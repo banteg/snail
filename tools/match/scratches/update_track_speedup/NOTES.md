@@ -3,7 +3,7 @@
 Exact match under the standard `msvc6.5 /O2 /G5 /W3` profile.
 
 The `owner_game +0x8c` backlink is directly typed as the containing
-`SubgameRuntime*`; its `subgame_pause_gate +0x09` is the update guard below.
+`cRSubGame*`; its `subgame_pause_gate +0x09` is the update guard below.
 
 Recovered behavior:
 
@@ -39,7 +39,7 @@ and `handle_subgoldy_collisions` consumes the full x/y/z vector. It was kept as
 a field-by-field `BodNode` view at that stage.
 
 2026-07-11 owner-view retirement: the duplicate pickup-only owner view was
-removed in favor of the canonical `SubgameRuntime` owner. Focused matching
+removed in favor of the canonical `cRSubGame` owner. Focused matching
 remains exact.
 
 2026-07-11 authored owner: the receiver and intrusive-list neighbors now use

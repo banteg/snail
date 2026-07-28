@@ -32,7 +32,7 @@ EXPECTED_TYPE_WIDTHS = {
     "SubGarbagePool": 0x264C,
     "SubRing": 0x1F8,
     "SubRingPool": 0x3F0,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -55,7 +55,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("active_head", "SubGarbage*"),
         0x04: ("slots", "SubGarbage[50]"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x356000: ("health_pickups", "SubHealth[8]"),
         0x3563A0: ("slug_hazards", "SlugPool"),
         0x356B00: ("sub_lazers", "SubLazerManager"),
@@ -66,7 +66,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# Collision walks carry EDI as a signed byte offset from SubgameRuntime, not as
+# Collision walks carry EDI as a signed byte offset from cRSubGame, not as
 # an owner pointer. The exact pool extents and element widths prove all six
 # lifetimes. Retype the four void-inferred walks to match the two int-inferred
 # predecessors, but keep the separately typed slot cursors as the borrowed

@@ -18,7 +18,7 @@ public:
     void initialize_fringe_manager(); // @ 0x447090
     Fringe* allocate_fringe_object(); // @ 0x4470a0
 
-    // Fixed storage embedded in SubgameRuntime. initialize_fringe_manager()
+    // Fixed storage embedded in cRSubGame. initialize_fringe_manager()
     // rewinds the cursor; allocation never transfers object ownership.
     Fringe objects[7000];       // +0x00000
     int count;                  // +0x5fb40

@@ -257,7 +257,7 @@ only the compiler-local EH relocation unresolved.
 
 The `Size of cRTutorial` entry now comes from `sizeof(Tutorial)`. Its known
 state/backlink prefix plus a 0xc-byte unresolved tail occupies exactly
-`SubgameRuntime +0xa858..+0xa874`, where the first `SubTracks` begins.
+`cRSubGame +0xa858..+0xa874`, where the first `SubTracks` begins.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
 
@@ -277,14 +277,14 @@ two complete 0x94-byte cRVapour children close exactly to 0x19c, ending at the
 
 The `Size of cRParcelManager` entry now comes from `sizeof(ParcelManager)`.
 Fifty inline 0x8c-byte `Parcel` records close exactly to the native 0x1b58
-total and the next `SubgameRuntime` field at `+0x125ffd8`. Constructor metrics
+total and the next `cRSubGame` field at `+0x125ffd8`. Constructor metrics
 remain unchanged at 88.89%, with 119 clean operands and only the existing
 compiler-local EH relocation unresolved.
 
 ## 2026-07-11 cRCompletion size ledger
 
 The `Size of cRCompletion` entry now comes from `sizeof(Completion)`. The one
-0x50-byte object at `SubgameRuntime +0x12727d8` owns both the parcel-display
+0x50-byte object at `cRSubGame +0x12727d8` owns both the parcel-display
 and final-result phases and ends exactly at the embedded `TimesUp` controller.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
@@ -293,7 +293,7 @@ only the compiler-local EH relocation unresolved.
 
 The `Size of cRTimesUp` entry now comes from `sizeof(TimesUp)`. Its state,
 borrowed border, progress, and step occupy the final 0x10 bytes of
-`SubgameRuntime`, closing the owner exactly at the root high-score screen.
+`cRSubGame`, closing the owner exactly at the root high-score screen.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
 
@@ -302,14 +302,14 @@ only the compiler-local EH relocation unresolved.
 The `Size of cRGalaxy` entry now comes from `sizeof(Galaxy)`. The recovered
 route/star and widget fields previously ended at 0x10fa4; the native 0x10fa8
 ledger proves the following unresolved dword belongs to the same owner, which
-now closes exactly at `SubgameRuntime +0x1270fc8`. Constructor metrics remain
+now closes exactly at `cRSubGame +0x1270fc8`. Constructor metrics remain
 unchanged at 88.89%, with 119 clean operands and only the compiler-local EH
 relocation unresolved.
 
 ## 2026-07-11 cRSegmentCache size ledger
 
 The `Size of cRSegmentCache` entry now comes from `sizeof(SegmentCache)`. Its
-0xa7f8-byte extent begins at `SubgameRuntime +0x5c`, owns the complete 143x5
+0xa7f8-byte extent begins at `cRSubGame +0x5c`, owns the complete 143x5
 cache-slot grid, and ends four alignment bytes before Tutorial. Constructor
 metrics remain unchanged at 88.89%, with 119 clean operands and only the
 compiler-local EH relocation unresolved.
@@ -318,12 +318,12 @@ compiler-local EH relocation unresolved.
 
 The `Size of cRGUI` entry now comes from `sizeof(GUI)`. Its borrowed Subgame
 pointer plus nine mode-dependent widget/state lanes occupy exactly 0x28 bytes
-at `SubgameRuntime +0x125ffe0`, ending at the `Help` owner. Android independently
+at `cRSubGame +0x125ffe0`, ending at the `Help` owner. Android independently
 preserves the same field offsets. Constructor metrics remain unchanged.
 
 ## 2026-07-11 recovered-owner ledger closure
 
-The already exact `GameRoot`, `SubgameRuntime`, `SubTracks`, `Player`
+The already exact `GameRoot`, `cRSubGame`, `SubTracks`, `Player`
 (`cRSubGoldy`), `LandscapeManager`, `SMTracks`, and `BodBase` extents now feed
 their runtime size prints through `sizeof` instead of duplicated hex literals.
 Each type has an independent compile-time size assertion and proven adjacent
@@ -342,14 +342,14 @@ unchanged.
 
 The `Size of cREnemyManager` entry now comes from `sizeof(EnemyManager)`. Its
 four-byte count and 256 inline 0x18-byte `ContactTargetEntry` records occupy
-exactly 0x1804 bytes at `SubgameRuntime +0x1270fd4`, ending at `Completion`.
+exactly 0x1804 bytes at `cRSubGame +0x1270fd4`, ending at `Completion`.
 Constructor metrics remain unchanged at 88.89%, with 119 clean operands and
 only the compiler-local EH relocation unresolved.
 
 ## 2026-07-11 cRTimeTrial size ledger
 
 The `Size of cRTimeTrial` entry now comes from `sizeof(TimeTrial)`. The exact
-0x330-byte owner begins at `SubgameRuntime +0xff25e0` and ends at the already
+0x330-byte owner begins at `cRSubGame +0xff25e0` and ends at the already
 proven one-byte `PathManager` at `+0xff2910`; TimeString callsites independently
 use the same start address as their receiver. Constructor metrics remain
 unchanged at 88.89%, with 119 clean operands and only the compiler-local EH
@@ -361,7 +361,7 @@ at a 0x10-byte stride. The resulting `TimeTrialCourseRecord[51]` layout is
 exactly 0x330 bytes, so it strengthens the Windows size-ledger boundary without
 changing constructor code generation.
 
-## 2026-07-13 final SubgameRuntime owner-band closure
+## 2026-07-13 final cRSubGame owner-band closure
 
 The consolidated Binary Ninja/IDA analysis layouts now replace the anonymous
 `+0x125ffd8..+0x12727d8` tail with the same proven owners used by the matching
@@ -370,7 +370,7 @@ headers: normalized garbage/salt frequencies, `GUI`, `Help`, `ThanksScreen`,
 Their exact extents form one contiguous chain through the existing
 `Completion` and `TimesUp` tail. A Binary Ninja declaration preview verified
 `GUI 0x28`, `Help 0x04`, `ThanksScreen 0x14`, `Galaxy 0x10fa8`,
-`EnemyManager 0x1804`, and the unchanged `SubgameRuntime 0x1272838`, then
+`EnemyManager 0x1804`, and the unchanged `cRSubGame 0x1272838`, then
 reverted without changing the database.
 
 This is analysis ownership consolidation, not constructor source shaping. At
@@ -463,7 +463,7 @@ verified structurally rather than whitelisted.
 ## 2026-07-14 runtime size-ledger array owners
 
 The remaining aggregate entries for cRSubHealth, cRSlug, cRSubGarbage, and
-cRPath now derive from the actual `SubgameRuntime` members instead of detached
+cRPath now derive from the actual `cRSubGame` members instead of detached
 `sizeof(type) * literal` expressions. This preserves an important native
 distinction: the cRSubGarbage ledger entry covers the 50 owned slots but not
 the adjacent borrowed active-list head in `SubGarbagePool`.

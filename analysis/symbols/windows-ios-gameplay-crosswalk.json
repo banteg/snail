@@ -415,7 +415,7 @@
       "android_symbol": "cRGalaxy::Open(int)",
       "source_object": "Galaxy.o",
       "confidence": "high",
-      "notes": "Both mobile Open bodies contain the same authored galaxy-file parser, point rescaling, route/star-bank population, placeholder labels, and SubgameRuntime backlink. Windows splits that bootstrap into this no-argument void startup member and keeps the interactive card opener separately at 0x409c50."
+      "notes": "Both mobile Open bodies contain the same authored galaxy-file parser, point rescaling, route/star-bank population, placeholder labels, and cRSubGame backlink. Windows splits that bootstrap into this no-argument void startup member and keeps the interactive card opener separately at 0x409c50."
     },
     {
       "address": "0x408c10",
@@ -722,7 +722,7 @@
       "ios_symbol": "cREnemyManager::Init()",
       "source_object": "Golb.o",
       "confidence": "high",
-      "notes": "The Windows receiver is the 0x1804-byte EnemyManager embedded at SubgameRuntime +0x1270fd4. Its one-store body is also identical-code-folded with an unrelated tracked-allocation stack initializer.",
+      "notes": "The Windows receiver is the 0x1804-byte EnemyManager embedded at cRSubGame +0x1270fd4. Its one-store body is also identical-code-folded with an unrelated tracked-allocation stack initializer.",
       "android_symbol": "cREnemyManager::Init()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -890,7 +890,7 @@
       "android_symbol": "cRSubGame::StartLevel(int)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "Android preserves the outer level-load, manager-reset, GenerateLevel, landscape, player, HUD, and music lifecycle. The Windows call to the shared one-byte stub with receiver SubgameRuntime +0x3bbb54 is the empty cRProgressBar::Init lifecycle edge also called by Android StartLevel."
+      "notes": "Android preserves the outer level-load, manager-reset, GenerateLevel, landscape, player, HUD, and music lifecycle. The Windows call to the shared one-byte stub with receiver cRSubGame +0x3bbb54 is the empty cRProgressBar::Init lifecycle edge also called by Android StartLevel."
     },
     {
       "address": "0x438700",
@@ -1156,7 +1156,7 @@
       "android_symbol": "cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The Android body independently confirms that the integer kind parameter is mutable, that the selected parent remains SubgameRuntime-owned embedded storage, and that kinds 0..8 retain distinct RR through RR13 streams. v1.9 adds a cRSubRow* parameter. All five Windows callers discard EAX, while the iOS body returns from failure paths without establishing a result and ends by invoking cRSubRing::AI(), supporting the shared void contract."
+      "notes": "The Android body independently confirms that the integer kind parameter is mutable, that the selected parent remains cRSubGame-owned embedded storage, and that kinds 0..8 retain distinct RR through RR13 streams. v1.9 adds a cRSubRow* parameter. All five Windows callers discard EAX, while the iOS body returns from failure paths without establishing a result and ends by invoking cRSubRing::AI(), supporting the shared void contract."
     },
     {
       "address": "0x43f130",
@@ -1318,7 +1318,7 @@
       "android_symbol": "cRSubGame::PlaceParcels()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All three ports dispatch the authored void method on the same cRSubGame receiver. The level definition and runtime rows are SubgameRuntime-owned; the normal digit/set candidate banks are global scratch and retain the mobile names gGroup0/gGroup. Android and iOS independently keep digit 0 on the natural catalog path and construct the same lane-centered tVector with zero y/z for glyph-derived candidates. Windows roots its inline segment scan at SubSegment::row_count and advances that borrow by the full segment stride without transferring ownership. Windows and Android reset the maximum set size inside each segment iteration, so the post-loop target intentionally uses the final segment's maximum rather than a level-wide maximum. Windows additionally reuses its catalog set-index scalar as that post-loop placement target and stages the two glyph branches through distinct tVector values before publishing them to the global banks."
+      "notes": "All three ports dispatch the authored void method on the same cRSubGame receiver. The level definition and runtime rows are cRSubGame-owned; the normal digit/set candidate banks are global scratch and retain the mobile names gGroup0/gGroup. Android and iOS independently keep digit 0 on the natural catalog path and construct the same lane-centered tVector with zero y/z for glyph-derived candidates. Windows roots its inline segment scan at SubSegment::row_count and advances that borrow by the full segment stride without transferring ownership. Windows and Android reset the maximum set size inside each segment iteration, so the post-loop target intentionally uses the final segment's maximum rather than a level-wide maximum. Windows additionally reuses its catalog set-index scalar as that post-loop placement target and stages the two glyph branches through distinct tVector values before publishing them to the global banks."
     },
     {
       "address": "0x444240",
@@ -1535,7 +1535,7 @@
       "android_symbol": "cRTutorial::AI()",
       "source_object": "Tutorial.o",
       "confidence": "high",
-      "notes": "The exact void Windows member samples the live Goldy position through its borrowed SubgameRuntime pointer. Its sole native caller discards the grid-cell lookup result, so residual EAX is not an authored return."
+      "notes": "The exact void Windows member samples the live Goldy position through its borrowed cRSubGame pointer. Its sole native caller discards the grid-cell lookup result, so residual EAX is not an authored return."
     },
     {
       "address": "0x448ec0",
@@ -1996,7 +1996,7 @@
       "android_symbol": "cRSubGame::HideScores()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "All three void methods null-check and hide the same pair of SubgameRuntime-owned score widgets in the same order."
+      "notes": "All three void methods null-check and hide the same pair of cRSubGame-owned score widgets in the same order."
     },
     {
       "address": "0x445f40",
@@ -2004,7 +2004,7 @@
       "android_symbol": "cRSubGame::UnHideScores()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Windows and Android unhide the same two SubgameRuntime-owned score widgets in order. No iOS symbol was found."
+      "notes": "Windows and Android unhide the same two cRSubGame-owned score widgets in order. No iOS symbol was found."
     },
     {
       "address": "0x4447c0",
@@ -2286,7 +2286,7 @@
       "android_symbol": "cRBanner::AI()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The exact Windows owner is one of two 0x60-byte Banner actors embedded at SubgameRuntime +0x359080. Android preserves the visibility mode, borrowed Player pointer, phase, and phase-step tail at the same offsets relative to its smaller platform BodBase."
+      "notes": "The exact Windows owner is one of two 0x60-byte Banner actors embedded at cRSubGame +0x359080. Android preserves the visibility mode, borrowed Player pointer, phase, and phase-step tail at the same offsets relative to its smaller platform BodBase."
     },
     {
       "address": "0x441dd0",
@@ -2866,7 +2866,7 @@
       "ios_symbol": "cRPathManager::NameCode(char*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "Both linearly search the authored Path name table and return its index or -1. Windows stores the otherwise-empty PathManager at SubgameRuntime +0xff2910; the unused receiver makes its machine ABI indistinguishable from the prior stdcall presentation.",
+      "notes": "Both linearly search the authored Path name table and return its index or -1. Windows stores the otherwise-empty PathManager at cRSubGame +0xff2910; the unused receiver makes its machine ABI indistinguishable from the prior stdcall presentation.",
       "android_symbol": "cRPathManager::NameCode(char*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -4489,7 +4489,7 @@
       "android_symbol": "cRHelp::Init()",
       "source_object": "Help.o",
       "confidence": "high",
-      "notes": "The exact Windows member initializes the single-widget cRHelp owner embedded at SubgameRuntime +0x1260008."
+      "notes": "The exact Windows member initializes the single-widget cRHelp owner embedded at cRSubGame +0x1260008."
     },
     {
       "address": "0x4168c0",
@@ -4621,7 +4621,7 @@
       "android_symbol": "cRTimeTrial::TimeString(cRTime&)",
       "source_object": "TimeTrial.o",
       "confidence": "high",
-      "notes": "Windows callsites seed `this` with SubgameRuntime +0xff25e0, whose 0x330-byte extent is fixed by the following PathManager and the runtime size ledger. The exact body writes the shared gTimeTrialString buffer and does not read receiver fields."
+      "notes": "Windows callsites seed `this` with cRSubGame +0xff25e0, whose 0x330-byte extent is fixed by the following PathManager and the runtime size ledger. The exact body writes the shared gTimeTrialString buffer and does not read receiver fields."
     },
     {
       "address": "0x415f50",
@@ -5086,7 +5086,7 @@
       "ios_symbol": "cRSubGame::cRSubGame()",
       "source_object": "SubGame.o",
       "confidence": "high",
-      "notes": "The sole Windows caller constructs the embedded SubgameRuntime and the exact helper returns that receiver after building every owned pool. Android and iOS preserve the authored cRSubGame constructor and the same owner families, but use smaller Bod prefixes, different pool capacities, and thirteen list heads rather than Windows ten; only ownership and lifecycle transfer across ports."
+      "notes": "The sole Windows caller constructs the embedded cRSubGame and the exact helper returns that receiver after building every owned pool. Android and iOS preserve the authored cRSubGame constructor and the same owner families, but use smaller Bod prefixes, different pool capacities, and thirteen list heads rather than Windows ten; only ownership and lifecycle transfer across ports."
     },
     {
       "address": "0x407b50",

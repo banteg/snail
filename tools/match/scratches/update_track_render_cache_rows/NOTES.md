@@ -31,20 +31,20 @@ Match status:
 
 ## 2026-07-14 draw-list and player owner closure
 
-The two root-relative list anchors are embedded `SubgameRuntime` owners:
+The two root-relative list anchors are embedded `cRSubGame` owners:
 `+0x355b64` is `fringe_attachment_list_head`, used only by the Fringe cache
 family, and `+0x355b9c` is `track_body_list_head`, used by Floor, Slide, Ramp,
 and Warn. The row activation threshold at root `+0x42fdec` is the embedded
 player's `position.z`, and the skirt color comes from the same subgame owner.
 
 All accesses retain the native independent `g_game` reloads while following
-the canonical `GameRoot -> SubgameRuntime` graph. The method remains exact at
+the canonical `GameRoot -> cRSubGame` graph. The method remains exact at
 227/227 instructions with all 27 operands clean.
 
 ## 2026-07-18 cross-tool owner graph
 
 Address-anchored IDA replay now preserves the exact `SegmentCache*` receiver
-and the full `GameRoot -> SubgameRuntime` owner graph in the checked-in
+and the full `GameRoot -> cRSubGame` owner graph in the checked-in
 artifact. The activation threshold names the embedded player's `position.z`;
 Fringe links through `fringe_attachment_list_head`, the other four families
 link through `track_body_list_head`, and skirt color is borrowed from the same

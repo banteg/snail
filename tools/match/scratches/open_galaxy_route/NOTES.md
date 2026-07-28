@@ -12,9 +12,9 @@ Current local field evidence:
   Known record fields are `route_name_index +0x00`, `map_x/map_y +0x08/+0x0c`,
   detail text `+0x1c`, and description text `+0x9c`.
 - `+0x10930` is a `0xa0`-stride route-name string table.
-- `+0x10f70` is a borrowed backlink to the enclosing `SubgameRuntime`, not an
+- `+0x10f70` is a borrowed backlink to the enclosing `cRSubGame`, not an
   independently owned progress table. Its native `+0x944150` route-record
-  base resolves exactly to `SubgameRuntime::sub_high_score +0x2b8c88`, the
+  base resolves exactly to `cRSubGame::sub_high_score +0x2b8c88`, the
   owned `time_trial_route_records[]` bank; its `0x1fac0` stride is
   `sizeof(SubSolution)`.
 - `+0x10f80` caches the selected record index.

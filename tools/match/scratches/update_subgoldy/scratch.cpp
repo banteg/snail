@@ -43,7 +43,7 @@ extern float g_replay_accum_z;            // unk_643194
 
 enum {
     TIME_TRIAL_RECORD_BANK_FROM_SUBGAME =
-        offsetof(SubgameRuntime, sub_high_score)
+        offsetof(cRSubGame, sub_high_score)
         + offsetof(SubHighScore, time_trial_route_records),
 };
 
@@ -68,7 +68,7 @@ struct SubgoldyPathView {
 // The standalone helper body is exact with a double source declaration, but
 // this native caller consumes the x87 return as float arithmetic. Return type
 // is not encoded in the MSVC thiscall symbol, so retain this caller-side ABI
-// view without duplicating any SubgameRuntime storage.
+// view without duplicating any cRSubGame storage.
 struct SubgoldyFloorSamplerCallView {
     float sample_track_floor_height_at_position(Vector3* position);
 };
@@ -82,7 +82,7 @@ struct SubgoldyFloorSamplerCallView {
 
 void Player::update_subgoldy()
 {
-    SubgameRuntime* current_game = game;
+    cRSubGame* current_game = game;
     if (current_game->subgame_pause_gate) {
         if (g_game->players[0].frontend_state != 9) {
             damage_gauge.update_damage_gauge();
@@ -121,13 +121,13 @@ void Player::update_subgoldy()
         return;
     }
 
-    SubgameRuntime* latch_game = game;
+    cRSubGame* latch_game = game;
     if (latch_game->replay_update_cursor > 20
         && !latch_game->track_state_latch)
         latch_game->track_state_latch = 1;
 
     Vector3* p_position;
-    SubgameRuntime* replay_game = game;
+    cRSubGame* replay_game = game;
     if (replay_game->selected_level_record_active
         && replay_game->replay_update_cursor
                < replay_game->selected_level_record->replay_sample_count
@@ -139,7 +139,7 @@ void Player::update_subgoldy()
                 ->run_records[replay_game->replay_update_cursor]
                 .lateral_x,
             16.0f);
-        SubgameRuntime* flag_game = game;
+        cRSubGame* flag_game = game;
         if (flag_game
                 ->selected_level_record
                 ->run_records[flag_game->replay_update_cursor]
@@ -213,12 +213,12 @@ steering_stored:
         float quantized_x = convert_math_type16_to_32(
             convert_math_type32_to_16(transform.position.x, 16.0f), 16.0f);
         transform.position.x = quantized_x;
-        SubgameRuntime* record_game = game;
+        cRSubGame* record_game = game;
         record_game
             ->current_high_score_record
             .run_records[record_game->replay_update_cursor]
             .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);
-        SubgameRuntime* record_game_z = game;
+        cRSubGame* record_game_z = game;
         if (!game->replay_update_cursor) {
             record_game_z
                 ->current_high_score_record
@@ -245,7 +245,7 @@ steering_stored:
                     32.0f)
                 + g_replay_accum_z;
         }
-        SubgameRuntime* fire_game = game;
+        cRSubGame* fire_game = game;
         if (fire_game->track_state_latch) {
             if (control_source->control_flags_a & INPUT_BUTTON_PRIMARY)
                 fire_game
@@ -262,7 +262,7 @@ steering_stored:
         if ((source->control_flags_b & INPUT_BUTTON_PRIMARY) == 0
             && (source->control_flags_a & INPUT_BUTTON_PRIMARY) == 0)
             game->track_state_latch = 1;
-        SubgameRuntime* mark_game = game;
+        cRSubGame* mark_game = game;
         if (mark_game->track_state_latch)
             mark_game
                 ->current_high_score_record
@@ -283,7 +283,7 @@ steering_stored:
         update_subgoldy_resurrect();
 
     cRSubLoc* source_cell = game->get_track_grid_cell_at_world_position(p_position);
-    SubgameRuntime* event_game = game;
+    cRSubGame* event_game = game;
     SubRow* row_record =
         &event_game->runtime_rows[source_cell->get_track_cell_row_index()];
     int event_id = row_record->row_event_id;
@@ -317,7 +317,7 @@ steering_stored:
                     1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             }
             int definition = row_record->row_event_id;
-            SubgameRuntime* voice_game = game;
+            cRSubGame* voice_game = game;
             if (voice_game
                     ->level_definition
                     .segment_slots[definition - 1]
@@ -355,7 +355,7 @@ steering_stored:
         if (velocity.z > 0.0f)
             velocity.z = 0.0f;
     } else {
-        SubgameRuntime* accel_game = game;
+        cRSubGame* accel_game = game;
         if ((float)accel_game->first_block_row_count > transform.position.z)
             velocity.z = accel_game->subgame_rate * accel_game->subgame_rate * 0.0040000002f
                        + velocity.z;
@@ -456,7 +456,7 @@ steering_stored:
         } else {
             cRSubLoc* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
             if (attachment_exit_pending) {
-                SubgameRuntime* drag_game = game;
+                cRSubGame* drag_game = game;
                 if ((drag_game->runtime_rows[landing_cell->get_track_cell_row_index()]
                          .flags
                       & SUBROW_FLAG_NO_FALL)
@@ -537,7 +537,7 @@ steering_stored:
                         && !attachment_exit_pending)
                         begin_post_follow_carryover();
                 }
-                SubgameRuntime* probe_game = game;
+                cRSubGame* probe_game = game;
                 if (probe_game->level_mode == 3)
                     probe_game->get_track_grid_cell_at_world_position(p_position);
                 if (((game->runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) == 0
@@ -714,7 +714,7 @@ steering_stored:
             damage_retrigger_timer = 0.0f;
     }
 
-    SubgameRuntime* completion_game = game;
+    cRSubGame* completion_game = game;
     float completion_start = (float)completion_game->completion_row_start;
     if (transform.position.z < completion_start || attachment_exit_pending) {
         if (!boost_one_tick && !control_override_active) {
@@ -735,7 +735,7 @@ steering_stored:
                     * 0.016666668f;
                 stopwatch.Add(remaining);
             }
-            SubgameRuntime* handoff_game = game;
+            cRSubGame* handoff_game = game;
             completion_handoff_timer = 0.0f;
             completion_handoff_timer_step = 0.016666668f;
             completion_handoff_voice_gate = 0;
@@ -754,7 +754,7 @@ steering_stored:
             boost_one_tick = 0;
         }
         completion_handoff_active = 1;
-        SubgameRuntime* run_out_game = game;
+        cRSubGame* run_out_game = game;
         if ((float)run_out_game->completion_row_start + 2.5f < transform.position.z) {
             float rate = run_out_game->subgame_rate;
             float quantum = rate * rate * 0.0040000002f;
@@ -768,7 +768,7 @@ steering_stored:
         if (cycle > 1.0f)
             completion_handoff_cycle_progress = 0.0f;
         completion_handoff_timer += completion_handoff_timer_step;
-        SubgameRuntime* display_game = game;
+        cRSubGame* display_game = game;
         display_game->subgame_rebuild_selector = 2;
         if (completion_handoff_timer > 2.0f && !completion_handoff_voice_gate) {
             completion_handoff_voice_gate = 1;
@@ -776,7 +776,7 @@ steering_stored:
                 VOICE_SET_VICTORY, VOICE_PLAY_INTERRUPT, -1);
         }
         if (completion_handoff_timer > 2.0f) {
-            SubgameRuntime* skip_game = game;
+            cRSubGame* skip_game = game;
             if (skip_game->level_mode == 0 || skip_game->level_mode == 1) {
                 if (skip_game->completion.fast_forward_enabled == 1
                     && (control_source->control_flags_a
@@ -788,7 +788,7 @@ steering_stored:
             }
         }
         if (completion_handoff_timer > 5.0f) {
-            SubgameRuntime* hold_game = game;
+            cRSubGame* hold_game = game;
             if ((hold_game->level_mode == 0 || hold_game->level_mode == 1)
                 && hold_game->completion.state != COMPLETION_STATE_CONTINUE_ACCEPTED)
                 completion_handoff_timer =
@@ -799,10 +799,10 @@ steering_stored:
             if (!fade_state) {
                 g_game->fade.begin_frontend_fade_out(0);
             } else if (fade_state == 4) {
-                SubgameRuntime* finish_game = game;
+                cRSubGame* finish_game = game;
                 if (finish_game->completion.state != COMPLETION_STATE_INACTIVE)
                     finish_game->completion.flush_row_event_display();
-                SubgameRuntime* dispatch_game = game;
+                cRSubGame* dispatch_game = game;
                 if (!dispatch_game->level_mode) {
                     if (dispatch_game->level_mode_arg
                         == g_game->subgame.galaxy.record_count - 1) {
@@ -816,7 +816,7 @@ steering_stored:
                 } else {
                     dispatch_game->complete_subgame(1);
                 }
-                SubgameRuntime* exit_game = game;
+                cRSubGame* exit_game = game;
                 if (exit_game->level_mode == 7) {
                     g_game->players[0].frontend_state = 26;
                     g_game->players[0].saved_frontend_state = 2;
@@ -893,7 +893,7 @@ steering_stored:
         }
     }
 
-    SubgameRuntime* ghost_game = game;
+    cRSubGame* ghost_game = game;
     if (ghost_game->level_mode == 4) {
         char* record_block =
             (char*)ghost_game + sizeof(SubSolution) * ghost_game->level_mode_arg;
@@ -938,7 +938,7 @@ steering_stored:
     float backdrop_zoom = transform.position.z / (float)game->runtime_row_count;
     g_game->backdrop.set_backdrop_zoom(backdrop_zoom);
 
-    SubgameRuntime* horizon_game = game;
+    cRSubGame* horizon_game = game;
     float interaction_limit = (float)horizon_game->completion_row_start - 30.0f;
     float interaction_near = transform.position.z - 8.0f;
     if (interaction_limit >= interaction_near)
@@ -983,7 +983,7 @@ steering_stored:
         }
     }
 
-    SubgameRuntime* commentary_game = game;
+    cRSubGame* commentary_game = game;
     float window_floor = commentary_game->subgame_rate * 0.17f;
     if ((commentary_game->subgame_rate * 0.5f - window_floor) * 0.1f + window_floor
             <= velocity.z
@@ -1012,7 +1012,7 @@ steering_stored:
     if (g_game->subgame.replay_update_cursor < 10)
         shoot_cooldown_progress = shoot_cooldown_step;
 
-    SubgameRuntime* emitter_game = game;
+    cRSubGame* emitter_game = game;
     if ((emitter_game->runtime_flags
             & SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS)
             != 0
@@ -1057,12 +1057,12 @@ steering_stored:
     }
 
     game->completion.update_row_event_display();
-    SubgameRuntime* tick_game = game;
+    cRSubGame* tick_game = game;
     tick_game->current_high_score_record.replay_sample_count =
         tick_game->current_high_score_record.replay_sample_count + 1;
-    SubgameRuntime* cursor_game = game;
+    cRSubGame* cursor_game = game;
     cursor_game->replay_update_cursor = cursor_game->replay_update_cursor + 1;
-    SubgameRuntime* times_game = game;
+    cRSubGame* times_game = game;
     if (times_game->replay_update_cursor == 21000)
         times_game->times_up.show_times_up_message();
     game->times_up.update_times_up();

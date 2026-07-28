@@ -13,7 +13,7 @@ Recovered behavior:
   `Tutorial::uninit_tutorial()` at `game+0xa858`;
 - always uninitializes the embedded player warning, the complete landscape
   manager's ten active entries, authored `TimesUp`, and the broader subgame BOD set through
-  `SubgameRuntime::remove_subgame_bods()`;
+  `cRSubGame::remove_subgame_bods()`;
 - for every non-state-1 teardown, removes active BOD nodes from the embedded
   20-slot SubLazer pool, 40-slot Salt pool, and two-slot start/completion
   `BannerPool`; row-event display is additionally flushed for modes `0`/`1`;
@@ -40,7 +40,7 @@ Likewise, `game+0xff7bc4` is the 0x3c-byte `cRBarrier` actor with a borrowed
 player pointer at `+0x38`; the adjacent selected-level replay bytes at
 `+0xff25d0/+0xff25d1` do not own that BOD.
 
-`SubgameRuntime` now exposes those actors and the teardown's other fixed pools
+`cRSubGame` now exposes those actors and the teardown's other fixed pools
 as embedded storage. The global BOD list only links the embedded nodes while
 live, and `destroy_subgame` recycles their links without freeing object
 storage. HUD fields remain borrowed `BorderManager` handles and are returned
@@ -48,7 +48,7 @@ through `kill_border()`. Focused Wibo remains exact at `246/246` with all 41
 masked operands resolved.
 
 The same lifetime rule applies to the adjacent path-template bank at
-`SubgameRuntime +0xff2914`: `destroy_subgame` does not destruct its 63 embedded
+`cRSubGame +0xff2914`: `destroy_subgame` does not destruct its 63 embedded
 pairs or free their sample/mesh allocations. Those are game-runtime assets
 created after the tracked allocation mark and released together by
 `free_tracked_allocations_to_mark` during main-loop shutdown.
@@ -56,13 +56,13 @@ created after the tracked allocation mark and released together by
 ## 2026-07-11 cRCompletion owner
 
 The mode-0/1 teardown now calls
-`SubgameRuntime::completion.flush_row_event_display()` directly. Mobile symbols
+`cRSubGame::completion.flush_row_event_display()` directly. Mobile symbols
 name the exact callee `cRCompletion::UnInit()`, and its 0x50-byte owner ends
 exactly at `times_up`. The old independent row-event controller view is
 retired; the teardown remains exact at 246/246 with all 41 operands clean.
 
 The adjacent tail call now resolves to the primary
-`SubgameRuntime::times_up.uninit_times_up()` owner. Android retains the exact
+`cRSubGame::times_up.uninit_times_up()` owner. Android retains the exact
 callee as `cRTimesUp::UnInit()`; the code remains exact.
 
 Tutorial-mode teardown likewise reaches the primary embedded `Tutorial`.
@@ -111,7 +111,7 @@ at 246/246 instructions with all 41 masked operands clean.
 
 The live Binary Ninja `Game*` receiver was the same stale named-type identity
 seen on the initializer, not a distinct aggregate. The guarded catalog repair
-recreated only this exact function as a `SubgameRuntime*` method, preserved its
+recreated only this exact function as a `cRSubGame*` method, preserved its
 sole user-defined receiver, and saved after verified readback. Its tracked
 decompile falls from 28 raw receiver-offset expressions to none and now exposes
 the player warning, landscape manager, completion display, embedded hazard
@@ -133,7 +133,7 @@ so the former literal `-8/-4/-0xc` spellings no longer need to be duplicated.
 
 ## 2026-07-25 life-stock pointer-slot borrow
 
-Postal teardown walks the same nine-entry `SubgameRuntime::life_stock_widgets`
+Postal teardown walks the same nine-entry `cRSubGame::life_stock_widgets`
 pointer bank initialized at startup. It borrows each pointer slot, returns the
 referenced widget through `BorderManager`, and advances by one four-byte
 pointer; it does not own a separate widget array.

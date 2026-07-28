@@ -68,7 +68,7 @@ an ownership improvement.
 ## 2026-07-14 analysis receiver closure
 
 The live BN receiver is now the matcher- and cross-port-proven
-`SubgameRuntime*`, replacing the stale same-size `Game*` identity. Both tracked
+`cRSubGame*`, replacing the stale same-size `Game*` identity. Both tracked
 decompilers now expose `runtime_row_count`, `runtime_cells`, the object slot,
 and packed `lane_and_flags` under that owner. This is analysis metadata only;
 the honest 81.33%, 75/75 matcher result and its documented cursor residual are
@@ -78,14 +78,14 @@ unchanged.
 
 `rebuild_track_runtime_from_segments` is the only native caller. It invokes
 this pass at `0x437e10`, discards EAX, and immediately reloads the same
-`SubgameRuntime*` receiver for `SlideSmoothTrack`. The retained source has
+`cRSubGame*` receiver for `SlideSmoothTrack`. The retained source has
 always modeled the pass as a void member, and its 75-instruction build
 reproduces the native count-derived EAX residue without an authored return
 statement. That residue is therefore compiler fallout from the final row-loop
 comparison, not a consumed row-count result.
 
 The analysis ABI now records
-`void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime*)`.
+`void __thiscall promote_track_tiles_to_fringe_variants(cRSubGame*)`.
 This is an ownership-only correction: matcher source, bytes, score, and the
 documented object-cursor residual are unchanged. `merge_track_tile_runs` and
 `build_track_fringe_objects` remain conservatively integer; this pass does not
@@ -104,7 +104,7 @@ and the stride without claiming ownership of either complete cell. It is not
 used in matcher source: the retained `cRSubLoc*` spelling remains the
 honest 81.33%, 75/75 form because the source-level object-slot form triggers
 the already measured VC6 CSE/register-allocation regression. The analysis
-annotation therefore removes a fabricated giant `SubgameRuntime` rebase while
+annotation therefore removes a fabricated giant `cRSubGame` rebase while
 preserving every matcher byte and all six clean operand constraints.
 
 ## 2026-07-27 authored WarnTrack owner

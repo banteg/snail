@@ -6,7 +6,7 @@
 #include "rmath_random.h"
 
 
-void SubgameRuntime::switch_track_mirror()
+void cRSubGame::switch_track_mirror()
 {
     bool mirror_enabled = random_float_below(1.0f, "Mirror") > 0.5f;
     if (mirror_enabled == track_mirror_enabled)

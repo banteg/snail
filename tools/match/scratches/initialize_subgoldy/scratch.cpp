@@ -224,7 +224,7 @@ void Player::initialize_subgoldy(int player_slot)
     do {
         *(int*)(shot_transform + SHOT_TRANSFORM_TO_STATE) = zero;
         ((TransformMatrix*)shot_transform)->set_matrix_identity();
-        *(SubgameRuntime**)(shot_transform + SHOT_TRANSFORM_TO_GAME) = this->game;
+        *(cRSubGame**)(shot_transform + SHOT_TRANSFORM_TO_GAME) = this->game;
         shot_transform += sizeof(GolbShot);
         --transform_count;
     } while (transform_count);

@@ -23,7 +23,7 @@ The measured improvement is **+26.45 percentage points**. The first remaining mi
 - Added semantic `Vec3` staging for ordinary offsets and the Supertramp terminal launch result.
 - Added ordinary-path x/y/z component intermediates to improve x87 scheduling.
 - Recovered aggregate `Vec3` publication into the embedded Player live-matrix rows.
-- Replaced the final field-first row and matrix globals with canonical `GameRoot`, `SubgameRuntime`, `SubRow`, and `Player` ownership paths.
+- Replaced the final field-first row and matrix globals with canonical `GameRoot`, `cRSubGame`, `SubRow`, and `Player` ownership paths.
 - Recovered `FollowState +0x20..+0x28` as one `orientation_up` vector and the side-exit output as a whole-vector copy.
 - Kept separate semantic clamp returns for the side-exit path.
 

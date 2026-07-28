@@ -5,7 +5,7 @@
 #include "transform_matrix.h"
 
 class Player;
-class SubgameRuntime;
+class cRSubGame;
 
 class Cameraman {
 public:
@@ -19,7 +19,7 @@ public:
     TransformMatrix desired_matrix; // +0x40
     TransformMatrix previous_desired_matrix; // +0x80
     Player* player; // +0xc0
-    SubgameRuntime* game; // +0xc4, non-owning backlink
+    cRSubGame* game; // +0xc4, non-owning backlink
     float fov_degrees; // +0xc8
     unsigned char force_camera_update; // +0xcc, copied into the subgame camera snap gate
     char unknown_cd[3];

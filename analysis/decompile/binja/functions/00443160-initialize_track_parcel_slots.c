@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_track_parcel_slots @ 0x443160 */
 
-00443160        struct SubgameRuntime** eax = &manager->slots[0].owner_subgame
+00443160        struct cRSubGame** eax = &manager->slots[0].owner_subgame
 00443164        int32_t i_1 = 0x32
 00443182        int32_t i
 0044316b        (eax - 0x3c)->slots[0].state = PARCEL_STATE_INACTIVE

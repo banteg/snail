@@ -32,7 +32,7 @@ void Player::handle_subgoldy_collisions()
 {
     enum {
         SALT_POOL_FROM_SUBGAME =
-            offsetof(SubgameRuntime, salt_hazards) + offsetof(SaltManager, slots),
+            offsetof(cRSubGame, salt_hazards) + offsetof(SaltManager, slots),
         SALT_STATE_FROM_SUBGAME = SALT_POOL_FROM_SUBGAME + offsetof(Salt, state),
         SALT_POSITION_FROM_SUBGAME =
             SALT_POOL_FROM_SUBGAME
@@ -42,7 +42,7 @@ void Player::handle_subgoldy_collisions()
             SALT_POOL_FROM_SUBGAME
             + offsetof(Salt, collision_armed),
         SUB_LAZER_POOL_FROM_SUBGAME =
-            offsetof(SubgameRuntime, sub_lazers)
+            offsetof(cRSubGame, sub_lazers)
             + offsetof(SubLazerManager, slots),
         SUB_LAZER_STATE_FROM_SUBGAME =
             SUB_LAZER_POOL_FROM_SUBGAME + offsetof(SubLazer, state),
@@ -157,7 +157,7 @@ void Player::handle_subgoldy_collisions()
                     if (distance < 1.5675001f) {
                         if ((shoot_flags & 0x80) == 0) {
                             if (!control_override_active) {
-                                SubgameRuntime* hit_game = game;
+                                cRSubGame* hit_game = game;
                                 control_override_active = 1;
                                 follow_state.active = 0;
                                 float rate = hit_game->subgame_rate;
@@ -216,7 +216,7 @@ void Player::handle_subgoldy_collisions()
                     g_sound_effect_manager.play_sound_effect(27);
                     game->parcel_manager.slots[n].state =
                         PARCEL_STATE_COLLECT_PENDING;
-                    SubgameRuntime* parcel_game = game;
+                    cRSubGame* parcel_game = game;
                     int collected = ++parcels_collected;
                     if (!parcel_game->level_mode)
                         sprintf(
@@ -314,7 +314,7 @@ void Player::handle_subgoldy_collisions()
                     game->ring_effects.slots[jj].state =
                         SUB_RING_STATE_COLLECT_PENDING;
                     if (!completion_handoff_active) {
-                        SubgameRuntime* effect_game = game;
+                        cRSubGame* effect_game = game;
                         SubRingKind kind = game->ring_effects.slots[jj].kind;
                         if (kind == SUB_RING_KIND_SLOW_DEFAULT
                             || kind == SUB_RING_KIND_SLOW_AUTHORED) {
@@ -324,7 +324,7 @@ void Player::handle_subgoldy_collisions()
                             velocity.z = effect_game->subgame_rate * 0.5f;
                         }
                     }
-                    SubgameRuntime* ladder_game = game;
+                    cRSubGame* ladder_game = game;
                     SubRingKind effect_kind =
                         game->ring_effects.slots[jj].kind;
                     if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT

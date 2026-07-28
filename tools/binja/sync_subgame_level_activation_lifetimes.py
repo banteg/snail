@@ -27,7 +27,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Invincible": 0x98,
     "Snail": 0x19B4,
     "Player": 0x4364,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -62,7 +62,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x0000: ("body", "RenderableBod"),
         0x2984: ("presentation", "Snail"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x3BB764: ("player", "Player"),
     },
     "GameRoot": {

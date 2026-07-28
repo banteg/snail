@@ -33,7 +33,7 @@ EXPECTED_TYPE_WIDTHS = {
     "TrackRowCellFringeFrontStrideCursor": 0x54,
     "SubRow": 0xF4,
     "SubRowParcelSpawnYStrideCursor": 0xF4,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -95,7 +95,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x58: ("source_segment", "SubSegment*"),
         0x5C: ("row_event_id", "int32_t"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0xA874: ("level_definition", "SubTracks"),
         0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
         0x5CCAC8: ("runtime_rows", "SubRow[3200]"),
@@ -236,7 +236,7 @@ RUNTIME_SEGMENT_SELECTION_USER_VAR_UPDATES = (
         814,
         71,
         "build_runtime_owner",
-        "SubgameRuntime*",
+        "cRSubGame*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -381,7 +381,15 @@ RUNTIME_GRID_GLYPH_USER_VAR_UPDATES = (
         1948,
         72,
         "runtime_grid_owner",
-        "SubgameRuntime*",
+        "cRSubGame*",
+    ),
+    (
+        "populate_runtime_track_cells_from_segments",
+        "RegisterVariableSourceType",
+        4765,
+        67,
+        "runtime_owner",
+        "cRSubGame*",
     ),
     (
         "populate_runtime_track_cells_from_segments",

@@ -24,7 +24,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_high_score_bank_types.h"
 RECORD_CURSOR_EXPECTED_SIZES = {
     "SubSolution": 0x1FAC0,
     "SubHighScore": 0x947648,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 SCALAR_SIZE_DISPLAY_UPDATES = (

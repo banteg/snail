@@ -2,7 +2,7 @@
 /* function: kill_slug_hazard @ 0x43f8b0 */
 /* selector: kill_slug_hazard */
 
-// Exact `Slug` kill transition from active to death-toss-pending: plays the death voice, records the right/left toss side, awards the slug score event through the containing SubgameRuntime's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`.
+// Exact `Slug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing cRSubGame's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`.
 void __thiscall kill_slug_hazard(Slug *slug)
 {
   __int64 v2; // rax

@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_track_fringe_objects @ 0x434be0 */
 
-00434bea        struct SubgameRuntime* runtime = game
-00434bf2        struct SubgameRuntime* runtime_saved = runtime
+00434bea        struct cRSubGame* runtime = game
+00434bf2        struct cRSubGame* runtime_saved = runtime
 00434bf6        initialize_fringe_manager(&g_game_base->subgame.fringe_manager)
 00434bfe        int32_t edge_variant_a = 0
 00434c02        int32_t row_index = 0

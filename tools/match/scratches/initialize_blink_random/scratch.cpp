@@ -4,7 +4,7 @@
 
 int next_math_random_value();
 
-void SubgameRuntime::initialize_blink_random()
+void cRSubGame::initialize_blink_random()
 {
     blink_random_index = 0;
     float* sample = blink_random_samples;

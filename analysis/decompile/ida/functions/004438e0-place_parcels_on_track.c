@@ -2,8 +2,8 @@
 /* function: place_parcels_on_track @ 0x4438e0 */
 /* selector: place_parcels_on_track */
 
-// Implements the authored void `cRSubGame::PlaceParcels()` method on the verified SubgameRuntime receiver: borrows a row_count-rooted cursor across the embedded SubTracks segment slots, scans authored rows and glyphs into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Mobile and Windows keep digit 0 on the natural catalog path; Windows and Android reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target.
-void __thiscall place_parcels_on_track(SubgameRuntime *game)
+// Implements the authored void `cRSubGame::PlaceParcels()` method on the verified cRSubGame receiver: borrows a row_count-rooted cursor across the embedded SubTracks segment slots, scans authored rows and glyphs into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Mobile and Windows keep digit 0 on the natural catalog path; Windows and Android reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target.
+void __thiscall place_parcels_on_track(cRSubGame *game)
 {
   int32_t level_mode; // eax
   int32_t v2; // esi
@@ -56,7 +56,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   float v49; // eax
   char *v50; // edx
   int32_t v51; // ecx
-  SubgameRuntime *v52; // ebp
+  cRSubGame *v52; // ebp
   int32_t v53; // eax
   int32_t parcel_quota; // ecx
   SubRow *projection_row; // esi
@@ -78,7 +78,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   Vec3 *p_parcel_spawn_position; // [esp+24h] [ebp-208h]
   int v72; // [esp+28h] [ebp-204h]
   int32_t v73; // [esp+2Ch] [ebp-200h]
-  SubgameRuntime *v74; // [esp+30h] [ebp-1FCh]
+  cRSubGame *v74; // [esp+30h] [ebp-1FCh]
   int v75; // [esp+34h] [ebp-1F8h]
   int32_t *v76; // [esp+38h] [ebp-1F4h]
   int32_t *v77; // [esp+3Ch] [ebp-1F0h]

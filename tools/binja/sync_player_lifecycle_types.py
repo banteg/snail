@@ -40,7 +40,7 @@ EXPECTED_OWNER_SIZES = {
     "Invincible": 0x98,
     "Snail": 0x19B4,
     "Player": 0x4364,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 SYMBOL_UPDATES = (

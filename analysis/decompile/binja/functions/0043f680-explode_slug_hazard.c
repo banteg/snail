@@ -25,16 +25,18 @@
 0043f794        eax_3->gravity_step = fconvert.s(x87_r7_23 * x87_r7_23 * fconvert.t(-0.00999999978f) * fconvert.t(2.20000005f))
 0043f7b6        float var_18_1 = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(var_3c_2) * fconvert.t(6.10351562e-05f))
 0043f7ba        int32_t eax_8 = next_math_random_value()
-0043f7c3        struct SubgameRuntime* owner_game = slug->owner_game
+0043f7c3        struct cRSubGame* owner_game = slug->owner_game
 0043f7fa        long double x87_r7_35 = float.t(next_math_random_value()) * fconvert.t(var_3c_2) * fconvert.t(3.05175781e-05f) + fconvert.t(owner_game->player.velocity.z)
 0043f800        long double x87_r6_7 = fconvert.t(owner_game->subgame_rate)
 0043f81c        eax_3->velocity.x = fconvert.s(x87_r6_7 * fconvert.t(var_18_1))
 0043f82a        eax_3->velocity.y = fconvert.s(fconvert.t(fconvert.s(float.t(eax_8) * (fconvert.t(var_3c_2) + fconvert.t(0.300000012f)) * fconvert.t(3.05175781e-05f))) * x87_r6_7)
 0043f837        eax_3->velocity.z = fconvert.s(x87_r7_35 * x87_r6_7)
 0043f84a        long double x87_r7_39 = float.t(next_math_random_value()) * fconvert.t(0.000305175781f)
+0043f87a        float var_20_1 = fconvert.s(fconvert.t(fconvert.s(x87_r7_39 * fconvert.t(eax_3->velocity.y))) + fconvert.t(slug->body.transform.position.y))
+0043f882        long double x87_r7_41 = x87_r7_39 * fconvert.t(eax_3->velocity.z) + fconvert.t(slug->body.transform.position.z)
 0043f885        eax_3->position.x = fconvert.s(fconvert.t(fconvert.s(x87_r7_39 * fconvert.t(eax_3->velocity.x))) + fconvert.t(slug->body.transform.position.x))
-0043f887        eax_3->position.y = fconvert.s(fconvert.t(fconvert.s(x87_r7_39 * fconvert.t(eax_3->velocity.y))) + fconvert.t(slug->body.transform.position.y))
-0043f892        eax_3->position.z = fconvert.s(x87_r7_39 * fconvert.t(eax_3->velocity.z) + fconvert.t(slug->body.transform.position.z))
+0043f887        eax_3->position.y = var_20_1
+0043f892        eax_3->position.z = fconvert.s(x87_r7_41)
 0043f899        cond:0_1 = var_38 != 1
 0043f89a        var_38 -= 1
 0043f89e        do while (cond:0_1)

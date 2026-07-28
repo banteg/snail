@@ -7,7 +7,7 @@
 #include "bod_types.h"
 
 class Player;
-class SubgameRuntime;
+class cRSubGame;
 
 enum ParcelState {
     PARCEL_STATE_INACTIVE = 0,
@@ -27,7 +27,7 @@ public:
     void update_track_parcel();
 
     ParcelState state; // +0x38
-    SubgameRuntime* owner_subgame; // +0x3c, borrowed backlink
+    cRSubGame* owner_subgame; // +0x3c, borrowed backlink
     char unknown_40[0x54 - 0x40];
     Sprite* sprite; // +0x54, borrowed SpriteManager handle
     char unknown_58[0x5c - 0x58];
@@ -48,7 +48,7 @@ struct ParcelManager {
     void initialize_track_parcel_slots();
     void update_track_parcels();
 
-    Parcel slots[50]; // fixed storage owned by SubgameRuntime
+    Parcel slots[50]; // fixed storage owned by cRSubGame
 };
 
 typedef char ParcelManager_must_be_0x1b58[

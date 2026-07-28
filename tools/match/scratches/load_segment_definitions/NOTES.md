@@ -66,7 +66,7 @@ Status:
   reapplies the checked-in header instead of treating a present name as proof
   that its layout is current; its normal readback verifies both the layouts and
   the six owner-aware prototypes.
-- 2026-07-13: The enclosing `SubgameRuntime` now owns the complete `SMTracks`
+- 2026-07-13: The enclosing `cRSubGame` now owns the complete `SMTracks`
   catalog at `+0x10014cc`. Its leading count plus 150 exact `0x4088` entries
   produces the verified `0x25cfb4` extent and lands exactly on the existing
   `ParcelManager +0x125e480`. A previewed Binary Ninja declaration preserved
@@ -124,7 +124,7 @@ Residuals:
 ## 2026-07-13 root services and cross-port cursor audit
 
 - The mesh and path lookups now follow the canonical `GameRoot*` through its
-  owned `DirectXLoader` and `SubgameRuntime::path_manager`; the last raw
+  owned `DirectXLoader` and `cRSubGame::path_manager`; the last raw
   `g_game_base` declaration in this parser is gone. Focused output remains the
   honest 62.24%, 573/571 instructions, with 80 clean operands and the five
   shifted call/string mismatches.

@@ -38,6 +38,8 @@
 0043d989        game_base_1->active_bod_list.first = &jetpack_cursor->jetpack
 0043d98b        jetpack_cursor->jetpack.bod.bod.list_prev.b = nullptr
 0043d98b        jetpack_cursor->jetpack.bod.bod.list_prev:1.b = 0
+0043d98b        jetpack_cursor->jetpack.bod.bod.list_prev:2.b = 0
+0043d98b        jetpack_cursor->jetpack.bod.bod.list_prev:3.b = 0
 0043d990        game_base_1->active_bod_list.first->list_next = nullptr
 0043d9ac        uint32_t list_flags = jetpack_cursor->jetpack.bod.bod.list_flags
 0043d9af        list_flags:1.b |= 2

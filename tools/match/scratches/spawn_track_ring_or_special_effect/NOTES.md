@@ -86,7 +86,7 @@ Type consolidation:
   corroborated by the collision consumer; the spawner source remains
   raw/base-shaped because that is part of its current best codegen form.
 - 2026-06-21 subgame receiver cleanup: the method now uses the shared
-  `SubgameRuntime` receiver and its existing `subgame_rate`, `level_mode`,
+  `cRSubGame` receiver and its existing `subgame_rate`, `level_mode`,
   `base_subgame_rate`, and `get_track_grid_cell_at_world_position` members
   instead of a scratch-local `Game` shell. Focused Wibo remains `51.23%`,
   `223/347`, with the same `34` clean masked operands and the same eight known
@@ -94,7 +94,7 @@ Type consolidation:
 
 2026-07-10 pool ownership and source-order pass:
 
-- `SubgameRuntime` now owns a typed `RingOrSpecialEffectPool` at `+0x35b78c`.
+- `cRSubGame` now owns a typed `RingOrSpecialEffectPool` at `+0x35b78c`.
   The two parents and each parent's ten particle records are embedded storage;
   `owner_player`, `rate_source`, and particle `parent` are non-owning links.
   The source row cell is sampled for placement but is not retained by the
@@ -120,7 +120,7 @@ Type consolidation:
 - The two embedded parent slots are now `SubRing`, and their ten inline
   children are `SubRingStar`, following the preserved iOS/Android
   `cRSubRing` and `cRSubRingStar` symbols.
-- `SubRingPool` owns the fixed storage; Player, SubgameRuntime rate source,
+- `SubRingPool` owns the fixed storage; Player, cRSubGame rate source,
   child parent links, and Sprite pointers retain their borrowed/manager-owned
   lifetimes. Focused matching remains 53.45%, 218/347.
 
@@ -220,7 +220,7 @@ switch-family mismatches.
 ## 2026-07-14 pool-scan ownership
 
 The compiler-sensitive free-slot scan still advances a byte pointer, but its
-base now derives from `offsetof(SubgameRuntime, ring_effects)` and its step from
+base now derives from `offsetof(cRSubGame, ring_effects)` and its step from
 `sizeof(SubRing)`. This removes the final hard-coded `+0x35b78c` pool address
 and `0x1f8` parent stride without changing the emitted code. Focused output
 remains honestly at 64.09%, 327/347 instructions, with 48 clean operands and
@@ -253,7 +253,7 @@ with 48 clean operands and the same ten documented switch-grouping mismatches.
 
 ## 2026-07-15 durable owner replay
 
-Both decompilers now replay the spawner on its real `SubgameRuntime*` receiver,
+Both decompilers now replay the spawner on its real `cRSubGame*` receiver,
 typed `SubRingPool` storage, `SubRingKind` input, and `SubRingState` lifecycle.
 The paired exports agree with the databases and retire IDA's stale raw-integer
 receiver and result-bearing prototype. This is ownership-only: focused output
@@ -293,8 +293,8 @@ is retained.
   streams. The Windows source now mutates `requested_kind` directly instead of
   inventing a second value owner.
 - `SubRingSlotCursor` is a typed manager-relative view: its prefix is derived
-  from `offsetof(SubgameRuntime, ring_effects)` and its payload is one
-  `SubRing`. VC6 therefore retains the native `SubgameRuntime + index *
+  from `offsetof(cRSubGame, ring_effects)` and its payload is one
+  `SubRing`. VC6 therefore retains the native `cRSubGame + index *
   sizeof(SubRing)` cursor while every large displacement remains tied to the
   real embedded owner. Once placement and activation finish, the source borrows
   `&slot_cursor->ring`; the compiler performs the same one-time cursor-to-object
@@ -313,7 +313,7 @@ is retained.
 
 - Binary Ninja and IDA now preserve the native manager-relative selected-slot
   lifetime as `SubRingSlotCursor`. Its large prefix aliases the enclosing
-  `SubgameRuntime`; only `ring` names embedded storage, so the view does not
+  `cRSubGame`; only `ring` names embedded storage, so the view does not
   invent a second runtime owner or a heap allocation.
 - The bounded scan is explicitly a `SubRingState* state_cursor` plus
   `slot_index`, after which the same ESI lifetime owns all placement,

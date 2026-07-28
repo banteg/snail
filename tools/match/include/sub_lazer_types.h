@@ -9,7 +9,7 @@
 #include "bod_types.h"
 #include "vector3.h"
 
-class SubgameRuntime;
+class cRSubGame;
 
 enum SubLazerState {
     SUB_LAZER_STATE_INACTIVE = 0,
@@ -30,7 +30,7 @@ public:
 
     SubLazerState state;      // +0x80
     char unknown_84[0x88 - 0x84];
-    SubgameRuntime* owner_game; // +0x88, borrowed containing subgame
+    cRSubGame* owner_game; // +0x88, borrowed containing subgame
     Vector3 velocity;         // +0x8c
     float sprite_bob_phase;   // +0x98
     float sprite_bob_phase_step; // +0x9c

@@ -2,7 +2,7 @@
 /* function: explode_slug_hazard @ 0x43f680 */
 /* selector: explode_slug_hazard */
 
-// Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst from a raw random/forward velocity vector scaled by the live SubgameRuntime rate. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`.
+// Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst from a raw random/forward velocity vector scaled by the live cRSubGame rate. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`.
 void __thiscall explode_slug_hazard(Slug *slug)
 {
   Sprite *sprite; // esi
@@ -10,14 +10,14 @@ void __thiscall explode_slug_hazard(Slug *slug)
   double v4; // st7
   double subgame_rate; // st7
   int math_random_value; // eax
-  SubgameRuntime *owner_game; // ebx
+  cRSubGame *owner_game; // ebx
   double v8; // st7
   double v9; // st6
   double v10; // st7
   float intensity; // [esp+0h] [ebp-54h]
   float v12; // [esp+14h] [ebp-40h]
   float v13; // [esp+18h] [ebp-3Ch]
-  int v14; // [esp+1Ch] [ebp-38h]
+  int i; // [esp+1Ch] [ebp-38h]
   float v15; // [esp+3Ch] [ebp-18h]
   float v16; // [esp+40h] [ebp-14h]
   float v17; // [esp+48h] [ebp-Ch]
@@ -25,8 +25,7 @@ void __thiscall explode_slug_hazard(Slug *slug)
   Vec3 v19; // 0:^30.12
   Vec3 v20; // 0:^3C.12
 
-  v14 = 70;
-  do
+  for ( i = 70; i != 0; --i )
   {
     v13 = (double)next_math_random_value() * 0.0000061035157 + 0.2;
     v12 = (double)next_math_random_value() * 0.000030517578 * 0.75 + 0.25;
@@ -65,7 +64,5 @@ void __thiscall explode_slug_hazard(Slug *slug)
     v20.y = v18 + slug->body.transform.position.y;
     v20.z = v10 * sprite->velocity.z + slug->body.transform.position.z;
     sprite->position = v20;
-    --v14;
   }
-  while ( v14 );
 }

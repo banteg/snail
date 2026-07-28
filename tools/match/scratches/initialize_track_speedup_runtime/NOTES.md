@@ -2,7 +2,7 @@
 
 `initialize_track_speedup_runtime` @ 0x4084b0 is the exact seven-instruction
 Windows constructor for the authored `SubSpeedUp` (`cRSubSpeedUp` cross-port)
-singleton at `SubgameRuntime +0x355db0`. It constructs the inherited
+singleton at `cRSubGame +0x355db0`. It constructs the inherited
 `RenderableBod`, installs table `0x497314`, and returns the receiver. That
 table's sole entry is the exact `update_track_speedup` @ 0x43ee50.
 

@@ -11,7 +11,7 @@
 00408d5e        set_border_justify_centre(&g_game_base->border_manager, 0f)
 00408d6f        capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)
 00408d7f        g_game_base->render_skip_count = 2
-00408d89        struct SubgameRuntime* level_progress_base = galaxy->level_progress_base
+00408d89        struct cRSubGame* level_progress_base = galaxy->level_progress_base
 00408d92        if (level_progress_base->level_mode == 0)
 00408d94        int32_t subgame_rebuild_selector = level_progress_base->subgame_rebuild_selector
 00408da2        if (subgame_rebuild_selector == 3 || subgame_rebuild_selector == 2)
@@ -32,8 +32,8 @@
 00408e3b        initialize_frontend_widget(galaxy->route_title_widget, &__dos_header, "Intergalactic Delivery Route", 0x14, 15f, 15f, color_3, 0, 0f)
 00408e46        galaxy->route_title_widget->font_scale = 0.829999983f
 00408e7b        galaxy->route_icon_widget = allocate_border(&g_game_base->border_manager)
-00408e81        struct tColour* eax_6 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00408ea1        initialize_frontend_sprite_button(galaxy->route_icon_widget, 0x20400802, 0x8a, 0x43b90000, 0x41200000, eax_6, 0f, 4)
+00408e81        struct tColour* color_4 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
+00408ea1        initialize_frontend_sprite_button(galaxy->route_icon_widget, 0x20400802, 0x8a, 370f, 10f, color_4, 0f, 4)
 00408eb8        galaxy->exit_or_back_widget = allocate_border(&g_game_base->border_manager)
 00408ed8        uint32_t widget_flags
 00408ed8        char* text
@@ -54,15 +54,15 @@
 00408f22        initialize_frontend_widget(galaxy->exit_or_back_widget, widget_flags, text, 0x14, 20f, 420f, color, 0, 0f)
 00408f2a        int32_t i = 0
 00408f2e        if (galaxy->record_count s> 0)
-00408f30        float* eax_12 = &galaxy->route_slots[0].record.highlight_target
-00408f33        (eax_12 - 0x2c)->route_slots[0].record.route_tint_alpha = 0f
-00408f36        (eax_12 - 0x2c)->route_slots[0].record.highlight_target = 0f
+00408f30        float* eax_11 = &galaxy->route_slots[0].record.highlight_target
+00408f33        (eax_11 - 0x2c)->route_slots[0].record.route_tint_alpha = 0f
+00408f36        (eax_11 - 0x2c)->route_slots[0].record.highlight_target = 0f
 00408f3b        i += 1
-00408f3c        eax_12 = &eax_12[0xa8]
+00408f3c        eax_11 = &eax_11[0xa8]
 00408f43        do while (i s< galaxy->record_count)
 00408f70        galaxy->bounds_frame_widget = allocate_border(&g_game_base->border_manager)
-00408f76        struct tColour* color_4 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00408f98        initialize_frontend_widget(galaxy->bounds_frame_widget, 0x20010002, &g_blank_text, 0x14, 30f, 80f, color_4, 0, 0f)
+00408f76        struct tColour* color_5 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
+00408f98        initialize_frontend_widget(galaxy->bounds_frame_widget, 0x20010002, &g_blank_text, 0x14, 30f, 80f, color_5, 0, 0f)
 00408fbd        store_color4f(&galaxy->bounds_frame_widget->hot_fill_color, 1f, 1f, 1f, 1f)
 00408fc8        hide_border_init(galaxy->bounds_frame_widget)
 00408fd3        galaxy->bounds_frame_widget->border_texture_id = 0x98
@@ -79,8 +79,8 @@
 00409007        bounds_frame_widget_1->authored_height:2.b = 0xc8
 00409007        bounds_frame_widget_1->authored_height:3.b = 0x42
 00409039        galaxy->selected_title_widget = allocate_border(&g_game_base->border_manager)
-0040903f        struct tColour* color_5 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00409061        initialize_frontend_widget(galaxy->selected_title_widget, 0x20400002, &g_blank_text, 0x14, 100f, 80f, color_5, 0, 0f)
+0040903f        struct tColour* color_6 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
+00409061        initialize_frontend_widget(galaxy->selected_title_widget, 0x20400002, &g_blank_text, 0x14, 100f, 80f, color_6, 0, 0f)
 0040906c        hide_border_init(galaxy->selected_title_widget)
 0040907c        __builtin_strncpy(&galaxy->selected_title_widget->font_scale, "fff?", 4)
 00409082        struct FrontendWidget* selected_title_widget = galaxy->selected_title_widget
@@ -89,8 +89,8 @@
 00409088        selected_title_widget->stack_gap:2.b = 0
 00409088        selected_title_widget->stack_gap:3.b = 0
 004090b9        galaxy->selected_detail_widget = allocate_border(&g_game_base->border_manager)
-004090bf        struct tColour* color_6 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-004090e1        initialize_frontend_widget(galaxy->selected_detail_widget, 0x20400002, &g_blank_text, 0x14, 300f, 440f, color_6, 0, 0f)
+004090bf        struct tColour* color_7 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
+004090e1        initialize_frontend_widget(galaxy->selected_detail_widget, 0x20400002, &g_blank_text, 0x14, 300f, 440f, color_7, 0, 0f)
 004090ec        hide_border_init(galaxy->selected_detail_widget)
 004090f7        __builtin_strncpy(&galaxy->selected_detail_widget->font_scale, "fff?", 4)
 004090fd        struct FrontendWidget* selected_detail_widget = galaxy->selected_detail_widget
@@ -99,8 +99,8 @@
 00409103        selected_detail_widget->stack_gap:2.b = 0
 00409103        selected_detail_widget->stack_gap:3.b = 0
 00409134        galaxy->selected_description_widget = allocate_border(&g_game_base->border_manager)
-0040913a        struct tColour* color_7 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-0040915c        initialize_frontend_widget(galaxy->selected_description_widget, 0x20400002, &g_blank_text, 0x14, 300f, 440f, color_7, 0, 0f)
+0040913a        struct tColour* color_8 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
+0040915c        initialize_frontend_widget(galaxy->selected_description_widget, 0x20400002, &g_blank_text, 0x14, 300f, 440f, color_8, 0, 0f)
 00409167        hide_border_init(galaxy->selected_description_widget)
 00409172        __builtin_strncpy(&galaxy->selected_description_widget->font_scale, "333?", 4)
 0040917c        struct FrontendWidget* selected_description_widget = galaxy->selected_description_widget
@@ -130,8 +130,8 @@
 00409220        play_or_deliver_widget->stack_gap:2.b = 0xa0
 00409220        play_or_deliver_widget->stack_gap:3.b = 0x41
 00409256        galaxy->replay_widget = allocate_border(&g_game_base->border_manager)
-0040925c        struct tColour* color_8 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-0040927e        initialize_frontend_widget(galaxy->replay_widget, 0x60000014, "Watch Best Trial", 0x14, 300f, 440f, color_8, 2, 0f)
+0040925c        struct tColour* color_9 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
+0040927e        initialize_frontend_widget(galaxy->replay_widget, 0x60000014, "Watch Best Trial", 0x14, 300f, 440f, color_9, 2, 0f)
 00409289        hide_border_init(galaxy->replay_widget)
 00409294        galaxy->replay_widget->stack_gap = 10f
 0040929e        struct FrontendWidget* replay_widget = galaxy->replay_widget

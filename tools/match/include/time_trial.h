@@ -1,4 +1,4 @@
-// Authored cRTimeTrial owner embedded in SubgameRuntime at +0xff25e0. The
+// Authored cRTimeTrial owner embedded in cRSubGame at +0xff25e0. The
 // following proven cRPathManager begins at +0xff2910, giving this object the
 // exact 0x330-byte extent printed by the Windows runtime size ledger.
 #ifndef TIME_TRIAL_H

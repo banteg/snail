@@ -20,7 +20,7 @@ void Player::update_subgoldy_resurrect()
         return;
 
     if (resurrect_final_loss == 0) {
-        SubgameRuntime* current_game = game;
+        cRSubGame* current_game = game;
         if (current_game->level_mode == 0)
             visible_life_stock -= 1;
         g_game->players[0].saved_frontend_state =
@@ -29,11 +29,11 @@ void Player::update_subgoldy_resurrect()
         return;
     }
 
-    SubgameRuntime* current_game = game;
+    cRSubGame* current_game = game;
     current_game->subgame_rebuild_selector = 2;
     game->complete_subgame(1);
 
-    SubgameRuntime* persistent_game = game;
+    cRSubGame* persistent_game = game;
     if (persistent_game->selected_level_record_persistent != 0) {
         GameRoot* app = g_game;
         app->players[0].saved_frontend_state = app->players[0].frontend_state;
@@ -43,7 +43,7 @@ void Player::update_subgoldy_resurrect()
 
     GameRoot* app = g_game;
     app->players[0].saved_frontend_state = app->players[0].frontend_state;
-    SubgameRuntime* route_game = game;
+    cRSubGame* route_game = game;
     if (route_game->level_mode == 0) {
         GameRoot* route_app = g_game;
         if (route_app->players[0].high_score_entry_pending == 0) {

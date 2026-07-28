@@ -2,7 +2,7 @@
 /* function: initialize_click_start @ 0x442170 */
 /* selector: initialize_click_start */
 
-// Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `SubgameRuntime::replay_launch_active` as the initial hide gate.
+// Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `cRSubGame::replay_launch_active` as the initial hide gate.
 void __thiscall initialize_click_start(ClickStart *click_start, Player *player)
 {
   tColour *v3; // eax

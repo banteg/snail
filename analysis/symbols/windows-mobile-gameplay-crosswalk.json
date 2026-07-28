@@ -13808,36 +13808,42 @@
       "android_candidates": [
         {
           "symbol": "cRSubGame::cRSubGame()",
-          "score": 0.7761,
-          "name_score": 0.675,
+          "score": 0.9111,
+          "name_score": 0.9,
           "size_score": 0.9278
         },
         {
+          "symbol": "cRGame::cRGame()",
+          "score": 0.74,
+          "name_score": 0.9,
+          "size_score": 0.5
+        },
+        {
+          "symbol": "cRSubGame::FringeEdgeTrack()",
+          "score": 0.7016,
+          "name_score": 0.54,
+          "size_score": 0.944
+        },
+        {
           "symbol": "cRSubGame::CondenseTrack()",
-          "score": 0.645,
-          "name_score": 0.4151,
+          "score": 0.6659,
+          "name_score": 0.45,
           "size_score": 0.9898
         },
         {
-          "symbol": "cRPath::BuildTurnunder(float, int, bool, char*, char*)",
-          "score": 0.6181,
-          "name_score": 0.4615,
-          "size_score": 0.8531
-        },
-        {
-          "symbol": "cRBorder::Init(int, char*, int, float, float, tColour, int, float)",
-          "score": 0.6131,
-          "name_score": 0.4174,
-          "size_score": 0.9065
-        },
-        {
-          "symbol": "cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)",
-          "score": 0.5984,
-          "name_score": 0.3478,
-          "size_score": 0.9742
+          "symbol": "cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)",
+          "score": 0.6551,
+          "name_score": 0.45,
+          "size_score": 0.9628
         }
       ],
       "ios_candidates": [
+        {
+          "symbol": "cRSubGame::cRSubGame()",
+          "score": 0.778,
+          "name_score": 0.9,
+          "size_score": 0.5951
+        },
         {
           "symbol": "cRSubLoc::AI()",
           "score": 0.7548,
@@ -13845,28 +13851,22 @@
           "size_score": 0.9871
         },
         {
-          "symbol": "cRSubGame::cRSubGame()",
-          "score": 0.643,
-          "name_score": 0.675,
-          "size_score": 0.5951
+          "symbol": "cRSubGame::SmoothTrack()",
+          "score": 0.6669,
+          "name_score": 0.45,
+          "size_score": 0.9923
         },
         {
-          "symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
-          "score": 0.6004,
-          "name_score": 0.3478,
-          "size_score": 0.9794
+          "symbol": "cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)",
+          "score": 0.603,
+          "name_score": 0.45,
+          "size_score": 0.8326
         },
         {
-          "symbol": "cRPath::BuildInvert1(float, int, bool, char*, char*)",
-          "score": 0.5909,
-          "name_score": 0.3333,
-          "size_score": 0.9773
-        },
-        {
-          "symbol": "std::vector<OFPointer<OFHighScoreBatchEntry>, std::allocator<OFPointer<OFHighScoreBatchEntry>>>::_M_fill_insert(__gnu_cxx::__normal_iterator<OFPointer<OFHighScoreBatchEntry>*, std::vector<OFPointer<OFHighScoreBatchEntry>, std::allocator<OFPointer<OFHighScoreBatchEntry>>>>, unsigned long, OFPointer<OFHighScoreBatchEntry> const&)",
-          "score": 0.5891,
-          "name_score": 0.3571,
-          "size_score": 0.9372
+          "symbol": "cRSubGame::UnInit()",
+          "score": 0.6016,
+          "name_score": 0.45,
+          "size_score": 0.8291
         }
       ]
     },
@@ -17502,6 +17502,12 @@
       "android_body_count": 1,
       "ios_candidates": [
         {
+          "symbol": "cRSubTrampRingManager::Init()",
+          "score": 0.644,
+          "name_score": 0.54,
+          "size_score": 0.8
+        },
+        {
           "symbol": "cRSpriteManager::GetTextureRef(int)",
           "score": 0.6418,
           "name_score": 0.5697,
@@ -17524,12 +17530,6 @@
           "score": 0.619,
           "name_score": 0.439,
           "size_score": 0.8889
-        },
-        {
-          "symbol": "cRSubTrampRingManager::Init()",
-          "score": 0.6154,
-          "name_score": 0.4923,
-          "size_score": 0.8
         }
       ]
     },
@@ -18382,22 +18382,22 @@
           "size_score": 1.0
         },
         {
+          "symbol": "cRSubGame::HideScores()",
+          "score": 0.67,
+          "name_score": 0.45,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "cRSubTrampRingManager::Init()",
+          "score": 0.6573,
+          "name_score": 0.54,
+          "size_score": 0.8333
+        },
+        {
           "symbol": "KeyboardInit()",
           "score": 0.6392,
           "name_score": 0.45,
           "size_score": 0.9231
-        },
-        {
-          "symbol": "cRSplashWindowManager::Init()",
-          "score": 0.6392,
-          "name_score": 0.45,
-          "size_score": 0.9231
-        },
-        {
-          "symbol": "cRCheat::Init()",
-          "score": 0.6367,
-          "name_score": 0.45,
-          "size_score": 0.9167
         }
       ]
     },

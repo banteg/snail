@@ -28,5 +28,5 @@ The sole native caller is `build_subgame_level`, which resets the embedded
 manager before authored parcel placement. The durable BN/IDA replay now owns
 this function by address, verifies `Parcel == 0x8c` and
 `ParcelManager == 0x1b58`, and preserves each slot's borrowed backlink to the
-root-owned `SubgameRuntime`. Matching remains exact at 13/13 instructions with
+root-owned `cRSubGame`. Matching remains exact at 13/13 instructions with
 one clean operand.

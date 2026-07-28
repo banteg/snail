@@ -227,7 +227,7 @@ TRACK_RENDER_CACHE_OWNER_MARKERS = (
     "BodBase bod;",
     "float cache_row_base;",
     "typedef struct SegmentCache {",
-    "SubgameRuntime* owner_subgame;",
+    "cRSubGame* owner_subgame;",
     "TrackRenderCacheSlot slots[0x8f][5];",
     "void __thiscall initialize_track_render_cache_manager(SegmentCache* manager);",
     "void __thiscall build_track_render_caches(",
@@ -251,6 +251,23 @@ SUB_LOC_OWNER_MARKERS = (
 
 SUB_LOC_OWNER_SIZES = {
     "cRSubLoc": 0x54,
+}
+
+SUBGAME_OWNER_MARKERS = (
+    "typedef struct cRSubGame cRSubGame;",
+    "typedef cRSubGame SubgameRuntime;",
+    "typedef struct cRSubGame {",
+    "} cRSubGame;",
+    "cRSubLoc runtime_cells[3200][8];",
+    "SubRow runtime_rows[3200];",
+    "cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(",
+    "void __thiscall populate_runtime_track_cells_from_segments(cRSubGame* game);",
+    "void __thiscall initialize_subgame(cRSubGame* game);",
+    "void __thiscall build_subgame_level(cRSubGame* game, int32_t level_index);",
+)
+
+SUBGAME_OWNER_SIZES = {
+    "cRSubGame": 0x1272838,
 }
 
 PATH_OWNER_MARKERS = (
@@ -386,14 +403,22 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x434B60,  # is_neighbor_cell_solid
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
+    0x4354F0,  # mark_track_warning_zones
     0x4355F0,  # promote_track_tiles_to_fringe_variants
     0x4356F0,  # harmonize_center_lane_floor_slide_variants
     0x435A80,  # select_track_tile_edge_variants
+    0x435D40,  # build_track_colours
+    0x435DF0,  # set_subgame_features
+    0x435E60,  # switch_track_mirror
     0x435EB0,  # populate_runtime_track_cells_from_segments
+    0x437270,  # normalize_segment_glyph_for_track_flags
     0x4374B0,  # initialize_subgame
+    0x437B10,  # reset_subgame
     0x437DE0,  # rebuild_track_runtime_from_segments
+    0x437E80,  # calc_slider_to_rate
     0x437EB0,  # build_subgame_level
     0x438700,  # complete_subgame
+    0x438850,  # destroy_subgame
     0x438B90,  # update_subgame
     0x439B00,  # refresh_fringe_object_draw_list
     0x439BC0,  # remove_sub_loc
@@ -415,7 +440,14 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43B120,  # update_subgoldy
     0x43D230,  # initialize_subgoldy_ghost
     0x43D3D0,  # set_subgoldy_ghost_z
+    0x43D410,  # get_track_grid_cell_at_world_position
     0x43D480,  # get_track_runtime_cell_at_world_z
+    0x43D4D0,  # sample_track_floor_height_at_position
+    0x43D6C0,  # spawn_track_health_pickup
+    0x43D880,  # spawn_track_speedup
+    0x43D890,  # spawn_track_jetpack_pickup
+    0x43DA80,  # spawn_track_garbage_hazard
+    0x43DC80,  # spawn_slug_hazard
     0x43DF10,  # spawn_track_ring_or_special_effect
     0x43E830,  # update_ring_or_special_effect_parent
     0x43ECC0,  # update_track_health_pickup
@@ -423,10 +455,15 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x43EFB0,  # update_track_jetpack_pickup
     0x43F5C0,  # initialize_slug_voice_manager
     0x43F5E0,  # update_slug_voice_manager
+    0x4404C0,  # set_subgame_rate
+    0x4404D0,  # calc_subgame_rate
+    0x4408A0,  # advance_blink_random
+    0x4408C0,  # initialize_blink_random
     0x440910,  # remove_subgame_bods
     0x440FD0,  # update_damage_gauge
     0x4413F0,  # apply_damage_gauge_delta
     0x4417D0,  # update_sub_lazer_projectile
+    0x442120,  # get_track_skirt_color
     0x442170,  # initialize_click_start
     0x442290,  # update_click_start
     0x442500,  # initialize_vapour
@@ -434,6 +471,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x442560,  # add_vapour_point
     0x4425F0,  # update_vapour
     0x442E40,  # release_snail_weapons
+    0x443730,  # spawn_track_parcel
     0x4438E0,  # place_parcels_on_track
     0x444240,  # place_challenge_parcels_on_track
     0x4444B0,  # project_position_onto_track_attachment
@@ -444,6 +482,9 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x445CD0,  # build_snail_world_hotspots
     0x445D50,  # extract_snail_local_hotspots
     0x445E20,  # update_times_up
+    0x445F10,  # hide_gameplay_scores
+    0x445F40,  # unhide_gameplay_scores
+    0x446020,  # update_subgame_camera
     0x446130,  # initialize_cutscene_ai
     0x446160,  # initialize_cameraman
     0x4466D0,  # update_cutscene
@@ -544,13 +585,13 @@ SUB_LAZER_ASSET_CURSOR_HEADER_MARKERS = (
     "typedef struct SubLazerBodyObjectStrideCursor {",
     "Object* body_object;",
     "tColour body_color;",
-    "SubgameRuntime* owner_game;",
+    "cRSubGame* owner_game;",
     "uint8_t _stride_tail[0x48];",
 )
 
 SALT_ASSET_CURSOR_HEADER_MARKERS = (
     "typedef struct SaltOwnerGameStrideCursor {",
-    "SubgameRuntime* owner_game;",
+    "cRSubGame* owner_game;",
     "uint8_t _stride_tail[0x94];",
 )
 
@@ -640,7 +681,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ("runtime_row_index", "int32_t runtime_row_index;", 0x4361DB, None),
     (
         "build_runtime_owner",
-        "SubgameRuntime *build_runtime_owner;",
+        "cRSubGame *build_runtime_owner;",
         0x4361DF,
         None,
     ),
@@ -893,7 +934,7 @@ UPDATE_SUBGOLDY_LVAR_SPECS = (
     ),
     (
         "row_event_game",
-        "SubgameRuntime *row_event_game;",
+        "cRSubGame *row_event_game;",
         0x43B6F0,
         None,
     ),
@@ -937,7 +978,7 @@ UPDATE_SUBGOLDY_LVAR_SPECS = (
     ),
     (
         "attachment_game",
-        "SubgameRuntime *attachment_game;",
+        "cRSubGame *attachment_game;",
         0x43BCDE,
         None,
     ),
@@ -1439,7 +1480,7 @@ BUILD_SUBGAME_ACTIVE_BOD_LVAR_SPECS = (
 # of their numeric values also land on named code or historical offset-symbol
 # addresses. IDA then renders the individual instruction operand as an address
 # expression and prevents Hex-Rays from folding the already typed GameRoot*
-# access back into its canonical Player/SubgameRuntime field. Keep the symbol
+# access back into its canonical Player/cRSubGame field. Keep the symbol
 # names themselves intact and normalize only the seven proven displacement
 # operands in the attachment-entry seed tail.
 ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS = (
@@ -1457,7 +1498,7 @@ ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS = (
 # GameRoot-relative field, but each numeric value also lands inside .text.
 # IDA consequently promotes the displacement to a loc_* address and prevents
 # Hex-Rays from following the already measured
-# GameRoot -> SubgameRuntime -> Player -> Snail ownership chain. Normalize only
+# GameRoot -> cRSubGame -> Player -> Snail ownership chain. Normalize only
 # these exact memory operands; the code symbols at the colliding addresses stay
 # intact.
 WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS = (
@@ -1585,9 +1626,9 @@ WORLD_INITIALIZER_ROOT_OFFSET_OPERANDS = (
 # receiver depths. The shutdown tail addresses SubHighScore at
 # GameRoot +0x6ffae0, the New Game attract loop addresses its postal_records at
 # GameRoot +0x6ffae8, and Complete addresses the bank at
-# SubgameRuntime +0x68b4c8. Each numeric displacement falls inside the unrelated
+# cRSubGame +0x68b4c8. Each numeric displacement falls inside the unrelated
 # g_parcel_set_buckets symbol, so IDA substitutes that global and hides the
-# already measured GameRoot -> SubgameRuntime -> SubHighScore owner chain.
+# already measured GameRoot -> cRSubGame -> SubHighScore owner chain.
 # Normalize only these ten exact operands; the parcel-bank symbol itself stays
 # intact for its real consumers.
 HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS = (
@@ -1610,7 +1651,7 @@ HIGH_SCORE_LIFECYCLE_OFFSET_OPERANDS = (
 # Player at GameRoot +0x42fd7c. The numeric displacement is also the tracked
 # address of the g_player_block evidence symbol, so IDA promotes it to a global
 # expression and hides the already recovered
-# GameRoot -> SubgameRuntime -> Player owner graph. Normalize only these ten
+# GameRoot -> cRSubGame -> Player owner graph. Normalize only these ten
 # exact operands; g_player_block remains intact as a bounded offset symbol.
 PLAYER_ROOT_BORROW_OFFSET_OPERANDS = (
     # Completion teardown and row-event scoring.
@@ -1646,10 +1687,10 @@ PLAYER_STATE_GATE_OFFSET_OPERANDS = (
     (0x4467B1, 0, 0x42FEC4),  # Player::click_start.hide_prompt
 )
 
-# Tutorial::Init borrows the containing SubgameRuntime and ORs the authored
+# Tutorial::Init borrows the containing cRSubGame and ORs the authored
 # tutorial feature mask into runtime_flags. IDA can promote both immediate
 # operands to address expressions because their values also land inside the
-# image, which blocks the typed GameRoot/SubgameRuntime folds. UnInit has the
+# image, which blocks the typed GameRoot/cRSubGame folds. UnInit has the
 # same collision for the root-owned TipManager displacement. Keep the global
 # symbols and normalize only these three proven instruction operands.
 TUTORIAL_NUMERIC_OPERANDS = (
@@ -1698,7 +1739,7 @@ HARMONIZE_ROOT_OFFSET_OPERANDS = (
 
 # The pool constructor's runtime-row displacement numerically collides with an
 # IDA auto-symbol at 0x5ccac8. Normalize this one proven LEA operand so
-# Hex-Rays can fold the typed SubgameRuntime receiver into runtime_rows instead
+# Hex-Rays can fold the typed cRSubGame receiver into runtime_rows instead
 # of treating the displacement as the address of an unrelated byte global.
 RUNTIME_POOL_ROW_OFFSET_OPERANDS = (
     (0x4082EC, 1, 0x5CCAC8),
@@ -1710,7 +1751,7 @@ FRINGE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x434C0C, 1, 0x5CCAC8),
 )
 
-# Four small consumers retain a typed SubgameRuntime base while taking a
+# Four small consumers retain a typed cRSubGame base while taking a
 # borrowed pointer into runtime_rows. Their proven displacements numerically
 # collide with IDA auto-symbol addresses, so normalize only these exact
 # operands and let the receiver type recover the shared SubRow owner.
@@ -1735,7 +1776,7 @@ MERGE_RUNTIME_ROW_OFFSET_OPERANDS = (
 # SubRow through a row-stride byte offset. These four root-relative
 # displacements numerically collide with IDA auto-symbols, so normalize only
 # the proven row flag and attachment-body operands. The typed GameRoot and
-# SubgameRuntime owners can then recover runtime_rows[row] without installing
+# cRSubGame owners can then recover runtime_rows[row] without installing
 # overlapping globals.
 REMOVE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x439BF0, 1, 0x6410E0),  # runtime_rows[row].flags
@@ -1751,7 +1792,7 @@ UPDATE_SUB_LOC_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x439FC2, 1, 0x6411B8),  # runtime_rows[row].attachment_body.color
 )
 
-# BuildLevel carries the owning SubgameRuntime base while advancing one
+# BuildLevel carries the owning cRSubGame base while advancing one
 # 0xf4-byte SubRow lane. IDA otherwise interprets the large structure
 # displacements as addresses of byte_5CCAC8/unk_5CCBxx globals, even after the
 # exact RuntimeRowStrideAnchor local is typed. Normalize every proven row-field
@@ -1821,7 +1862,7 @@ POPULATE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x436FFD, 0, 0x5CCB7C),  # attachment_body list flags store
 )
 
-# Both parcel-claim loops retain a containing SubgameRuntime base and access a
+# Both parcel-claim loops retain a containing cRSubGame base and access a
 # borrowed SubRow through the 0x5ccac8 runtime-row slab offset. Those numeric
 # displacements collide with IDA auto-symbol addresses, so Hex-Rays otherwise
 # prints byte_5CCAC8/unk_5CCB58 even after the exact locals are typed. Normalize
@@ -1862,7 +1903,7 @@ CHALLENGE_PARCELS_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x4443D7, 1, 0x5CCAC8),  # final direct SubRow cursor
 )
 
-# The main tick carries one SubgameRuntime-relative row anchor through a stack
+# The main tick carries one cRSubGame-relative row anchor through a stack
 # save while EDI is reused for the eight-cell scan. These are the only row
 # displacements whose numeric values collide with IDA address symbols; the
 # cell and projected-ring offsets remain ordinary structure displacements.
@@ -1891,7 +1932,7 @@ UPDATE_SUBGAME_RUNTIME_FLAG_OPERANDS = (
 # runtime row for attachment entry. In both blocks Hex-Rays inherits false
 # globals because the exact SubRow slab displacements are also valid image
 # addresses. Normalize only those nine evidenced operands: the typed
-# SubgameRuntime receiver and cRSubLoc locals can then recover the borrowed
+# cRSubGame receiver and cRSubLoc locals can then recover the borrowed
 # SubRow fields without installing an overlapping global or convenience view.
 UPDATE_SUBGOLDY_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x43B709, 1, 0x5CCAC8),  # row-event SubRow base / flags
@@ -1909,7 +1950,7 @@ UPDATE_SUBGOLDY_RUNTIME_ROW_OFFSET_OPERANDS = (
 # banks, then publishes that borrowed pointer through active_record_bank. The
 # five native displacements numerically collide with unrelated named globals,
 # causing Hex-Rays to print parcel/sprite owners even though EBP is the typed
-# SubgameRuntime receiver. Normalize only these proven operands so the shared
+# cRSubGame receiver. Normalize only these proven operands so the shared
 # SubHighScore layout can fold the postal, survival, time-trial, and active-bank
 # accesses without changing any global symbol.
 INITIALIZE_SUBGAME_RECORD_BANK_OFFSET_OPERANDS = (
@@ -2008,7 +2049,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_runtime_pools_and_path_template_bank",
-        "SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime* game);",
+        "cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(cRSubGame* game);",
     ),
     (
         "initialize_track_row_runtime",
@@ -2440,11 +2481,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_track_skirt_color",
-        "tColour* __thiscall get_track_skirt_color(SubgameRuntime* game, tColour* out);",
+        "tColour* __thiscall get_track_skirt_color(cRSubGame* game, tColour* out);",
     ),
     (
         "spawn_track_garbage_hazard",
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
+        "void __thiscall spawn_track_garbage_hazard(cRSubGame* game, cRSubLoc* cell, Player* player);",
     ),
     (
         "initialize_garbage_hazard",
@@ -2884,31 +2925,31 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_track_grid_cell_at_world_position",
-        "cRSubLoc* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);",
+        "cRSubLoc* __thiscall get_track_grid_cell_at_world_position(cRSubGame* game, Vec3* position);",
     ),
     (
         "get_track_runtime_cell_at_world_z",
-        "SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);",
+        "SubRow* __thiscall get_track_runtime_cell_at_world_z(cRSubGame* game, Vec3* position);",
     ),
     (
         "project_position_onto_track_attachment",
-        "void __thiscall project_position_onto_track_attachment(SubgameRuntime* game, Vec3* position, float* out_angle);",
+        "void __thiscall project_position_onto_track_attachment(cRSubGame* game, Vec3* position, float* out_angle);",
     ),
     (
         "sample_track_floor_height_at_position",
-        "double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);",
+        "double __thiscall sample_track_floor_height_at_position(cRSubGame* game, Vec3* position);",
     ),
     (
         "spawn_track_health_pickup",
-        "void __thiscall spawn_track_health_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
+        "void __thiscall spawn_track_health_pickup(cRSubGame* game, cRSubLoc* cell, Player* player);",
     ),
     (
         "spawn_track_jetpack_pickup",
-        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
+        "void __thiscall spawn_track_jetpack_pickup(cRSubGame* game, cRSubLoc* cell, Player* player);",
     ),
     (
         "is_neighbor_cell_solid",
-        "bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, cRSubLoc* cell, int32_t lane_offset, int32_t row_offset);",
+        "bool __thiscall is_neighbor_cell_solid(cRSubGame* game, cRSubLoc* cell, int32_t lane_offset, int32_t row_offset);",
     ),
     (
         "try_enter_track_attachment_from_swept_motion",
@@ -3048,91 +3089,91 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_subgame",
-        "void __thiscall initialize_subgame(SubgameRuntime* game);",
+        "void __thiscall initialize_subgame(cRSubGame* game);",
     ),
     (
         "destroy_subgame",
-        "void __thiscall destroy_subgame(SubgameRuntime* game);",
+        "void __thiscall destroy_subgame(cRSubGame* game);",
     ),
     (
         "update_subgame",
-        "void __thiscall update_subgame(SubgameRuntime* game);",
+        "void __thiscall update_subgame(cRSubGame* game);",
     ),
     (
         "remove_subgame_bods",
-        "void __thiscall remove_subgame_bods(SubgameRuntime* game);",
+        "void __thiscall remove_subgame_bods(cRSubGame* game);",
     ),
     (
         "build_subgame_level",
-        "void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);",
+        "void __thiscall build_subgame_level(cRSubGame* game, int32_t level_index);",
     ),
     (
         "calc_slider_to_rate",
-        "float __thiscall calc_slider_to_rate(SubgameRuntime* game, float slider);",
+        "float __thiscall calc_slider_to_rate(cRSubGame* game, float slider);",
     ),
     (
         "calc_subgame_rate",
-        "void __thiscall calc_subgame_rate(SubgameRuntime* game);",
+        "void __thiscall calc_subgame_rate(cRSubGame* game);",
     ),
     (
         "advance_blink_random",
-        "double __thiscall advance_blink_random(SubgameRuntime* game);",
+        "double __thiscall advance_blink_random(cRSubGame* game);",
     ),
     (
         "initialize_blink_random",
-        "void __thiscall initialize_blink_random(SubgameRuntime* game);",
+        "void __thiscall initialize_blink_random(cRSubGame* game);",
     ),
     (
         "hide_gameplay_scores",
-        "void __thiscall hide_gameplay_scores(SubgameRuntime* game);",
+        "void __thiscall hide_gameplay_scores(cRSubGame* game);",
     ),
     (
         "unhide_gameplay_scores",
-        "void __thiscall unhide_gameplay_scores(SubgameRuntime* game);",
+        "void __thiscall unhide_gameplay_scores(cRSubGame* game);",
     ),
     (
         "populate_runtime_track_cells_from_segments",
-        "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);",
+        "void __thiscall populate_runtime_track_cells_from_segments(cRSubGame* game);",
     ),
     (
         "rebuild_track_runtime_from_segments",
-        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
+        "void __thiscall rebuild_track_runtime_from_segments(cRSubGame* game, int32_t level_index);",
     ),
     (
         "place_parcels_on_track",
-        "void __thiscall place_parcels_on_track(SubgameRuntime* game);",
+        "void __thiscall place_parcels_on_track(cRSubGame* game);",
     ),
     (
         "place_challenge_parcels_on_track",
-        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);",
+        "void __thiscall place_challenge_parcels_on_track(cRSubGame* game);",
     ),
     (
         "mark_track_warning_zones",
-        "void __thiscall mark_track_warning_zones(SubgameRuntime* game);",
+        "void __thiscall mark_track_warning_zones(cRSubGame* game);",
     ),
     (
         "select_track_tile_edge_variants",
-        "void __thiscall select_track_tile_edge_variants(SubgameRuntime* game);",
+        "void __thiscall select_track_tile_edge_variants(cRSubGame* game);",
     ),
     (
         "merge_track_tile_runs",
-        "void __thiscall merge_track_tile_runs(SubgameRuntime* game);",
+        "void __thiscall merge_track_tile_runs(cRSubGame* game);",
     ),
     (
         "promote_track_tiles_to_fringe_variants",
-        "void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);",
+        "void __thiscall promote_track_tiles_to_fringe_variants(cRSubGame* game);",
     ),
     (
         "harmonize_center_lane_floor_slide_variants",
-        "void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game);",
+        "void __thiscall harmonize_center_lane_floor_slide_variants(cRSubGame* game);",
     ),
     (
         "build_track_fringe_objects",
-        "void __thiscall build_track_fringe_objects(SubgameRuntime* game);",
+        "void __thiscall build_track_fringe_objects(cRSubGame* game);",
     ),
     (
         "update_subgame_camera",
-        "void __thiscall update_subgame_camera(SubgameRuntime* runtime);",
+        "void __thiscall update_subgame_camera(cRSubGame* runtime);",
     ),
 ]
 
@@ -3438,16 +3479,16 @@ def _read_replay_start_cursor_field(
 def _read_replay_start_cursor_runtime_path(
 ) -> tuple[ida_typeinf.tinfo_t | None, dict[str, object]]:
     owner = ida_typeinf.tinfo_t()
-    if not owner.get_named_type(None, "SubgameRuntime", ida_typeinf.BTF_STRUCT):
+    if not owner.get_named_type(None, "cRSubGame", ida_typeinf.BTF_STRUCT):
         return None, {
             "status": "failed",
-            "owner": "SubgameRuntime",
+            "owner": "cRSubGame",
             "reason": "missing_owner",
         }
     if owner.get_size() != REPLAY_START_CURSOR_RUNTIME_OWNER_SIZE:
         return None, {
             "status": "failed",
-            "owner": "SubgameRuntime",
+            "owner": "cRSubGame",
             "reason": "owner_size_mismatch",
             "expected_size": REPLAY_START_CURSOR_RUNTIME_OWNER_SIZE,
             "observed_size": owner.get_size(),
@@ -3457,7 +3498,7 @@ def _read_replay_start_cursor_runtime_path(
     if not owner.get_udt_details(members):
         return None, {
             "status": "failed",
-            "owner": "SubgameRuntime",
+            "owner": "cRSubGame",
             "reason": "missing_owner_members",
         }
     direct = [
@@ -3469,7 +3510,7 @@ def _read_replay_start_cursor_runtime_path(
         index, member = direct[0]
         return owner, {
             "status": "verified",
-            "owner": "SubgameRuntime",
+            "owner": "cRSubGame",
             "owner_size": owner.get_size(),
             "mode": "direct_overlay",
             "index": index,
@@ -3482,7 +3523,7 @@ def _read_replay_start_cursor_runtime_path(
     if direct:
         return None, {
             "status": "failed",
-            "owner": "SubgameRuntime",
+            "owner": "cRSubGame",
             "reason": "unexpected_direct_member_candidates",
             "candidate_count": len(direct),
         }
@@ -3495,7 +3536,7 @@ def _read_replay_start_cursor_runtime_path(
     if len(player_members) != 1:
         return None, {
             "status": "failed",
-            "owner": "SubgameRuntime",
+            "owner": "cRSubGame",
             "reason": "missing_embedded_player_path",
             "candidate_count": len(player_members),
         }
@@ -3506,7 +3547,7 @@ def _read_replay_start_cursor_runtime_path(
     ):
         return None, {
             "status": "failed",
-            "owner": "SubgameRuntime",
+            "owner": "cRSubGame",
             "reason": "unexpected_embedded_player_path",
             "offset": hex(REPLAY_START_CURSOR_PLAYER_OFFSET),
             "size": int(player.size) // 8,
@@ -3515,7 +3556,7 @@ def _read_replay_start_cursor_runtime_path(
         }
     return None, {
         "status": "verified",
-        "owner": "SubgameRuntime",
+        "owner": "cRSubGame",
         "owner_size": owner.get_size(),
         "mode": "embedded_player",
         "offset": hex(REPLAY_START_CURSOR_PLAYER_OFFSET),
@@ -4338,12 +4379,12 @@ def _sync_subgame_receiver_lvar(
     owner_type = ida_typeinf.tinfo_t()
     if not owner_type.get_named_type(
         None,
-        "SubgameRuntime",
+        "cRSubGame",
         ida_typeinf.BTF_STRUCT,
     ):
         return {
             "status": "failed",
-            "reason": "missing_SubgameRuntime_type",
+            "reason": "missing_cRSubGame_type",
             "selector": selector,
         }
 
@@ -4351,7 +4392,7 @@ def _sync_subgame_receiver_lvar(
     if not pointer_type.create_ptr(owner_type):
         return {
             "status": "failed",
-            "reason": "create_SubgameRuntime_pointer_failed",
+            "reason": "create_cRSubGame_pointer_failed",
             "selector": selector,
         }
 
@@ -4865,6 +4906,11 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
 
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
+    missing_subgame_owner_markers = [
+        marker
+        for marker in SUBGAME_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_sub_loc_owner_markers = [
         marker
         for marker in SUB_LOC_OWNER_MARKERS
@@ -4916,7 +4962,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if marker not in header_text
     ]
     if (
-        missing_sub_loc_owner_markers
+        missing_subgame_owner_markers
+        or missing_sub_loc_owner_markers
         or missing_path_owner_markers
         or missing_path_manager_owner_markers
         or missing_bod_core_owner_markers
@@ -4928,6 +4975,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_fringe_mesh_cursor_markers
     ):
         marker_failures = []
+        if missing_subgame_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_subgame_owner_header"}
+            )
         if missing_sub_loc_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_sub_loc_owner_header"}
@@ -4969,6 +5020,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
+                    "missing_subgame_owner_markers": (
+                        missing_subgame_owner_markers
+                    ),
                     "missing_sub_loc_owner_markers": (
                         missing_sub_loc_owner_markers
                     ),
@@ -5001,6 +5055,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         return 1
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    subgame_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in SUBGAME_OWNER_SIZES
+    }
     sub_loc_owner_sizes = {
         name: _named_struct_size(name)
         for name in SUB_LOC_OWNER_SIZES
@@ -5060,6 +5118,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         hex(offset): _named_struct_member_readback("Player", offset)
         for offset in PLAYER_SHOOT_EXPECTED_MEMBERS
     }
+    subgame_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "subgame",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": subgame_owner_sizes[name],
+        }
+        for name, expected_size in SUBGAME_OWNER_SIZES.items()
+        if subgame_owner_sizes[name] != expected_size
+    ]
     sub_loc_owner_size_failures = [
         {
             "selector": name,
@@ -5127,7 +5196,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if track_render_cache_owner_sizes[name] != expected_size
     ]
     owner_size_failures = (
-        sub_loc_owner_size_failures
+        subgame_owner_size_failures
+        + sub_loc_owner_size_failures
         + path_owner_size_failures
         + path_manager_owner_size_failures
         + bod_core_owner_size_failures
@@ -5252,6 +5322,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "subgame_owner_sizes": subgame_owner_sizes,
                     "sub_loc_owner_sizes": sub_loc_owner_sizes,
                     "path_owner_sizes": path_owner_sizes,
                     "path_manager_owner_sizes": path_manager_owner_sizes,
@@ -5971,6 +6042,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "subgame_owner_sizes": subgame_owner_sizes,
                 "sub_loc_owner_sizes": sub_loc_owner_sizes,
                 "path_owner_sizes": path_owner_sizes,
                 "path_manager_owner_sizes": path_manager_owner_sizes,

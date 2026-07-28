@@ -26,13 +26,13 @@
 0043b23d        show_subgoldy_lives(player)
 0043b242        int32_t movement_mode_selector = player->movement_mode_selector
 0043b258        if (movement_mode_selector != 0 && movement_mode_selector != 2)
-0043b25e        struct SubgameRuntime* game = player->game
+0043b25e        struct cRSubGame* game = player->game
 0043b275        if (game->replay_update_cursor s> 0x14 && game->track_state_latch == 0)
 0043b277        game->track_state_latch = 1
-0043b27e        struct SubgameRuntime* eax_8 = player->game
+0043b27e        struct cRSubGame* eax_8 = player->game
 0043b291        long double st0_1
 0043b291        int16_t top_1
-0043b291        struct SubgameRuntime* game_2
+0043b291        struct cRSubGame* game_2
 0043b291        if (eax_8->selected_level_record_active == 0)
 0043b360        label_43b360:
 0043b360        int16_t eax_11
@@ -99,15 +99,15 @@
 0043b504        st0_3, eax_17 = convert_math_type32_to_16(player->body.transform.position.x, 16f)
 0043b50d        long double st0_4 = convert_math_type16_to_32(eax_17, 16f)
 0043b51f        player->body.transform.position.x = fconvert.s(st0_4)
-0043b521        struct SubgameRuntime* game_21 = player->game
+0043b521        struct cRSubGame* game_21 = player->game
 0043b528        int16_t eax_19
 0043b528        int80_t st0_5
 0043b528        st0_5, eax_19 = convert_math_type32_to_16(fconvert.s(st0_4), 16f)
 0043b536        int32_t ecx_25 = game_21->replay_update_cursor * 3
 0043b53e        *(&game_21->current_high_score_record.run_records + (ecx_25 << 1)) = eax_19
-0043b546        struct SubgameRuntime* game_19 = player->game
+0043b546        struct cRSubGame* game_19 = player->game
 0043b556        long double x87_r4_1
-0043b556        struct SubgameRuntime* game_10
+0043b556        struct cRSubGame* game_10
 0043b556        if (game_19->replay_update_cursor != 0)
 0043b5a5        int32_t var_58_4 = ecx_25
 0043b5a9        int16_t eax_25
@@ -130,13 +130,13 @@
 0043b592        x87_r4_1 = st0_1
 0043b5ed        g_replay_accum_z = fconvert.s(x87_r4_1)
 0043b5ed        top_1 = 0xfffd
-0043b5f3        struct SubgameRuntime* game_3 = player->game
+0043b5f3        struct cRSubGame* game_3 = player->game
 0043b601        if (game_3->track_state_latch != 0)
 0043b60c        if ((*(player->control_source + 4) & 0x4000) != 0)
 0043b614        int32_t edx_11 = game_3->replay_update_cursor * 3
 0043b617        (&game_3->current_high_score_record.run_records[0].flags)[edx_11].b |= 1
 0043b62f        if ((player->control_source->control_flags_b & 0x4000) != 0)
-0043b631        struct SubgameRuntime* game_4 = player->game
+0043b631        struct cRSubGame* game_4 = player->game
 0043b63d        int32_t ecx_35 = game_4->replay_update_cursor * 3
 0043b640        (&game_4->current_high_score_record.run_records[0].flags)[ecx_35].b |= 2
 0043b64f        struct PlayerControlSource* control_source = player->control_source
@@ -154,7 +154,7 @@
 0043b2c9        st0_1 = convert_math_type16_to_32(eax_8.w, 16f)
 0043b2ce        player->body.transform.position.x = fconvert.s(st0_1)
 0043b2ce        top_1 = 0
-0043b2d0        struct SubgameRuntime* game_1 = player->game
+0043b2d0        struct cRSubGame* game_1 = player->game
 0043b2ed        if ((game_1->selected_level_record->run_records[game_1->replay_update_cursor].flags.b & 4) == 0)
 0043b2f8        game_1->track_state_latch = 0
 0043b2ef        game_1->track_state_latch = 1
@@ -191,7 +191,7 @@
 0043b6da        if (eax_31.b != 0)
 0043b6de        update_subgoldy_resurrect(player)
 0043b6ea        struct cRSubLoc* eax_32 = get_track_grid_cell_at_world_position(player->game, p_position)
-0043b6ef        struct SubgameRuntime* game_22 = player->game
+0043b6ef        struct cRSubGame* game_22 = player->game
 0043b706        int32_t eax_34 = get_track_cell_row_index(eax_32) * 0x3d
 0043b710        int32_t row_event_id = (&game_22->runtime_rows[0].row_event_id)[eax_34]
 0043b734        if (row_event_id s> 0 && row_event_id != player->row_event.id && row_event_id s< game_22->level_definition.segment_count + 1)
@@ -552,7 +552,7 @@
 0043bffc        eax_92.b = player->attachment_exit_pending
 0043c004        if (eax_92.b == 0)
 0043c008        begin_post_follow_carryover(player)
-0043c011        struct SubgameRuntime* game_11 = player->game
+0043c011        struct cRSubGame* game_11 = player->game
 0043c01b        if (game_11->level_mode == 3)
 0043c01e        get_track_grid_cell_at_world_position(game_11, p_position)
 0043c038        if (((player->game->runtime_flags).w:1.b & 4) == 0 || (g_cheat_state.flags.b & 2) != 0)
@@ -865,7 +865,7 @@
 0043c43e        unimplemented  {fstp dword [esp+0x1c], st0}
 0043c446        position.x = x
 0043c44e        position.z = var_34_1
-0043c452        struct SubgameRuntime* game_12 = player->game
+0043c452        struct cRSubGame* game_12 = player->game
 0043c459        position.y = y_1
 0043c45d        struct cRSubLoc* eax_112
 0043c45d        int16_t x87control_2
@@ -981,7 +981,7 @@
 0043c69e        unimplemented  {fcomp st0, dword [0x497220]}
 0043c6a9        if ((((c0_45 ? 1 : 0) << 8 | (c2_45 ? 1 : 0) << 0xa | (c3_45 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb):1.b & 0x41) == 0)
 0043c6ab        player->damage_retrigger_timer = 0f
-0043c6b1        struct SubgameRuntime* game_13 = player->game
+0043c6b1        struct cRSubGame* game_13 = player->game
 0043c6b7        unimplemented  {fild st0, dword [ecx+0x58]}
 0043c6ba        float var_40_6 = fconvert.s(unimplemented  {fstp dword [esp+0x10], st0})
 0043c6ba        unimplemented  {fstp dword [esp+0x10], st0}
@@ -1034,7 +1034,7 @@
 0043c6f0        if (game_13->level_mode == 4)
 0043c6f2        unimplemented  {fld st0, dword [ebp+0x70]}
 0043c6f5        unimplemented  {fsub st0, dword [esp+0x10]}
-0043c6f9        struct SubgameRuntime* game_23 = game_13
+0043c6f9        struct cRSubGame* game_23 = game_13
 0043c700        unimplemented  {fdiv st0, dword [ebp+0x418]}
 0043c706        unimplemented  {fsubr st0, dword [0x497220]}
 0043c70c        unimplemented  {fmul st0, dword [0x4972c8]}
@@ -1115,7 +1115,7 @@
 0043c81d        player->completion_handoff_cycle_progress = 0f
 0043c823        unimplemented  {fld st0, dword [ebp+0x444]}
 0043c829        unimplemented  {fadd dword [ebp+0x448]}
-0043c82f        struct SubgameRuntime* game_14 = player->game
+0043c82f        struct cRSubGame* game_14 = player->game
 0043c835        player->completion_handoff_timer = fconvert.s(unimplemented  {fstp dword [ebp+0x444], st0})
 0043c835        unimplemented  {fstp dword [ebp+0x444], st0}
 0043c83b        game_14->subgame_rebuild_selector = 2
@@ -1140,7 +1140,7 @@
 0043c87f        bool c3_53 = unimplemented  {fcomp st0, dword [0x4974a4]} f== temp47_1
 0043c87f        unimplemented  {fcomp st0, dword [0x4974a4]}
 0043c88a        if ((((c0_53 ? 1 : 0) << 8 | (c2_53 ? 1 : 0) << 0xa | (c3_53 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb):1.b & 0x41) == 0)
-0043c88c        struct SubgameRuntime* game_5 = player->game
+0043c88c        struct cRSubGame* game_5 = player->game
 0043c892        int32_t level_mode_1 = game_5->level_mode
 0043c89c        if (level_mode_1 == 0 || level_mode_1 == 1)
 0043c8b8        if (game_5->completion.fast_forward_enabled == 1 && (player->control_source->control_flags_a:1.b & 0x40) != 0)
@@ -1155,7 +1155,7 @@
 0043c8d4        bool c3_54 = unimplemented  {fcomp st0, dword [0x497288]} f== temp50_1
 0043c8d4        unimplemented  {fcomp st0, dword [0x497288]}
 0043c8df        if ((((c0_54 ? 1 : 0) << 8 | (c2_54 ? 1 : 0) << 0xa | (c3_54 ? 1 : 0) << 0xe | (top_142 & 7) << 0xb):1.b & 0x41) == 0)
-0043c8e1        struct SubgameRuntime* game_15 = player->game
+0043c8e1        struct cRSubGame* game_15 = player->game
 0043c8e7        int32_t level_mode = game_15->level_mode
 0043c8f9        if ((level_mode == 0 || level_mode == 1) && game_15->completion.state != COMPLETION_STATE_CONTINUE_ACCEPTED)
 0043c8fb        unimplemented  {fld st0, dword [ebp+0x444]}
@@ -1175,10 +1175,10 @@
 0043c931        if (state == 0)
 0043c934        begin_frontend_fade_out(&game_base_1->fade, nullptr)
 0043c941        if (state == 4)
-0043c947        struct SubgameRuntime* game_6 = player->game
+0043c947        struct cRSubGame* game_6 = player->game
 0043c953        if (game_6->completion.state != COMPLETION_STATE_INACTIVE)
 0043c95b        flush_row_event_display(&game_6->completion)
-0043c960        struct SubgameRuntime* game_16 = player->game
+0043c960        struct cRSubGame* game_16 = player->game
 0043c969        if (game_16->level_mode != 0)
 0043c9c8        complete_subgame(game_16, 1)
 0043c97d        if (game_16->level_mode_arg == g_game_base->subgame.galaxy.record_count - 1)
@@ -1188,7 +1188,7 @@
 0043c9ad        return
 0043c9af        complete_subgame(game_16, 0)
 0043c9ba        player->game->subgame_rebuild_selector = 1
-0043c9cd        struct SubgameRuntime* game_20 = player->game
+0043c9cd        struct cRSubGame* game_20 = player->game
 0043c9d7        if (game_20->level_mode == 7)
 0043c9df        g_game_base->players[0].frontend_state = 0x1a
 0043c9ef        g_game_base->players[0].saved_frontend_state = 2
@@ -1351,7 +1351,7 @@
 0043ccd8        update_nuke(&player->nuke)
 0043ccc5        player->nuke_effect_progress = 0f
 0043cccb        uninit_nuke(&player->nuke)
-0043cce1        struct SubgameRuntime* game_17 = player->game
+0043cce1        struct cRSubGame* game_17 = player->game
 0043cceb        if (game_17->level_mode == 4)
 0043cd07        struct TimeTrialRouteRecordCursor* time_trial_route_cursor = game_17->level_mode_arg * 0x1fac0 + game_17
 0043cd1e        if (time_trial_route_cursor->record.active == 1 && game_17->selected_level_record_active == 0)
@@ -1399,7 +1399,7 @@
 0043cdbe        top_212 = top_213 + 1
 0043cdc0        subgoldy_ghost_z_1 = g_subgoldy_ghost_z
 0043cdd1        game_17 = set_subgoldy_ghost_z(player, subgoldy_ghost_z_1)
-0043cde1        struct SubgameRuntime* game_24 = game_17
+0043cde1        struct cRSubGame* game_24 = game_17
 0043cde2        unimplemented  {fild st0, dword [edx+0x54]}
 0043cdeb        unimplemented  {fdivr st0, dword [ebp+0x70]}
 0043cdee        float zoom = fconvert.s(unimplemented  {fstp dword [esp], st0})
@@ -1569,7 +1569,7 @@
 0043d05e        set_subgoldy_shoot_flags(player)
 0043d06f        if (g_game_base->subgame.replay_update_cursor s< 0xa)
 0043d077        player->shoot_cooldown_progress = player->shoot_cooldown_step
-0043d07d        struct SubgameRuntime* game_18 = player->game
+0043d07d        struct cRSubGame* game_18 = player->game
 0043d0a6        if ((game_18->runtime_flags & &__dos_header) != 0 && player->completion_handoff_active == 0 && player->control_override_active == 0)
 0043d0ac        enum ClickStartState state_2 = player->click_start.state
 0043d0b9        if (state_2 == CLICK_START_STATE_INACTIVE || state_2 == CLICK_START_STATE_TEARDOWN)
@@ -1624,11 +1624,11 @@
 0043d0ef        if ((((c0_74 ? 1 : 0) << 8 | (c2_74 ? 1 : 0) << 0xa | (c3_74 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb):1.b & 0x41) == 0)
 0043d0f5        player->shoot_cooldown_progress = 0f
 0043d1b7        update_row_event_display(&player->game->completion)
-0043d1bc        struct SubgameRuntime* game_7 = player->game
+0043d1bc        struct cRSubGame* game_7 = player->game
 0043d1c9        game_7->current_high_score_record.replay_sample_count += 1
-0043d1cf        struct SubgameRuntime* game_8 = player->game
+0043d1cf        struct cRSubGame* game_8 = player->game
 0043d1dc        game_8->replay_update_cursor += 1
-0043d1e2        struct SubgameRuntime* game_9 = player->game
+0043d1e2        struct cRSubGame* game_9 = player->game
 0043d1f2        if (game_9->replay_update_cursor == 0x5208)
 0043d1fa        show_times_up_message(&game_9->times_up)
 0043d20b        update_times_up(&player->game->times_up)

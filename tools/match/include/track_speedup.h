@@ -11,7 +11,7 @@
 
 class Player;
 class Sprite;
-class SubgameRuntime;
+class cRSubGame;
 
 class SubSpeedUp : public RenderableBod {
 public:
@@ -21,7 +21,7 @@ public:
     TrackPickupState state; // +0x80
     Player* owner; // +0x84
     char unknown_88[0x8c - 0x88];
-    SubgameRuntime* owner_game; // +0x8c, borrowed containing subgame
+    cRSubGame* owner_game; // +0x8c, borrowed containing subgame
     char unknown_90[0xac - 0x90];
     Sprite* sprite; // +0xac
     char unknown_b0[0xb4 - 0xb0];

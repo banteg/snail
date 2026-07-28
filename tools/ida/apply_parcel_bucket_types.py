@@ -59,11 +59,11 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     ),
     (
         "place_parcels_on_track",
-        "void __thiscall place_parcels_on_track(SubgameRuntime *game);",
+        "void __thiscall place_parcels_on_track(cRSubGame *game);",
     ),
     (
         "place_challenge_parcels_on_track",
-        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game);",
+        "void __thiscall place_challenge_parcels_on_track(cRSubGame *game);",
     ),
 )
 

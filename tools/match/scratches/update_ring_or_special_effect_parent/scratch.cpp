@@ -12,7 +12,7 @@ float sine(float radians);
 
 void SubRing::update_ring_or_special_effect_parent()
 {
-    SubgameRuntime* rate = rate_source;
+    cRSubGame* rate = rate_source;
     if (rate->subgame_pause_gate != 0)
         return;
 

@@ -2,8 +2,8 @@
 /* function: complete_subgame @ 0x438700 */
 /* selector: complete_subgame */
 
-// Snapshots the just-finished run into the working high-score/replay record, including the normalized garbage and salt frequencies, increments the per-run completion counter, and dispatches the mode-specific high-score handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Complete(bool)`.
-void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 completed)
+// Snapshots the just-finished run into the working high-score/replay record, including the normalized garbage and salt frequencies, increments the per-run completion counter, and dispatches the mode-specific high-score handoff. The symbol-rich iPhone `SubGame.o` implementation and Android function identify the same owner graph and scalar field grouping as authored `cRSubGame::Complete(bool)`.
+void __thiscall complete_subgame(cRSubGame *runtime, unsigned __int8 completed)
 {
   int32_t v3; // ecx
   int32_t score_tail; // eax

@@ -22,7 +22,7 @@ Expected residuals:
 ## 2026-07-13 snail cutscene animation ownership
 
 The first animation bank after path construction is owned by the embedded
-`SubgameRuntime::player.presentation` snail. Startup constructs and loads its
+`cRSubGame::player.presentation` snail. Startup constructs and loads its
 ten `cutscene_animation_slots` in native order: a config-selected base clip,
 then move, bobalong, left/right lookback, fall, damaged, into-shell, skid-stop,
 and talk. The base name is copied from the loader's `Test:` line through its
@@ -92,7 +92,7 @@ barrier, and render-cache handoff at `0x40fb46..0x40ffd6`:
 - `GameRoot +0xb24` is the exact `Track` (`cRTrack`) owner: four primary track
   textures, four secondary slide textures, and the current set at `+0x20`.
   Startup also applies the recovered texture flags and two-level mip policy.
-- The final island constructs the embedded `SubgameRuntime::barrier`, loads its
+- The final island constructs the embedded `cRSubGame::barrier`, loads its
   object, clears its inherited position, applies the authored translucent
   color/blend mode, and initializes the owned `SegmentCache`.
 
@@ -147,7 +147,7 @@ subgame view:
 ```text
 GameRoot + 0x1066f2c
 = GameRoot + 0x74618 + 0xff2914
-= SubgameRuntime + 0xff2914
+= cRSubGame + 0xff2914
 ```
 
 - Public `Path=` slots `0..50` occupy consecutive `0x150` pairs.
@@ -161,12 +161,12 @@ GameRoot + 0x1066f2c
 
 ## 2026-07-11 early subgame ownership
 
-The bootstrap now uses the embedded `SubgameRuntime` directly for its pause
+The bootstrap now uses the embedded `cRSubGame` directly for its pause
 gate, blink-table initialization, rate setup, and `level_mode_arg` handoff.
 This corrects two stale raw offsets in the semantic partial:
 
-- the pause gate is root `+0x74621` (`SubgameRuntime +0x09`), not `+0x74659`;
-- the mode argument is root `+0x7465c` (`SubgameRuntime +0x44`), not
+- the pause gate is root `+0x74621` (`cRSubGame +0x09`), not `+0x74659`;
+- the mode argument is root `+0x7465c` (`cRSubGame +0x44`), not
   `+0x74654`.
 
 The recovered thiscall shape removes the scratch's cdecl blink/rate shims and
@@ -176,7 +176,7 @@ partial of the 5,411-instruction bootstrap; the score change is supporting
 evidence, not a completeness claim.
 
 The Binary Ninja runtime sync was also made field-only when
-`SubgameRuntime` already exists. Its sparse import header can seed a fresh
+`cRSubGame` already exists. Its sparse import header can seed a fresh
 database, but it no longer flattens later `BodBase`, pool, and `Player`
 ownership when adding these blink fields.
 
@@ -235,7 +235,7 @@ the still-semantic startup partial, which remains at 5.65%.
 
 ## 2026-07-11 config selector ownership
 
-The early handoff into `SubgameRuntime::level_mode_arg` now reads
+The early handoff into `cRSubGame::level_mode_arg` now reads
 `RuntimeConfig::landscape_backdrop_variant_selector` at config offset `+0xa4`
 instead of the raw `unk_4DF9BC` spelling. The instruction stream and 5.65%
 semantic score are unchanged, while the masked audit improves from 73 clean / 18
@@ -290,10 +290,10 @@ still honestly absent.
 ## 2026-07-13 owned SubLazer and salt clone pools
 
 The next native producer island copies the root `lazer_model` donor into the
-20 inline `SubLazer` records at `SubgameRuntime +0x356b00` (stride `0xb0`),
+20 inline `SubLazer` records at `cRSubGame +0x356b00` (stride `0xb0`),
 then loads root `salt_model` from `salt.x` and copies it into the 40 inline
 `Salt` records at `+0x3578c0` (stride `0x98`). Both slot families retain a
-borrowed `SubgameRuntime*` at slot `+0x88`; the lazer pass also registers the
+borrowed `cRSubGame*` at slot `+0x88`; the lazer pass also registers the
 shared texture, sets alpha `0.7` and blend mode `9`, while the salt pass sets
 alpha `0.9`, blend mode `12`, and an identity transform.
 
@@ -309,7 +309,7 @@ remaining world/path-template producer islands are still absent.
 
 Startup initializes both embedded `BannerPool` records from a root-relative
 `index * 0x60` cursor. Each receives a fresh object loaded from
-`postofficestop.x`, a zero position, its `SubgameRuntime* owner_game`,
+`postofficestop.x`, a zero position, its `cRSubGame* owner_game`,
 visibility mode `0` or `1`, zero phase, and the exact phase step
 `0x3be38e38` (`0.006944444f`). The source keeps that native cursor shape while
 using the shared `Banner` fields; a compact `Banner&` trial was rejected because
@@ -616,7 +616,7 @@ root owner while retaining the native global reload.
 
 The startup services now borrow `subgame.landscape_manager` directly. The
 second menu-background load retains its independent global root reload but
-follows the same canonical `GameRoot -> SubgameRuntime -> LandscapeManager`
+follows the same canonical `GameRoot -> cRSubGame -> LandscapeManager`
 path. Sub-lazer and salt slots likewise store `&subgame` as their borrowed
 owner backlink instead of reconstructing it from root `+0x74618`. Focused
 output remains byte-identical at 80.49%, 5,391/5,411 instructions, with 1,542
@@ -685,7 +685,7 @@ shape while deriving every remaining owner-sensitive constant. The SubLazer
 cursor now gets its 20-slot extent, `BodBase::object` backtrack, and
 `SubLazer::owner_game` delta from the recovered manager and inherited layouts.
 The banner cursor similarly derives its root-relative pool base from
-`GameRoot::subgame` plus `SubgameRuntime::banners`, and its two-slot extent from
+`GameRoot::subgame` plus `cRSubGame::banners`, and its two-slot extent from
 `BannerPool::slots`. No pointer was promoted to a whole-record iterator because
 that would discard the native source shape encoded by the generated loop.
 
@@ -790,7 +790,7 @@ byte-stable 80.50% initializer frontier.
 The remaining constructor-proven presentation block is now durable in Binary
 Ninja: `Intro +0x4f2dc` spans exactly 0x48 bytes, `StarManager +0x4f33c`
 spans exactly 0x4c bytes, and `Logo +0x4f400` spans exactly 0x25218 bytes to
-the independently proven `SubgameRuntime +0x74618` boundary. The refreshed
+the independently proven `cRSubGame +0x74618` boundary. The refreshed
 initializer consequently names its replay latch, logo open, active-list
 insertion, and star-field open through those real embedded owners.
 
@@ -811,7 +811,7 @@ not an authored return contract.
 ## 2026-07-15 shared front-end root ownership
 
 The IDA receiver is now `GameRoot *`, and the complete constructor-proven
-front-end block composes with `SubgameRuntime`, `HighScore`, `TipManager`, and
+front-end block composes with `cRSubGame`, `HighScore`, `TipManager`, and
 the other established tail owners in one guarded graph. The initializer now
 names its path-template bank, tip manager, star manager, and backdrop through
 their real embedded owners. The replay refuses to overwrite any independently
@@ -860,7 +860,7 @@ matcher source remains byte-stable.
 
 ## 2026-07-16 durable Banner backlink replay
 
-The startup-proved `Banner +0x48` `SubgameRuntime*` backlink had survived in
+The startup-proved `Banner +0x48` `cRSubGame*` backlink had survived in
 the matcher and the live narrow hazard replay but had drifted back into padding
 in the canonical BN, IDA, and path ownership headers. All three headers and the
 broader BN replay lanes now retain `owner_game` before the independent
@@ -1085,7 +1085,7 @@ The matcher remains honestly at 80.50%, 5,392/5,411 instructions.
 ## 2026-07-24 Banner initializer stride ownership
 
 The two-iteration startup loop owns exactly
-`SubgameRuntime::banners.slots[2]`: `sizeof(Banner) == 0x60`, the pool is
+`cRSubGame::banners.slots[2]`: `sizeof(Banner) == 0x60`, the pool is
 `0xc0`, and the first actor begins at `GameRoot +0x3cd698`. Native VC6 does
 not keep a direct `Banner*`; it carries `game + i * 0x60` and applies the
 absolute root-to-Banner displacement at each access. The analysis-only
@@ -1371,11 +1371,11 @@ offset. An idempotent second replay reports all 109 operands unchanged with no
 missing or failed entries.
 
 Hex-Rays now follows the measured
-`GameRoot -> SubgameRuntime -> Player -> Snail` chain through all ten cutscene
+`GameRoot -> cRSubGame -> Player -> Snail` chain through all ten cutscene
 animation slots, the jetpack channel, three weapon channels and their inline
 animation slots, `SnailSkin::material_overrides`, the invincibility body, and
 the first Golb-shot vapour object. The initializer tail also folds root
-`+0x6ffae0` to `SubgameRuntime::sub_high_score`, consistent with the
+`+0x6ffae0` to `cRSubGame::sub_high_score`, consistent with the
 independently recovered subgame offset `+0x68b4c8`. Binary Ninja already
 rendered the same owners, so the two decompilers agree and a Ghidra replay was
 unnecessary.

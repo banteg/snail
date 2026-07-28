@@ -11,7 +11,8 @@ typedef unsigned char uint8_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
-typedef struct SubgameRuntime SubgameRuntime;
+typedef struct cRSubGame cRSubGame;
+typedef cRSubGame SubgameRuntime;
 
 typedef struct Vec3 {
     float x;
@@ -78,7 +79,7 @@ typedef struct SubLazer {
     RenderableBod body;
     SubLazerState state;
     uint8_t unknown_84[0x4];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     Vec3 velocity;
     float sprite_bob_phase;
     float sprite_bob_phase_step;
@@ -101,7 +102,7 @@ typedef struct Salt {
     RenderableBod body;
     SaltState state;
     uint8_t unknown_84[0x4];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     float fade_alpha;
     float spawn_velocity_y;
     uint8_t collision_armed;

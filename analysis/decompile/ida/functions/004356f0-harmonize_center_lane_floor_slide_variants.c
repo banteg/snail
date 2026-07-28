@@ -3,9 +3,9 @@
 /* selector: harmonize_center_lane_floor_slide_variants */
 
 // Exact Windows `void cRSubGame::SlideSmoothTrack()`: directly indexes the owned eight-lane `cRSubLoc` runtime grid, promoting a floor current cell beside a slide neighbor to the matching slide object and restoring a slide current cell beside a floor neighbor. Android and iOS preserve the owner, method name, row phases, same-lane neighbor direction, and replacement families.
-void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)
+void __thiscall harmonize_center_lane_floor_slide_variants(cRSubGame *game)
 {
-  SubgameRuntime *v1; // esi
+  cRSubGame *v1; // esi
   int v2; // eax
   int v3; // ecx
   int v4; // edx

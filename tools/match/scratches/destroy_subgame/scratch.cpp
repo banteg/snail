@@ -65,7 +65,7 @@ int report_errorf(char* format, ...);
         }                                                         \
     } while (0)
 
-void SubgameRuntime::destroy_subgame()
+void cRSubGame::destroy_subgame()
 {
     debug_report_stub("-SubGame::UnInit()\n");
     g_game->backdrop.corner_index_buffer_handle = 1;

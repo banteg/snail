@@ -6,7 +6,7 @@
 00441650        enum SubLazerState* eax = &manager->slots[0].state
 00441656        int32_t i_1 = 0x14
 00441667        int32_t i
-0044165b        (eax - 0x80)->slots[0].state = SUB_LAZER_STATE_INACTIVE
+0044165b        *eax = SUB_LAZER_STATE_INACTIVE
 00441661        eax = &eax[0x2c]
 00441666        i = i_1
 00441666        i_1 -= 1

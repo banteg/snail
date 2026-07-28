@@ -11,7 +11,8 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 
 typedef struct Player Player;
-typedef struct SubgameRuntime SubgameRuntime;
+typedef struct cRSubGame cRSubGame;
+typedef cRSubGame SubgameRuntime;
 typedef struct TextureRef TextureRef;
 typedef struct cRSubLoc cRSubLoc;
 
@@ -156,7 +157,7 @@ struct SubGarbage {
     SubGarbage* next_active;
     SubGarbageState state;
     SubGarbageCollisionSide collision_side;
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     Vec3 velocity;
     float radius;
     float attachment_facing_angle;
@@ -182,7 +183,7 @@ typedef SubGarbagePool GarbageHazardPool;
 
 /*
  * Analysis-only root-biased view retained by AddGarbage after multiplying the
- * slot index. The prefix aliases SubgameRuntime; garbage is one pool-owned
+ * slot index. The prefix aliases cRSubGame; garbage is one pool-owned
  * record, not separately allocated storage.
  */
 typedef struct SubGarbageSlotCursor {
@@ -214,7 +215,7 @@ void __thiscall spawn_garbage_smoke_particle(
     Vec3* velocity,
     Player* owner_player);
 void __thiscall spawn_track_garbage_hazard(
-    SubgameRuntime* game,
+    cRSubGame* game,
     cRSubLoc* cell,
     Player* player);
 

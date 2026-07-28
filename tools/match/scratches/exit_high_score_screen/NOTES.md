@@ -24,9 +24,9 @@ live analysis restores its stale scalar form.
 ## 2026-07-25 root-owner replay
 
 Refreshing the typed root view makes IDA agree with the exact source:
-`SubgameRuntime::level_mode` chooses the destination
+`cRSubGame::level_mode` chooses the destination
 `GamePlayer::frontend_state`, both paths seed
-`SubgameRuntime::subgame_rebuild_selector`, and
+`cRSubGame::subgame_rebuild_selector`, and
 `GamePlayer::redispatch_requested` schedules the transition. This is an
 ownership-only replay; the helper remains exact at 23/23 instructions.
 

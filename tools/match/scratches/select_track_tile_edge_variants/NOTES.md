@@ -27,7 +27,7 @@
 ## 2026-07-14 exact canonical-owner proof
 
 The field-first cursor now comes from
-`SubgameRuntime::runtime_cell_tile_views()`, its lane bound derives from the
+`cRSubGame::runtime_cell_tile_views()`, its lane bound derives from the
 owned runtime-cell row, and every floor/slide corner selection loads through
 the canonical `GameRoot* g_game` plus `root_bod_catalog`. The compiler retains
 the intentional field-relative neighbor offsets and authored corner storage
@@ -62,7 +62,7 @@ merged-run, AI, and uncached-body masks in `SubLocFlag`.
 ## 2026-07-14 analysis receiver closure
 
 The exact 220/220 matcher and cross-port `cRSubGame::SmoothTrack()` ownership
-now reach the live BN prototype as `SubgameRuntime*`; the old same-size `Game*`
+now reach the live BN prototype as `cRSubGame*`; the old same-size `Game*`
 identity is gone. Refreshed BN and IDA artifacts both expose
 `runtime_row_count`, `runtime_cells`, `tile_id`, and `lane_and_flags` under the
 canonical owner. Matcher bytes remain exact and unchanged.
@@ -77,7 +77,7 @@ and the exact 220/220 Windows transcription are both source-shaped void
 mutators.
 
 The analysis prototype now preserves that contract as
-`void __thiscall select_track_tile_edge_variants(SubgameRuntime*)`. This
+`void __thiscall select_track_tile_edge_variants(cRSubGame*)`. This
 removes a fabricated return value from both decompilers without altering one
 matcher byte or weakening any existing ownership check.
 

@@ -120,7 +120,7 @@ Rejected experiments:
   lanes are stored as `challenge_speed_value` /
   `challenge_difficulty_value`.
   Focused Wibo remains at the pinned 75.28%.
-- 2026-06-18 decompiler-sync pass: the narrow BN/IDA `SubgameRuntime` headers
+- 2026-06-18 decompiler-sync pass: the narrow BN/IDA `cRSubGame` headers
   now carry the sparse proven runtime layout through `sub_high_score`,
   `current_high_score_record`, replay cursor, selected-level gates, timers, and
   route-active state. BN now renders the high-score dispatch as calls through
@@ -135,7 +135,7 @@ no volatile, raw offset macro, fake alias, or forced register local was needed.
 ## 2026-07-10 ownership audit
 
 The native call tail makes the lifetime boundary explicit: `ebp` is the
-address of `SubgameRuntime::current_high_score_record`, while `ecx` is the
+address of `cRSubGame::current_high_score_record`, while `ecx` is the
 address of the same runtime's embedded `sub_high_score`. The three `add_*`
 helpers borrow that working record, normalize some metadata in place, and copy
 its value into bank-owned result/ranking arrays; no helper stores the input
@@ -150,11 +150,11 @@ residual rather than a reason to introduce an alias or volatile fakematch.
 
 ## 2026-07-11 Player owner closure
 
-The exact `0x4364`-byte `Player` begins at `SubgameRuntime +0x3bb764` and ends
+The exact `0x4364`-byte `Player` begins at `cRSubGame +0x3bb764` and ends
 at the first runtime track cell. `complete_subgame` therefore snapshots
 `player.total_score`, the six-dword `player.stopwatch`, `player.score_tail`,
 `player.replay_start_cursor`, and `player.completion_handoff_active`; none are
-independent SubgameRuntime fields. BN has only one reference to
+independent cRSubGame fields. BN has only one reference to
 `Player +0x300`, the dword copy into `SubSolution::score_tail`, so that
 name remains deliberately narrow.
 
@@ -180,7 +180,7 @@ methods remain exact, and the shared extern lint is now clean.
 
 ## 2026-07-11 hazard-frequency ownership
 
-The two former `source_timer_*` dwords at `SubgameRuntime +0x125ffd8` and
+The two former `source_timer_*` dwords at `cRSubGame +0x125ffd8` and
 `+0x125ffdc` are the live normalized `Garbage:` and `Salt:` frequencies:
 
 - `load_level_definition_file` parses the authored percentage fields into the
@@ -198,7 +198,7 @@ snapshot uses integer moves. Focused matching remains the honest pinned
 
 ## 2026-07-13 canonical Binary Ninja replay
 
-The stable `SubgameRuntime*` receiver ABI is now replayed together with the
+The stable `cRSubGame*` receiver ABI is now replayed together with the
 complete owner map. The tracked BN export contains no raw offsets: the snapshot
 comes from the embedded `Player`, lands in `current_high_score_record`, and is
 dispatched through the embedded `sub_high_score` bank. A health check pins that
@@ -236,7 +236,7 @@ fakematching construct.
 
 The three insertion calls at `0x43880d`, `0x43881e`, and `0x438831` all form
 `runtime + 0x68b4c8`. That displacement is the measured
-`SubgameRuntime::sub_high_score` boundary, already corroborated by Binary
+`cRSubGame::sub_high_score` boundary, already corroborated by Binary
 Ninja and every ranked-score helper. IDA instead promoted the displacement
 into the unrelated `g_parcel_set_buckets` range. The canonical replay now
 normalizes only those exact operands and Hex-Rays renders all three calls

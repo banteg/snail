@@ -241,9 +241,9 @@
 00409972        play_or_deliver_widget->widget_flags:3.b = eax_48:3.b
 0040997a        destroy_galaxy(galaxy)
 0040998b        galaxy->level_progress_base->level_mode_arg = galaxy->selected_index
-0040998e        struct SubgameRuntime* level_progress_base = galaxy->level_progress_base
+0040998e        struct cRSubGame* level_progress_base = galaxy->level_progress_base
 004099a2        load_frontend_level_by_mode_and_index(&level_progress_base->level_definition, level_progress_base->level_mode, level_progress_base->level_mode_arg)
-004099a7        struct SubgameRuntime* level_progress_base_3 = galaxy->level_progress_base
+004099a7        struct cRSubGame* level_progress_base_3 = galaxy->level_progress_base
 004099be        if (level_progress_base_3->level_mode == 0 && level_progress_base_3->subgame_rebuild_selector == 1)
 004099d0        return 2
 00409a5a        return 1
@@ -261,10 +261,10 @@
 004099e3        replay_widget->widget_flags:3.b = eax_52:3.b
 004099eb        destroy_galaxy(galaxy)
 004099fc        galaxy->level_progress_base->level_mode_arg = galaxy->selected_index
-004099ff        struct SubgameRuntime* level_progress_base_1 = galaxy->level_progress_base
+004099ff        struct cRSubGame* level_progress_base_1 = galaxy->level_progress_base
 00409a13        load_frontend_level_by_mode_and_index(&level_progress_base_1->level_definition, level_progress_base_1->level_mode, level_progress_base_1->level_mode_arg)
 00409a1e        galaxy->level_progress_base->selected_level_record_active = 1
-00409a25        struct SubgameRuntime* level_progress_base_2 = galaxy->level_progress_base
+00409a25        struct cRSubGame* level_progress_base_2 = galaxy->level_progress_base
 00409a4b        level_progress_base_2->selected_level_record = &level_progress_base_2->sub_high_score.time_trial_route_records[galaxy->selected_index]
 00409a5a        return 1
 00409a69        if (game_base_3->fade.state == 0 && galaxy->route_mode != 1)

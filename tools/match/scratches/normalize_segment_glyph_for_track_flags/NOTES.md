@@ -23,7 +23,7 @@ masked table operands:
   for glyph indexes `0x20..0x7d`.
 
 2026-06-21 subgame-header consolidation: the glyph normalizer now uses
-`SubgameRuntime` for the mirror flag, runtime flags, and completion-row fields.
+`cRSubGame` for the mirror flag, runtime flags, and completion-row fields.
 Focused Wibo remains exact at `100.00%`, `160/160` instructions, with `2` clean
 masked operands.
 
@@ -38,7 +38,7 @@ instructions, full prefix, and two clean table operands.
 ## 2026-07-18 analyzer owner ABI
 
 The exact member source, ECX data flow, and two native callsites prove the
-analyzer ABI as `char __thiscall (SubgameRuntime*, char, int32_t, char)`.
+analyzer ABI as `char __thiscall (cRSubGame*, char, int32_t, char)`.
 The receiver reads the recovered `track_mirror_enabled` (+0x02),
 `runtime_flags` (+0x4c), and `completion_row_start` (+0x58) fields. This
 replaces Binary Ninja's residual `void*` receiver / `int32_t` return and IDA's

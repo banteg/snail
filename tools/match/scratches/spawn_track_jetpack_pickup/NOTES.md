@@ -45,7 +45,7 @@ singleton.
 2026-06-16 pool-overlay/list-splice pass: the spawner now mirrors the health
 pickup scratch's shifted slot-base shape, keeping `esi` based at
 `subgame + slot_index * 0x19c` while using the shared
-`SubgameRuntime::jetpack_pickup` member and promoted `JetPack`
+`cRSubGame::jetpack_pickup` member and promoted `JetPack`
 fields. The active-list splice was
 also reordered to put the empty-list case first, matching native fallthrough
 and the health pickup shape. Focused Wibo improves from `52.86%` (`136/144`,
@@ -158,7 +158,7 @@ clean.
 
 The stale BN `TrackPickupRuntime* __thiscall(Game*, ...)` prototype is replaced
 by the cross-port- and caller-proven
-`void __thiscall(SubgameRuntime*, cRSubLoc*, Player*)`. IDA replay verifies
+`void __thiscall(cRSubGame*, cRSubLoc*, Player*)`. IDA replay verifies
 the same declaration and receiver lvar. Refreshed artifacts now expose the
 owned `jetpack_pickup` singleton, its lifecycle state, and honest empty
 `return;` paths; incompatible incidental register values remain deliberately
@@ -182,7 +182,7 @@ The allocator's `233/EAX` lifetime is the borrowed address of
 `JetPack **`. Preserving that exact identity removes Binary Ninja's false
 `JetPack::vtable` traversal: both non-empty and empty branches now walk
 `BodNode::list_prev/list_next`, matching IDA and the shared inline
-`BodList::add_bod` source. The singleton remains owned by `SubgameRuntime`;
+`BodList::add_bod` source. The singleton remains owned by `cRSubGame`;
 list membership does not create or transfer a JetPack owner. Focused matching
 remains honestly unchanged at `84.72%`, `144/144` instructions, prefix `7/144`,
 with nine clean masked operands.

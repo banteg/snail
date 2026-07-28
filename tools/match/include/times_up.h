@@ -1,4 +1,4 @@
-// Authored cRTimesUp owner embedded at the tail of SubgameRuntime.
+// Authored cRTimesUp owner embedded at the tail of cRSubGame.
 #ifndef TIMES_UP_H
 #define TIMES_UP_H
 

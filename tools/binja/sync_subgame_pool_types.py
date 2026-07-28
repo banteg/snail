@@ -95,7 +95,7 @@ SUBGAME_FIELD_UPDATES = (
 SUB_SPEEDUP_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "TrackPickupState"),
-    ("0x8c", "owner_game", "SubgameRuntime*"),
+    ("0x8c", "owner_game", "cRSubGame*"),
 )
 
 VAPOUR_FIELD_UPDATES = (
@@ -109,21 +109,21 @@ VAPOUR_FIELD_UPDATES = (
 
 JETPACK_FIELD_UPDATES = (
     ("0x38", "state", "TrackPickupState"),
-    ("0x44", "owner_game", "SubgameRuntime*"),
+    ("0x44", "owner_game", "cRSubGame*"),
     ("0x74", "vapour_a", "Vapour"),
     ("0x108", "vapour_b", "Vapour"),
 )
 
 SUB_HEALTH_FIELD_UPDATES = (
     ("0x38", "state", "TrackPickupState"),
-    ("0x44", "owner_game", "SubgameRuntime*"),
+    ("0x44", "owner_game", "cRSubGame*"),
 )
 
 SLUG_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "SubSlugState"),
     ("0x84", "death_toss_direction", "SubSlugDeathTossDirection"),
-    ("0x88", "owner_game", "SubgameRuntime*"),
+    ("0x88", "owner_game", "cRSubGame*"),
     ("0x98", "attachment_facing_angle", "float"),
     ("0x9c", "death_toss_progress", "float"),
     ("0xa0", "death_toss_progress_step", "float"),
@@ -145,7 +145,7 @@ SUB_RING_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
-    ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
+    ("reset_subgame", "void __thiscall reset_subgame(cRSubGame* game)"),
     (
         "initialize_track_speedup_runtime",
         "SubSpeedUp* __thiscall initialize_track_speedup_runtime(SubSpeedUp* speedup)",
@@ -157,7 +157,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_slug_hazard",
-        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* owner_player)",
+        "void __thiscall spawn_slug_hazard(cRSubGame* game, cRSubLoc* cell, Player* owner_player)",
     ),
     (
         "update_slug_voice_ai",
@@ -215,7 +215,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_track_ring_or_special_effect",
-        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, cRSubLoc* cell, int32_t requested_kind, Player* player, float ring_speed)",
+        "void __thiscall spawn_track_ring_or_special_effect(cRSubGame* game, cRSubLoc* cell, int32_t requested_kind, Player* player, float ring_speed)",
     ),
     (
         "initialize_ring_or_special_effect_particles",
@@ -237,7 +237,7 @@ PROTO_UPDATES = (
 
 # spawn_slug_hazard uses two distinct borrowed cursor shapes. ECX physically
 # points at Slug::state and advances by the full slot stride; ESI remains a
-# SubgameRuntime-relative biased base for the selected slot. Preserve those
+# cRSubGame-relative biased base for the selected slot. Preserve those
 # exact lifetimes instead of pretending either cursor is a direct Slug owner.
 SPAWN_SLUG_HAZARD_USER_VAR_UPDATES = (
     (
@@ -408,7 +408,7 @@ def main() -> int:
     )
 
     struct_updates = [
-        ("SubgameRuntime", SUBGAME_FIELD_UPDATES),
+        ("cRSubGame", SUBGAME_FIELD_UPDATES),
         ("SubSpeedUp", SUB_SPEEDUP_FIELD_UPDATES),
         ("Vapour", VAPOUR_FIELD_UPDATES),
         ("JetPack", JETPACK_FIELD_UPDATES),

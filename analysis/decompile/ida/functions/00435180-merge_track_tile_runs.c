@@ -3,9 +3,9 @@
 /* selector: merge_track_tile_runs */
 
 // Authored void `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `cRSubLoc` cells. The iOS and Android epilogues establish no result and their zero-row paths leave incompatible incidental values in the return register, independently resolving the Windows ABI. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies.
-void __thiscall merge_track_tile_runs(SubgameRuntime *game)
+void __thiscall merge_track_tile_runs(cRSubGame *game)
 {
-  SubgameRuntime *v1; // esi
+  cRSubGame *v1; // esi
   int32_t v2; // edx
   uint32_t *seed_lane_flags; // eax
   int i; // ecx

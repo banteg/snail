@@ -9,9 +9,9 @@
 unsigned char __fastcall is_sub_loc_floor(cRSubLoc* cell);
 unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
 
-void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
+void cRSubGame::harmonize_center_lane_floor_slide_variants()
 {
-    SubgameRuntime* game_runtime = this;
+    cRSubGame* game_runtime = this;
     int row = 0;
     if (game_runtime->runtime_row_count - 1 > 0) {
         int transition_flag = SUBLOC_FLAG_CACHE_FAMILY_SWAPPED;

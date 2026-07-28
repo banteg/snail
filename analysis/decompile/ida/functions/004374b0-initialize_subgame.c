@@ -3,7 +3,7 @@
 /* selector: initialize_subgame */
 
 // Initializes the active gameplay subgame state, including the continuation selector at `+0x1270fc8`, per-mode HUD widgets, replay-backed startup, and the first galaxy, challenge-setup, or gameplay handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Init()`.
-void __thiscall initialize_subgame(SubgameRuntime *game)
+void __thiscall initialize_subgame(cRSubGame *game)
 {
   int v1; // edx
   Fringe **p_fringe_front; // eax

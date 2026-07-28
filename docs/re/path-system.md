@@ -44,7 +44,7 @@ Ownership note:
 - `find_segment_path_index_by_name` is the authored
   `cRPathManager::NameCode(char*)` member in both Android and iOS
 - Windows stores the empty one-byte `cRPathManager` at
-  `SubgameRuntime +0xff2910` (`GameRoot +0x1066f28`), followed by three bytes
+  `cRSubGame +0xff2910` (`GameRoot +0x1066f28`), followed by three bytes
   of alignment and the path-template pair bank at `+0xff2914`;
   `PathManager` is retained only as a compatibility alias
 - `update_jetpack_gauge` at `0x43a390`
@@ -86,8 +86,8 @@ The current high-confidence model is:
 
 - `Path=<name>` resolves through a hardcoded name table in the executable
 - `load_segment_definitions` resolves that authored name to one of the `51` table indices and stores it on the parsed segment-row record at `+0x8bc`
-- `populate_runtime_track_cells_from_segments` later uses that stored index directly as `path_index * 336` into the embedded pair bank rooted at `SubgameRuntime + 0xff2914`; `+0xff29bc` is the secondary record `0xa8` bytes into each pair
-- that bank is the same storage constructed by `initialize_game_assets_and_world` at `GameRoot + 0x1066f2c`, because `SubgameRuntime = GameRoot + 0x74618`
+- `populate_runtime_track_cells_from_segments` later uses that stored index directly as `path_index * 336` into the embedded pair bank rooted at `cRSubGame + 0xff2914`; `+0xff29bc` is the secondary record `0xa8` bytes into each pair
+- that bank is the same storage constructed by `initialize_game_assets_and_world` at `GameRoot + 0x1066f2c`, because `cRSubGame = GameRoot + 0x74618`
 - the same `P/p` installer branch maps `P -> 30` and `p -> 29` for the runtime tile id, while the bank-root choice itself is controlled by a separate builder-state byte at `this + 2`
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs

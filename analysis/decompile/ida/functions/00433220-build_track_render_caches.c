@@ -2,7 +2,7 @@
 /* function: build_track_render_caches @ 0x433220 */
 /* selector: build_track_render_caches */
 
-// Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime’s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state.
+// Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning cRSubGame’s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state.
 void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_color)
 {
   int32_t current_row_index; // ecx
@@ -11,13 +11,13 @@ void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_c
   float *p_cache_row_base; // eax
   int i; // ecx
   int v8; // ebp
-  SubgameRuntime *owner_subgame; // eax
+  cRSubGame *owner_subgame; // eax
   int v10; // edx
-  SubgameRuntime *v11; // edx
+  cRSubGame *v11; // edx
   uint8_t *v12; // eax
   ObjectFaceQuad *facequads; // ecx
   Object *object; // eax
-  SubgameRuntime *v15; // edx
+  cRSubGame *v15; // edx
   int v16; // ebp
   uint8_t *v17; // eax
   int v18; // ebp

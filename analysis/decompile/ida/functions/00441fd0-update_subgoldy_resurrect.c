@@ -6,24 +6,24 @@
 void __thiscall update_subgoldy_resurrect(Player *player)
 {
   double v2; // st7
-  SubgameRuntime *game; // eax
+  cRSubGame *game; // eax
 
   player->velocity.z = 0.0;
-  if ( !g_game_base->fade.state )
+  if ( g_game_base->fade.state == 0 )
   {
     v2 = player->resurrect_progress_step + player->resurrect_progress;
     player->resurrect_progress = v2;
-    if ( v2 > 1.0 && !g_game_base->fade.state )
-      begin_frontend_fade_out(&g_game_base->fade.state, 0);
+    if ( v2 > 1.0 && g_game_base->fade.state == 0 )
+      begin_frontend_fade_out(&g_game_base->fade, nullptr);
   }
   if ( player->resurrect_progress > 1.0 && g_game_base->fade.state == 4 )
   {
     game = player->game;
-    if ( player->resurrect_final_loss )
+    if ( player->resurrect_final_loss != 0 )
     {
       game->subgame_rebuild_selector = 2;
       complete_subgame(player->game, 1u);
-      if ( player->game->selected_level_record_persistent )
+      if ( player->game->selected_level_record_persistent != 0 )
       {
         g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;
         g_game_base->players[0].frontend_state = 26;
@@ -31,7 +31,7 @@ void __thiscall update_subgoldy_resurrect(Player *player)
       else
       {
         g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;
-        if ( player->game->level_mode || g_game_base->players[0].high_score_entry_pending )
+        if ( player->game->level_mode != 0 || g_game_base->players[0].high_score_entry_pending != 0 )
         {
           g_game_base->players[0].frontend_state = 27;
         }
@@ -44,7 +44,7 @@ void __thiscall update_subgoldy_resurrect(Player *player)
     }
     else
     {
-      if ( !game->level_mode )
+      if ( game->level_mode == 0 )
         --player->visible_life_stock;
       g_game_base->players[0].saved_frontend_state = g_game_base->players[0].frontend_state;
       g_game_base->players[0].frontend_state = 28;

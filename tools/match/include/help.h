@@ -1,4 +1,4 @@
-// Authored cRHelp front-end owner embedded in SubgameRuntime.
+// Authored cRHelp front-end owner embedded in cRSubGame.
 #ifndef HELP_H
 #define HELP_H
 

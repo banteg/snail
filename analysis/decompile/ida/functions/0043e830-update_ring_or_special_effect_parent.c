@@ -2,10 +2,10 @@
 /* function: update_ring_or_special_effect_parent @ 0x43e830 */
 /* selector: update_ring_or_special_effect_parent */
 
-// Windows `cRSubRing::AI()`: advances a SubgameRuntime-owned SubRing and its ten inline SubRingStar children, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager. The constructor table at 0x49732c points directly here.
+// Windows `cRSubRing::AI()`: advances a cRSubGame-owned SubRing and its ten inline SubRingStar children, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager. The constructor table at 0x49732c points directly here.
 void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
 {
-  SubgameRuntime *rate_source; // eax
+  cRSubGame *rate_source; // eax
   int32_t v3; // ecx
   double v4; // st7
   unsigned __int8 v6; // c0
@@ -19,7 +19,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   struct BodNode *list_prev; // eax
   uint32_t v15; // eax
   SubRingStar *v16; // esi
-  int v17; // edi
+  int i; // edi
   int v18; // ebp
   SubRingStar *v19; // edi
   double v20; // st7
@@ -29,7 +29,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   struct BodNode *v24; // eax
   uint32_t v25; // eax
   SubRingStar *v26; // esi
-  int v27; // edi
+  int j; // edi
   int v28; // edx
   Vec3 *p_position; // eax
   float *collect_radius_cursor; // ecx
@@ -44,7 +44,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   struct BodNode *v39; // eax
   uint32_t v40; // eax
   SubRingStar *v41; // esi
-  int v42; // edi
+  int k; // edi
   Vec3 *v43; // edx
   float *expand_radius_cursor; // eax
   int v45; // ecx
@@ -57,7 +57,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
   float v52; // [esp+24h] [ebp-4h]
 
   rate_source = ring->rate_source;
-  if ( !rate_source->subgame_pause_gate )
+  if ( rate_source->subgame_pause_gate == 0 )
   {
     v3 = ring->star_shower_counter + 1;
     ring->star_shower_counter = v3;
@@ -66,11 +66,11 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
     switch ( ring->state )
     {
       case SUB_RING_STATE_ACTIVE:
-        if ( ring->oscillate_x )
+        if ( ring->oscillate_x != 0 )
         {
           v4 = ring->active_phase_step + ring->active_phase;
           ring->active_phase = v4;
-          if ( v6 | v7 )
+          if ( (v6 | v7) != 0 )
           {
             if ( v4 < 0.0 )
               ring->active_phase = v4 + 6.2831855;
@@ -88,7 +88,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
           update_ring_or_special_effect_particle(particles++);
           --v8;
         }
-        while ( v8 );
+        while ( v8 != 0 );
         owner_player = ring->owner_player;
         if ( ring->body.transform.position.z >= (double)owner_player->interaction_max_z )
         {
@@ -109,10 +109,10 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
             else
             {
               list_next = ring->body.bod.bod.list_next;
-              if ( list_next )
+              if ( list_next != nullptr )
                 list_next->list_prev = ring->body.bod.bod.list_prev;
               list_prev = ring->body.bod.bod.list_prev;
-              if ( list_prev )
+              if ( list_prev != nullptr )
                 list_prev->list_next = ring->body.bod.bod.list_next;
               else
                 p_active_bod_list->first = ring->body.bod.bod.list_next;
@@ -128,14 +128,11 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
             report_errorf(aListRemove);
           }
           v16 = ring->particles;
-          v17 = 10;
-          do
+          for ( i = 10; i != 0; --i )
           {
             kill_sprite(v16->sprite);
             ++v16;
-            --v17;
           }
-          while ( v17 );
         }
         return;
       case SUB_RING_STATE_COLLECT_PENDING:
@@ -152,7 +149,7 @@ LABEL_30:
           update_ring_or_special_effect_particle(v19++);
           --v18;
         }
-        while ( v18 );
+        while ( v18 != 0 );
         v20 = ring->transition_step + ring->transition_progress;
         ring->transition_progress = v20;
         if ( v20 <= 1.0 )
@@ -182,7 +179,7 @@ LABEL_30:
             v32[1] = p_position->y;
             v32[2] = p_position->z;
           }
-          while ( v28 );
+          while ( v28 != 0 );
         }
         else
         {
@@ -198,10 +195,10 @@ LABEL_30:
             else
             {
               v23 = ring->body.bod.bod.list_next;
-              if ( v23 )
+              if ( v23 != nullptr )
                 v23->list_prev = ring->body.bod.bod.list_prev;
               v24 = ring->body.bod.bod.list_prev;
-              if ( v24 )
+              if ( v24 != nullptr )
                 v24->list_next = ring->body.bod.bod.list_next;
               else
                 v22->first = ring->body.bod.bod.list_next;
@@ -217,14 +214,11 @@ LABEL_30:
             report_errorf(aListRemove);
           }
           v26 = ring->particles;
-          v27 = 10;
-          do
+          for ( j = 10; j != 0; --j )
           {
             kill_sprite(v26->sprite);
             ++v26;
-            --v27;
           }
-          while ( v27 );
         }
         return;
       case SUB_RING_STATE_EXPAND_PENDING:
@@ -241,7 +235,7 @@ LABEL_50:
           update_ring_or_special_effect_particle(v34++);
           --v33;
         }
-        while ( v33 );
+        while ( v33 != 0 );
         v35 = ring->transition_step + ring->transition_progress;
         ring->transition_progress = v35;
         if ( v35 <= 1.0 )
@@ -260,7 +254,7 @@ LABEL_50:
             v47[1] = v43->y;
             v47[2] = v43->z;
           }
-          while ( v45 );
+          while ( v45 != 0 );
         }
         else
         {
@@ -276,10 +270,10 @@ LABEL_50:
             else
             {
               v38 = ring->body.bod.bod.list_next;
-              if ( v38 )
+              if ( v38 != nullptr )
                 v38->list_prev = ring->body.bod.bod.list_prev;
               v39 = ring->body.bod.bod.list_prev;
-              if ( v39 )
+              if ( v39 != nullptr )
                 v39->list_next = ring->body.bod.bod.list_next;
               else
                 v37->first = ring->body.bod.bod.list_next;
@@ -295,14 +289,11 @@ LABEL_50:
             report_errorf(aListRemove);
           }
           v41 = ring->particles;
-          v42 = 10;
-          do
+          for ( k = 10; k != 0; --k )
           {
             kill_sprite(v41->sprite);
             ++v41;
-            --v42;
           }
-          while ( v42 );
         }
         break;
       default:

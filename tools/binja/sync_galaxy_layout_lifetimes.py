@@ -46,7 +46,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "Galaxy": {
         0x10930: ("route_names", "GalaxyRouteNameRecord[10]"),
-        0x10F70: ("level_progress_base", "SubgameRuntime*"),
+        0x10F70: ("level_progress_base", "cRSubGame*"),
     },
 }
 

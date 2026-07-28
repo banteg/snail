@@ -21,7 +21,7 @@ PATH_SIZE = 0xA8
 
 
 _FRINGE_REPAIR_TYPE_NAMES = {
-    "SubgameRuntime*": "struct SubgameRuntime*",
+    "cRSubGame*": "struct cRSubGame*",
     "SubRow*": "struct SubRow*",
     "cRSubLoc*": "struct cRSubLoc*",
     "Fringe*": "struct Fringe*",
@@ -67,7 +67,7 @@ def _pickup_repair_variables(function_name: str) -> tuple[dict[str, object], ...
             "index": 0,
             "storage": 67,
             "name": "game",
-            "type": "struct SubgameRuntime*",
+            "type": "struct cRSubGame*",
         },
         {
             "source_type": "VariableSourceType.StackVariableSourceType",
@@ -118,6 +118,8 @@ def _stale_pickup_repair_annotations(
             "type": (
                 "TrackRowCell*"
                 if variable["name"] == "cell"
+                else "SubgameRuntime*"
+                if variable["name"] == "game"
                 else variable["type"]
             ),
             "user_defined": True,
@@ -129,9 +131,9 @@ def _stale_pickup_repair_annotations(
 FUNCTION_SPECS = {
     "initialize_subgame": {
         "address": 0x4374B0,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
         "stale_prototype": "void __fastcall(struct Game* game)",
-        "declaration": "void __thiscall initialize_subgame(SubgameRuntime* game)",
+        "declaration": "void __thiscall initialize_subgame(cRSubGame* game)",
         "parameter_count": 1,
         "variables": (
             {
@@ -139,7 +141,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             {
                 "source_type": "VariableSourceType.StackVariableSourceType",
@@ -153,11 +155,11 @@ FUNCTION_SPECS = {
     "build_subgame_level": {
         "address": 0x437EB0,
         "expected_prototype": (
-            "void __thiscall(struct SubgameRuntime* game, int32_t level_index)"
+            "void __thiscall(struct cRSubGame* game, int32_t level_index)"
         ),
         "stale_prototype": "void __thiscall(struct Game* game, int32_t level_index)",
         "declaration": (
-            "void __thiscall build_subgame_level(SubgameRuntime* game, "
+            "void __thiscall build_subgame_level(cRSubGame* game, "
             "int32_t level_index)"
         ),
         "parameter_count": 2,
@@ -167,7 +169,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             {
                 "source_type": "VariableSourceType.StackVariableSourceType",
@@ -180,9 +182,9 @@ FUNCTION_SPECS = {
     },
     "destroy_subgame": {
         "address": 0x438850,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
         "stale_prototype": "void __fastcall(struct Game* game)",
-        "declaration": "void __thiscall destroy_subgame(SubgameRuntime* game)",
+        "declaration": "void __thiscall destroy_subgame(cRSubGame* game)",
         "parameter_count": 1,
         "variables": (
             {
@@ -190,15 +192,15 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
         ),
     },
     "update_subgame": {
         "address": 0x438B90,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
         "stale_prototype": "void __fastcall(struct Game* game)",
-        "declaration": "void __thiscall update_subgame(SubgameRuntime* game)",
+        "declaration": "void __thiscall update_subgame(cRSubGame* game)",
         "parameter_count": 1,
         "variables": (
             {
@@ -206,15 +208,15 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
         ),
     },
     "remove_subgame_bods": {
         "address": 0x440910,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
         "stale_prototype": "void __fastcall(struct Game* game)",
-        "declaration": "void __thiscall remove_subgame_bods(SubgameRuntime* game)",
+        "declaration": "void __thiscall remove_subgame_bods(cRSubGame* game)",
         "parameter_count": 1,
         "variables": (
             {
@@ -222,20 +224,20 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
         ),
     },
     "merge_track_tile_runs": {
         "address": 0x435180,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
+        "stale_prototype": "int32_t __thiscall(struct cRSubGame* game)",
         "legacy_prototypes": (
             "int32_t __thiscall(struct Game* game)",
         ),
         "declaration": (
             "void __thiscall merge_track_tile_runs("
-            "SubgameRuntime* game)"
+            "cRSubGame* game)"
         ),
         "parameter_count": 1,
         # Preserve the field-first CondenseTrack cursors recovered by the
@@ -247,7 +249,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             {
                 "source_type": "VariableSourceType.StackVariableSourceType",
@@ -323,8 +325,8 @@ FUNCTION_SPECS = {
     },
     "build_track_fringe_objects": {
         "address": 0x434BE0,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
+        "stale_prototype": "int32_t __thiscall(struct cRSubGame* game)",
         "legacy_prototypes": (
             "int32_t __thiscall(struct Game* game)",
         ),
@@ -334,7 +336,7 @@ FUNCTION_SPECS = {
         # fresh analysis, rather than the repair itself, decides whether it remains.
         "allowed_auto_tag_types": ("Unresolved Stack Pointer Value",),
         "declaration": (
-            "void __thiscall build_track_fringe_objects(SubgameRuntime* game)"
+            "void __thiscall build_track_fringe_objects(cRSubGame* game)"
         ),
         "parameter_count": 1,
         "variables": (
@@ -343,21 +345,21 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             *_fringe_builder_repair_variables(),
         ),
     },
     "promote_track_tiles_to_fringe_variants": {
         "address": 0x4355F0,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
+        "stale_prototype": "int32_t __thiscall(struct cRSubGame* game)",
         "legacy_prototypes": (
             "int32_t __thiscall(struct Game* game)",
         ),
         "declaration": (
             "void __thiscall promote_track_tiles_to_fringe_variants("
-            "SubgameRuntime* game)"
+            "cRSubGame* game)"
         ),
         "parameter_count": 1,
         "variables": (
@@ -366,20 +368,20 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
         ),
     },
     "harmonize_center_lane_floor_slide_variants": {
         "address": 0x4356F0,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
+        "stale_prototype": "int32_t __thiscall(struct cRSubGame* game)",
         "legacy_prototypes": (
             "int32_t __thiscall(struct Game* game)",
         ),
         "declaration": (
             "void __thiscall harmonize_center_lane_floor_slide_variants("
-            "SubgameRuntime* game)"
+            "cRSubGame* game)"
         ),
         "parameter_count": 1,
         "variables": (
@@ -388,20 +390,20 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
         ),
     },
     "select_track_tile_edge_variants": {
         "address": 0x435A80,
-        "expected_prototype": "void __thiscall(struct SubgameRuntime* game)",
-        "stale_prototype": "int32_t __thiscall(struct SubgameRuntime* game)",
+        "expected_prototype": "void __thiscall(struct cRSubGame* game)",
+        "stale_prototype": "int32_t __thiscall(struct cRSubGame* game)",
         "legacy_prototypes": (
             "int32_t __thiscall(struct Game* game)",
         ),
         "declaration": (
             "void __thiscall select_track_tile_edge_variants("
-            "SubgameRuntime* game)"
+            "cRSubGame* game)"
         ),
         "parameter_count": 1,
         "variables": (
@@ -410,7 +412,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
         ),
     },
@@ -418,7 +420,7 @@ FUNCTION_SPECS = {
         "address": 0x43D410,
         "expected_prototype": (
             "struct cRSubLoc* __thiscall("
-            "struct SubgameRuntime* game, struct Vec3* position)"
+            "struct cRSubGame* game, struct Vec3* position)"
         ),
         "stale_prototype": (
             "struct cRSubLoc* __thiscall("
@@ -426,11 +428,11 @@ FUNCTION_SPECS = {
         ),
         "legacy_prototypes": (
             "TrackRowCell* __thiscall("
-            "struct SubgameRuntime* game, struct Vec3* position)",
+            "struct cRSubGame* game, struct Vec3* position)",
         ),
         "declaration": (
             "cRSubLoc* __thiscall get_track_grid_cell_at_world_position("
-            "SubgameRuntime* game, Vec3* position)"
+            "cRSubGame* game, Vec3* position)"
         ),
         "parameter_count": 2,
         "variables": (
@@ -439,7 +441,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             {
                 "source_type": "VariableSourceType.StackVariableSourceType",
@@ -455,7 +457,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "SubgameRuntime*",
                 "user_defined": True,
             },
             {
@@ -471,14 +473,14 @@ FUNCTION_SPECS = {
     "sample_track_floor_height_at_position": {
         "address": 0x43D4D0,
         "expected_prototype": (
-            "double __thiscall(struct SubgameRuntime* game, struct Vec3* position)"
+            "double __thiscall(struct cRSubGame* game, struct Vec3* position)"
         ),
         "stale_prototype": (
             "double __thiscall(struct Game* game, struct Vec3* position)"
         ),
         "declaration": (
             "double __thiscall sample_track_floor_height_at_position("
-            "SubgameRuntime* game, Vec3* position)"
+            "cRSubGame* game, Vec3* position)"
         ),
         "parameter_count": 2,
         "variables": (
@@ -487,7 +489,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             {
                 "source_type": "VariableSourceType.StackVariableSourceType",
@@ -501,7 +503,7 @@ FUNCTION_SPECS = {
     "spawn_track_health_pickup": {
         "address": 0x43D6C0,
         "expected_prototype": (
-            "void __thiscall(struct SubgameRuntime* game, "
+            "void __thiscall(struct cRSubGame* game, "
             "struct cRSubLoc* cell, struct Player* player)"
         ),
         "stale_prototype": (
@@ -509,12 +511,12 @@ FUNCTION_SPECS = {
             "struct cRSubLoc* cell, struct Player* player)"
         ),
         "legacy_prototypes": (
-            "void __thiscall(struct SubgameRuntime* game, "
+            "void __thiscall(struct cRSubGame* game, "
             "TrackRowCell* cell, struct Player* player)",
         ),
         "declaration": (
             "void __thiscall spawn_track_health_pickup("
-            "SubgameRuntime* game, cRSubLoc* cell, Player* player)"
+            "cRSubGame* game, cRSubLoc* cell, Player* player)"
         ),
         "parameter_count": 3,
         "variables": _pickup_repair_variables("spawn_track_health_pickup"),
@@ -525,7 +527,7 @@ FUNCTION_SPECS = {
     "spawn_track_jetpack_pickup": {
         "address": 0x43D890,
         "expected_prototype": (
-            "void __thiscall(struct SubgameRuntime* game, "
+            "void __thiscall(struct cRSubGame* game, "
             "struct cRSubLoc* cell, struct Player* player)"
         ),
         "stale_prototype": (
@@ -533,12 +535,12 @@ FUNCTION_SPECS = {
             "struct cRSubLoc* cell, struct Player* player)"
         ),
         "legacy_prototypes": (
-            "void __thiscall(struct SubgameRuntime* game, "
+            "void __thiscall(struct cRSubGame* game, "
             "TrackRowCell* cell, struct Player* player)",
         ),
         "declaration": (
             "void __thiscall spawn_track_jetpack_pickup("
-            "SubgameRuntime* game, cRSubLoc* cell, Player* player)"
+            "cRSubGame* game, cRSubLoc* cell, Player* player)"
         ),
         "parameter_count": 3,
         "variables": _pickup_repair_variables("spawn_track_jetpack_pickup"),
@@ -550,7 +552,7 @@ FUNCTION_SPECS = {
         "address": 0x43D480,
         "expected_prototype": (
             "struct SubRow* __thiscall("
-            "struct SubgameRuntime* game, struct Vec3* position)"
+            "struct cRSubGame* game, struct Vec3* position)"
         ),
         "stale_prototype": (
             "struct TrackAttachmentRuntimeRow* __thiscall("
@@ -558,11 +560,11 @@ FUNCTION_SPECS = {
         ),
         "legacy_prototypes": (
             "struct TrackAttachmentRuntimeRow* __thiscall("
-            "struct SubgameRuntime* game, struct Vec3* position)",
+            "struct cRSubGame* game, struct Vec3* position)",
         ),
         "declaration": (
             "SubRow* __thiscall "
-            "get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)"
+            "get_track_runtime_cell_at_world_z(cRSubGame* game, Vec3* position)"
         ),
         "parameter_count": 2,
         "variables": (
@@ -571,7 +573,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             {
                 "source_type": "VariableSourceType.StackVariableSourceType",
@@ -585,7 +587,7 @@ FUNCTION_SPECS = {
     "project_position_onto_track_attachment": {
         "address": 0x4444B0,
         "expected_prototype": (
-            "void __thiscall(struct SubgameRuntime* game, "
+            "void __thiscall(struct cRSubGame* game, "
             "struct Vec3* position, float* out_angle)"
         ),
         "stale_prototype": (
@@ -593,7 +595,7 @@ FUNCTION_SPECS = {
         ),
         "declaration": (
             "void __thiscall project_position_onto_track_attachment("
-            "SubgameRuntime* game, Vec3* position, float* out_angle)"
+            "cRSubGame* game, Vec3* position, float* out_angle)"
         ),
         "parameter_count": 3,
         "variables": (
@@ -602,7 +604,7 @@ FUNCTION_SPECS = {
                 "index": 0,
                 "storage": 67,
                 "name": "game",
-                "type": "struct SubgameRuntime*",
+                "type": "struct cRSubGame*",
             },
             {
                 "source_type": "VariableSourceType.StackVariableSourceType",
@@ -1436,6 +1438,28 @@ FUNCTION_SPECS.update(
 )
 
 
+def _retain_legacy_subgame_runtime_prototypes() -> None:
+    """Keep exact pre-promotion owner spellings as guarded stale states."""
+
+    for spec in FUNCTION_SPECS.values():
+        candidates = list(spec.get("legacy_prototypes", ()))
+        for key in ("expected_prototype", "stale_prototype"):
+            prototype = str(spec[key])
+            if "cRSubGame" not in prototype:
+                continue
+            candidates.append(prototype.replace("cRSubGame", "SubgameRuntime"))
+        candidates.extend(
+            prototype.replace("struct SubgameRuntime", "SubgameRuntime")
+            for prototype in tuple(candidates)
+            if "struct SubgameRuntime" in prototype
+        )
+        if candidates:
+            spec["legacy_prototypes"] = tuple(dict.fromkeys(candidates))
+
+
+_retain_legacy_subgame_runtime_prototypes()
+
+
 def _repair_code(
     *, function_name: str, spec: dict[str, object], apply: bool
 ) -> str:
@@ -1459,7 +1483,7 @@ ALLOWED_MISSING_STALE_VARIABLE_KEYS = {
     for value in SPEC.get("allowed_missing_stale_variable_keys", ())
 }
 ALLOWED_AUTO_TAG_TYPES = set(SPEC.get("allowed_auto_tag_types", ()))
-OWNER_TYPE_NAME = SPEC.get("owner_type", "SubgameRuntime")
+OWNER_TYPE_NAME = SPEC.get("owner_type", "cRSubGame")
 OWNER_SIZE = SPEC.get("owner_size", __SUBGAME_RUNTIME_SIZE__)
 APPLY = __APPLY__
 

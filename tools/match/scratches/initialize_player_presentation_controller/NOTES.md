@@ -27,7 +27,7 @@ the separately proven `parcels_collected` field begins.
 
 The former `initialize_enemy_manager_runtime` name was stale: the sole caller
 passes `Player +0x2984`, while the actual Windows `cREnemyManager` is the
-separate `0x1804` contact-target registry at `SubgameRuntime +0x1270fd4`.
+separate `0x1804` contact-target registry at `cRSubGame +0x1270fd4`.
 
 Each 0x80-byte animation slot is exactly one complete `RenderableBod`. Its
 inherited `object +0x24` is the animated `Object*`; the AnimManager

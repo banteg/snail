@@ -144,7 +144,7 @@ instructions, 68 clean masked operands).
 
 ## 2026-07-10 slug-pool owner closure
 
-The promoted `SubgameRuntime::slug_hazards` pool now supplies the exact
+The promoted `cRSubGame::slug_hazards` pool now supplies the exact
 `0xec`-byte `SlugHazardRuntime` and its `hit_slug_hazard` method, so the old
 method-only local class view is removed. This resolves the shared-header
 redefinition without changing code shape: focused Wibo remains 73.34%,
@@ -172,10 +172,10 @@ baselines. `uv run snail match types --paths` now reports only the remaining
 ## 2026-06-21 subgame owner cleanup
 
 The retained cleanup removes this scratch's generic `Game` owner shell. Shared
-`SubgameRuntime` now exposes the garbage hazard pool at `+0x359140`, so the
+`cRSubGame` now exposes the garbage hazard pool at `+0x359140`, so the
 two garbage scans read `game->garbage_hazards.active_head` instead of the local
 `garbage_list_head` placeholder. `GolbShot::game` is now the same
-`SubgameRuntime*` owner used by the promoted header.
+`cRSubGame*` owner used by the promoted header.
 
 Focused Wibo stays pinned at `73.34%`, target `694`, candidate `645`, prefix
 `9/694`, with `68 ok, 0 unresolved, 0 mismatch`. The exact Golb helper users
@@ -602,7 +602,7 @@ and no unresolved or mismatched operands.
 The raw slug scan remains byte-indexed to preserve the measured VC6 register
 schedule, but its pool extent, 0xec stride, root-relative base, state lane,
 inherited render position, and both `hit_slug_hazard` receivers now derive from
-`SubgameRuntime::slug_hazards`, `SlugPool::slots`, and the primary `Slug`
+`cRSubGame::slug_hazards`, `SlugPool::slots`, and the primary `Slug`
 layout. This removes the absolute `0x3563a0`/`0x3564xx` address family and the
 duplicated decimal `1888`/`236` constants without promoting the loop to the
 already-rejected typed iterator spelling.

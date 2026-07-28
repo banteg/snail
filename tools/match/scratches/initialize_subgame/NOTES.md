@@ -38,7 +38,7 @@ Ownership recovered:
 - The four cell fringe pointers are non-owning handles to `FringeManager`
   allocations. Initialization clears the handles; it does not free through
   the cells.
-- `SubHighScore` is embedded in `SubgameRuntime`. Its `active_record_bank`
+- `SubHighScore` is embedded in `cRSubGame`. Its `active_record_bank`
   pointer borrows one of the bank's embedded postal, survival, or time-trial
   arrays; `active_level_score` and `active_level_timer` are separate embedded
   display snapshots copied from that record.
@@ -51,7 +51,7 @@ Ownership recovered:
   from the player's live position.
 
 2026-07-14 final initializer ownership cleanup: the remaining raw receiver
-offsets now use `SubgameRuntime::pause_fade_step`, embedded `TimesUp::state`,
+offsets now use `cRSubGame::pause_fade_step`, embedded `TimesUp::state`,
 and `FrontendWidget::texture_layer` for the two retained HUD handles. This
 removes the scratch-local byte view entirely while preserving exact 396/396
 output and all 85 clean operands.
@@ -83,7 +83,7 @@ labels and the known mode-HUD alignment miss where the target's
 call.
 
 2026-06-21 receiver cleanup: the scratch now defines
-`SubgameRuntime::initialize_subgame` directly instead of carrying a method-only
+`cRSubGame::initialize_subgame` directly instead of carrying a method-only
 local `Game` shell. Focused Wibo remains `63.25%`, 385/396 candidate
 instructions, prefix 1/396, with the same `71 ok / 3 mismatch` masked audit.
 `update_frontend_state_machine` was rechecked and remains exact. The type
@@ -114,7 +114,7 @@ the remaining generic owner list.
   bottom HUD, while the eight-entry table at `0x437af0` dispatches startup; the
   previous semantic names were reversed and are now corrected.
 - The VC6 object originally emitted those tables as `$L4668` and `$L4669`.
-  Adding the recovered blink methods to `SubgameRuntime` renumbered the current
+  Adding the recovered blink methods to `cRSubGame` renumbered the current
   compiler-local labels to `$L4670` and `$L4671` without changing a single
   instruction or table entry. Both generations remain aliases so the matcher
   can compare bounded table contents rather than trusting names alone.
@@ -207,7 +207,7 @@ aliases respectively and restore the 85 clean operands.
 - The built-in reset now targets the embedded
   `level_definition_scratch +0x1b01ec` rather than an oversized standalone
   slot-store cast. The exact constructor and startup enumeration prove this is
-  the second complete `0x1a5978` `SubTracks` in `SubgameRuntime`.
+  the second complete `0x1a5978` `SubTracks` in `cRSubGame`.
 - The shared header change renumbers the unchanged five- and eight-entry switch
   tables to `$L4812`/`$L4813`. COFF places them at the same object offsets
   `+0x62c`/`+0x640`; their bounded relocation sequences are unchanged. With
@@ -223,7 +223,7 @@ aliases respectively and restore the 85 clean operands.
 
 2026-07-11 landscape-manager header refresh:
 
-- The landscape receiver at `SubgameRuntime +0xff7c00` is now the complete
+- The landscape receiver at `cRSubGame +0xff7c00` is now the complete
   exact-size `LandscapeManager`, not overlapping active-entry and script-bank
   views. The menu-background record is reached through its `scripts[]` member.
 - Consolidating the shared header renumbers the unchanged five- and
@@ -289,7 +289,7 @@ aliases respectively and restore the 85 clean operands.
 
 2026-07-11 PathManager owner refresh:
 
-- Promoting the one-byte `cRPathManager` owner at `SubgameRuntime +0xff2910`
+- Promoting the one-byte `cRPathManager` owner at `cRSubGame +0xff2910`
   renumbers the unchanged bottom-HUD table to `$L4824` at object `+0x62c`.
 - Its five relocations still target object offsets `+0x419`, `+0x42d`,
   `+0x46b`, `+0x46b`, and `+0x441`, exactly matching the bounded target table.
@@ -352,7 +352,7 @@ aliases respectively and restore the 85 clean operands.
 
 2026-07-13 subgame row-window header refresh:
 
-- Naming `SubgameRuntime +0x20/+0x24` as the rolling runtime-row scan window
+- Naming `cRSubGame +0x20/+0x24` as the rolling runtime-row scan window
   advances the unchanged mode-table labels once more: `$L5148` is now the
   five-entry bottom-HUD table at object `+0x62c`, and `$L5149` is the
   eight-entry startup table at `+0x640`.
@@ -468,7 +468,7 @@ have been removed; `initialize_subgame` remains 396/396 with all 85 operands
 clean, without trusting private label spelling.
 
 2026-07-13 canonical Binary Ninja replay: the authoritative path-template
-header now supplies the complete `SubgameRuntime` owner map used by this exact
+header now supplies the complete `cRSubGame` owner map used by this exact
 source. Older Binary Ninja databases pin a separate user-defined `Game*`
 named-type identity; both ordinary prototype and local-retype attempts are
 restored by analysis. The sync reports that exact stale state honestly and
@@ -492,16 +492,16 @@ the function remains exact at 396/396 instructions with all 85 operands clean.
 
 The live Binary Ninja `Game*` receiver was not evidence for another aggregate:
 it was a stale named-type identity with the same `0x1272838` extent as
-`SubgameRuntime`. Ordinary prototype and local-variable setters rejected the
+`cRSubGame`. Ordinary prototype and local-variable setters rejected the
 identity-only correction. Recreating this one function with the registered
-`SubgameRuntime` type collapses 96 raw receiver offsets into the existing
+`cRSubGame` type collapses 96 raw receiver offsets into the existing
 runtime-cell, score-bank, HUD, player, GUI, galaxy, and lifecycle owners; only
 the still-unproved early `+0x0c/+0x10` pair remains raw.
 
 Function removal/recreation is not fully covered by Binary Ninja's undo API,
 so it is not part of the broad ownership replay. The opt-in
 `repair_subgame_receiver_owner.py --function initialize_subgame --apply` path
-checks the exact address, name, stale/current prototype, `SubgameRuntime`
+checks the exact address, name, stale/current prototype, `cRSubGame`
 extent, comments, tags, and user-defined variables first, preserves the
 receiver and `tColour` workspace, verifies readback, saves explicitly, and has
 a manual rollback path. Its default mode is read-only, and apply mode is a
@@ -510,7 +510,7 @@ remains available for compatibility.
 
 IDA had a different persistence layer: the function prototype was already
 correct, but a saved Hex-Rays `int this` lvar overrode it. The type sync now
-repairs and verifies the `SubgameRuntime *game` receiver for initializer,
+repairs and verifies the `cRSubGame *game` receiver for initializer,
 update, teardown, and BOD-removal lifecycle functions, invalidates cached
 pseudocode, and is idempotent across IDA's optional `struct` spelling. The
 tracked BN and IDA artifacts now expose the same initializer owner graph.
@@ -571,20 +571,20 @@ exact at 396/396 instructions with all 85 operands clean.
 ## 2026-07-25 life-stock pointer-slot borrow
 
 The postal HUD loop borrows one pointer slot at a time from the nine-entry
-`SubgameRuntime::life_stock_widgets` array. The runtime owns the pointer bank;
+`cRSubGame::life_stock_widgets` array. The runtime owns the pointer bank;
 `allocate_border` supplies each separately managed `FrontendWidget`, and the
 loop stores and configures that borrowed pointer before advancing by four
 bytes.
 
 Binary Ninja had promoted the ESI lifetime to a pointer to the entire
-nine-entry array, forcing subtraction back to the `SubgameRuntime` owner for
+nine-entry array, forcing subtraction back to the `cRSubGame` owner for
 every slot access. The exact identity (`RegisterVariableSourceType`, index
 `662`, storage `72`) now replays as
 `FrontendWidget** life_stock_widget_cursor`. IDA independently renders the
 same slot borrow as a `FrontendWidget**` increment loop.
 
 The shared initialization/teardown replay verifies
-`FrontendWidget == 0x724`, `SubgameRuntime == 0x1272838`, and the exact
+`FrontendWidget == 0x724`, `cRSubGame == 0x1272838`, and the exact
 `life_stock_widgets` field at `+0x35bb98` before applying either cursor.
 Matcher source remains unchanged and exact at 396/396 instructions with all 85
 operands clean.

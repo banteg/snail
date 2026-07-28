@@ -3,7 +3,7 @@
 /* selector: calc_subgame_rate */
 
 // Exact void Windows `cRSubGame::CalcRate()`: recomputes the live subgame rate from base speed, active-state track progress, mode-specific ramps, Goldy's damage-gauge envelope, and hover bonus. Android preserves the same owner and control graph with port-specific constants and layout.
-void __thiscall calc_subgame_rate(SubgameRuntime *game)
+void __thiscall calc_subgame_rate(cRSubGame *game)
 {
   double v2; // st7
   int32_t level_mode; // eax

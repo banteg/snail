@@ -68,17 +68,17 @@ offset macros, or fake aliases.
 - The generic scratch-local `Game` shell is now a named `SlugExplosionGameView`
   sparse owner view. Focused Wibo remains at 81.63%, 147/147 instructions, and
   32 clean masked operands.
-- A broad `SubgameRuntime*` hoist was rejected. It regressed to 69.86% by
+- A broad `cRSubGame*` hoist was rejected. It regressed to 69.86% by
   shrinking the frame and extending the owner register lifetime through the
   burst setup, so the local sparse view remains the closer source shape.
-- After `SlugHazardRuntime::owner_game` was promoted to `SubgameRuntime*`, this
+- After `SlugHazardRuntime::owner_game` was promoted to `cRSubGame*`, this
   scratch still keeps the explicit `SlugExplosionGameView` cast for the proven
   source shape. Focused Wibo remains unchanged at 81.63%.
 
 2026-07-11 owner closure:
 
 - The two lanes have distinct real owners: `subgame_rate` is the
-  `SubgameRuntime` clock at `+0x38`, while runtime `+0x3bbb7c` is the embedded
+  `cRSubGame` clock at `+0x38`, while runtime `+0x3bbb7c` is the embedded
   `Player::velocity.z`. `SlugHazardRuntime::owner_game` borrows the runtime and
   reaches the latter through `owner_game->player`.
 - Preserving the separate repeated rate reads and the late `game` local avoids

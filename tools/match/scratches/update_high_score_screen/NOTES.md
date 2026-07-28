@@ -21,7 +21,7 @@ Recovered relationships:
 - The former `HighScoreGameView` crossed two real owners. Root
   `+0x1a4/+0x1b8/+0x30c` are `GamePlayer[0]`'s 20-byte player name, front-end
   state, and redispatch byte. Root `+0x74658/+0x6ffae0/+0x1066be8...` are all
-  fields of the embedded `SubgameRuntime` and its owned `SubHighScore`.
+  fields of the embedded `cRSubGame` and its owned `SubHighScore`.
 - The footer fields are now named from their actual labels and shortcuts:
   `+0x24` is Cancel/Escape and `+0x28` is Submit/Enter. Submit finalizes the
   editable row; Cancel calls `cRSubHighScore::MiniDelete(int)` and exits.
@@ -52,7 +52,7 @@ screen shell without changing the honest 67.65% baseline.
 2026-07-13 canonical root graph:
 
 - Name commit/cancel, Back, record iteration, and replay launch now use the
-  typed `GameRoot*` global and follow the owned player, `SubgameRuntime`, and
+  typed `GameRoot*` global and follow the owned player, `cRSubGame`, and
   `SubHighScore` members. The byte cursor remains intentional for native's
   `0x1fac0` record stride.
 - The replay-launch branch still reloads the root around teardown rather than
@@ -96,7 +96,7 @@ keeps the exact 205/205-instruction result unchanged.
 
 Six exact `GameRoot +0x6ffae0/+0x6ffae4` instruction operands collided with
 the unrelated parcel-bucket symbol in IDA. Normalizing only those sites folds
-the whole method through `SubgameRuntime::sub_high_score`: name persistence
+the whole method through `cRSubGame::sub_high_score`: name persistence
 uses the active `SubSolution[]` bank, cancellation borrows the containing
 `SubHighScore`, and the replay loop becomes typed record indexing rather than
 a `0x1fac0` byte cursor. The launch handoff now names

@@ -5,7 +5,7 @@ Exact 7-instruction constructor for one `0xa0`-byte
 record `+0x84` and returns the original receiver.
 
 The constructor pass calls it ten times beginning at
-`SubgameRuntime::galaxy +0x10930`, exactly the shared `route_names[10]` array.
+`cRSubGame::galaxy +0x10930`, exactly the shared `route_names[10]` array.
 The old `initialize_solution_record` name had no supporting consumer and is
 retained only as a historical symbol alias.
 

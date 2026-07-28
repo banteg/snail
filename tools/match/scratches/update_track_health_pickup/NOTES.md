@@ -69,7 +69,7 @@ began using this same promoted `TrackHealthPickup` type and casting through
 the BOD-base interpretation of the first `0x38` bytes.
 
 Important naming correction: reset_subgame initializes health pickup `+0x44`
-with the containing `SubgameRuntime*`, so this lane is now `owner_game`, not a visibility-cell
+with the containing `cRSubGame*`, so this lane is now `owner_game`, not a visibility-cell
 pointer. `spawn_track_health_pickup` stores the row/source cell at
 `source_cell +0x68`. Do not collapse those into one `source_cell` field.
 Do not merge health and jetpack into one full pickup struct either: both use
@@ -78,12 +78,12 @@ bodies below `+0x74`.
 
 2026-06-18 owner-game rename: the earlier `TrackVisibilityCell` interpretation
 was invalidated by reset_subgame, which writes the containing
-`SubgameRuntime*` into
+`cRSubGame*` into
 `+0x44` for every health pickup slot. The update check is the same pause-byte
 view used by speedup and jetpack pickups.
 
 2026-07-11 owner-view retirement: speedup, health, and jetpack now borrow the
-full containing `SubgameRuntime` directly. The duplicate
+full containing `cRSubGame` directly. The duplicate
 `TrackPickupOwnerSubgameView`/`TrackPickupOwnerGameView` types were retired;
 their only known field, `subgame_pause_gate +0x09`, is already part of the
 canonical owner. This also makes the pickup ownership agree with slug, salt,

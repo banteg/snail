@@ -13,7 +13,7 @@
 enum {
     LEVEL_PARCEL_COUNT_FROM_GAME_ROOT =
         offsetof(GameRoot, subgame)
-        + offsetof(SubgameRuntime, level_definition)
+        + offsetof(cRSubGame, level_definition)
         + offsetof(SubTracks, parcel_count),
 };
 

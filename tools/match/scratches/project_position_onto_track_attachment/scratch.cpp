@@ -3,7 +3,7 @@
 #include "track_attachment.h"
 #include "transform_matrix.h"
 
-void SubgameRuntime::project_position_onto_track_attachment(Vector3* position, float* out_angle)
+void cRSubGame::project_position_onto_track_attachment(Vector3* position, float* out_angle)
 {
     SubRow* row = &runtime_rows[(int)position->z];
     *out_angle = 0.0f;

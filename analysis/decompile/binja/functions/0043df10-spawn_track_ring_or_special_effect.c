@@ -113,7 +113,7 @@
 0043e303        case 7
 0043e30b        long double x87_r7_61 = fconvert.t(cell->anchor_position.y) + fconvert.t(2.5f)
 0043e311        float x_8 = cell->anchor_position.x
-0043e314        int16_t z_1 = (cell->anchor_position.z).w
+0043e314        float z_1 = cell->anchor_position.z
 0043e31b        slot_cursor->ring.body.transform.position.x.b = x_8.b
 0043e31b        slot_cursor->ring.body.transform.position.x:1.b = x_8:1.b
 0043e31b        slot_cursor->ring.body.transform.position.x:2.b = x_8:2.b
@@ -122,12 +122,14 @@
 0043e32d        slot_cursor->ring.body.transform.position.y = fconvert.s(x87_r7_61)
 0043e330        slot_cursor->ring.body.transform.position.z.b = z_1.b
 0043e330        slot_cursor->ring.body.transform.position.z:1.b = z_1:1.b
+0043e330        slot_cursor->ring.body.transform.position.z:2.b = z_1:2.b
+0043e330        slot_cursor->ring.body.transform.position.z:3.b = z_1:3.b
 0043e346        slot_cursor->ring.active_phase = fconvert.s(random_float_below(1f, "RR13") * fconvert.t(6.28318548f))
 0043e365        slot_cursor->ring.active_phase_step = fconvert.s(fconvert.t(1f) / (fconvert.t(ring_speed) * fconvert.t(60f)) * fconvert.t(game->subgame_rate) * fconvert.t(6.28318548f))
 0043e28b        case 8
 0043e293        long double x87_r7_57 = fconvert.t(cell->anchor_position.y) + fconvert.t(2.5f)
 0043e299        float x_7 = cell->anchor_position.x
-0043e29c        int16_t z = (cell->anchor_position.z).w
+0043e29c        float z = cell->anchor_position.z
 0043e2a3        slot_cursor->ring.body.transform.position.x.b = x_7.b
 0043e2a3        slot_cursor->ring.body.transform.position.x:1.b = x_7:1.b
 0043e2a3        slot_cursor->ring.body.transform.position.x:2.b = x_7:2.b
@@ -136,6 +138,8 @@
 0043e2b5        slot_cursor->ring.body.transform.position.y = fconvert.s(x87_r7_57)
 0043e2b8        slot_cursor->ring.body.transform.position.z.b = z.b
 0043e2b8        slot_cursor->ring.body.transform.position.z:1.b = z:1.b
+0043e2b8        slot_cursor->ring.body.transform.position.z:2.b = z:2.b
+0043e2b8        slot_cursor->ring.body.transform.position.z:3.b = z:3.b
 0043e346        slot_cursor->ring.active_phase = fconvert.s(random_float_below(1f, "RR11") * fconvert.t(6.28318548f))
 0043e365        slot_cursor->ring.active_phase_step = fconvert.s(fconvert.t(1f) / (fconvert.t(ring_speed) * fconvert.t(60f)) * fconvert.t(game->subgame_rate) * fconvert.t(6.28318548f))
 0043e37d        if (get_track_grid_cell_at_world_position(game, &slot_cursor->ring.body.transform.position)->tile_id == SUBLOC_TILE_WALL2)
@@ -154,18 +158,26 @@
 0043e408        if (active_first != 0)
 0043e416        active_first->list_prev.b = (&slot_cursor->ring).b
 0043e416        active_first->list_prev:1.b = (&slot_cursor->ring):1.b
+0043e416        active_first->list_prev:2.b = (&slot_cursor->ring):2.b
+0043e416        active_first->list_prev:3.b = (&slot_cursor->ring):3.b
 0043e419        struct BodNode* first_for_link = *active_head
 0043e41b        struct BodNode* linked_head
 0043e41b        linked_head.b = first_for_link->list_prev.b
 0043e41b        linked_head:1.b = first_for_link->list_prev:1.b
+0043e41b        linked_head:2.b = first_for_link->list_prev:2.b
+0043e41b        linked_head:3.b = first_for_link->list_prev:3.b
 0043e41e        linked_head->list_next = first_for_link
 0043e421        struct BodNode* first_for_promote = *active_head
 0043e423        struct BodNode* promoted_head
 0043e423        promoted_head.b = first_for_promote->list_prev.b
 0043e423        promoted_head:1.b = first_for_promote->list_prev:1.b
+0043e423        promoted_head:2.b = first_for_promote->list_prev:2.b
+0043e423        promoted_head:3.b = first_for_promote->list_prev:3.b
 0043e426        *active_head = promoted_head
 0043e428        promoted_head->list_prev.b = nullptr
 0043e428        promoted_head->list_prev:1.b = 0
+0043e428        promoted_head->list_prev:2.b = 0
+0043e428        promoted_head->list_prev:3.b = 0
 0043e40a        *active_head = &slot_cursor->ring
 0043e40c        slot_cursor->ring.body.bod.bod.list_prev = nullptr
 0043e411        (*active_head)->list_next = nullptr

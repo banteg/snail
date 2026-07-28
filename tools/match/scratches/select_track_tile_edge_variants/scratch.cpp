@@ -17,7 +17,7 @@
         || (tile) == SUBLOC_TILE_GARBAGE_HAZARD \
         || (tile) == SUBLOC_TILE_SALT_HAZARD)
 
-void SubgameRuntime::select_track_tile_edge_variants()
+void cRSubGame::select_track_tile_edge_variants()
 {
     enum {
         TILE_VIEW_TO_CELL_BASE = offsetof(cRSubLoc, tile_id),

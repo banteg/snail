@@ -13,7 +13,7 @@
 004416b6        float z = direction->z
 004416b9        sub_lazer->sprite_bob_phase = 0f
 004416c8        sub_lazer->velocity.z = z
-004416cb        struct SubgameRuntime* owner_game = sub_lazer->owner_game
+004416cb        struct cRSubGame* owner_game = sub_lazer->owner_game
 004416e2        bool cond:0 = (0x200 & sub_lazer->body.bod.bod.list_flags) == 0
 004416e4        sub_lazer->sprite_bob_phase_step = fconvert.s(fconvert.t(owner_game->subgame_rate) * fconvert.t(0.00555555569f))
 004416ea        if (not(cond:0))

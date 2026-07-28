@@ -1,12 +1,12 @@
 // Authored cRGUI front-end level-selection owner. Windows embeds the exact
-// 0x28-byte object in SubgameRuntime and uses it for postal, challenge, and
+// 0x28-byte object in cRSubGame and uses it for postal, challenge, and
 // time-trial setup modes.
 #ifndef GUI_H
 #define GUI_H
 
 #include "frontend_widget.h"
 
-class SubgameRuntime;
+class cRSubGame;
 
 class GUI {
 public:
@@ -14,7 +14,7 @@ public:
     void destroy_challenge_setup_screen(); // @ 0x4161f0, cRGUI::UnInit
     int update_challenge_setup_screen(); // @ 0x416370, cRGUI::AI
 
-    SubgameRuntime* game; // +0x00, borrowed enclosing cRSubGame owner
+    cRSubGame* game; // +0x00, borrowed enclosing cRSubGame owner
     FrontendWidget* next_level_button; // +0x04
     FrontendWidget* previous_level_button; // +0x08
     FrontendWidget* level_name_widget; // +0x0c

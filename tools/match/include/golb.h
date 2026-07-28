@@ -11,7 +11,7 @@
 #include "vector3.h"
 
 class Player;
-class SubgameRuntime;
+class cRSubGame;
 class GolbShot;
 
 // Kind/state overlay for the projectile lane at GolbShot+0x198..+0x1bf.
@@ -107,7 +107,7 @@ public:
     float path_factor;           // +0x264
     float lifetime;              // +0x268
     float lifetime_step;         // +0x26c
-    SubgameRuntime* game;        // +0x270
+    cRSubGame* game;        // +0x270
     union {
         void* object_ref;        // +0x274, copied into spawned sprites
         int emitter_index;       // +0x274, create_golb caller-facing identity

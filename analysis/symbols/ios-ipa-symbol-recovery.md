@@ -247,7 +247,7 @@ file when available, and any v1.9 signature drift.
 
 High-confidence ownership recovered from the iOS symbols:
 
-- `SubgameRuntime` is the embedded `cRSubGame` owner; the surrounding Windows
+- `cRSubGame` is the embedded `cRSubGame` owner; the surrounding Windows
   root object still uses the larger `Game` view.
 - `Player` is the live Goldy actor, `cRSubGoldy`; the presentation subobject
   carries `cRSnail` methods such as `SetWeapon`, `SetJetPack`, and

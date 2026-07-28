@@ -168,6 +168,8 @@
 00439073        game_base_3->active_bod_list.first = &runtime_row_anchor->row.row_model
 00439075        runtime_row_anchor->row.row_model.body.bod.bod.list_prev.b = nullptr
 00439075        runtime_row_anchor->row.row_model.body.bod.bod.list_prev:1.b = 0
+00439075        runtime_row_anchor->row.row_model.body.bod.bod.list_prev:2.b = 0
+00439075        runtime_row_anchor->row.row_model.body.bod.bod.list_prev:3.b = 0
 0043907a        game_base_3->active_bod_list.first->list_next = nullptr
 00439096        uint32_t list_flags = runtime_row_anchor->row.row_model.body.bod.bod.list_flags
 00439099        list_flags:1.b |= 2
@@ -193,6 +195,8 @@
 004391b2        if (list_next_1 != 0)
 004391b4        list_next_1->list_prev.b = (&runtime_cell_anchor->cell.bod).b
 004391b4        list_next_1->list_prev:1.b = (&runtime_cell_anchor->cell.bod):1.b
+004391b4        list_next_1->list_prev:2.b = (&runtime_cell_anchor->cell.bod):2.b
+004391b4        list_next_1->list_prev:3.b = (&runtime_cell_anchor->cell.bod):3.b
 004391b7        runtime_cell_anchor->cell.bod.list_flags |= 0x200
 00439197        report_errorf("List ADDafter")
 004391bc        int32_t eax_37 = runtime_row_scan_begin & 0x80000007
@@ -207,6 +211,8 @@
 00439214        if (list_next_2 != 0)
 00439216        list_next_2->list_prev.b = (&runtime_row_anchor->row.attachment_body).b
 00439216        list_next_2->list_prev:1.b = (&runtime_row_anchor->row.attachment_body):1.b
+00439216        list_next_2->list_prev:2.b = (&runtime_row_anchor->row.attachment_body):2.b
+00439216        list_next_2->list_prev:3.b = (&runtime_row_anchor->row.attachment_body):3.b
 00439219        uint32_t list_flags_1 = runtime_row_anchor->row.attachment_body.bod.list_flags
 0043921c        list_flags_1:1.b |= 2
 0043921f        runtime_row_anchor->row.attachment_body.bod.list_flags = list_flags_1
@@ -222,6 +228,8 @@
 0043915c        if (list_next != 0)
 0043915e        list_next->list_prev.b = (&runtime_cell_anchor->cell).b
 0043915e        list_next->list_prev:1.b = (&runtime_cell_anchor->cell):1.b
+0043915e        list_next->list_prev:2.b = (&runtime_cell_anchor->cell):2.b
+0043915e        list_next->list_prev:3.b = (&runtime_cell_anchor->cell):3.b
 00439161        runtime_cell_anchor->cell.bod.list_flags |= 0x200
 0043913e        report_errorf("List ADDafter")
 0043924a        (*runtime_cell_anchor->cell.bod.vtable)()
@@ -238,6 +246,8 @@
 0043928e        if (fringe_list_next != 0)
 00439290        fringe_list_next->list_prev.b = current_fringe.b
 00439290        fringe_list_next->list_prev:1.b = current_fringe:1.b
+00439290        fringe_list_next->list_prev:2.b = current_fringe:2.b
+00439290        fringe_list_next->list_prev:3.b = current_fringe:3.b
 00439293        uint32_t fringe_list_flags = current_fringe->bod.bod.list_flags
 00439296        fringe_list_flags:1.b |= 2
 00439299        current_fringe->bod.bod.list_flags = fringe_list_flags

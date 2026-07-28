@@ -87,7 +87,7 @@ SUB_LAZER_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "SubLazerState"),
     ("0x84", "unknown_84", "uint8_t[0x4]"),
-    ("0x88", "owner_game", "SubgameRuntime*"),
+    ("0x88", "owner_game", "cRSubGame*"),
     ("0x8c", "velocity", "Vec3"),
     ("0x98", "sprite_bob_phase", "float"),
     ("0x9c", "sprite_bob_phase_step", "float"),
@@ -102,7 +102,7 @@ SALT_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "SaltState"),
     ("0x84", "unknown_84", "uint8_t[0x4]"),
-    ("0x88", "owner_game", "SubgameRuntime*"),
+    ("0x88", "owner_game", "cRSubGame*"),
     ("0x8c", "fade_alpha", "float"),
     ("0x90", "spawn_velocity_y", "float"),
     ("0x94", "collision_armed", "uint8_t"),
@@ -118,7 +118,7 @@ SALT_STATE_CURSOR_FIELD_UPDATES = (
 )
 
 BANNER_FIELD_UPDATES = (
-    ("0x48", "owner_game", "SubgameRuntime*"),
+    ("0x48", "owner_game", "cRSubGame*"),
 )
 
 PROTO_UPDATES = (
@@ -301,7 +301,7 @@ def main() -> int:
             target=args.target,
             struct_updates=(
                 ("FrameSubgameRuntime", FRAME_SUBGAME_FIELD_UPDATES),
-                ("SubgameRuntime", subgame_updates),
+                ("cRSubGame", subgame_updates),
                 ("Banner", BANNER_FIELD_UPDATES),
                 ("SubLazer", SUB_LAZER_FIELD_UPDATES),
                 ("SubLazerManager", SUB_LAZER_MANAGER_FIELD_UPDATES),

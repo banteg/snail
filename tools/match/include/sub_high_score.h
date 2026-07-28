@@ -1,4 +1,4 @@
-// Authored cRSubHighScore owner embedded in SubgameRuntime. Its 8-byte active
+// Authored cRSubHighScore owner embedded in cRSubGame. Its 8-byte active
 // window prefix borrows one of the three owned SubSolution arrays; all 75
 // solutions remain value-owned by this 0x947648-byte object.
 #ifndef SUB_HIGH_SCORE_H

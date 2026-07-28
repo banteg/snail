@@ -4,7 +4,7 @@
 #include "track_attachment.h"
 #include "game_root.h"
 
-// The follow state is embedded in the fixed player owned by SubgameRuntime.
+// The follow state is embedded in the fixed player owned by cRSubGame.
 #define PLAYER (&g_game->subgame.player)
 
 void cRPath::try_enter_track_attachment_from_swept_motion(

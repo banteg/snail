@@ -27,12 +27,12 @@ on the same runtime row shape.
 directly.
 
 2026-06-21 subgame-header consolidation: the accessor is now declared on
-`SubgameRuntime` and returns the shared runtime-row pointer directly.
+`cRSubGame` and returns the shared runtime-row pointer directly.
 Focused Wibo remains exact at `100.00%`, `23/23` instructions, with `3` clean
 masked operands.
 
 2026-07-10 owner promotion: the exact return now uses
-`&SubgameRuntime::runtime_rows[row]`. It remains `23/23` with three clean
+`&cRSubGame::runtime_rows[row]`. It remains `23/23` with three clean
 masked operands, proving the fixed 3200-row slab without raw offset math.
 
 ## 2026-07-11 cRSubRow ownership
@@ -54,7 +54,7 @@ remain exact.
 ## 2026-07-14 analysis receiver closure
 
 The live Binary Ninja `Game*` receiver was a stale same-size identity. The
-guarded repair recreated only this exact lookup as a `SubgameRuntime*` method,
+guarded repair recreated only this exact lookup as a `cRSubGame*` method,
 preserved both user-defined parameters, verified readback, and saved. Its
 tracked decompile now expresses the clamp as direct
 `game->runtime_rows[row]` ownership with no raw offsets; IDA agrees on the
@@ -66,7 +66,7 @@ with all three operands clean.
 
 ## 2026-07-24 runtime-row consumer replay
 
-IDA's two return-path LEAs used the typed `SubgameRuntime*` receiver but still
+IDA's two return-path LEAs used the typed `cRSubGame*` receiver but still
 printed their `0x5ccac8` displacements as the unrelated `byte_5CCAC8` symbol.
 The replay now normalizes only operands `0x43d49e:1` and `0x43d4be:1`, whose
 numeric values were read back independently from the live database. Hex-Rays
@@ -80,7 +80,7 @@ with all three masked operands clean.
 
 The analysis header and both live databases now use the authored `SubRow`
 identity for the complete `0xf4` record and the embedded 3200-row slab. Binary
-Ninja reports `SubgameRuntime::runtime_rows` as `SubRow[3200]`; the guarded
+Ninja reports `cRSubGame::runtime_rows` as `SubRow[3200]`; the guarded
 lookup repair preserved its recovered receiver and parameters while changing
 only the legacy return identity. IDA independently emits a `SubRow*` return.
 The tracked parcel-placement consumers also render the slab cursor as

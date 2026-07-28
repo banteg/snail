@@ -3,7 +3,7 @@
 Exact match.
 
 - Spawns one runtime parcel from the exact `allocate_track_parcel_slot` pool.
-- The function is a `SubgameRuntime` method with two stack arguments. Callers
+- The function is a `cRSubGame` method with two stack arguments. Callers
   pass a `Player*` hint as the second argument, but native ignores it and binds
   the runtime's owned `Player player` at `subgame+0x3bb764`.
 - The parcel starts in state `1`, copies the requested world position to both
@@ -15,7 +15,7 @@ Exact match.
   return.
 - The exact source shape keeps the non-null body explicit, returns from both
   bob-phase branches, and leaves the null return as the final tail block.
-- The shared `SubgameRuntime` now carries the fixed parcel pool at +0x125e480;
+- The shared `cRSubGame` now carries the fixed parcel pool at +0x125e480;
   `ParcelManager` owns 50 inline `Parcel` records, while each `Parcel` inherits
   its position from `BodBase` and borrows the
   embedded Player and SpriteManager handle. Keeping this scratch exact proves
@@ -36,7 +36,7 @@ matching remains exact at 96/96 instructions with all five operands clean.
 
 Native xrefs show two callers, `update_subgame` and
 `update_row_event_display`. Both borrow the embedded manager through the
-`SubgameRuntime` receiver; the returned `Parcel*` remains manager-owned while
+`cRSubGame` receiver; the returned `Parcel*` remains manager-owned while
 its Player, Sprite, and subgame links are borrowed. The paired replay now pins
 that complete lifecycle and reanalyzes both producers plus
 `handle_subgoldy_collisions`. Matching remains exact at 96/96 instructions

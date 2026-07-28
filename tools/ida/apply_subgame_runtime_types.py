@@ -20,6 +20,7 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
 HELP_OWNER_EXPECTED_SIZE = 0x04
+SUBGAME_OWNER_EXPECTED_SIZE = 0x1272838
 
 TRUSTED_NAMES = (
     (0x408860, "initialize_track_parcel_runtime"),
@@ -48,7 +49,7 @@ TRUSTED_NAMES = (
 SALT_OWNER_EXPECTED_SIZE = 0x98
 SALT_OWNER_EXPECTED_MEMBERS = (
     (0x80, 4, "state", "SaltState"),
-    (0x88, 4, "owner_game", "SubgameRuntime *"),
+    (0x88, 4, "owner_game", "cRSubGame *"),
     (0x8C, 4, "fade_alpha", "float"),
     (0x90, 4, "spawn_velocity_y", "float"),
     (0x94, 1, "collision_armed", "uint8_t"),
@@ -64,7 +65,7 @@ SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0
 SUB_LAZER_BODY_OBJECT_CURSOR_EXPECTED_SIZE = 0xB0
 SUB_LAZER_OWNER_EXPECTED_MEMBERS = (
     (0x80, 4, "state", "SubLazerState"),
-    (0x88, 4, "owner_game", "SubgameRuntime *"),
+    (0x88, 4, "owner_game", "cRSubGame *"),
     (0x8C, 12, "velocity", "Vec3"),
     (0x98, 4, "sprite_bob_phase", "float"),
     (0x9C, 4, "sprite_bob_phase_step", "float"),
@@ -77,7 +78,7 @@ SUB_GARBAGE_OWNER_EXPECTED_MEMBERS = (
     (0x80, 4, "next_active", "SubGarbage *"),
     (0x84, 4, "state", "SubGarbageState"),
     (0x88, 4, "collision_side", "SubGarbageCollisionSide"),
-    (0x8C, 4, "owner_game", "SubgameRuntime *"),
+    (0x8C, 4, "owner_game", "cRSubGame *"),
     (0x90, 12, "velocity", "Vec3"),
     (0x9C, 4, "radius", "float"),
     (0xA0, 4, "attachment_facing_angle", "float"),
@@ -95,7 +96,7 @@ SLUG_STATE_CURSOR_EXPECTED_SIZE = 0xEC
 SLUG_OWNER_EXPECTED_MEMBERS = (
     (0x80, 4, "state", "SubSlugState"),
     (0x84, 4, "death_toss_direction", "SubSlugDeathTossDirection"),
-    (0x88, 4, "owner_game", "SubgameRuntime *"),
+    (0x88, 4, "owner_game", "cRSubGame *"),
     (0x8C, 12, "velocity", "Vec3"),
     (0x98, 4, "attachment_facing_angle", "float"),
     (0xAC, 4, "sprite", "Sprite *"),
@@ -233,7 +234,7 @@ SALT_STARTUP_CURSOR_LVAR = {
         "salt_owner_game_cursor",
     },
     "accepted_types": {
-        "SubgameRuntime **",
+        "cRSubGame **",
         "SaltOwnerGameStrideCursor *",
     },
     "target_name": "salt_owner_game_cursor",
@@ -344,7 +345,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_slug_hazard",
-        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* owner_player);",
+        "void __thiscall spawn_slug_hazard(cRSubGame* game, cRSubLoc* cell, Player* owner_player);",
     ),
     (
         "update_slug_voice_ai",
@@ -428,7 +429,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_garbage_hazard",
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
+        "void __thiscall spawn_track_garbage_hazard(cRSubGame* game, cRSubLoc* cell, Player* player);",
     ),
     (
         "initialize_track_ring_or_special_effect_runtime",
@@ -436,7 +437,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_ring_or_special_effect",
-        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, cRSubLoc* cell, int32_t requested_kind, Player* player, float ring_speed);",
+        "void __thiscall spawn_track_ring_or_special_effect(cRSubGame* game, cRSubLoc* cell, int32_t requested_kind, Player* player, float ring_speed);",
     ),
     (
         "initialize_ring_or_special_effect_particles",
@@ -470,55 +471,55 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_subgame_features",
-        "void __thiscall set_subgame_features(SubgameRuntime* runtime);",
+        "void __thiscall set_subgame_features(cRSubGame* runtime);",
     ),
     (
         "switch_track_mirror",
-        "void __thiscall switch_track_mirror(SubgameRuntime* runtime);",
+        "void __thiscall switch_track_mirror(cRSubGame* runtime);",
     ),
     (
         "normalize_segment_glyph_for_track_flags",
-        "char __thiscall normalize_segment_glyph_for_track_flags(SubgameRuntime* runtime, char glyph, int32_t row, char edge_row);",
+        "char __thiscall normalize_segment_glyph_for_track_flags(cRSubGame* runtime, char glyph, int32_t row, char edge_row);",
     ),
     (
         "rebuild_track_runtime_from_segments",
-        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);",
+        "void __thiscall rebuild_track_runtime_from_segments(cRSubGame* game, int32_t level_index);",
     ),
     (
         "calc_slider_to_rate",
-        "float __thiscall calc_slider_to_rate(SubgameRuntime* game, float slider);",
+        "float __thiscall calc_slider_to_rate(cRSubGame* game, float slider);",
     ),
     (
         "set_subgame_rate",
-        "void __thiscall set_subgame_rate(SubgameRuntime* runtime, float rate);",
+        "void __thiscall set_subgame_rate(cRSubGame* runtime, float rate);",
     ),
     (
         "calc_subgame_rate",
-        "void __thiscall calc_subgame_rate(SubgameRuntime* game);",
+        "void __thiscall calc_subgame_rate(cRSubGame* game);",
     ),
     (
         "advance_blink_random",
-        "double __thiscall advance_blink_random(SubgameRuntime* game);",
+        "double __thiscall advance_blink_random(cRSubGame* game);",
     ),
     (
         "initialize_blink_random",
-        "void __thiscall initialize_blink_random(SubgameRuntime* game);",
+        "void __thiscall initialize_blink_random(cRSubGame* game);",
     ),
     (
         "hide_gameplay_scores",
-        "void __thiscall hide_gameplay_scores(SubgameRuntime* game);",
+        "void __thiscall hide_gameplay_scores(cRSubGame* game);",
     ),
     (
         "unhide_gameplay_scores",
-        "void __thiscall unhide_gameplay_scores(SubgameRuntime* game);",
+        "void __thiscall unhide_gameplay_scores(cRSubGame* game);",
     ),
     (
         "reset_subgame",
-        "void __thiscall reset_subgame(SubgameRuntime* game);",
+        "void __thiscall reset_subgame(cRSubGame* game);",
     ),
     (
         "complete_subgame",
-        "void __thiscall complete_subgame(SubgameRuntime* runtime, unsigned char completed);",
+        "void __thiscall complete_subgame(cRSubGame* runtime, unsigned char completed);",
     ),
     (
         "initialize_track_parcel_runtime",
@@ -542,7 +543,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_parcel",
-        "Parcel* __thiscall spawn_track_parcel(SubgameRuntime* runtime, Vec3* world_position, Player* source_player);",
+        "Parcel* __thiscall spawn_track_parcel(cRSubGame* runtime, Vec3* world_position, Player* source_player);",
     ),
     (
         "update_times_up",
@@ -586,7 +587,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "bind_subgame_owner",
-        "SubgameRuntime* __thiscall bind_subgame_owner(SubgameOwnerLink* owner);",
+        "cRSubGame* __thiscall bind_subgame_owner(SubgameOwnerLink* owner);",
     ),
 ]
 
@@ -629,6 +630,10 @@ TIME_TRIAL_EXPECTED_MEMBERS = (
 
 
 REQUIRED_CANONICAL_OWNER_MARKERS = (
+    "typedef struct cRSubGame cRSubGame;",
+    "typedef cRSubGame SubgameRuntime;",
+    "typedef struct cRSubGame {",
+    "} cRSubGame;",
     "SegmentCache segment_cache;",
     "SubRingStar particles[10];",
     "SubRingPool ring_effects;",
@@ -649,7 +654,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "typedef struct SubLazerBodyObjectStrideCursor {",
     "Object* body_object;",
     "tColour body_color;",
-    "SubgameRuntime* owner_game;",
+    "cRSubGame* owner_game;",
     "uint8_t _stride_tail[0x48];",
     "typedef struct SaltOwnerGameStrideCursor {",
     "uint8_t _stride_tail[0x94];",
@@ -1864,7 +1869,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         {
                             "reason": "noncanonical_subgame_runtime_header",
                             "detail": (
-                                "refusing to replace the recovered SubgameRuntime owner "
+                                "refusing to replace the recovered cRSubGame owner "
                                 "with a sparse compatibility header"
                             ),
                         }
@@ -1878,6 +1883,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     contact_header_path = header_path.with_name("contact_target_types.h")
     contact_parse_errors = idc.parse_decls(str(contact_header_path), idc.PT_FILE)
     parse_errors = contact_parse_errors + idc.parse_decls(str(header_path), idc.PT_FILE)
+    subgame_owner_size = _named_struct_size("cRSubGame")
     parcel_owner_sizes = {
         name: _named_struct_size(name) for name in EXPECTED_PARCEL_OWNER_SIZES
     }
@@ -1907,6 +1913,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in EXPECTED_PARCEL_OWNER_SIZES.items()
         if parcel_owner_sizes[name] != expected_size
     ]
+    if subgame_owner_size != SUBGAME_OWNER_EXPECTED_SIZE:
+        size_failures.append(
+            {
+                "selector": "cRSubGame",
+                "reason": "owner_size_mismatch",
+                "expected": SUBGAME_OWNER_EXPECTED_SIZE,
+                "observed": subgame_owner_size,
+            }
+        )
     help_owner_size = _named_struct_size("Help")
     if help_owner_size != HELP_OWNER_EXPECTED_SIZE:
         size_failures.append(
@@ -1977,6 +1992,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "subgame_owner_size": subgame_owner_size,
                     "parcel_owner_sizes": parcel_owner_sizes,
                     "help_owner_size": help_owner_size,
                     "banner_owner_sizes": banner_owner_sizes,
@@ -2381,6 +2397,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "contact_header": str(contact_header_path),
+                "subgame_owner_size": subgame_owner_size,
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "banner_owner_sizes": banner_owner_sizes,
                 "galaxy_owner_sizes": galaxy_owner_sizes,
@@ -2397,7 +2414,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "sub_garbage_owner_readback": sub_garbage_owner_readback,
                 "slug_owner_readback": slug_owner_readback,
                 "type_sizes": {
-                    "SubgameRuntime": _named_struct_size("SubgameRuntime"),
+                    "cRSubGame": _named_struct_size("cRSubGame"),
                     "TimeTrialCourseRecord": _named_struct_size(
                         "TimeTrialCourseRecord"
                     ),

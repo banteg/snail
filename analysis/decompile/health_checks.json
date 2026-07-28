@@ -754,7 +754,7 @@
       "required_substrings": [
         "cRSubLoc *row_event_source_cell",
         "cRSubLoc *current_cell",
-        "SubgameRuntime *attachment_game",
+        "cRSubGame *attachment_game",
         "row_event_source_cell = row_event_cell",
         "tile_id = row_event_source_cell->tile_id",
         "primary_attachment_cell = player->game->runtime_rows",
@@ -2299,7 +2299,7 @@
       "name": "bn_nested_subgame_update_tutorial_owner",
       "artifact": "analysis/decompile/binja/functions/00448de0-update_tutorial.c",
       "required_substrings": [
-        "struct SubgameRuntime* game = tutorial->game",
+        "struct cRSubGame* game = tutorial->game",
         "game->player.body.transform.position"
       ],
       "forbidden_substrings": [
@@ -2312,7 +2312,8 @@
       "artifact": "analysis/decompile/binja/functions/00440f80-update_barrier_ai.c",
       "required_substrings": [
         "barrier->bod.position.y = 0.400000006f",
-        "barrier->bod.position.z = barrier->owner_player->body.transform.position.z"
+        "float z = barrier->owner_player->body.transform.position.z",
+        "barrier->bod.position.z = z"
       ],
       "forbidden_substrings": [
         "void* result",
@@ -2392,7 +2393,7 @@
       "name": "bn_nested_subgame_jet_particle_owner",
       "artifact": "analysis/decompile/binja/functions/0043a690-update_jet_particles.c",
       "required_substrings": [
-        "struct SubgameRuntime* game = sub_hover->game",
+        "struct cRSubGame* game = sub_hover->game",
         "game->player.presentation.jetpack_channel",
         "sub_hover->game->player.presentation.snail_hotspots_world",
         "struct JetParticleSlot* particle_slot",
@@ -2607,7 +2608,7 @@
       "name": "bn_nested_subgame_collision_owner",
       "artifact": "analysis/decompile/binja/functions/00444cf0-handle_subgoldy_collisions.c",
       "required_substrings": [
-        "struct SubgameRuntime* game",
+        "struct cRSubGame* game",
         "int32_t salt_pool_byte_offset = 0",
         "salt_pool_byte_offset += 0x98",
         "int32_t sub_lazer_pool_byte_offset = 0",
@@ -2633,19 +2634,19 @@
         "int32_t slug_pool_byte_offset = 0",
         "slug_pool_byte_offset += 0xec",
         "int32_t parcel_pool_byte_offset = 0",
-        "*(&game_4->parcel_manager.slots[0].state + parcel_pool_byte_offset) == PARCEL_STATE_TRACK_ACTIVE",
+        "*(&game_5->parcel_manager.slots[0].state + parcel_pool_byte_offset) == PARCEL_STATE_TRACK_ACTIVE",
         "parcel_pool_byte_offset += 0x8c",
         "health_cursor->health.bod.position.z",
         "int32_t health_pool_byte_offset = 0",
-        "*(&game_5->health_pickups[0].state + health_pool_byte_offset) == TRACK_PICKUP_STATE_ACTIVE",
+        "*(&game_6->health_pickups[0].state + health_pool_byte_offset) == TRACK_PICKUP_STATE_ACTIVE",
         "health_pool_byte_offset += 0x74",
-        "game_2->speedup_pickup.state == TRACK_PICKUP_STATE_ACTIVE",
+        "game_3->speedup_pickup.state == TRACK_PICKUP_STATE_ACTIVE",
         "player->game->speedup_pickup.state = TRACK_PICKUP_STATE_TEARDOWN_PENDING",
-        "game_3->jetpack_pickup.state == TRACK_PICKUP_STATE_ACTIVE",
+        "game_4->jetpack_pickup.state == TRACK_PICKUP_STATE_ACTIVE",
         "player->game->jetpack_pickup.state = TRACK_PICKUP_STATE_TEARDOWN_PENDING",
-        "ring_cursor->ring.world_position.z",
+        "ring_cursor->ring.body.transform.position.z",
         "int32_t ring_pool_byte_offset = 0",
-        "*(&game_9->ring_effects.slots[0].state + ring_pool_byte_offset) == SUB_RING_STATE_ACTIVE",
+        "*(&game_10->ring_effects.slots[0].state + ring_pool_byte_offset) == SUB_RING_STATE_ACTIVE",
         "ring_pool_byte_offset += 0x1f8",
         "enum SubRingKind ring_kind",
         "ring_kind == SUB_RING_KIND_SLOW_DEFAULT || ring_kind == SUB_RING_KIND_SLOW_AUTHORED",
@@ -2846,7 +2847,7 @@
       "required_substrings": [
         "sub_garbage->state = SUB_GARBAGE_STATE_INACTIVE",
         "sub_garbage->body.bod.bod.list_flags",
-        "struct SubgameRuntime* owner_game",
+        "struct cRSubGame* owner_game",
         "struct SubGarbage* active_head",
         "owner_game->garbage_hazards.active_head"
       ],
@@ -2871,7 +2872,7 @@
         "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
         "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "sub_garbage->body.transform.position.x",
-        "struct SubgameRuntime* owner_game",
+        "struct cRSubGame* owner_game",
         "owner_game->subgame_rate",
         "sub_garbage->burst_progress = 0",
         "sub_garbage->burst_progress_step",
@@ -2918,7 +2919,7 @@
         "SUB_GARBAGE_COLLISION_SIDE_RIGHT",
         "SUB_GARBAGE_COLLISION_SIDE_LEFT",
         "sub_garbage->body.transform.position.x",
-        "SubgameRuntime *owner_game",
+        "cRSubGame *owner_game",
         "owner_game->subgame_rate",
         "sub_garbage->burst_progress = 0.0;",
         "sub_garbage->burst_progress_step",
@@ -2937,7 +2938,7 @@
       "name": "bn_nested_subgame_rate_owner",
       "artifact": "analysis/decompile/binja/functions/004404d0-calc_subgame_rate.c",
       "required_substrings": [
-        "struct SubgameRuntime* game_1",
+        "struct cRSubGame* game_1",
         "game->player.body.transform.position.z",
         "game->subgame_rate"
       ],
@@ -2949,7 +2950,7 @@
       "name": "ida_mobile_calc_slider_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00437e80-calc_slider_to_rate.c",
       "required_substrings": [
-        "float __thiscall calc_slider_to_rate(SubgameRuntime *game, float slider)",
+        "float __thiscall calc_slider_to_rate(cRSubGame *game, float slider)",
         "slider == 1.0",
         "return 1.1;",
         "return slider * 0.90000004 + 0.2;"
@@ -2964,7 +2965,7 @@
       "name": "bn_nested_subgame_parcel_slot_owner",
       "artifact": "analysis/decompile/binja/functions/00443160-initialize_track_parcel_slots.c",
       "required_substrings": [
-        "struct SubgameRuntime**",
+        "struct cRSubGame**",
         "slots[0].owner_subgame = &g_game_base->subgame"
       ],
       "forbidden_substrings": [
@@ -2976,7 +2977,7 @@
       "name": "bn_nested_subgame_update_parcel_owner",
       "artifact": "analysis/decompile/binja/functions/004431d0-update_track_parcel.c",
       "required_substrings": [
-        "struct SubgameRuntime* owner_subgame",
+        "struct cRSubGame* owner_subgame",
         "parcel->owner_subgame",
         "owner_subgame->player.presentation.snail_hotspots_world"
       ],
@@ -3039,8 +3040,10 @@
         "CameramanState",
         "unresolved_cc",
         "return result",
-        "Game *",
         "g_player_block"
+      ],
+      "forbidden_regexes": [
+        "\\bGame \\*"
       ]
     },
     {
@@ -4276,7 +4279,7 @@
       "name": "bn_bind_subgame_owner_root_borrow",
       "artifact": "analysis/decompile/binja/functions/00433fc0-bind_subgame_owner.c",
       "required_substrings": [
-        "struct SubgameRuntime* result = &g_game_base->subgame",
+        "struct cRSubGame* result = &g_game_base->subgame",
         "owner->game = result",
         "return result"
       ],
@@ -4291,7 +4294,7 @@
       "name": "ida_bind_subgame_owner_root_borrow",
       "artifact": "analysis/decompile/ida/functions/00433fc0-bind_subgame_owner.c",
       "required_substrings": [
-        "SubgameRuntime *__thiscall bind_subgame_owner(SubgameOwnerLink *owner)",
+        "cRSubGame *__thiscall bind_subgame_owner(SubgameOwnerLink *owner)",
         "result = &g_game_base->subgame;",
         "owner->game = &g_game_base->subgame;",
         "return result;"
@@ -4636,7 +4639,7 @@
       "artifact": "analysis/decompile/ida/functions/004354f0-mark_track_warning_zones.c",
       "required_substrings": [
         "cRSubGame::DeSaltTrack()",
-        "void __thiscall mark_track_warning_zones(SubgameRuntime *game)",
+        "void __thiscall mark_track_warning_zones(cRSubGame *game)",
         "game->runtime_row_count",
         "game->runtime_cells[0][0].tile_id",
         "game->runtime_cells[0][v6 + v7].lane_and_flags"
@@ -4716,26 +4719,28 @@
       "name": "ida_runtime_row_lookup_owner",
       "artifact": "analysis/decompile/ida/functions/0043d480-get_track_runtime_cell_at_world_z.c",
       "required_substrings": [
-        "SubRow *__thiscall get_track_runtime_cell_at_world_z(SubgameRuntime *game, Vec3 *position)",
+        "SubRow *__thiscall get_track_runtime_cell_at_world_z(cRSubGame *game, Vec3 *position)",
         "position->z",
         "game->runtime_rows",
         "return &game->runtime_rows[z]"
       ],
       "forbidden_substrings": [
         "TrackAttachmentRuntimeRow",
-        "Game *game",
         "int this",
         "this +",
         "byte_5CCAC8",
         "__asm",
         "_ET1"
+      ],
+      "forbidden_regexes": [
+        "\\bGame \\*game"
       ]
     },
     {
       "name": "ida_condense_track_grid_owner",
       "artifact": "analysis/decompile/ida/functions/00435180-merge_track_tile_runs.c",
       "required_substrings": [
-        "void __thiscall merge_track_tile_runs(SubgameRuntime *game)",
+        "void __thiscall merge_track_tile_runs(cRSubGame *game)",
         "game->runtime_cells",
         "v1->level_mode",
         "g_game_base",
@@ -4743,10 +4748,12 @@
       ],
       "forbidden_substrings": [
         "int32_t __thiscall merge_track_tile_runs",
-        "Game *game",
         "game->_pad_",
         "__asm",
         "_ET1"
+      ],
+      "forbidden_regexes": [
+        "\\bGame \\*game"
       ]
     },
     {
@@ -6619,7 +6626,7 @@
       "required_substrings": [
         "manager->owner_subgame->runtime_row_count",
         "int32_t cell_byte_offset = 0",
-        "struct SubgameRuntime* owner_subgame",
+        "struct cRSubGame* owner_subgame",
         "struct Fringe* fringe_object",
         "fringe_object->bod.object",
         "manager->skirt_color_bgra",
@@ -6830,7 +6837,7 @@
       "name": "ida_tcolour_skirt_owner",
       "artifact": "analysis/decompile/ida/functions/00442120-get_track_skirt_color.c",
       "required_substrings": [
-        "tColour *__thiscall get_track_skirt_color(SubgameRuntime *game, tColour *out)",
+        "tColour *__thiscall get_track_skirt_color(cRSubGame *game, tColour *out)",
         "struct tColour color",
         "game->level_definition.fringe_color.r",
         "game->level_definition.fringe_color.g",
@@ -7500,7 +7507,7 @@
       "artifact": "analysis/decompile/ida/functions/00438850-destroy_subgame.c",
       "required_substrings": [
         "g_game_base->backdrop.corner_index_buffer_handle = 1;",
-        "void __thiscall destroy_subgame(SubgameRuntime *game)",
+        "void __thiscall destroy_subgame(cRSubGame *game)",
         "uninit_warning(&game->player.warning)",
         "clear_active_landscape_entries(&game->landscape_manager)",
         "flush_row_event_display(&game->completion)",
@@ -7595,7 +7602,7 @@
       "name": "ida_update_subgame_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00438b90-update_subgame.c",
       "required_substrings": [
-        "void __thiscall update_subgame(SubgameRuntime *game)",
+        "void __thiscall update_subgame(cRSubGame *game)",
         "game->subgame_rebuild_selector",
         "game->player.click_start.state",
         "game->runtime_rows[0].ring_speed",
@@ -7710,7 +7717,7 @@
       "name": "ida_update_subgame_camera_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00446020-update_subgame_camera.c",
       "required_substrings": [
-        "void __thiscall update_subgame_camera(SubgameRuntime *runtime)",
+        "void __thiscall update_subgame_camera(cRSubGame *runtime)",
         "runtime->camera_snap_requested",
         "runtime->player.cameraman",
         "runtime->player.presentation.cutscene",
@@ -7875,7 +7882,7 @@
       "artifact": "analysis/decompile/binja/functions/00441650-initialize_sub_lazer_pool.c",
       "required_substrings": [
         "enum SubLazerState* eax = &manager->slots[0].state",
-        "(eax - 0x80)->slots[0].state = SUB_LAZER_STATE_INACTIVE",
+        "*eax = SUB_LAZER_STATE_INACTIVE",
         "eax = &eax[0x2c]",
         "00441669        return"
       ],
@@ -8114,7 +8121,7 @@
       "name": "bn_blink_random_sample_borrow",
       "artifact": "analysis/decompile/binja/functions/004408c0-initialize_blink_random.c",
       "required_substrings": [
-        "struct SubgameRuntime* game_1 = game",
+        "struct cRSubGame* game_1 = game",
         "game->blink_random_index = 0",
         "float* blink_sample_cursor = &game->blink_random_samples",
         "blink_sample_cursor = &blink_sample_cursor[1]",
@@ -8133,7 +8140,7 @@
       "name": "ida_blink_random_void_owner_abi",
       "artifact": "analysis/decompile/ida/functions/004408c0-initialize_blink_random.c",
       "required_substrings": [
-        "void __thiscall initialize_blink_random(SubgameRuntime *game)",
+        "void __thiscall initialize_blink_random(cRSubGame *game)",
         "game->blink_random_index = 0;",
         "blink_random_samples = game->blink_random_samples;",
         "for ( i = 24; i != 0; --i )",
@@ -8149,7 +8156,7 @@
       "name": "ida_hide_gameplay_scores_owner",
       "artifact": "analysis/decompile/ida/functions/00445f10-hide_gameplay_scores.c",
       "required_substrings": [
-        "void __thiscall hide_gameplay_scores(SubgameRuntime *game)",
+        "void __thiscall hide_gameplay_scores(cRSubGame *game)",
         "bottom_score_widget = game->bottom_score_widget;",
         "top_score_widget = game->top_score_widget;",
         "hide_border_init(bottom_score_widget);",
@@ -8164,7 +8171,7 @@
       "name": "ida_unhide_gameplay_scores_owner",
       "artifact": "analysis/decompile/ida/functions/00445f40-unhide_gameplay_scores.c",
       "required_substrings": [
-        "void __thiscall unhide_gameplay_scores(SubgameRuntime *game)",
+        "void __thiscall unhide_gameplay_scores(cRSubGame *game)",
         "unhide_border_init(game->bottom_score_widget);",
         "unhide_border_init(game->top_score_widget);"
       ],
@@ -8284,7 +8291,7 @@
       "name": "ida_remove_subgame_bods_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00440910-remove_subgame_bods.c",
       "required_substrings": [
-        "void __thiscall remove_subgame_bods(SubgameRuntime *game)",
+        "void __thiscall remove_subgame_bods(cRSubGame *game)",
         "game->runtime_cells[0]",
         "remove_track_render_cache_bods(&game->segment_cache)",
         "&game->health_pickups[0].bod.bod.list_next",
@@ -8796,7 +8803,7 @@
       ],
       "forbidden_substrings": [
         "return result",
-        "__offset(SubgameRuntime, 0x3591c8)",
+        "__offset(cRSubGame, 0x3591c8)",
         "GarbageHazardSlot",
         "GarbageHazardRuntime",
         "int32_t* ecx = &game->garbage_hazards.slots[0].state",
@@ -8811,7 +8818,7 @@
       "name": "ida_subgame_garbage_void_owner",
       "artifact": "analysis/decompile/ida/functions/0043da80-spawn_track_garbage_hazard.c",
       "required_substrings": [
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, cRSubLoc *cell, Player *player)",
+        "void __thiscall spawn_track_garbage_hazard(cRSubGame *game, cRSubLoc *cell, Player *player)",
         "SubGarbageState *i;",
         "game->garbage_hazards.slots[0].state",
         "game->garbage_hazards.active_head",
@@ -8982,7 +8989,7 @@
       "name": "ida_build_level_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00435eb0-populate_runtime_track_cells_from_segments.c",
       "required_substrings": [
-        "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)",
+        "void __thiscall populate_runtime_track_cells_from_segments(cRSubGame *game)",
         "game->runtime_row_count",
         "game->completion_row_start",
         "game->runtime_cells[0][0].fringe_front",
@@ -9002,7 +9009,7 @@
       "name": "ida_generate_level_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00437de0-rebuild_track_runtime_from_segments.c",
       "required_substrings": [
-        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)",
+        "void __thiscall rebuild_track_runtime_from_segments(cRSubGame *game, int32_t level_index)",
         "populate_runtime_track_cells_from_segments(game)",
         "select_track_tile_edge_variants(game)",
         "promote_track_tiles_to_fringe_variants(game)",
@@ -9021,7 +9028,7 @@
       "name": "ida_start_level_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00437eb0-build_subgame_level.c",
       "required_substrings": [
-        "void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)",
+        "void __thiscall build_subgame_level(cRSubGame *game, int32_t level_index)",
         "cache_music_file(aMusic1Ogg, 0, (char *)g_blank_text)",
         "rebuild_track_runtime_from_segments(game, level_index)",
         "game->banners.slots"
@@ -9066,7 +9073,7 @@
       "name": "ida_subgame_reset_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00437b10-reset_subgame.c",
       "required_substrings": [
-        "void __thiscall reset_subgame(SubgameRuntime *game)",
+        "void __thiscall reset_subgame(cRSubGame *game)",
         "game->health_pickups",
         "game->speedup_pickup",
         "game->jetpack_pickup",
@@ -9090,7 +9097,7 @@
       "name": "bn_subring_rate_owner",
       "artifact": "analysis/decompile/binja/functions/0043e830-update_ring_or_special_effect_parent.c",
       "required_substrings": [
-        "struct SubgameRuntime* rate_source = ring->rate_source",
+        "struct cRSubGame* rate_source = ring->rate_source",
         "rate_source->subgame_pause_gate",
         "rate_source->subgame_rate",
         "struct SubRingStar"
@@ -9367,7 +9374,7 @@
       "artifact": "analysis/decompile/ida/functions/0043df10-spawn_track_ring_or_special_effect.c",
       "required_substrings": [
         "void __thiscall spawn_track_ring_or_special_effect(",
-        "SubgameRuntime *game",
+        "cRSubGame *game",
         "int32_t requested_kind",
         "SubRingState *state_cursor",
         "SubRingSlotCursor *slot_cursor",
@@ -9473,7 +9480,7 @@
       "name": "bn_subring_parent_embedded_child_lifetimes",
       "artifact": "analysis/decompile/binja/functions/0043e830-update_ring_or_special_effect_parent.c",
       "required_substrings": [
-        "struct SubgameRuntime* rate_source = ring->rate_source",
+        "struct cRSubGame* rate_source = ring->rate_source",
         "struct SubRingStar* active_particle_cursor = &ring->particles",
         "update_ring_or_special_effect_particle(active_particle_cursor)",
         "kill_sprite(active_cleanup_particle->sprite)",
@@ -9511,7 +9518,7 @@
       "artifact": "analysis/decompile/ida/functions/0043e830-update_ring_or_special_effect_parent.c",
       "required_substrings": [
         "void __thiscall update_ring_or_special_effect_parent(SubRing *ring)",
-        "SubgameRuntime *rate_source",
+        "cRSubGame *rate_source",
         "switch ( ring->state )",
         "ring->particles",
         "rate_source->subgame_rate",
@@ -9546,7 +9553,7 @@
       "name": "bn_challenge_gui_initializer_owner",
       "artifact": "analysis/decompile/binja/functions/00415f50-initialize_challenge_setup_screen.c",
       "required_substrings": [
-        "struct SubgameRuntime* game = gui->game",
+        "struct cRSubGame* game = gui->game",
         "load_frontend_level_by_mode_and_index(&game->level_definition",
         "gui->difficulty_slider = allocate_border",
         "gui->game->sub_high_score.survival_pending_record.active",
@@ -9691,7 +9698,7 @@
       "artifact": "analysis/decompile/ida/functions/004374b0-initialize_subgame.c",
       "required_substrings": [
         "void __thiscall initialize_subgame(",
-        "SubgameRuntime *game)",
+        "cRSubGame *game)",
         "p_fringe_front = &game->runtime_cells[0][0].fringe_front",
         "&g_game_base->subgame.landscape_manager,",
         "subgame.landscape_manager.scripts[landscape_script_by_name]",
@@ -9727,8 +9734,8 @@
       "name": "bn_build_track_fringe_runtime_owner",
       "artifact": "analysis/decompile/binja/functions/00434be0-build_track_fringe_objects.c",
       "required_substrings": [
-        "struct SubgameRuntime* runtime = game",
-        "struct SubgameRuntime* runtime_saved = runtime",
+        "struct cRSubGame* runtime = game",
+        "struct cRSubGame* runtime_saved = runtime",
         "initialize_fringe_manager(&g_game_base->subgame.fringe_manager)",
         "allocate_fringe_object(&g_game_base->subgame.fringe_manager)",
         "runtime->runtime_row_count",
@@ -9755,8 +9762,8 @@
       ],
       "forbidden_substrings": [
         "struct Game*",
-        "struct SubgameRuntime* game_1",
-        "struct SubgameRuntime* game_2",
+        "struct cRSubGame* game_1",
+        "struct cRSubGame* game_2",
         "struct cRSubLoc (*",
         "int32_t ebx = 0",
         "int32_t var_48",
@@ -9780,7 +9787,7 @@
       "name": "ida_build_track_fringe_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00434be0-build_track_fringe_objects.c",
       "required_substrings": [
-        "void __thiscall build_track_fringe_objects(SubgameRuntime *game)",
+        "void __thiscall build_track_fringe_objects(cRSubGame *game)",
         "v1->runtime_row_count",
         "SubRow *row;",
         "cRSubLoc *cell;",
@@ -9895,7 +9902,7 @@
       "artifact": "analysis/decompile/ida/functions/004355f0-promote_track_tiles_to_fringe_variants.c",
       "required_substrings": [
         "cRSubGame::WarnTrack()",
-        "void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)",
+        "void __thiscall promote_track_tiles_to_fringe_variants(cRSubGame *game)",
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].object",
         "root_bod_catalog.floor_slices.storage",
@@ -9915,7 +9922,7 @@
       "name": "bn_harmonize_track_tiles_runtime_owner",
       "artifact": "analysis/decompile/binja/functions/004356f0-harmonize_center_lane_floor_slide_variants.c",
       "required_substrings": [
-        "struct SubgameRuntime* game_1 = game",
+        "struct cRSubGame* game_1 = game",
         "game_1->runtime_row_count",
         "game_1->runtime_cells[0][0].lane_and_flags",
         "root_bod_catalog.floor_corners.storage[0].object",
@@ -9932,7 +9939,7 @@
       "name": "ida_harmonize_track_tiles_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/004356f0-harmonize_center_lane_floor_slide_variants.c",
       "required_substrings": [
-        "void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)",
+        "void __thiscall harmonize_center_lane_floor_slide_variants(cRSubGame *game)",
         "game->runtime_row_count",
         "v1->runtime_cells[0][v5].lane_and_flags"
       ],
@@ -9974,7 +9981,7 @@
       "name": "ida_select_track_tiles_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00435a80-select_track_tile_edge_variants.c",
       "required_substrings": [
-        "void __thiscall select_track_tile_edge_variants(SubgameRuntime *game)",
+        "void __thiscall select_track_tile_edge_variants(cRSubGame *game)",
         "game->runtime_row_count",
         "&game->runtime_cells[0][0].tile_id",
         "root_bod_catalog.floor_corners.storage",
@@ -10009,7 +10016,7 @@
       "name": "ida_track_grid_cell_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/0043d410-get_track_grid_cell_at_world_position.c",
       "required_substrings": [
-        "cRSubLoc *__thiscall get_track_grid_cell_at_world_position(SubgameRuntime *game, Vec3 *position)",
+        "cRSubLoc *__thiscall get_track_grid_cell_at_world_position(cRSubGame *game, Vec3 *position)",
         "return &game->runtime_cells[z][v2]"
       ],
       "forbidden_substrings": [
@@ -10038,7 +10045,7 @@
       "name": "ida_track_floor_sample_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/0043d4d0-sample_track_floor_height_at_position.c",
       "required_substrings": [
-        "double __thiscall sample_track_floor_height_at_position(SubgameRuntime *game, Vec3 *position)",
+        "double __thiscall sample_track_floor_height_at_position(cRSubGame *game, Vec3 *position)",
         "get_track_grid_cell_at_world_position(game, position)",
         "track_grid_cell_at_world_position->anchor_position.y"
       ],
@@ -10089,7 +10096,7 @@
       "name": "ida_track_health_pickup_void_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/0043d6c0-spawn_track_health_pickup.c",
       "required_substrings": [
-        "void __thiscall spawn_track_health_pickup(SubgameRuntime *game, cRSubLoc *cell, Player *player)",
+        "void __thiscall spawn_track_health_pickup(cRSubGame *game, cRSubLoc *cell, Player *player)",
         "&game->health_pickups[0].state",
         "SubHealthSlotCursor *health_cursor",
         "health_cursor->health.state = TRACK_PICKUP_STATE_ACTIVE",
@@ -10149,7 +10156,7 @@
       "name": "ida_track_jetpack_pickup_void_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/0043d890-spawn_track_jetpack_pickup.c",
       "required_substrings": [
-        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, cRSubLoc *cell, Player *player)",
+        "void __thiscall spawn_track_jetpack_pickup(cRSubGame *game, cRSubLoc *cell, Player *player)",
         "&game->jetpack_pickup.state",
         "JetPackSlotCursor *jetpack_cursor",
         "jetpack_cursor->jetpack.state = TRACK_PICKUP_STATE_ACTIVE",
@@ -10208,7 +10215,7 @@
       "name": "ida_build_subgame_selected_speed_owner",
       "artifact": "analysis/decompile/ida/functions/00437eb0-build_subgame_level.c",
       "required_substrings": [
-        "void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)",
+        "void __thiscall build_subgame_level(cRSubGame *game, int32_t level_index)",
         "game->level_definition.selected_speed.bits",
         "game->level_definition.selected_speed.value",
         "reset_voice_manager(&g_voice_manager);",
@@ -10366,7 +10373,7 @@
       "artifact": "analysis/decompile/ida/functions/00415280-create_golb.c",
       "required_substrings": [
         "BodNode **p_first",
-        "first->list_prev = &shot->bod.bod;",
+        "first->list_prev = &shot->body.bod.bod;",
         "(*p_first)->list_prev->list_next = *p_first;",
         "BodNode **v40",
         "v41->list_prev = &p_tertiary_body->bod.bod;",
@@ -10724,7 +10731,7 @@
       "forbidden_substrings": [
         "Object **p_object; // edi",
         "set_bod_object((BodBase *)(p_object - 9)",
-        "*((SubgameRuntime **)p_object + 25) = &game->subgame;",
+        "*((cRSubGame **)p_object + 25) = &game->subgame;",
         "store_color4f((tColour *)(p_object + 1)",
         "p_object += 44;"
       ]
@@ -10742,7 +10749,7 @@
         "salt_owner_game_cursor = &salt_owner_game_cursor[1]"
       ],
       "forbidden_substrings": [
-        "struct SubgameRuntime** edi_14 = &game->subgame.salt_hazards.slots[0].owner_game",
+        "struct cRSubGame** edi_14 = &game->subgame.salt_hazards.slots[0].owner_game",
         "set_bod_object(&edi_14[-0x22]",
         "store_color4f(&edi_14[-0x18]",
         "edi_14 = &edi_14[0x26]",
@@ -10765,7 +10772,7 @@
         "salt_owner_game_cursor = \\((?:struct )?SaltOwnerGameStrideCursor \\*\\)&game->subgame\\.salt_hazards\\.slots\\[0\\]\\.owner_game;"
       ],
       "forbidden_substrings": [
-        "SubgameRuntime **p_owner_game; // edi",
+        "cRSubGame **p_owner_game; // edi",
         "(BodBase *)(p_owner_game - 34)",
         "*p_owner_game = &game->subgame;",
         "(tColour *)p_owner_game - 6",
@@ -10980,7 +10987,7 @@
       "name": "ida_normal_parcel_placement_receiver",
       "artifact": "analysis/decompile/ida/functions/004438e0-place_parcels_on_track.c",
       "required_substrings": [
-        "void __thiscall place_parcels_on_track(SubgameRuntime *game)",
+        "void __thiscall place_parcels_on_track(cRSubGame *game)",
         "game->level_definition.segment_count",
         "game->level_definition.segment_slots",
         "g_zero_parcel_buckets",
@@ -11016,7 +11023,7 @@
       "name": "ida_survival_parcel_placement_receiver",
       "artifact": "analysis/decompile/ida/functions/00444240-place_challenge_parcels_on_track.c",
       "required_substrings": [
-        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)",
+        "void __thiscall place_challenge_parcels_on_track(cRSubGame *game)",
         "game->challenge_speed_value",
         "game->level_definition.parcel_count",
         "g_zero_parcel_bucket_count_lane_end",
@@ -13454,7 +13461,7 @@
       "name": "ida_neighbor_cell_c_r_sub_loc_owner",
       "artifact": "analysis/decompile/ida/functions/00434b60-is_neighbor_cell_solid.c",
       "required_substrings": [
-        "bool __thiscall is_neighbor_cell_solid(SubgameRuntime *game, cRSubLoc *cell, int32_t lane_offset, int32_t row_offset)",
+        "bool __thiscall is_neighbor_cell_solid(cRSubGame *game, cRSubLoc *cell, int32_t lane_offset, int32_t row_offset)",
         "get_track_cell_row_index(cell)",
         "cell->lane_and_flags & 7",
         "game->runtime_row_count",
@@ -13526,7 +13533,7 @@
       "name": "ida_slug_allocator_cursor_owners",
       "artifact": "analysis/decompile/ida/functions/0043dc80-spawn_slug_hazard.c",
       "required_substrings": [
-        "void __thiscall spawn_slug_hazard(SubgameRuntime *game, cRSubLoc *cell, Player *owner_player)",
+        "void __thiscall spawn_slug_hazard(cRSubGame *game, cRSubLoc *cell, Player *owner_player)",
         "struct SlugStateStrideCursor *slug_state_cursor",
         "struct SlugSlotCursor *slug_slot_cursor",
         "slug_state_cursor->state",
@@ -13655,7 +13662,7 @@
       "name": "ida_parcel_spawn_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00443730-spawn_track_parcel.c",
       "required_substrings": [
-        "Parcel *__thiscall spawn_track_parcel(SubgameRuntime *runtime, Vec3 *world_position, Player *source_player)",
+        "Parcel *__thiscall spawn_track_parcel(cRSubGame *runtime, Vec3 *world_position, Player *source_player)",
         "allocate_track_parcel_slot(&runtime->parcel_manager)",
         "track_parcel_slot->state = PARCEL_STATE_TRACK_ACTIVE;",
         "track_parcel_slot->owner_player = &runtime->player;",
@@ -18620,7 +18627,7 @@
       "name": "ida_track_colour_build_semantic_owners",
       "artifact": "analysis/decompile/ida/functions/00435d40-build_track_colours.c",
       "required_substrings": [
-        "void __thiscall build_track_colours(SubgameRuntime *game)",
+        "void __thiscall build_track_colours(cRSubGame *game)",
         "g_loc_colour_lookup_check_black",
         "g_loc_colour_lookup_floor_slide_0.floor",
         "g_loc_colour_lookup_floor_slide_0.slide_0",
@@ -18972,7 +18979,7 @@
         "struct SubSegment* active_segment",
         "int32_t visited_segment_index = 0",
         "int32_t runtime_row_index = 0",
-        "struct SubgameRuntime* build_runtime_owner = game",
+        "struct cRSubGame* build_runtime_owner = game",
         "struct SubSegment* selected_segment",
         "int32_t random_segment_index",
         "int32_t sequential_segment_index = segment_cursor",
@@ -19016,11 +19023,11 @@
         "fringe_object_reloaded->bod.position"
       ],
       "forbidden_substrings": [
-        "struct SubgameRuntime* segment_count",
+        "struct cRSubGame* segment_count",
         "segment_count->scan_reset",
         "segment_count = game",
         "char* ecx_14",
-        "struct SubgameRuntime* segment_count_2",
+        "struct cRSubGame* segment_count_2",
         "int32_t var_24",
         "int32_t var_20",
         "char var_42",
@@ -19028,7 +19035,7 @@
         "int32_t j_1",
         "struct SubSegment* var_3c_1",
         "int32_t i_4 = 0",
-        "struct SubgameRuntime* runtime = game",
+        "struct cRSubGame* runtime = game",
         "struct SubSegment* active_segment_3",
         "struct Path* ecx_98",
         "runtime_cell_anchor->cell.attachment_template_record = ecx_98",
@@ -19075,7 +19082,7 @@
         "SubSegment *active_segment;",
         "int32_t visited_segment_index;",
         "int32_t runtime_row_index;",
-        "SubgameRuntime *build_runtime_owner;",
+        "cRSubGame *build_runtime_owner;",
         "SubSegment *selected_segment;",
         "int32_t selected_segment_row_count;",
         "SubSegment *source_segment;",
@@ -19173,14 +19180,14 @@
         "stamped_row->secondary_attachment_cell = p_cell",
         "int32_t v20;",
         "int32_t v22;",
-        "SubgameRuntime *v23;",
+        "cRSubGame *v23;",
         "SubSegment *p_last_segment;",
         "SubSegment *v31;",
         "char v104;",
         "int v110;",
         "uint8_t *runtime_row_anchor;",
         "char *runtime_cell_anchor;",
-        "SubgameRuntime *segment_row_index;",
+        "cRSubGame *segment_row_index;",
         "char *v84;",
         "(_DWORD *)v84 + 41",
         "(_DWORD *)v84 + 42",
@@ -19273,7 +19280,7 @@
       "name": "ida_track_projection_owner_abi",
       "artifact": "analysis/decompile/ida/functions/004444b0-project_position_onto_track_attachment.c",
       "required_substrings": [
-        "void __thiscall project_position_onto_track_attachment(SubgameRuntime *game, Vec3 *position, float *out_angle)",
+        "void __thiscall project_position_onto_track_attachment(cRSubGame *game, Vec3 *position, float *out_angle)",
         "SubRow *runtime_row;",
         "cRSubLoc *primary_attachment_cell;",
         "cRPath *attachment_template_record;",
@@ -20151,7 +20158,7 @@
       "name": "ida_runtime_pool_constructor_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00408060-initialize_runtime_pools_and_path_template_bank.c",
       "required_substrings": [
-        "SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime *game)",
+        "cRSubGame *__thiscall initialize_runtime_pools_and_path_template_bank(cRSubGame *game)",
         "&game->segment_cache",
         "&game->fringe_manager",
         "&game->player.body",
@@ -21175,7 +21182,7 @@
       "name": "ida_subgame_feature_selected_record_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00435df0-set_subgame_features.c",
       "required_substrings": [
-        "void __thiscall set_subgame_features(SubgameRuntime *runtime)",
+        "void __thiscall set_subgame_features(cRSubGame *runtime)",
         "runtime->selected_level_record_active",
         "runtime->selected_level_record",
         "runtime->level_mode",
@@ -21210,7 +21217,7 @@
       "artifact": "analysis/decompile/ida/functions/00437270-normalize_segment_glyph_for_track_flags.c",
       "required_substrings": [
         "char __thiscall normalize_segment_glyph_for_track_flags(",
-        "SubgameRuntime *runtime",
+        "cRSubGame *runtime",
         "runtime->completion_row_start",
         "runtime->runtime_flags",
         "runtime->track_mirror_enabled",
@@ -21964,7 +21971,7 @@
       "artifact": "analysis/decompile/binja/functions/00448da0-initialize_tutorial.c",
       "required_substrings": [
         "tutorial->state = 0",
-        "struct SubgameRuntime* eax_1 = &g_game_base->subgame",
+        "struct cRSubGame* eax_1 = &g_game_base->subgame",
         "tutorial->game = eax_1",
         "eax_1->runtime_flags |= 0x600000",
         "game->runtime_flags"

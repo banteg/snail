@@ -4,7 +4,7 @@ Exact match under the standard `msvc6.5 /O2 /G5 /W3` profile.
 
 Android and iOS both preserve the exact authored member
 `cRPathManager::NameCode(char*)`. Windows independently places the
-otherwise-empty, one-byte `cRPathManager` at `SubgameRuntime +0xff2910`,
+otherwise-empty, one-byte `cRPathManager` at `cRSubGame +0xff2910`,
 immediately before the path-template bank. `PathManager` remains only a
 compatibility alias. Recasting this scratch from a standalone stdcall helper
 to the unused-receiver thiscall method preserves exact 27/27 proof with all

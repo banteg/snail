@@ -12,7 +12,7 @@ typedef unsigned int DWORD;
 
 int report_errorf(char* format, ...);
 
-void SubgameRuntime::spawn_track_jetpack_pickup(cRSubLoc* cell, Player* player)
+void cRSubGame::spawn_track_jetpack_pickup(cRSubLoc* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
@@ -28,7 +28,7 @@ void SubgameRuntime::spawn_track_jetpack_pickup(cRSubLoc* cell, Player* player)
 
     DWORD* slot_base =
         game_words + sizeof(JetPack) / sizeof(DWORD) * slot_index;
-    SubgameRuntime* slot = (SubgameRuntime*)slot_base;
+    cRSubGame* slot = (cRSubGame*)slot_base;
     slot->jetpack_pickup.state = TRACK_PICKUP_STATE_ACTIVE;
     slot->jetpack_pickup.owner = player;
 

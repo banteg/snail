@@ -111,7 +111,7 @@ another row consumer agrees on the lane meanings.
 
 ## Receiver cleanup (2026-06-21)
 
-The scratch now defines `SubgameRuntime::place_parcels_on_track` directly and
+The scratch now defines `cRSubGame::place_parcels_on_track` directly and
 calls the shared `place_challenge_parcels_on_track` declaration for mode 1.
 The fragile candidate-bank and segment-record shapes stay scratch-local, with
 the segment base still addressed as `this + 0xa878`. Focused Wibo remains
@@ -137,7 +137,7 @@ regressed, so neither should be kept as an assumed fix:
 
 ## Embedded level owner and candidate-bank consolidation (2026-07-10)
 
-`SubgameRuntime +0xa874` is now the exact embedded `SubTracks`,
+`cRSubGame +0xa874` is now the exact embedded `SubTracks`,
 not a loose segment-count field followed by anonymous storage. Its `0x1a5978`
 extent accounts for the 100 authored `SubSegment` records, first/last
 segments, level display name, parcel count, texture set, and quota through
@@ -148,7 +148,7 @@ The two global candidate banks now share `ParcelBucket`: 32 semantic
 `ParcelCandidate` records followed by `candidate_count`, `set_id`, and
 `segment_index`. Both exact 2048-entry pool constructors remain 100%, proving
 the `0x20c` bucket stride and that these banks are global scratch storage, not
-SubgameRuntime-owned state. The placement scratch remains honestly at 26.30%
+cRSubGame-owned state. The placement scratch remains honestly at 26.30%
 (646/639, 26 clean operands and five known mismatches); the ownership rewrite
 neither improves nor regresses its code-shape score.
 
@@ -157,7 +157,7 @@ neither improves nor regresses its code-shape score.
 Both the parcel-set and digit-0 claim passes now preserve the source's direct
 `runtime_rows[absolute_row]` indexing instead of introducing a cached row
 pointer. That independently agrees with the survival placement routine and
-confirms that the claimed row remains owned by the `SubgameRuntime` slab while
+confirms that the claimed row remains owned by the `cRSubGame` slab while
 the selected `ParcelBucket` is temporary global pool state. The kind-42 tail
 also dispatches through `Path`, matching the same member
 owner recovered in the survival path rather than treating the transform helper
@@ -174,7 +174,7 @@ not add ownership evidence.
 ## Sequential runtime-row projection cursor (2026-07-14)
 
 The attachment-projection tail now retains a cursor rooted at
-`SubgameRuntime::runtime_rows[0]` and advances it by one owned `SubRow` per
+`cRSubGame::runtime_rows[0]` and advances it by one owned `SubRow` per
 iteration. This is the lifetime visible in the Windows loop: its induction
 pointer starts at the row flags, then reaches the borrowed primary attachment
 cell and overloaded projection payload through `SubRow` fields. The previous
@@ -204,19 +204,19 @@ the same two honest address-shape mismatches in later compaction code.
 The Windows and Android bodies both preserve the `cRSubGame` receiver across
 the normal/survival dispatch, while the iOS object symbols name both methods on
 that same owner. Binary Ninja prototype previews independently accepted
-`SubgameRuntime*` for the normal and survival functions, so the canonical
+`cRSubGame*` for the normal and survival functions, so the canonical
 header and both decompiler sync paths now replay the two `__thiscall`
 receivers. The tracked exports consequently expose `level_definition`,
 `runtime_rows`, and the global parcel pools without the old `Game*` shell.
 
-This pass also closes `SubgameRuntime +0x20..+0x33`: the rolling runtime-row
+This pass also closes `cRSubGame +0x20..+0x33`: the rolling runtime-row
 scan begin/end pair, completion-bonus x/y sources, and the shared
 `RuntimeRateOrLevelArg` union. Those lanes are independently consumed by
 `update_subgame`, `complete_subgame`, the level builders, rate calculation,
 and survival parcel placement. They are owned runtime state; the two 2048-slot
 parcel banks and 4096-entry survival row bank remain global scratch.
 
-A persistent local `SubgameRuntime* game = this` spelling was tested because
+A persistent local `cRSubGame* game = this` spelling was tested because
 Windows spills the receiver and Android retains a receiver alias. It left the
 candidate at 635 instructions but regressed the focused score from 30.93% to
 30.46% and did not recover the native prologue, so it was rejected rather than
@@ -254,7 +254,7 @@ focused score to 27.70% without adding ownership evidence.
 
 The two placement passes and the final projection pass now agree across source,
 Binary Ninja, and IDA on one ownership model. The parcel-set and digit-0 loops
-retain a containing `SubgameRuntime` base while advancing to a borrowed
+retain a containing `cRSubGame` base while advancing to a borrowed
 `SubRow` at the native `0xf4` stride; the final pass carries a direct borrowed
 `SubRow*` cursor through the owned `runtime_rows` slab. Neither candidate bank
 nor any row cursor owns or transfers that storage.
@@ -312,7 +312,7 @@ the digit-0 path carries a `Vec3*` candidate-position borrow and a
 `ParcelBucket*` destination cursor while publishing the copied candidate and
 its `candidate_count`, `set_id`, and `segment_index`. These views expose the
 already-proven `ParcelCandidate` and `ParcelBucket` fields without moving either
-2048-entry global scratch bank under `SubgameRuntime` ownership.
+2048-entry global scratch bank under `cRSubGame` ownership.
 
 A stack-variable split at the digit-0 destination definition was tested and
 rejected. Splitting the reused `out_angle` slot changed downstream MLIL variable

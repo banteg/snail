@@ -1,6 +1,6 @@
 # bind_subgame_owner @ 0x433fc0
 
-Stores the root-owned `SubgameRuntime` pointer (`GameRoot +0x74618`) in the
+Stores the root-owned `cRSubGame` pointer (`GameRoot +0x74618`) in the
 receiver's first word and returns it.
 
 The two native callsites in `initialize_game_assets_and_world` pass

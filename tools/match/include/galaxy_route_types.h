@@ -4,7 +4,7 @@
 
 #include "frontend_widget.h"
 
-class SubgameRuntime;
+class cRSubGame;
 
 struct GalaxyPoint {
     union {
@@ -139,7 +139,7 @@ public:
     // a 0x29c-byte authored/display record.
     GalaxyStar route_slots[101]; // +0x10, ends at +0x10930
     GalaxyRouteNameRecord route_names[10]; // +0x10930
-    SubgameRuntime* level_progress_base; // +0x10f70, borrowed enclosing subgame
+    cRSubGame* level_progress_base; // +0x10f70, borrowed enclosing subgame
     union {
         struct {
             FrontendWidget* exit_or_back_widget; // +0x10f74

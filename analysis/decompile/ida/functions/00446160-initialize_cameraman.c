@@ -2,10 +2,10 @@
 /* function: initialize_cameraman @ 0x446160 */
 /* selector: initialize_cameraman */
 
-// Initializes the exact 0xd8-byte cRCameraman embedded in Player at +0x200, wiring its Player and SubgameRuntime backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`.
+// Initializes the exact 0xd8-byte cRCameraman embedded in Player at +0x200, wiring its Player and cRSubGame backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`.
 void __thiscall initialize_cameraman(Cameraman *cameraman)
 {
-  SubgameRuntime *p_subgame; // ecx
+  cRSubGame *p_subgame; // ecx
 
   cameraman->player = &g_game_base->subgame.player;
   p_subgame = &g_game_base->subgame;

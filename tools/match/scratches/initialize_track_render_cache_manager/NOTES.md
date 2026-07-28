@@ -3,7 +3,7 @@
 Initial shape:
 
 - Seeds five render-cache capacity pairs.
-- Stores the borrowed enclosing `SubgameRuntime*` at manager `+0x54`; the
+- Stores the borrowed enclosing `cRSubGame*` at manager `+0x54`; the
   runtime begins at `game+0x74618`.
 - Initializes the 143 x 5 cache BOD slots by allocating an `Object` for each
   slot, attaching it through `set_bod_object`, clearing the object geometry
@@ -82,7 +82,7 @@ Volatile forms regressed by disturbing the prologue; non-volatile forms
 compile back to the same SIB base/index choice.
 
 2026-07-10 owner closure: three independent callers establish this manager as
-the embedded `SubgameRuntime::segment_cache` at `+0x5c`. The exact
+the embedded `cRSubGame::segment_cache` at `+0x5c`. The exact
 `0xa7f8` manager size ends at subgame `+0xa854`; `owner_subgame +0x54` is a
 borrowed backlink, the `143 x 5` BOD grid is manager-owned, and the five shared
 vertex/index buffers are tracked allocations owned for the manager lifetime.
@@ -96,7 +96,7 @@ The interior relocation is manifest-resolved through the renderer's proven
 
 2026-07-11 cRSegmentCache ownership:
 
-- The complete 0xa7f8-byte object at `SubgameRuntime +0x5c` is now named
+- The complete 0xa7f8-byte object at `cRSubGame +0x5c` is now named
   `SegmentCache`, matching the constructor's `Size of cRSegmentCache` ledger.
   Its owned 143x5 BOD grid, five vertex/index staging pairs, and borrowed
   enclosing-runtime backlink already account for the full extent. The rename

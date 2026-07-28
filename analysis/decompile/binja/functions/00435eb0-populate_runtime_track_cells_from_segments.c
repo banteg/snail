@@ -143,7 +143,7 @@
 004361d4        if (game->runtime_row_count s<= 0)
 004361d4        return
 004361da        int32_t runtime_row_index = 0
-004361de        struct SubgameRuntime* build_runtime_owner = game
+004361de        struct cRSubGame* build_runtime_owner = game
 004361e4        struct SubSegment* active_segment
 004361e4        int32_t segment_row_index_1
 004361e4        struct SubSegment* selected_segment
@@ -248,6 +248,8 @@
 004364cf        float ecx_42
 004364cf        ecx_42.b = segment_row_anchor->row.object_position.z.b
 004364cf        ecx_42:1.b = segment_row_anchor->row.object_position.z:1.b
+004364cf        ecx_42:2.b = segment_row_anchor->row.object_position.z:2.b
+004364cf        ecx_42:3.b = segment_row_anchor->row.object_position.z:3.b
 004364d2        runtime_row_anchor->row.row_model.body.transform.position.z = ecx_42
 004364db        runtime_row_anchor->row.row_model.body.transform.position.z = fconvert.s(float.t(build_row) + fconvert.t(runtime_row_anchor->row.row_model.body.transform.position.z))
 004364e8        if ((segment_row_anchor->row.flags.b & 8) == 0)
@@ -272,9 +274,11 @@
 00436573        *(&runtime_row_anchor->row.parcel_spawn_position.x + 2) = x:2.b
 00436573        *(&runtime_row_anchor->row.parcel_spawn_position.x + 3) = x:3.b
 00436578        runtime_row_anchor->row.parcel_spawn_position.y = segment_row_anchor->row.local_position.y
-0043657b        int16_t z = (segment_row_anchor->row.local_position.z).w
+0043657b        float z = segment_row_anchor->row.local_position.z
 0043657e        runtime_row_anchor->row.parcel_spawn_position.z.b = z.b
 0043657e        *(&runtime_row_anchor->row.parcel_spawn_position.z + 1) = z:1.b
+0043657e        *(&runtime_row_anchor->row.parcel_spawn_position.z + 2) = z:2.b
+0043657e        *(&runtime_row_anchor->row.parcel_spawn_position.z + 3) = z:3.b
 00436588        if ((segment_row_anchor->row.flags.b & 8) != 0)
 0043658a        uint32_t flags_2 = runtime_row_anchor->row.flags
 00436590        flags_2.b |= 8
@@ -667,9 +671,11 @@
 00436fb6        runtime_row_anchor->row.attachment_body.color.r:2.b = r:2.b
 00436fb6        runtime_row_anchor->row.attachment_body.color.r:3.b = r:3.b
 00436fbb        runtime_row_anchor->row.attachment_body.color.g = eax_107->g
-00436fbe        int16_t b_1 = (eax_107->b).w
+00436fbe        float b_1 = eax_107->b
 00436fc1        runtime_row_anchor->row.attachment_body.color.b.b = b_1.b
 00436fc1        runtime_row_anchor->row.attachment_body.color.b:1.b = b_1:1.b
+00436fc1        runtime_row_anchor->row.attachment_body.color.b:2.b = b_1:2.b
+00436fc1        runtime_row_anchor->row.attachment_body.color.b:3.b = b_1:3.b
 00436fc7        runtime_row_anchor->row.attachment_body.color.a = eax_107->a
 00436fd3        float g = eax_107->g
 00436fdc        float b = eax_107->b

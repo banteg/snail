@@ -2,8 +2,8 @@
 /* function: project_position_onto_track_attachment @ 0x4444b0 */
 /* selector: project_position_onto_track_attachment */
 
-// Projects a mutable world-space position onto an active track attachment template in place. Android and iOS preserve the authored `cRSubGame::CalcRealPos(tVector&, float&)` signature; both Windows callers discard EAX, confirming the same void SubgameRuntime method rather than the decompiler's stale-return contract.
-void __thiscall project_position_onto_track_attachment(SubgameRuntime *game, Vec3 *position, float *out_angle)
+// Projects a mutable world-space position onto an active track attachment template in place. Android and iOS preserve the authored `cRSubGame::CalcRealPos(tVector&, float&)` signature; both Windows callers discard EAX, confirming the same void cRSubGame method rather than the decompiler's stale-return contract.
+void __thiscall project_position_onto_track_attachment(cRSubGame *game, Vec3 *position, float *out_angle)
 {
   SubRow *runtime_row; // eax
   cRSubLoc *primary_attachment_cell; // edi

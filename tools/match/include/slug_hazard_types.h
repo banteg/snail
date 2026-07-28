@@ -1,5 +1,5 @@
 // Authored cRSlug view, recovered from constructor, voice, hit, explosion,
-// kill, AI, collision, and spawn paths. SubgameRuntime owns eight inline slots;
+// kill, AI, collision, and spawn paths. cRSubGame owns eight inline slots;
 // helpers may still use sparse casts when a focused source-shape proof requires
 // them.
 #ifndef SLUG_HAZARD_TYPES_H
@@ -10,7 +10,7 @@
 
 class Player;
 class Sprite;
-class SubgameRuntime;
+class cRSubGame;
 
 enum SubSlugState {
     SUB_SLUG_STATE_INACTIVE = 0,
@@ -41,7 +41,7 @@ public:
 
     SubSlugState state;                // +0x80
     SubSlugDeathTossDirection death_toss_direction; // +0x84
-    SubgameRuntime* owner_game;        // +0x88, borrowed containing subgame
+    cRSubGame* owner_game;        // +0x88, borrowed containing subgame
     Vector3 velocity;                  // +0x8c
     float attachment_facing_angle;     // +0x98, projection output added to player heading
     float death_toss_progress;                // +0x9c, write-only before teardown

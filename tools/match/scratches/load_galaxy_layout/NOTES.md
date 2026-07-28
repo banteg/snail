@@ -73,7 +73,7 @@ to `Galaxy` and absorbing its native-ledger tail keeps the honest 78.37%,
   (`234/233`) to `84.26%` (`237/233`) with the 62-instruction prefix intact and
   39 clean operands.
 - The retained `level_progress_base` backlink now explicitly borrows the
-  root-owned `SubgameRuntime`; it is not a separately allocated progress
+  root-owned `cRSubGame`; it is not a separately allocated progress
   table. Naming that owner is codegen-neutral.
 
 2026-07-12 contract and cross-port split recovery:
@@ -146,7 +146,7 @@ and `GalaxyPoint[101]` route bank. Live readback confirms the void loader and
 the typed constructor, destructor, updater, line renderer, route tick, route
 open/close, and bounds helper. Focused paired exports now retain `Galaxy*`,
 `GalaxyStar*`, both point-bank owners, and the borrowed
-`SubgameRuntime* level_progress_base` instead of IDA's former `_DWORD*` and
+`cRSubGame* level_progress_base` instead of IDA's former `_DWORD*` and
 integer receivers. Matching remains honestly unchanged at 88.27%, 236/233
 instructions, prefix 62, with 39 clean operands; this is a durable ownership
 replay correction, not a source-shape claim.

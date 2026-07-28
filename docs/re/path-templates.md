@@ -85,7 +85,7 @@ There is no constructor-to-runtime copy stage. The two formerly separate
 address families are aliases of the same embedded storage:
 
 ```text
-SubgameRuntime = GameRoot + 0x74618
+cRSubGame = GameRoot + 0x74618
 0x74618 + 0xff2914 = 0x1066f2c
 ```
 
@@ -96,15 +96,15 @@ SubgameRuntime = GameRoot + 0x74618
 - `initialize_game_assets_and_world` constructs public slot `i` directly at
   `GameRoot + 0x1066f2c + i * 0x150`
 - `update_subgame` and `populate_runtime_track_cells_from_segments` use the
-  `SubgameRuntime` view of that same array
+  `cRSubGame` view of that same array
 
 The parser/runtime path is therefore direct:
 
 - `load_segment_definitions` resolves `Path=...` to a public-table index and
   stores it on the parsed row at `+0x8bc`
 - the `P/p` builder reads that index and selects pair `i`
-- `SubgameRuntime + 0xff2914` selects the primary `0xa8` record and
-  `SubgameRuntime + 0xff29bc` selects the secondary record
+- `cRSubGame + 0xff2914` selects the primary `0xa8` record and
+  `cRSubGame + 0xff29bc` selects the secondary record
 - uppercase `P` becomes tile `30` and lowercase `p` tile `29`; the independent
   `track_mirror_enabled` byte chooses primary versus secondary
 
@@ -119,7 +119,7 @@ The bank has an exact fixed extent:
 - one `AttachmentPathTemplate` record is `0xa8` bytes
 - one `AttachmentPathTemplatePair` is `0x150` bytes
 - `63 * 0x150 = 0x52b0`
-- `SubgameRuntime + 0xff2914 + 0x52b0 = +0xff7bc4`, exactly the embedded
+- `cRSubGame + 0xff2914 + 0x52b0 = +0xff7bc4`, exactly the embedded
   `BarrierActor` that follows the bank
 
 `initialize_path_template_record_pair` retains a historical misleading name.

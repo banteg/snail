@@ -25,7 +25,7 @@ EXPECTED_TYPE_WIDTHS = {
     "FringeManager": 0x5FB44,
     "RootTrackFringeBodCatalog": 0x3F00,
     "RootBodCatalog": 0x4D00,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -54,7 +54,7 @@ EXPECTED_STRUCT_FIELDS = {
     "RootBodCatalog": {
         0xCB0: ("fringe_catalog", "RootTrackFringeBodCatalog"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x54: ("runtime_row_count", "int32_t"),
         0x35BBBC: ("fringe_manager", "FringeManager"),
         0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
@@ -62,7 +62,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# MakeFringe preserves the SubgameRuntime receiver across helper calls, walks
+# MakeFringe preserves the cRSubGame receiver across helper calls, walks
 # the separately owned row and cell slabs, selects one object from the root
 # fringe-BOD catalog, and borrows each emitted Fringe from the embedded pool.
 # Keep those ownership domains distinct; the per-direction integers are only
@@ -74,7 +74,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
         10,
         71,
         "runtime",
-        "SubgameRuntime*",
+        "cRSubGame*",
     ),
     (
         "build_track_fringe_objects",
@@ -82,7 +82,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
         18,
         -80,
         "runtime_saved",
-        "SubgameRuntime*",
+        "cRSubGame*",
     ),
     (
         "build_track_fringe_objects",

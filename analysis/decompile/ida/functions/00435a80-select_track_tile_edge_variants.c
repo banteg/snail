@@ -3,7 +3,7 @@
 /* selector: select_track_tile_edge_variants */
 
 // Void cRSubGame normalization pass that computes neighbor masks and chooses edge or corner variants for special runtime tile classes. Cross-port Android and iOS symbols match this pass to `cRSubGame::SmoothTrack()`.
-void __thiscall select_track_tile_edge_variants(SubgameRuntime *game)
+void __thiscall select_track_tile_edge_variants(cRSubGame *game)
 {
   int32_t v1; // edi
   SubLocTileId *p_tile_id; // esi

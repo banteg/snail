@@ -2,8 +2,8 @@
 /* function: set_subgame_features @ 0x435df0 */
 /* selector: set_subgame_features */
 
-// Derives the active subgame feature flags from the current mode, level, and challenge setup before runtime rows and pickups are built. Cross-port iOS symbols match this helper to `cRSubGame::SetFeatures()` in `SubGame.o`.
-void __thiscall set_subgame_features(SubgameRuntime *runtime)
+// Windows `void cRSubGame::SetFeatures()`: derives the active subgame feature flags from the current mode, level, and challenge setup before runtime rows and pickups are built. Android and iOS preserve the owner and void contract.
+void __thiscall set_subgame_features(cRSubGame *runtime)
 {
   int32_t level_mode; // eax
 

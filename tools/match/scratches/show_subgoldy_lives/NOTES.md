@@ -22,7 +22,7 @@ Evidence:
   entries visible and hides the rest.
 
 This also consolidates the adjacent gameplay score/life HUD widget fields into
-the shared `SubgameRuntime` view instead of repeating local `Game`
+the shared `cRSubGame` view instead of repeating local `Game`
 definitions.
 
 Source-shape note: native keeps an absolute `Game` byte offset in the loop
@@ -40,7 +40,7 @@ scalar inference. The matching source was already void and remains exact at
 ## 2026-07-18 Player lifecycle ownership guard
 
 The focused replay now freezes the exact `Player*` receiver,
-`visible_life_stock`, and borrowed `SubgameRuntime* game` relationship in both
+`visible_life_stock`, and borrowed `cRSubGame* game` relationship in both
 decompiler lanes. The scalar native byte-offset iterator is intentionally
 retained: retyping it as a direct widget pointer would misstate the recovered
 source shape and previously regressed matching. No matcher edit was made; the

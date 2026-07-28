@@ -131,7 +131,7 @@ is codegen-neutral at 99.53%, 213/213 instructions, prefix 102/213, and 37
 clean masked operands.
 
 2026-07-11 parcel return ownership: the state-2 spawn now receives a `Parcel*`
-from `SubgameRuntime::spawn_track_parcel`, backed by the embedded
+from `cRSubGame::spawn_track_parcel`, backed by the embedded
 `ParcelManager`. Android `cRSubGame::AddParcel(...)` independently proves that
 the pointer-or-null result is real. The focused Windows result remains 99.53%,
 213/213 instructions, prefix 102/213, with all 37 operands clean.
@@ -150,7 +150,7 @@ and `update_track_parcel` independently consumes the same owned vector in its
 state-7 delivery expression.
 
 2026-07-14 root player closure: parcel staging now passes
-`SubgameRuntime::parcel_home_anchor()` and the embedded `subgame.player` to the
+`cRSubGame::parcel_home_anchor()` and the embedded `subgame.player` to the
 parcel manager, while the zero-parcel bonus gate names `subgame.level_mode`
 and awards the same player. This removes the raw `root + 0x433f34`,
 `+0x42fd7c`, and `+0x74658` expressions without changing the exact 213/213
@@ -189,7 +189,7 @@ the other `SUMMARY_PENDING` producer. Focused matching remains exact at
 The parcel-spawn owner at `0x404d9a` and bonus-score owner at `0x404e5d` both
 resolve to the embedded Player at root `+0x42fd7c`. Normalizing only those
 colliding IDA operands recovers the full
-`SubgameRuntime::player.presentation.snail_hotspots_world[11]` producer graph
+`cRSubGame::player.presentation.snail_hotspots_world[11]` producer graph
 and the same Player score sink already shown by Binary Ninja. The parcel and
 Player lifetimes now agree across both decompilers; matching remains exact at
 213/213.

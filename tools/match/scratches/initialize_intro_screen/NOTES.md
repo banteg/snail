@@ -23,7 +23,7 @@ Expected residuals:
   `GameRoot +0x4f400`: a `0x18`-byte state header, 1024 `0x90`-byte crawl
   LogoLetters, and 32 `0x90`-byte image donors. The second bank begins at
   receiver `+0x24018`, and the complete object ends exactly at
-  `SubgameRuntime +0x74618`.
+  `cRSubGame +0x74618`.
 - `LogoLetter` is shared across its exact constructor, pinned updater,
   intro initializer, teardown, constructor loop, and logo loader. It owns the
   inherited `RenderableBod` through `+0x7f`, velocity at `+0x80`, and the

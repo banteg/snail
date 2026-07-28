@@ -333,7 +333,7 @@ IDA now normalizes the two relocatable Player basis-up operands and seven
 runtime-row operands whose numeric values collide with named code or offset
 symbols. This changes only those instruction operands, preserves the global
 symbols, and makes decompilation follow the full canonical graph:
-`GameRoot -> SubgameRuntime -> Player/rows -> cRSubLoc -> Path`.
+`GameRoot -> cRSubGame -> Player/rows -> cRSubLoc -> Path`.
 Fresh BN and IDA exports consequently agree on the player body transform,
 runtime row and primary cell, entry mesh pointers, color alpha, list flags,
 and subgame rate owners. Health checks preserve both views.

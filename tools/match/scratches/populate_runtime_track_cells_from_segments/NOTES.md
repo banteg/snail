@@ -125,7 +125,7 @@ former bank roots are the primary/secondary fields of one 63-pair array.
 codegen-neutral ownership recovery, not a score-driven relabeling.
 
 2026-06-17 runtime/root consolidation: the scratch now uses the shared sparse
-`SubgameRuntime` root and the named `TrackAttachmentRuntimeRow` fields
+`cRSubGame` root and the named `TrackAttachmentRuntimeRow` fields
 `parcel_set_id` and `attachment_template_index`. Focused Wibo remains 28.25%,
 1190/1245 candidate instructions, with masked operands 57 ok / 1 unresolved /
 0 mismatch. This is a field-evidence pass, not a source-shape fix: the exact
@@ -141,7 +141,7 @@ The remaining glyph-switch debt is a real table-layout mismatch, not an
 unknown local-label relocation.
 
 2026-06-21 receiver cleanup: the scratch now defines
-`SubgameRuntime::populate_runtime_track_cells_from_segments` directly and
+`cRSubGame::populate_runtime_track_cells_from_segments` directly and
 removes the duplicate local `Game` field window. Focused Wibo remains `28.25%`,
 1190/1245 candidate instructions, prefix 0/1245, with the same `57 ok / 1
 mismatch` masked audit. `uv run snail match types --paths` now reports
@@ -152,13 +152,13 @@ generic owner list.
 
 The raw `+0xff2914/+0xff29bc + index*0x150` spelling remains in this large
 scratch because the natural typed pair expression changes VC6 branch/address
-formation and globally reshuffles locals. The shared `SubgameRuntime` header
+formation and globally reshuffles locals. The shared `cRSubGame` header
 now owns the exact `PathPair[63]` field; retaining the native
 arithmetic here is source-shape preservation, not an unresolved owner.
 
 ## 2026-07-10 runtime slab ownership pass
 
-- `SubgameRuntime` owns a fixed `cRSubLoc[3200][8]` slab at `+0x3bfac8`.
+- `cRSubGame` owns a fixed `cRSubLoc[3200][8]` slab at `+0x3bfac8`.
   Its exact `0x20d000` extent lands at `+0x5ccac8`, where a fixed
   `SubRow[3200]` slab begins; the row slab's exact
   `0xbea00` extent lands at the embedded `SubHighScore` at `+0x68b4c8`.
@@ -184,7 +184,7 @@ arithmetic here is source-shape preservation, not an unresolved owner.
 - The selected replay/high-score source is now read through
   `selected_level_record_active` and the borrowed `selected_level_record`.
   Modes 0, 1, and 4 reset the embedded
-  `SubgameRuntime::current_high_score_record` directly; the scratch-local
+  `cRSubGame::current_high_score_record` directly; the scratch-local
   `HighScoreEntry` lookalike was not a separate owner.
 - The setup reset now names `replay_update_cursor` and the embedded `Player`
   fields it actually mutates: `total_score`, `stopwatch`, `score_tail`,
@@ -207,7 +207,7 @@ arithmetic here is source-shape preservation, not an unresolved owner.
 - Setup and selection now read the owned `SubTracks` First/Last row counts,
   random length/enable state, level display name, and segment-row counts
   directly. The rebuild gate and player follow latch likewise use their shared
-  `SubgameRuntime`/`Player` owners. These substitutions preserve the honest
+  `cRSubGame`/`Player` owners. These substitutions preserve the honest
   28.25%, 1190/1245 frontier and its 57 clean operands plus the known glyph
   table-layout mismatch.
 - The mode-3 raw addresses `+0x1b4410`, `+0x1bc850`, and `+0x1c0a70` are
@@ -328,7 +328,7 @@ not an independent owner: its fields align exactly with `SubSolution`, and the
 0x1fac0-byte authored `cRSubSolution` stride.
 
 The Binary Ninja and IDA-facing campaign now exposes the exact `SubSolution`
-and types `SubgameRuntime::selected_level_record +0xff25d4` accordingly. A
+and types `cRSubGame::selected_level_record +0xff25d4` accordingly. A
 Binary Ninja declaration preview verifies `ReplayRunRecord == 0x06`,
 `SubSolution == 0x1fac0`, and the borrowed runtime field without mutating the
 database. This is an analysis ownership correction only; focused Wibo remains
@@ -346,7 +346,7 @@ range with the three independently measured embedded stores:
 - the working `SubSolution current_high_score_record` at `+0xfd2b10`, ending
   exactly at the replay-launch flags at `+0xff25d0`.
 
-Binary Ninja preview keeps the enclosing `SubgameRuntime` size at 0x1272838
+Binary Ninja preview keeps the enclosing `cRSubGame` size at 0x1272838
 while exposing those owned arrays and record, then reverts. No matcher source
 was reshaped, so the focused 28.25% baseline and honest glyph-table mismatch
 remain unchanged.
@@ -439,9 +439,9 @@ VC6 scheduling, but their large address constants no longer stand alone:
 
 - ordinary, first, last, and mode-3 scratch segment addresses derive from the
   two embedded `SubTracks` owners, `SubSegment` stride, and slot indices;
-- the row cursor derives from `SubgameRuntime::runtime_rows` and `sizeof(SubRow)`;
+- the row cursor derives from `cRSubGame::runtime_rows` and `sizeof(SubRow)`;
 - the cell index cursor derives from `sizeof(cRSubLoc)`, while the mirror-byte
-  lookup derives from `SubgameRuntime::track_mirror_enabled`;
+  lookup derives from `cRSubGame::track_mirror_enabled`;
 - primary/secondary template selection derives from `path_pairs`, `PathPair`
   stride, and `PathPair::secondary`; and
 - the early-row height seed resolves to path pair 36's borrowed
@@ -482,7 +482,7 @@ The glyph switch and placement tail no longer carry absolute
 now derives:
 
 - the slab base and eight-lane row extent from
-  `SubgameRuntime::runtime_cells`;
+  `cRSubGame::runtime_cells`;
 - object list flags, position, render arguments, and color from the inherited
   `BodBase` prefix;
 - tile id, lane flags, and all four fringe links from `cRSubLoc`;
@@ -577,8 +577,8 @@ typed consumers.
 
 VC6 does not materialize final element pointers in the central construction
 loop. It keeps three containing-owner bases and advances them at the exact
-native strides: `SubSegment + row * 0x38`, `SubgameRuntime + row * 0xf4`, and
-`SubgameRuntime + cell * 0x54`. Analysis-only overlapping views now preserve
+native strides: `SubSegment + row * 0x38`, `cRSubGame + row * 0xf4`, and
+`cRSubGame + cell * 0x54`. Analysis-only overlapping views now preserve
 that real source ownership while exposing the consumed `AuthoredSegmentRow`,
 `SubRow`, and `cRSubLoc` members at `+0x814`, `+0x5ccac8`, and `+0x3bfac8`.
 The cell view also names the guarded same-lane tile one eight-cell row behind
@@ -586,7 +586,7 @@ the current cell instead of rendering it as an unrelated prefix byte.
 
 The compiler-reused stack lifetime at the authored-row ordinal is now the
 integer `segment_row_index` in both decompilers; it is no longer tainted as a
-`SubgameRuntime*`. Binary Ninja's exact SSA identities and IDA's exact lvar
+`cRSubGame*`. Binary Ninja's exact SSA identities and IDA's exact lvar
 definition addresses replay idempotently. This removes 39 raw owner
 displacements from Binary Ninja and recovers the same owner chain in IDA.
 Matcher source is unchanged at the honest 29.67%, 1,229/1,245-instruction
@@ -658,8 +658,8 @@ added.
 
 The runtime clear pass reuses ECX for four unrelated source lifetimes: the
 eight-cell fringe-link countdown, `SubTracks::segment_count`, a borrowed
-cursor beginning at `SubSegment::visited`, and the final `SubgameRuntime*`
-loop owner. Treating that physical register as one `SubgameRuntime*` produced
+cursor beginning at `SubSegment::visited`, and the final `cRSubGame*`
+loop owner. Treating that physical register as one `cRSubGame*` produced
 the false `segment_count->scan_reset` expression and also tainted helper-call
 results and integer loop conditions.
 
@@ -669,7 +669,7 @@ cross loop phis and update definitions at `0x43616a`/`0x436171` and
 `0x4361b3`/`0x4361bd`; replaying only their entry definitions lets HLIL
 coalesce them again. The durable replay therefore splits and merges each
 complete SSA lifetime before typing the four roles as `int32_t`, `int32_t`,
-`uint8_t*`, and `SubgameRuntime*`, respectively.
+`uint8_t*`, and `cRSubGame*`, respectively.
 
 IDA independently recovers the same byte cursor and now names it
 `visited_cursor` at its Hex-Rays definition locator `0x4361ae`. Its `+16928`
@@ -768,7 +768,7 @@ two documented jump-table/call-alignment mismatches.
 
 IDA now preserves the same borrowed `SubRow` owner that Binary Ninja already
 recovered for the authored-row copy. The physical `RuntimeRowStrideAnchor*`
-still points into `SubgameRuntime::runtime_rows`; exact numeric-operand
+still points into `cRSubGame::runtime_rows`; exact numeric-operand
 normalization only prevents the large `+0x5ccac8..+0x5ccba0` displacements
 from colliding with IDA's auto-created `byte_5CCAC8` / `unk_5CCBxx` symbols.
 The refreshed pseudocode therefore resolves `source_segment`, `row_event_id`,
@@ -823,7 +823,7 @@ The 3,200-row reset does not carry whole-record owners. It carries three
 borrowed interior addresses: `SubRow::parcel_spawn_position.y`, advancing by
 the complete `0xf4` row stride; `cRSubLoc::lane_and_flags`, advancing by
 the complete `0x54` cell stride; and `cRSubLoc::fringe_front`, likewise
-advancing by `0x54`. `SubgameRuntime::runtime_rows` and `runtime_cells` remain
+advancing by `0x54`. `cRSubGame::runtime_rows` and `runtime_cells` remain
 the sole owners. The analysis-only `SubRowParcelSpawnYStrideCursor`,
 `TrackRowCellLaneAndFlagsStrideCursor`, and
 `TrackRowCellFringeFrontStrideCursor` views are exactly those owner-record
@@ -887,7 +887,7 @@ other fakematch was added.
 ## 2026-07-25 runtime attachment-path borrows
 
 The `P`/`p` glyph arm now exposes the complete attachment borrow chain.
-`SubgameRuntime::path_pairs` owns 63 `PathPair` records. The mirror branch
+`cRSubGame::path_pairs` owns 63 `PathPair` records. The mirror branch
 selects one complete `Path`, either `primary` or `secondary`, and the current
 `cRSubLoc` retains that borrowed path in `attachment_template_record`.
 The selected path's `row_span_count` then stamps borrowed links to that same

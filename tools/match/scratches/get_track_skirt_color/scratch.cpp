@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-tColour* SubgameRuntime::get_track_skirt_color(tColour* out)
+tColour* cRSubGame::get_track_skirt_color(tColour* out)
 {
     tColour color;
     *out = *color.set_color_rgba(

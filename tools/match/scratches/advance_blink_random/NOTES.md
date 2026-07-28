@@ -14,7 +14,7 @@ returned cadence to schedule its next blink.
 
 2026-07-11 ownership recovery: the temporary `BlinkRandomTable` view was
 retired. The cursor and 24 samples are the final `0x64` bytes before the
-embedded `SubgameRuntime::player`, and the helper is now a direct
-`SubgameRuntime` method. Focused VC6 remains exact at 100.00%, 10/10
+embedded `cRSubGame::player`, and the helper is now a direct
+`cRSubGame` method. Focused VC6 remains exact at 100.00%, 10/10
 instructions. The only native xref is the slug-AI callsite, which passes the
 root's embedded subgame at `GameRoot +0x74618`.

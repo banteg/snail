@@ -158,7 +158,7 @@ raw `0x200` and `0x40` spellings; no new bit name was inferred.
 ## 2026-07-14 canonical subgame analysis owner
 
 Binary Ninja's frame bootstrap originally left `GameRoot::subgame` typed as a
-sparse `FrameSubgameRuntime`, even after the complete `SubgameRuntime` owner
+sparse `FrameSubgameRuntime`, even after the complete `cRSubGame` owner
 was available. The replay now promotes that root member to the canonical
 runtime when present. The fixed-step tail consequently resets
 `subgame.enemy_manager`, matching the matcher source and retiring the parallel

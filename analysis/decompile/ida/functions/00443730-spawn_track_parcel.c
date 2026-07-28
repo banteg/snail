@@ -2,8 +2,8 @@
 /* function: spawn_track_parcel @ 0x443730 */
 /* selector: spawn_track_parcel */
 
-// Exact `SubgameRuntime` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument.
-Parcel *__thiscall spawn_track_parcel(SubgameRuntime *runtime, Vec3 *world_position, Player *source_player)
+// Exact `cRSubGame` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument.
+Parcel *__thiscall spawn_track_parcel(cRSubGame *runtime, Vec3 *world_position, Player *source_player)
 {
   Parcel *track_parcel_slot; // eax
   Parcel *v5; // esi
@@ -15,7 +15,7 @@ Parcel *__thiscall spawn_track_parcel(SubgameRuntime *runtime, Vec3 *world_posit
 
   track_parcel_slot = allocate_track_parcel_slot(&runtime->parcel_manager);
   v5 = track_parcel_slot;
-  if ( !track_parcel_slot )
+  if ( track_parcel_slot == nullptr )
     return nullptr;
   p_position = &track_parcel_slot->bod.position;
   track_parcel_slot->state = PARCEL_STATE_TRACK_ACTIVE;

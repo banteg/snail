@@ -48,7 +48,7 @@ shared `track_colour_banks.h` records that owner without changing this
 function's exact instruction stream.
 
 2026-06-21 subgame-header consolidation: the helper now uses
-`SubgameRuntime::build_track_colours` instead of a scratch-local `Game` owner.
+`cRSubGame::build_track_colours` instead of a scratch-local `Game` owner.
 Focused Wibo remains exact at `100.00%`, `37/37` instructions, with `24` clean
 masked operands.
 

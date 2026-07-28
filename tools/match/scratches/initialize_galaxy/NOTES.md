@@ -22,7 +22,7 @@ Recovered ownership:
 - `data_4df9bc` is reused as the selected galaxy route/backdrop selector for
   route modes 0 and 2.
 - `Galaxy::level_progress_base` is a borrowed backlink to the enclosing
-  `SubgameRuntime`. The initializer reads `level_mode`, `level_mode_arg`, and
+  `cRSubGame`. The initializer reads `level_mode`, `level_mode_arg`, and
   `subgame_rebuild_selector` directly through that owner; it does not consult
   a separate progress allocation.
 - `data_4a20f4` and `data_4a20ec` are the Exit and Back widget labels.
@@ -44,7 +44,7 @@ duplicated branch receivers and proves the initializer.
 
 2026-07-11 authored owner: this exact 338/338 member maps to
 `cRGalaxy::Init()`. `sizeof(Galaxy) == 0x10fa8` closes the embedded owner at
-`SubgameRuntime +0x1270fc8`; the final dword remains conservatively unnamed.
+`cRSubGame +0x1270fc8`; the final dword remains conservatively unnamed.
 
 2026-07-12 void contract: every caller consumes initialization side effects and
 discards the tail-forwarded route-card pointer. Mobile `cRGalaxy::Init()` and
@@ -78,7 +78,7 @@ remains exact at 338/338 instructions with all 74 operands clean.
 ## 2026-07-15 Binary Ninja lifecycle replay
 
 Live readback now records `void __thiscall initialize_galaxy(Galaxy*)`. The
-focused export retains the enclosing `SubgameRuntime*` backlink, all nine
+focused export retains the enclosing `cRSubGame*` backlink, all nine
 widget owners, and the final typed `open_galaxy_route(galaxy,
 galaxy->selected_index)` handoff. Matching remains exact at 338/338 with 74
 clean operands.

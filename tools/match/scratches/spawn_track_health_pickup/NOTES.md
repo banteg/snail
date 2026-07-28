@@ -22,7 +22,7 @@ Evidence:
   this allocator writes its inherited `position` payload.
 - Scans eight health pickup slots at `subgame +0x356000`, stride `0x74`. The
   source keeps the native slot-base arithmetic by viewing the shifted slot base
-  as a `SubgameRuntime*` and accessing `slot->health_pickups[0]`. A direct
+  as a `cRSubGame*` and accessing `slot->health_pickups[0]`. A direct
   `this->health_pickups[slot_index]` member made VC6 choose the wrong base
   register.
 - Seeds the promoted partial `TrackHealthPickup` fields: inherited
@@ -38,7 +38,7 @@ Evidence:
   `position.z`, matching the native `__ftol` lane: even z starts at
   `0.5f`, odd z stays `0.0f`.
 
-This scratch now uses the shared `SubgameRuntime::health_pickups` layout, but
+This scratch now uses the shared `cRSubGame::health_pickups` layout, but
 keeps the shifted slot-base source shape because rebasing to a direct pickup
 pointer still does not match native register ownership.
 
@@ -48,7 +48,7 @@ Remaining mismatch:
   local is source-plausible but wrong for this scratch: it rebases `esi` at the
   pickup object, drops the focused score to 40.00%, and changes the native
   `[slot_base + 0x356000 + field]` addressing into small member offsets. The
-  shifted `SubgameRuntime*` view keeps the real struct visible without making that
+  shifted `cRSubGame*` view keeps the real struct visible without making that
   invalid register-ownership assumption.
 - The `Vector3` staging correction recovers the native position-local stack
   materialization. The remaining prefix break is now the order of the slot-index
@@ -93,7 +93,7 @@ masked operands. Spelling the 29-word slot stride as
 late `cell` reload before `sub eax, ebx`, while native finishes the slot-index
 subtract first. Explicit raw `zero` and `size_bits` locals for the sprite setup
 are also neutral and leave the existing `ecx`/`eax` register reversal. Keep the
-current shifted `SubgameRuntime*` view and typed sprite stores; the remaining
+current shifted `cRSubGame*` view and typed sprite stores; the remaining
 gaps are scheduling/register ownership, not a new pickup layout.
 
 2026-06-20 typed sprite-position copy: replacing the raw `DWORD*`
@@ -211,7 +211,7 @@ clean.
 Binary Ninja still exported this as `TrackPickupRuntime* __thiscall(Game*,
 ...)`, contradicting Android `cRSubGame::AddHealth`, the Windows callers, and
 the already honest matcher source. Guarded recreation now installs
-`void __thiscall(SubgameRuntime*, cRSubLoc*, Player*)`; IDA is replayed and
+`void __thiscall(cRSubGame*, cRSubLoc*, Player*)`; IDA is replayed and
 verified with the same receiver lvar and declaration. Both tracked artifacts
 expose the owned eight-slot `health_pickups` array and ordinary `return;`
 paths. No incidental EAX value is promoted into a fake result.

@@ -3,7 +3,7 @@
 /* selector: spawn_track_health_pickup */
 
 // Allocates and seeds one live `SubHealth` from the eight-record owned array, then inserts its zero-offset inherited `BodNode` into the borrowed `GameRoot::active_bod_list` head without transferring pickup ownership. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract instead of exporting incompatible incidental register values.
-void __thiscall spawn_track_health_pickup(SubgameRuntime *game, cRSubLoc *cell, Player *player)
+void __thiscall spawn_track_health_pickup(cRSubGame *game, cRSubLoc *cell, Player *player)
 {
   int v3; // ebx
   TrackPickupState *i; // eax

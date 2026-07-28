@@ -28,7 +28,7 @@ alpha, and live-matrix rotation. iOS v1.5 exports the same method from
 `SubGame.o`; iOS v1.9 retains the authored class, typeinfo, and vtable.
 
 All shared accesses now follow the complete
-`GameRoot -> SubgameRuntime -> Player -> Snail` owner graph: movement flags,
+`GameRoot -> cRSubGame -> Player -> Snail` owner graph: movement flags,
 the embedded shell render node, `SnailSkin`, and the live presentation matrix.
 The former five absolute root expressions disappear while the body stays
 exact.

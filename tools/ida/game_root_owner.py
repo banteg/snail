@@ -15,7 +15,7 @@ GAME_ROOT_ACTIVE_BOD_LIST_OFFSET = 0x5A8
 GAME_ROOT_ACTIVE_BOD_LIST_SIZE = 0xC
 
 _TAIL_TYPE_SIZES = {
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
     "HighScore": 0xF4,
     "TipManager": 0x98,
 }
@@ -53,7 +53,7 @@ _CANONICAL_FRONTEND = (
 )
 
 _CANONICAL_TAIL = (
-    (0x74618, 0x1272838, "subgame", "SubgameRuntime"),
+    (0x74618, 0x1272838, "subgame", "cRSubGame"),
     (0x12E6E50, 0xF4, "high_score", "HighScore"),
     (0x12E6F44, 0x14, "_pad_12e6f44", "uint8_t[20]"),
     (0x12E6F58, 0x98, "tip_manager", "TipManager"),

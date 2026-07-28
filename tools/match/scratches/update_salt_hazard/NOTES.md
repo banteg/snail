@@ -57,7 +57,7 @@ local, and spelling the unlink guard without `else` all stayed at `81.48%`.
 Clearing state before both reports and forcing a positive live branch regressed.
 
 2026-06-21 subgame-owner consolidation: `SaltHazardSlot::owner_game` is now a
-`SubgameRuntime*` for the pause gate, fade start, and kill-plane fields. The
+`cRSubGame*` for the pause gate, fade start, and kill-plane fields. The
 root free-list anchor is kept as a narrow `RootBodListView` at `g_game +0x5a8`
 instead of another ambiguous local `Game` shell. Focused Wibo remains exact at
 `100.00%`, `83/83` instructions, with `12` clean masked operands.
@@ -77,8 +77,8 @@ clean operands.
 canonical authored `Salt` established by startup. The lanes at `+0x8c`,
 `+0x90`, and `+0x94` are the fade, spawn-y, and collision-latch fields proved
 across the exact spawn, update, and collision paths, while `owner_game +0x88`
-is a borrowed `SubgameRuntime*`.
-`SubgameRuntime` owns the exact 40-slot `SaltManager` at `+0x3578c0`; this
+is a borrowed `cRSubGame*`.
+`cRSubGame` owns the exact 40-slot `SaltManager` at `+0x3578c0`; this
 replaces both the stale sparse slot experiment and lane-local `FrameSaltSlot`.
 Matching remains exact at 83/83.
 

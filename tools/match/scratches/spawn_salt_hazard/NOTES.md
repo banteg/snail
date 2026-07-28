@@ -60,7 +60,7 @@ and final OR prevents VC6 from hoisting the flag load above the independent
 instructions, full prefix, and `10` clean masked operands.
 
 2026-06-21 subgame-owner consolidation: `SaltHazardSlot::owner_game` now points
-at `SubgameRuntime`; this spawner reads `subgame_rate` through
+at `cRSubGame`; this spawner reads `subgame_rate` through
 `g_game +0x74618` and keeps the root salt list head as a byte-addressed
 `g_game +0x3ca224` anchor. Focused Wibo remains exact at `100.00%`, `67/67`
 instructions, with `10` clean masked operands.
@@ -72,7 +72,7 @@ that byte and clears it after damage. This scratch remains exact at `100.00%`,
 `67/67`, with `10` clean masked operands.
 
 2026-07-11 salt-list ownership closure: startup constructs a complete
-`BodBase` at `SubgameRuntime +0x355c0c`, and this spawner uses its inherited
+`BodBase` at `cRSubGame +0x355c0c`, and this spawner uses its inherited
 `BodNode` links as the salt live-list sentinel. The raw `char* g_game` address
 arithmetic is therefore replaced by `GameRoot::subgame.salt_hazard_list_head`;
 the rate read also resolves through the same owned subgame. Focused Wibo

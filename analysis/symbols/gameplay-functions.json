@@ -517,7 +517,7 @@
     {
       "address": "0x408060",
       "name": "initialize_runtime_pools_and_path_template_bank",
-      "description": "Exact Windows constructor projection for the embedded cRSubGame/SubgameRuntime owner. It initializes every desktop pool, including exactly 126 0xa8-byte path-template records at SubgameRuntime+0xff2914; Android and iOS preserve the authored cRSubGame constructor with port-specific layouts and capacities. The Windows records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias, and their 0x52b0 extent ends at the barrier actor at +0xff7bc4."
+      "description": "Exact Windows constructor projection for the embedded cRSubGame owner. It initializes every desktop pool, including exactly 126 0xa8-byte path-template records at cRSubGame+0xff2914; Android and iOS preserve the authored cRSubGame constructor with port-specific layouts and capacities. The Windows records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias, and their 0x52b0 extent ends at the barrier actor at +0xff7bc4."
     },
     {
       "address": "0x408410",
@@ -553,7 +553,7 @@
     {
       "address": "0x408510",
       "name": "initialize_track_health_pickup_runtime",
-      "description": "Exact Windows constructor for one authored `SubHealth` (`cRSubHealth` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_health_pickup`. `SubgameRuntime` owns eight inline 0x74-byte records whose 0x3a0 extent exactly matches the native `Size of cRSubHealth` ledger."
+      "description": "Exact Windows constructor for one authored `SubHealth` (`cRSubHealth` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_health_pickup`. `cRSubGame` owns eight inline 0x74-byte records whose 0x3a0 extent exactly matches the native `Size of cRSubHealth` ledger."
     },
     {
       "address": "0x408530",
@@ -568,7 +568,7 @@
     {
       "address": "0x408570",
       "name": "initialize_track_ring_or_special_effect_runtime",
-      "description": "Exact Windows constructor wrapper for one authored `SubRing` (`cRSubRing` cross-port): constructs the inherited RenderableBod, installs the table whose entry is update_ring_or_special_effect_parent, and returns the receiver. SubgameRuntime owns two 0x1f8-byte records whose 0x3f0 total matches the native cRSubRing size ledger."
+      "description": "Exact Windows constructor wrapper for one authored `SubRing` (`cRSubRing` cross-port): constructs the inherited RenderableBod, installs the table whose entry is update_ring_or_special_effect_parent, and returns the receiver. cRSubGame owns two 0x1f8-byte records whose 0x3f0 total matches the native cRSubRing size ledger."
     },
     {
       "address": "0x408590",
@@ -674,7 +674,7 @@
     {
       "address": "0x4088e0",
       "name": "load_galaxy_layout",
-      "description": "Recovered void Galaxy bootstrap: loads `Galaxy/_Galaxy.txt`, rescales the authored point tables, populates the embedded route/star bank, and binds its borrowed SubgameRuntime backlink. Android and iOS retain this parser inside `cRGalaxy::Open(int)`."
+      "description": "Recovered void Galaxy bootstrap: loads `Galaxy/_Galaxy.txt`, rescales the authored point tables, populates the embedded route/star bank, and binds its borrowed cRSubGame backlink. Android and iOS retain this parser inside `cRGalaxy::Open(int)`."
     },
     {
       "address": "0x408c10",
@@ -1655,7 +1655,7 @@
     {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state",
-      "description": "Exact void initializer for the Player-embedded `cRPathFollowGoldy`: stores the selected cRPath and borrowed runtime cRSubLoc, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `SubgameRuntime::runtime_rows[row].installed_heading_delta` into the cRPath. Its only Windows caller discards EAX; the apparent cRPath result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets."
+      "description": "Exact void initializer for the Player-embedded `cRPathFollowGoldy`: stores the selected cRPath and borrowed runtime cRSubLoc, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `cRSubGame::runtime_rows[row].installed_heading_delta` into the cRPath. Its only Windows caller discards EAX; the apparent cRPath result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets."
     },
     {
       "address": "0x420cb0",
@@ -1754,7 +1754,7 @@
     {
       "address": "0x429ae0",
       "name": "find_segment_path_index_by_name",
-      "description": "Implements `cRPathManager::NameCode(char*)`: Android and iOS preserve the exact authored class and member name, while Windows independently proves the empty one-byte owner at `SubgameRuntime +0xff2910`, the thiscall ABI, and the linear search over the hardcoded 51-entry Path= table. `PathManager` is retained only as a compatibility alias."
+      "description": "Implements `cRPathManager::NameCode(char*)`: Android and iOS preserve the exact authored class and member name, while Windows independently proves the empty one-byte owner at `cRSubGame +0xff2910`, the thiscall ABI, and the linear search over the hardcoded 51-entry Path= table. `PathManager` is retained only as a compatibility alias."
     },
     {
       "address": "0x429b20",
@@ -2411,7 +2411,7 @@
     {
       "address": "0x433220",
       "name": "build_track_render_caches",
-      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime\u2019s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state."
+      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning cRSubGame\u2019s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state."
     },
     {
       "address": "0x433830",
@@ -2672,12 +2672,12 @@
       "aliases": [
         "cRSubGame_ReSet"
       ],
-      "description": "Exact Windows implementation of authored `void cRSubGame::ReSet()`: rebinds the inline pickup, garbage, slug, and ring pools to their containing `SubgameRuntime`, restores or clears the replay score/timer snapshot, rearms the scan and camera latches, and empties the active garbage chain. Android preserves the same owner graph, replay-mode branch, timer handoff, and final latches despite platform-specific pool layouts. All five native callsites pass the active subgame receiver from `initialize_subgame`, matching Android `cRSubGame::Init()` ending in `ReSet(this)`."
+      "description": "Exact Windows implementation of authored `void cRSubGame::ReSet()`: rebinds the inline pickup, garbage, slug, and ring pools to their containing `cRSubGame`, restores or clears the replay score/timer snapshot, rearms the scan and camera latches, and empties the active garbage chain. Android preserves the same owner graph, replay-mode branch, timer handoff, and final latches despite platform-specific pool layouts. All five native callsites pass the active subgame receiver from `initialize_subgame`, matching Android `cRSubGame::Init()` ending in `ReSet(this)`."
     },
     {
       "address": "0x437c40",
       "name": "update_progress_bar",
-      "description": "Exact `cRProgressBar::AI()` method for the empty authored class at Player +0x3f0. It ignores `this`, derives track progress from the containing Goldy's z position and SubgameRuntime row bounds, and queues the three left-column HUD quads. Android and iOS preserve the same owner role."
+      "description": "Exact `cRProgressBar::AI()` method for the empty authored class at Player +0x3f0. It ignores `this`, derives track progress from the containing Goldy's z position and cRSubGame row bounds, and queues the three left-column HUD quads. Android and iOS preserve the same owner role."
     },
     {
       "address": "0x437de0",
@@ -2710,7 +2710,7 @@
     {
       "address": "0x438b90",
       "name": "update_subgame",
-      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Its eight ring-speed loads resolve exactly to `SubgameRuntime::runtime_rows[row].ring_speed` (`+0x5ccac8 + row * 0xf4 + 0xe8`); Android and iOS independently pass the corresponding current-row scalar to `cRSubGame::AddRing`. Cross-port symbols match this helper to `cRSubGame::AI()`."
+      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Its eight ring-speed loads resolve exactly to `cRSubGame::runtime_rows[row].ring_speed` (`+0x5ccac8 + row * 0xf4 + 0xe8`); Android and iOS independently pass the corresponding current-row scalar to `cRSubGame::AddRing`. Cross-port symbols match this helper to `cRSubGame::AI()`."
     },
     {
       "address": "0x439a40",
@@ -2798,7 +2798,7 @@
     {
       "address": "0x43a930",
       "name": "initialize_jetpack_gauge",
-      "description": "Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed SubgameRuntime and Player backlinks. The authored contract is void; the Windows integer parameter is unused."
+      "description": "Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed cRSubGame and Player backlinks. The authored contract is void; the Windows integer parameter is unused."
     },
     {
       "address": "0x43a980",
@@ -2808,7 +2808,7 @@
     {
       "address": "0x43a9c0",
       "name": "initialize_subgoldy",
-      "description": "Authored void `cRSubGoldy::Init(int)`: initializes the SubgameRuntime-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own AnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method."
+      "description": "Authored void `cRSubGoldy::Init(int)`: initializes the cRSubGame-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own AnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method."
     },
     {
       "address": "0x43af10",
@@ -2919,7 +2919,7 @@
     {
       "address": "0x43df10",
       "name": "spawn_track_ring_or_special_effect",
-      "description": "Void Windows `cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)`: scans the two SubgameRuntime-owned SubRing slots, mutates the ordinary integer kind parameter when the default ring randomizes to slow, and stores the resulting typed `SubRingKind`. Its nine distinct authored paths preserve `RR` through `RR13`, dispatch Ring=* rows into ring, explode, slow, or power-up effects, link the inherited BOD, initialize ten inline SubRingStar children, and invoke slot-zero AI. All five Windows callers discard EAX; the independent iOS body likewise returns from failure paths without establishing a result."
+      "description": "Void Windows `cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)`: scans the two cRSubGame-owned SubRing slots, mutates the ordinary integer kind parameter when the default ring randomizes to slow, and stores the resulting typed `SubRingKind`. Its nine distinct authored paths preserve `RR` through `RR13`, dispatch Ring=* rows into ring, explode, slow, or power-up effects, link the inherited BOD, initialize ten inline SubRingStar children, and invoke slot-zero AI. All five Windows callers discard EAX; the independent iOS body likewise returns from failure paths without establishing a result."
     },
     {
       "address": "0x43e470",
@@ -2939,7 +2939,7 @@
     {
       "address": "0x43e830",
       "name": "update_ring_or_special_effect_parent",
-      "description": "Windows `cRSubRing::AI()`: advances a SubgameRuntime-owned SubRing and its ten inline SubRingStar children, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager. The constructor table at 0x49732c points directly here."
+      "description": "Windows `cRSubRing::AI()`: advances a cRSubGame-owned SubRing and its ten inline SubRingStar children, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager. The constructor table at 0x49732c points directly here."
     },
     {
       "address": "0x43ecc0",
@@ -2979,7 +2979,7 @@
     {
       "address": "0x43f5c0",
       "name": "initialize_slug_voice_manager",
-      "description": "Exact initializer for the 0x0c-byte `SlugVoiceManager` embedded at `SubgameRuntime +0x35bb7c`. Android retains the authored owner as `cRSlugVoiceManager::Init()`."
+      "description": "Exact initializer for the 0x0c-byte `SlugVoiceManager` embedded at `cRSubGame +0x35bb7c`. Android retains the authored owner as `cRSlugVoiceManager::Init()`."
     },
     {
       "address": "0x43f5e0",
@@ -2994,17 +2994,17 @@
     {
       "address": "0x43f680",
       "name": "explode_slug_hazard",
-      "description": "Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst from a raw random/forward velocity vector scaled by the live SubgameRuntime rate. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`."
+      "description": "Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst from a raw random/forward velocity vector scaled by the live cRSubGame rate. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`."
     },
     {
       "address": "0x43f8b0",
       "name": "kill_slug_hazard",
-      "description": "Exact `Slug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing SubgameRuntime's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
+      "description": "Exact `Slug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing cRSubGame's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
     },
     {
       "address": "0x43f930",
       "name": "update_slug_hazard_ai",
-      "description": "Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
+      "description": "Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing cRSubGame, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
     },
     {
       "address": "0x440020",
@@ -3087,7 +3087,7 @@
     {
       "address": "0x440f80",
       "name": "update_barrier_ai",
-      "description": "Exact void cRBarrier::AI() callback for the embedded 0x3c-byte BarrierActor at SubgameRuntime +0xff7bc4. It borrows Player* at +0x38, follows the player's live z position, and is installed in g_barrier_actor_callback_table; the residual EAX value is not an authored return."
+      "description": "Exact void cRBarrier::AI() callback for the embedded 0x3c-byte BarrierActor at cRSubGame +0xff7bc4. It borrows Player* at +0x38, follows the player's live z position, and is installed in g_barrier_actor_callback_table; the residual EAX value is not an authored return."
     },
     {
       "address": "0x440fa0",
@@ -3097,7 +3097,7 @@
     {
       "address": "0x440fd0",
       "name": "update_damage_gauge",
-      "description": "Advances the player-embedded contact-damage gauge controller at `Player+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `SubgameRuntime::subgame_pause_gate` suspends updates; `Player::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `Player::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`."
+      "description": "Advances the player-embedded contact-damage gauge controller at `Player+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `cRSubGame::subgame_pause_gate` suspends updates; `Player::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `Player::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`."
     },
     {
       "address": "0x4413f0",
@@ -3117,7 +3117,7 @@
     {
       "address": "0x441650",
       "name": "initialize_sub_lazer_pool",
-      "description": "Exact void Windows `cRSubLazerManager::Init()`: clears the 32-bit SubLazerState of all 20 owned inline actors at `SubgameRuntime +0x356b00` to SUB_LAZER_STATE_INACTIVE before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental."
+      "description": "Exact void Windows `cRSubLazerManager::Init()`: clears the 32-bit SubLazerState of all 20 owned inline actors at `cRSubGame +0x356b00` to SUB_LAZER_STATE_INACTIVE before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental."
     },
     {
       "address": "0x441670",
@@ -3157,7 +3157,7 @@
     {
       "address": "0x441d40",
       "name": "update_banner",
-      "description": "Exact Windows `cRBanner::AI()`: updates one of the two fixed Banner actors embedded at `SubgameRuntime +0x359080`, toggles its inherited BOD visibility flag from the borrowed Player row position, wraps its phase, and writes the sinusoidal bob into `BodBase::position.y`. Android preserves the same four-field class tail after its smaller platform BodBase, while iOS preserves the authored owner in `SubGame.o`."
+      "description": "Exact Windows `cRBanner::AI()`: updates one of the two fixed Banner actors embedded at `cRSubGame +0x359080`, toggles its inherited BOD visibility flag from the borrowed Player row position, wraps its phase, and writes the sinusoidal bob into `BodBase::position.y`. Android preserves the same four-field class tail after its smaller platform BodBase, while iOS preserves the authored owner in `SubGame.o`."
     },
     {
       "address": "0x441dd0",
@@ -3190,12 +3190,12 @@
     {
       "address": "0x442170",
       "name": "initialize_click_start",
-      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `SubgameRuntime::replay_launch_active` as the initial hide gate."
+      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `cRSubGame::replay_launch_active` as the initial hide gate."
     },
     {
       "address": "0x442290",
       "name": "update_click_start",
-      "description": "Windows `ClickStart::update_click_start`, authored as `cRClickStart::AI`: advances the prompt hide gate and selected-replay or player-confirm handoff through `SubgameRuntime`'s replay record/cursor fields, updates the working `SubSolution` run flags and parent startup index, recenters both pointers, plays SFX 8, and recycles the embedded RenderableBod child through `GameRoot::active_bod_list`."
+      "description": "Windows `ClickStart::update_click_start`, authored as `cRClickStart::AI`: advances the prompt hide gate and selected-replay or player-confirm handoff through `cRSubGame`'s replay record/cursor fields, updates the working `SubSolution` run flags and parent startup index, recenters both pointers, plays SFX 8, and recycles the embedded RenderableBod child through `GameRoot::active_bod_list`."
     },
     {
       "address": "0x442500",
@@ -3243,7 +3243,7 @@
     {
       "address": "0x443160",
       "name": "initialize_track_parcel_slots",
-      "description": "Exact `ParcelManager` initializer: clears all 50 Parcel states and seeds each borrowed SubgameRuntime backlink. Android retains the authored member as `cRParcelManager::Init()`."
+      "description": "Exact `ParcelManager` initializer: clears all 50 Parcel states and seeds each borrowed cRSubGame backlink. Android retains the authored member as `cRParcelManager::Init()`."
     },
     {
       "address": "0x443190",
@@ -3263,7 +3263,7 @@
     {
       "address": "0x443730",
       "name": "spawn_track_parcel",
-      "description": "Exact `SubgameRuntime` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument."
+      "description": "Exact `cRSubGame` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument."
     },
     {
       "address": "0x443860",
@@ -3288,17 +3288,17 @@
     {
       "address": "0x4438e0",
       "name": "place_parcels_on_track",
-      "description": "Implements the authored void `cRSubGame::PlaceParcels()` method on the verified SubgameRuntime receiver: borrows a row_count-rooted cursor across the embedded SubTracks segment slots, scans authored rows and glyphs into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Mobile and Windows keep digit 0 on the natural catalog path; Windows and Android reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target."
+      "description": "Implements the authored void `cRSubGame::PlaceParcels()` method on the verified cRSubGame receiver: borrows a row_count-rooted cursor across the embedded SubTracks segment slots, scans authored rows and glyphs into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Mobile and Windows keep digit 0 on the natural catalog path; Windows and Android reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target."
     },
     {
       "address": "0x444240",
       "name": "place_challenge_parcels_on_track",
-      "description": "Implements the authored void `cRSubGame::PlaceParcelsSurvival()` method on the verified SubgameRuntime receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place. Cross-port path-dependent return residues are incidental and the Windows caller discards EAX."
+      "description": "Implements the authored void `cRSubGame::PlaceParcelsSurvival()` method on the verified cRSubGame receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place. Cross-port path-dependent return residues are incidental and the Windows caller discards EAX."
     },
     {
       "address": "0x4444b0",
       "name": "project_position_onto_track_attachment",
-      "description": "Projects a mutable world-space position onto an active track attachment template in place. Android and iOS preserve the authored `cRSubGame::CalcRealPos(tVector&, float&)` signature; both Windows callers discard EAX, confirming the same void SubgameRuntime method rather than the decompiler's stale-return contract."
+      "description": "Projects a mutable world-space position onto an active track attachment template in place. Android and iOS preserve the authored `cRSubGame::CalcRealPos(tVector&, float&)` signature; both Windows callers discard EAX, confirming the same void cRSubGame method rather than the decompiler's stale-return contract."
     },
     {
       "address": "0x444600",
@@ -3361,7 +3361,7 @@
     {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
-      "description": "Void `Player` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its byte-strided parcel and health walks retain typed state lifetimes over the SubgameRuntime-owned banks. The ring sweep likewise borrows one owned slot and preserves separate typed `SubRingKind` lifetimes for the motion response and reward/effect ladder before the parent AI owns collection teardown. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
+      "description": "Void `Player` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its byte-strided parcel and health walks retain typed state lifetimes over the cRSubGame-owned banks. The ring sweep likewise borrows one owned slot and preserves separate typed `SubRingKind` lifetimes for the motion response and reward/effect ladder before the parent AI owns collection teardown. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
     },
     {
       "address": "0x445840",
@@ -3418,7 +3418,7 @@
       "aliases": [
         "cRSubGame_HideScores"
       ],
-      "description": "Exact void Windows `cRSubGame::HideScores()`: null-checks and hides the two gameplay score widgets owned by SubgameRuntime. Android and iOS preserve the same two-widget method and guard order."
+      "description": "Exact void Windows `cRSubGame::HideScores()`: null-checks and hides the two gameplay score widgets owned by cRSubGame. Android and iOS preserve the same two-widget method and guard order."
     },
     {
       "address": "0x445f40",
@@ -3426,7 +3426,7 @@
       "aliases": [
         "cRSubGame_UnHideScores"
       ],
-      "description": "Exact void Windows `cRSubGame::UnHideScores()`: unhides the two gameplay score widgets owned by SubgameRuntime. Android preserves the same two calls; no iOS symbol was found."
+      "description": "Exact void Windows `cRSubGame::UnHideScores()`: unhides the two gameplay score widgets owned by cRSubGame. Android preserves the same two calls; no iOS symbol was found."
     },
     {
       "address": "0x445f60",
@@ -3456,7 +3456,7 @@
     {
       "address": "0x446160",
       "name": "initialize_cameraman",
-      "description": "Initializes the exact 0xd8-byte cRCameraman embedded in Player at +0x200, wiring its Player and SubgameRuntime backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`."
+      "description": "Initializes the exact 0xd8-byte cRCameraman embedded in Player at +0x200, wiring its Player and cRSubGame backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`."
     },
     {
       "address": "0x4461d0",
@@ -3466,7 +3466,7 @@
     {
       "address": "0x4466d0",
       "name": "update_cutscene",
-      "description": "Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `Player::cameraman.live_matrix`, clears `Player::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `SubgameRuntime::level_definition.parcel_count` before the completion-screen handoff."
+      "description": "Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `Player::cameraman.live_matrix`, clears `Player::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `cRSubGame::level_definition.parcel_count` before the completion-screen handoff."
     },
     {
       "address": "0x446e30",
@@ -3566,7 +3566,7 @@
     {
       "address": "0x448960",
       "name": "format_time_trial_string",
-      "description": "Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored Time/cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte TimeTrial owner embedded at SubgameRuntime +0xff25e0, although the body does not read receiver fields."
+      "description": "Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored Time/cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte TimeTrial owner embedded at cRSubGame +0xff25e0, although the body does not read receiver fields."
     },
     {
       "address": "0x4489e0",
@@ -3609,7 +3609,7 @@
     {
       "address": "0x448da0",
       "name": "initialize_tutorial",
-      "description": "Exact Windows `Tutorial::initialize_tutorial`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing SubgameRuntime, and applies the tutorial runtime flags. Android and iOS retain `cRTutorial::Init()`."
+      "description": "Exact Windows `Tutorial::initialize_tutorial`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing cRSubGame, and applies the tutorial runtime flags. Android and iOS retain `cRTutorial::Init()`."
     },
     {
       "address": "0x448dd0",
@@ -3619,7 +3619,7 @@
     {
       "address": "0x448de0",
       "name": "update_tutorial",
-      "description": "Exact void Windows Tutorial::update_tutorial thunk: samples the live Goldy position through the borrowed containing SubgameRuntime. Its only native caller discards the lookup result, and Android/iOS retain cRTutorial::AI()."
+      "description": "Exact void Windows Tutorial::update_tutorial thunk: samples the live Goldy position through the borrowed containing cRSubGame. Its only native caller discards the lookup result, and Android/iOS retain cRTutorial::AI()."
     },
     {
       "address": "0x448df0",

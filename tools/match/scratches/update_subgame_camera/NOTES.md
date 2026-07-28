@@ -19,7 +19,7 @@ the decompiler's apparent `char` return, and the original source shape is a
 snap-path `al` test while avoiding the bogus blend-path reload.
 
 2026-06-21 subgame-header consolidation: the camera snap byte, `Cameraman`,
-override camera matrix, and override snap byte now live in `SubgameRuntime`.
+override camera matrix, and override snap byte now live in `cRSubGame`.
 Focused Wibo remains exact at `100.00%`, `70/70` instructions, with `9` clean
 masked operands.
 
@@ -35,22 +35,22 @@ operands.
 is `GameRoot::players[0].transform`, while the rendered FOV at root +0x284 is
 `GameRoot::players[0].camera.fov_degrees`. These fields belong to the root
 front-end `GamePlayer`; they are deliberately distinct from the gameplay
-`SubgameRuntime::player.cameraman` that supplies the target matrix and FOV.
+`cRSubGame::player.cameraman` that supplies the target matrix and FOV.
 Replacing the raw root offsets with that complete owner graph remains exact at
 70/70 instructions with all nine masked operands clean.
 
 2026-07-14 camera-source request recovery: both selected camera owners expose
 the same handoff semantic. The cutscene branch copies
 `CutScene::force_camera_update`, and the normal branch copies
-`Cameraman::force_camera_update`, into `SubgameRuntime::camera_snap_requested`.
+`Cameraman::force_camera_update`, into `cRSubGame::camera_snap_requested`.
 The latter was the final unnamed byte in the exact 0xd8-byte Cameraman owner.
 The outer handoff remains exact at 70/70 instructions with all nine operands
 clean.
 
 2026-07-14 analysis ABI closure: the live Binary Ninja prototype had retained
 a stale `char __thiscall(Game*)` inference even though every caller ignores a
-result and the exact source is `void SubgameRuntime::update_subgame_camera()`.
-Both databases now use `void __thiscall(SubgameRuntime*)`. The refreshed BN
+result and the exact source is `void cRSubGame::update_subgame_camera()`.
+Both databases now use `void __thiscall(cRSubGame*)`. The refreshed BN
 and IDA decompiles expose `camera_snap_requested`, the embedded Cameraman, and
 the cutscene owner without raw receiver offsets or a fabricated return value.
 The matcher remains exact at 70/70 instructions with all nine operands clean.

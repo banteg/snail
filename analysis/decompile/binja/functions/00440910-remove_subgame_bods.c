@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: remove_subgame_bods @ 0x440910 */
 
-00440910        struct SubgameRuntime* game_1 = game
+00440910        struct cRSubGame* game_1 = game
 00440919        struct cRSubLoc* runtime_cell_cursor = &game->runtime_cells
 0044091f        struct BodNode** row_list_next_cursor = &game->runtime_rows[0].row_model.body.bod.bod.list_next
 00440925        int32_t rows_remaining = 0xc80
@@ -24,9 +24,13 @@
 00440986        struct BodNode* row_free_top
 00440986        row_free_top.b = row_active_list->free_top.b
 00440986        row_free_top:1.b = row_active_list->free_top:1.b
+00440986        row_free_top:2.b = row_active_list->free_top:2.b
+00440986        row_free_top:3.b = row_active_list->free_top:3.b
 0044098c        *row_list_next_cursor = row_free_top
-0044098e        row_active_list->free_top.b = (row_list_next_cursor.w - 0xc).b
-0044098e        row_active_list->free_top:1.b = (row_list_next_cursor.w - 0xc):1.b
+0044098e        row_active_list->free_top.b = (&row_list_next_cursor[-3]).b
+0044098e        row_active_list->free_top:1.b = (&row_list_next_cursor[-3]):1.b
+0044098e        row_active_list->free_top:2.b = (&row_list_next_cursor[-3]):2.b
+0044098e        row_active_list->free_top:3.b = (&row_list_next_cursor[-3]):3.b
 00440991        uint32_t row_flags_after_clear = row_list_next_cursor[-2]
 00440994        row_flags_after_clear:1.b &= 0xfd
 00440997        row_list_next_cursor[-2] = row_flags_after_clear
@@ -62,9 +66,13 @@
 00440a2c        struct BodNode* health_free_top
 00440a2c        health_free_top.b = health_active_list->free_top.b
 00440a2c        health_free_top:1.b = health_active_list->free_top:1.b
+00440a2c        health_free_top:2.b = health_active_list->free_top:2.b
+00440a2c        health_free_top:3.b = health_active_list->free_top:3.b
 00440a32        *health_list_next_cursor = health_free_top
-00440a34        health_active_list->free_top.b = (health_list_next_cursor.w - 0xc).b
-00440a34        health_active_list->free_top:1.b = (health_list_next_cursor.w - 0xc):1.b
+00440a34        health_active_list->free_top.b = (&health_list_next_cursor[-3]).b
+00440a34        health_active_list->free_top:1.b = (&health_list_next_cursor[-3]):1.b
+00440a34        health_active_list->free_top:2.b = (&health_list_next_cursor[-3]):2.b
+00440a34        health_active_list->free_top:3.b = (&health_list_next_cursor[-3]):3.b
 00440a37        uint32_t health_flags_after_clear = health_list_next_cursor[-2]
 00440a3a        health_flags_after_clear:1.b &= 0xfd
 00440a3d        health_list_next_cursor[-2] = health_flags_after_clear
@@ -85,6 +93,8 @@
 00440a98        struct BodNode* speedup_list_prev_for_next = game->speedup_pickup.body.bod.bod.list_prev
 00440a9b        speedup_list_next->list_prev.b = speedup_list_prev_for_next.b
 00440a9b        speedup_list_next->list_prev:1.b = speedup_list_prev_for_next:1.b
+00440a9b        speedup_list_next->list_prev:2.b = speedup_list_prev_for_next:2.b
+00440a9b        speedup_list_next->list_prev:3.b = speedup_list_prev_for_next:3.b
 00440a9e        struct BodNode* speedup_list_prev = game->speedup_pickup.body.bod.bod.list_prev
 00440aa3        if (speedup_list_prev == 0)
 00440ab0        speedup_active_list->first = game->speedup_pickup.body.bod.bod.list_next
@@ -107,6 +117,8 @@
 00440b1d        struct BodNode* jetpack_list_prev_for_next = game->jetpack_pickup.bod.bod.list_prev
 00440b20        jetpack_list_next->list_prev.b = jetpack_list_prev_for_next.b
 00440b20        jetpack_list_next->list_prev:1.b = jetpack_list_prev_for_next:1.b
+00440b20        jetpack_list_next->list_prev:2.b = jetpack_list_prev_for_next:2.b
+00440b20        jetpack_list_next->list_prev:3.b = jetpack_list_prev_for_next:3.b
 00440b23        struct BodNode* jetpack_list_prev = game->jetpack_pickup.bod.bod.list_prev
 00440b28        if (jetpack_list_prev == 0)
 00440b35        jetpack_active_list->first = game->jetpack_pickup.bod.bod.list_next
@@ -138,9 +150,13 @@
 00440bbb        struct BodNode* garbage_free_top
 00440bbb        garbage_free_top.b = garbage_active_list->free_top.b
 00440bbb        garbage_free_top:1.b = garbage_active_list->free_top:1.b
+00440bbb        garbage_free_top:2.b = garbage_active_list->free_top:2.b
+00440bbb        garbage_free_top:3.b = garbage_active_list->free_top:3.b
 00440bc1        *garbage_list_next_cursor = garbage_free_top
-00440bc3        garbage_active_list->free_top.b = (garbage_list_next_cursor.w - 0xc).b
-00440bc3        garbage_active_list->free_top:1.b = (garbage_list_next_cursor.w - 0xc):1.b
+00440bc3        garbage_active_list->free_top.b = (&garbage_list_next_cursor[-3]).b
+00440bc3        garbage_active_list->free_top:1.b = (&garbage_list_next_cursor[-3]):1.b
+00440bc3        garbage_active_list->free_top:2.b = (&garbage_list_next_cursor[-3]):2.b
+00440bc3        garbage_active_list->free_top:3.b = (&garbage_list_next_cursor[-3]):3.b
 00440bc6        uint32_t garbage_flags_after_clear = garbage_list_next_cursor[-2]
 00440bc9        garbage_flags_after_clear:1.b &= 0xfd
 00440bcc        garbage_list_next_cursor[-2] = garbage_flags_after_clear
@@ -169,9 +185,13 @@
 00440c43        struct BodNode* slug_free_top
 00440c43        slug_free_top.b = slug_active_list->free_top.b
 00440c43        slug_free_top:1.b = slug_active_list->free_top:1.b
+00440c43        slug_free_top:2.b = slug_active_list->free_top:2.b
+00440c43        slug_free_top:3.b = slug_active_list->free_top:3.b
 00440c49        *slug_list_next_cursor = slug_free_top
-00440c4b        slug_active_list->free_top.b = (slug_list_next_cursor.w - 0xc).b
-00440c4b        slug_active_list->free_top:1.b = (slug_list_next_cursor.w - 0xc):1.b
+00440c4b        slug_active_list->free_top.b = (&slug_list_next_cursor[-3]).b
+00440c4b        slug_active_list->free_top:1.b = (&slug_list_next_cursor[-3]):1.b
+00440c4b        slug_active_list->free_top:2.b = (&slug_list_next_cursor[-3]):2.b
+00440c4b        slug_active_list->free_top:3.b = (&slug_list_next_cursor[-3]):3.b
 00440c4e        uint32_t slug_flags_after_clear = slug_list_next_cursor[-2]
 00440c51        slug_flags_after_clear:1.b &= 0xfd
 00440c54        slug_list_next_cursor[-2] = slug_flags_after_clear
@@ -199,9 +219,13 @@
 00440cc5        struct BodNode* ring_free_top
 00440cc5        ring_free_top.b = ring_active_list->free_top.b
 00440cc5        ring_free_top:1.b = ring_active_list->free_top:1.b
+00440cc5        ring_free_top:2.b = ring_active_list->free_top:2.b
+00440cc5        ring_free_top:3.b = ring_active_list->free_top:3.b
 00440ccb        *ring_list_next_cursor = ring_free_top
-00440ccd        ring_active_list->free_top.b = (ring_list_next_cursor.w - 0xc).b
-00440ccd        ring_active_list->free_top:1.b = (ring_list_next_cursor.w - 0xc):1.b
+00440ccd        ring_active_list->free_top.b = (&ring_list_next_cursor[-3]).b
+00440ccd        ring_active_list->free_top:1.b = (&ring_list_next_cursor[-3]):1.b
+00440ccd        ring_active_list->free_top:2.b = (&ring_list_next_cursor[-3]):2.b
+00440ccd        ring_active_list->free_top:3.b = (&ring_list_next_cursor[-3]):3.b
 00440cd0        uint32_t ring_flags_after_clear = ring_list_next_cursor[-2]
 00440cd3        ring_flags_after_clear:1.b &= 0xfd
 00440cd6        ring_list_next_cursor[-2] = ring_flags_after_clear
@@ -227,9 +251,13 @@
 00440d55        struct BodNode* player_free_top
 00440d55        player_free_top.b = player_active_list->free_top.b
 00440d55        player_free_top:1.b = player_active_list->free_top:1.b
+00440d55        player_free_top:2.b = player_active_list->free_top:2.b
+00440d55        player_free_top:3.b = player_active_list->free_top:3.b
 00440d58        game->player.body.bod.bod.list_next = player_free_top
 00440d5b        player_active_list->free_top.b = (&game->player).b
 00440d5b        player_active_list->free_top:1.b = (&game->player):1.b
+00440d5b        player_active_list->free_top:2.b = (&game->player):2.b
+00440d5b        player_active_list->free_top:3.b = (&game->player):3.b
 00440d5e        uint32_t player_flags_after_clear = game->player.body.bod.bod.list_flags
 00440d61        player_flags_after_clear:1.b &= 0xfd
 00440d64        game->player.body.bod.bod.list_flags = player_flags_after_clear
@@ -244,6 +272,8 @@
 00440dab        struct BodNode* snail_list_prev_for_next = game->player.presentation.body.bod.bod.list_prev
 00440dae        snail_list_next->list_prev.b = snail_list_prev_for_next.b
 00440dae        snail_list_next->list_prev:1.b = snail_list_prev_for_next:1.b
+00440dae        snail_list_next->list_prev:2.b = snail_list_prev_for_next:2.b
+00440dae        snail_list_next->list_prev:3.b = snail_list_prev_for_next:3.b
 00440db1        struct BodNode* snail_list_prev = game->player.presentation.body.bod.bod.list_prev
 00440db6        if (snail_list_prev == 0)
 00440dc3        snail_active_list->first = game->player.presentation.body.bod.bod.list_next
@@ -264,6 +294,8 @@
 00440e1f        struct BodNode* jetpack_channel_list_prev_for_next = game->player.presentation.jetpack_channel.body.bod.bod.list_prev
 00440e22        jetpack_channel_list_next->list_prev.b = jetpack_channel_list_prev_for_next.b
 00440e22        jetpack_channel_list_next->list_prev:1.b = jetpack_channel_list_prev_for_next:1.b
+00440e22        jetpack_channel_list_next->list_prev:2.b = jetpack_channel_list_prev_for_next:2.b
+00440e22        jetpack_channel_list_next->list_prev:3.b = jetpack_channel_list_prev_for_next:3.b
 00440e25        struct BodNode* jetpack_channel_list_prev = game->player.presentation.jetpack_channel.body.bod.bod.list_prev
 00440e2a        if (jetpack_channel_list_prev == 0)
 00440e37        jetpack_channel_active_list->first = game->player.presentation.jetpack_channel.body.bod.bod.list_next
@@ -284,6 +316,8 @@
 00440e93        struct BodNode* weapon_channel_0_list_prev_for_next = game->player.presentation.weapon_channels[0].body.bod.bod.list_prev
 00440e96        weapon_channel_0_list_next->list_prev.b = weapon_channel_0_list_prev_for_next.b
 00440e96        weapon_channel_0_list_next->list_prev:1.b = weapon_channel_0_list_prev_for_next:1.b
+00440e96        weapon_channel_0_list_next->list_prev:2.b = weapon_channel_0_list_prev_for_next:2.b
+00440e96        weapon_channel_0_list_next->list_prev:3.b = weapon_channel_0_list_prev_for_next:3.b
 00440e99        struct BodNode* weapon_channel_0_list_prev = game->player.presentation.weapon_channels[0].body.bod.bod.list_prev
 00440e9e        if (weapon_channel_0_list_prev == 0)
 00440eab        weapon_channel_0_active_list->first = game->player.presentation.weapon_channels[0].body.bod.bod.list_next

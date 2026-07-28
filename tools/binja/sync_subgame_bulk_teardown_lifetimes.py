@@ -32,7 +32,7 @@ EXPECTED_TYPE_WIDTHS = {
     "SlugPool": 0x760,
     "SubRing": 0x1F8,
     "SubRingPool": 0x3F0,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -80,7 +80,7 @@ EXPECTED_STRUCT_FIELDS = {
     "SubRingPool": {
         0x00: ("slots", "SubRing[2]"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x356000: ("health_pickups", "SubHealth[8]"),
         0x3563A0: ("slug_hazards", "SlugPool"),
         0x359140: ("garbage_hazards", "SubGarbagePool"),

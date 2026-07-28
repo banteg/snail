@@ -75,7 +75,7 @@ Rejected probes:
   remaining residual is still the velocity zero/x87 staging plus one tail
   branch label.
 - 2026-06-21 subgame receiver cleanup: the allocator now lives on
-  `SubgameRuntime`, sharing the recovered slug spawn declaration and projection
+  `cRSubGame`, sharing the recovered slug spawn declaration and projection
   call surface without changing the raw slot layout. Focused Wibo remains
   `92.79%`, `159/160`, with `16` clean masked operands.
 
@@ -97,9 +97,9 @@ register or padding accommodation.
 The same pass records the surrounding owners without changing codegen:
 
 - the insertion anchor is `GameRoot::active_bod_list`;
-- its tail sentinel is the embedded `SubgameRuntime::player` object;
+- its tail sentinel is the embedded `cRSubGame::player` object;
 - the hit-flash rate comes from `GameRoot::subgame.subgame_rate`; and
-- `SubgameRuntime::next_slug_voice_trigger_z` starts at `50.0f` and advances by
+- `cRSubGame::next_slug_voice_trigger_z` starts at `50.0f` and advances by
   `slug_voice_trigger_spacing_z` (`100.0f`) whenever a spawned slug receives
   `engagement_voice_gate`. `update_slug_hazard_ai` later consumes that gate at
   the player's 16-unit approach threshold.
@@ -131,7 +131,7 @@ advances it normally, retiring the unexplained dword constants `874760` and
 write: state, player backlink, inherited transform/list node, attachment
 projection, velocity, sprite handle, source cell, hit/voice/blink state, and
 their progress rates. The sprite position copy is also the ordinary `Vector3`
-assignment, and the velocity scale names `SubgameRuntime::subgame_rate` rather
+assignment, and the velocity scale names `cRSubGame::subgame_rate` rather
 than float lane 14.
 
 This is the source shape VC6's native biased-index addressing was hiding; it
@@ -172,10 +172,10 @@ physical allocator cursors:
 - the free-slot sweep points at `Slug::state`, then advances by the complete
   `0xec` slot stride, so `SlugStateStrideCursor` is a field-first borrowed view
   rather than a `Slug*`;
-- the selected-slot register retains `SubgameRuntime + slot_index * 0xec`, so
+- the selected-slot register retains `cRSubGame + slot_index * 0xec`, so
   `SlugSlotCursor` preserves that root-biased address and exposes its one
   embedded `slug` record without inventing independent storage;
-- IDA now carries the typed `SubgameRuntime`, `cRSubLoc`, and `Player`
+- IDA now carries the typed `cRSubGame`, `cRSubLoc`, and `Player`
   arguments plus the same two cursor views; the sprite, inherited BOD node,
   player tail, and position copy then recover transitively from real fields.
 

@@ -25,7 +25,7 @@ Status:
   independently proving the callback relationship. Matching remains exact at
   60/60 instructions with six clean masked operands.
 - 2026-07-14: canonicalized the cull plane and active/free list through
-  `GameRoot -> SubgameRuntime -> Player` ownership. Matching remains exact at
+  `GameRoot -> cRSubGame -> Player` ownership. Matching remains exact at
   60/60 with all six operands clean.
 
 ## 2026-07-18 live-analysis ownership replay

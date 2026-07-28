@@ -3,7 +3,7 @@
 Exact match: 100.00%, 7/7 instructions, with both masked operands clean.
 
 The stable Windows name predates the concrete owner recovery. Its only use is
-the constructor callback passed over `SubgameRuntime::segment_cache.slots`:
+the constructor callback passed over `cRSubGame::segment_cache.slots`:
 stride `0x3c`, count `0x2cb`, exactly the complete 143 by 5
 `TrackRenderCacheSlot` grid. The body calls `BodBase::initialize_bod_base()`,
 installs `g_active_bod_vtable`, and returns the same slot.

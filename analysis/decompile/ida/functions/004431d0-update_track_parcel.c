@@ -5,7 +5,7 @@
 // Runs one live `Parcel` through bobbing, homing, and final delivery-arc states, consuming the owned `Completion::widget_world` vector before registering delivery and tearing down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain `cRParcel::AI()`.
 void __thiscall update_track_parcel(Parcel *parcel)
 {
-  SubgameRuntime *owner_subgame; // ecx
+  cRSubGame *owner_subgame; // ecx
   double v3; // st7
   unsigned __int8 v5; // c0
   unsigned __int8 v6; // c3
@@ -26,7 +26,7 @@ void __thiscall update_track_parcel(Parcel *parcel)
   float y; // eax
   Sprite *v22; // eax
   double v23; // st7
-  Vec4 *p_basis_up; // eax
+  Vec3 *p_basis_up; // eax
   Vec3 *v25; // edx
   double v26; // st7
   float v27; // ecx
@@ -34,7 +34,7 @@ void __thiscall update_track_parcel(Parcel *parcel)
   double v29; // st7
   Sprite *v30; // ecx
   int math_random_value; // eax
-  SubgameRuntime *v32; // eax
+  cRSubGame *v32; // eax
   double v33; // st7
   Sprite *v34; // ecx
   double v35; // st7
@@ -59,7 +59,7 @@ void __thiscall update_track_parcel(Parcel *parcel)
   float v54; // [esp+30h] [ebp-8h]
 
   owner_subgame = parcel->owner_subgame;
-  if ( !owner_subgame->subgame_pause_gate )
+  if ( owner_subgame->subgame_pause_gate == 0 )
   {
     switch ( parcel->state )
     {
@@ -71,7 +71,7 @@ void __thiscall update_track_parcel(Parcel *parcel)
         }
         v3 = parcel->bob_phase_step + parcel->bob_phase;
         parcel->bob_phase = v3;
-        if ( !(v5 | v6) )
+        if ( (v5 | v6) == 0 )
           parcel->bob_phase = v3 - 1.0;
         p_position = &parcel->sprite->position;
         p_position->x = parcel->bod.position.x;

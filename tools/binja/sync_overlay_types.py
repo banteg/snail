@@ -29,7 +29,7 @@ PROTO_UPDATES = (
     ("update_overlay", "void __thiscall update_overlay(Overlay* overlay)"),
     (
         "bind_subgame_owner",
-        "SubgameRuntime* __thiscall bind_subgame_owner(SubgameOwnerLink* owner)",
+        "cRSubGame* __thiscall bind_subgame_owner(SubgameOwnerLink* owner)",
     ),
 )
 

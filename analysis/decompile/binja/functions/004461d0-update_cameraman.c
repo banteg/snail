@@ -120,7 +120,7 @@
 0044664d        long double x87_r7_72 = fconvert.t(0.5f) - st0_4 * fconvert.t(0.5f)
 00446657        template_record_2.q = fconvert.d(x87_r7_72)
 00446671        x87_r7_75 = fconvert.t(fconvert.s(x87_r7_72)) * fconvert.t(50f) + fconvert.t(110f)
-00446685        struct SubgameRuntime* game = cameraman->game
+00446685        struct cRSubGame* game = cameraman->game
 0044668b        struct cRPath* template_record_4 = template_record
 004466a0        cameraman->fov_degrees = fconvert.s((x87_r7_75 - fconvert.t(cameraman->fov_degrees)) * fconvert.t(0.300000012f) + fconvert.t(cameraman->fov_degrees))
 004466b4        linear_interpolate_matrix(cameraman, &cameraman->previous_desired_matrix, &cameraman->desired_matrix, fconvert.s(fconvert.t(game->subgame_rate) * fconvert.t(0.300000012f)))

@@ -3,7 +3,7 @@
 /* selector: promote_track_tiles_to_fringe_variants */
 
 // Void Windows `cRSubGame::WarnTrack()`: promotes floor and slide runtime cells to their warning object variants when the same lane in the next row is empty. Android preserves the two object-family scans, replacement banks, 0x20 marker, and dispatcher position between `SmoothTrack()` and `SlideSmoothTrack()`. Its sole Windows caller consumes only the grid mutation; the count-derived EAX residue is incidental.
-void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime *game)
+void __thiscall promote_track_tiles_to_fringe_variants(cRSubGame *game)
 {
   Object **p_object; // esi
   int i; // ebp

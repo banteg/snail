@@ -9,26 +9,26 @@ void __thiscall update_subgoldy(Player *player)
   signed int v3; // eax
   signed int segment_count; // ecx
   int32_t movement_mode_selector; // eax
-  SubgameRuntime *game; // eax
-  SubgameRuntime *v7; // eax
+  cRSubGame *game; // eax
+  cRSubGame *v7; // eax
   SubSolution *selected_level_record; // ecx
   int32_t replay_update_cursor; // eax
   Vec3 *p_position; // ebx
-  SubgameRuntime *v11; // eax
+  cRSubGame *v11; // eax
   double v12; // st7
   double track_z_offset; // st7
   double v14; // st7
   char v16; // c0
   double v17; // st7
   __int16 v18; // ax
-  SubgameRuntime *v19; // esi
-  SubgameRuntime *v20; // esi
+  cRSubGame *v19; // esi
+  cRSubGame *v20; // esi
   double v21; // st7
-  SubgameRuntime *v22; // eax
+  cRSubGame *v22; // eax
   PlayerControlSource *control_source; // eax
-  SubgameRuntime *v24; // eax
+  cRSubGame *v24; // eax
   cRSubLoc *row_event_cell; // eax
-  SubgameRuntime *row_event_game; // edi
+  cRSubGame *row_event_game; // edi
   int32_t row_event_row_index; // eax
   SubRow *runtime_row; // esi
   int row_event_id; // eax
@@ -36,7 +36,7 @@ void __thiscall update_subgoldy(Player *player)
   SubSegmentEventBiasView *sample_segment_view; // edx
   SubLocTileId tile_id; // al
   double subgame_rate; // st7
-  SubgameRuntime *v34; // ecx
+  cRSubGame *v34; // ecx
   Vec3 *p_velocity; // esi
   double v36; // st7
   cRSubLoc *track_grid_cell_at_world_position; // eax
@@ -44,36 +44,36 @@ void __thiscall update_subgoldy(Player *player)
   double v39; // st7
   double v40; // st7
   cRSubLoc *current_cell; // esi
-  SubgameRuntime *attachment_game; // edi
+  cRSubGame *attachment_game; // edi
   int32_t primary_row_index; // eax
   int32_t secondary_row_index; // eax
   SubLocTileId v45; // al
   uint8_t open_edge_mask; // al
   double v47; // st7
   double v48; // st6
-  SubgameRuntime *v49; // ecx
+  cRSubGame *v49; // ecx
   double v50; // st7
   double v51; // st7
   double v52; // st7
   cRSubLoc *v53; // eax
   cRSubLoc *v54; // esi
   float v55; // eax
-  SubgameRuntime *v56; // ecx
+  cRSubGame *v56; // ecx
   double v57; // st7
   double v58; // st7
-  SubgameRuntime *v59; // ecx
-  SubgameRuntime *v60; // ecx
+  cRSubGame *v59; // ecx
+  cRSubGame *v60; // ecx
   double v61; // st7
-  SubgameRuntime *v62; // ecx
+  cRSubGame *v62; // ecx
   double v63; // st7
   double v64; // st7
-  SubgameRuntime *v65; // ecx
-  SubgameRuntime *v66; // eax
-  SubgameRuntime *v67; // ecx
+  cRSubGame *v65; // ecx
+  cRSubGame *v66; // eax
+  cRSubGame *v67; // ecx
   int32_t state; // eax
-  SubgameRuntime *v69; // eax
-  SubgameRuntime *v70; // ecx
-  SubgameRuntime *v71; // ebp
+  cRSubGame *v69; // eax
+  cRSubGame *v70; // ecx
+  cRSubGame *v71; // ebp
   bool v72; // zf
   double v73; // st7
   double wobble_alpha; // st7
@@ -89,7 +89,7 @@ void __thiscall update_subgoldy(Player *player)
   double v84; // st7
   double v85; // st7
   double v86; // st7
-  SubgameRuntime *v87; // ecx
+  cRSubGame *v87; // ecx
   TimeTrialRouteRecordCursor *time_trial_route_cursor; // eax
   int32_t replay_sample_count; // ecx
   int32_t replay_start_cursor; // edx
@@ -103,13 +103,13 @@ void __thiscall update_subgoldy(Player *player)
   double v98; // st7
   uint8_t control_override_active; // al
   double v100; // st7
-  SubgameRuntime *v101; // eax
+  cRSubGame *v101; // eax
   double v102; // st7
   double v103; // st7
-  SubgameRuntime *v104; // ecx
+  cRSubGame *v104; // ecx
   ClickStartState v105; // eax
   double v106; // st7
-  SubgameRuntime *v107; // eax
+  cRSubGame *v107; // eax
   float x; // [esp-14h] [ebp-6Ch]
   float v109; // [esp-14h] [ebp-6Ch]
   float y; // [esp-10h] [ebp-68h]

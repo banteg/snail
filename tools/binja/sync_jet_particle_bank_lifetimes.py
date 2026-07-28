@@ -29,7 +29,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Snail": 0x19B4,
     "Player": 0x4364,
     "Sprite": 0xB4,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -48,7 +48,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x0C: ("state", "SubHoverState"),
         0x10: ("player", "Player*"),
         0x20: ("particle_slots", "JetParticleSlot[30]"),
-        0x200: ("game", "SubgameRuntime*"),
+        0x200: ("game", "cRSubGame*"),
         0x210: ("warning_intensity", "float"),
     },
     "RenderableBod": {
@@ -82,7 +82,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x74: ("lifetime_step", "float"),
         0x78: ("gravity_step", "float"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x3BB764: ("player", "Player"),
     },
 }

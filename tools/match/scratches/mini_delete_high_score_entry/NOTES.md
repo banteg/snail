@@ -4,7 +4,7 @@ Deletes a canceled pending top-ten entry by shifting later records over its
 row. The iOS symbol corpus independently names this owner method
 `cRSubHighScore::MiniDelete(int)`.
 
-This is a `SubHighScore` member. The bank is owned by `SubgameRuntime` at
+This is a `SubHighScore` member. The bank is owned by `cRSubGame` at
 `game+0x74618+0x68b4c8 = game+0x6ffae0`; its first two fields are the borrowed
 active-bank pointer and row count. Native uses the overlapping source window at
 bank `+0x17c108`, exactly `survival_records[1]`. The

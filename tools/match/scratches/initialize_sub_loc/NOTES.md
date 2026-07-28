@@ -12,7 +12,7 @@ The table entry at `0x497368` points directly to
 Ownership is fixed by three independent Windows facts:
 
 - `initialize_runtime_pools_and_path_template_bank` calls it exactly `0x6400`
-  times over the owned runtime-cell slab at `SubgameRuntime +0x3bfac8`;
+  times over the owned runtime-cell slab at `cRSubGame +0x3bfac8`;
 - every call advances by the exact `cRSubLoc` size, `0x54`;
 - `construct_game_runtime` reports the incremented global as
   `LocCount=%i Memory=%i`, with memory computed as `count * 0x54`.
@@ -31,7 +31,7 @@ remains `attachment_template_record +0x38`. The constructor remains exact at
 
 ## 2026-07-15 durable root composition replay
 
-The owned 25,600-cell slab now sits under a complete `SubgameRuntime` embedded
+The owned 25,600-cell slab now sits under a complete `cRSubGame` embedded
 at `GameRoot +0x74618`; the runtime is exactly `0x1272838` bytes and ends at
 root `+0x12e6e50`. All three IDA replay lanes preserve that composition instead
 of letting the sparse frame view truncate the runtime tail. The constructor

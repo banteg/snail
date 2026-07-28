@@ -1,11 +1,11 @@
-// Start/completion banner actors embedded in SubgameRuntime.
+// Start/completion banner actors embedded in cRSubGame.
 #ifndef BANNER_H
 #define BANNER_H
 
 #include "bod_types.h"
 #include "player.h"
 
-class SubgameRuntime;
+class cRSubGame;
 
 class Banner : public BodBase {
 public:
@@ -14,7 +14,7 @@ public:
     // Android preserves this same tail immediately after its platform BodBase.
     int visibility_mode; // +0x38, 0 start row; 1 completion row
     char unknown_3c[0x48 - 0x3c];
-    SubgameRuntime* owner_game; // +0x48, borrowed embedded-subgame backlink
+    cRSubGame* owner_game; // +0x48, borrowed embedded-subgame backlink
     char unknown_4c[0x54 - 0x4c];
     Player* owner_player; // +0x54, borrowed row-position source
     float phase; // +0x58
@@ -25,7 +25,7 @@ typedef char Banner_must_be_0x60[(sizeof(Banner) == 0x60) ? 1 : -1];
 
 class BannerPool {
 public:
-    // Fixed start/completion storage owned by SubgameRuntime. The global BOD
+    // Fixed start/completion storage owned by cRSubGame. The global BOD
     // list only links these objects while the subgame is live.
     Banner slots[2];
 };

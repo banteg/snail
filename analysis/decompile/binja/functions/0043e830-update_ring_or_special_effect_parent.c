@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_ring_or_special_effect_parent @ 0x43e830 */
 
-0043e839        struct SubgameRuntime* rate_source = ring->rate_source
+0043e839        struct cRSubGame* rate_source = ring->rate_source
 0043e844        if (rate_source->subgame_pause_gate != 0)
 0043e844        return
 0043e850        int32_t edi_2 = ring->star_shower_counter + 1

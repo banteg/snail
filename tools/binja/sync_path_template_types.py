@@ -416,7 +416,7 @@ GOLB_SHOT_FIELD_UPDATES = (
     ("0x264", "path_factor", "float"),
     ("0x268", "lifetime", "float"),
     ("0x26c", "lifetime_step", "float"),
-    ("0x270", "game", "SubgameRuntime*"),
+    ("0x270", "game", "cRSubGame*"),
     ("0x274", "object_ref", "void*"),
     ("0x278", "owner_player", "Player*"),
     ("0x27c", "source_matrix", "TransformMatrix"),
@@ -463,6 +463,11 @@ SUB_LOC_OWNER_TYPE_NAMES = (
     "TrackRowCell",
 )
 
+SUBGAME_OWNER_TYPE_NAMES = (
+    "cRSubGame",
+    "SubgameRuntime",
+)
+
 SUB_LOC_DEPENDENT_VIEW_TYPE_NAMES = (
     "TrackRowCellSameLaneCursorView",
     "SubRowParcelSpawnYStrideCursor",
@@ -503,6 +508,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubLazerSlotCursor",
     "SaltSlotCursor",
     "ParcelSlotCursor",
+    "cRSubGame",
     "SubgameRuntime",
     "SubHighScore",
     "SubSolution",
@@ -962,7 +968,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x3f0", "progress_bar", "ProgressBar"),
     ("0x3f4", "warning", "Warning"),
     ("0x404", "lives", "int32_t"),
-    ("0x408", "game", "SubgameRuntime*"),
+    ("0x408", "game", "cRSubGame*"),
     ("0x40c", "movement_mode_selector", "int32_t"),
     ("0x410", "velocity", "Vec3"),
     ("0x41c", "boost_one_tick", "uint8_t"),
@@ -1058,7 +1064,7 @@ UPDATE_SUBGOLDY_USER_VAR_UPDATES = (
 # The time-trial ghost path preserves the native
 # `game + route_index * sizeof(SubSolution)` expression in EAX. This exact
 # lifetime borrows one SubHighScore::time_trial_route_records element through
-# a SubgameRuntime-relative analytical view; it does not own another record.
+# a cRSubGame-relative analytical view; it does not own another record.
 UPDATE_SUBGOLDY_REPLAY_USER_VAR_UPDATES = (
     (
         "update_subgoldy",
@@ -1308,7 +1314,7 @@ TIP_MANAGER_USER_VAR_UPDATES = (
 # borrowed embedded-object receivers. In particular, the first Weapon lifetime
 # otherwise remains a pointer-to-array and hides its inherited BodNode fields.
 # The former initialized_player override is intentionally absent: the canonical
-# SubgameRuntime receiver now keeps `&game->player` typed without an SSA patch.
+# cRSubGame receiver now keeps `&game->player` typed without an SSA patch.
 BUILD_SUBGAME_ACTIVE_BOD_USER_VAR_UPDATES = (
     (
         "build_subgame_level",
@@ -1615,7 +1621,7 @@ KILL_GOLB_OWNER_USER_VAR_UPDATES = (
     ),
 )
 
-# place_parcels_on_track retains a containing SubgameRuntime base while its two
+# place_parcels_on_track retains a containing cRSubGame base while its two
 # candidate-claim loops advance one 0xf4 SubRow lane. The final projection pass
 # instead carries a direct borrowed SubRow cursor. Pin those native register
 # lifetimes so the row fields do not collapse back into absolute data symbols;
@@ -1798,13 +1804,13 @@ UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
 )
 
 # VC6 computes the runtime-row ring-speed address as a dword index relative to
-# the complete SubgameRuntime base, so there is no honest SubRow* lifetime for
+# the complete cRSubGame base, so there is no honest SubRow* lifetime for
 # Binary Ninja to type. Preserve the exact owner at the eight load
 # instructions instead. The Windows identity below is algebraically
 # `runtime_rows + row * 0xf4 + 0xe8`; Android and iOS independently pass their
 # current authored row's corresponding scalar to cRSubGame::AddRing.
 UPDATE_SUBGAME_RING_SPEED_COMMENT = (
-    "Owner: SubgameRuntime::runtime_rows[runtime_row_scan_begin].ring_speed "
+    "Owner: cRSubGame::runtime_rows[runtime_row_scan_begin].ring_speed "
     "(+0x5ccac8 + row * 0xf4 + 0xe8). Android cRSubGame::AI @ 0x82214 and "
     "iOS cRSubGame::AI @ 0x33a50 independently pass the current authored "
     "row speed to AddRing; Windows offsets remain authoritative."
@@ -1945,7 +1951,7 @@ REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES = (
 # The ring spawner retains a manager-relative ESI cursor until activation is
 # complete, then borrows the embedded SubRing's BodNode prefix for insertion in
 # the root active list. Preserve those two ownership domains explicitly: the
-# cursor does not own another SubgameRuntime, and the root list owns neither the
+# cursor does not own another cRSubGame, and the root list owns neither the
 # selected ring nor any other embedded bod.
 SPAWN_TRACK_RING_USER_VAR_UPDATES = (
     (
@@ -2038,7 +2044,7 @@ SPAWN_TRACK_RING_USER_VAR_UPDATES = (
     ),
 )
 
-# The pickup spawners retain a SubgameRuntime-relative cursor while advancing
+# The pickup spawners retain a cRSubGame-relative cursor while advancing
 # the fixed-size slot stride. These prefix views make the inline JetPack and
 # SubHealth owners visible without pretending the cursor owns another runtime.
 SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES = (
@@ -2061,9 +2067,9 @@ SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES = (
 )
 
 # The collision dispatcher keeps byte offsets in EDI and repeatedly forms a
-# temporary `SubgameRuntime + slot_offset` pointer in EAX. These analysis-only
+# temporary `cRSubGame + slot_offset` pointer in EAX. These analysis-only
 # cursor views name the embedded slot reached by each large displacement while
-# retaining the real SubgameRuntime owner and the native byte-strided lifetime.
+# retaining the real cRSubGame owner and the native byte-strided lifetime.
 COLLISION_POOL_CURSOR_USER_VAR_UPDATES = (
     (
         "handle_subgoldy_collisions",
@@ -2141,7 +2147,7 @@ SPAWN_SALT_HAZARD_USER_VAR_UPDATES = (
 # runtime row, and one runtime cell at their native 0x38/0xf4/0x54 strides.
 # Binary Ninja otherwise flattens all three into void-pointer displacement
 # arithmetic. The stack slot is the matching authored-row ordinal, not the
-# SubgameRuntime pointer inferred from an earlier compiler-reused lifetime.
+# cRSubGame pointer inferred from an earlier compiler-reused lifetime.
 # The attachment-entry span has a separate exact SubRow lifetime: it begins at
 # runtime_row_anchor->row and advances by the native 0xf4 SubRow stride.
 # The four-pointer fringe tail likewise has exact slot, object-reload, and
@@ -2225,7 +2231,7 @@ POPULATE_RUNTIME_SPLIT_USER_VAR_UPDATES = (
         (("0x43714d", "mlil", "RegisterVariableSourceType", 4765, 67),),
         ("RegisterVariableSourceType", 4765, 67),
         "runtime_owner",
-        "SubgameRuntime*",
+        "cRSubGame*",
     ),
 )
 
@@ -2258,7 +2264,7 @@ POPULATE_SEGMENT_SELECTION_USER_VAR_UPDATES = (
         814,
         71,
         "build_runtime_owner",
-        "SubgameRuntime*",
+        "cRSubGame*",
     ),
     (
         "populate_runtime_track_cells_from_segments",
@@ -2622,7 +2628,7 @@ FRINGE_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
-# SlideSmoothTrack carries the same SubgameRuntime-relative cell cursor in two
+# SlideSmoothTrack carries the same cRSubGame-relative cell cursor in two
 # disjoint ESI lifetimes. The first compares the current cell with the next
 # same-lane row; the second compares it with the previous same-lane row.
 HARMONIZE_RUNTIME_USER_VAR_UPDATES = (
@@ -2886,6 +2892,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
 # canonical owners after importing their authoritative types.
 GAME_ROOT_FIELD_UPDATES = (
     ("0x5a8", "active_bod_list", "BodList"),
+    ("0x74618", "subgame", "cRSubGame"),
     ("0x12e6f58", "tip_manager", "TipManager"),
 )
 
@@ -2900,7 +2907,7 @@ VAPOUR_FIELD_UPDATES = (
 
 JETPACK_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
-    ("0x44", "owner_game", "SubgameRuntime*"),
+    ("0x44", "owner_game", "cRSubGame*"),
     ("0x74", "vapour_a", "Vapour"),
     ("0x108", "vapour_b", "Vapour"),
 )
@@ -2931,7 +2938,7 @@ SUB_SPEED_UP_FIELD_UPDATES = (
 )
 
 BANNER_FIELD_UPDATES = (
-    ("0x48", "owner_game", "SubgameRuntime*"),
+    ("0x48", "owner_game", "cRSubGame*"),
 )
 
 WARNING_FIELD_UPDATES = (
@@ -3017,7 +3024,7 @@ ROW_MODEL_FIELD_UPDATES = (
 )
 
 THANKS_SCREEN_FIELD_UPDATES = (
-    ("0x00", "game", "SubgameRuntime*"),
+    ("0x00", "game", "cRSubGame*"),
     ("0x04", "message_widget", "FrontendWidget*"),
     ("0x08", "message_state", "int32_t"),
     ("0x0c", "message_progress", "float"),
@@ -3098,7 +3105,7 @@ SUB_HOVER_FIELD_UPDATES = (
     ("0x18", "wobble_y", "float"),
     ("0x1c", "wobble_alpha", "float"),
     ("0x20", "particle_slots", "JetParticleSlot[0x1e]"),
-    ("0x200", "game", "SubgameRuntime*"),
+    ("0x200", "game", "cRSubGame*"),
     ("0x20c", "warning_intensity_latch", "float"),
     ("0x210", "warning_intensity", "float"),
 )
@@ -3128,7 +3135,7 @@ TIP_MANAGER_FIELD_UPDATES = (
 )
 
 TUTORIAL_FIELD_UPDATES = (
-    ("0x0c", "game", "SubgameRuntime*"),
+    ("0x0c", "game", "cRSubGame*"),
 )
 
 BOD_CORE_DATA_VAR_UPDATES = (
@@ -3197,6 +3204,47 @@ def ensure_c_r_sub_loc_owner_types(
         header_path=header_path,
         replace_types=stale_types,
         include_types=SUB_LOC_OWNER_TYPE_NAMES,
+    )
+    result["stale_types"] = stale_types
+    return result
+
+
+def ensure_c_r_subgame_owner_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Promote the cross-port authored cRSubGame identity over the old alias."""
+
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    missing_from_header = [
+        name for name in SUBGAME_OWNER_TYPE_NAMES if name not in equivalence
+    ]
+    if missing_from_header:
+        raise RuntimeError(
+            "authoritative header omitted cRSubGame owner types: "
+            + ", ".join(missing_from_header)
+        )
+
+    stale_types = tuple(
+        name for name in SUBGAME_OWNER_TYPE_NAMES if not equivalence[name]
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRSubGame owner types already equivalent",
+            "types": SUBGAME_OWNER_TYPE_NAMES,
+        }
+
+    result = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=SUBGAME_OWNER_TYPE_NAMES,
     )
     result["stale_types"] = stale_types
     return result
@@ -3773,19 +3821,19 @@ TIP_PROTO_UPDATES = (
 TRACK_NORMALIZATION_VOID_PROTO_UPDATES = (
     (
         "merge_track_tile_runs",
-        "void __thiscall merge_track_tile_runs(SubgameRuntime* game)",
+        "void __thiscall merge_track_tile_runs(cRSubGame* game)",
     ),
     (
         "select_track_tile_edge_variants",
-        "void __thiscall select_track_tile_edge_variants(SubgameRuntime* game)",
+        "void __thiscall select_track_tile_edge_variants(cRSubGame* game)",
     ),
     (
         "promote_track_tiles_to_fringe_variants",
-        "void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game)",
+        "void __thiscall promote_track_tiles_to_fringe_variants(cRSubGame* game)",
     ),
     (
         "harmonize_center_lane_floor_slide_variants",
-        "void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game)",
+        "void __thiscall harmonize_center_lane_floor_slide_variants(cRSubGame* game)",
     ),
 )
 
@@ -3807,7 +3855,7 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_runtime_pools_and_path_template_bank",
-        "SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime* game)",
+        "cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(cRSubGame* game)",
     ),
     (
         "initialize_track_row_runtime",
@@ -3877,7 +3925,7 @@ PROTO_UPDATES = (
     ("set_color_black", "void __thiscall set_color_black(tColour* color)"),
     (
         "get_track_skirt_color",
-        "tColour* __thiscall get_track_skirt_color(SubgameRuntime* game, tColour* out)",
+        "tColour* __thiscall get_track_skirt_color(cRSubGame* game, tColour* out)",
     ),
     (
         "uninit_pause_menu",
@@ -4328,7 +4376,7 @@ PROTO_UPDATES = (
     ("update_invincible_shell", "void __thiscall update_invincible_shell(Invincible* invincible)"),
 )
 
-# The full SubgameRuntime and Player field maps above are the canonical owner
+# The full cRSubGame and Player field maps above are the canonical owner
 # views consumed by these lifecycle and level-builder functions. These
 # prototypes are replayed through the direct verified batch because older BN
 # analysis can otherwise restore an inferred but ABI-equivalent fastcall label.
@@ -4346,44 +4394,44 @@ GOLDY_PATH_FOLLOW_PROTO_UPDATES = (
 CORE_SUBGAME_PROTO_UPDATES = (
     (
         "calc_slider_to_rate",
-        "float __thiscall calc_slider_to_rate(SubgameRuntime* game, float slider)",
+        "float __thiscall calc_slider_to_rate(cRSubGame* game, float slider)",
     ),
     (
         "calc_subgame_rate",
-        "void __thiscall calc_subgame_rate(SubgameRuntime* game)",
+        "void __thiscall calc_subgame_rate(cRSubGame* game)",
     ),
     (
         "advance_blink_random",
-        "double __thiscall advance_blink_random(SubgameRuntime* game)",
+        "double __thiscall advance_blink_random(cRSubGame* game)",
     ),
     (
         "initialize_blink_random",
-        "void __thiscall initialize_blink_random(SubgameRuntime* game)",
+        "void __thiscall initialize_blink_random(cRSubGame* game)",
     ),
     (
         "hide_gameplay_scores",
-        "void __thiscall hide_gameplay_scores(SubgameRuntime* game)",
+        "void __thiscall hide_gameplay_scores(cRSubGame* game)",
     ),
     (
         "unhide_gameplay_scores",
-        "void __thiscall unhide_gameplay_scores(SubgameRuntime* game)",
+        "void __thiscall unhide_gameplay_scores(cRSubGame* game)",
     ),
     (
         "update_subgoldy_resurrect",
         "void __thiscall update_subgoldy_resurrect(Player* player)",
     ),
-    ("reset_subgame", "void __thiscall reset_subgame(SubgameRuntime* game)"),
+    ("reset_subgame", "void __thiscall reset_subgame(cRSubGame* game)"),
     (
         "complete_subgame",
-        "void __thiscall complete_subgame(SubgameRuntime* game, uint8_t completed)",
+        "void __thiscall complete_subgame(cRSubGame* game, uint8_t completed)",
     ),
     (
         "mark_track_warning_zones",
-        "void __thiscall mark_track_warning_zones(SubgameRuntime* game)",
+        "void __thiscall mark_track_warning_zones(cRSubGame* game)",
     ),
     (
         "is_neighbor_cell_solid",
-        "bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, cRSubLoc* cell, int32_t lane_offset, int32_t row_offset)",
+        "bool __thiscall is_neighbor_cell_solid(cRSubGame* game, cRSubLoc* cell, int32_t lane_offset, int32_t row_offset)",
     ),
     (
         "try_enter_track_attachment_from_swept_motion",
@@ -4400,15 +4448,15 @@ CORE_SUBGAME_PROTO_UPDATES = (
     *GOLDY_PATH_FOLLOW_PROTO_UPDATES,
     (
         "populate_runtime_track_cells_from_segments",
-        "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game)",
+        "void __thiscall populate_runtime_track_cells_from_segments(cRSubGame* game)",
     ),
     (
         "place_parcels_on_track",
-        "void __thiscall place_parcels_on_track(SubgameRuntime* game)",
+        "void __thiscall place_parcels_on_track(cRSubGame* game)",
     ),
     (
         "place_challenge_parcels_on_track",
-        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game)",
+        "void __thiscall place_challenge_parcels_on_track(cRSubGame* game)",
     ),
 )
 
@@ -4421,42 +4469,132 @@ CORE_SUBGAME_PROTO_UPDATES = (
 # stale identities and defaults to a read-only inspection because function
 # recreation is not covered by ordinary Binary Ninja undo.
 DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
-    ("initialize_subgame", "void __thiscall initialize_subgame(SubgameRuntime* game)"),
+    ("initialize_subgame", "void __thiscall initialize_subgame(cRSubGame* game)"),
     (
         "build_subgame_level",
-        "void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index)",
+        "void __thiscall build_subgame_level(cRSubGame* game, int32_t level_index)",
     ),
-    ("destroy_subgame", "void __thiscall destroy_subgame(SubgameRuntime* game)"),
-    ("update_subgame", "void __thiscall update_subgame(SubgameRuntime* game)"),
-    ("remove_subgame_bods", "void __thiscall remove_subgame_bods(SubgameRuntime* game)"),
+    ("destroy_subgame", "void __thiscall destroy_subgame(cRSubGame* game)"),
+    ("update_subgame", "void __thiscall update_subgame(cRSubGame* game)"),
+    ("remove_subgame_bods", "void __thiscall remove_subgame_bods(cRSubGame* game)"),
     (
         "build_track_fringe_objects",
-        "void __thiscall build_track_fringe_objects(SubgameRuntime* game)",
+        "void __thiscall build_track_fringe_objects(cRSubGame* game)",
     ),
     (
         "get_track_grid_cell_at_world_position",
-        "cRSubLoc* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position)",
+        "cRSubLoc* __thiscall get_track_grid_cell_at_world_position(cRSubGame* game, Vec3* position)",
     ),
     (
         "sample_track_floor_height_at_position",
-        "double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position)",
+        "double __thiscall sample_track_floor_height_at_position(cRSubGame* game, Vec3* position)",
     ),
     (
         "spawn_track_health_pickup",
-        "void __thiscall spawn_track_health_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player)",
+        "void __thiscall spawn_track_health_pickup(cRSubGame* game, cRSubLoc* cell, Player* player)",
     ),
     (
         "spawn_track_jetpack_pickup",
-        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player)",
+        "void __thiscall spawn_track_jetpack_pickup(cRSubGame* game, cRSubLoc* cell, Player* player)",
     ),
     (
         "get_track_runtime_cell_at_world_z",
-        "SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position)",
+        "SubRow* __thiscall get_track_runtime_cell_at_world_z(cRSubGame* game, Vec3* position)",
     ),
     (
         "project_position_onto_track_attachment",
-        "void __thiscall project_position_onto_track_attachment(SubgameRuntime* game, Vec3* position, float* out_angle)",
+        "void __thiscall project_position_onto_track_attachment(cRSubGame* game, Vec3* position, float* out_angle)",
     ),
+)
+
+SUBGAME_OWNER_COMPAT_PROTO_UPDATES = (
+    (
+        "bind_subgame_owner",
+        "cRSubGame* __thiscall bind_subgame_owner(SubgameOwnerLink* owner)",
+    ),
+    (
+        "build_track_colours",
+        "void __thiscall build_track_colours(cRSubGame* game)",
+    ),
+    (
+        "spawn_track_garbage_hazard",
+        "void __thiscall spawn_track_garbage_hazard(cRSubGame* game, cRSubLoc* cell, Player* player)",
+    ),
+    (
+        "spawn_slug_hazard",
+        "void __thiscall spawn_slug_hazard(cRSubGame* game, cRSubLoc* cell, Player* owner_player)",
+    ),
+    (
+        "spawn_track_ring_or_special_effect",
+        "void __thiscall spawn_track_ring_or_special_effect(cRSubGame* game, cRSubLoc* cell, int32_t requested_kind, Player* player, float ring_speed)",
+    ),
+)
+
+# Every Windows child owner/backpointer currently proved to reach the embedded
+# GameRoot::subgame object. Some types live in separate narrow headers, so the
+# focused migration updates each one only when that owner has already been
+# recovered in the target database. Their own replay scripts use cRSubGame too,
+# keeping a fresh database canonical when those slices are introduced later.
+SUBGAME_BACKPOINTER_STRUCT_UPDATES = (
+    ("Cameraman", (("0xc4", "game", "cRSubGame*"),)),
+    ("GarbageHazardRuntime", (("0x8c", "game", "cRSubGame*"),)),
+    ("GarbageHazardSlot", (("0x8c", "owner_game", "cRSubGame*"),)),
+    ("GolbShot", (("0x270", "game", "cRSubGame*"),)),
+    ("GolbShotFlightStrideCursor", (("0xac", "game", "cRSubGame*"),)),
+    ("Player", (("0x408", "game", "cRSubGame*"),)),
+    ("Salt", (("0x88", "owner_game", "cRSubGame*"),)),
+    ("SegmentCache", (("0x54", "owner_subgame", "cRSubGame*"),)),
+    ("Slug", (("0x88", "owner_game", "cRSubGame*"),)),
+    ("SlugHazardRuntime", (("0x88", "owner_game", "cRSubGame*"),)),
+    ("SubGarbage", (("0x8c", "owner_game", "cRSubGame*"),)),
+    ("SubHealth", (("0x44", "owner_game", "cRSubGame*"),)),
+    ("SubHover", (("0x200", "game", "cRSubGame*"),)),
+    ("SubLazer", (("0x88", "owner_game", "cRSubGame*"),)),
+    ("SubRing", (("0x1d0", "rate_source", "cRSubGame*"),)),
+    ("SubSpeedUp", (("0x8c", "owner_game", "cRSubGame*"),)),
+    ("SubgameOwnerLink", (("0x00", "game", "cRSubGame*"),)),
+    ("TrackHealthPickup", (("0x44", "owner_game", "cRSubGame*"),)),
+    ("TrackJetpackPickup", (("0x44", "owner_game", "cRSubGame*"),)),
+    ("TrackSpeedupRuntime", (("0x8c", "owner_game", "cRSubGame*"),)),
+    ("Tutorial", (("0x0c", "game", "cRSubGame*"),)),
+    ("Parcel", (("0x3c", "owner_subgame", "cRSubGame*"),)),
+    ("JetPack", (("0x44", "owner_game", "cRSubGame*"),)),
+    ("Banner", (("0x48", "owner_game", "cRSubGame*"),)),
+    (
+        "SubLazerBodyObjectStrideCursor",
+        (("0x64", "owner_game", "cRSubGame*"),),
+    ),
+    ("SaltOwnerGameStrideCursor", (("0x00", "owner_game", "cRSubGame*"),)),
+    ("GUI", (("0x00", "game", "cRSubGame*"),)),
+    ("ThanksScreen", (("0x00", "game", "cRSubGame*"),)),
+    ("Galaxy", (("0x10f70", "level_progress_base", "cRSubGame*"),)),
+)
+
+# These functions retain a user-defined ECX parameter even after their owner
+# UDT becomes a compatibility alias. Once cRSubGame is present, retyping only
+# that exact receiver preserves every independently audited local lifetime and
+# lets Binary Ninja render the canonical member ABI without function recreation.
+SUBGAME_RECEIVER_USER_VAR_UPDATES = tuple(
+    (
+        identifier,
+        "RegisterVariableSourceType",
+        0,
+        67,
+        "game",
+        "cRSubGame*",
+    )
+    for identifier, _prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
+) + tuple(
+    (
+        identifier,
+        "RegisterVariableSourceType",
+        0,
+        67,
+        "game",
+        "cRSubGame*",
+    )
+    for identifier, _prototype in SUBGAME_OWNER_COMPAT_PROTO_UPDATES
+    if identifier != "bind_subgame_owner"
 )
 
 REFINED_PATH_OWNER_PROTO_UPDATES = (
@@ -4661,6 +4799,27 @@ SUB_LOC_OWNER_REANALYSIS_CONSUMERS = (
     "update_golb_ai",
 )
 
+SUBGAME_OWNER_REANALYSIS_CONSUMERS = (
+    "construct_game_runtime",
+    "run_frame_update",
+    "initialize_game_assets_and_world",
+    "initialize_runtime_pools_and_path_template_bank",
+    "build_track_render_caches",
+    "initialize_jetpack_gauge",
+    "initialize_tutorial",
+    "create_golb",
+    "update_golb_ai",
+    "update_subgoldy",
+    "handle_subgoldy_collisions",
+    "update_ring_or_special_effect_parent",
+    "update_slug_hazard_ai",
+    "update_garbage_hazard",
+    "update_track_health_pickup",
+    "update_track_jetpack_pickup",
+    "update_track_parcel",
+    "update_tutorial",
+)
+
 
 def collect_c_r_path_owner_proto_updates() -> tuple[tuple[str, str], ...]:
     """Collect every Windows cRPath receiver ABI from the canonical replay."""
@@ -4686,6 +4845,36 @@ def collect_c_r_path_owner_proto_updates() -> tuple[tuple[str, str], ...]:
     )
     updates.update(dict(DEFERRED_PATH_OWNER_PROTO_UPDATES))
     return tuple(updates.items())
+
+
+def collect_c_r_subgame_owner_proto_updates() -> tuple[tuple[str, str], ...]:
+    """Collect every directly replayable Windows cRSubGame receiver ABI."""
+
+    updates: dict[str, str] = dict(SUBGAME_OWNER_COMPAT_PROTO_UPDATES)
+    for proto_updates in (
+        PROTO_UPDATES,
+        CORE_SUBGAME_PROTO_UPDATES,
+    ):
+        updates.update(
+            {
+                identifier: prototype
+                for identifier, prototype in proto_updates
+                if "cRSubGame*" in prototype
+            }
+        )
+    return tuple(updates.items())
+
+
+def collect_c_r_subgame_backpointer_struct_updates(
+    *, target: str
+) -> tuple[tuple[str, tuple[tuple[str, str, str], ...]], ...]:
+    """Collect canonical child backpointers from owner types present in BN."""
+
+    return tuple(
+        (struct_name, updates)
+        for struct_name, updates in SUBGAME_BACKPOINTER_STRUCT_UPDATES
+        if struct_exists(REPO_ROOT, target=target, struct_name=struct_name)
+    )
 
 
 def collect_c_r_sub_loc_owner_proto_updates() -> tuple[tuple[str, str], ...]:
@@ -4842,7 +5031,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Apply the authoritative path/presentation ownership slice to a Binary Ninja "
-            "target and replay the proven Player and SubgameRuntime field overlays."
+            "target and replay the proven Player and cRSubGame field overlays."
         )
     )
     parser.add_argument(
@@ -4895,6 +5084,14 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     focused_group.add_argument(
+        "--subgame-owner-only",
+        action="store_true",
+        help=(
+            "Replay only the authored cRSubGame type, compatibility alias, "
+            "GameRoot embed, and directly writable Windows member ABIs."
+        ),
+    )
+    focused_group.add_argument(
         "--sub-loc-owner-only",
         action="store_true",
         help=(
@@ -4907,7 +5104,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Replay only the authored cRPathManager type, embedded "
-            "SubgameRuntime field, and NameCode(char*) method ABI."
+            "cRSubGame field, and NameCode(char*) method ABI."
         ),
     )
     focused_group.add_argument(
@@ -4982,6 +5179,80 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.subgame_owner_only:
+        subgame_owner_type_result = ensure_c_r_subgame_owner_types(
+            target=args.target,
+            header_path=header_path,
+        )
+        operations.append(subgame_owner_type_result)
+        subgame_owner_proto_updates = collect_c_r_subgame_owner_proto_updates()
+        subgame_backpointer_updates = (
+            collect_c_r_subgame_backpointer_struct_updates(target=args.target)
+        )
+        subgame_owner_results = apply_struct_and_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_updates=(
+                ("cRSubGame", SUBGAME_RUNTIME_FIELD_UPDATES),
+                ("GameRoot", (("0x74618", "subgame", "cRSubGame"),)),
+                *subgame_backpointer_updates,
+            ),
+            proto_updates=subgame_owner_proto_updates,
+        )
+        operations.extend(subgame_owner_results)
+        subgame_receiver_results = apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SUBGAME_RECEIVER_USER_VAR_UPDATES,
+        )
+        operations.extend(subgame_receiver_results)
+        operations.extend(
+            report_deferred_owner_prototypes(
+                target=args.target,
+                updates=DEFERRED_SUBGAME_OWNER_PROTO_UPDATES,
+                stale_identity_reason=(
+                    "the legacy SubgameRuntime or Game receiver needs the "
+                    "guarded recreation lane before cRSubGame can persist"
+                ),
+            )
+        )
+        if _has_verified_mutation(
+            [
+                subgame_owner_type_result,
+                *subgame_owner_results,
+                *subgame_receiver_results,
+            ]
+        ):
+            operations.extend(
+                reanalyze_functions(
+                    REPO_ROOT,
+                    target=args.target,
+                    identifiers=tuple(
+                        dict.fromkeys(
+                            (
+                                *(
+                                    identifier
+                                    for identifier, _prototype
+                                    in subgame_owner_proto_updates
+                                ),
+                                *(
+                                    identifier
+                                    for identifier, _prototype
+                                    in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
+                                ),
+                                *SUBGAME_OWNER_REANALYSIS_CONSUMERS,
+                            )
+                        )
+                    ),
+                )
+            )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.path_owner_only:
         path_owner_type_result = ensure_c_r_path_owner_types(
             target=args.target,
@@ -5059,7 +5330,7 @@ def main() -> int:
             struct_updates=(
                 ("cRSubLoc", SUB_LOC_FIELD_UPDATES),
                 (
-                    "SubgameRuntime",
+                    "cRSubGame",
                     (("0x3bfac8", "runtime_cells", "cRSubLoc[0xc80][8]"),),
                 ),
                 (
@@ -5090,7 +5361,7 @@ def main() -> int:
                 target=args.target,
                 updates=collect_deferred_c_r_sub_loc_owner_proto_updates(),
                 stale_identity_reason=(
-                    "the exact SubgameRuntime receiver needs the established "
+                    "the exact cRSubGame receiver needs the established "
                     "guarded recreation lane before its cRSubLoc borrow can "
                     "be persisted"
                 ),
@@ -5130,7 +5401,7 @@ def main() -> int:
             struct_updates=(
                 ("cRPathManager", PATH_MANAGER_FIELD_UPDATES),
                 (
-                    "SubgameRuntime",
+                    "cRSubGame",
                     (("0xff2910", "path_manager", "cRPathManager"),),
                 ),
             ),
@@ -5388,7 +5659,7 @@ def main() -> int:
                     "Invincible",
                     "Snail",
                     "Player",
-                    "SubgameRuntime",
+                    "cRSubGame",
                 ),
             )
         )
@@ -5421,7 +5692,7 @@ def main() -> int:
                     "RuntimeRowStrideAnchor",
                     "RuntimeCellStrideAnchor",
                     "TimeTrialRouteRecordCursor",
-                    "SubgameRuntime",
+                    "cRSubGame",
                 ),
             )
         )
@@ -5728,6 +5999,12 @@ def main() -> int:
             )
         )
         operations.append(
+            ensure_c_r_subgame_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.append(
             types_declare_if_missing(
                 REPO_ROOT,
                 target=args.target,
@@ -5842,7 +6119,7 @@ def main() -> int:
                 ),
                 ("Face", FACE_FIELD_UPDATES),
                 ("cRPathManager", PATH_MANAGER_FIELD_UPDATES),
-                ("SubgameRuntime", SUBGAME_RUNTIME_FIELD_UPDATES),
+                ("cRSubGame", SUBGAME_RUNTIME_FIELD_UPDATES),
                 ("Vapour", VAPOUR_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
                 ("SubHealth", SUB_HEALTH_FIELD_UPDATES),
@@ -5888,6 +6165,9 @@ def main() -> int:
                 ("Cameraman", CAMERAMAN_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),
                 ("SnailSkin", SNAIL_SKIN_FIELD_UPDATES),
+                *collect_c_r_subgame_backpointer_struct_updates(
+                    target=args.target
+                ),
             ),
             proto_updates=CORE_SUBGAME_PROTO_UPDATES,
         )
@@ -6009,6 +6289,13 @@ def main() -> int:
         apply_refined_owner_prototypes(
             target=args.target,
             updates=REFINED_PATH_OWNER_PROTO_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SUBGAME_RECEIVER_USER_VAR_UPDATES,
         )
     )
     operations.extend(

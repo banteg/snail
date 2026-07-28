@@ -3,7 +3,7 @@
 Exact match: 100.00%, 2/2 instructions.
 
 The receiver is the 0x1804-byte `EnemyManager` embedded at
-`SubgameRuntime +0x1270fd4`. The helper clears only its leading count, matching
+`cRSubGame +0x1270fd4`. The helper clears only its leading count, matching
 the iOS `cREnemyManager::Init()` symbol in `Golb.o`; the fixed 256-entry storage
 remains embedded and is reused on the next frame.
 

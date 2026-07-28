@@ -4,7 +4,7 @@
 
 class Sprite;
 class Player;
-class SubgameRuntime;
+class cRSubGame;
 struct Vector3;
 
 struct JetParticleSlot {
@@ -51,7 +51,7 @@ public:
     float wobble_alpha; // +0x1c
     JetParticleSlot
         particle_slots[JET_PARTICLE_ROW_COUNT][JET_PARTICLE_COLUMN_COUNT]; // +0x20
-    SubgameRuntime* game; // +0x200, borrowed owning subgame
+    cRSubGame* game; // +0x200, borrowed owning subgame
     char unknown_204[0x20c - 0x204];
     float warning_intensity_latch; // +0x20c
     float warning_intensity; // +0x210

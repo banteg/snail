@@ -36,7 +36,7 @@ Residuals:
 
 The exact 62-instruction body now uses the primary `SubGarbage` receiver,
 matching Android's retained `cRSubGarbage::Kill()` symbol. The active-chain
-head at `SubgameRuntime +0x359140` is borrowed wrapper state immediately before
+head at `cRSubGame +0x359140` is borrowed wrapper state immediately before
 the 50 owned records; it is not part of the authored `cRSubGarbage` allocation
 whose native ledger is exactly `50 * 0xc4 == 0x2648`.
 
@@ -56,7 +56,7 @@ pool-pointer temporary, this canonical field expression preserves the native
 base-plus-displacement loads and remains exact at 62/62 instructions with all
 six masked operands clean. Together with the root-list cleanup, the destroyer
 now distinguishes both owners explicitly: `GameRoot` owns BOD membership and
-`SubgameRuntime::SubGarbagePool` owns garbage-chain membership.
+`cRSubGame::SubGarbagePool` owns garbage-chain membership.
 
 ## 2026-07-14 backlink and teardown-state naming
 

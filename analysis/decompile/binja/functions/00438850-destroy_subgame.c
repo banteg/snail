@@ -33,9 +33,13 @@
 00438937        struct BodNode* edx_6
 00438937        edx_6.b = ecx_7->free_top.b
 00438937        edx_6:1.b = ecx_7->free_top:1.b
+00438937        edx_6:2.b = ecx_7->free_top:2.b
+00438937        edx_6:3.b = ecx_7->free_top:3.b
 0043893d        (esi_1 - 0x356b0c)->sub_lazers.slots[0].body.bod.bod.list_next = edx_6
-0043893f        ecx_7->free_top.b = (esi_1.w - 0xc).b
-0043893f        ecx_7->free_top:1.b = (esi_1.w - 0xc):1.b
+0043893f        ecx_7->free_top.b = (&esi_1[-3]).b
+0043893f        ecx_7->free_top:1.b = (&esi_1[-3]):1.b
+0043893f        ecx_7->free_top:2.b = (&esi_1[-3]):2.b
+0043893f        ecx_7->free_top:3.b = (&esi_1[-3]):3.b
 00438942        uint32_t list_flags_1 = (esi_1 - 0x356b0c)->sub_lazers.slots[0].body.bod.bod.list_flags
 00438945        list_flags_1:1.b &= 0xfd
 00438948        (esi_1 - 0x356b0c)->sub_lazers.slots[0].body.bod.bod.list_flags = list_flags_1
@@ -63,9 +67,13 @@
 004389b7        struct BodNode* edx_11
 004389b7        edx_11.b = ecx_9->free_top.b
 004389b7        edx_11:1.b = ecx_9->free_top:1.b
+004389b7        edx_11:2.b = ecx_9->free_top:2.b
+004389b7        edx_11:3.b = ecx_9->free_top:3.b
 004389bd        (esi_2 - 0x3578cc)->salt_hazards.slots[0].body.bod.bod.list_next = edx_11
-004389bf        ecx_9->free_top.b = (esi_2.w - 0xc).b
-004389bf        ecx_9->free_top:1.b = (esi_2.w - 0xc):1.b
+004389bf        ecx_9->free_top.b = (&esi_2[-3]).b
+004389bf        ecx_9->free_top:1.b = (&esi_2[-3]):1.b
+004389bf        ecx_9->free_top:2.b = (&esi_2[-3]):2.b
+004389bf        ecx_9->free_top:3.b = (&esi_2[-3]):3.b
 004389c2        uint32_t list_flags_3 = (esi_2 - 0x3578cc)->salt_hazards.slots[0].body.bod.bod.list_flags
 004389c5        list_flags_3:1.b &= 0xfd
 004389c8        (esi_2 - 0x3578cc)->salt_hazards.slots[0].body.bod.bod.list_flags = list_flags_3
@@ -93,9 +101,13 @@
 00438a37        struct BodNode* edx_16
 00438a37        edx_16.b = ecx_11->free_top.b
 00438a37        edx_16:1.b = ecx_11->free_top:1.b
+00438a37        edx_16:2.b = ecx_11->free_top:2.b
+00438a37        edx_16:3.b = ecx_11->free_top:3.b
 00438a3d        (esi_3 - 0x35908c)->banners.slots[0].bod.bod.list_next = edx_16
-00438a3f        ecx_11->free_top.b = (esi_3.w - 0xc).b
-00438a3f        ecx_11->free_top:1.b = (esi_3.w - 0xc):1.b
+00438a3f        ecx_11->free_top.b = (&esi_3[-3]).b
+00438a3f        ecx_11->free_top:1.b = (&esi_3[-3]):1.b
+00438a3f        ecx_11->free_top:2.b = (&esi_3[-3]):2.b
+00438a3f        ecx_11->free_top:3.b = (&esi_3[-3]):3.b
 00438a42        uint32_t list_flags_5 = (esi_3 - 0x35908c)->banners.slots[0].bod.bod.list_flags
 00438a45        list_flags_5:1.b &= 0xfd
 00438a48        (esi_3 - 0x35908c)->banners.slots[0].bod.bod.list_flags = list_flags_5
@@ -112,9 +124,11 @@
 00438a85        if ((list_flags_6.b & 0x40) == 0)
 00438a96        struct BodNode* list_next_3 = game->barrier.bod.bod.list_next
 00438a9b        if (list_next_3 != 0)
-00438a9d        int16_t list_prev_4 = (game->barrier.bod.bod.list_prev).w
+00438a9d        struct BodNode* list_prev_4 = game->barrier.bod.bod.list_prev
 00438aa0        list_next_3->list_prev.b = list_prev_4.b
 00438aa0        list_next_3->list_prev:1.b = list_prev_4:1.b
+00438aa0        list_next_3->list_prev:2.b = list_prev_4:2.b
+00438aa0        list_next_3->list_prev:3.b = list_prev_4:3.b
 00438aa3        struct BodNode* list_prev_3 = game->barrier.bod.bod.list_prev
 00438aa8        if (list_prev_3 == 0)
 00438ab5        edx_17->first = game->barrier.bod.bod.list_next

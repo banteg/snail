@@ -20,13 +20,14 @@
 004460a4        __builtin_memcpy(&var_80, &runtime->player.presentation.cutscene.live_matrix, 0x40)
 004460a6        game_base_1->players[0].camera.fov_degrees = 110f
 00446051        set_matrix_identity(&var_80)
+00446056        struct GameRoot* game_base_2 = g_game_base
 0044605c        var_80.position.y = 0x40400000
-00446064        g_game_base->players[0].camera.fov_degrees = 110f
+00446064        game_base_2->players[0].camera.fov_degrees = 110f
 004460dc        if (runtime->camera_snap_requested == 0)
-00446103        struct GameRoot* game_base_2 = g_game_base
+00446103        struct GameRoot* game_base_3 = g_game_base
 0044610d        float alpha
 0044610d        __builtin_strncpy(&alpha, "fff?", 4)
-0044611e        linear_interpolate_matrix(&game_base_2->players[0].body.transform, &from, &var_80, alpha)
+0044611e        linear_interpolate_matrix(&game_base_3->players[0].body.transform, &from, &var_80, alpha)
 0044612c        return
 004460f3        __builtin_memcpy(&g_game_base->players[0].body.transform, &var_80, 0x40)
 004460f6        runtime->camera_snap_requested = 0

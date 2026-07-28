@@ -17,7 +17,7 @@ This pass takes the smallest safe owner slices around the cache/fringe builders 
   - per-cache `cache_row_base` at `+0x38`
 - [`SegmentCache`](../headers/path_template_types.h), the authored
   `cRSegmentCache`:
-  - embedded in `SubgameRuntime +0x5c`, exact size `0xa7f8`
+  - embedded in `cRSubGame +0x5c`, exact size `0xa7f8`
   - packed skirt/fringe color at `+0x00`
   - five per-type vertex caps
   - five per-type index caps
@@ -25,7 +25,7 @@ This pass takes the smallest safe owner slices around the cache/fringe builders 
   - borrowed `owner_subgame` backlink at `+0x54`
   - `143 x 5` owned cache BOD slots at `+0x58`
   - build/activation row state at `+0xa7ec/+0xa7f0/+0xa7f4`
-- [`SubgameRuntime`](../../tools/match/include/subgame_runtime.h):
+- [`cRSubGame`](../../tools/match/include/subgame_runtime.h):
   - the actual enclosing owner reached through `SegmentCache.owner_subgame`
   - `runtime_row_count` at `+0x54`
   - owned `runtime_cells[3200][8]` slab at `+0x3bfac8`, ending `+0x5ccac8`
@@ -75,5 +75,5 @@ the two ranges have the same size.
   openness, and its fringe and player-entry consumers agree on those four bits.
 - The former sparse `TrackRenderGrid` compatibility view has been retired. It
   was not separately allocated storage or a second owner; the manager backlink
-  is directly typed as `SubgameRuntime*` in the source and both tool lanes.
+  is directly typed as `cRSubGame*` in the source and both tool lanes.
 - `RenderObjectTextureGroups` is intentionally generic. The same tail is used outside the track-cache manager and should not be named as a cache-only object.

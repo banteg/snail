@@ -16,9 +16,9 @@ unsigned char __fastcall is_sub_loc_ramp(cRSubLoc* cell);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 
-#define RUNTIME_CELL_BASE_OFFSET ((int)offsetof(SubgameRuntime, runtime_cells))
+#define RUNTIME_CELL_BASE_OFFSET ((int)offsetof(cRSubGame, runtime_cells))
 #define RUNTIME_CELL_OFFSET(field) \
-    ((int)offsetof(SubgameRuntime, runtime_cells[0][0].field))
+    ((int)offsetof(cRSubGame, runtime_cells[0][0].field))
 
 void SegmentCache::build_track_render_caches(tColour skirt_color)
 {

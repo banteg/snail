@@ -3,7 +3,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-cRSubLoc* SubgameRuntime::get_track_grid_cell_at_world_position(Vector3* position)
+cRSubLoc* cRSubGame::get_track_grid_cell_at_world_position(Vector3* position)
 {
     int lane = (int)(position->x + 4.0f);
     int row = (int)position->z;

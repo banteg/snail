@@ -48,7 +48,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x5C: ("facequads", "ObjectFaceQuad*"),
     },
     "SegmentCache": {
-        0x54: ("owner_subgame", "SubgameRuntime*"),
+        0x54: ("owner_subgame", "cRSubGame*"),
     },
 }
 

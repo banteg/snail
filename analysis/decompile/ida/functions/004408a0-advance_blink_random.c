@@ -3,7 +3,7 @@
 /* selector: advance_blink_random */
 
 // Exact Windows `cRSubGame::BlinkRand()`: advances the owned cursor modulo 24 and returns the selected blink-cadence sample. Android preserves the same method and table cardinality.
-double __thiscall advance_blink_random(SubgameRuntime *game)
+double __thiscall advance_blink_random(cRSubGame *game)
 {
   int32_t v1; // edx
 

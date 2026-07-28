@@ -10,7 +10,7 @@ SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
   struct BodNode *list_next; // eax
   struct BodNode *list_prev; // eax
   uint32_t v6; // eax
-  SubgameRuntime *owner_game; // ecx
+  cRSubGame *owner_game; // ecx
   SubGarbage *result; // eax
   SubGarbage *next_active; // ecx
 
@@ -26,10 +26,10 @@ SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
     else
     {
       list_next = sub_garbage->body.bod.bod.list_next;
-      if ( list_next )
+      if ( list_next != nullptr )
         list_next->list_prev = sub_garbage->body.bod.bod.list_prev;
       list_prev = sub_garbage->body.bod.bod.list_prev;
-      if ( list_prev )
+      if ( list_prev != nullptr )
         list_prev->list_next = sub_garbage->body.bod.bod.list_next;
       else
         p_active_bod_list->first = sub_garbage->body.bod.bod.list_next;
@@ -52,7 +52,7 @@ SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
     result = sub_garbage->next_active;
     owner_game->garbage_hazards.active_head = result;
   }
-  else if ( result )
+  else if ( result != nullptr )
   {
     while ( 1 )
     {
@@ -60,7 +60,7 @@ SubGarbage *__thiscall destroy_garbage_hazard(SubGarbage *sub_garbage)
       if ( next_active == sub_garbage )
         break;
       result = result->next_active;
-      if ( !next_active )
+      if ( next_active == nullptr )
         return result;
     }
     result->next_active = sub_garbage->next_active;

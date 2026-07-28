@@ -8,7 +8,7 @@ int next_math_random_value();
 
 void Parcel::update_track_parcel()
 {
-    SubgameRuntime* subgame = owner_subgame;
+    cRSubGame* subgame = owner_subgame;
     Vector3 delta;
     if (subgame->subgame_pause_gate)
         return;
@@ -45,7 +45,7 @@ void Parcel::update_track_parcel()
 
     case PARCEL_STATE_COLLECT_PENDING: {
         float bob_lift = sine(bob_phase * 6.2831855f) * 0.30000001f;
-        SubgameRuntime* current_subgame = owner_subgame;
+        cRSubGame* current_subgame = owner_subgame;
         Vector3* home_anchor = current_subgame->parcel_home_anchor();
         progress = 0.0f;
         progress_step = 0.0416666679f;
@@ -100,7 +100,7 @@ void Parcel::update_track_parcel()
         /* fall through */
 
     case PARCEL_STATE_DELIVERING: {
-        SubgameRuntime* current_subgame = owner_subgame;
+        cRSubGame* current_subgame = owner_subgame;
         Vector3* home_anchor = current_subgame->parcel_home_anchor();
         delta = current_subgame->completion.widget_world - *home_anchor;
 

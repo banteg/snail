@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_salt_hazard @ 0x441c10 */
 
-00441c13        struct SubgameRuntime* owner_game = salt->owner_game
+00441c13        struct cRSubGame* owner_game = salt->owner_game
 00441c1e        if (owner_game->subgame_pause_gate != 0)
 00441c1e        return
 00441c24        enum SaltState state = salt->state

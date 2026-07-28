@@ -29,7 +29,7 @@ Rejected source-shape probes:
   changed the byte-load register from `ecx` to `edx`.
 
 2026-06-21 subgame-header consolidation: the helper now uses the shared
-`SubgameRuntime` owner for `runtime_row_count` while keeping the proven raw
+`cRSubGame` owner for `runtime_row_count` while keeping the proven raw
 runtime-cell byte-offset idiom. Focused Wibo remains exact at `100.00%`,
 `47/47` instructions, with `2` clean masked operands.
 
@@ -46,7 +46,7 @@ exact at 47/47 with two clean operands.
 
 The native helper still requires its separate byte-offset base before loading
 the tile id and forming the `cRSubLoc*` argument. Those two displacements now
-derive from `SubgameRuntime::runtime_cells` and
+derive from `cRSubGame::runtime_cells` and
 `runtime_cells[0][0].tile_id` with `offsetof`, rather than repeating
 `0x3bfac8` and `0x3bfb04`. Binary Ninja confirms the same `0x54` cell with
 `tile_id +0x3c`. Focused output remains exact at 47/47 with both operands

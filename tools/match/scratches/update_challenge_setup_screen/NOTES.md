@@ -2,7 +2,7 @@
 
 First structured scratch for the challenge/time-trial setup updater. The
 screen controller layout is shared through `gui.h`, and its
-`game` pointer is now recovered as a borrowed `SubgameRuntime*`.
+`game` pointer is now recovered as a borrowed `cRSubGame*`.
 
 ## Recovered behavior
 
@@ -17,7 +17,7 @@ screen controller layout is shared through `gui.h`, and its
 - Mode `4` refreshes the Time Trial best-time widget through the same
   member-style `format_time_trial_string` call shape used by `update_subgame`,
   then shows or hides the Replay button from the selected replay record.
-- Replay launch sets `SubgameRuntime::selected_level_record_active` and stores
+- Replay launch sets `cRSubGame::selected_level_record_active` and stores
   `selected_level_record` as either the owned
   `SubHighScore::survival_pending_record` or the selected
   `SubHighScore::time_trial_route_records` entry.
@@ -59,14 +59,14 @@ duplicate local type; the focused score stayed 80.68%.
 `cRTimeTrial` object between the selected-replay handoff and PathManager. Both
 TimeString calls remain codegen-neutral at the honest 80.68% baseline.
 
-2026-06-21 validation after the shared `SubgameRuntime` front-controller
+2026-06-21 validation after the shared `cRSubGame` front-controller
 promotion: focused Wibo is still `80.68%`, `354/355`, prefix `8/355`, and the
 masked audit is now clean at `35 ok / 0 unresolved / 0 mismatch` under the
 current symbol set.
 
 2026-07-11 ownership closure: the former raw challenge replay and Time Trial
-record windows are both owned by `SubgameRuntime::sub_high_score`; the replay
-selection latch and pointer are direct `SubgameRuntime` fields. The ownership
+record windows are both owned by `cRSubGame::sub_high_score`; the replay
+selection latch and pointer are direct `cRSubGame` fields. The ownership
 rewrite is codegen-neutral at 80.68%, 354/355 instructions, prefix 8/355, and
 35 clean masked operands.
 

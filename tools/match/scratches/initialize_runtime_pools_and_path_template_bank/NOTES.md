@@ -1,6 +1,6 @@
 # `initialize_runtime_pools_and_path_template_bank` notes
 
-- This scratch walks the canonical embedded owners in `SubgameRuntime`. The
+- This scratch walks the canonical embedded owners in `cRSubGame`. The
   constructor pass spans many unrelated pools, so a few neutral callback casts
   remain where VC6 folded distinct authored constructors to one helper.
 - The call at +0x10013dc targets the small object-constructor thunk at
@@ -13,7 +13,7 @@ The constructor reuses EDI for seven independent inline-array walks. Native
 advances are exactly the recovered element widths: `SubHealth` `0x74`, `Slug`
 `0xec`, `Banner` `0x60`, `SubGarbage` `0xc4`, `SubRing` `0x1f8`,
 `cRSubLoc` `0x54`, and `Path` `0xa8`. Each loop therefore borrows one
-element from its enclosing `SubgameRuntime` pool; no loop owns or advances by
+element from its enclosing `cRSubGame` pool; no loop owns or advances by
 the complete array.
 
 Binary Ninja had widened four lifetimes to pointers to the complete arrays and
@@ -56,11 +56,11 @@ the three xref-free Windows records still do not acquire speculative names.
 This is provenance and ownership recovery only. The exact Windows constructor
 remains byte-identical at 227/227 instructions with all 72 operands clean.
 
-## 2026-07-17 enclosing SubgameRuntime ABI
+## 2026-07-17 enclosing cRSubGame ABI
 
 The exact 227-instruction constructor, its sole `GameRoot::subgame` caller,
 and every independently closed embedded pool establish
-`SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime*)`.
+`cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(cRSubGame*)`.
 Applying that receiver type exposes the complete pool graph in both decompilers
 instead of 80 raw `arg1 + offset` expressions. The runtime-row constructor now
 also lands on the authored `RowModel` nested in each `SubRow`.
@@ -69,14 +69,14 @@ The stronger owner graph also makes `build_subgame_level` retain
 `&game->player` without the former SSA-local `initialized_player` override, so
 that stale identity is removed from the canonical BN replay. In IDA, the one
 proven `lea` at `0x4082ec` is normalized from the colliding `byte_5CCAC8`
-auto-symbol back to the numeric `SubgameRuntime::runtime_rows` displacement;
+auto-symbol back to the numeric `cRSubGame::runtime_rows` displacement;
 the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 
 ## 2026-07-10 path-bank ownership
 
-- The pass at `SubgameRuntime +0xff2914` initializes exactly `126` records at
+- The pass at `cRSubGame +0xff2914` initializes exactly `126` records at
   stride `0xa8`: 63 adjacent primary/secondary pairs of stride `0x150`.
-- `SubgameRuntime` itself is `GameRoot +0x74618`, so this is the same address as
+- `cRSubGame` itself is `GameRoot +0x74618`, so this is the same address as
   the world initializer's constructor base `GameRoot +0x1066f2c`; no install
   copy or transfer exists.
 - The four bytes immediately before the bank now split into the authored empty
@@ -84,7 +84,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
   independently printed by `construct_game_runtime`; naming the boundary keeps
   this constructor exact at 227/227 with all 72 operands clean.
 - The `63 * 0x150 = 0x52b0` extent ends exactly at the embedded barrier at
-  `SubgameRuntime +0xff7bc4`.
+  `cRSubGame +0xff7bc4`.
 - `initialize_path_template_record_pair` is now owned by `Path` itself: it
   initializes the inherited leading `BodBase` and `fringe_mesh_bod` at `+0x60`.
   Walking the typed flat bank as 126 adjacent `Path` records preserves this
@@ -93,11 +93,11 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 ## 2026-07-14 SegmentCache and barrier constructor ownership
 
 - The opening no-op constructor receiver is the embedded
-  `SubgameRuntime::segment_cache`, not an anonymous color at `this +0x5c`.
+  `cRSubGame::segment_cache`, not an anonymous color at `this +0x5c`.
   Windows folds that authored constructor to the same three-byte helper used
   by trivial value objects, so the narrow `tColour*` call view remains only to
   preserve the merged relocation; its address now derives from
-  `offsetof(SubgameRuntime, segment_cache)`.
+  `offsetof(cRSubGame, segment_cache)`.
 - Native retains that receiver in `edi`, then advances it by
   `offsetof(SegmentCache, slots)`. The slot stride and complete `143 * 5`
   count now derive from `TrackRenderCacheSlot` and `segment_cache.slots`
@@ -112,7 +112,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 
 ## 2026-07-11 live-list sentinels
 
-- Ten consecutive constructor calls from `SubgameRuntime +0x355b64` through
+- Ten consecutive constructor calls from `cRSubGame +0x355b64` through
   `+0x355d5c` build complete `0x38`-byte `BodBase` objects. Their exact
   `0x230` extent ends at `active_level_score +0x355d94` with no gap.
 - Windows consumers identify five inherited node prefixes: the shared
@@ -137,7 +137,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 ## 2026-07-11 paired cRSubTracks owners
 
 - The constructor builds two consecutive, identically shaped regions at
-  `SubgameRuntime +0xa874` and `+0x1b01ec`. Each is exactly `0x1a5978`, the
+  `cRSubGame +0xa874` and `+0x1b01ec`. Each is exactly `0x1a5978`, the
   independently reported size of `cRSubTracks`/`SubTracks`.
 - Both regions construct 100 `0x4220` segment slots, the 256 authored-row
   arrays inside their `First:` and `Last:` slots, and their tail `tColour`.
@@ -151,7 +151,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 
 ## 2026-07-11 segment catalog boundary
 
-- The catalog receiver is `SubgameRuntime +0x10014cc`; the constructor starts
+- The catalog receiver is `cRSubGame +0x10014cc`; the constructor starts
   150 records at `+0x10014d0`, exactly four bytes into that object.
 - `150 * 0x4088 + 4 = 0x25cfb4`, the reported `cRSMTracks` size, and the result
   ends exactly at the parcel pool at `+0x125e480`.
@@ -160,7 +160,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 
 ## 2026-07-11 landscape manager boundary
 
-- Ten `0x90`-byte active entries begin at `SubgameRuntime +0xff7c00`, the
+- Ten `0x90`-byte active entries begin at `cRSubGame +0xff7c00`, the
   script count follows at `+0xff81a0`, and 128 `0x124`-byte script records
   begin at `+0xff81a4`.
 - `10 * 0x90 + 4 + 128 * 0x124 = 0x97a4`, exactly the reported
@@ -171,7 +171,7 @@ the refreshed decompile now reads `runtime_rows = game->runtime_rows`.
 
 ## 2026-07-11 cRFace height-field boundary
 
-- The constructed object at `SubgameRuntime +0x10013a4` is one `0x38`-byte
+- The constructed object at `cRSubGame +0x10013a4` is one `0x38`-byte
   `BodBase` followed by a `0xf0`-byte `Movie` at `+0x38`.
 - Its exact `0x128` extent ends at `SMTracks +0x10014cc`, closing the
   entire post-landscape gap without padding.
@@ -202,7 +202,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRSubRow constructor loop
 
-- The 3200-record pass at `SubgameRuntime +0x5ccac8` now walks the owned
+- The 3200-record pass at `cRSubGame +0x5ccac8` now walks the owned
   `SubRow runtime_rows[3200]` array directly rather than a generic runtime-slot
   cursor with a literal `0xf4` increment.
 - Each call reaches the exact `SubRow` initializer that owns the embedded
@@ -223,7 +223,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRFringe constructor array
 
-- The 7000-entry pass at `SubgameRuntime +0x35bbbc` now addresses the owned
+- The 7000-entry pass at `cRSubGame +0x35bbbc` now addresses the owned
   `FringeManager::objects` array directly, using `sizeof(Fringe)` rather than
   a raw 0x38-byte runtime-slot cursor.
 - Android independently preserves the owners as `cRFringeManager` and
@@ -234,7 +234,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRSubRing constructor array
 
-- The two-record pass at `SubgameRuntime +0x35b78c` now walks the owned
+- The two-record pass at `cRSubGame +0x35b78c` now walks the owned
   `SubRingPool::slots` array directly rather than a generic 0x1f8-byte cursor.
 - Each exact constructor installs the table whose entry is
   `cRSubRing::AI()`; the two records total `0x3f0`, matching the native
@@ -244,7 +244,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRSubLazerManager constructor array
 
-- The 20-record pass at `SubgameRuntime +0x356b00` now addresses
+- The 20-record pass at `cRSubGame +0x356b00` now addresses
   `SubLazerManager::slots` directly with `sizeof(SubLazer)`.
 - Each constructor installs the table whose entry is `cRSubLazer::AI()`; the
   20 * 0xb0 extent is exactly the native 0xdc0 cRSubLazerManager ledger size.
@@ -252,7 +252,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRSaltManager constructor array
 
-- The 40-record pass at `SubgameRuntime +0x3578c0` now addresses
+- The 40-record pass at `cRSubGame +0x3578c0` now addresses
   `SaltManager::slots` directly with `sizeof(Salt)`.
 - Each constructor installs the table whose entry is `cRSalt::AI()`; the
   40 * 0x98 extent is exactly the native 0x17c0 cRSaltManager ledger size.
@@ -260,7 +260,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRSubGarbage constructor array
 
-- The 50-record pass at `SubgameRuntime +0x359144` now walks
+- The 50-record pass at `cRSubGame +0x359144` now walks
   `SubGarbagePool::slots` directly with `sizeof(SubGarbage) == 0xc4`.
 - The resulting `0x2648` extent is exactly the Windows
   `Size of cRSubGarbage` ledger value. The active-chain head at the preceding
@@ -271,7 +271,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRSlug constructor array
 
-- The eight-record pass at `SubgameRuntime +0x3563a0` now walks the owned
+- The eight-record pass at `cRSubGame +0x3563a0` now walks the owned
   `SlugPool::slots` array directly with `sizeof(Slug) == 0xec`.
 - Its exact 0x760 extent ends at `SubLazerManager +0x356b00` and matches the
   native `Size of cRSlug` ledger with no gap or wrapper prefix.
@@ -281,7 +281,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRSubHealth constructor array
 
-- The eight-record pass at `SubgameRuntime +0x356000` now walks the owned
+- The eight-record pass at `cRSubGame +0x356000` now walks the owned
   `SubHealth health_pickups[8]` array directly with `sizeof(SubHealth) == 0x74`.
 - Its exact 0x3a0 extent ends at `SlugPool +0x3563a0` and matches the native
   `Size of cRSubHealth` ledger with no gap.
@@ -292,7 +292,7 @@ the complete Windows boundary and this constructor's exact machine code.
 ## 2026-07-11 cRSubSpeedUp singleton
 
 - The constructor now targets the owned `SubSpeedUp speedup_pickup` at
-  `SubgameRuntime +0x355db0` directly rather than a generic runtime-slot cast.
+  `cRSubGame +0x355db0` directly rather than a generic runtime-slot cast.
 - Its exact 0xb4 extent ends at the `JetPack` singleton at `+0x355e64` and
   matches the native `Size of cRSubSpeedUp` ledger.
 - Table `0x497314` links the exact constructor to exact `cRSubSpeedUp::AI()`.
@@ -301,7 +301,7 @@ the complete Windows boundary and this constructor's exact machine code.
 ## 2026-07-11 cRJetPack singleton
 
 - The constructor now targets the owned `JetPack jetpack_pickup` at
-  `SubgameRuntime +0x355e64` directly rather than a generic runtime-slot cast.
+  `cRSubGame +0x355e64` directly rather than a generic runtime-slot cast.
 - Its two complete 0x94-byte `Vapour` children at `+0x74/+0x108` close the
   exact 0x19c owner at `SubHealth +0x356000`.
 - Parent table `0x497318` links to `cRJetPack::AI()`; both child tables at
@@ -310,7 +310,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-11 cRParcelManager constructor array
 
-- The 50-record pass at `SubgameRuntime +0x125e480` now walks
+- The 50-record pass at `cRSubGame +0x125e480` now walks
   `ParcelManager::slots` directly with `sizeof(Parcel) == 0x8c`.
 - Its exact `0x1b58` extent matches the native `Size of cRParcelManager`
   ledger. Each record's exact constructor installs the table whose entry is
@@ -328,7 +328,7 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-12 cRClickStart constructor ownership
 
-- The constructor call at `SubgameRuntime::player +0xa0` now uses the exact
+- The constructor call at `cRSubGame::player +0xa0` now uses the exact
   `ClickStart` receiver instead of a neutral RuntimeSlot.
 - Cross-port vtable and Init/AI symbols identify this as cRClickStart; focused
   Windows remains exact at 227/227 instructions with 72 clean operands.
@@ -356,7 +356,7 @@ operands clean.
 ## 2026-07-14 cRBanner constructor ownership
 
 The two 0x60-byte constructor records now walk `BannerPool::slots` directly
-instead of reconstructing `SubgameRuntime +0x359080` through a generic
+instead of reconstructing `cRSubGame +0x359080` through a generic
 `RuntimeSlot` and a literal stride. Startup, level construction, and teardown
 agree that these are the embedded start/completion `Banner` actors; advancing a
 typed `Banner*` preserves the exact 227/227 instructions and all 72 operands.

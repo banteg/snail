@@ -56,7 +56,7 @@ PROTO_UPDATES = tuple(
 ) + (
     (
         "build_track_colours",
-        "void __thiscall build_track_colours(SubgameRuntime* game)",
+        "void __thiscall build_track_colours(cRSubGame* game)",
     ),
 )
 

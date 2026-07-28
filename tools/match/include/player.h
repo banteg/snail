@@ -35,7 +35,7 @@ struct Object;
 
 class Player;
 class Sprite;
-class SubgameRuntime;
+class cRSubGame;
 class SubHealth;
 
 class Snail;
@@ -161,7 +161,7 @@ public:
     void set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
     TransformMatrix* live_transform(); // inherited render transform at +0x38
 
-    // Player storage is embedded in SubgameRuntime. Its inherited BOD node is
+    // Player storage is embedded in cRSubGame. Its inherited BOD node is
     // merely linked into the global active list; the list never owns it.
     int resurrect_final_loss;              // +0x80
     unsigned char resurrect_active;        // +0x84
@@ -236,9 +236,9 @@ public:
     char unknown_3f1[0x3f4 - 0x3f1];
     Warning warning;                       // +0x3f4, authored cRWarning owner
     int lives;                            // +0x404
-    // Non-owning backlink to the SubgameRuntime that embeds this Player.
+    // Non-owning backlink to the cRSubGame that embeds this Player.
     // initialize_subgoldy is its sole setter; teardown never frees through it.
-    SubgameRuntime* game;                  // +0x408
+    cRSubGame* game;                  // +0x408
     int movement_mode_selector;            // +0x40c
     Vector3 velocity;                      // +0x410 (y at +0x414, z at +0x418)
     unsigned char boost_one_tick;          // +0x41c — DEAD: only ever written 0

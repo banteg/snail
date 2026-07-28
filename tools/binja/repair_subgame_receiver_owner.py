@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compatibility entrypoint for guarded SubgameRuntime receiver repairs."""
+"""Compatibility entrypoint for guarded cRSubGame receiver repairs."""
 
 from repair_initialize_subgame_owner import main
 

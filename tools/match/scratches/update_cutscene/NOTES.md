@@ -12,7 +12,7 @@ Recovered relationships:
 - `Snail::snail_hotspots_world[12]` is the completion
   skid-stop source and `snail_hotspots_world[18]` is the recurring intro-talk
   look-at anchor.
-- Completion initializes the embedded `SubgameRuntime::completion` immediately on the state `5`
+- Completion initializes the embedded `cRSubGame::completion` immediately on the state `5`
   entry handoff while entering state `6`, then plays SFX `46`.
 - Death entry plays voice set `3`, releases snail weapons, and later falls back
   to voice set `11` if `initialize_subgoldy_death` does not consume the gate.
@@ -26,7 +26,7 @@ Closed ownership:
   embedded 0xd8-byte `Player::cameraman` owner. States `6`, `8`, and `11` use it
   as their camera blend source.
 - `g_game_base +0x2247f8` is
-  `SubgameRuntime::level_definition.parcel_count`, the same total consumed by
+  `cRSubGame::level_definition.parcel_count`, the same total consumed by
   parcel placement and the collision HUD path. State `5` compares it with
   `Player::parcels_collected` for the perfect-delivery flag.
 
@@ -163,7 +163,7 @@ fields. Focused output is byte-identical at 93.25%, 503/505 instructions, with
 The mode-0 perfect-delivery comparison retains its direct `g_game_base` load
 to preserve the native register lifetime, but the former `0x2247f8`
 displacement now derives from `GameRoot::subgame`,
-`SubgameRuntime::level_definition`, and `SubTracks::parcel_count`. This keeps
+`cRSubGame::level_definition`, and `SubTracks::parcel_count`. This keeps
 the accepted schedule while making all three ownership links executable in
 the source rather than only documented in notes.
 The normalized candidate listing remains byte-identical
@@ -196,7 +196,7 @@ result and bounded jump-table mismatch.
 ## 2026-07-15 durable root composition replay
 
 The former root `unknown_12e6df0` is now the exact `Completion` child at
-`SubgameRuntime +0x12727d8`; the adjacent `TimesUp` closes the runtime at root
+`cRSubGame +0x12727d8`; the adjacent `TimesUp` closes the runtime at root
 `+0x12e6e50`. Both decompilers therefore express the completion handoff and
 `level_definition.parcel_count` through one nested owner graph. Focused output
 remains 93.25%, 503/505 instructions, prefix 0/505, with 57 clean operands and

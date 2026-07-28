@@ -19,7 +19,7 @@ void GolbShot::update_golb_ai()
 {
     enum {
         SLUG_POOL_FROM_SUBGAME =
-            offsetof(SubgameRuntime, slug_hazards) + offsetof(SlugPool, slots),
+            offsetof(cRSubGame, slug_hazards) + offsetof(SlugPool, slots),
         SLUG_POOL_EXTENT = sizeof(((SlugPool*)0)->slots),
         SLUG_SLOT_STRIDE = sizeof(Slug),
         SLUG_STATE_FROM_SUBGAME =

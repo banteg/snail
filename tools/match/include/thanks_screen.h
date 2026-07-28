@@ -5,7 +5,7 @@
 
 #include "frontend_widget.h"
 
-class SubgameRuntime;
+class cRSubGame;
 
 class ThanksScreen {
 public:
@@ -13,7 +13,7 @@ public:
     void update_thanks_for_playing_screen(); // @ 0x4340f0
     void uninit_thanks_screen(); // @ 0x4340c0
 
-    SubgameRuntime* game; // +0x00, borrowed enclosing cRSubGame owner
+    cRSubGame* game; // +0x00, borrowed enclosing cRSubGame owner
     FrontendWidget* message_widget; // +0x04
     int message_state; // +0x08
     float message_progress; // +0x0c
@@ -25,9 +25,9 @@ public:
 // common C++ base class merely because their identical setup was folded.
 class SubgameOwnerLink {
 public:
-    SubgameRuntime* bind_subgame_owner(); // @ 0x433fc0
+    cRSubGame* bind_subgame_owner(); // @ 0x433fc0
 
-    SubgameRuntime* game; // +0x00
+    cRSubGame* game; // +0x00
 };
 
 #endif

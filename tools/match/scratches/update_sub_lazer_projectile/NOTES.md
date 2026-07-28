@@ -105,7 +105,7 @@ choice for the shared zero register and by-value `Vector3` spill timing, not a
 known type or semantic gap.
 
 2026-06-21 subgame-owner consolidation: `SubLazerSlot::owner_game` now points
-at `SubgameRuntime`, and the track-cell probes call the shared subgame accessors
+at `cRSubGame`, and the track-cell probes call the shared subgame accessors
 through `g_game_base +0x74618` instead of a local `Game::track_runtime` shell.
 Focused Wibo remains at `81.11%`, `216/218` candidate/target instructions,
 with `23` clean masked operands.
@@ -140,7 +140,7 @@ probe is retained. No volatile, label, or dummy-state nudge is used.
 2026-07-13 Binary Ninja ownership consolidation: the slot callback now consumes
 the canonical authored `SubLazer` established by startup, including its
 `BodNode` prefix, transform, velocity, and borrowed `owner_game +0x88`
-backlink. `SubgameRuntime` owns the exact 20-slot `SubLazerManager` at
+backlink. `cRSubGame` owns the exact 20-slot `SubLazerManager` at
 `+0x356b00`; this replaces both the stale sparse slot experiment and the
 lane-local `FrameSubLazerSlot`. The focused source remains honestly near-exact
 at 92.63% (216/218).

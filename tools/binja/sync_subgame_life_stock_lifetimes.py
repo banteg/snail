@@ -20,16 +20,16 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
     "FrontendWidget": 0x724,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x35BB98: ("life_stock_widgets", "FrontendWidget*[9]"),
     },
 }
 
-# SubgameRuntime owns the fixed nine-entry pointer bank. Initialization and
+# cRSubGame owns the fixed nine-entry pointer bank. Initialization and
 # teardown each borrow one pointer slot at a time; neither loop owns the
 # FrontendWidget allocation stored in that slot.
 LIFE_STOCK_WIDGET_CURSOR_USER_VAR_UPDATES = (
@@ -68,7 +68,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical SubgameRuntime owner.",
+        help="Header documenting the canonical cRSubGame owner.",
     )
     return parser.parse_args()
 

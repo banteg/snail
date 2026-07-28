@@ -15,7 +15,7 @@ Kind 1 now names its enclosing-shot backlink at `GolbShot +0x114`, directly
 after the exact 0x94-byte `Vapour` owner, and uses the shared secondary-body
 list links and colour owner. Kind 0's `+0x248` slot is now a `Sprite*` across
 creation, update, and exact teardown. Matrix identity and all lifetime/facing
-steps use the recovered `TransformMatrix` and `SubgameRuntime::subgame_rate`
+steps use the recovered `TransformMatrix` and `cRSubGame::subgame_rate`
 member surfaces.
 
 These ownership substitutions are codegen-neutral: focused output remains
@@ -45,7 +45,7 @@ and its no-op AI callback. Focused matching is byte-for-byte unchanged at
 ## 2026-07-13 Golb vapour list ownership
 
 The kind-1 presentation path inserts its embedded `Vapour +0x80` after
-`SubgameRuntime::golb_vapour_list_head +0x355d24` (`GameRoot +0x3ca33c`).
+`cRSubGame::golb_vapour_list_head +0x355d24` (`GameRoot +0x3ca33c`).
 Startup independently installs that sentinel into the root active BOD chain.
 Replacing the raw root displacement with this owner is codegen-neutral:
 focused matching remains 36.08%, 460/582 instructions, with all 35 operands

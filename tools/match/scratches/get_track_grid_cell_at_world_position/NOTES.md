@@ -22,19 +22,19 @@ stride, and the same stride is used by the builder, fringe, warning-zone, and
 row-index scratches.
 
 2026-06-21 subgame-header consolidation: the accessor now lives on the shared
-`SubgameRuntime` owner instead of a scratch-local `Game` shell. Focused Wibo
+`cRSubGame` owner instead of a scratch-local `Game` shell. Focused Wibo
 remains exact at `100.00%`, `34/34` instructions, with `3` clean masked
 operands.
 
 2026-07-10 owner promotion: the exact return now uses
-`&SubgameRuntime::runtime_cells[row][lane]`. It remains `34/34` with three
+`&cRSubGame::runtime_cells[row][lane]`. It remains `34/34` with three
 clean masked operands, proving the fixed 3200 x 8 slab without raw offset math.
 
 ## 2026-07-14 runtime-grid dimensions
 
 The fixed grid dimensions now have one shared owner:
 `SUBGAME_RUNTIME_ROW_CAPACITY == 3200` and
-`SUBGAME_TRACK_LANE_COUNT == 8`. `SubgameRuntime::runtime_cells` and
+`SUBGAME_TRACK_LANE_COUNT == 8`. `cRSubGame::runtime_cells` and
 `runtime_rows` use those capacities directly, while row lookup, world-space
 clamps, neighbor queries, edge selection, fringe promotion, fringe building,
 the main subgame update, and the construction size ledger derive their bounds,
@@ -55,7 +55,7 @@ hashes remain byte-identical:
 ## 2026-07-14 analysis receiver closure
 
 The exact 34/34 implementation is now also authoritative in both analysis
-databases: `cRSubLoc* __thiscall(SubgameRuntime*, Vec3*)`. Binary Ninja's
+databases: `cRSubLoc* __thiscall(cRSubGame*, Vec3*)`. Binary Ninja's
 stale `Game*` identity was guardedly recreated, and both exports now return
 directly from `game->runtime_cells`. This exact helper is the strongest local
 proof that the surrounding normalization and pickup helpers share the same

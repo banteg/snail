@@ -2,7 +2,7 @@
 /* function: update_slug_hazard_ai @ 0x43f930 */
 /* selector: update_slug_hazard_ai */
 
-// Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing SubgameRuntime, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.
+// Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing cRSubGame, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.
 void __thiscall update_slug_hazard_ai(Slug *slug)
 {
   float hit_flash_progress_step; // ecx
@@ -34,7 +34,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
   char v30; // c0
   double v32; // st7
   char v33; // c0
-  SubgameRuntime *owner_game; // eax
+  cRSubGame *owner_game; // eax
   double v35; // st7
   uint32_t v36; // eax
   struct BodNode *v37; // eax

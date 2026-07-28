@@ -2,10 +2,10 @@
 /* function: initialize_jetpack_gauge @ 0x43a930 */
 /* selector: initialize_jetpack_gauge */
 
-// Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed SubgameRuntime and Player backlinks. The authored contract is void; the Windows integer parameter is unused.
+// Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed cRSubGame and Player backlinks. The authored contract is void; the Windows integer parameter is unused.
 void __thiscall initialize_jetpack_gauge(SubHover *sub_hover, int32_t player_slot)
 {
-  SubgameRuntime *p_subgame; // edx
+  cRSubGame *p_subgame; // edx
   struct Player *p_player; // edx
 
   sub_hover->progress = 0.0;

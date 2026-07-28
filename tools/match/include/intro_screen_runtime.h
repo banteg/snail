@@ -1,5 +1,5 @@
 // Root-owned cRLogo runtime at GameRoot +0x4f400. The two fixed renderable
-// banks close exactly on SubgameRuntime +0x74618.
+// banks close exactly on cRSubGame +0x74618.
 #ifndef INTRO_SCREEN_RUNTIME_H
 #define INTRO_SCREEN_RUNTIME_H
 

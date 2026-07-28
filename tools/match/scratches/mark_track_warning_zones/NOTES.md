@@ -1,6 +1,6 @@
 # Source-shaped — 98.99%, 99/99 instructions
 
-The recovered source now keeps the native `SubgameRuntime` receiver in `ecx`
+The recovered source now keeps the native `cRSubGame` receiver in `ecx`
 and names the complete runtime-cell owner. The sole remaining byte drift is
 the independent cell-cursor/saved-row reload order documented below; no
 synthetic dependency is warranted. The pinned semantics are:
@@ -33,13 +33,13 @@ remaining diff is still broad register ownership: VC6 keeps `this` outside
 `tile_id +0x3c` and `lane_and_flags +0x40` layout.
 
 2026-06-20 shared-owner consolidation: `runtime_row_count` and the
-`+0x3bfb04` tile-byte cursor now live in `SubgameRuntime`, matching the exact
+`+0x3bfb04` tile-byte cursor now live in `cRSubGame`, matching the exact
 `rebuild_track_runtime_from_segments` caller and the Android `cRSubGame`
 symbol. Focused Wibo stays at 36.27%; an index-only scan and a do/while
 lateral-offset loop both regressed, so the prior pointer scan remains.
 
 2026-07-10 runtime-grid ownership pass: the tile-byte cursor is now obtained
-through `SubgameRuntime::runtime_cell_tile_views()`, an inline field-first view
+through `cRSubGame::runtime_cell_tile_views()`, an inline field-first view
 of the owned `cRSubLoc[3200][8]` slab. This preserves the 0x54 cursor
 stride without pretending the tile-byte view owns separate storage.
 
@@ -89,7 +89,7 @@ The tracked decompile consequently reads `cell_tile_cursor->tile_id`, names the
 real `SubLocTileId` values in the seed predicate, advances
 `cell_tile_cursor[1]`, and hands that exact pointer back to the next-row cursor.
 The previous synthetic subtraction from the runtime base is gone. Destination
-stamps remain rooted in the owning `SubgameRuntime::runtime_cells` slab, so the
+stamps remain rooted in the owning `cRSubGame::runtime_cells` slab, so the
 field-first scan view and complete-cell owner stay distinct.
 
 The guarded replay verifies the `0x54` cell and view widths, the exact tile and

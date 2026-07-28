@@ -102,7 +102,7 @@ The current high-confidence `Player` fields are:
 - `+0x2e8`: six-dword `stopwatch`
 - `+0x300`: `score_tail`
 - `+0x304`: `replay_start_cursor`
-  - `update_click_start` captures `SubgameRuntime::replay_update_cursor` here
+  - `update_click_start` captures `cRSubGame::replay_update_cursor` here
     and in `SubSolution +0x24`
   - `complete_subgame` persists the Player value, `reset_subgame` restores it,
     and Time Trial ghost playback subtracts it from the record value before
@@ -388,7 +388,7 @@ Current practical read:
 - the current tracked IDA camera slice is now typed from the checked-in header, so the decompile uses `live_matrix`, `desired_matrix`, and `cached_camera_target_world` directly instead of raw matrix blocks and `player + 0x2964` float indexing
 
 The outer `cRSubGame::CameraAI()` path copies `force_camera_update` into
-`SubgameRuntime::camera_snap_requested`, matching the parallel
+`cRSubGame::camera_snap_requested`, matching the parallel
 `CutScene::force_camera_update` handoff. Several player-side attachment and
 presentation inputs consumed by `update_cameraman` are still only partially
 typed.
@@ -550,15 +550,15 @@ Practical interpretation:
   - deactivation at the `0.94` warning edge uses `set_weapon_animation(..., 1, 1, 8)` followed by a queued `-1`
 - the recovered asset family for that controller is `JETPACKTHRUST`; the separate `cRSubHover::Jets` nozzle-particle owner is now represented in Zig as the persistent bank above, including native-scaled width/back-offset jitter and the recovered trail-tip detached puff allocation branch
 
-## SubgameRuntime
+## cRSubGame
 
-The current high-confidence `SubgameRuntime` fields are:
+The current high-confidence `cRSubGame` fields are:
 
 `initialize_subgame @ 0x4374b0` closes the receiver identity: Windows, the
 exact matcher, and the cross-port `cRSubGame::Init()` symbol all describe the
 same `0x1272838`-byte gameplay aggregate. The older Binary Ninja `Game` type
 was a separate named-type identity with the same extent, not a second owner.
-Once the receiver is bound to `SubgameRuntime`, the initializer exposes the
+Once the receiver is bound to `cRSubGame`, the initializer exposes the
 embedded runtime-cell grid, high-score banks, HUD handles, player backlink,
 GUI, galaxy, completion, and times-up owners directly. `Game` remains useful
 only as historical decompiler spelling in older evidence.
@@ -655,7 +655,7 @@ only as historical decompiler spelling in older evidence.
   - exact `0x1b58`-byte `cRParcelManager` owner with 50 inline `0x8c`-byte
     `Parcel` records
   - each `Parcel` owns its inherited `BodBase` and borrows the enclosing
-    `SubgameRuntime`, embedded `Player`, and SpriteManager sprite handle
+    `cRSubGame`, embedded `Player`, and SpriteManager sprite handle
 - `+0x1260020`: `galaxy`
   - exact `0x10fa8`-byte `Galaxy` controller ending at `+0x1270fc8`
   - `load_galaxy_layout` borrows the external `GalaxyPoint[10]` group-anchor
@@ -1308,7 +1308,7 @@ Current practical read:
 - both helpers lift the spawn point above the authored floor height, attach a sprite using `player->player_slot`, and store the source runtime cell
 - both helpers insert the pickup's zero-offset inherited `BodNode` into
   `GameRoot::active_bod_list`; the `BodNode **` head address and every branch
-  reload are borrowed list lifetimes, while `SubgameRuntime` retains the
+  reload are borrowed list lifetimes, while `cRSubGame` retains the
   `SubHealth` array and `JetPack` singleton ownership
 - health seeds a parity-based `phase_offset` (`0.0` on odd `z`, `0.5` on even `z`) plus a `1/60` phase step, and `update_track_health_pickup` applies the native sprite-only bob `base_y + (sin(phase * tau) + 1.0) * 0.3`
 - jetpack seeds the same source-cell/parity lane but also applies the native ramp-side lateral bias at spawn time:
@@ -1320,7 +1320,7 @@ Current practical read:
 - the Windows byte-strided parcel and health sweeps keep their active-state
   loads as independent `ParcelState` and `TrackPickupState` register
   lifetimes; those values and the cursor views both borrow the same embedded
-  SubgameRuntime banks rather than introducing separate slot owners
+  cRSubGame banks rather than introducing separate slot owners
 - health collection also triggers `health_collect_particles`, which allocates `8` `SMOKE.TGA` sprites (`sprite id 128`) with:
   - radial world-axis velocity `sin/cos(i * pi / 4) * 0.015`
   - forward velocity `player->velocity.z * 0.4`
@@ -1640,11 +1640,11 @@ the follow helpers and the render-cache builders:
 The checked-in header also now mirrors the narrow render-cache owner slice:
 
 - `SegmentCache`, the authored `cRSegmentCache` embedded at
-  `SubgameRuntime +0x5c`
+  `cRSubGame +0x5c`
 - `TrackRenderCacheSlot`
 - the borrowed `SegmentCache.owner_subgame` backlink to that enclosing
-  `SubgameRuntime`
-- `SubgameRuntime.runtime_row_count` and its owned runtime-cell slab
+  `cRSubGame`
+- `cRSubGame.runtime_row_count` and its owned runtime-cell slab
 - the generic render-object texture-group tail at `+0xc0..+0xd4`
 
 High-confidence shared `Object` geometry fields:
@@ -1764,7 +1764,7 @@ These names are now safe to use when reading or extending the current Binary Nin
 One local tooling caveat remains:
 
 - the current `bn decompile` output does not always rewrite post-hoc struct-growth sites away from raw `__offset(...)` expressions, even after a manual analysis refresh
-- `bn types show Player`, `bn types show SubgameRuntime`, and the recovered
+- `bn types show Player`, `bn types show cRSubGame`, and the recovered
   path-template types are therefore the authoritative typed layouts for now
 - older databases can retain a same-size `Game*` named-type identity on the
   cataloged subgame lifecycle and track-normalization receivers; inspect one

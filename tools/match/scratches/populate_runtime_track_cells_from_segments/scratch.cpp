@@ -22,7 +22,7 @@ int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 void set_object_color(Object* object, tColour color);
 
-void SubgameRuntime::populate_runtime_track_cells_from_segments()
+void cRSubGame::populate_runtime_track_cells_from_segments()
 {
     char* base = (char*)this;
     int runtime_build_seed;
@@ -129,21 +129,21 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
 
     enum {
         TRACK_MIRROR_FLAG_OFFSET =
-            offsetof(SubgameRuntime, track_mirror_enabled),
+            offsetof(cRSubGame, track_mirror_enabled),
         LEVEL_SEGMENT_SLOTS_BASE =
-            offsetof(SubgameRuntime, level_definition)
+            offsetof(cRSubGame, level_definition)
             + offsetof(SubTracks, segment_slots),
         LEVEL_FIRST_SEGMENT_BASE =
-            offsetof(SubgameRuntime, level_definition)
+            offsetof(cRSubGame, level_definition)
             + offsetof(SubTracks, first_segment),
         LEVEL_LAST_SEGMENT_BASE =
-            offsetof(SubgameRuntime, level_definition)
+            offsetof(cRSubGame, level_definition)
             + offsetof(SubTracks, last_segment),
         SCRATCH_SEGMENT_SLOTS_BASE =
-            offsetof(SubgameRuntime, level_definition_scratch)
+            offsetof(cRSubGame, level_definition_scratch)
             + offsetof(SubTracks, segment_slots),
-        RUNTIME_CELLS_BASE = offsetof(SubgameRuntime, runtime_cells),
-        RUNTIME_ROWS_BASE = offsetof(SubgameRuntime, runtime_rows),
+        RUNTIME_CELLS_BASE = offsetof(cRSubGame, runtime_cells),
+        RUNTIME_ROWS_BASE = offsetof(cRSubGame, runtime_rows),
         RUNTIME_LANE_COUNT =
             sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]),
         CELL_BOD_BASE = RUNTIME_CELLS_BASE,
@@ -179,7 +179,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_back),
         CELL_FRINGE_COUNT =
             sizeof(((cRSubLoc*)0)->fringes) / sizeof(((cRSubLoc*)0)->fringes[0]),
-        PATH_PAIRS_BASE = offsetof(SubgameRuntime, path_pairs),
+        PATH_PAIRS_BASE = offsetof(cRSubGame, path_pairs),
         PATH_PAIR_SECONDARY_DELTA = offsetof(PathPair, secondary),
         PATH_36_PRIMARY_SAMPLES =
             PATH_PAIRS_BASE + 36 * sizeof(PathPair)

@@ -37,7 +37,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
   float v34; // ecx
   int32_t kind; // eax
   int v36; // eax
-  SubgameRuntime *game; // ecx
+  cRSubGame *game; // ecx
   double v38; // st7
   cRGolbRocket *p_tertiary_body; // ecx
   BodNode **v40; // eax
@@ -50,12 +50,12 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
   int32_t v47; // edx
   Vec3 *v48; // eax
   float z; // eax
-  SubgameRuntime *v50; // ecx
+  cRSubGame *v50; // ecx
   Vapour *p_vapour; // ebp
   double v52; // st7
   BodBase *p_golb_vapour_list_head; // eax
   struct BodNode *list_next; // eax
-  SubgameRuntime *v55; // ecx
+  cRSubGame *v55; // ecx
   Player *v56; // edx
   Sprite *sprite; // eax
   Vec3 *v58; // eax
@@ -69,7 +69,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
 
   shot->skip_one_tick = 0;
   shot->slug_bounce_armed = 0;
-  if ( (shot->bod.bod.list_flags & 0x200) != 0 )
+  if ( (shot->body.bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
@@ -79,7 +79,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
     first = g_game_base->active_bod_list.first;
     if ( first != nullptr )
     {
-      first->list_prev = &shot->bod.bod;
+      first->list_prev = &shot->body.bod.bod;
       (*p_first)->list_prev->list_next = *p_first;
       list_prev = (*p_first)->list_prev;
       *p_first = list_prev;
@@ -87,11 +87,11 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
     }
     else
     {
-      *p_first = &shot->bod.bod;
-      shot->bod.bod.list_prev = nullptr;
+      *p_first = &shot->body.bod.bod;
+      shot->body.bod.bod.list_prev = nullptr;
       (*p_first)->list_next = nullptr;
     }
-    shot->bod.bod.list_flags |= 0x200u;
+    shot->body.bod.bod.list_flags |= 0x200u;
   }
   shot->owner_player = player;
   shoot_flags = player->shoot_flags;
@@ -461,5 +461,5 @@ LABEL_51:
   v64 = shot->flight_transform.position.z;
   shot->previous_flight_transform.position.y = y;
   shot->previous_flight_transform.position.z = v64;
-  (*(void (__thiscall **)(GolbShot *))shot->bod.bod.vtable)(shot);
+  (*(void (__thiscall **)(GolbShot *))shot->body.bod.bod.vtable)(shot);
 }

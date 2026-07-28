@@ -7,7 +7,7 @@ void __thiscall spawn_sub_lazer_projectile(SubLazer *sub_lazer, const Vec3 *orig
 {
   TransformMatrix *p_transform; // edi
   float z; // edx
-  SubgameRuntime *owner_game; // eax
+  cRSubGame *owner_game; // eax
   uint32_t list_flags; // edx
   double v8; // st7
   struct BodNode *p_bod; // eax
@@ -16,9 +16,7 @@ void __thiscall spawn_sub_lazer_projectile(SubLazer *sub_lazer, const Vec3 *orig
   p_transform = &sub_lazer->body.transform;
   sub_lazer->state = SUB_LAZER_STATE_ACTIVE;
   set_matrix_identity(&sub_lazer->body.transform);
-  sub_lazer->body.transform.position.x = origin->x;
-  sub_lazer->body.transform.position.y = origin->y;
-  sub_lazer->body.transform.position.z = origin->z;
+  sub_lazer->body.transform.position = *origin;
   sub_lazer->velocity.x = direction->x;
   sub_lazer->velocity.y = direction->y;
   z = direction->z;
@@ -40,7 +38,7 @@ void __thiscall spawn_sub_lazer_projectile(SubLazer *sub_lazer, const Vec3 *orig
     sub_lazer->body.bod.bod.list_next = p_bod->list_next;
     p_bod->list_next = &sub_lazer->body.bod.bod;
     list_next = sub_lazer->body.bod.bod.list_next;
-    if ( list_next )
+    if ( list_next != nullptr )
       list_next->list_prev = &sub_lazer->body.bod.bod;
     sub_lazer->body.bod.bod.list_flags |= 0x200u;
     set_matrix_z_direction(p_transform, &sub_lazer->velocity);

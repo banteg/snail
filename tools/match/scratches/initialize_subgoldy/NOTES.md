@@ -144,7 +144,7 @@ from the exact initializer without changing its ownership or ABI.
 
 - Binary Ninja xrefs confirm this function is the sole setter of both
   `Player::game +0x408` and `Player::control_source +0x43c`. The former points
-  back to the `SubgameRuntime` that embeds the Player; the latter borrows one
+  back to the `cRSubGame` that embeds the Player; the latter borrows one
   of two input-controller views from the root game object.
 - The self-links at `Nuke::owner_player` and
   authored `Snail::owner_player`, plus the embedded

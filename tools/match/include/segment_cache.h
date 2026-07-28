@@ -1,4 +1,4 @@
-// Authored cRSegmentCache owner embedded in SubgameRuntime. The runtime size
+// Authored cRSegmentCache owner embedded in cRSubGame. The runtime size
 // ledger fixes its 0xa7f8-byte extent; the complete field layout is recovered
 // from its constructor, cache builder, row updater, and teardown methods.
 #ifndef SEGMENT_CACHE_H
@@ -7,7 +7,7 @@
 #include "bod_types.h"
 #include "sprite.h"
 
-class SubgameRuntime;
+class cRSubGame;
 struct ObjectRenderVertex;
 struct Object;
 
@@ -80,7 +80,7 @@ public:
         shared_vertex_buffers[TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x2c
     unsigned short*
         shared_index_buffers[TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x40
-    SubgameRuntime* owner_subgame; // +0x54, borrowed enclosing runtime
+    cRSubGame* owner_subgame; // +0x54, borrowed enclosing runtime
     TrackRenderCacheSlot
         slots[TRACK_RENDER_CACHE_ROW_COUNT][TRACK_RENDER_CACHE_FAMILY_COUNT]; // +0x58
     float build_cache_row_base; // +0xa7ec

@@ -23,7 +23,7 @@ EXPECTED_TYPE_WIDTHS = {
     "cRSubLoc": 0x54,
     "TrackRowCellObjectSlotView": 0x54,
     "TrackRowCellTileByteView": 0x54,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -41,7 +41,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x01: ("open_edge_mask", "uint8_t"),
         0x04: ("lane_and_flags", "uint32_t"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x54: ("runtime_row_count", "int32_t"),
         0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
     },
@@ -95,7 +95,7 @@ TRACK_TILE_EDGE_USER_VAR_UPDATES = (
 
 # WarnTrack carries ESI at cRSubLoc::object (+0x24) and advances it by the
 # complete 0x54 cell stride. Preserve that borrowed field identity instead of
-# letting BN fabricate a SubgameRuntime owner by subtracting the runtime-grid
+# letting BN fabricate a cRSubGame owner by subtracting the runtime-grid
 # base from the cursor.
 TRACK_TILE_PROMOTION_USER_VAR_UPDATES = (
     (

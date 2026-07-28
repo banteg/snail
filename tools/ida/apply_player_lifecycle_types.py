@@ -108,7 +108,7 @@ REQUIRED_OWNER_MARKERS = (
     "GolbShot golb_shots[0xc];",
     "SubHover sub_hover;",
     "Snail presentation;",
-    "typedef struct SubgameRuntime {",
+    "typedef struct cRSubGame {",
     "void __thiscall health_collect_particles(Player* player, SubHealth* pickup);",
     "void __thiscall begin_post_follow_carryover(Player* player);",
 )
@@ -129,7 +129,7 @@ EXPECTED_OWNER_SIZES = {
     "Invincible": 0x98,
     "Snail": 0x19B4,
     "Player": 0x4364,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 GOLB_SHOT_CURSOR_LVAR = (

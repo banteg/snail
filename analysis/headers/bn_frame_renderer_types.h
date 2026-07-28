@@ -329,7 +329,7 @@ void __thiscall set_border_justify_centre(
     BorderManager* manager, float justify_centre);
 
 /*
- * Standalone bootstrap view used only until the canonical SubgameRuntime is
+ * Standalone bootstrap view used only until the canonical cRSubGame is
  * present.  The sync promotes GameRoot::subgame to that complete owner rather
  * than keeping this sparse frame-renderer view as a parallel identity.
  */

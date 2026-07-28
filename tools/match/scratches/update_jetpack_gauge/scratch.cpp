@@ -29,7 +29,7 @@ void SubHover::update_jetpack_gauge()
         float next_progress = progress + progress_step;
         progress = next_progress;
 
-        SubgameRuntime* live_game = game;
+        cRSubGame* live_game = game;
         Player* live_player = player;
         if (next_progress > 1.0f
             || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {

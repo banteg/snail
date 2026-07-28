@@ -1,7 +1,7 @@
 # update_barrier_ai
 
 Exact 5/5-instruction helper for the embedded tutorial `cRBarrier` actor at
-`SubgameRuntime +0xff7bc4`.
+`cRSubGame +0xff7bc4`.
 
 The actor is a 0x3c-byte `BodBase` extension. Its only added field is a
 borrowed `Player*` at `+0x38`; each update copies the player's live z position

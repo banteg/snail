@@ -42,7 +42,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# AddGarbage retains ESI at SubgameRuntime + slot_index * sizeof(SubGarbage)
+# AddGarbage retains ESI at cRSubGame + slot_index * sizeof(SubGarbage)
 # instead of rebasing it to the selected actor. This analysis-only root-biased
 # cursor makes every large displacement resolve through the one pool-owned slot
 # without pretending the physical register holds a direct SubGarbage pointer.

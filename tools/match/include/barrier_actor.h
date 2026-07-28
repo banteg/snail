@@ -1,4 +1,4 @@
-// Tutorial barrier actor embedded in SubgameRuntime.
+// Tutorial barrier actor embedded in cRSubGame.
 #ifndef BARRIER_ACTOR_H
 #define BARRIER_ACTOR_H
 

@@ -2,8 +2,8 @@
 /* function: initialize_runtime_pools_and_path_template_bank @ 0x408060 */
 /* selector: initialize_runtime_pools_and_path_template_bank */
 
-// Exact Windows constructor projection for the embedded cRSubGame/SubgameRuntime owner. It initializes every desktop pool, including exactly 126 0xa8-byte path-template records at SubgameRuntime+0xff2914; Android and iOS preserve the authored cRSubGame constructor with port-specific layouts and capacities. The Windows records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias, and their 0x52b0 extent ends at the barrier actor at +0xff7bc4.
-SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime *game)
+// Exact Windows constructor projection for the embedded cRSubGame owner. It initializes every desktop pool, including exactly 126 0xa8-byte path-template records at cRSubGame+0xff2914; Android and iOS preserve the authored cRSubGame constructor with port-specific layouts and capacities. The Windows records form the same 63 primary/secondary pairs later constructed through the GameRoot+0x1066f2c alias, and their 0x52b0 extent ends at the barrier actor at +0xff7bc4.
+cRSubGame *__thiscall initialize_runtime_pools_and_path_template_bank(cRSubGame *game)
 {
   SegmentCache *p_segment_cache; // edi
   SubHealth *health_pickups; // edi

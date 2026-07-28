@@ -3,7 +3,7 @@
 Exact match: 100.00%, 2/2 instructions.
 
 This is Windows `cRFringeManager::Init()`. It rewinds the cursor for the 7000
-inline 0x38-byte `Fringe` records owned by `SubgameRuntime`; it does not destroy
+inline 0x38-byte `Fringe` records owned by `cRSubGame`; it does not destroy
 or transfer those records.
 
 ## 2026-07-18 analyzer owner closure

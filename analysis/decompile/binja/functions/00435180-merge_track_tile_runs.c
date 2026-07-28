@@ -3,9 +3,9 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: merge_track_tile_runs @ 0x435180 */
 
-00435185        struct SubgameRuntime* game_1 = game
+00435185        struct cRSubGame* game_1 = game
 00435187        int32_t i = 0
-00435189        struct SubgameRuntime* game_2 = game_1
+00435189        struct cRSubGame* game_2 = game_1
 00435192        if (game_1->runtime_row_count s> 0)
 00435194        uint32_t* seed_lane_flags = &game_1->runtime_cells[0][0].lane_and_flags
 0043519a        int32_t j_1 = 8

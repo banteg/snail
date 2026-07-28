@@ -2,16 +2,16 @@
 /* function: reset_subgame @ 0x437b10 */
 /* selector: reset_subgame */
 
-// Exact Windows implementation of authored `void cRSubGame::ReSet()`: rebinds the inline pickup, garbage, slug, and ring pools to their containing `SubgameRuntime`, restores or clears the replay score/timer snapshot, rearms the scan and camera latches, and empties the active garbage chain. Android preserves the same owner graph, replay-mode branch, timer handoff, and final latches despite platform-specific pool layouts. All five native callsites pass the active subgame receiver from `initialize_subgame`, matching Android `cRSubGame::Init()` ending in `ReSet(this)`.
-void __thiscall reset_subgame(SubgameRuntime *game)
+// Exact Windows implementation of authored `void cRSubGame::ReSet()`: rebinds the inline pickup, garbage, slug, and ring pools to their containing `cRSubGame`, restores or clears the replay score/timer snapshot, rearms the scan and camera latches, and empties the active garbage chain. Android preserves the same owner graph, replay-mode branch, timer handoff, and final latches despite platform-specific pool layouts. All five native callsites pass the active subgame receiver from `initialize_subgame`, matching Android `cRSubGame::Init()` ending in `ReSet(this)`.
+void __thiscall reset_subgame(cRSubGame *game)
 {
   int v2; // ecx
-  SubgameRuntime **p_owner_game; // eax
-  SubgameRuntime **v4; // eax
+  cRSubGame **p_owner_game; // eax
+  cRSubGame **v4; // eax
   int i; // ecx
-  SubgameRuntime **v6; // eax
+  cRSubGame **v6; // eax
   int j; // ecx
-  SubgameRuntime **p_rate_source; // eax
+  cRSubGame **p_rate_source; // eax
   int k; // ecx
   int32_t score_tail; // edx
   int32_t replay_start_cursor; // eax

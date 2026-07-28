@@ -4,7 +4,7 @@ Target: `update_subgame @ 0x438b90` (`thiscall`, 3748 bytes, 1033 instructions).
 
 This scratch reconstructs the outer gameplay state machine and the state-2 runtime update path rather than using a minimal placeholder. The source was shaped against both decompile exports and repeatedly measured with the VC6.5 `/O2 /G5 /W3` matcher toolchain.
 
-`SubgameRuntime::garbage_frequency` at `+0x125ffd8` and `salt_frequency` at
+`cRSubGame::garbage_frequency` at `+0x125ffd8` and `salt_frequency` at
 `+0x125ffdc` are the normalized level-script spawn controls. The garbage lane
 drives the 0.8..1.0 random threshold and the salt lane drives the 0.98..1.0
 threshold; `build_subgame_level` seeds both and `complete_subgame` persists
@@ -28,7 +28,7 @@ The shared camera call is left at function tail, while native early-return paths
 ## Runtime layout findings
 
 The row scanner uses the canonical `SubRow` owner at
-`SubgameRuntime::runtime_rows`:
+`cRSubGame::runtime_rows`:
 
 - `SubRow` stride: `0xf4` bytes;
 - row flags: `+0x00`;
@@ -129,8 +129,8 @@ honestly unaudited references.
 The state-1 snapshot copies like-named configuration lanes into like-named
 subgame lanes. Raw Windows instructions at `0x438cb3..0x438ccd` load
 `g_runtime_config +0x40` (`g_challenge_speed_percent`) into
-`SubgameRuntime +0x28`, then load `g_runtime_config +0x48`
-(`g_challenge_difficulty_percent`) into `SubgameRuntime +0x2c`:
+`cRSubGame +0x28`, then load `g_runtime_config +0x48`
+(`g_challenge_difficulty_percent`) into `cRSubGame +0x2c`:
 
 ```asm
 mov ecx, dword [0x4df958]
@@ -185,12 +185,12 @@ receiver used here and by the challenge setup/HUD callers. The broad
 its internals remain opaque because TimeString does not read them.
 
 2026-06-21 receiver cleanup: the scratch now defines
-`SubgameRuntime::update_subgame` directly and uses the shared
-`SubgameRuntime` front-controller window for pause menu, challenge setup,
+`cRSubGame::update_subgame` directly and uses the shared
+`cRSubGame` front-controller window for pause menu, challenge setup,
 galaxy route, selected replay state, and rebuild selector fields. Focused Wibo
 is unchanged at `67.53%`, `1046/1033`, prefix `9/1033`, with the same
 `108 ok / 2 mismatch` masked audit. `spawn_track_speedup` remains a
-member-style call surface on `SubgameRuntime` because this caller wants the
+member-style call surface on `cRSubGame` because this caller wants the
 historical receiver lookup even though the standalone helper body is
 `__stdcall`/receiver-free. `uv run snail match types --paths` still reports no
 generic `Game` owner row.
@@ -272,7 +272,7 @@ instruction count with no unresolved or mismatched call/data operand; further
 register or label shaping needs new independent source evidence.
 
 2026-07-11 galaxy ownership: the state-zero route dispatch now uses the
-embedded `SubgameRuntime::galaxy` at `+0x1260020`, retiring the duplicate
+embedded `cRSubGame::galaxy` at `+0x1260020`, retiring the duplicate
 `CompletionGalaxyRoute` view. Focused output remains 78.22%, 1033/1033, with
 the same two jump-table mismatches and 116 clean operands.
 
@@ -294,7 +294,7 @@ The state-2 runtime-cell consumer walks the four contiguous directional
 `Fringe*` slots at `cRSubLoc +0x44..+0x50`. The cell owns those pointer
 slots; each non-null `Fringe` remains borrowed from the embedded
 `FringeManager`, is temporarily linked through
-`SubgameRuntime::fringe_attachment_list_head`, and receives a copied skirt
+`cRSubGame::fringe_attachment_list_head`, and receives a copied skirt
 colour through its inherited `BodBase::color`.
 
 A narrow guarded Binary Ninja replay now pins eight lifetimes around that
@@ -312,7 +312,7 @@ not a score-shaping edit. The focused result remains exactly 79.75%,
 honest jump-table mismatches. No fakematch was introduced.
 
 2026-07-11 slug voice manager ownership: the state-2 update now calls the
-embedded `SubgameRuntime::slug_voice_manager` directly. Android retains the
+embedded `cRSubGame::slug_voice_manager` directly. Android retains the
 same owner/member as `cRSlugVoiceManager::AI()`, and the preceding exact
 initializer closes the complete 0x0c-byte object. Focused output remains
 78.22%, 1033/1033, with 116 clean operands and the same two honest jump-table
@@ -327,7 +327,7 @@ mismatches.
 
 2026-07-13 runtime-row window and child-owner pass:
 
-- `SubgameRuntime +0x20/+0x24` is the rolling runtime-row scan window, now
+- `cRSubGame +0x20/+0x24` is the rolling runtime-row scan window, now
   named `runtime_row_scan_begin` / `runtime_row_scan_end`. `scan_reset` seeds
   the begin at zero and the end from either `runtime_row_count` or the player
   interaction Z window; subsequent ticks advance begin to the prior end, and
@@ -350,14 +350,14 @@ mismatches.
 
 - The Binary Ninja/IDA path-template campaign no longer declares a parallel
   `Game` aggregate for this receiver. Every field and helper on that shell is
-  rooted at the authored `SubgameRuntime`/`cRSubGame` object.
+  rooted at the authored `cRSubGame`/`cRSubGame` object.
 - The old `pause_gate +0x74621` lane mixed root-object and subgame-relative
   coordinates. Since the subgame is embedded at root `+0x74618`, the real
   field is `subgame_pause_gate +0x09` on the receiver.
 - The exact 0x4364-byte `Player` is now embedded at runtime `+0x3bb764`, ending
   at the first runtime cell at `+0x3bfac8`; the former flattened stopwatch,
   warning, and presentation aliases are retired. Cameraman, salt, sub-lazer,
-  hover, and player backlinks all borrow `SubgameRuntime*` consistently.
+  hover, and player backlinks all borrow `cRSubGame*` consistently.
 - Binary Ninja declaration preview verifies the sparse analysis owner at exact
   size 0x1272838 and reverts without mutating the database. Matching source is
   unchanged: focused Wibo remains 78.22%, 1033/1033 instructions, with 116
@@ -412,7 +412,7 @@ base, and all anchor reads use `cRSubLoc::position`. The exact constructor and
 instructions, with 117 clean operands and the same two honest table mismatches.
 
 The native-shape `RuntimeCellSlotBase` now derives its leading extent from
-`offsetof(SubgameRuntime, runtime_cells)`, and the one pause-path byte store
+`offsetof(cRSubGame, runtime_cells)`, and the one pause-path byte store
 derives `subgame_pause_gate` the same way. This retains the late cell-base
 displacement and byte-store scheduling documented above without repeating
 `0x3bfac8` or `+9` as unowned layout facts. Focused metrics and audited
@@ -421,7 +421,7 @@ operands remain unchanged.
 ## 2026-07-14 cRSubPause owner closure
 
 The state-3/4 pause branch now enters the authored `SubPause` embedded at
-`SubgameRuntime +0x14`. Cross-port `cRSubPause::Init()` and
+`cRSubGame +0x14`. Cross-port `cRSubPause::Init()` and
 `cRSubPause::AI()` symbols, plus Android's three-pointer body layout, close the
 0x0c-byte owner without changing the honest partial baseline: 79.75%,
 1036/1033 instructions, 117 clean operands, and the same two table mismatches.
@@ -439,7 +439,7 @@ operands, and the same two table-identity mismatches.
 
 The row scanner now names the distinct game-wide gates for parcel requests,
 health pickups, ambient garbage and salt, slug hazards, and default ramp
-rings. These are `SubgameRuntime::runtime_flags` bits, not `SubRow` metadata.
+rings. These are `cRSubGame::runtime_flags` bits, not `SubRow` metadata.
 Focused output remains byte-identical at 79.75%, 1,036/1,033 instructions,
 prefix 9/1,033, 117 clean operands, and the same two table mismatches.
 
@@ -455,7 +455,7 @@ clean operands, and the same two table-identity mismatches.
 
 The live Binary Ninja receiver was a stale same-size `Game*` named type. The
 guarded catalog repair recreated only the exact known function as a
-`SubgameRuntime*` method and preserved its sole user-defined receiver. The
+`cRSubGame*` method and preserved its sole user-defined receiver. The
 tracked decompile drops from 90 raw receiver-offset expressions to 17 while
 recovering the state machine, rebuild and replay selectors, player and
 click-start children, runtime row and cell slabs, pickup/hazard pools, HUD, and
@@ -469,7 +469,7 @@ and the same two table-identity mismatches.
 
 ## 2026-07-14 control-prefix ownership closure
 
-The first 0x28 bytes of `SubgameRuntime` now use the same producer/consumer
+The first 0x28 bytes of `cRSubGame` now use the same producer/consumer
 names in the matcher, both analysis headers, and both decompilers. This body
 provides the main consumers for `resume_requested`, `subgame_pause_gate`,
 `pause_fade`, `pause_fade_step`, and `scan_reset`; reset, initialization,
@@ -503,7 +503,7 @@ identity mismatches.
 
 ## 2026-07-17 runtime row/cell containing-owner replay
 
-- The native row scan retains a borrowed `SubgameRuntime`-relative containing
+- The native row scan retains a borrowed `cRSubGame`-relative containing
   base at the `0xf4` row stride. Binary Ninja's exact EDI identity is
   `RegisterVariableSourceType / 1188 / 73`; IDA's register definition is
   `0x439035`, with the saved stack lifetime at `0x439038` / stack offset 76.
@@ -518,7 +518,7 @@ identity mismatches.
   `0x5ccb58`, `0x5ccb78`, and `0x5ccb88` are normalized only at the nine proven
   instructions. Replay then renders structure fields instead of unrelated
   `byte_`/`unk_` globals; the operand values read back unchanged.
-- These are borrowed cursors into `SubgameRuntime`; neither lifetime owns or
+- These are borrowed cursors into `cRSubGame`; neither lifetime owns or
   transfers any row, cell, body, or fringe allocation. No source change is
   justified by the metadata pass. The honest focused baseline remains 79.75%,
   1036 candidate versus 1033 target instructions, 117 clean masked operands,
@@ -533,7 +533,7 @@ register lifetime at `0x4398cb`. Both now read back as
 `TimeTrialRouteRecordCursor *` and render `record.active` plus the record's
 score/time union instead of raw `+0x944150/+0x944158` loads.
 
-The cursor's prefix aliases the enclosing `SubgameRuntime`; its terminal
+The cursor's prefix aliases the enclosing `cRSubGame`; its terminal
 `SubSolution` is the record already owned by
 `SubHighScore::time_trial_route_records[level_mode_arg]`. It is not a second
 record bank or a new allocation. The matching source already expresses that
@@ -595,7 +595,7 @@ same strength-reduced address:
 `game + ((row + (row * 3 + 0x12414) * 0x14 + 0x615c) << 2)`
 
 Expanding it gives `game + 0x5ccbb0 + row * 0xf4`, exactly
-`SubgameRuntime::runtime_rows[row].ring_speed` because `runtime_rows` begins at
+`cRSubGame::runtime_rows[row].ring_speed` because `runtime_rows` begins at
 `+0x5ccac8` and `SubRow::ring_speed` is `+0xe8`. IDA 9.4 already renders that
 owner. Android `cRSubGame::AI()` at `0x82214` and iOS `cRSubGame::AI()` at
 `0x33a50` independently pass their corresponding current-row scalar to

@@ -75,7 +75,7 @@ The cross-port symbols also recover the authored builder hierarchy:
 - exact Windows `rebuild_track_runtime_from_segments` is the void `cRSubGame::GenerateLevel(int)`; it wraps `BuildLevel()` with feature, colour, parcel, normalization, warning, fringe, and cache passes
 - outer Windows `build_subgame_level` is `cRSubGame::StartLevel(int)`; it loads the level and managers, calls `GenerateLevel(int)`, and then establishes landscape, player, HUD, music, and active-list state
 
-Within `BuildLevel()`'s `P`/`p` glyph arm, `SubgameRuntime::path_pairs`
+Within `BuildLevel()`'s `P`/`p` glyph arm, `cRSubGame::path_pairs`
 remains the owner of each `PathPair`. The mirror flag selects a borrowed
 `primary` or `secondary` `Path`; the current `TrackRowCell` retains that path,
 and the path's `row_span_count` controls how many `SubRow` records retain a
@@ -127,7 +127,7 @@ Related shared color helper:
 
 ## Game-Wide Runtime Feature Flags
 
-`SubgameRuntime::runtime_flags` at `+0x4c` is a game-wide course-feature word.
+`cRSubGame::runtime_flags` at `+0x4c` is a game-wide course-feature word.
 It is a separate owner from both `AuthoredSegmentRow::flags` and the copied
 `SubRow::flags` word. `set_subgame_features` writes the mode preset before
 track population, while selected replay/high-score records can restore the
@@ -274,9 +274,9 @@ Recovered row-wise ramp and connector rewrites:
 High-confidence findings:
 
 - startup loads `salt.x` into the root salt donor and clones that object into
-  the `40` inline `0x98`-byte salt slots at `SubgameRuntime +0x3578c0`
+  the `40` inline `0x98`-byte salt slots at `cRSubGame +0x3578c0`
 - startup likewise clones the root lazer donor into the `20` inline
-  `0xb0`-byte sub-lazer slots at `SubgameRuntime +0x356b00`
+  `0xb0`-byte sub-lazer slots at `cRSubGame +0x356b00`
 - both slot families borrow their owning subgame through slot `+0x88`
 - `SubLazerState` is the 32-bit slot owner at `+0x80`: inactive `0`, active
   `1`, and recycle-pending `2`
@@ -300,7 +300,7 @@ High-confidence findings:
   - ramp `Ring=PowerUp`/`Ring=Explode`/`Ring=Slow` calls pass the cell `48` rows ahead (`0xfc0 / 0x54`) and use that target cell directly
   - explosive ramp tiles `0x08..0x0a` still use the current cell and receive the native `+17` row z offset in the `SUB_RING_KIND_EXPLODE_RAMP` (`2`) branch
 - kinds `0` and `1` remain named `UNKNOWN_0` and `UNKNOWN_1`: their distinct native spawn/consumer paths are preserved, but no live Windows producer has been recovered
-- collision borrows the selected SubgameRuntime-owned slot twice: the first
+- collision borrows the selected cRSubGame-owned slot twice: the first
   typed kind lifetime chooses slow versus forward motion, and the second drives
   the reward/effect ladder; these are two register lifetimes for one stored
   `SubRingKind`, not two ring owners
@@ -525,7 +525,7 @@ The checked-in render-cache owner slice now also exposes:
 - `SegmentCache.max_index_counts[5]`
 - `SegmentCache.shared_vertex_buffers[5]`
 - `SegmentCache.shared_index_buffers[5]`
-- `SubgameRuntime.segment_cache` at `+0x5c`
+- `cRSubGame.segment_cache` at `+0x5c`
 - `SegmentCache.owner_subgame`, a borrowed backlink to the enclosing runtime
 - `SegmentCache.slots[143][5]`, owned `BodBase` cache nodes
 - `TrackRenderCacheSlot.cache_row_base` at `+0x38`

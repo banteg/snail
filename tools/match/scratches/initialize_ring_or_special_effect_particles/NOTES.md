@@ -13,7 +13,7 @@ Evidence:
 - The child layout matches the updater and emitter scratches:
   `sprite +0x00`, `parent +0x04`, `base_position +0x08`, `phase +0x14`,
   `phase_step +0x18`, and `radius +0x1c`.
-- Parent `+0x1d0` borrows its enclosing `SubgameRuntime`; that owner's
+- Parent `+0x1d0` borrows its enclosing `cRSubGame`; that owner's
   `subgame_rate +0x38` feeds child orbit phase step as
   `rate * 0.104719758`.
 - The scratch includes `subgame_runtime.h` directly because dereferencing that
@@ -111,7 +111,7 @@ the scratch remains exact at 153/153 instructions with ten clean operands.
 
 The paired replay replaces IDA's `_DWORD*` receiver with the canonical
 `SubRing*`, exposes its ten owned `SubRingStar` children, and resolves the
-borrowed `SubgameRuntime*` rate source plus live `Sprite` fields. Strict export
+borrowed `cRSubGame*` rate source plus live `Sprite` fields. Strict export
 reports no database/export mismatches. The source and bytes remain exact at
 153/153 instructions with ten clean operands.
 

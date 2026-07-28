@@ -3,7 +3,7 @@
 `initialize_track_jetpack_pickup_runtime` @ 0x4084d0 is exact at 17/17
 instructions with six clean masked operands. It is the Windows constructor for
 the authored `JetPack` (`cRJetPack` cross-port) singleton at
-`SubgameRuntime +0x355e64`.
+`cRSubGame +0x355e64`.
 
 The complete boundary is now closed:
 

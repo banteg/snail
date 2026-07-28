@@ -122,7 +122,7 @@ Rejected source-shape probes:
   `sprite + 0x54` store instead of native's stack-spilled `v15` reload. Keep
   the current raw sprite-word tail and reused `tColour` lanes.
 - 2026-06-21 garbage owner cleanup: `GarbageHazardSlot::game` is now a shared
-  `SubgameRuntime*`, removing this scratch's generic owner `Game` shell without
+  `cRSubGame*`, removing this scratch's generic owner `Game` shell without
   changing codegen. Focused Wibo remains at 85.14%, 72/76 candidate
   instructions, 5/76 prefix, and 9 clean masked operands.
 

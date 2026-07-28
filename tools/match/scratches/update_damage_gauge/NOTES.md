@@ -3,7 +3,7 @@
 update_damage_gauge @ 0x440fd0. The former root-offset window is now fully
 owned by `GameRoot::subgame` and its embedded `Player`:
 
-- `Game+0x74621` is `SubgameRuntime::subgame_pause_gate`.
+- `Game+0x74621` is `cRSubGame::subgame_pause_gate`.
 - Warning start is blocked by `Player::attachment_exit_pending` at `+0x41d`
   or `Player::completion_handoff_active` at `+0x440`; the latter also forces
   the accelerated drain path.
@@ -101,7 +101,7 @@ lands inside `GameRoot::subgame.embedded_player()` or the subgame pause gate;
 the completion-handoff timer pair is promoted into the shared `Player`, and the
 last exit word is the already-owned `CutScene::state`. The live Binary Ninja
 `Player` type now also exposes its progress bar, warning, lives, and borrowed
-`SubgameRuntime*` backlink. Focused Wibo remains 94.03%, 268/268 instructions,
+`cRSubGame*` backlink. Focused Wibo remains 94.03%, 268/268 instructions,
 prefix 122/268, with 65 clean masked operands.
 
 2026-07-11 authored-owner recovery: Android `cRDamageGuage::AI()` reads the
@@ -125,7 +125,7 @@ with all 65 operands clean.
 
 The proved `cRDamageGuage::Take(float, bool)` ABI now reaches both decompilers,
 so the draining calls render as explicit `true` and `false` while retaining the
-full `GameRoot -> SubgameRuntime -> Player` ownership graph. The neighboring
+full `GameRoot -> cRSubGame -> Player` ownership graph. The neighboring
 `+0x0c` byte remains honestly unresolved because Windows and Android only clear
 it in `Init`; neither `AI` nor `Take` reads it. Focused output remains at
 94.03%, 268/268 instructions, prefix 122/268, with all 65 operands clean; the

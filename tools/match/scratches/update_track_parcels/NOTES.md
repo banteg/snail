@@ -24,7 +24,7 @@ unproduced state values. Focused matching remains exact at 16/16 instructions.
 ## 2026-07-18 analyzer lifecycle replay
 
 The sole native caller is `update_subgoldy`, which borrows the embedded
-`SubgameRuntime::parcel_manager`; it does not pass an individual parcel or
+`cRSubGame::parcel_manager`; it does not pass an individual parcel or
 transfer slot storage. Both analyzer replays now pin the manager member name
 and `void __thiscall(ParcelManager*)` ABI, gate the 50-slot owner at 0x1b58
 bytes, and reanalyze the update/spawn/collision consumers together. Matching

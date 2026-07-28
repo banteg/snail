@@ -37,7 +37,7 @@ Recovered behavior and ownership:
   backlink.
 - The same Player owns the adjacent position, velocity, exit byte, and inline
   `cRSquidge`; the installed heading comes from
-  `SubgameRuntime::runtime_rows[row].installed_heading_delta`.
+  `cRSubGame::runtime_rows[row].installed_heading_delta`.
 - The final validation is
   `cRPathFollowGoldy::update_track_attachment_follow_state(player.velocity.z,
   &player.transform.position, &player.velocity)`.
@@ -55,7 +55,7 @@ The fixed player is now reached through
 `GameRoot::subgame.player`; every accepted-entry write traverses canonical
 `Player` fields, including the embedded `follow_state`, inherited transform, velocity,
 exit gate, and `Squidge`. The installed heading likewise comes from the real
-`SubgameRuntime::runtime_rows[row]` owner. Seven field-first absolute globals
+`cRSubGame::runtime_rows[row]` owner. Seven field-first absolute globals
 are no longer needed by matching sources.
 
 This ownership recovery improves the focused candidate from 84.69%, 188/204
@@ -92,7 +92,7 @@ replay now normalizes only those instruction operands to numeric displacements;
 it preserves the symbols themselves and lets the existing `GameRoot*` type
 fold the accesses into `Player::attachment_exit_pending`, `Squidge`, the
 embedded `cRPathFollowGoldy`, its Player backlink and orientation fields, and
-`SubgameRuntime::runtime_rows[row].installed_heading_delta`. BN independently
+`cRSubGame::runtime_rows[row].installed_heading_delta`. BN independently
 shows the same owner chain. Tracked health checks guard both exports against
 the old raw-global and integer-receiver forms.
 

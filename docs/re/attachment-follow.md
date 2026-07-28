@@ -22,8 +22,8 @@ This is the first strong static point where named `Path=` rows clearly affect ge
 
 The constructor bank and installed bank are the same embedded array:
 
-- `SubgameRuntime = GameRoot + 0x74618`
-- `SubgameRuntime + 0xff2914 = GameRoot + 0x1066f2c`
+- `cRSubGame = GameRoot + 0x74618`
+- `cRSubGame + 0xff2914 = GameRoot + 0x1066f2c`
 - 126 initialized `0xa8` records form 63 `0x150` primary/secondary pairs
 - public path-table indices address pairs `0..50` directly
 - pairs `51..62` own auxiliary meshes used by public pairs `0..7`, `25..27`, and `41`
@@ -47,7 +47,7 @@ The strong static chain from this bundle is:
 
 - authored `Path=` name -> `find_segment_path_index_by_name` returns one of `51` hardcoded name-table indices
 - `load_segment_definitions` stores that resolved public index on the parsed segment-row record at `+0x8bc`
-- `populate_runtime_track_cells_from_segments` later reads that stored index and selects a pair as `path_index * 336 + SubgameRuntime + 0xff2914`; the secondary half is `+0xa8`
+- `populate_runtime_track_cells_from_segments` later reads that stored index and selects a pair as `path_index * 336 + cRSubGame + 0xff2914`; the secondary half is `+0xa8`
 - in that same installer branch, uppercase `P` becomes runtime tile `30` and lowercase `p` becomes runtime tile `29`, but the installed-bank root itself is chosen by a separate builder-state byte at `this + 2`, not directly by glyph case
 - generated runtime rows carry attachment flags `0x40/0x80` plus entry-cell pointers at `+0xa4/+0xa8`
 - each entry cell points directly to its selected template at cell `+0x38`

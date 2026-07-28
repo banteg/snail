@@ -271,6 +271,8 @@
 0044404f        int32_t ecx_35
 0044404f        ecx_35.b = zero_candidate_position->z.b
 0044404f        ecx_35:1.b = zero_candidate_position->z:1.b
+0044404f        ecx_35:2.b = zero_candidate_position->z:2.b
+0044404f        ecx_35:3.b = zero_candidate_position->z:3.b
 00444052        zero_runtime_row_anchor->row.parcel_spawn_position.z = ecx_35
 00444061        zero_runtime_row_anchor->row.parcel_spawn_position.z = fconvert.s(float.t(eax_42) + fconvert.t(zero_runtime_row_anchor->row.parcel_spawn_position.z) + fconvert.t(0.5f))
 00444073        zero_runtime_row_anchor->row.parcel_spawn_position.y = fconvert.s(fconvert.t(zero_runtime_row_anchor->row.parcel_spawn_position.y) + fconvert.t(1f))

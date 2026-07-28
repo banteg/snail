@@ -3,7 +3,7 @@
 /* selector: calc_slider_to_rate */
 
 // Exact Windows `cRSubGame::CalcSliderToRate(float)`: maps a normalized challenge-speed slider through `x * 0.90000004 + 0.2`, with the authored maximum slider receiving the special 1.1 rate. Android preserves the same receiver, branch, and constants.
-float __thiscall calc_slider_to_rate(SubgameRuntime *game, float slider)
+float __thiscall calc_slider_to_rate(cRSubGame *game, float slider)
 {
   if ( slider == 1.0 )
     return 1.1;

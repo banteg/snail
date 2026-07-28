@@ -3,7 +3,7 @@
 /* selector: build_track_colours */
 
 // Exact Windows `cRSubGame::BuildColours()`: seeds the CheckBlack, Floor, two physical Slide, Wall, Trampoline, Ramp, Empty, Path, PathWorm, and PathWarp banks. Android and iOS preserve the ten original gLocColourLookup* symbols and the same 13-call order; their two Slide calls alias one owner while Windows keeps separate storage.
-void __thiscall build_track_colours(SubgameRuntime *game)
+void __thiscall build_track_colours(cRSubGame *game)
 {
   int i; // esi
 

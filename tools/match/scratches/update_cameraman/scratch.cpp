@@ -130,7 +130,7 @@ void Cameraman::update_cameraman()
     } else {
         desired_fov = 110.0f;
     }
-    SubgameRuntime* rate_game = game;
+    cRSubGame* rate_game = game;
     fov_degrees = (desired_fov - fov_degrees) * 0.30000001f + fov_degrees;
     live_matrix.linear_interpolate_matrix(
         previous_desired_matrix,

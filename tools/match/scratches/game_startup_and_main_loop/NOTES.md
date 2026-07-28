@@ -167,7 +167,7 @@ window destruction jumps directly to class unregistration.
   state through that owner instead of byte arithmetic.
 - The shutdown record at root `+0x6ffae0` is
   `GameRoot::subgame.sub_high_score`: root `+0x74618` plus
-  `SubgameRuntime::sub_high_score +0x68b4c8` closes the address exactly.
+  `cRSubGame::sub_high_score +0x68b4c8` closes the address exactly.
 - Calling `GameRoot::initialize_game_assets_and_world()` with its recovered
   thiscall ABI removes the scratch's false pushed argument and stack cleanup.
   Focused matching improves from 63.65%, 338/325 instructions and 125 clean
@@ -298,7 +298,7 @@ debt.
 
 The five shutdown calls at `0x407234..0x40727f` each form
 `g_game_base + 0x6ffae0`. The recovered layout closes that address exactly as
-`GameRoot::subgame +0x74618 + SubgameRuntime::sub_high_score +0x68b4c8`.
+`GameRoot::subgame +0x74618 + cRSubGame::sub_high_score +0x68b4c8`.
 Binary Ninja already exposes the direct owner, while IDA promoted the numeric
 displacement into the unrelated `g_parcel_set_buckets` range. Exact operand
 normalization now preserves `&g_game_base->subgame.sub_high_score` for all five

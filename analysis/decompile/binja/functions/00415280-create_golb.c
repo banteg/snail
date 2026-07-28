@@ -207,7 +207,7 @@
 004157e3        shot->direction.z = shot->velocity.z
 004157e6        int32_t kind = shot->kind
 004157ee        if (kind == 0)
-004159b6        struct SubgameRuntime* game_2 = shot->game
+004159b6        struct cRSubGame* game_2 = shot->game
 004159bc        struct Player* owner_player_3 = shot->owner_player
 004159c2        shot->lifetime = 0f
 004159df        shot->lifetime_step = fconvert.s(fconvert.t(game_2->subgame_rate) * fconvert.t(0.0416666679f))
@@ -233,7 +233,7 @@
 00415ac7        shot->render_sprite->facing_angle_step = fconvert.s(fconvert.t(shot->game->subgame_rate) * fconvert.t(0.58177644f))
 00415acd        shot->object_ref = emitter_index
 004157f5        if (kind == 1)
-00415900        struct SubgameRuntime* game_1 = shot->game
+00415900        struct cRSubGame* game_1 = shot->game
 00415906        shot->lifetime = 0f
 00415915        long double x87_r7_50 = fconvert.t(game_1->subgame_rate) * fconvert.t(0.0416666679f)
 0041591b        shot->vapour_owner_shot = shot
@@ -254,7 +254,7 @@
 004159a5        add_vapour_point(&shot->vapour, &shot->flight_transform)
 004159af        (*shot->vapour.body.bod.bod.vtable)()
 004157fc        if (kind == 2)
-00415802        struct SubgameRuntime* game = shot->game
+00415802        struct cRSubGame* game = shot->game
 00415808        shot->lifetime = 0f
 00415811        long double x87_r7_48 = fconvert.t(game->subgame_rate) * fconvert.t(0.0277777761f)
 0041581d        shot->rocket_owner_shot = shot

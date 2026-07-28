@@ -2,7 +2,7 @@
 /* function: update_cutscene @ 0x4466d0 */
 /* selector: update_cutscene */
 
-// Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `Player::cameraman.live_matrix`, clears `Player::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `SubgameRuntime::level_definition.parcel_count` before the completion-screen handoff.
+// Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `Player::cameraman.live_matrix`, clears `Player::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `cRSubGame::level_definition.parcel_count` before the completion-screen handoff.
 void __thiscall update_cutscene(CutScene *cutscene)
 {
   CutSceneState state; // eax

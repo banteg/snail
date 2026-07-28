@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
         help=(
             "Rename only the guarded replay-origin cursor fields after "
             "verifying owner sizes, offsets, integral widths, and the "
-            "SubgameRuntime-to-Player ownership path."
+            "cRSubGame-to-Player ownership path."
         ),
     )
     narrow_mode.add_argument(

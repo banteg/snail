@@ -11,7 +11,7 @@ void Tutorial::initialize_tutorial()
     game = &g_game->subgame;
     game->runtime_flags |= SUBGAME_RUNTIME_FLAGS_TUTORIAL_INIT_OR_MASK;
 
-    SubgameRuntime* owner = game;
+    cRSubGame* owner = game;
     unsigned int flags = owner->runtime_flags;
     flags &= ~SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE;
     owner->runtime_flags = flags;

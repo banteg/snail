@@ -20,11 +20,11 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
     "Player": 0x4364,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x3BB700: ("blink_random_index", "int32_t"),
         0x3BB704: ("blink_random_samples", "float[24]"),
         0x3BB764: ("player", "Player"),
@@ -33,7 +33,7 @@ EXPECTED_STRUCT_FIELDS = {
 
 # The initializer borrows one float at a time from the 24-entry cadence table.
 # ESI advances by four bytes and does not own the complete array or the
-# enclosing SubgameRuntime.
+# enclosing cRSubGame.
 BLINK_RANDOM_SAMPLE_CURSOR_USER_VAR_UPDATES = (
     (
         "initialize_blink_random",
@@ -59,7 +59,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical SubgameRuntime owner.",
+        help="Header documenting the canonical cRSubGame owner.",
     )
     return parser.parse_args()
 

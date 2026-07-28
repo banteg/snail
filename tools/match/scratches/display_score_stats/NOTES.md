@@ -1,7 +1,7 @@
 # display_score_stats @ 0x4403c0
 
 `Player::display_score_stats` reports the six run score buckets on the
-`SubgameRuntime`-owned Player at `game+0x3bb764` before `complete_subgame`
+`cRSubGame`-owned Player at `game+0x3bb764` before `complete_subgame`
 snapshots the final result. These are the same `Player::total_score` and
 `Player::score_buckets` fields produced by `add_subgoldy_score`.
 
@@ -24,7 +24,7 @@ Match status: proof-grade.
 2026-06-16 initially split the call receiver into a sparse `RunScoreStats`
 view because only the score-window offsets were known. The complete Player
 extent recovered on 2026-07-11 supersedes that split:
-`SubgameRuntime +0x3bb764` is the embedded `Player` through `+0x3bfac8`.
+`cRSubGame +0x3bb764` is the embedded `Player` through `+0x3bfac8`.
 The scratch now uses the real `Player` receiver and remains exact.
 
 Residual:

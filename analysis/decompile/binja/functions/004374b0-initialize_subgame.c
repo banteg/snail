@@ -138,6 +138,8 @@
 004379ca        float ecx_48
 004379ca        ecx_48.b = game->player.body.transform.position.z.b
 004379ca        ecx_48:1.b = game->player.body.transform.position.z:1.b
+004379ca        ecx_48:2.b = game->player.body.transform.position.z:2.b
+004379ca        ecx_48:3.b = game->player.body.transform.position.z:3.b
 004379cd        game->player.cached_camera_target_world.z = ecx_48
 004379df        game->player.body.bod.bod.list_flags &= 0xffffffdf
 004379e5        initialize_warning(&game->player.warning)

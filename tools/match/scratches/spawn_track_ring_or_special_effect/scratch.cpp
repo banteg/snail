@@ -14,11 +14,11 @@
 int report_errorf(const char* format, ...);
 
 struct SubRingSlotCursor {
-    char subgame_prefix[offsetof(SubgameRuntime, ring_effects)];
+    char subgame_prefix[offsetof(cRSubGame, ring_effects)];
     SubRing ring;
 };
 
-void SubgameRuntime::spawn_track_ring_or_special_effect(
+void cRSubGame::spawn_track_ring_or_special_effect(
     cRSubLoc* cell,
     int requested_kind,
     Player* player,
@@ -26,7 +26,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
 {
     int slot_index = 0;
     SubRing* scan = (SubRing*)((char*)this
-        + offsetof(SubgameRuntime, ring_effects));
+        + offsetof(cRSubGame, ring_effects));
     for (;
          slot_index < SUB_RING_POOL_CAPACITY;
          slot_index++, scan = (SubRing*)((char*)scan + sizeof(SubRing))) {

@@ -12,7 +12,7 @@ typedef unsigned int DWORD;
 
 int report_errorf(char* format, ...);
 
-void SubgameRuntime::spawn_track_health_pickup(cRSubLoc* cell, Player* player)
+void cRSubGame::spawn_track_health_pickup(cRSubLoc* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
@@ -29,7 +29,7 @@ void SubgameRuntime::spawn_track_health_pickup(cRSubLoc* cell, Player* player)
 
     DWORD* slot_base =
         game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;
-    SubgameRuntime* slot = (SubgameRuntime*)slot_base;
+    cRSubGame* slot = (cRSubGame*)slot_base;
     slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;
     slot->health_pickups[0].owner = player;
 

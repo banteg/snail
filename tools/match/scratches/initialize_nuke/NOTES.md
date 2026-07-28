@@ -1,7 +1,7 @@
 # initialize_nuke
 
 - Near-exact/source-shaped match: 93.75%, 64/64 instructions.
-- Uses typed `Nuke`, `Player`, `SubgameRuntime`, `SpriteManager`, and
+- Uses typed `Nuke`, `Player`, `cRSubGame`, `SpriteManager`, and
   `Sprite` layouts. This pins the owner player pointer, `subgame_rate` read
   through `GameRoot::subgame`, orbit center-z/phase
   fields, and the 25 sprite slots at controller `+0x18`.

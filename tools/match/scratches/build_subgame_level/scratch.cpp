@@ -28,7 +28,7 @@ int report_errorf(char* format, ...);
 int sprintf(char* buffer, char* format, ...);
 void set_input_controller_pointer_authored_xy(int controller, float x, float y);
 
-void SubgameRuntime::build_subgame_level(int level_index)
+void cRSubGame::build_subgame_level(int level_index)
 {
     g_game->star_manager.unhide_star_field();
     if (level_mode == 7)

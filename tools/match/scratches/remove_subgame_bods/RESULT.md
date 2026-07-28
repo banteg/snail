@@ -1,6 +1,6 @@
 # `remove_subgame_bods` match result
 
-Focused scratch for `SubgameRuntime::remove_subgame_bods @ 0x440910`.
+Focused scratch for `cRSubGame::remove_subgame_bods @ 0x440910`.
 
 Final focused run:
 

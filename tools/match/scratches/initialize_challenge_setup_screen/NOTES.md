@@ -14,7 +14,7 @@ First structured scratch for the challenge mode setup initializer.
   void contract below supersedes that proof-grade classification.
 
 2026-07-11 ownership closure: `GUI::game` is a borrowed
-`SubgameRuntime*`, not a scratch-local setup view. The selected mode/index and
+`cRSubGame*`, not a scratch-local setup view. The selected mode/index and
 inline `SubTracks` owner belongs to that runtime, while replay availability
 comes from its owned `SubHighScore::survival_pending_record`. Focused Wibo
 retained the former scalar exact baseline before the return-contract audit.
@@ -26,7 +26,7 @@ also closes exactly between the salt-frequency dword and the `Help` owner.
 
 2026-07-13 root-owner cleanup: player-zero mouse capture and all five widget
 allocations now use the canonical `GameRoot` graph. The borrowed
-`SubgameRuntime* game` remains screen-local state.
+`cRSubGame* game` remains screen-local state.
 
 ## 2026-07-14 authored void contract
 
@@ -41,7 +41,7 @@ consumes its semantic 0/1/3 state result.
 ## 2026-07-15 durable owner replay
 
 The narrow Binary Ninja sync now persists the exact 0x28-byte cRGUI layout:
-the borrowed `SubgameRuntime*` at +0x00 and eight `FrontendWidget*` slots
+the borrowed `cRSubGame*` at +0x00 and eight `FrontendWidget*` slots
 through +0x24. Live readback kept `Init` as `void __thiscall(GUI*)`. The IDA
 replay corrected its stale result-bearing prototype to the same void contract,
 and a strict three-method export completed with zero BN or IDA mismatches.

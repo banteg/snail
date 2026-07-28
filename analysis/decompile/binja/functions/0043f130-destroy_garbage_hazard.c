@@ -23,7 +23,7 @@
 0043f1a3        sub_garbage->body.bod.bod.list_flags = list_flags_1
 0043f168        report_errorf("List remove NEXTBOD")
 0043f1ac        kill_sprite(sub_garbage->sprite)
-0043f1b1        struct SubgameRuntime* owner_game = sub_garbage->owner_game
+0043f1b1        struct cRSubGame* owner_game = sub_garbage->owner_game
 0043f1b7        struct SubGarbage* active_head = owner_game->garbage_hazards.active_head
 0043f1bf        if (active_head == sub_garbage)
 0043f1c1        struct SubGarbage* next_active = sub_garbage->next_active

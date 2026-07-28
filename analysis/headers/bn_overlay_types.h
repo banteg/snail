@@ -31,7 +31,7 @@ typedef struct Overlay {
 } Overlay;
 
 typedef struct SubgameOwnerLink {
-    struct SubgameRuntime* game;
+    struct cRSubGame* game;
 } SubgameOwnerLink;
 
 #endif

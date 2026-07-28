@@ -33,7 +33,7 @@ The earlier residual came from spelling the replay-attract cases as an
 2026-07-10 owner closure: the three replay bases are now typed as
 `SubHighScore::postal_records`, `survival_records`, and
 `time_trial_route_records`; replay handoff fields and `level_mode` are owned by
-the same embedded `SubgameRuntime`. Removing the synthetic cross-root game view
+the same embedded `cRSubGame`. Removing the synthetic cross-root game view
 changes VC6 reload scheduling slightly, so the honest focused score moves from
 63.94% to 63.06%.
 
@@ -64,7 +64,7 @@ assembly, or register-forcing constructs are used.
 
 The attract loop now uses the same typed `g_game` graph as the button paths:
 its selected record, three owned `SubHighScore` banks, replay-launch slot, and
-`level_mode` all belong to `SubgameRuntime`. Removing the remaining raw
+`level_mode` all belong to `cRSubGame`. Removing the remaining raw
 `GameRoot` casts preserves native's independent loads and keeps the method
 exact at 273/273 with all 62 operands clean.
 

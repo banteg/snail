@@ -2,7 +2,7 @@
 /* function: handle_subgoldy_collisions @ 0x444cf0 */
 /* selector: handle_subgoldy_collisions */
 
-// Void `Player` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`.
+// Void `Player` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its byte-strided parcel and health walks retain typed state lifetimes over the cRSubGame-owned banks. The ring sweep likewise borrows one owned slot and preserves separate typed `SubRingKind` lifetimes for the motion response and reward/effect ladder before the parent AI owns collection teardown. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`.
 void __thiscall handle_subgoldy_collisions(Player *player)
 {
   int i; // edi
@@ -15,14 +15,14 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   double v9; // st7
   __int64 v10; // rax
   int m; // edi
-  SubgameRuntime *game; // edx
+  cRSubGame *game; // edx
   SubSlugState state; // ecx
   SlugSlotCursor *slug_cursor; // eax
   double v15; // st7
   double v16; // st7
-  SubgameRuntime *v17; // eax
+  cRSubGame *v17; // eax
   double v18; // st7
-  SubgameRuntime *v19; // eax
+  cRSubGame *v19; // eax
   __int64 v20; // rax
   double v21; // st7
   double v22; // st6
@@ -31,7 +31,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   int n; // edi
   ParcelSlotCursor *parcel_cursor; // eax
   double v27; // st7
-  SubgameRuntime *v28; // eax
+  cRSubGame *v28; // eax
   int32_t v29; // ebx
   int ii; // edi
   SubHealthSlotCursor *health_cursor; // eax
@@ -39,20 +39,20 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   double y; // st7
   double v35; // st7
   char v36; // c0
-  SubgameRuntime *v37; // eax
+  cRSubGame *v37; // eax
   double v38; // st7
   double v39; // st7
   double v41; // st7
   char v42; // c0
-  SubgameRuntime *v43; // eax
+  cRSubGame *v43; // eax
   double v44; // st7
   double v45; // st7
   int jj; // edi
   SubRingSlotCursor *ring_cursor; // eax
   double v48; // st7
-  SubgameRuntime *v49; // ecx
+  cRSubGame *v49; // ecx
   SubRingKind ring_kind; // eax
-  SubgameRuntime *v51; // ecx
+  cRSubGame *v51; // ecx
   SubRingKind effect_kind; // eax
   int32_t v53; // eax
   int v54; // eax
@@ -73,7 +73,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
   Vec3 v69; // [esp+6Ch] [ebp-18h] BYREF
   Vec3 v70; // [esp+78h] [ebp-Ch] BYREF
 
-  if ( !player->attachment_exit_pending && !player->boost_one_tick && !player->control_override_active )
+  if ( player->attachment_exit_pending == 0 && player->boost_one_tick == 0 && player->control_override_active == 0 )
   {
     if ( SLOBYTE(player->shoot_flags) >= 0 )
     {
@@ -92,7 +92,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
             if ( player->damage_retrigger_timer == 0.0 )
               player->damage_retrigger_timer = player->damage_retrigger_step;
             player->game->salt_hazards.slots[i].collision_armed = 0;
-            apply_damage_gauge_delta(&player->damage_gauge, 0.15000001, 0);
+            apply_damage_gauge_delta(&player->damage_gauge, 0.15000001, false);
           }
         }
       }
@@ -110,11 +110,11 @@ void __thiscall handle_subgoldy_collisions(Player *player)
         if ( v7 < 1.0 && normalize_vector(&v59) < 0.49000001 )
         {
           player->game->sub_lazers.slots[j].state = SUB_LAZER_STATE_RECYCLE_PENDING;
-          apply_damage_gauge_delta(&player->damage_gauge, 0.02, 0);
+          apply_damage_gauge_delta(&player->damage_gauge, 0.02, false);
         }
       }
     }
-    for ( k = player->game->garbage_hazards.active_head; k; k = k->next_active )
+    for ( k = player->game->garbage_hazards.active_head; k != nullptr; k = k->next_active )
     {
       if ( k->state == SUB_GARBAGE_STATE_ACTIVE )
       {
@@ -136,7 +136,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           else
             k->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
           add_subgoldy_score(player, 0, 0);
-          apply_damage_gauge_delta(&player->damage_gauge, 0.039999999, 0);
+          apply_damage_gauge_delta(&player->damage_gauge, 0.039999999, false);
           v10 = (__int64)((double)next_math_random_value() * -0.000061035156);
           play_sound_effect(&g_sound_effect_manager, 39 - v10);
         }
@@ -164,11 +164,11 @@ void __thiscall handle_subgoldy_collisions(Player *player)
             {
               kill_slug_hazard(&player->game->slug_hazards.slots[m]);
             }
-            else if ( player->control_override_active )
+            else if ( player->control_override_active != 0 )
             {
               subgame_rate = player->game->subgame_rate;
               player->velocity.z = subgame_rate * subgame_rate * 0.0040000002 * -8.0;
-              apply_damage_gauge_delta(&player->damage_gauge, 1.0, 0);
+              apply_damage_gauge_delta(&player->damage_gauge, 1.0, false);
             }
             else
             {
@@ -226,7 +226,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
           v28 = player->game;
           v29 = player->parcels_collected + 1;
           player->parcels_collected = v29;
-          if ( !v28->level_mode )
+          if ( v28->level_mode == 0 )
             sprintf((char *const)&v28->lives_text_widget->text_buffer, "%i/%i", v29, v28->level_definition.parcel_count);
         }
       }
@@ -248,14 +248,14 @@ void __thiscall handle_subgoldy_collisions(Player *player)
       if ( y >= 0.49000001 && v59.z < 1.0 )
       {
         v35 = v59.y;
-        if ( v36 )
+        if ( v36 != 0 )
           v35 = -v35;
         if ( v35 < 0.40000001 && normalize_vector(&v60) < 0.98000002 )
         {
           play_sound_effect(&g_sound_effect_manager, 14);
           player->game->health_pickups[ii].state = TRACK_PICKUP_STATE_TEARDOWN_PENDING;
           health_collect_particles(player, &player->game->health_pickups[ii]);
-          apply_damage_gauge_delta(&player->damage_gauge, -0.5, 0);
+          apply_damage_gauge_delta(&player->damage_gauge, -0.5, false);
         }
       }
     }
@@ -274,7 +274,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
     if ( v39 >= 0.49000001 && v59.z < 1.0 )
     {
       v41 = v59.y;
-      if ( v42 )
+      if ( v42 != 0 )
         v41 = -v41;
       if ( v41 < 0.40000001 && normalize_vector(&v60) < 0.98000002 )
       {
@@ -314,7 +314,7 @@ void __thiscall handle_subgoldy_collisions(Player *player)
       if ( v48 < 1.0 && normalize_vector(&v70) < 0.98000002 )
       {
         player->game->ring_effects.slots[jj].state = SUB_RING_STATE_COLLECT_PENDING;
-        if ( !player->completion_handoff_active )
+        if ( player->completion_handoff_active == 0 )
         {
           v49 = player->game;
           ring_kind = v49->ring_effects.slots[jj].kind;
@@ -384,6 +384,8 @@ LABEL_106:
             play_sound_effect(&g_sound_effect_manager, 42);
             player->nuke_effect_progress = player->nuke_effect_progress_step;
             initialize_nuke(&player->nuke);
+            break;
+          default:
             break;
         }
       }

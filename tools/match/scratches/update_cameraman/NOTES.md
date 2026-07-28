@@ -127,9 +127,9 @@ byte `+0xcc`, and lift envelope fields `+0xd0/+0xd4`.
 
 ## 2026-06-21 subgame owner typing
 
-`Cameraman::game` is now typed as `SubgameRuntime*`, removing this
+`Cameraman::game` is now typed as `cRSubGame*`, removing this
 scratch's local `Game` shell. The two consumed owner lanes were already shared
-as `SubgameRuntime::subgame_rate` and `first_block_row_count`; focused Wibo
+as `cRSubGame::subgame_rate` and `first_block_row_count`; focused Wibo
 remains at `92.55%`, `322/322`, with the same single masked call mismatch.
 
 ## 2026-07-11 authored cRCameraman owner
@@ -146,7 +146,7 @@ clean masked operands and the existing single call mismatch.
 
 The former `unresolved_cc` byte is now `force_camera_update`. The outer
 `cRSubGame::CameraAI()` path copies `Cameraman +0xcc` into
-`SubgameRuntime::camera_snap_requested`, exactly as its alternate cutscene
+`cRSubGame::camera_snap_requested`, exactly as its alternate cutscene
 branch copies `CutScene::force_camera_update` into that gate. This Cameraman AI
 clears the request at entry in the Windows build. The rename preserves the
 focused 92.55%, 322/322 instruction result and its existing single call-name

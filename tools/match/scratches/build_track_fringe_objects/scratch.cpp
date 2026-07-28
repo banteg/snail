@@ -16,7 +16,7 @@
 int debug_report_stub(char* format, ...);
 extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
-void SubgameRuntime::build_track_fringe_objects()
+void cRSubGame::build_track_fringe_objects()
 {
     g_game->subgame.fringe_manager.initialize_fringe_manager();
 

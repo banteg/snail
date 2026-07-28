@@ -14,7 +14,7 @@ the Windows source preserves the native store order; removing that local
 regresses the focused match and is not a more faithful source shape.
 
 2026-07-14 parent-owner closure: the retained local now borrows
-`SubgameRuntime::player.presentation` directly. Matching stays exact at 6/6
+`cRSubGame::player.presentation` directly. Matching stays exact at 6/6
 with both operands clean.
 
 ## 2026-07-14 material-slot role closure
@@ -33,7 +33,7 @@ so these constants document proven values without inventing an enum ABI.
 The focused Snail-presentation lane now verifies the exact 0x20-byte
 `SnailSkin` child and replays its complete `Init/AI/Change` ABI family. Paired
 tracked decompiles expose the root-owned `Snail` parent at
-`SubgameRuntime::player.presentation`, replacing the stale synthetic
+`cRSubGame::player.presentation`, replacing the stale synthetic
 transition-state owner and raw root displacement. Strict health checks preserve
 that borrowed parent relationship. Focused matching remains exact at 6/6 with
 both operands clean.

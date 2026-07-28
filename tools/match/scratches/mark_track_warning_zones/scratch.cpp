@@ -5,7 +5,7 @@
 
 #include "subgame_runtime.h"
 
-void SubgameRuntime::mark_track_warning_zones()
+void cRSubGame::mark_track_warning_zones()
 {
     int row = 0;
     int saved_row = row;

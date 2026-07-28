@@ -25,7 +25,7 @@ The three independent lifecycle passes now close the parent boundary:
 
 `12 * 0x2e8` ends exactly at `Player +0x2730`, the next independently named
 movement-fire field. The bank is therefore owned storage in `Player`, not a
-borrowed emitter view or a separate SubgameRuntime pool.
+borrowed emitter view or a separate cRSubGame pool.
 
 ## 2026-07-16 lifecycle receiver contract
 

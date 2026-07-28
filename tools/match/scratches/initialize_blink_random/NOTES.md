@@ -18,13 +18,13 @@ This helper resets the blink cadence index at `+0x3bb700` and fills the
 
 2026-07-11 ownership recovery: the synthetic whole-subgame
 `BlinkRandomTable` view was removed. `blink_random_index` and
-`blink_random_samples` now live directly on `SubgameRuntime` at `+0x3bb700`
+`blink_random_samples` now live directly on `cRSubGame` at `+0x3bb700`
 and `+0x3bb704`; the table ends exactly where the owned player begins.
 Focused VC6 remains exact at 100.00%, 21/21 instructions, with five clean
 masked operands. The only native xref is the root-world bootstrap.
 
 2026-07-25 sample cursor ownership: native ESI starts at
-`SubgameRuntime::blink_random_samples`, advances by one four-byte float, and
+`cRSubGame::blink_random_samples`, advances by one four-byte float, and
 stores through `[esi-4]` for exactly 24 iterations. It borrows one table
 element at a time; it is not a pointer to the complete 24-float array and does
 not recover the enclosing runtime through a negative bias.

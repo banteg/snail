@@ -12,7 +12,7 @@ void __thiscall update_cameraman(Cameraman *cameraman)
   double v6; // st7
   double v7; // st6
   Player *v8; // ecx
-  Path *template_record; // edx
+  cRPath *template_record; // edx
   PathTemplateKind kind; // eax
   double v11; // st7
   Player *v12; // ecx
@@ -24,10 +24,11 @@ void __thiscall update_cameraman(Cameraman *cameraman)
   Player *v18; // esi
   Player *v19; // eax
   Player *v20; // eax
-  Path *v21; // ecx
+  cRPath *v21; // ecx
   double v22; // st7
   double v23; // st7
-  SubgameRuntime *game; // eax
+  double v24; // st7
+  cRSubGame *game; // eax
   float m30; // [esp+0h] [ebp-64h]
   float angle; // [esp+Ch] [ebp-58h]
   float anglea; // [esp+Ch] [ebp-58h]
@@ -36,9 +37,9 @@ void __thiscall update_cameraman(Cameraman *cameraman)
   float angled; // [esp+Ch] [ebp-58h]
   float anglee; // [esp+Ch] [ebp-58h]
   float anglef; // [esp+Ch] [ebp-58h]
-  float v33; // [esp+20h] [ebp-44h]
   float v34; // [esp+20h] [ebp-44h]
   float v35; // [esp+20h] [ebp-44h]
+  float v36; // [esp+20h] [ebp-44h]
   TransformMatrix transform; // [esp+24h] [ebp-40h] BYREF
 
   player = cameraman->player;
@@ -86,18 +87,17 @@ void __thiscall update_cameraman(Cameraman *cameraman)
     {
       v6 = 0.0;
     }
-    v33 = 1.0 - v6;
+    v34 = 1.0 - v6;
     v7 = (1.0 - v6) * v4->cached_camera_target_world.y * 1.15 + cameraman->desired_matrix.position.y;
     cameraman->desired_matrix.position.y = v7;
     cameraman->desired_matrix.position.y = v6 * 0.34999999 * v4->cached_camera_target_world.y + v7;
-    angle = v33 * 0.87249994;
-    rotate_matrix_local_x(&cameraman->desired_matrix, angle);
+    angle = v34 * 0.87249994;
+    rotate_matrix_world_x(&cameraman->desired_matrix, angle);
   }
   v8 = cameraman->player;
   if ( v8->follow_state.active == 1
     && ((template_record = v8->follow_state.template_record,
-         kind = template_record->kind,
-         kind == PATH_TEMPLATE_KIND_FAMILY_10)
+         (kind = template_record->kind) == PATH_TEMPLATE_KIND_FAMILY_10)
      || kind == 8
      || kind == 9
      || kind == 10
@@ -151,35 +151,35 @@ void __thiscall update_cameraman(Cameraman *cameraman)
     cameraman->previous_desired_matrix.position.z = v15 - 3.0;
   }
   v17 = (-2.0 - (v13->cached_camera_target_world.y - 0.49000001) * 5.0) * 0.017449999;
-  v34 = v17;
+  v35 = v17;
   if ( v17 >= -1.2214999 )
   {
-    if ( v34 > 1.2214999 )
-      v34 = 1.2214999;
-    rotate_matrix_local_x(&cameraman->desired_matrix, v34);
+    if ( v35 > 1.2214999 )
+      v35 = 1.2214999;
+    rotate_matrix_world_x(&cameraman->desired_matrix, v35);
   }
   else
   {
-    rotate_matrix_local_x(&cameraman->desired_matrix, -1.2214999);
+    rotate_matrix_world_x(&cameraman->desired_matrix, -1.2214999);
   }
   v18 = cameraman->player;
   anglec = v18->lane_lean_progress * 3.1415927;
   angled = (0.5 - cosine(anglec) * 0.5) * v18->lane_lean_amplitude * 6.2831855
          + v18->cached_camera_target_world.x * -8.0 * 0.017449999 * 0.17;
-  rotate_matrix_local_z(&cameraman->desired_matrix, angled);
+  rotate_matrix_world_z(&cameraman->desired_matrix, angled);
   if ( cameraman->player->follow_state.active == 1 )
   {
     set_matrix_identity(&transform);
-    rotate_matrix_local_z(&transform, cameraman->player->follow_state.orientation_a);
+    rotate_matrix_world_z(&transform, cameraman->player->follow_state.orientation_a);
     multiply_matrix_assign(&cameraman->desired_matrix, &transform);
-    rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b);
+    rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b);
   }
   v19 = cameraman->player;
-  if ( v19->attachment_exit_pending )
-    rotate_matrix_local_z(&cameraman->desired_matrix, v19->post_follow_exit_roll);
-  rotate_matrix_local_z(&cameraman->desired_matrix, cameraman->player->heading_roll);
+  if ( v19->attachment_exit_pending != 0 )
+    rotate_matrix_world_z(&cameraman->desired_matrix, v19->post_follow_exit_roll);
+  rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->heading_roll);
   v20 = cameraman->player;
-  if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record, v21->kind == PATH_TEMPLATE_KIND_WORM) )
+  if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record)->kind == PATH_TEMPLATE_KIND_WORM )
   {
     v22 = (v20->body.transform.position.z - v20->follow_state.source_cell->anchor_position.z) / v21->segment_count_f;
     if ( v22 >= 0.0 )
@@ -192,16 +192,17 @@ void __thiscall update_cameraman(Cameraman *cameraman)
       v22 = 0.0;
     }
     anglee = v22 * 6.2831855;
-    v35 = 0.5 - cosine(anglee) * 0.5;
-    debug_report_stub();
-    v23 = v35 * 50.0 + 110.0;
+    v23 = 0.5 - cosine(anglee) * 0.5;
+    v36 = v23;
+    debug_report_stub("Worm scale %f\n", v23);
+    v24 = v36 * 50.0 + 110.0;
   }
   else
   {
-    v23 = 110.0;
+    v24 = 110.0;
   }
   game = cameraman->game;
-  cameraman->fov_degrees = (v23 - cameraman->fov_degrees) * 0.30000001 + cameraman->fov_degrees;
+  cameraman->fov_degrees = (v24 - cameraman->fov_degrees) * 0.30000001 + cameraman->fov_degrees;
   anglef = game->subgame_rate * 0.30000001;
   linear_interpolate_matrix(
     &cameraman->live_matrix,

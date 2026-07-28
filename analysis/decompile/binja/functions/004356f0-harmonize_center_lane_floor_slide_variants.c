@@ -3,9 +3,9 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: harmonize_center_lane_floor_slide_variants @ 0x4356f0 */
 
-004356f4        struct SubgameRuntime* game_1 = game
+004356f4        struct cRSubGame* game_1 = game
 004356f6        int32_t i = 0
-004356f8        struct SubgameRuntime* game_2 = game_1
+004356f8        struct cRSubGame* game_2 = game_1
 004356ff        int32_t i_1 = 0
 00435706        if (game_1->runtime_row_count - 1 s<= 0)
 00435706        return

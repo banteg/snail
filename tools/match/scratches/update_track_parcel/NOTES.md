@@ -25,7 +25,7 @@ Recovered relationships:
 The shared parcel header now models the primary authored `Parcel : BodBase`;
 the exact initializer and table entry join it to Android/iOS `cRParcel::AI()`.
 The fixed `ParcelManager` proves 50 owned inline records. A parcel itself only
-borrows its `SubgameRuntime`, embedded `Player`, and SpriteManager sprite
+borrows its `cRSubGame`, embedded `Player`, and SpriteManager sprite
 handles. The tail remains named as `progress`, `progress_step`,
 `target_distance`, `travel_dir`, and `delivery_offset`.
 
@@ -41,7 +41,7 @@ table entries differ because the residual control-flow tails still differ.
 The Binary Ninja and IDA subgame-runtime lanes now carry the same exact
 `Parcel` and `ParcelManager` owners as the matching headers. The legacy
 `TrackParcelRuntime[50]` field has been removed from the path-template sync:
-`SubgameRuntime +0x125e480` owns one `0x1b58`-byte manager, the manager owns 50
+`cRSubGame +0x125e480` owns one `0x1b58`-byte manager, the manager owns 50
 inline `0x8c` records, and each record only borrows its enclosing runtime,
 embedded player, and sprite handle. This is a type/prototype correction; the
 honest 63.79%, 290/312 instruction scratch is unchanged.
@@ -104,7 +104,7 @@ operands clean.
 ## 2026-07-18 analysis ownership catch-up
 
 Refreshing the tracked IDA lane through the canonical `Parcel`,
-`ParcelManager`, `SubgameRuntime`, `Player`, `Completion`, and `Sprite` owners
+`ParcelManager`, `cRSubGame`, `Player`, `Completion`, and `Sprite` owners
 collapses 62 raw parcel/root offsets into direct fields. The artifact now
 retains the state transition names, borrowed player and sprite links, both
 owned flight vectors, the player home hotspot, and the completion widget

@@ -27,7 +27,7 @@ int report_errorf(char* format, ...);
         list->remove_bod((node_expr));                           \
     } while (0)
 
-void SubgameRuntime::remove_subgame_bods()
+void cRSubGame::remove_subgame_bods()
 {
     cRSubLoc* cell = &runtime_cells[0][0];
     BodNode** row_next = &runtime_rows[0].row_model.list_next;

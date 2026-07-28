@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-void SubgameRuntime::set_subgame_rate(float rate_value)
+void cRSubGame::set_subgame_rate(float rate_value)
 {
     base_rate = rate_value;
     subgame_rate = rate_value;

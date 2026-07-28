@@ -5,7 +5,7 @@ offsets. The remaining debt is systematic local-stack and register allocation:
 
 2026-07-26 Android/iOS ownership and source-shape pass: the mobile bodies
 confirm that slug, parcel, health, ring, speedup, and jetpack collision entries
-are short borrows from fixed banks owned by `SubgameRuntime`, rather than
+are short borrows from fixed banks owned by `cRSubGame`, rather than
 durable per-slot pointer owners. Direct element indexing restores the Windows
 VC6 base-plus-element cursor lifetimes for those six banks. Salt and sub-lazer
 remain the two genuine Windows-specific game-relative byte cursors: typed
@@ -39,7 +39,7 @@ the EAX slot cursor. Binary Ninja now preserves those exact identities as
 `parcel_state: ParcelState` (MLIL 1388/ECX) and
 `health_state: TrackPickupState` (MLIL 1666/ECX), so the active comparisons
 render with the same enums already proved by the exact allocators and
-updaters. Both values are borrowed reads from SubgameRuntime-owned embedded
+updaters. Both values are borrowed reads from cRSubGame-owned embedded
 banks; neither creates another parcel, pickup, or manager owner. A dedicated
 `sync_collision_state_lifetimes.py` replay verifies the five canonical enum
 definitions and updates only the six state/kind register lifetimes in this
@@ -55,7 +55,7 @@ physical registers. Binary Ninja now preserves those exact lifetimes as
 kind locals by Hex-Rays definition addresses `0x4456c5` and `0x4456fe`. The
 first kind read owns only the slow-versus-forward velocity response, while the
 second owns the reward/effect ladder. Both are borrowed reads of the same
-`SubgameRuntime::ring_effects.slots[jj].kind`, not separate storage owners.
+`cRSubGame::ring_effects.slots[jj].kind`, not separate storage owners.
 The broad path-template replay followed by the narrow pool replay reports all
 three Binary Ninja variables already current, proving the two replay paths
 compose idempotently. The scratch also carries the already-proved slug state as
@@ -64,9 +64,9 @@ honest `54.23%`, `651/673` instructions, prefix `8/673`, with `88 ok / 0
 unresolved / 0 mismatch` masked operands.
 
 2026-07-17 collision-pool cursor ownership pass: the six byte-strided sweeps
-that VC6 carries as `SubgameRuntime + slot_offset` now have explicit
+that VC6 carries as `cRSubGame + slot_offset` now have explicit
 analysis-only manager-relative cursor views in both tracked decompilers. The
-views preserve the enclosing `SubgameRuntime` as the sole storage owner and
+views preserve the enclosing `cRSubGame` as the sole storage owner and
 name only the terminal embedded slot: salt `+0x3578c0`, sub-lazer `+0x356b00`,
 slug `+0x3563a0`, parcel `+0x125e480`, health `+0x356000`, and ring
 `+0x35b78c`. Binary Ninja and IDA read back the exact local identities and now
@@ -100,7 +100,7 @@ during the earlier slug-only slice. The salt sweep now uses the native
 game-base byte cursor (`0..0x17c0`, stride `0x98`), which restores the target's
 long-lived byte offset register and improves the focused result from `52.85%`
 (`659/673`) to `53.46%` (`655/673`). The raw spelling does not make ownership
-unknown: `SubgameRuntime::salt_hazards`, `SaltManager::slots`, `Salt::state`,
+unknown: `cRSubGame::salt_hazards`, `SaltManager::slots`, `Salt::state`,
 `Salt::transform.position`, and `Salt::collision_armed` jointly prove every accessed
 lane. It is retained only because spelling the same walk as `Salt*` changes
 VC6's register allocation in this large function.
@@ -277,9 +277,9 @@ sets cutscene state `5` during completion handoff. The scratch keeps its broad
 local `Player` window because replacing it with the shared header would also
 pull in include-sensitive math/sprite/controller views.
 
-2026-06-21 runtime owner cleanup: `Player::game` is now a `SubgameRuntime*`,
+2026-06-21 runtime owner cleanup: `Player::game` is now a `cRSubGame*`,
 and the collision scratch includes `subgame_runtime.h` directly instead of
-carrying a local `Game` field window. `SubgameRuntime` now exposes the proven
+carrying a local `Game` field window. `cRSubGame` now exposes the proven
 `parcel_total` lane at `+0x1b01e0`; the parcel HUD writer uses the existing
 `lives_text_widget` field at `+0x35bb94`. Focused Wibo is unchanged at
 `52.85%`, `659/673`, prefix `8/673`, with `86 ok / 0 mismatch` in the masked
@@ -343,7 +343,7 @@ misalignment.
 
 Asm-verified field finds (cross-findings for the campaign):
 
-- player+0x408 = SubgameRuntime* (the back-pointer; previously tracked as a
+- player+0x408 = cRSubGame* (the back-pointer; previously tracked as a
   scratch-local `Game*`)
 - player+0x440 = completion_handoff_active — cross-confirms the
   unification's "damage-warning drain blocker at 0x4301bc"
@@ -404,12 +404,12 @@ and golb matches.
 
 The collision path now consumes inherited `Parcel::position`, and
 the HUD total comes from the embedded
-`SubgameRuntime::level_definition.parcel_count`. The focused result remains
+`cRSubGame::level_definition.parcel_count`. The focused result remains
 52.85%, 659/673, prefix 8/673, with all 86 masked operands clean.
 
 ## Collision-pool ownership closure (2026-07-10)
 
-`SubgameRuntime` now owns the complete fixed collision band: eight `Slug`
+`cRSubGame` now owns the complete fixed collision band: eight `Slug`
 slots through `SlugPool`, twenty sub-lazers, forty
 salt hazards, the `ParcelManager`, eight health pickups, and the two ring-effect
 parents. The salt, slug, parcel, health, and ring sweeps now derive their byte
@@ -417,7 +417,7 @@ cursors from those named members while retaining the native byte-strided loop
 shape.
 
 The parcel sweep now names the primary `Parcel` records and derives its base
-from `SubgameRuntime::parcel_manager.slots`. This is codegen-neutral at 52.85%,
+from `cRSubGame::parcel_manager.slots`. This is codegen-neutral at 52.85%,
 659/673, prefix 8/673, with all 86 masked operands clean.
 
 The salt byte at slot `+0x94` is now `collision_armed`: the exact spawner sets
@@ -470,14 +470,14 @@ is unchanged; focused Wibo remains 52.85%, 659/673, with 86 clean operands.
 ## cRSubSpeedUp primary owner (2026-07-11)
 
 The singleton collision check now uses the primary `SubSpeedUp` object at
-`SubgameRuntime +0x355db0`. Its full position vector, state, owner backlink,
+`cRSubGame +0x355db0`. Its full position vector, state, owner backlink,
 and sprite are independently established by the exact constructor and exact
 AI. Focused Wibo remains 52.85%, 659/673, with all 86 operands clean.
 
 ## cRJetPack primary owner (2026-07-11)
 
 The adjacent singleton collision check now uses the primary `JetPack` at
-`SubgameRuntime +0x355e64`. Android/iOS retain `cRJetPack`, the exact Windows
+`cRSubGame +0x355e64`. Android/iOS retain `cRJetPack`, the exact Windows
 constructor table points to its AI, and its two embedded cRVapour children
 close the full 0x19c allocation. Focused Wibo remains 52.85%, 659/673, with
 all 86 operands clean.
@@ -499,7 +499,7 @@ BN and IDA-facing headers now agree with the exact 0x4364-byte matching owner:
 
 - `score_tail +0x300`, `last_ring_spawn_z +0x37c`, and
   `boost_one_tick +0x41c` replace proven opaque lanes;
-- `game +0x408` is the borrowed enclosing `SubgameRuntime*`;
+- `game +0x408` is the borrowed enclosing `cRSubGame*`;
 - `parcels_collected +0x4338` precedes `visible_life_stock +0x4340`; and
 - `Squidge +0x4344` plus the commentary timers at `+0x435c/+0x4360` close the
   real tail.
@@ -510,11 +510,11 @@ and subgoldy update paths without reshaping the matcher scratch. The 52.85%,
 
 ## Pickup and hazard manager analysis closure (2026-07-13)
 
-The analysis `SubgameRuntime` now embeds the health, slug, sub-lazer, and salt
+The analysis `cRSubGame` now embeds the health, slug, sub-lazer, and salt
 owners consumed by this function rather than spanning them with one anonymous
 pad. Their exact slot counts and extents meet at `+0x356000`, `+0x3563a0`,
 `+0x356b00`, `+0x3578c0`, and the existing `BannerPool +0x359080` boundary.
-Borrowed `Player*` and `SubgameRuntime*` backlinks remain distinct from row-cell
+Borrowed `Player*` and `cRSubGame*` backlinks remain distinct from row-cell
 sources inside each slot.
 
 Binary Ninja declaration preview verifies the manager layouts and reverts.
@@ -554,7 +554,7 @@ from the owners they traverse:
 - `SubLazerManager::slots` / `sizeof(SubLazer)`;
 - `SlugPool::slots` / `sizeof(Slug)`;
 - `ParcelManager::slots` / `sizeof(Parcel)`;
-- `SubgameRuntime::health_pickups` / `sizeof(SubHealth)`; and
+- `cRSubGame::health_pickups` / `sizeof(SubHealth)`; and
 - `SubRingPool::slots` / `sizeof(SubRing)`.
 
 The byte cursors remain intentional because typed iterator spellings rotate
@@ -568,10 +568,10 @@ codegen-neutral: focused output remains 53.93%, 651/673 instructions, with all
 The two remaining absolute fixed-pool address families are now compile-time
 derivations from their recovered owners while preserving the native byte
 cursors. Salt state, inherited render position, and collision-armed byte come
-from `SubgameRuntime::salt_hazards`, `SaltManager::slots`, `Salt::state`,
+from `cRSubGame::salt_hazards`, `SaltManager::slots`, `Salt::state`,
 `Salt::transform.position`, and `Salt::collision_armed`. The
 sub-lazer state and inherited render position similarly come from
-`SubgameRuntime::sub_lazers`, `SubLazerManager::slots`, `SubLazer::state`, and
+`cRSubGame::sub_lazers`, `SubLazerManager::slots`, `SubLazer::state`, and
 `SubLazer::transform.position`. This removes the raw `0x3579xx` and `0x356bxx`
 lane literals without pretending that a typed record iterator matches the
 original loop source shape.
@@ -661,7 +661,7 @@ decompilers: sound calls now borrow `g_sound_effect_manager`, voice calls borrow
 `SubHealth*`, and the slug-death lane calls
 `begin_post_follow_carryover(Player*)` without an integer cast. The helper's
 independent 100% match closes the ABI as void, while the six analytical pool
-cursors remain borrowed SubgameRuntime-relative views rather than new owners.
+cursors remain borrowed cRSubGame-relative views rather than new owners.
 Focused matching remains 54.23%, 651/673 instructions, prefix 8/673, with all
 88 masked operands clean and no mismatches.
 
@@ -688,7 +688,7 @@ The complete collision sweep now distinguishes its two traversal models. The
 garbage branch borrows real `SubGarbage*` nodes from
 `SubGarbagePool::active_head` and follows `next_active`. Salt, sub-lazer, slug,
 parcel, health, and ring branches instead retain one signed byte offset from
-the enclosing `SubgameRuntime`, then form a separately typed borrowed slot
+the enclosing `cRSubGame`, then form a separately typed borrowed slot
 cursor at each use.
 
 Exact owner extents close every loop independently: `SaltManager 0x17c0` by
@@ -696,7 +696,7 @@ Exact owner extents close every loop independently: `SaltManager 0x17c0` by
 `Slug 0xec`, `ParcelManager 0x1b58` by `Parcel 0x8c`, eight `SubHealth` slots
 at `0x74` each, and `SubRingPool 0x3f0` by `SubRing 0x1f8`. A guarded replay
 names the intrusive cursor plus all six byte offsets and rejects incompatible
-pool or `SubgameRuntime` layouts before mutation. All seven annotations survive
+pool or `cRSubGame` layouts before mutation. All seven annotations survive
 reanalysis; a second complete replay skips all seven as already current.
 
 Matcher source remains untouched at the honest 54.23%, 651/673-instruction

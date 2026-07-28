@@ -175,7 +175,7 @@ Residuals:
   `staged_position.y` also matched, but the reference spelling is retained as
   the narrower original-looking C++ source shape. No residual remains.
 - 2026-06-21 subgame owner cleanup: the method now lives on
-  `SubgameRuntime`, sharing the recovered garbage allocator and
+  `cRSubGame`, sharing the recovered garbage allocator and
   `project_position_onto_track_attachment` call surface without changing the
   raw slot-walk shape. Focused Wibo remains exact at `100.00%`, `143/143`
   instructions, with `16` clean masked operands.
@@ -184,7 +184,7 @@ Residuals:
 
 - The exact allocator scans 50 inline `SubGarbage` records, each 0xc4 bytes;
   their `0x2648` extent is the complete native `Size of cRSubGarbage` total.
-- The four-byte word at `SubgameRuntime +0x359140` is the borrowed active-chain
+- The four-byte word at `cRSubGame +0x359140` is the borrowed active-chain
   head immediately before those records. `SubGarbagePool` names the Windows
   wrapper boundary without folding that head into the authored allocation.
 - Cross-port `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)` provenance and the
@@ -212,9 +212,9 @@ directly and remains exact at 143/143 instructions with all 16 operands clean.
 The exact spawner now reaches each shared owner directly:
 
 - `GameRoot::active_bod_list` owns the root intrusive-list anchor;
-- `SubgameRuntime::player` supplies the embedded tail sentinel used by the
+- `cRSubGame::player` supplies the embedded tail sentinel used by the
   active BOD list during gameplay;
-- `SubgameRuntime::garbage_hazards.slots[slot_index]` owns the final
+- `cRSubGame::garbage_hazards.slots[slot_index]` owns the final
   `source_cell` and `hidden` writes.
 
 This retires the raw root-list address, the player word offset, and the
@@ -252,12 +252,12 @@ roles now come from the shared `SubGarbagePool` contract.
 
 The allocator's borrowed BOD membership now begins from a canonical
 `GameRoot*` declaration, while slot storage and active-chain ownership remain
-with `SubgameRuntime::garbage_hazards`. Focused output stays exact at 143/143
+with `cRSubGame::garbage_hazards`. Focused output stays exact at 143/143
 instructions with all 16 operands clean.
 
 ## 2026-07-15 analysis-lane replay
 
-The canonical analysis headers now type `SubgameRuntime::garbage_hazards` as
+The canonical analysis headers now type `cRSubGame::garbage_hazards` as
 the exact 0x264c-byte `SubGarbagePool`, with its active head followed by 50
 inline `SubGarbage` records. Both decompiler lanes recover the pool scan and
 active-head splice under that owner; the exact 143/143 matcher proof remains
@@ -273,7 +273,7 @@ fakematch was introduced.
 
 ## 2026-07-19 selected-slot ownership replay
 
-The allocator preserves ESI as `SubgameRuntime + slot_index * 0xc4`, rather
+The allocator preserves ESI as `cRSubGame + slot_index * 0xc4`, rather
 than rebasing it to the selected `SubGarbage`. Both analysis lanes now model
 that physical value with the analysis-only `SubGarbageSlotCursor`: its
 `0x359144` prefix aliases the runtime root and its one `SubGarbage` member is

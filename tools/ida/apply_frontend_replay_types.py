@@ -83,7 +83,7 @@ TRUSTED_DECLARATIONS = [
 # cRHighScore::AI borrows the active SubHighScore bank six times. Those
 # GameRoot displacements also land inside the unrelated parcel-bucket data
 # symbol, so IDA promotes the instructions to false global expressions and
-# hides the already recovered GameRoot -> SubgameRuntime -> SubHighScore graph.
+# hides the already recovered GameRoot -> cRSubGame -> SubHighScore graph.
 # Normalize only these exact operands; the parcel-bank symbol remains intact.
 HIGH_SCORE_UPDATE_BANK_OFFSET_OPERANDS = (
     (0x4172C5, 1, 0x6FFAE0),

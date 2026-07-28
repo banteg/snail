@@ -70,7 +70,7 @@ Rejected probes:
 
 2026-06-21 subgame owner typing:
 
-- `SlugHazardRuntime::owner_game` is now a shared `SubgameRuntime*`, removing
+- `SlugHazardRuntime::owner_game` is now a shared `cRSubGame*`, removing
   this scratch's local generic `Game` shell.
 - The consumed lanes are `subgame_pause_gate`, `subgame_rate`, and the shared
   `EnemyManager` at `+0x1270fd4`; focused Wibo remains 66.15%,
@@ -79,7 +79,7 @@ Rejected probes:
 
 2026-07-11 blink-source ownership:
 
-- The blink cadence call now targets `SubgameRuntime::advance_blink_random()`
+- The blink cadence call now targets `cRSubGame::advance_blink_random()`
   directly; the synthetic `BlinkRandomTable` cast and header are gone.
 - The global-root address expression is retained because the native callsite
   itself passes `g_game_base +0x74618`, rather than the slug's borrowed owner

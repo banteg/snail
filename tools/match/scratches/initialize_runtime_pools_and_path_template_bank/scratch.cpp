@@ -12,12 +12,12 @@ extern void* g_subgoldy_callback_table;      // data_497300
 extern void* g_barrier_actor_callback_table; // data_4972fc
 extern void* g_face_callback_table;          // data_4972f8
 
-SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank()
+cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
 {
     char* self = (char*)this;
 
     tColour* segment_cache_constructor_receiver =
-        (tColour*)(self + offsetof(SubgameRuntime, segment_cache));
+        (tColour*)(self + offsetof(cRSubGame, segment_cache));
     segment_cache_constructor_receiver->noop_this_constructor();
     RuntimeSlot* active_bods = (RuntimeSlot*)((char*)segment_cache_constructor_receiver
         + offsetof(SegmentCache, slots));

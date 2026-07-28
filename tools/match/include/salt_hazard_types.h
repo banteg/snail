@@ -7,7 +7,7 @@
 #include "bod_types.h"
 #include "vector3.h"
 
-class SubgameRuntime;
+class cRSubGame;
 
 enum SaltState {
     SALT_STATE_INACTIVE = 0,
@@ -22,7 +22,7 @@ public:
 
     SaltState state;            // +0x80
     char unknown_84[0x88 - 0x84];
-    SubgameRuntime* owner_game; // +0x88
+    cRSubGame* owner_game; // +0x88
     float fade_alpha;           // +0x8c
     float spawn_velocity_y;     // +0x90
     unsigned char collision_armed; // +0x94

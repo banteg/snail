@@ -49,7 +49,7 @@ the exact 67/67 instruction body and all 19 clean operands.
 
 The two score calls at `0x404853` and `0x404881` add the same root displacement
 `0x42fd7c`, exactly
-`GameRoot::subgame +0x74618 + SubgameRuntime::player +0x3bb764`. IDA had
+`GameRoot::subgame +0x74618 + cRSubGame::player +0x3bb764`. IDA had
 mistaken that displacement for the standalone `g_player_block` evidence
 symbol. Exact operand normalization now agrees with Binary Ninja and the
 matcher source on `&g_game_base->subgame.player`; the exact 67/67 result is

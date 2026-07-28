@@ -8,7 +8,7 @@
 
 int debug_report_stub(char* format, ...);
 
-void SubgameRuntime::place_challenge_parcels_on_track()
+void cRSubGame::place_challenge_parcels_on_track()
 {
     float source_scaled = (float)challenge_speed_value * 50.0f;
     source_scaled = source_scaled * 0.00999999978f;

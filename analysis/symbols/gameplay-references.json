@@ -2139,7 +2139,7 @@
         "data_4972f8",
         "g_smtracks_vtable"
       ],
-      "description": "Windows `cRFace` BOD callback table installed on the 0x128-byte animated height-field owner at SubgameRuntime +0x10013a4; its first entry is `update_smtracks`, the exact cross-port `cRFace::AI()`."
+      "description": "Windows `cRFace` BOD callback table installed on the 0x128-byte animated height-field owner at cRSubGame +0x10013a4; its first entry is `update_smtracks`, the exact cross-port `cRFace::AI()`."
     },
     {
       "address": "0x4972fc",
@@ -3499,7 +3499,7 @@
         "unk_4df958"
       ],
       "size": "0x4",
-      "description": "Persisted challenge speed percentage written by the setup slider, copied into SubgameRuntime and SubSolution, and later used for challenge parcel and completion-bonus calculations."
+      "description": "Persisted challenge speed percentage written by the setup slider, copied into cRSubGame and SubSolution, and later used for challenge parcel and completion-bonus calculations."
     },
     {
       "address": "0x4df95c",
@@ -3521,7 +3521,7 @@
         "unk_4df960"
       ],
       "size": "0x4",
-      "description": "Persisted challenge difficulty percentage written by the setup slider, copied into SubgameRuntime and SubSolution, and later used for hazard, parcel, and completion-bonus calculations."
+      "description": "Persisted challenge difficulty percentage written by the setup slider, copied into cRSubGame and SubSolution, and later used for hazard, parcel, and completion-bonus calculations."
     },
     {
       "address": "0x4df964",
@@ -4396,7 +4396,7 @@
         "data_64118c",
         "g_row_heading_table"
       ],
-      "description": "Relocatable field-first view of SubgameRuntime::runtime_rows[0].installed_heading_delta; attachment entry indexes successive 0xf4-byte runtime rows."
+      "description": "Relocatable field-first view of cRSubGame::runtime_rows[0].installed_heading_delta; attachment entry indexes successive 0xf4-byte runtime rows."
     },
     {
       "address": "0x643190",
@@ -4537,7 +4537,7 @@
       "name": "g_sub_high_score_offset",
       "kind": "offset",
       "aliases": [],
-      "description": "Relocatable SubgameRuntime::sub_high_score offset used by completion dispatch. The embedded cRSubHighScore owner is 0x947648 bytes."
+      "description": "Relocatable cRSubGame::sub_high_score offset used by completion dispatch. The embedded cRSubHighScore owner is 0x947648 bytes."
     },
     {
       "address": "0x74e7e8",

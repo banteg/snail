@@ -29,7 +29,7 @@ EXPECTED_TYPE_WIDTHS = {
     "SlugSlotCursor": 0x35648C,
     "SubGarbage": 0xC4,
     "GolbShot": 0x2E8,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -64,7 +64,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x27C: ("source_matrix", "TransformMatrix"),
         0x2BC: ("path_follow", "GolbPathFollowState"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x3563A0: ("slug_hazards", "SlugPool"),
         0x359140: ("garbage_hazards", "SubGarbagePool"),
     },

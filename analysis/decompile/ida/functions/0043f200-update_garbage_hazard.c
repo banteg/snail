@@ -9,7 +9,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
   Player *owner_player; // ecx
   double x; // st7
   double v5; // st7
-  SubgameRuntime *owner_game; // edx
+  cRSubGame *owner_game; // edx
   Vec3 *p_velocity; // ecx
   double subgame_rate; // st6
   SubGarbageCollisionSide collision_side; // eax

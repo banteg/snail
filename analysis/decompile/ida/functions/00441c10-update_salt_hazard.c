@@ -5,7 +5,7 @@
 // Exact Windows `cRSalt::AI()`: advances one live Salt fade state from the shared track z thresholds, updates its alpha tint, and retires the inherited BOD node at the far cutoff. The constructor table at 0x497340 points directly here; cross-port iOS preserves the owner.
 void __thiscall update_salt_hazard(Salt *salt)
 {
-  SubgameRuntime *owner_game; // eax
+  cRSubGame *owner_game; // eax
   __int32 v3; // ecx
   BodList *p_active_bod_list; // ecx
   uint32_t list_flags; // eax
@@ -16,14 +16,14 @@ void __thiscall update_salt_hazard(Salt *salt)
   char v11; // c0
 
   owner_game = salt->owner_game;
-  if ( !owner_game->subgame_pause_gate )
+  if ( owner_game->subgame_pause_gate == 0 )
   {
     v3 = salt->state - 1;
     if ( salt->state == SALT_STATE_ACTIVE )
     {
       v9 = 1.0 - (salt->body.transform.position.z - owner_game->player.body.transform.position.z) * 0.021739131;
       salt->fade_alpha = v9;
-      if ( v11 )
+      if ( v11 != 0 )
       {
         v9 = 0.0;
       }
@@ -50,10 +50,10 @@ void __thiscall update_salt_hazard(Salt *salt)
         else
         {
           list_next = salt->body.bod.bod.list_next;
-          if ( list_next )
+          if ( list_next != nullptr )
             list_next->list_prev = salt->body.bod.bod.list_prev;
           list_prev = salt->body.bod.bod.list_prev;
-          if ( list_prev )
+          if ( list_prev != nullptr )
             list_prev->list_next = salt->body.bod.bod.list_next;
           else
             p_active_bod_list->first = salt->body.bod.bod.list_next;

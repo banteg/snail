@@ -25,7 +25,7 @@ incidental compiler value, not an authored return contract.
 
 Earlier volatile-Game-base and flat-float-table experiments are rejected. The
 exact candidate now traverses the ordinary relocatable `GameRoot`, its embedded
-`SubgameRuntime`, and the recovered row array directly, with no field-first
+`cRSubGame`, and the recovered row array directly, with no field-first
 global alias or source-only scheduling barrier.
 
 ## 2026-07-14 root declaration closure

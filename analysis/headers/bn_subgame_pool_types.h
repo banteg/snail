@@ -14,7 +14,8 @@ typedef struct Object Object;
 typedef struct BodNode BodNode;
 typedef struct Player Player;
 typedef struct Sprite Sprite;
-typedef struct SubgameRuntime SubgameRuntime;
+typedef struct cRSubGame cRSubGame;
+typedef cRSubGame SubgameRuntime;
 typedef struct cRSubLoc cRSubLoc;
 typedef struct TransformMatrix TransformMatrix;
 typedef struct AnimManager AnimManager;
@@ -90,7 +91,7 @@ typedef struct SubSpeedUp {
     TrackPickupState state;
     struct Player* owner;
     uint8_t unknown_88[0x04];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t unknown_90[0x1c];
     struct Sprite* sprite;
     uint8_t unknown_b0[0x04];
@@ -108,7 +109,7 @@ typedef struct JetPack {
     TrackPickupState state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
     struct cRSubLoc* source_cell;
@@ -128,7 +129,7 @@ typedef struct SubHealth {
     TrackPickupState state;
     struct Player* owner;
     uint8_t unknown_40[0x04];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
     struct cRSubLoc* source_cell;
@@ -160,7 +161,7 @@ typedef struct Slug {
     RenderableBod body;
     SubSlugState state;
     SubSlugDeathTossDirection death_toss_direction;
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     Vec3 velocity;
     float attachment_facing_angle;
     float death_toss_progress;
@@ -205,7 +206,7 @@ typedef struct SlugStateStrideCursor {
 
 /*
  * Analysis-only manager-relative view for the allocator's selected slot.
- * The prefix aliases the enclosing SubgameRuntime; slug is one embedded pool
+ * The prefix aliases the enclosing cRSubGame; slug is one embedded pool
  * record, not independently owned storage.
  */
 typedef struct SlugSlotCursor {
@@ -267,7 +268,7 @@ struct SubRing {
     SubRingKind kind;
     int32_t owner_lives_snapshot;
     SubRingStar particles[10];
-    SubgameRuntime* rate_source;
+    cRSubGame* rate_source;
     float transition_progress;
     float transition_step;
     uint8_t oscillate_x;
@@ -289,7 +290,7 @@ typedef SubRingPool RingOrSpecialEffectPool;
 
 SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);
 void __thiscall spawn_track_ring_or_special_effect(
-    SubgameRuntime* game,
+    cRSubGame* game,
     cRSubLoc* cell,
     int32_t requested_kind,
     Player* player,

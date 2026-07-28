@@ -51,7 +51,7 @@ void __thiscall update_jet_particles(SubHover *sub_hover)
       v17 = (1.0 - v16) * v18 * sub_hover->warning_intensity;
       do
       {
-        if ( v3 )
+        if ( v3 != 0 )
         {
           x = sub_hover->game->player.presentation.snail_hotspots_world[14].x;
           y = sub_hover->game->player.presentation.snail_hotspots_world[14].y;

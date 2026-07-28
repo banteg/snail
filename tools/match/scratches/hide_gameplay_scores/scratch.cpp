@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-void SubgameRuntime::hide_gameplay_scores()
+void cRSubGame::hide_gameplay_scores()
 {
     FrontendWidget* widget_b = bottom_score_widget;
     if (widget_b != 0) {

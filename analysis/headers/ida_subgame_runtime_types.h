@@ -11,7 +11,8 @@ typedef struct Object Object;
 typedef struct Player Player;
 typedef struct Sprite Sprite;
 typedef struct FrontendWidget FrontendWidget;
-typedef struct SubgameRuntime SubgameRuntime;
+typedef struct cRSubGame cRSubGame;
+typedef cRSubGame SubgameRuntime;
 typedef struct cRSubLoc cRSubLoc;
 typedef struct TransformMatrix TransformMatrix;
 typedef struct BodNode BodNode;
@@ -71,7 +72,7 @@ typedef struct Parcel {
     float color_b;
     float color_a;
     ParcelState state;
-    SubgameRuntime* owner_subgame;
+    cRSubGame* owner_subgame;
     uint8_t unknown_40[0x54 - 0x40];
     Sprite* sprite;
     uint8_t unknown_58[0x5c - 0x58];
@@ -87,7 +88,7 @@ typedef struct Parcel {
 
 typedef char Parcel_must_be_0x8c[(sizeof(Parcel) == 0x8c) ? 1 : -1];
 
-/* Exact 0x1b58-byte Windows cRParcelManager embedded in SubgameRuntime. */
+/* Exact 0x1b58-byte Windows cRParcelManager embedded in cRSubGame. */
 typedef struct ParcelManager {
     Parcel slots[50];
 } ParcelManager;
@@ -105,7 +106,7 @@ typedef enum CompletionState {
     COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6,
 } CompletionState;
 
-/* Exact 0x50-byte Windows cRCompletion embedded in SubgameRuntime. */
+/* Exact 0x50-byte Windows cRCompletion embedded in cRSubGame. */
 typedef struct Completion {
     FrontendWidget* title_widget;
     FrontendWidget* delivered_count_widget;
@@ -178,7 +179,7 @@ typedef struct JetPack {
     TrackPickupState state;
     Player* owner;
     uint8_t unknown_40[0x44 - 0x40];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t unknown_48[0x64 - 0x48];
     Sprite* sprite;
     cRSubLoc* source_cell;
@@ -206,7 +207,7 @@ typedef struct Banner {
     float color_a;
     int32_t visibility_mode;
     uint8_t unknown_3c[0x48 - 0x3c];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t unknown_4c[0x54 - 0x4c];
     Player* owner_player;
     float phase;
@@ -221,7 +222,7 @@ typedef struct BannerPool {
  * Analysis-only root-relative stride view for the Banner startup loop.
  * initialize_game_assets_and_world carries `game + i * sizeof(Banner)` and
  * applies the absolute GameRoot-to-Banner offset at each access. This view is
- * not another owner: `SubgameRuntime::banners.slots` remains the sole Banner
+ * not another owner: `cRSubGame::banners.slots` remains the sole Banner
  * storage.
  */
 typedef struct BannerInitStrideView {
@@ -329,7 +330,7 @@ typedef char TimeTrial_must_be_0x330[
 ];
 
 typedef struct GUI {
-    SubgameRuntime* game;
+    cRSubGame* game;
     FrontendWidget* next_level_button;
     FrontendWidget* previous_level_button;
     FrontendWidget* level_name_widget;
@@ -347,7 +348,7 @@ typedef struct Help {
 typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
 
 typedef struct ThanksScreen {
-    SubgameRuntime* game;
+    cRSubGame* game;
     FrontendWidget* message_widget;
     int32_t message_state;
     float message_progress;
@@ -398,7 +399,7 @@ typedef struct Galaxy {
     int32_t record_count;
     GalaxyStar route_slots[101];
     GalaxyRouteNameRecord route_names[10];
-    SubgameRuntime* level_progress_base;
+    cRSubGame* level_progress_base;
     FrontendWidget* exit_or_back_widget;
     FrontendWidget* route_title_widget;
     FrontendWidget* route_icon_widget;
@@ -430,7 +431,7 @@ typedef struct SubPause {
     FrontendWidget* resume_widget;
 } SubPause;
 
-typedef struct SubgameRuntime {
+typedef struct cRSubGame {
     uint8_t scan_reset;
     uint8_t camera_snap_requested;
     uint8_t track_mirror_enabled;
@@ -514,10 +515,10 @@ typedef struct SubgameRuntime {
     EnemyManager enemy_manager;
     Completion completion;
     TimesUp times_up;
-} SubgameRuntime;
+} cRSubGame;
 
 typedef struct SubgameOwnerLink {
-    SubgameRuntime* game;
+    cRSubGame* game;
 } SubgameOwnerLink;
 
 void __thiscall uninit_pause_menu(SubPause* pause);

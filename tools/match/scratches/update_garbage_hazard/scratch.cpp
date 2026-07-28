@@ -10,7 +10,7 @@
 
 void SubGarbage::update_garbage_hazard()
 {
-    SubgameRuntime* pause_game = owner_game;
+    cRSubGame* pause_game = owner_game;
     if (!pause_game->subgame_pause_gate) {
         int current_state = state;
         switch ((unsigned int)current_state) {
@@ -53,7 +53,7 @@ void SubGarbage::update_garbage_hazard()
             random_velocity.x = (float)random_signed_float_below(0.1f, "GDI");
             random_velocity.y = (float)random_float_below(0.2f, 0) + 0.1f;
             random_velocity.z = (float)random_float_below(0.30000001f, 0);
-            SubgameRuntime* rate_game = owner_game;
+            cRSubGame* rate_game = owner_game;
             Vector3* burst_velocity = &velocity;
             float rate = rate_game->subgame_rate;
             Vector3 staged_velocity;
@@ -109,7 +109,7 @@ side_adjustment_complete:
 
             sprite->position = *position;
 
-            SubgameRuntime* gravity_game = owner_game;
+            cRSubGame* gravity_game = owner_game;
             float gravity_step = gravity_game->subgame_rate
                 * gravity_game->subgame_rate
                 * -0.0099999998f;

@@ -3,7 +3,7 @@
 /* selector: populate_runtime_track_cells_from_segments */
 
 // Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Each lane iteration writes the physical runtime `cRSubLoc` selected by `lane`, while a distinct mirrored authored lane indexes the borrowed active `SubSegment::glyph_rows`; first/last-block bounds produce the byte `edge_row` input consumed by the glyph normalizer. Runtime cell object selection reuses each `cRSubLoc` cell's shared `cRBod`/`BodBase` prefix and borrows render objects from the root catalog, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner.
-void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
+void __thiscall populate_runtime_track_cells_from_segments(cRSubGame *game)
 {
   int32_t runtime_build_seed; // esi
   int32_t level_mode; // eax
@@ -26,7 +26,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t visited_segment_index; // eax
   uint8_t *visited_cursor; // ecx
   int32_t runtime_row_index; // edi
-  SubgameRuntime *build_runtime_owner; // ebp
+  cRSubGame *build_runtime_owner; // ebp
   SubSegment *selected_segment; // esi
   double segment_count; // st7
   int32_t v26; // eax

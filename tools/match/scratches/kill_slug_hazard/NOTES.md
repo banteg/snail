@@ -23,7 +23,7 @@ never part of the caller contract.
 2026-07-13 player-owner closure: the score award now reaches
 `owner_game->player` directly. This retires the final fixed-offset Player cast
 from the exact slug kill path and makes the lifetime explicit: each inline
-`Slug` borrows its enclosing `SubgameRuntime`, which owns the scoring Player.
+`Slug` borrows its enclosing `cRSubGame`, which owns the scoring Player.
 Focused Wibo remains exact at 35/35 with all seven masked operands clean.
 
 ## 2026-07-14 lifecycle roles

@@ -15,7 +15,7 @@ the same kind-42/non-kind-42 tail used by the normal parcel placer.
 ## Source-shape findings
 
 - 2026-06-21 receiver cleanup: the scratch now defines
-  `SubgameRuntime::place_challenge_parcels_on_track` directly, using the shared
+  `cRSubGame::place_challenge_parcels_on_track` directly, using the shared
   receiver fields for `challenge_speed_value`,
   `challenge_difficulty_scalar`, and `runtime_row_count`. Focused Wibo remains
   44.70% at that checkpoint. This removes the local `Game` shell from the type
@@ -54,7 +54,7 @@ the same kind-42/non-kind-42 tail used by the normal parcel placer.
 ## Shared ownership pass (2026-07-10)
 
 The computed count and quota now land in the embedded
-`SubTracks`, and both row scans walk SubgameRuntime's owned
+`SubTracks`, and both row scans walk cRSubGame's owned
 `runtime_rows[3200]` array. The reset cursor uses the same shared
 `ParcelBucket::candidate_count` lane proven by the exact zero-bank constructor.
 
@@ -74,7 +74,7 @@ symbol `gParcelGroupSurvival0`. Its `0x4000`-byte extent is fixed by both the
 Android symbol size and the Windows reference manifest, and ends exactly where
 the parcel-set bucket bank begins at `0x6487e8`. The helper fills at most the
 runtime's 3200 row indices, so this is global placement scratch capacity rather
-than `SubgameRuntime`-owned state.
+than `cRSubGame`-owned state.
 
 ## Cross-port candidate lifetime recovery (2026-07-13)
 
@@ -105,7 +105,7 @@ clean.
 The Windows caller passes its live receiver unchanged, and Android/iOS both
 name this method `cRSubGame::PlaceParcelsSurvival()`. A Binary Ninja prototype
 preview then verified that replacing the stale `__fastcall(void*)` shell with
-`__thiscall(SubgameRuntime*)` preserves analysis and reveals
+`__thiscall(cRSubGame*)` preserves analysis and reveals
 `challenge_speed_value`, `challenge_difficulty_scalar`,
 `level_definition`, and `runtime_rows`. The canonical header, Binary Ninja
 replay, and IDA replay now carry that same receiver contract.
@@ -138,7 +138,7 @@ remains 81.40%, 173/171 instructions, with all 33 operands clean.
 
 The selected-row claim and final projection pass now carry the same ownership
 model as normal parcel placement in both decompiler lanes. The claim keeps the
-containing `SubgameRuntime` base while borrowing one `SubRow` through a
+containing `cRSubGame` base while borrowing one `SubRow` through a
 `RuntimeRowStrideAnchor*`; the projection pass advances a direct borrowed
 `SubRow*`. Neither lifetime owns or transfers the `runtime_rows` slab, and the
 global survival row-index bank remains independent scratch storage.

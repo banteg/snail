@@ -31,7 +31,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Snail": 0x19B4,
     "GolbShot": 0x2E8,
     "Player": 0x4364,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -82,7 +82,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x019C: ("homing_target", "Vec3"),
         0x0248: ("render_sprite", "Sprite*"),
         0x024C: ("velocity", "Vec3"),
-        0x0270: ("game", "SubgameRuntime*"),
+        0x0270: ("game", "cRSubGame*"),
         0x0278: ("owner_player", "Player*"),
     },
     "Player": {
@@ -93,7 +93,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x0410: ("velocity", "Vec3"),
         0x2984: ("presentation", "Snail"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x0038: ("subgame_rate", "float"),
         0x355D24: ("golb_vapour_list_head", "BodBase"),
         0x1270FD4: ("enemy_manager", "EnemyManager"),
@@ -275,7 +275,7 @@ def main() -> int:
             definitions=CREATE_GOLB_SPRITE_GAME_DEFINITIONS,
             target_var=CREATE_GOLB_SPRITE_GAME_VAR,
             variable_name="sprite_game",
-            variable_type="SubgameRuntime*",
+            variable_type="cRSubGame*",
         )
     )
     operations.extend(

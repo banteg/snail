@@ -15,6 +15,8 @@
 00442159        float esi_2
 00442159        esi_2.b = eax_1->b.b
 00442159        esi_2:1.b = eax_1->b:1.b
+00442159        esi_2:2.b = eax_1->b:2.b
+00442159        esi_2:3.b = eax_1->b:3.b
 0044215c        out->b = esi_2
 00442163        out->a = eax_1->a
 00442169        return out

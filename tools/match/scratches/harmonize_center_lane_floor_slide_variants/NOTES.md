@@ -7,7 +7,7 @@
   the current/neighbor cache families match the center-lane transition shape.
 - The exact scratch keeps the shared `cRSubLoc`/`BodBase` views while
   indexing `runtime_cells[row][lane]` directly. VC6 consequently retains the
-  owning `SubgameRuntime*` plus `(lane + row * 8) * 0x54`, matching the native
+  owning `cRSubGame*` plus `(lane + row * 8) * 0x54`, matching the native
   base cursor instead of materializing shifted current/neighbor pointers.
 - Current retained shape is 100.00%, with 226/226 instructions, a 226/226
   prefix, and all 28 operands audited cleanly.
@@ -70,7 +70,7 @@ semantics; those calls are not reversed for a greener report.
 ## 2026-07-14 analysis receiver closure
 
 The live BN function no longer carries the stale `Game*` receiver. Guarded
-recreation installs the matcher- and Android-proven `SubgameRuntime*`, and the
+recreation installs the matcher- and Android-proven `cRSubGame*`, and the
 BN/IDA exports now agree on the runtime-grid owner and packed cell flags. This
 does not alter the deliberately evidence-backed floor/slide predicate order or
 the honest 58.98% matcher result; reversing those calls remains rejected as
@@ -79,7 +79,7 @@ fakematching.
 ## 2026-07-17 same-lane cell-neighborhood ownership
 
 The native ESI value in each row-phase arm is not a `cRSubLoc*`. It retains
-`SubgameRuntime + (row * 8 + lane) * 0x54`, so the current cell remains at
+`cRSubGame + (row * 8 + lane) * 0x54`, so the current cell remains at
 `+0x3bfac8` and the previous/next same-lane cells sit exactly one eight-cell
 row stride (`0x2a0`) behind/ahead. The shared `RuntimeCellStrideAnchor` now
 models all three real `cRSubLoc` owners instead of only the predecessor's
@@ -111,7 +111,7 @@ The void matcher member and the independent
 in-place `cRSubLoc` mutations.
 
 The replayed analysis prototype is therefore
-`void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime*)`.
+`void __thiscall harmonize_center_lane_floor_slide_variants(cRSubGame*)`.
 No matcher expression or operand was changed; the honest 58.98% result and the
 evidence-backed predicate ordering remain intact.
 
@@ -130,7 +130,7 @@ replacement writes the current `cRSubLoc` through the containing `cRSubGame`.
 Mirroring that ownership in Windows by using
 `runtime_cells[row][lane]` directly, rather than first materializing
 `cRSubLoc* cell`, `next`, and `previous` aliases, lets VC6 retain the native
-`SubgameRuntime* + flattened-index` cursor naturally. Rewriting only the
+`cRSubGame* + flattened-index` cursor naturally. Rewriting only the
 forward phase raised the focused result from 58.98% to 76.55%; applying the
 same authored shape to the mirrored backward phase closes the function at
 100.00%, 226/226 instructions, a 226/226 prefix, and 28 clean masked operands.

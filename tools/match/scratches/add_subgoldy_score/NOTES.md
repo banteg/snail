@@ -15,7 +15,7 @@ operands.
 - Crossing a 50,000-point boundary increments `Player+0x4340` up to a visible
   life stock cap of `9`.
 - The score sound `0x2c` only plays after the 50,000-point threshold awards a
-  life, and is gated off while `SubgameRuntime::level_mode` or the root-owned
+  life, and is gated off while `cRSubGame::level_mode` or the root-owned
   `FrontendFade::state` is nonzero.
 - The function is a `void` mutator in source terms.
 - `END=0x44037e` excludes the native switch jump-table data that follows the

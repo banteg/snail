@@ -3,22 +3,22 @@
 /* selector: destroy_subgame */
 
 // Tears down the active gameplay subgame state, including runtime lists, HUD widgets, and the current mode handoff state before control returns to the front-end. Cross-port Android and iOS symbols match this helper to `cRSubGame::UnInit()`.
-void __thiscall destroy_subgame(SubgameRuntime *game)
+void __thiscall destroy_subgame(cRSubGame *game)
 {
   struct BodNode **p_list_next; // esi
-  int v3; // ebx
+  int i; // ebx
   int v4; // eax
   BodList *p_active_bod_list; // ecx
   int v6; // eax
   struct BodNode *v7; // eax
   struct BodNode **v8; // esi
-  int v9; // ebx
+  int j; // ebx
   int v10; // eax
   BodList *v11; // ecx
   int v12; // eax
   struct BodNode *v13; // eax
   struct BodNode **v14; // esi
-  int v15; // ebx
+  int k; // ebx
   int v16; // eax
   BodList *v17; // ecx
   int v18; // eax
@@ -29,9 +29,9 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
   struct BodNode *list_prev; // ecx
   uint32_t v24; // ecx
   FrontendWidget **life_stock_widgets; // esi
-  int v26; // edi
+  int m; // edi
 
-  debug_report_stub();
+  debug_report_stub(aSubgameUninit);
   g_game_base->backdrop.corner_index_buffer_handle = 1;
   if ( game->level_mode == 7 )
     uninit_tutorial(&game->tutorial);
@@ -44,8 +44,7 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
     if ( game->level_mode <= 1u )
       flush_row_event_display(&game->completion);
     p_list_next = &game->sub_lazers.slots[0].body.bod.bod.list_next;
-    v3 = 20;
-    do
+    for ( i = 20; i != 0; --i )
     {
       v4 = (int)*(p_list_next - 2);
       if ( (v4 & 0x200) != 0 )
@@ -57,10 +56,10 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
         }
         else
         {
-          if ( *p_list_next )
+          if ( *p_list_next != nullptr )
             (*p_list_next)->list_prev = *(p_list_next - 1);
           v6 = (int)*(p_list_next - 1);
-          if ( v6 )
+          if ( v6 != 0 )
             *(_DWORD *)(v6 + 12) = *p_list_next;
           else
             p_active_bod_list->first = *p_list_next;
@@ -72,12 +71,9 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
         }
       }
       p_list_next += 44;
-      --v3;
     }
-    while ( v3 );
     v8 = &game->salt_hazards.slots[0].body.bod.bod.list_next;
-    v9 = 40;
-    do
+    for ( j = 40; j != 0; --j )
     {
       v10 = (int)*(v8 - 2);
       if ( (v10 & 0x200) != 0 )
@@ -89,10 +85,10 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
         }
         else
         {
-          if ( *v8 )
+          if ( *v8 != nullptr )
             (*v8)->list_prev = *(v8 - 1);
           v12 = (int)*(v8 - 1);
-          if ( v12 )
+          if ( v12 != 0 )
             *(_DWORD *)(v12 + 12) = *v8;
           else
             v11->first = *v8;
@@ -104,12 +100,9 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
         }
       }
       v8 += 38;
-      --v9;
     }
-    while ( v9 );
     v14 = &game->banners.slots[0].bod.bod.list_next;
-    v15 = 2;
-    do
+    for ( k = 2; k != 0; --k )
     {
       v16 = (int)*(v14 - 2);
       if ( (v16 & 0x200) != 0 )
@@ -121,10 +114,10 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
         }
         else
         {
-          if ( *v14 )
+          if ( *v14 != nullptr )
             (*v14)->list_prev = *(v14 - 1);
           v18 = (int)*(v14 - 1);
-          if ( v18 )
+          if ( v18 != 0 )
             *(_DWORD *)(v18 + 12) = *v14;
           else
             v17->first = *v14;
@@ -136,9 +129,7 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
         }
       }
       v14 += 24;
-      --v15;
     }
-    while ( v15 );
   }
   if ( (game->barrier.bod.bod.list_flags & 0x200) != 0 )
   {
@@ -153,10 +144,10 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
       else
       {
         list_next = game->barrier.bod.bod.list_next;
-        if ( list_next )
+        if ( list_next != nullptr )
           list_next->list_prev = game->barrier.bod.bod.list_prev;
         list_prev = game->barrier.bod.bod.list_prev;
-        if ( list_prev )
+        if ( list_prev != nullptr )
           list_prev->list_next = game->barrier.bod.bod.list_next;
         else
           v20->first = game->barrier.bod.bod.list_next;
@@ -174,24 +165,19 @@ void __thiscall destroy_subgame(SubgameRuntime *game)
   }
   kill_border(&g_game_base->border_manager, game->top_score_widget);
   kill_border(&g_game_base->border_manager, game->bottom_score_widget);
-  if ( game->selected_level_record_persistent )
+  if ( game->selected_level_record_persistent != 0 )
   {
     g_game_base->players[0].saved_frontend_state = 18;
     game->selected_level_record_persistent = 0;
   }
   if ( game->level_mode == 3 )
     g_game_base->subgame.level_mode = 2;
-  if ( !game->level_mode )
+  if ( game->level_mode == 0 )
   {
     kill_border(&g_game_base->border_manager, game->lives_icon_widget);
     kill_border(&g_game_base->border_manager, game->lives_text_widget);
     life_stock_widgets = game->life_stock_widgets;
-    v26 = 9;
-    do
-    {
+    for ( m = 9; m != 0; --m )
       kill_border(&g_game_base->border_manager, *life_stock_widgets++);
-      --v26;
-    }
-    while ( v26 );
   }
 }

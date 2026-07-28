@@ -22,12 +22,12 @@ Exact match.
   `high_score_entry_pending` at root offset `+0x30d`.
 - 2026-06-21 owner cleanup: the sparse owner view is now named
   `SubgoldyResurrectGameView` instead of the generic scratch-local `Game`.
-  Replacing it with broad `SubgameRuntime*` casts was rejected because it
+  Replacing it with broad `cRSubGame*` casts was rejected because it
   changed VC6 hoisting around `resurrect_final_loss` and regressed the scratch
   to `76.51%`; the sparse renamed view keeps the exact `100.00%`, `76/76`
   source shape.
 - 2026-07-11 owner closure: all three sparse fields are now independently
-  proven members of the real `SubgameRuntime` owner, and `Player::game` is its
+  proven members of the real `cRSubGame` owner, and `Player::game` is its
   borrowed backlink. Keeping the native succession of `current_game`,
   `persistent_game`, and `route_game` locals avoids the earlier broad-cast
   scheduling regression, so the synthetic `SubgoldyResurrectGameView` can be

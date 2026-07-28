@@ -1,7 +1,6 @@
-// Root subgame runtime view, partial. iOS symbols name this embedded owner
-// cRSubGame; the surrounding Windows root object remains the larger Game view.
-// This intentionally stays sparse: fields are added only when an exact helper
-// or cross-function caller proves them.
+// Authored cRSubGame owner embedded in the Windows GameRoot. Android and iOS
+// preserve the class identity and method family; the field layout and ABI
+// below remain Windows-native and are extended only from exact local evidence.
 #ifndef SUBGAME_RUNTIME_H
 #define SUBGAME_RUNTIME_H
 
@@ -76,9 +75,9 @@ enum SubgameRuntimeFlagPreset {
     SUBGAME_RUNTIME_FLAGS_TUTORIAL_INIT_OR_MASK = 0x600000,
 };
 
-class SubgameRuntime {
+class cRSubGame {
 public:
-    SubgameRuntime* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
+    cRSubGame* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
     void set_subgame_features(); // @ 0x435df0
     void switch_track_mirror(); // @ 0x435e60; mobile cRSubGame::SwitchMirror()
     void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
@@ -202,14 +201,14 @@ public:
     SubGarbagePool garbage_hazards; // +0x359140, borrowed head + 50 owned slots
     SubRingPool ring_effects; // +0x35b78c, two embedded cRSubRing slots
     SlugVoiceManager slug_voice_manager; // +0x35bb7c, authored cRSlugVoiceManager
-    // BorderManager pool handles. SubgameRuntime retains them for gameplay,
+    // BorderManager pool handles. cRSubGame retains them for gameplay,
     // then destroy_subgame returns each handle through kill_border().
     FrontendWidget* top_score_widget; // +0x35bb88
     FrontendWidget* bottom_score_widget; // +0x35bb8c
     FrontendWidget* lives_icon_widget; // +0x35bb90
     FrontendWidget* lives_text_widget; // +0x35bb94
     FrontendWidget* life_stock_widgets[9]; // +0x35bb98
-    // Fixed visual pool owned by SubgameRuntime. cRSubLoc fringe fields
+    // Fixed visual pool owned by cRSubGame. cRSubLoc fringe fields
     // only borrow handles into this storage while a built track is live.
     FringeManager fringe_manager; // +0x35bbbc, count at +0x3bb6fc
     // Shared cadence source used by the embedded slug pool. Startup fills the
@@ -218,16 +217,16 @@ public:
     float blink_random_samples[24]; // +0x3bb704, ends at +0x3bb764
     // The complete cRSubGoldy actor is embedded here. Its score/timer block,
     // gauges, cameraman, and presentation controller all share this owner;
-    // the former sparse SubgameRuntime aliases merely reached into this field.
+    // the former sparse cRSubGame aliases merely reached into this field.
     Player player; // +0x3bb764, ends at +0x3bfac8
-    // Fixed row-major runtime grid owned by SubgameRuntime. Gameplay actors
+    // Fixed row-major runtime grid owned by cRSubGame. Gameplay actors
     // retain pointers into this slab only for the lifetime of the built track.
     cRSubLoc runtime_cells[SUBGAME_RUNTIME_ROW_CAPACITY][SUBGAME_TRACK_LANE_COUNT];
     // +0x3bfac8, ends at +0x5ccac8
-    // Fixed row records owned by SubgameRuntime. Their body objects are
+    // Fixed row records owned by cRSubGame. Their body objects are
     // embedded; source_segment and attachment-cell fields are borrowed links.
     SubRow runtime_rows[SUBGAME_RUNTIME_ROW_CAPACITY]; // +0x5ccac8, ends at +0x68b4c8
-    // Both objects are embedded in SubgameRuntime. complete_subgame snapshots
+    // Both objects are embedded in cRSubGame. complete_subgame snapshots
     // into current_high_score_record, then lends that record to sub_high_score
     // for in-place normalization and value-copy persistence.
     SubHighScore sub_high_score; // +0x68b4c8, owns persistent record arrays
@@ -289,31 +288,32 @@ public:
 // GameRoot embeds cRSubGame at +0x74618. Its exact extent reaches the root
 // high-score screen at +0x12e6e50, proving that the replay, help, thanks, and
 // high-score-bank fields above all share this single owner.
-typedef char SubgameRuntime_must_be_0x1272838[
-    (sizeof(SubgameRuntime) == 0x1272838) ? 1 : -1];
+typedef cRSubGame SubgameRuntime; // compatibility analysis name
+typedef char cRSubGame_must_be_0x1272838[
+    (sizeof(cRSubGame) == 0x1272838) ? 1 : -1];
 
-inline Player* SubgameRuntime::embedded_player()
+inline Player* cRSubGame::embedded_player()
 {
     return &player;
 }
 
-inline Vector3* SubgameRuntime::parcel_delivery_arc_basis()
+inline Vector3* cRSubGame::parcel_delivery_arc_basis()
 {
     return &embedded_player()->presentation.transform.basis_up;
 }
 
-inline Vector3* SubgameRuntime::parcel_home_anchor()
+inline Vector3* cRSubGame::parcel_home_anchor()
 {
     return &embedded_player()->presentation.snail_hotspots_world[
         SNAIL_HOTSPOT_PARCEL_POINT];
 }
 
-inline TrackRowCellTileByteView* SubgameRuntime::runtime_cell_tile_views()
+inline TrackRowCellTileByteView* cRSubGame::runtime_cell_tile_views()
 {
     return (TrackRowCellTileByteView*)&runtime_cells[0][0].tile_id;
 }
 
-inline TrackRowCellFringeLinkView* SubgameRuntime::runtime_cell_fringe_links()
+inline TrackRowCellFringeLinkView* cRSubGame::runtime_cell_fringe_links()
 {
     return (TrackRowCellFringeLinkView*)&runtime_cells[0][0].fringes[0];
 }

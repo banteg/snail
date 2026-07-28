@@ -5,7 +5,7 @@
 #include "segment_cache.h"
 
 
-void SubgameRuntime::rebuild_track_runtime_from_segments(int level_index)
+void cRSubGame::rebuild_track_runtime_from_segments(int level_index)
 {
     level_mode_arg = level_index;
     set_subgame_features();

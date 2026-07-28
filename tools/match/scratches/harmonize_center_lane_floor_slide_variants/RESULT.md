@@ -18,7 +18,7 @@ match exactly.
 
 The closing source-shape change follows the Android/iOS bodies and indexes
 `runtime_cells[row][lane]` directly. That lets VC6 retain the owning
-`SubgameRuntime*` plus the flattened `(lane + row * 8) * 0x54` cursor, matching
+`cRSubGame*` plus the flattened `(lane + row * 8) * 0x54` cursor, matching
 the native current/next/previous displacements without synthetic dependencies.
 
 ## Rejected trials

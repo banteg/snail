@@ -32,7 +32,7 @@ void Galaxy::initialize_galaxy()
     g_game->players[0].mouse_cursor.capture_mouse_cursor();
     g_game->render_skip_countdown = 2;
 
-    SubgameRuntime* progress = level_progress_base;
+    cRSubGame* progress = level_progress_base;
     if (progress->level_mode == 0) {
         int selected_mode = progress->subgame_rebuild_selector;
         if (selected_mode == 3 || selected_mode == 2) {

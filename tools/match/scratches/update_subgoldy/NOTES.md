@@ -135,7 +135,7 @@ scratch additionally pins:
 - **Tail**: collisions, 5 anim managers (presentation +0x104, jetpack
   channel base +0x11e0 with manager +0x12e8, weapon channel bases
   +0x64c/+0xa28/+0xe04 stride 0x3dc with managers at base +0x108), track parcels
-  (`SubgameRuntime::parcel_manager`), update_snail_presentation,
+  (`cRSubGame::parcel_manager`), update_snail_presentation,
   set_subgoldy_shoot_flags, `Completion` row-event display,
   `current_high_score_record.replay_sample_count++`, and
   `replay_update_cursor++ == 21000` → `TimesUp`.
@@ -186,7 +186,7 @@ Game side: the compact outer call view still owns level_mode +0x40 (NOT
 +0x150), level_mode_arg +0x44, runtime_flags +0x4c,
 first_block_row_count +0x50, runtime_row_count +0x54, and
 completion_row_start +0x58. Proven deeper owners now use
-`SubgameRuntime::level_definition` (`SubTracks`), `runtime_rows` (`SubRow`,
+`cRSubGame::level_definition` (`SubTracks`), `runtime_rows` (`SubRow`,
 stride 0xf4), `current_high_score_record`, selected-record replay state,
 `replay_update_cursor`, `track_state_latch`, `parcel_manager`,
 `subgame_rebuild_selector`, `completion`, and `times_up`. The level-definition
@@ -366,7 +366,7 @@ source-shape issue is solved.
   `float sample_track_floor_height_at_position(...)` return view that keeps the
   native `fadd dword` shape here; forcing the standalone helper's exact
   `double` return into this large caller regressed to `72.46%` and `289 ok / 1`.
-  The real owner is now canonical `SubgameRuntime*`; only a fieldless
+  The real owner is now canonical `cRSubGame*`; only a fieldless
   `SubgoldyFloorSamplerCallView` retains that return-type ambiguity because
   MSVC does not encode it in the thiscall symbol. Focused Wibo remains
   `72.51%`, `2067/2087`, with the same `290 ok / 1` jump-table masked audit.
@@ -382,18 +382,18 @@ guidance without perturbing this scheduling-sensitive body:
   warning, control-source, presentation, cutscene, and squidge shells are gone.
 - Runtime row reads use the canonical `SubRow` slab. Authored row-event text,
   duration, and sample id come from
-  `SubgameRuntime::level_definition.segment_slots`, whose owner is
+  `cRSubGame::level_definition.segment_slots`, whose owner is
   `SubTracks`.
 - Replay and completion lanes now name the canonical selected-record state,
   `current_high_score_record`, `replay_update_cursor`, `track_state_latch`,
   `subgame_rebuild_selector`, `Completion`, `TimesUp`, and `ParcelManager`
-  members of `SubgameRuntime`.
+  members of `cRSubGame`.
 - Root accesses now name `GameRoot::backdrop`, `tip_manager`, the Galaxy record
   count, and the replay cursor. The temporary `AppShellHudRow` interpretation
   was retired by the root-owner proof below.
 - The Time Trial ghost bank still uses an offset-preserving base followed by a
   canonical `SubSolution` view. Spelling the same object directly through
-  `SubgameRuntime::sub_high_score.time_trial_route_records[level_mode_arg]`
+  `cRSubGame::sub_high_score.time_trial_route_records[level_mode_arg]`
   regressed this caller to 70.68% and 285 clean operands; it was rejected as a
   source-schedule change, not retained as a cosmetic ownership win.
 
@@ -523,7 +523,7 @@ canonical `Player::update_subgoldy()` method, and `Player +0x38` exposes the ful
 0x40-byte render transform rather than only its position row. The
 shared player also names the replay anchor, tile-14 wall-stall window,
 exit-voice timer, and timer-360 state used here. Every outer runtime access now
-uses the borrowed canonical `SubgameRuntime*` backlink.
+uses the borrowed canonical `cRSubGame*` backlink.
 
 One fieldless caller-ABI view remains for
 `sample_track_floor_height_at_position`: the standalone exact helper body is
@@ -577,7 +577,7 @@ register-shaped adapters were introduced.
 ## 2026-07-14 ghost record-bank owner derivation
 
 The offset-preserving ghost cursor remains intact, but its former `0x944150`
-bank base now derives from `offsetof(SubgameRuntime, sub_high_score) +
+bank base now derives from `offsetof(cRSubGame, sub_high_score) +
 offsetof(SubHighScore, time_trial_route_records)`. This identifies the exact
 owned time-trial bank while retaining the native `sizeof(SubSolution) *
 level_mode_arg` evaluation order that the direct indexed-member spelling had
@@ -694,7 +694,7 @@ and by the existing matching source; Binary Ninja had retained them as
 The native time-trial expression deliberately remains
 `game + level_mode_arg * sizeof(SubSolution)`. Its exact EAX/Hex-Rays lifetime
 is now a borrowed `TimeTrialRouteRecordCursor *`, rooted at
-`SubgameRuntime + offsetof(SubgameRuntime, sub_high_score) +
+`cRSubGame + offsetof(cRSubGame, sub_high_score) +
 offsetof(SubHighScore, time_trial_route_records)`. This recovers
 `SubSolution::{active,replay_start_cursor,replay_sample_count,run_records}` in both
 tracked decompilers without flattening the `SubHighScore` owner or claiming a
@@ -754,12 +754,12 @@ misattributed addresses. Native code proves `event_id > 0` and
 
 Those addresses are exactly
 `SubTracks::segment_slots[event_id - 1] + {0x4018, 0x4218, 0x421c}` because
-`SubgameRuntime::level_definition` begins at `+0xa874` and
+`cRSubGame::level_definition` begins at `+0xa874` and
 `SubTracks::segment_slots` at `+0x4`. The bounded
 `SubSegmentEventBiasView` therefore starts its one-based alias at `+0x6658`;
 element N aliases the real segment slot N-1, while element zero is explicitly
 invalid. Its `0x1a7cf8` extent ends with the real 100-slot segment bank. It is
-a borrowed analysis view, not a second `SubTracks` or `SubgameRuntime` owner.
+a borrowed analysis view, not a second `SubTracks` or `cRSubGame` owner.
 
 Binary Ninja had merged the scalar `row_event_id` EAX lifetime with the later
 game-base load at `0x43b752`. The replay splits only that definition
@@ -794,7 +794,7 @@ inspection independently identifies nine native displacements:
 - `0x43be6d` and `0x43bebb -> 0x5ccb70` read
   `secondary_attachment_cell`.
 
-Those offsets are exactly `SubgameRuntime::runtime_rows + {0x0,0xa4,0xa8,0xf0}`
+Those offsets are exactly `cRSubGame::runtime_rows + {0x0,0xa4,0xa8,0xf0}`
 with `sizeof(SubRow) == 0xf4`. The guarded replay normalizes only those
 operands, types the borrowed row lifetime at `0x43b70a` as `SubRow *`, and
 names the independent row-event and primary/secondary attachment cell/index

@@ -3,7 +3,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-SubRow* SubgameRuntime::get_track_runtime_cell_at_world_z(Vector3* position)
+SubRow* cRSubGame::get_track_runtime_cell_at_world_z(Vector3* position)
 {
     int row = (int)position->z;
 

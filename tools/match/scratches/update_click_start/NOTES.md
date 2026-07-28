@@ -48,7 +48,7 @@ explicit range guard or replacing early returns with breaks was neutral or
 worse and still produced a compare tree, so no jump-table fakematch was kept.
 
 2026-07-12 replay/root ownership pass: the state-2 handoff now uses the exact
-`SubgameRuntime::replay_launch_active`, `replay_launch_record`, and
+`cRSubGame::replay_launch_active`, `replay_launch_record`, and
 `replay_update_cursor` fields. Live input records are addressed through
 `current_high_score_record.run_records[cursor]`; the 16-bit `flags` owner is
 ORed with `0x20` and then has bit zero cleared, while
@@ -95,7 +95,7 @@ mobile writers justify a stronger name. Matcher source and the honest 84.06%,
 ## 2026-07-15 replay dispatch ownership
 
 The two launch-gate tests now read
-`SubgameRuntime::replay_launch_active` directly instead of preserving an
+`cRSubGame::replay_launch_active` directly instead of preserving an
 authored-looking but unsupported scratch local. VC6 folds those reads into the
 native `dl` lifetime around the borrowed replay record, including the native
 `ebp` save/restore and the second `test dl, dl`. This raises the focused match

@@ -30,7 +30,7 @@ EXPECTED_OWNER_SIZES = {
     "TimeTrialRouteRecordCursor": 0x963C10,
     "SubHighScore": 0x947648,
     "Player": 0x4364,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 FUNCTION_SYMBOL_UPDATES = (
@@ -56,7 +56,7 @@ PROTO_UPDATES = (
 
 # update_subgoldy preserves the native
 # `game + route_index * sizeof(SubSolution)` expression in EAX. This exact
-# lifetime is a borrowed SubgameRuntime-relative view of the record owned by
+# lifetime is a borrowed cRSubGame-relative view of the record owned by
 # SubHighScore::time_trial_route_records; it does not introduce another owner.
 USER_VAR_UPDATES = (
     (

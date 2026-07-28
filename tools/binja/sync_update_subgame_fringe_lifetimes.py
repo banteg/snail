@@ -24,7 +24,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Fringe": 0x38,
     "tColour": 0x10,
     "cRSubLoc": 0x54,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -52,7 +52,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x4C: ("fringe_left", "Fringe*"),
         0x50: ("fringe_back", "Fringe*"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x355B64: ("fringe_attachment_list_head", "BodBase"),
         0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
     },

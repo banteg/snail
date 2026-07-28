@@ -64,7 +64,7 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct SubHighScore {",
     "SubSolution time_trial_route_records[51];",
     "typedef struct Player {",
-    "typedef struct SubgameRuntime {",
+    "typedef struct cRSubGame {",
     "void __thiscall update_subgoldy(Player* player);",
 )
 
@@ -74,7 +74,7 @@ EXPECTED_OWNER_SIZES = {
     "TimeTrialRouteRecordCursor": 0x963C10,
     "SubHighScore": 0x947648,
     "Player": 0x4364,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 TIME_TRIAL_ROUTE_CURSOR_LVAR = (

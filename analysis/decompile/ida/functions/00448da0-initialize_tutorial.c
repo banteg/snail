@@ -2,11 +2,11 @@
 /* function: initialize_tutorial @ 0x448da0 */
 /* selector: initialize_tutorial */
 
-// Exact Windows `Tutorial::initialize_tutorial`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing SubgameRuntime, and applies the tutorial runtime flags. Android and iOS retain `cRTutorial::Init()`.
+// Exact Windows `Tutorial::initialize_tutorial`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing cRSubGame, and applies the tutorial runtime flags. Android and iOS retain `cRTutorial::Init()`.
 void __thiscall initialize_tutorial(Tutorial *tutorial)
 {
-  SubgameRuntime *p_subgame; // eax
-  SubgameRuntime *game; // ecx
+  cRSubGame *p_subgame; // eax
+  cRSubGame *game; // ecx
   uint32_t runtime_flags; // eax
 
   tutorial->state = 0;

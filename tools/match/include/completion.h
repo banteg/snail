@@ -1,4 +1,4 @@
-// Authored cRCompletion owner embedded in SubgameRuntime. The same 0x50-byte
+// Authored cRCompletion owner embedded in cRSubGame. The same 0x50-byte
 // object drives both the parcel-delivery display and the final result screen.
 #ifndef COMPLETION_H
 #define COMPLETION_H

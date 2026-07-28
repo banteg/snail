@@ -12,7 +12,7 @@ is this exact address. That direct callback edge closes the owner independently
 of the cross-port symbol match.
 
 - gate: `lane_and_flags & SUBLOC_FLAG_AI_ENABLED` (`0x2000`) plus
-  `SubgameRuntime::subgame_pause_gate`
+  `cRSubGame::subgame_pause_gate`
 - tile 14 (wall2): fires only once `first_block_row_count` is behind the
   embedded player's z; 4% per-tick roll (`random_float_below(100) < 4`);
   spawn at the cell anchor with y+8 and an offset from the encoded
@@ -22,7 +22,7 @@ of the cross-port symbol match.
   through the owned `SubLazerPool`; then the cull check
 - tile 22: cull behind `Player::interaction_max_z`
 - tiles 29/30 (attachment skirts): WORM templates fade by rate/30 with a
-  fixed alpha; `SubgameRuntime::get_track_skirt_color` syncs into
+  fixed alpha; `cRSubGame::get_track_skirt_color` syncs into
   `runtime_rows[row].attachment_body.color` (`+0xd8` in the 0xf4-byte row);
   cull at `row_span_count + 5` behind
 - default: cull behind the player interaction plane when also past
@@ -63,13 +63,13 @@ sync.
 
 2026-06-21 root-view naming: the cached global owner slice is now
 `Wall2EmitterGameView` instead of generic `Game`, documenting that the offsets
-are root-game globals rather than the embedded `SubgameRuntime`. Focused Wibo
+are root-game globals rather than the embedded `cRSubGame`. Focused Wibo
 remains 46.77%, 185/187 candidate/target instructions, with 30 clean masked
 operands.
 
 2026-07-11 ownership and vector-source pass: the synthetic root and receiver
 views are removed. Every global offset now resolves through `GameRoot` into the
-owned `SubgameRuntime`, embedded `Player`, `SubLazerPool`, or 0xf4-byte runtime
+owned `cRSubGame`, embedded `Player`, `SubLazerPool`, or 0xf4-byte runtime
 row. The receiver is the shared `cRSubLoc`, and the skirt-color
 destination is specifically `TrackAttachmentRuntimeRow::attachment_body.color`.
 
@@ -84,7 +84,7 @@ after the owner rewrite. Focused Wibo improves from 46.77% to 82.67%, 188/187
 candidate/target instructions, prefix 26/187, with 34 clean masked operands.
 
 The live Binary Ninja prototypes now agree: this function is a void thiscall on
-`cRSubLoc`, `get_track_skirt_color` is a `SubgameRuntime` method returning
+`cRSubLoc`, `get_track_skirt_color` is a `cRSubGame` method returning
 `tColour*`, and `shoot_sub_lazer_pool` is a `SubLazerPool` method over two
 vectors.
 

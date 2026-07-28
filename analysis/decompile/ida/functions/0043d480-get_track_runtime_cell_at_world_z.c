@@ -3,7 +3,7 @@
 /* selector: get_track_runtime_cell_at_world_z */
 
 // Exact Windows `cRSubGame::RowFromPos(tVector)`: clamps world z into the generated row array and returns the authored `SubRow` runtime record. Android preserves the same owned-row lookup with a port-specific capacity and stride; the Windows 0xf4 stride and 3200-row slab agree with the constructor ledger's `Size of cRSubRow` total of 0xbea00 bytes.
-SubRow *__thiscall get_track_runtime_cell_at_world_z(SubgameRuntime *game, Vec3 *position)
+SubRow *__thiscall get_track_runtime_cell_at_world_z(cRSubGame *game, Vec3 *position)
 {
   __int64 z; // rax
 

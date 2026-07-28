@@ -16,7 +16,7 @@ Recovered layout evidence:
   `Game+0x14` after backdrop activation. `load_landscape_script_by_name` writes
   RGB from `Fog:` and the missing-Fog fallback writes the full `tColour`.
 - active slots are inserted after
-  `SubgameRuntime::landscape_slice_list_head +0x355c44`
+  `cRSubGame::landscape_slice_list_head +0x355c44`
   (`GameRoot +0x3ca25c`).
 - `data_4df9bc` is a landscape backdrop variant selector fed from
   `Game::level_mode_arg`; activator consumes its low bit outside tutorial and

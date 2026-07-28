@@ -6,7 +6,7 @@
 #include "subgame_runtime.h"
 
 
-void SubgameRuntime::update_subgame_camera()
+void cRSubGame::update_subgame_camera()
 {
     int state = subgame_state;
     TransformMatrix from = g_game->players[0].transform;

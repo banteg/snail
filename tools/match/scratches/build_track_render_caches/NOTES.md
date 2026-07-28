@@ -33,7 +33,7 @@ source-level behavior:
   updates grouped vertex, primitive, and vertex counts; and
 - performs the final Floor/Slide/Warn/Ramp/Fringe maximum-count/name pass.
 
-The active row slab is addressed from `SubgameRuntime + 0x3bfac8`, with the
+The active row slab is addressed from `cRSubGame + 0x3bfac8`, with the
 anchor at `+0x10`, render object at `+0x24`, `lane_and_flags` at `+0x40`, and the
 four fringe pointers at `+0x44..+0x50`.
 
@@ -100,10 +100,10 @@ candidate encoding, so no unnatural pointer trick was retained.
 ## Ownership closure (2026-07-10)
 
 The exact callers prove `SegmentCache` is embedded at
-`SubgameRuntime +0x5c`; its exact `0xa7f8` extent ends at `+0xa854`, four bytes
+`cRSubGame +0x5c`; its exact `0xa7f8` extent ends at `+0xa854`, four bytes
 before the tutorial controller. It owns `143 x 5` `BodBase` slots and the five
 typed vertex/index staging allocations. Each slot retains an ObjectList handle,
-while manager `+0x54` is a borrowed backlink to the enclosing SubgameRuntime.
+while manager `+0x54` is a borrowed backlink to the enclosing cRSubGame.
 
 The previous cross-tool `TrackRenderCacheSlot::vertex_count +0x2c` was false:
 that offset is inside `BodBase::color`. Exact activation and removal prove the
@@ -127,11 +127,11 @@ so the generic object is the real borrowed geometry contract.
 
 2026-07-11 cRSegmentCache ownership: the enclosing 0xa7f8-byte
 `SegmentCache` name is fixed by the Windows runtime size ledger and its exact
-SubgameRuntime boundaries. The 475/475 stream remains at the honest 99.79%
+cRSubGame boundaries. The 475/475 stream remains at the honest 99.79%
 baseline with 20 clean operands.
 
 2026-07-13 backlink ownership cleanup: `SegmentCache +0x54` is now uniformly
-typed as the borrowed enclosing `SubgameRuntime*`. The former
+typed as the borrowed enclosing `cRSubGame*`. The former
 `TrackRenderGrid` was not a distinct allocation or owner: it was a sparse
 duplicate view of the same runtime pointer, carrying only `runtime_row_count`
 and `runtime_cells`. Removing that synthetic type from the scratch, shared
@@ -155,7 +155,7 @@ induction variable across the 3200-by-8 `cRSubLoc` slab. Directly changing that
 to a typed pointer perturbs register allocation across the function, so the
 native induction shape remains; its cell base, render object, lifecycle flags,
 and four fringe links now derive with `offsetof` from
-`SubgameRuntime::runtime_cells` and the shared `cRSubLoc` fields. The eight-lane
+`cRSubGame::runtime_cells` and the shared `cRSubLoc` fields. The eight-lane
 row bound derives from the array extent.
 
 The flush cursor's adjacent index-count, vertex-buffer, and index-buffer lanes
@@ -191,7 +191,7 @@ local all-white value now use that authored type, while the fringe builder
 still passes the same four packed bytes by value. Focused Wibo remains at the
 honest 99.79%, 475/475 instructions, with all 20 operands clean and only the
 equivalent SIB base/index ordering unresolved. Binary Ninja readback also
-retains the borrowed `SubgameRuntime*` backlink alongside `tColourSmall`.
+retains the borrowed `cRSubGame*` backlink alongside `tColourSmall`.
 
 ## 2026-07-15 authored void contract
 

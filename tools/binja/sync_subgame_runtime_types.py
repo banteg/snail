@@ -66,7 +66,7 @@ GALAXY_FIELD_UPDATES = (
     ("0x0c", "record_count", "int32_t"),
     ("0x10", "route_slots", "GalaxyStar[101]"),
     ("0x10930", "route_names", "GalaxyRouteNameRecord[10]"),
-    ("0x10f70", "level_progress_base", "SubgameRuntime*"),
+    ("0x10f70", "level_progress_base", "cRSubGame*"),
     ("0x10f74", "exit_or_back_widget", "FrontendWidget*"),
     ("0x10f78", "route_title_widget", "FrontendWidget*"),
     ("0x10f7c", "route_icon_widget", "FrontendWidget*"),
@@ -363,14 +363,24 @@ COMPLETION_FIELD_UPDATES = (
 
 PARCEL_FIELD_UPDATES = (
     ("0x38", "state", "ParcelState"),
+    ("0x3c", "owner_subgame", "cRSubGame*"),
 )
 
 JETPACK_FIELD_UPDATES = (
     ("0x38", "state", "TrackPickupState"),
+    ("0x44", "owner_game", "cRSubGame*"),
 )
 
 BANNER_FIELD_UPDATES = (
-    ("0x48", "owner_game", "SubgameRuntime*"),
+    ("0x48", "owner_game", "cRSubGame*"),
+)
+
+SUB_LAZER_STARTUP_CURSOR_FIELD_UPDATES = (
+    ("0x64", "owner_game", "cRSubGame*"),
+)
+
+SALT_STARTUP_CURSOR_FIELD_UPDATES = (
+    ("0x00", "owner_game", "cRSubGame*"),
 )
 
 TIMES_UP_FIELD_UPDATES = (
@@ -378,7 +388,7 @@ TIMES_UP_FIELD_UPDATES = (
 )
 
 GUI_FIELD_UPDATES = (
-    ("0x00", "game", "SubgameRuntime*"),
+    ("0x00", "game", "cRSubGame*"),
     ("0x04", "next_level_button", "FrontendWidget*"),
     ("0x08", "previous_level_button", "FrontendWidget*"),
     ("0x0c", "level_name_widget", "FrontendWidget*"),
@@ -391,6 +401,10 @@ GUI_FIELD_UPDATES = (
 
 HELP_FIELD_UPDATES = (
     ("0x00", "back_button", "FrontendWidget*"),
+)
+
+THANKS_SCREEN_FIELD_UPDATES = (
+    ("0x00", "game", "cRSubGame*"),
 )
 
 PROTO_UPDATES = (
@@ -488,30 +502,30 @@ PROTO_UPDATES = (
         "append_subgame_contact_target",
         "void __thiscall append_subgame_contact_target(EnemyManager* manager, const Vec3* position, float radius, int32_t kind, ContactTargetObject* object)",
     ),
-    ("set_subgame_features", "void __thiscall set_subgame_features(SubgameRuntime* runtime)"),
-    ("switch_track_mirror", "void __thiscall switch_track_mirror(SubgameRuntime* runtime)"),
+    ("set_subgame_features", "void __thiscall set_subgame_features(cRSubGame* runtime)"),
+    ("switch_track_mirror", "void __thiscall switch_track_mirror(cRSubGame* runtime)"),
     (
         "normalize_segment_glyph_for_track_flags",
-        "char __thiscall normalize_segment_glyph_for_track_flags(SubgameRuntime* runtime, char glyph, int32_t row, char edge_row)",
+        "char __thiscall normalize_segment_glyph_for_track_flags(cRSubGame* runtime, char glyph, int32_t row, char edge_row)",
     ),
     (
         "rebuild_track_runtime_from_segments",
-        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int32_t level_index)",
+        "void __thiscall rebuild_track_runtime_from_segments(cRSubGame* runtime, int32_t level_index)",
     ),
     (
         "calc_slider_to_rate",
-        "float __thiscall calc_slider_to_rate(SubgameRuntime* runtime, float slider)",
+        "float __thiscall calc_slider_to_rate(cRSubGame* runtime, float slider)",
     ),
-    ("set_subgame_rate", "void __thiscall set_subgame_rate(SubgameRuntime* runtime, float rate)"),
-    ("calc_subgame_rate", "void __thiscall calc_subgame_rate(SubgameRuntime* runtime)"),
-    ("advance_blink_random", "double __thiscall advance_blink_random(SubgameRuntime* runtime)"),
-    ("initialize_blink_random", "void __thiscall initialize_blink_random(SubgameRuntime* runtime)"),
-    ("hide_gameplay_scores", "void __thiscall hide_gameplay_scores(SubgameRuntime* runtime)"),
+    ("set_subgame_rate", "void __thiscall set_subgame_rate(cRSubGame* runtime, float rate)"),
+    ("calc_subgame_rate", "void __thiscall calc_subgame_rate(cRSubGame* runtime)"),
+    ("advance_blink_random", "double __thiscall advance_blink_random(cRSubGame* runtime)"),
+    ("initialize_blink_random", "void __thiscall initialize_blink_random(cRSubGame* runtime)"),
+    ("hide_gameplay_scores", "void __thiscall hide_gameplay_scores(cRSubGame* runtime)"),
     (
         "unhide_gameplay_scores",
-        "void __thiscall unhide_gameplay_scores(SubgameRuntime* runtime)",
+        "void __thiscall unhide_gameplay_scores(cRSubGame* runtime)",
     ),
-    ("complete_subgame", "void __thiscall complete_subgame(SubgameRuntime* runtime, uint8_t completed)"),
+    ("complete_subgame", "void __thiscall complete_subgame(cRSubGame* runtime, uint8_t completed)"),
     (
         "initialize_track_parcel_runtime",
         "Parcel* __thiscall initialize_track_parcel_runtime(Parcel* parcel)",
@@ -534,7 +548,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_track_parcel",
-        "Parcel* __thiscall spawn_track_parcel(SubgameRuntime* runtime, Vec3* world_position, Player* source_player)",
+        "Parcel* __thiscall spawn_track_parcel(cRSubGame* runtime, Vec3* world_position, Player* source_player)",
     ),
     (
         "initialize_completion_screen",
@@ -582,7 +596,7 @@ PROTO_UPDATES = (
     ),
     (
         "update_subgame_camera",
-        "void __thiscall update_subgame_camera(SubgameRuntime* runtime)",
+        "void __thiscall update_subgame_camera(cRSubGame* runtime)",
     ),
     (
         "initialize_help_screen",
@@ -720,7 +734,10 @@ def main() -> int:
     type_rename_operations = apply_type_renames(
         REPO_ROOT,
         target=args.target,
-        renames=(("GalaxyRouteSlot", "GalaxyStar"),),
+        renames=(
+            ("SubgameRuntime", "cRSubGame"),
+            ("GalaxyRouteSlot", "GalaxyStar"),
+        ),
     )
 
     operations: list[dict[str, object]] = [
@@ -746,6 +763,7 @@ def main() -> int:
             target=args.target,
             header_path=header_path,
             required_structs=(
+                "cRSubGame",
                 "SubgameRuntime",
                 "SubPause",
                 "TimeTrialCourseRecord",
@@ -971,7 +989,7 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             struct_updates=(
-                ("SubgameRuntime", subgame_updates),
+                ("cRSubGame", subgame_updates),
                 ("GalaxyPoint", GALAXY_POINT_FIELD_UPDATES),
                 ("GalaxyRouteRecord", GALAXY_ROUTE_RECORD_FIELD_UPDATES),
                 ("GalaxyStar", GALAXY_STAR_FIELD_UPDATES),
@@ -979,11 +997,17 @@ def main() -> int:
                 ("Galaxy", GALAXY_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
                 ("Banner", BANNER_FIELD_UPDATES),
+                (
+                    "SubLazerBodyObjectStrideCursor",
+                    SUB_LAZER_STARTUP_CURSOR_FIELD_UPDATES,
+                ),
+                ("SaltOwnerGameStrideCursor", SALT_STARTUP_CURSOR_FIELD_UPDATES),
                 ("Completion", COMPLETION_FIELD_UPDATES),
                 ("Parcel", PARCEL_FIELD_UPDATES),
                 ("TimesUp", TIMES_UP_FIELD_UPDATES),
                 ("GUI", GUI_FIELD_UPDATES),
                 ("Help", HELP_FIELD_UPDATES),
+                ("ThanksScreen", THANKS_SCREEN_FIELD_UPDATES),
             ),
             # Several legacy analysis aliases are re-inferred during preview.
             # The batch helper applies prototypes through the same verified

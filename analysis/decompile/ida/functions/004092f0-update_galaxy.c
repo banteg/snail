@@ -37,7 +37,7 @@ int32_t __thiscall update_galaxy(Galaxy *galaxy)
   int32_t v32; // edx
   FrontendWidget *play_or_deliver_widget; // ecx
   FrontendWidgetFlag v34; // eax
-  SubgameRuntime *level_progress_base; // esi
+  cRSubGame *level_progress_base; // esi
   FrontendWidget *replay_widget; // ecx
   FrontendWidgetFlag v37; // eax
   int32_t hover_state; // eax

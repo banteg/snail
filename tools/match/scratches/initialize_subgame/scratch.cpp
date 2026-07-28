@@ -32,7 +32,7 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
 int report_errorf(char* format, ...); // @ 0x431cc0
 
-void SubgameRuntime::initialize_subgame()
+void cRSubGame::initialize_subgame()
 {
     int scratch[6];
 

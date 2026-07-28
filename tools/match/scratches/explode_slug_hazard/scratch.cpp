@@ -42,7 +42,7 @@ void Slug::explode_slug_hazard()
             ((float)next_math_random_value() - 16384.0f) * spread * 0.000061035156f;
         random_velocity.y =
             (float)next_math_random_value() * (spread + 0.30000001f) * 0.000030517578f;
-        SubgameRuntime* game = owner_game;
+        cRSubGame* game = owner_game;
         random_velocity.z =
             (float)next_math_random_value() * spread * 0.000030517578f
             + game->player.velocity.z;

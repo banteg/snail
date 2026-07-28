@@ -65,7 +65,7 @@ Residuals:
 
 2026-07-12 Galaxy and landscape ownership closure:
 
-- The root-relative `+0x12d4638` gate is `SubgameRuntime::galaxy.active`.
+- The root-relative `+0x12d4638` gate is `cRSubGame::galaxy.active`.
   Each parsed `ArcadeN` ordinal selects one owned `GalaxyStar` at the
   native `0x2a0` stride; the loader writes the level name to
   `record.detail_text` and `GalaxyText:` to `record.description_text`.
@@ -74,7 +74,7 @@ Residuals:
   over the typed `route_slots` array preserves the focused `75.17%`,
   `939/926` instructions, and all `165` clean masked operands.
 - The `Background:` receiver is the already-proved embedded
-  `SubgameRuntime::landscape_manager`, not a standalone root-relative loader
+  `cRSubGame::landscape_manager`, not a standalone root-relative loader
   view. Naming both owners is codegen-neutral and removes the last raw
   `g_game_base` arithmetic from this parser.
 
@@ -142,7 +142,7 @@ refreshing this parser: `AuthoredSegmentRow` `0x38`, `SegmentCatalogEntry`
 `0x1a5978`, and `SubSegmentRaw` `0x48`, together with the two compiler cursor
 views. IDA refuses name/prototype/local mutations if any extent is wrong.
 Focused reanalysis also recovered the 512-byte `script_name` stack buffer and
-kept its landscape lookup on the embedded `SubgameRuntime::landscape_manager`.
+kept its landscape lookup on the embedded `cRSubGame::landscape_manager`.
 The scratch and its honest 82.27% matcher result are unchanged.
 
 ## 2026-07-25 complete parser-frame ownership

@@ -13,7 +13,7 @@ int report_errorf(char* format, ...);
 
 enum {
     ROOT_RUNTIME_ROWS_BASE =
-        offsetof(GameRoot, subgame) + offsetof(SubgameRuntime, runtime_rows),
+        offsetof(GameRoot, subgame) + offsetof(cRSubGame, runtime_rows),
 };
 
 #define OUTER_RUNTIME_ROW(cursor_expr) \

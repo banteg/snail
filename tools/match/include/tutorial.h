@@ -1,8 +1,8 @@
-// Authored cRTutorial owner embedded in SubgameRuntime.
+// Authored cRTutorial owner embedded in cRSubGame.
 #ifndef TUTORIAL_H
 #define TUTORIAL_H
 
-class SubgameRuntime;
+class cRSubGame;
 
 class Tutorial {
 public:
@@ -12,7 +12,7 @@ public:
 
     int state; // +0x00
     char unknown_04[0x0c - 0x04];
-    SubgameRuntime* game; // +0x0c, borrowed containing subgame
+    cRSubGame* game; // +0x0c, borrowed containing subgame
     char unknown_10[0x1c - 0x10];
 };
 

@@ -81,7 +81,7 @@ and the authored `cRSnail` presentation at +0x2984. The skin receiver is the
 presentation's owned `cRSnailSkin` at +0x1938, hence `Player +0x42bc` and the
 correct relocatable address `Game +0x434038` (the earlier +0x430938 comment
 was a typo). The scratch now reaches every gate and side effect through the
-shared `GameRoot -> SubgameRuntime -> Player` layout and removes the fake
+shared `GameRoot -> cRSubGame -> Player` layout and removes the fake
 `DamageSnailView`. That ownership substitution alone was codegen-neutral at
 72.43%, so it is not presented as a score claim. Reorienting the same voice
 fallback as `if (!play damage) { play ouch; animate; } else { seed timer; }`

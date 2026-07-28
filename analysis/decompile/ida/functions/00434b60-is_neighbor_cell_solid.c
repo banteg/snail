@@ -3,7 +3,7 @@
 /* selector: is_neighbor_cell_solid */
 
 // Exact Windows implementation of `cRSubGame::TestLoc(cRSubLoc*, int, int)`: derives the source row with cRSubLoc::Yi, applies lane and row offsets with bounds checks, probes the eight-lane runtime grid, rejects cRSubLoc::IsEmpty, then excludes tile ids 35, 0, 22, and 28. Android preserves the same method body and constants.
-bool __thiscall is_neighbor_cell_solid(SubgameRuntime *game, cRSubLoc *cell, int32_t lane_offset, int32_t row_offset)
+bool __thiscall is_neighbor_cell_solid(cRSubGame *game, cRSubLoc *cell, int32_t lane_offset, int32_t row_offset)
 {
   int32_t track_cell_row_index; // eax
   uint32_t v6; // ecx

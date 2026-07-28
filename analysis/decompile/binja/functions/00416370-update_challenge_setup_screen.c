@@ -11,9 +11,9 @@
 004166ca        if ((widget_flags_8.b & 0x20) != 0)
 004166cc        widget_flags_8.b &= 0xdf
 004166ce        next_level_button_3->widget_flags = widget_flags_8
-004166d4        struct SubgameRuntime* game_4 = gui->game
+004166d4        struct cRSubGame* game_4 = gui->game
 004166da        game_4->level_mode_arg += 1
-004166dd        struct SubgameRuntime* game_5 = gui->game
+004166dd        struct cRSubGame* game_5 = gui->game
 004166ed        load_frontend_level_by_mode_and_index(&game_5->level_definition, game_5->level_mode, game_5->level_mode_arg)
 00416704        rstrcpy_checked_ascii(&gui->level_name_widget->text_buffer, &gui->game->level_definition.level_display_name)
 0041670f        layout_frontend_widget(gui->level_name_widget)
@@ -22,9 +22,9 @@
 0041671f        if ((widget_flags_9.b & 0x20) != 0)
 00416721        widget_flags_9.b &= 0xdf
 00416723        previous_level_button_3->widget_flags = widget_flags_9
-00416729        struct SubgameRuntime* game_6 = gui->game
+00416729        struct cRSubGame* game_6 = gui->game
 0041672f        game_6->level_mode_arg -= 1
-00416732        struct SubgameRuntime* game_7 = gui->game
+00416732        struct cRSubGame* game_7 = gui->game
 00416742        load_frontend_level_by_mode_and_index(&game_7->level_definition, game_7->level_mode, game_7->level_mode_arg)
 00416759        rstrcpy_checked_ascii(&gui->level_name_widget->text_buffer, &gui->game->level_definition.level_display_name)
 00416764        layout_frontend_widget(gui->level_name_widget)
@@ -81,7 +81,7 @@
 00416693        replay_button_2->widget_flags = widget_flags_7
 0041669b        destroy_challenge_setup_screen(gui)
 004166a3        gui->game->selected_level_record_active = 1
-004166aa        struct SubgameRuntime* game_12 = gui->game
+004166aa        struct cRSubGame* game_12 = gui->game
 004166b7        game_12->selected_level_record = &game_12->sub_high_score.survival_pending_record
 004166be        return 1
 00416393        if (level_mode == 4)
@@ -90,13 +90,13 @@
 004163a4        if ((widget_flags.b & 0x20) != 0)
 004163aa        widget_flags.b &= 0xdf
 004163ac        next_level_button_2->widget_flags = widget_flags
-004163b2        struct SubgameRuntime* game = gui->game
+004163b2        struct cRSubGame* game = gui->game
 004163b8        game->level_mode_arg += 1
-004163bb        struct SubgameRuntime* game_1 = gui->game
+004163bb        struct cRSubGame* game_1 = gui->game
 004163cb        load_frontend_level_by_mode_and_index(&game_1->level_definition, game_1->level_mode, game_1->level_mode_arg)
 004163e2        rstrcpy_checked_ascii(&gui->level_name_widget->text_buffer, &gui->game->level_definition.level_display_name)
 004163ed        layout_frontend_widget(gui->level_name_widget)
-004163f2        struct SubgameRuntime* game_8 = gui->game
+004163f2        struct cRSubGame* game_8 = gui->game
 00416418        format_time_trial_string(&game_8->time_trial, &game_8->sub_high_score.time_trial_route_records[game_8->level_mode_arg].score_or_time)
 0041642d        rstrcpy_checked_ascii(&gui->game->bottom_score_widget->text_buffer, 0x751478)
 00416435        struct FrontendWidget* previous_level_button_2 = gui->previous_level_button
@@ -104,13 +104,13 @@
 00416440        if ((widget_flags_1.b & 0x20) != 0)
 00416446        widget_flags_1.b &= 0xdf
 00416448        previous_level_button_2->widget_flags = widget_flags_1
-0041644e        struct SubgameRuntime* game_2 = gui->game
+0041644e        struct cRSubGame* game_2 = gui->game
 00416454        game_2->level_mode_arg -= 1
-00416457        struct SubgameRuntime* game_3 = gui->game
+00416457        struct cRSubGame* game_3 = gui->game
 00416467        load_frontend_level_by_mode_and_index(&game_3->level_definition, game_3->level_mode, game_3->level_mode_arg)
 0041647e        rstrcpy_checked_ascii(&gui->level_name_widget->text_buffer, &gui->game->level_definition.level_display_name)
 00416489        layout_frontend_widget(gui->level_name_widget)
-0041648e        struct SubgameRuntime* game_9 = gui->game
+0041648e        struct cRSubGame* game_9 = gui->game
 004164b4        format_time_trial_string(&game_9->time_trial, &game_9->sub_high_score.time_trial_route_records[game_9->level_mode_arg].score_or_time)
 004164c9        rstrcpy_checked_ascii(&gui->game->bottom_score_widget->text_buffer, 0x751478)
 004164e0        struct FrontendWidget* previous_level_button = gui->previous_level_button
@@ -124,7 +124,7 @@
 00416509        if (gui->game->level_mode_arg != g_runtime_config.highest_galaxy_route_index)
 00416513        next_level_button->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED
 0041650b        next_level_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED
-00416519        struct SubgameRuntime* game_10 = gui->game
+00416519        struct cRSubGame* game_10 = gui->game
 00416538        struct FrontendWidget* replay_button = gui->replay_button
 0041653e        struct FrontendWidget* previous_widget
 0041653e        if (game_10->sub_high_score.time_trial_route_records[game_10->level_mode_arg].active == 1)
@@ -154,7 +154,7 @@
 004165b7        replay_button_1->widget_flags = widget_flags_4
 004165bf        destroy_challenge_setup_screen(gui)
 004165c7        gui->game->selected_level_record_active = 1
-004165ce        struct SubgameRuntime* game_11 = gui->game
+004165ce        struct cRSubGame* game_11 = gui->game
 004165ed        game_11->selected_level_record = &game_11->sub_high_score.time_trial_route_records[game_11->level_mode_arg]
 004165f9        return 1
 004167fd        return 0

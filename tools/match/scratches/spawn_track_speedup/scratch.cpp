@@ -2,6 +2,6 @@
 
 #include "subgame_runtime.h"
 
-void SubgameRuntime::spawn_track_speedup(cRSubLoc* cell, Player* player)
+void cRSubGame::spawn_track_speedup(cRSubLoc* cell, Player* player)
 {
 }

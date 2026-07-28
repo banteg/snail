@@ -22,7 +22,7 @@ Focused Wibo remains exact: 100.00%, 8/8 instructions, with four clean masked
 operands.
 
 2026-07-14 parent-owner closure: the initializer now borrows
-`SubgameRuntime::player` and its owned `Player::presentation` directly instead
+`cRSubGame::player` and its owned `Player::presentation` directly instead
 of rebuilding root `+0x42fd7c/+0x432700`. It stays exact at 8/8 with all four
 operands clean.
 
@@ -39,7 +39,7 @@ untouched.
 ## 2026-07-25 paired owner canary
 
 Fresh Binary Ninja analysis now closes the same two constants through the
-imported `GameRoot -> SubgameRuntime -> Player` graph without a local-variable
+imported `GameRoot -> cRSubGame -> Player` graph without a local-variable
 override: the first store borrows `Player::presentation`, and the final store
 borrows the enclosing `Player`. The tracked BN artifact had simply preceded
 that analysis state.

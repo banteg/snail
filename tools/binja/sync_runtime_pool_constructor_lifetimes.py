@@ -19,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
     "SubHealth": 0x74,
     "Slug": 0xEC,
     "SlugPool": 0x760,
@@ -35,7 +35,7 @@ EXPECTED_TYPE_WIDTHS = {
 }
 
 EXPECTED_STRUCT_FIELDS = {
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x356000: ("health_pickups", "SubHealth[8]"),
         0x3563A0: ("slug_hazards", "SlugPool"),
         0x359080: ("banners", "BannerPool"),
@@ -64,7 +64,7 @@ EXPECTED_STRUCT_FIELDS = {
 }
 
 # The constructor reuses EDI for seven independent walks. Each lifetime borrows
-# one inline element from its enclosing SubgameRuntime pool and advances by the
+# one inline element from its enclosing cRSubGame pool and advances by the
 # exact element width; none owns the complete array it traverses.
 RUNTIME_POOL_CONSTRUCTOR_CURSOR_USER_VAR_UPDATES = (
     (
@@ -142,7 +142,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical SubgameRuntime pool owners.",
+        help="Header documenting the canonical cRSubGame pool owners.",
     )
     return parser.parse_args()
 

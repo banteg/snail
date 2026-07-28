@@ -99,7 +99,7 @@ Current checked-in example:
     `AI` lifecycle contracts. The same replay owns the canonical `SubRing` /
     `SubRingStar` / `SubRingPool` graph and its six constructor, spawn, and
     update prototypes; the old IDA-only `RingEffectRateSource` shell is retired
-    because the backlink borrows the enclosing `SubgameRuntime` directly.
+    because the backlink borrows the enclosing `cRSubGame` directly.
 - `star_manager_types.h`
 - `uv run python tools/ida/sync_star_manager_types.py`
 - `vapour_trail_types.h`
@@ -156,7 +156,7 @@ intentional.
   - Uses the same shared header as IDA to recover both constructor-bounded
     `ParcelBucket` banks and the survival index bank. Binary Ninja deliberately
     types one bucket at each bank base rather than claiming the full array:
-    those absolute ranges overlap numeric `SubgameRuntime` offsets in BN's
+    those absolute ranges overlap numeric `cRSubGame` offsets in BN's
     unified address namespace. The guarded replay removes the former wide
     claims, preserves the canonical runtime fields, and still records the exact
     bank extents in the shared header and IDA.
@@ -225,7 +225,7 @@ intentional.
 - `bn_subgame_runtime_types.h`
 - `uv run python tools/binja/sync_subgame_runtime_types.py`
   - Replays the exact 0x28-byte cRGUI owner, including its borrowed
-    `SubgameRuntime*` and eight owned `FrontendWidget*` slots, plus the same
+    `cRSubGame*` and eight owned `FrontendWidget*` slots, plus the same
     `void`/`void`/`int` lifecycle split.
 - `bn_overlay_types.h`
 - `uv run python tools/binja/sync_overlay_types.py` (after the presentation/path-template lane)
@@ -274,7 +274,7 @@ currently pins `pack_color_rgba_u8` to the retired `ColorBGRA8` tag: its
 verification, so that one prototype is intentionally deferred while the
 checked-in header and IDA lane carry the recovered owner.
 
-It also retains the complete canonical `SubgameRuntime` field map accumulated
+It also retains the complete canonical `cRSubGame` field map accumulated
 by the path, player, hazard, landscape, and lifecycle slices. The stable
 `reset_subgame` and `complete_subgame` receiver ABIs are replayed with that map.
 Functions that still carry a pinned user-defined stale receiver in BN are
@@ -301,7 +301,7 @@ The selected-record BN lane is even narrower:
 - the minimal `Player.game` / `Player.movement_state` overlays needed for replay consumers like `update_subgoldy`
 
 The high-score bank and subgame-runtime BN lanes carry the recovered
-`SubSolution`, `SubHighScore`, and sparse `SubgameRuntime` layouts that
+`SubSolution`, `SubHighScore`, and sparse `cRSubGame` layouts that
 make `complete_subgame` and the three `add_*_high_score` helpers readable.
 
 The subgame-hazard lane owns the canonical `SubLazer` / `SubLazerManager` and
@@ -312,7 +312,7 @@ batches all field/prototype mutations behind one verified preview.
 The adjacent subgame-pool lane owns the canonical `SubRing` / `SubRingStar` /
 `SubRingPool` family. It records two inline `0x1f8` parents, ten inline `0x20`
 children per parent, and the borrowed backlink from each parent to its enclosing
-`SubgameRuntime`. The replay selectively replaces only the obsolete generic
+`cRSubGame`. The replay selectively replaces only the obsolete generic
 ring shells, preserves the inherited `RenderableBod body` at parent `+0x00`,
 and batches the verified root field and prototype changes. The paired IDA
 subgame-runtime replay consumes the same canonical header, so both databases
@@ -499,7 +499,7 @@ IDA import refuses forward-only shared declarations and verifies the exact
 prototype.
 
 The canonical IDA `path_template_types.h` lane remains useful beyond path
-templates because it is the single accumulated `SubgameRuntime` and gameplay
+templates because it is the single accumulated `cRSubGame` and gameplay
 owner graph. The front-end lifecycle slice reuses it for exact `Help`,
 `Options`, and `LoadingBar` records instead of creating another broad GameRoot
 header. Its narrow trusted declarations now preserve void Help/Options teardown
@@ -517,7 +517,7 @@ component types are present, it composes the contiguous
 `RootBodCatalog +0x44100`, `DirectXLoader +0x48e00`, `Backdrop +0x4ec10`,
 `Intro`, `MainMenu`, `StarManager`, `Options`, `Exit`, standalone `BodBase`,
 and `Logo` block through `+0x74618`, followed by the complete
-`SubgameRuntime` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
+`cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into
 the exact `0x12e6ff4` root. Bootstrap databases missing the catalog/loader types
 retain the front-end-plus-tail composition; databases also missing a front-end
@@ -533,5 +533,5 @@ pre-biased addresses for `SubTracks::segment_slots[event_id - 1]`; the view's
 element zero is explicitly invalid, while element N aliases the real segment
 slot N-1. Binary Ninja applies it only to four split/short-lived game-base
 register definitions, and IDA applies it to the independently materialized
-sample-base lifetime. `SubgameRuntime::level_definition` remains the storage
+sample-base lifetime. `cRSubGame::level_definition` remains the storage
 owner; no overlapping owner field is installed merely to improve pseudocode.

@@ -1,6 +1,6 @@
 # `remove_subgame_bods` recovery notes
 
-Target: `SubgameRuntime::remove_subgame_bods @ 0x440910` (`thiscall`, 1644 bytes, 501 instructions).
+Target: `cRSubGame::remove_subgame_bods @ 0x440910` (`thiscall`, 1644 bytes, 501 instructions).
 
 Initial scratch reconstructs the full cleanup pass:
 
@@ -61,7 +61,7 @@ Rejected probes:
 - Player, presentation, jetpack channel, three weapon channels, and invincible
   shell removals are now expressed as embedded subobjects. Their intrusive BOD
   nodes are returned to the shared free list, but their backing storage remains
-  owned by `SubgameRuntime::player`.
+  owned by `cRSubGame::player`.
 - `Player +0xa0` is the exact embedded `ClickStart` (`cRClickStart`), with its `state` lane at
   `Player +0x120`. The initializer now uses that typed view. A typed spelling of
   the final teardown branch regressed to `59.18%`, so the scratch retains the
@@ -82,13 +82,13 @@ frontier and two speedup/jetpack string-order mismatches remain unchanged.
 2026-07-11 JetPack ownership: the second singleton teardown arm is backed by
 the primary `JetPack` owner at `+0x355e64`; only its inherited BOD membership
 and sprite are released, while the parent and two embedded cRVapour objects
-remain owned by `SubgameRuntime`. The 59.98% frontier is unchanged.
+remain owned by `cRSubGame`. The 59.98% frontier is unchanged.
 
 ## 2026-07-12 shared list-owner recovery
 
 The repeated row, pickup, hazard, ring, player, and presentation teardown
 blocks do not own their unlink algorithm. Each embedded record remains stored
-inside `SubgameRuntime`; its containing `BodNode` is merely lent to the global
+inside `cRSubGame`; its containing `BodNode` is merely lent to the global
 `BodList`, whose inline `remove_bod` method owns active-list unlinking and the
 free-stack push. Replacing both hand-expanded macros with that shared method
 also preserves the required early exits after either list diagnostic.
@@ -104,14 +104,14 @@ visible rather than forced.
 ## 2026-07-13 embedded pool and Player-bank closure
 
 - Health, garbage, slug, and ring teardown cursors now start from their owned
-  `SubgameRuntime` arrays, and their inactive writes name each slot's `state`.
+  `cRSubGame` arrays, and their inactive writes name each slot's `state`.
   The speedup and JetPack singleton state clears use their embedded owners too.
 - The final projectile loop is `player.golb_shots`: 12 complete `GolbShot`
   records at `Player +0x450`, ending exactly at the next Player field at
   `+0x2730`. The same bank is constructed during runtime-pool initialization
   and scanned by movement-flag emission.
 - The remaining tail names `player.movement_mode_selector` and the embedded
-  `player.click_start` body/state instead of reaching through SubgameRuntime
+  `player.click_start` body/state instead of reaching through cRSubGame
   offsets. Intrusive-list removal still borrows only their `BodNode` prefixes.
 - These owner substitutions are codegen-neutral: focused Wibo remains 67.67%
   with 495/501 instructions, 63 clean operands, and the same two documented
@@ -130,14 +130,14 @@ with the same 63 clean operands and two honest string-order mismatches.
 ## 2026-07-13 analysis sentinel-band closure
 
 The path-template analysis owner now exposes all ten consecutive `BodBase`
-sentinels at `SubgameRuntime +0x355b64`, followed by `active_level_score`, the
+sentinels at `cRSubGame +0x355b64`, followed by `active_level_score`, the
 embedded `Time` snapshot, and the exact 0xb4-byte `SubSpeedUp` singleton. This
 closes the full 0x300-byte bridge from the second `SubTracks` owner to the
 existing `JetPack +0x355e64` without an anonymous pad or shifted downstream
 fields.
 
 Binary Ninja preview verifies `SubSpeedUp == 0xb4` and keeps
-`SubgameRuntime == 0x1272838`, then reverts. Focused teardown matching remains
+`cRSubGame == 0x1272838`, then reverts. Focused teardown matching remains
 the honest 67.67%, 495/501-instruction baseline with 63 clean operands and the
 same two documented speedup/JetPack string-order mismatches.
 
@@ -180,7 +180,7 @@ documented string-order mismatches.
 
 The final Golb projectile teardown count now derives from the complete
 `Player::golb_shots` array rather than repeating its twelve-slot extent. The
-unused raw `char*` alias of the `SubgameRuntime` receiver is also gone; every
+unused raw `char*` alias of the `cRSubGame` receiver is also gone; every
 remaining access follows a typed embedded owner. Focused output is unchanged
 at 67.67%, 495/501 instructions, with 63 clean operands and the same two honest
 string-order mismatches.
@@ -189,7 +189,7 @@ string-order mismatches.
 
 All inline removals and the three out-of-line recycler calls now borrow the
 shared intrusive list from a canonical `GameRoot*`. Pool, singleton, Player,
-and presentation storage stays embedded in `SubgameRuntime`; only each
+and presentation storage stays embedded in `cRSubGame`; only each
 `BodNode` membership crosses into the root list. Focused output remains 67.67%,
 495/501 instructions, prefix 6/501, with 63 clean operands and the same two
 documented string-order mismatches.
@@ -213,7 +213,7 @@ string-order mismatches.
 
 The live Binary Ninja `Game*` receiver was another stale same-size identity.
 The guarded catalog repair recreated only this exact function with its proven
-`SubgameRuntime*` owner and preserved the sole user-defined receiver. The
+`cRSubGame*` owner and preserved the sole user-defined receiver. The
 tracked decompile falls from 137 raw receiver-offset expressions to one,
 recovering the row/cell slabs, track cache, pickup and hazard pools, ring slots,
 embedded player bodies, projectile bank, and sprite cleanup owners. The one
@@ -258,7 +258,7 @@ borrowed `GameRoot::active_bod_list` lifetimes for rows, health pickups,
 garbage hazards, slugs, and ring effects. Each unlink block names the loaded
 list flags, next/previous nodes, free-stack head, and post-clear flags; the row
 block also keeps its nested eight-cell countdown distinct from the 3200-row
-extent. The backing arrays remain owned by `SubgameRuntime`; only their
+extent. The backing arrays remain owned by `cRSubGame`; only their
 embedded `BodNode` memberships move through the root intrusive list.
 
 The guarded replay verifies every relevant owner width and exact field before
@@ -274,7 +274,7 @@ prefix 6, with 64 clean operands and the one existing string-order mismatch.
 
 The two singleton pickup blocks now keep independent `BodList*`, flag,
 next-node, previous-node, and post-clear lifetimes. `SubSpeedUp` and `JetPack`
-remain complete embedded `SubgameRuntime` owners, while only their inherited
+remain complete embedded `cRSubGame` owners, while only their inherited
 zero-offset `BodNode` membership is transferred from the root active list to
 its free stack before each owner returns to `TRACK_PICKUP_STATE_INACTIVE`.
 
@@ -329,7 +329,7 @@ reconstruction. Windows IDA independently confirms each scope:
 - ClickStart returns to its inactive state only inside its linked-body branch.
 
 The Player block now borrows one scoped reference to the embedded
-`SubgameRuntime::player`, matching the single `cRSubGoldy` owner visible in
+`cRSubGame::player`, matching the single `cRSubGoldy` owner visible in
 both mobile ports. The projectile bank and ClickStart tail remain separately
 rooted at the same owning member because extending the temporary reference
 through them regressed focused matching to 67.46%.

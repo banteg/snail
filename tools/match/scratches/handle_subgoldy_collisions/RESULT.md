@@ -18,10 +18,10 @@ reference audit.
 ## Accepted ownership and source-shape changes
 
 - Recovered slug, parcel, health, ring, speedup, and jetpack entries as
-  transient borrows from fixed banks owned by `SubgameRuntime`. Direct element
+  transient borrows from fixed banks owned by `cRSubGame`. Direct element
   indexing restores the Windows compiler's base-plus-element cursor lifetimes.
 - Retained the salt and sub-lazer sweeps as game-relative byte cursors. Their
-  ownership is fully typed through `SubgameRuntime` offsets, but direct element
+  ownership is fully typed through `cRSubGame` offsets, but direct element
   rewrites regress the Windows code shape.
 - Copied the complete health/speedup/jetpack delta with
   `probe_c = probe_b` after assigning z. IDA 9.4 and both mobile bodies support

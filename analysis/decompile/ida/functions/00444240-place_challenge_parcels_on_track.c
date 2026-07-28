@@ -2,8 +2,8 @@
 /* function: place_challenge_parcels_on_track @ 0x444240 */
 /* selector: place_challenge_parcels_on_track */
 
-// Implements the authored void `cRSubGame::PlaceParcelsSurvival()` method on the verified SubgameRuntime receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place. Cross-port path-dependent return residues are incidental and the Windows caller discards EAX.
-void __thiscall place_challenge_parcels_on_track(SubgameRuntime *game)
+// Implements the authored void `cRSubGame::PlaceParcelsSurvival()` method on the verified cRSubGame receiver: derives the quota from owned completion/difficulty state, records eligible runtime_rows indices in the global `gParcelGroupSurvival0` scratch bank, and randomly claims rows while compacting that bank in place. Cross-port path-dependent return residues are incidental and the Windows caller discards EAX.
+void __thiscall place_challenge_parcels_on_track(cRSubGame *game)
 {
   int32_t v2; // eax
   int32_t *zero_bucket_count_lane; // eax

@@ -8,7 +8,7 @@ Android and iOS preserve the original signature as
 
 Recovered semantics:
 
-- indexes the owned `SubgameRuntime::runtime_rows[(int)position.z]` slab;
+- indexes the owned `cRSubGame::runtime_rows[(int)position.z]` slab;
 - clears `*out_angle` before checking the row attachment flag `0x40`;
 - exits without modifying the position when the attachment flag is clear;
 - derives the attachment sample index from `(int)position.z -
@@ -68,7 +68,7 @@ Recovery history:
   lateral and anchored-base components. The later by-value expression recovery
   below closes it without dummy volatile locals or inline assembly.
 - 2026-06-21 subgame receiver cleanup: the method now lives on
-  `SubgameRuntime`, matching its `cRSubGame` call surface and the shared
+  `cRSubGame`, matching its `cRSubGame` call surface and the shared
   declaration used by garbage/slug callers. Focused Wibo is unchanged at
   `88.68%`, `106/106`, with `5` clean masked operands.
 
@@ -80,7 +80,7 @@ that keeps the long exact prefix at 88.68%.
 ## 2026-07-10 runtime-row and return-contract closure
 
 The raw `this + 0x5ccac8 + 0xf4 * row` cursor is now expressed as
-`SubgameRuntime::runtime_rows[row]`, the same owned slab proved by track
+`cRSubGame::runtime_rows[row]`, the same owned slab proved by track
 construction and both parcel-placement passes. This is codegen-neutral at
 88.68%, 106/106 instructions, prefix 67/106, with five clean operands.
 
@@ -118,14 +118,14 @@ and both exits use `retn 8`. Its only callers, `spawn_track_garbage_hazard` and
 `spawn_slug_hazard`, pass a `Vec3*` plus `float*` and discard EAX immediately.
 Together with the exact cross-port `cRSubGame::CalcRealPos(tVector&, float&)`
 signature, this closes the Windows ABI as
-`void SubgameRuntime::project_position_onto_track_attachment(Vec3*, float*)`.
+`void cRSubGame::project_position_onto_track_attachment(Vec3*, float*)`.
 The guarded Binary Ninja repair records and replaces only the observed stale
 `char* (int32_t, int32_t*, float*)` identity; the shared header and BN/IDA
 replay catalogs now preserve the recovered owner and argument types.
 
 ## 2026-07-24 row, cell, path, and sample ownership
 
-IDA's live prototype already preserved the recovered void `SubgameRuntime`
+IDA's live prototype already preserved the recovered void `cRSubGame`
 method, but its runtime-row LEA still rendered as the unrelated
 `byte_5CCAC8` global. Normalizing only operand `0x4444d4:1` exposes the direct
 `game->runtime_rows[row]` borrow. Exact lvar readback then preserves the

@@ -4,7 +4,7 @@
 /* function: initialize_challenge_setup_screen @ 0x415f50 */
 
 00415f61        capture_mouse_cursor(&g_game_base->players[0].mouse_cursor)
-00415f66        struct SubgameRuntime* game = gui->game
+00415f66        struct cRSubGame* game = gui->game
 00415f76        load_frontend_level_by_mode_and_index(&game->level_definition, game->level_mode, game->level_mode_arg)
 00415f81        if (gui->game->level_mode != 1)
 00415f81        return

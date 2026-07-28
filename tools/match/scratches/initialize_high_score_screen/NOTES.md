@@ -68,7 +68,7 @@ Expected residuals:
 
 2026-07-13 root-owner graph cleanup:
 
-- The initializer now reaches the root-owned `StarManager`, `SubgameRuntime`,
+- The initializer now reaches the root-owned `StarManager`, `cRSubGame`,
   `LandscapeManager`, `Backdrop`, `BorderManager`, and player-zero
   `MouseCursorState` through `GameRoot` members instead of reconstructing each
   owner from a raw `char* + offset` cast.

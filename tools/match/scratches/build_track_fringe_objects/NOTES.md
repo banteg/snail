@@ -102,7 +102,7 @@ residuals.
 
 ## 2026-06-21 subgame receiver cleanup
 
-The scratch now defines `SubgameRuntime::build_track_fringe_objects`, and the
+The scratch now defines `cRSubGame::build_track_fringe_objects`, and the
 shared declaration was corrected from `void` to `int` to match the native
 release-stripped debug-report tail. Focused Wibo is unchanged at `53.76%`,
 `476/495`, with `47` clean masked operands; the remaining diff is still the
@@ -122,7 +122,7 @@ keeps the clear-handle leg after it, matching the native branch layout.
 The pool boundary is now explicit. Root `+0x3d01d4` is subgame
 `+0x35bbbc`, exactly the start of a 0x5fb44-byte `FringeManager`; root
 `+0x42fd14` is the same manager's `count` at subgame `+0x3bb6fc`.
-`SubgameRuntime` therefore owns all 7,000 fixed `FringeObject` records.
+`cRSubGame` therefore owns all 7,000 fixed `FringeObject` records.
 `initialize_fringe_manager()` only rewinds the cursor, and each
 `cRSubLoc::fringe_*` field is a non-owning handle into that storage. The
 builder uses the singleton's typed `fringe_manager` member at every native
@@ -171,14 +171,14 @@ that swap with volatile locals, register tricks, or raw-offset aliases.
 ## 2026-07-13 analysis runtime-band closure
 
 The path-template Binary Ninja/IDA owner now embeds the exact
-`FringeManager` at `SubgameRuntime +0x35bbbc`: 7,000 owned 0x38-byte
+`FringeManager` at `cRSubGame +0x35bbbc`: 7,000 owned 0x38-byte
 `FringeObject` records followed by `count +0x5fb40`, ending exactly at
 `blink_random_index +0x3bb700`. The four score/lives handles and nine life
 stock handles immediately before it are typed as borrowed `FrontendWidget*`
 values rather than part of an anonymous pad.
 
 Binary Ninja preview verifies `FringeManager == 0x5fb44` and keeps the
-enclosing `SubgameRuntime == 0x1272838`, then reverts. The exact two-instruction
+enclosing `cRSubGame == 0x1272838`, then reverts. The exact two-instruction
 manager initializer remains proof-grade; this builder remains honestly partial
 at 60.39%, 492/495 instructions, with all 48 operands clean.
 
@@ -211,8 +211,8 @@ with all 48 operands clean.
 
 The live Binary Ninja function still pinned a separate same-sized `Game*`
 receiver even though the matcher source, Android `cRSubGame::FringeEdgeTrack`,
-and every runtime-grid access establish `SubgameRuntime`. A guarded function
-recreation now installs `SubgameRuntime*` without discarding user annotations.
+and every runtime-grid access establish `cRSubGame`. A guarded function
+recreation now installs `cRSubGame*` without discarding user annotations.
 The refreshed BN export consequently exposes `runtime_rows`, `runtime_cells`,
 and the four directional `FringeObject*` fields instead of the former
 `__offset(Game, ...)` owner shell; IDA independently retains the same receiver.
@@ -226,14 +226,14 @@ or bytes changed in this ownership-only closure.
 
 The analyzer-only `FringeObject` compatibility name is now retired. The four
 directional cell fields are explicit borrowed `Fringe*` handles, while
-`SubgameRuntime::fringe_manager` owns all 7000 inline `Fringe` records and its
+`cRSubGame::fringe_manager` owns all 7000 inline `Fringe` records and its
 cursor. Focused replay also types the exact constructor, pool reset/allocation,
 and vtable callback together, preventing the cell handles and pool element from
 drifting into separate same-sized analyzer types.
 
 ## 2026-07-19 builder lifetime closure
 
-Binary Ninja now preserves the saved `SubgameRuntime*` receiver, independent
+Binary Ninja now preserves the saved `cRSubGame*` receiver, independent
 `SubRow*` and `cRSubLoc*` iterators, row/cell loop bounds, fringe-family
 selector, and both directional edge selectors. Each allocation result is named
 as the corresponding borrowed `Fringe*`, while the four color temporaries stay

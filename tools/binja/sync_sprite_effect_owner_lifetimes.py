@@ -28,7 +28,7 @@ EXPECTED_TYPE_WIDTHS = {
     "GolbShot": 0x2E8,
     "Player": 0x4364,
     "SubGarbage": 0xC4,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -62,7 +62,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "GolbShot": {
         0x24C: ("velocity", "Vec3"),
-        0x270: ("game", "SubgameRuntime*"),
+        0x270: ("game", "cRSubGame*"),
         0x274: ("object_ref", "void*"),
         0x278: ("owner_player", "Player*"),
     },
@@ -70,9 +70,9 @@ EXPECTED_STRUCT_FIELDS = {
         0x380: ("player_slot", "int32_t"),
     },
     "SubGarbage": {
-        0x8C: ("owner_game", "SubgameRuntime*"),
+        0x8C: ("owner_game", "cRSubGame*"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x38: ("subgame_rate", "float"),
     },
 }

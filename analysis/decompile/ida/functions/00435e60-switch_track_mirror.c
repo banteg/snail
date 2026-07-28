@@ -3,7 +3,7 @@
 /* selector: switch_track_mirror */
 
 // Windows `void cRSubGame::SwitchMirror()`: selects a row-mirror state from a strict random > 0.5 test, counts repeated choices, and forces an inversion after four repeats. Android preserves the owner and algorithm while leaving RAND's float bits in R0; both Windows call sites ignore EAX.
-void __thiscall switch_track_mirror(SubgameRuntime *runtime)
+void __thiscall switch_track_mirror(cRSubGame *runtime)
 {
   uint8_t v2; // al
 

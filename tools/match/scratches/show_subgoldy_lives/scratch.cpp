@@ -6,8 +6,8 @@
 void Player::show_subgoldy_lives()
 {
     int live_index = 0;
-    for (int offset = (int)((SubgameRuntime*)0)->life_stock_widgets;
-         offset < (int)(((SubgameRuntime*)0)->life_stock_widgets + 9);
+    for (int offset = (int)((cRSubGame*)0)->life_stock_widgets;
+         offset < (int)(((cRSubGame*)0)->life_stock_widgets + 9);
          offset += sizeof(FrontendWidget*)) {
         if (live_index < visible_life_stock) {
             FrontendWidget* widget = *(FrontendWidget**)((char*)game + offset);

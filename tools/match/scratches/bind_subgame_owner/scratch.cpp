@@ -4,9 +4,9 @@
 #include "thanks_screen.h"
 
 
-SubgameRuntime* SubgameOwnerLink::bind_subgame_owner()
+cRSubGame* SubgameOwnerLink::bind_subgame_owner()
 {
-    SubgameRuntime* result = &g_game->subgame;
+    cRSubGame* result = &g_game->subgame;
     game = result;
     return result;
 }

@@ -35,7 +35,7 @@ Recovered relationships:
   100.00%, 84/84 instructions, with 16 masked operands OK.
 
 2026-07-11 owner closure: Binary Ninja's complete `Player` field at
-`SubgameRuntime +0x3bb764` proves that all five former contextual rate aliases
+`cRSubGame +0x3bb764` proves that all five former contextual rate aliases
 belong to the embedded actor. Replacing the sparse runtime overlay with direct
 `player` fields preserves the proof-grade 100.00% match and all 16 operands.
 

@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_subgame_level @ 0x437eb0 */
 
-00437eb0        struct SubgameRuntime* game_1 = game
+00437eb0        struct cRSubGame* game_1 = game
 00437ec1        unhide_star_field(&g_game_base->star_manager)
 00437ece        if (game->level_mode != 7)
 00437ed7        unhide_gameplay_scores(game)
@@ -110,6 +110,8 @@
 00438295        if (list_next != 0)
 00438297        list_next->list_prev.b = (&game->banners).b
 00438297        list_next->list_prev:1.b = (&game->banners):1.b
+00438297        list_next->list_prev:2.b = (&game->banners):2.b
+00438297        list_next->list_prev:3.b = (&game->banners):3.b
 0043829a        game->banners.slots[0].bod.bod.list_flags |= 0x200
 0043827a        report_errorf("List ADDafter")
 0043829d        game->banners.slots[0].bod.position.z = 0f
@@ -129,6 +131,8 @@
 00438311        if (list_next_1 != 0)
 00438313        list_next_1->list_prev.b = (&game->banners.slots[1].bod.bod).b
 00438313        list_next_1->list_prev:1.b = (&game->banners.slots[1].bod.bod):1.b
+00438313        list_next_1->list_prev:2.b = (&game->banners.slots[1].bod.bod):2.b
+00438313        list_next_1->list_prev:3.b = (&game->banners.slots[1].bod.bod):3.b
 00438316        game->banners.slots[1].bod.bod.list_flags |= 0x200
 004382f6        report_errorf("List ADDafter")
 00438319        game->banners.slots[1].bod.position.z = 0f
@@ -202,6 +206,8 @@
 00438430        *active_first_ref_weapon_0 = &game->player.presentation.weapon_channels
 00438432        game->player.presentation.weapon_channels.128.bod.bod.list_prev.b = nullptr
 00438432        game->player.presentation.weapon_channels.128.bod.bod.list_prev:1.b = 0
+00438432        game->player.presentation.weapon_channels.128.bod.bod.list_prev:2.b = 0
+00438432        game->player.presentation.weapon_channels.128.bod.bod.list_prev:3.b = 0
 00438437        (*active_first_ref_weapon_0)->list_next = nullptr
 00438456        game->player.presentation.weapon_channels.128.bod.bod.list_flags |= 0x200
 00438416        report_errorf("List ADD")
@@ -218,6 +224,8 @@
 00438488        *active_first_ref_weapon_1 = &game->player.presentation.weapon_channels[1]
 0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev.b = nullptr
 0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev:1.b = 0
+0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev:2.b = 0
+0043848a        game->player.presentation.weapon_channels[1].body.bod.bod.list_prev:3.b = 0
 0043848f        (*active_first_ref_weapon_1)->list_next = nullptr
 004384ae        game->player.presentation.weapon_channels[1].body.bod.bod.list_flags |= 0x200
 0043846e        report_errorf("List ADD")
@@ -234,6 +242,8 @@
 004384e0        *active_first_ref_weapon_2 = &game->player.presentation.weapon_channels[2]
 004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev.b = nullptr
 004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev:1.b = 0
+004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev:2.b = 0
+004384e2        game->player.presentation.weapon_channels[2].body.bod.bod.list_prev:3.b = 0
 004384e7        (*active_first_ref_weapon_2)->list_next = nullptr
 00438506        game->player.presentation.weapon_channels[2].body.bod.bod.list_flags |= 0x200
 004384c6        report_errorf("List ADD")
@@ -250,6 +260,8 @@
 00438538        *active_first_ref_invincible_shell = &game->player.presentation.invincible_shell
 0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev.b = nullptr
 0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev:1.b = 0
+0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev:2.b = 0
+0043853a        game->player.presentation.invincible_shell.body.bod.bod.list_prev:3.b = 0
 0043853f        (*active_first_ref_invincible_shell)->list_next = nullptr
 0043855e        game->player.presentation.invincible_shell.body.bod.bod.list_flags |= 0x200
 0043851e        report_errorf("List ADD")
@@ -269,6 +281,8 @@
 0043859f        *active_first_ref_presentation = &game->player.presentation
 004385a1        game->player.presentation.body.bod.bod.list_prev.b = nullptr
 004385a1        game->player.presentation.body.bod.bod.list_prev:1.b = 0
+004385a1        game->player.presentation.body.bod.bod.list_prev:2.b = 0
+004385a1        game->player.presentation.body.bod.bod.list_prev:3.b = 0
 004385a6        (*active_first_ref_presentation)->list_next = nullptr
 004385c5        game->player.presentation.body.bod.bod.list_flags |= 0x200
 00438585        report_errorf("List ADD")
@@ -278,18 +292,26 @@
 004385ea        if (active_first_player != 0)
 004385f8        active_first_player->list_prev.b = (&game->player).b
 004385f8        active_first_player->list_prev:1.b = (&game->player):1.b
+004385f8        active_first_player->list_prev:2.b = (&game->player):2.b
+004385f8        active_first_player->list_prev:3.b = (&game->player):3.b
 004385fb        struct BodNode* active_first_link_player = *active_first_ref_player
 004385fd        struct BodNode* active_new_first_player
 004385fd        active_new_first_player.b = active_first_link_player->list_prev.b
 004385fd        active_new_first_player:1.b = active_first_link_player->list_prev:1.b
+004385fd        active_new_first_player:2.b = active_first_link_player->list_prev:2.b
+004385fd        active_new_first_player:3.b = active_first_link_player->list_prev:3.b
 00438600        active_new_first_player->list_next = active_first_link_player
 00438603        struct BodNode* active_first_reload_player = *active_first_ref_player
 00438605        struct BodNode* active_new_first_player_reloaded
 00438605        active_new_first_player_reloaded.b = active_first_reload_player->list_prev.b
 00438605        active_new_first_player_reloaded:1.b = active_first_reload_player->list_prev:1.b
+00438605        active_new_first_player_reloaded:2.b = active_first_reload_player->list_prev:2.b
+00438605        active_new_first_player_reloaded:3.b = active_first_reload_player->list_prev:3.b
 00438608        *active_first_ref_player = active_new_first_player_reloaded
 0043860a        active_new_first_player_reloaded->list_prev.b = nullptr
 0043860a        active_new_first_player_reloaded->list_prev:1.b = 0
+0043860a        active_new_first_player_reloaded->list_prev:2.b = 0
+0043860a        active_new_first_player_reloaded->list_prev:3.b = 0
 004385ec        *active_first_ref_player = &game->player
 004385ee        game->player.body.bod.bod.list_prev = nullptr
 004385f3        (*active_first_ref_player)->list_next = nullptr
@@ -304,6 +326,8 @@
 00438651        if (list_next_2 != 0)
 00438653        list_next_2->list_prev.b = (&game->barrier).b
 00438653        list_next_2->list_prev:1.b = (&game->barrier):1.b
+00438653        list_next_2->list_prev:2.b = (&game->barrier):2.b
+00438653        list_next_2->list_prev:3.b = (&game->barrier):3.b
 00438656        game->barrier.bod.bod.list_flags |= 0x200
 00438636        report_errorf("List ADDafter")
 00438659        int32_t level_mode_2 = game->level_mode

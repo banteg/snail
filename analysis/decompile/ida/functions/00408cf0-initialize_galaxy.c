@@ -5,8 +5,8 @@
 // Exact void Windows `Galaxy::initialize_galaxy`: builds the Star Map, seeds its selected route from SnailMail.cfg, and wires Deliver/Play, replay, and back controls. Android and iOS preserve `cRGalaxy::Init()`.
 void __thiscall initialize_galaxy(Galaxy *galaxy)
 {
-  int landscape_script_by_name; // eax
-  SubgameRuntime *level_progress_base; // eax
+  int32_t landscape_script_by_name; // eax
+  cRSubGame *level_progress_base; // eax
   int32_t subgame_rebuild_selector; // ecx
   tColour *v5; // eax
   tColour *v6; // eax
@@ -25,15 +25,13 @@ void __thiscall initialize_galaxy(Galaxy *galaxy)
 
   hide_star_field(&g_game_base->star_manager);
   cache_music_file(g_main_menu_music_path, 0, (char *)g_blank_text);
-  landscape_script_by_name = load_landscape_script_by_name(
-                               (char *)&g_game_base->subgame.landscape_manager,
-                               aStarmapTxt_0);
+  landscape_script_by_name = load_landscape_script_by_name(&g_game_base->subgame.landscape_manager, script_name);
   change_backdrop(&g_game_base->backdrop, &g_game_base->subgame.landscape_manager.scripts[landscape_script_by_name], 0);
   set_border_justify_centre(&g_game_base->border_manager, 0.0);
   capture_mouse_cursor(&g_game_base->players[0].mouse_cursor);
   g_game_base->render_skip_count = 2;
   level_progress_base = galaxy->level_progress_base;
-  if ( !level_progress_base->level_mode )
+  if ( level_progress_base->level_mode == 0 )
   {
     subgame_rebuild_selector = level_progress_base->subgame_rebuild_selector;
     if ( subgame_rebuild_selector == 3 || subgame_rebuild_selector == 2 )
@@ -61,7 +59,7 @@ void __thiscall initialize_galaxy(Galaxy *galaxy)
   galaxy->route_title_widget->font_scale = 0.82999998;
   galaxy->route_icon_widget = allocate_border(&g_game_base->border_manager);
   v6 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
-  initialize_frontend_sprite_button((int)galaxy->route_icon_widget, 541067266, 138, 1136197632, 1092616192, v6, 0.0, 4);
+  initialize_frontend_sprite_button(galaxy->route_icon_widget, 0x20400802u, 138, 370.0, 10.0, v6, 0.0, 4);
   galaxy->exit_or_back_widget = allocate_border(&g_game_base->border_manager);
   if ( galaxy->route_mode == 1 )
   {
@@ -142,7 +140,7 @@ void __thiscall initialize_galaxy(Galaxy *galaxy)
   galaxy->selected_description_widget->font_scale = 0.69999999;
   galaxy->selected_description_widget->stack_gap = 0.0;
   galaxy->play_or_deliver_widget = allocate_border(&g_game_base->border_manager);
-  if ( galaxy->level_progress_base->level_mode )
+  if ( galaxy->level_progress_base->level_mode != 0 )
   {
     v17 = set_color_rgba((tColour *)&color, 1.0, 1.0, 1.0, 1.0);
     initialize_frontend_widget(galaxy->play_or_deliver_widget, 0x60000014u, aPlay, 20, 300.0, 440.0, v17, 2, 100.0);

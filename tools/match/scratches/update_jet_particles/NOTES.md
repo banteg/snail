@@ -22,7 +22,7 @@ Recovered relationships under test:
   position.
 
 The owner chain is now closed through the shared types: the gauge borrows its
-containing `Player` and `SubgameRuntime`; the runtime embeds that same player,
+containing `Player` and `cRSubGame`; the runtime embeds that same player,
 whose presentation owns the animation channel and hotspot banks while
 inheriting its render transform.
 
@@ -141,7 +141,7 @@ instructions, prefix 0, with all 16 operands clean.
 ## 2026-07-18 durable owner replay
 
 Both tracked decompilers now retain the exact `SubHover*` receiver and recover
-the borrowed `SubgameRuntime`, embedded Player presentation/hotspot bank,
+the borrowed `cRSubGame`, embedded Player presentation/hotspot bank,
 forward basis, velocity, 15-by-2 particle bank, and complete shared Sprite
 fields. The focused replay verifies `SubHover` 0x214, `Player` 0x4364, and
 `Sprite` 0xb4 before exporting. This is an ownership/export improvement only:

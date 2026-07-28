@@ -29,7 +29,7 @@ focused result stays codegen-neutral at 64.10%.
 
 2026-07-11 cRCompletion closure: this method, exact `flush_row_event_display`,
 exact `register_parcel_delivery`, and exact `update_row_event_display` all act
-on `SubgameRuntime::completion +0x12727d8`. The `Completion` union names both
+on `cRSubGame::completion +0x12727d8`. The `Completion` union names both
 the parcel-display and final-result phases without duplicating storage;
 `sizeof(Completion) == 0x50` matches the native ledger and ends exactly at
 `TimesUp`. The focused initializer remains honestly at 64.10%, 268/278, with
@@ -56,13 +56,13 @@ all 34 operands clean.
 2026-07-13 cross-tool owner routing:
 
 - Binary Ninja and IDA now carry `Completion` and the adjacent `TimesUp`
-  directly in their canonical `SubgameRuntime` headers. The `0x50`-byte
+  directly in their canonical `cRSubGame` headers. The `0x50`-byte
   completion owner at `+0x12727d8` ends exactly where the `0x10`-byte times-up
   owner begins at `+0x1272828`.
 - The path-template sync no longer owns those root fields, and its redundant
   IDA Completion prototypes have been removed in favor of the dedicated
   completion-screen lane. BN lifecycle prototypes now live with the
-  SubgameRuntime owner. This is codegen-neutral ownership cleanup; the honest
+  cRSubGame owner. This is codegen-neutral ownership cleanup; the honest
   89.89%, 276/278 initializer result remains unchanged.
 
 2026-07-13 canonical root reloads:
@@ -129,7 +129,7 @@ with all 44 operands clean.
   universe and also replayed three unrelated `Exit` methods with stale `int`
   ABIs. The completion lane now owns only the four retained
   `cRCompletion` methods and imports the aggregate path-template ownership
-  header. A trial import of the narrower SubgameRuntime header was rejected
+  header. A trial import of the narrower cRSubGame header was rejected
   because its intentionally sparse Player prefix regressed already-recovered
   presentation fields; this is concrete evidence that the aggregate header is
   still useful rather than campaign clutter.

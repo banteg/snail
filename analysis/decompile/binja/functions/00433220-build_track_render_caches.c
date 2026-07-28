@@ -51,7 +51,7 @@
 004332ff        int32_t fringe_byte_offset = cell_byte_offset + 0x3bfb0c
 00433305        int32_t var_44_1 = 4
 0043338b        bool cond:2_1
-0043330d        struct SubgameRuntime* owner_subgame = manager->owner_subgame
+0043330d        struct cRSubGame* owner_subgame = manager->owner_subgame
 00433310        struct Fringe* fringe_object = *(owner_subgame + fringe_byte_offset)
 00433315        if (fringe_object != 0)
 00433349        append_track_cache_object(manager, row_index, fringe_object->bod.object, &owner_subgame->runtime_cells[0][0].anchor_position + cell_byte_offset, manager->shared_vertex_buffers[4], &vertex_count_5, manager->shared_index_buffers[4], &index_count_4, manager->max_vertex_counts[4], manager->max_index_counts[4], manager->skirt_color_bgra, 0)
@@ -61,7 +61,7 @@
 00433386        cond:2_1 = var_44_1 != 1
 00433387        var_44_1 -= 1
 0043338b        do while (cond:2_1)
-0043338d        struct SubgameRuntime* owner_subgame_2 = manager->owner_subgame
+0043338d        struct cRSubGame* owner_subgame_2 = manager->owner_subgame
 00433390        uint32_t cell_flags = *(&owner_subgame_2->runtime_cells[0][0].lane_and_flags + cell_byte_offset)
 00433397        uint8_t* warning_cell_base = cell_byte_offset + owner_subgame_2
 004333ab        struct Object* cache_object
@@ -71,7 +71,7 @@
 00433417        uint8_t* floor_or_slide_cell_base
 00433417        uint32_t floor_cell_flags
 00433417        if (eax_19 != 0)
-0043341d        struct SubgameRuntime* owner_subgame_3 = manager->owner_subgame
+0043341d        struct cRSubGame* owner_subgame_3 = manager->owner_subgame
 00433420        floor_cell_flags = *(&owner_subgame_3->runtime_cells[0][0].lane_and_flags + cell_byte_offset)
 00433427        floor_or_slide_cell_base = cell_byte_offset + owner_subgame_3
 00433438        uint32_t color
@@ -112,7 +112,7 @@
 004333fe        cache_object = (&manager->slots[0][2].bod.object)[cache_row_index * 0x4b]
 004335d0        label_4335d0:
 004335d0        *cache_object->group_texture_refs = source_facequads->texture_ref
-004335d2        struct SubgameRuntime* owner_subgame_1 = manager->owner_subgame
+004335d2        struct cRSubGame* owner_subgame_1 = manager->owner_subgame
 004335dc        uint32_t updated_cell_flags = *(&owner_subgame_1->runtime_cells[0][0].lane_and_flags + cell_byte_offset)
 004335e3        updated_cell_flags:1.b &= 0xbf
 004335e6        *(&owner_subgame_1->runtime_cells[0][0].lane_and_flags + cell_byte_offset) = updated_cell_flags

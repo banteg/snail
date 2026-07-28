@@ -5,7 +5,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment.h"
 
-bool SubgameRuntime::is_neighbor_cell_solid(cRSubLoc* cell, int dx, int dz)
+bool cRSubGame::is_neighbor_cell_solid(cRSubLoc* cell, int dx, int dz)
 {
     int row = cell->get_track_cell_row_index();
     int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;
@@ -17,11 +17,11 @@ bool SubgameRuntime::is_neighbor_cell_solid(cRSubLoc* cell, int dx, int dz)
                 21 * (dx + lane + SUBGAME_TRACK_LANE_COUNT * neighbor_row);
             char* cell_base = (char*)this + (cell_index << 2);
             unsigned char tile_id = *(unsigned char*)(cell_base
-                + (int)offsetof(SubgameRuntime, runtime_cells[0][0].tile_id));
+                + (int)offsetof(cRSubGame, runtime_cells[0][0].tile_id));
             cRSubLoc* neighbor = (cRSubLoc*)cell_base;
             int tile = tile_id;
             neighbor = (cRSubLoc*)((char*)neighbor
-                + (int)offsetof(SubgameRuntime, runtime_cells));
+                + (int)offsetof(cRSubGame, runtime_cells));
             if (!neighbor->is_sub_loc_empty()
                 && tile != SUBLOC_TILE_EMPTY
                 && tile != SUBLOC_TILE_RING_MARKER

@@ -26,7 +26,7 @@
 #include "vector3.h"
 
 struct RuntimeCellSlotBase {
-    char before_cell[offsetof(SubgameRuntime, runtime_cells)];
+    char before_cell[offsetof(cRSubGame, runtime_cells)];
     cRSubLoc cell;
 };
 
@@ -47,7 +47,7 @@ int queue_axis_aligned_textured_quad_uv(
     float rotation);
 int report_errorf(char* format, ...);
 
-void SubgameRuntime::update_subgame()
+void cRSubGame::update_subgame()
 {
     char* game = (char*)this;
     int cell_index;
@@ -210,7 +210,7 @@ void SubgameRuntime::update_subgame()
 
         if ((read_pressed_text_input_key_code() == 11 || g_window_deactivated == one)
             && g_game->fade.state == zero) {
-            *(unsigned char*)(game + offsetof(SubgameRuntime, subgame_pause_gate)) = one;
+            *(unsigned char*)(game + offsetof(cRSubGame, subgame_pause_gate)) = one;
             subgame_state = three;
             g_sprite_manager.set_sprite_manager_paused((char)one);
             if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)

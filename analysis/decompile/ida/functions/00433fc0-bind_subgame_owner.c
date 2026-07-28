@@ -3,9 +3,9 @@
 /* selector: bind_subgame_owner */
 
 // Binds a front-end controller’s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the identical one-store body with the ThanksScreen owner-binding callsite.
-SubgameRuntime *__thiscall bind_subgame_owner(SubgameOwnerLink *owner)
+cRSubGame *__thiscall bind_subgame_owner(SubgameOwnerLink *owner)
 {
-  SubgameRuntime *result; // eax
+  cRSubGame *result; // eax
 
   result = &g_game_base->subgame;
   owner->game = &g_game_base->subgame;

@@ -3,7 +3,7 @@
 /* selector: initialize_blink_random */
 
 // Exact void Windows `cRSubGame::BlinkRandInit()`: resets the owned cursor and fills 24 blink-cadence samples with `1 / (((rand / 32768) + 1) * 60)`. Android and iOS preserve the same owner, table cardinality, formula, and void contract.
-void __thiscall initialize_blink_random(SubgameRuntime *game)
+void __thiscall initialize_blink_random(cRSubGame *game)
 {
   float *blink_random_samples; // esi
   int i; // edi

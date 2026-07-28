@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-double SubgameRuntime::advance_blink_random()
+double cRSubGame::advance_blink_random()
 {
     int next_index = (blink_random_index + 1) % 24;
     blink_random_index = next_index;

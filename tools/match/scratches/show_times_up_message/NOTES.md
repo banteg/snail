@@ -8,7 +8,7 @@ progress, and marks the controller active.
 
 2026-07-11 authored owner: the primary `TimesUp` type is shared through
 `times_up.h` across show/update/uninit and maps to mobile `cRTimesUp::Init()`.
-It owns the final 0x10 bytes of `SubgameRuntime`; the border at +0x04 is a
+It owns the final 0x10 bytes of `cRSubGame`; the border at +0x04 is a
 borrowed `FrontendWidget*`. This scratch remains exact at 31/31 with all six
 operands clean.
 

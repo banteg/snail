@@ -25,7 +25,7 @@ EXPECTED_TYPE_WIDTHS = {
     "RenderableBod": 0x80,
     "SubSpeedUp": 0xB4,
     "JetPack": 0x19C,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -52,7 +52,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("bod", "BodBase"),
         0x38: ("state", "TrackPickupState"),
     },
-    "SubgameRuntime": {
+    "cRSubGame": {
         0x355DB0: ("speedup_pickup", "SubSpeedUp"),
         0x355E64: ("jetpack_pickup", "JetPack"),
     },
@@ -61,7 +61,7 @@ EXPECTED_STRUCT_FIELDS = {
     },
 }
 
-# The pickup records remain embedded in SubgameRuntime. These two blocks only
+# The pickup records remain embedded in cRSubGame. These two blocks only
 # borrow their inherited BodNode links, remove that membership from the root
 # active list, and push the same node onto the root free stack before clearing
 # the pickup state. Preserve the two independent list-operation lifetimes; do

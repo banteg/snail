@@ -157,7 +157,7 @@
 0043ff1c        if ((((x87_r7_43 < temp9_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_43, temp9_1) ? 1 : 0) << 0xa | (x87_r7_43 == temp9_1 ? 1 : 0) << 0xe):1.b & 0x40) == 0)
 0043ff1e        var_14_4 = 1
 0043ff01        var_14_4 = 0xffffffff
-0043ff2a        struct SubgameRuntime* owner_game = slug->owner_game
+0043ff2a        struct cRSubGame* owner_game = slug->owner_game
 0043ff30        slug->death_toss_progress = 0f
 0043ff3e        slug->velocity.x = fconvert.s(float.t(var_14_4) * fconvert.t(0.200000003f) + fconvert.t(slug->velocity.x))
 0043ff43        long double x87_r7_48 = fconvert.t(owner_game->subgame_rate) * fconvert.t(0.00833333377f)

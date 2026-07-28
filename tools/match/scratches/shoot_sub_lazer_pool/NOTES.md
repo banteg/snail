@@ -86,7 +86,7 @@ without changing the exact 48/48-instruction implementation.
 
 2026-07-26 canonical owner correction: Android and iOS independently preserve
 this exact method as `cRSubLazerManager::Shoot(tVector, tVector)`. The Windows
-receiver is likewise `SubgameRuntime::sub_lazers`, the exact 20-slot manager
+receiver is likewise `cRSubGame::sub_lazers`, the exact 20-slot manager
 owner. The scratch and manifest therefore use `shoot_sub_lazer_pool`;
 the then-provisional `shoot_subgoldy` label was not its owner. Matching stays
 exact at 48/48 with all four operands clean.

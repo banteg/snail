@@ -5,7 +5,7 @@
 
 void Player::initialize_subgoldy_death()
 {
-    int mode = ((SubgameRuntime*)game)->level_mode;
+    int mode = ((cRSubGame*)game)->level_mode;
 
     switch (mode) {
     case 0:

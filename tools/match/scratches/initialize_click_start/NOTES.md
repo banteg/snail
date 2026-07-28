@@ -31,7 +31,7 @@ borrowed `Player*`. Focused Wibo remains exact at 79/79 instructions.
 2026-07-12 root/replay owner closure: prompt allocation now uses the exact
 `GameRoot::border_manager`, active-list insertion uses
 `GameRoot::active_bod_list.first`, and the initial hide decision reads
-`SubgameRuntime::replay_launch_active`. These typed substitutions preserve the
+`cRSubGame::replay_launch_active`. These typed substitutions preserve the
 exact 79/79 instruction match and close the initializer's remaining raw root
 offsets.
 

@@ -3,7 +3,7 @@
 /* selector: mark_track_warning_zones */
 
 // Void Windows `cRSubGame::DeSaltTrack()`: stamps the exact hazard tile set's six-row by two-lane salt-and-garbage suppression footprint through the owned `cRSubLoc` runtime grid after `CondenseTrack()` and before fringe construction. Android preserves the tile set, bounds, 0x18 flag update, and dispatcher position. The source-shaped transcription is 98.99% at 99/99 instructions.
-void __thiscall mark_track_warning_zones(SubgameRuntime *game)
+void __thiscall mark_track_warning_zones(cRSubGame *game)
 {
   int v1; // ebx
   SubLocTileId *p_tile_id; // eax

@@ -27,7 +27,7 @@ Recovered behavior:
   BOD is unlinked back into the shared free list.
 
 This helper is called by the wall-2 emitter update path and by
-`SubgameRuntime::remove_subgame_bods()`, so it is the smaller source-of-truth target
+`cRSubGame::remove_subgame_bods()`, so it is the smaller source-of-truth target
 before writing the larger subgame teardown pool scratch.
 
 Residual: the four-fringe-pointer loop is semantically aligned, but VC6 keeps
@@ -148,7 +148,7 @@ all 17 operands clean.
 
 The native outer cursor is retained, but its former `0x6410e0` displacement
 now derives from `offsetof(GameRoot, subgame) +
-offsetof(SubgameRuntime, runtime_rows)`. This binds the row lookup to both
+offsetof(cRSubGame, runtime_rows)`. This binds the row lookup to both
 recovered owners without changing the loop or register-lifetime shape.
 The normalized candidate listing remains byte-identical
 (`f51aff1164e0396a262f4ec1ccf1058c96410873dea5e39c400c49317e720897`),

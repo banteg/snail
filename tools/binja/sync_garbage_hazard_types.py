@@ -112,7 +112,7 @@ SUB_GARBAGE_FIELD_UPDATES = (
     ("0x80", "next_active", "SubGarbage*"),
     ("0x84", "state", "SubGarbageState"),
     ("0x88", "collision_side", "SubGarbageCollisionSide"),
-    ("0x8c", "owner_game", "SubgameRuntime*"),
+    ("0x8c", "owner_game", "cRSubGame*"),
     ("0x90", "velocity", "Vec3"),
     ("0x9c", "radius", "float"),
     ("0xa0", "attachment_facing_angle", "float"),
@@ -186,7 +186,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_track_garbage_hazard",
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* player)",
+        "void __thiscall spawn_track_garbage_hazard(cRSubGame* game, cRSubLoc* cell, Player* player)",
     ),
 )
 
@@ -289,7 +289,7 @@ def main() -> int:
         *apply_proto_updates(REPO_ROOT, target=args.target, updates=PROTO_UPDATES),
     ]
 
-    for struct_name in ("SubgameRuntime", "FrameSubgameRuntime"):
+    for struct_name in ("cRSubGame", "FrameSubgameRuntime"):
         if struct_exists(REPO_ROOT, target=args.target, struct_name=struct_name):
             operations.extend(
                 apply_struct_field_updates(

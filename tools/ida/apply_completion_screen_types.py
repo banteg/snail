@@ -44,7 +44,7 @@ TRUSTED_FUNCTIONS = (
 EXPECTED_OWNER_SIZES = {
     "Completion": 0x50,
     "SubSolution": 0x1FAC0,
-    "SubgameRuntime": 0x1272838,
+    "cRSubGame": 0x1272838,
 }
 
 INITIALIZER_COLOR_SELECTOR = "initialize_completion_screen"

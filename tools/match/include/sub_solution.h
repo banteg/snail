@@ -1,6 +1,6 @@
 // Authored cRSubSolution replay/high-score entry and its compact persistence
 // header. The 0x1fac0-byte object is owned by cRSubHighScore banks and by the
-// active SubgameRuntime run snapshot.
+// active cRSubGame run snapshot.
 #ifndef SUB_SOLUTION_H
 #define SUB_SOLUTION_H
 

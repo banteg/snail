@@ -637,9 +637,9 @@ def resolved_game_root_field_updates(*, target: str) -> tuple[tuple[str, str, st
     """Prefer complete root subowners after their canonical types are available."""
     border_manager_type = resolved_border_manager_struct_name(target=target)
     subgame_type = (
-        "SubgameRuntime"
+        "cRSubGame"
         if current_struct_size(
-            REPO_ROOT, target=target, struct_name="SubgameRuntime"
+            REPO_ROOT, target=target, struct_name="cRSubGame"
         )
         == 0x1272838
         else "FrameSubgameRuntime"

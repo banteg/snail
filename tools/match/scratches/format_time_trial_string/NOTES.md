@@ -6,7 +6,7 @@ at 0x751478 from the exact authored `cRTime` layout used by
 
 iOS and Android preserve the authored signature as
 `cRTimeTrial::TimeString(cRTime&)` in `TimeTrial.o`. Windows callsites seed
-`this` with `SubgameRuntime +0xff25e0`; the following proven PathManager at
+`this` with `cRSubGame +0xff25e0`; the following proven PathManager at
 `+0xff2910` and the runtime size ledger independently fix this owner at 0x330
 bytes. The formatter body itself does not read receiver fields.
 
@@ -51,9 +51,9 @@ promotable local duplicate.
   `TimeTrial` at `+0xff25e0`, followed by the one-byte `PathManager` at
   `+0xff2910` and all 63 exact `PathPair` values at `+0xff2914`.
 - The former `runtime_track_index` lane was a flattened field inside the
-  TimeTrial extent, not an independent SubgameRuntime member.
+  TimeTrial extent, not an independent cRSubGame member.
 - Binary Ninja preview verifies all boundaries and keeps
-  `SubgameRuntime == 0x1272838`, then reverts. The formatter remains exact at
+  `cRSubGame == 0x1272838`, then reverts. The formatter remains exact at
   36/36 instructions with all twelve operands clean.
 
 2026-07-24 course-record ownership:

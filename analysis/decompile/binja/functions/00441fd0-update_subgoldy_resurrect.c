@@ -10,15 +10,15 @@
 00441ffb        long double temp1_1 = fconvert.t(1f)
 00441ffb        x87_r7_2 - temp1_1
 00442006        if ((((x87_r7_2 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp1_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-0044200e        struct FrontendFade* ecx_2 = &g_game_base->fade
-00442014        if (ecx_2->state == 0)
-00442018        begin_frontend_fade_out(ecx_2, 0)
+0044200e        struct FrontendFade* fade = &g_game_base->fade
+00442014        if (fade->state == 0)
+00442018        begin_frontend_fade_out(fade, nullptr)
 0044201d        long double x87_r7_3 = fconvert.t(player->resurrect_progress)
 00442023        long double temp0 = fconvert.t(1f)
 00442023        x87_r7_3 - temp0
 0044203e        if ((((x87_r7_3 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0) ? 1 : 0) << 0xa | (x87_r7_3 == temp0 ? 1 : 0) << 0xe):1.b & 0x41) != 0 || g_game_base->fade.state != 4)
 0044203e        return
-0044204c        struct SubgameRuntime* game = player->game
+0044204c        struct cRSubGame* game = player->game
 00442052        if (player->resurrect_final_loss == 0)
 00442059        if (game->level_mode == 0)
 0044205b        player->visible_life_stock -= 1

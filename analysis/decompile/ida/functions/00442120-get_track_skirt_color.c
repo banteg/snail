@@ -3,7 +3,7 @@
 /* selector: get_track_skirt_color */
 
 // Builds the shared RGBA skirt or fringe colour from the current track colour scalars and a fixed alpha, then copies it into one runtime row or fringe object. Cross-port Android symbols match this helper to `cRSubGame::GetSkirtColour(tColourSmall)`.
-tColour *__thiscall get_track_skirt_color(SubgameRuntime *game, tColour *out)
+tColour *__thiscall get_track_skirt_color(cRSubGame *game, tColour *out)
 {
   struct tColour color; // [esp+4h] [ebp-10h] BYREF
 
@@ -15,4 +15,3 @@ tColour *__thiscall get_track_skirt_color(SubgameRuntime *game, tColour *out)
             0.40000001);
   return out;
 }
-

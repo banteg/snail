@@ -2,11 +2,8 @@
 /* function: normalize_segment_glyph_for_track_flags @ 0x437270 */
 /* selector: normalize_segment_glyph_for_track_flags */
 
-char __thiscall normalize_segment_glyph_for_track_flags(
-        SubgameRuntime *runtime,
-        char glyph,
-        int32_t row,
-        char edge_row)
+// Exact Windows implementation of authored `cRSubGame::LevelConvert(char, int, bool)`. The ECX receiver owns `track_mirror_enabled` at +0x02, `runtime_flags` at +0x4c, and `completion_row_start` at +0x58; three stack arguments carry the authored glyph, build row, and edge-row flag before `BuildLevel()` selects the runtime tile family. Android preserves the exact owner, signature, producer call, and normalized-glyph consumer while extending the feature-policy switch for its later runtime; iOS inlines the corresponding policy into `BuildLevel()` and exports no separate body.
+char __thiscall normalize_segment_glyph_for_track_flags(cRSubGame *runtime, char glyph, int32_t row, char edge_row)
 {
   char result; // al
   uint32_t runtime_flags; // ecx
@@ -66,7 +63,7 @@ char __thiscall normalize_segment_glyph_for_track_flags(
         {
           if ( (v9 & 0x20) != 0 )
           {
-            if ( runtime->track_mirror_enabled )
+            if ( runtime->track_mirror_enabled != 0 )
               result = 91;
           }
           else
@@ -93,7 +90,7 @@ char __thiscall normalize_segment_glyph_for_track_flags(
         }
         break;
       case '_':
-        if ( (runtime->runtime_flags & 0x40) == 0 && !edge_row )
+        if ( (runtime->runtime_flags & 0x40) == 0 && edge_row == 0 )
           result = 46;
         break;
       case 'o':
@@ -107,7 +104,7 @@ char __thiscall normalize_segment_glyph_for_track_flags(
         {
           if ( (v7 & 0x20) != 0 )
           {
-            if ( runtime->track_mirror_enabled )
+            if ( runtime->track_mirror_enabled != 0 )
               result = 125;
           }
           else
@@ -137,7 +134,7 @@ char __thiscall normalize_segment_glyph_for_track_flags(
           if ( (v6 & 0x20) != 0 )
           {
 LABEL_23:
-            if ( runtime->track_mirror_enabled )
+            if ( runtime->track_mirror_enabled != 0 )
               result = 123;
           }
           else

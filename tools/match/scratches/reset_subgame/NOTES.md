@@ -13,7 +13,7 @@ Recovered behavior:
 - re-arms the two live subgame bytes, clears the replay/restore byte, and
   resets the active garbage chain head.
 
-The exact scratch now consumes the canonical `SubgameRuntime` owners for every
+The exact scratch now consumes the canonical `cRSubGame` owners for every
 touched pool and for the replay snapshot handoff into the embedded `Player`.
 No fixed dword indices remain.
 
@@ -36,12 +36,12 @@ Important source-shape correction:
 - The native function is void-shaped. The old `int result` source was a
   decompiler artifact from the leftover `eax` value and made VC6 hoist the saved
   tail-b load before tail-a.
-- Spelling the helper as `void SubgameRuntime::reset_subgame()` removes the artificial
+- Spelling the helper as `void cRSubGame::reset_subgame()` removes the artificial
   return-value dependency and matches the native saved snapshot load order:
   score, tail-a, tail-b.
 - Focused Wibo is now 100.00%, 75/75 instructions, with 2 clean masked
   operands.
-- Binary Ninja readback is now directly typed as `SubgameRuntime`; the old
+- Binary Ninja readback is now directly typed as `cRSubGame`; the old
   root-`Game` and pickup-only owner views were stale import artifacts.
 
 2026-06-18 pool naming correction:
@@ -54,11 +54,11 @@ Important source-shape correction:
   cell. `reset_subgame` writes the containing subgame owner into this lane for all
   eight health slots; the spawned row source remains `source_cell +0x68`.
 - Pickup and slug `owner_game` backlinks now point directly to the containing
-  `SubgameRuntime`. Its `subgame_pause_gate +0x09` remains distinct from the
+  `cRSubGame`. Its `subgame_pause_gate +0x09` remains distinct from the
   global/UI pause gate at root `Game +0x74621`.
 - A broad BN header import preview still disturbed existing shared structs, so
   the sync script field-sets the recovered names on the existing
-  `SubgameRuntime` without reimporting `Sprite`, `cRSubLoc`, or `Player`.
+  `cRSubGame` without reimporting `Sprite`, `cRSubLoc`, or `Player`.
 
 2026-07-11 cRSubHealth ownership: the exact eight-record backlink loop now
 lands on the primary `SubHealth` array at `+0x356000`. It writes the containing
@@ -84,14 +84,14 @@ contiguous pool band between `JetPack` and `BannerPool`: eight exact 0x74-byte
 and the 40-slot 0x17c0 `SaltManager` at `+0x3578c0`.
 
 Binary Ninja preview verifies every stride and boundary while keeping
-`SubgameRuntime == 0x1272838`, then reverts. The exact reset body remains
+`cRSubGame == 0x1272838`, then reverts. The exact reset body remains
 75/75 instructions with both masked operands clean.
 
 ## 2026-07-13 cRSubRing backlink closure
 
 The final two-slot reset loop now closes the pool's lifetime model: each
 embedded `SubRing` is marked inactive and receives a borrowed pointer back to
-the enclosing `SubgameRuntime` at `+0x1d0`. `cRSubRing::Init` and `AI` consume
+the enclosing `cRSubGame` at `+0x1d0`. `cRSubRing::Init` and `AI` consume
 that same owner for `subgame_rate` and the pause gate; there is no separately
 allocated rate-source object. The historical generic ring names remain aliases
 only, and the exact reset body remains 75/75.
@@ -103,7 +103,7 @@ directly:
 
 - `speedup_pickup`, `jetpack_pickup`, `health_pickups`, `slug_hazards`,
   `garbage_hazards`, and `ring_effects` receive their state clears and borrowed
-  `SubgameRuntime*` backlinks through their primary types;
+  `cRSubGame*` backlinks through their primary types;
 - the replay restore condition reads `replay_launch_active`, `level_mode`, and
   `current_high_score_record.replay_mode_id`;
 - score, `Time`, score-tail, and replay-source values copy from the owned
@@ -127,7 +127,7 @@ The field rename remains exact at 75/75 instructions with both operands clean.
 ## 2026-07-14 reset-pool extent derivation
 
 The health, garbage, slug, and ring reset loops now derive their bounds from
-the exact arrays owned by `SubgameRuntime`. The normalized listing is
+the exact arrays owned by `cRSubGame`. The normalized listing is
 byte-identical
 (`5400e59084b4ded03fa3af9eb7a3db57020f9698f18ba8bcc60b2624bb96a008`)
 and remains exact at 75/75 instructions with two clean operands.
@@ -146,7 +146,7 @@ scratch remains exact at 75/75 instructions with two clean operands.
 
 ## 2026-07-24 paired decompiler ownership
 
-Binary Ninja already carried the exact `void __thiscall(SubgameRuntime*)`
+Binary Ninja already carried the exact `void __thiscall(cRSubGame*)`
 receiver, but the tracked IDA lane still rendered all pool and replay state as
 large `_DWORD*` indices. The dedicated IDA subgame replay now applies the same
 ABI and guards the function's trusted address before re-decompilation.
@@ -154,7 +154,7 @@ ABI and guards the function's trusted address before re-decompilation.
 The refreshed readback exposes every inline pool backlink, the owned
 `current_high_score_record` snapshot, the embedded Player timer/score state,
 and the final scan, camera, replay, and active-garbage latches through the
-containing `SubgameRuntime`. All five callsites independently load that same
+containing `cRSubGame`. All five callsites independently load that same
 receiver in `initialize_subgame`. The matcher remains naturally exact at
 75/75 instructions; no source or compiler scheduling was changed.
 
@@ -170,7 +170,7 @@ bytes and clearing replay and active-garbage state.
 
 The lifecycle edge is exact rather than name-only evidence. Android
 `cRSubGame::Init()` ends in `ReSet(this)`, while all five native exits from
-Windows `initialize_subgame` load the same `SubgameRuntime` receiver before
+Windows `initialize_subgame` load the same `cRSubGame` receiver before
 calling `0x437b10`. Android uses different record strides, capacities, and
 offsets, so none of those physical layout values transfer to Windows. No
 exported iOS `ReSet` body exists in the tracked corpus.

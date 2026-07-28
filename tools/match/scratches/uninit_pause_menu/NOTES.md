@@ -15,7 +15,7 @@ The earlier local names `title/resume/quit` were misleading but codegen-neutral.
 2026-07-14 ownership correction: leaked iOS symbols place
 `cRSubPause::UnInit()` in `SubGame.o`, and Android independently consumes the
 same three-pointer owner at `+0x00/+0x04/+0x08`. The owner is the 0x0c-byte
-`SubPause` embedded at `SubgameRuntime +0x14`. Every recovered Windows caller
+`SubPause` embedded at `cRSubGame +0x14`. Every recovered Windows caller
 ignores a result, and the final 8-instruction
 `MouseCursorState::release_mouse_cursor()` helper does not establish `EAX`;
 any apparent integer return was incidental register state. Expressing the
@@ -24,7 +24,7 @@ native final-call sequence at 22/22 instructions with all eight masked
 operands clean, so the former `PauseMenuTeardownView` and
 `PauseMenuMouseCursorReleaseView` shells were removed.
 
-2026-07-18 focused replay closure: the `SubgameRuntime` replay now owns the
+2026-07-18 focused replay closure: the `cRSubGame` replay now owns the
 pause lifecycle ABI and explicitly reanalyzes this teardown together with
 `initialize_pause_menu` and `update_pause_menu`. Both tracked analyzers retain
 the `void __thiscall(SubPause*)` contract, the three named widget members, and

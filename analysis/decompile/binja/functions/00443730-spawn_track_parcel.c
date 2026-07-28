@@ -13,9 +13,11 @@
 00443766        result->position.x:2.b = x:2.b
 00443766        result->position.x:3.b = x:3.b
 0044376d        result->position.y = world_position->y
-00443770        int16_t z = (world_position->z).w
+00443770        float z = world_position->z
 00443773        result->position.z.b = z.b
 00443773        result->position.z:1.b = z:1.b
+00443773        result->position.z:2.b = z:2.b
+00443773        result->position.z:3.b = z:3.b
 0044377c        result->owner_player = &runtime->player
 0044378b        struct Sprite* eax_1 = allocate_sprite(&g_sprite_manager, runtime->player.player_slot, 0x79, 0xffffffff, 0xffffffff)
 00443790        result->sprite = eax_1
@@ -34,9 +36,11 @@
 004437d5        ecx_6->r:2.b = r:2.b
 004437d5        ecx_6->r:3.b = r:3.b
 004437da        ecx_6->g = eax_3->g
-004437dd        int16_t b = (eax_3->b).w
+004437dd        float b = eax_3->b
 004437e0        ecx_6->b.b = b.b
 004437e0        ecx_6->b:1.b = b:1.b
+004437e0        ecx_6->b:2.b = b:2.b
+004437e0        ecx_6->b:3.b = b:3.b
 004437e6        ecx_6->a = eax_3->a
 004437f1        result->sprite->size_start = 1f
 004437f7        result->sprite->size_end = 1f

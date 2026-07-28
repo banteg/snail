@@ -59,7 +59,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x18: ("max_index_counts", "int32_t[5]"),
         0x2C: ("shared_vertex_buffers", "ObjectRenderVertex*[5]"),
         0x40: ("shared_index_buffers", "uint16_t*[5]"),
-        0x54: ("owner_subgame", "SubgameRuntime*"),
+        0x54: ("owner_subgame", "cRSubGame*"),
         0x58: ("slots", "TrackRenderCacheSlot[143][5]"),
     },
 }

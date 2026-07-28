@@ -26,9 +26,9 @@ selected-level/replay launch handoff back to the subgame state machine.
   including the mode-1 return through the saved frontend state fields at
   `g_game_base + 0x4f3ac/+0x4f3b4`.
 - `level_progress_base` is a borrowed backlink to the enclosing
-  `SubgameRuntime`. Play/Deliver writes its `level_mode_arg` and calls the
+  `cRSubGame`. Play/Deliver writes its `level_mode_arg` and calls the
   embedded `level_definition`; no separate progress object owns those fields.
-- Replay launch sets `SubgameRuntime::selected_level_record_active` and lends
+- Replay launch sets `cRSubGame::selected_level_record_active` and lends
   `selected_level_record` a pointer into the enclosing owner's persistent
   `sub_high_score.time_trial_route_records[selected_index]` bank. The native
   address identity is exact: `0x68b4c8 + 0x2b8c88 == 0x944150`, with
@@ -92,7 +92,7 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
 
 - `load_galaxy_layout` stores `&GameRoot::subgame` at `Galaxy +0x10f70`.
   `initialize_galaxy`, `open_galaxy_route`, and this updater independently use
-  that same value as a `SubgameRuntime*`.
+  that same value as a `cRSubGame*`.
 - The typed backlink recovers the launch/replay ownership described above and
   preserves this scratch's honest 61.11%, 550/566 result with all 43 operands
   clean. The exact opener remains 266/266 and the exact initializer remains

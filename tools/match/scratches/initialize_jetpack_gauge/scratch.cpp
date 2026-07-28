@@ -7,7 +7,7 @@
 void SubHover::initialize_jetpack_gauge(int player_slot)
 {
     progress = 0.0f;
-    SubgameRuntime* game_ptr = &g_game->subgame;
+    cRSubGame* game_ptr = &g_game->subgame;
     progress_step = 0.00166666671f;
     game = game_ptr;
     Player* player_ptr = g_game->subgame.embedded_player();

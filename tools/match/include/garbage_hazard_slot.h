@@ -10,7 +10,7 @@
 
 class Player;
 class Sprite;
-class SubgameRuntime;
+class cRSubGame;
 
 enum SubGarbageState {
     SUB_GARBAGE_STATE_INACTIVE = 0,
@@ -39,7 +39,7 @@ public:
     SubGarbage* next_active; // +0x80, borrowed link within the owning pool
     SubGarbageState state; // +0x84
     SubGarbageCollisionSide collision_side; // +0x88
-    SubgameRuntime* owner_game; // +0x8c, borrowed containing subgame
+    cRSubGame* owner_game; // +0x8c, borrowed containing subgame
     Vector3 velocity;               // +0x90
     float radius;                   // +0x9c
     float attachment_facing_angle; // +0xa0, projection output added to player heading

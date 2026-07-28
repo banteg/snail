@@ -170,7 +170,7 @@ removal residual is one root-anchor register choice; the larger residual is
 still the state-3 camera-target `Vector3` staging at target instruction 193.
 
 2026-07-13 rate-owner closure: reset assigns each embedded ring's `+0x1d0`
-backlink directly to its enclosing `SubgameRuntime`; the updater consumes that
+backlink directly to its enclosing `cRSubGame`; the updater consumes that
 same owner's `subgame_pause_gate +0x09` and `subgame_rate +0x38`. The former
 `RingEffectRateSource` shell represented no allocation or lifetime boundary and
 is retired. Focused matching remains 98.21%, 336/336, with 37 clean operands.
@@ -196,7 +196,7 @@ clean operands.
 ## 2026-07-15 durable owner replay
 
 Both databases now persist the canonical `SubRing*` receiver, its ten owned
-`SubRingStar` children, borrowed `SubgameRuntime*` rate source, and root-owned
+`SubRingStar` children, borrowed `cRSubGame*` rate source, and root-owned
 active-list teardown. Readback confirms the `0x20` child, `0x1f8` parent, and
 `0x3f0` two-slot pool; the synthetic `RingEffectRateSource` owner is gone and
 strict paired export reports no mismatches. Matching remains 98.21%, 336/336

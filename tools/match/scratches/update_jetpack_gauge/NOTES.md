@@ -57,7 +57,7 @@ separate `test eax, eax` after `dec eax`, while native reuses flags from
 `84.29%` and disturbed the progress-add x87 order, so keep the ladder.
 
 2026-06-21 subgame owner typing: `SubHover::game` is now typed
-as `SubgameRuntime*`, and the global row-sampler cast uses the same shared
+as `cRSubGame*`, and the global row-sampler cast uses the same shared
 runtime view at `g_game_base + 0x74618`. This removes the scratch-local
 generic `Game` shell without moving the codegen; focused Wibo remains at
 `85.93%`, `132/131`, prefix `6/131`, with 34 clean masked operands.

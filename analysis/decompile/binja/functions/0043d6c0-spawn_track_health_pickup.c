@@ -70,15 +70,17 @@
 0043d7fc        health_cursor->health.sprite->size_start = 0.600000024f
 0043d805        health_cursor->health.sprite->size_end = 0.600000024f
 0043d80e        float x_1 = health_cursor->health.bod.position.x
-0043d810        char* ecx_5 = &health_cursor->health.sprite->position
-0043d813        *ecx_5 = x_1.b
-0043d813        ecx_5[1] = x_1:1.b
-0043d813        ecx_5[2] = x_1:2.b
-0043d813        ecx_5[3] = x_1:3.b
-0043d818        *(ecx_5 + 4) = health_cursor->health.bod.position.y
-0043d81b        int16_t z_1 = (health_cursor->health.bod.position.z).w
-0043d81e        ecx_5[8] = z_1.b
-0043d81e        ecx_5[9] = z_1:1.b
+0043d810        struct Vec3* ecx_5 = &health_cursor->health.sprite->position
+0043d813        ecx_5->x.b = x_1.b
+0043d813        ecx_5->x:1.b = x_1:1.b
+0043d813        ecx_5->x:2.b = x_1:2.b
+0043d813        ecx_5->x:3.b = x_1:3.b
+0043d818        ecx_5->y = health_cursor->health.bod.position.y
+0043d81b        float z_1 = health_cursor->health.bod.position.z
+0043d81e        ecx_5->z.b = z_1.b
+0043d81e        ecx_5->z:1.b = z_1:1.b
+0043d81e        ecx_5->z:2.b = z_1:2.b
+0043d81e        ecx_5->z:3.b = z_1:3.b
 0043d821        health_cursor->health.source_cell = cell_1
 0043d827        health_cursor->health.bob_phase = 0f
 0043d83a        int16_t x87control

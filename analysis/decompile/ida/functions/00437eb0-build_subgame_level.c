@@ -3,7 +3,7 @@
 /* selector: build_subgame_level */
 
 // Windows implementation of authored `cRSubGame::StartLevel(int)`. It performs the outer level-file load and manager resets, invokes `GenerateLevel(int)` for the runtime track rebuild, then sets up mode-specific HUD state, backdrop and landscape selection, player state, music, and the first gameplay object lists.
-void __thiscall build_subgame_level(SubgameRuntime *game, int32_t level_index)
+void __thiscall build_subgame_level(cRSubGame *game, int32_t level_index)
 {
   int32_t level_mode; // eax
   double challenge_difficulty_value; // st7

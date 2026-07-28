@@ -3,7 +3,7 @@
 /* selector: rebuild_track_runtime_from_segments */
 
 // Exact authored void `cRSubGame::GenerateLevel(int)`: stores the level argument, applies mode features and colours, calls `BuildLevel()` to populate runtime rows, then places parcels and runs the normalization, warning, fringe, and render-cache passes. Windows and Android `StartLevel(int)` discard its incidental final callee result.
-void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime *game, int32_t level_index)
+void __thiscall rebuild_track_runtime_from_segments(cRSubGame *game, int32_t level_index)
 {
   tColour out; // [esp+4h] [ebp-10h] BYREF
   tColour v4; // 0:^0.16

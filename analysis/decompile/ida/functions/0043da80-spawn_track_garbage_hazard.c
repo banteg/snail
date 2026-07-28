@@ -3,7 +3,7 @@
 /* selector: spawn_track_garbage_hazard */
 
 // Exact void allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records for `SUB_GARBAGE_STATE_INACTIVE` after the pool's borrowed active-chain head, then activates the selected slot; the sole Windows caller discards EAX, while Android leaves incompatible incidental results on success and exhaustion. Android and iOS identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`.
-void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, cRSubLoc *cell, Player *player)
+void __thiscall spawn_track_garbage_hazard(cRSubGame *game, cRSubLoc *cell, Player *player)
 {
   int v3; // eax
   SubGarbageState *i; // ecx

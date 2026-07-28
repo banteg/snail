@@ -1,6 +1,6 @@
 # merge_track_tile_runs
 
-`SubgameRuntime::merge_track_tile_runs` makes a second pass over the populated
+`cRSubGame::merge_track_tile_runs` makes a second pass over the populated
 runtime track cells. It seeds every cell with the independent
 `SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY` (`0x6000`) bits,
 then scans each row's eight lanes for horizontal slide, floor, and worm-tunnel
@@ -25,7 +25,7 @@ Important flag distinction: the first cell's start gate excludes
 the run counts to match the native behavior after the initial AI/uncached-body
 seed pass.
 
-Continuation cleanup is owned by `SubgameRuntime::runtime_cells[row][lane]`, not
+Continuation cleanup is owned by `cRSubGame::runtime_cells[row][lane]`, not
 by an independently advancing borrowed cell pointer. Recomputing the indexed
 field cursor matches the native row/lane address arithmetic and prevents a run
 cursor from escaping its eight-cell row.
@@ -44,7 +44,7 @@ Source-shape progression:
 - the two field-first cursors and fixed wall-run flag owner bring the retained
   version to 54.77% (276 target instructions, 290 candidate instructions, ten
   clean masked operands);
-- a `SubgameRuntime* game = this` alias was byte-neutral, and alternate outer
+- a `cRSubGame* game = this` alias was byte-neutral, and alternate outer
   cell scopes regressed the score, so neither is retained.
 
 The remaining gap is mostly the compiler preserving a parallel cell-base
@@ -98,7 +98,7 @@ loop counter at all three call sites.
 The cleanup write also names the containing `cRSubLoc` directly from its
 `lane_and_flags` field cursor instead of keeping a redundant `clear_cell`
 local alive. This removes six candidate instructions while retaining the
-indexed `SubgameRuntime::runtime_cells[row][lane]` owner and the native
+indexed `cRSubGame::runtime_cells[row][lane]` owner and the native
 backward walk.
 
 Focused matching rises from 54.77% (290/276) to **67.50% (284/276)** with all
@@ -129,7 +129,7 @@ attachment body. Focused output remains 67.50%, 284/276 instructions, with all
 
 The live Binary Ninja `Game*` receiver was a stale same-size named identity.
 The guarded repair recreated only this exact function with the proven
-`SubgameRuntime*` receiver and preserved its sole user-defined parameter. Both
+`cRSubGame*` receiver and preserved its sole user-defined parameter. Both
 tracked decompilers now expose `runtime_row_count`, `runtime_cells`,
 `runtime_rows`, and `level_mode` through that owner with no raw aggregate
 offsets. The remaining field-first cursor arithmetic is the native eight-lane
@@ -175,7 +175,7 @@ presentation residual is documented instead of fakematched.
 The per-row suppression cursor now begins at
 `runtime_rows[0].attachment_body.bod.list_flags`. Live IDA inspection proves
 operand `0x4351cb:1` carries the numeric `0x5ccb7c` displacement from the
-typed `SubgameRuntime*`; exact normalization removes the false
+typed `cRSubGame*`; exact normalization removes the false
 `unk_5CCB7C` global while retaining the native borrowed `uint32_t*` cursor.
 
 No matcher source changed. The focused result remains honestly at 67.50%,

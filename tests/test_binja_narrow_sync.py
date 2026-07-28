@@ -34,9 +34,9 @@ def test_owner_syncs_keep_subgame_runtime_as_the_canonical_backlink() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     path_header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
 
-    assert 'TUTORIAL_FIELD_UPDATES = (\n    ("0x0c", "game", "SubgameRuntime*"),' in path_sync
+    assert 'TUTORIAL_FIELD_UPDATES = (\n    ("0x0c", "game", "cRSubGame*"),' in path_sync
     assert '("Tutorial", TUTORIAL_FIELD_UPDATES),' in path_sync
-    assert "SubgameRuntime* game;" in path_header
+    assert "cRSubGame* game;" in path_header
 
 
 def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
@@ -703,7 +703,7 @@ def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
         repo_root / "analysis/decompile/health_checks.json"
     ).read_text(encoding="utf-8")
     assert "void initialize_blink_random();" in matcher_header
-    assert "void SubgameRuntime::initialize_blink_random()" in blink_source
+    assert "void cRSubGame::initialize_blink_random()" in blink_source
     assert "return result;" not in blink_source
     assert '"00440909        return"' in health_checks
     assert '"return result"' in health_checks
@@ -724,17 +724,17 @@ def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     ):
         source = source_path.read_text(encoding="utf-8")
         assert (
-            "float __thiscall calc_slider_to_rate(SubgameRuntime*" in source
+            "float __thiscall calc_slider_to_rate(cRSubGame*" in source
         )
         assert (
-            "void __thiscall initialize_blink_random(SubgameRuntime*" in source
+            "void __thiscall initialize_blink_random(cRSubGame*" in source
         )
-        assert "void __thiscall hide_gameplay_scores(SubgameRuntime*" in source
+        assert "void __thiscall hide_gameplay_scores(cRSubGame*" in source
         assert (
-            "void __thiscall unhide_gameplay_scores(SubgameRuntime*" in source
+            "void __thiscall unhide_gameplay_scores(cRSubGame*" in source
         )
         assert (
-            "int32_t __thiscall initialize_blink_random(SubgameRuntime*"
+            "int32_t __thiscall initialize_blink_random(cRSubGame*"
             not in source
         )
 
@@ -1192,7 +1192,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
             ('"Invincible"', "0x98"),
             ('"Snail"', "0x19B4"),
             ('"Player"', "0x4364"),
-            ('"SubgameRuntime"', "0x1272838"),
+            ('"cRSubGame"', "0x1272838"),
         ):
             assert f"{owner}: {size}" in source
 
@@ -1367,7 +1367,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         (HEADER_DIR / name).read_text(encoding="utf-8")
         for name in ("frame_renderer_types.h", "bn_frame_renderer_types.h")
     )
-    assert '"SubgameRuntime": 0x1272838' in owner_sync
+    assert '"cRSubGame": 0x1272838' in owner_sync
     for owner in (
         '(0x44100, 0x4D00, "root_bod_catalog", "RootBodCatalog")',
         '(0x48E00, 0x5E10, "directx_loader", "DirectXLoader")',
@@ -2743,7 +2743,7 @@ def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
         calls.append(args)
         return {
             "result": {
-                "SubgameRuntime": [
+                "cRSubGame": [
                     {
                         "offset": 0x3BFAC8,
                         "name": "runtime_cells",
@@ -2754,7 +2754,7 @@ def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
                     {
                         "offset": 0x408,
                         "name": "game",
-                        "type": "struct SubgameRuntime*",
+                        "type": "struct cRSubGame*",
                     }
                 ],
             }
@@ -2765,10 +2765,10 @@ def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
     assert _narrow_sync.current_struct_fields_batch(
         Path("."),
         target="snail-mail.exe",
-        struct_names=("SubgameRuntime", "Player"),
+        struct_names=("cRSubGame", "Player"),
     ) == {
-        "SubgameRuntime": {0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]")},
-        "Player": {0x408: ("game", "SubgameRuntime*")},
+        "cRSubGame": {0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]")},
+        "Player": {0x408: ("game", "cRSubGame*")},
     }
     assert len(calls) == 1
     assert calls[0][:2] == ("py", "exec")
@@ -2782,7 +2782,7 @@ def test_current_prototypes_batches_readback(monkeypatch) -> None:
         calls.append(args)
         return {
             "result": {
-                "reset_subgame": "void __thiscall(struct SubgameRuntime* game)",
+                "reset_subgame": "void __thiscall(struct cRSubGame* game)",
                 "0x437eb0": None,
             }
         }
@@ -2794,7 +2794,7 @@ def test_current_prototypes_batches_readback(monkeypatch) -> None:
         target="snail-mail.exe",
         identifiers=("reset_subgame", "0x437eb0"),
     ) == {
-        "reset_subgame": "void __thiscall(struct SubgameRuntime* game)",
+        "reset_subgame": "void __thiscall(struct cRSubGame* game)",
         "0x437eb0": None,
     }
     assert len(calls) == 1
@@ -3160,7 +3160,7 @@ def test_run_bn_reads_failure_spill_before_raising(monkeypatch, tmp_path) -> Non
                     {
                         "op": "struct_field_set",
                         "status": "verified",
-                        "struct_name": "SubgameRuntime",
+                        "struct_name": "cRSubGame",
                         "field_name": "runtime_cells",
                     },
                     {
@@ -3170,7 +3170,7 @@ def test_run_bn_reads_failure_spill_before_raising(monkeypatch, tmp_path) -> Non
                         "address": "0x4374b0",
                         "before_prototype": "void __fastcall(struct Game* game)",
                         "expected_prototype": (
-                            "void __thiscall(struct SubgameRuntime* game)"
+                            "void __thiscall(struct cRSubGame* game)"
                         ),
                         "message": "Live prototype verification failed at 0x4374b0",
                     },
@@ -3196,7 +3196,7 @@ def test_run_bn_reads_failure_spill_before_raising(monkeypatch, tmp_path) -> Non
         message = str(error)
         assert str(spill_path) in message
         assert "initialize_subgame" in message
-        assert "SubgameRuntime" in message
+        assert "cRSubGame" in message
         assert "runtime_cells" not in message
     else:
         raise AssertionError("failed spilled mutation was accepted")
@@ -3207,12 +3207,12 @@ def test_struct_exists_rejects_forward_declaration(monkeypatch) -> None:
         _narrow_sync,
         "run_bn",
         lambda *_args, **_kwargs: {
-            "layout": "struct SubgameRuntime // size=0x0",
+            "layout": "struct cRSubGame // size=0x0",
         },
     )
 
     assert not _narrow_sync.struct_exists(
-        Path("."), target="snail-mail.exe", struct_name="SubgameRuntime"
+        Path("."), target="snail-mail.exe", struct_name="cRSubGame"
     )
 
 
@@ -3221,12 +3221,12 @@ def test_struct_exists_accepts_complete_layout(monkeypatch) -> None:
         _narrow_sync,
         "run_bn",
         lambda *_args, **_kwargs: {
-            "layout": "struct SubgameRuntime // size=0x1272838\n0x0000: uint8_t state",
+            "layout": "struct cRSubGame // size=0x1272838\n0x0000: uint8_t state",
         },
     )
 
     assert _narrow_sync.struct_exists(
-        Path("."), target="snail-mail.exe", struct_name="SubgameRuntime"
+        Path("."), target="snail-mail.exe", struct_name="cRSubGame"
     )
 
 
@@ -3776,7 +3776,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         assert f'"{function_name}"' in deferred_prototypes
     assert (
         '"initialize_subgame", "void __thiscall '
-        'initialize_subgame(SubgameRuntime* game)"'
+        'initialize_subgame(cRSubGame* game)"'
     ) in deferred_prototypes
     for function_name in (
         "destroy_subgame",
@@ -3785,7 +3785,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     ):
         assert (
             f'"{function_name}", "void __thiscall '
-            f'{function_name}(SubgameRuntime* game)"'
+            f'{function_name}(cRSubGame* game)"'
         ) in deferred_prototypes
     for function_name in (
         "merge_track_tile_runs",
@@ -3794,7 +3794,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "harmonize_center_lane_floor_slide_variants",
     ):
         declaration = (
-            f"void __thiscall {function_name}(SubgameRuntime* game)"
+            f"void __thiscall {function_name}(cRSubGame* game)"
         )
         assert declaration in normalization_prototypes
         assert declaration + ";" in ida_source
@@ -3803,12 +3803,12 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
             "\n    },", 1
         )[0]
         assert (
-            '"expected_prototype": "void __thiscall(struct SubgameRuntime* game)"'
+            '"expected_prototype": "void __thiscall(struct cRSubGame* game)"'
             in repair_spec
         )
         assert (
             '"stale_prototype": '
-            '"int32_t __thiscall(struct SubgameRuntime* game)"'
+            '"int32_t __thiscall(struct cRSubGame* game)"'
             in repair_spec
         )
         assert '"int32_t __thiscall(struct Game* game)"' in repair_spec
@@ -3829,7 +3829,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
                 assert f'"name": "{variable_name}"' in repair_spec
     assert "*TRACK_NORMALIZATION_VOID_PROTO_UPDATES" in source
     assert '"address": 0x4374B0' in repair_source
-    assert '"expected_prototype": "void __thiscall(struct SubgameRuntime* game)"' in repair_source
+    assert '"expected_prototype": "void __thiscall(struct cRSubGame* game)"' in repair_source
     assert '"stale_prototype": "void __fastcall(struct Game* game)"' in repair_source
     for function_name in (
         "initialize_subgame",
@@ -3882,15 +3882,15 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     assert "*_fringe_builder_repair_variables()" in fringe_repair_spec
     assert (
         '"SubRow* __thiscall get_track_runtime_cell_at_world_z('
-        'SubgameRuntime* game, Vec3* position)"'
+        'cRSubGame* game, Vec3* position)"'
     ) in deferred_prototypes
     assert (
         '"SubRow* __thiscall get_track_runtime_cell_at_world_z('
-        'SubgameRuntime* game, Vec3* position);"'
+        'cRSubGame* game, Vec3* position);"'
     ) in ida_source
     projection_declaration = (
         "void __thiscall project_position_onto_track_attachment("
-        "SubgameRuntime* game, Vec3* position, float* out_angle);"
+        "cRSubGame* game, Vec3* position, float* out_angle);"
     )
     compact_projection_declaration = "".join(projection_declaration.split())
     assert compact_projection_declaration in compact_header
@@ -3901,7 +3901,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "spawn_track_jetpack_pickup",
     ):
         declaration = (
-            f"void __thiscall {function_name}(SubgameRuntime* game, "
+            f"void __thiscall {function_name}(cRSubGame* game, "
             "cRSubLoc* cell, Player* player);"
         )
         assert declaration in header
@@ -4110,7 +4110,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         "update_subgame",
         "remove_subgame_bods",
     ):
-        declaration = f"void __thiscall {function_name}(SubgameRuntime* game);"
+        declaration = f"void __thiscall {function_name}(cRSubGame* game);"
         assert declaration in header
         assert declaration in ida_source
 
@@ -4232,7 +4232,10 @@ def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None
         assert "add_vapour_point(&shot->vapour" in artifacts["update"]
         assert "shot->tertiary_body.transform" in artifacts["update"]
         assert "shot->vapour_owner_shot = shot" in artifacts["create"]
-        assert "shot->bod.bod" in artifacts["create"]
+        if lane == "ida":
+            assert "shot->body.bod.bod" in artifacts["create"]
+        else:
+            assert "shot->bod.bod" in artifacts["create"]
         assert "shot->vapour.body" in artifacts["create"]
         assert "shot->tertiary_body" in artifacts["create"]
 
@@ -4249,7 +4252,7 @@ def test_runtime_pool_constructor_replay_preserves_nested_owners() -> None:
 
     declarations = (
         "RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body)",
-        "SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(SubgameRuntime* game)",
+        "cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(cRSubGame* game)",
         "SubRow* __thiscall initialize_track_row_runtime(SubRow* row)",
         "Fringe* __thiscall initialize_fringe_object(Fringe* fringe)",
         "Object* __thiscall initialize_object_constructor_thunk(Object* object)",
@@ -4424,7 +4427,7 @@ def test_high_score_replay_preserves_embedded_record_element_borrows() -> None:
     for expected_size in (
         '"SubSolution": 0x1FAC0',
         '"SubHighScore": 0x947648',
-        '"SubgameRuntime": 0x1272838',
+        '"cRSubGame": 0x1272838',
     ):
         assert expected_size in binja_source
     assert "SCALAR_SIZE_DISPLAY_UPDATES" in binja_source
@@ -4487,7 +4490,7 @@ def test_subgame_life_stock_replay_preserves_pointer_slot_borrows() -> None:
 
     for expected in (
         '"FrontendWidget": 0x724',
-        '"SubgameRuntime": 0x1272838',
+        '"cRSubGame": 0x1272838',
         '0x35BB98: ("life_stock_widgets", "FrontendWidget*[9]")',
         "LIFE_STOCK_WIDGET_CURSOR_USER_VAR_UPDATES",
         "current_struct_fields_batch",
@@ -4529,7 +4532,7 @@ def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
     ).read_text(encoding="utf-8")
 
     for expected in (
-        '"SubgameRuntime": 0x1272838',
+        '"cRSubGame": 0x1272838',
         '"SubHealth": 0x74',
         '"Slug": 0xEC',
         '"Banner": 0x60',
@@ -4591,7 +4594,7 @@ def test_blink_random_replay_preserves_sample_borrow() -> None:
 
     for expected in (
         '"Player": 0x4364',
-        '"SubgameRuntime": 0x1272838',
+        '"cRSubGame": 0x1272838',
         '0x3BB700: ("blink_random_index", "int32_t")',
         '0x3BB704: ("blink_random_samples", "float[24]")',
         '0x3BB764: ("player", "Player")',
@@ -5082,7 +5085,7 @@ def test_bind_subgame_owner_reanalysis_is_paired() -> None:
     bn_check = checks["bn_bind_subgame_owner_root_borrow"]
     ida_check = checks["ida_bind_subgame_owner_root_borrow"]
     assert (
-        "struct SubgameRuntime* result = &g_game_base->subgame"
+        "struct cRSubGame* result = &g_game_base->subgame"
         in bn_check["required_substrings"]
     )
     assert "g_game_base + 0x74618" in bn_check["forbidden_substrings"]
@@ -9832,7 +9835,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert definition_address in ida_path_sync
     for name, declaration in (
         ("row_event_cell", "cRSubLoc *row_event_cell;"),
-        ("row_event_game", "SubgameRuntime *row_event_game;"),
+        ("row_event_game", "cRSubGame *row_event_game;"),
         (
             "row_event_source_cell",
             "cRSubLoc *row_event_source_cell;",
@@ -9845,7 +9848,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
             "SubSegmentEventBiasView *sample_segment_view;",
         ),
         ("current_cell", "cRSubLoc *current_cell;"),
-        ("attachment_game", "SubgameRuntime *attachment_game;"),
+        ("attachment_game", "cRSubGame *attachment_game;"),
         (
             "primary_attachment_cell",
             "cRSubLoc *primary_attachment_cell;",
@@ -10537,11 +10540,11 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
     assert '(0x437B10, "reset_subgame")' in ida_runtime_sync
     assert "0x437B10,  # reset_subgame" in ida_runtime_sync
     assert (
-        "void __thiscall set_subgame_features(SubgameRuntime* runtime);"
+        "void __thiscall set_subgame_features(cRSubGame* runtime);"
         in ida_runtime_sync
     )
     assert (
-        "void __thiscall reset_subgame(SubgameRuntime* game);"
+        "void __thiscall reset_subgame(cRSubGame* game);"
         in ida_runtime_sync
     )
 
@@ -10561,16 +10564,16 @@ def test_subgame_control_prefix_ownership_stays_aligned() -> None:
     assert '("0x08", "resume_requested", "uint8_t")' in frame_sync
     assert '("0x3c", "subgame_state", "int32_t")' in frame_sync
     assert "def resolved_game_root_field_updates" in frame_sync
-    assert 'struct_name="SubgameRuntime"' in frame_sync
+    assert 'struct_name="cRSubGame"' in frame_sync
     assert 'else "FrameSubgameRuntime"' in frame_sync
     assert "apply_struct_and_proto_updates" in frame_sync
     assert "apply_struct_field_updates" not in frame_sync
     assert (
-        '"void __thiscall update_subgame_camera(SubgameRuntime* runtime)"'
+        '"void __thiscall update_subgame_camera(cRSubGame* runtime)"'
         in runtime_sync
     )
     assert (
-        '"void __thiscall update_subgame_camera(SubgameRuntime* runtime);"'
+        '"void __thiscall update_subgame_camera(cRSubGame* runtime);"'
         in ida_sync
     )
     assert "char __thiscall update_subgame_camera" not in ida_sync
@@ -10608,12 +10611,12 @@ def test_segment_glyph_normalizer_replay_preserves_subgame_owner_abi() -> None:
 
     expected = (
         "char __thiscall normalize_segment_glyph_for_track_flags("
-        "SubgameRuntime* runtime, char glyph, int32_t row, char edge_row)"
+        "cRSubGame* runtime, char glyph, int32_t row, char edge_row)"
     )
     assert expected in binja_sync
     assert expected + ";" in ida_sync
     assert "char __thiscall normalize_segment_glyph_for_track_flags(" in path_header
-    assert "SubgameRuntime* runtime," in path_header
+    assert "cRSubGame* runtime," in path_header
     assert "0x437270,  # normalize_segment_glyph_for_track_flags" in ida_sync
 
 
@@ -10811,7 +10814,7 @@ def test_sub_ring_kind_boundary_and_state_ownership_stay_aligned() -> None:
         assert "SUB_RING_KIND_POWER_UP_AUTHORED = 8" in header
         assert "SubRing* parent;" in header
         assert "SubRingStar particles[" in header
-        assert "SubgameRuntime* rate_source;" in header
+        assert "cRSubGame* rate_source;" in header
         assert "SubRing slots[" in header
         assert "RingEffectRateSource" not in header
 
@@ -10965,12 +10968,12 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         assert function_name in pool_sync
         assert function_name in ida_sync
     assert (
-        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, "
+        "void __thiscall spawn_slug_hazard(cRSubGame* game, "
         "cRSubLoc* cell, Player* owner_player)"
         in pool_sync
     )
     assert (
-        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, "
+        "void __thiscall spawn_slug_hazard(cRSubGame* game, "
         "cRSubLoc* cell, Player* owner_player);"
         in ida_sync
     )
@@ -11224,29 +11227,29 @@ def test_parcel_bucket_banks_have_one_shared_cross_decompiler_owner() -> None:
 
     for source in (binja_sync, path_binja_sync):
         assert (
-            "void __thiscall place_parcels_on_track(SubgameRuntime* game)" in source
+            "void __thiscall place_parcels_on_track(cRSubGame* game)" in source
         )
         assert (
             "void __thiscall "
-            "place_challenge_parcels_on_track(SubgameRuntime* game)" in source
+            "place_challenge_parcels_on_track(cRSubGame* game)" in source
         )
         assert "int32_t __thiscall place_parcels_on_track" not in source
         assert "int32_t __thiscall place_challenge_parcels_on_track" not in source
 
     assert (
-        "void __thiscall place_parcels_on_track(SubgameRuntime* game);" in path_header
+        "void __thiscall place_parcels_on_track(cRSubGame* game);" in path_header
     )
     assert (
-        "void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);"
+        "void __thiscall place_challenge_parcels_on_track(cRSubGame* game);"
         in path_header
     )
     assert "int32_t __thiscall place_parcels_on_track" not in path_header
     assert "int32_t __thiscall place_challenge_parcels_on_track" not in path_header
 
     for source in (ida_apply, path_ida_apply):
-        assert "void __thiscall place_parcels_on_track(SubgameRuntime" in source
+        assert "void __thiscall place_parcels_on_track(cRSubGame" in source
         assert (
-            "void __thiscall place_challenge_parcels_on_track(SubgameRuntime"
+            "void __thiscall place_challenge_parcels_on_track(cRSubGame"
             in source
         )
         assert "int32_t __thiscall place_parcels_on_track" not in source
@@ -11442,7 +11445,7 @@ def test_track_colour_banks_replay_semantic_owners_without_collapsing_slide() ->
     assert '(0x435D40, "build_track_colours")' in ida_apply
     for source in (binja_sync, ida_apply):
         assert "void __cdecl {name}" in source
-        assert "void __thiscall build_track_colours(SubgameRuntime" in source
+        assert "void __thiscall build_track_colours(cRSubGame" in source
     assert "apply_struct_and_proto_updates" in binja_sync
     assert "TRUSTED_FUNCTION_DECLARATIONS = tuple(" in ida_apply
     assert 'FUNCTION_MANIFEST_PATH = REPO_ROOT / "analysis/symbols/gameplay-functions.json"' in ida_apply
@@ -11558,7 +11561,7 @@ def test_completion_replay_uses_the_canonical_subgame_owner() -> None:
     assert "sync_game_root_owner_graph(require=True)" in ida_apply
     assert '"Completion": 0x50' in ida_apply
     assert '"SubSolution": 0x1FAC0' in ida_apply
-    assert '"SubgameRuntime": 0x1272838' in ida_apply
+    assert '"cRSubGame": 0x1272838' in ida_apply
     assert "ida_hexrays.mark_cfunc_dirty(address, True)" in ida_apply
     assert "idc.save_database(idc.get_idb_path(), 0)" in ida_apply
     assert "INITIALIZER_COLOR_DEFINITION_ADDRESS = 0x404A5F" in ida_apply
@@ -11903,7 +11906,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
             "LandscapeManager* manager);"
         ) in ida_sync
         assert (
-            "void __thiscall calc_subgame_rate(SubgameRuntime* game);"
+            "void __thiscall calc_subgame_rate(cRSubGame* game);"
             in ida_sync
         )
         assert "SaltHazardSlot* slot" not in ida_sync
@@ -12021,12 +12024,12 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
         encoding="utf-8"
     )
 
-    assert "SubgameRuntime* owner_game; // +0x48" in matcher
+    assert "cRSubGame* owner_game; // +0x48" in matcher
     for header in headers:
         banner = header.split("typedef struct Banner {", 1)[1].split(
             "} Banner;", 1
         )[0]
-        assert "SubgameRuntime* owner_game;" in banner
+        assert "cRSubGame* owner_game;" in banner
         assert banner.index("owner_game") < banner.index("owner_player")
         assert "0x48 - 0x3c" in banner
         assert "0x54 - 0x4c" in banner
@@ -12034,7 +12037,7 @@ def test_banner_backlink_owner_survives_every_replay_lane() -> None:
         assert "uint8_t root_to_banner[0x3cd698];" in header
         assert "Banner banner;" in header
     for sync in syncs:
-        assert '("0x48", "owner_game", "SubgameRuntime*")' in sync
+        assert '("0x48", "owner_game", "cRSubGame*")' in sync
         assert '("Banner", BANNER_FIELD_UPDATES)' in sync
     runtime_sync = syncs[1]
     path_sync = syncs[2]
@@ -12251,7 +12254,7 @@ def test_sub_lazer_asset_cursor_is_field_first_borrowed_and_fail_closed() -> Non
         assert "Object* body_object;" in header
         assert "tColour body_color;" in header
         assert "uint8_t _pad_14[0x50];" in header
-        assert "SubgameRuntime* owner_game;" in header
+        assert "cRSubGame* owner_game;" in header
         assert "uint8_t _stride_tail[0x48];" in header
     assert "typedef struct tColour {" in narrow_header
 
@@ -12337,7 +12340,7 @@ def test_salt_asset_cursor_is_field_first_borrowed_and_fail_closed() -> None:
     assert "Salt slots[40];" in matcher_header
     for header in (narrow_header, canonical_header):
         assert "typedef struct SaltOwnerGameStrideCursor {" in header
-        assert "SubgameRuntime* owner_game;" in header
+        assert "cRSubGame* owner_game;" in header
         assert "uint8_t _stride_tail[0x94];" in header
         assert "sole owner" in header or "owns neither slot" in header
 
@@ -14140,7 +14143,7 @@ def test_tutorial_lifecycle_replay_keeps_runtime_and_tip_manager_owners() -> Non
     ida_root_owner = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
 
     for header in (analysis_header, matcher_tutorial):
-        assert "SubgameRuntime* game" in header
+        assert "cRSubGame* game" in header
     for header in (analysis_header, matcher_subgame):
         assert "runtime_flags" in header
     assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in ida_root_owner
@@ -14231,7 +14234,7 @@ def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch)
     monkeypatch.setattr(
         _narrow_sync,
         "current_type_widths",
-        lambda *_args, **_kwargs: {"SubgameRuntime": None},
+        lambda *_args, **_kwargs: {"cRSubGame": None},
     )
 
     def fake_run_bn(_repo_root, *args):
@@ -14243,9 +14246,9 @@ def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch)
                 "success": True,
                 "preview": preview,
                 "committed": not preview,
-                "applied": [{"name": "SubgameRuntime", "verified": True}],
+                "applied": [{"name": "cRSubGame", "verified": True}],
                 "restoration": (
-                    [{"name": "SubgameRuntime", "verified": True}]
+                    [{"name": "cRSubGame", "verified": True}]
                     if preview
                     else []
                 ),
@@ -14259,16 +14262,16 @@ def test_types_declare_if_missing_previews_then_selectively_applies(monkeypatch)
         Path("."),
         target="snail-mail.exe",
         header_path=Path("runtime_types.h"),
-        required_structs=("SubgameRuntime",),
+        required_structs=("cRSubGame",),
     )
 
     assert result["op"] == "types_declare_missing_only"
-    assert result["missing_structs"] == ("SubgameRuntime",)
-    assert result["include_types"] == ("SubgameRuntime",)
+    assert result["missing_structs"] == ("cRSubGame",)
+    assert result["include_types"] == ("cRSubGame",)
     assert len(calls) == 2
     assert calls[0][:2] == ("py", "exec")
     assert calls[1][:2] == ("py", "exec")
-    assert "included_names = set([\"SubgameRuntime\"])" in calls[0][-1]
+    assert "included_names = set([\"cRSubGame\"])" in calls[0][-1]
     assert "preview = True" in calls[0][-1]
     assert "begin_undo_actions" in calls[0][-1]
     assert "revert_undo_actions" in calls[0][-1]
@@ -14289,7 +14292,7 @@ def test_types_declare_if_missing_skips_complete_structs(monkeypatch) -> None:
     monkeypatch.setattr(
         _narrow_sync,
         "current_type_widths",
-        lambda *_args, **_kwargs: {"SubgameRuntime": 0x1272838},
+        lambda *_args, **_kwargs: {"cRSubGame": 0x1272838},
     )
     monkeypatch.setattr(
         _narrow_sync,
@@ -14301,7 +14304,7 @@ def test_types_declare_if_missing_skips_complete_structs(monkeypatch) -> None:
         Path("."),
         target="snail-mail.exe",
         header_path=Path("runtime_types.h"),
-        required_structs=("SubgameRuntime",),
+        required_structs=("cRSubGame",),
     )
 
     assert result["status"] == "skipped"
@@ -14311,7 +14314,7 @@ def test_types_declare_if_missing_rejects_header_without_requested_type(monkeypa
     monkeypatch.setattr(
         _narrow_sync,
         "current_type_widths",
-        lambda *_args, **_kwargs: {"SubgameRuntime": None},
+        lambda *_args, **_kwargs: {"cRSubGame": None},
     )
 
     def fake_run_bn(_repo_root, *args):
@@ -14335,11 +14338,11 @@ def test_types_declare_if_missing_rejects_header_without_requested_type(monkeypa
             Path("."),
             target="snail-mail.exe",
             header_path=Path("runtime_types.h"),
-            required_structs=("SubgameRuntime",),
+            required_structs=("cRSubGame",),
         )
     except RuntimeError as error:
         assert "does not provide complete definitions" in str(error)
-        assert "SubgameRuntime" in str(error)
+        assert "cRSubGame" in str(error)
     else:
         raise AssertionError("missing requested header type was accepted")
 
@@ -15436,7 +15439,7 @@ def test_track_cache_face_lifetime_replay_stays_guarded() -> None:
         ("ObjectFaceQuad", "0x02", "vertex_0", "uint16_t"),
         ("ObjectFaceQuad", "0x10", "uv", "ObjectUv[4]"),
         ("Object", "0x5C", "facequads", "ObjectFaceQuad*"),
-        ("SegmentCache", "0x54", "owner_subgame", "SubgameRuntime*"),
+        ("SegmentCache", "0x54", "owner_subgame", "cRSubGame*"),
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
@@ -15655,7 +15658,7 @@ def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:
         ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
         ("Object", "0xC0", "render_buffers", "ObjectRenderBuffers*"),
         ("Object", "0xC8", "index_buffer", "ObjectIndexBuffer*"),
-        ("SegmentCache", "0x54", "owner_subgame", "SubgameRuntime*"),
+        ("SegmentCache", "0x54", "owner_subgame", "cRSubGame*"),
         ("SegmentCache", "0x58", "slots", "TrackRenderCacheSlot[143][5]"),
     ):
         assert f'"{struct_name}": {{' in replay
@@ -17546,7 +17549,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
         ("FringeManager", "0x5FB44"),
         ("RootTrackFringeBodCatalog", "0x3F00"),
         ("RootBodCatalog", "0x4D00"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -17571,19 +17574,19 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
             "RootTrackFringeBodCatalog",
         ),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x35BBBC",
             "fringe_manager",
             "FringeManager",
         ),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x3BFAC8",
             "runtime_cells",
             "cRSubLoc[3200][8]",
         ),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x5CCAC8",
             "runtime_rows",
             "SubRow[3200]",
@@ -17593,13 +17596,13 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
 
     for source_type, index, storage, name, type_name in (
-        ("RegisterVariableSourceType", 10, 71, "runtime", "SubgameRuntime*"),
+        ("RegisterVariableSourceType", 10, 71, "runtime", "cRSubGame*"),
         (
             "StackVariableSourceType",
             18,
             -80,
             "runtime_saved",
-            "SubgameRuntime*",
+            "cRSubGame*",
         ),
         ("RegisterVariableSourceType", 30, 69, "edge_variant_a", "int32_t"),
         ("StackVariableSourceType", 34, -72, "row_index", "int32_t"),
@@ -17686,7 +17689,7 @@ def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
         ("SlugPool", "0x760"),
         ("SubRing", "0x1F8"),
         ("SubRingPool", "0x3F0"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -17705,27 +17708,27 @@ def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
         ("SubRing", "0x00", "body", "RenderableBod"),
         ("SubRingPool", "0x00", "slots", "SubRing[2]"),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x356000",
             "health_pickups",
             "SubHealth[8]",
         ),
-        ("SubgameRuntime", "0x3563A0", "slug_hazards", "SlugPool"),
+        ("cRSubGame", "0x3563A0", "slug_hazards", "SlugPool"),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x359140",
             "garbage_hazards",
             "SubGarbagePool",
         ),
-        ("SubgameRuntime", "0x35B78C", "ring_effects", "SubRingPool"),
+        ("cRSubGame", "0x35B78C", "ring_effects", "SubRingPool"),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x3BFAC8",
             "runtime_cells",
             "cRSubLoc[3200][8]",
         ),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x5CCAC8",
             "runtime_rows",
             "SubRow[3200]",
@@ -17909,7 +17912,7 @@ def test_subgame_pickup_teardown_lifetime_replay_stays_guarded() -> None:
         ("RenderableBod", "0x80"),
         ("SubSpeedUp", "0xB4"),
         ("JetPack", "0x19C"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -17926,12 +17929,12 @@ def test_subgame_pickup_teardown_lifetime_replay_stays_guarded() -> None:
         ("JetPack", "0x00", "bod", "BodBase"),
         ("JetPack", "0x38", "state", "TrackPickupState"),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x355DB0",
             "speedup_pickup",
             "SubSpeedUp",
         ),
-        ("SubgameRuntime", "0x355E64", "jetpack_pickup", "JetPack"),
+        ("cRSubGame", "0x355E64", "jetpack_pickup", "JetPack"),
         ("GameRoot", "0x05A8", "active_bod_list", "BodList"),
     ):
         assert f'"{struct_name}": {{' in replay
@@ -18051,7 +18054,7 @@ def test_subgame_player_teardown_lifetime_replay_stays_guarded() -> None:
         ("Weapon", "0x3DC"),
         ("Snail", "0x19B4"),
         ("Player", "0x4364"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -18069,7 +18072,7 @@ def test_subgame_player_teardown_lifetime_replay_stays_guarded() -> None:
         ("Snail", "0x11E0", "jetpack_channel", "Weapon"),
         ("Player", "0x0000", "body", "RenderableBod"),
         ("Player", "0x2984", "presentation", "Snail"),
-        ("SubgameRuntime", "0x3BB764", "player", "Player"),
+        ("cRSubGame", "0x3BB764", "player", "Player"),
         ("GameRoot", "0x05A8", "active_bod_list", "BodList"),
     ):
         assert f'"{struct_name}": {{' in replay
@@ -18223,7 +18226,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
             ("TrackRowCellFringeFrontStrideCursor", "0x54"),
             ("SubRow", "0xF4"),
             ("SubRowParcelSpawnYStrideCursor", "0xF4"),
-            ("SubgameRuntime", "0x1272838"),
+            ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -18273,15 +18276,15 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
                 "source_segment",
                 "SubSegment*",
             ),
-        ("SubgameRuntime", "0xA874", "level_definition", "SubTracks"),
+        ("cRSubGame", "0xA874", "level_definition", "SubTracks"),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x3BFAC8",
             "runtime_cells",
             "cRSubLoc[3200][8]",
         ),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x5CCAC8",
             "runtime_rows",
             "SubRow[3200]",
@@ -18375,7 +18378,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
             1948,
             72,
             "runtime_grid_owner",
-            "SubgameRuntime*",
+            "cRSubGame*",
         ),
         (
             "RegisterVariableSourceType",
@@ -18632,7 +18635,7 @@ def test_subgame_level_activation_lifetime_replay_stays_guarded() -> None:
         ("Invincible", "0x98"),
         ("Snail", "0x19B4"),
         ("Player", "0x4364"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -18649,7 +18652,7 @@ def test_subgame_level_activation_lifetime_replay_stays_guarded() -> None:
         ("Snail", "0x1894", "invincible_shell", "Invincible"),
         ("Player", "0x0000", "body", "RenderableBod"),
         ("Player", "0x2984", "presentation", "Snail"),
-        ("SubgameRuntime", "0x3BB764", "player", "Player"),
+        ("cRSubGame", "0x3BB764", "player", "Player"),
         ("GameRoot", "0x05A8", "active_bod_list", "BodList"),
     ):
         assert f'"{struct_name}": {{' in replay
@@ -18789,7 +18792,7 @@ def test_update_subgame_ring_speed_owner_comments_stay_guarded() -> None:
         assert f'"{address}"' in replay
     assert replay.count('"8b 14 8e"') == 8
     assert (
-        "SubgameRuntime::runtime_rows[runtime_row_scan_begin].ring_speed"
+        "cRSubGame::runtime_rows[runtime_row_scan_begin].ring_speed"
         in replay
     )
     assert "game + 0x5ccbb0 + row * 0xf4" in notes
@@ -18807,7 +18810,7 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
         ("Fringe", "0x38"),
         ("tColour", "0x10"),
         ("cRSubLoc", "0x54"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -18822,13 +18825,13 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
         ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
         ("cRSubLoc", "0x50", "fringe_back", "Fringe*"),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x355B64",
             "fringe_attachment_list_head",
             "BodBase",
         ),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x3BFAC8",
             "runtime_cells",
             "cRSubLoc[3200][8]",
@@ -18883,7 +18886,7 @@ def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     expected = (
         "void __thiscall initialize_track_render_cache_manager(SegmentCache* manager)",
         "void __thiscall build_track_render_caches(SegmentCache* manager, tColour skirt_color)",
-        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* runtime, int32_t level_index)",
+        "void __thiscall rebuild_track_runtime_from_segments(cRSubGame* runtime, int32_t level_index)",
     )
     assert expected[0] in track_sync
     assert expected[1] in track_sync
@@ -18921,11 +18924,11 @@ def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     ):
         assert address in ida_path_sync
     assert (
-        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);"
+        "void __thiscall rebuild_track_runtime_from_segments(cRSubGame* game, int32_t level_index);"
         in ida_path_sync
     )
     assert (
-        "void __thiscall rebuild_track_runtime_from_segments(SubgameRuntime* game, int32_t level_index);"
+        "void __thiscall rebuild_track_runtime_from_segments(cRSubGame* game, int32_t level_index);"
         in ida_runtime_sync
     )
     assert (
@@ -19141,7 +19144,7 @@ def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:
 
     for header in (binja_header, ida_header, ida_canonical_header):
         assert "typedef struct GUI" in header
-        assert "SubgameRuntime* game;" in header
+        assert "cRSubGame* game;" in header
         for field in (
             "next_level_button",
             "previous_level_button",
@@ -19155,7 +19158,7 @@ def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:
             assert f"FrontendWidget* {field};" in header
 
     assert "GUI_FIELD_UPDATES = (" in binja_sync
-    assert '("0x00", "game", "SubgameRuntime*")' in binja_sync
+    assert '("0x00", "game", "cRSubGame*")' in binja_sync
     assert '("0x24", "replay_button", "FrontendWidget*")' in binja_sync
     assert "void __thiscall initialize_challenge_setup_screen(GUI* gui)" in binja_sync
     assert "void __thiscall initialize_challenge_setup_screen(GUI* gui);" in ida_sync
@@ -19833,7 +19836,7 @@ def test_collision_pool_offset_lifetime_replay_stays_guarded() -> None:
         ("SubGarbagePool", "0x264C"),
         ("SubRing", "0x1F8"),
         ("SubRingPool", "0x3F0"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -19845,18 +19848,18 @@ def test_collision_pool_offset_lifetime_replay_stays_guarded() -> None:
         ("SubRingPool", "0x00", "slots", "SubRing[2]"),
         ("SubGarbagePool", "0x00", "active_head", "SubGarbage*"),
         ("SubGarbagePool", "0x04", "slots", "SubGarbage[50]"),
-        ("SubgameRuntime", "0x356000", "health_pickups", "SubHealth[8]"),
-        ("SubgameRuntime", "0x3563A0", "slug_hazards", "SlugPool"),
-        ("SubgameRuntime", "0x356B00", "sub_lazers", "SubLazerManager"),
-        ("SubgameRuntime", "0x3578C0", "salt_hazards", "SaltManager"),
+        ("cRSubGame", "0x356000", "health_pickups", "SubHealth[8]"),
+        ("cRSubGame", "0x3563A0", "slug_hazards", "SlugPool"),
+        ("cRSubGame", "0x356B00", "sub_lazers", "SubLazerManager"),
+        ("cRSubGame", "0x3578C0", "salt_hazards", "SaltManager"),
         (
-            "SubgameRuntime",
+            "cRSubGame",
             "0x359140",
             "garbage_hazards",
             "SubGarbagePool",
         ),
-        ("SubgameRuntime", "0x35B78C", "ring_effects", "SubRingPool"),
-        ("SubgameRuntime", "0x125E480", "parcel_manager", "ParcelManager"),
+        ("cRSubGame", "0x35B78C", "ring_effects", "SubRingPool"),
+        ("cRSubGame", "0x125E480", "parcel_manager", "ParcelManager"),
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
@@ -19901,7 +19904,7 @@ def test_jet_particle_bank_lifetime_replay_stays_guarded() -> None:
         ("Snail", "0x19B4"),
         ("Player", "0x4364"),
         ("Sprite", "0xB4"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -19909,7 +19912,7 @@ def test_jet_particle_bank_lifetime_replay_stays_guarded() -> None:
         ("JetParticleSlot", "0x00", "sprite", "Sprite*"),
         ("SubHover", "0x10", "player", "Player*"),
         ("SubHover", "0x20", "particle_slots", "JetParticleSlot[30]"),
-        ("SubHover", "0x200", "game", "SubgameRuntime*"),
+        ("SubHover", "0x200", "game", "cRSubGame*"),
         ("Player", "0x380", "player_slot", "int32_t"),
         ("Player", "0x410", "velocity", "Vec3"),
         ("Player", "0x2750", "sub_hover", "SubHover"),
@@ -19919,7 +19922,7 @@ def test_jet_particle_bank_lifetime_replay_stays_guarded() -> None:
         ("Sprite", "0x48", "position", "Vec3"),
         ("Sprite", "0x54", "velocity", "Vec3"),
         ("Sprite", "0x78", "gravity_step", "float"),
-        ("SubgameRuntime", "0x3BB764", "player", "Player"),
+        ("cRSubGame", "0x3BB764", "player", "Player"),
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
@@ -20691,7 +20694,7 @@ def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
         ("cRSubLoc", "0x54"),
         ("TrackRowCellObjectSlotView", "0x54"),
         ("TrackRowCellTileByteView", "0x54"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{type_name}": {width}' in replay
 
@@ -23329,7 +23332,7 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
         ("SlugSlotCursor", "0x35648C"),
         ("SubGarbage", "0xC4"),
         ("GolbShot", "0x2E8"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{type_name}": {width}' in replay
 
@@ -23448,7 +23451,7 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
         ("GolbShot", "0x2E8"),
         ("Player", "0x4364"),
         ("SubGarbage", "0xC4"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{type_name}": {width}' in replay
 
@@ -23541,8 +23544,8 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
     assert '0x48: ("position", "Vec3")' in replay
     assert '0x54: ("velocity", "Vec3")' in replay
     assert '0x78: ("gravity_step", "float")' in replay
-    assert '0x270: ("game", "SubgameRuntime*")' in replay
-    assert '0x8C: ("owner_game", "SubgameRuntime*")' in replay
+    assert '0x270: ("game", "cRSubGame*")' in replay
+    assert '0x8C: ("owner_game", "cRSubGame*")' in replay
     assert "struct SpriteMotionTail" not in replay
 
     ida_replay = (
@@ -23610,7 +23613,7 @@ def test_create_golb_replay_splits_real_pointer_owners() -> None:
         ("Snail", "0x19B4"),
         ("GolbShot", "0x2E8"),
         ("Player", "0x4364"),
-        ("SubgameRuntime", "0x1272838"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{type_name}": {width}' in replay
 
@@ -23644,7 +23647,7 @@ def test_create_golb_replay_splits_real_pointer_owners() -> None:
         in replay
     )
     assert 'variable_name="sprite_game"' in replay
-    assert 'variable_type="SubgameRuntime*"' in replay
+    assert 'variable_type="cRSubGame*"' in replay
     assert 'variable_name="target_entry"' in replay
     assert 'variable_type="ContactTargetEntry*"' in replay
     assert '0x0248: ("render_sprite", "Sprite*")' in replay
@@ -23812,7 +23815,7 @@ def test_runtime_segment_selection_owner_chain_replays_cross_decompiler() -> Non
             814,
             71,
             "build_runtime_owner",
-            "SubgameRuntime*",
+            "cRSubGame*",
         ),
         (
             "RegisterVariableSourceType",
@@ -23870,7 +23873,7 @@ def test_runtime_segment_selection_owner_chain_replays_cross_decompiler() -> Non
         ("runtime_row_index", "int32_t runtime_row_index;", "0x4361DB"),
         (
             "build_runtime_owner",
-            "SubgameRuntime *build_runtime_owner;",
+            "cRSubGame *build_runtime_owner;",
             "0x4361DF",
         ),
         ("selected_segment", "SubSegment *selected_segment;", "0x4361E7"),
@@ -24210,7 +24213,7 @@ def test_mobile_utility_abis_and_overlay_owners_are_persisted() -> None:
 
     switch_prototype = (
         "void __thiscall switch_track_mirror("
-        "SubgameRuntime* runtime)"
+        "cRSubGame* runtime)"
     )
     assert switch_prototype in binja_subgame_sync
     assert switch_prototype + ";" in ida_subgame_sync
@@ -24499,6 +24502,135 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
         assert "cRPath::Mirror(cRPath*)" in body
 
 
+def test_c_r_subgame_primary_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+    binja_sync = (
+        repo_root / "tools/binja/sync_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    binja_subgame_sync = (
+        repo_root / "tools/binja/sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (
+        repo_root / "tools/ida/apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    ida_subgame_sync = (
+        repo_root / "tools/ida/apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    guarded_repair = (
+        repo_root / "tools/binja/repair_initialize_subgame_owner.py"
+    ).read_text(encoding="utf-8")
+    crosswalk = json.loads(
+        (
+            repo_root
+            / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+        ).read_text(encoding="utf-8")
+    )
+
+    assert "class cRSubGame {" in matcher_header
+    assert "class SubgameRuntime {" not in matcher_header
+    assert "typedef cRSubGame SubgameRuntime;" in matcher_header
+    assert "cRSubGame_must_be_0x1272838" in matcher_header
+    assert "SubgameRuntime_must_be_0x1272838" not in matcher_header
+    assert "typedef struct cRSubGame cRSubGame;" in analysis_header
+    assert "typedef cRSubGame SubgameRuntime;" in analysis_header
+    assert "typedef struct cRSubGame {" in analysis_header
+    assert "} cRSubGame;" in analysis_header
+    assert "cRSubLoc runtime_cells[3200][8];" in analysis_header
+    assert "SubRow runtime_rows[3200];" in analysis_header
+
+    assert 'SUBGAME_OWNER_TYPE_NAMES = (' in binja_sync
+    assert '"cRSubGame",' in binja_sync
+    assert '"SubgameRuntime",' in binja_sync
+    assert '"--subgame-owner-only"' in binja_sync
+    assert '("cRSubGame", SUBGAME_RUNTIME_FIELD_UPDATES)' in binja_sync
+    assert '("0x74618", "subgame", "cRSubGame")' in binja_sync
+    assert "collect_c_r_subgame_owner_proto_updates" in binja_sync
+    assert "collect_c_r_subgame_backpointer_struct_updates" in binja_sync
+    assert "ensure_c_r_subgame_owner_types" in binja_sync
+    assert "SUBGAME_RECEIVER_USER_VAR_UPDATES" in binja_sync
+    assert "SUBGAME_OWNER_COMPAT_PROTO_UPDATES" in binja_sync
+    assert '"RegisterVariableSourceType",\n        0,\n        67,' in binja_sync
+    for owner_backpointer in (
+        '("Cameraman", (("0xc4", "game", "cRSubGame*"),))',
+        '("GarbageHazardSlot", (("0x8c", "owner_game", "cRSubGame*"),))',
+        '("Player", (("0x408", "game", "cRSubGame*"),))',
+        '("SegmentCache", (("0x54", "owner_subgame", "cRSubGame*"),))',
+        '("SubRing", (("0x1d0", "rate_source", "cRSubGame*"),))',
+        '("Tutorial", (("0x0c", "game", "cRSubGame*"),))',
+    ):
+        assert owner_backpointer in binja_sync
+    for owner_method in (
+        "bind_subgame_owner",
+        "build_track_colours",
+        "spawn_track_garbage_hazard",
+        "spawn_slug_hazard",
+        "spawn_track_ring_or_special_effect",
+    ):
+        assert owner_method in binja_sync
+    assert '("SubgameRuntime", "cRSubGame")' in binja_subgame_sync
+    assert '"SubgameRuntime",' in binja_subgame_sync
+    for owner_field in (
+        '("0x3c", "owner_subgame", "cRSubGame*")',
+        '("0x44", "owner_game", "cRSubGame*")',
+        '("0x48", "owner_game", "cRSubGame*")',
+        '("0x64", "owner_game", "cRSubGame*")',
+        '("0x00", "game", "cRSubGame*")',
+        '("0x10f70", "level_progress_base", "cRSubGame*")',
+    ):
+        assert owner_field in binja_subgame_sync
+    assert "SUB_LAZER_STARTUP_CURSOR_FIELD_UPDATES" in binja_subgame_sync
+    assert "SALT_STARTUP_CURSOR_FIELD_UPDATES" in binja_subgame_sync
+    assert "THANKS_SCREEN_FIELD_UPDATES" in binja_subgame_sync
+
+    assert "SUBGAME_OWNER_MARKERS" in ida_sync
+    assert "SUBGAME_OWNER_SIZES" in ida_sync
+    assert '"cRSubGame": 0x1272838' in ida_sync
+    assert '"typedef cRSubGame SubgameRuntime;"' in ida_sync
+    assert '"subgame_owner_sizes": subgame_owner_sizes' in ida_sync
+    assert "SUBGAME_OWNER_EXPECTED_SIZE = 0x1272838" in ida_subgame_sync
+    assert '"typedef cRSubGame SubgameRuntime;"' in ida_subgame_sync
+    assert '"subgame_owner_size": subgame_owner_size' in ida_subgame_sync
+
+    assert "_retain_legacy_subgame_runtime_prototypes" in guarded_repair
+    assert 'prototype.replace("cRSubGame", "SubgameRuntime")' in guarded_repair
+    assert 'prototype.replace("struct SubgameRuntime", "SubgameRuntime")' in (
+        guarded_repair
+    )
+    assert '"type": "SubgameRuntime*"' in guarded_repair
+    assert '"type": "struct cRSubGame*"' in guarded_repair
+
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    for windows_name, authored_method in (
+        (
+            "initialize_runtime_pools_and_path_template_bank",
+            "cRSubGame::cRSubGame()",
+        ),
+        (
+            "populate_runtime_track_cells_from_segments",
+            "cRSubGame::BuildLevel()",
+        ),
+        ("initialize_subgame", "cRSubGame::Init()"),
+        ("build_subgame_level", "cRSubGame::StartLevel(int)"),
+        ("complete_subgame", "cRSubGame::Complete(bool)"),
+        ("destroy_subgame", "cRSubGame::UnInit()"),
+        ("update_subgame", "cRSubGame::AI()"),
+    ):
+        entry = entries[windows_name]
+        assert authored_method in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+
+
 def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (
@@ -24556,7 +24688,7 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
         "void __thiscall update_sub_loc(cRSubLoc* cell);",
         "int32_t __thiscall get_track_cell_row_index(cRSubLoc* cell);",
         "bool __thiscall is_neighbor_cell_solid(\n"
-        "    SubgameRuntime* game,\n"
+        "    cRSubGame* game,\n"
         "    cRSubLoc* cell,\n"
         "    int32_t lane_offset,\n"
         "    int32_t row_offset\n"
@@ -24566,12 +24698,12 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
         if "\n" not in declaration:
             assert f'"{declaration}"' in ida_sync
     assert (
-        '"bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, '
+        '"bool __thiscall is_neighbor_cell_solid(cRSubGame* game, '
         'cRSubLoc* cell, int32_t lane_offset, int32_t row_offset);"'
         in ida_sync
     )
     assert (
-        '"bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, '
+        '"bool __thiscall is_neighbor_cell_solid(cRSubGame* game, '
         'cRSubLoc* cell, int32_t lane_offset, int32_t row_offset)"'
         in binja_sync
     )
@@ -24610,7 +24742,7 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
             "\n    },", 1
         )[0]
         assert (
-            '"void __thiscall(struct SubgameRuntime* game, "\n'
+            '"void __thiscall(struct cRSubGame* game, "\n'
             '            "TrackRowCell* cell, struct Player* player)"'
             in repair_spec
         )
@@ -24628,7 +24760,7 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
     )[1].split("\n    },", 1)[0]
     assert (
         '"TrackRowCell* __thiscall("\n'
-        '            "struct SubgameRuntime* game, struct Vec3* position)"'
+        '            "struct cRSubGame* game, struct Vec3* position)"'
         in grid_repair_spec
     )
     assert '"stale_variable_annotations": (' in grid_repair_spec

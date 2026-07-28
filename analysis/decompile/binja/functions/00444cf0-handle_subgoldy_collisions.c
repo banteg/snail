@@ -12,9 +12,10 @@
 00444e11        while (salt_pool_byte_offset s< 0x17c0)
 00444d40        struct SaltSlotCursor* salt_cursor = player->game + salt_pool_byte_offset
 00444d55        if (salt_cursor->salt.state == SALT_STATE_ACTIVE && salt_cursor->salt.collision_armed == 1)
+00444d7b        float var_50_1 = fconvert.s(fconvert.t(salt_cursor->salt.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
 00444d85        long double x87_r7_6 = fconvert.t(salt_cursor->salt.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00444d8f        vector_2.x = fconvert.s(fconvert.t(salt_cursor->salt.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
-00444d93        vector_2.y = fconvert.s(fconvert.t(salt_cursor->salt.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
+00444d93        vector_2.y = var_50_1
 00444d9b        long double temp8_1 = fconvert.t(1f)
 00444d9b        x87_r7_6 - temp8_1
 00444da5        vector_2.z = fconvert.s(x87_r7_6)
@@ -35,9 +36,10 @@
 00444ece        while (sub_lazer_pool_byte_offset s< 0xdc0)
 00444e26        struct SubLazerSlotCursor* sub_lazer_cursor = player->game + sub_lazer_pool_byte_offset
 00444e2e        if (sub_lazer_cursor->sub_lazer.state == SUB_LAZER_STATE_ACTIVE)
+00444e54        float var_50_2 = fconvert.s(fconvert.t(sub_lazer_cursor->sub_lazer.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
 00444e5e        long double x87_r7_14 = fconvert.t(sub_lazer_cursor->sub_lazer.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00444e68        vector.x = fconvert.s(fconvert.t(sub_lazer_cursor->sub_lazer.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
-00444e6c        vector.y = fconvert.s(fconvert.t(sub_lazer_cursor->sub_lazer.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
+00444e6c        vector.y = var_50_2
 00444e74        long double temp7_1 = fconvert.t(1f)
 00444e74        x87_r7_14 - temp7_1
 00444e7e        vector.z = fconvert.s(x87_r7_14)
@@ -52,9 +54,10 @@
 00444eda        struct SubGarbage* active_garbage = player->game->garbage_hazards.active_head
 00444ee2        while (active_garbage != 0)
 00444eee        if (active_garbage->state == SUB_GARBAGE_STATE_ACTIVE)
+00444f0e        float var_50_3 = fconvert.s(fconvert.t(active_garbage->body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
 00444f15        long double x87_r7_21 = fconvert.t(active_garbage->body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00444f1f        vector.x = fconvert.s(fconvert.t(active_garbage->body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
-00444f23        vector.y = fconvert.s(fconvert.t(active_garbage->body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
+00444f23        vector.y = var_50_3
 00444f2b        long double temp20_1 = fconvert.t(1f)
 00444f2b        x87_r7_21 - temp20_1
 00444f35        vector.z = fconvert.s(x87_r7_21)
@@ -78,13 +81,14 @@
 0044500f        active_garbage = active_garbage->next_active
 0044501d        int32_t slug_pool_byte_offset = 0
 0044524b        while (slug_pool_byte_offset s< 0x760)
-0044501f        struct SubgameRuntime* game_8 = player->game
-00445025        enum SubSlugState slug_state = *(&game_8->slug_hazards.slots[0].state + slug_pool_byte_offset)
-0044502c        struct SlugSlotCursor* slug_cursor = slug_pool_byte_offset + game_8
+0044501f        struct cRSubGame* game_9 = player->game
+00445025        enum SubSlugState slug_state = *(&game_9->slug_hazards.slots[0].state + slug_pool_byte_offset)
+0044502c        struct SlugSlotCursor* slug_cursor = slug_pool_byte_offset + game_9
 00445036        if (slug_state == SUB_SLUG_STATE_ACTIVE || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE)
+00445058        float var_50_4 = fconvert.s(fconvert.t(slug_cursor->slug.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
 00445062        long double x87_r7_39 = fconvert.t(slug_cursor->slug.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
 00445070        vector.x = fconvert.s(fconvert.t(slug_cursor->slug.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
-00445074        vector.y = fconvert.s(fconvert.t(slug_cursor->slug.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
+00445074        vector.y = var_50_4
 0044507c        long double temp21_1 = fconvert.t(2f)
 0044507c        x87_r7_39 - temp21_1
 00445086        vector.z = fconvert.s(x87_r7_39)
@@ -101,7 +105,7 @@
 0044520b        long double x87_r7_49 = fconvert.t(player->game->subgame_rate)
 0044521e        player->velocity.z = fconvert.s(x87_r7_49 * x87_r7_49 * fconvert.t(0.00400000019f) * fconvert.t(-8f))
 00445226        x87control = apply_damage_gauge_delta(&player->damage_gauge, 1f, false)
-004450cd        struct SubgameRuntime* game = player->game
+004450cd        struct cRSubGame* game = player->game
 004450d3        player->control_override_active = 1
 004450da        player->follow_state.active = 0
 004450e9        long double x87_r7_41 = fconvert.t(game->subgame_rate)
@@ -109,32 +113,40 @@
 00445112        player->velocity.y = fconvert.s(x87_r7_41 * fconvert.t(0.200000003f))
 0044511d        player->velocity.z = fconvert.s(x87_r7_41 * fconvert.t(-0.200000003f))
 00445122        begin_post_follow_carryover(player)
+00445127        struct cRSubGame* game_1 = player->game
 0044512d        player->presentation.cutscene.state = CUT_SCENE_STATE_DEATH_PENDING
-00445137        (&player->game->slug_hazards.slots[0].player_encounter_latched)[slug_pool_byte_offset] = 1
-00445152        int32_t eax_24 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f))
-0044516c        x87control = play_slug_voice(&player->game->slug_hazards + slug_pool_byte_offset, 0x22 - eax_24)
+00445137        (&game_1->slug_hazards.slots[0].player_encounter_latched)[slug_pool_byte_offset] = 1
+00445152        int32_t eax_23 = ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f))
+0044516c        x87control = play_slug_voice(&player->game->slug_hazards + slug_pool_byte_offset, 0x22 - eax_23)
 00445175        long double x87_r7_46 = fconvert.t(fconvert.s(st0_4)) * fconvert.t(0.5f)
 0044517b        player->presentation.wobble.lift_phase_step = 0f
+00445199        float var_2c_1 = fconvert.s(fconvert.t(vector.y) * x87_r7_46)
+0044519d        long double x87_r7_47 = x87_r7_46 * fconvert.t(vector.z)
 004451ab        vector_2.x = fconvert.s(fconvert.t(fconvert.s(x87_r7_46 * fconvert.t(vector.x))) + fconvert.t(player->cached_camera_target_world.x))
+004451b3        long double x87_r6_10 = fconvert.t(var_2c_1) + fconvert.t(player->cached_camera_target_world.y)
 004451bd        struct Vec3 position
 004451bd        position.x = vector_2.x
-004451c8        vector_2.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(vector.y) * x87_r7_46)) + fconvert.t(player->cached_camera_target_world.y))
+004451c1        int32_t player_slot = player->player_slot
+004451c8        vector_2.y = fconvert.s(x87_r6_10)
+004451d0        long double x87_r7_48 = x87_r7_47 + fconvert.t(player->cached_camera_target_world.z)
 004451d6        position.y = vector_2.y
-004451e5        vector_2.z = fconvert.s(x87_r7_46 * fconvert.t(vector.z) + fconvert.t(player->cached_camera_target_world.z))
+004451e5        vector_2.z = fconvert.s(x87_r7_48)
 004451ed        position.z = vector_2.z
-004451f1        firework_shoot(&player->firework, &position, player->player_slot, 0x5c, 0x50)
+004451f1        firework_shoot(&player->firework, &position, player_slot, 0x5c, 0x50)
 0044523f        slug_pool_byte_offset += 0xec
 00445251        int32_t parcel_pool_byte_offset = 0
 0044535a        while (parcel_pool_byte_offset s< 0x1b58)
-00445253        struct SubgameRuntime* game_4 = player->game
-00445259        struct ParcelSlotCursor* parcel_cursor = parcel_pool_byte_offset + game_4
-00445265        if (*(&game_4->parcel_manager.slots[0].state + parcel_pool_byte_offset) == PARCEL_STATE_TRACK_ACTIVE)
+00445253        struct cRSubGame* game_5 = player->game
+00445259        struct ParcelSlotCursor* parcel_cursor = parcel_pool_byte_offset + game_5
+00445265        if (*(&game_5->parcel_manager.slots[0].state + parcel_pool_byte_offset) == PARCEL_STATE_TRACK_ACTIVE)
 00445277        vector_2.x = fconvert.s(fconvert.t(parcel_cursor->parcel.position.x) - fconvert.t(player->cached_camera_target_world.x))
+00445287        float x_1 = vector_2.x
 0044528b        vector_2.y = fconvert.s(fconvert.t(parcel_cursor->parcel.position.y) - fconvert.t(player->cached_camera_target_world.y))
 00445295        long double x87_r7_56 = fconvert.t(parcel_cursor->parcel.position.z) - fconvert.t(player->cached_camera_target_world.z)
+0044529b        float y = vector_2.y
 0044529f        struct Vec3 vector_3
-0044529f        vector_3.x = vector_2.x
-004452a3        vector_3.y = vector_2.y
+0044529f        vector_3.x = x_1
+004452a3        vector_3.y = y
 004452a7        vector_2.z = fconvert.s(x87_r7_56)
 004452ab        long double temp25_1 = fconvert.t(1f)
 004452ab        x87_r7_56 - temp25_1
@@ -148,23 +160,26 @@
 004452ef        play_voice_manager(&g_voice_manager, 0xa, 1, 0xffffffff)
 004452fb        play_sound_effect(&g_sound_effect_manager, 0x1b)
 00445306        *(&player->game->parcel_manager.slots[0].state + parcel_pool_byte_offset) = 4
-00445317        struct SubgameRuntime* game_1 = player->game
+00445317        struct cRSubGame* game_2 = player->game
 0044531d        int32_t ebx_2 = player->parcels_collected + 1
 0044531e        player->parcels_collected = ebx_2
-0044532b        if (game_1->level_mode == 0)
-00445346        sprintf(&game_1->lives_text_widget->text_buffer.raw, "%i/%i", ebx_2, game_1->level_definition.parcel_count)
+0044532b        if (game_2->level_mode == 0)
+00445346        sprintf(&game_2->lives_text_widget->text_buffer.raw, "%i/%i", ebx_2, game_2->level_definition.parcel_count)
 0044534e        parcel_pool_byte_offset += 0x8c
 00445475        struct Vec3 vector_1
 00445367        int32_t health_pool_byte_offset = 0
 00445475        while (health_pool_byte_offset s< 0x3a0)
-00445369        struct SubgameRuntime* game_5 = player->game
-0044536f        struct SubHealthSlotCursor* health_cursor = health_pool_byte_offset + game_5
-0044537b        if (*(&game_5->health_pickups[0].state + health_pool_byte_offset) == TRACK_PICKUP_STATE_ACTIVE)
+00445369        struct cRSubGame* game_6 = player->game
+0044536f        struct SubHealthSlotCursor* health_cursor = health_pool_byte_offset + game_6
+0044537b        if (*(&game_6->health_pickups[0].state + health_pool_byte_offset) == TRACK_PICKUP_STATE_ACTIVE)
 0044538d        vector.x = fconvert.s(fconvert.t(health_cursor->health.bod.position.x) - fconvert.t(player->cached_camera_target_world.x))
+0044539d        float x_2 = vector.x
 004453a1        vector.y = fconvert.s(fconvert.t(health_cursor->health.bod.position.y) - fconvert.t(player->cached_camera_target_world.y))
-004453b5        vector_1.x = vector.x
-004453b9        vector_1.y = vector.y
-004453bd        vector.z = fconvert.s(fconvert.t(health_cursor->health.bod.position.z) - fconvert.t(player->cached_camera_target_world.z))
+004453ab        long double x87_r7_63 = fconvert.t(health_cursor->health.bod.position.z) - fconvert.t(player->cached_camera_target_world.z)
+004453b1        float y_1 = vector.y
+004453b5        vector_1.x = x_2
+004453b9        vector_1.y = y_1
+004453bd        vector.z = fconvert.s(x87_r7_63)
 004453c1        long double x87_r7_64 = fconvert.t(player->body.transform.position.y)
 004453c4        long double temp0_1 = fconvert.t(0.49000001f)
 004453c4        x87_r7_64 - temp0_1
@@ -192,13 +207,16 @@
 00445455        health_collect_particles(player, &player->game->health_pickups + health_pool_byte_offset)
 00445467        apply_damage_gauge_delta(&player->damage_gauge, -0.5f, false)
 0044546c        health_pool_byte_offset += 0x74
-0044547b        struct SubgameRuntime* game_2 = player->game
-00445487        if (game_2->speedup_pickup.state == TRACK_PICKUP_STATE_ACTIVE)
-00445499        vector.x = fconvert.s(fconvert.t(game_2->speedup_pickup.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
-004454ad        vector.y = fconvert.s(fconvert.t(game_2->speedup_pickup.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
-004454c1        vector_1.x = vector.x
-004454c5        vector_1.y = vector.y
-004454c9        vector.z = fconvert.s(fconvert.t(game_2->speedup_pickup.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z))
+0044547b        struct cRSubGame* game_3 = player->game
+00445487        if (game_3->speedup_pickup.state == TRACK_PICKUP_STATE_ACTIVE)
+00445499        vector.x = fconvert.s(fconvert.t(game_3->speedup_pickup.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
+004454a9        float x_3 = vector.x
+004454ad        vector.y = fconvert.s(fconvert.t(game_3->speedup_pickup.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
+004454b7        long double x87_r7_74 = fconvert.t(game_3->speedup_pickup.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
+004454bd        float y_2 = vector.y
+004454c1        vector_1.x = x_3
+004454c5        vector_1.y = y_2
+004454c9        vector.z = fconvert.s(x87_r7_74)
 004454cd        long double x87_r7_75 = fconvert.t(player->body.transform.position.y)
 004454d0        long double temp2_1 = fconvert.t(0.49000001f)
 004454d0        x87_r7_75 - temp2_1
@@ -223,13 +241,16 @@
 0044552e        if ((((st0_7 < temp19_1 ? 1 : 0) << 8 | (is_unordered.t(st0_7, temp19_1) ? 1 : 0) << 0xa | (st0_7 == temp19_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00445538        player->game->speedup_pickup.state = TRACK_PICKUP_STATE_TEARDOWN_PENDING
 00445556        player->velocity.z = fconvert.s(fconvert.t(player->game->subgame_rate) * fconvert.t(0.5f))
-0044555c        struct SubgameRuntime* game_3 = player->game
-00445568        if (game_3->jetpack_pickup.state == TRACK_PICKUP_STATE_ACTIVE)
-0044557a        vector.x = fconvert.s(fconvert.t(game_3->jetpack_pickup.bod.position.x) - fconvert.t(player->cached_camera_target_world.x))
-0044558e        vector.y = fconvert.s(fconvert.t(game_3->jetpack_pickup.bod.position.y) - fconvert.t(player->cached_camera_target_world.y))
-004455a2        vector_1.x = vector.x
-004455a6        vector_1.y = vector.y
-004455aa        vector.z = fconvert.s(fconvert.t(game_3->jetpack_pickup.bod.position.z) - fconvert.t(player->cached_camera_target_world.z))
+0044555c        struct cRSubGame* game_4 = player->game
+00445568        if (game_4->jetpack_pickup.state == TRACK_PICKUP_STATE_ACTIVE)
+0044557a        vector.x = fconvert.s(fconvert.t(game_4->jetpack_pickup.bod.position.x) - fconvert.t(player->cached_camera_target_world.x))
+0044558a        float x = vector.x
+0044558e        vector.y = fconvert.s(fconvert.t(game_4->jetpack_pickup.bod.position.y) - fconvert.t(player->cached_camera_target_world.y))
+00445598        long double x87_r7_87 = fconvert.t(game_4->jetpack_pickup.bod.position.z) - fconvert.t(player->cached_camera_target_world.z)
+0044559e        float y_4 = vector.y
+004455a2        vector_1.x = x
+004455a6        vector_1.y = y_4
+004455aa        vector.z = fconvert.s(x87_r7_87)
 004455ae        long double x87_r7_88 = fconvert.t(player->body.transform.position.y)
 004455b1        long double temp4_1 = fconvert.t(0.49000001f)
 004455b1        x87_r7_88 - temp4_1
@@ -247,15 +268,16 @@
 00445603        arm_jetpack_gauge(&player->sub_hover)
 00445608        int32_t ring_pool_byte_offset = 0
 00445829        while (ring_pool_byte_offset s< 0x3f0)
-00445614        struct SubgameRuntime* game_9 = player->game
-00445621        struct SubRingSlotCursor* ring_cursor = ring_pool_byte_offset + game_9
-00445627        if (*(&game_9->ring_effects.slots[0].state + ring_pool_byte_offset) == SUB_RING_STATE_ACTIVE)
-00445639        vector_2.x = fconvert.s(fconvert.t(ring_cursor->ring.world_position.x) - fconvert.t(player->cached_camera_target_world.x))
-00445649        vector_2.y = fconvert.s(fconvert.t(ring_cursor->ring.world_position.y) - fconvert.t(player->cached_camera_target_world.y))
-00445653        long double x87_r7_96 = fconvert.t(ring_cursor->ring.world_position.z) - fconvert.t(player->cached_camera_target_world.z)
+00445614        struct cRSubGame* game_10 = player->game
+00445621        struct SubRingSlotCursor* ring_cursor = ring_pool_byte_offset + game_10
+00445627        if (*(&game_10->ring_effects.slots[0].state + ring_pool_byte_offset) == SUB_RING_STATE_ACTIVE)
+00445639        vector_2.x = fconvert.s(fconvert.t(ring_cursor->ring.body.transform.position.x) - fconvert.t(player->cached_camera_target_world.x))
+00445649        vector_2.y = fconvert.s(fconvert.t(ring_cursor->ring.body.transform.position.y) - fconvert.t(player->cached_camera_target_world.y))
+00445653        long double x87_r7_96 = fconvert.t(ring_cursor->ring.body.transform.position.z) - fconvert.t(player->cached_camera_target_world.z)
+0044565d        float y_3 = vector_2.y
 00445661        struct Vec3 vector_4
 00445661        vector_4.x = vector_2.x
-00445665        vector_4.y = vector_2.y
+00445665        vector_4.y = y_3
 00445669        vector_2.z = fconvert.s(x87_r7_96)
 0044566d        long double temp14_1 = fconvert.t(1f)
 0044566d        x87_r7_96 - temp14_1
@@ -267,19 +289,19 @@
 0044569d        if ((((st0_9 < temp18_1 ? 1 : 0) << 8 | (is_unordered.t(st0_9, temp18_1) ? 1 : 0) << 0xa | (st0_9 == temp18_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 004456a9        *(&player->game->ring_effects.slots[0].state + ring_pool_byte_offset) = 2
 004456bc        if (player->completion_handoff_active == 0)
-004456be        struct SubgameRuntime* game_6 = player->game
-004456c4        enum SubRingKind ring_kind = *(&game_6->ring_effects.slots[0].kind + ring_pool_byte_offset)
+004456be        struct cRSubGame* game_7 = player->game
+004456c4        enum SubRingKind ring_kind = *(&game_7->ring_effects.slots[0].kind + ring_pool_byte_offset)
 004456d2        if (ring_kind == SUB_RING_KIND_SLOW_DEFAULT || ring_kind == SUB_RING_KIND_SLOW_AUTHORED)
 004456ec        player->velocity.z = -0.100000001f
 004456f2        play_sound_effect(&g_sound_effect_manager, 0x2b)
-004456dd        player->velocity.z = fconvert.s(fconvert.t(game_6->subgame_rate) * fconvert.t(0.5f))
-004456f7        struct SubgameRuntime* game_7 = player->game
-004456fd        enum SubRingKind effect_kind = *(&game_7->ring_effects.slots[0].kind + ring_pool_byte_offset)
-00445710        int32_t eax_56
+004456dd        player->velocity.z = fconvert.s(fconvert.t(game_7->subgame_rate) * fconvert.t(0.5f))
+004456f7        struct cRSubGame* game_8 = player->game
+004456fd        enum SubRingKind effect_kind = *(&game_8->ring_effects.slots[0].kind + ring_pool_byte_offset)
+00445710        int32_t eax_51
 00445710        if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED)
 004457ab        int32_t lives = player->lives
 004457b4        if (lives s< 0xa)
-004457c0        if ((game_7->runtime_flags.b & 0x10) != 0 && game_7->level_mode != 3)
+004457c0        if ((game_8->runtime_flags.b & 0x10) != 0 && game_8->level_mode != 3)
 004457c3        player->lives = lives + 1
 004457d4        play_voice_manager(&g_voice_manager, 5, 1, 0xffffffff)
 004457d9        int32_t shooting_tier_1 = player->shooting_tier
@@ -287,10 +309,10 @@
 004457e5        player->shooting_tier = shooting_tier_1 + 1
 004457ed        if (shooting_tier_1 == 8)
 004457ef        player->shooting_tier = 7
-004457fb        eax_56 = player->shooting_tier - 1
-004457ff        if (eax_56 s> 6)
+004457fb        eax_51 = player->shooting_tier - 1
+004457ff        if (eax_51 s> 6)
 004457ff        goto label_445801
-0044580d        play_sound_effect(&g_sound_effect_manager, eax_56 + 1)
+0044580d        play_sound_effect(&g_sound_effect_manager, eax_51 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
 00445719        if (effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED)
 0044571b        int32_t shooting_tier = player->shooting_tier
@@ -298,9 +320,9 @@
 00445727        player->shooting_tier = shooting_tier + 1
 0044572f        if (shooting_tier == 8)
 00445731        player->shooting_tier = 7
-0044573d        eax_56 = player->shooting_tier - 1
-00445741        if (eax_56 s<= 6)
-0044580d        play_sound_effect(&g_sound_effect_manager, eax_56 + 1)
+0044573d        eax_51 = player->shooting_tier - 1
+00445741        if (eax_51 s<= 6)
+0044580d        play_sound_effect(&g_sound_effect_manager, eax_51 + 1)
 00445818        add_subgoldy_score(player, 2, 0)
 00445801        label_445801:
 0044580d        play_sound_effect(&g_sound_effect_manager, 6 + 1)

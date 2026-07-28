@@ -24,7 +24,7 @@ instructions, prefix 44/44, 7 masked operands OK, no unresolved or mismatched
 operands.
 
 The actor now uses the shared `Banner : BodBase` owner view. Two fixed banner
-objects are embedded in `SubgameRuntime::banners`; active-list linkage does not
+objects are embedded in `cRSubGame::banners`; active-list linkage does not
 own their storage, and `destroy_subgame` only recycles those links.
 
 Cross-port ownership is independently preserved. iOS exports
@@ -38,7 +38,7 @@ keeps no stack local in the prologue and uses `push ecx; fstp [esp]` directly
 before calling `sine`.
 
 2026-07-13 ownership clarification: startup writes `&game->subgame` at banner
-`+0x48`, proving a distinct borrowed `SubgameRuntime*` backlink before the
+`+0x48`, proving a distinct borrowed `cRSubGame*` backlink before the
 existing `Player* +0x54`. The shared header and Binary Ninja `Banner` type now
 preserve both owners. `update_banner` does not read the new field and remains
 exact at 44/44.

@@ -148,7 +148,8 @@ typedef char Fringe_must_be_0x38[(sizeof(Fringe) == 0x38) ? 1 : -1];
 
 typedef struct Player Player;
 typedef struct SubSegment SubSegment;
-typedef struct SubgameRuntime SubgameRuntime;
+typedef struct cRSubGame cRSubGame;
+typedef cRSubGame SubgameRuntime;
 typedef struct Snail Snail;
 typedef struct Sprite Sprite;
 typedef struct cRSubLoc cRSubLoc;
@@ -335,7 +336,7 @@ typedef struct SubSegmentRowStrideAnchor {
  * Biasing the view by one SubSegment makes element N alias the real
  * SubTracks::segment_slots[N - 1]. Element zero is deliberately invalid and
  * must never be dereferenced. This is a borrowed analysis view only;
- * SubgameRuntime::level_definition remains the storage owner.
+ * cRSubGame::level_definition remains the storage owner.
  */
 typedef struct SubSegmentEventBiasView {
     uint8_t subgame_prefix[0x6658];
@@ -377,18 +378,18 @@ typedef struct SubSpeedUp {
     TrackPickupState state;
     Player* owner;
     uint8_t unknown_88[0x8c - 0x88];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t unknown_90[0xac - 0x90];
     Sprite* sprite;
     uint8_t unknown_b0[0xb4 - 0xb0];
 } SubSpeedUp;
 
-/* Two authored cRBanner actors are embedded at SubgameRuntime +0x359080. */
+/* Two authored cRBanner actors are embedded at cRSubGame +0x359080. */
 typedef struct Banner {
     BodBase bod;
     int32_t visibility_mode;
     uint8_t _pad_3c[0x48 - 0x3c];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t _pad_4c[0x54 - 0x4c];
     Player* owner_player;
     float phase;
@@ -403,7 +404,7 @@ typedef struct BannerPool {
  * Analysis-only root-relative stride view for the Banner startup loop.
  * initialize_game_assets_and_world carries `game + i * sizeof(Banner)` and
  * applies the absolute GameRoot-to-Banner offset at each access. This view is
- * not another owner: `SubgameRuntime::banners.slots` remains the sole Banner
+ * not another owner: `cRSubGame::banners.slots` remains the sole Banner
  * storage.
  */
 typedef struct BannerInitStrideView {
@@ -430,7 +431,7 @@ typedef struct JetPack {
     TrackPickupState state;
     Player* owner;
     uint8_t _pad_40[0x44 - 0x40];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t _pad_48[0x64 - 0x48];
     Sprite* sprite;
     cRSubLoc* source_cell;
@@ -455,7 +456,7 @@ typedef enum ParcelState {
 typedef struct Parcel {
     BodBase bod;
     ParcelState state;
-    SubgameRuntime* owner_subgame;
+    cRSubGame* owner_subgame;
     uint8_t _pad_40[0x54 - 0x40];
     Sprite* sprite;
     uint8_t _pad_58[0x5c - 0x58];
@@ -480,7 +481,7 @@ typedef char ParcelManager_must_be_0x1b58[
 
 /* Exact 0x28-byte authored cRGUI front-end controller. */
 typedef struct GUI {
-    SubgameRuntime* game;
+    cRSubGame* game;
     FrontendWidget* next_level_button;
     FrontendWidget* previous_level_button;
     FrontendWidget* level_name_widget;
@@ -536,7 +537,7 @@ typedef struct LoadingQuadVertexView {
 
 /* Exact 0x14-byte thanks-for-playing controller. */
 typedef struct ThanksScreen {
-    SubgameRuntime* game;
+    cRSubGame* game;
     FrontendWidget* message_widget;
     int32_t message_state;
     float message_progress;
@@ -595,7 +596,7 @@ typedef struct Galaxy {
     int32_t record_count;
     GalaxyStar route_slots[101];
     GalaxyRouteNameRecord route_names[10];
-    SubgameRuntime* level_progress_base;
+    cRSubGame* level_progress_base;
     FrontendWidget* exit_or_back_widget;
     FrontendWidget* route_title_widget;
     FrontendWidget* route_icon_widget;
@@ -741,7 +742,7 @@ typedef struct FrontendWidget {
     FrontendWidget* slider_value_widget;
 } FrontendWidget;
 
-/* Authored cRSubPause owner embedded in SubgameRuntime at +0x14. */
+/* Authored cRSubPause owner embedded in cRSubGame at +0x14. */
 typedef struct SubPause {
     FrontendWidget* options_widget;
     FrontendWidget* end_game_widget;
@@ -787,7 +788,7 @@ typedef struct Warning {
 } Warning;
 
 /*
- * Authored cRTimesUp countdown actor at SubgameRuntime +0x1272828. Native
+ * Authored cRTimesUp countdown actor at cRSubGame +0x1272828. Native
  * functions: update_times_up @ 0x445e20, uninit_times_up @ 0x445e70.
  */
 typedef enum TimesUpState {
@@ -859,7 +860,7 @@ typedef struct Salt {
     RenderableBod body;
     SaltState state;
     uint8_t _pad_84[0x4];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     float fade_alpha;
     float spawn_velocity_y;
     uint8_t collision_armed;
@@ -873,14 +874,14 @@ typedef struct Salt {
  * following slot's prefix; it owns neither slot.
  */
 typedef struct SaltOwnerGameStrideCursor {
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t _stride_tail[0x94];
 } SaltOwnerGameStrideCursor;
 
 typedef Salt SaltHazardSlot;
 
 /*
- * SubLazer projectile runtime slot. Pool lives at `SubgameRuntime +0x356b00`
+ * SubLazer projectile runtime slot. Pool lives at `cRSubGame +0x356b00`
  * with 20 owned slots and stride 0xb0. Each slot borrows its containing
  * subgame and is fired by Wall2 tile emitters through cRSubLazerManager::Shoot.
  * Native functions: initialize_sub_lazer_pool
@@ -902,7 +903,7 @@ typedef struct SubLazer {
     RenderableBod body;
     SubLazerState state;
     uint8_t _pad_84[0x4];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     Vec3 velocity;
     float sprite_bob_phase;
     float sprite_bob_phase_step;
@@ -920,7 +921,7 @@ typedef struct SubLazerBodyObjectStrideCursor {
     Object* body_object;
     tColour body_color;
     uint8_t _pad_14[0x50];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t _stride_tail[0x48];
 } SubLazerBodyObjectStrideCursor;
 
@@ -932,7 +933,7 @@ typedef struct SubHealth {
     TrackPickupState state;
     Player* owner;
     uint8_t _pad_40[0x44 - 0x40];
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     uint8_t _pad_48[0x64 - 0x48];
     Sprite* sprite;
     cRSubLoc* source_cell;
@@ -964,7 +965,7 @@ typedef struct Slug {
     RenderableBod body;
     SubSlugState state;
     SubSlugDeathTossDirection death_toss_direction;
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     Vec3 velocity;
     float attachment_facing_angle;
     float death_toss_progress;
@@ -1033,7 +1034,7 @@ struct SubGarbage {
     SubGarbage* next_active;
     SubGarbageState state;
     SubGarbageCollisionSide collision_side;
-    SubgameRuntime* owner_game;
+    cRSubGame* owner_game;
     Vec3 velocity;
     float radius;
     float attachment_facing_angle;
@@ -1097,7 +1098,7 @@ struct SubRing {
     SubRingKind kind;
     int32_t owner_lives_snapshot;
     SubRingStar particles[10];
-    SubgameRuntime* rate_source;
+    cRSubGame* rate_source;
     float transition_progress;
     float transition_step;
     uint8_t oscillate_x;
@@ -1138,9 +1139,9 @@ typedef SubRingPool RingOrSpecialEffectPool;
 
 /*
  * Analysis-only manager-relative view used while VC6 retains
- * `SubgameRuntime + slot_index * sizeof(SubRing)` instead of materializing a
+ * `cRSubGame + slot_index * sizeof(SubRing)` instead of materializing a
  * direct SubRing pointer. The prefix is not separately owned storage: `ring`
- * aliases one of SubgameRuntime::ring_effects.slots.
+ * aliases one of cRSubGame::ring_effects.slots.
  */
 typedef struct SubRingSlotCursor {
     uint8_t subgame_prefix[0x35b78c];
@@ -1150,9 +1151,9 @@ typedef struct SubRingSlotCursor {
 /*
  * Analysis-only manager-relative views for the byte-strided pool sweeps in
  * Player::handle_subgoldy_collisions. Each prefix aliases the enclosing
- * SubgameRuntime; the final field is one embedded slot, not separately owned
+ * cRSubGame; the final field is one embedded slot, not separately owned
  * storage. The views preserve native `subgame + slot_offset` cursor lifetimes
- * without misrepresenting them as additional SubgameRuntime instances.
+ * without misrepresenting them as additional cRSubGame instances.
  */
 typedef struct JetPackSlotCursor {
     uint8_t subgame_prefix[0x355e64];
@@ -1563,7 +1564,7 @@ typedef struct SubRow {
  * Analysis-only field-first view for BuildLevel's runtime-row clear pass.
  * Native carries SubRow::parcel_spawn_position.y and advances by the complete
  * 0xf4-byte row stride while clearing fields on both sides of that address.
- * SubgameRuntime::runtime_rows remains the sole owner; the tail aliases the
+ * cRSubGame::runtime_rows remains the sole owner; the tail aliases the
  * next row's prefix and owns neither row.
  */
 typedef struct SubRowParcelSpawnYStrideCursor {
@@ -1584,7 +1585,7 @@ typedef char SubRowParcelSpawnYStrideCursor_must_be_0xf4[
     (sizeof(SubRowParcelSpawnYStrideCursor) == 0xf4) ? 1 : -1
 ];
 
-/* Native retains the enclosing SubgameRuntime base while advancing one
+/* Native retains the enclosing cRSubGame base while advancing one
  * 0xf4-byte runtime-row lane. Only row at +0x5ccac8 is consumed here. */
 typedef struct RuntimeRowStrideAnchor {
     uint8_t runtime_prefix[0x5ccac8];
@@ -1602,7 +1603,7 @@ typedef struct GameRootRuntimeRowStrideAnchor {
     SubRow row;
 } GameRootRuntimeRowStrideAnchor;
 
-/* Native likewise carries a SubgameRuntime-relative 0x54-byte cell cursor.
+/* Native likewise carries a cRSubGame-relative 0x54-byte cell cursor.
  * The immediate lane neighbors are one cell stride away, the same-lane row
  * neighbors are one eight-cell row stride (0x2a0) away, and update_subgame's
  * projected ring cell is six rows (0xfc0) ahead of the current cell at
@@ -1778,7 +1779,7 @@ typedef struct SegmentCache {
     int32_t max_index_counts[5];
     ObjectRenderVertex* shared_vertex_buffers[5];
     uint16_t* shared_index_buffers[5];
-    SubgameRuntime* owner_subgame;
+    cRSubGame* owner_subgame;
     TrackRenderCacheSlot slots[0x8f][5];
     float build_cache_row_base;
     float next_cache_row_z;
@@ -1809,7 +1810,7 @@ typedef struct Cameraman {
     TransformMatrix desired_matrix;
     TransformMatrix previous_desired_matrix;
     Player* player;
-    SubgameRuntime* game;
+    cRSubGame* game;
     float fov_degrees;
     uint8_t force_camera_update;
     uint8_t _pad_cd[0x3];
@@ -1864,7 +1865,7 @@ typedef struct SubHover {
     float wobble_y;
     float wobble_alpha;
     JetParticleSlot particle_slots[30];
-    SubgameRuntime* game;
+    cRSubGame* game;
     uint8_t _pad_204[0x8];
     float warning_intensity_latch;
     float warning_intensity;
@@ -2163,7 +2164,7 @@ typedef struct Tutorial {
     int32_t state;
     int32_t _pad_04;
     int32_t _pad_08;
-    SubgameRuntime* game;
+    cRSubGame* game;
     uint8_t _pad_10[0xc];
 } Tutorial;
 
@@ -2244,7 +2245,7 @@ typedef struct SubSolution {
     int32_t opaque_persistence_word_1;
 } SubSolution;
 
-/* Analysis-only SubgameRuntime-relative view for update_subgame's native
+/* Analysis-only cRSubGame-relative view for update_subgame's native
  * `game + route_index * sizeof(SubSolution)` cursor. The prefix aliases the
  * enclosing runtime and the terminal field aliases one record owned by
  * SubHighScore::time_trial_route_records; this is not additional storage. */
@@ -2327,7 +2328,7 @@ typedef char PathTemplateSamplePairCursorView_must_be_0x150[
 /*
  * Android and iOS preserve the authored cRPath identity and member family.
  * Windows independently proves this exact 0xa8-byte layout and stores 126
- * instances as 63 adjacent PathPair records in SubgameRuntime.
+ * instances as 63 adjacent PathPair records in cRSubGame.
  */
 typedef struct cRPath {
     BodBase bod;
@@ -2422,7 +2423,7 @@ typedef struct __base(RenderableBod, 0x00) GolbShot {
     float path_factor;
     float lifetime;
     float lifetime_step;
-    SubgameRuntime* game;
+    cRSubGame* game;
     void* object_ref;
     Player* owner_player;
     TransformMatrix source_matrix;
@@ -2441,7 +2442,7 @@ typedef struct GolbShotFlightStrideCursor {
     uint8_t _pad_40[0x40];
     int32_t state;
     uint8_t _pad_84[0x28];
-    SubgameRuntime* game;
+    cRSubGame* game;
     uint8_t _stride_tail[0x238];
 } GolbShotFlightStrideCursor;
 
@@ -2521,7 +2522,7 @@ typedef struct Player {
     uint8_t _pad_3f1[0x3];
     Warning warning;
     int32_t lives;
-    SubgameRuntime* game;
+    cRSubGame* game;
     int32_t movement_mode_selector;
     Vec3 velocity;
     uint8_t boost_one_tick;
@@ -2575,7 +2576,7 @@ typedef union RuntimeRateOrLevelArg {
  * the broad object sparse, but the complete Player child at +0x3bb764 is now
  * represented as ownership rather than flattened score/presentation aliases.
  */
-typedef struct SubgameRuntime {
+typedef struct cRSubGame {
     uint8_t scan_reset;
     uint8_t camera_snap_requested;
     uint8_t track_mirror_enabled;
@@ -2670,7 +2671,7 @@ typedef struct SubgameRuntime {
     EnemyManager enemy_manager;
     Completion completion;
     TimesUp times_up;
-} SubgameRuntime;
+} cRSubGame;
 
 TextureRef* __thiscall get_or_create_texture_ref(
     TextureRefList* texture_list, char* texture_path, void* payload,
@@ -2816,8 +2817,8 @@ void __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node);
 RenderableBod* __thiscall initialize_noop_renderable_bod(RenderableBod* body);
 TrackRenderCacheSlot* __thiscall initialize_active_bod(TrackRenderCacheSlot* slot);
 void __thiscall update_active_bod(TrackRenderCacheSlot* slot);
-SubgameRuntime* __thiscall initialize_runtime_pools_and_path_template_bank(
-    SubgameRuntime* game
+cRSubGame* __thiscall initialize_runtime_pools_and_path_template_bank(
+    cRSubGame* game
 );
 SubRow* __thiscall initialize_track_row_runtime(SubRow* row);
 Fringe* __thiscall initialize_fringe_object(Fringe* fringe);
@@ -2877,7 +2878,7 @@ void __thiscall add_vapour_point(Vapour* vapour, const TransformMatrix* point);
 void __thiscall update_vapour(Vapour* vapour);
 SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);
 void __thiscall spawn_track_ring_or_special_effect(
-    SubgameRuntime* game,
+    cRSubGame* game,
     cRSubLoc* cell,
     int32_t requested_kind,
     Player* player,
@@ -2975,37 +2976,37 @@ void __thiscall update_progress_bar(ProgressBar* progress_bar);
 void __thiscall initialize_nuke(Nuke* nuke);
 void __thiscall update_nuke(Nuke* nuke);
 void __thiscall uninit_nuke(Nuke* nuke);
-float __thiscall calc_slider_to_rate(SubgameRuntime* game, float slider);
-void __thiscall calc_subgame_rate(SubgameRuntime* game);
-double __thiscall advance_blink_random(SubgameRuntime* game);
-void __thiscall initialize_blink_random(SubgameRuntime* game);
-void __thiscall hide_gameplay_scores(SubgameRuntime* game);
-void __thiscall unhide_gameplay_scores(SubgameRuntime* game);
+float __thiscall calc_slider_to_rate(cRSubGame* game, float slider);
+void __thiscall calc_subgame_rate(cRSubGame* game);
+double __thiscall advance_blink_random(cRSubGame* game);
+void __thiscall initialize_blink_random(cRSubGame* game);
+void __thiscall hide_gameplay_scores(cRSubGame* game);
+void __thiscall unhide_gameplay_scores(cRSubGame* game);
 cRSubLoc* __thiscall initialize_sub_loc(cRSubLoc* cell);
 void __thiscall remove_sub_loc(cRSubLoc* cell);
 void __thiscall update_sub_loc(cRSubLoc* cell);
 int32_t __thiscall get_track_cell_row_index(cRSubLoc* cell);
-cRSubLoc* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);
-SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);
+cRSubLoc* __thiscall get_track_grid_cell_at_world_position(cRSubGame* game, Vec3* position);
+SubRow* __thiscall get_track_runtime_cell_at_world_z(cRSubGame* game, Vec3* position);
 bool __thiscall is_neighbor_cell_solid(
-    SubgameRuntime* game,
+    cRSubGame* game,
     cRSubLoc* cell,
     int32_t lane_offset,
     int32_t row_offset
 );
 void __thiscall project_position_onto_track_attachment(
-    SubgameRuntime* game,
+    cRSubGame* game,
     Vec3* position,
     float* out_angle
 );
-double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);
-void __thiscall spawn_track_health_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);
-void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);
-void __thiscall merge_track_tile_runs(SubgameRuntime* game);
-void __thiscall mark_track_warning_zones(SubgameRuntime* game);
-void __thiscall select_track_tile_edge_variants(SubgameRuntime* game);
-void __thiscall promote_track_tiles_to_fringe_variants(SubgameRuntime* game);
-void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime* game);
+double __thiscall sample_track_floor_height_at_position(cRSubGame* game, Vec3* position);
+void __thiscall spawn_track_health_pickup(cRSubGame* game, cRSubLoc* cell, Player* player);
+void __thiscall spawn_track_jetpack_pickup(cRSubGame* game, cRSubLoc* cell, Player* player);
+void __thiscall merge_track_tile_runs(cRSubGame* game);
+void __thiscall mark_track_warning_zones(cRSubGame* game);
+void __thiscall select_track_tile_edge_variants(cRSubGame* game);
+void __thiscall promote_track_tiles_to_fringe_variants(cRSubGame* game);
+void __thiscall harmonize_center_lane_floor_slide_variants(cRSubGame* game);
 void __thiscall try_enter_track_attachment_from_swept_motion(
     cRPath* self,
     float world_x,
@@ -3383,13 +3384,13 @@ void __thiscall update_loading_screen(LoadingBar* loading_bar);
 
 void __thiscall destroy_options_menu(Options* options);
 
-void __thiscall initialize_subgame(SubgameRuntime* game);
+void __thiscall initialize_subgame(cRSubGame* game);
 
-void __thiscall destroy_subgame(SubgameRuntime* game);
+void __thiscall destroy_subgame(cRSubGame* game);
 
-void __thiscall update_subgame(SubgameRuntime* game);
+void __thiscall update_subgame(cRSubGame* game);
 
-void __thiscall remove_subgame_bods(SubgameRuntime* game);
+void __thiscall remove_subgame_bods(cRSubGame* game);
 
 Salt* __thiscall initialize_salt_hazard_runtime(Salt* salt);
 
@@ -3402,24 +3403,24 @@ void __thiscall spawn_salt_hazard(
 
 void __thiscall update_salt_hazard(Salt* salt);
 
-void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game);
+void __thiscall populate_runtime_track_cells_from_segments(cRSubGame* game);
 
 char __thiscall normalize_segment_glyph_for_track_flags(
-    SubgameRuntime* runtime,
+    cRSubGame* runtime,
     char glyph,
     int32_t row,
     char edge_row
 );
 
 void __thiscall rebuild_track_runtime_from_segments(
-    SubgameRuntime* game,
+    cRSubGame* game,
     int32_t level_index
 );
 
-void __thiscall build_subgame_level(SubgameRuntime* game, int32_t level_index);
+void __thiscall build_subgame_level(cRSubGame* game, int32_t level_index);
 
-void __thiscall place_parcels_on_track(SubgameRuntime* game);
-void __thiscall place_challenge_parcels_on_track(SubgameRuntime* game);
+void __thiscall place_parcels_on_track(cRSubGame* game);
+void __thiscall place_challenge_parcels_on_track(cRSubGame* game);
 
 void __thiscall initialize_track_render_cache_manager(SegmentCache* manager);
 
@@ -3473,7 +3474,7 @@ Parcel* __thiscall allocate_track_parcel_slot(ParcelManager* manager);
 void __thiscall update_track_parcel(Parcel* parcel);
 
 Parcel* __thiscall spawn_track_parcel(
-    SubgameRuntime* runtime,
+    cRSubGame* runtime,
     Vec3* world_position,
     Player* source_player
 );

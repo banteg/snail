@@ -3,8 +3,8 @@
 ## Scope
 
 This scratch reconstructs Windows-local
-`SubgameRuntime::build_subgame_level(int level_index)` at `0x437eb0` through
-the shared `SubgameRuntime` and `GameRoot` owner graphs. Cross-port symbol and
+`cRSubGame::build_subgame_level(int level_index)` at `0x437eb0` through
+the shared `cRSubGame` and `GameRoot` owner graphs. Cross-port symbol and
 body evidence identifies the authored method as `cRSubGame::StartLevel(int)`,
 not `BuildLevel()`.
 
@@ -43,7 +43,7 @@ early after the easier prefix. Its major phases are:
    positions, and calculate the subgame rate.
 
 The hazard-frequency tail is now typed end to end. `garbage_frequency` and
-`salt_frequency` at `SubgameRuntime +0x125ffd8/+0x125ffdc` are normalized from
+`salt_frequency` at `cRSubGame +0x125ffd8/+0x125ffdc` are normalized from
 the embedded level definition's authored `Garbage:`/`Salt:` percentages, or
 restored from the selected `SubSolution` for replay. `update_subgame`
 consumes the same floats as spawn controls and `complete_subgame` persists
@@ -101,8 +101,8 @@ mismatch).
   scratch out of the `FrontendWidget`, `Player`, `GolbPathBank`,
   `SubLazerPool`, and `SaltHazardPool` rows.
 - 2026-06-21 receiver cleanup: the scratch now defines
-  `SubgameRuntime::build_subgame_level` directly and declares the unused-receiver
-  `calc_slider_to_rate` call surface on `SubgameRuntime`. Focused Wibo stays at
+  `cRSubGame::build_subgame_level` directly and declares the unused-receiver
+  `calc_slider_to_rate` call surface on `cRSubGame`. Focused Wibo stays at
   `86.10%`, `560/555`, prefix `244/555`, with the same `105 ok / 1 mismatch`
   masked audit. A trial using the standalone `__stdcall calc_slider_to_rate`
   signature regressed to `73.56%`, `557/555`, prefix `62/555`; the caller wants
@@ -169,7 +169,7 @@ the active-list tail.
 
 ## 2026-07-10 embedded-player ownership pass
 
-- `SubgameRuntime::embedded_player()` now returns the address of the owned
+- `cRSubGame::embedded_player()` now returns the address of the owned
   `Player player` member at `+0x3bb764` without pretending it is heap allocated. The start row,
   completion row, Subgoldy initializer, and voice owner all point at that same
   embedded object.
@@ -208,7 +208,7 @@ the active-list tail.
 - The seven active-list receivers now retain their complete embedded-owner
   lifetimes: `Player*` for the Player body, `Weapon*` for the jetpack and three
   weapon channels, `Invincible*` for the shell, and `Snail*` for the
-  presentation body. `SubgameRuntime::player.presentation` remains the sole
+  presentation body. `cRSubGame::player.presentation` remains the sole
   owner; `GameRoot::active_bod_list` only borrows each inherited `BodNode`.
 - Binary Ninja MLIL uses those exact owner pointers at the native
   `0x4383a8..0x4385ee` definitions and inherited list accesses. Its HLIL still
@@ -256,7 +256,7 @@ existing `105 ok / 1 mismatch` audit.
 ## 2026-07-11 landscape manager ownership
 
 - Random landscape-script loads and activation now use the complete embedded
-  `LandscapeManager` type at `SubgameRuntime +0xff7c00`; the former script-bank
+  `LandscapeManager` type at `cRSubGame +0xff7c00`; the former script-bank
   and first-entry receiver views were two windows onto this one object.
 - Header consolidation renumbers the unchanged two local COFF tables to
   `$L5017`/`$L5018`. Their bounded contents match the already audited
@@ -283,7 +283,7 @@ existing `105 ok / 1 mismatch` audit.
 
 ## 2026-07-11 cRSlugVoiceManager owner
 
-The exact call receiver at `SubgameRuntime +0x35bb7c` is now the embedded
+The exact call receiver at `cRSubGame +0x35bb7c` is now the embedded
 `SlugVoiceManager` rather than an anonymous byte interval. Android independently
 retains `cRSlugVoiceManager::Init()` with the same three fields and values. The
 typed member call is codegen-neutral at the pinned 86.10% frontier.
@@ -291,7 +291,7 @@ typed member call is codegen-neutral at the pinned 86.10% frontier.
 ## 2026-07-11 cRParcelManager initializer owner
 
 The level reset now calls the embedded
-`SubgameRuntime::parcel_manager.initialize_track_parcel_slots()` directly at
+`cRSubGame::parcel_manager.initialize_track_parcel_slots()` directly at
 `+0x125e480`. The exact callee and Android `cRParcelManager::Init()` prove that
 this is the manager owner, not a one-method pool window. The focused result
 remains `86.10%`, `560/555`, prefix `244/555`, with 105 clean non-table
@@ -299,7 +299,7 @@ operands and the one real table-shape mismatch.
 
 ## 2026-07-11 empty cRProgressBar owner
 
-The shared no-op call at SubgameRuntime +0x3bbb54 is now receiver-typed as the
+The shared no-op call at cRSubGame +0x3bbb54 is now receiver-typed as the
 embedded `ProgressBar` at Player +0x3f0. Android `cRSubGame::StartLevel()`
 independently calls the one-instruction `cRProgressBar::Init()` at the matching
 lifecycle point. Windows and Android AI ignore the receiver, so the owner is an
@@ -309,12 +309,12 @@ the existing table-shape mismatch.
 
 ## 2026-07-13 shared level-build ownership
 
-- The level reset now uses the shared `GameRoot`, `SubgameRuntime`, `Player`,
+- The level reset now uses the shared `GameRoot`, `cRSubGame`, `Player`,
   and `SubTracks` owners for the star field, landscape/backdrop state, replay
   inputs, gauges and hazards, score/lives widgets, player setup, and terminal
   subgame state. These substitutions preserve the 86.10%, 560/555 instruction
   frontier and expose ownership without manufacturing a match.
-- `SubgameRuntime +0xa854` is the byte-sized `track_state_latch` handed between
+- `cRSubGame +0xa854` is the byte-sized `track_state_latch` handed between
   row-event and movement-emitter paths. `SubTracks::selected_speed` also has a
   bitwise view for the native `-1.0f` sentinel comparison.
 - The typed Banner-member rewrite was rejected because it changed the native
@@ -352,7 +352,7 @@ all 106 operands. The body remains honestly partial at 86.10%.
 ## 2026-07-13 analysis level-definition closure
 
 The path-template Binary Ninja/IDA campaign now embeds both complete
-0x1a5978-byte `SubTracks` owners in `SubgameRuntime`: the active
+0x1a5978-byte `SubTracks` owners in `cRSubGame`: the active
 `level_definition +0xa874` and startup scratch storage at `+0x1b01ec`. Their
 100 segment slots, first/last segments, random controls, colors, level name,
 speed/hazard controls, landscape index, and parcel fields end exactly at the
@@ -360,7 +360,7 @@ sentinel band at `+0x355b64`; the old first-dword `level_segment_count` view is
 retired.
 
 Binary Ninja preview verifies `SubSegment == 0x4220`, `SubTracks == 0x1a5978`,
-and the enclosing `SubgameRuntime == 0x1272838`, then reverts. Matching source
+and the enclosing `cRSubGame == 0x1272838`, then reverts. Matching source
 is unchanged: focused Wibo remains 86.10%, 560/555 instructions, with all 106
 masked operands clean and no mismatch.
 
@@ -376,7 +376,7 @@ existing state jump-table identity mismatch.
 
 ## 2026-07-13 canonical Binary Ninja replay
 
-The authoritative `SubgameRuntime` map now reaches this caller through the
+The authoritative `cRSubGame` map now reaches this caller through the
 return value of `initialize_subgoldy`, exposing the embedded Player presentation
 channels, slug voice manager, active level definition, barrier backlink, and
 Banner pool. The tracked BN export drops from 81 to 28 raw offsets and is
@@ -425,7 +425,7 @@ prefix 177, with 101 clean operands and the existing state-table mismatch.
 ## 2026-07-14 Banner owner closure
 
 The start and completion row actors now use the two embedded
-`SubgameRuntime::banners.slots` directly. Their inherited position, list flags,
+`cRSubGame::banners.slots` directly. Their inherited position, list flags,
 color alpha, and `owner_player` backlink are initialized from the named
 `first_block_row_count` and `completion_row_start` fields; the scratch no
 longer needs a raw byte alias of its receiver or any `+0x359080..+0x359134`
@@ -463,7 +463,7 @@ with all 101 operands clean.
 
 The remaining live Binary Ninja `Game*` receiver was a stale same-size named
 type, not a second StartLevel aggregate. The guarded repair recreated only the
-exact known function as `SubgameRuntime*`, preserved both user-defined
+exact known function as `cRSubGame*`, preserved both user-defined
 parameters, verified readback, and saved explicitly. The tracked BN decompile
 drops from 28 raw offsets to two and now follows the level definition, replay
 record, runtime pools, landscape manager, banners, Player, presentation
@@ -537,7 +537,7 @@ same lanes before completion scoring does.
 
 The shared owners now expose `RuntimeConfig::challenge_speed_percent` /
 `challenge_difficulty_percent` and
-`SubgameRuntime::challenge_speed_value` /
+`cRSubGame::challenge_speed_value` /
 `challenge_difficulty_value`. This is a field-identity correction across the
 complete setup, runtime, and saved-solution path; offsets and Windows codegen
 are unchanged. Focused `StartLevel` remains 77.67%, 560/555 instructions,

@@ -11,7 +11,7 @@
 
 unsigned char __fastcall is_sub_loc_empty(cRSubLoc* cell);
 
-void SubgameRuntime::promote_track_tiles_to_fringe_variants()
+void cRSubGame::promote_track_tiles_to_fringe_variants()
 {
     int row = 0;
     if (runtime_row_count - 1 > 0) {

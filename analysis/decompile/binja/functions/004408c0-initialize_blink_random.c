@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_blink_random @ 0x4408c0 */
 
-004408c0        struct SubgameRuntime* game_1 = game
+004408c0        struct cRSubGame* game_1 = game
 004408c3        game->blink_random_index = 0
 004408cd        float* blink_sample_cursor = &game->blink_random_samples
 004408d3        int32_t i_1 = 0x18

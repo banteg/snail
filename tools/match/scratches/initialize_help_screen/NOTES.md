@@ -12,7 +12,7 @@ Help-screen initializer, reusing the main-menu music/backdrop setup with the
 
 2026-07-11 cRHelp ownership: Android and iOS preserve this method as
 `cRHelp::Init()`, paired with `AI()` and Android `UnInit()`. The exact
-four-byte owner lives at `SubgameRuntime +0x1260008`; the shared type is now
+four-byte owner lives at `cRSubGame +0x1260008`; the shared type is now
 `Help`, and this initializer remains exact at 47/47.
 
 2026-07-13 root-owner cleanup: the landscape, backdrop, border pool, and Back

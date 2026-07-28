@@ -3,6 +3,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: bind_subgame_owner @ 0x433fc0 */
 
-00433fc5        struct SubgameRuntime* result = &g_game_base->subgame
+00433fc5        struct cRSubGame* result = &g_game_base->subgame
 00433fca        owner->game = result
 00433fcc        return result

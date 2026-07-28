@@ -45,7 +45,7 @@
 0043f2f0        float var_c_1 = fconvert.s(random_signed_float_below(0.100000001f, "GDI"))
 0043f30b        float var_8_1 = fconvert.s(random_float_below(0.200000003f, nullptr) + fconvert.t(0.100000001f))
 0043f30f        long double st0_3 = random_float_below(0.300000012f, nullptr)
-0043f314        struct SubgameRuntime* owner_game = sub_garbage->owner_game
+0043f314        struct cRSubGame* owner_game = sub_garbage->owner_game
 0043f325        long double x87_r6_1 = fconvert.t(owner_game->subgame_rate)
 0043f33c        sub_garbage->velocity.x = fconvert.s(x87_r6_1 * fconvert.t(var_c_1))
 0043f34a        sub_garbage->velocity.y = fconvert.s(fconvert.t(var_8_1) * x87_r6_1)

@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: calc_subgame_rate @ 0x4404d0 */
 
-004404d0        struct SubgameRuntime* game_1 = game
+004404d0        struct cRSubGame* game_1 = game
 004404dc        if (game->subgame_state != 2)
 004405f3        game->subgame_rate = game->rate_or_level_arg.base_rate
 004405f3        return
