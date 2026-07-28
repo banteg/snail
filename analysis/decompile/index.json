@@ -18,11 +18,11 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_supertramp_path_template_pair",
-      "address": "0x423f10"
+      "name": "initialize_worm_path_template_pair",
+      "address": "0x420170"
     }
   ],
-  "health_check_count": 1142,
+  "health_check_count": 1143,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

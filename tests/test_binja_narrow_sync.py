@@ -22586,10 +22586,107 @@ def test_worm_replay_preserves_two_stage_mesh_owner_lifetimes() -> None:
     assert "WORM_PATH_USER_VAR_UPDATES" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "apply_user_var_updates" in replay
+    assert "WORM_CONTROL_LIFETIME_SPLITS" in replay
     assert '0x9C: ("lateral_scale", "float")' in replay
+    for control_owner in (
+        "entrance_sample_index",
+        "entrance_sample_offset",
+        "exit_sample_index",
+        "exit_sample_offset",
+        "middle_index",
+        "middle_sample_offset",
+        "delta_index",
+        "delta_sample_offset",
+    ):
+        assert f'"{control_owner}"' in replay
+    for definition in (
+        ("0x4201b1", "mlil", "StackVariableSourceType", 65, -128),
+        ("0x4201b7", "mlil_ssa", "StackVariableSourceType", 71, -128),
+        ("0x420268", "mlil", "StackVariableSourceType", 248, -128),
+        ("0x4201b5", "mlil", "RegisterVariableSourceType", 69, 73),
+        ("0x4201b7", "mlil_ssa", "RegisterVariableSourceType", 71, 73),
+        ("0x420253", "mlil", "RegisterVariableSourceType", 227, 73),
+        ("0x420272", "mlil", "RegisterVariableSourceType", 258, 69),
+        ("0x420280", "mlil_ssa", "RegisterVariableSourceType", 272, 69),
+        ("0x420325", "mlil", "RegisterVariableSourceType", 437, 69),
+        ("0x42027c", "mlil", "StackVariableSourceType", 268, -112),
+        ("0x420280", "mlil_ssa", "StackVariableSourceType", 272, -112),
+        ("0x420326", "mlil", "StackVariableSourceType", 438, -112),
+        ("0x420277", "mlil", "RegisterVariableSourceType", 263, 73),
+        ("0x420280", "mlil_ssa", "RegisterVariableSourceType", 272, 73),
+        ("0x42031f", "mlil", "RegisterVariableSourceType", 431, 73),
+        ("0x42033a", "mlil", "RegisterVariableSourceType", 458, 69),
+        ("0x420341", "mlil_ssa", "RegisterVariableSourceType", 465, 69),
+        ("0x4205aa", "mlil", "RegisterVariableSourceType", 1082, 69),
+        ("0x42033c", "mlil", "RegisterVariableSourceType", 460, 73),
+        ("0x420341", "mlil_ssa", "RegisterVariableSourceType", 465, 73),
+        ("0x4205a4", "mlil", "RegisterVariableSourceType", 1076, 73),
+        ("0x4205ba", "mlil", "RegisterVariableSourceType", 1098, 69),
+        ("0x4205c7", "mlil_ssa", "RegisterVariableSourceType", 1111, 69),
+        ("0x420673", "mlil", "RegisterVariableSourceType", 1283, 69),
+        ("0x4205c5", "mlil", "RegisterVariableSourceType", 1109, 73),
+        ("0x4205c7", "mlil_ssa", "RegisterVariableSourceType", 1111, 73),
+        ("0x42067e", "mlil", "RegisterVariableSourceType", 1294, 73),
+    ):
+        expected_definition = (
+            f'("{definition[0]}", "{definition[1]}", '
+            f'"{definition[2]}", {definition[3]}, {definition[4]})'
+        )
+        assert expected_definition in replay
     for rejected_index in (713, 912):
         assert f"({rejected_index}, 66," not in replay
+
+    health = json.loads(
+        (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    check = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_worm_path_full_owner_abi"
+    )
+    regexes = check["required_regexes"]
+    for address in (
+        "00420428",
+        "004204f2",
+        "004206e4",
+        "00420727",
+        "00420958",
+    ):
+        assert any(pattern.startswith(address) for pattern in regexes)
+    for folded_owner in (
+        "struct Vec3* primary_up",
+        "struct Vec3* secondary_up",
+        "struct Vec3* primary_terminal_delta",
+        "struct Vec3* secondary_terminal_delta",
+        "struct Vec3* vertex",
+    ):
+        assert folded_owner not in check["required_substrings"]
+
+    ida_check = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "ida_worm_path_mobile_control_and_owner_abi"
+    )
+    for source_shape in (
+        "while ( v4 < 4 );",
+        "while ( v6 - 20 < 4 );",
+        "for ( i = 4; i < 20; ++i )",
+        "while ( v21 < (signed int)(self->segment_count - 1) );",
+    ):
+        assert source_shape in ida_check["required_substrings"]
+    for stale_ida_shape in (
+        "void __thiscall sub_420170",
+        "int this",
+        "strip_mesh",
+        "return calc_path_length_z",
+        "__asm",
+        "_ET1",
+    ):
+        assert stale_ida_shape in ida_check["forbidden_substrings"]
 
 
 def test_cage2_replay_splits_terminal_scalar_and_preserves_mesh_owners() -> None:

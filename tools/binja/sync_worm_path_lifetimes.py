@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -80,12 +80,103 @@ WORM_PATH_USER_VAR_UPDATES = tuple(
     for index, storage, variable_name, variable_type in WORM_PATH_LIFETIME_SPECS
 )
 
+# Android and iOS independently preserve Worm's portable 24-sample control
+# graph: entrance samples 0..3, exit samples 20..23, a middle 4..19 basis
+# pass, and a fresh delta pass. Windows remains authoritative for the exact
+# definitions and native 0xa8-byte sample offsets below. The exit index merges
+# its EBX lifetime with the stack spill VC6 uses for x87 conversion.
+WORM_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x4201b1", "mlil", "StackVariableSourceType", 65, -128),
+            ("0x4201b7", "mlil_ssa", "StackVariableSourceType", 71, -128),
+            ("0x420268", "mlil", "StackVariableSourceType", 248, -128),
+        ),
+        ("StackVariableSourceType", 65, -128),
+        "entrance_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4201b5", "mlil", "RegisterVariableSourceType", 69, 73),
+            ("0x4201b7", "mlil_ssa", "RegisterVariableSourceType", 71, 73),
+            ("0x420253", "mlil", "RegisterVariableSourceType", 227, 73),
+        ),
+        ("RegisterVariableSourceType", 69, 73),
+        "entrance_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x420272", "mlil", "RegisterVariableSourceType", 258, 69),
+            ("0x420280", "mlil_ssa", "RegisterVariableSourceType", 272, 69),
+            ("0x420325", "mlil", "RegisterVariableSourceType", 437, 69),
+            ("0x42027c", "mlil", "StackVariableSourceType", 268, -112),
+            ("0x420280", "mlil_ssa", "StackVariableSourceType", 272, -112),
+            ("0x420326", "mlil", "StackVariableSourceType", 438, -112),
+        ),
+        ("RegisterVariableSourceType", 258, 69),
+        "exit_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x420277", "mlil", "RegisterVariableSourceType", 263, 73),
+            ("0x420280", "mlil_ssa", "RegisterVariableSourceType", 272, 73),
+            ("0x42031f", "mlil", "RegisterVariableSourceType", 431, 73),
+        ),
+        ("RegisterVariableSourceType", 263, 73),
+        "exit_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42033a", "mlil", "RegisterVariableSourceType", 458, 69),
+            ("0x420341", "mlil_ssa", "RegisterVariableSourceType", 465, 69),
+            ("0x4205aa", "mlil", "RegisterVariableSourceType", 1082, 69),
+        ),
+        ("RegisterVariableSourceType", 458, 69),
+        "middle_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42033c", "mlil", "RegisterVariableSourceType", 460, 73),
+            ("0x420341", "mlil_ssa", "RegisterVariableSourceType", 465, 73),
+            ("0x4205a4", "mlil", "RegisterVariableSourceType", 1076, 73),
+        ),
+        ("RegisterVariableSourceType", 460, 73),
+        "middle_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4205ba", "mlil", "RegisterVariableSourceType", 1098, 69),
+            ("0x4205c7", "mlil_ssa", "RegisterVariableSourceType", 1111, 69),
+            ("0x420673", "mlil", "RegisterVariableSourceType", 1283, 69),
+        ),
+        ("RegisterVariableSourceType", 1098, 69),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4205c5", "mlil", "RegisterVariableSourceType", 1109, 73),
+            ("0x4205c7", "mlil_ssa", "RegisterVariableSourceType", 1111, 73),
+            ("0x42067e", "mlil", "RegisterVariableSourceType", 1294, 73),
+        ),
+        ("RegisterVariableSourceType", 1109, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the proved basis, terminal, mesh, vertex, and face "
-            "lifetimes in the worm path constructor."
+            "Replay the proved control, basis, terminal, mesh, vertex, and "
+            "face lifetimes in the worm path constructor."
         )
     )
     parser.add_argument(
@@ -154,6 +245,22 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=WORM_PATH_USER_VAR_UPDATES,
+        ),
+        *apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    "initialize_worm_path_template_pair",
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for definitions, target_var, variable_name, variable_type in (
+                    WORM_CONTROL_LIFETIME_SPLITS
+                )
+            ),
         ),
     ]
     return emit_summary(

@@ -210,3 +210,36 @@ rather than receiving invented labels. Representative focused recompilation is
 codegen-neutral: Worm stays at 72.81% (728/736, 37 clean operands), FollowState
 at 72.89% (698/726, 63 clean operands), and the projection consumer remains
 exact at 100.00% (106/106).
+
+## 2026-07-28 mobile-backed control ownership
+
+The exact Android and iOS `cRPath::BuildWorm(char*)` bodies independently
+preserve the portable 24-sample prefix also present in Windows: entrance
+samples 0 through 3, exit samples 20 through 23, a middle 4-through-19 basis
+pass with a distinct first iteration, and a fresh delta pass through
+`segment_count - 1`. The ports end after path-length calculation and do not
+contain Windows' cylindrical mesh tail, so no mobile claim is made for those
+mesh controls.
+
+Windows MLIL supplies the exact native definitions and 0xa8-byte cursors for
+`entrance_sample_index`/`entrance_sample_offset`,
+`exit_sample_index`/`exit_sample_offset`,
+`middle_index`/`middle_sample_offset`, and
+`delta_index`/`delta_sample_offset`. Transactional preview also proves that
+the exit counter's EBX lifetime and its x87 stack spill are one logical
+source variable. The preview produces four clean named loops with no new
+`__offset` expressions; matcher source and bytes remain unchanged at the
+honest 72.81% frontier.
+
+After the control splits, Binary Ninja folds the already-current basis-up,
+terminal-delta, and ordinary mesh-vertex locals into five address-pinned
+`Vec3` aggregate assignments. A post-export replay confirms that all fifteen
+earlier user-owned lifetimes remain current in the database. Health therefore
+checks the five exact Windows aggregate sites rather than requiring stale
+temporary-name rendering.
+
+The IDA 9.4 refresh independently renders the same 0-through-3,
+20-through-23, 4-through-19, and `segment_count - 1` Windows ranges. It also
+replaces the stale tracked `strip_mesh`/non-void artifact with the already
+proved `Path*`, `bod.object`, and void finalizer ABI. A paired IDA health check
+now pins that second-opinion owner and control shape.
