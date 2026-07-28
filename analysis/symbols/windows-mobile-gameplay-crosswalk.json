@@ -10285,8 +10285,7 @@
       "source_object": "ObjectProc.o",
       "confidence": "high",
       "android_body_count": 1,
-      "ios_body_count": 1,
-      "notes": "All ports preserve the five-float cRDistort owner. Windows embeds the canonical Distort at Object +0x80; only the first three floats have recovered consumers, so the final two remain unnamed."
+      "ios_body_count": 1
     },
     {
       "address": "0x41aa50",
@@ -10298,7 +10297,6 @@
       "source_object": "ObjectProc.o",
       "confidence": "high",
       "android_body_count": 1,
-      "notes": "Android proves the authored cRDistort owner, borrowed cRObject target, three leading controls, and ordered copy-buffer chaining. iOS preserves cRDistort::BuildMatrix but exposes no consumer for either tail float; Windows-specific bounds and normal-refresh behavior remain authoritative.",
       "ios_candidates": [
         {
           "symbol": "cRBackdrop::Render()",

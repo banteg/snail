@@ -7880,8 +7880,8 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         mobile_crosswalk["0x41aa50"]["android_symbol"]
         == "cRDistort::Build(cRObject*)"
     )
-    assert "final two remain unnamed" in mobile_crosswalk["0x41aa30"]["notes"]
-    assert "cRDistort::BuildMatrix" in mobile_crosswalk["0x41aa50"]["notes"]
+    assert "final two remain unnamed" in ios_crosswalk["0x41aa30"]["notes"]
+    assert "cRDistort::BuildMatrix" in ios_crosswalk["0x41aa50"]["notes"]
     assert "canonical Distort owner" in ios_crosswalk["0x41aa30"]["notes"]
     assert "no consumers for the two tail floats" in ios_crosswalk["0x41aa50"]["notes"]
 

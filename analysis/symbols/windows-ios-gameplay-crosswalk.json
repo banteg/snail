@@ -998,7 +998,7 @@
       "android_symbol": "cRSubGoldy::SetShootFlags()",
       "source_object": null,
       "confidence": "high",
-      "notes": "Android preserves the authored name and the same nine-case selector-to-weapon-flags/cadence table. Its common POP {R4,PC} exit leaves the original receiver in R0 when unchanged but the incidental residue of cRSnail::SetWeapon when changed, proving the member is void. The former update_player_movement_flags name remains an alias."
+      "notes": "Android preserves the authored name and the same nine-case selector-to-weapon-flags/cadence table. After the switch it keeps the current mask distinct from a local copy of the previous mask, refreshes that local only after cRSnail::SetWeapon, and performs one final previous-mask store; the same source lifetime raises the honest Windows match to 98.99% without a volatile barrier. Its common POP {R4,PC} exit leaves the original receiver in R0 when unchanged but the incidental residue of cRSnail::SetWeapon when changed, proving the member is void. The former update_player_movement_flags name remains an alias."
     },
     {
       "address": "0x43a300",

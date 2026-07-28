@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**532/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93897/294937** bytes (**31.84%**) are proof-grade, and overall fuzzy is **78.73%**.
+**532/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93897/294937** bytes (**31.84%**) are proof-grade, and overall fuzzy is **78.74%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -543,7 +543,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (28)
+## Near Match (95-99.99%) (29)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -564,6 +564,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 26 ok |  | core |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  | core |
 | 🚧 | update_sub_loc | 0x439d50 | 702 | 187/187 | 99.47% | 55/187 | 39 ok |  | core |
+| 🚧 | set_subgoldy_shoot_flags | 0x43a1a0 | 344 | 49/50 | 98.99% | 46/50 | 2 ok |  | core |
 | 🚧 | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 347/347 | 99.71% | 294/347 | 75 ok |  | core |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  | core |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 2 unaudited, 37 ok |  | core |
@@ -576,7 +577,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (47)
+## High Progress (80-94.99%) (46)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -602,7 +603,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  | core |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  | core |
 | 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 2 unaudited, 17 ok |  | core |
-| 🚧 | set_subgoldy_shoot_flags | 0x43a1a0 | 344 | 46/50 | 93.75% | 38/50 | 2 ok |  | core |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 132/131 | 85.93% | 6/131 | 34 ok |  | core |
 | 🚧 | play_subgoldy_shoot_sfx | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 2 unaudited, 19 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2086/2087 | 82.67% | 12/2087 | 3 unaudited, 314 ok |  | core |

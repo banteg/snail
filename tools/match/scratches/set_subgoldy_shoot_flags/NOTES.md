@@ -1,6 +1,6 @@
 # set_subgoldy_shoot_flags / cRSubGoldy::SetShootFlags @ 0x43a1a0
 
-Source-shaped match: 93.75%, 38/50 instruction prefix, 46/50 candidate/target
+Source-shaped match: 98.99%, 46/50 instruction prefix, 49/50 candidate/target
 insns.
 
 This helper maps the player's shooting tier at `+0x308` onto the
@@ -109,5 +109,27 @@ the retired volatile barrier is not restored.
 The Android-authored name now owns the canonical Windows identity
 `set_subgoldy_shoot_flags`. The former behavior label
 `update_player_movement_flags` remains an alias. This is an ownership-only
-correction: the honest 93.75% result and native duplicate-tail residual are
-unchanged.
+correction: at that point the honest 93.75% result and native duplicate-tail
+residual were unchanged.
+
+## 2026-07-28 mobile-backed mask lifetime
+
+The complete Android body preserves two distinct values after the selector
+switch: the current `shoot_flags` value passed to `cRSnail::SetWeapon`, and a
+local copy of `previous_shoot_flags` which is refreshed from the member only
+after that call. One final source-level assignment writes the selected value
+back to `previous_shoot_flags`.
+
+Retaining those same `current_flags` and `selected_flags` lifetimes in the
+Windows scratch raises focused Wibo from 93.75% (`46/50`, prefix `38`) to
+98.99% (`49/50`, prefix `46`), with both masked operands clean. It also
+recovers the shipped binary's separate changed and unchanged epilogues without
+the retired volatile barrier.
+
+The sole residual is the unchanged path's redundant member reload: native
+reloads `shoot_flags` before writing the equal value, while VC6 keeps the
+already-equal `selected_flags` value live in ECX. An explicit `else` assignment
+and a final assignment through `current_flags` both let VC6 tail-merge the
+paths again and regress to 93.75%; neither is retained. The clean cross-port
+lifetime remains honest at one missing instruction rather than forcing a
+reload.
