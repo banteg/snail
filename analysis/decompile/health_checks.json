@@ -12801,6 +12801,16 @@
         "self->width_cells = width_cells_",
         "self->segment_count = 0x22",
         "if (handedness == 0)",
+        "int32_t interior_index = 0",
+        "int32_t interior_sample_offset = 0xa8",
+        "double base_phase =",
+        "float curve_phase =",
+        "float curve_phase_sine =",
+        "interior_sample_offset += 0xa8",
+        "interior_index += 1",
+        "int32_t delta_index = 0",
+        "int32_t delta_sample_offset = 0",
+        "delta_sample_offset += 0xa8",
         "get_path_nodes(self)",
         "struct PathTemplateSample* primary_sample_cursor",
         "struct PathTemplateSample* primary_mesh_sample",
@@ -12831,11 +12841,17 @@
         "void* eax_29",
         "int16_t* ebp_1",
         "int16_t* ebp_2",
+        "int32_t width_cells_1 = 0",
+        "int32_t i = 0xa8",
+        "width_cells_ = fconvert.s(sine(width_cells_))",
         "arg2",
         "arg3",
         "arg4",
         "return calc_path_length_z"
-      ]
+      ],
+      "max_counts": {
+        "__offset": 15
+      }
     },
     {
       "name": "bn_twister2_path_full_owner_abi",
@@ -12845,6 +12861,16 @@
         "self->width_cells = width_cells_",
         "self->segment_count = 0x34",
         "if (handedness == 0)",
+        "int32_t interior_index = 0",
+        "int32_t interior_sample_offset = 0xa8",
+        "double base_phase =",
+        "float curve_phase =",
+        "float curve_phase_sine =",
+        "interior_sample_offset += 0xa8",
+        "interior_index += 1",
+        "int32_t delta_index = 0",
+        "int32_t delta_sample_offset = 0",
+        "delta_sample_offset += 0xa8",
         "get_path_nodes(self)",
         "struct PathTemplateSample* primary_sample_cursor",
         "struct PathTemplateSample* primary_mesh_sample",
@@ -12875,11 +12901,17 @@
         "void* eax_29",
         "int16_t* ebp_1",
         "int16_t* ebp_2",
+        "int32_t width_cells_1 = 0",
+        "int32_t i = 0xa8",
+        "width_cells_ = fconvert.s(sine(width_cells_))",
         "arg2",
         "arg3",
         "arg4",
         "return calc_path_length_z"
-      ]
+      ],
+      "max_counts": {
+        "__offset": 15
+      }
     },
     {
       "name": "bn_p_path_full_owner_abi",

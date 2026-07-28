@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -86,6 +86,189 @@ TWISTER_PATH_USER_VAR_UPDATES = tuple(
         "initialize_twister2_path_template_pair",
     )
     for index, storage, variable_name, variable_type in TWISTER_PATH_LIFETIME_SPECS
+)
+
+# Android and iOS independently preserve the twister source skeleton: one
+# logical interior index, one byte cursor, a base phase, a handedness-adjusted
+# phase, its half phase and sine, and a separate delta loop. Windows remains
+# authoritative for the exact definitions and constants. In particular, the
+# Windows Twister2 body has 52 samples and a 0.251327425f step, unlike the
+# 66-sample mobile body.
+TWISTER_CONTROL_USER_VAR_UPDATES = tuple(
+    (
+        function_name,
+        "StackVariableSourceType",
+        454,
+        -64,
+        "half_phase",
+        "float",
+    )
+    for function_name in (
+        "initialize_twister_path_template_pair",
+        "initialize_twister2_path_template_pair",
+    )
+)
+
+TWISTER_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x42a6db", "mlil", "RegisterVariableSourceType", 411, 71),
+            ("0x42a6e3", "mlil", "StackVariableSourceType", 419, 8),
+            ("0x42a6ec", "mlil_ssa", "RegisterVariableSourceType", 428, 71),
+            ("0x42a6ec", "mlil_ssa", "StackVariableSourceType", 428, 8),
+            ("0x42a7b1", "mlil", "RegisterVariableSourceType", 625, 71),
+            ("0x42a7b6", "mlil", "StackVariableSourceType", 630, 8),
+            ("0x42a9eb", "mlil", "StackVariableSourceType", 1195, 8),
+        ),
+        ("RegisterVariableSourceType", 411, 71),
+        "interior_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42a6e7", "mlil", "RegisterVariableSourceType", 423, 73),
+            ("0x42a6ec", "mlil_ssa", "RegisterVariableSourceType", 428, 73),
+            ("0x42a9e5", "mlil", "RegisterVariableSourceType", 1189, 73),
+        ),
+        ("RegisterVariableSourceType", 423, 73),
+        "interior_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42a6f6", "mlil", "RegisterVariableSourceType", 438, 4103),
+        ),
+        ("RegisterVariableSourceType", 438, 4103),
+        "base_phase",
+        "long double",
+    ),
+    (
+        (
+            ("0x42a6fc", "mlil", "StackVariableSourceType", 444, 8),
+            ("0x42a716", "mlil", "StackVariableSourceType", 470, 8),
+            ("0x42a71a", "mlil_ssa", "StackVariableSourceType", 474, 8),
+        ),
+        ("StackVariableSourceType", 444, 8),
+        "curve_phase",
+        "float",
+    ),
+    (
+        (
+            ("0x42a79d", "mlil", "StackVariableSourceType", 605, 8),
+        ),
+        ("StackVariableSourceType", 605, 8),
+        "curve_phase_sine",
+        "float",
+    ),
+    (
+        (
+            ("0x42a7c5", "mlil", "StackVariableSourceType", 645, 8),
+        ),
+        ("StackVariableSourceType", 645, 8),
+        "sample_z",
+        "float",
+    ),
+    (
+        (
+            ("0x42a9fe", "mlil", "RegisterVariableSourceType", 1214, 71),
+            ("0x42aa0b", "mlil_ssa", "RegisterVariableSourceType", 1227, 71),
+            ("0x42aaba", "mlil", "RegisterVariableSourceType", 1402, 71),
+        ),
+        ("RegisterVariableSourceType", 1214, 71),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42aa09", "mlil", "RegisterVariableSourceType", 1225, 73),
+            ("0x42aa0b", "mlil_ssa", "RegisterVariableSourceType", 1227, 73),
+            ("0x42aac5", "mlil", "RegisterVariableSourceType", 1413, 73),
+        ),
+        ("RegisterVariableSourceType", 1225, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
+TWISTER2_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x42b0cb", "mlil", "RegisterVariableSourceType", 411, 71),
+            ("0x42b0d3", "mlil", "StackVariableSourceType", 419, 8),
+            ("0x42b0dc", "mlil_ssa", "RegisterVariableSourceType", 428, 71),
+            ("0x42b0dc", "mlil_ssa", "StackVariableSourceType", 428, 8),
+            ("0x42b1a1", "mlil", "RegisterVariableSourceType", 625, 71),
+            ("0x42b1a6", "mlil", "StackVariableSourceType", 630, 8),
+            ("0x42b3db", "mlil", "StackVariableSourceType", 1195, 8),
+        ),
+        ("RegisterVariableSourceType", 411, 71),
+        "interior_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42b0d7", "mlil", "RegisterVariableSourceType", 423, 73),
+            ("0x42b0dc", "mlil_ssa", "RegisterVariableSourceType", 428, 73),
+            ("0x42b3d5", "mlil", "RegisterVariableSourceType", 1189, 73),
+        ),
+        ("RegisterVariableSourceType", 423, 73),
+        "interior_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42b0e6", "mlil", "RegisterVariableSourceType", 438, 4103),
+        ),
+        ("RegisterVariableSourceType", 438, 4103),
+        "base_phase",
+        "long double",
+    ),
+    (
+        (
+            ("0x42b0ec", "mlil", "StackVariableSourceType", 444, 8),
+            ("0x42b106", "mlil", "StackVariableSourceType", 470, 8),
+            ("0x42b10a", "mlil_ssa", "StackVariableSourceType", 474, 8),
+        ),
+        ("StackVariableSourceType", 444, 8),
+        "curve_phase",
+        "float",
+    ),
+    (
+        (
+            ("0x42b18d", "mlil", "StackVariableSourceType", 605, 8),
+        ),
+        ("StackVariableSourceType", 605, 8),
+        "curve_phase_sine",
+        "float",
+    ),
+    (
+        (
+            ("0x42b1b5", "mlil", "StackVariableSourceType", 645, 8),
+        ),
+        ("StackVariableSourceType", 645, 8),
+        "sample_z",
+        "float",
+    ),
+    (
+        (
+            ("0x42b3ee", "mlil", "RegisterVariableSourceType", 1214, 71),
+            ("0x42b3fb", "mlil_ssa", "RegisterVariableSourceType", 1227, 71),
+            ("0x42b4aa", "mlil", "RegisterVariableSourceType", 1402, 71),
+        ),
+        ("RegisterVariableSourceType", 1214, 71),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42b3f9", "mlil", "RegisterVariableSourceType", 1225, 73),
+            ("0x42b3fb", "mlil_ssa", "RegisterVariableSourceType", 1227, 73),
+            ("0x42b4b5", "mlil", "RegisterVariableSourceType", 1413, 73),
+        ),
+        ("RegisterVariableSourceType", 1225, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
 )
 
 
@@ -161,7 +344,39 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=TWISTER_PATH_USER_VAR_UPDATES,
+            updates=(
+                TWISTER_PATH_USER_VAR_UPDATES
+                + TWISTER_CONTROL_USER_VAR_UPDATES
+            ),
+        ),
+        *apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    function_name,
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for function_name, specs in (
+                    (
+                        "initialize_twister_path_template_pair",
+                        TWISTER_CONTROL_LIFETIME_SPLITS,
+                    ),
+                    (
+                        "initialize_twister2_path_template_pair",
+                        TWISTER2_CONTROL_LIFETIME_SPLITS,
+                    ),
+                )
+                for (
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                ) in specs
+            ),
         ),
     ]
     return emit_summary(

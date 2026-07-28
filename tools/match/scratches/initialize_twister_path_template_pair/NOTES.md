@@ -181,3 +181,24 @@ Refining the source, shared headers, and analysis prototypes is byte-neutral:
 focused matching remains 57.97% (672/677), with a 94-instruction prefix and 49
 clean masked operands. The selector name remains conservative because mobile
 symbols recover its type but not its original parameter name.
+
+## 2026-07-28 paired mobile control ownership
+
+The Android and iOS `BuildTwisterA` bodies independently retain the same
+authored control graph as Windows: a logical interior index, a separate
+`0xa8` byte cursor, a base phase, a handedness-adjusted phase, a half phase,
+the adjusted-phase sine, and a fresh index/cursor pair for delta
+recomputation. Windows remains authoritative for this executable's exact
+34-sample body and `0.196349546f` angular step.
+
+The guarded Windows MLIL replay now separates those definitions from the
+reused `width_cells_` stack slot as `interior_index`,
+`interior_sample_offset`, `base_phase`, `curve_phase`, `half_phase`,
+`curve_phase_sine`, `sample_z`, `delta_index`, and
+`delta_sample_offset`. HLIL naturally inlines the lower-IL `half_phase` and
+`sample_z` temporaries; the remaining owners render directly without leaking
+into the later mesh loops. Replay is idempotent, Binary Ninja and IDA 9.4
+strict exports pass with zero mismatches, and all 1,142 health checks pass.
+
+This is analysis-only: focused matching remains honestly unchanged at 57.97%
+(672/677), with a 94-instruction prefix and 49 clean masked operands.

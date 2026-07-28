@@ -20511,6 +20511,34 @@ def test_twister_path_replay_preserves_sample_and_facequad_lifetimes() -> None:
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+    assert "apply_split_user_var_updates" in replay
+    for control_owner in (
+        "interior_index",
+        "interior_sample_offset",
+        "base_phase",
+        "curve_phase",
+        "half_phase",
+        "curve_phase_sine",
+        "sample_z",
+        "delta_index",
+        "delta_sample_offset",
+    ):
+        assert f'"{control_owner}"' in replay
+    for definition in (
+        ("0x42a6ec", "mlil_ssa", "RegisterVariableSourceType", 428, 71),
+        ("0x42a6ec", "mlil_ssa", "StackVariableSourceType", 428, 8),
+        ("0x42a71a", "mlil_ssa", "StackVariableSourceType", 474, 8),
+        ("0x42aa0b", "mlil_ssa", "RegisterVariableSourceType", 1227, 73),
+        ("0x42b0dc", "mlil_ssa", "RegisterVariableSourceType", 428, 71),
+        ("0x42b0dc", "mlil_ssa", "StackVariableSourceType", 428, 8),
+        ("0x42b10a", "mlil_ssa", "StackVariableSourceType", 474, 8),
+        ("0x42b3fb", "mlil_ssa", "RegisterVariableSourceType", 1227, 73),
+    ):
+        expected_definition = (
+            f'("{definition[0]}", "{definition[1]}", '
+            f'"{definition[2]}", {definition[3]}, {definition[4]})'
+        )
+        assert expected_definition in replay
     assert "(1803, 66" not in replay
 
 
@@ -22368,6 +22396,32 @@ def test_wibble_twister_aggregate_health_stays_address_anchored() -> None:
             assert (
                 rendered_alias not in checks[check_name]["required_substrings"]
             )
+
+    for check_name in (
+        "bn_twister_path_full_owner_abi",
+        "bn_twister2_path_full_owner_abi",
+    ):
+        required_substrings = checks[check_name]["required_substrings"]
+        for control_owner in (
+            "int32_t interior_index = 0",
+            "int32_t interior_sample_offset = 0xa8",
+            "double base_phase =",
+            "float curve_phase =",
+            "float curve_phase_sine =",
+            "interior_sample_offset += 0xa8",
+            "interior_index += 1",
+            "int32_t delta_index = 0",
+            "int32_t delta_sample_offset = 0",
+            "delta_sample_offset += 0xa8",
+        ):
+            assert control_owner in required_substrings
+        for stale_control in (
+            "int32_t width_cells_1 = 0",
+            "int32_t i = 0xa8",
+            "width_cells_ = fconvert.s(sine(width_cells_))",
+        ):
+            assert stale_control in checks[check_name]["forbidden_substrings"]
+        assert checks[check_name]["max_counts"] == {"__offset": 15}
 
 
 def test_transition_family_mobile_symbols_prove_boolean_side_exit() -> None:
