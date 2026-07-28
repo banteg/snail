@@ -730,7 +730,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🖥 | reset_direct3d_render_state | 0x4118b0 | 163 | 52/52 | 100.00% | 52/52 | 3 ok |  | replaceable-platform |
 | 🖥 | release_direct3d_device_interfaces | 0x411960 | 81 | 18/18 | 100.00% | 18/18 | - |  | replaceable-platform |
 | 🖥 | initialize_game_window_and_input_wrapper | 0x4119c0 | 14 | 5/5 | 100.00% | 5/5 | 1 ok |  | replaceable-platform |
-| 🖥 | initialize_game_window_and_input | 0x4119d0 | 920 | 266/266 | 92.48% | 6/266 | 1 mismatch, 56 ok |  | replaceable-platform |
+| 🖥 | initialize_game_window_and_input | 0x4119d0 | 920 | 266/266 | 92.48% | 6/266 | 57 ok |  | replaceable-platform |
 | 🖥 | release_global_direct3d_renderer_resources | 0x411d70 | 10 | 2/2 | 100.00% | 2/2 | 2 ok |  | replaceable-platform |
 | 🖥 | uninitialize_input_devices | 0x411d80 | 20 | 4/4 | 100.00% | 4/4 | 4 ok |  | replaceable-platform |
 | 🖥 | end_overlay_render_state | 0x411de0 | 43 | 13/13 | 100.00% | 13/13 | 4 ok |  | replaceable-platform |

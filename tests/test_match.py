@@ -1192,6 +1192,64 @@ def test_masked_operand_audit_accepts_aligned_shifted_jump_table_targets() -> No
     assert result.masked_operand_audit.problem_count == 0
 
 
+def test_masked_operand_audit_accepts_jump_target_at_aligned_replace_span() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<I", mapped, 0x2000, 0x401009)
+    candidate_code = bytes.fromhex("ff248500000000b80000000031d2c3")
+    candidate = ObjectFunction(
+        name="_foo",
+        data=candidate_code + (b"\x00" * 4),
+        relocation_offsets=frozenset({3, 15}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=3,
+                symbol_name="$Ltable",
+                text="sym:$Ltable",
+                key="name:$Ltable",
+                explained=True,
+                addend=0,
+                symbol_offset=15,
+                symbol_size=4,
+            ),
+            ObjectRelocationReference(
+                offset=15,
+                symbol_name="$Lcase0",
+                text="sym:$Lcase0",
+                key="name:$Lcase0",
+                explained=True,
+                addend=0,
+                symbol_offset=12,
+            ),
+        ),
+    )
+    result = match_function(
+        bytes.fromhex("ff24850020400031c031c9c3"),
+        candidate,
+        image=LoadedImage(
+            mapped=bytes(mapped),
+            image_base=0x400000,
+            size_of_image=0x3000,
+        ),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                    size=0x4,
+                ),
+            ),
+        ),
+    )
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.target_references[0].jump_table_entries == (9,)
+    assert entry.candidate_references[0].jump_table_entries == (12,)
+    assert entry.status == "ok"
+    assert result.masked_operand_audit.problem_count == 0
+
+
 def test_masked_operand_audit_bounds_unaliased_table_by_object_symbol_extent() -> None:
     mapped = bytearray(b"\x00" * 0x3000)
     struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)

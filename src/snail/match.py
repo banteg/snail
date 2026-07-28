@@ -1868,12 +1868,21 @@ def audit_masked_operands(
         autojunk=False,
     )
     text_pairs = equal_pairs(text_matcher)
+    # Switch destinations can land at the first instruction of a corresponding
+    # replace span whose register choice or operand order differs. Equal-sized
+    # replace spans still provide a positional CFG mapping; include that mapping
+    # only for jump-table destination auditing, without changing the score or
+    # the reference-bearing instruction alignment above.
+    structural_pairs = list(text_pairs)
+    for tag, a0, a1, b0, b1 in text_matcher.get_opcodes():
+        if tag == "replace" and a1 - a0 == b1 - b0:
+            structural_pairs.extend(zip(range(a0, a1), range(b0, b1)))
     aligned_instruction_offsets = frozenset(
         (
             target_disassembly[target_index].offset,
             candidate_disassembly[candidate_index].offset,
         )
-        for target_index, candidate_index in text_pairs
+        for target_index, candidate_index in structural_pairs
     )
     audit_pairs = list(reference_masked_pairs)
     for target_index, candidate_index in text_pairs:
