@@ -2,11 +2,11 @@
 
 Small level texture-set mutator at `0x410730`. The iOS symbol inventory
 preserves the authored owner and method as `cRTrack::Change(int)` in `Game.o`;
-the Android port independently retains the same class method at its level-init
-callsite. The Windows root subobject is therefore modeled as `Track`, not the
-former semantic-only `TextureSetSelector` placeholder.
+the Android port independently retains the same class method. The Windows root
+subobject is therefore modeled primarily as `cRTrack`; `Track` remains only a
+compatibility alias for older analysis consumers.
 
-- `Track +0x00` and `+0x10` are the four-entry track and slide texture banks.
+- `cRTrack +0x00` and `+0x10` are the four-entry track and slide texture banks.
 - `+0x20` stores the active texture-set index.
 - Argument `5` selects a random set in `[0, 4)`.
 - A changed set rewrites both texture banks through
@@ -58,3 +58,17 @@ natural explanation for the native selector/default lifetimes. VC6 coalesced
 it back to the same 41-instruction candidate, so it was removed. The method
 remains honestly at 76.19% with all six operands audited; no volatile reload or
 other register-allocation coercion was restored.
+
+## 2026-07-28 primary cRTrack ownership
+
+The newly tracked Android and iOS bodies independently expose the exact
+`cRTrack::Change(int)` symbol and a void mutator contract. They also make the
+port boundary explicit: both mobile owners are 0x388 bytes, carry seven
+platform texture sets, and use selector 8 for random choice. None of those
+offsets, counts, or selectors transfer to Windows.
+
+Windows machine code and the sole root callsite independently retain the exact
+0x24-byte owner at `GameRoot +0xb24`, four track/slide pairs, and selector 5.
+The matcher, Binary Ninja, and IDA therefore now use `cRTrack` as the primary
+type while keeping `Track` only as a compatibility alias. The source-shape
+rename leaves the honest 76.19% machine-code score unchanged.

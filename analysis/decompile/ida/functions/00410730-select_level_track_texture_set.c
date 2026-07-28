@@ -2,8 +2,8 @@
 /* function: select_level_track_texture_set @ 0x410730 */
 /* selector: select_level_track_texture_set */
 
-// Windows cRTrack::Change(int): selects one of four root-owned track/slide texture pairs, with selector 5 choosing a random pair. Symbol-preserving iOS and Android builds independently retain the authored cRTrack owner and Change(int) method.
-void __thiscall select_level_track_texture_set(Track *track, int32_t texture_set)
+// Exact void Windows cRTrack::Change(int): selects one of four root-owned track/slide texture pairs, with selector 5 choosing a random pair. Android and iOS independently preserve the authored cRTrack owner and Change(int) method, but their 0x388-byte seven-set layout and selector 8 are platform-specific; only the class identity and role transfer to the Windows-proved 0x24-byte owner.
+void __thiscall select_level_track_texture_set(cRTrack *track, int32_t texture_set)
 {
   int32_t v3; // edi
   int32_t current_texture_set; // eax

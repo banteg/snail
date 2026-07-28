@@ -24257,3 +24257,77 @@ def test_replay_start_cursor_ownership_has_guarded_ida_replay() -> None:
         assert "replay_start_cursor" in source
         assert "startup_track_index" not in source
         assert "source_tail" not in source
+
+
+def test_c_r_track_primary_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (repo_root / "tools/match/include/track.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_root = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    scratch = (
+        repo_root
+        / "tools/match/scratches/select_level_track_texture_set/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    scratch_config = (
+        repo_root
+        / "tools/match/scratches/select_level_track_texture_set/scratch.conf"
+    ).read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRTrack {" in matcher_header
+    assert "typedef cRTrack Track;" in matcher_header
+    assert "cRTrack track; // +0xb24" in matcher_root
+    assert "void cRTrack::Change(int texture_set)" in scratch
+    assert "SYMBOL=?Change@cRTrack@@QAEXH@Z" in scratch_config
+
+    for header_name in (
+        "bn_frame_renderer_types.h",
+        "frame_renderer_types.h",
+    ):
+        header = (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        assert "typedef struct cRTrack {" in header
+        assert "} cRTrack;\ntypedef cRTrack Track;" in header
+        assert "cRTrack track;" in header
+
+    prototype = (
+        "void __thiscall select_level_track_texture_set("
+        "cRTrack* track, int32_t texture_set)"
+    )
+    assert prototype in binja_sync
+    assert "--track-only" in binja_sync
+    assert "ensure_c_r_track_owner_types" in binja_sync
+    assert "if _has_verified_mutation(track_owner_results):" in binja_sync
+    assert '("0xb24", "track", "cRTrack")' in binja_sync
+    assert '"cRTrack": 0x24' in ida_sync
+    assert (
+        "void __thiscall select_level_track_texture_set("
+        "cRTrack *track, int32_t texture_set);"
+    ) in ida_sync
+
+    gameplay_functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    track_entry = next(
+        entry
+        for entry in gameplay_functions["functions"]
+        if int(entry["address"], 0) == 0x410730
+    )
+    assert "0x388-byte seven-set layout and selector 8" in track_entry["description"]
+    assert "Windows-proved 0x24-byte owner" in track_entry["description"]
+
+    for mobile_body in (
+        "analysis/decompile/android/functions/0003f330-_ZN7cRTrack6ChangeEi.c",
+        "analysis/decompile/ios/functions/0004265c-_ZN7cRTrack6ChangeEi.c",
+    ):
+        body = (repo_root / mobile_body).read_text(encoding="utf-8")
+        assert "cRTrack::Change(int)" in body

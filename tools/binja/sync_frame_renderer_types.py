@@ -12,10 +12,12 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_symbol_updates,
     apply_user_var_updates,
+    current_header_type_equivalence,
     current_struct_size,
     emit_summary,
     reanalyze_functions,
     types_declare_if_missing,
+    types_declare_missing_only,
 )
 
 
@@ -56,7 +58,7 @@ REQUIRED_STRUCTS = (
     "Viewport",
     "FrameContactTargetRegistry",
     "FrameSubgameRuntime",
-    "Track",
+    "cRTrack",
     "BorderStackEntry",
     "BorderStack",
     "BorderRecord",
@@ -228,7 +230,7 @@ PROTO_UPDATES = (
     ),
     (
         "select_level_track_texture_set",
-        "void __thiscall select_level_track_texture_set(Track* track, int32_t texture_set)",
+        "void __thiscall select_level_track_texture_set(cRTrack* track, int32_t texture_set)",
     ),
 )
 
@@ -273,8 +275,28 @@ FRAME_RENDERER_REANALYSIS_FUNCTIONS = (
     "render_game_frame",
     "attach_render_camera_source",
     "initialize_render_camera_slot",
+    "select_level_track_texture_set",
+    "populate_runtime_track_cells_from_segments",
     *MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS,
     *BORDER_KILL_REANALYSIS_FUNCTIONS,
+)
+
+TRACK_FIELD_UPDATES = (
+    ("0x00", "track_textures", "TextureRef*[4]"),
+    ("0x10", "slide_textures", "TextureRef*[4]"),
+    ("0x20", "current_texture_set", "int32_t"),
+)
+
+TRACK_OWNER_TYPE_NAMES = (
+    "cRTrack",
+    "Track",
+)
+
+TRACK_PROTO_UPDATES = (
+    (
+        "select_level_track_texture_set",
+        "void __thiscall select_level_track_texture_set(cRTrack* track, int32_t texture_set)",
+    ),
 )
 
 MOUSE_CURSOR_FIELD_UPDATES = (
@@ -604,7 +626,7 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x7c8", "overlay_1", "FrameOverlay"),
     ("0x914", "overlay_2", "FrameOverlay"),
     ("0xa60", "root_noop_renderable", "FrameRenderableBod"),
-    ("0xb24", "track", "Track"),
+    ("0xb24", "track", "cRTrack"),
     ("0xb48", "unknown_000b48", "int32_t"),
     ("0xb4c", "border_manager", "BorderManager"),
     ("0x74618", "subgame", "FrameSubgameRuntime"),
@@ -676,6 +698,47 @@ def resolved_sprite_struct_name(*, target: str) -> str:
             f"observed {size!r}"
         )
     return "Sprite"
+
+
+def ensure_c_r_track_owner_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Promote the exact mobile-authored cRTrack class identity."""
+
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    missing_from_header = [
+        name for name in TRACK_OWNER_TYPE_NAMES if name not in equivalence
+    ]
+    if missing_from_header:
+        raise RuntimeError(
+            "authoritative header omitted cRTrack owner types: "
+            + ", ".join(missing_from_header)
+        )
+
+    stale_types = tuple(
+        name for name in TRACK_OWNER_TYPE_NAMES if not equivalence[name]
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRTrack owner types already equivalent",
+            "types": TRACK_OWNER_TYPE_NAMES,
+        }
+
+    result = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=TRACK_OWNER_TYPE_NAMES,
+    )
+    result["stale_types"] = stale_types
+    return result
 
 
 def resolved_renderable_bod_struct_name(*, target: str) -> str:
@@ -756,7 +819,17 @@ def verify_border_record_flags_stride_cursor(*, target: str) -> dict[str, object
 
 def _has_verified_mutation(results: list[dict[str, object]]) -> bool:
     """Report whether a narrow replay changed an owner, prototype, or global."""
-    return any(result.get("status") == "verified" for result in results)
+
+    def contains_verified_mutation(value: object) -> bool:
+        if isinstance(value, dict):
+            if value.get("status") == "verified" or value.get("verified") is True:
+                return True
+            return any(contains_verified_mutation(item) for item in value.values())
+        if isinstance(value, list):
+            return any(contains_verified_mutation(item) for item in value)
+        return False
+
+    return contains_verified_mutation(results)
 
 
 def _changed_user_var_functions(
@@ -847,6 +920,14 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_HEADER_PATH,
         help="Narrow Binary Ninja type header.",
     )
+    parser.add_argument(
+        "--track-only",
+        action="store_true",
+        help=(
+            "Replay only the authored cRTrack type, embedded GameRoot field, "
+            "and Change(int) method ABI."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -856,7 +937,43 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = [
+    operations: list[dict[str, object]] = []
+    if args.track_only:
+        operations.append(
+            ensure_c_r_track_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        track_owner_results = apply_struct_and_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_updates=(
+                ("cRTrack", TRACK_FIELD_UPDATES),
+                ("GameRoot", (("0xb24", "track", "cRTrack"),)),
+            ),
+            proto_updates=TRACK_PROTO_UPDATES,
+        )
+        operations.extend(track_owner_results)
+        if _has_verified_mutation(track_owner_results):
+            operations.extend(
+                reanalyze_functions(
+                    REPO_ROOT,
+                    target=args.target,
+                    identifiers=(
+                        "select_level_track_texture_set",
+                        "populate_runtime_track_cells_from_segments",
+                    ),
+                )
+            )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
+    operations.extend([
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,
@@ -869,13 +986,17 @@ def main() -> int:
             header_path=SPRITE_HEADER_PATH,
             required_structs=SPRITE_REQUIRED_STRUCTS,
         ),
+        ensure_c_r_track_owner_types(
+            target=args.target,
+            header_path=header_path,
+        ),
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,
             header_path=header_path,
             required_structs=REQUIRED_STRUCTS,
         )
-    ]
+    ])
 
     resolved_sprite_struct_name(target=args.target)
     resolved_renderable_bod_struct_name(target=args.target)
@@ -910,6 +1031,7 @@ def main() -> int:
                 GAME_PLAYER_INIT_STRIDE_VIEW_FIELD_UPDATES,
             ),
             ("FrameSubgameRuntime", FRAME_SUBGAME_RUNTIME_FIELD_UPDATES),
+            ("cRTrack", TRACK_FIELD_UPDATES),
             ("BorderStackEntry", BORDER_STACK_ENTRY_FIELD_UPDATES),
             ("BorderStack", BORDER_STACK_FIELD_UPDATES),
             ("BorderRecord", BORDER_RECORD_FIELD_UPDATES),

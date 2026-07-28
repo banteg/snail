@@ -104,7 +104,7 @@ public:
     Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport 3
     RenderableBod root_noop_renderable; // +0xa60, callback has an empty AI slot
     char unknown_000ae0[0xb24 - 0xae0];
-    Track track; // +0xb24, exact cRTrack owner with four track/slide pairs
+    cRTrack track; // +0xb24, exact Windows owner with four track/slide pairs
     int unknown_000b48; // +0xb48, startup-only dword storage
     // Exact cRBorder manager: the 150-record pool is followed by its delayed
     // transition lane and center-justify scalar, ending at the root BOD bank.

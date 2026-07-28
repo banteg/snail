@@ -4,7 +4,7 @@
 #include "rmath_random.h"
 
 
-void Track::Change(int texture_set)
+void cRTrack::Change(int texture_set)
 {
     int selected;
 

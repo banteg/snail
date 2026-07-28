@@ -45,7 +45,7 @@ EXPECTED_OWNER_SIZES = {
     "FrameRenderCamera": 0xC8,
     "FrameOverlay": 0x14C,
     "Viewport": 0x28,
-    "Track": 0x24,
+    "cRTrack": 0x24,
     "BorderStackEntry": 0x8,
     "BorderStack": 0x64C,
     "BorderRecord": 0x724,
@@ -276,7 +276,7 @@ TRUSTED_FUNCTION_DECLARATIONS = [
     ),
     (
         "select_level_track_texture_set",
-        "void __thiscall select_level_track_texture_set(Track *track, int32_t texture_set);",
+        "void __thiscall select_level_track_texture_set(cRTrack *track, int32_t texture_set);",
     ),
 ]
 

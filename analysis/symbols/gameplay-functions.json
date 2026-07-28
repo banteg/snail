@@ -846,7 +846,7 @@
     {
       "address": "0x410730",
       "name": "select_level_track_texture_set",
-      "description": "Windows cRTrack::Change(int): selects one of four root-owned track/slide texture pairs, with selector 5 choosing a random pair. Symbol-preserving iOS and Android builds independently retain the authored cRTrack owner and Change(int) method."
+      "description": "Exact void Windows cRTrack::Change(int): selects one of four root-owned track/slide texture pairs, with selector 5 choosing a random pair. Android and iOS independently preserve the authored cRTrack owner and Change(int) method, but their 0x388-byte seven-set layout and selector 8 are platform-specific; only the class identity and role transfer to the Windows-proved 0x24-byte owner."
     },
     {
       "address": "0x4107d0",
