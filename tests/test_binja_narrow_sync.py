@@ -21433,7 +21433,7 @@ def test_toad_hill_sbend_replay_preserves_mesh_owner_lifetimes() -> None:
             assert leaked_home in check["forbidden_substrings"]
 
 
-def test_loop_family_replay_preserves_mesh_owner_lifetimes() -> None:
+def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None:
     replay = (BINJA_DIR / "sync_loop_family_path_lifetimes.py").read_text(
         encoding="utf-8"
     )
@@ -21492,12 +21492,68 @@ def test_loop_family_replay_preserves_mesh_owner_lifetimes() -> None:
         )
 
     assert "LOOP_FAMILY_PATH_USER_VAR_UPDATES" in replay
+    assert "LOOPTHELOOP_CONTROL_USER_VAR_UPDATES" in replay
+    assert "LOOPTHELOOP_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "apply_user_var_updates" in replay
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
+
+    for index, storage, name, variable_type in (
+        (98, -72, "curve_count_f", "float"),
+        (137, -76, "lead_sample_z", "float"),
+        (711, -76, "secondary_radius", "float"),
+        (764, -68, "angle", "float"),
+    ):
+        assert (
+            f'        {index},\n'
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        ) in replay
+
+    for name, variable_type in (
+        ("loop_wiggle", "float"),
+        ("curve_count", "int32_t"),
+        ("total_segment_count", "int32_t"),
+        ("loop_radius", "float"),
+        ("lead_sample_index", "int32_t"),
+        ("lead_sample_offset", "int32_t"),
+        ("tail_index", "int32_t"),
+        ("tail_sample_z", "float"),
+        ("tail_sample_offset", "int32_t"),
+        ("terminal_sample_offset", "int32_t"),
+        ("curve_index", "int32_t"),
+        ("curve_sample_offset", "int32_t"),
+        ("delta_index", "int32_t"),
+        ("delta_sample_offset", "int32_t"),
+    ):
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    for address, view, source_type, index, storage in (
+        ("0x41b105", "mlil", "StackVariableSourceType", 21, -84),
+        ("0x41b116", "mlil_ssa", "StackVariableSourceType", 38, -84),
+        ("0x41b12a", "mlil", "RegisterVariableSourceType", 58, 66),
+        ("0x41b12f", "mlil", "StackVariableSourceType", 63, -80),
+        ("0x41b15c", "mlil", "StackVariableSourceType", 108, 4),
+        ("0x41b172", "mlil_ssa", "StackVariableSourceType", 130, 8),
+        ("0x41b172", "mlil_ssa", "RegisterVariableSourceType", 130, 73),
+        ("0x41b274", "mlil_ssa", "RegisterVariableSourceType", 388, 69),
+        ("0x41b274", "mlil_ssa", "StackVariableSourceType", 388, 8),
+        ("0x41b274", "mlil_ssa", "RegisterVariableSourceType", 388, 73),
+        ("0x41b3d8", "mlil_ssa", "RegisterVariableSourceType", 744, 67),
+        ("0x41b3d8", "mlil_ssa", "StackVariableSourceType", 744, 8),
+        ("0x41b3d8", "mlil_ssa", "RegisterVariableSourceType", 744, 73),
+        ("0x41b5f4", "mlil_ssa", "RegisterVariableSourceType", 1284, 69),
+        ("0x41b5f4", "mlil_ssa", "RegisterVariableSourceType", 1284, 73),
+    ):
+        assert (
+            f'("{address}", "{view}", "{source_type}", {index}, {storage})'
+            in replay
+        )
 
     health = json.loads(
         (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(

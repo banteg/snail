@@ -138,3 +138,34 @@ code-generation neutral and focused matching remains honestly at 69.71%.
 Windows still cleans six stack arguments and its callers supply one trailing
 texture beyond the five-argument mobile method. That platform-specific input
 is retained rather than deleting a proven Windows ABI slot.
+
+## 2026-07-28 mobile-backed control ownership
+
+The exact Android
+`analysis/decompile/android/functions/00058728-_ZN6cRPath16BuildLoopTheLoopEfibPcS0_.c`
+and iOS
+`analysis/decompile/ios/functions/00050cf4-_ZN6cRPath16BuildLoopTheLoopEfibPcS0_.c`
+bodies independently preserve the same portable control graph: derived curve
+count and radius, fixed seven-sample lead and tail passes, the circular sample
+pass beginning at byte offset `7 * 0xa8`, and the delta-normalization pass.
+Both ports end at `CalcLengthZ`; neither contains the Windows strip-mesh and
+facequad tail.
+
+Windows machine code remains authoritative for all addresses and lifetimes.
+A transactional Binary Ninja replay separates 41 exact MLIL definitions into
+fourteen logical owners: wiggle, derived counts/radius, lead and tail
+index/byte-offset pairs, terminal sample offset, curve index/offset, and delta
+index/offset. Four already-bounded scalar homes additionally recover the
+floating curve count, lead sample Z, secondary radius, and angle. The
+Windows-only mesh/face loops remain untouched.
+
+The replay previewed and rolled back before applying, saved the database, and
+was fully idempotent on a second run. Strict Binary Ninja/IDA 9.4 export
+reported zero symbol mismatches and all 1,142 decompile health checks passed.
+The IDA 9.4 refresh also replaces the tracked artifact's stale five-argument
+`PathTemplate` view with the proven seven-argument Windows `Path*` ABI.
+The candidate source and masks are intentionally unchanged: focused matching
+remains 69.71% (721 target / 725 candidate instructions), prefix 22/721, with
+49 clean masked operands and no unresolved, mismatched, or unaudited operands.
+Repository validation is 497 tests passed, exact-only masked audit clean, and
+extern lint clean.

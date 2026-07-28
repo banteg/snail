@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -114,12 +114,191 @@ LOOP_FAMILY_PATH_USER_VAR_UPDATES = tuple(
     for index, storage, variable_name, variable_type in specs
 )
 
+# The paired Android and iOS BuildLoopTheLoop bodies independently preserve
+# the portable setup through CalcLengthZ: derived counts and radii, fixed
+# seven-sample lead and tail passes, the circular sample pass, and the delta
+# pass. Windows remains authoritative for every exact MLIL identity below and
+# for its additional strip-mesh and facequad tail, which this pass leaves
+# untouched.
+LOOPTHELOOP_CONTROL_USER_VAR_UPDATES = (
+    (
+        "initialize_looptheloop_path_template_pair",
+        "StackVariableSourceType",
+        98,
+        -72,
+        "curve_count_f",
+        "float",
+    ),
+    (
+        "initialize_looptheloop_path_template_pair",
+        "StackVariableSourceType",
+        137,
+        -76,
+        "lead_sample_z",
+        "float",
+    ),
+    (
+        "initialize_looptheloop_path_template_pair",
+        "StackVariableSourceType",
+        711,
+        -76,
+        "secondary_radius",
+        "float",
+    ),
+    (
+        "initialize_looptheloop_path_template_pair",
+        "StackVariableSourceType",
+        764,
+        -68,
+        "angle",
+        "float",
+    ),
+)
+
+LOOPTHELOOP_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x41b105", "mlil", "StackVariableSourceType", 21, -84),
+            ("0x41b10e", "mlil", "StackVariableSourceType", 30, -84),
+            ("0x41b116", "mlil_ssa", "StackVariableSourceType", 38, -84),
+        ),
+        ("StackVariableSourceType", 21, -84),
+        "loop_wiggle",
+        "float",
+    ),
+    (
+        (
+            ("0x41b12a", "mlil", "RegisterVariableSourceType", 58, 66),
+            ("0x41b12f", "mlil", "StackVariableSourceType", 63, -80),
+        ),
+        ("RegisterVariableSourceType", 58, 66),
+        "curve_count",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b133", "mlil", "RegisterVariableSourceType", 67, 66),
+            ("0x41b136", "mlil", "StackVariableSourceType", 70, -68),
+        ),
+        ("RegisterVariableSourceType", 67, 66),
+        "total_segment_count",
+        "int32_t",
+    ),
+    (
+        (("0x41b15c", "mlil", "StackVariableSourceType", 108, 4),),
+        ("StackVariableSourceType", 108, 4),
+        "loop_radius",
+        "float",
+    ),
+    (
+        (
+            ("0x41b16c", "mlil", "StackVariableSourceType", 124, 8),
+            ("0x41b24e", "mlil", "StackVariableSourceType", 350, 8),
+            ("0x41b172", "mlil_ssa", "StackVariableSourceType", 130, 8),
+        ),
+        ("StackVariableSourceType", 124, 8),
+        "lead_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b170", "mlil", "RegisterVariableSourceType", 128, 73),
+            ("0x41b23d", "mlil", "RegisterVariableSourceType", 333, 73),
+            ("0x41b172", "mlil_ssa", "RegisterVariableSourceType", 130, 73),
+        ),
+        ("RegisterVariableSourceType", 128, 73),
+        "lead_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b25c", "mlil", "RegisterVariableSourceType", 364, 69),
+            ("0x41b25e", "mlil", "StackVariableSourceType", 366, 8),
+            ("0x41b333", "mlil", "RegisterVariableSourceType", 579, 69),
+            ("0x41b33b", "mlil", "StackVariableSourceType", 587, 8),
+            ("0x41b274", "mlil_ssa", "RegisterVariableSourceType", 388, 69),
+            ("0x41b274", "mlil_ssa", "StackVariableSourceType", 388, 8),
+        ),
+        ("RegisterVariableSourceType", 364, 69),
+        "tail_index",
+        "int32_t",
+    ),
+    (
+        (("0x41b300", "mlil", "StackVariableSourceType", 528, 8),),
+        ("StackVariableSourceType", 528, 8),
+        "tail_sample_z",
+        "float",
+    ),
+    (
+        (
+            ("0x41b271", "mlil", "RegisterVariableSourceType", 385, 73),
+            ("0x41b351", "mlil", "RegisterVariableSourceType", 609, 73),
+            ("0x41b274", "mlil_ssa", "RegisterVariableSourceType", 388, 73),
+        ),
+        ("RegisterVariableSourceType", 385, 73),
+        "tail_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b3c6", "mlil", "RegisterVariableSourceType", 726, 67),
+            ("0x41b3c9", "mlil", "StackVariableSourceType", 729, -64),
+            ("0x41b3d4", "mlil", "RegisterVariableSourceType", 740, 67),
+            ("0x41b3d8", "mlil_ssa", "RegisterVariableSourceType", 744, 67),
+        ),
+        ("RegisterVariableSourceType", 726, 67),
+        "terminal_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b36c", "mlil", "StackVariableSourceType", 636, 8),
+            ("0x41b5d1", "mlil", "RegisterVariableSourceType", 1249, 66),
+            ("0x41b5da", "mlil", "StackVariableSourceType", 1258, 8),
+            ("0x41b3d8", "mlil_ssa", "StackVariableSourceType", 744, 8),
+        ),
+        ("StackVariableSourceType", 636, 8),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b3cd", "mlil", "RegisterVariableSourceType", 733, 73),
+            ("0x41b5d2", "mlil", "RegisterVariableSourceType", 1250, 73),
+            ("0x41b3d8", "mlil_ssa", "RegisterVariableSourceType", 744, 73),
+        ),
+        ("RegisterVariableSourceType", 733, 73),
+        "curve_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b5e7", "mlil", "RegisterVariableSourceType", 1271, 69),
+            ("0x41b6a0", "mlil", "RegisterVariableSourceType", 1456, 69),
+            ("0x41b5f4", "mlil_ssa", "RegisterVariableSourceType", 1284, 69),
+        ),
+        ("RegisterVariableSourceType", 1271, 69),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41b5f2", "mlil", "RegisterVariableSourceType", 1282, 73),
+            ("0x41b6ab", "mlil", "RegisterVariableSourceType", 1467, 73),
+            ("0x41b5f4", "mlil_ssa", "RegisterVariableSourceType", 1284, 73),
+        ),
+        ("RegisterVariableSourceType", 1282, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the proved vector, terminal-delta, mesh-vertex, and "
-            "facequad lifetimes in the loop-the-loop, W-loop, and loopout "
+            "Replay the proved control, vector, terminal-delta, mesh-vertex, "
+            "and facequad lifetimes in the loop-the-loop, W-loop, and loopout "
             "constructors."
         )
     )
@@ -188,7 +367,26 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=LOOP_FAMILY_PATH_USER_VAR_UPDATES,
+            updates=(
+                LOOP_FAMILY_PATH_USER_VAR_UPDATES
+                + LOOPTHELOOP_CONTROL_USER_VAR_UPDATES
+            ),
+        ),
+        *apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    "initialize_looptheloop_path_template_pair",
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for definitions, target_var, variable_name, variable_type in (
+                    LOOPTHELOOP_CONTROL_LIFETIME_SPLITS
+                )
+            ),
         ),
     ]
     return emit_summary(
