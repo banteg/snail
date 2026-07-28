@@ -1,4 +1,4 @@
-# update_subgoldy @ 0x43b120 — 82.67%, 2086/2087 insns, structure complete
+# update_subgoldy @ 0x43b120 — 82.75%, 2087/2087 insns, structure complete
 
 The boss of bosses (2087 normalized instructions, 8456 bytes) has a full
 scratch: every block of the function is transcribed and the diff is dominated
@@ -34,10 +34,10 @@ operands, no mismatches, and three visible unaudited global loads. The
 standalone Windows helper remains a pointer call; a probe that changed its
 signature to the mobile by-value ABI regressed and was rejected.
 
-A direct one-expression transliteration of the mobile steering lerp also
-regressed the focused score and reintroduced a jump-table mismatch, so it was
-rejected. The retained changes recover cross-port value lifetimes and preserve
-the clean operand audit; none are register-only source scheduling.
+A direct one-expression transliteration of the mobile steering lerp regressed
+the focused score and was rejected. The retained changes recover cross-port
+value lifetimes and preserve the clean operand audit; none are register-only
+source scheduling.
 
 ## 2026-07-27 mobile scalar lifetime pass
 
@@ -864,3 +864,20 @@ Android and iOS `cRSubGoldy::AI()` independently preserve the same subtraction
 and cursor addition. This identifies one replay-origin cursor while leaving
 mobile offsets non-authoritative. The focused result remains honestly
 unchanged at 82.67%, 2,086/2,087 instructions with 314 clean operands.
+
+## 2026-07-28 steering pull lifetime
+
+Android and iOS both retain the authored steering smoothing semantics:
+`position.x += (steer_target - position.x) * game_rate * 0.2`. Windows remains
+the ABI and scheduling authority: its x87 sequence loads `subgame_rate`,
+multiplies it by `0.2f`, subtracts the old x position from the target, then
+multiplies and adds the old position.
+
+Spelling the rate as a scoped `pull`, multiplying it by `0.2f` in a separate
+statement, and preserving the mobile expression order makes the Windows
+candidate exact from function offsets `+0x334` through `+0x3ed`. The focused
+result rises from 82.67% to 82.75%; candidate and target are both 2,087
+instructions, with 314 clean masked operands, no unresolved or mismatched
+references, and three visible unaudited global loads. A local switch-table
+audit false positive exposed by this honest source change was fixed in the
+matcher rather than waived or hidden with a symbol alias.

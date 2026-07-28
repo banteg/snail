@@ -203,10 +203,11 @@ steering_stored:
             else if (steer_target > 3.7f)
                 steer_target = 3.7f;
             if (click_start.state != CLICK_START_STATE_WAITING_FOR_START) {
-                float steer_delta = steer_target;
-                float pull = game->subgame_rate * 0.2f;
-                steer_delta -= transform.position.x;
-                transform.position.x = pull * steer_delta + transform.position.x;
+                float pull = game->subgame_rate;
+                pull *= 0.2f;
+                transform.position.x =
+                    (steer_target - transform.position.x) * pull
+                    + transform.position.x;
             }
         }
         p_position = &transform.position;
