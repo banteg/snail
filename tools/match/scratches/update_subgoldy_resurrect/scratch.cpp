@@ -31,7 +31,7 @@ void Player::update_subgoldy_resurrect()
 
     cRSubGame* current_game = game;
     current_game->subgame_rebuild_selector = 2;
-    game->complete_subgame(1);
+    game->Complete(1);
 
     cRSubGame* persistent_game = game;
     if (persistent_game->selected_level_record_persistent != 0) {

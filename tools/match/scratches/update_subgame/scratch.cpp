@@ -47,7 +47,7 @@ int queue_axis_aligned_textured_quad_uv(
     float rotation);
 int report_errorf(char* format, ...);
 
-void cRSubGame::update_subgame()
+void cRSubGame::AI()
 {
     char* game = (char*)this;
     int cell_index;
@@ -128,7 +128,7 @@ void cRSubGame::update_subgame()
             }
             if (result != 3)
                 break;
-            destroy_subgame();
+            UnInit();
             g_game->players[0].frontend_state = 2;
             return;
 
@@ -141,7 +141,7 @@ void cRSubGame::update_subgame()
             }
             if (result != 3)
                 break;
-            destroy_subgame();
+            UnInit();
             g_game->players[0].frontend_state = 2;
             return;
 
@@ -154,7 +154,7 @@ void cRSubGame::update_subgame()
             }
             if (result != 3)
                 break;
-            destroy_subgame();
+            UnInit();
             g_game->players[0].frontend_state = 2;
             return;
 

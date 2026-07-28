@@ -42,7 +42,7 @@ int Galaxy::update_galaxy()
         tColour route_zero_color;
         color.noop_this_constructor();
 
-        level_progress_base->hide_gameplay_scores();
+        level_progress_base->HideScores();
 
         int tick_index = 0;
         if (g_runtime_config.highest_galaxy_route_index >= 0) {

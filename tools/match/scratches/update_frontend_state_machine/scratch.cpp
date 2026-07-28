@@ -17,11 +17,11 @@ void GamePlayer::update_frontend_state_machine()
         switch (state) {
         case 10:
             g_game->subgame.current_high_score_record.score = 0;
-            g_game->subgame.initialize_subgame();
+            g_game->subgame.Init();
             frontend_state = 11;
         case 11: {
             GameRoot* owner = g_game;
-            owner->subgame.update_subgame();
+            owner->subgame.AI();
             break;
         }
         case 12:
@@ -132,23 +132,23 @@ void GamePlayer::update_frontend_state_machine()
         case 26:
         {
             GameRoot* owner = g_game;
-            owner->subgame.destroy_subgame();
+            owner->subgame.UnInit();
             goto restore_saved_state;
         }
         case 27:
         {
             GameRoot* owner = g_game;
-            owner->subgame.destroy_subgame();
-            g_game->subgame.initialize_subgame();
+            owner->subgame.UnInit();
+            g_game->subgame.Init();
             goto restore_saved_state;
         }
         case 28:
         {
             GameRoot* owner = g_game;
-            owner->subgame.destroy_subgame();
+            owner->subgame.UnInit();
         }
             g_game->subgame.subgame_rebuild_selector = 0;
-            g_game->subgame.initialize_subgame();
+            g_game->subgame.Init();
         restore_saved_state: {
             int saved_state = saved_frontend_state;
             if (saved_state != -1)

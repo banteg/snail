@@ -185,7 +185,7 @@ receiver used here and by the challenge setup/HUD callers. The broad
 its internals remain opaque because TimeString does not read them.
 
 2026-06-21 receiver cleanup: the scratch now defines
-`cRSubGame::update_subgame` directly and uses the shared
+`cRSubGame::AI` directly and uses the shared
 `cRSubGame` front-controller window for pause menu, challenge setup,
 galaxy route, selected replay state, and rebuild selector fields. Focused Wibo
 is unchanged at `67.53%`, `1046/1033`, prefix `9/1033`, with the same

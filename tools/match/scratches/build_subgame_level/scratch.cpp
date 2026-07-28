@@ -32,9 +32,9 @@ void cRSubGame::StartLevel(int level_index)
 {
     g_game->star_manager.unhide_star_field();
     if (level_mode == 7)
-        hide_gameplay_scores();
+        HideScores();
     else
-        unhide_gameplay_scores();
+        UnHideScores();
 
     int zero = 0;
     switch ((unsigned int)(

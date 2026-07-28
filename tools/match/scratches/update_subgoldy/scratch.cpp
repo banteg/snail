@@ -807,15 +807,15 @@ steering_stored:
                 if (!dispatch_game->level_mode) {
                     if (dispatch_game->level_mode_arg
                         == g_game->subgame.galaxy.record_count - 1) {
-                        dispatch_game->complete_subgame(1);
+                        dispatch_game->Complete(1);
                         g_game->players[0].saved_frontend_state = 29;
                         g_game->players[0].frontend_state = 26;
                         return;
                     }
-                    dispatch_game->complete_subgame(0);
+                    dispatch_game->Complete(0);
                     game->subgame_rebuild_selector = 1;
                 } else {
-                    dispatch_game->complete_subgame(1);
+                    dispatch_game->Complete(1);
                 }
                 cRSubGame* exit_game = game;
                 if (exit_game->level_mode == 7) {

@@ -32,7 +32,7 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f540
 int report_errorf(char* format, ...); // @ 0x431cc0
 
-void cRSubGame::initialize_subgame()
+void cRSubGame::Init()
 {
     int scratch[6];
 
@@ -254,24 +254,24 @@ void cRSubGame::initialize_subgame()
                 // Native mode 0 continues into the galaxy setup path.
             case 4:
                 galaxy.initialize_galaxy();
-                reset_subgame();
+                ReSet();
                 return;
             case 1:
                 gui.initialize_challenge_setup_screen();
-                reset_subgame();
+                ReSet();
                 return;
             case 7:
                 subgame_state = 0;
-                reset_subgame();
+                ReSet();
                 return;
             default:
                 report_errorf("Unknown game mode");
-                reset_subgame();
+                ReSet();
                 return;
             }
         }
         base_rate = selected_level_record->replay_speed_scalar;
     }
 
-    reset_subgame();
+    ReSet();
 }

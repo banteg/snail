@@ -33,7 +33,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
         entering_name = 1;
 
     g_game->star_manager.hide_star_field();
-    g_game->subgame.hide_gameplay_scores();
+    g_game->subgame.HideScores();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index = g_game->subgame.landscape_manager
                            .load_landscape_script_by_name(g_menu_background_script_path);

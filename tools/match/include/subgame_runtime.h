@@ -81,8 +81,8 @@ public:
     void SetFeatures(); // @ 0x435df0
     void switch_track_mirror(); // @ 0x435e60; mobile cRSubGame::SwitchMirror()
     void BuildLevel(); // @ 0x435eb0
-    void initialize_subgame(); // @ 0x4374b0
-    void reset_subgame(); // @ 0x437b10; Android cRSubGame::ReSet()
+    void Init(); // @ 0x4374b0
+    void ReSet(); // @ 0x437b10
     void GenerateLevel(int level_index); // @ 0x437de0
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void StartLevel(int level_index); // @ 0x437eb0
@@ -91,8 +91,8 @@ public:
     Vector3* parcel_home_anchor(); // Player.presentation.snail_hotspots_world[11]
     TrackRowCellTileByteView* runtime_cell_tile_views(); // +0x3bfb04 field-first view
     TrackRowCellFringeLinkView* runtime_cell_fringe_links(); // +0x3bfb0c field-first view
-    void update_subgame(); // @ 0x438b90
-    void destroy_subgame(); // @ 0x438850
+    void AI(); // @ 0x438b90
+    void UnInit(); // @ 0x438850
     void spawn_track_health_pickup(
         cRSubLoc* cell, Player* player); // @ 0x43d6c0
     void spawn_track_speedup(cRSubLoc* cell, Player* player); // @ 0x43d880, no-op in Windows/Android
@@ -105,9 +105,9 @@ public:
     void calc_subgame_rate(); // @ 0x4404d0
     double advance_blink_random(); // @ 0x4408a0
     void initialize_blink_random(); // @ 0x4408c0
-    void remove_subgame_bods(); // @ 0x440910
-    void hide_gameplay_scores(); // @ 0x445f10
-    void unhide_gameplay_scores(); // @ 0x445f40
+    void RemoveBods(); // @ 0x440910
+    void HideScores(); // @ 0x445f10
+    void UnHideScores(); // @ 0x445f40
     void update_subgame_camera(); // @ 0x446020
     tColour* get_track_skirt_color(tColour* out); // @ 0x442120
     Parcel* spawn_track_parcel(
@@ -117,7 +117,7 @@ public:
     SubRow* get_track_runtime_cell_at_world_z(Vector3* position);
     double sample_track_floor_height_at_position(Vector3* position);
     void project_position_onto_track_attachment(Vector3* position, float* out_angle);
-    void complete_subgame(unsigned char completed);
+    void Complete(unsigned char completed); // @ 0x438700
     void BuildColours(); // @ 0x435d40
     void PlaceParcels(); // @ 0x4438e0
     void place_challenge_parcels_on_track();

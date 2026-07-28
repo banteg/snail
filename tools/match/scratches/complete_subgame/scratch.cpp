@@ -4,7 +4,7 @@
 #include "cheat_state.h"
 #include "subgame_runtime.h"
 
-void cRSubGame::complete_subgame(unsigned char completed)
+void cRSubGame::Complete(unsigned char completed)
 {
     player.display_score_stats();
 

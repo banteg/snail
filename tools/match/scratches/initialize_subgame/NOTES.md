@@ -83,7 +83,7 @@ labels and the known mode-HUD alignment miss where the target's
 call.
 
 2026-06-21 receiver cleanup: the scratch now defines
-`cRSubGame::initialize_subgame` directly instead of carrying a method-only
+`cRSubGame::Init` directly instead of carrying a method-only
 local `Game` shell. Focused Wibo remains `63.25%`, 385/396 candidate
 instructions, prefix 1/396, with the same `71 ok / 3 mismatch` masked audit.
 `update_frontend_state_machine` was rechecked and remains exact. The type
@@ -588,3 +588,18 @@ The shared initialization/teardown replay verifies
 `life_stock_widgets` field at `+0x35bb98` before applying either cursor.
 Matcher source remains unchanged and exact at 396/396 instructions with all 85
 operands clean.
+
+## 2026-07-28 authored lifecycle surface
+
+Verified mobile bodies now supply one coherent authored `cRSubGame` lifecycle
+to the matcher: `Init()` ends in `ReSet()`, `AI()` drives the state machine,
+`Complete(bool)` snapshots a finished run, and `UnInit()` delegates owned body
+teardown to `RemoveBods()`. `HideScores()` and `UnHideScores()` are the paired
+HUD visibility methods used by `StartLevel()`.
+
+Only owner, method names, and call relationships transfer from mobile. Windows
+still controls layout and ABI; in particular, the exact Windows
+`Complete` scratch retains its proven `unsigned char` parameter. A full
+eight-job rebuild leaves `Init`, `ReSet`, `Complete`, `UnInit`, both score
+methods, and every exact caller byte-identical. `AI` and `RemoveBods` retain
+their honest 79.94% and 70.58% frontiers.

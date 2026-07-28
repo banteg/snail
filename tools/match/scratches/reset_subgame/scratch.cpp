@@ -8,7 +8,7 @@ typedef unsigned int DWORD;
 extern "C" void* memcpy(void* dest, const void* src, unsigned int count);
 #pragma intrinsic(memcpy)
 
-void cRSubGame::reset_subgame()
+void cRSubGame::ReSet()
 {
     int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
     SubHealth* health = health_pickups;

@@ -511,6 +511,134 @@ def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:
     assert windows_offsets == sorted(windows_offsets)
 
 
+def test_mobile_subgame_lifecycle_recovers_authored_windows_members() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    matcher_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    expected_members = (
+        (
+            "initialize_subgame",
+            "Init",
+            "?Init@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "reset_subgame",
+            "ReSet",
+            "?ReSet@cRSubGame@@QAEXXZ",
+            False,
+        ),
+        (
+            "destroy_subgame",
+            "UnInit",
+            "?UnInit@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_subgame",
+            "AI",
+            "?AI@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "remove_subgame_bods",
+            "RemoveBods",
+            "?RemoveBods@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "hide_gameplay_scores",
+            "HideScores",
+            "?HideScores@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "unhide_gameplay_scores",
+            "UnHideScores",
+            "?UnHideScores@cRSubGame@@QAEXXZ",
+            False,
+        ),
+    )
+
+    for windows_name, authored_name, symbol, has_ios_body in expected_members:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == f"cRSubGame::{authored_name}()"
+        assert entry["android_body_count"] == 1
+        if has_ios_body:
+            assert entry["ios_symbol"] == f"cRSubGame::{authored_name}()"
+            assert entry["ios_body_count"] == 1
+        else:
+            assert "ios_symbol" not in entry
+
+        assert authored_name in functions_by_name[windows_name]["aliases"]
+        assert f"void {authored_name}();" in matcher_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"void cRSubGame::{authored_name}()" in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={symbol}\n" in scratch_config
+
+    complete = entries["complete_subgame"]
+    assert complete["status"] == "verified"
+    assert complete["confidence"] == "high"
+    assert complete["android_symbol"] == "cRSubGame::Complete(bool)"
+    assert complete["ios_symbol"] == "cRSubGame::Complete(bool)"
+    assert complete["android_body_count"] == 1
+    assert complete["ios_body_count"] == 1
+    assert "Complete" in functions_by_name["complete_subgame"]["aliases"]
+    assert "void Complete(unsigned char completed);" in matcher_header
+
+    complete_root = (
+        repo_root / "tools/match/scratches/complete_subgame"
+    )
+    complete_source = (complete_root / "scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert (
+        "void cRSubGame::Complete(unsigned char completed)"
+        in complete_source
+    )
+    complete_config = (complete_root / "scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    assert "FUNCTION=complete_subgame\n" in complete_config
+    assert "SYMBOL=?Complete@cRSubGame@@QAEXE@Z\n" in complete_config
+
+    windows_init = (
+        repo_root / "tools/match/scratches/initialize_subgame/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    android_init = (
+        repo_root
+        / (
+            "analysis/decompile/android/functions/"
+            "0007de9c-_ZN9cRSubGame4InitEv.c"
+        )
+    ).read_text(encoding="utf-8")
+    assert "ReSet();" in windows_init
+    assert "ReSet(this);" in android_init
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

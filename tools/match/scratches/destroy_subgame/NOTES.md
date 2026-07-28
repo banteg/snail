@@ -12,8 +12,8 @@ Recovered behavior:
 - if the level mode is tutorial (`7`), calls
   `Tutorial::uninit_tutorial()` at `game+0xa858`;
 - always uninitializes the embedded player warning, the complete landscape
-  manager's ten active entries, authored `TimesUp`, and the broader subgame BOD set through
-  `cRSubGame::remove_subgame_bods()`;
+  manager's ten active entries, authored `TimesUp`, and the broader subgame BOD
+  set through `cRSubGame::RemoveBods()`;
 - for every non-state-1 teardown, removes active BOD nodes from the embedded
   20-slot SubLazer pool, 40-slot Salt pool, and two-slot start/completion
   `BannerPool`; row-event display is additionally flushed for modes `0`/`1`;

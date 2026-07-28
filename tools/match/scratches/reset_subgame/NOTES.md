@@ -36,7 +36,7 @@ Important source-shape correction:
 - The native function is void-shaped. The old `int result` source was a
   decompiler artifact from the leftover `eax` value and made VC6 hoist the saved
   tail-b load before tail-a.
-- Spelling the helper as `void cRSubGame::reset_subgame()` removes the artificial
+- Spelling the helper as `void cRSubGame::ReSet()` removes the artificial
   return-value dependency and matches the native saved snapshot load order:
   score, tail-a, tail-b.
 - Focused Wibo is now 100.00%, 75/75 instructions, with 2 clean masked

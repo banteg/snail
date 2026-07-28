@@ -1,6 +1,8 @@
 # `remove_subgame_bods` recovery notes
 
-Target: `cRSubGame::remove_subgame_bods @ 0x440910` (`thiscall`, 1644 bytes, 501 instructions).
+Stable target `remove_subgame_bods` is authored
+`cRSubGame::RemoveBods() @ 0x440910` (`thiscall`, 1644 bytes,
+501 instructions).
 
 Initial scratch reconstructs the full cleanup pass:
 

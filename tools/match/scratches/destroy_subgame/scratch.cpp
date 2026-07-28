@@ -65,7 +65,7 @@ int report_errorf(char* format, ...);
         }                                                         \
     } while (0)
 
-void cRSubGame::destroy_subgame()
+void cRSubGame::UnInit()
 {
     debug_report_stub("-SubGame::UnInit()\n");
     g_game->backdrop.corner_index_buffer_handle = 1;
@@ -76,7 +76,7 @@ void cRSubGame::destroy_subgame()
     embedded_player()->warning.uninit_warning();
     landscape_manager.clear_active_landscape_entries();
     times_up.uninit_times_up();
-    remove_subgame_bods();
+    RemoveBods();
 
     DWORD subgame_state = this->subgame_state;
     DWORD linked_flag = BOD_FLAG_LINKED;

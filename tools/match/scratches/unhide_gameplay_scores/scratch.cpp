@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-void cRSubGame::unhide_gameplay_scores()
+void cRSubGame::UnHideScores()
 {
     bottom_score_widget->unhide_border_init();
     top_score_widget->unhide_border_init();

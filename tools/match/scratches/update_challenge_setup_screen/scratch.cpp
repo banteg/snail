@@ -11,7 +11,7 @@
 
 int GUI::update_challenge_setup_screen()
 {
-    game->hide_gameplay_scores();
+    game->HideScores();
 
     switch (game->level_mode) {
     case 4: {
