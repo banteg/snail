@@ -3,7 +3,7 @@
 #include "quaternion.h"
 #include "transform_matrix.h"
 
-TransformMatrix::TransformMatrix(const Quaternion& quaternion)
+tMatrix::tMatrix(const Quaternion& quaternion)
 {
     float xx = quaternion.x * quaternion.x;
     float xy = quaternion.y * quaternion.x;

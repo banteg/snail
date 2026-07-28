@@ -44,7 +44,7 @@ static __forceinline void orient_previous_with_up(
     PathTemplateSample* current = &samples[current_index];
 
     if (curve_index == 0) {
-        previous->transform.set_matrix_rotation_identity();
+        previous->transform.RotIdentity();
         return;
     }
 
@@ -58,7 +58,7 @@ static __forceinline void orient_previous_with_up(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
     float roll_angle = roll_source->center_x * 0.2617994f;
-    previous->transform.rotate_matrix_local_z(roll_angle);
+    previous->transform.RotLocalZ(roll_angle);
 }
 
 static __forceinline void compute_terminal_deltas(Path* path)

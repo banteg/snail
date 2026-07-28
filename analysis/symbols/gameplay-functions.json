@@ -4314,7 +4314,7 @@
       "aliases": [
         "tVector_operator_multiply"
       ],
-      "description": "Stable Windows harness identity for the exact value-returning `tVector::operator*(const TransformMatrix&) const`. Its hidden output pointer exposes the ordinary VC6 aggregate-return ABI. Android and iOS retain the same authored owner with their `tMatrix` type name."
+      "description": "Stable Windows harness identity for the exact value-returning `tVector::operator*(const tMatrix&) const`. Its hidden output pointer exposes the ordinary VC6 aggregate-return ABI; TransformMatrix remains a compatibility typedef."
     },
     {
       "address": "0x44cb50",
@@ -4338,7 +4338,7 @@
       "aliases": [
         "tVector_operator_multiply_assign"
       ],
-      "description": "Exact void by-value `tVector::operator*=(TransformMatrix)` retained by iOS as `tVector::operator*=(tMatrix)`. It applies the affine basis and translation in place; Android exposes the analogous operation as `tVector::Multiply(const tMatrix&)`."
+      "description": "Exact void by-value `tVector::operator*=(tMatrix)` retained by iOS. It applies the affine basis and translation in place; Android exposes the analogous operation as `tVector::Multiply(const tMatrix&)`."
     },
     {
       "address": "0x44cc20",
@@ -4346,7 +4346,7 @@
       "aliases": [
         "tVector_Rotate"
       ],
-      "description": "Exact reference-returning `tVector::Rotate(const TransformMatrix&)` member. It applies only the 3x3 rotational basis in place; sprite-facing callers consume the returned receiver."
+      "description": "Exact reference-returning `tVector::Rotate(const tMatrix&)` member. It applies only the 3x3 rotational basis in place; sprite-facing callers consume the returned receiver."
     },
     {
       "address": "0x44cca0",
@@ -4388,57 +4388,71 @@
     {
       "address": "0x44cde0",
       "name": "initialize_uniform_scale_matrix",
+      "aliases": [
+        "tMatrix_ctor_scale"
+      ],
       "description": "Stable Windows harness identity for the authored single-float `tMatrix::tMatrix(float)` constructor retained by Android. The exact constructor writes the scalar across the xyz diagonal, zeroes off-diagonal and translation slots, and sets homogeneous `w` to 1.0."
     },
     {
       "address": "0x44ce30",
       "name": "rotate_matrix_world_x",
       "aliases": [
-        "rotate_matrix_local_x"
+        "rotate_matrix_local_x",
+        "tMatrix_RotLocalX"
       ],
-      "description": "Stable Windows harness identity for the exact void `TransformMatrix::rotate_matrix_local_x(float)` member, retained by iOS and Android as `tMatrix::RotLocalX(float)`. It rotates the up/forward basis around the matrix's local X axis."
+      "description": "Stable Windows harness identity for the exact void `tMatrix::RotLocalX(float)` member retained by iOS and Android. It rotates the up/forward basis around the matrix's local X axis."
     },
     {
       "address": "0x44cec0",
       "name": "rotate_matrix_world_y",
       "aliases": [
-        "rotate_matrix_local_y"
+        "rotate_matrix_local_y",
+        "tMatrix_RotLocalY"
       ],
-      "description": "Stable Windows harness identity for the exact void `TransformMatrix::rotate_matrix_local_y(float)` member, retained by iOS and Android as `tMatrix::RotLocalY(float)`. It rotates the right/forward basis around the matrix's local Y axis."
+      "description": "Stable Windows harness identity for the exact void `tMatrix::RotLocalY(float)` member retained by iOS and Android. It rotates the right/forward basis around the matrix's local Y axis."
     },
     {
       "address": "0x44cf50",
       "name": "rotate_matrix_world_z",
       "aliases": [
-        "rotate_matrix_local_z"
+        "rotate_matrix_local_z",
+        "tMatrix_RotLocalZ"
       ],
-      "description": "Stable Windows harness identity for the exact void `TransformMatrix::rotate_matrix_local_z(float)` member, retained by iOS and Android as `tMatrix::RotLocalZ(float)`. It rotates the right/up basis around the matrix's local Z axis."
+      "description": "Stable Windows harness identity for the exact void `tMatrix::RotLocalZ(float)` member retained by iOS and Android. It rotates the right/up basis around the matrix's local Z axis."
     },
     {
       "address": "0x44cfe0",
       "name": "initialize_matrix_from_values",
+      "aliases": [
+        "tMatrix_ctor_values"
+      ],
       "description": "Stable Windows harness identity for the authored 16-float `tMatrix::tMatrix(float, ..., float)` constructor retained by Android and iOS. The exact constructor writes all four matrix rows and returns its receiver only through the ordinary VC6 constructor ABI."
     },
     {
       "address": "0x44d060",
       "name": "multiply_matrices",
-      "description": "Exact void `TransformMatrix::multiply_matrices(const TransformMatrix&, const TransformMatrix&)` member: writes `this = lhs * rhs` for the 3x3 basis and translated origin row. Android retains `tMatrix::Multiply(const tMatrix&, const tMatrix&)`; the right operand left in EAX is incidental."
+      "aliases": [
+        "tMatrix_MultiplyPair"
+      ],
+      "description": "Exact void `tMatrix::Multiply(const tMatrix&, const tMatrix&)` member: writes `this = lhs * rhs` for the 3x3 basis and translated origin row. The right operand left in EAX is incidental."
     },
     {
       "address": "0x44d1a0",
       "name": "multiply_matrix_assign",
       "aliases": [
-        "multiply_matrix_in_place"
+        "multiply_matrix_in_place",
+        "tMatrix_operator_multiply_assign"
       ],
-      "description": "Exact void `TransformMatrix::operator*=(const TransformMatrix&)` member: it snapshots its receiver and delegates to the two-reference multiply core. Android retains the full body as `tMatrix::operator*=`, while its `tMatrix::Multiply(const tMatrix&)` entry is a forwarding branch to this operator; the Windows pair has the same ownership split."
+      "description": "Exact void `tMatrix::operator*=(const tMatrix&)` member: it snapshots its receiver and delegates to the two-reference multiply core. Android retains the full body, while its `tMatrix::Multiply(const tMatrix&)` entry is a forwarding branch to this operator; the Windows pair has the same ownership split."
     },
     {
       "address": "0x44d1d0",
       "name": "multiply_matrix",
       "aliases": [
-        "multiply_matrix_in_place_forward_thunk"
+        "multiply_matrix_in_place_forward_thunk",
+        "tMatrix_Multiply"
       ],
-      "description": "Exact void `TransformMatrix::multiply_matrix(const TransformMatrix&)` member retained by iOS and Android as `tMatrix::Multiply(const tMatrix&)`. The Windows body forwards its rhs reference to the owned multiply-assignment operator, matching Android's direct branch from `Multiply` to `operator*=`."
+      "description": "Exact void `tMatrix::Multiply(const tMatrix&)` member retained by iOS and Android. The Windows body forwards its rhs reference to the owned multiply-assignment operator, matching Android's direct branch from `Multiply` to `operator*=`."
     },
     {
       "address": "0x44d1e0",
@@ -4451,37 +4465,58 @@
     {
       "address": "0x44d210",
       "name": "set_matrix_identity",
-      "description": "Exact void `TransformMatrix::set_matrix_identity()` method: resets the complete 4x4 transform including translation, matching mobile `tMatrix::Identity()`."
+      "aliases": [
+        "tMatrix_Identity"
+      ],
+      "description": "Exact void `tMatrix::Identity()` method: resets the complete 4x4 transform including translation."
     },
     {
       "address": "0x44d250",
       "name": "set_matrix_rotation_identity",
-      "description": "Exact void `TransformMatrix::set_matrix_rotation_identity()` method: resets the rotational basis and homogeneous row while preserving translation, matching mobile `tMatrix::RotIdentity()`."
+      "aliases": [
+        "tMatrix_RotIdentity"
+      ],
+      "description": "Exact void `tMatrix::RotIdentity()` method: resets the rotational basis and homogeneous row while preserving translation."
     },
     {
       "address": "0x44d280",
       "name": "invert_matrix_in_place",
+      "aliases": [
+        "tMatrix_Invert"
+      ],
       "description": "Void `tMatrix::Invert()` implementation: inverts one orthonormal transform matrix in place by transposing the basis and recomputing the negated translated origin. Windows and Android callers discard the incidental receiver register."
     },
     {
       "address": "0x44d330",
       "name": "invert_matrix_from_source",
+      "aliases": [
+        "tMatrix_InvertFromSource"
+      ],
       "description": "Void `tMatrix::Invert(tMatrix const&)` implementation: writes the inverse of a source orthonormal transform into a destination matrix. Its ordinary callers discard the result register, while cRPlayer/cROverlay AI only tail-call it under their independently void callback contracts."
     },
     {
       "address": "0x44d3d0",
       "name": "orthogonalize_matrix",
-      "description": "Exact void `TransformMatrix::orthogonalize_matrix()` method: normalizes the three basis vectors and rebuilds an orthogonal frame through cross products, matching mobile `tMatrix::Orthoganalize()`."
+      "aliases": [
+        "tMatrix_Orthoganalize"
+      ],
+      "description": "Exact void `tMatrix::Orthoganalize()` method: normalizes the three basis vectors and rebuilds an orthogonal frame through cross products. Both mobile ports preserve the authored misspelling."
     },
     {
       "address": "0x44d410",
       "name": "set_matrix_z_direction",
-      "description": "Exact void `TransformMatrix::set_matrix_z_direction(const Vector3&)` method: normalizes a requested forward direction and rebuilds the right/up basis, matching mobile `tMatrix::SetZDir(tVector const&)`."
+      "aliases": [
+        "tMatrix_SetZDir"
+      ],
+      "description": "Exact void `tMatrix::SetZDir(const tVector&)` method: normalizes a requested forward direction and rebuilds the right/up basis."
     },
     {
       "address": "0x44d4e0",
       "name": "look_at_point",
-      "description": "Exact void `TransformMatrix::look_at_point(const Vector3&)` method: subtracts the matrix position from a world-space target and forwards the resulting direction to SetZDir, matching mobile `tMatrix::LookAt(tVector const&)`."
+      "aliases": [
+        "tMatrix_LookAt"
+      ],
+      "description": "Exact void `tMatrix::LookAt(const tVector&)` method: subtracts the matrix position from a world-space target and forwards the resulting direction to SetZDir."
     },
     {
       "address": "0x44d530",
@@ -4501,17 +4536,26 @@
     {
       "address": "0x44d820",
       "name": "initialize_matrix_from_quaternion",
+      "aliases": [
+        "tMatrix_ctor_quaternion"
+      ],
       "description": "Stable Windows harness identity for the authored `tMatrix::tMatrix(const tQuaternian&)` constructor retained by Android. The exact typed const-reference constructor builds the rotation basis and resets translation and homogeneous slots to identity values."
     },
     {
       "address": "0x44d920",
       "name": "interpolate_matrix_rotation",
-      "description": "Exact void `TransformMatrix::interpolate_matrix_rotation(float)` implementation of the authored mobile `tMatrix::Interpolate(float)` member. It extracts and copy-assigns the current rotation as a quaternion, scales its axis angle, and rebuilds the matrix when the rotation is nonzero."
+      "aliases": [
+        "tMatrix_Interpolate"
+      ],
+      "description": "Exact void `tMatrix::Interpolate(float)` member. It extracts and copy-assigns the current rotation as a quaternion, scales its axis angle, and rebuilds the matrix when the rotation is nonzero."
     },
     {
       "address": "0x44da90",
       "name": "linear_interpolate_matrix",
-      "description": "Exact void `TransformMatrix::linear_interpolate_matrix(const TransformMatrix&, const TransformMatrix&, float)` method: blends rotation in matrix space and translation linearly, matching mobile `tMatrix::LinearInterpolate(tMatrix const&, tMatrix const&, float)`."
+      "aliases": [
+        "tMatrix_LinearInterpolate"
+      ],
+      "description": "Exact void `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)` method: blends rotation in matrix space and translation linearly."
     },
     {
       "address": "0x44db50",

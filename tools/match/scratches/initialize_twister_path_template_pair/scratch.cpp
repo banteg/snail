@@ -32,7 +32,7 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
         path->primary_samples[current_index - 1].transform.basis_up.cross_vectors(
             &path->primary_samples[current_index - 1].transform.basis_forward,
             &path->primary_samples[current_index - 1].transform.basis_right);
-        path->primary_samples[current_index - 1].transform.orthogonalize_matrix();
+        path->primary_samples[current_index - 1].transform.Orthoganalize();
 
         path->secondary_samples[current_index - 1].transform.basis_up =
             Vector3(0.0f, 1.0f, 0.0f);
@@ -55,12 +55,12 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
                  .transform.basis_forward,
             &path->secondary_samples[current_index - 1].transform.basis_right);
         path->secondary_samples[current_index - 1]
-            .transform.orthogonalize_matrix();
+            .transform.Orthoganalize();
     } else {
         path->primary_samples[current_index - 1]
-            .transform.set_matrix_rotation_identity();
+            .transform.RotIdentity();
         path->secondary_samples[current_index - 1]
-            .transform.set_matrix_rotation_identity();
+            .transform.RotIdentity();
     }
 }
 

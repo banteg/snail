@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-TransformMatrix::TransformMatrix(
+tMatrix::tMatrix(
     float m00,
     float m01,
     float m02,

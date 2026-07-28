@@ -6,9 +6,9 @@
 #include "vector3.h"
 #include "vertex_buffer_view.h"
 #include "direct3d_device8_view.h"
+#include "transform_matrix_fwd.h"
 
 struct TextureRef;
-struct TransformMatrix;
 struct tColour;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;

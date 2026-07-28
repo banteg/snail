@@ -1,6 +1,6 @@
 # multiply_matrix @ 0x44d1d0
 
-Exact 4/4 `TransformMatrix::multiply_matrix(const TransformMatrix&)` member,
+Exact 4/4 `tMatrix::Multiply(const TransformMatrix&)` member,
 used twice by the LoopBow path-template constructor. It pushes the rhs argument
 and calls the multiply-assignment operator at `0x44d1a0`, preserving the
 incoming matrix receiver in ECX.

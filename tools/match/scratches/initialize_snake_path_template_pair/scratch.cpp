@@ -214,8 +214,8 @@ void cRPath::initialize_snake_path_template_pair(
         PathTemplateSample* secondary_current = &secondary_samples[i];
 
         if (curve_index == 0) {
-            primary_previous->transform.set_matrix_rotation_identity();
-            secondary_previous->transform.set_matrix_rotation_identity();
+            primary_previous->transform.RotIdentity();
+            secondary_previous->transform.RotIdentity();
         } else {
             primary_previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
             primary_previous->transform.basis_forward = Vector3(

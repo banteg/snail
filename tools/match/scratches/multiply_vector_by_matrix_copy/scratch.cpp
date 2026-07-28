@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-tVector tVector::operator*(const TransformMatrix& matrix) const
+tVector tVector::operator*(const tMatrix& matrix) const
 {
     tVector result = *this;
 

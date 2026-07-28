@@ -2,8 +2,8 @@
 
 #include "transform_matrix.h"
 
-void TransformMatrix::premultiply_matrix_in_place(const TransformMatrix& lhs)
+void tMatrix::PreMultiply(const tMatrix& lhs)
 {
-    TransformMatrix rhs = *this;
-    multiply_matrices(lhs, rhs);
+    tMatrix rhs = *this;
+    Multiply(lhs, rhs);
 }

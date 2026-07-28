@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-tVector& tVector::Rotate(const TransformMatrix& matrix)
+tVector& tVector::Rotate(const tMatrix& matrix)
 {
     tVector source = *this;
 

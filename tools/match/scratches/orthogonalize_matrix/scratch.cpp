@@ -2,11 +2,11 @@
 
 #include "transform_matrix.h"
 
-void TransformMatrix::orthogonalize_matrix()
+void tMatrix::Orthoganalize()
 {
-    Vector3* right = &basis_right;
-    Vector3* up = &basis_up;
-    Vector3* forward = &basis_forward;
+    tVector* right = &basis_right;
+    tVector* up = &basis_up;
+    tVector* forward = &basis_forward;
 
     right->Normalize();
     up->Normalize();

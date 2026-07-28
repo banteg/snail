@@ -509,7 +509,7 @@ steering_stored:
                     && transform.position.y > -0.16333334f
                     && !landing_cell->IsEmpty()
                     && landing_cell->tile_id != SUBLOC_TILE_TRAMPOLINE) {
-                    transform.set_matrix_rotation_identity();
+                    transform.RotIdentity();
                     trampoline_bounce_active = 0;
                     if (velocity.y < -0.029999999f) {
                         float squidge_amount = velocity.y - 0.029999999f;

@@ -1,4 +1,4 @@
-# TransformMatrix::set_matrix_identity @ 0x44d210
+# tMatrix::Identity @ 0x44d210
 
 Exact 19-instruction `tMatrix::Identity()` body. It resets the complete matrix,
 including translation, while `set_matrix_rotation_identity` deliberately

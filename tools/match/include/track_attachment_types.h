@@ -12,10 +12,10 @@
 #include "player_fwd.h"
 #include "sub_loc_tile_ids.h"
 #include "sub_loc_fwd.h"
+#include "transform_matrix_fwd.h"
 #include "vector3.h"
 #include "vector_types.h"
 
-struct TransformMatrix;
 struct SubSegment;
 
 // Windows-native cRPath template discriminants. Android/iOS constructor

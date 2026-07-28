@@ -136,18 +136,56 @@
       "name": "initialize_uniform_scale_matrix",
       "kind": "function",
       "aliases": [
+        "??0tMatrix@@QAE@M@Z",
         "??0TransformMatrix@@QAE@M@Z"
       ],
-      "description": "Stable Windows harness identity for the recovered single-float TransformMatrix constructor."
+      "description": "Stable Windows harness identity for the recovered single-float tMatrix constructor; TransformMatrix remains a compatibility typedef."
+    },
+    {
+      "address": "0x44ce30",
+      "name": "rotate_matrix_world_x",
+      "kind": "function",
+      "aliases": [
+        "?RotLocalX@tMatrix@@QAEXM@Z"
+      ],
+      "description": "Exact authored tMatrix::RotLocalX(float) member."
+    },
+    {
+      "address": "0x44cec0",
+      "name": "rotate_matrix_world_y",
+      "kind": "function",
+      "aliases": [
+        "?RotLocalY@tMatrix@@QAEXM@Z"
+      ],
+      "description": "Exact authored tMatrix::RotLocalY(float) member."
+    },
+    {
+      "address": "0x44cf50",
+      "name": "rotate_matrix_world_z",
+      "kind": "function",
+      "aliases": [
+        "?RotLocalZ@tMatrix@@QAEXM@Z"
+      ],
+      "description": "Exact authored tMatrix::RotLocalZ(float) member."
     },
     {
       "address": "0x44cfe0",
       "name": "initialize_matrix_from_values",
       "kind": "function",
       "aliases": [
+        "??0tMatrix@@QAE@MMMMMMMMMMMMMMMM@Z",
         "??0TransformMatrix@@QAE@MMMMMMMMMMMMMMMM@Z"
       ],
-      "description": "Stable Windows harness identity for the recovered sixteen-float TransformMatrix constructor."
+      "description": "Stable Windows harness identity for the recovered sixteen-float tMatrix constructor; TransformMatrix remains a compatibility typedef."
+    },
+    {
+      "address": "0x44d060",
+      "name": "multiply_matrices",
+      "kind": "function",
+      "aliases": [
+        "?Multiply@tMatrix@@QAEXABU1@0@Z"
+      ],
+      "description": "Exact authored tMatrix::Multiply(const tMatrix&, const tMatrix&) member."
     },
     {
       "address": "0x402484",
@@ -1707,10 +1745,11 @@
       "name": "multiply_vector_by_matrix_copy",
       "kind": "function",
       "aliases": [
+        "??DtVector@@QBE?AU0@ABUtMatrix@@@Z",
         "??DtVector@@QBE?AU0@ABUTransformMatrix@@@Z",
         "??DVector3@@QBE?AU0@ABUTransformMatrix@@@Z"
       ],
-      "description": "Exact value-returning tVector affine matrix operator with a hidden VC6 output pointer."
+      "description": "Exact value-returning tVector affine tMatrix operator with a hidden VC6 output pointer."
     },
     {
       "address": "0x44cb50",
@@ -1735,19 +1774,21 @@
       "name": "multiply_vector_by_matrix",
       "kind": "function",
       "aliases": [
+        "??XtVector@@QAEXUtMatrix@@@Z",
         "??XtVector@@QAEXUTransformMatrix@@@Z",
         "??XVector3@@QAEXUTransformMatrix@@@Z"
       ],
-      "description": "Void in-place tVector matrix operator; Windows passes the complete TransformMatrix by value."
+      "description": "Void in-place tVector matrix operator; Windows passes the complete tMatrix by value."
     },
     {
       "address": "0x44cc20",
       "name": "rotate_vector_by_matrix",
       "kind": "function",
       "aliases": [
+        "?Rotate@tVector@@QAEAAU1@ABUtMatrix@@@Z",
         "?Rotate@tVector@@QAEAAU1@ABUTransformMatrix@@@Z"
       ],
-      "description": "Exact reference-returning tVector::Rotate(const TransformMatrix&) entry."
+      "description": "Exact reference-returning tVector::Rotate(const tMatrix&) entry."
     },
     {
       "address": "0x44cca0",
@@ -1800,6 +1841,7 @@
       "name": "multiply_matrix_assign",
       "kind": "function",
       "aliases": [
+        "??XtMatrix@@QAEXABU0@@Z",
         "??XTransformMatrix@@QAEXABU0@@Z",
         "multiply_matrix_in_place",
         "sub_44d1a0"
@@ -1811,10 +1853,83 @@
       "name": "multiply_matrix",
       "kind": "function",
       "aliases": [
+        "?Multiply@tMatrix@@QAEXABU1@@Z",
         "multiply_matrix_in_place_forward_thunk",
         "sub_44d1d0"
       ],
       "description": "Authored `tMatrix::Multiply(const tMatrix&)` member: a small thiscall forwarder that pushes the rhs matrix argument and calls the multiply-assignment operator at 0x44d1a0."
+    },
+    {
+      "address": "0x44d1e0",
+      "name": "premultiply_matrix_in_place",
+      "kind": "function",
+      "aliases": [
+        "?PreMultiply@tMatrix@@QAEXABU1@@Z"
+      ],
+      "description": "Exact authored tMatrix::PreMultiply(const tMatrix&) member."
+    },
+    {
+      "address": "0x44d210",
+      "name": "set_matrix_identity",
+      "kind": "function",
+      "aliases": [
+        "?Identity@tMatrix@@QAEXXZ"
+      ],
+      "description": "Exact authored tMatrix::Identity() member."
+    },
+    {
+      "address": "0x44d250",
+      "name": "set_matrix_rotation_identity",
+      "kind": "function",
+      "aliases": [
+        "?RotIdentity@tMatrix@@QAEXXZ"
+      ],
+      "description": "Exact authored tMatrix::RotIdentity() member."
+    },
+    {
+      "address": "0x44d280",
+      "name": "invert_matrix_in_place",
+      "kind": "function",
+      "aliases": [
+        "?Invert@tMatrix@@QAEXXZ"
+      ],
+      "description": "Exact authored tMatrix::Invert() member."
+    },
+    {
+      "address": "0x44d330",
+      "name": "invert_matrix_from_source",
+      "kind": "function",
+      "aliases": [
+        "?Invert@tMatrix@@QAEXABU1@@Z"
+      ],
+      "description": "Exact authored tMatrix::Invert(const tMatrix&) member."
+    },
+    {
+      "address": "0x44d3d0",
+      "name": "orthogonalize_matrix",
+      "kind": "function",
+      "aliases": [
+        "?Orthoganalize@tMatrix@@QAEXXZ"
+      ],
+      "description": "Exact authored tMatrix::Orthoganalize() member, retaining the original spelling preserved by both mobile ports."
+    },
+    {
+      "address": "0x44d410",
+      "name": "set_matrix_z_direction",
+      "kind": "function",
+      "aliases": [
+        "?SetZDir@tMatrix@@QAEXABUtVector@@@Z"
+      ],
+      "description": "Exact authored tMatrix::SetZDir(const tVector&) member."
+    },
+    {
+      "address": "0x44d4e0",
+      "name": "look_at_point",
+      "kind": "function",
+      "aliases": [
+        "?LookAt@tMatrix@@QAEXABUtVector@@@Z"
+      ],
+      "description": "Exact authored tMatrix::LookAt(const tVector&) member."
     },
     {
       "address": "0x44d530",
@@ -1839,18 +1954,38 @@
       "name": "initialize_quaternion_from_matrix",
       "kind": "function",
       "aliases": [
+        "??0Quaternion@@QAE@ABUtMatrix@@@Z",
         "??0Quaternion@@QAE@ABUTransformMatrix@@@Z"
       ],
-      "description": "Quaternion matrix-argument constructor; Android symbols identify the recovered helper as tQuaternian::tQuaternian(const tMatrix&)."
+      "description": "Quaternion matrix-argument constructor using the recovered tMatrix owner; Android symbols identify the remaining owner as tQuaternian."
     },
     {
       "address": "0x44d820",
       "name": "initialize_matrix_from_quaternion",
       "kind": "function",
       "aliases": [
+        "??0tMatrix@@QAE@ABUQuaternion@@@Z",
         "??0TransformMatrix@@QAE@ABUQuaternion@@@Z"
       ],
-      "description": "TransformMatrix quaternion-argument constructor retained by Android as tMatrix::tMatrix(const tQuaternian&)."
+      "description": "Exact tMatrix quaternion-argument constructor retained by Android as tMatrix::tMatrix(const tQuaternian&); Quaternion remains the current compatibility owner."
+    },
+    {
+      "address": "0x44d920",
+      "name": "interpolate_matrix_rotation",
+      "kind": "function",
+      "aliases": [
+        "?Interpolate@tMatrix@@QAEXM@Z"
+      ],
+      "description": "Exact authored tMatrix::Interpolate(float) member."
+    },
+    {
+      "address": "0x44da90",
+      "name": "linear_interpolate_matrix",
+      "kind": "function",
+      "aliases": [
+        "?LinearInterpolate@tMatrix@@QAEXABU1@0M@Z"
+      ],
+      "description": "Exact authored tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float) member."
     },
     {
       "address": "0x44db50",

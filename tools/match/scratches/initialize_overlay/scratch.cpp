@@ -6,8 +6,8 @@ void Overlay::initialize_overlay()
 {
     camera.overlay_rotation_angle = 0.0f;
     rotation_step = 0.00036547193f;
-    transform.set_matrix_identity();
+    transform.Identity();
     camera.fov_degrees = 38.0f;
-    camera.transform.set_matrix_identity();
-    camera.view_matrix.invert_matrix_from_source(transform);
+    camera.transform.Identity();
+    camera.view_matrix.Invert(transform);
 }

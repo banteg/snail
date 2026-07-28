@@ -1187,8 +1187,8 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
             "tVector::operator*(tMatrix const&) const",
             "tVector_operator_multiply",
             "tVector::operator*(",
-            "tVector operator*(const TransformMatrix& matrix) const;",
-            "??DtVector@@QBE?AU0@ABUTransformMatrix@@@Z",
+            "tVector operator*(const tMatrix& matrix) const;",
+            "??DtVector@@QBE?AU0@ABUtMatrix@@@Z",
         ),
         (
             "dot_vectors",
@@ -1211,16 +1211,16 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
             "tVector::operator*=(tMatrix)",
             "tVector_operator_multiply_assign",
             "tVector::operator*=(",
-            "void operator*=(TransformMatrix matrix);",
-            "??XtVector@@QAEXUTransformMatrix@@@Z",
+            "void operator*=(tMatrix matrix);",
+            "??XtVector@@QAEXUtMatrix@@@Z",
         ),
         (
             "rotate_vector_by_matrix",
             "tVector::Rotate(tMatrix const&)",
             "tVector_Rotate",
             "tVector::Rotate(",
-            "tVector& Rotate(const TransformMatrix& matrix);",
-            "?Rotate@tVector@@QAEAAU1@ABUTransformMatrix@@@Z",
+            "tVector& Rotate(const tMatrix& matrix);",
+            "?Rotate@tVector@@QAEAAU1@ABUtMatrix@@@Z",
         ),
         (
             "normalize_vector",
@@ -1316,6 +1316,259 @@ def test_mobile_tvector_methods_recover_authored_surface() -> None:
     ).read_text(encoding="utf-8")
     assert "int tVector::zero_vector3()" in zero_source
     assert entries["zero_vector3"]["status"] == "unverified"
+
+
+def test_mobile_tmatrix_methods_recover_authored_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    matrix_header = (
+        repo_root / "tools/match/include/transform_matrix.h"
+    ).read_text(encoding="utf-8")
+    matrix_fwd = (
+        repo_root / "tools/match/include/transform_matrix_fwd.h"
+    ).read_text(encoding="utf-8")
+    expected_methods = (
+        (
+            "initialize_uniform_scale_matrix",
+            "tMatrix::tMatrix(float)",
+            "tMatrix_ctor_scale",
+            "tMatrix::tMatrix(",
+            "tMatrix(float scale);",
+            "??0tMatrix@@QAE@M@Z",
+        ),
+        (
+            "rotate_matrix_world_x",
+            "tMatrix::RotLocalX(float)",
+            "tMatrix_RotLocalX",
+            "tMatrix::RotLocalX(",
+            "void RotLocalX(float angle);",
+            "?RotLocalX@tMatrix@@QAEXM@Z",
+        ),
+        (
+            "rotate_matrix_world_y",
+            "tMatrix::RotLocalY(float)",
+            "tMatrix_RotLocalY",
+            "tMatrix::RotLocalY(",
+            "void RotLocalY(float angle);",
+            "?RotLocalY@tMatrix@@QAEXM@Z",
+        ),
+        (
+            "rotate_matrix_world_z",
+            "tMatrix::RotLocalZ(float)",
+            "tMatrix_RotLocalZ",
+            "tMatrix::RotLocalZ(",
+            "void RotLocalZ(float angle);",
+            "?RotLocalZ@tMatrix@@QAEXM@Z",
+        ),
+        (
+            "initialize_matrix_from_values",
+            (
+                "tMatrix::tMatrix(float, float, float, float, float, "
+                "float, float, float, float, float, float, float, "
+                "float, float, float, float)"
+            ),
+            "tMatrix_ctor_values",
+            "tMatrix::tMatrix(",
+            "float m30, float m31, float m32, float m33); // @ 0x44cfe0",
+            "??0tMatrix@@QAE@MMMMMMMMMMMMMMMM@Z",
+        ),
+        (
+            "multiply_matrices",
+            "tMatrix::Multiply(tMatrix const&, tMatrix const&)",
+            "tMatrix_MultiplyPair",
+            "tMatrix::Multiply(",
+            "void Multiply(const tMatrix& lhs, const tMatrix& rhs);",
+            "?Multiply@tMatrix@@QAEXABU1@0@Z",
+        ),
+        (
+            "multiply_matrix_assign",
+            "tMatrix::operator*=(tMatrix const&)",
+            "tMatrix_operator_multiply_assign",
+            "tMatrix::operator*=(",
+            "void operator*=(const tMatrix& rhs);",
+            "??XtMatrix@@QAEXABU0@@Z",
+        ),
+        (
+            "multiply_matrix",
+            "tMatrix::Multiply(tMatrix const&)",
+            "tMatrix_Multiply",
+            "tMatrix::Multiply(",
+            "void Multiply(const tMatrix& rhs);",
+            "?Multiply@tMatrix@@QAEXABU1@@Z",
+        ),
+        (
+            "premultiply_matrix_in_place",
+            "tMatrix::PreMultiply(tMatrix const&)",
+            "tMatrix_PreMultiply",
+            "tMatrix::PreMultiply(",
+            "void PreMultiply(const tMatrix& lhs);",
+            "?PreMultiply@tMatrix@@QAEXABU1@@Z",
+        ),
+        (
+            "set_matrix_identity",
+            "tMatrix::Identity()",
+            "tMatrix_Identity",
+            "tMatrix::Identity(",
+            "void Identity();",
+            "?Identity@tMatrix@@QAEXXZ",
+        ),
+        (
+            "set_matrix_rotation_identity",
+            "tMatrix::RotIdentity()",
+            "tMatrix_RotIdentity",
+            "tMatrix::RotIdentity(",
+            "void RotIdentity();",
+            "?RotIdentity@tMatrix@@QAEXXZ",
+        ),
+        (
+            "invert_matrix_in_place",
+            "tMatrix::Invert()",
+            "tMatrix_Invert",
+            "tMatrix::Invert(",
+            "void Invert();",
+            "?Invert@tMatrix@@QAEXXZ",
+        ),
+        (
+            "invert_matrix_from_source",
+            "tMatrix::Invert(tMatrix const&)",
+            "tMatrix_InvertFromSource",
+            "tMatrix::Invert(",
+            "void Invert(const tMatrix& source);",
+            "?Invert@tMatrix@@QAEXABU1@@Z",
+        ),
+        (
+            "orthogonalize_matrix",
+            "tMatrix::Orthoganalize()",
+            "tMatrix_Orthoganalize",
+            "tMatrix::Orthoganalize(",
+            "void Orthoganalize();",
+            "?Orthoganalize@tMatrix@@QAEXXZ",
+        ),
+        (
+            "set_matrix_z_direction",
+            "tMatrix::SetZDir(tVector const&)",
+            "tMatrix_SetZDir",
+            "tMatrix::SetZDir(",
+            "void SetZDir(const tVector& direction);",
+            "?SetZDir@tMatrix@@QAEXABUtVector@@@Z",
+        ),
+        (
+            "look_at_point",
+            "tMatrix::LookAt(tVector const&)",
+            "tMatrix_LookAt",
+            "tMatrix::LookAt(",
+            "void LookAt(const tVector& target);",
+            "?LookAt@tMatrix@@QAEXABUtVector@@@Z",
+        ),
+        (
+            "initialize_matrix_from_quaternion",
+            "tMatrix::tMatrix(tQuaternian const&)",
+            "tMatrix_ctor_quaternion",
+            "tMatrix::tMatrix(",
+            "tMatrix(const Quaternion& quaternion);",
+            "??0tMatrix@@QAE@ABUQuaternion@@@Z",
+        ),
+        (
+            "interpolate_matrix_rotation",
+            "tMatrix::Interpolate(float)",
+            "tMatrix_Interpolate",
+            "tMatrix::Interpolate(",
+            "void Interpolate(float alpha);",
+            "?Interpolate@tMatrix@@QAEXM@Z",
+        ),
+        (
+            "linear_interpolate_matrix",
+            (
+                "tMatrix::LinearInterpolate("
+                "tMatrix const&, tMatrix const&, float)"
+            ),
+            "tMatrix_LinearInterpolate",
+            "tMatrix::LinearInterpolate(",
+            "void LinearInterpolate(",
+            "?LinearInterpolate@tMatrix@@QAEXABU1@0M@Z",
+        ),
+    )
+
+    for (
+        windows_name,
+        mobile_symbol,
+        alias,
+        source_spelling,
+        header_declaration,
+        object_symbol,
+    ) in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert header_declaration in matrix_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert source_spelling in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}" in scratch_config
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+    assert "struct tMatrix {" in matrix_header
+    assert "struct TransformMatrix {" not in matrix_header
+    assert "tMatrix_must_be_0x40" in matrix_header
+    assert "struct tMatrix;" in matrix_fwd
+    assert "typedef tMatrix TransformMatrix;" in matrix_fwd
+    assert "authored spelling" in matrix_header
+
+    old_member_names = (
+        "rotate_matrix_local_x",
+        "rotate_matrix_local_y",
+        "rotate_matrix_local_z",
+        "multiply_matrices",
+        "multiply_matrix",
+        "premultiply_matrix_in_place",
+        "set_matrix_identity",
+        "set_matrix_rotation_identity",
+        "invert_matrix_in_place",
+        "invert_matrix_from_source",
+        "linear_interpolate_matrix",
+        "interpolate_matrix_rotation",
+        "orthogonalize_matrix",
+        "set_matrix_z_direction",
+        "look_at_point",
+    )
+    for path in (repo_root / "tools/match/scratches").rglob("*.cpp"):
+        if "build" in path.parts:
+            continue
+        source = path.read_text(encoding="utf-8")
+        for name in old_member_names:
+            assert f".{name}(" not in source
+            assert f"->{name}(" not in source
+            assert f"::{name}(" not in source
 
 
 def test_mobile_subgoldy_methods_recover_authored_surface() -> None:

@@ -9,7 +9,7 @@ new-up temporary before the z lane writes both final temporaries.
 2026-07-14 owner correction: iOS and Android both retain this exact member as
 `tMatrix::RotLocalX(float)`. Mixing the receiver's own up/forward basis rows is
 also direct local-axis evidence; "world" was only the old Windows analysis
-label. The scratch now defines `TransformMatrix::rotate_matrix_local_x`, keeps
+label. The scratch now defines `tMatrix::RotLocalX`, keeps
 the stable dashboard identity through `SYMBOL`, and remains 50/50 exact.
 
 2026-07-18 tracked decompile replay: the live database keeps the authored

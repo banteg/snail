@@ -173,13 +173,13 @@ void cRPath::initialize_loopbow_path_template_pair(
             TransformMatrix rotation;
             set_matrix_identity(&rotation);
             float half_sine = sine(half_angle);
-            rotation.rotate_matrix_local_y(
+            rotation.RotLocalY(
                 sine(half_angle) * half_sine * 0.52359879f);
 
             primary_samples[sample_index].transform.position.z -= 7.0f;
             secondary_samples[sample_index].transform.position.z -= 7.0f;
-            primary_samples[sample_index].transform.multiply_matrix(rotation);
-            secondary_samples[sample_index].transform.multiply_matrix(rotation);
+            primary_samples[sample_index].transform.Multiply(rotation);
+            secondary_samples[sample_index].transform.Multiply(rotation);
             primary_samples[sample_index].transform.position.z += 7.0f;
             secondary_samples[sample_index].transform.position.z += 7.0f;
 

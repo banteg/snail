@@ -462,7 +462,7 @@ void cRSubGame::BuildLevel()
             Object* object =
                 g_game->directx_loader.cached_x_mesh_slots[object_id].object;
             ((SubRow*)row_record)->row_model.set_bod_object(object);
-            ((SubRow*)row_record)->row_model.transform.set_matrix_identity();
+            ((SubRow*)row_record)->row_model.transform.Identity();
             *(int*)(row_record + ROW_MODEL_POSITION_X) =
                 *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_X);
             *(int*)(row_record + ROW_MODEL_POSITION_Y) =

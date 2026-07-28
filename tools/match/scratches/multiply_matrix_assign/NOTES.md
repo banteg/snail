@@ -20,5 +20,5 @@ constructor calls `Multiply` at the corresponding two composition sites.
 
 The Windows body does not restore the receiver in EAX after the core call, so
 the authored operator is `void`, not the conventional reference-returning
-shape. Defining `void TransformMatrix::operator*=(const TransformMatrix&)`
+shape. Defining `void tMatrix::operator*=(const TransformMatrix&)`
 remains exact at 18/18 with its core-call operand clean.

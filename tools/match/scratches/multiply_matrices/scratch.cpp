@@ -2,9 +2,7 @@
 
 #include "transform_matrix.h"
 
-void TransformMatrix::multiply_matrices(
-    const TransformMatrix& lhs,
-    const TransformMatrix& rhs)
+void tMatrix::Multiply(const tMatrix& lhs, const tMatrix& rhs)
 {
     basis_right.x = lhs.basis_right.x * rhs.basis_right.x
         + lhs.basis_right.y * rhs.basis_up.x

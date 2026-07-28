@@ -9,7 +9,7 @@ void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* 
 {
     state = SUB_LAZER_STATE_ACTIVE;
     TransformMatrix* live_matrix = &transform;
-    live_matrix->set_matrix_identity();
+    live_matrix->Identity();
     Vector3* position = &transform.position;
     *position = *origin;
     velocity = *direction;
@@ -29,5 +29,5 @@ void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* 
         list_flags |= BOD_FLAG_LINKED;
     }
 
-    live_matrix->set_matrix_z_direction(velocity);
+    live_matrix->SetZDir(velocity);
 }

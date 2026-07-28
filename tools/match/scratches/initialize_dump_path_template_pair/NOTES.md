@@ -89,7 +89,7 @@ show the same authored control structure recovered in the Hump sibling. Dump
 now performs the curve conversion after kind/mirror/exit/width ownership,
 keeps a mutable `curve_count + 7` departure index, writes both seven-sample
 fixed runs directly, advances the explicit curved byte offset in a `do/while`,
-uses owned `TransformMatrix::set_matrix_identity` member calls, constructs the
+uses owned `tMatrix::Identity` member calls, constructs the
 ordinary mesh-row position as a real `Vector3`, preserves the nonempty
 face-column `do/while`, and retains both duplicate parity-controlled texture
 paths. Applied as a coherent transfer, that source shape reached `44.48%`

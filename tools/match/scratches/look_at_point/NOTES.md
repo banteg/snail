@@ -10,7 +10,7 @@ exact thiscall member `set_matrix_z_direction` (`0x44d410`), which rebuilds the
 forward basis (and right/up) from that direction:
 
 ```cpp
-void TransformMatrix::look_at_point(const Vector3& target)
+void tMatrix::LookAt(const Vector3& target)
 {
     Vector3 delta = target - position;
     set_matrix_z_direction(delta);

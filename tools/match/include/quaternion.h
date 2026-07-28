@@ -2,8 +2,9 @@
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
+#include "transform_matrix_fwd.h"
+
 struct AxisAngle;
-struct TransformMatrix;
 
 struct Quaternion {
     Quaternion(); // out-of-line default constructor used by interpolation

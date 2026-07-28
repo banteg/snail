@@ -158,7 +158,7 @@ tools/match/match.sh \
 
 2026-07-14 matrix-multiply owner pass: both local-Y rotation compositions now
 pass the temporary matrix through the recovered const-reference
-`TransformMatrix::multiply_matrix` member, eliminating the old casts. The
+`tMatrix::Multiply` member, eliminating the old casts. The
 honest partial remains byte-identical at 67.54%, 800/796 candidate/target
 instructions and prefix 10/796.
 

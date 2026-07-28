@@ -3,62 +3,59 @@
 #ifndef TRANSFORM_MATRIX_H
 #define TRANSFORM_MATRIX_H
 
+#include "transform_matrix_fwd.h"
 #include "vector3.h"
 #include "vector_types.h"
 
 struct Quaternion;
 
-struct TransformMatrix {
-    TransformMatrix() {}
-    TransformMatrix(float scale); // @ 0x44cde0, tMatrix::tMatrix(float)
-    TransformMatrix(
+struct tMatrix {
+    tMatrix() {}
+    tMatrix(float scale); // @ 0x44cde0
+    tMatrix(
         float m00, float m01, float m02, float m03,
         float m10, float m11, float m12, float m13,
         float m20, float m21, float m22, float m23,
         float m30, float m31, float m32, float m33); // @ 0x44cfe0
-    TransformMatrix(const Quaternion& quaternion); // @ 0x44d820
+    tMatrix(const Quaternion& quaternion); // @ 0x44d820
     // ABI compatibility view for partial callers that copy from the
     // constructor's EAX result. The owned definition is the overload above.
-    TransformMatrix* initialize_matrix_from_values(
+    tMatrix* initialize_matrix_from_values(
         float m00, float m01, float m02, float m03,
         float m10, float m11, float m12, float m13,
         float m20, float m21, float m22, float m23,
         float m30, float m31, float m32, float m33); // @ 0x44cfe0
-    void operator*=(const TransformMatrix& rhs); // @ 0x44d1a0, tMatrix::operator*=
-    void multiply_matrix(const TransformMatrix& rhs); // @ 0x44d1d0, tMatrix::Multiply
-    void premultiply_matrix_in_place(
-        const TransformMatrix& lhs); // @ 0x44d1e0, tMatrix::PreMultiply
-    void multiply_matrices(
-        const TransformMatrix& lhs,
-        const TransformMatrix& rhs); // @ 0x44d060
-    void invert_matrix_in_place(); // @ 0x44d280, tMatrix::Invert()
-    void invert_matrix_from_source(
-        const TransformMatrix& source); // @ 0x44d330, tMatrix::Invert(tMatrix const&)
-    void linear_interpolate_matrix(
-        const TransformMatrix& from,
-        const TransformMatrix& to,
+    void operator*=(const tMatrix& rhs); // @ 0x44d1a0
+    void Multiply(const tMatrix& rhs); // @ 0x44d1d0
+    void PreMultiply(const tMatrix& lhs); // @ 0x44d1e0
+    void Multiply(const tMatrix& lhs, const tMatrix& rhs); // @ 0x44d060
+    void Invert(); // @ 0x44d280
+    void Invert(const tMatrix& source); // @ 0x44d330
+    void LinearInterpolate(
+        const tMatrix& from,
+        const tMatrix& to,
         float alpha); // @ 0x44da90
-    void interpolate_matrix_rotation(float alpha);     // @ 0x44d920
-    void orthogonalize_matrix();                       // @ 0x44d3d0
-    void set_matrix_identity();                       // @ 0x44d210, tMatrix::Identity()
-    void set_matrix_rotation_identity();              // @ 0x44d250, tMatrix::RotIdentity()
-    void rotate_matrix_local_x(float angle);          // @ 0x44ce30, tMatrix::RotLocalX
-    void rotate_matrix_local_y(float angle);          // @ 0x44cec0, tMatrix::RotLocalY
-    void rotate_matrix_local_z(float angle);          // @ 0x44cf50, tMatrix::RotLocalZ
-    void set_matrix_z_direction(const Vector3& direction); // @ 0x44d410
-    void look_at_point(const Vector3& target);             // @ 0x44d4e0
+    void Interpolate(float alpha); // @ 0x44d920
+    void Orthoganalize(); // @ 0x44d3d0, authored spelling
+    void Identity(); // @ 0x44d210
+    void RotIdentity(); // @ 0x44d250
+    void RotLocalX(float angle); // @ 0x44ce30
+    void RotLocalY(float angle); // @ 0x44cec0
+    void RotLocalZ(float angle); // @ 0x44cf50
+    void SetZDir(const tVector& direction); // @ 0x44d410
+    void LookAt(const tVector& target); // @ 0x44d4e0
 
-    Vector3 basis_right;   // +0x00
+    tVector basis_right;   // +0x00
     float basis_right_w;   // +0x0c
-    Vector3 basis_up;      // +0x10
+    tVector basis_up;      // +0x10
     float basis_up_w;      // +0x1c
-    Vector3 basis_forward; // +0x20
+    tVector basis_forward; // +0x20
     float basis_forward_w; // +0x2c
-    Vector3 position;      // +0x30
+    tVector position;      // +0x30
     float position_w;      // +0x3c
 };
 
-typedef char TransformMatrix_must_be_0x40[(sizeof(TransformMatrix) == 0x40) ? 1 : -1];
+typedef char tMatrix_must_be_0x40[(sizeof(tMatrix) == 0x40) ? 1 : -1];
 
 // Compatibility surface for partial scratches not yet converted to the
 // authored member spelling. The ABI is identical: transform is passed in ECX.

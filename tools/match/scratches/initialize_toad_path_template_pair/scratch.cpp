@@ -233,7 +233,7 @@ void cRPath::initialize_toad_path_template_pair(
         primary_samples[index].transform.basis_right.cross_vectors(
             &primary_samples[index].transform.basis_up,
             &primary_samples[index].transform.basis_forward);
-        primary_samples[index].transform.rotate_matrix_local_z(angle);
+        primary_samples[index].transform.RotLocalZ(angle);
 
         secondary_samples[index].transform = primary_samples[index].transform;
         secondary_samples[index].transform.position.x +=

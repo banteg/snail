@@ -159,9 +159,9 @@ void cRSubGoldy::Init(int player_slot)
     if (this->game->selected_level_record_active == 0)
         this->presentation.cutscene.state = CUT_SCENE_STATE_INTRO_PENDING;
     this->presentation.owner_player = this;
-    this->presentation.transform.set_matrix_identity();
-    this->presentation.cached_cutscene_matrix.set_matrix_identity();
-    this->presentation.previous_live_matrix.set_matrix_identity();
+    this->presentation.transform.Identity();
+    this->presentation.cached_cutscene_matrix.Identity();
+    this->presentation.previous_live_matrix.Identity();
     this->parcels_collected = zero;
     click_start.initialize_click_start(this);
     cameraman.initialize_cameraman();
@@ -223,7 +223,7 @@ void cRSubGoldy::Init(int player_slot)
     int transform_count = 12;
     do {
         *(int*)(shot_transform + SHOT_TRANSFORM_TO_STATE) = zero;
-        ((TransformMatrix*)shot_transform)->set_matrix_identity();
+        ((TransformMatrix*)shot_transform)->Identity();
         *(cRSubGame**)(shot_transform + SHOT_TRANSFORM_TO_GAME) = this->game;
         shot_transform += sizeof(GolbShot);
         --transform_count;

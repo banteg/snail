@@ -292,7 +292,7 @@ prefix and all 63 operands clean.
 ## 2026-07-14 matrix-owner follow-up
 
 The endpoint blend and ordinary terminal branch now invoke
-`TransformMatrix::set_matrix_identity()` on their owned local matrices. This
+`tMatrix::Identity()` on their owned local matrices. This
 removes the scratch-local free-function declaration and keeps the focused
 candidate byte-identical at `72.89%`, `698/726`, prefix `122/726`, with
 `63/0/0` masked operands.

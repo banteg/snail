@@ -227,7 +227,7 @@ void cRSubGame::Init()
     level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
     cRSubGoldy* player = embedded_player();
-    player->live_transform()->set_matrix_identity();
+    player->live_transform()->Identity();
     player->movement_mode_selector = 0;
     player->game = this;
     player->cached_camera_target_world = player->transform.position;

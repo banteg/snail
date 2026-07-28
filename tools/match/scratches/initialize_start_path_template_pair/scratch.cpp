@@ -214,8 +214,8 @@ void cRPath::initialize_start_path_template_pair(
                 &secondary_samples[i - 1];
 
             if (i <= 5) {
-                primary_previous->transform.set_matrix_rotation_identity();
-                secondary_previous->transform.set_matrix_rotation_identity();
+                primary_previous->transform.RotIdentity();
+                secondary_previous->transform.RotIdentity();
             } else {
                 primary_samples[i - 1].transform.basis_right =
                     Vector3(1.0f, 0.0f, 0.0f);

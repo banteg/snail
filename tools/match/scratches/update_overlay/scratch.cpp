@@ -11,8 +11,8 @@ void Overlay::update_overlay()
         camera.overlay_rotation_angle += 6.2831855f;
     }
 
-    transform.set_matrix_identity();
-    transform.rotate_matrix_local_z(camera.overlay_rotation_angle);
+    transform.Identity();
+    transform.RotLocalZ(camera.overlay_rotation_angle);
     camera.transform = transform;
-    camera.view_matrix.invert_matrix_from_source(transform);
+    camera.view_matrix.Invert(transform);
 }

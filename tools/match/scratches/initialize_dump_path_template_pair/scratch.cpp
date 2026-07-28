@@ -92,7 +92,7 @@ static inline void orient_previous_with_fixed_up(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
     if (roll != 0.0f)
-        previous->transform.rotate_matrix_local_z(roll);
+        previous->transform.RotLocalZ(roll);
 }
 
 void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
@@ -201,8 +201,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 
 #if PATH_VARIANT == 1
             float roll = sine(angle * 0.5f) * sine(angle * 8.0f) * 0.39269909f;
-            primary_samples[sample_index].transform.rotate_matrix_local_z(roll);
-            secondary_samples[sample_index].transform.rotate_matrix_local_z(roll);
+            primary_samples[sample_index].transform.RotLocalZ(roll);
+            secondary_samples[sample_index].transform.RotLocalZ(roll);
 #endif
         }
     }
@@ -318,12 +318,12 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
-        primary_samples[i].transform.set_matrix_identity();
+        primary_samples[i].transform.Identity();
         float z = (float)i;
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
-        secondary_samples[i].transform.set_matrix_identity();
+        secondary_samples[i].transform.Identity();
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y = 0.49000001f;
         secondary_samples[i].transform.position.z = z;
@@ -336,13 +336,13 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         primary_samples[departure_index].rotation_scalar_94 = 0.0f;
         primary_samples[departure_index].special_scalar = 0.0f;
         primary_samples[departure_index].lateral_scale = 1.0f;
-        primary_samples[departure_index].transform.set_matrix_identity();
+        primary_samples[departure_index].transform.Identity();
         float z = (float)departure_index;
         primary_samples[departure_index].transform.position.x =
             primary_samples[departure_index].center_x;
         primary_samples[departure_index].transform.position.y = 0.0f;
         primary_samples[departure_index].transform.position.z = z;
-        secondary_samples[departure_index].transform.set_matrix_identity();
+        secondary_samples[departure_index].transform.Identity();
         secondary_samples[departure_index].transform.position.x =
             primary_samples[departure_index].center_x;
         secondary_samples[departure_index].transform.position.y = 0.49000001f;
@@ -367,7 +367,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->lateral_scale = 1.0f;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
-                ->transform.set_matrix_identity();
+                ->transform.Identity();
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.x =
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
@@ -379,7 +379,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.z = z;
             ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
-                ->transform.set_matrix_identity();
+                ->transform.Identity();
             ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
                 ->transform.position.x =
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
@@ -391,9 +391,9 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 ->transform.position.z = z;
             if (sample_offset <= 7 * (int)sizeof(PathAttachmentSample)) {
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                    - 1)->transform.set_matrix_rotation_identity();
+                    - 1)->transform.RotIdentity();
                 ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                    - 1)->transform.set_matrix_rotation_identity();
+                    - 1)->transform.RotIdentity();
             } else {
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
                     - 1)->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
@@ -488,8 +488,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 (float)(i + 1),
                 0);
             if (sample_index <= 1) {
-                primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
-                secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
+                primary_samples[sample_index - 1].transform.RotIdentity();
+                secondary_samples[sample_index - 1].transform.RotIdentity();
             } else {
                 orient_previous_with_fixed_right(
                     &primary_samples[sample_index - 1],
@@ -548,8 +548,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x - sine(angle) * 0.49000001f;
             if (sample_index <= 3) {
-                primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
-                secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
+                primary_samples[sample_index - 1].transform.RotIdentity();
+                secondary_samples[sample_index - 1].transform.RotIdentity();
             } else {
                 float up_x = -sine(angle);
                 float up_y = cosine(angle);
@@ -619,8 +619,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 (float)(i + 4),
                 0);
             if (sample_index <= 4) {
-                primary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
-                secondary_samples[sample_index - 1].transform.set_matrix_rotation_identity();
+                primary_samples[sample_index - 1].transform.RotIdentity();
+                secondary_samples[sample_index - 1].transform.RotIdentity();
             } else {
                 float roll = primary_samples[sample_index - 1].center_x * 0.2617994f;
                 orient_previous_with_fixed_up(

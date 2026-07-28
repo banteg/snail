@@ -7,7 +7,7 @@
 #include "axis.h"
 #include "transform_matrix.h"
 
-void TransformMatrix::interpolate_matrix_rotation(float alpha)
+void tMatrix::Interpolate(float alpha)
 {
     Quaternion working;
     AxisAngle axis;
@@ -20,14 +20,14 @@ void TransformMatrix::interpolate_matrix_rotation(float alpha)
     if (working.z > -0.001f && working.z < 0.001f)
         working.z = 0.0f;
     if (working.x == 0.0f && working.y == 0.0f && working.z == 0.0f) {
-        TransformMatrix rebuilt(working);
+        tMatrix rebuilt(working);
         *this = rebuilt;
     } else {
         axis = working;
         if (axis.angle != 0.0f) {
             axis.angle = axis.angle * alpha;
             working = axis;
-            TransformMatrix rebuilt(working);
+            tMatrix rebuilt(working);
             *this = rebuilt;
         }
     }

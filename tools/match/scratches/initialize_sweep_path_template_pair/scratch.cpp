@@ -19,7 +19,7 @@ static __forceinline void orient_previous_with_up(
     PathTemplateSample* current = &samples[current_index];
 
     if (curve_index == 0) {
-        previous->transform.set_matrix_rotation_identity();
+        previous->transform.RotIdentity();
         return;
     }
 
@@ -33,7 +33,7 @@ static __forceinline void orient_previous_with_up(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
     if (roll_angle != 0.0f)
-        previous->transform.rotate_matrix_local_z(roll_angle);
+        previous->transform.RotLocalZ(roll_angle);
 }
 
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)

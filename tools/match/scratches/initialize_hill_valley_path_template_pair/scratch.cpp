@@ -62,9 +62,9 @@ static __forceinline void orient_previous_hill_pair(Path* path, int current_inde
             &path->secondary_samples[current_index - 1].transform.basis_right);
     } else {
         path->primary_samples[current_index - 1]
-            .transform.set_matrix_rotation_identity();
+            .transform.RotIdentity();
         path->secondary_samples[current_index - 1]
-            .transform.set_matrix_rotation_identity();
+            .transform.RotIdentity();
     }
 }
 

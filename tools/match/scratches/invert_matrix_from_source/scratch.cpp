@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-void TransformMatrix::invert_matrix_from_source(const TransformMatrix& source)
+void tMatrix::Invert(const tMatrix& source)
 {
     position.x = -(source.position.y * source.basis_right.y + source.basis_right.z * source.position.z + source.position.x * source.basis_right.x);
     position.y = -(source.position.y * source.basis_up.y + source.basis_up.z * source.position.z + source.position.x * source.basis_up.x);

@@ -46,7 +46,7 @@ void CutScene::update_cutscene()
         set_matrix_identity(&live_matrix);
         live_matrix.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
-        live_matrix.look_at_point(presentation->transform.position);
+        live_matrix.LookAt(presentation->transform.position);
         progress = progress + progress_step;
         if (progress > 1.0f) {
             progress_step = 0.00833333377f;
@@ -64,10 +64,10 @@ void CutScene::update_cutscene()
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         float swing = sine(progress * 3.1415927f);
         camera_matrix_a.position.x = swing + swing + camera_matrix_a.position.x;
-        camera_matrix_a.look_at_point(presentation->transform.position);
+        camera_matrix_a.LookAt(presentation->transform.position);
 
         camera_matrix_b = presentation->owner_player->cameraman.live_matrix;
-        live_matrix.linear_interpolate_matrix(
+        live_matrix.LinearInterpolate(
             camera_matrix_a,
             camera_matrix_b,
             sine(progress * 1.5707964f));
@@ -116,10 +116,10 @@ void CutScene::update_cutscene()
         camera_matrix_b.position.x = swing + swing + camera_matrix_b.position.x;
         if (camera_matrix_b.position.y < 0.0f)
             camera_matrix_b.position.y = 0.0f;
-        camera_matrix_b.look_at_point(presentation->transform.position);
+        camera_matrix_b.LookAt(presentation->transform.position);
 
         camera_matrix_a = presentation->owner_player->cameraman.live_matrix;
-        live_matrix.linear_interpolate_matrix(
+        live_matrix.LinearInterpolate(
             camera_matrix_a,
             camera_matrix_b,
             sine(progress * 1.5707964f));
@@ -141,7 +141,7 @@ void CutScene::update_cutscene()
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         if (live_matrix.position.y < 0.0f)
             live_matrix.position.y = 0.0f;
-        live_matrix.look_at_point(presentation->transform.position);
+        live_matrix.LookAt(presentation->transform.position);
 
         if (player->resurrect_active != 0 || (player->DeathInit(), player->attachment_exit_gate_b != 0)) {
             progress = progress_step + progress;
@@ -206,10 +206,10 @@ void CutScene::update_cutscene()
 
         float skid_arc = sine(progress * 3.1415927f);
         camera_matrix_b.position.x = camera_matrix_b.position.x - skid_arc * 0.5f;
-        camera_matrix_b.look_at_point(presentation->transform.position);
+        camera_matrix_b.LookAt(presentation->transform.position);
 
         camera_matrix_a = presentation->owner_player->cameraman.live_matrix;
-        live_matrix.linear_interpolate_matrix(
+        live_matrix.LinearInterpolate(
             camera_matrix_a,
             camera_matrix_b,
             sine(progress * 1.5707964f));
@@ -229,7 +229,7 @@ void CutScene::update_cutscene()
         set_matrix_identity(&live_matrix);
         live_matrix.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
-        live_matrix.look_at_point(presentation->transform.position);
+        live_matrix.LookAt(presentation->transform.position);
         if (presentation->anim_manager.queue_count == 0)
             presentation->dispatch_cutscene_animation(
                 9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);

@@ -153,7 +153,7 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
             + anchor->z;
 
         if (sample_index == terminal_index) {
-            transform.set_matrix_identity();
+            transform.Identity();
         } else {
             from = sample->transform;
             to = current_template->secondary_samples[sample_index + 1].transform;
@@ -165,7 +165,7 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
             to.position.x = 0.0f;
             float alpha =
                 advanced / current_template->secondary_samples[sample_index].delta_length;
-            transform.linear_interpolate_matrix(from, to, alpha);
+            transform.LinearInterpolate(from, to, alpha);
         }
 
         transform.basis_right.x *= lateral_scale;

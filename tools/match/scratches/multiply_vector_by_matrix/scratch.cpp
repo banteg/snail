@@ -2,7 +2,7 @@
 
 #include "transform_matrix.h"
 
-void tVector::operator*=(TransformMatrix matrix)
+void tVector::operator*=(tMatrix matrix)
 {
     tVector source = *this;
 

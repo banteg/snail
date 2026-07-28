@@ -102,7 +102,7 @@ shapes raises focused Wibo from `30.38%` (`612/685`, `38 ok / 0 mismatch`) to
 - the native nonempty face-column `do/while`: `40.82%` (`633/685`).
 
 The fixed and curved sample identities now use the owned
-`TransformMatrix::set_matrix_identity` member spelling. That cleanup is
+`tMatrix::Identity` member spelling. That cleanup is
 code-generation neutral and leaves the focused result unchanged.
 
 2026-07-15 nonterminal mesh value ownership: constructing the ordinary-row

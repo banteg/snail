@@ -2,12 +2,13 @@
 #ifndef DIRECT3D_DEVICE8_VIEW_H
 #define DIRECT3D_DEVICE8_VIEW_H
 
+#include "transform_matrix_fwd.h"
+
 class Direct3DTexture8;
 struct Direct3DDevice8;
 struct Direct3DVertexBuffer8;
 struct D3DPresentParameters;
 struct ObjectIndexBufferResource;
-struct TransformMatrix;
 
 struct D3DViewport8 {
     unsigned int x;

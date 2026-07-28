@@ -26,22 +26,22 @@ void Snail::update_snail_presentation()
 
         scratch_matrix = *owner_player->live_transform();
         source_matrix = *owner_player->live_transform();
-        scratch_matrix.set_matrix_rotation_identity();
+        scratch_matrix.RotIdentity();
 
         float angle =
             (-0.785398185f - owner_player->cutscene_pitch_cycle * 6.28318548f)
             * 1.39999998f;
         if (angle < -6.28318548f)
             angle = -6.28318548f;
-        scratch_matrix.rotate_matrix_local_x(angle);
-        owner_player->live_transform()->linear_interpolate_matrix(
+        scratch_matrix.RotLocalX(angle);
+        owner_player->live_transform()->LinearInterpolate(
             scratch_matrix, source_matrix, 0.939999998f);
     } else {
         if (owner_player->attachment_exit_pending != 0) {
             scratch_matrix = *owner_player->live_transform();
             source_matrix = *owner_player->live_transform();
-            scratch_matrix.set_matrix_rotation_identity();
-            owner_player->live_transform()->linear_interpolate_matrix(
+            scratch_matrix.RotIdentity();
+            owner_player->live_transform()->LinearInterpolate(
                 scratch_matrix, source_matrix, 0.970000029f);
         }
     }
@@ -52,7 +52,7 @@ void Snail::update_snail_presentation()
     transform.position = *camera_target;
 
     scratch_matrix = transform;
-    transform.linear_interpolate_matrix(
+    transform.LinearInterpolate(
         scratch_matrix,
         cached_cutscene_matrix,
         0.699999988f);
@@ -62,7 +62,7 @@ void Snail::update_snail_presentation()
     if (up_y > 0.0f) {
         float yaw = (transform.position.x - cached_cutscene_matrix.position.x)
             * 0.800000012f;
-        transform.rotate_matrix_local_y(yaw);
+        transform.RotLocalY(yaw);
     }
 
     wobble.roll_phase = wobble.roll_phase_step + wobble.roll_phase;
@@ -74,11 +74,11 @@ void Snail::update_snail_presentation()
         wobble.lift_phase = wobble.lift_phase - 1.0f;
 
     base_matrix = transform;
-    roll_matrix.set_matrix_identity();
-    roll_matrix.rotate_matrix_local_z(
+    roll_matrix.Identity();
+    roll_matrix.RotLocalZ(
         sine(wobble.roll_phase * 6.28318548f) * 0.0174499992f);
 
-    inverse_live.invert_matrix_from_source(transform);
+    inverse_live.Invert(transform);
     transform *= inverse_live;
     transform.position.y = transform.position.y + 1.29999995f;
     transform *= roll_matrix;
@@ -94,7 +94,7 @@ void Snail::update_snail_presentation()
 
     if (shell_roll_progress > 0.0f) {
         float shell_yaw = cutscene_roll_progress * -2.09439516f;
-        transform.rotate_matrix_local_y(shell_yaw);
+        transform.RotLocalY(shell_yaw);
         cutscene_roll_progress = cutscene_roll_step + cutscene_roll_progress;
         if (cutscene_roll_progress > 1.0f)
             cutscene_roll_progress = 1.0f;

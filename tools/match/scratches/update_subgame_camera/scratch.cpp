@@ -14,7 +14,7 @@ void cRSubGame::update_subgame_camera()
 
     TransformMatrix target;
     if (state == 1) {
-        target.set_matrix_identity();
+        target.Identity();
         target.position.y = 3.0f;
         g_game->players[0].camera.fov_degrees = 110.0f;
     } else {
@@ -37,6 +37,6 @@ void cRSubGame::update_subgame_camera()
         return;
     }
 
-    g_game->players[0].transform.linear_interpolate_matrix(
+    g_game->players[0].transform.LinearInterpolate(
         from, target, 0.89999998f);
 }

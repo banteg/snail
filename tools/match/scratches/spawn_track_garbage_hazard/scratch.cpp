@@ -52,7 +52,7 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
     float* radius = &garbage_hazards.slots[slot_index].radius;
     *radius = (random_float_below(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
     garbage_hazards.slots[slot_index].state = SUB_GARBAGE_STATE_ACTIVE;
-    garbage_hazards.slots[slot_index].transform.set_matrix_identity();
+    garbage_hazards.slots[slot_index].transform.Identity();
 
     Vector3 staged_position;
     float& staged_y = staged_position.y;

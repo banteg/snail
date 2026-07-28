@@ -3,7 +3,7 @@
 
 #include "transform_matrix.h"
 
-TransformMatrix::TransformMatrix(float scale)
+tMatrix::tMatrix(float scale)
 {
     basis_right.x = scale;
     basis_right.y = 0.0f;

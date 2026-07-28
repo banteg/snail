@@ -1,9 +1,9 @@
-// TransformMatrix::operator*= @ 0x44d1a0 (thiscall)
+// tMatrix::operator*= @ 0x44d1a0 (thiscall)
 
 #include "transform_matrix.h"
 
-void TransformMatrix::operator*=(const TransformMatrix& rhs)
+void tMatrix::operator*=(const tMatrix& rhs)
 {
-    TransformMatrix lhs = *this;
-    multiply_matrices(lhs, rhs);
+    tMatrix lhs = *this;
+    Multiply(lhs, rhs);
 }

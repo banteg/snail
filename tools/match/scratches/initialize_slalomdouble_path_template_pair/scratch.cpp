@@ -191,7 +191,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
         PathTemplateSample* primary_previous = &primary_samples[i - 1];
         PathTemplateSample* primary_current = &primary_samples[i];
         if (curve_index == 0) {
-            primary_previous->transform.set_matrix_rotation_identity();
+            primary_previous->transform.RotIdentity();
         } else {
             primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
             primary_previous->transform.basis_forward = Vector3(
@@ -206,13 +206,13 @@ void cRPath::initialize_slalomdouble_path_template_pair(
                 &primary_previous->transform.basis_up,
                 &primary_previous->transform.basis_forward);
             float primary_roll = primary_previous->center_x * 0.2617994f;
-            primary_previous->transform.rotate_matrix_local_z(primary_roll);
+            primary_previous->transform.RotLocalZ(primary_roll);
         }
 
         PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
         PathTemplateSample* secondary_current = &secondary_samples[i];
         if (curve_index == 0) {
-            secondary_previous->transform.set_matrix_rotation_identity();
+            secondary_previous->transform.RotIdentity();
         } else {
             secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
             secondary_previous->transform.basis_forward = Vector3(
@@ -227,7 +227,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
                 &secondary_previous->transform.basis_up,
                 &secondary_previous->transform.basis_forward);
             float secondary_roll = primary_previous->center_x * 0.2617994f;
-            secondary_previous->transform.rotate_matrix_local_z(secondary_roll);
+            secondary_previous->transform.RotLocalZ(secondary_roll);
         }
         ++curve_index;
     }

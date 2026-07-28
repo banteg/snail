@@ -2,9 +2,9 @@
 
 #include "transform_matrix.h"
 
-void TransformMatrix::invert_matrix_in_place()
+void tMatrix::Invert()
 {
-    TransformMatrix source = *this;
+    tMatrix source = *this;
 
     position.x = -(source.basis_right.z * position.z + source.basis_right.x * source.position.x + source.basis_right.y * source.position.y);
     basis_right.y = source.basis_up.x;

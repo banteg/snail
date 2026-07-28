@@ -2,11 +2,11 @@
 
 #include "transform_matrix.h"
 
-void TransformMatrix::set_matrix_z_direction(const Vector3& direction)
+void tMatrix::SetZDir(const tVector& direction)
 {
-    Vector3 right;
-    Vector3 forward;
-    Vector3* up = &basis_up;
+    tVector right;
+    tVector forward;
+    tVector* up = &basis_up;
 
     if (forward.Normalize(direction) != 0.0f) {
         basis_forward.x = forward.x;

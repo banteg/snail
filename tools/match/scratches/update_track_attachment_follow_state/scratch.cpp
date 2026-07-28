@@ -119,7 +119,7 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
                 arg1, arg2, 0.49000001f, &transform, &out_angle);
             unsigned int active_index = sample_index;
             if (active_index == 0 || active_index == (unsigned int)(this->template_record->segment_count - 1)) {
-                from.set_matrix_identity();
+                from.Identity();
                 from.position.x = transform.position.x;
                 from.position.y = transform.position.y;
                 from.position.z = transform.position.z;
@@ -129,7 +129,7 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
                     blend = progress;
                 else
                     blend = 1.0f - progress;
-                transform.linear_interpolate_matrix(from, to, blend);
+                transform.LinearInterpolate(from, to, blend);
             }
 
             Vec3* output = &output_position;
@@ -160,7 +160,7 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
             v83 = path_y * v79 + anchor->y + sample->transform.position.y;
             v84 = path_z + anchor->z + sample->transform.position.z;
             if (current_index == (unsigned int)terminal_index) {
-                transform.set_matrix_identity();
+                transform.Identity();
             } else {
                 v95 = sample->transform;
                 v96 = secondary[current_index + 1].transform;
@@ -171,7 +171,7 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
                 v96.position.y = 0.0f;
                 v96.position.x = 0.0f;
                 alpha = out_angle / current_template->secondary_samples[current_index].delta_length;
-                transform.linear_interpolate_matrix(v95, v96, alpha);
+                transform.LinearInterpolate(v95, v96, alpha);
             }
 
             Vec3* output = &output_position;

@@ -1,4 +1,4 @@
-# TransformMatrix::set_matrix_rotation_identity @ 0x44d250
+# tMatrix::RotIdentity @ 0x44d250
 
 Exact 16-instruction `tMatrix::RotIdentity()` body. It resets the rotational
 basis and homogeneous lanes while deliberately preserving translation.

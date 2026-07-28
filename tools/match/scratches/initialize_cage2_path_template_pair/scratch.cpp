@@ -76,8 +76,8 @@ void cRPath::initialize_cage2_path_template_pair(
             primary_samples[i].transform.position.z;
 
         if (i <= 1) {
-            primary_samples[i - 1].transform.set_matrix_rotation_identity();
-            secondary_samples[i - 1].transform.set_matrix_rotation_identity();
+            primary_samples[i - 1].transform.RotIdentity();
+            secondary_samples[i - 1].transform.RotIdentity();
         } else {
             primary_samples[i - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
             primary_samples[i - 1].transform.basis_forward = Vector3(
@@ -91,7 +91,7 @@ void cRPath::initialize_cage2_path_template_pair(
             primary_samples[i - 1].transform.basis_right.cross_vectors(
                 &primary_samples[i - 1].transform.basis_up,
                 &primary_samples[i - 1].transform.basis_forward);
-            primary_samples[i - 1].transform.rotate_matrix_local_z(
+            primary_samples[i - 1].transform.RotLocalZ(
                 (float)((1.0f - cosine(curve_angle)) * 0.5f)
                     * primary_samples[i - 1].center_x * 0.39269909f);
 
@@ -107,7 +107,7 @@ void cRPath::initialize_cage2_path_template_pair(
             secondary_samples[i - 1].transform.basis_right.cross_vectors(
                 &secondary_samples[i - 1].transform.basis_up,
                 &secondary_samples[i - 1].transform.basis_forward);
-            secondary_samples[i - 1].transform.rotate_matrix_local_z(
+            secondary_samples[i - 1].transform.RotLocalZ(
                 (float)((1.0f - cosine(curve_angle)) * 0.5f)
                     * primary_samples[i - 1].center_x * 0.39269909f);
         }

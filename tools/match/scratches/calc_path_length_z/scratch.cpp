@@ -25,9 +25,9 @@ void __fastcall cRPath::calc_path_length_z()
     int i = 0;
     if (segment_count > 0) {
         do {
-            this->primary_samples[i].inverse_matrix.invert_matrix_from_source(
+            this->primary_samples[i].inverse_matrix.Invert(
                 this->primary_samples[i].transform);
-            this->secondary_samples[i].inverse_matrix.invert_matrix_from_source(
+            this->secondary_samples[i].inverse_matrix.Invert(
                 this->secondary_samples[i].transform);
 
             ++i;

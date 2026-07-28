@@ -1,6 +1,6 @@
 #include "transform_matrix.h"
 
-void TransformMatrix::set_matrix_rotation_identity()
+void tMatrix::RotIdentity()
 {
     position_w = 1.0f;
     basis_forward.z = 1.0f;

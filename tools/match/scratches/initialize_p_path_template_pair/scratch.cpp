@@ -230,8 +230,8 @@ void cRPath::initialize_p_path_template_pair(
             PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
             PathTemplateSample* secondary_current = &secondary_samples[i];
             if (i <= 1) {
-                primary_previous->transform.set_matrix_rotation_identity();
-                secondary_previous->transform.set_matrix_rotation_identity();
+                primary_previous->transform.RotIdentity();
+                secondary_previous->transform.RotIdentity();
             } else {
                 primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
                 primary_previous->transform.basis_forward = Vector3(

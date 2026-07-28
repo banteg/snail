@@ -12,6 +12,6 @@ void initialize_main_loop_display_state()
     g_display_mode_state.clear_display_mode_state();
     g_window_deactivated = 0;
     g_pending_window_deactivate = 0;
-    g_object_texture_transform_matrix.set_matrix_identity();
+    g_object_texture_transform_matrix.Identity();
     initialize_main_loop_timing_state();
 }

@@ -135,8 +135,8 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                 &secondary_samples[i - 1].transform.basis_forward,
                 &secondary_samples[i - 1].transform.basis_right);
         } else {
-            primary_samples[i - 1].transform.set_matrix_rotation_identity();
-            secondary_samples[i - 1].transform.set_matrix_rotation_identity();
+            primary_samples[i - 1].transform.RotIdentity();
+            secondary_samples[i - 1].transform.RotIdentity();
         }
 
         ++middle_index;

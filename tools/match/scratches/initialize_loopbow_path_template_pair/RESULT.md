@@ -21,7 +21,7 @@ the target's full local-frame size and six-argument epilogue.
 ```
 
 The two matrix-composition calls now resolve cleanly to the authored
-`TransformMatrix::multiply_matrix(const TransformMatrix&)` member at
+`tMatrix::Multiply(const TransformMatrix&)` member at
 `0x44d1d0`. Android implements the same `tMatrix::Multiply` entry as a direct
 branch to `tMatrix::operator*=`, reproducing Windows' forwarder/body split, and
 iOS LoopBow calls `Multiply` at both corresponding sites:

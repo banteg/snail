@@ -34,7 +34,7 @@ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
     cRSubGoldy** player_ref = &slug_hazards.slots[slot_index].owner_player;
     *state_ref = SUB_SLUG_STATE_ACTIVE;
     *player_ref = owner_player;
-    slug_hazards.slots[slot_index].transform.set_matrix_identity();
+    slug_hazards.slots[slot_index].transform.Identity();
 
     Vector3 staged_position =
         cell->position + Vector3(0.0f, 1.7f, 0.0f);

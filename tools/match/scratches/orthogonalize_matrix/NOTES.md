@@ -16,7 +16,7 @@ two argument pushes, while native pushes both arguments before moving the
 destination vector into `ecx`.
 
 Spelling the function as the `TransformMatrix` member it is in the shared
-header (`void TransformMatrix::orthogonalize_matrix()`, using `this` instead
+header (`void tMatrix::Orthoganalize()`, using `this` instead
 of a `transform` parameter) flips VC6's thiscall setup to the native
 push-then-`mov ecx` order for both cross calls and closes the residual. The
 ABI is unchanged (ecx = this on entry, `mov esi, ecx` prologue identical), so

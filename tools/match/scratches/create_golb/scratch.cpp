@@ -36,7 +36,7 @@ void GolbShot::create_golb(cRSubGoldy* player_, int spawn_selector, int emitter_
         kind = 2;
     }
 
-    source_matrix.set_matrix_identity();
+    source_matrix.Identity();
 
     cRSubGoldy* spawn_player = owner_player;
     Vec3* position = &flight_transform.position;

@@ -167,8 +167,8 @@ void GolbShot::update_golb_ai()
     new_direction = &direction;
     *new_direction = *new_output - previous_flight_transform.position;
     if (kind == 2) {
-        tertiary_body.transform.set_matrix_z_direction(direction);
-        tertiary_body.transform.rotate_matrix_local_z(spin);
+        tertiary_body.transform.SetZDir(direction);
+        tertiary_body.transform.RotLocalZ(spin);
     }
     lived = lifetime_step + lifetime;
     lifetime = lived;

@@ -21,7 +21,7 @@ void Cameraman::update_cameraman()
         0.0f, 0.94600099f, 0.32416201f, 0.0f,
         0.0f, -0.32416201f, 0.94600099f, 0.0f,
         p->cached_camera_target_world.x * 0.40000001f, 1.8f, -0.5f, 1.0f);
-    desired_matrix.orthogonalize_matrix();
+    desired_matrix.Orthoganalize();
 
     cRSubGoldy* ramp_player = player;
     float first_rows = (float)game->first_block_row_count;
@@ -37,7 +37,7 @@ void Cameraman::update_cameraman()
             + desired_matrix.position.y;
         desired_matrix.position.y = lifted;
         desired_matrix.position.y = ramp * 0.34999999f * ramp_player->cached_camera_target_world.y + lifted;
-        desired_matrix.rotate_matrix_local_x(inverse_ramp * 0.87249994f);
+        desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);
     } else {
         desired_matrix.position.y =
             ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;
@@ -94,25 +94,25 @@ void Cameraman::update_cameraman()
         pitch = -1.2214999f;
     else if (pitch > 1.2214999f)
         pitch = 1.2214999f;
-    desired_matrix.rotate_matrix_local_x(pitch);
+    desired_matrix.RotLocalX(pitch);
 
     cRSubGoldy* lean_player = player;
     float lean_roll = (0.5f - cosine(lean_player->lane_lean_progress * 3.1415927f) * 0.5f)
         * lean_player->lane_lean_amplitude * 6.2831855f;
     float steer_roll = lean_player->cached_camera_target_world.x * -8.0f;
     steer_roll = steer_roll * 0.017449999f;
-    desired_matrix.rotate_matrix_local_z(lean_roll + steer_roll * 0.17f);
+    desired_matrix.RotLocalZ(lean_roll + steer_roll * 0.17f);
 
     if (player->follow_state.active == 1) {
         set_matrix_identity(&transform);
-        transform.rotate_matrix_local_z(player->follow_state.orientation_a);
+        transform.RotLocalZ(player->follow_state.orientation_a);
         desired_matrix *= transform;
-        desired_matrix.rotate_matrix_local_z(player->follow_state.orientation_b);
+        desired_matrix.RotLocalZ(player->follow_state.orientation_b);
     }
     cRSubGoldy* exit_player = player;
     if (exit_player->attachment_exit_pending)
-        desired_matrix.rotate_matrix_local_z(exit_player->post_follow_exit_roll);
-    desired_matrix.rotate_matrix_local_z(player->heading_roll);
+        desired_matrix.RotLocalZ(exit_player->post_follow_exit_roll);
+    desired_matrix.RotLocalZ(player->heading_roll);
 
     cRSubGoldy* worm_player = player;
     Path* worm_template;
@@ -132,7 +132,7 @@ void Cameraman::update_cameraman()
     }
     cRSubGame* rate_game = game;
     fov_degrees = (desired_fov - fov_degrees) * 0.30000001f + fov_degrees;
-    live_matrix.linear_interpolate_matrix(
+    live_matrix.LinearInterpolate(
         previous_desired_matrix,
         desired_matrix,
         rate_game->subgame_rate * 0.30000001f);

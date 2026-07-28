@@ -104,7 +104,7 @@ with all 44 operands clean.
 
 2026-07-14 matrix-multiply owner pass: all three composition calls now use the
 void const-reference matrix member then believed to be
-`TransformMatrix::multiply_matrix`. The complete cutscene initializer remains
+`tMatrix::Multiply`. The complete cutscene initializer remains
 339/339 exact with all 44 operands clean.
 
 2026-07-14 canonical process-root gate: the pause early-out now reads

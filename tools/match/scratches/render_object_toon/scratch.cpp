@@ -33,7 +33,7 @@ void render_object_toon(Object* object, TransformMatrix* matrix)
     Vector3 view_vector = camera_delta;
 
     TransformMatrix inverse = *matrix;
-    inverse.invert_matrix_in_place();
+    inverse.Invert();
     view_vector.Rotate(inverse);
     view_vector.Magnitude();
 

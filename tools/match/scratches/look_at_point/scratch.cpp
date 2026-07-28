@@ -8,8 +8,8 @@
 
 #include "transform_matrix.h"
 
-void TransformMatrix::look_at_point(const Vector3& target)
+void tMatrix::LookAt(const tVector& target)
 {
-    Vector3 delta = target - position;
-    set_matrix_z_direction(delta);
+    tVector delta = target - position;
+    SetZDir(delta);
 }

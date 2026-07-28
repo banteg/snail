@@ -1,7 +1,7 @@
 #ifndef VECTOR3_H
 #define VECTOR3_H
 
-struct TransformMatrix;
+#include "transform_matrix_fwd.h"
 
 // Authored three-float vector owner retained by Android and iOS. Vector3
 // remains a compatibility typedef for matcher sources not yet migrated.
@@ -33,8 +33,8 @@ struct tVector {
         return *this;
     }
 
-    tVector operator*(const TransformMatrix& matrix) const; // @ 0x44cac0
-    void operator*=(TransformMatrix matrix); // @ 0x44cb90, matrix by value
+    tVector operator*(const tMatrix& matrix) const; // @ 0x44cac0
+    void operator*=(tMatrix matrix); // @ 0x44cb90, matrix by value
 
     tVector& operator+=(const tVector& rhs)
     {
@@ -58,8 +58,8 @@ struct tVector {
     // ABI compatibility view for the exact Bod caller that dereferences the
     // hidden-return EAX pointer. The owned definition is operator* above.
     tVector* multiply_vector_by_matrix_copy(
-        tVector* out, const TransformMatrix* matrix) const; // @ 0x44cac0
-    tVector& Rotate(const TransformMatrix& matrix); // @ 0x44cc20
+        tVector* out, const tMatrix* matrix) const; // @ 0x44cac0
+    tVector& Rotate(const tMatrix& matrix); // @ 0x44cc20
 };
 
 typedef tVector Vector3;
