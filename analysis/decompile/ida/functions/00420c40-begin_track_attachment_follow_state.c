@@ -2,9 +2,9 @@
 /* function: begin_track_attachment_follow_state @ 0x420c40 */
 /* selector: begin_track_attachment_follow_state */
 
-// Exact void initializer for the Player-embedded attachment `FollowState`: stores the selected Path and borrowed runtime cell, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `SubgameRuntime::runtime_rows[row].installed_heading_delta` into the Path. Its only Windows caller discards EAX; the apparent Path result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. iOS Path.o names it `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`.
+// Exact void initializer for the Player-embedded `cRPathFollowGoldy`: stores the selected Path and borrowed runtime cell, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `SubgameRuntime::runtime_rows[row].installed_heading_delta` into the Path. Its only Windows caller discards EAX; the apparent Path result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets.
 void __thiscall begin_track_attachment_follow_state(
-        FollowState *follow_state,
+        cRPathFollowGoldy *follow_state,
         TrackRowCell *source_cell,
         const Vec3 *world_position,
         Player *player)

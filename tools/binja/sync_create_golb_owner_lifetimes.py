@@ -89,7 +89,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x0000: ("body", "RenderableBod"),
         0x0338: ("shoot_flags", "uint32_t"),
         0x0380: ("player_slot", "int32_t"),
-        0x0384: ("follow_state", "FollowState"),
+        0x0384: ("follow_state", "cRPathFollowGoldy"),
         0x0410: ("velocity", "Vec3"),
         0x2984: ("presentation", "Snail"),
     },

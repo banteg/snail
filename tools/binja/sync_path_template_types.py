@@ -915,7 +915,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x378", "nuke_effect_progress_step", "float"),
     ("0x37c", "last_ring_spawn_z", "float"),
     ("0x380", "player_slot", "int32_t"),
-    ("0x384", "follow_state", "FollowState"),
+    ("0x384", "follow_state", "cRPathFollowGoldy"),
     ("0x3c4", "damage_gauge", "DamageGuage"),
     ("0x3f0", "progress_bar", "ProgressBar"),
     ("0x3f4", "warning", "Warning"),
@@ -3024,10 +3024,19 @@ PATH_TEMPLATE_SAMPLE_FIELD_UPDATES = (
     ("0xa4", "lateral_source", "float"),
 )
 
-FOLLOW_STATE_FIELD_UPDATES = (
+GOLDY_PATH_FOLLOW_FIELD_UPDATES = (
     # Reset by populate_runtime_track_cells_from_segments and read by
     # update_subgoldy. No nonzero producer is proved yet.
     ("0x3c", "flag_3c", "uint8_t"),
+)
+
+GOLDY_PATH_FOLLOW_OWNER_TYPE_NAMES = (
+    "cRPathFollowGoldy",
+    "FollowState",
+)
+
+GOLDY_PATH_FOLLOW_PLAYER_FIELD_UPDATES = (
+    ("0x384", "follow_state", "cRPathFollowGoldy"),
 )
 
 JET_PARTICLE_SLOT_FIELD_UPDATES = (
@@ -3171,6 +3180,51 @@ def ensure_golb_path_follow_state(*, target: str) -> dict[str, object]:
             GOLB_PATH_FOLLOW_STATE_DECLARATION,
         ),
     }
+
+
+def ensure_goldy_path_follow_owner_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Promote the exact mobile-authored cRPathFollowGoldy class identity."""
+
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    missing_from_header = [
+        name
+        for name in GOLDY_PATH_FOLLOW_OWNER_TYPE_NAMES
+        if name not in equivalence
+    ]
+    if missing_from_header:
+        raise RuntimeError(
+            "authoritative header omitted Goldy path-follow types: "
+            + ", ".join(missing_from_header)
+        )
+
+    stale_types = tuple(
+        name
+        for name in GOLDY_PATH_FOLLOW_OWNER_TYPE_NAMES
+        if not equivalence[name]
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRPathFollowGoldy owner types already equivalent",
+            "types": GOLDY_PATH_FOLLOW_OWNER_TYPE_NAMES,
+        }
+
+    result = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=GOLDY_PATH_FOLLOW_OWNER_TYPE_NAMES,
+    )
+    result["stale_types"] = stale_types
+    return result
 
 
 def ensure_golb_authored_types(
@@ -4107,6 +4161,17 @@ PROTO_UPDATES = (
 # views consumed by these lifecycle and level-builder functions. These
 # prototypes are replayed through the direct verified batch because older BN
 # analysis can otherwise restore an inferred but ABI-equivalent fastcall label.
+GOLDY_PATH_FOLLOW_PROTO_UPDATES = (
+    (
+        "begin_track_attachment_follow_state",
+        "void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player)",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "int32_t __thiscall update_track_attachment_follow_state(cRPathFollowGoldy* follow_state, float path_factor, Vec3* out_position, Vec3* motion)",
+    ),
+)
+
 CORE_SUBGAME_PROTO_UPDATES = (
     (
         "calc_slider_to_rate",
@@ -4157,10 +4222,7 @@ CORE_SUBGAME_PROTO_UPDATES = (
         "is_point_inside_track_attachment",
         "bool __thiscall is_point_inside_track_attachment(Path* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
     ),
-    (
-        "update_track_attachment_follow_state",
-        "int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion)",
-    ),
+    *GOLDY_PATH_FOLLOW_PROTO_UPDATES,
     (
         "populate_runtime_track_cells_from_segments",
         "void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime* game)",
@@ -4529,6 +4591,14 @@ def parse_args() -> argparse.Namespace:
         help="Replay only the GolbShot/path-follow ownership slice.",
     )
     focused_group.add_argument(
+        "--goldy-path-follow-only",
+        action="store_true",
+        help=(
+            "Replay only the authored cRPathFollowGoldy type, embedded Player "
+            "field, and Init/Traverse method ABIs."
+        ),
+    )
+    focused_group.add_argument(
         "--cut-scene-only",
         action="store_true",
         help="Replay only the CutScene state owner and its two method prototypes.",
@@ -4600,6 +4670,37 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
+    if args.goldy_path_follow_only:
+        operations.append(
+            ensure_goldy_path_follow_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
+            apply_struct_and_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_updates=(
+                    (
+                        "cRPathFollowGoldy",
+                        GOLDY_PATH_FOLLOW_FIELD_UPDATES,
+                    ),
+                    (
+                        "Player",
+                        GOLDY_PATH_FOLLOW_PLAYER_FIELD_UPDATES,
+                    ),
+                ),
+                proto_updates=GOLDY_PATH_FOLLOW_PROTO_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.bod_core_only:
         operations.append(
             types_declare_if_missing(
@@ -5157,6 +5258,13 @@ def main() -> int:
                 updates=SYMBOL_UPDATES,
             )
         )
+    if not args.golb_only:
+        operations.append(
+            ensure_goldy_path_follow_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
     operations.append(
         ensure_golb_authored_types(
             target=args.target,
@@ -5254,7 +5362,10 @@ def main() -> int:
                 ("SubRow", SUB_ROW_FIELD_UPDATES),
                 ("PathTemplateSample", PATH_TEMPLATE_SAMPLE_FIELD_UPDATES),
                 ("Path", PATH_FIELD_UPDATES),
-                ("FollowState", FOLLOW_STATE_FIELD_UPDATES),
+                (
+                    "cRPathFollowGoldy",
+                    GOLDY_PATH_FOLLOW_FIELD_UPDATES,
+                ),
                 ("JetParticleSlot", JET_PARTICLE_SLOT_FIELD_UPDATES),
                 ("SubHover", SUB_HOVER_FIELD_UPDATES),
                 ("TipData", TIP_DATA_FIELD_UPDATES),

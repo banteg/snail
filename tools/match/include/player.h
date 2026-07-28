@@ -231,7 +231,7 @@ public:
     int player_slot;                       // +0x380
     // Authored cRPathFollowGoldy owner. Its absolute address in the embedded
     // player is 0x430100, previously mistaken for an independent global.
-    FollowState follow_state;              // +0x384
+    cRPathFollowGoldy follow_state;         // +0x384
     DamageGuage damage_gauge;     // +0x3c4
     ProgressBar progress_bar;               // +0x3f0, empty authored cRProgressBar
     char unknown_3f1[0x3f4 - 0x3f1];

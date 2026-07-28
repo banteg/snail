@@ -18,9 +18,11 @@
 0042c7ba        long double temp2_1 = fconvert.t(0f)
 0042c7ba        x87_r7_1 - temp2_1
 0042c7c5        if ((((x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-0042c80b        vector.x = fconvert.s(fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(sample->transform.position.x)))
-0042c822        vector.y = fconvert.s(fconvert.t(world_y) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(sample->transform.position.y))))
-0042c82e        vector.z = fconvert.s(fconvert.t(world_z) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t(sample->transform.position.z))))
+0042c82e        vector = struct Vec3 {
+    .x = fconvert.s(fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(sample->transform.position.x)))
+    .y = fconvert.s(fconvert.t(world_y) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(sample->transform.position.y))))
+    .z = fconvert.s(fconvert.t(world_z) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t(sample->inverse_matrix.__offset(0xfffffffffffffff8).d))))
+}
 0042c832        rotate_vector_by_matrix(&vector, &sample->inverse_matrix)
 0042c837        uint32_t width_cells = self->width_cells
 0042c83c        int32_t eax_7
@@ -51,10 +53,11 @@
 0042c8b5        x87_r7_15 - temp7_1
 0042c8bc        struct PathTemplateSample* swept_sample = secondary_samples + ebp_2
 0042c8c4        if ((((x87_r7_15 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_15, temp7_1) ? 1 : 0) << 0xa | (x87_r7_15 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-0042c932        struct Vec3 vector_1
-0042c932        vector_1.x = fconvert.s(fconvert.t(sweep_dx) + fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(swept_sample->transform.position.x)))
-0042c946        vector_1.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_y) + fconvert.t(sweep_dy))) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(swept_sample->transform.position.y))))
-0042c952        vector_1.z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_z) + fconvert.t(sweep_dz))) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t(swept_sample->transform.position.z))))
+0042c952        struct Vec3 vector_1 = struct Vec3 {
+    .x = fconvert.s(fconvert.t(sweep_dx) + fconvert.t(world_x) - (fconvert.t(x) + fconvert.t(swept_sample->transform.position.x)))
+    .y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_y) + fconvert.t(sweep_dy))) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(swept_sample->transform.position.y))))
+    .z = fconvert.s(fconvert.t(fconvert.s(fconvert.t(world_z) + fconvert.t(sweep_dz))) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t(swept_sample->inverse_matrix.__offset(0xfffffffffffffff8).d))))
+}
 0042c956        rotate_vector_by_matrix(&vector_1, &swept_sample->inverse_matrix)
 0042c95b        long double x87_r7_23 = fconvert.t(vector_1.y)
 0042c95f        long double temp8_1 = fconvert.t(0.00100000005f)

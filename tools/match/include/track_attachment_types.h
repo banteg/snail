@@ -432,11 +432,11 @@ struct SubRow {                          // stride 0xf4
 
 typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 
-class FollowState {
+class cRPathFollowGoldy {
 public:
     // VC6 folds this empty owner constructor into the shared body at
     // 0x408600. The cRSubGame constructor passes Player::follow_state exactly.
-    FollowState* noop_runtime_slot_constructor();
+    cRPathFollowGoldy* noop_runtime_slot_constructor();
     void begin_track_attachment_follow_state(
         SubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
     int update_track_attachment_follow_state(
@@ -463,8 +463,10 @@ public:
     char unknown_3d[0x40 - 0x3d];
 };
 
-typedef char FollowState_must_be_0x40[
-    (sizeof(FollowState) == 0x40) ? 1 : -1];
-typedef FollowState cRPathFollowGoldy;
+typedef char cRPathFollowGoldy_must_be_0x40[
+    (sizeof(cRPathFollowGoldy) == 0x40) ? 1 : -1];
+// Compatibility vocabulary retained for older analysis notes and scratch-local
+// views. Android and iOS preserve cRPathFollowGoldy as the authored class name.
+typedef cRPathFollowGoldy FollowState;
 
 #endif

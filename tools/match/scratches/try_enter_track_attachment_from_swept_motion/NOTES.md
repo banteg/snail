@@ -30,7 +30,8 @@ Recovered behavior and ownership:
   `Player::attachment_exit_pending` at player+0x41d. The caller rechecks that
   byte before its secondary-slot probe, so a successful primary entry retires
   the gate while a miss leaves the secondary candidate eligible.
-- The seeded block at game+0x430100 is `Player::FollowState` at player+0x384,
+- The seeded block at game+0x430100 is the Player-embedded
+  `cRPathFollowGoldy` at player+0x384,
   not a standalone global. It owns the borrowed `Path`, borrowed `SubLoc`,
   sample index, progress, vertical offset, orientation fields, and Player
   backlink.
@@ -38,7 +39,7 @@ Recovered behavior and ownership:
   `cRSquidge`; the installed heading comes from
   `SubgameRuntime::runtime_rows[row].installed_heading_delta`.
 - The final validation is
-  `FollowState::update_track_attachment_follow_state(player.velocity.z,
+  `cRPathFollowGoldy::update_track_attachment_follow_state(player.velocity.z,
   &player.transform.position, &player.velocity)`.
 
 The two native callers discard EAX, both empty exits return without producing
@@ -90,7 +91,7 @@ whose numeric addresses collide with the relocatable `GameRoot` offsets. The
 replay now normalizes only those instruction operands to numeric displacements;
 it preserves the symbols themselves and lets the existing `GameRoot*` type
 fold the accesses into `Player::attachment_exit_pending`, `Squidge`, the
-embedded `FollowState`, its Player backlink and orientation fields, and
+embedded `cRPathFollowGoldy`, its Player backlink and orientation fields, and
 `SubgameRuntime::runtime_rows[row].installed_heading_delta`. BN independently
 shows the same owner chain. Tracked health checks guard both exports against
 the old raw-global and integer-receiver forms.
@@ -99,3 +100,29 @@ No matching source changed. A fresh focused compile remains at 95.78%, 199/204
 instructions, a 16-instruction prefix, and 47 clean operands. The remaining
 delta is still the one commutative swept-X addition order plus the native
 duplicated exhausted-loop epilogue; neither warrants source-shape fakematching.
+
+## 2026-07-28 authored follow-class ownership
+
+The expanded Android and iOS reference bodies close the class identity that
+Windows cannot spell by itself. Both ports retain exact
+`cRPathFollowGoldy::{Init,Traverse}` symbols, and their `cRPath::Search` success
+tails hand ownership to that class. Windows remains authoritative for the
+embedded address at `Player +0x384`, the 0x40-byte extent, every member offset,
+and this split function's scalar ABI.
+
+The shared matcher and analysis headers now make `cRPathFollowGoldy` the
+primary owner; `FollowState` is retained only as a compatibility alias. Player,
+both follow-method prototypes, and the BN/IDA replay paths use the authored
+name directly. No mobile offset or ARM-only control flow was transferred.
+
+This is intentionally codegen-neutral. The focused Windows candidate remains
+95.78%, 199/204 instructions, a 16-instruction prefix, and 47 clean operands.
+The only differences remain the commutative x87 addition order and VC6's
+duplicated exhausted-loop epilogue, so no source-shape forcing was added.
+
+IDA 9.4 reanalysis now keeps the two swept-search cursors as
+`PathTemplateSample*` values instead of reducing them to adjacent
+`TransformMatrix*` pointers. The tracked health contract therefore checks the
+sample bank, transform basis, and inverse-matrix ownership independently of
+that presentation choice. The function bytes, ABI, and matcher score did not
+change.

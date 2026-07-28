@@ -2681,7 +2681,7 @@
       "ios_symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "The byte-identical Windows helper is a void initializer on the Player-embedded FollowState. Its sole caller ignores EAX; the final Path-shaped register value is incidental, not a return contract.",
+      "notes": "The byte-identical Windows helper is a void initializer on the Player-embedded cRPathFollowGoldy. Its sole caller ignores EAX; the final Path-shaped register value is incidental, not a return contract. Windows independently proves the 0x40-byte layout and offsets.",
       "android_symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -2691,7 +2691,7 @@
       "ios_symbol": "cRPathFollowGoldy::Traverse(float, tVector&, tVector*)",
       "source_object": "Path.o",
       "confidence": "high",
-      "notes": "Both builds store the interpolated matrix up basis as one owned FollowState vector. Both also retain the unreachable voice-4 guard at sample_index == segment_count * 2 even though traversal terminates at segment_count.",
+      "notes": "Both mobile builds preserve cRPathFollowGoldy as the authored class and store the interpolated matrix up basis as one owned vector. Both also retain the unreachable voice-4 guard at sample_index == segment_count * 2 even though traversal terminates at segment_count; Windows independently proves the 0x40-byte layout and offsets.",
       "android_symbol": "cRPathFollowGoldy::Traverse(float, tVector&, tVector*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -2945,7 +2945,7 @@
       "ios_symbol": "cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)",
       "source_object": "Path.o",
       "confidence": "medium",
-      "notes": "The iOS name describes the same swept-search responsibility. Windows retains a Path receiver and seven stack dwords for position, sweep, and a borrowed SubLoc; accepted entry seeds the Player-embedded FollowState and clears the Player-owned exit-pending gate.",
+      "notes": "The Android and iOS names describe the same swept-search responsibility. Windows retains a Path receiver and seven stack dwords for position, sweep, and a borrowed SubLoc; accepted entry seeds the Player-embedded cRPathFollowGoldy and clears the Player-owned exit-pending gate.",
       "android_symbol": "cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

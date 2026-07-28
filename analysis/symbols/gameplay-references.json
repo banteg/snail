@@ -770,7 +770,7 @@
         "data_430100"
       ],
       "size": "0x40",
-      "description": "Relocatable 0x40-byte Player embedded attachment-follow child block at player+0x384, seeded by try_enter_track_attachment_from_swept_motion."
+      "description": "Relocatable 0x40-byte Player-embedded cRPathFollowGoldy owner at player+0x384, seeded by try_enter_track_attachment_from_swept_motion; Windows proves the extent and offsets while Android/iOS preserve the authored class name."
     },
     {
       "address": "0x430170",

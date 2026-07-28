@@ -2,7 +2,7 @@
 /* function: try_enter_track_attachment_from_swept_motion @ 0x42c770 */
 /* selector: try_enter_track_attachment_from_swept_motion */
 
-// Scans `Path::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `FollowState`, copies the runtime row's installed heading into the Path, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family.
+// Scans `Path::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `cRPathFollowGoldy`, copies the runtime row's installed heading into the Path, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family; Android and iOS name the broader owner `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)` and independently confirm that the accepted tail hands off to `cRPathFollowGoldy`.
 void __thiscall try_enter_track_attachment_from_swept_motion(
         Path *self,
         float world_x,
@@ -16,9 +16,9 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
   uint32_t segment_count; // esi
   signed int v10; // esi
   signed int i; // ebp
-  const TransformMatrix *p_transform; // ecx
+  PathTemplateSample *v12; // ecx
   double v13; // st7
-  const TransformMatrix *v14; // ecx
+  PathTemplateSample *v14; // ecx
   double v15; // st7
   Vec3 vector; // [esp+14h] [ebp-60h] BYREF
   Vec3 anchor_position; // [esp+20h] [ebp-54h]
@@ -39,35 +39,35 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
   {
     for ( i = v10; ; --i )
     {
-      p_transform = &self->secondary_samples[i].transform;
-      if ( p_transform->basis_up.y > 0.0 )
+      v12 = &self->secondary_samples[i];
+      if ( v12->transform.basis_up.y > 0.0 )
       {
-        v13 = anchor_position.x + p_transform->position.x;
-        v21 = anchor_position.y + p_transform->position.y;
-        v22 = anchor_position.z + p_transform->position.z;
+        v13 = anchor_position.x + v12->transform.position.x;
+        v21 = anchor_position.y + v12->transform.position.y;
+        v22 = anchor_position.z + v12->transform.position.z;
         v18.x = world_x - v13;
         v18.y = world_y - v21;
         v18.z = world_z - v22;
         vector = v18;
-        rotate_vector_by_matrix(&vector, p_transform + 1);
+        rotate_vector_by_matrix(&vector, &v12->inverse_matrix);
         if ( (double)((signed int)self->width_cells / -2) - 0.30000001 < vector.x
           && (double)((signed int)self->width_cells / 2) + 0.30000001 > vector.x
           && vector.y >= -0.2
           && vector.z > 0.0 )
         {
-          v14 = &self->secondary_samples[i].transform;
-          if ( vector.z < (double)v14[2].basis_right.w )
+          v14 = &self->secondary_samples[i];
+          if ( vector.z < (double)v14->delta_length )
           {
-            v15 = anchor_position.x + v14->position.x;
-            v25 = anchor_position.y + v14->position.y;
-            v26 = anchor_position.z + v14->position.z;
+            v15 = anchor_position.x + v14->transform.position.x;
+            v25 = anchor_position.y + v14->transform.position.y;
+            v26 = anchor_position.z + v14->transform.position.z;
             v23 = world_y + sweep_dy;
             v24 = world_z + sweep_dz;
             v19.x = sweep_dx + world_x - v15;
             v19.y = v23 - v25;
             v19.z = v24 - v26;
             v20 = v19;
-            rotate_vector_by_matrix(&v20, v14 + 1);
+            rotate_vector_by_matrix(&v20, &v14->inverse_matrix);
             if ( v20.y <= 0.001 )
               break;
           }
@@ -93,7 +93,7 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
     update_track_attachment_follow_state(
       &g_game_base->subgame.player.follow_state,
       g_game_base->subgame.player.velocity.z,
-      (Vec3 *)&g_game_base->subgame.player.body.transform.position,
+      &g_game_base->subgame.player.body.transform.position,
       &g_game_base->subgame.player.velocity);
   }
 }

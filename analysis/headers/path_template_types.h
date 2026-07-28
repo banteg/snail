@@ -2344,7 +2344,7 @@ typedef struct PathPair {
     Path secondary;
 } PathPair;
 
-typedef struct FollowState {
+typedef struct cRPathFollowGoldy {
     uint8_t active;
     uint8_t _pad_01[0x3];
     Path* template_record;
@@ -2361,8 +2361,8 @@ typedef struct FollowState {
      * No nonzero producer has been recovered, so retain the neutral name. */
     uint8_t flag_3c;
     uint8_t _pad_3d[0x3];
-} FollowState;
-typedef FollowState cRPathFollowGoldy;
+} cRPathFollowGoldy;
+typedef cRPathFollowGoldy FollowState;
 
 typedef struct GolbPathFollowState {
     uint8_t active;
@@ -2503,7 +2503,7 @@ typedef struct Player {
     float nuke_effect_progress_step;
     float last_ring_spawn_z;
     int32_t player_slot;
-    FollowState follow_state;
+    cRPathFollowGoldy follow_state;
     DamageGuage damage_gauge;
     ProgressBar progress_bar;
     uint8_t _pad_3f1[0x3];
@@ -3003,8 +3003,8 @@ bool __thiscall is_point_inside_track_attachment(
     Vec3 swept_motion,
     TrackRowCell* cell
 );
-void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);
-int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
+void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);
+int32_t __thiscall update_track_attachment_follow_state(cRPathFollowGoldy* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 
 void __thiscall initialize_looptheloop_path_template_pair(
     Path* self,

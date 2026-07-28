@@ -1367,9 +1367,9 @@ ATTACHMENT_ENTRY_ROOT_OFFSET_OPERANDS = (
     (0x42C98A, 0, 0x430199),  # Player::attachment_exit_pending
     (0x42C99C, 1, 0x4340C0),  # Player::squidge
     (0x42C9B4, 0, 0x430100),  # Player::follow_state.active
-    (0x42CA18, 1, 0x42FD7C),  # FollowState::player -> Player
+    (0x42CA18, 1, 0x42FD7C),  # cRPathFollowGoldy::player -> Player
     (0x42CA3D, 1, 0x64118C),  # runtime_rows[row].installed_heading_delta
-    (0x42CA5B, 0, 0x430118),  # FollowState::orientation_a
+    (0x42CA5B, 0, 0x430118),  # cRPathFollowGoldy::orientation_a
     (0x42CA7B, 1, 0x430100),  # Player::follow_state
 )
 
@@ -2841,11 +2841,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "begin_track_attachment_follow_state",
-        "void __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);",
+        "void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);",
     ),
     (
         "update_track_attachment_follow_state",
-        "int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);",
+        "int32_t __thiscall update_track_attachment_follow_state(cRPathFollowGoldy* follow_state, float path_factor, Vec3* out_position, Vec3* motion);",
     ),
     (
         "initialize_loopout_path_template_pair",

@@ -1,9 +1,9 @@
 // begin_track_attachment_follow_state @ 0x420c40 (thiscall, ret 0xc)
-// Exact cRPathFollowGoldy::Init: void initializer on Player::FollowState.
+// Exact cRPathFollowGoldy::Init: void initializer on Player::follow_state.
 #include "game_root.h"
 
 
-void FollowState::begin_track_attachment_follow_state(
+void cRPathFollowGoldy::begin_track_attachment_follow_state(
     TrackRowCell* cell, const Vector3* world_position, Player* owning_player)
 {
     active = 1;

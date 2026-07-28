@@ -9,7 +9,7 @@
 typedef Vector3 Vec3;
 
 
-int FollowState::update_track_attachment_follow_state(
+int cRPathFollowGoldy::update_track_attachment_follow_state(
     float path_factor,
     Vec3* out_position,
     Vec3* motion)

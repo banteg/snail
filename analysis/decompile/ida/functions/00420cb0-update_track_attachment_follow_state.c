@@ -2,9 +2,9 @@
 /* function: update_track_attachment_follow_state @ 0x420cb0 */
 /* selector: update_track_attachment_follow_state */
 
-// Advances one live attachment-follow session along the current Path, updates segment progress and local height, publishes the interpolated transform basis into the live Player matrix, stores the transform's up basis as the owned `FollowState::orientation_up` vector, writes the output position, and returns a small mode code consumed by `update_subgoldy`. The canonical `FollowState` borrows its `Path` and `SubLoc` source cell and traverses the Path-owned `AttachmentSample` banks; the former private matrix and anchor views were duplicate type shells and are retired. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. The static `voice 4` lane is dead: initialization seeds `sample_index = 0`, traversal increments it by one, and the same helper terminates at `sample_index == segment_count` before `sample_index == segment_count * 2` can hold. The iOS build preserves both that unr
+// Advances one live attachment-follow session along its borrowed Path and SubLoc, updates progress and local height, publishes the interpolated basis into the live Player matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets.
 int32_t __thiscall update_track_attachment_follow_state(
-        FollowState *follow_state,
+        cRPathFollowGoldy *follow_state,
         float path_factor,
         Vec3 *out_position,
         Vec3 *motion)
@@ -51,55 +51,50 @@ int32_t __thiscall update_track_attachment_follow_state(
   double v45; // st6
   float x; // eax
   TransformMatrix *p_transform; // edx
-  Vec4 *p_basis_up; // ecx
-  Vec4 *p_basis_forward; // eax
-  PathTemplateSample *v50; // ecx
-  double v51; // st7
-  float *v52; // esi
+  PathTemplateSample *v48; // ecx
+  double v49; // st7
+  TransformMatrix *v50; // esi
   TrackRowCell *source_cell; // ecx
-  double v54; // st7
-  double v55; // st7
-  double v56; // st6
-  double v57; // st6
-  double v58; // st5
-  TransformMatrix *v59; // eax
-  Vec4 *v60; // edx
-  Vec4 *v61; // ecx
-  float v62; // edx
+  double v52; // st7
+  double v53; // st7
+  double v54; // st6
+  double v55; // st6
+  double v56; // st5
+  float v57; // edx
   float z; // ecx
-  Path *v64; // edx
-  float v65; // eax
-  bool v66; // zf
-  int v67; // ecx
-  int v68; // ecx
+  Path *v59; // edx
+  float v60; // eax
+  bool v61; // zf
+  int v62; // ecx
+  int v63; // ecx
   PathTemplateSample *primary_samples; // eax
-  double v70; // st7
-  PathTemplateSample *v71; // eax
-  double v72; // st7
-  double v73; // st7
+  double v65; // st7
+  PathTemplateSample *v66; // eax
+  double v67; // st7
+  double v68; // st7
   Player *player; // ecx
-  double v75; // st7
+  double v70; // st7
   float arg2; // [esp+0h] [ebp-1A0h]
   float alpha; // [esp+Ch] [ebp-194h]
-  float v78; // [esp+20h] [ebp-180h]
-  float v79; // [esp+20h] [ebp-180h]
+  float v73; // [esp+20h] [ebp-180h]
+  float v74; // [esp+20h] [ebp-180h]
   float out_angle; // [esp+24h] [ebp-17Ch] BYREF
   float arg1; // [esp+28h] [ebp-178h]
-  float v82; // [esp+2Ch] [ebp-174h]
-  float v83; // [esp+30h] [ebp-170h]
-  float v84; // [esp+34h] [ebp-16Ch]
-  float v85; // [esp+38h] [ebp-168h]
+  float v77; // [esp+2Ch] [ebp-174h]
+  float v78; // [esp+30h] [ebp-170h]
+  float v79; // [esp+34h] [ebp-16Ch]
+  float v80; // [esp+38h] [ebp-168h]
   TransformMatrix transform; // [esp+3Ch] [ebp-164h] BYREF
-  float v87; // [esp+7Ch] [ebp-124h]
-  float v88; // [esp+80h] [ebp-120h]
-  float v89; // [esp+84h] [ebp-11Ch]
-  float v90; // [esp+88h] [ebp-118h]
-  float v91; // [esp+8Ch] [ebp-114h]
-  float v92; // [esp+94h] [ebp-10Ch]
-  float v93; // [esp+98h] [ebp-108h]
+  float v82; // [esp+7Ch] [ebp-124h]
+  float v83; // [esp+80h] [ebp-120h]
+  float v84; // [esp+84h] [ebp-11Ch]
+  float v85; // [esp+88h] [ebp-118h]
+  float v86; // [esp+8Ch] [ebp-114h]
+  float v87; // [esp+94h] [ebp-10Ch]
+  float v88; // [esp+98h] [ebp-108h]
   TransformMatrix from; // [esp+A0h] [ebp-100h] BYREF
-  TransformMatrix v95; // [esp+E0h] [ebp-C0h] BYREF
-  TransformMatrix v96; // [esp+120h] [ebp-80h] BYREF
+  TransformMatrix v90; // [esp+E0h] [ebp-C0h] BYREF
+  TransformMatrix v91; // [esp+120h] [ebp-80h] BYREF
   TransformMatrix to; // [esp+160h] [ebp-40h] BYREF
 
   sample_index = follow_state->sample_index;
@@ -107,25 +102,25 @@ int32_t __thiscall update_track_attachment_follow_state(
   secondary_samples = template_record->secondary_samples;
   v8 = path_factor * secondary_samples[sample_index].delta_length;
   p_delta_length = &secondary_samples[sample_index].delta_length;
-  v78 = v8;
+  v73 = v8;
   if ( v8 + follow_state->progress <= *p_delta_length )
   {
 LABEL_11:
     v18 = follow_state->sample_index;
-    out_angle = v78 + follow_state->progress;
+    out_angle = v73 + follow_state->progress;
     follow_state->progress = out_angle;
     v19 = follow_state->template_record;
     v20 = v19->segment_count - 1;
     v21 = v18;
     p_x = &v19->primary_samples[v18].transform.basis_right.x;
     if ( v18 == v20 )
-      v85 = p_x[36];
+      v80 = p_x[36];
     else
-      v85 = out_angle / v19->secondary_samples[v18].delta_length * (p_x[78] - p_x[36]) + p_x[36];
+      v80 = out_angle / v19->secondary_samples[v18].delta_length * (p_x[78] - p_x[36]) + p_x[36];
     if ( v18 == v20 )
-      v79 = p_x[39];
+      v74 = p_x[39];
     else
-      v79 = out_angle / v19->secondary_samples[v21].delta_length * (p_x[81] - p_x[39]) + p_x[39];
+      v74 = out_angle / v19->secondary_samples[v21].delta_length * (p_x[81] - p_x[39]) + p_x[39];
     if ( v18 == v20 )
       arg1 = p_x[40];
     else
@@ -133,18 +128,18 @@ LABEL_11:
     if ( v19->kind == PATH_TEMPLATE_KIND_NONLINEAR_42 )
     {
       v38 = out_position;
-      arg2 = out_position->x - v85;
+      arg2 = out_position->x - v80;
       compute_kind42_attachment_transform(v19, arg1, arg2, 0.49000001, &transform, &out_angle);
       v39 = follow_state->sample_index;
-      if ( !v39 || v39 == follow_state->template_record->segment_count - 1 )
+      if ( v39 == 0 || v39 == follow_state->template_record->segment_count - 1 )
       {
         set_matrix_identity(&from);
         from.position.x = transform.position.x;
         v40 = follow_state->sample_index;
         from.position.y = transform.position.y;
         from.position.z = transform.position.z;
-        qmemcpy(&to, &transform, sizeof(to));
-        if ( v40 )
+        to = transform;
+        if ( v40 != 0 )
           arg1 = 1.0 - follow_state->progress;
         else
           arg1 = follow_state->progress;
@@ -157,9 +152,9 @@ LABEL_11:
           * follow_state->progress
           + follow_state->source_cell->anchor_position.z
           + follow_state->template_record->secondary_samples[follow_state->sample_index].transform.position.z;
-      transform.basis_right.x = transform.basis_right.x * v79;
-      transform.basis_right.y = transform.basis_right.y * v79;
-      transform.basis_right.z = transform.basis_right.z * v79;
+      transform.basis_right.x = transform.basis_right.x * v74;
+      transform.basis_right.y = transform.basis_right.y * v74;
+      transform.basis_right.z = transform.basis_right.z * v74;
       v45 = motion->y + follow_state->vertical_offset;
       follow_state->output_position.x = transform.position.x;
       x = transform.basis_right.x;
@@ -170,137 +165,122 @@ LABEL_11:
       g_game_base->subgame.player.body.transform.basis_right.x = x;
       p_transform->basis_right.y = transform.basis_right.y;
       p_transform->basis_right.z = transform.basis_right.z;
-      p_basis_up = &g_game_base->subgame.player.body.transform.basis_up;
-      g_game_base->subgame.player.body.transform.basis_up.x = transform.basis_up.x;
-      p_basis_up->y = transform.basis_up.y;
-      p_basis_up->z = transform.basis_up.z;
-      p_basis_forward = &g_game_base->subgame.player.body.transform.basis_forward;
-      g_game_base->subgame.player.body.transform.basis_forward.x = transform.basis_forward.x;
-      p_basis_forward->y = transform.basis_forward.y;
-      p_basis_forward->z = transform.basis_forward.z;
+      g_game_base->subgame.player.body.transform.basis_up = transform.basis_up;
+      g_game_base->subgame.player.body.transform.basis_forward = transform.basis_forward;
     }
     else
     {
-      v50 = v19->secondary_samples;
-      v51 = out_angle * v50[v21].delta_dir_to_next.x;
-      v52 = &v50[v21].transform.basis_right.x;
+      v48 = v19->secondary_samples;
+      v49 = out_angle * v48[v21].delta_dir_to_next.x;
+      v50 = &v48[v21].transform;
       source_cell = follow_state->source_cell;
-      v82 = v51 * v79 + source_cell->anchor_position.x + v52[12];
-      v83 = out_angle * v52[33] * v79 + source_cell->anchor_position.y + v52[13];
-      v84 = out_angle * v52[34] + source_cell->anchor_position.z + v52[14];
+      v77 = v49 * v74 + source_cell->anchor_position.x + v50->position.x;
+      v78 = out_angle * v50[2].basis_right.y * v74 + source_cell->anchor_position.y + v50->position.y;
+      v79 = out_angle * v50[2].basis_right.z + source_cell->anchor_position.z + v50->position.z;
       if ( v18 == v20 )
       {
         set_matrix_identity(&transform);
       }
       else
       {
-        qmemcpy(&v95, v52, sizeof(v95));
-        qmemcpy(&v96, &v19->secondary_samples[v18 + 1], sizeof(v96));
-        memset(&v95.position, 0, 12);
-        memset(&v96.position, 0, 12);
+        v90 = *v50;
+        v91 = v19->secondary_samples[v18 + 1].transform;
+        memset(&v90.position, 0, sizeof(v90.position));
+        memset(&v91.position, 0, sizeof(v91.position));
         alpha = out_angle / v19->secondary_samples[v21].delta_length;
-        linear_interpolate_matrix(&transform, &v95, &v96, alpha);
+        linear_interpolate_matrix(&transform, &v90, &v91, alpha);
       }
       p_output_position = &follow_state->output_position;
       v38 = out_position;
       p_y = &motion->y;
-      transform.basis_right.x = transform.basis_right.x * v79;
-      transform.basis_right.y = transform.basis_right.y * v79;
-      transform.basis_right.z = transform.basis_right.z * v79;
-      v54 = motion->y + follow_state->vertical_offset;
-      follow_state->vertical_offset = v54;
-      v92 = transform.basis_up.x * v54;
-      v93 = transform.basis_up.y * v54;
-      v55 = v54 * transform.basis_up.z;
-      v56 = out_position->x - v85;
-      v87 = v56 * transform.basis_right.x;
-      v88 = transform.basis_right.y * v56;
-      v90 = v87 + v82;
-      v91 = v88 + v83;
-      v57 = v56 * transform.basis_right.z + v84;
-      v82 = v90 + v92;
-      v58 = v91 + v93;
-      follow_state->output_position.x = v82;
-      v83 = v58;
-      follow_state->output_position.y = v83;
-      v84 = v57 + v55;
-      follow_state->output_position.z = v84;
-      v59 = &g_game_base->subgame.player.body.transform;
-      g_game_base->subgame.player.body.transform.basis_right.x = transform.basis_right.x;
-      v59->basis_right.y = transform.basis_right.y;
-      v59->basis_right.z = transform.basis_right.z;
-      v60 = &g_game_base->subgame.player.body.transform.basis_up;
-      g_game_base->subgame.player.body.transform.basis_up.x = transform.basis_up.x;
-      v60->y = transform.basis_up.y;
-      v60->z = transform.basis_up.z;
-      v61 = &g_game_base->subgame.player.body.transform.basis_forward;
-      g_game_base->subgame.player.body.transform.basis_forward.x = transform.basis_forward.x;
-      v61->y = transform.basis_forward.y;
-      v61->z = transform.basis_forward.z;
+      transform.basis_right.x = transform.basis_right.x * v74;
+      transform.basis_right.y = transform.basis_right.y * v74;
+      transform.basis_right.z = transform.basis_right.z * v74;
+      v52 = motion->y + follow_state->vertical_offset;
+      follow_state->vertical_offset = v52;
+      v87 = transform.basis_up.x * v52;
+      v88 = transform.basis_up.y * v52;
+      v53 = v52 * transform.basis_up.z;
+      v54 = out_position->x - v80;
+      v82 = v54 * transform.basis_right.x;
+      v83 = transform.basis_right.y * v54;
+      v85 = v82 + v77;
+      v86 = v83 + v78;
+      v55 = v54 * transform.basis_right.z + v79;
+      v77 = v85 + v87;
+      v56 = v86 + v88;
+      follow_state->output_position.x = v77;
+      v78 = v56;
+      follow_state->output_position.y = v78;
+      v79 = v55 + v53;
+      follow_state->output_position.z = v79;
+      g_game_base->subgame.player.body.transform.basis_right = transform.basis_right;
+      g_game_base->subgame.player.body.transform.basis_up = transform.basis_up;
+      g_game_base->subgame.player.body.transform.basis_forward = transform.basis_forward;
     }
-    v62 = transform.basis_up.y;
+    v57 = transform.basis_up.y;
     follow_state->orientation_up.x = transform.basis_up.x;
     z = transform.basis_up.z;
-    follow_state->orientation_up.y = v62;
-    v64 = follow_state->template_record;
+    follow_state->orientation_up.y = v57;
+    v59 = follow_state->template_record;
     follow_state->orientation_up.z = z;
-    v65 = *(float *)&follow_state->sample_index;
-    v66 = LODWORD(v65) == v64->segment_count - 1;
-    arg1 = v65;
-    if ( v66 )
+    v60 = *(float *)&follow_state->sample_index;
+    v61 = LODWORD(v60) == v59->segment_count - 1;
+    arg1 = v60;
+    if ( v61 )
     {
-      v67 = 168 * LODWORD(v65);
-      follow_state->orientation_b = v64->primary_samples[LODWORD(v65)].rotation_scalar_98;
-      follow_state->orientation_a = v64->primary_samples[LODWORD(v65)].rotation_scalar_94;
+      v62 = 168 * LODWORD(v60);
+      follow_state->orientation_b = v59->primary_samples[LODWORD(v60)].rotation_scalar_98;
+      follow_state->orientation_a = v59->primary_samples[LODWORD(v60)].rotation_scalar_94;
     }
     else
     {
-      v68 = 7 * LODWORD(v65);
-      primary_samples = v64->primary_samples;
-      v67 = 24 * v68;
-      v70 = *(float *)((char *)&primary_samples[1].rotation_scalar_98 + v67)
-          - *(float *)((char *)&primary_samples->rotation_scalar_98 + v67);
-      if ( v70 <= 3.1415927 )
+      v63 = 7 * LODWORD(v60);
+      primary_samples = v59->primary_samples;
+      v62 = 24 * v63;
+      v65 = *(float *)((char *)&primary_samples[1].rotation_scalar_98 + v62)
+          - *(float *)((char *)&primary_samples->rotation_scalar_98 + v62);
+      if ( v65 <= 3.1415927 )
       {
-        if ( v70 < -3.1415927 )
-          v70 = v70 + 6.2831855;
+        if ( v65 < -3.1415927 )
+          v65 = v65 + 6.2831855;
       }
       else
       {
-        v70 = v70 - 6.2831855;
+        v65 = v65 - 6.2831855;
       }
       follow_state->orientation_b = follow_state->progress
-                                  / *(float *)((char *)&v64->secondary_samples->delta_length + v67)
-                                  * v70
-                                  + *(float *)((char *)&primary_samples->rotation_scalar_98 + v67);
-      v71 = v64->primary_samples;
-      v72 = *(float *)((char *)&v71[1].rotation_scalar_94 + v67) - *(float *)((char *)&v71->rotation_scalar_94 + v67);
-      if ( v72 <= 3.1415927 )
+                                  / *(float *)((char *)&v59->secondary_samples->delta_length + v62)
+                                  * v65
+                                  + *(float *)((char *)&primary_samples->rotation_scalar_98 + v62);
+      v66 = v59->primary_samples;
+      v67 = *(float *)((char *)&v66[1].rotation_scalar_94 + v62) - *(float *)((char *)&v66->rotation_scalar_94 + v62);
+      if ( v67 <= 3.1415927 )
       {
-        if ( v72 < -3.1415927 )
-          v72 = v72 + 6.2831855;
+        if ( v67 < -3.1415927 )
+          v67 = v67 + 6.2831855;
       }
       else
       {
-        v72 = v72 - 6.2831855;
+        v67 = v67 - 6.2831855;
       }
       v38 = out_position;
       follow_state->orientation_a = follow_state->progress
-                                  / *(float *)((char *)&v64->secondary_samples->delta_length + v67)
-                                  * v72
-                                  + *(float *)((char *)&v71->rotation_scalar_94 + v67);
+                                  / *(float *)((char *)&v59->secondary_samples->delta_length + v62)
+                                  * v67
+                                  + *(float *)((char *)&v66->rotation_scalar_94 + v62);
     }
-    v73 = follow_state->progress / *(float *)((char *)&v64->secondary_samples->delta_length + v67);
+    v68 = follow_state->progress / *(float *)((char *)&v59->secondary_samples->delta_length + v62);
     player = follow_state->player;
-    follow_state->orientation_b = (v73 + (double)SLODWORD(arg1))
-                                * v64->installed_heading_delta
-                                / (double)(int)v64->segment_count;
+    follow_state->orientation_b = (v68 + (double)SLODWORD(arg1))
+                                * v59->installed_heading_delta
+                                / (double)(int)v59->segment_count;
     if ( player->sub_hover.state == SUB_HOVER_STATE_ACTIVE )
       goto LABEL_62;
-    v75 = v38->x - v85;
-    if ( v75 < 0.0 )
-      v75 = -v75;
-    if ( v75 <= (double)(int)v64->width_cells * 0.5 + 0.30000001 || follow_state->vertical_offset > 0.0 )
+    v70 = v38->x - v80;
+    if ( v70 < 0.0 )
+      v70 = -v70;
+    if ( v70 <= (double)(int)v59->width_cells * 0.5 + 0.30000001 || follow_state->vertical_offset > 0.0 )
     {
 LABEL_62:
       if ( follow_state->vertical_offset < 0.0 )
@@ -340,11 +320,11 @@ LABEL_62:
       v11 = sample_index + 1;
       follow_state->progress = 0.0;
       follow_state->sample_index = v11;
-      v78 = v78 - v10;
+      v73 = v73 - v10;
       if ( v11 == 2 * template_record->segment_count )
         play_voice_manager(&g_voice_manager, 4, 1u, -1);
       v12 = follow_state->template_record;
-      if ( v12->has_entry_mesh_transition )
+      if ( v12->has_entry_mesh_transition != 0 )
       {
         segment_count = v12->segment_count;
         v14 = follow_state->sample_index;
@@ -368,12 +348,12 @@ LABEL_62:
       if ( sample_index == template_record->segment_count )
         break;
       p_delta_length = &template_record->secondary_samples[sample_index].delta_length;
-      if ( v78 + follow_state->progress <= *p_delta_length )
+      if ( v73 + follow_state->progress <= *p_delta_length )
         goto LABEL_11;
     }
     follow_state->active = 0;
-    if ( v78 >= 1.0 )
-      v78 = 0.99900001;
+    if ( v73 >= 1.0 )
+      v73 = 0.99900001;
     v23 = path_factor
         * follow_state->template_record->secondary_samples[follow_state->template_record->segment_count - 1].delta_length;
     motion->z = v23;
@@ -386,25 +366,25 @@ LABEL_62:
       v25 = follow_state->template_record;
       v26 = out_position->x;
       v27 = v25->segment_count;
-      v28 = v78 + v25->width_or_scale;
+      v28 = v73 + v25->width_or_scale;
       v29 = v25->secondary_samples;
       v30 = v28 * v29[v27 - 1].transform.basis_forward.x;
       v31 = &v29[v27];
       p_anchor_position = &follow_state->source_cell->anchor_position;
-      v90 = v30;
-      v91 = v28 * v31[-1].transform.basis_forward.y;
+      v85 = v30;
+      v86 = v28 * v31[-1].transform.basis_forward.y;
       v33 = v28 * v31[-1].transform.basis_forward.z;
       v34 = p_anchor_position->x + v31[-1].transform.position.x;
-      v88 = v31[-1].transform.position.y + p_anchor_position->y;
-      v89 = v31[-1].transform.position.z + p_anchor_position->z;
-      v82 = v34 + v90;
-      v35 = v88 + v91;
-      out_position->x = v82;
-      v83 = v35;
-      v36 = v89 + v33;
-      out_position->y = v83;
-      v84 = v36;
-      out_position->z = v84;
+      v83 = v31[-1].transform.position.y + p_anchor_position->y;
+      v84 = v31[-1].transform.position.z + p_anchor_position->z;
+      v77 = v34 + v85;
+      v35 = v83 + v86;
+      out_position->x = v77;
+      v78 = v35;
+      v36 = v84 + v33;
+      out_position->y = v78;
+      v79 = v36;
+      out_position->z = v79;
       out_position->x = v26;
       follow_state->player->cutscene_pitch_cycle_step = g_game_base->subgame.subgame_rate * 0.013888888;
       follow_state->player->cutscene_pitch_cycle = follow_state->player->cutscene_pitch_cycle_step;
@@ -415,7 +395,7 @@ LABEL_62:
       out_position->z = v24->secondary_samples[v24->segment_count - 1].transform.position.z
                       + follow_state->source_cell->anchor_position.z
                       + v24->width_or_scale
-                      + v78;
+                      + v73;
     }
     follow_state->player->heading_roll = follow_state->template_record->installed_heading_delta
                                        + follow_state->player->heading_roll;

@@ -6011,9 +6011,11 @@ def test_mobile_subgoldy_layout_recovers_folded_constructor_owners() -> None:
     assert "subgoldy->cameraman.noop_runtime_slot_constructor();" in constructor
     assert "subgoldy->follow_state.noop_runtime_slot_constructor();" in constructor
     assert "typedef Cameraman cRCameraman;" in cameraman_header
-    assert "typedef FollowState cRPathFollowGoldy;" in attachment_header
+    assert "class cRPathFollowGoldy {" in attachment_header
+    assert "typedef cRPathFollowGoldy FollowState;" in attachment_header
     assert "typedef Cameraman cRCameraman;" in analysis_header
-    assert "typedef FollowState cRPathFollowGoldy;" in analysis_header
+    assert "typedef struct cRPathFollowGoldy {" in analysis_header
+    assert "typedef cRPathFollowGoldy FollowState;" in analysis_header
 
     # Port-specific offsets are evidence for the class identities only. The
     # Windows scratch continues to derive its own +0x200/+0x384 layout.
@@ -19319,9 +19321,9 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     sample_struct = analysis_header.split(
         "typedef struct PathTemplateSample {", 1
     )[1].split("} PathTemplateSample;", 1)[0]
-    follow_struct = analysis_header.split("typedef struct FollowState {", 1)[1].split(
-        "} FollowState;", 1
-    )[0]
+    follow_struct = analysis_header.split(
+        "typedef struct cRPathFollowGoldy {", 1
+    )[1].split("} cRPathFollowGoldy;", 1)[0]
 
     for source in (sample_struct, matcher_sample):
         assert "TransformMatrix inverse_matrix;" in source
@@ -19358,7 +19360,12 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
     assert "unsigned char flag_3c;" in matcher_follow
     assert "_pad_3c" not in follow_struct
     assert '("0x3c", "flag_3c", "uint8_t")' in binja_sync
-    assert '("FollowState", FOLLOW_STATE_FIELD_UPDATES)' in binja_sync
+    assert "--goldy-path-follow-only" in binja_sync
+    assert "ensure_goldy_path_follow_owner_types" in binja_sync
+    assert (
+        '"cRPathFollowGoldy",\n'
+        "                    GOLDY_PATH_FOLLOW_FIELD_UPDATES,"
+    ) in binja_sync
     attachment_entry_prototype = (
         "void __thiscall try_enter_track_attachment_from_swept_motion("
         "Path* self, float world_x, float world_y, float world_z, "
@@ -19390,9 +19397,18 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         analysis_header.split()
     )
 
+    follow_begin_prototype = (
+        "void __thiscall begin_track_attachment_follow_state("
+        "cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, "
+        "const Vec3* world_position, Player* player)"
+    )
+    assert follow_begin_prototype in binja_sync
+    assert follow_begin_prototype + ";" in ida_sync
+    assert follow_begin_prototype + ";" in analysis_header
+
     follow_update_prototype = (
         "int32_t __thiscall update_track_attachment_follow_state("
-        "FollowState* follow_state, float path_factor, Vec3* out_position, "
+        "cRPathFollowGoldy* follow_state, float path_factor, Vec3* out_position, "
         "Vec3* motion)"
     )
     assert follow_update_prototype in binja_sync

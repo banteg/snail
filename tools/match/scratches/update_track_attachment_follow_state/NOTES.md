@@ -12,7 +12,7 @@ Current matcher result:
 
 Recovered shape:
 
-- thiscall `FollowState::update_track_attachment_follow_state(float path_factor, Vec3* out_position, Vec3* motion)`, returns the mode code consumed by `update_subgoldy`
+- thiscall `cRPathFollowGoldy::update_track_attachment_follow_state(float path_factor, Vec3* out_position, Vec3* motion)`, returns the mode code consumed by `update_subgoldy`
 - advances `progress` by `path_factor * secondary_samples[sample_index].delta_length`
 - consumes sample overflows until the active sample can hold the remaining delta
 - terminates at `sample_index == template->segment_count`, clears `active`, returns `3`, and handles the Supertramp launch special case
@@ -402,3 +402,21 @@ All six current/next scalar accesses render through named fields with zero
 synthetic `__offset` expressions. The one-past-end terminal secondary cursor
 still reads the preceding record and remains byte-typed rather than receiving
 a misleading negative-offset cast. Matcher source is unchanged at 72.89%.
+
+## 2026-07-28 authored class identity
+
+Android and iOS retain the exact
+`cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol for this
+Windows body. The shared 0x40-byte Windows layout is therefore now primarily
+named `cRPathFollowGoldy`; `FollowState` is only a compatibility alias. The
+Windows executable remains the source of truth for its offsets and ABI.
+
+Renaming the method owner is codegen-neutral: focused matching remains 72.89%,
+698/726 instructions, prefix 122/726, with 63 clean operands. The two
+unaudited constants belong to the native-only tail and were not masked or
+forced.
+
+The IDA 9.4 export also recovers several whole-aggregate transform assignments
+that the prior decompiler rendered as `qmemcpy` and row-by-row copies. This is
+decompiler presentation only; Windows code bytes and the matcher candidate are
+unchanged.
