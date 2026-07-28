@@ -16,7 +16,7 @@
 #include "transform_matrix.h"
 
 
-void Player::initialize_subgoldy(int player_slot)
+void cRSubGoldy::initialize_subgoldy(int player_slot)
 {
     int zero = 0;
 

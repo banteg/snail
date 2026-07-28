@@ -213,7 +213,7 @@ void cRSubGame::StartLevel(int level_index)
     *(int*)&banners.slots[1].position.x = zero;
     unsigned int completion_flags = banners.slots[1].list_flags;
     float completion_z = (float)completion_row_start;
-    Player* player_owner = embedded_player();
+    cRSubGoldy* player_owner = embedded_player();
     ((unsigned char*)&completion_flags)[0] &= 0xdf;
     banners.slots[1].owner_player = player_owner;
     banners.slots[1].list_flags = completion_flags;

@@ -588,7 +588,7 @@
     {
       "address": "0x408600",
       "name": "noop_runtime_slot_constructor",
-      "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. Two direct calls in the exact cRSubGame constructor additionally pass the complete `Player::cameraman` and `Player::follow_state` owners; Android/iOS preserve those classes as cRCameraman and cRPathFollowGoldy. The body proves trivial construction only; it does not establish an iostream owner.",
+      "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. Two direct calls in the exact cRSubGame constructor additionally pass the complete `cRSubGoldy::cameraman` and `cRSubGoldy::follow_state` owners; Android/iOS preserve those classes as cRCameraman and cRPathFollowGoldy. The body proves trivial construction only; it does not establish an iostream owner.",
       "aliases": [
         "cRCameraman_ctor",
         "cRPathFollowGoldy_ctor"
@@ -638,7 +638,7 @@
     {
       "address": "0x4086d0",
       "name": "initialize_player_presentation_controller",
-      "description": "Constructs the exact 0x19b4-byte authored `cRSnail` embedded at `Player +0x2984`: initializes its renderable prefix, ten visual slots, four animation channels, two hotspot sources, and cRInvincible child before installing their callback tables."
+      "description": "Constructs the exact 0x19b4-byte authored `cRSnail` embedded at `cRSubGoldy +0x2984`: initializes its renderable prefix, ten visual slots, four animation channels, two hotspot sources, and cRInvincible child before installing their callback tables."
     },
     {
       "address": "0x408820",
@@ -1655,12 +1655,12 @@
     {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state",
-      "description": "Exact void initializer for the Player-embedded `cRPathFollowGoldy`: stores the selected cRPath and borrowed runtime cRSubLoc, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `cRSubGame::runtime_rows[row].installed_heading_delta` into the cRPath. Its only Windows caller discards EAX; the apparent cRPath result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets."
+      "description": "Exact void initializer for the cRSubGoldy-embedded `cRPathFollowGoldy`: stores the selected cRPath and borrowed runtime cRSubLoc, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the cRSubGoldy backlink, and copies `cRSubGame::runtime_rows[row].installed_heading_delta` into the cRPath. Its only Windows caller discards EAX; the apparent cRPath result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets."
     },
     {
       "address": "0x420cb0",
       "name": "update_track_attachment_follow_state",
-      "description": "Advances one live attachment-follow session along its borrowed cRPath and cRSubLoc, updates progress and local height, publishes the interpolated basis into the live Player matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets."
+      "description": "Advances one live attachment-follow session along its borrowed cRPath and cRSubLoc, updates progress and local height, publishes the interpolated basis into the live cRSubGoldy matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets."
     },
     {
       "address": "0x421770",
@@ -1798,7 +1798,7 @@
     {
       "address": "0x42c770",
       "name": "try_enter_track_attachment_from_swept_motion",
-      "description": "Scans `cRPath::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `cRPathFollowGoldy`, copies the runtime row's installed heading into the cRPath, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family; Android and iOS name the broader owner `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)` and independently confirm that the accepted tail hands off to `cRPathFollowGoldy`."
+      "description": "Scans `cRPath::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `cRSubGoldy::attachment_exit_pending`, seeds the cRSubGoldy-embedded `cRPathFollowGoldy`, copies the runtime row's installed heading into the cRPath, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family; Android and iOS name the broader owner `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)` and independently confirm that the accepted tail hands off to `cRPathFollowGoldy`."
     },
     {
       "address": "0x42ca90",
@@ -2699,7 +2699,7 @@
     {
       "address": "0x437c40",
       "name": "update_progress_bar",
-      "description": "Exact `cRProgressBar::AI()` method for the empty authored class at Player +0x3f0. It ignores `this`, derives track progress from the containing Goldy's z position and cRSubGame row bounds, and queues the three left-column HUD quads. Android and iOS preserve the same owner role."
+      "description": "Exact `cRProgressBar::AI()` method for the empty authored class at cRSubGoldy +0x3f0. It ignores `this`, derives track progress from the containing Goldy's z position and cRSubGame row bounds, and queues the three left-column HUD quads. Android and iOS preserve the same owner role."
     },
     {
       "address": "0x437de0",
@@ -2747,7 +2747,7 @@
       "aliases": [
         "AI"
       ],
-      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Its eight ring-speed loads resolve exactly to `cRSubGame::runtime_rows[row].ring_speed` (`+0x5ccac8 + row * 0xf4 + 0xe8`); Android and iOS independently pass the corresponding current-row scalar to `cRSubGame::AddRing`. Cross-port symbols match this helper to `cRSubGame::AI()`."
+      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `cRSubGoldy::click_start.state` lane at +0x120 equals 2. Its eight ring-speed loads resolve exactly to `cRSubGame::runtime_rows[row].ring_speed` (`+0x5ccac8 + row * 0xf4 + 0xe8`); Android and iOS independently pass the corresponding current-row scalar to `cRSubGame::AddRing`. Cross-port symbols match this helper to `cRSubGame::AI()`."
     },
     {
       "address": "0x439a40",
@@ -2787,7 +2787,7 @@
     {
       "address": "0x43a010",
       "name": "health_collect_particles",
-      "description": "Exact `Player` collection burst for one `SubHealth`, emitting eight particles from the pickup sprite. Android and iOS retain the authored member as `cRSubGoldy::HealthCollect(cRSubHealth*)`."
+      "description": "Exact `cRSubGoldy` collection burst for one `SubHealth`, emitting eight particles from the pickup sprite. Android and iOS retain the authored member as `cRSubGoldy::HealthCollect(cRSubHealth*)`."
     },
     {
       "address": "0x43a1a0",
@@ -2796,7 +2796,7 @@
         "update_player_movement_flags",
         "SetShootFlags"
       ],
-      "description": "Void Windows `cRSubGoldy::SetShootFlags()`: maps `Player::shooting_tier` at +0x308 onto `shoot_flags` at +0x338 and `shoot_cooldown_step` at +0x2734, compares `previous_shoot_flags` at +0x33c, then refreshes the owned cRSnail presentation when the mask changes. Android preserves the authored symbol and identical tier table; its common exit has incompatible R0 residues across the changed and unchanged paths, proving there is no result contract. Ghidra 12.1.2 independently recovers the same void ownership chain."
+      "description": "Void Windows `cRSubGoldy::SetShootFlags()`: maps `cRSubGoldy::shooting_tier` at +0x308 onto `shoot_flags` at +0x338 and `shoot_cooldown_step` at +0x2734, compares `previous_shoot_flags` at +0x33c, then refreshes the owned cRSnail presentation when the mask changes. Android preserves the authored symbol and identical tier table; its common exit has incompatible R0 residues across the changed and unchanged paths, proving there is no result contract. Ghidra 12.1.2 independently recovers the same void ownership chain."
     },
     {
       "address": "0x43a300",
@@ -2830,17 +2830,17 @@
     {
       "address": "0x43a690",
       "name": "update_jet_particles",
-      "description": "Windows `SubHover::update_jet_particles`, authored as `cRSubHover::Jets`: projects the owner's 15-by-2 jet exhaust grid backward from the authored snail hotspots and occasionally emits a detached puff with 85% of Player velocity."
+      "description": "Windows `SubHover::update_jet_particles`, authored as `cRSubHover::Jets`: projects the owner's 15-by-2 jet exhaust grid backward from the authored snail hotspots and occasionally emits a detached puff with 85% of cRSubGoldy velocity."
     },
     {
       "address": "0x43a930",
       "name": "initialize_jetpack_gauge",
-      "description": "Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed cRSubGame and Player backlinks. The authored contract is void; the Windows integer parameter is unused."
+      "description": "Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed cRSubGame and cRSubGoldy backlinks. The authored contract is void; the Windows integer parameter is unused."
     },
     {
       "address": "0x43a980",
       "name": "arm_jetpack_gauge",
-      "description": "Exact Windows `SubHover::arm_jetpack_gauge`, authored as `cRSubHover::On`: arms the child at Player +0x2750, clears progress and wobble, selects the snail jetpack visual, and calls JetInit. The authored contract is void."
+      "description": "Exact Windows `SubHover::arm_jetpack_gauge`, authored as `cRSubHover::On`: arms the child at cRSubGoldy +0x2750, clears progress and wobble, selects the snail jetpack visual, and calls JetInit. The authored contract is void."
     },
     {
       "address": "0x43a9c0",
@@ -2853,7 +2853,7 @@
       "aliases": [
         "cRSubGoldy_ShowLives"
       ],
-      "description": "Exact void Windows `cRSubGoldy::ShowLives()`: refreshes the nine-slot Goldy life display by showing the first `visible_life_stock` widgets and hiding the rest. Android preserves the same nine-widget loop and Player-owned life count; no iOS symbol was found."
+      "description": "Exact void Windows `cRSubGoldy::ShowLives()`: refreshes the nine-slot Goldy life display by showing the first `visible_life_stock` widgets and hiding the rest. Android preserves the same nine-widget loop and cRSubGoldy-owned life count; no iOS symbol was found."
     },
     {
       "address": "0x43af60",
@@ -2873,7 +2873,7 @@
         "play_movement_state_sound",
         "PlayShootSfx"
       ],
-      "description": "Void Windows `cRSubGoldy::PlayShootSfx()`: chooses one of the authored shoot-SFX families 17..18, 19..21, or 22..24 from `Player::shoot_flags` at +0x338, caches the sampled variant at Player +0x1cc, and attenuates playback while attachment-exit handling is active. Android and iOS preserve the authored symbol. Android's shared epilogue receives incompatible R0 residues from the no-sound, direct-play, and scaled-play paths, independently proving there is no result contract."
+      "description": "Void Windows `cRSubGoldy::PlayShootSfx()`: chooses one of the authored shoot-SFX families 17..18, 19..21, or 22..24 from `cRSubGoldy::shoot_flags` at +0x338, caches the sampled variant at cRSubGoldy +0x1cc, and attenuates playback while attachment-exit handling is active. Android and iOS preserve the authored symbol. Android's shared epilogue receives incompatible R0 residues from the no-sound, direct-play, and scaled-play paths, independently proving there is no result contract."
     },
     {
       "address": "0x43b120",
@@ -2928,34 +2928,50 @@
     {
       "address": "0x43d6c0",
       "name": "spawn_track_health_pickup",
+      "aliases": [
+        "AddHealth"
+      ],
       "description": "Allocates and seeds one live `SubHealth` from the eight-record owned array, then inserts its zero-offset inherited `BodNode` into the borrowed `GameRoot::active_bod_list` head without transferring pickup ownership. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract instead of exporting incompatible incidental register values."
     },
     {
       "address": "0x43d880",
       "name": "spawn_track_speedup",
       "aliases": [
-        "sub_hover_hover"
+        "sub_hover_hover",
+        "AddSpeedUp"
       ],
       "description": "Exact one-instruction no-op shared by two authored call surfaces: `cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)` and `cRSubHover::Hover(tVector&, float)`. Cross-port Android retains both as separate literal no-ops; Windows callsites prove the two receiver/signature families share this folded address."
     },
     {
       "address": "0x43d890",
       "name": "spawn_track_jetpack_pickup",
+      "aliases": [
+        "AddJetPack"
+      ],
       "description": "Seeds the owned `JetPack` singleton from the active runtime cell, then inserts its zero-offset inherited `BodNode` into the borrowed `GameRoot::active_bod_list` head without creating a list-owned JetPack view. Android and iOS retain `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract rather than exporting incompatible incidental register values."
     },
     {
       "address": "0x43da80",
       "name": "spawn_track_garbage_hazard",
+      "aliases": [
+        "AddGarbage"
+      ],
       "description": "Exact void allocator and initializer for one live `SubGarbage` from the active runtime row state. It scans the 50 owned 0xc4-byte records for `SUB_GARBAGE_STATE_INACTIVE` after the pool's borrowed active-chain head, then activates the selected slot; the sole Windows caller discards EAX, while Android leaves incompatible incidental results on success and exhaustion. Android and iOS identify the caller-owned method as `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43dc80",
       "name": "spawn_slug_hazard",
-      "description": "Void allocator for one live `Slug`: scans the eight owned 0xec-byte records for `SUB_SLUG_STATE_INACTIVE`, writes `SUB_SLUG_STATE_ACTIVE`, installs the borrowed owner Player, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning method as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`; both independently leave incompatible receiver and random/blink residues on exhaustion versus success, proving those values are incidental rather than a return contract. The honest Windows void reconstruction preserves the resulting two-instruction epilogue residual."
+      "aliases": [
+        "AddSlug"
+      ],
+      "description": "Void allocator for one live `Slug`: scans the eight owned 0xec-byte records for `SUB_SLUG_STATE_INACTIVE`, writes `SUB_SLUG_STATE_ACTIVE`, installs the borrowed owner cRSubGoldy, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded cRSubGoldy tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning method as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`; both independently leave incompatible receiver and random/blink residues on exhaustion versus success, proving those values are incidental rather than a return contract. The honest Windows void reconstruction preserves the resulting two-instruction epilogue residual."
     },
     {
       "address": "0x43df10",
       "name": "spawn_track_ring_or_special_effect",
+      "aliases": [
+        "AddRing"
+      ],
       "description": "Void Windows `cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)`: scans the two cRSubGame-owned SubRing slots, mutates the ordinary integer kind parameter when the default ring randomizes to slow, and stores the resulting typed `SubRingKind`. Its nine distinct authored paths preserve `RR` through `RR13`, dispatch Ring=* rows into ring, explode, slow, or power-up effects, link the inherited BOD, initialize ten inline SubRingStar children, and invoke slot-zero AI. All five Windows callers discard EAX; the independent iOS body likewise returns from failure paths without establishing a result."
     },
     {
@@ -3036,12 +3052,12 @@
     {
       "address": "0x43f8b0",
       "name": "kill_slug_hazard",
-      "description": "Exact `Slug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing cRSubGame's Player, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
+      "description": "Exact `Slug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing cRSubGame's cRSubGoldy, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
     },
     {
       "address": "0x43f930",
       "name": "update_slug_hazard_ai",
-      "description": "Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing cRSubGame, embedded owner Player, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
+      "description": "Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing cRSubGame, embedded owner cRSubGoldy, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
     },
     {
       "address": "0x440020",
@@ -3056,7 +3072,7 @@
     {
       "address": "0x4402c0",
       "name": "add_subgoldy_score",
-      "description": "Void `Player` member that adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. All 14 direct Windows callsites discard EAX. Cross-port evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
+      "description": "Void `cRSubGoldy` member that adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. All 14 direct Windows callsites discard EAX. Cross-port evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
     },
     {
       "address": "0x4403a0",
@@ -3070,7 +3086,7 @@
     {
       "address": "0x4403c0",
       "name": "display_score_stats",
-      "description": "Void `Player` member that formats and displays Goldy's per-event score buckets. Its sole `complete_subgame` caller discards EAX; the terminal value is only the last debug-report call residue. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsDisplay()` in `SubGame.o`."
+      "description": "Void `cRSubGoldy` member that formats and displays Goldy's per-event score buckets. Its sole `complete_subgame` caller discards EAX; the terminal value is only the last debug-report call residue. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsDisplay()` in `SubGame.o`."
     },
     {
       "address": "0x4404c0",
@@ -3127,7 +3143,7 @@
     {
       "address": "0x440f80",
       "name": "update_barrier_ai",
-      "description": "Exact void cRBarrier::AI() callback for the embedded 0x3c-byte BarrierActor at cRSubGame +0xff7bc4. It borrows Player* at +0x38, follows the player's live z position, and is installed in g_barrier_actor_callback_table; the residual EAX value is not an authored return."
+      "description": "Exact void cRBarrier::AI() callback for the embedded 0x3c-byte BarrierActor at cRSubGame +0xff7bc4. It borrows cRSubGoldy* at +0x38, follows the player's live z position, and is installed in g_barrier_actor_callback_table; the residual EAX value is not an authored return."
     },
     {
       "address": "0x440fa0",
@@ -3137,12 +3153,12 @@
     {
       "address": "0x440fd0",
       "name": "update_damage_gauge",
-      "description": "Advances the player-embedded contact-damage gauge controller at `Player+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `cRSubGame::subgame_pause_gate` suspends updates; `Player::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `Player::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`."
+      "description": "Advances the player-embedded contact-damage gauge controller at `cRSubGoldy+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `cRSubGame::subgame_pause_gate` suspends updates; `cRSubGoldy::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `cRSubGoldy::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`."
     },
     {
       "address": "0x4413f0",
       "name": "apply_damage_gauge_delta",
-      "description": "Applies one signed delta to `Player::damage_gauge` at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by bit 0x80 of `Player::shoot_flags`; state 2 ignores unforced positive deltas and also ignores unforced negative deltas while `Player::trampoline_bounce_active == 1`. Its fallback path changes `Player::presentation.snail_skin`, then dispatches damage animations through the same presentation unless `Player::control_override_active` is set. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
+      "description": "Applies one signed delta to `cRSubGoldy::damage_gauge` at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by bit 0x80 of `cRSubGoldy::shoot_flags`; state 2 ignores unforced positive deltas and also ignores unforced negative deltas while `cRSubGoldy::trampoline_bounce_active == 1`. Its fallback path changes `cRSubGoldy::presentation.snail_skin`, then dispatches damage animations through the same presentation unless `cRSubGoldy::control_override_active` is set. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
     },
     {
       "address": "0x441540",
@@ -3197,12 +3213,12 @@
     {
       "address": "0x441d40",
       "name": "update_banner",
-      "description": "Exact Windows `cRBanner::AI()`: updates one of the two fixed Banner actors embedded at `cRSubGame +0x359080`, toggles its inherited BOD visibility flag from the borrowed Player row position, wraps its phase, and writes the sinusoidal bob into `BodBase::position.y`. Android preserves the same four-field class tail after its smaller platform BodBase, while iOS preserves the authored owner in `SubGame.o`."
+      "description": "Exact Windows `cRBanner::AI()`: updates one of the two fixed Banner actors embedded at `cRSubGame +0x359080`, toggles its inherited BOD visibility flag from the borrowed cRSubGoldy row position, wraps its phase, and writes the sinusoidal bob into `BodBase::position.y`. Android preserves the same four-field class tail after its smaller platform BodBase, while iOS preserves the authored owner in `SubGame.o`."
     },
     {
       "address": "0x441dd0",
       "name": "firework_shoot",
-      "description": "Windows `FireWork::firework_shoot`, authored as `cRFireWork::Shoot`: spawns a randomized sprite burst through the exact empty one-byte child at `Player +0x1d0`. The receiver is unused by the body but is passed by the native thiscall; Android and iOS retain the owner with a by-value vector signature."
+      "description": "Windows `FireWork::firework_shoot`, authored as `cRFireWork::Shoot`: spawns a randomized sprite burst through the exact empty one-byte child at `cRSubGoldy +0x1d0`. The receiver is unused by the body but is passed by the native thiscall; Android and iOS retain the owner with a by-value vector signature."
     },
     {
       "address": "0x441f60",
@@ -3215,12 +3231,12 @@
     {
       "address": "0x441fa0",
       "name": "initialize_subgoldy_resurrect",
-      "description": "Void `Player` member that seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. `initialize_subgoldy_death` tail-forwards into it, but both external death callers discard the selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
+      "description": "Void `cRSubGoldy` member that seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. `initialize_subgoldy_death` tail-forwards into it, but both external death callers discard the selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
     },
     {
       "address": "0x441fd0",
       "name": "update_subgoldy_resurrect",
-      "description": "Void `Player` member that advances Goldy's resurrect or death-resolution state machine after `initialize_subgoldy_death`: starts the fade, decrements the visible life stock on the respawn branch, and only falls through to `complete_subgame` when the final-loss path wins. Its sole `update_subgoldy` caller loads the receiver into ECX and consumes no result. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectAI()`."
+      "description": "Void `cRSubGoldy` member that advances Goldy's resurrect or death-resolution state machine after `initialize_subgoldy_death`: starts the fade, decrements the visible life stock on the respawn branch, and only falls through to `complete_subgame` when the final-loss path wins. Its sole `update_subgoldy` caller loads the receiver into ECX and consumes no result. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectAI()`."
     },
     {
       "address": "0x442120",
@@ -3230,7 +3246,7 @@
     {
       "address": "0x442170",
       "name": "initialize_click_start",
-      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `cRSubGame::replay_launch_active` as the initial hide gate."
+      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at cRSubGoldy +0xa0, stores its borrowed cRSubGoldy backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `cRSubGame::replay_launch_active` as the initial hide gate."
     },
     {
       "address": "0x442290",
@@ -3263,12 +3279,12 @@
       "aliases": [
         "initialize_cutscene"
       ],
-      "description": "Authored `cRSnail::AIGoldy()`, preserved by Android and iOS: this per-frame presentation method borrows `Player::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, world hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner. The historical `initialize_cutscene` label remains an alias; the distinct exact `initialize_cutscene_ai @ 0x446130` is the real cRCutScene initializer."
+      "description": "Authored `cRSnail::AIGoldy()`, preserved by Android and iOS: this per-frame presentation method borrows `cRSubGoldy::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, world hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner. The historical `initialize_cutscene` label remains an alias; the distinct exact `initialize_cutscene_ai @ 0x446130` is the real cRCutScene initializer."
     },
     {
       "address": "0x442e40",
       "name": "release_snail_weapons",
-      "description": "Authored `cRSnail::ReleaseWeapons()`: constructs and scales one random/forward `Vector3` release step for each embedded weapon and jetpack animation channel, raises the one-shot Invincible gate, and ends the active Player jetpack hover."
+      "description": "Authored `cRSnail::ReleaseWeapons()`: constructs and scales one random/forward `Vector3` release step for each embedded weapon and jetpack animation channel, raises the one-shot Invincible gate, and ends the active cRSubGoldy jetpack hover."
     },
     {
       "address": "0x443070",
@@ -3303,6 +3319,9 @@
     {
       "address": "0x443730",
       "name": "spawn_track_parcel",
+      "aliases": [
+        "AddParcel"
+      ],
       "description": "Exact `cRSubGame` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument."
     },
     {
@@ -3369,17 +3388,17 @@
       "aliases": [
         "cRSquidge_Init"
       ],
-      "description": "Exact Windows `cRSquidge::Init()`. The sole caller passes the inline `Player + 0x4344` Squidge owner, and the helper clears its six Y/Z spring floats. The historical `initialize_score_stats` alias is retired here and assigned to the actual Goldy score-stat initializer at 0x4403a0."
+      "description": "Exact Windows `cRSquidge::Init()`. The sole caller passes the inline `cRSubGoldy + 0x4344` Squidge owner, and the helper clears its six Y/Z spring floats. The historical `initialize_score_stats` alias is retired here and assigned to the actual Goldy score-stat initializer at 0x4403a0."
     },
     {
       "address": "0x444980",
       "name": "start_squidge_y",
-      "description": "Authored `cRSquidge::StartY(float)`: resets the Y spring phase and seeds its velocity on the inline `Player + 0x4344` Squidge owner."
+      "description": "Authored `cRSquidge::StartY(float)`: resets the Y spring phase and seeds its velocity on the inline `cRSubGoldy + 0x4344` Squidge owner."
     },
     {
       "address": "0x4449a0",
       "name": "start_squidge_z",
-      "description": "Authored `cRSquidge::StartZ(float)`: seeds the Z spring phase and velocity on the inline `Player + 0x4344` Squidge owner."
+      "description": "Authored `cRSquidge::StartZ(float)`: seeds the Z spring phase and velocity on the inline `cRSubGoldy + 0x4344` Squidge owner."
     },
     {
       "address": "0x4449c0",
@@ -3389,7 +3408,7 @@
     {
       "address": "0x444ac0",
       "name": "initialize_invincible_shell",
-      "description": "Authored `cRInvincible::Init()`: resets the exact 0x98-byte visual owner embedded at `Snail + 0x1894` (`Player + 0x4218`) and restores the normal snail skin."
+      "description": "Authored `cRInvincible::Init()`: resets the exact 0x98-byte visual owner embedded at `Snail + 0x1894` (`cRSubGoldy + 0x4218`) and restores the normal snail skin."
     },
     {
       "address": "0x444ae0",
@@ -3399,12 +3418,12 @@
     {
       "address": "0x444b50",
       "name": "update_invincible_shell",
-      "description": "Authored `cRInvincible::AI()`: fades the embedded shell visual in while bit 0x80 of the owning Player's `shoot_flags` stays active, spins it on the shared snail matrix, and fades back to the base skin once invincibility clears."
+      "description": "Authored `cRInvincible::AI()`: fades the embedded shell visual in while bit 0x80 of the owning cRSubGoldy's `shoot_flags` stays active, spins it on the shared snail matrix, and fades back to the base skin once invincibility clears."
     },
     {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
-      "description": "Void `Player` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its byte-strided parcel and health walks retain typed state lifetimes over the cRSubGame-owned banks. The ring sweep likewise borrows one owned slot and preserves separate typed `SubRingKind` lifetimes for the motion response and reward/effect ladder before the parent AI owns collection teardown. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the Player-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
+      "description": "Void `cRSubGoldy` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its byte-strided parcel and health walks retain typed state lifetimes over the cRSubGame-owned banks. The ring sweep likewise borrows one owned slot and preserves separate typed `SubRingKind` lifetimes for the motion response and reward/effect ladder before the parent AI owns collection teardown. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the cRSubGoldy-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
     },
     {
       "address": "0x445840",
@@ -3422,7 +3441,7 @@
     {
       "address": "0x445920",
       "name": "set_snail_weapon",
-      "description": "Authored `cRSnail::SetWeapon(int)`: maps `Player::shoot_flags` onto the three animation channels owned by the exact Snail at `Player +0x2984`."
+      "description": "Authored `cRSnail::SetWeapon(int)`: maps `cRSubGoldy::shoot_flags` onto the three animation channels owned by the exact Snail at `cRSubGoldy +0x2984`."
     },
     {
       "address": "0x445cd0",
@@ -3496,12 +3515,12 @@
     {
       "address": "0x446130",
       "name": "initialize_cutscene_ai",
-      "description": "Authored `cRCutScene::Init()`: initializes the exact 0x5c-byte CutScene embedded at `Snail + 0x1958` (`Player + 0x42dc`), wiring its Snail/Player backlinks and clearing state."
+      "description": "Authored `cRCutScene::Init()`: initializes the exact 0x5c-byte CutScene embedded at `Snail + 0x1958` (`cRSubGoldy + 0x42dc`), wiring its Snail/cRSubGoldy backlinks and clearing state."
     },
     {
       "address": "0x446160",
       "name": "initialize_cameraman",
-      "description": "Initializes the exact 0xd8-byte cRCameraman embedded in Player at +0x200, wiring its Player and cRSubGame backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`."
+      "description": "Initializes the exact 0xd8-byte cRCameraman embedded in cRSubGoldy at +0x200, wiring its cRSubGoldy and cRSubGame backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`."
     },
     {
       "address": "0x4461d0",
@@ -3511,22 +3530,22 @@
     {
       "address": "0x4466d0",
       "name": "update_cutscene",
-      "description": "Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `Player::cameraman.live_matrix`, clears `Player::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `cRSubGame::level_definition.parcel_count` before the completion-screen handoff."
+      "description": "Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `cRSubGoldy::cameraman.live_matrix`, clears `cRSubGoldy::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `cRSubGame::level_definition.parcel_count` before the completion-screen handoff."
     },
     {
       "address": "0x446e30",
       "name": "initialize_subgoldy_death",
-      "description": "Void `Player` member that chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Both direct callers discard EAX; its tail paths only preserve the downstream selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`."
+      "description": "Void `cRSubGoldy` member that chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Both direct callers discard EAX; its tail paths only preserve the downstream selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`."
     },
     {
       "address": "0x446e80",
       "name": "initialize_warning",
-      "description": "Initializes the exact 0x10-byte Windows cRWarning owner embedded in Player at +0x3f4: allocates and hides its border, then resets the phase state. Android and iOS retain cRWarning::Init, with wider mobile presentation layouts."
+      "description": "Initializes the exact 0x10-byte Windows cRWarning owner embedded in cRSubGoldy at +0x3f4: allocates and hides its border, then resets the phase state. Android and iOS retain cRWarning::Init, with wider mobile presentation layouts."
     },
     {
       "address": "0x446f10",
       "name": "uninit_warning",
-      "description": "Releases the border owned by Player's embedded cRWarning. Android preserves this lifecycle edge as cRWarning::UnInit()."
+      "description": "Releases the border owned by cRSubGoldy's embedded cRWarning. Android preserves this lifecycle edge as cRWarning::UnInit()."
     },
     {
       "address": "0x446f30",
@@ -3546,7 +3565,7 @@
     {
       "address": "0x446f80",
       "name": "update_warning",
-      "description": "Advances Player's embedded cRWarning phase and warning-border alpha while gameplay is unpaused, alternating its solid and fade states and replaying the warning cue. Android and iOS retain the same owner role as cRWarning::AI()."
+      "description": "Advances cRSubGoldy's embedded cRWarning phase and warning-border alpha while gameplay is unpaused, alternating its solid and fade states and replaying the warning cue. Android and iOS retain the same owner role as cRWarning::AI()."
     },
     {
       "address": "0x447040",
@@ -3566,12 +3585,12 @@
     {
       "address": "0x4470e0",
       "name": "uninit_nuke",
-      "description": "Kills the 25 sprite slots owned by the exact 0x7c-byte cRNuke collision-ring effect at Player +0x150 and clears its active state. Android and iOS retain this method as `cRNuke::UnInit()`."
+      "description": "Kills the 25 sprite slots owned by the exact 0x7c-byte cRNuke collision-ring effect at cRSubGoldy +0x150 and clears its active state. Android and iOS retain this method as `cRNuke::UnInit()`."
     },
     {
       "address": "0x447110",
       "name": "initialize_nuke",
-      "description": "Initializes the exact 0x7c-byte cRNuke owner at Player +0x150: spawns the 25-sprite ring effect used by collision kinds `2` and `6`, seeds its orbit height and phase step from the owning player and global tick delta, and immediately dispatches `cRNuke::AI()`. Android retains this method as `cRNuke::Init()`."
+      "description": "Initializes the exact 0x7c-byte cRNuke owner at cRSubGoldy +0x150: spawns the 25-sprite ring effect used by collision kinds `2` and `6`, seeds its orbit height and phase step from the owning player and global tick delta, and immediately dispatches `cRNuke::AI()`. Android retains this method as `cRNuke::Init()`."
     },
     {
       "address": "0x4471e0",

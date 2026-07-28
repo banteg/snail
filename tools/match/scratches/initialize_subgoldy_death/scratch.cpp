@@ -3,7 +3,7 @@
 #include "player.h"
 #include "subgame_runtime.h"
 
-void Player::initialize_subgoldy_death()
+void cRSubGoldy::initialize_subgoldy_death()
 {
     int mode = ((cRSubGame*)game)->level_mode;
 

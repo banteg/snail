@@ -141,7 +141,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         sizeof(fringe_manager.objects) / sizeof(fringe_manager.objects[0]),
         &RuntimeSlot::initialize_fringe_object);
 
-    Player* subgoldy = &player;
+    cRSubGoldy* subgoldy = &player;
     subgoldy->initialize_renderable_bod();
     subgoldy->click_start.initialize_click_start_controller_runtime();
     subgoldy->cameraman.noop_runtime_slot_constructor();

@@ -57,7 +57,7 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
 
 seed:
     // The follow child is embedded at player+0x384; velocity and exit state
-    // are adjacent Player fields, not cRPathFollowGoldy tail fields.
+    // are adjacent cRSubGoldy fields, not cRPathFollowGoldy tail fields.
     PLAYER->attachment_exit_pending = 0;
     PLAYER->squidge.start_squidge_y(PLAYER->velocity.y);
     PLAYER->follow_state.active = 1;

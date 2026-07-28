@@ -14,7 +14,7 @@ extern char g_worm_fov_report_format[];
 void Cameraman::update_cameraman()
 {
     TransformMatrix transform;
-    Player* p = player;
+    cRSubGoldy* p = player;
     force_camera_update = 0;
     desired_matrix = *transform.initialize_matrix_from_values(
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -23,7 +23,7 @@ void Cameraman::update_cameraman()
         p->cached_camera_target_world.x * 0.40000001f, 1.8f, -0.5f, 1.0f);
     desired_matrix.orthogonalize_matrix();
 
-    Player* ramp_player = player;
+    cRSubGoldy* ramp_player = player;
     float first_rows = (float)game->first_block_row_count;
     if (first_rows > ramp_player->cached_camera_target_world.z) {
         float ramp = ramp_player->cached_camera_target_world.z / first_rows * 1.4f - 0.40000001f;
@@ -43,7 +43,7 @@ void Cameraman::update_cameraman()
             ramp_player->cached_camera_target_world.y * 0.34999999f + desired_matrix.position.y;
     }
 
-    Player* lift_player = player;
+    cRSubGoldy* lift_player = player;
     Path* template_record;
     PathTemplateKind kind;
     if (lift_player->follow_state.active == 1
@@ -68,14 +68,14 @@ void Cameraman::update_cameraman()
         attachment_lift_envelope = 0.0f;
     }
 
-    Player* pitch_player = player;
+    cRSubGoldy* pitch_player = player;
     if (pitch_player->cutscene_pitch_cycle > 0.0f) {
         attachment_lift_envelope =
             (0.5f - cosine(pitch_player->cutscene_pitch_cycle * 4.712389f + 1.5707964f) * 0.5f) * 0.23999999f
             + attachment_lift_envelope;
     }
 
-    Player* target_player = player;
+    cRSubGoldy* target_player = player;
     float smoothed = (attachment_lift_envelope - smoothed_attachment_lift_envelope) * 0.1f
         + smoothed_attachment_lift_envelope;
     smoothed_attachment_lift_envelope = smoothed;
@@ -96,7 +96,7 @@ void Cameraman::update_cameraman()
         pitch = 1.2214999f;
     desired_matrix.rotate_matrix_local_x(pitch);
 
-    Player* lean_player = player;
+    cRSubGoldy* lean_player = player;
     float lean_roll = (0.5f - cosine(lean_player->lane_lean_progress * 3.1415927f) * 0.5f)
         * lean_player->lane_lean_amplitude * 6.2831855f;
     float steer_roll = lean_player->cached_camera_target_world.x * -8.0f;
@@ -109,12 +109,12 @@ void Cameraman::update_cameraman()
         desired_matrix *= transform;
         desired_matrix.rotate_matrix_local_z(player->follow_state.orientation_b);
     }
-    Player* exit_player = player;
+    cRSubGoldy* exit_player = player;
     if (exit_player->attachment_exit_pending)
         desired_matrix.rotate_matrix_local_z(exit_player->post_follow_exit_roll);
     desired_matrix.rotate_matrix_local_z(player->heading_roll);
 
-    Player* worm_player = player;
+    cRSubGoldy* worm_player = player;
     Path* worm_template;
     float desired_fov;
     if (worm_player->follow_state.active == 1 && (worm_template = worm_player->follow_state.template_record, worm_template->kind == PATH_TEMPLATE_KIND_WORM)) {

@@ -5,12 +5,12 @@
 #define GOLB_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 #include "sprite.h"
 #include "track_attachment_types.h"
 #include "vapour.h"
 #include "vector3.h"
 
-class Player;
 class cRSubGame;
 class GolbShot;
 
@@ -74,7 +74,7 @@ public:
     GolbShot* initialize_golb_shot(); // @ 0x408690
     void kill_golb(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
     void update_golb_ai(); // @ 0x414820, iOS/Android cRSubGolb::AI()
-    void create_golb(Player* player, int spawn_selector, int emitter_index); // @ 0x415280
+    void create_golb(cRSubGoldy* player, int spawn_selector, int emitter_index); // @ 0x415280
     Sprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60,
         // Android cRSubGolb::Smoke(tVector)
@@ -113,8 +113,8 @@ public:
         int emitter_index;       // +0x274, create_golb caller-facing identity
     };
     union {
-        Player* owner_player;  // +0x278
-        Player* player;        // +0x278, update_golb_ai bounds/collision view
+        cRSubGoldy* owner_player;  // +0x278
+        cRSubGoldy* player;        // +0x278, update_golb_ai bounds/collision view
     };
     TransformMatrix source_matrix; // +0x27c
     GolbPathFollowState path_follow; // +0x2bc

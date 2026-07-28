@@ -26,7 +26,7 @@ int next_math_random_value();
 int report_warningf(char* format, ...);
 int report_errorf(char* format, ...);
 
-void cRSubGame::spawn_track_garbage_hazard(cRSubLoc* cell, Player* player)
+void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;

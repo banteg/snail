@@ -18,10 +18,10 @@ struct SubRingSlotCursor {
     SubRing ring;
 };
 
-void cRSubGame::spawn_track_ring_or_special_effect(
+void cRSubGame::AddRing(
     cRSubLoc* cell,
     int requested_kind,
-    Player* player,
+    cRSubGoldy* player,
     float ring_speed)
 {
     int slot_index = 0;

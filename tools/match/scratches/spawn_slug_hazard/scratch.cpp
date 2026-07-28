@@ -16,7 +16,7 @@
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-void cRSubGame::spawn_slug_hazard(cRSubLoc* cell, Player* owner_player)
+void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
 {
     int slot_index = 0;
     Slug* scan = slug_hazards.slots;
@@ -31,7 +31,7 @@ void cRSubGame::spawn_slug_hazard(cRSubLoc* cell, Player* owner_player)
     }
 
     SubSlugState* state_ref = &slug_hazards.slots[slot_index].state;
-    Player** player_ref = &slug_hazards.slots[slot_index].owner_player;
+    cRSubGoldy** player_ref = &slug_hazards.slots[slot_index].owner_player;
     *state_ref = SUB_SLUG_STATE_ACTIVE;
     *player_ref = owner_player;
     slug_hazards.slots[slot_index].transform.set_matrix_identity();

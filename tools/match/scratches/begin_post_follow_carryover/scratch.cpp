@@ -2,7 +2,7 @@
 #include "player.h"
 #include "track_attachment_types.h"
 
-void Player::begin_post_follow_carryover()
+void cRSubGoldy::begin_post_follow_carryover()
 {
     if (follow_state.active) {
         post_follow_heading_carryover = follow_state.template_record->installed_heading_bits;

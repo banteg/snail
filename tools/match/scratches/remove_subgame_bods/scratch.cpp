@@ -112,7 +112,7 @@ void cRSubGame::RemoveBods()
     } while (ring_count != 0);
 
     {
-        Player& player_owner = player;
+        cRSubGoldy& player_owner = player;
         if ((((BodNode*)&player_owner)->list_flags & BOD_FLAG_LINKED) != 0) {
             REMOVE_INLINE_BOD_NODE((BodNode*)&player_owner);
             REMOVE_INLINE_BOD_NODE(

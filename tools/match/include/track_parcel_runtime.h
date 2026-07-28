@@ -5,8 +5,8 @@
 #define TRACK_PARCEL_RUNTIME_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 
-class Player;
 class cRSubGame;
 
 enum ParcelState {
@@ -33,7 +33,7 @@ public:
     char unknown_58[0x5c - 0x58];
     float bob_phase; // +0x5c
     float bob_phase_step; // +0x60
-    Player* owner_player; // +0x64, borrowed embedded Player
+    cRSubGoldy* owner_player; // +0x64, borrowed embedded cRSubGoldy
     float progress; // +0x68
     float progress_step; // +0x6c
     float target_distance; // +0x70

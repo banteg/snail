@@ -3,8 +3,8 @@
 #define RING_SPECIAL_EFFECT_TYPES_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 
-class Player;
 class Sprite;
 class cRSubGame;
 class SubRing;
@@ -40,7 +40,7 @@ enum {
 class SubRingStar {
 public:
     void update_ring_or_special_effect_particle(); // @ 0x43e780
-    void emit_ring_star_shower(Player* owner); // @ 0x43e690
+    void emit_ring_star_shower(cRSubGoldy* owner); // @ 0x43e690
 
     // SpriteManager allocation handle; removal returns it through kill_sprite().
     Sprite* sprite; // +0x00, not inline storage owned by the particle
@@ -62,7 +62,7 @@ public:
     void update_ring_or_special_effect_parent(); // @ 0x43e830
 
     SubRingState state; // +0x80
-    Player* owner_player; // +0x84, borrowed Player used for slot/lives state
+    cRSubGoldy* owner_player; // +0x84, borrowed cRSubGoldy used for slot/lives state
     SubRingKind kind; // +0x88
     int owner_lives_snapshot; // +0x8c
     // Fixed child storage owned by this parent. Each child's sprite is a

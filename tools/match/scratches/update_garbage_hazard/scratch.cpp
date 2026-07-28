@@ -22,7 +22,7 @@ void SubGarbage::update_garbage_hazard()
             Vector3* visual_position = &sprite->position;
             *visual_position = *position;
 
-            Player* owner = owner_player;
+            cRSubGoldy* owner = owner_player;
             if (transform.position.z < owner->interaction_max_z)
             {
                 destroy_garbage_hazard();
@@ -121,7 +121,7 @@ side_adjustment_complete:
                 return;
             }
 
-            Player* owner = owner_player;
+            cRSubGoldy* owner = owner_player;
             float next_smoke_timer = smoke_timer_step + smoke_timer;
             smoke_timer = next_smoke_timer;
             if (next_smoke_timer > 1.0f) {
@@ -137,7 +137,7 @@ side_adjustment_complete:
 
         sprite->facing_angle =
             owner_player->heading_roll + attachment_facing_angle;
-        Player* roll_result = owner_player;
+        cRSubGoldy* roll_result = owner_player;
         if (roll_result->follow_state.active == 1)
             sprite->facing_angle = roll_result->follow_state.orientation_b + sprite->facing_angle;
         return;

@@ -8,10 +8,10 @@
 #define TRACK_HEALTH_PICKUP_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 #include "sub_loc_fwd.h"
 #include "track_pickup_state.h"
 
-class Player;
 class Sprite;
 class cRSubGame;
 
@@ -21,7 +21,7 @@ public:
     void update_track_health_pickup(); // @ 0x43ecc0
 
     TrackPickupState state; // +0x38
-    Player* owner; // +0x3c
+    cRSubGoldy* owner; // +0x3c
     char unknown_40[0x44 - 0x40];
     // Pause gate view initialized from cRSubGame during reset_subgame. This is
     // distinct from source_cell at +0x68, which spawn_track_health_pickup stores.

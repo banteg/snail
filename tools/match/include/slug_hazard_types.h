@@ -6,9 +6,9 @@
 #define SLUG_HAZARD_TYPES_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 #include "sub_loc_fwd.h"
 
-class Player;
 class Sprite;
 class cRSubGame;
 
@@ -54,7 +54,7 @@ public:
     char unknown_b5[0xb8 - 0xb5];
     float lateral_phase;               // +0xb8
     float lateral_phase_step;          // +0xbc
-    Player* owner_player;              // +0xc0, borrowed embedded Player
+    cRSubGoldy* owner_player;              // +0xc0, borrowed embedded cRSubGoldy
     int engagement_voice_gate;         // +0xc4
     int hit_points;                    // +0xc8
     unsigned char hit_flash_pending;   // +0xcc

@@ -8,7 +8,7 @@
 int next_math_random_value();
 double __fastcall normalize_vector(Vector3* vector);
 
-void Player::PlayShootSfx()
+void cRSubGoldy::PlayShootSfx()
 {
     unsigned int flags = shoot_flags;
     int sound_id;

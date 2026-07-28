@@ -5,10 +5,10 @@
 #define GARBAGE_HAZARD_SLOT_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 #include "sub_loc_fwd.h"
 #include "vector3.h"
 
-class Player;
 class Sprite;
 class cRSubGame;
 
@@ -34,7 +34,7 @@ public:
     void update_garbage_hazard();
     SubGarbage* destroy_garbage_hazard();
     void spawn_garbage_smoke_particle(
-        Vector3* position, Vector3* velocity, Player* owner_player);
+        Vector3* position, Vector3* velocity, cRSubGoldy* owner_player);
 
     SubGarbage* next_active; // +0x80, borrowed link within the owning pool
     SubGarbageState state; // +0x84
@@ -51,7 +51,7 @@ public:
     cRSubLoc* source_cell; // +0xb8, borrowed runtime-grid cell
     unsigned char hidden; // +0xbc
     char unknown_bd[0xc0 - 0xbd];
-    Player* owner_player; // +0xc0, borrowed embedded Player
+    cRSubGoldy* owner_player; // +0xc0, borrowed embedded cRSubGoldy
 };
 typedef SubGarbage GarbageHazardSlot;
 

@@ -4,7 +4,7 @@
 int debug_report_stub(char* format, int value); // @ 0x449c00, stripped in release
 typedef int (__cdecl *DebugReportOneArg)(char* format);
 
-void Player::display_score_stats()
+void cRSubGoldy::display_score_stats()
 {
     if (total_score != 0) {
         debug_report_stub("\n Score Stats: %i\n", total_score);

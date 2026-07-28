@@ -18,7 +18,7 @@ typedef Vector3 Vec3;
 int report_errorf(char* format, ...);
 int next_math_random_value();
 
-void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_index)
+void GolbShot::create_golb(cRSubGoldy* player_, int spawn_selector, int emitter_index)
 {
     skip_one_tick = 0;
     slug_bounce_armed = 0;
@@ -38,14 +38,14 @@ void GolbShot::create_golb(Player* player_, int spawn_selector, int emitter_inde
 
     source_matrix.set_matrix_identity();
 
-    Player* spawn_player = owner_player;
+    cRSubGoldy* spawn_player = owner_player;
     Vec3* position = &flight_transform.position;
     state = 1;
     *position = spawn_player->transform.position;
     Vec3 half_forward = spawn_player->transform.basis_forward * 0.5f;
     *position += half_forward;
 
-    Player* player = owner_player;
+    cRSubGoldy* player = owner_player;
     DWORD shoot_flags = player->shoot_flags;
     if ((shoot_flags & 5) == 0) {
         if ((shoot_flags & 2) != 0) {

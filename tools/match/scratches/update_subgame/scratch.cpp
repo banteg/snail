@@ -280,7 +280,7 @@ void cRSubGame::AI()
                     & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
                 != zero
                 && (runtime_flags & SUBGAME_RUNTIME_FLAG_PARCEL_SPAWNS) != zero)
-                spawn_track_parcel(
+                AddParcel(
                     &runtime_rows[cell_index].parcel_spawn_position,
                     &player);
 
@@ -377,21 +377,21 @@ void cRSubGame::AI()
                                 != zero
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
-                            spawn_track_health_pickup(&cell_slot->cell, &player);
+                            AddHealth(&cell_slot->cell, &player);
 
                         if (cell_slot->cell.tile_id == SUBLOC_TILE_SPEEDUP_PICKUP
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
-                            spawn_track_speedup(&cell_slot->cell, &player);
+                            AddSpeedUp(&cell_slot->cell, &player);
 
                         if (cell_slot->cell.tile_id == SUBLOC_TILE_JETPACK_PICKUP
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start)
-                            spawn_track_jetpack_pickup(&cell_slot->cell, &player);
+                            AddJetPack(&cell_slot->cell, &player);
 
                         unsigned char hazard_tile = cell_slot->cell.tile_id;
                         if (hazard_tile == SUBLOC_TILE_GARBAGE_HAZARD) {
-                            spawn_track_garbage_hazard(
+                            AddGarbage(
                                 &cell_slot->cell, &player);
                         } else if ((cell_slot->cell.lane_and_flags
                                         & SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN)
@@ -432,7 +432,7 @@ void cRSubGame::AI()
                                 && (level_mode != 0
                                     || random_float_below(1.0f, "G3")
                                         <= base_subgame_rate * 0.6f + 0.4f)) {
-                            spawn_track_garbage_hazard(
+                            AddGarbage(
                                 &cell_slot->cell, &player);
                         }
 
@@ -465,26 +465,26 @@ void cRSubGame::AI()
                             && cell_slot->cell.tile_id == SUBLOC_TILE_SLUG_HAZARD
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start) {
-                            spawn_slug_hazard(&cell_slot->cell, &player);
+                            AddSlug(&cell_slot->cell, &player);
                         }
 
                         unsigned int ring_flags = runtime_rows[cell_index].flags;
                         if ((ring_flags & SUBROW_FLAG_RING_NONE) == 0) {
                             if (cell_slot->cell.tile_id == SUBLOC_TILE_RING_MARKER) {
                                 if ((ring_flags & SUBROW_FLAG_RING_NORMAL) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &cell_slot->cell, SUB_RING_KIND_NORMAL_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &cell_slot->cell, SUB_RING_KIND_POWER_UP_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &cell_slot->cell, SUB_RING_KIND_EXPLODE_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &cell_slot->cell, SUB_RING_KIND_SLOW_AUTHORED, &player,
                                         runtime_rows[cell_index].ring_speed);
                                 } else {
@@ -510,7 +510,7 @@ after_authored_ring:
                                     < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & SUBROW_FLAG_RING_POWER_UP) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
                                         SUB_RING_KIND_POWER_UP_AUTHORED, &player,
@@ -520,7 +520,7 @@ after_authored_ring:
                                             6 * SUBGAME_TRACK_LANE_COUNT]
                                             .position.z;
                                 } else if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
                                         SUB_RING_KIND_EXPLODE_AUTHORED, &player,
@@ -530,7 +530,7 @@ after_authored_ring:
                                             6 * SUBGAME_TRACK_LANE_COUNT]
                                             .position.z;
                                 } else if ((ring_flags & SUBROW_FLAG_RING_SLOW) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &(&cell_slot->cell)[
                                             6 * SUBGAME_TRACK_LANE_COUNT],
                                         SUB_RING_KIND_SLOW_AUTHORED, &player,
@@ -550,7 +550,7 @@ after_authored_ring:
                                         != SUBLOC_TILE_RAMP_LESS
                                     && cell_slot->cell.tile_id
                                         != SUBLOC_TILE_RAMP_RIGHT_BRACKET) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &cell_slot->cell, SUB_RING_KIND_NORMAL_DEFAULT,
                                         &player, 0.0f);
                                     if (player.lives < 10)
@@ -570,7 +570,7 @@ after_authored_ring:
                                     < cell_slot->cell.position.z
                                 && cell_index < completion_row_start) {
                                 if ((ring_flags & SUBROW_FLAG_RING_EXPLODE) != 0) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &cell_slot->cell, SUB_RING_KIND_EXPLODE_RAMP, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z = cell_slot->cell.position.z;
@@ -579,7 +579,7 @@ after_authored_ring:
                                     || ((runtime_rows[cell_index].flags
                                             & SUBROW_FLAG_RING_EXPLODE)
                                         != 0)) {
-                                    spawn_track_ring_or_special_effect(
+                                    AddRing(
                                         &cell_slot->cell, SUB_RING_KIND_EXPLODE_RAMP,
                                         &player, 0.0f);
                                     player.last_ring_spawn_z = cell_slot->cell.position.z;

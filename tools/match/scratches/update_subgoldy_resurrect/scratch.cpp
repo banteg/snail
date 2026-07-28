@@ -3,7 +3,7 @@
 #include "game_root.h"
 
 
-void Player::update_subgoldy_resurrect()
+void cRSubGoldy::update_subgoldy_resurrect()
 {
     velocity.z = 0.0f;
 

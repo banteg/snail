@@ -33,7 +33,7 @@ void Snail::release_snail_weapons()
         random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;
         random_y = random_float_below(1.0f, 0);
         random_y = random_y + 0.5f;
-        Player* owner = owner_player;
+        cRSubGoldy* owner = owner_player;
         forward_z = owner->velocity.z;
         release_step = &weapon_channels[1].release_step;
         *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;

@@ -3,7 +3,7 @@
 #include "sprite.h"
 #include "player.h"
 
-void Player::initialize_subgoldy_ghost(int owner)
+void cRSubGoldy::initialize_subgoldy_ghost(int owner)
 {
     tColour color;
 

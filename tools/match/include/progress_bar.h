@@ -7,7 +7,7 @@ public:
     void noop_runtime_ai();
     void update_progress_bar(); // @ 0x437c40, cRProgressBar::AI
 
-    // Authored empty C++ class; Player supplies alignment padding afterward.
+    // Authored empty C++ class; cRSubGoldy supplies alignment padding afterward.
     unsigned char _empty;
 };
 

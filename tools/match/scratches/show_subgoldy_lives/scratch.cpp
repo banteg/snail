@@ -3,7 +3,7 @@
 #include "player.h"
 #include "subgame_runtime.h"
 
-void Player::show_subgoldy_lives()
+void cRSubGoldy::show_subgoldy_lives()
 {
     int live_index = 0;
     for (int offset = (int)((cRSubGame*)0)->life_stock_widgets;

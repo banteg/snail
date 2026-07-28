@@ -5,8 +5,7 @@
 #include "border_manager.h"
 #include "bod_types.h"
 #include "frontend_widget.h"
-
-class Player;
+#include "player_fwd.h"
 
 enum ClickStartState {
     CLICK_START_STATE_INACTIVE = 0,
@@ -19,7 +18,7 @@ enum ClickStartState {
 class ClickStart : public RenderableBod {
 public:
     ClickStart* initialize_click_start_controller_runtime(); // @ 0x408670, constructor
-    void initialize_click_start(Player* player); // @ 0x442170, cRClickStart::Init
+    void initialize_click_start(cRSubGoldy* player); // @ 0x442170, cRClickStart::Init
     void update_click_start();                   // @ 0x442290, cRClickStart::AI
 
     ClickStartState state;      // +0x80
@@ -27,7 +26,7 @@ public:
     float teardown_progress;    // +0x88
     float teardown_progress_step; // +0x8c
     char unknown_90[0x98 - 0x90];
-    Player* owner_player;       // +0x98, borrowed owning cRSubGoldy
+    cRSubGoldy* owner_player;       // +0x98, borrowed owning cRSubGoldy
     char unknown_9c[0xa8 - 0x9c];
     unsigned char hide_prompt;  // +0xa8
 };

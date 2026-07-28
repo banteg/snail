@@ -3,7 +3,7 @@
 First scratch for `initialize_subgoldy @ 0x43a9c0`.
 
 This initializes the live Goldy player block for a new subgame run. The scratch
-keeps the broad `Player` storage as raw offsets while using established helper
+keeps the broad `cRSubGoldy` storage as raw offsets while using established helper
 types for animation managers, click-start, cameraman, damage gauge, jetpack
 gauge, snail skin, invincibility shell, and matrices.
 
@@ -24,7 +24,7 @@ Recovered structure:
 
 Source-shape notes:
 
-- The receiver is the complete shared `Player`; several old initialization
+- The receiver is the complete shared `cRSubGoldy`; several old initialization
   runs remain raw-offset shaped where that is the proven VC6 source form.
 - The tiny `0x41aa30` helper is the proof-grade authored
   `initialize_object_distort` / `cRDistort::Init`; the empty runtime callback
@@ -39,6 +39,24 @@ Latest focused result:
 - target/candidate instructions: 279 / 279
 - prefix: 279 / 279
 - masked operands: 27 clean, 0 unresolved, 0 mismatched
+
+2026-07-28 primary cRSubGoldy ownership:
+
+- Android and iOS independently preserve `cRSubGoldy` as the authored actor
+  owner. The Windows matcher now defines that class directly; `Player` survives
+  only as a pointer-only compatibility alias in `player_fwd.h`.
+- Windows remains authoritative for the 0x4364-byte layout and all member
+  offsets. No mobile layout or ABI was transferred.
+- VC6 object symbols now naturally name `cRSubGoldy`, including
+  `?update_subgoldy@cRSubGoldy@@QAEXXZ` and
+  `?Shoot@cRSubGoldy@@QAEXPAV1@@Z`; no symbol override or register forcing is
+  involved.
+- The same cross-port evidence recovers the caller-owned
+  `cRSubGame::{AddHealth,AddSpeedUp,AddJetPack,AddGarbage,AddSlug,AddRing,AddParcel}`
+  factory surface. Their Windows return contracts, parameter widths, and object
+  layouts remain native-derived.
+- Full parallel status regeneration leaves every focused score unchanged,
+  including this exact 279/279 initializer.
 
 2026-07-14 Snail animation-owner cleanup: the borrowed
 `AnimManager::target_model` now receives `&presentation` through Snail's proven

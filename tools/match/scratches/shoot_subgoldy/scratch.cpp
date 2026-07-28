@@ -5,10 +5,10 @@
 
 typedef unsigned int DWORD;
 
-void Player::Shoot(Player* shoot_source)
+void cRSubGoldy::Shoot(cRSubGoldy* shoot_source)
 {
     DWORD flags = shoot_source->shoot_flags;
-    Player* owner = (Player*)this;
+    cRSubGoldy* owner = (cRSubGoldy*)this;
     int spawn_count;
 
     while ((flags & 0x69) == 0) {

@@ -50,7 +50,7 @@ void Completion::update_row_event_display()
                 controller->staged_parcel_count = staged_parcel_count;
                 GameRoot* game = g_game;
                 Parcel* parcel =
-                    game->subgame.spawn_track_parcel(
+                    game->subgame.AddParcel(
                         game->subgame.parcel_home_anchor(),
                         &game->subgame.player);
                 Sprite* sprite = parcel->sprite;

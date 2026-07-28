@@ -1,4 +1,4 @@
-// Player (Goldy) runtime struct, partial. iOS symbols name this owner
+// cRSubGoldy (Goldy) runtime struct, partial. iOS symbols name this owner
 // cRSubGoldy, with the presentation subobject carrying cRSnail methods.
 // Fields recovered around the
 // attachment-exit lanes. Offsets per analysis/decompile/*/0043af60-*.c and
@@ -19,6 +19,7 @@
 #include "sub_hover.h"
 #include "nuke.h"
 #include "weapon.h"
+#include "player_fwd.h"
 #include "progress_bar.h"
 #include "score_buckets.h"
 #include "snail_skin.h"
@@ -33,7 +34,6 @@
 
 struct Object;
 
-class Player;
 class Sprite;
 class cRSubGame;
 class SubHealth;
@@ -106,7 +106,7 @@ public:
     // linked body has the 0x800 animation-progress flag.
     TransformMatrix previous_live_matrix;   // +0x80
     TransformMatrix cached_cutscene_matrix; // +0xc0
-    Player* owner_player;                   // +0x100, non-owning backlink to containing Player
+    cRSubGoldy* owner_player;                   // +0x100, non-owning backlink to containing cRSubGoldy
     AnimManager anim_manager;               // +0x104
     PresentationAnimationSlot cutscene_animation_slots[10]; // +0x14c, owned slots
     // Authored order: left blaster/laser, right blaster/laser, top
@@ -135,12 +135,12 @@ public:
 typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
 typedef Snail cRSnail;
 
-class Player : public RenderableBod {
+class cRSubGoldy : public RenderableBod {
 public:
     void update_subgoldy();              // @ 0x43b120, cRSubGoldy::AI()
     void begin_post_follow_carryover();   // @ 0x43af60
     void SetShootFlags();                  // @ 0x43a1a0, cRSubGoldy::SetShootFlags()
-    void Shoot(Player* player);                   // @ 0x43a300, cRSubGoldy::Shoot(cRSubGoldy*)
+    void Shoot(cRSubGoldy* player);                   // @ 0x43a300, cRSubGoldy::Shoot(cRSubGoldy*)
     void PlayShootSfx();                   // @ 0x43afd0, cRSubGoldy::PlayShootSfx()
     void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
     void clear_subgoldy_score_buckets();   // @ 0x4403a0
@@ -149,7 +149,7 @@ public:
     void health_collect_particles(SubHealth* pickup); // @ 0x43a010
     // Authored cRSubGoldy::SpeedUpCollect() folds into the shared one-byte
     // noop_runtime_ai body at 0x407b50; the collision callsite still passes
-    // this Player receiver in ecx.
+    // this cRSubGoldy receiver in ecx.
     void noop_runtime_ai();
     void initialize_subgoldy(int player_slot); // @ 0x43a9c0, cRSubGoldy::Init
     void initialize_subgoldy_ghost(int owner); // @ 0x43d230, cRSubGoldy::GhostInit(int)
@@ -161,7 +161,7 @@ public:
     void set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
     TransformMatrix* live_transform(); // inherited render transform at +0x38
 
-    // Player storage is embedded in cRSubGame. Its inherited BOD node is
+    // cRSubGoldy storage is embedded in cRSubGame. Its inherited BOD node is
     // merely linked into the global active list; the list never owns it.
     int resurrect_final_loss;              // +0x80
     unsigned char resurrect_active;        // +0x84
@@ -192,7 +192,7 @@ public:
     char unknown_2d9[0x2dc - 0x2d9];
     float cutscene_pitch_cycle;             // +0x2dc
     float cutscene_pitch_cycle_step;        // +0x2e0
-    // Player-owned run score producer and completion snapshot window.
+    // cRSubGoldy-owned run score producer and completion snapshot window.
     int total_score;                        // +0x2e4
     Time stopwatch;                         // +0x2e8, authored cRTime value
     // Only confirmed consumer copies this value into SubSolution::score_tail.
@@ -236,7 +236,7 @@ public:
     char unknown_3f1[0x3f4 - 0x3f1];
     Warning warning;                       // +0x3f4, authored cRWarning owner
     int lives;                            // +0x404
-    // Non-owning backlink to the cRSubGame that embeds this Player.
+    // Non-owning backlink to the cRSubGame that embeds this cRSubGoldy.
     // initialize_subgoldy is its sole setter; teardown never frees through it.
     cRSubGame* game;                  // +0x408
     int movement_mode_selector;            // +0x40c
@@ -290,13 +290,12 @@ public:
     float slow_commentary_step;             // +0x4360
 };
 
-typedef char Player_must_be_0x4364[(sizeof(Player) == 0x4364) ? 1 : -1];
+typedef char cRSubGoldy_must_be_0x4364[
+    (sizeof(cRSubGoldy) == 0x4364) ? 1 : -1];
 
-// Authored cross-port owner. Android/iOS corroborate behavior but use their
-// own cRSubGoldy and cRSprite layouts, so no mobile offsets transfer here.
-typedef Player cRSubGoldy;
-
-inline TransformMatrix* Player::live_transform()
+// Android/iOS corroborate the authored owner but use their own cRSubGoldy and
+// cRSprite layouts, so no mobile offsets transfer here.
+inline TransformMatrix* cRSubGoldy::live_transform()
 {
     return &transform;
 }

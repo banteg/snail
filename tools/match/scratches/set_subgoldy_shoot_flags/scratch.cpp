@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-void Player::SetShootFlags()
+void cRSubGoldy::SetShootFlags()
 {
     int tier = shooting_tier;
     shoot_flags = 0;

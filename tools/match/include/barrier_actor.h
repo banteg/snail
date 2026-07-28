@@ -9,7 +9,7 @@ class BarrierActor : public BodBase {
 public:
     void update_barrier_ai(); // @ 0x440f80, cRBarrier::AI
 
-    Player* owner_player; // +0x38, borrowed live-position source
+    cRSubGoldy* owner_player; // +0x38, borrowed live-position source
 };
 
 typedef char BarrierActor_must_be_0x3c[

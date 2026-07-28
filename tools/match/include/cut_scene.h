@@ -2,9 +2,9 @@
 #ifndef CUT_SCENE_H
 #define CUT_SCENE_H
 
+#include "player_fwd.h"
 #include "transform_matrix.h"
 
-class Player;
 class Snail;
 
 enum CutSceneState {
@@ -28,7 +28,7 @@ public:
     void update_cutscene(); // @ 0x4466d0, cRCutScene::AI
 
     Snail* presentation; // +0x00, non-owning parent cRSnail
-    Player* player; // +0x04, non-owning Goldy owner
+    cRSubGoldy* player; // +0x04, non-owning Goldy owner
     int camera_mode; // +0x08
     CutSceneState state; // +0x0c
     TransformMatrix live_matrix; // +0x10

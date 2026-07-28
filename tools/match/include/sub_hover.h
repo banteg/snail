@@ -2,8 +2,9 @@
 #ifndef SUB_HOVER_H
 #define SUB_HOVER_H
 
+#include "player_fwd.h"
+
 class Sprite;
-class Player;
 class cRSubGame;
 struct Vector3;
 
@@ -45,7 +46,7 @@ public:
     float progress_step; // +0x04
     int unknown_08; // +0x08
     SubHoverState state; // +0x0c
-    Player* player; // +0x10, borrowed containing player
+    cRSubGoldy* player; // +0x10, borrowed containing player
     float wobble_x; // +0x14
     float wobble_y; // +0x18
     float wobble_alpha; // +0x1c

@@ -86,21 +86,28 @@ public:
     void GenerateLevel(int level_index); // @ 0x437de0
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
     void StartLevel(int level_index); // @ 0x437eb0
-    Player* embedded_player(); // borrowed pointer to owned player at +0x3bb764
-    Vector3* parcel_delivery_arc_basis(); // Player.presentation.transform.basis_up
-    Vector3* parcel_home_anchor(); // Player.presentation.snail_hotspots_world[11]
+    cRSubGoldy* embedded_player(); // borrowed pointer to owned player at +0x3bb764
+    Vector3* parcel_delivery_arc_basis(); // cRSubGoldy.presentation.transform.basis_up
+    Vector3* parcel_home_anchor(); // cRSubGoldy.presentation.snail_hotspots_world[11]
     TrackRowCellTileByteView* runtime_cell_tile_views(); // +0x3bfb04 field-first view
     TrackRowCellFringeLinkView* runtime_cell_fringe_links(); // +0x3bfb0c field-first view
     void AI(); // @ 0x438b90
     void UnInit(); // @ 0x438850
-    void spawn_track_health_pickup(
-        cRSubLoc* cell, Player* player); // @ 0x43d6c0
-    void spawn_track_speedup(cRSubLoc* cell, Player* player); // @ 0x43d880, no-op in Windows/Android
-    void spawn_track_jetpack_pickup(cRSubLoc* cell, Player* player); // @ 0x43d890
-    void spawn_track_garbage_hazard(cRSubLoc* cell, Player* player); // @ 0x43da80
-    void spawn_slug_hazard(cRSubLoc* cell, Player* owner_player); // @ 0x43dc80
-    void spawn_track_ring_or_special_effect(
-        cRSubLoc* cell, int requested_kind, Player* player, float ring_speed); // @ 0x43df10
+    void AddHealth(
+        cRSubLoc* cell, cRSubGoldy* player); // @ 0x43d6c0
+    void AddSpeedUp(
+        cRSubLoc* cell, cRSubGoldy* player); // @ 0x43d880, folded no-op
+    void AddJetPack(
+        cRSubLoc* cell, cRSubGoldy* player); // @ 0x43d890
+    void AddGarbage(
+        cRSubLoc* cell, cRSubGoldy* player); // @ 0x43da80
+    void AddSlug(
+        cRSubLoc* cell, cRSubGoldy* owner_player); // @ 0x43dc80
+    void AddRing(
+        cRSubLoc* cell,
+        int requested_kind,
+        cRSubGoldy* player,
+        float ring_speed); // @ 0x43df10
     void set_subgame_rate(float rate); // @ 0x4404c0
     void calc_subgame_rate(); // @ 0x4404d0
     double advance_blink_random(); // @ 0x4408a0
@@ -110,9 +117,9 @@ public:
     void UnHideScores(); // @ 0x445f40
     void update_subgame_camera(); // @ 0x446020
     tColour* get_track_skirt_color(tColour* out); // @ 0x442120
-    Parcel* spawn_track_parcel(
+    Parcel* AddParcel(
         Vector3* world_position,
-        Player* ignored_player); // @ 0x443730, native binds embedded_player()
+        cRSubGoldy* ignored_player); // @ 0x443730, native binds embedded_player()
     cRSubLoc* get_track_grid_cell_at_world_position(Vector3* position);
     SubRow* get_track_runtime_cell_at_world_z(Vector3* position);
     double sample_track_floor_height_at_position(Vector3* position);
@@ -218,7 +225,7 @@ public:
     // The complete cRSubGoldy actor is embedded here. Its score/timer block,
     // gauges, cameraman, and presentation controller all share this owner;
     // the former sparse cRSubGame aliases merely reached into this field.
-    Player player; // +0x3bb764, ends at +0x3bfac8
+    cRSubGoldy player; // +0x3bb764, ends at +0x3bfac8
     // Fixed row-major runtime grid owned by cRSubGame. Gameplay actors
     // retain pointers into this slab only for the lifetime of the built track.
     cRSubLoc runtime_cells[SUBGAME_RUNTIME_ROW_CAPACITY][SUBGAME_TRACK_LANE_COUNT];
@@ -292,7 +299,7 @@ typedef cRSubGame SubgameRuntime; // compatibility analysis name
 typedef char cRSubGame_must_be_0x1272838[
     (sizeof(cRSubGame) == 0x1272838) ? 1 : -1];
 
-inline Player* cRSubGame::embedded_player()
+inline cRSubGoldy* cRSubGame::embedded_player()
 {
     return &player;
 }

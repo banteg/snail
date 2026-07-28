@@ -9,7 +9,7 @@
 void SubGarbage::spawn_garbage_smoke_particle(
     Vector3* position,
     Vector3* velocity,
-    Player* owner_player)
+    cRSubGoldy* owner_player)
 {
     char result = (char)g_runtime_config.render_flags;
     if ((result & 0x10) != 0) {

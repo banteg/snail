@@ -1,10 +1,10 @@
 // begin_track_attachment_follow_state @ 0x420c40 (thiscall, ret 0xc)
-// Exact cRPathFollowGoldy::Init: void initializer on Player::follow_state.
+// Exact cRPathFollowGoldy::Init: void initializer on cRSubGoldy::follow_state.
 #include "game_root.h"
 
 
 void cRPathFollowGoldy::begin_track_attachment_follow_state(
-    cRSubLoc* cell, const Vector3* world_position, Player* owning_player)
+    cRSubLoc* cell, const Vector3* world_position, cRSubGoldy* owning_player)
 {
     active = 1;
     template_record = cell->attachment_template_record;

@@ -7350,7 +7350,7 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
         assert function_name in path_header
 
     assert "class ClickStart : public RenderableBod" in click_matcher
-    assert "Player* owner_player" in click_matcher
+    assert "cRSubGoldy* owner_player" in click_matcher
     assert "class ActiveLandscapeEntry : public RenderableBod" in landscape_matcher
     assert "RenderableBod* reference_bod" in landscape_matcher
     for address in (
@@ -10395,7 +10395,7 @@ def test_parcel_spawn_position_ownership_stays_aligned() -> None:
     assert ".parcel_spawn_position" in place_parcels
     assert ".parcel_spawn_position" in place_challenge
     assert "&runtime_rows[cell_index].parcel_spawn_position" in update_subgame
-    assert "spawn_track_parcel(" in update_subgame
+    assert "AddParcel(" in update_subgame
 
 
 def test_subgame_runtime_flag_ownership_stays_aligned_across_replay_lanes() -> None:
@@ -10977,9 +10977,11 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         "cRSubLoc* cell, Player* owner_player);"
         in ida_sync
     )
-    assert "void spawn_slug_hazard(cRSubLoc* cell, Player* owner_player);" in (
+    matcher_subgame = (
         repo_root / "tools/match/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
+    assert "void AddSlug(" in matcher_subgame
+    assert "cRSubLoc* cell, cRSubGoldy* owner_player);" in matcher_subgame
     assert "SPAWN_SLUG_HAZARD_LVAR_SPECS" in ida_sync
     assert "0x43DC89" in ida_sync
     assert "0x43DCBD" in ida_sync

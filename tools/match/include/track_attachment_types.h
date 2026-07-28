@@ -9,6 +9,7 @@
 #include "bod_types.h"
 #include "fringe_fwd.h"
 #include "object_render_types.h"
+#include "player_fwd.h"
 #include "sub_loc_tile_ids.h"
 #include "sub_loc_fwd.h"
 #include "vector3.h"
@@ -16,7 +17,6 @@
 
 struct TransformMatrix;
 struct SubSegment;
-class Player;
 
 // Windows-native cRPath template discriminants. Android/iOS constructor
 // symbols corroborate the authored identities, but their numeric values are
@@ -440,10 +440,10 @@ typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 class cRPathFollowGoldy {
 public:
     // VC6 folds this empty owner constructor into the shared body at
-    // 0x408600. The cRSubGame constructor passes Player::follow_state exactly.
+    // 0x408600. The cRSubGame constructor passes cRSubGoldy::follow_state exactly.
     cRPathFollowGoldy* noop_runtime_slot_constructor();
     void begin_track_attachment_follow_state(
-        cRSubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
+        cRSubLoc* source_cell, const Vector3* world_position, cRSubGoldy* player); // @ 0x420c40
     int update_track_attachment_follow_state(
         float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
 
@@ -463,7 +463,7 @@ public:
     // preserved in both Windows and iOS cRPathFollowGoldy::Traverse.
     Vector3 orientation_up;      // +0x20
     Vector3 output_position;     // +0x2c
-    Player* player;              // +0x38 back-reference (player+0x3bc)
+    cRSubGoldy* player;              // +0x38 back-reference (player+0x3bc)
     unsigned char flag_3c;       // +0x3c, completion handoff gate
     char unknown_3d[0x40 - 0x3d];
 };

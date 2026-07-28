@@ -7,11 +7,11 @@
 #define TRACK_JETPACK_PICKUP_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 #include "sub_loc_fwd.h"
 #include "track_pickup_state.h"
 #include "vapour.h"
 
-class Player;
 class Sprite;
 class cRSubGame;
 
@@ -21,7 +21,7 @@ public:
     void update_track_jetpack_pickup(); // @ 0x43efb0
 
     TrackPickupState state; // +0x38
-    Player* owner; // +0x3c
+    cRSubGoldy* owner; // +0x3c
     char unknown_40[0x44 - 0x40];
     cRSubGame* owner_game; // +0x44, borrowed containing subgame
     char unknown_48[0x64 - 0x48];

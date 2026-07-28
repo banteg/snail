@@ -3,7 +3,7 @@
 #include "player.h"
 #include "sprite.h"
 
-void Player::set_subgoldy_ghost_z(float ghost_z)
+void cRSubGoldy::set_subgoldy_ghost_z(float ghost_z)
 {
     ghost_sprite_a->flags |= SPRITE_FLAG_RENDER_ENABLED;
     ghost_sprite_b->flags |= SPRITE_FLAG_RENDER_ENABLED;

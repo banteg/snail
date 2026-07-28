@@ -2,9 +2,8 @@
 #ifndef NUKE_H
 #define NUKE_H
 
+#include "player_fwd.h"
 #include "sprite.h"
-
-class Player;
 
 enum {
     NUKE_SPRITE_SLOT_COUNT = 25,
@@ -22,7 +21,7 @@ public:
     void uninit_nuke(); // @ 0x4470e0, cRNuke::UnInit
 
     NukeState state; // +0x00
-    Player* owner_player; // +0x04, non-owning backlink to containing Player
+    cRSubGoldy* owner_player; // +0x04, non-owning backlink to containing cRSubGoldy
     float orbit_center_z_step; // +0x08
     float orbit_center_z; // +0x0c
     float orbit_phase; // +0x10

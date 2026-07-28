@@ -46,7 +46,7 @@ void Snail::update_snail_presentation()
         }
     }
 
-    Player* player = owner_player;
+    cRSubGoldy* player = owner_player;
     transform = *player->live_transform();
     Vector3* camera_target = &player->cached_camera_target_world;
     transform.position = *camera_target;

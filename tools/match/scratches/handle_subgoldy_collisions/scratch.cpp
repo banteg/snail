@@ -28,7 +28,7 @@ float __fastcall normalize_vector(Vec3* vector);
 int next_math_random_value();
 int sprintf(char* buffer, const char* format, ...);
 
-void Player::handle_subgoldy_collisions()
+void cRSubGoldy::handle_subgoldy_collisions()
 {
     enum {
         SALT_POOL_FROM_SUBGAME =

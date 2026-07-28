@@ -226,7 +226,7 @@ void cRSubGame::Init()
     g_game->players[0].selected_high_score_rank = 0;
     level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
-    Player* player = embedded_player();
+    cRSubGoldy* player = embedded_player();
     player->live_transform()->set_matrix_identity();
     player->movement_mode_selector = 0;
     player->game = this;

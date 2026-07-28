@@ -30,7 +30,7 @@ void SubHover::update_jetpack_gauge()
         progress = next_progress;
 
         cRSubGame* live_game = game;
-        Player* live_player = player;
+        cRSubGoldy* live_player = player;
         if (next_progress > 1.0f
             || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {
             goto finish_hover;

@@ -10,7 +10,7 @@ void SubHover::initialize_jetpack_gauge(int player_slot)
     cRSubGame* game_ptr = &g_game->subgame;
     progress_step = 0.00166666671f;
     game = game_ptr;
-    Player* player_ptr = g_game->subgame.embedded_player();
+    cRSubGoldy* player_ptr = g_game->subgame.embedded_player();
     state = SUB_HOVER_STATE_INACTIVE;
     player = player_ptr;
     wobble_alpha = 0.0f;

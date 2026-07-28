@@ -37,7 +37,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRSubGarbage %i\n", sizeof(((cRSubGame*)0)->garbage_hazards.slots)); \
     debug_report_stub("   Size of cRSubRing %i\n", sizeof(SubRingPool)); \
     debug_report_stub("   Size of cRFringeManager %i\n", sizeof(FringeManager)); \
-    debug_report_stub("   Size of cRSubGoldy %i\n", sizeof(Player)); \
+    debug_report_stub("   Size of cRSubGoldy %i\n", sizeof(cRSubGoldy)); \
     debug_report_stub("   Size of cRSubLoc %i\n", sizeof(((cRSubGame*)0)->runtime_cells)); \
     debug_report_stub("   Size of cRSubRow %i\n", sizeof(((cRSubGame*)0)->runtime_rows)); \
     debug_report_stub("   Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \

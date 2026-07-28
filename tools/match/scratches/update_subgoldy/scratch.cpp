@@ -80,7 +80,7 @@ struct SubgoldyFloorSamplerCallView {
 // voice id at +0x204 (0xa874); the flat 0xa874 read is
 // level_segment_count.
 
-void Player::update_subgoldy()
+void cRSubGoldy::update_subgoldy()
 {
     cRSubGame* current_game = game;
     if (current_game->subgame_pause_gate) {

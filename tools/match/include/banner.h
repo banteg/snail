@@ -16,7 +16,7 @@ public:
     char unknown_3c[0x48 - 0x3c];
     cRSubGame* owner_game; // +0x48, borrowed embedded-subgame backlink
     char unknown_4c[0x54 - 0x4c];
-    Player* owner_player; // +0x54, borrowed row-position source
+    cRSubGoldy* owner_player; // +0x54, borrowed row-position source
     float phase; // +0x58
     float phase_step; // +0x5c
 };

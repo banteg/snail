@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -639,6 +640,129 @@ def test_mobile_subgame_lifecycle_recovers_authored_windows_members() -> None:
     assert "ReSet(this);" in android_init
 
 
+def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    matcher_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    expected_factories = (
+        (
+            "spawn_track_health_pickup",
+            "AddHealth",
+            "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
+            0,
+            "?AddHealth@cRSubGame@@QAEXPAUcRSubLoc@@PAVcRSubGoldy@@@Z",
+        ),
+        (
+            "spawn_track_speedup",
+            "AddSpeedUp",
+            "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
+            0,
+            "?AddSpeedUp@cRSubGame@@QAEXPAUcRSubLoc@@PAVcRSubGoldy@@@Z",
+        ),
+        (
+            "spawn_track_jetpack_pickup",
+            "AddJetPack",
+            "cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)",
+            1,
+            "?AddJetPack@cRSubGame@@QAEXPAUcRSubLoc@@PAVcRSubGoldy@@@Z",
+        ),
+        (
+            "spawn_track_garbage_hazard",
+            "AddGarbage",
+            "cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)",
+            1,
+            "?AddGarbage@cRSubGame@@QAEXPAUcRSubLoc@@PAVcRSubGoldy@@@Z",
+        ),
+        (
+            "spawn_slug_hazard",
+            "AddSlug",
+            "cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)",
+            1,
+            "?AddSlug@cRSubGame@@QAEXPAUcRSubLoc@@PAVcRSubGoldy@@@Z",
+        ),
+        (
+            "spawn_track_ring_or_special_effect",
+            "AddRing",
+            (
+                "cRSubGame::AddRing("
+                "cRSubLoc*, int, cRSubGoldy*, float)"
+            ),
+            1,
+            "?AddRing@cRSubGame@@QAEXPAUcRSubLoc@@HPAVcRSubGoldy@@M@Z",
+        ),
+    )
+
+    for (
+        windows_name,
+        authored_name,
+        mobile_symbol,
+        ios_body_count,
+        object_symbol,
+    ) in expected_factories:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == ios_body_count
+        assert authored_name in functions_by_name[windows_name]["aliases"]
+        assert f"void {authored_name}(" in matcher_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"void cRSubGame::{authored_name}(" in scratch_source
+        assert "cRSubGoldy* " in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+
+    parcel = entries["spawn_track_parcel"]
+    assert parcel["status"] == "verified"
+    assert parcel["confidence"] == "high"
+    assert parcel["android_symbol"] == (
+        "cRSubGame::AddParcel(tVector*, cRSubGoldy*)"
+    )
+    assert parcel["ios_symbol"] == "cRSubGame::AddParcel(...)"
+    assert parcel["android_body_count"] == 1
+    assert parcel["ios_body_count"] == 1
+    assert "AddParcel" in functions_by_name["spawn_track_parcel"]["aliases"]
+    assert "Parcel* AddParcel(" in matcher_header
+
+    parcel_root = repo_root / "tools/match/scratches/spawn_track_parcel"
+    parcel_source = (parcel_root / "scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "Parcel* cRSubGame::AddParcel(" in parcel_source
+    assert "cRSubGoldy*)" in parcel_source
+    parcel_config = (parcel_root / "scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    assert "FUNCTION=spawn_track_parcel\n" in parcel_config
+    assert (
+        "SYMBOL=?AddParcel@cRSubGame@@QAEPAVParcel@@"
+        "PAUVector3@@PAVcRSubGoldy@@@Z\n"
+        in parcel_config
+    )
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
@@ -688,8 +812,20 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     player_header = (
         repo_root / "tools/match/include/player.h"
     ).read_text(encoding="utf-8")
+    player_forward_header = (
+        repo_root / "tools/match/include/player_fwd.h"
+    ).read_text(encoding="utf-8")
     assert "typedef Sprite cRSprite;" in sprite_header
-    assert "typedef Player cRSubGoldy;" in player_header
+    assert "class cRSubGoldy : public RenderableBod" in player_header
+    assert "typedef cRSubGoldy Player;" in player_forward_header
+    assert "class Player;" not in player_header
+    matcher_include_root = repo_root / "tools/match/include"
+    for header_path in matcher_include_root.glob("*.h"):
+        if header_path.name != "player_fwd.h":
+            assert re.search(
+                r"\bPlayer\b",
+                header_path.read_text(encoding="utf-8"),
+            ) is None
 
 
 def test_mobile_animation_keyframes_recover_crbodpos_tail_lane() -> None:

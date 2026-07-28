@@ -7,9 +7,9 @@
 #define TRACK_SPEEDUP_H
 
 #include "bod_types.h"
+#include "player_fwd.h"
 #include "track_pickup_state.h"
 
-class Player;
 class Sprite;
 class cRSubGame;
 
@@ -19,7 +19,7 @@ public:
     void update_track_speedup(); // @ 0x43ee50
 
     TrackPickupState state; // +0x80
-    Player* owner; // +0x84
+    cRSubGoldy* owner; // +0x84
     char unknown_88[0x8c - 0x88];
     cRSubGame* owner_game; // +0x8c, borrowed containing subgame
     char unknown_90[0xac - 0x90];

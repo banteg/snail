@@ -39,7 +39,7 @@ struct SubSolutionHeader {
     };
     int score_tail; // +0x20
     // Replay cursor captured when the live run starts. Reset restores this
-    // value to Player::replay_start_cursor and ghost playback uses the delta.
+    // value to cRSubGoldy::replay_start_cursor and ghost playback uses the delta.
     int replay_start_cursor; // +0x24
     int checksum; // +0x28
     int replay_level_index; // +0x2c
@@ -116,7 +116,7 @@ public:
     };
     int score_tail; // +0x20
     // Replay cursor captured when the live run starts. Reset restores this
-    // value to Player::replay_start_cursor and ghost playback uses the delta.
+    // value to cRSubGoldy::replay_start_cursor and ghost playback uses the delta.
     int replay_start_cursor; // +0x24
     int replay_level_index; // +0x28
     int replay_mode_id; // +0x2c, copied to the subgame launch mode

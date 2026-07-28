@@ -1,6 +1,6 @@
 // apply_damage_gauge_delta @ 0x4413f0 (thiscall, ret 0x8)
 // Hit-flash side-effect chain + gauge fill clamp. Gate: sign bit of the
-// owning Player's movement flags (unforced only); state 2 blocks unforced
+// owning cRSubGoldy's movement flags (unforced only); state 2 blocks unforced
 // positive deltas and negative ones during a trampoline bounce.
 
 #include "damage_guage.h"
