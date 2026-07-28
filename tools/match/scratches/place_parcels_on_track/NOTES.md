@@ -526,3 +526,41 @@ scan source shape, not missing vector ownership. A separately named pair of
 branch locals remains rejected at 37.43%; an explicit outer segment cursor was
 also score-neutral and emitted its borrow before the native zero-segment gate,
 so neither spelling is retained.
+
+## Mobile-backed claim precision and Windows bank control (2026-07-28)
+
+Android and iOS independently compute each claimed row center in float:
+`float(absolute_row) + parcel_spawn_position.z + 0.5f`. Windows agrees with an
+`fild` of the integer row followed by two dword `fadd` operations. Removing the
+scratch's explicit double conversion from the positive-set path improves
+focused Wibo from 43.59% to 43.91%. Applying that change to the digit-0 path
+before recovering its surrounding bank lifetime rotates the complete selection
+loop and regresses to 38.75%, so that incomplete probe was rejected.
+
+The missing lifetime was the one exposed by all three binaries: the selected
+digit-0 entry never becomes a durable `ParcelBucket*` owner. Android retains a
+`0x20c`-scaled `gGroup0` offset, iOS accesses the `_gGroup0` field lanes with
+the same scaled index, and Windows carries that offset in ESI while it copies
+the candidate into the owned runtime row. Direct global indexing preserves the
+semantic `ParcelBucket` layout without inventing a bucket owner. Together with
+the float row-center expression, it improves the scratch from 44.06% to
+68.64%.
+
+Windows also publishes the digit-0 compaction metadata in
+`candidate_count`, `segment_index`, then cleared `set_id` order. Reordering
+those independent field writes improves 43.91% to 44.06% before the larger
+lifetime recovery. Both mobile ports confirm the same moved metadata, although
+their compiler schedules differ.
+
+Finally, Windows enters each nonempty candidate bank once and uses only the
+placement quota on the loop back edge. The Android and iOS ports add
+bank-exhaustion guards on their back edges, but the Windows disassembly is
+unambiguous: positive sets precheck `set_entry_count`, digit-0 entries precheck
+`zero_entry_count`, and both then use `do`/`while` quota loops. Recovering those
+Windows control shapes improves 68.64% to 84.69% and then 87.77%.
+
+The accepted candidate is 637/639 instructions with the exact `0x214` frame,
+7-instruction prefix, and all 98 masked operands clean: zero unresolved, zero
+mismatched, and zero unaudited. The residual is stack-slot coloring plus the
+already-documented final projection evaluation order. No volatile barrier,
+synthetic dependency, stack padding, or register forcing is present.

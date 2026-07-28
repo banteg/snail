@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**532/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93897/294937** bytes (**31.84%**) are proof-grade, and overall fuzzy is **78.75%**.
+**532/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **93897/294937** bytes (**31.84%**) are proof-grade, and overall fuzzy is **79.11%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -577,7 +577,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 96.83% | 37/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (46)
+## High Progress (80-94.99%) (47)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -614,6 +614,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 5/125 | 33 ok |  | core |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 unaudited, 12 ok |  | core |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 637/639 | 87.77% | 7/639 | 98 ok |  | core |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 173/171 | 81.40% | 0/171 | 2 unaudited, 33 ok |  | core |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  | core |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  | core |
@@ -676,7 +677,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 575/571 | 65.79% | 7/571 | 5 unaudited, 91 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 1 mismatch, 4 unaudited, 54 ok |  | boundary |
 
-## Early Progress (>0-49.99%) (12)
+## Early Progress (>0-49.99%) (11)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -691,7 +692,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 33 ok |  | core |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 39 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1230/1245 | 32.32% | 2/1245 | 1 mismatch, 115 unaudited, 78 ok |  | core |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 641/639 | 43.59% | 7/639 | 70 unaudited, 62 ok |  | core |
 
 ## Excluded: Replaceable Platform (120)
 

@@ -154,8 +154,8 @@ void cRSubGame::place_parcels_on_track()
                       level_definition.level_display_name);
 
     int placed = 0;
-    if (set_or_target > 0) {
-        while (set_entry_count > 0) {
+    if (set_or_target > 0 && set_entry_count > 0) {
+        do {
             int picked = (int)random_float_below((float)set_entry_count, "P1");
             placed += g_parcel_set_buckets[picked].candidate_count;
             for (int spot = 0;
@@ -177,8 +177,8 @@ void cRSubGame::place_parcels_on_track()
                 runtime_rows[absolute_row].parcel_spawn_position =
                     g_parcel_set_buckets[picked].candidates[spot].position;
                 runtime_rows[absolute_row].parcel_spawn_position.z =
-                    (float)((double)absolute_row
-                            + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5);
+                    (float)absolute_row
+                    + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5f;
                 runtime_rows[absolute_row].parcel_spawn_position.y =
                     runtime_rows[absolute_row].parcel_spawn_position.y + 1.0f;
                 if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
@@ -207,19 +207,18 @@ void cRSubGame::place_parcels_on_track()
                     --scan;
                 }
             }
-            if (placed >= set_or_target)
-                break;
-        }
+        } while (placed < set_or_target);
     }
 
-    if (placed < level_definition.parcel_count) {
-        while (zero_entry_count > 0) {
+    if (placed < level_definition.parcel_count && zero_entry_count > 0) {
+        do {
             int picked = (int)random_float_below((float)zero_entry_count, "P2");
-            ParcelBucket* entry = &g_zero_parcel_buckets[picked];
-            placed += entry->candidate_count;
+            placed += g_zero_parcel_buckets[picked].candidate_count;
             int absolute_row =
-                entry->candidates[0].row
-                + level_definition.segment_slots[entry->segment_index].row_base;
+                g_zero_parcel_buckets[picked].candidates[0].row
+                + level_definition
+                      .segment_slots[g_zero_parcel_buckets[picked].segment_index]
+                      .row_base;
             if (runtime_rows[absolute_row].flags
                 & SUBROW_FLAG_PARCEL_SPAWN_REQUESTED)
                 report_errorf("Duplicate Parcel Request in %s.",
@@ -228,10 +227,10 @@ void cRSubGame::place_parcels_on_track()
                 SUBROW_FLAG_PARCEL_CANDIDATE
                 | SUBROW_FLAG_PARCEL_SPAWN_REQUESTED;
             runtime_rows[absolute_row].parcel_spawn_position =
-                entry->candidates[0].position;
+                g_zero_parcel_buckets[picked].candidates[0].position;
             runtime_rows[absolute_row].parcel_spawn_position.z =
-                (float)((double)absolute_row
-                        + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5);
+                (float)absolute_row
+                + runtime_rows[absolute_row].parcel_spawn_position.z + 0.5f;
             runtime_rows[absolute_row].parcel_spawn_position.y =
                 runtime_rows[absolute_row].parcel_spawn_position.y + 1.0f;
             if (runtime_rows[absolute_row].flags & SUBROW_FLAG_MIRRORED)
@@ -242,14 +241,12 @@ void cRSubGame::place_parcels_on_track()
                     g_zero_parcel_buckets[move + 1].candidates[0];
                 g_zero_parcel_buckets[move].candidate_count =
                     g_zero_parcel_buckets[move + 1].candidate_count;
-                g_zero_parcel_buckets[move].set_id = 0;
                 g_zero_parcel_buckets[move].segment_index =
                     g_zero_parcel_buckets[move + 1].segment_index;
+                g_zero_parcel_buckets[move].set_id = 0;
             }
             --zero_entry_count;
-            if (placed >= level_definition.parcel_count)
-                break;
-        }
+        } while (placed < level_definition.parcel_count);
     }
 
     if (placed != level_definition.parcel_count) {
