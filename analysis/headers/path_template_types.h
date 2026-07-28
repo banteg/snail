@@ -2302,6 +2302,18 @@ typedef struct PathTemplateSample {
     float lateral_source;
 } PathTemplateSample;
 
+/* Analysis-only view of the adjacent current/next primary-sample window used
+ * by both path-follow traversals. Paired mobile bodies preserve the authored
+ * two-sample source shape; the 0xa8 stride and field offsets remain grounded
+ * in the Windows executable. */
+typedef struct PathTemplateSamplePairCursorView {
+    PathTemplateSample current;
+    PathTemplateSample next;
+} PathTemplateSamplePairCursorView;
+typedef char PathTemplateSamplePairCursorView_must_be_0x150[
+    (sizeof(PathTemplateSamplePairCursorView) == 0x150) ? 1 : -1
+];
+
 /* Authored cRPath, exact 0xa8 bytes. Windows stores 126 instances as 63
  * adjacent primary/secondary PathPair records in SubgameRuntime. */
 typedef struct Path {

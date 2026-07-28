@@ -561,6 +561,7 @@ def ensure_path_analysis_views(
         "TimeTrial",
         "PresentationWobbleController",
         "PresentationAnimationObjectStrideCursor",
+        "PathTemplateSamplePairCursorView",
         "SnailHotspotLocalZCursorView",
         "ObjectFaceQuadTextureCursorView",
         "GolbShotVapourObjectStrideCursor",

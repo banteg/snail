@@ -7,10 +7,13 @@ from pathlib import Path
 import sys
 
 from _narrow_sync import (
+    apply_split_user_var_updates,
     apply_user_var_updates,
+    current_header_type_equivalence,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
+    types_declare_missing_only,
 )
 from _target import DEFAULT_TARGET
 
@@ -22,6 +25,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "TransformMatrix": 0x40,
     "PathTemplateSample": 0xA8,
+    "PathTemplateSamplePairCursorView": 0x150,
     "TrackRowCell": 0x54,
     "GolbPathFollowState": 0x28,
     "GolbShot": 0x2E8,
@@ -47,6 +51,10 @@ EXPECTED_STRUCT_FIELDS = {
         0x9C: ("lateral_scale", "float"),
         0xA0: ("special_scalar", "float"),
     },
+    "PathTemplateSamplePairCursorView": {
+        0x00: ("current", "PathTemplateSample"),
+        0xA8: ("next", "PathTemplateSample"),
+    },
     "TrackRowCell": {
         0x10: ("anchor_position", "Vec3"),
     },
@@ -69,11 +77,12 @@ EXPECTED_STRUCT_FIELDS = {
 # All eleven identities preserve a zero-__offset decompile in transactional
 # preview.
 #
-# Two wider sample casts are intentionally omitted. Register lifetime 193 is a
-# primary-sample byte cursor that also reaches into the next 0xa8-byte sample;
-# forcing PathTemplateSample* creates three forward offsets. Lifetime 354 is
-# the one-past-end secondary boundary used to read the terminal sample; the
-# same cast creates five negative offsets.
+# Register lifetime 193 is a proved two-record current/next primary-sample
+# window: Windows fixes the 0xa8 stride and exact MLIL definitions, while
+# paired Android/iOS bodies independently preserve the authored two-sample
+# source shape. Lifetime 354 remains deliberately untyped because it is the
+# one-past-end secondary boundary used to read the terminal sample; a sample
+# cast creates five negative offsets.
 GOLB_PATH_FOLLOW_LIFETIME_SPECS = (
     (261, 68, "flight_position_overflow", "Vec3*"),
     (360, 68, "source_anchor_position", "Vec3*"),
@@ -101,6 +110,71 @@ GOLB_PATH_FOLLOW_USER_VAR_UPDATES = tuple(
         GOLB_PATH_FOLLOW_LIFETIME_SPECS
     )
 )
+
+GOLB_PATH_FOLLOW_PRIMARY_SAMPLE_PAIR_SPLITS = (
+    (
+        (
+            (
+                "0x421a02",
+                "mlil_ssa",
+                "RegisterVariableSourceType",
+                594,
+                67,
+            ),
+            (
+                "0x421871",
+                "mlil_ssa",
+                "RegisterVariableSourceType",
+                193,
+                67,
+            ),
+        ),
+        ("RegisterVariableSourceType", 594, 67),
+        "primary_sample_pair",
+        "PathTemplateSamplePairCursorView*",
+    ),
+    (
+        (
+            (
+                "0x421a25",
+                "mlil_ssa",
+                "RegisterVariableSourceType",
+                629,
+                67,
+            ),
+        ),
+        ("RegisterVariableSourceType", 629, 67),
+        "primary_sample_pair_rejoined",
+        "PathTemplateSamplePairCursorView*",
+    ),
+)
+
+
+def ensure_primary_sample_pair_view(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    type_name = "PathTemplateSamplePairCursorView"
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    if equivalence.get(type_name, False):
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "primary-sample pair view already matches the header",
+            "header": str(header_path),
+            "replace_types": (),
+            "include_types": (type_name,),
+        }
+    return types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=(type_name,),
+        include_types=(type_name,),
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -171,7 +245,27 @@ def main() -> int:
         raise FileNotFoundError(f"path ownership header not found: {header_path}")
 
     operations = [
+        ensure_primary_sample_pair_view(
+            target=args.target,
+            header_path=header_path,
+        ),
         verify_owner_layouts(args.target),
+        *apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    "traverse_path_follow_golb",
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for definitions, target_var, variable_name, variable_type in (
+                    GOLB_PATH_FOLLOW_PRIMARY_SAMPLE_PAIR_SPLITS
+                )
+            ),
+        ),
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,

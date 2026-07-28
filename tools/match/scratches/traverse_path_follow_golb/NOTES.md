@@ -311,3 +311,17 @@ one-past-end and reads the preceding sample, so the same cast introduced five
 negative offsets. Both remain honest byte views. No matcher source changed:
 focused matching remains 71.82% (416/425 instructions) with all seven operands
 clean.
+
+## 2026-07-28 paired primary-sample ownership
+
+The exact Android and iOS `cRPathFollowGolb::Traverse` bodies independently
+preserve distinct current and next primary-sample operands. Windows remains
+authoritative for the 0xa8 record stride, field offsets, and exact MLIL
+definitions, which together prove a bounded 0x150-byte two-record window.
+
+Binary Ninja now replays that window as an analysis-only
+`PathTemplateSamplePairCursorView`, including the post-branch phi lifetime.
+All six current/next scalar accesses render through named fields with zero
+synthetic `__offset` expressions. The one-past-end terminal secondary cursor
+still reads the preceding record and remains byte-typed rather than receiving
+a misleading negative-offset cast. Matcher source is unchanged at 71.82%.

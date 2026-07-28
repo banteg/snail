@@ -388,3 +388,17 @@ Windows `PathTemplateKind` members `PATH_TEMPLATE_KIND_NONLINEAR_42` and
 authored identities, while the discriminant values remain grounded in the
 Windows executable. The focused result is unchanged at 72.89%, 698/726
 instructions, prefix 122/726, with 63 clean masked operands.
+
+## 2026-07-28 paired primary-sample ownership
+
+The exact Android and iOS `cRPathFollowGoldy::Traverse` bodies independently
+preserve distinct current and next primary-sample operands. Windows remains
+authoritative for the 0xa8 record stride, field offsets, and exact MLIL
+definitions, which together prove a bounded 0x150-byte two-record window.
+
+Binary Ninja now replays that window as an analysis-only
+`PathTemplateSamplePairCursorView`, including the post-branch phi lifetime.
+All six current/next scalar accesses render through named fields with zero
+synthetic `__offset` expressions. The one-past-end terminal secondary cursor
+still reads the preceding record and remains byte-typed rather than receiving
+a misleading negative-offset cast. Matcher source is unchanged at 72.89%.

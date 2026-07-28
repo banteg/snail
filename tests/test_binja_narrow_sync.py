@@ -19109,9 +19109,14 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         assert "float lateral_source;" in source
     assert "_pad_40" not in sample_struct
     assert "_pad_a4" not in sample_struct
+    assert "typedef struct PathTemplateSamplePairCursorView {" in analysis_header
+    assert "PathTemplateSample current;" in analysis_header
+    assert "PathTemplateSample next;" in analysis_header
+    assert "PathTemplateSamplePairCursorView_must_be_0x150" in analysis_header
     assert '("0x40", "inverse_matrix", "TransformMatrix")' in binja_sync
     assert '("0xa4", "lateral_source", "float")' in binja_sync
     assert '("PathTemplateSample", PATH_TEMPLATE_SAMPLE_FIELD_UPDATES)' in binja_sync
+    assert '"PathTemplateSamplePairCursorView",' in binja_sync
 
     assert "PATH_SAMPLE_INVERSE_USER_VAR_UPDATES" in binja_sync
     for identity in (
@@ -22917,11 +22922,14 @@ def test_attachment_follow_replay_preserves_samples_and_player_matrix() -> None:
         ("Vec3", "0x0C"),
         ("TransformMatrix", "0x40"),
         ("PathTemplateSample", "0xA8"),
+        ("PathTemplateSamplePairCursorView", "0x150"),
     ):
         assert f'"{type_name}": {width}' in replay
 
     assert '"update_track_attachment_follow_state"' in replay
     assert "apply_split_user_var_update" in replay
+    assert "apply_split_user_var_updates" in replay
+    assert "ensure_primary_sample_pair_view" in replay
     for address, index in (
         ("0x420dab", 251),
         ("0x420e5e", 430),
@@ -22934,8 +22942,28 @@ def test_attachment_follow_replay_preserves_samples_and_player_matrix() -> None:
         ) in replay
     assert "ATTACHMENT_FOLLOW_ROOT_SPLIT_DEFINITIONS" in replay
     assert "ATTACHMENT_FOLLOW_ROOT_TARGET_VAR" in replay
+    assert "ATTACHMENT_FOLLOW_PRIMARY_SAMPLE_PAIR_SPLITS" in replay
     assert 'variable_name="attachment_game_base"' in replay
     assert 'variable_type="GameRoot*"' in replay
+    for address, index in (
+        ("0x4210b6", 1030),
+        ("0x420edf", 559),
+        ("0x4210d9", 1065),
+    ):
+        assert f'"{address}"' in replay
+        assert (
+            f'                "RegisterVariableSourceType",\n'
+            f"                {index},\n"
+            f"                67,"
+        ) in replay
+    for variable_name in (
+        "primary_sample_pair",
+        "primary_sample_pair_rejoined",
+    ):
+        assert (
+            f'        "{variable_name}",\n'
+            f'        "PathTemplateSamplePairCursorView*",'
+        ) in replay
     for index, storage, name, variable_type in (
         (1406, 66, "current_secondary_sample", "PathTemplateSample*"),
         (1596, 72, "secondary_sample", "PathTemplateSample*"),
@@ -22958,8 +22986,9 @@ def test_attachment_follow_replay_preserves_samples_and_player_matrix() -> None:
     assert "apply_user_var_updates" in replay
     assert '0x00: ("basis_right", "Vec3")' in replay
     assert '0x20: ("basis_forward", "Vec3")' in replay
-    for rejected_index in (559, 744):
-        assert f"({rejected_index}," not in replay
+    assert '0x00: ("current", "PathTemplateSample")' in replay
+    assert '0xA8: ("next", "PathTemplateSample")' in replay
+    assert "(744," not in replay
 
 
 def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
@@ -22971,6 +23000,7 @@ def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
         ("Vec3", "0x0C"),
         ("TransformMatrix", "0x40"),
         ("PathTemplateSample", "0xA8"),
+        ("PathTemplateSamplePairCursorView", "0x150"),
         ("TrackRowCell", "0x54"),
         ("GolbPathFollowState", "0x28"),
         ("GolbShot", "0x2E8"),
@@ -22978,6 +23008,28 @@ def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
         assert f'"{type_name}": {width}' in replay
 
     assert '"traverse_path_follow_golb"' in replay
+    assert "apply_split_user_var_updates" in replay
+    assert "ensure_primary_sample_pair_view" in replay
+    assert "GOLB_PATH_FOLLOW_PRIMARY_SAMPLE_PAIR_SPLITS" in replay
+    for address, index in (
+        ("0x421a02", 594),
+        ("0x421871", 193),
+        ("0x421a25", 629),
+    ):
+        assert f'"{address}"' in replay
+        assert (
+            f'                "RegisterVariableSourceType",\n'
+            f"                {index},\n"
+            f"                67,"
+        ) in replay
+    for variable_name in (
+        "primary_sample_pair",
+        "primary_sample_pair_rejoined",
+    ):
+        assert (
+            f'        "{variable_name}",\n'
+            f'        "PathTemplateSamplePairCursorView*",'
+        ) in replay
     for index, storage, name, variable_type in (
         (261, 68, "flight_position_overflow", "Vec3*"),
         (360, 68, "source_anchor_position", "Vec3*"),
@@ -23002,8 +23054,9 @@ def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
     assert '0x1C4: ("flight_transform", "TransformMatrix")' in replay
     assert '0x24C: ("velocity", "Vec3")' in replay
     assert '0x258: ("direction", "Vec3")' in replay
-    for rejected_index in (193, 354):
-        assert f"({rejected_index}," not in replay
+    assert '0x00: ("current", "PathTemplateSample")' in replay
+    assert '0xA8: ("next", "PathTemplateSample")' in replay
+    assert "(354," not in replay
 
 
 def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:

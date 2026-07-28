@@ -8,10 +8,13 @@ import sys
 
 from _narrow_sync import (
     apply_split_user_var_update,
+    apply_split_user_var_updates,
     apply_user_var_updates,
+    current_header_type_equivalence,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
+    types_declare_missing_only,
 )
 from _target import DEFAULT_TARGET
 
@@ -23,6 +26,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "TransformMatrix": 0x40,
     "PathTemplateSample": 0xA8,
+    "PathTemplateSamplePairCursorView": 0x150,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -42,6 +46,10 @@ EXPECTED_STRUCT_FIELDS = {
         0x80: ("delta_dir_to_next", "Vec3"),
         0x8C: ("delta_length", "float"),
     },
+    "PathTemplateSamplePairCursorView": {
+        0x00: ("current", "PathTemplateSample"),
+        0xA8: ("next", "PathTemplateSample"),
+    },
 }
 
 # The ordinary traversal branch owns a current and next secondary sample, then
@@ -50,10 +58,12 @@ EXPECTED_STRUCT_FIELDS = {
 # FollowState output vector back to the caller. All ten identities preserve a
 # zero-__offset decompile in transactional preview.
 #
-# Two tempting enclosing-sample views are intentionally omitted. Typing the
-# primary interpolation cursor at 559 as PathTemplateSample* creates three
-# forward offsets for fields in the next sample; typing the terminal boundary
-# at 744 creates five negative offsets while reading the preceding sample.
+# The primary interpolation cursor is a proved two-record current/next window:
+# Windows fixes the 0xa8 stride and exact MLIL definitions, while paired
+# Android/iOS bodies independently preserve the authored two-sample source
+# shape. The terminal boundary at 744 remains deliberately untyped because it
+# is one-past-end and reads the preceding sample; a sample cast creates five
+# negative offsets.
 ATTACHMENT_FOLLOW_LIFETIME_SPECS = (
     (1406, 66, "current_secondary_sample", "PathTemplateSample*"),
     (1596, 72, "secondary_sample", "PathTemplateSample*"),
@@ -104,6 +114,71 @@ ATTACHMENT_FOLLOW_ROOT_TARGET_VAR = (
     251,
     66,
 )
+
+ATTACHMENT_FOLLOW_PRIMARY_SAMPLE_PAIR_SPLITS = (
+    (
+        (
+            (
+                "0x4210b6",
+                "mlil_ssa",
+                "RegisterVariableSourceType",
+                1030,
+                67,
+            ),
+            (
+                "0x420edf",
+                "mlil_ssa",
+                "RegisterVariableSourceType",
+                559,
+                67,
+            ),
+        ),
+        ("RegisterVariableSourceType", 1030, 67),
+        "primary_sample_pair",
+        "PathTemplateSamplePairCursorView*",
+    ),
+    (
+        (
+            (
+                "0x4210d9",
+                "mlil_ssa",
+                "RegisterVariableSourceType",
+                1065,
+                67,
+            ),
+        ),
+        ("RegisterVariableSourceType", 1065, 67),
+        "primary_sample_pair_rejoined",
+        "PathTemplateSamplePairCursorView*",
+    ),
+)
+
+
+def ensure_primary_sample_pair_view(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    type_name = "PathTemplateSamplePairCursorView"
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    if equivalence.get(type_name, False):
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "primary-sample pair view already matches the header",
+            "header": str(header_path),
+            "replace_types": (),
+            "include_types": (type_name,),
+        }
+    return types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=(type_name,),
+        include_types=(type_name,),
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -173,7 +248,13 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"path ownership header not found: {header_path}")
 
-    operations = [verify_owner_layouts(args.target)]
+    operations = [
+        ensure_primary_sample_pair_view(
+            target=args.target,
+            header_path=header_path,
+        ),
+        verify_owner_layouts(args.target),
+    ]
     operations.extend(
         apply_split_user_var_update(
             REPO_ROOT,
@@ -183,6 +264,24 @@ def main() -> int:
             target_var=ATTACHMENT_FOLLOW_ROOT_TARGET_VAR,
             variable_name="attachment_game_base",
             variable_type="GameRoot*",
+        )
+    )
+    operations.extend(
+        apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    "update_track_attachment_follow_state",
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for definitions, target_var, variable_name, variable_type in (
+                    ATTACHMENT_FOLLOW_PRIMARY_SAMPLE_PAIR_SPLITS
+                )
+            ),
         )
     )
     operations.extend(
