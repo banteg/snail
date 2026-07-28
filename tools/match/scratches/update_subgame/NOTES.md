@@ -586,3 +586,28 @@ Two natural Windows probes were measured and removed. Selecting a shared kind
 before one spawner call regressed focused Wibo from 79.94% to 58.14%; spelling
 the priority as an explicit nested absence ladder reached only 78.40%. The
 retained Windows source is therefore still the best honest VC6 shape.
+
+## 2026-07-28 dual-mobile ring-speed ownership
+
+The eight Windows loads feeding `spawn_track_ring_or_special_effect` use the
+same strength-reduced address:
+
+`game + ((row + (row * 3 + 0x12414) * 0x14 + 0x615c) << 2)`
+
+Expanding it gives `game + 0x5ccbb0 + row * 0xf4`, exactly
+`SubgameRuntime::runtime_rows[row].ring_speed` because `runtime_rows` begins at
+`+0x5ccac8` and `SubRow::ring_speed` is `+0xe8`. IDA 9.4 already renders that
+owner. Android `cRSubGame::AI()` at `0x82214` and iOS `cRSubGame::AI()` at
+`0x33a50` independently pass their corresponding current-row scalar to
+`cRSubGame::AddRing`, corroborating the authored relationship without
+transplanting either mobile layout into Windows.
+
+VC6 never materializes a `SubRow*` for these accesses: it leaves the row
+calculation as a dword index and loads through `[game + index * 4]`. Retyping
+that integer as a row pointer would be false ownership. The Binary Ninja replay
+therefore attaches byte-guarded comments to the eight exact load instructions
+instead. The generic narrow-sync layer now supports transactional, read-back
+verified instruction comments, so future non-materialized owners can be
+preserved without fakematching or fake pointer lifetimes. This is analysis-only
+and leaves the honest focused frontier unchanged at 79.94%, 1036/1033
+instructions, 123 clean operands, and the two jump-table identity residuals.

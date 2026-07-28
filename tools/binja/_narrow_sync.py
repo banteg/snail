@@ -21,6 +21,7 @@ SymbolRemoval = tuple[str, str]
 DataVarUpdate = tuple[str, str]
 DataVarRemoval = tuple[str, str]
 IntDisplayUpdate = tuple[str, str, str, int, int, str, str, str]
+InstructionCommentUpdate = tuple[str, str, str, str]
 SplitVarSpec = tuple[str, int, int]
 SplitVarDefinition = tuple[str, str, str, int, int]
 SplitUserVarUpdate = tuple[
@@ -554,6 +555,41 @@ try:
             affected_functions.append(str(function.name))
             continue
 
+        if kind == "instruction_comment_set":
+            function = find_function(operation["identifier"])
+            address = int(str(operation["address"]), 0)
+            if function not in bv.get_functions_containing(address):
+                raise RuntimeError(
+                    f"refusing instruction comment outside "
+                    f"{function.name}: {address:#x}"
+                )
+            expected_bytes = bytes.fromhex(str(operation["expected_bytes"]))
+            observed_bytes = bytes(bv.read(address, len(expected_bytes)))
+            if observed_bytes != expected_bytes:
+                raise RuntimeError(
+                    f"refusing instruction comment at {address:#x}: "
+                    f"expected {expected_bytes.hex(' ')}, found "
+                    f"{observed_bytes.hex(' ')}"
+                )
+            expected_comment = str(operation["comment"])
+            before = str(bv.get_comment_at(address) or "")
+            changed = before != expected_comment
+            if changed:
+                analysis_changed = True
+                bv.set_comment_at(address, expected_comment)
+            results.append({
+                "op": kind,
+                "identifier": str(operation["identifier"]),
+                "function": str(function.name),
+                "address": hex(address),
+                "expected_bytes": expected_bytes.hex(" "),
+                "comment": expected_comment,
+                "before": before,
+                "changed": changed,
+            })
+            affected_functions.append(str(function.name))
+            continue
+
         if kind == "struct_field_set":
             struct_name = str(operation["struct_name"])
             type_obj = bv.get_type_by_name(struct_name)
@@ -677,6 +713,10 @@ try:
                 "required_hlil_present": True,
                 "forbidden_hlil_absent": True,
             }
+        elif entry["op"] == "instruction_comment_set":
+            observed = str(bv.get_comment_at(int(entry["address"], 0)) or "")
+            entry["observed"] = observed
+            entry["verified"] = observed == entry["comment"]
         else:
             type_obj = bv.get_type_by_name(entry["struct_name"])
             member = (
@@ -701,6 +741,7 @@ try:
             "undefine_symbol",
             "ensure_function_analysis",
             "int_display_set",
+            "instruction_comment_set",
             "user_var_set",
             "user_var_delete",
         } and not entry["changed"]:
@@ -2395,6 +2436,83 @@ def apply_int_display_updates(
     return [
         {
             "op": "int_display_batch",
+            "operation_count": len(operations),
+            "operations": operations,
+            "preview": {
+                "success": preview.get("success"),
+                "message": preview.get("message"),
+                "affected_function_count": len(
+                    preview.get("affected_functions", ())
+                ),
+            },
+            "result": applied,
+        }
+    ]
+
+
+def instruction_comment_operations(
+    updates: Iterable[InstructionCommentUpdate],
+) -> list[dict[str, object]]:
+    return [
+        {
+            "op": "instruction_comment_set",
+            "identifier": identifier,
+            "address": address,
+            "expected_bytes": expected_bytes,
+            "comment": comment,
+        }
+        for identifier, address, expected_bytes, comment in updates
+    ]
+
+
+def apply_instruction_comment_updates(
+    repo_root: Path,
+    *,
+    target: str,
+    updates: Iterable[InstructionCommentUpdate],
+) -> list[dict[str, object]]:
+    operations = instruction_comment_operations(updates)
+    if not operations:
+        return []
+
+    preview = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=True,
+    )
+    preview_results = preview.get("results")
+    if (
+        not isinstance(preview_results, list)
+        or len(preview_results) != len(operations)
+        or any(
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("changed"), bool)
+            for entry in preview_results
+        )
+    ):
+        raise RuntimeError(
+            f"Binary Ninja instruction-comment preview is malformed: {preview!r}"
+        )
+    if all(entry["changed"] is False for entry in preview_results):
+        return [
+            {
+                **operation,
+                "status": "skipped",
+                "reason": "already current",
+            }
+            for operation in operations
+        ]
+
+    applied = run_bn_batch(
+        repo_root,
+        target=target,
+        operations=operations,
+        preview=False,
+    )
+    return [
+        {
+            "op": "instruction_comment_batch",
             "operation_count": len(operations),
             "operations": operations,
             "preview": {

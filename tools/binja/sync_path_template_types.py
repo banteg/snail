@@ -8,6 +8,7 @@ import sys
 
 from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_instruction_comment_updates,
     apply_data_var_updates,
     apply_proto_updates,
     apply_struct_and_proto_updates,
@@ -1751,6 +1752,70 @@ UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
         66,
         "time_trial_route_cursor",
         "TimeTrialRouteRecordCursor*",
+    ),
+)
+
+# VC6 computes the runtime-row ring-speed address as a dword index relative to
+# the complete SubgameRuntime base, so there is no honest SubRow* lifetime for
+# Binary Ninja to type. Preserve the exact owner at the eight load
+# instructions instead. The Windows identity below is algebraically
+# `runtime_rows + row * 0xf4 + 0xe8`; Android and iOS independently pass their
+# current authored row's corresponding scalar to cRSubGame::AddRing.
+UPDATE_SUBGAME_RING_SPEED_COMMENT = (
+    "Owner: SubgameRuntime::runtime_rows[runtime_row_scan_begin].ring_speed "
+    "(+0x5ccac8 + row * 0xf4 + 0xe8). Android cRSubGame::AI @ 0x82214 and "
+    "iOS cRSubGame::AI @ 0x33a50 independently pass the current authored "
+    "row speed to AddRing; Windows offsets remain authoritative."
+)
+
+UPDATE_SUBGAME_RING_SPEED_COMMENT_UPDATES = (
+    (
+        "update_subgame",
+        "0x4395a3",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
+    ),
+    (
+        "update_subgame",
+        "0x4395cb",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
+    ),
+    (
+        "update_subgame",
+        "0x4395f3",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
+    ),
+    (
+        "update_subgame",
+        "0x43961f",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
+    ),
+    (
+        "update_subgame",
+        "0x43968f",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
+    ),
+    (
+        "update_subgame",
+        "0x4396cb",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
+    ),
+    (
+        "update_subgame",
+        "0x439707",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
+    ),
+    (
+        "update_subgame",
+        "0x4397fc",
+        "8b 14 8e",
+        UPDATE_SUBGAME_RING_SPEED_COMMENT,
     ),
 )
 
@@ -4794,6 +4859,13 @@ def main() -> int:
                 updates=UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
             )
         )
+        operations.extend(
+            apply_instruction_comment_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=UPDATE_SUBGAME_RING_SPEED_COMMENT_UPDATES,
+            )
+        )
         return emit_summary(
             repo_root=REPO_ROOT,
             target=args.target,
@@ -5309,6 +5381,13 @@ def main() -> int:
                 *PATH_SAMPLE_INVERSE_USER_VAR_UPDATES,
                 *ATTACHMENT_FOLLOW_USER_VAR_UPDATES,
             ),
+        )
+    )
+    operations.extend(
+        apply_instruction_comment_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=UPDATE_SUBGAME_RING_SPEED_COMMENT_UPDATES,
         )
     )
     operations.extend(

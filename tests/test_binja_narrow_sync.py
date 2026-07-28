@@ -18719,6 +18719,68 @@ def test_update_subgame_frontend_root_split_stays_guarded() -> None:
     assert "(char *)g_game_base + 440" in ida_check["forbidden_substrings"]
 
 
+def test_instruction_comment_batch_is_byte_guarded_and_transactional() -> None:
+    operations = _narrow_sync.instruction_comment_operations(
+        (
+            (
+                "update_subgame",
+                "0x4395a3",
+                "8b 14 8e",
+                "runtime row ring-speed owner",
+            ),
+        )
+    )
+
+    assert operations == [
+        {
+            "op": "instruction_comment_set",
+            "identifier": "update_subgame",
+            "address": "0x4395a3",
+            "expected_bytes": "8b 14 8e",
+            "comment": "runtime row ring-speed owner",
+        }
+    ]
+    batch_code = _narrow_sync._batch_python_code(operations, preview=True)
+    assert "function not in bv.get_functions_containing(address)" in batch_code
+    assert "observed_bytes != expected_bytes" in batch_code
+    assert "bv.set_comment_at(address, expected_comment)" in batch_code
+    assert "bv.get_comment_at(int(entry[\"address\"], 0))" in batch_code
+    assert "bv.revert_undo_actions(state)" in batch_code
+
+
+def test_update_subgame_ring_speed_owner_comments_stay_guarded() -> None:
+    replay = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    notes = (
+        Path(__file__).parents[1]
+        / "tools/match/scratches/update_subgame/NOTES.md"
+    ).read_text(encoding="utf-8")
+
+    assert "UPDATE_SUBGAME_RING_SPEED_COMMENT_UPDATES" in replay
+    assert replay.count(
+        "updates=UPDATE_SUBGAME_RING_SPEED_COMMENT_UPDATES"
+    ) == 2
+    for address in (
+        "0x4395a3",
+        "0x4395cb",
+        "0x4395f3",
+        "0x43961f",
+        "0x43968f",
+        "0x4396cb",
+        "0x439707",
+        "0x4397fc",
+    ):
+        assert f'"{address}"' in replay
+    assert replay.count('"8b 14 8e"') == 8
+    assert (
+        "SubgameRuntime::runtime_rows[runtime_row_scan_begin].ring_speed"
+        in replay
+    )
+    assert "game + 0x5ccbb0 + row * 0xf4" in notes
+    assert "would be false ownership" in notes
+
+
 def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
     replay = (
         BINJA_DIR / "sync_update_subgame_fringe_lifetimes.py"
