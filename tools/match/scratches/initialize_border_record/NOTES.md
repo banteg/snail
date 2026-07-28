@@ -8,3 +8,12 @@ allocators return a slot through the separate `FrontendWidget*` semantic view.
 2026-07-15 live replay: BN and IDA now retain the `BorderRecord*` receiver and
 the named color fields instead of raw dword arithmetic. The matching source is
 unchanged and exact at 21/21 instructions with nine clean operands.
+
+## 2026-07-28 backing/semantic projection
+
+The independently recovered `FrontendWidget`/authored `cRBorder` view now
+retains `color_06c` at the same Windows `+0x6c` lane constructed here. This is
+not a mobile-offset transfer: the exact Windows constructor proves the member,
+and the exact Windows allocator proves that the returned semantic pointer is
+the same record base. The separate `BorderRecord` backing identity remains
+intact rather than being collapsed into a fake union.

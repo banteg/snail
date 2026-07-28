@@ -13079,6 +13079,38 @@ def test_frontend_widget_flag_ownership_stays_aligned() -> None:
         )
 
 
+def test_frontend_widget_backing_lifecycle_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = [
+        (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        for header_name in (
+            "bn_frontend_widget_types.h",
+            "frontend_replay_types.h",
+            "path_template_types.h",
+        )
+    ]
+    matcher_header = (
+        repo_root / "tools/match/include/frontend_widget.h"
+    ).read_text(encoding="utf-8")
+    backing_header = (
+        repo_root / "tools/match/include/border_manager.h"
+    ).read_text(encoding="utf-8")
+
+    assert '("0x6c", "color_06c", "tColour")' in frontend_sync
+    assert '("0x19c", "created_time", "int32_t")' in frontend_sync
+    for header in analysis_headers:
+        assert "tColour color_06c;" in header
+        assert "int32_t created_time;" in header
+        assert "uint8_t _pad_6c[0x10];" not in header
+        assert "uint8_t _pad_198[0x8];" not in header
+    for header in (matcher_header, backing_header):
+        assert "tColour color_06c;" in header
+        assert "int created_time;" in header
+
+
 def test_frontend_widget_draw_owner_replay_stays_aligned() -> None:
     frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
         encoding="utf-8"

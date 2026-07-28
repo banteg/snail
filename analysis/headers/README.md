@@ -137,7 +137,9 @@ intentional.
   - Width-gates the complete `FrontendWidget` field owner, replays the unique
     `cRBorder::Draw()` receiver annotation, and records its authored void ABI as
     guarded function-recreation debt while Binary Ninja retains a stale
-    explicit function type.
+    explicit function type. The semantic view also retains the constructor-owned
+    `color_06c` and allocator-stamped `created_time` lanes shared with the exact
+    `BorderRecord` backing view.
 - `bn_frontend_menu_types.h`
 - `uv run python tools/binja/sync_frontend_menu_types.py`
 - `uv run python tools/ida/sync_frontend_menu_types.py`
@@ -476,7 +478,10 @@ The same replay now owns the complete `BorderManager +0xb4c`: its embedded
 `BorderStack`, fixed 150-entry `BorderRecord` pool, and delayed-widget state.
 `BorderRecord` remains the exact backing-storage identity while allocator and
 front-end callsites deliberately consume each returned slot as a
-`FrontendWidget`; the replay does not collapse those two proven views.
+`FrontendWidget`; the replay does not collapse those two proven views. The two
+views name `color_06c` and `created_time` consistently because the Windows
+constructor and allocator prove those shared physical lanes; Android and iOS
+independently corroborate the allocator lifecycle without donating offsets.
 
 The star-manager lane records the cross-port `cRStarManager` owner, its
 constructed `BodBase` prefix, the `0x2c` entry stride, and the lifecycle fields

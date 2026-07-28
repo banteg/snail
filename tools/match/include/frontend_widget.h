@@ -43,8 +43,9 @@ enum FrontendWidgetFlag {
 };
 
 // Semantic cRBorder view over BorderRecord storage. The exact record
-// constructor initializes the inherited BodBase; widget-specific semantics
-// begin at +0x38.
+// constructor initializes the inherited BodBase and color_06c; the manager
+// allocator stamps created_time before returning this view. Widget-specific
+// semantics begin at +0x38.
 class FrontendWidget : public BodBase {
 public:
     void draw_frontend_widget(); // @ 0x401130, iOS/Android cRBorder::Draw()
@@ -108,7 +109,7 @@ public:
         int sprite_hit_mask_texture_id;
     }; // +0x064
     int sprite_extend_texture_c; // +0x068, stored by border_sprite_extend
-    char unknown_06c[0x7c - 0x06c];
+    tColour color_06c; // +0x06c, constructed with the backing BorderRecord
     int widget_type; // +0x7c, border style/font preset
     TwinkleManager twinkle_manager; // +0x080, five inline twinkles and manager state
     float sprite_shadow_offset; // +0x178, optional second sprite draw offset
@@ -125,7 +126,8 @@ public:
     float slider_hit_top; // +0x18c
     float slider_hit_bottom; // +0x190
     int shortcut_key_code; // +0x194
-    char unknown_198[0x1a0 - 0x198];
+    char unknown_198[0x19c - 0x198];
+    int created_time; // +0x19c, stamped by BorderManager::allocate_border
     unsigned int widget_flags; // +0x1a0, FrontendWidgetFlag word
     unsigned int previous_widget_flags; // +0x1a4
     char unknown_1a8[0x1ac - 0x1a8];

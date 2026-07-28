@@ -155,6 +155,19 @@ The rewrite is codegen-neutral: focused matching remains 99.30%, 429/429
 instructions, prefix 55, with 49 clean operands and the one documented
 jump-table layout mismatch.
 
+## 2026-07-28 returned-record lifecycle
+
+The semantic `FrontendWidget` view now exposes the two physical lanes already
+proved on its exact `BorderRecord` backing storage: `color_06c`, constructed by
+`initialize_border_record`, and `created_time +0x19c`, stamped by
+`BorderManager::allocate_border` before this initializer is called. Android
+and iOS `cRBorderManager::GetBorder()` independently corroborate the latter
+frame-stamp-before-return lifecycle with their own platform layouts.
+
+This does not name the constructor-only dword at Windows `+0x38`, and it does
+not import any mobile offsets. The backing and semantic types remain distinct
+views of the same Windows record rather than a fake union.
+
 ## 2026-07-16 constructor caller flag vocabulary
 
 Nineteen core frontend construction paths now spell their independently proven

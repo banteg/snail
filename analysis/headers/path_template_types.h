@@ -664,7 +664,7 @@ typedef struct FrontendWidget {
     int32_t background_texture_id;
     int32_t texture_hit_test_sprite;
     int32_t sprite_extend_texture_c;
-    uint8_t _pad_6c[0x10];
+    tColour color_06c;
     int32_t widget_type;
     TwinkleManager twinkle_manager;
     float sprite_shadow_offset;
@@ -675,7 +675,8 @@ typedef struct FrontendWidget {
     float slider_hit_top;
     float slider_hit_bottom;
     int32_t shortcut_key_code;
-    uint8_t _pad_198[0x8];
+    uint8_t _pad_198[0x4];
+    int32_t created_time;
     FrontendWidgetFlag widget_flags;
     FrontendWidgetFlag previous_widget_flags;
     uint8_t _pad_1a8[0x4];

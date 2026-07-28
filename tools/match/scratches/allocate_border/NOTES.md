@@ -41,3 +41,19 @@ exact `BorderRecord[150]` pool in both databases. The allocator readback names
 the flags scan, `created_time`, and `GameRoot::frame_counter`, while its return
 type stays `FrontendWidget*`; no fake union collapses the two proven views.
 The focused source remains exact at 23/23 with three clean operands.
+
+## 2026-07-28 cross-port lifecycle corroboration
+
+Android `cRBorderManager::GetBorder()` at `0x5d11c` and iOS
+`cRBorderManager::GetBorder()` at `0x388a0` independently preserve the same
+150-slot allocation lifecycle. Each scans the slot flags at mobile
+record-relative `+0x194`, stamps the immediately preceding `+0x190` lane from
+the mobile root frame counter, and returns the record base. Windows remains
+authoritative for its own layout: this exact allocator scans
+`BorderRecord::flags +0x1a0`, stamps `created_time +0x19c` from
+`GameRoot::frame_counter +0x51c`, and returns that same base through
+`FrontendWidget*`.
+
+The semantic `FrontendWidget` view now names `created_time` as well as the
+backing `BorderRecord` view. The mobile/Windows `0xc` offset delta is recorded
+as layout evidence only; no mobile address was copied into the Windows type.
