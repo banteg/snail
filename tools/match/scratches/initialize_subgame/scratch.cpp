@@ -101,7 +101,7 @@ void cRSubGame::Init()
         0x14,
         400.0f,
         14.0f,
-        ((tColour*)scratch)->set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f),
+        ((tColour*)scratch)->Set(1.0f, 1.0f, 1.0f, 0.0299999993f),
         3,
         300.0f);
     top_score_widget->font_scale = 1.5f;
@@ -115,7 +115,7 @@ void cRSubGame::Init()
             122,
             0.0f,
             58.0f,
-            ((tColour*)scratch)->set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            ((tColour*)scratch)->Set(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
         lives_icon_widget->hide_border_init();
@@ -128,7 +128,7 @@ void cRSubGame::Init()
             0x14,
             47.0f,
             80.0f,
-            ((tColour*)scratch)->set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f),
+            ((tColour*)scratch)->Set(1.0f, 1.0f, 1.0f, 0.0299999993f),
             0,
             0.0f);
         lives_text_widget->hide_border_init();
@@ -144,7 +144,7 @@ void cRSubGame::Init()
                 123,
                 (float)icon_index * 24.0f + 13.0f,
                 430.0f,
-                ((tColour*)scratch)->set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                ((tColour*)scratch)->Set(1.0f, 1.0f, 1.0f, 1.0f),
                 0.0f,
                 4);
             (*icon_slot)->sprite_shadow_offset = 0.0f;
@@ -185,7 +185,7 @@ void cRSubGame::Init()
         0x14,
         40.0f,
         14.0f,
-        ((tColour*)scratch)->set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f),
+        ((tColour*)scratch)->Set(1.0f, 1.0f, 1.0f, 0.0299999993f),
         3,
         -71.0f);
     bottom_score_widget->font_scale = 1.5f;

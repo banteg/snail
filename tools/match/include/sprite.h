@@ -23,13 +23,16 @@ enum {
 // Set/Alpha/Grey/White/Black family with the same RGBA field order.
 struct tColour {
     tColour* noop_this_constructor();
-    tColour* set_color_rgba(float r, float g, float b, float a); // @ 0x44db60; Set
-    void store_color4f(float r, float g, float b, float a); // @ 0x44dbb0; constructor role
-    void set_color_rgb(float r, float g, float b); // @ 0x44dbd0; Set
-    void set_color_alpha(float alpha); // @ 0x44db80; Alpha
-    void set_color_grayscale(float intensity); // @ 0x44db90; Grey
-    void set_color_white(); // @ 0x44dc50; White
-    void set_color_black(); // @ 0x44dc60; Black
+    tColour* Set(float r, float g, float b, float a); // @ 0x44db60
+    void Set(float r, float g, float b); // @ 0x44dbd0
+    void Alpha(float alpha); // @ 0x44db80
+    void Grey(float intensity); // @ 0x44db90
+    void White(); // @ 0x44dc50
+    void Black(); // @ 0x44dc60
+
+    // The mobile four-float constructor is the semantic counterpart, but a
+    // VC6 constructor adds a `this` return absent from the Windows body.
+    void store_color4f(float r, float g, float b, float a); // @ 0x44dbb0
 
     float r; // +0x00
     float g; // +0x04

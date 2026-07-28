@@ -49,7 +49,7 @@ void FrontendFade::update_frontend_transition_overlay()
             640.0f,
             480.0f,
             0x1000000,
-            color.set_color_rgba(0.0f, 0.0f, 0.0f, alpha),
+            color.Set(0.0f, 0.0f, 0.0f, alpha),
             14);
     }
 }

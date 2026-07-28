@@ -24,7 +24,7 @@ void GolbShot::spawn_golb_smoke(Vector3* position)
 
     {
         tColour color;
-        sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+        sprite->color = *color.Set(1.0f, 1.0f, 1.0f, 1.0f);
     }
     float* sprite_words = (float*)sprite;
     sprite_words[24] = 0.1f;

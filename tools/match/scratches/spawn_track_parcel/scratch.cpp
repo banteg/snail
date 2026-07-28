@@ -18,7 +18,7 @@ Parcel* cRSubGame::AddParcel(Vector3* world_position, cRSubGoldy*)
         parcel->sprite->gravity_step = 0.0f;
 
         tColour color;
-        parcel->sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+        parcel->sprite->color = *color.Set(1.0f, 1.0f, 1.0f, 1.0f);
         parcel->sprite->size_start = 1.0f;
         parcel->sprite->size_end = 1.0f;
         parcel->sprite->position = parcel->position;

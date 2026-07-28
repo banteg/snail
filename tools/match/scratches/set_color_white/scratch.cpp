@@ -1,8 +1,8 @@
-// set_color_white @ 0x44dc50 (thiscall, ret)
+// set_color_white @ 0x44dc50 (thiscall, ret) — tColour::White()
 
 #include "sprite.h"
 
-void tColour::set_color_white()
+void tColour::White()
 {
-    set_color_grayscale(1.0f);
+    Grey(1.0f);
 }

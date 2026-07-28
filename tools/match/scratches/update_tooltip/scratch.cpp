@@ -55,14 +55,14 @@ void FrontendWidgetTooltip::update_tooltip()
                     FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     g_game->players[0].mouse_cursor.saved_x,
                     g_game->players[0].mouse_cursor.saved_y + 64.0f,
-                    color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
+                    color.Set(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
             } else if ((flags & 4) != 0) {
                 FrontendWidget* local_owner = owner_widget;
                 tooltip_widget->initialize_frontend_widget(
                     FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y - local_owner->active_padding,
-                    color_above.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
+                    color_above.Set(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
                 FrontendWidget* border = tooltip_widget;
                 border->layout_anchor_y =
                     border->layout_anchor_y - (border->layout_height + border->active_padding);
@@ -73,7 +73,7 @@ void FrontendWidgetTooltip::update_tooltip()
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y + local_owner->layout_height +
                         local_owner->active_padding,
-                    color_below.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
+                    color_below.Set(1.0f, 1.0f, 1.0f, 1.0f), 1, anchor);
                 FrontendWidget* border = tooltip_widget;
                 border->layout_anchor_y = border->layout_anchor_y + border->active_padding;
             } else if ((flags & 0x10) != 0) {
@@ -82,7 +82,7 @@ void FrontendWidgetTooltip::update_tooltip()
                     FRONTEND_WIDGET_FLAG_HIGHLIGHTED, (char*)this, 7,
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y - local_owner->active_padding,
-                    color_above_left.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0, 0.0f);
+                    color_above_left.Set(1.0f, 1.0f, 1.0f, 1.0f), 0, 0.0f);
                 FrontendWidget* border = tooltip_widget;
                 border->layout_anchor_y =
                     border->layout_anchor_y - (border->layout_height + border->active_padding);
@@ -93,7 +93,7 @@ void FrontendWidgetTooltip::update_tooltip()
                     local_owner->layout_anchor_x,
                     local_owner->layout_anchor_y + local_owner->layout_height +
                         local_owner->active_padding,
-                    color_below_left.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0, 0.0f);
+                    color_below_left.Set(1.0f, 1.0f, 1.0f, 1.0f), 0, 0.0f);
                 FrontendWidget* border = tooltip_widget;
                 border->layout_anchor_y = border->layout_anchor_y + border->active_padding;
             }

@@ -26,7 +26,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
         0x14,
         definition->anchor_x,
         definition->layout_y,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         alignment >> 1,
         definition->anchor_x);
 
@@ -47,7 +47,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
                 0x14,
                 0.0f,
                 0.0f,
-                color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                color.Set(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
                 definition->anchor_x + 40.0f);
 
@@ -59,7 +59,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
                 0x14,
                 0.0f,
                 0.0f,
-                color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                color.Set(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
                 definition->anchor_x - 60.0f);
             widget_disable->stack_widget_below(widget_main);
@@ -72,7 +72,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
                 0x14,
                 0.0f,
                 0.0f,
-                color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                color.Set(1.0f, 1.0f, 1.0f, 1.0f),
                 2,
                 definition->anchor_x);
             widget_disable = 0;

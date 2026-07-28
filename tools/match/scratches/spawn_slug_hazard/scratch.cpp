@@ -73,7 +73,7 @@ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
     unsigned int flags = sprite->flags;
     flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     sprite->flags = flags;
-    slug_hazards.slots[slot_index].sprite->color.set_color_white();
+    slug_hazards.slots[slot_index].sprite->color.White();
     slug_hazards.slots[slot_index].sprite->gravity_step = 0.0f;
     slug_hazards.slots[slot_index].sprite->progress = 0.0f;
     slug_hazards.slots[slot_index].sprite->progress_step = 0.0f;

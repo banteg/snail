@@ -6,7 +6,7 @@ void Sprite::initialize_sprite()
 {
     flags = SPRITE_FLAG_ACTIVE | SPRITE_FLAG_SKIP_INITIAL_PROGRESS
         | SPRITE_FLAG_RENDER_ENABLED;
-    color.set_color_white();
+    color.White();
 
     int zero = 0;
     gravity_step = -0.013f;

@@ -39,7 +39,7 @@ void GUI::initialize_challenge_setup_screen()
         0x14,
         20.0f,
         80.0f,
-        difficulty_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        difficulty_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     difficulty_slider->slider_value =
@@ -55,7 +55,7 @@ void GUI::initialize_challenge_setup_screen()
         0x14,
         20.0f,
         145.0f,
-        speed_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        speed_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     speed_slider->slider_value =
@@ -78,7 +78,7 @@ void GUI::initialize_challenge_setup_screen()
         0x14,
         20.0f,
         250.0f,
-        play_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        play_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         play_anchor_x);
     play_button->stack_widget_below(speed_slider);
@@ -93,7 +93,7 @@ void GUI::initialize_challenge_setup_screen()
         0x14,
         20.0f,
         70.0f,
-        replay_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        replay_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         -100.0f);
     replay_button->stack_widget_below(speed_slider);
@@ -109,7 +109,7 @@ void GUI::initialize_challenge_setup_screen()
         0x14,
         20.0f,
         20.0f,
-        back_color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        back_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     back_button->stack_widget_below(replay_button);

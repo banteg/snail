@@ -59,7 +59,7 @@ void Completion::initialize_completion_screen(
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "Delivery Complete!",
         20, 0.0f, 80.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
 
     delivered_count_widget = g_game->border_manager.allocate_border();
     if (delivered_count == 1) {
@@ -67,20 +67,20 @@ void Completion::initialize_completion_screen(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             " 0 Package Delivered", 20, 0.0f, 160.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else {
         delivered_count_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "00 Packages Delivered", 20, 0.0f, 160.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     }
 
     bonus_icon_widget = g_game->border_manager.allocate_border();
     bonus_icon_widget->initialize_frontend_sprite_button(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE, 122,
         100.0f, 146.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 4);
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 4);
     bonus_icon_widget->sprite_shadow_offset = 0.0f;
 
     bonus_summary_widget = g_game->border_manager.allocate_border();
@@ -90,13 +90,13 @@ void Completion::initialize_completion_screen(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "PERFECT SCORE!>50,000 Bonus Points", 20, 0.0f, 302.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else if (mode == 1) {
         bonus_summary_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "LEVEL COMPLETE!>", 20, 0.0f, 302.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         bonus_summary_widget->border_add_text_number(bonus_score);
         strcat(bonus_summary_widget->text_buffer, " Bonus Points");
     }
@@ -110,13 +110,13 @@ void Completion::initialize_completion_screen(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_click_to_continue_text, 20, 0.0f, 400.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else {
         continue_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_click_to_continue_text, 20, 0.0f, 320.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     }
     continue_widget->hide_border_init();
 

@@ -47,7 +47,7 @@ int GameRoot::run_frame_update()
                 64.0f,
                 64.0f,
                 0x1000000,
-                color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+                color.Set(1.0f, 1.0f, 1.0f, 1.0f),
                 7);
         }
     }

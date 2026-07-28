@@ -165,7 +165,7 @@ void FrontendWidget::draw_frontend_widget()
                 texture_hit_width + border_edge,
                 texture_hit_height + border_edge,
                 0x1000000,
-                shadow_color.set_color_rgba(0.0f, 0.0f, 0.0f, 0.89999998f),
+                shadow_color.Set(0.0f, 0.0f, 0.0f, 0.89999998f),
                 0.0f,
                 0.0f,
                 1.0f,
@@ -227,7 +227,7 @@ void FrontendWidget::draw_frontend_widget()
         && this == g_game->border_manager.delayed_widget) {
         tColour glow_color;
         glow_color.noop_this_constructor();
-        white.set_color_white();
+        white.White();
         glow_color.store_color4f(
             white.r,
             white.g,

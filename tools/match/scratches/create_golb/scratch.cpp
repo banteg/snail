@@ -265,7 +265,7 @@ after_shoot_flag_source:
 
             tColour color;
             render_sprite->color =
-                *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+                *color.Set(1.0f, 1.0f, 1.0f, 1.0f);
             render_sprite->size_start = 0.49000001f;
             render_sprite->size_end = 0.49000001f;
             Vec3* sprite_position = (Vec3*)&render_sprite->position;

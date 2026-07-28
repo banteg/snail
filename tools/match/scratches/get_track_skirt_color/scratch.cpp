@@ -5,7 +5,7 @@
 tColour* cRSubGame::GetSkirtColour(tColour* out)
 {
     tColour color;
-    *out = *color.set_color_rgba(
+    *out = *color.Set(
         level_definition.fringe_color.r,
         level_definition.fringe_color.g,
         level_definition.fringe_color.b,

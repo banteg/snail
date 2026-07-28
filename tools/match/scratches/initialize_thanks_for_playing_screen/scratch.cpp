@@ -33,7 +33,7 @@ void ThanksScreen::initialize_thanks_for_playing_screen()
         0x14,
         0.0f,
         435.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     message_widget->font_scale = 1.2f;

@@ -53,7 +53,7 @@ void Invincible::update_invincible_shell()
 
     g_game->subgame.player.presentation.snail_skin.change_snail_skin(
         SNAIL_SKIN_SLOT_INVINCIBLE, 0.0f);
-    color.set_color_white();
+    color.White();
     color.a = fade_progress * 0.80000001f;
 
     float angle = spin_phase * 6.2831855f;

@@ -39,7 +39,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             prompt_y - 54.0f,
-            color_3.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_3.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             140.0f);
 
@@ -51,7 +51,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             prompt_y,
-            color_19.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_19.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             268.0f);
         return;
@@ -64,7 +64,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             200.0f,
-            color_5.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_5.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
 
@@ -77,7 +77,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             prompt_y,
-            color_13.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_13.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
@@ -90,7 +90,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             prompt_y,
-            color_7.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_7.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
         no_button->stack_widget_below(prompt_title);
@@ -104,7 +104,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             200.0f,
-            color_17.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_17.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
 
@@ -117,7 +117,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             prompt_y,
-            color_9.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_9.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
@@ -130,7 +130,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             prompt_y,
-            color_15.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_15.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
         no_button->stack_widget_below(prompt_title);
@@ -145,7 +145,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             200.0f,
-            color_11.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_11.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
 
@@ -158,7 +158,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             330.0f,
-            color_2.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_2.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
@@ -171,7 +171,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             330.0f,
-            color_4.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_4.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
         no_button->stack_widget_below(prompt_title);
@@ -185,7 +185,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             200.0f,
-            color_6.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_6.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
 
@@ -198,7 +198,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             330.0f,
-            color_8.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_8.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
@@ -211,7 +211,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             330.0f,
-            color_10.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_10.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
         no_button->stack_widget_below(prompt_title);
@@ -225,7 +225,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             0.0f,
             200.0f,
-            color_12.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_12.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
 
@@ -238,7 +238,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             468.0f,
             373.0f,
-            color_14.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_14.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
@@ -251,7 +251,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             568.0f,
             296.0f,
-            color_16.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_16.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
         no_button->stack_widget_below(prompt_title);
@@ -266,7 +266,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             473.0f,
             33.0f,
-            color_18.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_18.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
 
@@ -278,7 +278,7 @@ void Exit::initialize_exit_prompt()
             0x14,
             566.0f,
             108.0f,
-            color_20.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color_20.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
         return;

@@ -50,7 +50,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
     case 0:
         title_widget->initialize_frontend_widget(
             0, (char*)"Postal High Scores", 23, 0.0f, 64.0f,
-            postal_heading_challenge_background_color.set_color_rgba(
+            postal_heading_challenge_background_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.postal_records;
@@ -61,7 +61,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
     case 1:
         title_widget->initialize_frontend_widget(
             0, (char*)"Challenge High Scores", 23, 0.0f, 64.0f,
-            challenge_heading_rank_color.set_color_rgba(
+            challenge_heading_rank_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.survival_records;
@@ -100,7 +100,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                               ",
                     22, 0.0f, y,
-                    postal_background_color.set_color_rgba(
+                    postal_background_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -228.0f);
 
@@ -110,7 +110,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    postal_rank_color.set_color_rgba(
+                    postal_rank_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->border_add_text_number(row_index + 1);
@@ -123,7 +123,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
-                    postal_name_color.set_color_rgba(
+                    postal_name_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
@@ -138,7 +138,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     g_game->border_manager.allocate_border();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    postal_score_color.set_color_rgba(
+                    postal_score_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     3, 160.0f);
                 score_row_widgets[row_index]->border_add_text_number(
@@ -153,7 +153,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                         | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                     (char*)"Replay", 22, 0.0f, y,
-                    postal_replay_color.set_color_rgba(
+                    postal_replay_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     2, 125.0f);
                 replay_row_widgets[row_index]->hide_border_init();
@@ -172,7 +172,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                           ",
                     22, 0.0f, y,
-                    postal_heading_challenge_background_color.set_color_rgba(
+                    postal_heading_challenge_background_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -228.0f);
 
@@ -182,7 +182,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    challenge_heading_rank_color.set_color_rgba(
+                    challenge_heading_rank_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->border_add_text_number(row_index + 1);
@@ -195,7 +195,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
-                    challenge_name_color.set_color_rgba(
+                    challenge_name_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
@@ -210,7 +210,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                     g_game->border_manager.allocate_border();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    challenge_score_color.set_color_rgba(
+                    challenge_score_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     3, 125.0f);
                 score_row_widgets[row_index]->border_add_text_number(
@@ -225,7 +225,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                         | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                     (char*)"Replay", 22, 0.0f, y,
-                    challenge_replay_color.set_color_rgba(
+                    challenge_replay_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     2, 170.0f);
                 if (entering_name != 0)
@@ -236,10 +236,10 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
 
             if ((row_index & 1) != 0) {
                 row_background_widgets[row_index]->idle_fill_color =
-                    *alternating_background_color.set_color_rgba(
+                    *alternating_background_color.Set(
                         0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
                 replay_row_widgets[row_index]->idle_fill_color =
-                    *shared_action_color.set_color_rgba(
+                    *shared_action_color.Set(
                         0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
             }
         }
@@ -256,7 +256,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Cancel", 23, 0.0f, y,
-            shared_action_color.set_color_rgba(
+            shared_action_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
         cancel_name_button->set_frontend_widget_shortcut_key(11);
 
@@ -266,7 +266,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Submit", 23, 0.0f, y,
-            shared_action_color.set_color_rgba(
+            shared_action_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
         submit_name_button->set_frontend_widget_shortcut_key(5);
         return;
@@ -278,7 +278,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text, 23, 0.0f, y,
-        shared_action_color.set_color_rgba(
+        shared_action_color.Set(
             1.0f, 1.0f, 1.0f, 1.0f), 2, -132.0f);
 
     bank_toggle_button = g_game->border_manager.allocate_border();
@@ -289,7 +289,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Challenge Scores", 23, 0.0f, y,
-            alternating_background_color.set_color_rgba(
+            alternating_background_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     case 1:
@@ -298,7 +298,7 @@ void HighScore::initialize_high_score_screen(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Postal Scores", 23, 0.0f, y,
-            shared_action_color.set_color_rgba(
+            shared_action_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     }

@@ -1028,6 +1028,135 @@ def test_mobile_subloc_methods_recover_authored_surface() -> None:
         assert "__fastcall is_sub_loc_" not in source
 
 
+def test_mobile_tcolour_methods_recover_authored_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    colour_header = (
+        repo_root / "tools/match/include/sprite.h"
+    ).read_text(encoding="utf-8")
+    expected_methods = (
+        (
+            "set_color_rgba",
+            "Set",
+            "tColour::Set(float, float, float, float)",
+            "tColour_SetRGBA",
+            "?Set@tColour@@QAEPAU1@MMMM@Z",
+        ),
+        (
+            "set_color_alpha",
+            "Alpha",
+            "tColour::Alpha(float)",
+            "tColour_Alpha",
+            "?Alpha@tColour@@QAEXM@Z",
+        ),
+        (
+            "set_color_grayscale",
+            "Grey",
+            "tColour::Grey(float)",
+            "tColour_Grey",
+            "?Grey@tColour@@QAEXM@Z",
+        ),
+        (
+            "set_color_rgb",
+            "Set",
+            "tColour::Set(float, float, float)",
+            "tColour_SetRGB",
+            "?Set@tColour@@QAEXMMM@Z",
+        ),
+        (
+            "set_color_white",
+            "White",
+            "tColour::White()",
+            "tColour_White",
+            "?White@tColour@@QAEXXZ",
+        ),
+        (
+            "set_color_black",
+            "Black",
+            "tColour::Black()",
+            "tColour_Black",
+            "?Black@tColour@@QAEXXZ",
+        ),
+    )
+
+    for (
+        windows_name,
+        authored_name,
+        mobile_symbol,
+        alias,
+        object_symbol,
+    ) in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert f"{authored_name}(" in colour_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"tColour::{authored_name}(" in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+    old_names = (
+        "set_color_rgba(",
+        "set_color_alpha(",
+        "set_color_grayscale(",
+        "set_color_rgb(",
+        "set_color_white(",
+        "set_color_black(",
+    )
+    for path in (repo_root / "tools/match/scratches").rglob("*.cpp"):
+        if "build" in path.parts:
+            continue
+        source = path.read_text(encoding="utf-8")
+        assert not any(name in source for name in old_names)
+
+    verified = load_json(
+        repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    store_entry = next(
+        entry
+        for entry in verified["entries"]
+        if entry["windows_name"] == "store_color4f"
+    )
+    store_source = (
+        repo_root / "tools/match/scratches/store_color4f/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert store_entry["android_symbol"].startswith("tColour::tColour(")
+    assert "not the exact Windows VC6 source shape" in store_entry["notes"]
+    assert "void tColour::store_color4f(" in store_source
+    assert "tColour::tColour(" not in store_source
+
+
 def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

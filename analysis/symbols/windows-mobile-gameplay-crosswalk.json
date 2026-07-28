@@ -5226,34 +5226,34 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "cRSubGoldy::cRSubGoldy()",
+          "score": 0.7945,
+          "name_score": 0.9,
+          "size_score": 0.6364
+        },
+        {
+          "symbol": "cRSubGoldy::GhostInit(int)",
+          "score": 0.67,
+          "name_score": 0.45,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "cRSubGoldy::RessurectAI()",
+          "score": 0.6237,
+          "name_score": 0.45,
+          "size_score": 0.8842
+        },
+        {
           "symbol": "tMatrix::Interpolate(float)",
           "score": 0.6164,
           "name_score": 0.4186,
           "size_score": 0.913
         },
         {
-          "symbol": "ObjectProcSimplifyRecord(cRObject*, cRDuplicateVertices*)",
-          "score": 0.5833,
-          "name_score": 0.3214,
-          "size_score": 0.9762
-        },
-        {
-          "symbol": "cRStarManager::UpdateStars(float)",
-          "score": 0.5825,
-          "name_score": 0.32,
-          "size_score": 0.9762
-        },
-        {
-          "symbol": "cRSnail::SetAnimation(int, bool, int)",
-          "score": 0.579,
-          "name_score": 0.6,
-          "size_score": 0.5476
-        },
-        {
-          "symbol": "cRPath::SearchPos(tVector, tVector, cRSubLoc*)",
-          "score": 0.57,
-          "name_score": 0.3072,
-          "size_score": 0.9643
+          "symbol": "cRSubGoldy::HealthCollect(cRSubHealth*)",
+          "score": 0.6129,
+          "name_score": 0.45,
+          "size_score": 0.8571
         }
       ],
       "ios_candidates": [
@@ -19446,6 +19446,12 @@
           "size_score": 0.75
         },
         {
+          "symbol": "cRSubGoldy::ScoreStatsInit()",
+          "score": 0.6796,
+          "name_score": 0.54,
+          "size_score": 0.8889
+        },
+        {
           "symbol": "OFBinarySink::~OFBinarySink()",
           "score": 0.6436,
           "name_score": 0.48,
@@ -19456,12 +19462,6 @@
           "score": 0.6283,
           "name_score": 0.4545,
           "size_score": 0.8889
-        },
-        {
-          "symbol": "OFISerializer::StringKey::equals(OFISerializerKey const*) const",
-          "score": 0.6256,
-          "name_score": 0.376,
-          "size_score": 1.0
         }
       ]
     },
@@ -19681,16 +19681,16 @@
           "size_score": 0.963
         },
         {
+          "symbol": "cRSubTrampRing::AI()",
+          "score": 0.7021,
+          "name_score": 0.675,
+          "size_score": 0.7429
+        },
+        {
           "symbol": "cRSubHighScore::SaveMiniData()",
           "score": 0.6852,
           "name_score": 0.5,
           "size_score": 0.963
-        },
-        {
-          "symbol": "std::_Rb_tree<OFSdbmHashedString, std::pair<OFSdbmHashedString const, OFRTTI const*>, std::_Select1st<std::pair<OFSdbmHashedString const, OFRTTI const*>>, std::less<OFSdbmHashedString>, std::allocator<std::pair<OFSdbmHashedString const, OFRTTI const*>>>::_M_insert_unique(std::pair<OFSdbmHashedString const, OFRTTI const*> const&)",
-          "score": 0.678,
-          "name_score": 0.4762,
-          "size_score": 0.9808
         }
       ]
     },

@@ -62,7 +62,7 @@ load_script:
     cursor = find_case_insensitive_substring("Fog:", file_bytes);
     if (cursor == 0) {
         report_errorf("Landscape. Cannot find Fog: %s", script_path);
-        scripts[script_count].fog_color.set_color_black();
+        scripts[script_count].fog_color.Black();
     } else {
         cursor = find_case_insensitive_substring(":", cursor);
         parsed_int = parse_next_signed_int(&cursor);

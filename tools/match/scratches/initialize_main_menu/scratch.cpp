@@ -37,7 +37,7 @@ void MainMenu::initialize_main_menu()
         0x14,
         20.0f,
         90.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
 
@@ -49,7 +49,7 @@ void MainMenu::initialize_main_menu()
         0x14,
         20.0f,
         20.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     high_scores_widget->stack_widget_below(new_game_widget);
@@ -62,7 +62,7 @@ void MainMenu::initialize_main_menu()
         0x14,
         20.0f,
         20.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     options_widget->stack_widget_below(high_scores_widget);
@@ -75,7 +75,7 @@ void MainMenu::initialize_main_menu()
         0x14,
         20.0f,
         20.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     options_widget->stack_widget_below(high_scores_widget);
@@ -89,7 +89,7 @@ void MainMenu::initialize_main_menu()
         0x14,
         20.0f,
         20.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     credits_widget->stack_widget_below(options_widget);
@@ -102,7 +102,7 @@ void MainMenu::initialize_main_menu()
         0x14,
         20.0f,
         390.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     exit_widget->stack_widget_below(credits_widget);

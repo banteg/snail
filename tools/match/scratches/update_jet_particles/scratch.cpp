@@ -74,7 +74,7 @@ void SubHover::update_jet_particles()
                 sprite->lifetime_step = 0.0f;
 
                 tColour color;
-                sprite->color = *color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+                sprite->color = *color.Set(1.0f, 1.0f, 1.0f, 1.0f);
                 sprite->size_start = 0.1f;
                 sprite->size_end = 0.300000012f;
 

@@ -39,7 +39,7 @@ void Intro::initialize_new_game_menu()
         0x14,
         20.0f,
         80.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
 
@@ -52,7 +52,7 @@ void Intro::initialize_new_game_menu()
         0x14,
         20.0f,
         20.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     postal_button->stack_widget_below(tutorial_button);
@@ -66,7 +66,7 @@ void Intro::initialize_new_game_menu()
         0x14,
         20.0f,
         20.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     time_trial_button->stack_widget_below(postal_button);
@@ -79,7 +79,7 @@ void Intro::initialize_new_game_menu()
         0x14,
         20.0f,
         20.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     challenge_button->stack_widget_below(time_trial_button);
@@ -93,7 +93,7 @@ void Intro::initialize_new_game_menu()
         0x14,
         0.0f,
         350.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         -220.0f);
 
@@ -105,7 +105,7 @@ void Intro::initialize_new_game_menu()
         0x14,
         20.0f,
         350.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     back_button->stack_widget_below(challenge_button);

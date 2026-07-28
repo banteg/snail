@@ -46,7 +46,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR]
-            .color.set_color_white();
+            .color.White();
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE];
@@ -56,7 +56,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_SLIDE]
-            .color.set_color_white();
+            .color.White();
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP];
@@ -66,7 +66,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_RAMP]
-            .color.set_color_white();
+            .color.White();
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING];
@@ -76,7 +76,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->y = 0.0f;
         position->x = 0.0f;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_WARNING]
-            .color.set_color_white();
+            .color.White();
 
         next_cache_row_z += 24.0f;
         next_cache_row_index++;

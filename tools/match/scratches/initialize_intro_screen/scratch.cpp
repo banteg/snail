@@ -97,7 +97,7 @@ void Logo::initialize_intro_screen(char* file_name)
                 Vector3(0.0f, -4.0f, 0.0f);
             letters[renderable_count].transform.position.z +=
                 crawl_y - image_height * 0.5f;
-            letters[renderable_count].color.set_color_white();
+            letters[renderable_count].color.White();
             letters[renderable_count].color.a = 0.99900001f;
             letters[renderable_count].glyph = 0xff;
 
@@ -155,7 +155,7 @@ void Logo::initialize_intro_screen(char* file_name)
                         initial_position;
                     letters[renderable_count].transform.position.x += x;
                     letters[renderable_count].transform.position.z += crawl_y;
-                    letters[renderable_count].color.set_color_white();
+                    letters[renderable_count].color.White();
                     letters[renderable_count].color.a = 0.99900001f;
                     Vector3* velocity = &letters[renderable_count].velocity;
                     velocity->z = 0.0f;

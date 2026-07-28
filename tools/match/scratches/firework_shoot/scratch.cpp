@@ -30,7 +30,7 @@ void FireWork::firework_shoot(
         sprite->progress_step = 1.0f / (duration * 60.0f);
 
         float red = (float)random_float_below(0.300000012f, 0) + 0.699999988f;
-        sprite->color.set_color_rgb(red, red * 0.5f, 0.0f);
+        sprite->color.Set(red, red * 0.5f, 0.0f);
 
         sprite->size_start = 0.5f;
         sprite->size_end = 0.100000001f;

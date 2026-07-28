@@ -28,7 +28,7 @@ void Slug::explode_slug_hazard()
         sprite->lifetime = 0.0f;
         sprite->lifetime_step = 0.0f;
         sprite->progress_step = progress_step;
-        sprite->color.set_color_grayscale(
+        sprite->color.Grey(
             (float)next_math_random_value() * 0.0000305175781f * 0.3f + 0.7f);
         sprite->size_start = size * 0.30000001f;
         sprite->size_end = size * 1.2f;

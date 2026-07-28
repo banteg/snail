@@ -325,7 +325,7 @@ void cRSubGame::BuildLevel()
             *(int*)cell_flags &= 0xffffafa7;
             *(short*)cell_flags = 0;
             *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;
-            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->set_color_white();
+            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();
             cell_flags += sizeof(cRSubLoc);
         }
 

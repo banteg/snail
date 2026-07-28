@@ -3970,7 +3970,7 @@
       "android_symbol": "tColour::tColour(float, float, float, float)",
       "source_object": "RMaths.o",
       "confidence": "high",
-      "notes": "This is the stable Windows harness name for the four-float constructor role. Both implementations write RGBA at +0/+4/+8/+12; the exact 9/9 Windows source is a void write and all covered callers ignore the final component register.",
+      "notes": "The mobile constructor is the semantic counterpart: both implementations write RGBA at +0/+4/+8/+12. It is not the exact Windows VC6 source shape, because spelling the Windows body as a constructor synthesizes an extra `mov eax, ecx` and falls from 9/9 to 0/9 prefix instructions. The honest Windows transcription remains a void write until an authored non-constructor name is recovered.",
       "ios_symbol": "tColour::tColour(float, float, float, float)",
       "ios_symbol_evidence": "exact-demangled-symbol"
     },

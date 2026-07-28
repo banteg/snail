@@ -67,7 +67,7 @@ void draw_font_text_instance(cFontPrintBuffer* entry)
                     v0,
                     u1,
                     v1,
-                    shadow_color.set_color_rgba(
+                    shadow_color.Set(
                         0.0f, 0.0f, 0.0f, 0.800000012f),
                     2,
                     0);

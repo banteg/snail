@@ -1783,13 +1783,59 @@
       "description": "Three-byte generic identity thunk (`eax = ecx; ret`) shared by folded trivial default constructors; its cross-tool ABI is `void* __thiscall(void* self)` rather than any one aliased owner type."
     },
     {
+      "address": "0x44db60",
+      "name": "set_color_rgba",
+      "kind": "function",
+      "aliases": [
+        "?Set@tColour@@QAEPAU1@MMMM@Z"
+      ],
+      "description": "Exact Windows pointer-returning tColour::Set(float, float, float, float) entry."
+    },
+    {
+      "address": "0x44db80",
+      "name": "set_color_alpha",
+      "kind": "function",
+      "aliases": [
+        "?Alpha@tColour@@QAEXM@Z"
+      ],
+      "description": "Exact Windows void tColour::Alpha(float) entry."
+    },
+    {
+      "address": "0x44db90",
+      "name": "set_color_grayscale",
+      "kind": "function",
+      "aliases": [
+        "?Grey@tColour@@QAEXM@Z"
+      ],
+      "description": "Exact Windows void tColour::Grey(float) entry."
+    },
+    {
       "address": "0x44dbd0",
       "name": "set_color_rgb",
       "kind": "function",
       "aliases": [
+        "?Set@tColour@@QAEXMMM@Z",
         "sub_44dbd0"
       ],
-      "description": "tColour three-channel RGB setter used by firework_shoot; stores r/g/b and leaves alpha unchanged."
+      "description": "Exact Windows void tColour::Set(float, float, float) entry; stores r/g/b and leaves alpha unchanged."
+    },
+    {
+      "address": "0x44dc50",
+      "name": "set_color_white",
+      "kind": "function",
+      "aliases": [
+        "?White@tColour@@QAEXXZ"
+      ],
+      "description": "Exact Windows void tColour::White() entry."
+    },
+    {
+      "address": "0x44dc60",
+      "name": "set_color_black",
+      "kind": "function",
+      "aliases": [
+        "?Black@tColour@@QAEXXZ"
+      ],
+      "description": "Exact Windows void tColour::Black() entry."
     },
     {
       "address": "0x44ebc1",

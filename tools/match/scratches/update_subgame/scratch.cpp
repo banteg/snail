@@ -174,12 +174,12 @@ void cRSubGame::AI()
             if (level_mode == three) {
                 queue_axis_aligned_textured_quad_uv(
                     27, 580.0f, 6.0f, 64.0f, 64.0f, 0x1000000,
-                    replay_color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.400000006f),
+                    replay_color.Set(1.0f, 1.0f, 1.0f, 0.400000006f),
                     0.0f, 0.0f, 1.0f, 1.0f, 1, 0);
             } else {
                 queue_axis_aligned_textured_quad_uv(
                     27, 288.0f, 10.0f, 64.0f, 64.0f, 0x1000000,
-                    replay_color_alt.set_color_rgba(1.0f, 1.0f, 1.0f, 0.400000006f),
+                    replay_color_alt.Set(1.0f, 1.0f, 1.0f, 0.400000006f),
                     0.0f, 0.0f, 1.0f, 1.0f, 1, 0);
             }
         }

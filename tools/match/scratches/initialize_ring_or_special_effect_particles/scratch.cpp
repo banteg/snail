@@ -55,7 +55,7 @@ void SubRing::initialize_ring_or_special_effect_particles(int)
 
         tColour color;
         particle->sprite->color =
-            *color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.800000012f);
+            *color.Set(1.0f, 1.0f, 1.0f, 0.800000012f);
         unsigned int flags = particle->sprite->flags;
         flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         particle->sprite->flags = flags;

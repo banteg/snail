@@ -89,7 +89,7 @@ int Galaxy::update_galaxy()
                     queue_axis_aligned_textured_quad_uv(
                         151, route_slots[0].record.map_x - 16.0f,
                         route_slots[0].record.map_y - 16.0f, 32.0f, 32.0f, 0x1000000,
-                        route_zero_color.set_color_rgba(1.0f, 0.0f, 0.0f, 0.99000001f), 0.0f, 0.0f,
+                        route_zero_color.Set(1.0f, 0.0f, 0.0f, 0.99000001f), 0.0f, 0.0f,
                         1.0f, 1.0f, 15, 0);
                 } else {
                     if (route_mode == 1 && route_index > selected_index)
@@ -111,7 +111,7 @@ int Galaxy::update_galaxy()
             } while (route_index <= g_runtime_config.highest_galaxy_route_index);
         }
 
-        color.set_color_white();
+        color.White();
         color.a = 0.200000003f;
         int line_index = 1;
         if (g_runtime_config.highest_galaxy_route_index > 1) {
@@ -135,7 +135,7 @@ int Galaxy::update_galaxy()
             } while (line_index < g_runtime_config.highest_galaxy_route_index);
         }
 
-        color.set_color_white();
+        color.White();
         int galaxy_index = 0;
         GalaxyRouteNameRecord* route_name = route_names;
         do {

@@ -24,7 +24,7 @@ void cRSubGoldy::HealthCollect(SubHealth* pickup)
             sprite->gravity_step = -0.00019999999f;
 
             tColour color;
-            sprite->color = *color.set_color_rgba(1.0f, 0.75f, 0.75f, 1.0f);
+            sprite->color = *color.Set(1.0f, 0.75f, 0.75f, 1.0f);
             Vector3* position = &sprite->position;
             sprite->size_start = 0.1f;
             sprite->size_end = 0.5f;

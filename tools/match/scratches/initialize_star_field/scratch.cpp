@@ -74,7 +74,7 @@ void StarManager::initialize_star_field()
 
             tColour color;
             entries[index].sprite->color =
-                *color.set_color_rgba(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);
+                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);
             entries[index].sprite->size_start = 0.800000012f;
             entries[index].sprite->size_end = entries[index].sprite->size_start;
             entries[index].sprite->corner_scale =

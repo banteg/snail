@@ -13,7 +13,7 @@ void ClickStart::initialize_click_start(cRSubGoldy* new_player)
     prompt->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "Click to Start", 0x14, 0.0f,
-        200.0f, color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.0299999993f), 2, 0.0f);
+        200.0f, color.Set(1.0f, 1.0f, 1.0f, 0.0299999993f), 2, 0.0f);
     prompt->hide_border_init();
 
     int flags = list_flags;

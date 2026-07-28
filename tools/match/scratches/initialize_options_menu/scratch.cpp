@@ -25,7 +25,7 @@ void Options::initialize_options_menu()
         0x14,
         90.0f,
         75.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     fullscreen_widget->layout_anchor_y += 8.0f;
@@ -40,7 +40,7 @@ void Options::initialize_options_menu()
         0x14,
         90.0f,
         400.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     sound_volume_widget->stack_widget_below(fullscreen_widget);
@@ -57,7 +57,7 @@ void Options::initialize_options_menu()
         0x14,
         90.0f,
         400.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     music_volume_widget->stack_widget_below(sound_volume_widget);
@@ -74,7 +74,7 @@ void Options::initialize_options_menu()
         0x14,
         90.0f,
         400.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
     back_widget->stack_widget_below(music_volume_widget);

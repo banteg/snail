@@ -62,8 +62,8 @@ void FrontendWidget::initialize_frontend_sprite_button(
     hot_fill_color = *color;
 
     tColour white;
-    idle_text_color = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
-    hot_text_color = *white.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f);
+    idle_text_color = *white.Set(1.0f, 1.0f, 1.0f, 1.0f);
+    hot_text_color = *white.Set(1.0f, 1.0f, 1.0f, 1.0f);
 
     if (((unsigned char)this->widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0) {
         hover_blend_target = 1.0f;

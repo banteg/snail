@@ -61,7 +61,7 @@ void Galaxy::initialize_galaxy()
             20,
             15.0f,
             15.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
         route_title_widget->font_scale = 0.83f;
@@ -75,7 +75,7 @@ void Galaxy::initialize_galaxy()
             138,
             370.0f,
             10.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
     }
@@ -91,7 +91,7 @@ void Galaxy::initialize_galaxy()
             20,
             20.0f,
             420.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
     } else {
@@ -105,7 +105,7 @@ void Galaxy::initialize_galaxy()
             20,
             20.0f,
             420.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
     }
@@ -132,7 +132,7 @@ void Galaxy::initialize_galaxy()
             20,
             30.0f,
             80.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
         bounds_frame_widget->hot_fill_color.store_color4f(
@@ -156,7 +156,7 @@ void Galaxy::initialize_galaxy()
             20,
             100.0f,
             80.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
         selected_title_widget->hide_border_init();
@@ -172,7 +172,7 @@ void Galaxy::initialize_galaxy()
             20,
             300.0f,
             440.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
         selected_detail_widget->hide_border_init();
@@ -188,7 +188,7 @@ void Galaxy::initialize_galaxy()
             20,
             300.0f,
             440.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
         selected_description_widget->hide_border_init();
@@ -208,7 +208,7 @@ void Galaxy::initialize_galaxy()
             20,
             300.0f,
             440.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             100.0f);
     } else {
@@ -222,7 +222,7 @@ void Galaxy::initialize_galaxy()
             20,
             300.0f,
             440.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             100.0f);
     }
@@ -241,7 +241,7 @@ void Galaxy::initialize_galaxy()
             20,
             300.0f,
             440.0f,
-            color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+            color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
         replay_widget->hide_border_init();

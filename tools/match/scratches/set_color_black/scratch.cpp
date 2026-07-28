@@ -1,8 +1,8 @@
-// set_color_black @ 0x44dc60 (thiscall, ret)
+// set_color_black @ 0x44dc60 (thiscall, ret) — tColour::Black()
 
 #include "sprite.h"
 
-void tColour::set_color_black()
+void tColour::Black()
 {
-    set_color_grayscale(0.0f);
+    Grey(0.0f);
 }

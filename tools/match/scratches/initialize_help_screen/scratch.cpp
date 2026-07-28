@@ -33,7 +33,7 @@ void Help::initialize_help_screen()
         0x14,
         0.0f,
         420.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f),
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
 }

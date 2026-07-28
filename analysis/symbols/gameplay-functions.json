@@ -4494,26 +4494,38 @@
     {
       "address": "0x44db60",
       "name": "set_color_rgba",
+      "aliases": [
+        "tColour_SetRGBA"
+      ],
       "description": "Exact Windows `tColour::Set(float, float, float, float)` role: stores the four RGBA floats at `+0/+4/+8/+12` and returns the same destination pointer. Android preserves the class, method name, field order, and four stores."
     },
     {
       "address": "0x44db80",
       "name": "set_color_alpha",
+      "aliases": [
+        "tColour_Alpha"
+      ],
       "description": "Exact void `tColour::Alpha(float)` role: stores one float at the alpha lane `+0x0c`. Both Windows callers discard EAX, and the honest float/void source remains exact at 3/3 instructions without a synthetic integer return."
     },
     {
       "address": "0x44db90",
       "name": "set_color_grayscale",
+      "aliases": [
+        "tColour_Grey"
+      ],
       "description": "Exact void `tColour::Grey(float)` role: stores one uniform RGB value and forces alpha to `1.0`. Its callers treat it as a write-only method; the value left in EAX is incidental."
     },
     {
       "address": "0x44dbb0",
       "name": "store_color4f",
-      "description": "Stable Windows harness identity for the authored `tColour::tColour(float, float, float, float)` constructor role. It stores RGBA at `+0/+4/+8/+12`; all callers treat it as write-only, so the final component register left live by the epilogue is not a return value."
+      "description": "Exact Windows void four-float colour write at `+0/+4/+8/+12`. The mobile `tColour(float, float, float, float)` constructor is its semantic counterpart, but not its exact VC6 source shape: the constructor spelling synthesizes an extra `mov eax, ecx` and loses the native 9/9 instruction stream."
     },
     {
       "address": "0x44dbd0",
       "name": "set_color_rgb",
+      "aliases": [
+        "tColour_SetRGB"
+      ],
       "description": "Exact void `tColour::Set(float, float, float)` role: stores RGB at `+0/+4/+8` while preserving the existing alpha lane. Android retains the same overload."
     },
     {
@@ -4524,11 +4536,17 @@
     {
       "address": "0x44dc50",
       "name": "set_color_white",
+      "aliases": [
+        "tColour_White"
+      ],
       "description": "Exact void `tColour::White()` role: tail-calls the recovered Grey helper with `1.0f`, producing opaque white. Android retains the same method."
     },
     {
       "address": "0x44dc60",
       "name": "set_color_black",
+      "aliases": [
+        "tColour_Black"
+      ],
       "description": "Exact void `tColour::Black()` role: tail-calls the recovered Grey helper with `0.0f`, producing opaque black. Android retains the same method."
     },
     {

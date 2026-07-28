@@ -18,7 +18,7 @@ void SubPause::initialize_pause_menu()
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_end_game_text, 0x14, 0.0f, 145.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     end_game_widget->set_frontend_widget_shortcut_key(11);
 
     options_widget = g_game->border_manager.allocate_border();
@@ -26,7 +26,7 @@ void SubPause::initialize_pause_menu()
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_options_text, 0x14, 0.0f, 190.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 0.029999999f), 2, 0.0f);
+        color.Set(1.0f, 1.0f, 1.0f, 0.029999999f), 2, 0.0f);
     options_widget->set_frontend_widget_shortcut_key(111);
     options_widget->layout_frontend_widget();
     options_widget->stack_widget_below(end_game_widget);
@@ -36,7 +36,7 @@ void SubPause::initialize_pause_menu()
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_resume_text, 0x14, 0.0f, 320.0f,
-        color.set_color_rgba(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
+        color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     resume_widget->set_frontend_widget_shortcut_key(5);
     resume_widget->stack_widget_below(options_widget);
 
