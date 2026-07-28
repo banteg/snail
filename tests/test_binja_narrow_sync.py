@@ -21292,14 +21292,72 @@ def test_turnover_family_path_replay_preserves_mesh_owner_lifetimes() -> None:
         )
 
     assert "TURNOVER_FAMILY_PATH_USER_VAR_UPDATES" in replay
+    assert "TURNOVER_FAMILY_CONTROL_USER_VAR_UPDATES" in replay
+    assert "TURNOVER_CONTROL_LIFETIME_SPLITS" in replay
+    assert "TURNOVERDOUBLE_CONTROL_LIFETIME_SPLITS" in replay
+    assert "TURNUNDER_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "apply_user_var_updates" in replay
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
     for rejected_index in (884, 918):
         assert f"({rejected_index}, 66," not in replay
+
+    for index, storage, name, variable_type in (
+        (82, -80, "curve_count_f", "float"),
+        (622, -76, "angle", "float"),
+        (82, -72, "curve_count_f", "float"),
+        (611, -64, "curve_phase", "float"),
+        (625, -80, "roll_angle", "float"),
+        (634, -76, "angle", "float"),
+    ):
+        assert (
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        ) in replay
+
+    for name, variable_type in (
+        ("curve_count", "int32_t"),
+        ("total_segment_count", "int32_t"),
+        ("curve_radius", "float"),
+        ("lead_sample_index", "int32_t"),
+        ("lead_sample_offset", "int32_t"),
+        ("tail_sample_index", "int32_t"),
+        ("tail_sample_offset", "int32_t"),
+        ("curve_index", "int32_t"),
+        ("curve_sample_offset", "int32_t"),
+        ("delta_index", "int32_t"),
+        ("delta_sample_offset", "int32_t"),
+    ):
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    compact_replay = "".join(replay.split())
+    for address, view, source_type, index, storage in (
+        ("0x426cda", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x426d21", "mlil_ssa", "StackVariableSourceType", 113, 8),
+        ("0x426e16", "mlil_ssa", "RegisterVariableSourceType", 358, 73),
+        ("0x426f07", "mlil_ssa", "RegisterVariableSourceType", 599, 69),
+        ("0x42710b", "mlil_ssa", "RegisterVariableSourceType", 1115, 69),
+        ("0x42766a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x4276b1", "mlil_ssa", "StackVariableSourceType", 113, 8),
+        ("0x4277a2", "mlil_ssa", "RegisterVariableSourceType", 354, 73),
+        ("0x427893", "mlil_ssa", "RegisterVariableSourceType", 595, 69),
+        ("0x427aba", "mlil_ssa", "RegisterVariableSourceType", 1146, 69),
+        ("0x42800a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x428051", "mlil_ssa", "StackVariableSourceType", 113, 8),
+        ("0x42814c", "mlil_ssa", "RegisterVariableSourceType", 364, 73),
+        ("0x428243", "mlil_ssa", "RegisterVariableSourceType", 611, 69),
+        ("0x428471", "mlil_ssa", "RegisterVariableSourceType", 1169, 69),
+    ):
+        assert (
+            f'("{address}","{view}","{source_type}",{index},{storage}'
+            in compact_replay
+        )
 
 
 def test_wibble_invert_halfpipe_replay_preserves_mesh_owner_lifetimes() -> None:
@@ -22131,6 +22189,32 @@ def test_transition_family_aggregate_health_stays_address_anchored() -> None:
             control_owner
             in checks["bn_start_path_full_owner_abi"]["required_substrings"]
         )
+
+    common_turnover_control_owners = (
+        "int32_t curve_count =",
+        "self->segment_count = curve_count + 8",
+        "float curve_count_f =",
+        "float curve_radius =",
+        "int32_t lead_sample_index =",
+        "int32_t lead_sample_offset =",
+        "int32_t tail_sample_index =",
+        "int32_t tail_sample_offset =",
+        "int32_t curve_index =",
+        "int32_t curve_sample_offset =",
+        "delta_index = 0",
+        "int32_t delta_sample_offset =",
+    )
+    for check_name, unique_control_owner in (
+        ("bn_turnover_path_full_owner_abi", "float angle ="),
+        ("bn_turnoverdouble_path_full_owner_abi", "float roll_angle ="),
+        ("bn_turnunder_path_full_owner_abi", "float angle ="),
+    ):
+        required_substrings = checks[check_name]["required_substrings"]
+        for control_owner in (
+            *common_turnover_control_owners,
+            unique_control_owner,
+        ):
+            assert control_owner in required_substrings
 
 
 def test_wibble_twister_aggregate_health_stays_address_anchored() -> None:

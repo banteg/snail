@@ -153,3 +153,22 @@ builder. The shared declaration, replay tooling, and live Binary Ninja
 prototype now encode that platform split. The scalar refinement is
 byte-neutral: focused matching remains 50.55% (670/687), with a six-instruction
 prefix and 45 clean masked operands.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android and iOS bodies independently preserve the six-sample lead,
+two-sample tail, curved body beginning at sample 6, separate curve/sample and
+delta/sample cursors, count-derived radius, transform-only secondary copy, and
+final `CalcLengthZ` traversal. Windows SSA independently proves the corresponding
+native stack definitions, including `curve_count`, `curve_count_f`, the
+`curve_count + 8` total, logical indices, byte offsets, and the negative
+one-turn `angle`. Mobile evidence supplies source shape only; the Windows ABI,
+storage, and mesh tail remain authoritative and unchanged.
+
+The guarded replay now persists those conflict-free lifetimes and is
+idempotent on a second run. The refreshed Binary Ninja decompile renders the
+owners without `__offset` artifacts. IDA 9.4 also replaces the stale tracked
+five-argument `PathTemplate*`/`int32_t` export with the recovered seven-argument
+`Path*`/`void` Windows signature and current object/mesh types. This
+analysis-only recovery leaves focused matching at 50.55% (670/687), with a
+six-instruction prefix and 45 clean masked operands.

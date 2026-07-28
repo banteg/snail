@@ -115,3 +115,24 @@ The shared declaration, replay tooling, and live Binary Ninja prototype now
 encode that platform split. The scalar refinement is byte-neutral: focused
 matching remains 50.79% (655/680), with a 15-instruction prefix and 46 clean
 masked operands.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android and iOS bodies independently preserve the six-sample lead,
+two-sample tail, curved body beginning at sample 6, separate curve/sample and
+delta/sample cursors, count-derived radius, transform-only secondary copy, and
+final `CalcLengthZ` traversal. They also distinguish the two-turn centerline
+phase from the folded four-turn roll. Windows SSA independently proves the
+corresponding native stack definitions: `curve_count`, `curve_count_f`, the
+`curve_count + 8` total, logical indices, byte offsets, `curve_phase`, and
+`roll_angle`. Binary Ninja inlines the phase expression in HLIL, but its MLIL
+stack lifetime remains distinct. Mobile evidence supplies source shape only;
+the Windows ABI, storage, and mesh tail remain authoritative and unchanged.
+
+The guarded replay now persists those conflict-free lifetimes and is
+idempotent on a second run. The refreshed Binary Ninja decompile renders the
+surviving owners without `__offset` artifacts. IDA 9.4 also replaces the stale
+tracked five-argument `PathTemplate*`/`int32_t` export with the recovered
+seven-argument `Path*`/`void` Windows signature and current object/mesh types.
+This analysis-only recovery leaves focused matching at 50.79% (655/680), with
+a 15-instruction prefix and 46 clean masked operands.
