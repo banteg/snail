@@ -22051,7 +22051,7 @@ def test_cage2_replay_splits_terminal_scalar_and_preserves_mesh_owners() -> None
         assert rendered_alias not in check["required_substrings"]
 
 
-def test_loopbow_replay_preserves_staged_basis_and_mesh_owners() -> None:
+def test_loopbow_replay_preserves_control_staged_basis_and_mesh_owners() -> None:
     replay = (BINJA_DIR / "sync_loopbow_path_lifetimes.py").read_text(
         encoding="utf-8"
     )
@@ -22090,13 +22090,70 @@ def test_loopbow_replay_preserves_staged_basis_and_mesh_owners() -> None:
         )
 
     assert "LOOPBOW_PATH_USER_VAR_UPDATES" in replay
+    assert "LOOPBOW_CONTROL_USER_VAR_UPDATES" in replay
+    assert "LOOPBOW_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "apply_user_var_updates" in replay
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(2180, 66," not in replay
+
+    for index, storage, name, variable_type in (
+        (27, -128, "center_offset", "float"),
+        (107, -148, "curve_segment_count_f", "float"),
+        (149, -144, "lead_sample_z", "float"),
+        (540, -120, "tail_sample_z", "float"),
+        (726, -144, "secondary_radius", "float"),
+        (744, -120, "terminal_sample_offset", "int32_t"),
+        (781, -116, "angle", "float"),
+        (836, -152, "half_angle", "float"),
+        (1305, -152, "half_sine", "float"),
+    ):
+        assert (
+            f'        {index},\n'
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        ) in replay
+
+    for name, variable_type in (
+        ("curve_segment_count", "int32_t"),
+        ("total_segment_count", "int32_t"),
+        ("curve_radius", "float"),
+        ("lead_sample_index", "int32_t"),
+        ("lead_sample_offset", "int32_t"),
+        ("tail_index", "int32_t"),
+        ("tail_sample_offset", "int32_t"),
+        ("curve_index", "int32_t"),
+        ("curve_sample_offset", "int32_t"),
+        ("delta_index", "int32_t"),
+        ("delta_sample_offset", "int32_t"),
+    ):
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    for address, view, source_type, index, storage in (
+        ("0x42bac3", "mlil", "RegisterVariableSourceType", 67, 66),
+        ("0x42bac8", "mlil", "StackVariableSourceType", 72, -124),
+        ("0x42bacc", "mlil", "RegisterVariableSourceType", 76, 66),
+        ("0x42bacf", "mlil", "StackVariableSourceType", 79, -116),
+        ("0x42baf5", "mlil", "StackVariableSourceType", 117, 4),
+        ("0x42bb0e", "mlil_ssa", "StackVariableSourceType", 142, -156),
+        ("0x42bb0e", "mlil_ssa", "RegisterVariableSourceType", 142, 73),
+        ("0x42bc10", "mlil_ssa", "RegisterVariableSourceType", 400, 69),
+        ("0x42bc10", "mlil_ssa", "StackVariableSourceType", 400, -156),
+        ("0x42bc10", "mlil_ssa", "RegisterVariableSourceType", 400, 73),
+        ("0x42bd79", "mlil_ssa", "StackVariableSourceType", 761, -156),
+        ("0x42bd79", "mlil_ssa", "RegisterVariableSourceType", 761, 69),
+        ("0x42c0b5", "mlil_ssa", "RegisterVariableSourceType", 1589, 69),
+        ("0x42c0b5", "mlil_ssa", "RegisterVariableSourceType", 1589, 73),
+    ):
+        assert (
+            f'("{address}", "{view}", "{source_type}", {index}, {storage})'
+            in replay
+        )
 
 
 def test_attachment_follow_replay_preserves_samples_and_player_matrix() -> None:

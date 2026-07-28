@@ -7,7 +7,7 @@ void __thiscall initialize_loopbow_path_template_pair(
         Path *self,
         float curve_scale,
         uint32_t width_cells_arg,
-        char mode,
+        bool mode,
         char *texture_a,
         char *texture_b,
         char *vertical_texture)
@@ -372,7 +372,7 @@ void __thiscall initialize_loopbow_path_template_pair(
           {
             v46 = &facequads[2 * v8 + 2 * v44 * self->width_cells + v45];
             v46->header_word = 0;
-            if ( v45 )
+            if ( v45 != 0 )
             {
               v46->vertex_0 = v44 * (LOWORD(self->width_cells) + 1) + v8 + 1;
               v46->vertex_1 = v8 + v44 * (LOWORD(self->width_cells) + 1);

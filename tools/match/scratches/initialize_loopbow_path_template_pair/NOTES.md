@@ -211,3 +211,29 @@ Promoting the third argument from the earlier byte-width placeholder `char` to
 and 63 clean masked operands. The change records exact paired Android/iOS
 symbol provenance without changing Windows' extra texture slot or imitating
 codegen.
+
+## 2026-07-28 mobile-backed control ownership
+
+The exact Android and iOS `cRPath::BuildLoopBow(float, int, bool, char*,
+char*)` bodies independently preserve the same portable ownership graph:
+derived curve and total sample counts, seven-sample lead and tail passes, the
+zero-based curve pass beginning at sample byte offset `7 * 0xa8`, and the
+delta-normalization pass. Both ports end at `CalcLengthZ`; neither contains the
+Windows strip-mesh and facequad tail.
+
+Windows machine code remains authoritative for all addresses and lifetimes.
+A transactional Binary Ninja replay now separates 32 exact MLIL definitions
+into eleven logical owners: `curve_segment_count`, `total_segment_count`,
+`curve_radius`, and the index/byte-offset pairs for the lead, tail, curve, and
+delta passes. Nine already-bounded scalar lifetimes also recover
+`center_offset`, the floating curve count, straight-sample Z values, secondary
+radius, terminal sample offset, angle, half-angle, and half-sine. The
+Windows-only mesh/face counters remain untouched by this mobile-backed pass.
+
+The replay previews and rolls back before applying, saves the database, and is
+idempotent on a second run. Strict Binary Ninja/IDA 9.4 export reports zero
+symbol mismatches and all 1,142 decompile health checks pass. The candidate
+source is intentionally unchanged: focused matching remains 67.54% (796 target
+/ 800 candidate instructions), prefix 10/796, with 63 clean masked operands
+and no unresolved, mismatched, or unaudited operands. Repository validation is
+497 tests passed, exact-only masked audit clean, and extern lint clean.
