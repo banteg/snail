@@ -199,7 +199,7 @@ void GolbShot::update_golb_ai()
                         else
                             garbage->collision_side =
                                 SUB_GARBAGE_COLLISION_SIDE_RIGHT;
-                        player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
+                        player->ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
                         if (kind != 1)
                             goto garbage_hit;
                     }
@@ -282,7 +282,7 @@ garbage_hit:
                                 splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
                             else
                                 splash->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
-                            player->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
+                            player->ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
                         }
                     }
                 }

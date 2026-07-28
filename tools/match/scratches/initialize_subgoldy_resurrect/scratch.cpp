@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-void cRSubGoldy::initialize_subgoldy_resurrect(int final_loss)
+void cRSubGoldy::RessurectInit(int final_loss)
 {
     resurrect_active = 1;
     resurrect_final_loss = final_loss;

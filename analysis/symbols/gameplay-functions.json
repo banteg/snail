@@ -2787,6 +2787,9 @@
     {
       "address": "0x43a010",
       "name": "health_collect_particles",
+      "aliases": [
+        "cRSubGoldy_HealthCollect"
+      ],
       "description": "Exact `cRSubGoldy` collection burst for one `SubHealth`, emitting eight particles from the pickup sprite. Android and iOS retain the authored member as `cRSubGoldy::HealthCollect(cRSubHealth*)`."
     },
     {
@@ -2845,6 +2848,9 @@
     {
       "address": "0x43a9c0",
       "name": "initialize_subgoldy",
+      "aliases": [
+        "cRSubGoldy_Init"
+      ],
       "description": "Authored void `cRSubGoldy::Init(int)`: initializes the cRSubGame-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own AnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method."
     },
     {
@@ -2878,6 +2884,9 @@
     {
       "address": "0x43b120",
       "name": "update_subgoldy",
+      "aliases": [
+        "cRSubGoldy_AI"
+      ],
       "description": "Main void per-frame player or Goldy actor step, installed as slot zero of `g_subgoldy_callback_table` and invoked through the shared void `BodAiDispatch` ABI. It updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. It contains four direct calls to `begin_post_follow_carryover`, plus the post-exit progress loop that advances `attachment_exit_progress` by `attachment_exit_progress_step` and trips the `gate_a` and `gate_b` thresholds. Windows `cdb` confirmed those carryover-arm lanes are real, but at least one clean level-complete path bypasses all four of them. Newer field-xref narrowing also shows later retirement of `attachment_exit_pending` happens only through five clear sites inside this function, not through the swept-entry helper or a standalone progress-expiry store; one of those clear sites, `0x43bcb3`, now resolves to the non-follow floor-cache/slide motion branch for runtime tiles `0x0f`/`0x10`/`0x12`/`0x13` plus the `damage_gauge.state == 2` slide override. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
     },
     {
@@ -3072,6 +3081,9 @@
     {
       "address": "0x4402c0",
       "name": "add_subgoldy_score",
+      "aliases": [
+        "cRSubGoldy_ScoreAdd"
+      ],
       "description": "Void `cRSubGoldy` member that adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. All 14 direct Windows callsites discard EAX. Cross-port evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
     },
     {
@@ -3086,6 +3098,9 @@
     {
       "address": "0x4403c0",
       "name": "display_score_stats",
+      "aliases": [
+        "cRSubGoldy_ScoreStatsDisplay"
+      ],
       "description": "Void `cRSubGoldy` member that formats and displays Goldy's per-event score buckets. Its sole `complete_subgame` caller discards EAX; the terminal value is only the last debug-report call residue. Cross-port iOS symbols match this helper to `cRSubGoldy::ScoreStatsDisplay()` in `SubGame.o`."
     },
     {
@@ -3231,11 +3246,17 @@
     {
       "address": "0x441fa0",
       "name": "initialize_subgoldy_resurrect",
+      "aliases": [
+        "cRSubGoldy_RessurectInit"
+      ],
       "description": "Void `cRSubGoldy` member that seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. `initialize_subgoldy_death` tail-forwards into it, but both external death callers discard the selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
     },
     {
       "address": "0x441fd0",
       "name": "update_subgoldy_resurrect",
+      "aliases": [
+        "cRSubGoldy_RessurectAI"
+      ],
       "description": "Void `cRSubGoldy` member that advances Goldy's resurrect or death-resolution state machine after `initialize_subgoldy_death`: starts the fade, decrements the visible life stock on the respawn branch, and only falls through to `complete_subgame` when the final-loss path wins. Its sole `update_subgoldy` caller loads the receiver into ECX and consumes no result. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectAI()`."
     },
     {
@@ -3423,6 +3444,9 @@
     {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
+      "aliases": [
+        "cRSubGoldy_Collision"
+      ],
       "description": "Void `cRSubGoldy` member that processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and contact damage. Its byte-strided parcel and health walks retain typed state lifetimes over the cRSubGame-owned banks. The ring sweep likewise borrows one owned slot and preserves separate typed `SubRingKind` lifetimes for the motion response and reward/effect ladder before the parent AI owns collection teardown. Its sole `update_subgoldy` caller discards EAX, and the terminal register value is only the last incidental score-helper result. The first slug hit scales `(0, 0.2, -0.2)` by the subgame rate and emits a burst through the cRSubGoldy-owned Firework controller. Cross-port Android and iOS symbols identify `cRSubGoldy::Collision()`."
     },
     {
@@ -3535,6 +3559,9 @@
     {
       "address": "0x446e30",
       "name": "initialize_subgoldy_death",
+      "aliases": [
+        "cRSubGoldy_DeathInit"
+      ],
       "description": "Void `cRSubGoldy` member that chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Both direct callers discard EAX; its tail paths only preserve the downstream selector residue. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`."
     },
     {

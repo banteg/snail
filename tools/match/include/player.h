@@ -137,28 +137,28 @@ typedef Snail cRSnail;
 
 class cRSubGoldy : public RenderableBod {
 public:
-    void update_subgoldy();              // @ 0x43b120, cRSubGoldy::AI()
+    void AI();              // @ 0x43b120, cRSubGoldy::AI()
     void begin_post_follow_carryover();   // @ 0x43af60
     void SetShootFlags();                  // @ 0x43a1a0, cRSubGoldy::SetShootFlags()
     void Shoot(cRSubGoldy* player);                   // @ 0x43a300, cRSubGoldy::Shoot(cRSubGoldy*)
     void PlayShootSfx();                   // @ 0x43afd0, cRSubGoldy::PlayShootSfx()
-    void add_subgoldy_score(int score_kind, int bonus_score); // @ 0x4402c0
-    void clear_subgoldy_score_buckets();   // @ 0x4403a0
-    void display_score_stats();            // @ 0x4403c0
-    void handle_subgoldy_collisions();      // @ 0x444cf0
-    void health_collect_particles(SubHealth* pickup); // @ 0x43a010
+    void ScoreAdd(int score_kind, int bonus_score); // @ 0x4402c0
+    void ScoreStatsInit();   // @ 0x4403a0
+    void ScoreStatsDisplay();            // @ 0x4403c0
+    void Collision();      // @ 0x444cf0
+    void HealthCollect(SubHealth* pickup); // @ 0x43a010
     // Authored cRSubGoldy::SpeedUpCollect() folds into the shared one-byte
     // noop_runtime_ai body at 0x407b50; the collision callsite still passes
     // this cRSubGoldy receiver in ecx.
     void noop_runtime_ai();
-    void initialize_subgoldy(int player_slot); // @ 0x43a9c0, cRSubGoldy::Init
-    void initialize_subgoldy_ghost(int owner); // @ 0x43d230, cRSubGoldy::GhostInit(int)
-    void initialize_subgoldy_resurrect(int final_loss); // @ 0x441fa0
-    void update_subgoldy_resurrect();      // @ 0x441fd0
-    void initialize_subgoldy_death();      // @ 0x446e30
-    void kill_subgoldy();                 // @ 0x445840
-    void show_subgoldy_lives();           // @ 0x43af10
-    void set_subgoldy_ghost_z(float ghost_z); // @ 0x43d3d0
+    void Init(int player_slot); // @ 0x43a9c0, cRSubGoldy::Init
+    void GhostInit(int owner); // @ 0x43d230, cRSubGoldy::GhostInit(int)
+    void RessurectInit(int final_loss); // @ 0x441fa0
+    void RessurectAI();      // @ 0x441fd0
+    void DeathInit();      // @ 0x446e30
+    void Kill();                 // @ 0x445840
+    void ShowLives();           // @ 0x43af10
+    void GhostDraw(float ghost_z); // @ 0x43d3d0
     TransformMatrix* live_transform(); // inherited render transform at +0x38
 
     // cRSubGoldy storage is embedded in cRSubGame. Its inherited BOD node is

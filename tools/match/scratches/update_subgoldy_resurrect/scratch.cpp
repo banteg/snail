@@ -3,7 +3,7 @@
 #include "game_root.h"
 
 
-void cRSubGoldy::update_subgoldy_resurrect()
+void cRSubGoldy::RessurectAI()
 {
     velocity.z = 0.0f;
 

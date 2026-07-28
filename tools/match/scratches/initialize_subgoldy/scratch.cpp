@@ -16,7 +16,7 @@
 #include "transform_matrix.h"
 
 
-void cRSubGoldy::initialize_subgoldy(int player_slot)
+void cRSubGoldy::Init(int player_slot)
 {
     int zero = 0;
 
@@ -165,7 +165,7 @@ void cRSubGoldy::initialize_subgoldy(int player_slot)
     this->parcels_collected = zero;
     click_start.initialize_click_start(this);
     cameraman.initialize_cameraman();
-    initialize_subgoldy_ghost(this->player_slot);
+    GhostInit(this->player_slot);
 
     this->damage_retrigger_step = 0.0505050495f;
     this->surface_reaction_step = 0.0505050495f;

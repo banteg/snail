@@ -68,7 +68,7 @@ void cRSubGame::ReSet()
     } else {
         if (subgame_rebuild_selector == 2) {
             player.total_score = 0;
-            player.clear_subgoldy_score_buckets();
+            player.ScoreStatsInit();
         }
         player.stopwatch.Zero();
         player.score_tail = 0;

@@ -1175,6 +1175,15 @@
       "description": "Compiler-emitted switch jump table for update_subgame's level-state dispatch."
     },
     {
+      "address": "0x43a010",
+      "name": "health_collect_particles",
+      "kind": "function",
+      "aliases": [
+        "?HealthCollect@cRSubGoldy@@QAEXPAVSubHealth@@@Z"
+      ],
+      "description": "Exact Windows cRSubGoldy::HealthCollect(SubHealth*) entry; the decorated alias keeps candidate relocations owner-specific."
+    },
+    {
       "address": "0x43a2d4",
       "name": "update_player_movement_flags_jump_table",
       "kind": "jump_table",
@@ -1185,6 +1194,33 @@
       "description": "Compiler-emitted shooting-tier selector jump table used by Windows cRSubGoldy::SetShootFlags (canonical harness name set_subgoldy_shoot_flags)."
     },
     {
+      "address": "0x43a9c0",
+      "name": "initialize_subgoldy",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSubGoldy@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRSubGoldy::Init(int) entry; the decorated alias disambiguates it from other authored Init methods."
+    },
+    {
+      "address": "0x43af10",
+      "name": "show_subgoldy_lives",
+      "kind": "function",
+      "aliases": [
+        "?ShowLives@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::ShowLives() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x43b120",
+      "name": "update_subgoldy",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::AI() entry; the decorated alias disambiguates it from other authored AI methods."
+    },
+    {
       "address": "0x43d218",
       "name": "update_subgoldy_follow_jump_table",
       "kind": "jump_table",
@@ -1193,6 +1229,24 @@
       ],
       "size": "0x10",
       "description": "Compiler-emitted switch jump table used by update_subgoldy in the attachment-follow handling region."
+    },
+    {
+      "address": "0x43d230",
+      "name": "initialize_subgoldy_ghost",
+      "kind": "function",
+      "aliases": [
+        "?GhostInit@cRSubGoldy@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRSubGoldy::GhostInit(int) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x43d3d0",
+      "name": "set_subgoldy_ghost_z",
+      "kind": "function",
+      "aliases": [
+        "?GhostDraw@cRSubGoldy@@QAEXM@Z"
+      ],
+      "description": "Exact Windows cRSubGoldy::GhostDraw(float) entry with its authored decorated relocation name."
     },
     {
       "address": "0x43e44c",
@@ -1234,6 +1288,15 @@
       "description": "Compiler-emitted state switch jump table used by update_slug_hazard_ai."
     },
     {
+      "address": "0x4402c0",
+      "name": "add_subgoldy_score",
+      "kind": "function",
+      "aliases": [
+        "?ScoreAdd@cRSubGoldy@@QAEXHH@Z"
+      ],
+      "description": "Exact Windows cRSubGoldy::ScoreAdd(int,int) entry with its authored decorated relocation name."
+    },
+    {
       "address": "0x440380",
       "name": "add_subgoldy_score_jump_table",
       "kind": "jump_table",
@@ -1242,6 +1305,24 @@
       ],
       "size": "0x18",
       "description": "Compiler-emitted score-kind switch jump table used by add_subgoldy_score."
+    },
+    {
+      "address": "0x4403a0",
+      "name": "clear_subgoldy_score_buckets",
+      "kind": "function",
+      "aliases": [
+        "?ScoreStatsInit@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::ScoreStatsInit() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x4403c0",
+      "name": "display_score_stats",
+      "kind": "function",
+      "aliases": [
+        "?ScoreStatsDisplay@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::ScoreStatsDisplay() entry with its authored decorated relocation name."
     },
     {
       "address": "0x441b70",
@@ -1260,6 +1341,24 @@
         "?Add@Time@@QAEXM@Z"
       ],
       "description": "Exact Windows cRTime::Add(float) entry; the decorated alias preserves the authored method owner in candidate relocations."
+    },
+    {
+      "address": "0x441fa0",
+      "name": "initialize_subgoldy_resurrect",
+      "kind": "function",
+      "aliases": [
+        "?RessurectInit@cRSubGoldy@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRSubGoldy::RessurectInit(int) entry with the authored spelling and owner."
+    },
+    {
+      "address": "0x441fd0",
+      "name": "update_subgoldy_resurrect",
+      "kind": "function",
+      "aliases": [
+        "?RessurectAI@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::RessurectAI() entry with the authored spelling and owner."
     },
     {
       "address": "0x4424ec",
@@ -1300,6 +1399,24 @@
       "description": "Compiler-emitted state switch jump table used by update_invincible_shell."
     },
     {
+      "address": "0x444cf0",
+      "name": "handle_subgoldy_collisions",
+      "kind": "function",
+      "aliases": [
+        "?Collision@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::Collision() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x445840",
+      "name": "kill_subgoldy",
+      "kind": "function",
+      "aliases": [
+        "?Kill@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::Kill() entry with its authored decorated relocation name."
+    },
+    {
       "address": "0x445bf0",
       "name": "set_snail_weapon_movement_jump_table",
       "kind": "jump_table",
@@ -1328,6 +1445,15 @@
       ],
       "size": "0x30",
       "description": "Compiler-emitted 12-entry switch table for CutSceneState values 1..12; states 3 and 4 route to the default return and have no Windows producer."
+    },
+    {
+      "address": "0x446e30",
+      "name": "initialize_subgoldy_death",
+      "kind": "function",
+      "aliases": [
+        "?DeathInit@cRSubGoldy@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGoldy::DeathInit() entry with its authored decorated relocation name."
     },
     {
       "address": "0x446e60",

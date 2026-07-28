@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-void cRSubGoldy::clear_subgoldy_score_buckets()
+void cRSubGoldy::ScoreStatsInit()
 {
     for (int i = 0; i < SUBGOLDY_SCORE_BUCKET_COUNT; ++i) {
         score_buckets[i] = 0;

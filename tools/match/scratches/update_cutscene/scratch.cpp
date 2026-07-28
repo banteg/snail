@@ -143,7 +143,7 @@ void CutScene::update_cutscene()
             live_matrix.position.y = 0.0f;
         live_matrix.look_at_point(presentation->transform.position);
 
-        if (player->resurrect_active != 0 || (player->initialize_subgoldy_death(), player->attachment_exit_gate_b != 0)) {
+        if (player->resurrect_active != 0 || (player->DeathInit(), player->attachment_exit_gate_b != 0)) {
             progress = progress_step + progress;
         } else {
             g_voice_manager.play_voice_manager(

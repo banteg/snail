@@ -18,7 +18,7 @@ void TimesUp::update_times_up()
             break;
         case TIMES_UP_STATE_EXPIRED:
             uninit_times_up();
-            g_game->subgame.player.kill_subgoldy();
+            g_game->subgame.player.Kill();
             state = TIMES_UP_STATE_INACTIVE;
             break;
     }

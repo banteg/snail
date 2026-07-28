@@ -3,24 +3,24 @@
 #include "player.h"
 #include "subgame_runtime.h"
 
-void cRSubGoldy::initialize_subgoldy_death()
+void cRSubGoldy::DeathInit()
 {
     int mode = ((cRSubGame*)game)->level_mode;
 
     switch (mode) {
     case 0:
         if (visible_life_stock <= 0) {
-            initialize_subgoldy_resurrect(1);
+            RessurectInit(1);
             return;
         }
-        initialize_subgoldy_resurrect(0);
+        RessurectInit(0);
         return;
     case 1:
     case 4:
-        initialize_subgoldy_resurrect(1);
+        RessurectInit(1);
         return;
     case 7:
-        initialize_subgoldy_resurrect(0);
+        RessurectInit(0);
         return;
     }
 }

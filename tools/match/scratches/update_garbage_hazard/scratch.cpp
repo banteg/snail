@@ -36,7 +36,7 @@ void SubGarbage::update_garbage_hazard()
                     collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                 else
                     collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
-                owner->add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
+                owner->ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
             }
 
             owner_game->enemy_manager.append_subgame_contact_target(

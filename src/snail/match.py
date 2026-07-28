@@ -565,12 +565,13 @@ def _reference_symbol_by_name(
     if reference_manifest is None:
         return {}
     by_name: dict[str, ReferenceSymbol] = {}
-    # Populate canonical fallbacks first, then let exact manifest spellings
-    # override them. This preserves convenient C-style aliases while allowing
-    # decorated C++ overloads to resolve independently.
+    # Populate C/stdcall canonical fallbacks first, then let exact manifest
+    # spellings override them. A decorated C++ name carries its owner and
+    # signature, so reducing e.g. ?Init@cRSubGoldy to the generic key "Init"
+    # would incorrectly capture ?Init@cRSubGame relocations.
     for symbol in reference_manifest.symbols:
         for name in (symbol.name, *symbol.aliases):
-            if name.startswith("$L"):
+            if name.startswith(("$L", "?")):
                 continue
             by_name.setdefault(_canonical_symbol_name(name), symbol)
     for symbol in reference_manifest.symbols:

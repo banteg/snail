@@ -230,7 +230,7 @@ void cRSubGame::StartLevel(int level_index)
     g_game->players[0].mouse_cursor.release_mouse_cursor();
     player.movement_mode_selector = one;
     player.steering_mode_selector = zero;
-    player.initialize_subgoldy(one);
+    player.Init(one);
 
     BodNode* node =
         &embedded_player()->presentation.jetpack_channel;

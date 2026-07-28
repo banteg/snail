@@ -80,7 +80,7 @@ struct SubgoldyFloorSamplerCallView {
 // voice id at +0x204 (0xa874); the flat 0xa874 read is
 // level_segment_count.
 
-void cRSubGoldy::update_subgoldy()
+void cRSubGoldy::AI()
 {
     cRSubGame* current_game = game;
     if (current_game->subgame_pause_gate) {
@@ -113,7 +113,7 @@ void cRSubGoldy::update_subgoldy()
     presentation.object->distort.y_squash = squidge.y_output;
     presentation.object->distort.xyz_scale = squidge.z_output;
     if (!game->level_mode)
-        show_subgoldy_lives();
+        ShowLives();
 
     switch (movement_mode_selector) {
     case 0:
@@ -281,7 +281,7 @@ steering_stored:
     }
 
     if (resurrect_active)
-        update_subgoldy_resurrect();
+        RessurectAI();
 
     cRSubLoc* source_cell = game->get_track_grid_cell_at_world_position(p_position);
     cRSubGame* event_game = game;
@@ -551,7 +551,7 @@ steering_stored:
                     transform.position.y = 0.49000001f;
                 }
                 if (transform.position.y < -7.0f && !resurrect_active)
-                    initialize_subgoldy_death();
+                    DeathInit();
             }
         }
         if (surface_reaction_timer != 0.0f) {
@@ -932,7 +932,7 @@ steering_stored:
                 clamped_ghost_z = g_subgoldy_ghost_z;
             else
                 clamped_ghost_z = ghost_horizon;
-            set_subgoldy_ghost_z(clamped_ghost_z);
+            GhostDraw(clamped_ghost_z);
         }
     }
 
@@ -1001,7 +1001,7 @@ steering_stored:
         }
     }
 
-    handle_subgoldy_collisions();
+    Collision();
     presentation.anim_manager.update_anim_manager();
     presentation.jetpack_channel.anim_manager.update_anim_manager();
     presentation.weapon_channels[0].anim_manager.update_anim_manager();

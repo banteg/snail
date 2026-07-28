@@ -9,12 +9,12 @@ void Completion::flush_row_event_display()
     if (state != COMPLETION_STATE_INACTIVE) {
         if (delivered_parcel_count != parcel_target_count) {
             while (delivered_parcel_count < parcel_target_count) {
-                g_game->subgame.player.add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
+                g_game->subgame.player.ScoreAdd(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
                 delivered_parcel_count += 1;
             }
 
             if (bonus_enabled != 0) {
-                g_game->subgame.player.add_subgoldy_score(bonus_score, 0);
+                g_game->subgame.player.ScoreAdd(bonus_score, 0);
             }
         }
 

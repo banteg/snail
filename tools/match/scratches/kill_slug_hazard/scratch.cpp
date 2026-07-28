@@ -18,7 +18,7 @@ void Slug::kill_slug_hazard()
             death_toss_direction = SUB_SLUG_DEATH_TOSS_RIGHT;
         else
             death_toss_direction = SUB_SLUG_DEATH_TOSS_LEFT;
-        owner_game->player.add_subgoldy_score(SUBGOLDY_SCORE_SLUG, 0);
+        owner_game->player.ScoreAdd(SUBGOLDY_SCORE_SLUG, 0);
         explode_slug_hazard();
     }
 }

@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-void cRSubGoldy::kill_subgoldy()
+void cRSubGoldy::Kill()
 {
     begin_post_follow_carryover();
     transform.position.y = -8.0f;

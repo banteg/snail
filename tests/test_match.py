@@ -727,6 +727,34 @@ def test_extract_object_function_maps_reference_symbol_aliases() -> None:
     assert function.relocation_references[0].key == "ref:g_game_base"
 
 
+def test_cpp_reference_alias_does_not_capture_another_method_owner() -> None:
+    subgoldy_init = ReferenceSymbol(
+        address=0x43A9C0,
+        name="initialize_subgoldy",
+        kind="function",
+        aliases=("?Init@cRSubGoldy@@QAEXH@Z",),
+    )
+    manifest = ReferenceSymbolManifest(
+        name="test references",
+        symbols=(subgoldy_init,),
+    )
+
+    assert (
+        _reference_symbol_for_symbol_name(
+            manifest,
+            "?Init@cRSubGoldy@@QAEXH@Z",
+        )
+        is subgoldy_init
+    )
+    assert (
+        _reference_symbol_for_symbol_name(
+            manifest,
+            "?Init@cRSubGame@@QAEXXZ",
+        )
+        is None
+    )
+
+
 def test_extract_object_function_does_not_global_resolve_local_label_alias() -> None:
     code = bytes.fromhex("a100000000c3") + b"\x00" * 8
     obj = parse_coff_object(build_object(code, [("_foo", 0), ("$L307", 6)], [(1, 1)]))

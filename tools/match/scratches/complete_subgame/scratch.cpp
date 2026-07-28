@@ -6,7 +6,7 @@
 
 void cRSubGame::Complete(unsigned char completed)
 {
-    player.display_score_stats();
+    player.ScoreStatsDisplay();
 
     current_high_score_record.run_records[replay_update_cursor].flags |= 0x08;
     ++current_high_score_record.replay_sample_count;

@@ -763,6 +763,143 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
     )
 
 
+def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    player_header = (
+        repo_root / "tools/match/include/player.h"
+    ).read_text(encoding="utf-8")
+    expected_methods = (
+        (
+            "health_collect_particles",
+            "HealthCollect",
+            "cRSubGoldy::HealthCollect(cRSubHealth*)",
+            "?HealthCollect@cRSubGoldy@@QAEXPAVSubHealth@@@Z",
+        ),
+        (
+            "initialize_subgoldy",
+            "Init",
+            "cRSubGoldy::Init(int)",
+            "?Init@cRSubGoldy@@QAEXH@Z",
+        ),
+        (
+            "show_subgoldy_lives",
+            "ShowLives",
+            "cRSubGoldy::ShowLives()",
+            "?ShowLives@cRSubGoldy@@QAEXXZ",
+        ),
+        (
+            "update_subgoldy",
+            "AI",
+            "cRSubGoldy::AI()",
+            "?AI@cRSubGoldy@@QAEXXZ",
+        ),
+        (
+            "initialize_subgoldy_ghost",
+            "GhostInit",
+            "cRSubGoldy::GhostInit(int)",
+            "?GhostInit@cRSubGoldy@@QAEXH@Z",
+        ),
+        (
+            "set_subgoldy_ghost_z",
+            "GhostDraw",
+            "cRSubGoldy::GhostDraw(float)",
+            "?GhostDraw@cRSubGoldy@@QAEXM@Z",
+        ),
+        (
+            "add_subgoldy_score",
+            "ScoreAdd",
+            "cRSubGoldy::ScoreAdd(int, int)",
+            "?ScoreAdd@cRSubGoldy@@QAEXHH@Z",
+        ),
+        (
+            "clear_subgoldy_score_buckets",
+            "ScoreStatsInit",
+            "cRSubGoldy::ScoreStatsInit()",
+            "?ScoreStatsInit@cRSubGoldy@@QAEXXZ",
+        ),
+        (
+            "display_score_stats",
+            "ScoreStatsDisplay",
+            "cRSubGoldy::ScoreStatsDisplay()",
+            "?ScoreStatsDisplay@cRSubGoldy@@QAEXXZ",
+        ),
+        (
+            "initialize_subgoldy_resurrect",
+            "RessurectInit",
+            "cRSubGoldy::RessurectInit(int)",
+            "?RessurectInit@cRSubGoldy@@QAEXH@Z",
+        ),
+        (
+            "update_subgoldy_resurrect",
+            "RessurectAI",
+            "cRSubGoldy::RessurectAI()",
+            "?RessurectAI@cRSubGoldy@@QAEXXZ",
+        ),
+        (
+            "handle_subgoldy_collisions",
+            "Collision",
+            "cRSubGoldy::Collision()",
+            "?Collision@cRSubGoldy@@QAEXXZ",
+        ),
+        (
+            "kill_subgoldy",
+            "Kill",
+            "cRSubGoldy::Kill()",
+            "?Kill@cRSubGoldy@@QAEXXZ",
+        ),
+        (
+            "initialize_subgoldy_death",
+            "DeathInit",
+            "cRSubGoldy::DeathInit()",
+            "?DeathInit@cRSubGoldy@@QAEXXZ",
+        ),
+    )
+
+    for windows_name, authored_name, mobile_symbol, object_symbol in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+        assert f"cRSubGoldy_{authored_name}" in (
+            functions_by_name[windows_name]["aliases"]
+        )
+        assert f"void {authored_name}(" in player_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"void cRSubGoldy::{authored_name}(" in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

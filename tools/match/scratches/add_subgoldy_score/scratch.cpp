@@ -7,7 +7,7 @@
 
 void report_errorf(const char* message, ...);
 
-void cRSubGoldy::add_subgoldy_score(int score_kind, int bonus_score)
+void cRSubGoldy::ScoreAdd(int score_kind, int bonus_score)
 {
     int points;
 

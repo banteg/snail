@@ -58,6 +58,23 @@ Latest focused result:
 - Full parallel status regeneration leaves every focused score unchanged,
   including this exact 279/279 initializer.
 
+2026-07-28 authored cRSubGoldy member surface:
+
+- The verified mobile crosswalk now supplies the remaining lifecycle, score,
+  collision, health, death, resurrection, and ghost method names directly:
+  `AI`, `Init`, `ShowLives`, `Collision`, `HealthCollect`, `ScoreAdd`,
+  `ScoreStatsInit`, `ScoreStatsDisplay`, `GhostInit`, `GhostDraw`, `DeathInit`,
+  `Kill`, `RessurectInit`, and `RessurectAI`.
+- Stable Windows target IDs remain unchanged. Each scratch selects its natural
+  owner-specific VC6 symbol, and `gameplay-references.json` records the complete
+  decorated spelling so generic names such as `AI` and `Init` cannot collide
+  across classes.
+- The reference resolver no longer canonicalizes a decorated C++ alias into an
+  ownerless fallback. Exact C++ spellings remain exact; C and stdcall aliases
+  retain their existing canonical fallback.
+- Full status returns to the unchanged 532 proof-grade functions and 79.11%
+  overall fuzzy score after every authored relocation is resolved.
+
 2026-07-14 Snail animation-owner cleanup: the borrowed
 `AnimManager::target_model` now receives `&presentation` through Snail's proven
 public `RenderableBod` inheritance. This removes the last cast-only prefix view

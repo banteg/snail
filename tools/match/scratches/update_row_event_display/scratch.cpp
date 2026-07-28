@@ -91,7 +91,7 @@ void Completion::update_row_event_display()
             if (controller->parcel_target_count == 0) {
                 GameRoot* game = g_game;
                 if (game->subgame.level_mode == 1) {
-                    game->subgame.player.add_subgoldy_score(
+                    game->subgame.player.ScoreAdd(
                         SUBGOLDY_SCORE_BONUS, controller->bonus_score);
                     g_sound_effect_manager.play_sound_effect(0x31);
                 }

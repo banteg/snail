@@ -73,7 +73,7 @@ void cRSubGame::BuildLevel()
     if (subgame_rebuild_selector == 3) {
         subgame_rebuild_selector = 1;
         player.total_score = 0;
-        player.clear_subgoldy_score_buckets();
+        player.ScoreStatsInit();
         player.visible_life_stock = 3;
     }
 

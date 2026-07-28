@@ -28,7 +28,7 @@ float __fastcall normalize_vector(Vec3* vector);
 int next_math_random_value();
 int sprintf(char* buffer, const char* format, ...);
 
-void cRSubGoldy::handle_subgoldy_collisions()
+void cRSubGoldy::Collision()
 {
     enum {
         SALT_POOL_FROM_SUBGAME =
@@ -130,7 +130,7 @@ void cRSubGoldy::handle_subgoldy_collisions()
                         garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;
                     else
                         garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
-                    add_subgoldy_score(SUBGOLDY_SCORE_GARBAGE, 0);
+                    ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
                     damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
                     g_sound_effect_manager.play_sound_effect(
                         39 - (int)((float)next_math_random_value()
@@ -210,7 +210,7 @@ void cRSubGoldy::handle_subgoldy_collisions()
                     - cached_camera_target_world.z;
                 probe_rings = probe_salt;
                 if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
-                    add_subgoldy_score(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
+                    ScoreAdd(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
                     g_voice_manager.play_voice_manager(
                         VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
                     g_sound_effect_manager.play_sound_effect(27);
@@ -251,7 +251,7 @@ void cRSubGoldy::handle_subgoldy_collisions()
                     g_sound_effect_manager.play_sound_effect(14);
                     game->health_pickups[ii].state =
                         TRACK_PICKUP_STATE_TEARDOWN_PENDING;
-                    health_collect_particles(&game->health_pickups[ii]);
+                    HealthCollect(&game->health_pickups[ii]);
                     damage_gauge.apply_damage_gauge_delta(-0.5f, 0);
                 }
             }
@@ -351,7 +351,7 @@ void cRSubGoldy::handle_subgoldy_collisions()
                         if (effect_index > 6)
                             effect_index = 6;
                         g_sound_effect_manager.play_sound_effect(effect_index + 1);
-                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
+                        ScoreAdd(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
                     if (effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED) {
@@ -365,15 +365,15 @@ void cRSubGoldy::handle_subgoldy_collisions()
                         if (effect_index > 6)
                             effect_index = 6;
                         g_sound_effect_manager.play_sound_effect(effect_index + 1);
-                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
+                        ScoreAdd(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
                     if (effect_kind == SUB_RING_KIND_UNKNOWN_1) {
-                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
+                        ScoreAdd(SUBGOLDY_SCORE_RING, 0);
                         g_sound_effect_manager.play_sound_effect(1);
                     } else if (effect_kind == SUB_RING_KIND_EXPLODE_RAMP
                         || effect_kind == SUB_RING_KIND_EXPLODE_AUTHORED) {
-                        add_subgoldy_score(SUBGOLDY_SCORE_RING, 0);
+                        ScoreAdd(SUBGOLDY_SCORE_RING, 0);
                         g_sound_effect_manager.play_sound_effect(42);
                         nuke_effect_progress = nuke_effect_progress_step;
                         nuke.initialize_nuke();
