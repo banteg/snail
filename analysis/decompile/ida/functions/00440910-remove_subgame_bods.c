@@ -5,7 +5,7 @@
 // Unlinks gameplay body lists and runtime pickup/hazard bods during subgame teardown. Cross-port iOS symbols match this helper to `cRSubGame::RemoveBods()` in `SubGame.o`.
 void __thiscall remove_subgame_bods(SubgameRuntime *game)
 {
-  TrackRowCell *runtime_cell_cursor; // edi
+  cRSubLoc *runtime_cell_cursor; // edi
   BodNode **row_list_next_cursor; // esi
   int i; // ebp
   BodList *p_active_bod_list; // ecx

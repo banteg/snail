@@ -154,7 +154,7 @@ SubgameRuntime* SubgameRuntime::initialize_runtime_pools_and_path_template_bank(
     subgoldy->presentation.initialize_player_presentation_controller();
     subgoldy->vtable = &g_subgoldy_callback_table;
 
-    SubLoc* loc = &runtime_cells[0][0];
+    cRSubLoc* loc = &runtime_cells[0][0];
     int loc_count = sizeof(runtime_cells) / sizeof(runtime_cells[0][0]);
     do {
         loc->initialize_sub_loc();

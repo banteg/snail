@@ -33,7 +33,7 @@ three run families readable.
 
 - Walking raw `lane_and_flags` pointers from `+0x3bfb08` looked closer to the
   native disassembly, but it regressed to 18.83% and produced a real masked
-  row-record-base mismatch. The typed `TrackRowCell*` walk is retained.
+  row-record-base mismatch. The typed `cRSubLoc*` walk is retained.
 - Treating continuation cells as cache-family-swapped (`0x40`) gates was
   wrong; the native requires the uncached-body bit (`0x4000`) after the seed
   pass.

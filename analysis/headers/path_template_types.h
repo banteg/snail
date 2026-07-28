@@ -151,8 +151,9 @@ typedef struct SubSegment SubSegment;
 typedef struct SubgameRuntime SubgameRuntime;
 typedef struct Snail Snail;
 typedef struct Sprite Sprite;
-typedef struct TrackRowCell TrackRowCell;
-typedef struct TrackRowCell SubLoc;
+typedef struct cRSubLoc cRSubLoc;
+typedef cRSubLoc SubLoc;
+typedef cRSubLoc TrackRowCell;
 
 typedef enum FrontendWidgetFlag {
     FRONTEND_WIDGET_FLAG_HIGHLIGHTED = 0x00000002,
@@ -432,7 +433,7 @@ typedef struct JetPack {
     SubgameRuntime* owner_game;
     uint8_t _pad_48[0x64 - 0x48];
     Sprite* sprite;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     float bob_phase;
     float bob_phase_step;
     Vapour vapour_a;
@@ -934,7 +935,7 @@ typedef struct SubHealth {
     SubgameRuntime* owner_game;
     uint8_t _pad_48[0x64 - 0x48];
     Sprite* sprite;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     float bob_phase;
     float bob_phase_step;
 } SubHealth;
@@ -971,7 +972,7 @@ typedef struct Slug {
     float death_toss_secondary_progress;
     float death_toss_secondary_progress_step;
     Sprite* sprite;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     uint8_t passed_player;
     uint8_t _pad_b5[0xb8 - 0xb5];
     float lateral_phase;
@@ -1041,7 +1042,7 @@ struct SubGarbage {
     float smoke_timer;
     float smoke_timer_step;
     Sprite* sprite;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     uint8_t hidden;
     uint8_t _pad_bd[0xc0 - 0xbd];
     Player* owner_player;
@@ -1416,12 +1417,12 @@ typedef enum SubLocFlag {
     SUBLOC_FLAG_CORNER_OBJECT = 0x8000,
 } SubLocFlag;
 
-typedef struct TrackRowCell {
+typedef struct cRSubLoc {
     BodNode bod;
     Vec3 anchor_position;
     float render_arg_1c;
     float render_arg_20;
-    void* object;
+    Object* object;
     tColour color;
     struct cRPath* attachment_template_record;
     SubLocTileId tile_id;
@@ -1432,12 +1433,15 @@ typedef struct TrackRowCell {
     Fringe* fringe_right;
     Fringe* fringe_left;
     Fringe* fringe_back;
-} TrackRowCell;
+} cRSubLoc;
+typedef char cRSubLoc_must_be_0x54[
+    (sizeof(cRSubLoc) == 0x54) ? 1 : -1
+];
 
 /*
  * Analysis-only field-first views for BuildLevel's runtime-cell clear pass.
- * Native carries either TrackRowCell::lane_and_flags or
- * TrackRowCell::fringe_front and advances by the complete 0x54-byte cell
+ * Native carries either cRSubLoc::lane_and_flags or
+ * cRSubLoc::fringe_front and advances by the complete 0x54-byte cell
  * stride. The tails alias the following cell's prefix solely to preserve that
  * induction; neither view owns a cell or any borrowed Fringe.
  */
@@ -1465,7 +1469,7 @@ typedef char TrackRowCellFringeFrontStrideCursor_must_be_0x54[
 ];
 
 /*
- * Analysis-only field-first view used while scanning TrackRowCell::object.
+ * Analysis-only field-first view used while scanning cRSubLoc::object.
  * Native advances this borrowed pointer by the full 0x54 cell stride. The
  * tail aliases the next cell's prefix solely to preserve that induction; this
  * view never owns either cell.
@@ -1481,7 +1485,7 @@ typedef char TrackRowCellObjectSlotView_must_stride_0x54[
 ];
 
 /*
- * Analysis-only field-first view used while scanning TrackRowCell::tile_id.
+ * Analysis-only field-first view used while scanning cRSubLoc::tile_id.
  * Native advances this borrowed pointer by the full 0x54 cell stride. The
  * tail therefore aliases the remainder of the current cell and the prefix of
  * the next one; this view never owns either cell.
@@ -1500,15 +1504,15 @@ typedef char TrackRowCellTileByteView_must_stride_0x54[
 /*
  * Analysis-only offset-pointer view for a borrowed runtime cell whose
  * same-lane predecessor is read one complete eight-cell row earlier. The
- * pointer value names the inherited current TrackRowCell at +0x2a0; the seven
+ * pointer value names the inherited current cRSubLoc at +0x2a0; the seven
  * intervening cells are real storage but span a lane-dependent row boundary
  * and are never consumed through this view. This view owns none of the cells.
  */
 typedef struct __ptr_offset(0x2a0)
-    __base(TrackRowCell, 0x2a0) TrackRowCellSameLaneCursorView {
-    TrackRowCell previous_row_same_lane;
-    TrackRowCell intervening_cells[7];
-    __inherited TrackRowCell current_cell;
+    __base(cRSubLoc, 0x2a0) TrackRowCellSameLaneCursorView {
+    cRSubLoc previous_row_same_lane;
+    cRSubLoc intervening_cells[7];
+    __inherited cRSubLoc current_cell;
 } TrackRowCellSameLaneCursorView;
 typedef char TrackRowCellSameLaneCursorView_must_be_0x2f4[
     (sizeof(TrackRowCellSameLaneCursorView) == 0x2f4) ? 1 : -1
@@ -1546,8 +1550,8 @@ typedef struct SubRow {
     Vec3 parcel_spawn_position;
     int32_t parcel_set_id;
     int32_t attachment_template_index;
-    TrackRowCell* primary_attachment_cell;
-    TrackRowCell* secondary_attachment_cell;
+    cRSubLoc* primary_attachment_cell;
+    cRSubLoc* secondary_attachment_cell;
     float installed_heading_delta;
     BodBase attachment_body;
     float ring_speed;
@@ -1567,8 +1571,8 @@ typedef struct SubRowParcelSpawnYStrideCursor {
     float parcel_spawn_z;
     int32_t parcel_set_id;
     int32_t attachment_template_index;
-    TrackRowCell* primary_attachment_cell;
-    TrackRowCell* secondary_attachment_cell;
+    cRSubLoc* primary_attachment_cell;
+    cRSubLoc* secondary_attachment_cell;
     float installed_heading_delta;
     BodBase attachment_body;
     float ring_speed;
@@ -1605,15 +1609,15 @@ typedef struct GameRootRuntimeRowStrideAnchor {
  * +0x3bfac8. */
 typedef struct RuntimeCellStrideAnchor {
     uint8_t runtime_prefix_before_previous_row_same_lane[0x3bf828];
-    TrackRowCell previous_row_same_lane;
+    cRSubLoc previous_row_same_lane;
     uint8_t runtime_gap_previous_row_to_previous_lane[0x1f8];
-    TrackRowCell previous_lane_same_row;
-    TrackRowCell cell;
-    TrackRowCell next_lane_same_row;
+    cRSubLoc previous_lane_same_row;
+    cRSubLoc cell;
+    cRSubLoc next_lane_same_row;
     uint8_t runtime_gap_next_lane_to_next_row[0x1f8];
-    TrackRowCell next_row_same_lane;
+    cRSubLoc next_row_same_lane;
     uint8_t runtime_gap_next_row_to_projected_row[0xccc];
-    TrackRowCell projected_row_six_ahead_same_lane;
+    cRSubLoc projected_row_six_ahead_same_lane;
 } RuntimeCellStrideAnchor;
 
 typedef enum PathTemplateKind {
@@ -2356,7 +2360,7 @@ typedef struct cRPathFollowGoldy {
     uint8_t active;
     uint8_t _pad_01[0x3];
     cRPath* template_record;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     uint32_t sample_index;
     float progress;
     float vertical_offset;
@@ -2376,7 +2380,7 @@ typedef struct GolbPathFollowState {
     uint8_t active;
     uint8_t _pad_01[0x3];
     cRPath* template_record;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     int32_t sample_index;
     float progress;
     float vertical_offset;
@@ -2635,7 +2639,7 @@ typedef struct SubgameRuntime {
     int32_t blink_random_index;
     float blink_random_samples[24];
     Player player;
-    TrackRowCell runtime_cells[3200][8];
+    cRSubLoc runtime_cells[3200][8];
     SubRow runtime_rows[3200];
     SubHighScore sub_high_score;
     SubSolution current_high_score_record;
@@ -2785,7 +2789,7 @@ void __thiscall compute_kind42_attachment_transform(
 );
 int32_t __thiscall initialize_path_follow_golb(
     GolbPathFollowState* state,
-    TrackRowCell* source_cell,
+    cRSubLoc* source_cell,
     const Vec3* position,
     GolbShot* shot
 );
@@ -2874,7 +2878,7 @@ void __thiscall update_vapour(Vapour* vapour);
 SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);
 void __thiscall spawn_track_ring_or_special_effect(
     SubgameRuntime* game,
-    TrackRowCell* cell,
+    cRSubLoc* cell,
     int32_t requested_kind,
     Player* player,
     float ring_speed);
@@ -2977,16 +2981,26 @@ double __thiscall advance_blink_random(SubgameRuntime* game);
 void __thiscall initialize_blink_random(SubgameRuntime* game);
 void __thiscall hide_gameplay_scores(SubgameRuntime* game);
 void __thiscall unhide_gameplay_scores(SubgameRuntime* game);
-TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);
+cRSubLoc* __thiscall initialize_sub_loc(cRSubLoc* cell);
+void __thiscall remove_sub_loc(cRSubLoc* cell);
+void __thiscall update_sub_loc(cRSubLoc* cell);
+int32_t __thiscall get_track_cell_row_index(cRSubLoc* cell);
+cRSubLoc* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);
 SubRow* __thiscall get_track_runtime_cell_at_world_z(SubgameRuntime* game, Vec3* position);
+bool __thiscall is_neighbor_cell_solid(
+    SubgameRuntime* game,
+    cRSubLoc* cell,
+    int32_t lane_offset,
+    int32_t row_offset
+);
 void __thiscall project_position_onto_track_attachment(
     SubgameRuntime* game,
     Vec3* position,
     float* out_angle
 );
 double __thiscall sample_track_floor_height_at_position(SubgameRuntime* game, Vec3* position);
-void __thiscall spawn_track_health_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);
-void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);
+void __thiscall spawn_track_health_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);
+void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);
 void __thiscall merge_track_tile_runs(SubgameRuntime* game);
 void __thiscall mark_track_warning_zones(SubgameRuntime* game);
 void __thiscall select_track_tile_edge_variants(SubgameRuntime* game);
@@ -3000,7 +3014,7 @@ void __thiscall try_enter_track_attachment_from_swept_motion(
     float sweep_dx,
     float sweep_dy,
     float sweep_dz,
-    TrackRowCell* source_cell
+    cRSubLoc* source_cell
 );
 void __thiscall get_path_position_at_node(
     cRPath* self,
@@ -3013,9 +3027,9 @@ bool __thiscall is_point_inside_track_attachment(
     cRPath* self,
     Vec3 probe,
     Vec3 swept_motion,
-    TrackRowCell* cell
+    cRSubLoc* cell
 );
-void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);
+void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, cRSubLoc* source_cell, const Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(cRPathFollowGoldy* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 
 void __thiscall initialize_looptheloop_path_template_pair(
@@ -3464,12 +3478,12 @@ Parcel* __thiscall spawn_track_parcel(
     Player* source_player
 );
 
-int32_t __fastcall is_sub_loc_floor(TrackRowCell* cell);
+int32_t __fastcall is_sub_loc_floor(cRSubLoc* cell);
 
-int32_t __fastcall is_sub_loc_slide(TrackRowCell* cell);
+int32_t __fastcall is_sub_loc_slide(cRSubLoc* cell);
 
-int32_t __fastcall is_sub_loc_ramp(TrackRowCell* cell);
+int32_t __fastcall is_sub_loc_ramp(cRSubLoc* cell);
 
-int32_t __fastcall is_sub_loc_empty(TrackRowCell* cell);
+int32_t __fastcall is_sub_loc_empty(cRSubLoc* cell);
 
 #endif

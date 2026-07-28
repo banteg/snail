@@ -12,7 +12,7 @@
 The constructor reuses EDI for seven independent inline-array walks. Native
 advances are exactly the recovered element widths: `SubHealth` `0x74`, `Slug`
 `0xec`, `Banner` `0x60`, `SubGarbage` `0xc4`, `SubRing` `0x1f8`,
-`TrackRowCell` `0x54`, and `Path` `0xa8`. Each loop therefore borrows one
+`cRSubLoc` `0x54`, and `Path` `0xa8`. Each loop therefore borrows one
 element from its enclosing `SubgameRuntime` pool; no loop owns or advances by
 the complete array.
 
@@ -213,12 +213,12 @@ the complete Windows boundary and this constructor's exact machine code.
 ## 2026-07-11 cRSubLoc constructor loop
 
 - The preceding `0x6400`-entry pass is the complete
-  `SubLoc runtime_cells[3200][8]` array, not a generic BOD pool.
-- It advances by `sizeof(SubLoc) == 0x54` and invokes the exact SubLoc-owned
+  `cRSubLoc runtime_cells[3200][8]` array, not a generic BOD pool.
+- It advances by `sizeof(cRSubLoc) == 0x54` and invokes the exact cRSubLoc-owned
   wrapper at `0x4088c0`, which installs the cell vtable and increments the
   global reported as `LocCount`.
 - Replacing the raw `RuntimeSlot` cursor and literal stride with the owned
-  `SubLoc` array remains exact at 227/227 instructions with all 72 operands
+  `cRSubLoc` array remains exact at 227/227 instructions with all 72 operands
   clean.
 
 ## 2026-07-11 cRFringe constructor array

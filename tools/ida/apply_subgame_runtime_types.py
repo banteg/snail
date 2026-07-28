@@ -82,7 +82,7 @@ SUB_GARBAGE_OWNER_EXPECTED_MEMBERS = (
     (0x9C, 4, "radius", "float"),
     (0xA0, 4, "attachment_facing_angle", "float"),
     (0xB4, 4, "sprite", "Sprite *"),
-    (0xB8, 4, "source_cell", "TrackRowCell *"),
+    (0xB8, 4, "source_cell", "cRSubLoc *"),
     (0xC0, 4, "owner_player", "Player *"),
 )
 SUB_GARBAGE_SLOT_CURSOR_EXPECTED_MEMBERS = (
@@ -99,7 +99,7 @@ SLUG_OWNER_EXPECTED_MEMBERS = (
     (0x8C, 12, "velocity", "Vec3"),
     (0x98, 4, "attachment_facing_angle", "float"),
     (0xAC, 4, "sprite", "Sprite *"),
-    (0xB0, 4, "source_cell", "TrackRowCell *"),
+    (0xB0, 4, "source_cell", "cRSubLoc *"),
     (0xC0, 4, "owner_player", "Player *"),
 )
 SLUG_STATE_CURSOR_EXPECTED_MEMBERS = (
@@ -344,7 +344,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_slug_hazard",
-        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* owner_player);",
+        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* owner_player);",
     ),
     (
         "update_slug_voice_ai",
@@ -428,7 +428,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_garbage_hazard",
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
     ),
     (
         "initialize_track_ring_or_special_effect_runtime",
@@ -436,7 +436,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_ring_or_special_effect",
-        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, int32_t requested_kind, Player* player, float ring_speed);",
+        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, cRSubLoc* cell, int32_t requested_kind, Player* player, float ring_speed);",
     ),
     (
         "initialize_ring_or_special_effect_particles",
@@ -632,7 +632,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "SegmentCache segment_cache;",
     "SubRingStar particles[10];",
     "SubRingPool ring_effects;",
-    "TrackRowCell runtime_cells[3200][8];",
+    "cRSubLoc runtime_cells[3200][8];",
     "SubRow runtime_rows[3200];",
     "SubSolution* selected_level_record;",
     "TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];",
@@ -1806,7 +1806,7 @@ UPDATE_SUB_LAZER_NAMED_LVAR_SPECS = (
         "grid_cell",
         0x441939,
         {"track_grid_cell_at_world_position", "grid_cell"},
-        {"TrackRowCell *"},
+        {"cRSubLoc *"},
         "grid_cell",
     ),
     (

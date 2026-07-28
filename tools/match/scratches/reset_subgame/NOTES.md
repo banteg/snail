@@ -58,7 +58,7 @@ Important source-shape correction:
   global/UI pause gate at root `Game +0x74621`.
 - A broad BN header import preview still disturbed existing shared structs, so
   the sync script field-sets the recovered names on the existing
-  `SubgameRuntime` without reimporting `Sprite`, `TrackRowCell`, or `Player`.
+  `SubgameRuntime` without reimporting `Sprite`, `cRSubLoc`, or `Player`.
 
 2026-07-11 cRSubHealth ownership: the exact eight-record backlink loop now
 lands on the primary `SubHealth` array at `+0x356000`. It writes the containing

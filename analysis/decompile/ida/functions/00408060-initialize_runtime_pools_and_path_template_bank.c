@@ -16,7 +16,7 @@ SubgameRuntime *__thiscall initialize_runtime_pools_and_path_template_bank(Subga
   int m; // ebx
   SubRingPool *p_ring_effects; // edi
   int n; // ebx
-  TrackRowCell *v13; // edi
+  cRSubLoc *v13; // edi
   int ii; // ebx
   SubRow *runtime_rows; // edi
   int jj; // ebx

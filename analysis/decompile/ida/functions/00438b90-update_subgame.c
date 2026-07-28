@@ -2,7 +2,7 @@
 /* function: update_subgame @ 0x438b90 */
 /* selector: update_subgame */
 
-// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`.
+// Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, active gameplay tick, and forward runtime-row scan for pickups plus authored or ambient garbage/salt hazards. Generated garbage/salt spawns are suppressed while the live `Player::click_start.state` lane at +0x120 equals 2. Its eight ring-speed loads resolve exactly to `SubgameRuntime::runtime_rows[row].ring_speed` (`+0x5ccac8 + row * 0xf4 + 0xe8`); Android and iOS independently pass the corresponding current-row scalar to `cRSubGame::AddRing`. Cross-port symbols match this helper to `cRSubGame::AI()`.
 void __thiscall update_subgame(SubgameRuntime *game)
 {
   int32_t subgame_rebuild_selector; // eax
@@ -28,9 +28,9 @@ void __thiscall update_subgame(SubgameRuntime *game)
   uint32_t list_flags; // eax
   RuntimeCellStrideAnchor *runtime_cell_anchor; // edi
   SubLocTileId tile_id; // al
-  TrackRowCell *v25; // eax
+  cRSubLoc *v25; // eax
   struct BodNode *v26; // ecx
-  TrackRowCell *p_cell; // eax
+  cRSubLoc *p_cell; // eax
   struct BodNode *list_next; // ecx
   BodBase *p_attachment_body; // eax
   struct BodNode *v30; // ecx
@@ -348,7 +348,7 @@ LABEL_65:
                 runtime_cell_anchor->cell.bod.list_flags |= 0x200u;
               }
             }
-            (*(void (__thiscall **)(TrackRowCell *))runtime_cell_anchor->cell.bod.vtable)(&runtime_cell_anchor->cell);
+            (*(void (__thiscall **)(cRSubLoc *))runtime_cell_anchor->cell.bod.vtable)(&runtime_cell_anchor->cell);
           }
           p_fringe_front = &runtime_cell_anchor->cell.fringe_front;
           for ( i = 4; i != 0; --i )

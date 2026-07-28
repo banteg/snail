@@ -61,7 +61,7 @@ void __thiscall place_parcels_on_track(SubgameRuntime *game)
   int32_t parcel_quota; // ecx
   SubRow *projection_row; // esi
   int32_t v56; // edi
-  TrackRowCell *primary_attachment_cell; // ecx
+  cRSubLoc *primary_attachment_cell; // ecx
   float y; // edx
   int32_t track_cell_row_index; // eax
   float upper_bound; // [esp+0h] [ebp-22Ch]

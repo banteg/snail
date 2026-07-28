@@ -212,7 +212,7 @@ candidates.
 The old local `AttachmentFollowRuntimeRow` / scalar overlay was misleading.
 `g_game_base +0x641184 + row*0xf4` is a field-first view of
 `TrackAttachmentRuntimeRow::primary_attachment_cell` at subgame row `+0xa4`.
-The pointed object is a `TrackRowCell`, so its `+0x24` and `+0x34` writes are
+The pointed object is a `cRSubLoc`, so its `+0x24` and `+0x34` writes are
 `BodBase.object` and `tColour.a`, not anonymous runtime scalars.
 
 For templates with `has_entry_mesh_transition` (`+0x9c`):
@@ -255,7 +255,7 @@ vector owner, with no padding, volatile qualifier, or synthetic scheduling aid.
 ## 2026-07-14 canonical follow ownership
 
 The updater now defines the shared `FollowState` method directly. Its borrowed
-`Path*` and `SubLoc*`, plus the path-owned `AttachmentSample` banks, replace the
+`Path*` and `cRSubLoc*`, plus the path-owned `AttachmentSample` banks, replace the
 old `AttachmentFollowStateMatrixView`, `PathMatrixView`,
 `TrackRowCellAnchorView`, `AttachmentSampleMatrixView`, and
 `PathKind42CallView`. The kind-42 call now goes through canonical `Path`.
@@ -283,7 +283,7 @@ source was introduced.
 
 ## 2026-07-14 source-cell base closure
 
-The borrowed `SubLoc*` now exposes inherited `BodBase::position` and list flags
+The borrowed `cRSubLoc*` now exposes inherited `BodBase::position` and list flags
 directly. Entry-mesh milestone writes therefore reach the primary attachment
 cell's inherited `BodNode` without a synthetic embedded `bod` owner. Focused
 output is byte-stable at 72.89%, 698/726 instructions, with the 122-instruction
@@ -325,7 +325,7 @@ attachment-owned flag. Focused output remains byte-identical at 72.89%,
 
 The canonical `FollowState` method prototype is now replayed durably into both
 analysis databases. Binary Ninja also reapplies the exact nine SSA identities
-that arise from repeated runtime-row loads as `TrackRowCell*` and `Path*`;
+that arise from repeated runtime-row loads as `cRSubLoc*` and `Path*`;
 these identities retain the primary attachment cell, template record, object,
 list-flag, and alpha owners through the entry-mesh milestones.
 
@@ -333,7 +333,7 @@ IDA now normalizes the two relocatable Player basis-up operands and seven
 runtime-row operands whose numeric values collide with named code or offset
 symbols. This changes only those instruction operands, preserves the global
 symbols, and makes decompilation follow the full canonical graph:
-`GameRoot -> SubgameRuntime -> Player/rows -> TrackRowCell -> Path`.
+`GameRoot -> SubgameRuntime -> Player/rows -> cRSubLoc -> Path`.
 Fresh BN and IDA exports consequently agree on the player body transform,
 runtime row and primary cell, entry mesh pointers, color alpha, list flags,
 and subgame rate owners. Health checks preserve both views.

@@ -3,7 +3,7 @@
 /* selector: is_sub_loc_floor */
 
 // Exact Windows counterpart of cross-port `cRSubLoc::IsFloor()`: accepts tile ids 1, 20, 21, 33, 34, and 27.
-int32_t __fastcall is_sub_loc_floor(TrackRowCell *cell)
+int32_t __fastcall is_sub_loc_floor(cRSubLoc *cell)
 {
   SubLocTileId tile_id; // al
   int32_t result; // eax

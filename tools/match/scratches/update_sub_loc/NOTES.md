@@ -1,13 +1,13 @@
 # High progress — 99.47%, 187/187 insns
 
-This is the per-cell `SubLoc` update, matching the iOS
+This is the per-cell `cRSubLoc` update, matching the iOS
 `cRSubLoc::AI()` owner, not a pooled `FringeObject` method. The receiver's
 inherited `BodBase` owns its list node, position, render arguments, object, and
 color; the attachment-template backlink, tile id, and lane flags are the same
 fields used by the exact runtime-grid builders and near-matched cell teardown.
 Semantics complete:
 
-The Windows `SubLoc` constructor installs the table at `0x497368`, whose entry
+The Windows `cRSubLoc` constructor installs the table at `0x497368`, whose entry
 is this exact address. That direct callback edge closes the owner independently
 of the cross-port symbol match.
 
@@ -70,7 +70,7 @@ operands.
 2026-07-11 ownership and vector-source pass: the synthetic root and receiver
 views are removed. Every global offset now resolves through `GameRoot` into the
 owned `SubgameRuntime`, embedded `Player`, `SubLazerPool`, or 0xf4-byte runtime
-row. The receiver is the shared `SubLoc`, and the skirt-color
+row. The receiver is the shared `cRSubLoc`, and the skirt-color
 destination is specifically `TrackAttachmentRuntimeRow::attachment_body.color`.
 
 The native 0x34-byte frame is recovered by the ordinary C++ shape: copy the
@@ -84,7 +84,7 @@ after the owner rewrite. Focused Wibo improves from 46.77% to 82.67%, 188/187
 candidate/target instructions, prefix 26/187, with 34 clean masked operands.
 
 The live Binary Ninja prototypes now agree: this function is a void thiscall on
-`TrackRowCell`, `get_track_skirt_color` is a `SubgameRuntime` method returning
+`cRSubLoc`, `get_track_skirt_color` is a `SubgameRuntime` method returning
 `tColour*`, and `shoot_sub_lazer_pool` is a `SubLazerPool` method over two
 vectors.
 
@@ -114,7 +114,7 @@ neutral or regressive and are not retained.
 
 ## 2026-07-14 BodBase ownership
 
-All cell-anchor reads now name inherited `SubLoc::position`, while render
+All cell-anchor reads now name inherited `cRSubLoc::position`, while render
 arguments, object, color, and active-list links resolve through the same
 `BodBase` receiver. The exact constructor and 25,600-cell initialization loop
 prove the base and 0x54 stride. Focused output remains byte-stable at 83.20%,

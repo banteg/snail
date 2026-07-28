@@ -14,6 +14,7 @@
 0043dcbf        slug_slot_cursor->slug.state = SUB_SLUG_STATE_ACTIVE
 0043dcc9        slug_slot_cursor->slug.owner_player = owner_player
 0043dcd5        set_matrix_identity(&slug_slot_cursor->slug.body.transform)
+0043dce9        long double x87_r7_1 = fconvert.t(cell->anchor_position.y) + fconvert.t(1.70000005f)
 0043dcef        float x = cell->anchor_position.x
 0043dcf2        int16_t z = (cell->anchor_position.z).w
 0043dcf9        slug_slot_cursor->slug.body.transform.position.x.b = x.b
@@ -21,18 +22,19 @@
 0043dcf9        slug_slot_cursor->slug.body.transform.position.x:2.b = x:2.b
 0043dcf9        slug_slot_cursor->slug.body.transform.position.x:3.b = x:3.b
 0043dcfb        float x_1 = x
-0043dd0b        slug_slot_cursor->slug.body.transform.position.y = fconvert.s(fconvert.t(cell->anchor_position.y) + fconvert.t(1.70000005f))
+0043dd0b        slug_slot_cursor->slug.body.transform.position.y = fconvert.s(x87_r7_1)
 0043dd16        slug_slot_cursor->slug.body.transform.position.z.b = z.b
 0043dd16        slug_slot_cursor->slug.body.transform.position.z:1.b = z:1.b
 0043dd1b        project_position_onto_track_attachment(game, &slug_slot_cursor->slug.body.transform.position, &slug_slot_cursor->slug.attachment_facing_angle)
 0043dd23        long double x87_r6 = fconvert.t(0f)
 0043dd2f        float var_c = fconvert.s(x87_r6)
+0043dd3f        long double x87_r7_3 = fconvert.t(game->subgame_rate) * fconvert.t(-0.200000003f)
 0043dd45        slug_slot_cursor->slug.velocity.x.b = var_c.b
 0043dd45        slug_slot_cursor->slug.velocity.x:1.b = var_c:1.b
 0043dd45        slug_slot_cursor->slug.velocity.x:2.b = var_c:2.b
 0043dd45        slug_slot_cursor->slug.velocity.x:3.b = var_c:3.b
 0043dd47        slug_slot_cursor->slug.velocity.y = fconvert.s(x87_r6)
-0043dd50        int16_t var_4_1 = (fconvert.s(fconvert.t(game->subgame_rate) * fconvert.t(-0.200000003f))).w
+0043dd50        int16_t var_4_1 = (fconvert.s(x87_r7_3)).w
 0043dd58        slug_slot_cursor->slug.velocity.z.b = var_4_1.b
 0043dd58        slug_slot_cursor->slug.velocity.z:1.b = var_4_1:1.b
 0043dd61        struct BodList* edx_5 = &g_game_base->active_bod_list

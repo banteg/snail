@@ -4,7 +4,7 @@
 
 
 void cRPathFollowGoldy::begin_track_attachment_follow_state(
-    TrackRowCell* cell, const Vector3* world_position, Player* owning_player)
+    cRSubLoc* cell, const Vector3* world_position, Player* owning_player)
 {
     active = 1;
     template_record = cell->attachment_template_record;

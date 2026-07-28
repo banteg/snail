@@ -121,7 +121,7 @@ SUB_GARBAGE_FIELD_UPDATES = (
     ("0xac", "smoke_timer", "float"),
     ("0xb0", "smoke_timer_step", "float"),
     ("0xb4", "sprite", "Sprite*"),
-    ("0xb8", "source_cell", "TrackRowCell*"),
+    ("0xb8", "source_cell", "cRSubLoc*"),
     ("0xbc", "hidden", "uint8_t"),
     ("0xc0", "owner_player", "Player*"),
 )
@@ -186,7 +186,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_track_garbage_hazard",
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player)",
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* player)",
     ),
 )
 

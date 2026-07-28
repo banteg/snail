@@ -129,7 +129,7 @@ IDA's live prototype already preserved the recovered void `SubgameRuntime`
 method, but its runtime-row LEA still rendered as the unrelated
 `byte_5CCAC8` global. Normalizing only operand `0x4444d4:1` exposes the direct
 `game->runtime_rows[row]` borrow. Exact lvar readback then preserves the
-successive `SubRow*`, `TrackRowCell*`, `Path*`, and `PathTemplateSample*`
+successive `SubRow*`, `cRSubLoc*`, `Path*`, and `PathTemplateSample*`
 owners.
 
 The sample pointer advances by the native 0xa8-byte `PathTemplateSample`

@@ -6,8 +6,8 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
-unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_floor(cRSubLoc* cell);
+unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
 
 void SubgameRuntime::harmonize_center_lane_floor_slide_variants()
 {

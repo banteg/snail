@@ -84,7 +84,7 @@ void SubgameRuntime::place_challenge_parcels_on_track()
                 && (runtime_rows[scan].flags
                         & SUBROW_FLAG_PRIMARY_ATTACHMENT)
                     != 0) {
-                TrackRowCell* cell = runtime_rows[scan].primary_attachment_cell;
+                cRSubLoc* cell = runtime_rows[scan].primary_attachment_cell;
                 int source_row = cell->get_track_cell_row_index();
                 int node =
                     (int)runtime_rows[scan].parcel_spawn_position.z

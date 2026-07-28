@@ -5,20 +5,22 @@
 
 0043d6c8        int32_t ebx = 0
 0043d6ca        enum TrackPickupState* eax = &game->health_pickups[0].state
-0043d6d3        while ((eax - 0x356038)->health_pickups[0].state != TRACK_PICKUP_STATE_INACTIVE)
+0043d6d3        while (*eax != TRACK_PICKUP_STATE_INACTIVE)
 0043d6d5        ebx += 1
 0043d6d6        eax = &eax[0x1d]
 0043d6dc        if (ebx s>= 8)
 0043d6e2        return
-0043d6ef        struct TrackRowCell* cell_1 = cell
+0043d6ef        struct cRSubLoc* cell_1 = cell
 0043d6fc        struct SubHealthSlotCursor* health_cursor = game + ebx * 0x74
 0043d6ff        health_cursor->health.state = TRACK_PICKUP_STATE_ACTIVE
 0043d709        health_cursor->health.owner = player
 0043d718        float x = cell_1->anchor_position.x
+0043d71b        float z = cell_1->anchor_position.z
 0043d72a        float x_2 = x
+0043d72e        float var_8 = fconvert.s(fconvert.t(cell_1->anchor_position.y) + fconvert.t(0.600000024f))
 0043d736        health_cursor->health.bod.position.x = x
-0043d73c        health_cursor->health.bod.position.y = fconvert.s(fconvert.t(cell_1->anchor_position.y) + fconvert.t(0.600000024f))
-0043d73f        health_cursor->health.bod.position.z = cell_1->anchor_position.z
+0043d73c        health_cursor->health.bod.position.y = var_8
+0043d73f        health_cursor->health.bod.position.z = z
 0043d751        if (((health_cursor->health.bod.bod.list_flags).w:1.b & 2) == 0)
 0043d762        struct GameRoot* game_base_1 = g_game_base
 0043d76e        struct BodNode* first = game_base_1->active_bod_list.first
@@ -74,9 +76,9 @@
 0043d813        ecx_5[2] = x_1:2.b
 0043d813        ecx_5[3] = x_1:3.b
 0043d818        *(ecx_5 + 4) = health_cursor->health.bod.position.y
-0043d81b        int16_t z = (health_cursor->health.bod.position.z).w
-0043d81e        ecx_5[8] = z.b
-0043d81e        ecx_5[9] = z:1.b
+0043d81b        int16_t z_1 = (health_cursor->health.bod.position.z).w
+0043d81e        ecx_5[8] = z_1.b
+0043d81e        ecx_5[9] = z_1:1.b
 0043d821        health_cursor->health.source_cell = cell_1
 0043d827        health_cursor->health.bob_phase = 0f
 0043d83a        int16_t x87control

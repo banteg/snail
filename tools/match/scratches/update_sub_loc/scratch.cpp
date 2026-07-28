@@ -10,7 +10,7 @@
 
 
 
-void SubLoc::update_sub_loc()
+void cRSubLoc::update_sub_loc()
 {
     if ((lane_and_flags & SUBLOC_FLAG_AI_ENABLED) == 0)
         return;

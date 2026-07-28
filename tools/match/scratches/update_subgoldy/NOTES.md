@@ -261,7 +261,7 @@ source-shape issue is solved.
   with shared `vector3.h` preserved the headline score but introduced a
   masked operand mismatch, so this scratch keeps its local view for now.
 - 2026-06-15 attachment-layout probe: expanding the local
-  `AttachmentSample`/`Path`/`TrackRowCell` views to the
+  `AttachmentSample`/`Path`/`cRSubLoc` views to the
   shared-header field names also preserved the headline score but shrank the
   stack frame and introduced the same jump-table masked mismatch. Keep the
   compact local attachment view until a source-shape fix explains the frame.
@@ -318,7 +318,7 @@ source-shape issue is solved.
   `SubgoldyTrackRowCellView`, and `SubgoldyFollowStateView`. This preserves the
   by-value swept-entry caller shape that beat the scalar shared-header call
   spelling above, while making the type report stop advertising these local
-  views as ready-to-promote `Path`, `TrackRowCell`, or
+  views as ready-to-promote `Path`, `cRSubLoc`, or
   `FollowState` copies. Focused evidence stayed unchanged at `72.51%`,
   `2067/2087`, and the same `290 ok / 1` jump-table masked audit.
 - 2026-07-11 cRPath ownership: symbol-preserving ports identify the shared
@@ -489,11 +489,11 @@ instructions, with 290 clean masked operands and one jump-table mismatch.
 ## 2026-07-14 cell and follow ownership consolidation
 
 - The scratch-local runtime-cell shell is gone. Grid lookup, row-event,
-  slide, landing, and trampoline paths now use the complete authored `SubLoc`
+  slide, landing, and trampoline paths now use the complete authored `cRSubLoc`
   owner, including the primary/secondary attachment cells borrowed from
   canonical `SubRow` records.
 - The duplicate 0x40-byte follow shell is replaced by the shared `FollowState`
-  (`cRPathFollowGoldy`) owner. Its exact `Path*`, `SubLoc*`, and `Player*`
+  (`cRPathFollowGoldy`) owner. Its exact `Path*`, `cRSubLoc*`, and `Player*`
   relationships now cover both begin and update calls.
 - A full promotion of the remaining caller-local `SubgoldyPathView` was
   tested and rejected: spelling the swept-entry call through the shared

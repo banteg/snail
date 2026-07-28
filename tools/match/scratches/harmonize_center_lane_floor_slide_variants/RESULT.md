@@ -11,7 +11,7 @@
 | Masked operands | 28 clean, 0 unresolved, 0 mismatched |
 
 The exact source recovers authored `cRSubGame::SlideSmoothTrack()` as a direct
-row/lane pass over the owned `SubLoc` runtime grid. Rows with phase 3 inspect
+row/lane pass over the owned `cRSubLoc` runtime grid. Rows with phase 3 inspect
 the same lane in the following row; rows with phase 5 inspect the preceding
 row. The four floor/slide object-family scans and `0x40` transition flag writes
 match exactly.

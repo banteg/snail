@@ -20,10 +20,10 @@ target[11]    lea esi, dword [ecx+0x3bfaec]
 candidate[11] lea esi, dword [ecx+0x3bfac8]
 ```
 
-Native keeps `esi` at the `TrackRowCell +0x24` BOD object slot, so accesses to
+Native keeps `esi` at the `cRSubLoc +0x24` BOD object slot, so accesses to
 the object pointer, lane flags, next-row neighbor, and BOD receiver appear as
 `[esi]`, `[esi+0x1c]`, `[esi+0x27c]`, and `esi-0x24`. The retained source keeps
-the shared `TrackRowCell*` cursor, so the same accesses are shifted by `+0x24`.
+the shared `cRSubLoc*` cursor, so the same accesses are shifted by `+0x24`.
 
 ## Rejected trials
 

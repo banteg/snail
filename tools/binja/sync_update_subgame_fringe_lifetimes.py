@@ -23,7 +23,7 @@ EXPECTED_TYPE_WIDTHS = {
     "BodBase": 0x38,
     "Fringe": 0x38,
     "tColour": 0x10,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "SubgameRuntime": 0x1272838,
 }
 
@@ -46,7 +46,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x08: ("b", "float"),
         0x0C: ("a", "float"),
     },
-    "TrackRowCell": {
+    "cRSubLoc": {
         0x44: ("fringe_front", "Fringe*"),
         0x48: ("fringe_right", "Fringe*"),
         0x4C: ("fringe_left", "Fringe*"),
@@ -54,12 +54,12 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "SubgameRuntime": {
         0x355B64: ("fringe_attachment_list_head", "BodBase"),
-        0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]"),
+        0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
     },
 }
 
 # update_subgame scans the four directional Fringe pointers embedded in each
-# TrackRowCell. The cell owns the pointer slots, while FringeManager retains the
+# cRSubLoc. The cell owns the pointer slots, while FringeManager retains the
 # backing objects. Each non-null object is borrowed into the runtime attachment
 # list and then reloaded after get_track_skirt_color before its BodBase colour is
 # copied. Keep that explicit reload: the matching scratch proves it is part of

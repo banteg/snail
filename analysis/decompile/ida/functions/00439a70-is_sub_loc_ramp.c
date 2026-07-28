@@ -2,8 +2,8 @@
 /* function: is_sub_loc_ramp @ 0x439a70 */
 /* selector: is_sub_loc_ramp */
 
-// Exact SubLoc predicate matching cross-port `cRSubLoc::IsRamp()`: accepts the authored ramp tile family 2 through 13.
-int32_t __fastcall is_sub_loc_ramp(TrackRowCell *cell)
+// Exact cRSubLoc predicate matching cross-port `cRSubLoc::IsRamp()`: accepts the authored ramp tile family 2 through 13.
+int32_t __fastcall is_sub_loc_ramp(cRSubLoc *cell)
 {
   SubLocTileId tile_id; // al
   int32_t result; // eax

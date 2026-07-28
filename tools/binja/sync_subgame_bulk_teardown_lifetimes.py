@@ -24,7 +24,7 @@ EXPECTED_TYPE_WIDTHS = {
     "RenderableBod": 0x80,
     "RowModel": 0x8C,
     "SubRow": 0xF4,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "SubHealth": 0x74,
     "SubGarbage": 0xC4,
     "SubGarbagePool": 0x264C,
@@ -51,7 +51,7 @@ EXPECTED_STRUCT_FIELDS = {
     "SubRow": {
         0x04: ("row_model", "RowModel"),
     },
-    "TrackRowCell": {
+    "cRSubLoc": {
         0x00: ("bod", "BodNode"),
     },
     "SubHealth": {
@@ -74,7 +74,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("slots", "Slug[8]"),
     },
     "SubRing": {
-        0x00: ("bod", "BodNode"),
+        0x00: ("body", "RenderableBod"),
         0x80: ("state", "SubRingState"),
     },
     "SubRingPool": {
@@ -85,17 +85,26 @@ EXPECTED_STRUCT_FIELDS = {
         0x3563A0: ("slug_hazards", "SlugPool"),
         0x359140: ("garbage_hazards", "SubGarbagePool"),
         0x35B78C: ("ring_effects", "SubRingPool"),
-        0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]"),
+        0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
         0x5CCAC8: ("runtime_rows", "SubRow[3200]"),
     },
 }
 
 # Bulk teardown never frees the backing row/pickup/hazard records. It borrows
 # each embedded BodNode's list links, unlinks that node from the root BodList,
-# and pushes it onto the list's free stack. Preserve the five independent list
-# borrows and countdowns without inventing a common pool owner or flattening
-# the compiler-sensitive list_next field cursors.
+# and pushes it onto the list's free stack. Preserve the cRSubLoc element
+# cursor plus the five independent list borrows and countdowns without
+# inventing a common pool owner or flattening the compiler-sensitive list_next
+# field cursors.
 SUBGAME_BULK_TEARDOWN_USER_VAR_UPDATES = (
+    (
+        "remove_subgame_bods",
+        "RegisterVariableSourceType",
+        9,
+        73,
+        "runtime_cell_cursor",
+        "cRSubLoc*",
+    ),
     (
         "remove_subgame_bods",
         "RegisterVariableSourceType",

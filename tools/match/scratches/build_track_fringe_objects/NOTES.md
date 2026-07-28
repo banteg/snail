@@ -64,9 +64,9 @@ Main residuals from `--regions`:
   versus `test eax, eax` and has shifted labels from the earlier register
   allocation split.
 
-## 2026-06-16 TrackRowCell consolidation
+## 2026-06-16 cRSubLoc consolidation
 
-`TrackRowCell` now exposes the four fringe object pointers at
+`cRSubLoc` now exposes the four fringe object pointers at
 `+0x44..+0x50` in the shared attachment header. This scratch consumes that
 shared view directly instead of carrying a private `RuntimeCell` clone. At this
 point `FringeObject` stayed local because the type scanner still reported
@@ -124,7 +124,7 @@ The pool boundary is now explicit. Root `+0x3d01d4` is subgame
 `+0x42fd14` is the same manager's `count` at subgame `+0x3bb6fc`.
 `SubgameRuntime` therefore owns all 7,000 fixed `FringeObject` records.
 `initialize_fringe_manager()` only rewinds the cursor, and each
-`TrackRowCell::fringe_*` field is a non-owning handle into that storage. The
+`cRSubLoc::fringe_*` field is a non-owning handle into that storage. The
 builder uses the singleton's typed `fringe_manager` member at every native
 global reload and reports the typed count at the tail.
 
@@ -144,7 +144,7 @@ that swap with volatile locals, register tricks, or raw-offset aliases.
 - Android preserves the builder owner as `cRSubGame::FringeEdgeTrack()`, the
   pool as `cRFringeManager`, and each 0x38-byte object as `cRFringe`.
 - The shared Windows type is now `Fringe`; `FringeObject` is retained only as
-  a compatibility alias. Each `SubLoc::fringe_*` field is a borrowed `Fringe*`
+  a compatibility alias. Each `cRSubLoc::fringe_*` field is a borrowed `Fringe*`
   into the manager's inline 7000-object array.
 - The constructor loop now addresses `fringe_manager.objects` with
   `sizeof(Fringe)` and 7000 explicitly while staying exact at 227/227. This
@@ -162,7 +162,7 @@ that swap with volatile locals, register tricks, or raw-offset aliases.
   `DirectXLoader`.
 - `build_track_fringe_objects` now selects
   `TrackFringeBodCatalog::entries[family][direction][edge_a][edge_b].object`.
-  The allocated `Fringe` borrows that render object, while each SubLoc fringe
+  The allocated `Fringe` borrows that render object, while each cRSubLoc fringe
   field separately borrows the allocated Fringe from `FringeManager`.
 - Runtime row/cell cursors now start from the owned `runtime_rows` and
   `runtime_cells` arrays. These ownership substitutions preserve the honest
@@ -197,13 +197,13 @@ This is byte-identical at 60.39%, 492/495 instructions, prefix 3/495, with all
 edge-selector register scheduling; no register-shaped construct is introduced.
 
 The unused scratch-local `Vec3Bits` declaration is also retired: all emitted
-positions already use the shared `Vector3` owned by `BodBase` and `SubLoc`.
+positions already use the shared `Vector3` owned by `BodBase` and `cRSubLoc`.
 
 ## 2026-07-14 row render-suppression flag
 
 Both row checks now consume `SUBROW_FLAG_SUPPRESS_TRACK_RENDER`, the runtime
 copy of the authored `*` marker. They clear directional fringe ownership for
-that row without conflating the flag with any per-cell `SubLoc` bit. Focused
+that row without conflating the flag with any per-cell `cRSubLoc` bit. Focused
 output remains byte-identical at 60.39%, 492/495 instructions, prefix 3/495,
 with all 48 operands clean.
 
@@ -234,7 +234,7 @@ drifting into separate same-sized analyzer types.
 ## 2026-07-19 builder lifetime closure
 
 Binary Ninja now preserves the saved `SubgameRuntime*` receiver, independent
-`SubRow*` and `TrackRowCell*` iterators, row/cell loop bounds, fringe-family
+`SubRow*` and `cRSubLoc*` iterators, row/cell loop bounds, fringe-family
 selector, and both directional edge selectors. Each allocation result is named
 as the corresponding borrowed `Fringe*`, while the four color temporaries stay
 direction-local. This makes the ownership chain explicit: the subgame owns the

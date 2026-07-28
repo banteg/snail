@@ -103,7 +103,7 @@ vs the `+0x48` store) is compiler scheduling, and the equivalent raw field
 write did not improve the match.
 
 2026-06-16 entry shared-field pass: the `P`/`p` path now writes the shared
-`TrackRowCell::attachment_template_record`, uses
+`cRSubLoc::attachment_template_record`, uses
 `Path::row_span_count`, and stamps
 `TrackAttachmentRuntimeRow::primary_attachment_cell` /
 `secondary_attachment_cell` over the template span. Focused Wibo remains
@@ -158,7 +158,7 @@ arithmetic here is source-shape preservation, not an unresolved owner.
 
 ## 2026-07-10 runtime slab ownership pass
 
-- `SubgameRuntime` owns a fixed `SubLoc[3200][8]` slab at `+0x3bfac8`.
+- `SubgameRuntime` owns a fixed `cRSubLoc[3200][8]` slab at `+0x3bfac8`.
   Its exact `0x20d000` extent lands at `+0x5ccac8`, where a fixed
   `SubRow[3200]` slab begins; the row slab's exact
   `0xbea00` extent lands at the embedded `SubHighScore` at `+0x68b4c8`.
@@ -340,7 +340,7 @@ the existing glyph-table mismatch.
 The same analysis owner now replaces the anonymous `+0x3bfac8..+0xff25d0`
 range with the three independently measured embedded stores:
 
-- `TrackRowCell runtime_cells[3200][8]` at `+0x3bfac8`, ending at `+0x5ccac8`;
+- `cRSubLoc runtime_cells[3200][8]` at `+0x3bfac8`, ending at `+0x5ccac8`;
 - `TrackAttachmentRuntimeRow runtime_rows[3200]` at `+0x5ccac8`, ending at
   `+0x68b4c8`; and
 - the working `SubSolution current_high_score_record` at `+0xfd2b10`, ending
@@ -379,7 +379,7 @@ glyph jump-table layout difference.
 
 The scratch-local `TrackRowBodSlot` did not own any storage. The exact
 `initialize_sub_loc` constructor runs the shared `cRBod` initializer over each
-0x54-byte `SubLoc`; that owner now directly inherits `BodBase`, so glyph-selected
+0x54-byte `cRSubLoc`; that owner now directly inherits `BodBase`, so glyph-selected
 object writes call `BodBase::set_bod_object` through the real base while
 retaining the raw cell cursor needed by the large VC6 switch.
 
@@ -390,7 +390,7 @@ The other two receivers are complete embedded owners, not prefix views:
 
 The row field casts and attachment-span cursor now use canonical `SubRow`
 instead of its historical `TrackAttachmentRuntimeRow` alias. No distinct
-`SubLoc::set_bod_object` symbol or replacement shell was introduced. The
+`cRSubLoc::set_bod_object` symbol or replacement shell was introduced. The
 ownership consolidation is codegen neutral at `29.27%`, `1,208/1,245`, prefix
 `2/1,245`, with `60` clean masked operands and the one known glyph jump-table
 layout mismatch.
@@ -412,14 +412,14 @@ layout mismatch.
 ## Runtime clear-cursor ownership (2026-07-14)
 
 The native clear pass still advances an interior cursor rooted at
-`SubLoc::fringe_front` and another rooted at `SubRow::projection_payload.y`.
+`cRSubLoc::fringe_front` and another rooted at `SubRow::projection_payload.y`.
 Those lifetimes are useful compiler evidence, but their former
 `+0x3bfb0c/+0x5ccb5c`, 84-byte, 61-dword, and numbered negative/positive lane
 constants no longer carry the layout themselves:
 
 - cursor bases derive from `runtime_cells[0][0]` and `runtime_rows[0]`;
 - row and lane counts derive from the owned 3200-by-8 arrays;
-- cursor strides derive from `sizeof(SubLoc)` and `sizeof(SubRow)`; and
+- cursor strides derive from `sizeof(cRSubLoc)` and `sizeof(SubRow)`; and
 - every cleared row lane derives from `offsetof(SubRow, ...)`, covering flags,
   projection payload, parcel/template state, borrowed attachment/source links,
   heading/ring values, and the row-event id.
@@ -440,7 +440,7 @@ VC6 scheduling, but their large address constants no longer stand alone:
 - ordinary, first, last, and mode-3 scratch segment addresses derive from the
   two embedded `SubTracks` owners, `SubSegment` stride, and slot indices;
 - the row cursor derives from `SubgameRuntime::runtime_rows` and `sizeof(SubRow)`;
-- the cell index cursor derives from `sizeof(SubLoc)`, while the mirror-byte
+- the cell index cursor derives from `sizeof(cRSubLoc)`, while the mirror-byte
   lookup derives from `SubgameRuntime::track_mirror_enabled`;
 - primary/secondary template selection derives from `path_pairs`, `PathPair`
   stride, and `PathPair::secondary`; and
@@ -485,14 +485,14 @@ now derives:
   `SubgameRuntime::runtime_cells`;
 - object list flags, position, render arguments, and color from the inherited
   `BodBase` prefix;
-- tile id, lane flags, and all four fringe links from `SubLoc`;
+- tile id, lane flags, and all four fringe links from `cRSubLoc`;
 - the previous-row tile address from one owned eight-cell row stride; and
 - the fringe propagation loop's count/step and destination positions from the
-  four-pointer `SubLoc` tail and `BodBase::position`.
+  four-pointer `cRSubLoc` tail and `BodBase::position`.
 
 The unusual trampoline color address remains in its native index-bias form,
 but that bias is now derived from the slab base plus `BodBase::color` divided
-by `sizeof(SubLoc)`. The pre/post normalized listing hash is still
+by `sizeof(cRSubLoc)`. The pre/post normalized listing hash is still
 `4b3b94f2fa2ea974a196c05e9d42f3c2ad75b0a0cc4f47739471d1996e5aa444`;
 focused Wibo therefore remains honestly unchanged at 29.27%, 1,208/1,245,
 60 clean operands, and the known glyph jump-table mismatch.
@@ -580,7 +580,7 @@ loop. It keeps three containing-owner bases and advances them at the exact
 native strides: `SubSegment + row * 0x38`, `SubgameRuntime + row * 0xf4`, and
 `SubgameRuntime + cell * 0x54`. Analysis-only overlapping views now preserve
 that real source ownership while exposing the consumed `AuthoredSegmentRow`,
-`SubRow`, and `TrackRowCell` members at `+0x814`, `+0x5ccac8`, and `+0x3bfac8`.
+`SubRow`, and `cRSubLoc` members at `+0x814`, `+0x5ccac8`, and `+0x3bfac8`.
 The cell view also names the guarded same-lane tile one eight-cell row behind
 the current cell instead of rendering it as an unrelated prefix byte.
 
@@ -613,13 +613,13 @@ mismatches; this is ownership recovery, not match shaping.
 
 The resulting BN reanalysis also corrects two prefix-equivalent
 `set_bod_object` receivers from the embedded `vtable` word to the enclosing
-`TrackRowCell`/`BodBase` prefix. Those are accepted type-propagation
+`cRSubLoc`/`BodBase` prefix. Those are accepted type-propagation
 improvements in the same function; they do not alter matcher source or bytes.
 
 ## 2026-07-18 fringe position propagation
 
 The placement tail iterates the four contiguous borrowed fringe links at
-`TrackRowCell::fringe_front` through `fringe_back`. The native ECX lifetime is
+`cRSubLoc::fringe_front` through `fringe_back`. The native ECX lifetime is
 therefore an exact `FringeObject**` slot cursor. Its two EAX reloads are the
 borrowed `FringeObject*` in that slot, and their derived `+0x10` address is
 exactly `&FringeObject::bod.position`, a `Vec3*`; it is not an integer buffer
@@ -717,7 +717,7 @@ promoted to a fabricated, negatively biased `SubSegment*` owner.
 
 The following 3,200-row reset carries two more physical field cursors. The
 row cursor starts at `SubRow::projection_payload.y` and advances by `0xf4`,
-while the cell cursor starts at `TrackRowCell::fringe_front`, derives the
+while the cell cursor starts at `cRSubLoc::fringe_front`, derives the
 neighboring `lane_and_flags` word at `-4`, and advances each lane by `0x54`.
 The replay names both outer countdowns, the lane-and-flags and list-flags
 values, and the current/next fringe-link cursors. It deliberately leaves the
@@ -735,7 +735,7 @@ was introduced.
 ## 2026-07-24 authored glyph lane ownership
 
 The eight-lane materialization loop now keeps its two lane identities
-separate. `runtime_lane` selects the physical `SubLoc` written in
+separate. `runtime_lane` selects the physical `cRSubLoc` written in
 `runtime_cells`, while `authored_lane` is either that lane or `7 - lane` and
 indexes the borrowed active `SubSegment::glyph_rows`. Their two branch
 definitions and SSA joins are replayed as complete lifetimes; naming only the
@@ -821,8 +821,8 @@ instructions, with 66 clean operands and the same two documented mismatches.
 
 The 3,200-row reset does not carry whole-record owners. It carries three
 borrowed interior addresses: `SubRow::parcel_spawn_position.y`, advancing by
-the complete `0xf4` row stride; `TrackRowCell::lane_and_flags`, advancing by
-the complete `0x54` cell stride; and `TrackRowCell::fringe_front`, likewise
+the complete `0xf4` row stride; `cRSubLoc::lane_and_flags`, advancing by
+the complete `0x54` cell stride; and `cRSubLoc::fringe_front`, likewise
 advancing by `0x54`. `SubgameRuntime::runtime_rows` and `runtime_cells` remain
 the sole owners. The analysis-only `SubRowParcelSpawnYStrideCursor`,
 `TrackRowCellLaneAndFlagsStrideCursor`, and
@@ -889,7 +889,7 @@ other fakematch was added.
 The `P`/`p` glyph arm now exposes the complete attachment borrow chain.
 `SubgameRuntime::path_pairs` owns 63 `PathPair` records. The mirror branch
 selects one complete `Path`, either `primary` or `secondary`, and the current
-`TrackRowCell` retains that borrowed path in `attachment_template_record`.
+`cRSubLoc` retains that borrowed path in `attachment_template_record`.
 The selected path's `row_span_count` then stamps borrowed links to that same
 cell across consecutive `SubRow` records. The pair, selected path, cell, and
 rows all keep their existing owners.

@@ -12,7 +12,7 @@ typedef unsigned int DWORD;
 
 int report_errorf(char* format, ...);
 
-void SubgameRuntime::spawn_track_health_pickup(TrackRowCell* cell, Player* player)
+void SubgameRuntime::spawn_track_health_pickup(cRSubLoc* cell, Player* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;

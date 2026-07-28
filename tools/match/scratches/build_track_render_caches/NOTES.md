@@ -115,7 +115,7 @@ headers and Binary Ninja sync now agree on that layout and on the owned
 arguments now name
 `owner_subgame->runtime_cells[0][0].position + cell_offset` directly,
 and the unused scratch-local cell layout duplicate has been removed. This
-keeps the real owner and inherited `TrackRowCell +0x10` anchor visible while
+keeps the real owner and inherited `cRSubLoc +0x10` anchor visible while
 preserving 99.79%, 475/475 instructions, and 20 clean operands. The lone
 equivalent SIB base/index encoding remains honest scheduler debt.
 
@@ -140,7 +140,7 @@ honest 99.79%, 475/475 instruction result with 20 clean operands. The sole
 remaining equivalent SIB base/index encoding is intentionally left visible.
 
 2026-07-14 runtime-cell base closure: the seven cache position arguments now
-reach inherited `SubLoc::position` through the actual `BodBase` owner. The
+reach inherited `cRSubLoc::position` through the actual `BodBase` owner. The
 exact cell constructor and full dependency sweep preserve this near-match at
 99.79%, 475/475 instructions, with all 20 operands clean.
 
@@ -151,11 +151,11 @@ boundary: `ObjectList` owns the objects, while `SegmentCache` and `Fringe`
 retain typed handles and borrow texture references from their facequads.
 
 2026-07-14 runtime-cell and staging-lane closure: native keeps a byte-offset
-induction variable across the 3200-by-8 `SubLoc` slab. Directly changing that
+induction variable across the 3200-by-8 `cRSubLoc` slab. Directly changing that
 to a typed pointer perturbs register allocation across the function, so the
 native induction shape remains; its cell base, render object, lifecycle flags,
 and four fringe links now derive with `offsetof` from
-`SubgameRuntime::runtime_cells` and the shared `SubLoc` fields. The eight-lane
+`SubgameRuntime::runtime_cells` and the shared `cRSubLoc` fields. The eight-lane
 row bound derives from the array extent.
 
 The flush cursor's adjacent index-count, vertex-buffer, and index-buffer lanes
@@ -243,7 +243,7 @@ The five-family flush separately owns its `Object**` slot cursor, typed vertex
 and index-buffer resources, locked stream pointers, and flushed `Object*`.
 The final capacity scan has its own family counter, row countdown, `Object**`
 cursor, and `Object*` borrow. Every annotation is replayed only after checking
-the canonical `BodBase`, `Fringe`, `TrackRowCell`, `ObjectFaceQuad`, render
+the canonical `BodBase`, `Fringe`, `cRSubLoc`, `ObjectFaceQuad`, render
 buffer, `Object`, and `SegmentCache` widths and owner fields.
 
 The last debug-name switch genuinely reuses the earlier `row_index` stack slot
@@ -262,7 +262,7 @@ its complete borrowed chain: `Fringe` to `BodBase::object`, then
 of the pre-call fringe borrow because the mesh append call clobbers the native
 registers. The warning, slide, floor, and ramp paths likewise keep four
 short-lived `Object*` reloads, so their shared face-bank lifetime resolves
-through `TrackRowCell::object` instead of raw `+0x5c` dereferences.
+through `cRSubLoc::object` instead of raw `+0x5c` dereferences.
 
 The flush phase now distinguishes the retained D3D resources from the two
 borrowed lock outputs and their shared staging sources. Vertex streams are

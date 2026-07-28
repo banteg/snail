@@ -118,7 +118,7 @@ form regressed to `83.85%`.
 
 ## 2026-07-12 grid and active-list ownership
 
-- The four former raw byte probes are exact `SubLoc` neighbors:
+- The four former raw byte probes are exact `cRSubLoc` neighbors:
   `cell[-1].tile_id`, `cell[2].tile_id`, `cell[-2].tile_id`, and
   `cell[1].tile_id`. Their 0x54-byte stride explains every native displacement
   and removes the last anonymous grid access from this allocator.
@@ -158,7 +158,7 @@ clean.
 
 The stale BN `TrackPickupRuntime* __thiscall(Game*, ...)` prototype is replaced
 by the cross-port- and caller-proven
-`void __thiscall(SubgameRuntime*, TrackRowCell*, Player*)`. IDA replay verifies
+`void __thiscall(SubgameRuntime*, cRSubLoc*, Player*)`. IDA replay verifies
 the same declaration and receiver lvar. Refreshed artifacts now expose the
 owned `jetpack_pickup` singleton, its lifecycle state, and honest empty
 `return;` paths; incompatible incidental register values remain deliberately

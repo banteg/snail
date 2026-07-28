@@ -5,19 +5,19 @@
 Android and iOS `cRSubGame::LocFromPos(tVector)` preserve the same `x + 4`
 lane conversion, 0..7 lane clamp, non-negative row clamp, and row-major return
 from the SubGame-owned cell slab. Port capacities and cell strides differ, as
-expected. This gives the Windows `SubLoc` return and SubGame receiver authored
+expected. This gives the Windows `cRSubLoc` return and SubGame receiver authored
 names, not just layout-derived aliases.
 
 Exact helper: clamps world x to lane `0..7`, clamps world z to runtime row
-`0..3199`, and returns the `TrackRowCell` at `game + 0x3bfac8` with stride
+`0..3199`, and returns the `cRSubLoc` at `game + 0x3bfac8` with stride
 `0x54`.
 
-2026-06-16 type pass: return type is now the shared `TrackRowCell*` from
+2026-06-16 type pass: return type is now the shared `cRSubLoc*` from
 `track_attachment_types.h` instead of `void*`. Focused match remains exact at
 `34/34`.
 
-2026-06-16 layout assertion pass: the shared `TrackRowCell` now asserts
-`sizeof(TrackRowCell) == 0x54`. This exact accessor pins the row-major cell
+2026-06-16 layout assertion pass: the shared `cRSubLoc` now asserts
+`sizeof(cRSubLoc) == 0x54`. This exact accessor pins the row-major cell
 stride, and the same stride is used by the builder, fringe, warning-zone, and
 row-index scratches.
 
@@ -55,7 +55,7 @@ hashes remain byte-identical:
 ## 2026-07-14 analysis receiver closure
 
 The exact 34/34 implementation is now also authoritative in both analysis
-databases: `TrackRowCell* __thiscall(SubgameRuntime*, Vec3*)`. Binary Ninja's
+databases: `cRSubLoc* __thiscall(SubgameRuntime*, Vec3*)`. Binary Ninja's
 stale `Game*` identity was guardedly recreated, and both exports now return
 directly from `game->runtime_cells`. This exact helper is the strongest local
 proof that the surrounding normalization and pickup helpers share the same

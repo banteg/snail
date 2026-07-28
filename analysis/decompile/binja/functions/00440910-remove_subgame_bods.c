@@ -4,7 +4,7 @@
 /* function: remove_subgame_bods @ 0x440910 */
 
 00440910        struct SubgameRuntime* game_1 = game
-00440919        struct TrackRowCell* runtime_cell_cursor = &game->runtime_cells
+00440919        struct cRSubLoc* runtime_cell_cursor = &game->runtime_cells
 0044091f        struct BodNode** row_list_next_cursor = &game->runtime_rows[0].row_model.body.bod.bod.list_next
 00440925        int32_t rows_remaining = 0xc80
 004409b3        int32_t i

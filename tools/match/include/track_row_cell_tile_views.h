@@ -1,9 +1,9 @@
 // Track row-cell tile-byte view, partial.
 //
-// This view starts at TrackRowCell/SubLoc::tile_id (+0x3c) and walks with the
-// full sizeof(SubLoc) == 0x54 stride. It is not the full anchor-bearing cell
+// This view starts at cRSubLoc/cRSubLoc::tile_id (+0x3c) and walks with the
+// full sizeof(cRSubLoc) == 0x54 stride. It is not the full anchor-bearing cell
 // base view; callers that must preserve field-first pointer induction derive
-// the containing or neighboring SubLoc from those two layout facts.
+// the containing or neighboring cRSubLoc from those two layout facts.
 #ifndef TRACK_ROW_CELL_TILE_VIEWS_H
 #define TRACK_ROW_CELL_TILE_VIEWS_H
 
@@ -11,14 +11,14 @@
 #include "sub_loc_tile_ids.h"
 
 struct TrackRowCellTileByteView {
-    SubLocTileId tile_id; // TrackRowCell +0x3c
-    unsigned char open_edge_mask; // TrackRowCell +0x3d, SubLocOpenEdgeFlag bits
+    SubLocTileId tile_id; // cRSubLoc +0x3c
+    unsigned char open_edge_mask; // cRSubLoc +0x3d, SubLocOpenEdgeFlag bits
     char _pad_02[0x04 - 0x02];
-    unsigned int lane_and_flags; // TrackRowCell +0x40, SubLocFlag bits
+    unsigned int lane_and_flags; // cRSubLoc +0x40, SubLocFlag bits
     char _tail_08[0x54 - 0x08];
 };
 
-// Field-first view beginning at TrackRowCell +0x44. These are non-owning
+// Field-first view beginning at cRSubLoc +0x44. These are non-owning
 // handles to objects allocated and recycled by the shared FringeManager.
 struct TrackRowCellFringeLinkView {
     Fringe* front;

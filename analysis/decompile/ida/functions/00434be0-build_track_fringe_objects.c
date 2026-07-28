@@ -2,13 +2,13 @@
 /* function: build_track_fringe_objects @ 0x434be0 */
 /* selector: build_track_fringe_objects */
 
-// Windows `cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime SubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android preserves the owner and method name.
+// Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime cRSubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract.
 void __thiscall build_track_fringe_objects(SubgameRuntime *game)
 {
   SubgameRuntime *v1; // ebp
   int v2; // ebx
   SubRow *row; // edx
-  TrackRowCell *cell; // esi
+  cRSubLoc *cell; // esi
   uint8_t open_edge_mask; // cl
   int v6; // edi
   SubLocTileId tile_id; // al

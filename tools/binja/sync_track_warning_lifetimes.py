@@ -20,14 +20,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "TrackRowCellObjectSlotView": 0x54,
     "TrackRowCellTileByteView": 0x54,
     "SubgameRuntime": 0x1272838,
 }
 
 EXPECTED_STRUCT_FIELDS = {
-    "TrackRowCell": {
+    "cRSubLoc": {
         0x3C: ("tile_id", "SubLocTileId"),
         0x3D: ("open_edge_mask", "uint8_t"),
         0x40: ("lane_and_flags", "uint32_t"),
@@ -43,14 +43,14 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "SubgameRuntime": {
         0x54: ("runtime_row_count", "int32_t"),
-        0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]"),
+        0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
     },
 }
 
 # DeSaltTrack holds one EAX row cursor, one EDX current-cell cursor, and a saved
-# stack copy. All three point at TrackRowCell::tile_id (+0x3c) and advance by
+# stack copy. All three point at cRSubLoc::tile_id (+0x3c) and advance by
 # the full 0x54 cell stride. The overlapping field-first view records that
-# physical borrow without rebasing any cursor to a false TrackRowCell owner.
+# physical borrow without rebasing any cursor to a false cRSubLoc owner.
 TRACK_WARNING_USER_VAR_UPDATES = (
     (
         "mark_track_warning_zones",
@@ -93,7 +93,7 @@ TRACK_TILE_EDGE_USER_VAR_UPDATES = (
     ),
 )
 
-# WarnTrack carries ESI at TrackRowCell::object (+0x24) and advances it by the
+# WarnTrack carries ESI at cRSubLoc::object (+0x24) and advances it by the
 # complete 0x54 cell stride. Preserve that borrowed field identity instead of
 # letting BN fabricate a SubgameRuntime owner by subtracting the runtime-grid
 # base from the cursor.
@@ -112,7 +112,7 @@ TRACK_TILE_PROMOTION_USER_VAR_UPDATES = (
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the field-first TrackRowCell cursors in the warning, "
+            "Replay the field-first cRSubLoc cursors in the warning, "
             "edge-selection, and warning-variant promotion passes."
         )
     )

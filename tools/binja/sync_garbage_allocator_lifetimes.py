@@ -30,7 +30,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x84: ("state", "SubGarbageState"),
         0x9C: ("radius", "float"),
         0xB4: ("sprite", "Sprite*"),
-        0xB8: ("source_cell", "TrackRowCell*"),
+        0xB8: ("source_cell", "cRSubLoc*"),
         0xC0: ("owner_player", "Player*"),
     },
     "SubGarbagePool": {

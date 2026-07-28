@@ -2,10 +2,10 @@
 /* function: initialize_path_follow_golb @ 0x421770 */
 /* selector: initialize_path_follow_golb */
 
-// Starts one Golb projectile attachment-follow session by borrowing the runtime `SubLoc`, its authored `Path`, and its world anchor; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`.
+// Starts one Golb projectile attachment-follow session by borrowing the runtime `cRSubLoc`, its authored `cRPath`, and its world anchor; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`.
 int32_t __thiscall initialize_path_follow_golb(
         GolbPathFollowState *state,
-        TrackRowCell *source_cell,
+        cRSubLoc *source_cell,
         const Vec3 *position,
         GolbShot *shot)
 {

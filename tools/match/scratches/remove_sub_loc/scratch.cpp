@@ -41,7 +41,7 @@ enum {
         }                                                         \
     } while (0)
 
-void SubLoc::remove_sub_loc()
+void cRSubLoc::remove_sub_loc()
 {
     int row_index = get_track_cell_row_index();
     unsigned char tile = tile_id;

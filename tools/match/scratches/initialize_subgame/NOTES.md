@@ -20,7 +20,7 @@ raw rather than being assigned speculative owners.
 Recovered structure:
 
 - clears 3200 groups of eight runtime cells, zeroing the four directional
-  fringe handles at `TrackRowCell +0x44..+0x50` in each `0x54`-byte lane;
+  fringe handles at `cRSubLoc +0x44..+0x50` in each `0x54`-byte lane;
 - selector `1`/`2` reloads the main-menu music, menu backdrop, and centered
   border state;
 - level modes `0`, `1`, and `4` copy the active level record pointer, score,
@@ -99,7 +99,7 @@ the remaining generic owner list.
   manager-handle reload pattern.
 - Modeling the opening as an intrinsic 16-byte `memset` of each cell's four
   fringe handles recovered the complete nested clear loop. This is the
-  field-level operation evidenced by `TrackRowCell +0x44..+0x50`, not a
+  field-level operation evidenced by `cRSubLoc +0x44..+0x50`, not a
   byte-shaped matching shim.
 - Typing the embedded player reset recovered the native position-to-camera
   vector copy and warning initialization. Spelling `++level_mode_arg` directly

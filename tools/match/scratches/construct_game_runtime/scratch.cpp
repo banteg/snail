@@ -55,7 +55,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRTimesUp %i\n", sizeof(TimesUp)); \
     debug_report_stub("Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
     debug_report_stub("Size of cRBod %i\n", sizeof(BodBase)); \
-    debug_report_stub("Size of cRSubLoc %i\n", sizeof(SubLoc)); \
+    debug_report_stub("Size of cRSubLoc %i\n", sizeof(cRSubLoc)); \
     debug_report_stub("Solutions %i\n", sizeof(SubHighScore)); \
 } while (0)
 
@@ -187,6 +187,6 @@ int construct_game_runtime()
 
     g_game = game;
     debug_report_stub("BodCount=%i  Memory=%i\n", g_bod_base_init_count, g_bod_base_init_count * 0x38);
-    debug_report_stub("LocCount=%i Memory=%i\n", g_sub_loc_count, g_sub_loc_count * sizeof(SubLoc));
+    debug_report_stub("LocCount=%i Memory=%i\n", g_sub_loc_count, g_sub_loc_count * sizeof(cRSubLoc));
     return debug_report_stub("LocMirrorCount=%i Memory=%i\n", g_loc_mirror_count, g_loc_mirror_count * 0x15c);
 }

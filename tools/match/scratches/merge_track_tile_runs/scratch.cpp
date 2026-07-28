@@ -8,8 +8,8 @@
 #include "track_attachment_types.h"
 
 
-unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
-unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_floor(cRSubLoc* cell);
+unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
 
 #define IS_FLOOR_RUN_TILE(tile) \
     ((tile) == SUBLOC_TILE_FLOOR_DOT \
@@ -19,8 +19,8 @@ unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
         || (tile) == SUBLOC_TILE_SALT_HAZARD)
 
 #define CELL_FROM_LANE_FLAGS(lane_flags) \
-    ((TrackRowCell*)((char*)(lane_flags) \
-        - offsetof(TrackRowCell, lane_and_flags)))
+    ((cRSubLoc*)((char*)(lane_flags) \
+        - offsetof(cRSubLoc, lane_and_flags)))
 
 #define CLEAR_MERGED_CONTINUATIONS(game, row, first_lane, run_length)          \
     do {                                                                       \
@@ -35,7 +35,7 @@ unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
                 *clear_lane_flags &=                                           \
                     ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);     \
                 clear_lane_flags -=                                           \
-                    sizeof(TrackRowCell) / sizeof(unsigned int);               \
+                    sizeof(cRSubLoc) / sizeof(unsigned int);               \
                 --(run_length);                                                \
             } while ((run_length) != 0);                                       \
         }                                                                      \
@@ -51,7 +51,7 @@ void SubgameRuntime::merge_track_tile_runs()
             do {
                 *lane_flags |=
                     SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY;
-                lane_flags += sizeof(TrackRowCell) / sizeof(unsigned int);
+                lane_flags += sizeof(cRSubLoc) / sizeof(unsigned int);
                 --lane_count;
             } while (lane_count != 0);
 
@@ -68,12 +68,12 @@ void SubgameRuntime::merge_track_tile_runs()
         do {
             int lane = 0;
             do {
-                TrackRowCell* cell = CELL_FROM_LANE_FLAGS(cell_lane_flags);
+                cRSubLoc* cell = CELL_FROM_LANE_FLAGS(cell_lane_flags);
                 if (is_sub_loc_floor(cell) != 0
                     && (*cell_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
                     && (*cell_lane_flags & SUBLOC_FLAG_CACHE_FAMILY_SWAPPED) == 0) {
                     int run_length = 0;
-                    TrackRowCell* cursor = cell;
+                    cRSubLoc* cursor = cell;
                     int lane_cursor = lane;
                     while (lane_cursor
                                < (int)(sizeof(runtime_cells[0])
@@ -102,7 +102,7 @@ void SubgameRuntime::merge_track_tile_runs()
                            && (*cell_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0
                            && (*cell_lane_flags & SUBLOC_FLAG_CACHE_FAMILY_SWAPPED) == 0) {
                     int run_length = 0;
-                    TrackRowCell* cursor = cell;
+                    cRSubLoc* cursor = cell;
                     int lane_cursor = lane;
                     while (lane_cursor
                                < (int)(sizeof(runtime_cells[0])
@@ -136,7 +136,7 @@ void SubgameRuntime::merge_track_tile_runs()
                         *cell_lane_flags = flags;
 
                         int run_length = 0;
-                        TrackRowCell* cursor = cell;
+                        cRSubLoc* cursor = cell;
                         int lane_cursor = lane;
                         while (lane_cursor
                                    < (int)(sizeof(runtime_cells[0])
@@ -187,7 +187,7 @@ void SubgameRuntime::merge_track_tile_runs()
 
                 ++lane;
                 cell_lane_flags +=
-                    sizeof(TrackRowCell) / sizeof(unsigned int);
+                    sizeof(cRSubLoc) / sizeof(unsigned int);
             } while (lane
                 < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0])));
 

@@ -77,11 +77,11 @@ schedule but roots each probe in the shared manager-relative
 named `SubGarbage*` lifetimes over the one `SubGarbagePool::active_head`
 chain, and the terminal wall effect is recovered as one stack `Vec3`.
 
-The earlier plain `TrackRowCell*` preview was correctly rejected because
+The earlier plain `cRSubLoc*` preview was correctly rejected because
 Binary Ninja degraded `(cell - 8)->tile_id` into a negative `__offset`. The
 recovered `TrackRowCellSameLaneCursorView` now uses Binary Ninja's real
 structure pointer-offset model instead: its pointer value names the inherited
-current `TrackRowCell` at `+0x2a0`, while `previous_row_same_lane` names the
+current `cRSubLoc` at `+0x2a0`, while `previous_row_same_lane` names the
 cell eight `0x54`-byte slots earlier. IDA independently renders the same
 geometry as `v19[-8].tile_id`. This is explicitly a borrowed analysis view,
 not a claimed source class or a new storage owner.
@@ -89,7 +89,7 @@ not a claimed source class or a new storage owner.
 The two tile tests now resolve as `same_lane_cursor->tile_id` and
 `same_lane_cursor->previous_row_same_lane.tile_id` without any synthetic
 `__offset`. The call-result EAX lifetime deliberately remains automatic:
-forcing it to `TrackRowCell*` made Binary Ninja regress the world-position
+forcing it to `cRSubLoc*` made Binary Ninja regress the world-position
 argument from the complete `Vec3` to `&position.x`; the carried EDI lifetime
 alone is the offset-rooted cursor. These analysis-only changes leave focused
 Wibo honestly unchanged at 81.88%, `669/694` instructions, prefix `9/694`,
@@ -106,10 +106,10 @@ last `void* + 72` body-position view without changing focused output: 73.34%,
 ## 2026-07-14 path-cell and garbage-chain ownership
 
 The projectile follow state now borrows the shared authored `Path*` and
-`SubLoc*` directly. This removes both the scratch-local tile-byte shell and the
+`cRSubLoc*` directly. This removes both the scratch-local tile-byte shell and the
 duplicate `GolbPathTemplate` / `GolbPathSourceCell` prefix types. The fast-shot
 look-ahead is the preceding runtime row (`cell - 8`, or `8 * 0x54 = 672`
-bytes), while the same `SubLoc` supplies the attachment template and anchor
+bytes), while the same `cRSubLoc` supplies the attachment template and anchor
 position consumed by `initialize_path_follow_golb` and `traverse_path_follow_golb`.
 
 Both garbage collision sweeps now walk the shared `SubGarbagePool::active_head`
@@ -371,7 +371,7 @@ velocity owner operands (`[edi+4]`/`[edi+8]` versus direct member offsets) and
 the downstream path/collision scheduling.
 
 Historical tooling cleanup note: earlier `uv run snail match types Game Player
-PathFollow TrackRowCell GolbShot Vec3 ResultRecord RunRecord` passes reported
+PathFollow cRSubLoc GolbShot Vec3 ResultRecord RunRecord` passes reported
 `Game`, `GolbShot`, and `Vec3` as divergent across scratches. The
 TransformMatrix piece is superseded by the 2026-06-18 consolidation below, and
 the GolbShot method-surface conflict is superseded by the 2026-06-20
@@ -383,7 +383,7 @@ scratch-local until more matching islands agree.
 `49.85%`, `646/694`, with `52 ok, 1 mismatch`; the broader `GolbShot`,
 `Game`, and `Vec3` owner views remain scratch-local.
 
-2026-06-15 type-header split probe: replacing the tiny local `TrackRowCell`
+2026-06-15 type-header split probe: replacing the tiny local `cRSubLoc`
 view with `track_attachment_types.h` kept the headline score at 49.85%, but
 added a `Player` class/struct warning and an extra masked operand mismatch
 around the late `kill_golb`/grid-cell call region. Keep the compact local
@@ -392,9 +392,9 @@ tile-id view until the surrounding owner/vector scheduling is less fragile.
 2026-06-20 tile-view naming cleanup: the compact local row-cell view is now
 `GolbTrackRowCellTileView`, making it explicit that this scratch only needs the
 `tile_id +0x3c` byte and should not be promoted to the full shared
-`TrackRowCell` header yet. Focused evidence stayed unchanged at `49.85%`,
+`cRSubLoc` header yet. Focused evidence stayed unchanged at `49.85%`,
 `646/694`, `9/694` prefix, and the existing `52 ok / 1` masked call mismatch;
-`uv run snail match types TrackRowCell --paths` now reports no consolidation
+`uv run snail match types cRSubLoc --paths` now reports no consolidation
 candidates.
 
 2026-06-20 GolbShot header compatibility: `create_golb` now consumes

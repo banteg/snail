@@ -8,7 +8,7 @@ static const float kInvalidFloorHeight = -100.0f;
 
 double SubgameRuntime::sample_track_floor_height_at_position(Vector3* position)
 {
-    TrackRowCell* cell = get_track_grid_cell_at_world_position(position);
+    cRSubLoc* cell = get_track_grid_cell_at_world_position(position);
     char tile_id = cell->tile_id;
 
     if (tile_id == SUBLOC_TILE_FLOOR_DOT

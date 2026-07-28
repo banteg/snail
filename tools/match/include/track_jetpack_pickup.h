@@ -26,7 +26,7 @@ public:
     SubgameRuntime* owner_game; // +0x44, borrowed containing subgame
     char unknown_48[0x64 - 0x48];
     Sprite* sprite; // +0x64
-    TrackRowCell* source_cell; // +0x68
+    cRSubLoc* source_cell; // +0x68
     float bob_phase; // +0x6c
     float bob_phase_step; // +0x70
     Vapour vapour_a; // +0x74, embedded cRVapour

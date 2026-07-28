@@ -20,7 +20,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
     "SubRow": 0xF4,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "Fringe": 0x38,
     "FringeManager": 0x5FB44,
     "RootTrackFringeBodCatalog": 0x3F00,
@@ -32,7 +32,7 @@ EXPECTED_STRUCT_FIELDS = {
     "SubRow": {
         0x00: ("flags", "uint32_t"),
     },
-    "TrackRowCell": {
+    "cRSubLoc": {
         0x10: ("anchor_position", "Vec3"),
         0x3C: ("tile_id", "SubLocTileId"),
         0x3D: ("open_edge_mask", "uint8_t"),
@@ -57,7 +57,7 @@ EXPECTED_STRUCT_FIELDS = {
     "SubgameRuntime": {
         0x54: ("runtime_row_count", "int32_t"),
         0x35BBBC: ("fringe_manager", "FringeManager"),
-        0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]"),
+        0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
         0x5CCAC8: ("runtime_rows", "SubRow[3200]"),
     },
 }
@@ -66,7 +66,7 @@ EXPECTED_STRUCT_FIELDS = {
 # the separately owned row and cell slabs, selects one object from the root
 # fringe-BOD catalog, and borrows each emitted Fringe from the embedded pool.
 # Keep those ownership domains distinct; the per-direction integers are only
-# catalog selectors, and TrackRowCell stores non-owning handles to the results.
+# catalog selectors, and cRSubLoc stores non-owning handles to the results.
 TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
     (
         "build_track_fringe_objects",
@@ -114,7 +114,7 @@ TRACK_FRINGE_BUILDER_USER_VAR_UPDATES = (
         52,
         72,
         "cell",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "build_track_fringe_objects",

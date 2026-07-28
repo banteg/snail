@@ -3,7 +3,7 @@
 /* selector: is_sub_loc_empty */
 
 // Exact Windows counterpart of cross-port `cRSubLoc::IsEmpty()`: accepts tile ids 0, 28, 35, 14, and 29.
-int32_t __fastcall is_sub_loc_empty(TrackRowCell *cell)
+int32_t __fastcall is_sub_loc_empty(cRSubLoc *cell)
 {
   SubLocTileId tile_id; // al
   int32_t result; // eax

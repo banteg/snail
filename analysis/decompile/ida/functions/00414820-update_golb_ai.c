@@ -2,7 +2,7 @@
 /* function: update_golb_ai @ 0x414820 */
 /* selector: update_golb_ai */
 
-// Authored `cRSubGolb::AI()` member: advances one live `GolbShot`, borrowing the `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup. Android and iOS preserve the complete state machine over their platform layouts.
+// Authored `cRSubGolb::AI()` member: advances one live `GolbShot`, borrowing the `cRSubLoc`/`cRPath` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup. Android and iOS preserve the complete state machine over their platform layouts.
 void __thiscall update_golb_ai(GolbShot *shot)
 {
   GolbPathFollowState *p_path_follow; // ecx
@@ -21,8 +21,8 @@ void __thiscall update_golb_ai(GolbShot *shot)
   double v15; // st5
   double path_entry_z_latch; // st7
   float v17; // eax
-  TrackRowCell *track_grid_cell_at_world_position; // eax
-  TrackRowCell *v19; // edi
+  cRSubLoc *track_grid_cell_at_world_position; // eax
+  cRSubLoc *v19; // edi
   int32_t v20; // eax
   int v21; // eax
   double v22; // st7

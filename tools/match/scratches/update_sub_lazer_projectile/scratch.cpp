@@ -35,7 +35,7 @@ void SubLazer::update_sub_lazer_projectile()
         *live_position += velocity;
         if (transform.position.y >= 0.0f
             && transform.position.z >= owner_game->player.interaction_max_z) {
-            TrackRowCell* grid =
+            cRSubLoc* grid =
                 g_game->subgame.get_track_grid_cell_at_world_position(live_position);
             SubRow* cell =
                 g_game->subgame.get_track_runtime_cell_at_world_z(live_position);

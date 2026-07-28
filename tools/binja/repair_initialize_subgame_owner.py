@@ -8,6 +8,8 @@ import sys
 
 from _narrow_sync import run_bn
 from _target import DEFAULT_TARGET
+from sync_path_template_types import SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES
+from sync_pickup_list_lifetimes import PICKUP_LIST_USER_VAR_UPDATES
 from sync_track_fringe_builder_lifetimes import (
     TRACK_FRINGE_BUILDER_USER_VAR_UPDATES,
 )
@@ -21,9 +23,16 @@ PATH_SIZE = 0xA8
 _FRINGE_REPAIR_TYPE_NAMES = {
     "SubgameRuntime*": "struct SubgameRuntime*",
     "SubRow*": "struct SubRow*",
-    "TrackRowCell*": "struct TrackRowCell*",
+    "cRSubLoc*": "struct cRSubLoc*",
     "Fringe*": "struct Fringe*",
     "tColour": "struct tColour",
+}
+
+_PICKUP_REPAIR_TYPE_NAMES = {
+    "BodNode*": "struct BodNode*",
+    "BodNode**": "struct BodNode**",
+    "JetPackSlotCursor*": "struct JetPackSlotCursor*",
+    "SubHealthSlotCursor*": "struct SubHealthSlotCursor*",
 }
 
 
@@ -49,6 +58,72 @@ def _fringe_builder_repair_variables() -> tuple[dict[str, object], ...]:
             }
         )
     return tuple(variables)
+
+
+def _pickup_repair_variables(function_name: str) -> tuple[dict[str, object], ...]:
+    variables: list[dict[str, object]] = [
+        {
+            "source_type": "VariableSourceType.RegisterVariableSourceType",
+            "index": 0,
+            "storage": 67,
+            "name": "game",
+            "type": "struct SubgameRuntime*",
+        },
+        {
+            "source_type": "VariableSourceType.StackVariableSourceType",
+            "index": 0,
+            "storage": 4,
+            "name": "cell",
+            "type": "struct cRSubLoc*",
+        },
+        {
+            "source_type": "VariableSourceType.StackVariableSourceType",
+            "index": 0,
+            "storage": 8,
+            "name": "player",
+            "type": "struct Player*",
+        },
+    ]
+    for (
+        selector,
+        source_type,
+        index,
+        storage,
+        name,
+        type_name,
+    ) in (
+        *PICKUP_LIST_USER_VAR_UPDATES,
+        *SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES,
+    ):
+        if selector != function_name:
+            continue
+        variables.append(
+            {
+                "source_type": f"VariableSourceType.{source_type}",
+                "index": index,
+                "storage": storage,
+                "name": name,
+                "type": _PICKUP_REPAIR_TYPE_NAMES.get(type_name, type_name),
+            }
+        )
+    return tuple(variables)
+
+
+def _stale_pickup_repair_annotations(
+    function_name: str,
+) -> tuple[dict[str, object], ...]:
+    return tuple(
+        {
+            **variable,
+            "type": (
+                "TrackRowCell*"
+                if variable["name"] == "cell"
+                else variable["type"]
+            ),
+            "user_defined": True,
+        }
+        for variable in _pickup_repair_variables(function_name)
+    )
 
 
 FUNCTION_SPECS = {
@@ -200,7 +275,7 @@ FUNCTION_SPECS = {
                 "index": 105,
                 "storage": 73,
                 "name": "cell",
-                "type": "struct TrackRowCell*",
+                "type": "struct cRSubLoc*",
             },
             {
                 "source_type": "VariableSourceType.RegisterVariableSourceType",
@@ -342,15 +417,19 @@ FUNCTION_SPECS = {
     "get_track_grid_cell_at_world_position": {
         "address": 0x43D410,
         "expected_prototype": (
-            "struct TrackRowCell* __thiscall("
+            "struct cRSubLoc* __thiscall("
             "struct SubgameRuntime* game, struct Vec3* position)"
         ),
         "stale_prototype": (
-            "struct TrackRowCell* __thiscall("
+            "struct cRSubLoc* __thiscall("
             "struct Game* game, struct Vec3* position)"
         ),
+        "legacy_prototypes": (
+            "TrackRowCell* __thiscall("
+            "struct SubgameRuntime* game, struct Vec3* position)",
+        ),
         "declaration": (
-            "TrackRowCell* __thiscall get_track_grid_cell_at_world_position("
+            "cRSubLoc* __thiscall get_track_grid_cell_at_world_position("
             "SubgameRuntime* game, Vec3* position)"
         ),
         "parameter_count": 2,
@@ -368,6 +447,24 @@ FUNCTION_SPECS = {
                 "storage": 4,
                 "name": "position",
                 "type": "struct Vec3*",
+            },
+        ),
+        "stale_variable_annotations": (
+            {
+                "source_type": "VariableSourceType.RegisterVariableSourceType",
+                "index": 0,
+                "storage": 67,
+                "name": "game",
+                "type": "struct SubgameRuntime*",
+                "user_defined": True,
+            },
+            {
+                "source_type": "VariableSourceType.StackVariableSourceType",
+                "index": 0,
+                "storage": 4,
+                "name": "position",
+                "type": "struct Vec3*",
+                "user_defined": True,
             },
         ),
     },
@@ -405,78 +502,48 @@ FUNCTION_SPECS = {
         "address": 0x43D6C0,
         "expected_prototype": (
             "void __thiscall(struct SubgameRuntime* game, "
-            "struct TrackRowCell* cell, struct Player* player)"
+            "struct cRSubLoc* cell, struct Player* player)"
         ),
         "stale_prototype": (
             "struct TrackPickupRuntime* __thiscall(struct Game* game, "
-            "struct TrackRowCell* cell, struct Player* player)"
+            "struct cRSubLoc* cell, struct Player* player)"
+        ),
+        "legacy_prototypes": (
+            "void __thiscall(struct SubgameRuntime* game, "
+            "TrackRowCell* cell, struct Player* player)",
         ),
         "declaration": (
             "void __thiscall spawn_track_health_pickup("
-            "SubgameRuntime* game, TrackRowCell* cell, Player* player)"
+            "SubgameRuntime* game, cRSubLoc* cell, Player* player)"
         ),
         "parameter_count": 3,
-        "variables": (
-            {
-                "source_type": "VariableSourceType.RegisterVariableSourceType",
-                "index": 0,
-                "storage": 67,
-                "name": "game",
-                "type": "struct SubgameRuntime*",
-            },
-            {
-                "source_type": "VariableSourceType.StackVariableSourceType",
-                "index": 0,
-                "storage": 4,
-                "name": "cell",
-                "type": "struct TrackRowCell*",
-            },
-            {
-                "source_type": "VariableSourceType.StackVariableSourceType",
-                "index": 0,
-                "storage": 8,
-                "name": "player",
-                "type": "struct Player*",
-            },
+        "variables": _pickup_repair_variables("spawn_track_health_pickup"),
+        "stale_variable_annotations": _stale_pickup_repair_annotations(
+            "spawn_track_health_pickup"
         ),
     },
     "spawn_track_jetpack_pickup": {
         "address": 0x43D890,
         "expected_prototype": (
             "void __thiscall(struct SubgameRuntime* game, "
-            "struct TrackRowCell* cell, struct Player* player)"
+            "struct cRSubLoc* cell, struct Player* player)"
         ),
         "stale_prototype": (
             "struct TrackPickupRuntime* __thiscall(struct Game* game, "
-            "struct TrackRowCell* cell, struct Player* player)"
+            "struct cRSubLoc* cell, struct Player* player)"
+        ),
+        "legacy_prototypes": (
+            "void __thiscall(struct SubgameRuntime* game, "
+            "TrackRowCell* cell, struct Player* player)",
         ),
         "declaration": (
             "void __thiscall spawn_track_jetpack_pickup("
-            "SubgameRuntime* game, TrackRowCell* cell, Player* player)"
+            "SubgameRuntime* game, cRSubLoc* cell, Player* player)"
         ),
         "parameter_count": 3,
-        "variables": (
-            {
-                "source_type": "VariableSourceType.RegisterVariableSourceType",
-                "index": 0,
-                "storage": 67,
-                "name": "game",
-                "type": "struct SubgameRuntime*",
-            },
-            {
-                "source_type": "VariableSourceType.StackVariableSourceType",
-                "index": 0,
-                "storage": 4,
-                "name": "cell",
-                "type": "struct TrackRowCell*",
-            },
-            {
-                "source_type": "VariableSourceType.StackVariableSourceType",
-                "index": 0,
-                "storage": 8,
-                "name": "player",
-                "type": "struct Player*",
-            },
+        "variables": _pickup_repair_variables("spawn_track_jetpack_pickup"),
+        "stale_variable_annotations": _stale_pickup_repair_annotations(
+            "spawn_track_jetpack_pickup"
         ),
     },
     "get_track_runtime_cell_at_world_z": {

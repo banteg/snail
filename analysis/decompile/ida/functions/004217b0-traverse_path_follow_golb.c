@@ -2,7 +2,7 @@
 /* function: traverse_path_follow_golb @ 0x4217b0 */
 /* selector: traverse_path_follow_golb */
 
-// Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the formerly misassigned `calc_path_length_z` name now belongs to the distinct no-argument `cRPath::CalcLengthZ()` owner at 0x42c600.
+// Advances one Golb projectile attachment-follow session through the borrowed authored `cRPath::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the formerly misassigned `calc_path_length_z` name now belongs to the distinct no-argument `cRPath::CalcLengthZ()` owner at 0x42c600.
 int32_t __thiscall traverse_path_follow_golb(
         GolbPathFollowState *state,
         float path_factor,
@@ -43,7 +43,7 @@ int32_t __thiscall traverse_path_follow_golb(
   PathTemplateSample *v37; // ecx
   double v38; // st7
   TransformMatrix *p_transform; // esi
-  TrackRowCell *source_cell; // ecx
+  cRSubLoc *source_cell; // ecx
   double v41; // st7
   double v42; // st7
   double v43; // st6

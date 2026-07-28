@@ -5,15 +5,12 @@
 // Exact `ParcelManager` update: walks the 50 owned records and dispatches each active Parcel through its installed table. Android and iOS v1.9 retain `cRParcelManager::AI()`.
 void __thiscall update_track_parcels(ParcelManager *manager)
 {
-  int v2; // edi
+  int i; // edi
 
-  v2 = 50;
-  do
+  for ( i = 50; i != 0; --i )
   {
-    if ( manager->slots[0].state )
+    if ( manager->slots[0].state != PARCEL_STATE_INACTIVE )
       (*(void (__thiscall **)(ParcelManager *))manager->slots[0].bod.bod.vtable)(manager);
     manager = (ParcelManager *)((char *)manager + 140);
-    --v2;
   }
-  while ( v2 );
 }

@@ -60,7 +60,7 @@ focused plus broad Binary Ninja/IDA replay. The first focused Binary Ninja run
 found one real analysis-only gap: the method already returned `void` and owned
 a `Path*`, but its two vector pointers still used the legacy `Vector3` alias.
 Replay canonicalized both to `Vec3*` and verified `Vec3` at `0x0c`,
-`TrackRowCell` at `0x54`, and both `PathTemplateSample` and `Path` at `0xa8`.
+`cRSubLoc` at `0x54`, and both `PathTemplateSample` and `Path` at `0xa8`.
 
 Refreshed artifacts now expose the void method directly in both lanes, and both
 parcel-placement callers borrow `attachment_template_record` as the receiver

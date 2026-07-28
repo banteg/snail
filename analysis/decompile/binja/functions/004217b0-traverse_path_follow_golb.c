@@ -91,7 +91,7 @@
 00421a93        if (template_record_1->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 00421b3c        struct PathTemplateSample* secondary_samples_1 = template_record_1->secondary_samples
 00421b4c        struct PathTemplateSample* secondary_sample = eax_14 + secondary_samples_1
-00421b4f        struct TrackRowCell* source_cell = state->source_cell
+00421b4f        struct cRSubLoc* source_cell = state->source_cell
 00421b5c        float var_e4_2 = fconvert.s(fconvert.t(var_f0) * fconvert.t(*(&secondary_samples_1->delta_dir_to_next + eax_14)) * fconvert.t(lateral_scale) + fconvert.t(secondary_sample->transform.position.x) + fconvert.t(source_cell->anchor_position.x))
 00421b74        float var_e0_2 = fconvert.s(fconvert.t(var_f0) * fconvert.t(secondary_sample->delta_dir_to_next.y) * fconvert.t(lateral_scale) + fconvert.t(secondary_sample->transform.position.y) + fconvert.t(source_cell->anchor_position.y))
 00421b88        float var_dc_2 = fconvert.s(fconvert.t(var_f0) * fconvert.t(secondary_sample->delta_dir_to_next.z) + fconvert.t(secondary_sample->transform.position.z) + fconvert.t(source_cell->anchor_position.z))

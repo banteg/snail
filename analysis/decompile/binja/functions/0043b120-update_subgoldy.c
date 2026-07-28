@@ -190,7 +190,7 @@
 0043b6d2        eax_31.b = player->resurrect_active.b
 0043b6da        if (eax_31.b != 0)
 0043b6de        update_subgoldy_resurrect(player)
-0043b6ea        struct TrackRowCell* eax_32 = get_track_grid_cell_at_world_position(player->game, p_position)
+0043b6ea        struct cRSubLoc* eax_32 = get_track_grid_cell_at_world_position(player->game, p_position)
 0043b6ef        struct SubgameRuntime* game_22 = player->game
 0043b706        int32_t eax_34 = get_track_cell_row_index(eax_32) * 0x3d
 0043b710        int32_t row_event_id = (&game_22->runtime_rows[0].row_event_id)[eax_34]
@@ -404,7 +404,7 @@
 0043bc82        unimplemented  {fstp dword [ebp+0x410], st0}
 0043bc82        int16_t top_66 = top_13
 0043bc90        if (player->boost_one_tick == 0)
-0043bcc8        struct TrackRowCell* cell
+0043bcc8        struct cRSubLoc* cell
 0043bcc8        int16_t x87control_1
 0043bcc8        cell, x87control_1 = get_track_grid_cell_at_world_position(player->game, p_position)
 0043bcd7        if (player->attachment_exit_pending != 0)
@@ -428,7 +428,7 @@
 0043bd7a        unimplemented  {fmul st0, dword [0x4975c8]}
 0043bd80        float sweep_dz = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
 0043bd80        unimplemented  {fstp dword [esp+0x1c], st0}
-0043bd98        struct TrackRowCell* source_cell = (&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
+0043bd98        struct cRSubLoc* source_cell = (&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
 0043bdf0        x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, p_position->y, p_position->z, sweep_dx, sweep_dy, sweep_dz, source_cell)
 0043bdfd        if (player->attachment_exit_pending != 0 && (player->game->runtime_rows[get_track_cell_row_index(cell)].flags.b & 0x80) != 0)
 0043be27        unimplemented  {fld st0, dword [ebp+0x410]}
@@ -443,7 +443,7 @@
 0043be4f        unimplemented  {fmul st0, dword [0x4975c8]}
 0043be55        float sweep_dz_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
 0043be55        unimplemented  {fstp dword [esp+0x1c], st0}
-0043be6d        struct TrackRowCell* source_cell_1 = (&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
+0043be6d        struct cRSubLoc* source_cell_1 = (&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]
 0043bec5        int32_t eax_85
 0043bec5        eax_85, x87control_1 = try_enter_track_attachment_from_swept_motion((&player->game->runtime_rows[0].secondary_attachment_cell)[get_track_cell_row_index(cell) * 0x3d]->attachment_template_record, p_position->x, p_position->y, p_position->z, sweep_dx_1, sweep_dy_1, sweep_dz_1, source_cell_1)
 0043beca        int16_t eax_86
@@ -867,7 +867,7 @@
 0043c44e        position.z = var_34_1
 0043c452        struct SubgameRuntime* game_12 = player->game
 0043c459        position.y = y_1
-0043c45d        struct TrackRowCell* eax_112
+0043c45d        struct cRSubLoc* eax_112
 0043c45d        int16_t x87control_2
 0043c45d        eax_112, x87control_2 = get_track_grid_cell_at_world_position(game_12, &position)
 0043c466        if (eax_112->tile_id != SUBLOC_TILE_WALL2)

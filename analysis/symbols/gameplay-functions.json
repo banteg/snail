@@ -669,7 +669,7 @@
     {
       "address": "0x4088c0",
       "name": "initialize_sub_loc",
-      "description": "Exact Windows `SubLoc` constructor wrapper: runs the shared `cRBod` base constructor, installs the cell-specific vtable, increments the global `LocCount`, and returns the receiver. The runtime-pool constructor calls it 25,600 times at a 0x54 stride over the complete SubLoc grid."
+      "description": "Exact Windows `cRSubLoc` constructor wrapper: runs the shared `cRBod` base constructor, installs the cell-specific vtable, increments the global `LocCount`, and returns the receiver. The runtime-pool constructor calls it 25,600 times at a 0x54 stride over the complete cRSubLoc grid."
     },
     {
       "address": "0x4088e0",
@@ -1255,7 +1255,7 @@
     {
       "address": "0x414820",
       "name": "update_golb_ai",
-      "description": "Authored `cRSubGolb::AI()` member: advances one live `GolbShot`, borrowing the `SubLoc`/`Path` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup. Android and iOS preserve the complete state machine over their platform layouts."
+      "description": "Authored `cRSubGolb::AI()` member: advances one live `GolbShot`, borrowing the `cRSubLoc`/`cRPath` follow owners and shared `SubGarbagePool` collision chain while updating the embedded `Vapour` trail or `tertiary_body.transform` rocket owner for straight-flight, path-follow motion, impacts, and cleanup. Android and iOS preserve the complete state machine over their platform layouts."
     },
     {
       "address": "0x415280",
@@ -1605,7 +1605,7 @@
         "allocate_path_template_samples",
         "GetNodes"
       ],
-      "description": "Windows `cRPath::GetNodes()`: allocates the primary and secondary `PathTemplateSample` arrays for one Path and stores both pointers on the owner. Android exports the authored name and preserves the same two labeled allocations at the corresponding constructor lifecycle edge, then additionally seeds primary-sample defaults; iOS inlines that broader mobile form. The Windows member is therefore the narrower allocator-only implementation, not an exact-body port match."
+      "description": "Windows `cRPath::GetNodes()`: allocates the primary and secondary `PathTemplateSample` arrays for one cRPath and stores both pointers on the owner. Android exports the authored name and preserves the same two labeled allocations at the corresponding constructor lifecycle edge, then additionally seeds primary-sample defaults; iOS inlines that broader mobile form. The Windows member is therefore the narrower allocator-only implementation, not an exact-body port match."
     },
     {
       "address": "0x41b0f0",
@@ -1655,22 +1655,22 @@
     {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state",
-      "description": "Exact void initializer for the Player-embedded `cRPathFollowGoldy`: stores the selected Path and borrowed runtime cell, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `SubgameRuntime::runtime_rows[row].installed_heading_delta` into the Path. Its only Windows caller discards EAX; the apparent Path result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets."
+      "description": "Exact void initializer for the Player-embedded `cRPathFollowGoldy`: stores the selected cRPath and borrowed runtime cRSubLoc, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the Player backlink, and copies `SubgameRuntime::runtime_rows[row].installed_heading_delta` into the cRPath. Its only Windows caller discards EAX; the apparent cRPath result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets."
     },
     {
       "address": "0x420cb0",
       "name": "update_track_attachment_follow_state",
-      "description": "Advances one live attachment-follow session along its borrowed Path and SubLoc, updates progress and local height, publishes the interpolated basis into the live Player matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets."
+      "description": "Advances one live attachment-follow session along its borrowed cRPath and cRSubLoc, updates progress and local height, publishes the interpolated basis into the live Player matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets."
     },
     {
       "address": "0x421770",
       "name": "initialize_path_follow_golb",
-      "description": "Starts one Golb projectile attachment-follow session by borrowing the runtime `SubLoc`, its authored `Path`, and its world anchor; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`."
+      "description": "Starts one Golb projectile attachment-follow session by borrowing the runtime `cRSubLoc`, its authored `cRPath`, and its world anchor; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`."
     },
     {
       "address": "0x4217b0",
       "name": "traverse_path_follow_golb",
-      "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `Path::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the formerly misassigned `calc_path_length_z` name now belongs to the distinct no-argument `cRPath::CalcLengthZ()` owner at 0x42c600."
+      "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `cRPath::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the formerly misassigned `calc_path_length_z` name now belongs to the distinct no-argument `cRPath::CalcLengthZ()` owner at 0x42c600."
     },
     {
       "address": "0x421dc0",
@@ -1679,7 +1679,7 @@
         "mirror_path_template_pair_x",
         "Mirror"
       ],
-      "description": "Windows `cRPath::Mirror(cRPath*)`: clones one Path, negates X-space samples, and additionally mirrors the Windows strip mesh and flips its winding. Android and iOS independently preserve the authored owner and signature, while their mobile implementations stop after sample mirroring and `CalcLengthZ()`."
+      "description": "Windows `cRPath::Mirror(cRPath*)`: clones one cRPath, negates X-space samples, and additionally mirrors the Windows strip mesh and flips its winding. Android and iOS independently preserve the authored owner and signature, while their mobile implementations stop after sample mirroring and `CalcLengthZ()`."
     },
     {
       "address": "0x4221f0",
@@ -1704,12 +1704,12 @@
     {
       "address": "0x4246a0",
       "name": "build_track_fringe_mesh",
-      "description": "Windows `cRPath::BuildFringe(char*, float)`: owns a generated fringe Object through the Path's second BodBase, extrudes both strip edges with authored Vector3 operations, emits two textured facequads per segment, and clamps X only for exact side sentinels -1 or +1. Android and iOS preserve the authored method name."
+      "description": "Windows `cRPath::BuildFringe(char*, float)`: owns a generated fringe Object through the cRPath's second BodBase, extrudes both strip edges with authored Vector3 operations, emits two textured facequads per segment, and clamps X only for exact side sentinels -1 or +1. Android and iOS preserve the authored method name."
     },
     {
       "address": "0x424ad0",
       "name": "build_track_fringe_supertramp_mesh",
-      "description": "Windows `cRPath::BuildFringeSuperTramp(char*)`: owns a generated fringe Object through the Path's second BodBase, emits the two extruded side strips, extrapolates two terminal cap vertices, and appends the final cap facequad. Android and iOS preserve the authored method name."
+      "description": "Windows `cRPath::BuildFringeSuperTramp(char*)`: owns a generated fringe Object through the cRPath's second BodBase, emits the two extruded side strips, extrapolates two terminal cap vertices, and appends the final cap facequad. Android and iOS preserve the authored method name."
     },
     {
       "address": "0x425050",
@@ -1798,7 +1798,7 @@
     {
       "address": "0x42c770",
       "name": "try_enter_track_attachment_from_swept_motion",
-      "description": "Scans `Path::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `cRPathFollowGoldy`, copies the runtime row's installed heading into the Path, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family; Android and iOS name the broader owner `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)` and independently confirm that the accepted tail hands off to `cRPathFollowGoldy`."
+      "description": "Scans `cRPath::secondary_samples` against the player's swept motion, using real vector subtraction in each sample-local frame. On acceptance it clears `Player::attachment_exit_pending`, seeds the Player-embedded `cRPathFollowGoldy`, copies the runtime row's installed heading into the cRPath, and immediately validates the candidate through one follow update. The caller rechecks the cleared byte before its secondary-slot probe, so a successful primary entry suppresses that fallback. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches this entry family; Android and iOS name the broader owner `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)` and independently confirm that the accepted tail hands off to `cRPathFollowGoldy`."
     },
     {
       "address": "0x42ca90",
@@ -2411,7 +2411,7 @@
     {
       "address": "0x433220",
       "name": "build_track_render_caches",
-      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime\u2019s fixed runtime-cell slab and uses each embedded TrackRowCell anchor as the mesh-instance position. The final debug-report result is incidental call state."
+      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime\u2019s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state."
     },
     {
       "address": "0x433830",
@@ -2595,17 +2595,17 @@
     {
       "address": "0x434b60",
       "name": "is_neighbor_cell_solid",
-      "description": "Exact Windows implementation of `cRSubGame::TestLoc(cRSubLoc*, int, int)`: derives the source row with SubLoc::Yi, applies lane and row offsets with bounds checks, probes the eight-lane runtime grid, rejects SubLoc::IsEmpty, then excludes tile ids 35, 0, 22, and 28. Android preserves the same method body and constants."
+      "description": "Exact Windows implementation of `cRSubGame::TestLoc(cRSubLoc*, int, int)`: derives the source row with cRSubLoc::Yi, applies lane and row offsets with bounds checks, probes the eight-lane runtime grid, rejects cRSubLoc::IsEmpty, then excludes tile ids 35, 0, 22, and 28. Android preserves the same method body and constants."
     },
     {
       "address": "0x434be0",
       "name": "build_track_fringe_objects",
-      "description": "Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime SubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract."
+      "description": "Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime cRSubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract."
     },
     {
       "address": "0x435180",
       "name": "merge_track_tile_runs",
-      "description": "Authored void `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `SubLoc` cells. The iOS and Android epilogues establish no result and their zero-row paths leave incompatible incidental values in the return register, independently resolving the Windows ABI. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies."
+      "description": "Authored void `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `cRSubLoc` cells. The iOS and Android epilogues establish no result and their zero-row paths leave incompatible incidental values in the return register, independently resolving the Windows ABI. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies."
     },
     {
       "address": "0x4354f0",
@@ -2613,7 +2613,7 @@
       "aliases": [
         "DeSaltTrack"
       ],
-      "description": "Void Windows `cRSubGame::DeSaltTrack()`: stamps the exact hazard tile set's six-row by two-lane salt-and-garbage suppression footprint through the owned `SubLoc` runtime grid after `CondenseTrack()` and before fringe construction. Android preserves the tile set, bounds, 0x18 flag update, and dispatcher position. The source-shaped transcription is 98.99% at 99/99 instructions."
+      "description": "Void Windows `cRSubGame::DeSaltTrack()`: stamps the exact hazard tile set's six-row by two-lane salt-and-garbage suppression footprint through the owned `cRSubLoc` runtime grid after `CondenseTrack()` and before fringe construction. Android preserves the tile set, bounds, 0x18 flag update, and dispatcher position. The source-shaped transcription is 98.99% at 99/99 instructions."
     },
     {
       "address": "0x4355f0",
@@ -2629,7 +2629,7 @@
       "aliases": [
         "SlideSmoothTrack"
       ],
-      "description": "Exact Windows `void cRSubGame::SlideSmoothTrack()`: directly indexes the owned eight-lane `SubLoc` runtime grid, promoting a floor current cell beside a slide neighbor to the matching slide object and restoring a slide current cell beside a floor neighbor. Android and iOS preserve the owner, method name, row phases, same-lane neighbor direction, and replacement families."
+      "description": "Exact Windows `void cRSubGame::SlideSmoothTrack()`: directly indexes the owned eight-lane `cRSubLoc` runtime grid, promoting a floor current cell beside a slide neighbor to the matching slide object and restoring a slide current cell beside a floor neighbor. Android and iOS preserve the owner, method name, row phases, same-lane neighbor direction, and replacement families."
     },
     {
       "address": "0x435a80",
@@ -2654,7 +2654,7 @@
     {
       "address": "0x435eb0",
       "name": "populate_runtime_track_cells_from_segments",
-      "description": "Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Each lane iteration writes the physical runtime `SubLoc` selected by `lane`, while a distinct mirrored authored lane indexes the borrowed active `SubSegment::glyph_rows`; first/last-block bounds produce the byte `edge_row` input consumed by the glyph normalizer. Runtime cell object selection reuses each `SubLoc` cell's shared `cRBod`/`BodBase` prefix and borrows render objects from the root catalog, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner."
+      "description": "Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Each lane iteration writes the physical runtime `cRSubLoc` selected by `lane`, while a distinct mirrored authored lane indexes the borrowed active `SubSegment::glyph_rows`; first/last-block bounds produce the byte `edge_row` input consumed by the glyph normalizer. Runtime cell object selection reuses each `cRSubLoc` cell's shared `cRBod`/`BodBase` prefix and borrows render objects from the root catalog, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner."
     },
     {
       "address": "0x437270",
@@ -2720,7 +2720,7 @@
     {
       "address": "0x439a70",
       "name": "is_sub_loc_ramp",
-      "description": "Exact SubLoc predicate matching cross-port `cRSubLoc::IsRamp()`: accepts the authored ramp tile family 2 through 13."
+      "description": "Exact cRSubLoc predicate matching cross-port `cRSubLoc::IsRamp()`: accepts the authored ramp tile family 2 through 13."
     },
     {
       "address": "0x439ab0",
@@ -2740,12 +2740,12 @@
     {
       "address": "0x439bc0",
       "name": "remove_sub_loc",
-      "description": "Windows `cRSubLoc::Remove()`: tears down one live SubLoc through the shared inlined `cLinkedList<cRBod>::Remove` owner, clearing `SubRow::attachment_body` for entry tiles when required and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the Windows constructor table and both native callers independently confirm the owner."
+      "description": "Windows `cRSubLoc::Remove()`: tears down one live cRSubLoc through the shared inlined `cLinkedList<cRBod>::Remove` owner, clearing `SubRow::attachment_body` for entry tiles when required and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the Windows constructor table and both native callers independently confirm the owner."
     },
     {
       "address": "0x439d50",
       "name": "update_sub_loc",
-      "description": "Windows `cRSubLoc::AI()`: updates one runtime `TrackRowCell`/SubLoc. Wall2 tile 14 builds its launch origin as the cell position plus `(0, 8, 0)` and its aim target as Goldy's position plus `(0, 0, jitter + 8)`, then fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z. Android and iOS independently preserve both vector additions. Tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. The source-shaped Windows transcription reaches 99.47% at 187/187 instructions with all references audited."
+      "description": "Windows `cRSubLoc::AI()`: updates one runtime cRSubLoc. Wall2 tile 14 builds its launch origin as the cell position plus `(0, 8, 0)` and its aim target as Goldy's position plus `(0, 0, jitter + 8)`, then fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z. Android and iOS independently preserve both vector additions. Tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. The source-shaped Windows transcription reaches 99.47% at 187/187 instructions with all references audited."
     },
     {
       "address": "0x43a010",
@@ -2865,7 +2865,7 @@
       "aliases": [
         "cRSubGame_LocFromPos"
       ],
-      "description": "Exact Windows `cRSubGame::LocFromPos(tVector)`: clamps world-space x and z into the eight-lane gameplay grid and returns the owned compact 0x54-byte `SubLoc` runtime cell. Android and iOS preserve the same lane/row clamp and row-major ownership with port-specific capacities and strides."
+      "description": "Exact Windows `cRSubGame::LocFromPos(tVector)`: clamps world-space x and z into the eight-lane gameplay grid and returns the owned compact 0x54-byte `cRSubLoc` runtime cell. Android and iOS preserve the same lane/row clamp and row-major ownership with port-specific capacities and strides."
     },
     {
       "address": "0x43d480",
@@ -2881,7 +2881,7 @@
       "aliases": [
         "cRSubGame_GetY"
       ],
-      "description": "Exact Windows `cRSubGame::GetY(tVector)`: samples the current `SubLoc`, returns flat, ramp, raised-ramp, trampoline-stored, or sentinel floor height, and uses the authored 0.4, 0.5, and -100 constants. Android preserves the full method body and iOS independently preserves the exact demangled symbol."
+      "description": "Exact Windows `cRSubGame::GetY(tVector)`: samples the current `cRSubLoc`, returns flat, ramp, raised-ramp, trampoline-stored, or sentinel floor height, and uses the authored 0.4, 0.5, and -100 constants. Android preserves the full method body and iOS independently preserves the exact demangled symbol."
     },
     {
       "address": "0x43d5a0",

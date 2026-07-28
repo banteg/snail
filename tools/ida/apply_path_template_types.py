@@ -81,6 +81,7 @@ TRUSTED_NAMES = [
     (0x433FD0, "initialize_thanks_for_playing_screen"),
     (0x4340C0, "uninit_thanks_screen"),
     (0x4340F0, "update_thanks_for_playing_screen"),
+    (0x434B60, "is_neighbor_cell_solid"),
     (0x437E80, "calc_slider_to_rate"),
     (0x439B00, "refresh_fringe_object_draw_list"),
     (0x43A390, "update_jetpack_gauge"),
@@ -234,6 +235,24 @@ TRACK_RENDER_CACHE_OWNER_MARKERS = (
     "void __thiscall remove_track_render_cache_bods(SegmentCache* manager);",
 )
 
+SUB_LOC_OWNER_MARKERS = (
+    "typedef struct cRSubLoc cRSubLoc;",
+    "typedef cRSubLoc SubLoc;",
+    "typedef cRSubLoc TrackRowCell;",
+    "typedef struct cRSubLoc {",
+    "} cRSubLoc;",
+    "cRSubLoc_must_be_0x54",
+    "cRSubLoc runtime_cells[3200][8];",
+    "cRSubLoc* __thiscall initialize_sub_loc(cRSubLoc* cell);",
+    "void __thiscall remove_sub_loc(cRSubLoc* cell);",
+    "void __thiscall update_sub_loc(cRSubLoc* cell);",
+    "int32_t __thiscall get_track_cell_row_index(cRSubLoc* cell);",
+)
+
+SUB_LOC_OWNER_SIZES = {
+    "cRSubLoc": 0x54,
+}
+
 PATH_OWNER_MARKERS = (
     "typedef struct cRPath {",
     "} cRPath;",
@@ -364,6 +383,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x433FD0,  # initialize_thanks_for_playing_screen
     0x4340C0,  # uninit_thanks_screen
     0x4340F0,  # update_thanks_for_playing_screen
+    0x434B60,  # is_neighbor_cell_solid
     0x434BE0,  # build_track_fringe_objects
     0x435180,  # merge_track_tile_runs
     0x4355F0,  # promote_track_tiles_to_fringe_variants
@@ -661,7 +681,7 @@ POPULATE_RUNTIME_LVAR_SPECS = (
     ("lane", "int32_t lane;", 0x436637, 60),
     (
         "runtime_cell",
-        "TrackRowCell *runtime_cell;",
+        "cRSubLoc *runtime_cell;",
         0x4366C5,
         None,
     ),
@@ -814,7 +834,7 @@ PROJECT_ATTACHMENT_LVAR_SPECS = (
     ("runtime_row", "SubRow *runtime_row;", 0x4444D5, None),
     (
         "primary_attachment_cell",
-        "TrackRowCell *primary_attachment_cell;",
+        "cRSubLoc *primary_attachment_cell;",
         0x4444EB,
         None,
     ),
@@ -867,7 +887,7 @@ UPDATE_SUBGAME_RUNTIME_LVAR_SPECS = (
 UPDATE_SUBGOLDY_LVAR_SPECS = (
     (
         "row_event_cell",
-        "TrackRowCell *row_event_cell;",
+        "cRSubLoc *row_event_cell;",
         0x43B6EB,
         None,
     ),
@@ -876,6 +896,14 @@ UPDATE_SUBGOLDY_LVAR_SPECS = (
         "SubgameRuntime *row_event_game;",
         0x43B6F0,
         None,
+    ),
+    # Stack +0x2c is reused for unrelated float lifetimes later in the function;
+    # use a unique semantic name so Hex-Rays can persist this exact early split.
+    (
+        "row_event_source_cell",
+        "cRSubLoc *row_event_source_cell;",
+        0x43B6F8,
+        44,
     ),
     (
         "row_event_row_index",
@@ -903,7 +931,7 @@ UPDATE_SUBGOLDY_LVAR_SPECS = (
     ),
     (
         "current_cell",
-        "TrackRowCell *current_cell;",
+        "cRSubLoc *current_cell;",
         0x43BCCE,
         None,
     ),
@@ -915,7 +943,7 @@ UPDATE_SUBGOLDY_LVAR_SPECS = (
     ),
     (
         "primary_attachment_cell",
-        "TrackRowCell *primary_attachment_cell;",
+        "cRSubLoc *primary_attachment_cell;",
         0x43BDA4,
         24,
     ),
@@ -927,7 +955,7 @@ UPDATE_SUBGOLDY_LVAR_SPECS = (
     ),
     (
         "secondary_attachment_cell",
-        "TrackRowCell *secondary_attachment_cell;",
+        "cRSubLoc *secondary_attachment_cell;",
         0x43BE79,
         24,
     ),
@@ -982,7 +1010,7 @@ WORLD_INITIALIZER_SALT_ASSET_LVAR_SPECS = (
 )
 
 REMOVE_SUBGAME_BODS_CURSOR_LVAR_SPECS = (
-    ("runtime_cell_cursor", "TrackRowCell *runtime_cell_cursor;", 0x44091A, None),
+    ("runtime_cell_cursor", "cRSubLoc *runtime_cell_cursor;", 0x44091A, None),
     (
         "row_list_next_cursor",
         "BodNode **row_list_next_cursor;",
@@ -1014,6 +1042,24 @@ REMOVE_SUBGAME_BODS_CURSOR_LVAR_SPECS = (
         None,
     ),
     ("golb_shot_cursor", "GolbShot *golb_shot_cursor;", 0x440F15, None),
+)
+
+# This four-byte stack slot holds row indices during the build pass and is
+# reused for cache-family format strings afterward. IDA 9.4 cannot split the
+# branch-merged late stores, so keep the exact early integer owners only.
+BUILD_TRACK_RENDER_CACHE_COUNTER_LVAR_SPECS = (
+    (
+        "current_row_index",
+        "int32_t current_row_index;",
+        0x433251,
+        None,
+    ),
+    (
+        "row_index",
+        "int32_t row_index;",
+        0x433253,
+        60,
+    ),
 )
 
 SPAWN_TRACK_RING_LVAR_SPECS = (
@@ -1127,7 +1173,7 @@ COLLISION_POOL_CURSOR_LVAR_SPECS = (
 MERGE_RUNTIME_LVAR_SPECS = (
     ("seed_lane_flags", "uint32_t *seed_lane_flags;", 0x435195, None),
     ("cell_lane_flags", "uint32_t *cell_lane_flags;", 0x4351D8, None),
-    ("cell", "TrackRowCell *cell;", 0x4351EA, None),
+    ("cell", "cRSubLoc *cell;", 0x4351EA, None),
     ("floor_tile_cursor", "uint8_t *floor_tile_cursor;", 0x43521C, None),
     (
         "floor_cleanup_lane_flags",
@@ -1164,7 +1210,7 @@ MERGE_RUNTIME_LVAR_SPECS = (
 
 FRINGE_RUNTIME_LVAR_SPECS = (
     ("row", "SubRow *row;", 0x434C0D, None),
-    ("cell", "TrackRowCell *cell;", 0x434C15, None),
+    ("cell", "cRSubLoc *cell;", 0x434C15, None),
     ("row_cursor", "SubRow *row_cursor;", 0x434C1B, 40),
     ("fringe_front_new", "Fringe *fringe_front_new;", 0x434D44, None),
     ("fringe_right_new", "Fringe *fringe_right_new;", 0x434E48, None),
@@ -1685,7 +1731,7 @@ MERGE_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x4351CB, 1, 0x5CCB7C),  # runtime_rows[0].attachment_body list_flags
 )
 
-# SubLoc teardown obtains the containing GameRoot and addresses one borrowed
+# cRSubLoc teardown obtains the containing GameRoot and addresses one borrowed
 # SubRow through a row-stride byte offset. These four root-relative
 # displacements numerically collide with IDA auto-symbols, so normalize only
 # the proven row flag and attachment-body operands. The typed GameRoot and
@@ -1845,7 +1891,7 @@ UPDATE_SUBGAME_RUNTIME_FLAG_OPERANDS = (
 # runtime row for attachment entry. In both blocks Hex-Rays inherits false
 # globals because the exact SubRow slab displacements are also valid image
 # addresses. Normalize only those nine evidenced operands: the typed
-# SubgameRuntime receiver and TrackRowCell locals can then recover the borrowed
+# SubgameRuntime receiver and cRSubLoc locals can then recover the borrowed
 # SubRow fields without installing an overlapping global or convenience view.
 UPDATE_SUBGOLDY_RUNTIME_ROW_OFFSET_OPERANDS = (
     (0x43B709, 1, 0x5CCAC8),  # row-event SubRow base / flags
@@ -2050,7 +2096,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_path_follow_golb",
-        "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, TrackRowCell* source_cell, const Vec3* position, GolbShot* shot);",
+        "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, cRSubLoc* source_cell, const Vec3* position, GolbShot* shot);",
     ),
     (
         "traverse_path_follow_golb",
@@ -2110,15 +2156,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_sub_loc",
-        "SubLoc* __thiscall initialize_sub_loc(SubLoc* cell);",
+        "cRSubLoc* __thiscall initialize_sub_loc(cRSubLoc* cell);",
     ),
     (
         "remove_sub_loc",
-        "void __thiscall remove_sub_loc(SubLoc* cell);",
+        "void __thiscall remove_sub_loc(cRSubLoc* cell);",
     ),
     (
         "update_sub_loc",
-        "void __thiscall update_sub_loc(SubLoc* cell);",
+        "void __thiscall update_sub_loc(cRSubLoc* cell);",
     ),
     (
         "initialize_damage_gauge",
@@ -2134,7 +2180,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_track_cell_row_index",
-        "int32_t __thiscall get_track_cell_row_index(SubLoc* cell);",
+        "int32_t __thiscall get_track_cell_row_index(cRSubLoc* cell);",
     ),
     (
         "find_segment_path_index_by_name",
@@ -2358,19 +2404,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "is_sub_loc_floor",
-        "int32_t __fastcall is_sub_loc_floor(TrackRowCell* cell);",
+        "int32_t __fastcall is_sub_loc_floor(cRSubLoc* cell);",
     ),
     (
         "is_sub_loc_slide",
-        "int32_t __fastcall is_sub_loc_slide(TrackRowCell* cell);",
+        "int32_t __fastcall is_sub_loc_slide(cRSubLoc* cell);",
     ),
     (
         "is_sub_loc_ramp",
-        "int32_t __fastcall is_sub_loc_ramp(TrackRowCell* cell);",
+        "int32_t __fastcall is_sub_loc_ramp(cRSubLoc* cell);",
     ),
     (
         "is_sub_loc_empty",
-        "int32_t __fastcall is_sub_loc_empty(TrackRowCell* cell);",
+        "int32_t __fastcall is_sub_loc_empty(cRSubLoc* cell);",
     ),
     (
         "set_color_alpha",
@@ -2398,7 +2444,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_garbage_hazard",
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
     ),
     (
         "initialize_garbage_hazard",
@@ -2838,7 +2884,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "get_track_grid_cell_at_world_position",
-        "TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);",
+        "cRSubLoc* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position);",
     ),
     (
         "get_track_runtime_cell_at_world_z",
@@ -2854,15 +2900,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "spawn_track_health_pickup",
-        "void __thiscall spawn_track_health_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+        "void __thiscall spawn_track_health_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
     ),
     (
         "spawn_track_jetpack_pickup",
-        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player);",
+        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player);",
+    ),
+    (
+        "is_neighbor_cell_solid",
+        "bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, cRSubLoc* cell, int32_t lane_offset, int32_t row_offset);",
     ),
     (
         "try_enter_track_attachment_from_swept_motion",
-        "void __thiscall try_enter_track_attachment_from_swept_motion(cRPath* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell);",
+        "void __thiscall try_enter_track_attachment_from_swept_motion(cRPath* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, cRSubLoc* source_cell);",
     ),
     (
         "get_path_position_at_node",
@@ -2870,11 +2920,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "is_point_inside_track_attachment",
-        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell);",
+        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, cRSubLoc* cell);",
     ),
     (
         "begin_track_attachment_follow_state",
-        "void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player);",
+        "void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, cRSubLoc* source_cell, const Vec3* world_position, Player* player);",
     ),
     (
         "update_track_attachment_follow_state",
@@ -3776,6 +3826,13 @@ def _sync_exact_lvars(
         "selector": selector,
         "locals": results,
     }
+
+
+def _sync_build_track_render_cache_counter_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "build_track_render_caches",
+        BUILD_TRACK_RENDER_CACHE_COUNTER_LVAR_SPECS,
+    )
 
 
 def _sync_loading_quad_lvars() -> dict[str, object]:
@@ -4808,6 +4865,11 @@ def _sync_golb_shot_prefix_owner(header_path: pathlib.Path) -> dict[str, object]
 
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
+    missing_sub_loc_owner_markers = [
+        marker
+        for marker in SUB_LOC_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_path_owner_markers = [
         marker
         for marker in PATH_OWNER_MARKERS
@@ -4854,7 +4916,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if marker not in header_text
     ]
     if (
-        missing_path_owner_markers
+        missing_sub_loc_owner_markers
+        or missing_path_owner_markers
         or missing_path_manager_owner_markers
         or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
@@ -4865,6 +4928,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_fringe_mesh_cursor_markers
     ):
         marker_failures = []
+        if missing_sub_loc_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_sub_loc_owner_header"}
+            )
         if missing_path_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_path_owner_header"}
@@ -4902,6 +4969,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
+                    "missing_sub_loc_owner_markers": (
+                        missing_sub_loc_owner_markers
+                    ),
                     "missing_path_owner_markers": missing_path_owner_markers,
                     "missing_path_manager_owner_markers": (
                         missing_path_manager_owner_markers
@@ -4931,6 +5001,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         return 1
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    sub_loc_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in SUB_LOC_OWNER_SIZES
+    }
     path_owner_sizes = {
         name: _named_struct_size(name)
         for name in PATH_OWNER_SIZES
@@ -4975,7 +5049,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     fringe_face_pair_cursor_size = _named_struct_size(
         "FringeFaceQuadPairCursorView"
     )
-    track_row_cell_tile_owner = _named_struct_member_readback("TrackRowCell", 0x3C)
+    track_row_cell_tile_owner = _named_struct_member_readback("cRSubLoc", 0x3C)
     expected_track_row_cell_tile_owner = {
         "offset": "0x3c",
         "size": 1,
@@ -4986,6 +5060,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         hex(offset): _named_struct_member_readback("Player", offset)
         for offset in PLAYER_SHOOT_EXPECTED_MEMBERS
     }
+    sub_loc_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "sub_loc",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": sub_loc_owner_sizes[name],
+        }
+        for name, expected_size in SUB_LOC_OWNER_SIZES.items()
+        if sub_loc_owner_sizes[name] != expected_size
+    ]
     path_owner_size_failures = [
         {
             "selector": name,
@@ -5042,7 +5127,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if track_render_cache_owner_sizes[name] != expected_size
     ]
     owner_size_failures = (
-        path_owner_size_failures
+        sub_loc_owner_size_failures
+        + path_owner_size_failures
         + path_manager_owner_size_failures
         + bod_core_owner_size_failures
         + fringe_owner_size_failures
@@ -5140,7 +5226,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if track_row_cell_tile_owner != expected_track_row_cell_tile_owner:
         owner_size_failures.append(
             {
-                "selector": "TrackRowCell.tile_id",
+                "selector": "cRSubLoc.tile_id",
                 "owner_group": "track_row_cell",
                 "reason": "tile_owner_mismatch",
                 "expected": expected_track_row_cell_tile_owner,
@@ -5166,6 +5252,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "sub_loc_owner_sizes": sub_loc_owner_sizes,
                     "path_owner_sizes": path_owner_sizes,
                     "path_manager_owner_sizes": path_manager_owner_sizes,
                     "bod_core_owner_sizes": bod_core_owner_sizes,
@@ -5584,6 +5671,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
     lvar_view = _sync_build_track_render_cache_lvar()
     if lvar_view.get("status") == "failed":
         failed.append({"selector": "build_track_render_caches", "lvar_view": lvar_view})
+    build_track_render_cache_counter_lvars = (
+        _sync_build_track_render_cache_counter_lvars()
+    )
+    if build_track_render_cache_counter_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "build_track_render_caches",
+                "counter_lvars": build_track_render_cache_counter_lvars,
+            }
+        )
     frontend_color_lvars = _sync_color_lvars("initialize_frontend_widget")
     if frontend_color_lvars.get("status") == "failed":
         failed.append(
@@ -5874,6 +5971,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "sub_loc_owner_sizes": sub_loc_owner_sizes,
                 "path_owner_sizes": path_owner_sizes,
                 "path_manager_owner_sizes": path_manager_owner_sizes,
                 "bod_core_owner_sizes": bod_core_owner_sizes,
@@ -5931,6 +6029,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "initialize_subgame_record_bank_offset_operands": initialize_subgame_record_bank_offset_operands,
                 "subhover_player_root_offset_operands": subhover_player_root_offset_operands,
                 "lvar_view": lvar_view,
+                "build_track_render_cache_counter_lvars": build_track_render_cache_counter_lvars,
                 "frontend_color_lvars": frontend_color_lvars,
                 "update_sub_loc_color_lvars": update_sub_loc_color_lvars,
                 "get_track_skirt_color_lvars": get_track_skirt_color_lvars,

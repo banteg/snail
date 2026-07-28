@@ -27,13 +27,13 @@ TRUSTED_DECLARATIONS = (
     ),
     (
         "is_point_inside_track_attachment",
-        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell);",
+        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, cRSubLoc* cell);",
     ),
 )
 
 REQUIRED_OWNER_MARKERS = (
     "typedef struct Vec3 {",
-    "typedef struct TrackRowCell {",
+    "typedef struct cRSubLoc {",
     "typedef struct PathTemplateSample {",
     "typedef struct cRPath {",
     "typedef cRPath Path;",
@@ -43,7 +43,7 @@ REQUIRED_OWNER_MARKERS = (
 
 EXPECTED_OWNER_SIZES = {
     "Vec3": 0xC,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "PathTemplateSample": 0xA8,
     "cRPath": 0xA8,
 }

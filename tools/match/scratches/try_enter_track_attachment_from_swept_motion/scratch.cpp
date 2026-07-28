@@ -10,7 +10,7 @@
 void cRPath::try_enter_track_attachment_from_swept_motion(
     float px, float py, float pz,
     float sweep_x, float sweep_y, float sweep_z,
-    TrackRowCell* cell)
+    cRSubLoc* cell)
 {
     Vector3 local;
     Vector3 probe;

@@ -31,21 +31,24 @@ void __thiscall select_track_tile_edge_variants(SubgameRuntime *game)
         BYTE1(v4) &= ~0x80u;
         *((_DWORD *)p_tile_id + 1) = v4;
         v5 = *p_tile_id;
-        if ( *p_tile_id
+        if ( *p_tile_id != SUBLOC_TILE_EMPTY
           && v5 != SUBLOC_TILE_RING_MARKER
           && v5 != SUBLOC_TILE_UNIVERSE_HOLE
           && v5 != SUBLOC_TILE_PATH_ENTRY_LOWERCASE
           && v5 != SUBLOC_TILE_PATH_ENTRY_UPPERCASE
           && v5 != SUBLOC_TILE_WALL2 )
         {
-          if ( !i || (unsigned __int8)is_sub_loc_empty((TrackRowCell *)(p_tile_id - 144)) )
+          if ( i == 0 || (unsigned __int8)is_sub_loc_empty((cRSubLoc *)(p_tile_id - 144)) != 0 )
             *((_BYTE *)p_tile_id + 1) |= 8u;
-          if ( i == 7 || (unsigned __int8)is_sub_loc_empty((TrackRowCell *)(p_tile_id + 24)) )
+          if ( i == 7 || (unsigned __int8)is_sub_loc_empty((cRSubLoc *)(p_tile_id + 24)) != 0 )
             *((_BYTE *)p_tile_id + 1) |= 4u;
-          if ( !v1 || (unsigned __int8)is_sub_loc_empty((TrackRowCell *)(p_tile_id - 732)) )
+          if ( v1 == 0 || (unsigned __int8)is_sub_loc_empty((cRSubLoc *)(p_tile_id - 732)) != 0 )
             *((_BYTE *)p_tile_id + 1) |= 1u;
-          if ( v1 >= game->runtime_row_count - 1 || (unsigned __int8)is_sub_loc_empty((TrackRowCell *)(p_tile_id + 612)) )
+          if ( v1 >= game->runtime_row_count - 1
+            || (unsigned __int8)is_sub_loc_empty((cRSubLoc *)(p_tile_id + 612)) != 0 )
+          {
             *((_BYTE *)p_tile_id + 1) |= 2u;
+          }
           switch ( *((_BYTE *)p_tile_id + 1) )
           {
             case 5:
@@ -64,7 +67,7 @@ void __thiscall select_track_tile_edge_variants(SubgameRuntime *game)
               }
               else if ( v8 != SUBLOC_TILE_TRAMPOLINE
                      && v8 != SUBLOC_TILE_WALL2
-                     && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
+                     && (unsigned __int8)is_sub_loc_ramp((cRSubLoc *)(p_tile_id - 60)) == 0 )
               {
                 set_bod_object(
                   (BodBase *)(p_tile_id - 60),
@@ -86,7 +89,7 @@ void __thiscall select_track_tile_edge_variants(SubgameRuntime *game)
               }
               if ( v10 != SUBLOC_TILE_TRAMPOLINE
                 && v10 != SUBLOC_TILE_WALL2
-                && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
+                && (unsigned __int8)is_sub_loc_ramp((cRSubLoc *)(p_tile_id - 60)) == 0 )
               {
                 set_bod_object(
                   (BodBase *)(p_tile_id - 60),
@@ -109,7 +112,7 @@ LABEL_67:
               }
               else if ( v6 != SUBLOC_TILE_TRAMPOLINE
                      && v6 != SUBLOC_TILE_WALL2
-                     && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
+                     && (unsigned __int8)is_sub_loc_ramp((cRSubLoc *)(p_tile_id - 60)) == 0 )
               {
                 set_bod_object(
                   (BodBase *)(p_tile_id - 60),
@@ -132,7 +135,7 @@ LABEL_67:
               }
               else if ( v9 != SUBLOC_TILE_TRAMPOLINE
                      && v9 != SUBLOC_TILE_WALL2
-                     && !(unsigned __int8)is_sub_loc_ramp((TrackRowCell *)(p_tile_id - 60)) )
+                     && (unsigned __int8)is_sub_loc_ramp((cRSubLoc *)(p_tile_id - 60)) == 0 )
               {
                 set_bod_object(
                   (BodBase *)(p_tile_id - 60),

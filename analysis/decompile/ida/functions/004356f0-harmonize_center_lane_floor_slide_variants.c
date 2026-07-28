@@ -2,7 +2,7 @@
 /* function: harmonize_center_lane_floor_slide_variants @ 0x4356f0 */
 /* selector: harmonize_center_lane_floor_slide_variants */
 
-// Void cRSubGame normalization pass that harmonizes center-lane floor and slide seam variants after the main edge pass: a floor current cell beside a slide neighbor is promoted to the matching slide object, while a slide current cell beside a floor neighbor is restored to the floor object. Cross-port Android and iOS symbols match this pass to `cRSubGame::SlideSmoothTrack()`.
+// Exact Windows `void cRSubGame::SlideSmoothTrack()`: directly indexes the owned eight-lane `cRSubLoc` runtime grid, promoting a floor current cell beside a slide neighbor to the matching slide object and restoring a slide current cell beside a floor neighbor. Android and iOS preserve the owner, method name, row phases, same-lane neighbor direction, and replacement families.
 void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime *game)
 {
   SubgameRuntime *v1; // esi

@@ -2,7 +2,7 @@
 
 #include "track_attachment.h"
 
-unsigned char SubLoc::is_sub_loc_slide()
+unsigned char cRSubLoc::is_sub_loc_slide()
 {
     unsigned char tile_id = this->tile_id;
     unsigned char result;

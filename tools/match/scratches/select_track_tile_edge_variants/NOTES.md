@@ -1,6 +1,6 @@
 # select_track_tile_edge_variants
 
-- Walks the row-major `SubLoc +0x3c` tile-byte view.
+- Walks the row-major `cRSubLoc +0x3c` tile-byte view.
 - Clears `open_edge_mask`, clears `SUBLOC_FLAG_CORNER_OBJECT`, builds open-edge
   bits from left/right/back/front neighbors, and for edge masks `5`, `6`, `9`,
   and `10` swaps the current cell's BOD object to the matching edge variant.
@@ -15,7 +15,7 @@
   the independent tile-id loads across the flag stores without using volatile
   or artificial dependencies.
 - 2026-07-11 predicate-owner pass: the neighbor and ramp calls now resolve
-  through the shared `SubLoc` methods proven against Android
+  through the shared `cRSubLoc` methods proven against Android
   `cRSubLoc::IsEmpty()` and `cRSubLoc::IsRamp()`. The field-first cursor is
   retained for native source shape; the enclosing cell casts express the real
   owner. The function remains exact at 220/220 with all 18 operands clean.
@@ -36,10 +36,10 @@ mapping. Focused output remains fully exact at 220/220 instructions with all
 
 ## 2026-07-14 neighborhood-delta ownership
 
-Binary Ninja's live `TrackRowCell` layout agrees with the shared `SubLoc`:
+Binary Ninja's live `cRSubLoc` layout agrees with the shared `cRSubLoc`:
 size `0x54`, `tile_id +0x3c`, `open_edge_mask +0x3d`, and
 `lane_and_flags +0x40`. The exact field-first cursor deltas now derive from
-`sizeof(SubLoc)`, `sizeof(runtime_cells[0])`, and `offsetof(SubLoc, tile_id)`:
+`sizeof(cRSubLoc)`, `sizeof(runtime_cells[0])`, and `offsetof(cRSubLoc, tile_id)`:
 the former `-0x90/+0x18` pair selects adjacent lanes,
 `-0x2dc/+0x264` selects adjacent rows, and `-0x3c` recovers the containing
 cell/BOD. This removes parallel layout constants while preserving the native
@@ -84,7 +84,7 @@ matcher byte or weakening any existing ownership check.
 ## 2026-07-19 tile-cursor lifetime
 
 The live ESI induction variable is a borrowed field-first view rooted at
-`TrackRowCell::tile_id`, not a complete `TrackRowCell` owner. Replaying it as
+`cRSubLoc::tile_id`, not a complete `cRSubLoc` owner. Replaying it as
 `TrackRowCellTileByteView*` recovers the current cell's `tile_id`,
 `open_edge_mask`, and packed `lane_and_flags` accesses plus the exact `0x54`
 cell stride. The view's tail only provides that stride and does not claim

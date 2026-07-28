@@ -12,14 +12,14 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
   uint32_t updated_list_flags; // eax
   double next_bob_phase; // st7
   Vec3 *position; // edi
-  TrackRowCell *grid_cell; // ebp
+  cRSubLoc *grid_cell; // ebp
   SubRow *runtime_row; // ebx
   Vec3 primary_swept_motion; // 0:^2C.12
   Vec3 secondary_probe; // 0:^2C.12
   Vec3 primary_probe; // 0:^38.12
   Vec3 secondary_swept_motion; // 0:^38.12
 
-  if ( !sub_lazer->owner_game->subgame_pause_gate )
+  if ( sub_lazer->owner_game->subgame_pause_gate == 0 )
   {
     if ( sub_lazer->state == SUB_LAZER_STATE_ACTIVE )
     {
@@ -93,10 +93,10 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
         else
         {
           list_next = sub_lazer->body.bod.bod.list_next;
-          if ( list_next )
+          if ( list_next != nullptr )
             list_next->list_prev = sub_lazer->body.bod.bod.list_prev;
           list_prev = sub_lazer->body.bod.bod.list_prev;
-          if ( list_prev )
+          if ( list_prev != nullptr )
             list_prev->list_next = sub_lazer->body.bod.bod.list_next;
           else
             active_bod_list->first = sub_lazer->body.bod.bod.list_next;

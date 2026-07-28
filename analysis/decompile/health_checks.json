@@ -752,14 +752,18 @@
       "name": "ida_update_subgoldy_runtime_row_attachment_owner",
       "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
       "required_substrings": [
-        "TrackRowCell *current_cell",
+        "cRSubLoc *row_event_source_cell",
+        "cRSubLoc *current_cell",
         "SubgameRuntime *attachment_game",
+        "row_event_source_cell = row_event_cell",
+        "tile_id = row_event_source_cell->tile_id",
         "primary_attachment_cell = player->game->runtime_rows",
         "secondary_attachment_cell = player->game->runtime_rows",
         "runtime_rows[primary_row_index].primary_attachment_cell->attachment_template_record",
         "runtime_rows[secondary_row_index].secondary_attachment_cell->attachment_template_record"
       ],
       "forbidden_substrings": [
+        "TrackRowCell *source_cell",
         "byte_5CCAC8",
         "unk_5CCB6C",
         "unk_5CCB70"
@@ -784,7 +788,7 @@
       "name": "ida_remove_sub_loc_root_list_owner",
       "artifact": "analysis/decompile/ida/functions/00439bc0-remove_sub_loc.c",
       "required_substrings": [
-        "void __thiscall remove_sub_loc(SubLoc *cell)",
+        "void __thiscall remove_sub_loc(cRSubLoc *cell)",
         "GameRootRuntimeRowStrideAnchor *runtime_row_anchor",
         "g_game_base->subgame.runtime_rows[v4].flags",
         "runtime_row_anchor->row.attachment_body.bod.list_flags",
@@ -821,7 +825,7 @@
       "name": "ida_update_sub_loc_root_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/00439d50-update_sub_loc.c",
       "required_substrings": [
-        "void __thiscall update_sub_loc(SubLoc *cell)",
+        "void __thiscall update_sub_loc(cRSubLoc *cell)",
         "g_game_base->subgame.first_block_row_count",
         "g_game_base->subgame.player.body.transform.position",
         "&g_game_base->subgame.sub_lazers",
@@ -4452,7 +4456,7 @@
       "required_substrings": [
         "void __thiscall try_enter_track_attachment_from_swept_motion(",
         "cRPath *self,",
-        "TrackRowCell *source_cell)",
+        "cRSubLoc *source_cell)",
         "PathTemplateSample *",
         "self->secondary_samples[i]",
         "->transform.basis_up.y",
@@ -4501,7 +4505,7 @@
       "required_substrings": [
         "void __thiscall begin_track_attachment_follow_state(",
         "cRPathFollowGoldy *follow_state,",
-        "TrackRowCell *source_cell,",
+        "cRSubLoc *source_cell,",
         "follow_state->template_record = attachment_template_record",
         "follow_state->source_cell = source_cell",
         "follow_state->player = player",
@@ -4521,7 +4525,10 @@
       "required_substrings": [
         "follow_state->template_record",
         "follow_state->source_cell",
+        "struct cRSubLoc* primary_attachment_cell_transition_flags",
         "primary_attachment_cell_transition_flags->bod.list_flags",
+        "struct cRPath* entry_transition_template",
+        "struct cRPath* entry_base_template",
         "entry_transition_template->entry_transition_strip_mesh",
         "entry_base_template->entry_base_strip_mesh",
         "(&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->color.a = 0.600000024f",
@@ -4560,6 +4567,9 @@
         "__offset",
         "void* esi_8",
         "void* esi_10",
+        "struct TrackRowCell* primary_attachment_cell_transition_flags",
+        "struct Path* entry_transition_template",
+        "struct Path* entry_base_template",
         "float* edx_26",
         "float* out_position_2",
         "play_voice_manager(0x751498",
@@ -4745,7 +4755,7 @@
       "required_substrings": [
         "uint32_t *seed_lane_flags;",
         "uint32_t *cell_lane_flags;",
-        "TrackRowCell *cell;",
+        "cRSubLoc *cell;",
         "uint8_t *floor_tile_cursor;",
         "uint32_t *floor_cleanup_lane_flags;",
         "uint32_t *slide_lane_flags_cursor;",
@@ -4753,7 +4763,7 @@
         "uint8_t *wall_tile_cursor;",
         "uint32_t *wall_cleanup_lane_flags;",
         "uint32_t *row_attachment_flags;",
-        "cell = CONTAINING_RECORD(cell_lane_flags, TrackRowCell, lane_and_flags);",
+        "cell = CONTAINING_RECORD(cell_lane_flags, cRSubLoc, lane_and_flags);",
         "runtime_rows[0].attachment_body.bod.list_flags"
       ],
       "forbidden_substrings": [
@@ -6364,12 +6374,16 @@
         "void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_color)",
         "tColour skirt_color",
         "TrackRenderCacheBuildLocals locals",
+        "int32_t current_row_index",
+        "int32_t row_index",
         "manager->owner_subgame",
         "locals.vertex_counts",
         "append_track_cache_object"
       ],
       "forbidden_substrings": [
         "int32_t __thiscall build_track_render_caches",
+        "const char *row_index",
+        "(int32_t)row_index",
         "return result",
         "ObjectVertexBufferVtbl",
         "PathTemplateStripMesh",
@@ -6608,8 +6622,8 @@
         "struct SubgameRuntime* owner_subgame",
         "struct Fringe* fringe_object",
         "fringe_object->bod.object",
-        "struct tColourSmall color_2",
         "manager->skirt_color_bgra",
+        "manager->skirt_color_bgra, 0)",
         "owner_subgame->runtime_cells",
         "uint32_t cell_flags",
         "struct Object* cache_object",
@@ -8168,7 +8182,7 @@
         "&game->health_pickups[0].bod.bod.list_next",
         "&game->ring_effects.slots[0].body.bod.bod.list_next",
         "game->player.body.bod.bod.list_flags",
-        "struct TrackRowCell* runtime_cell_cursor",
+        "struct cRSubLoc* runtime_cell_cursor",
         "struct BodNode** row_list_next_cursor",
         "struct BodNode** health_list_next_cursor",
         "struct BodNode** garbage_list_next_cursor",
@@ -8253,7 +8267,7 @@
         "struct Game*",
         "__offset(Game",
         "arg1->",
-        "struct TrackRowCell (*)[0xc80][0x8]",
+        "struct cRSubLoc (*)[0xc80][0x8]",
         "struct SubHealth**",
         "struct GolbShot (*)[0xc]",
         "row_linked_flags_gate",
@@ -8276,7 +8290,7 @@
         "&game->health_pickups[0].bod.bod.list_next",
         "&game->ring_effects.slots[0].body.bod.bod.list_next",
         "game->player.body.bod.bod.list_flags",
-        "TrackRowCell *runtime_cell_cursor",
+        "cRSubLoc *runtime_cell_cursor",
         "BodNode **row_list_next_cursor",
         "&game->runtime_rows[0].row_model.body.bod.bod.list_next",
         "BodNode **health_list_next_cursor",
@@ -8797,7 +8811,7 @@
       "name": "ida_subgame_garbage_void_owner",
       "artifact": "analysis/decompile/ida/functions/0043da80-spawn_track_garbage_hazard.c",
       "required_substrings": [
-        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
+        "void __thiscall spawn_track_garbage_hazard(SubgameRuntime *game, cRSubLoc *cell, Player *player)",
         "SubGarbageState *i;",
         "game->garbage_hazards.slots[0].state",
         "game->garbage_hazards.active_head",
@@ -9364,7 +9378,7 @@
         "initialize_ring_or_special_effect_particles(selected_ring, player->lives)"
       ],
       "forbidden_substrings": [
-        "TrackRowCell *__thiscall spawn_track_ring_or_special_effect",
+        "cRSubLoc *__thiscall spawn_track_ring_or_special_effect",
         "char *v8",
         "*((_DWORD *)v8",
         "(Vec3 *)v8",
@@ -9719,7 +9733,7 @@
         "allocate_fringe_object(&g_game_base->subgame.fringe_manager)",
         "runtime->runtime_row_count",
         "struct SubRow* row = &runtime->runtime_rows",
-        "struct TrackRowCell* cell = &runtime->runtime_cells",
+        "struct cRSubLoc* cell = &runtime->runtime_cells",
         "struct SubRow* row_cursor = row",
         "int32_t cells_remaining = 8",
         "int32_t fringe_family = 0",
@@ -9743,7 +9757,7 @@
         "struct Game*",
         "struct SubgameRuntime* game_1",
         "struct SubgameRuntime* game_2",
-        "struct TrackRowCell (*",
+        "struct cRSubLoc (*",
         "int32_t ebx = 0",
         "int32_t var_48",
         "int32_t var_4c_1",
@@ -9769,7 +9783,7 @@
         "void __thiscall build_track_fringe_objects(SubgameRuntime *game)",
         "v1->runtime_row_count",
         "SubRow *row;",
-        "TrackRowCell *cell;",
+        "cRSubLoc *cell;",
         "SubRow *row_cursor;",
         "row = v1->runtime_rows;",
         "cell = v1->runtime_cells[0];",
@@ -9995,7 +10009,7 @@
       "name": "ida_track_grid_cell_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/0043d410-get_track_grid_cell_at_world_position.c",
       "required_substrings": [
-        "TrackRowCell *__thiscall get_track_grid_cell_at_world_position(SubgameRuntime *game, Vec3 *position)",
+        "cRSubLoc *__thiscall get_track_grid_cell_at_world_position(SubgameRuntime *game, Vec3 *position)",
         "return &game->runtime_cells[z][v2]"
       ],
       "forbidden_substrings": [
@@ -10075,7 +10089,7 @@
       "name": "ida_track_health_pickup_void_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/0043d6c0-spawn_track_health_pickup.c",
       "required_substrings": [
-        "void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
+        "void __thiscall spawn_track_health_pickup(SubgameRuntime *game, cRSubLoc *cell, Player *player)",
         "&game->health_pickups[0].state",
         "SubHealthSlotCursor *health_cursor",
         "health_cursor->health.state = TRACK_PICKUP_STATE_ACTIVE",
@@ -10135,7 +10149,7 @@
       "name": "ida_track_jetpack_pickup_void_runtime_owner",
       "artifact": "analysis/decompile/ida/functions/0043d890-spawn_track_jetpack_pickup.c",
       "required_substrings": [
-        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)",
+        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, cRSubLoc *cell, Player *player)",
         "&game->jetpack_pickup.state",
         "JetPackSlotCursor *jetpack_cursor",
         "jetpack_cursor->jetpack.state = TRACK_PICKUP_STATE_ACTIVE",
@@ -13423,12 +13437,33 @@
       "name": "bn_neighbor_cell_lane_owner",
       "artifact": "analysis/decompile/binja/functions/00434b60-is_neighbor_cell_solid.c",
       "required_substrings": [
-        "arg2->lane_and_flags & 7",
-        "get_track_cell_row_index(arg2)",
+        "cell->lane_and_flags & 7",
+        "get_track_cell_row_index(cell)",
+        "game->runtime_row_count",
+        "game->runtime_cells",
         "is_sub_loc_empty("
       ],
       "forbidden_substrings": [
+        "arg2->lane_and_flags",
         "arg2->__offset(0x40)",
+        "*(arg1 + 0x54)",
+        "sub_434B60"
+      ]
+    },
+    {
+      "name": "ida_neighbor_cell_c_r_sub_loc_owner",
+      "artifact": "analysis/decompile/ida/functions/00434b60-is_neighbor_cell_solid.c",
+      "required_substrings": [
+        "bool __thiscall is_neighbor_cell_solid(SubgameRuntime *game, cRSubLoc *cell, int32_t lane_offset, int32_t row_offset)",
+        "get_track_cell_row_index(cell)",
+        "cell->lane_and_flags & 7",
+        "game->runtime_row_count",
+        "game->runtime_cells",
+        "is_sub_loc_empty((cRSubLoc *)"
+      ],
+      "forbidden_substrings": [
+        "is_neighbor_cell_solid(_DWORD *this",
+        "TrackRowCell",
         "sub_434B60"
       ]
     },
@@ -13491,7 +13526,7 @@
       "name": "ida_slug_allocator_cursor_owners",
       "artifact": "analysis/decompile/ida/functions/0043dc80-spawn_slug_hazard.c",
       "required_substrings": [
-        "void __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *owner_player)",
+        "void __thiscall spawn_slug_hazard(SubgameRuntime *game, cRSubLoc *cell, Player *owner_player)",
         "struct SlugStateStrideCursor *slug_state_cursor",
         "struct SlugSlotCursor *slug_slot_cursor",
         "slug_state_cursor->state",
@@ -17641,7 +17676,7 @@
         "tutorial->game->player.body.transform.position"
       ],
       "forbidden_substrings": [
-        "TrackRowCell *__fastcall update_tutorial",
+        "cRSubLoc *__fastcall update_tutorial",
         "return get_track_grid_cell_at_world_position",
         "TutorialController *controller"
       ]
@@ -18962,7 +18997,7 @@
         "runtime_row_anchor->row.source_segment",
         "runtime_cell_anchor->previous_row_same_lane.tile_id",
         "runtime_cell_anchor->cell.attachment_template_record",
-        "struct Path* selected_attachment_path",
+        "struct cRPath* selected_attachment_path",
         "runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path",
         "int32_t attachment_span_index = 0",
         "attachment_span_index += 1",
@@ -19098,7 +19133,7 @@
         "runtime_row_anchor->row.attachment_body",
         "runtime_cell_anchor->previous_row_same_lane.tile_id",
         "runtime_cell_anchor->cell.attachment_template_record",
-        "TrackRowCell *runtime_cell;",
+        "cRSubLoc *runtime_cell;",
         "cRPath *selected_attachment_path;",
         "int32_t attachment_span_index;",
         "selected_attachment_path = &game->path_pairs[attachment_template_index].secondary",
@@ -19129,7 +19164,7 @@
         "int v111;",
         "int32_t v105;",
         "SubSegment *p_first_segment;",
-        "TrackRowCell *p_cell;",
+        "cRSubLoc *p_cell;",
         "PathPair *p_secondary;",
         "signed int v83;",
         "p_secondary = (PathPair *)&game->path_pairs",
@@ -19216,8 +19251,8 @@
       "artifact": "analysis/decompile/binja/functions/004444b0-project_position_onto_track_attachment.c",
       "required_substrings": [
         "game->runtime_rows",
-        "SubLoc* cell",
-        "struct Path* attachment_template_record",
+        "cRSubLoc* cell",
+        "struct cRPath* attachment_template_record",
         "cell->attachment_template_record",
         "attachment_template_record->primary_samples",
         "compute_kind42_attachment_transform(attachment_template_record",
@@ -19240,7 +19275,7 @@
       "required_substrings": [
         "void __thiscall project_position_onto_track_attachment(SubgameRuntime *game, Vec3 *position, float *out_angle)",
         "SubRow *runtime_row;",
-        "TrackRowCell *primary_attachment_cell;",
+        "cRSubLoc *primary_attachment_cell;",
         "cRPath *attachment_template_record;",
         "PathTemplateSample *sample;",
         "Vec3 projected_position;",
@@ -19307,7 +19342,7 @@
       "required_substrings": [
         "int32_t __thiscall initialize_path_follow_golb(",
         "GolbPathFollowState *state",
-        "TrackRowCell *source_cell",
+        "cRSubLoc *source_cell",
         "const Vec3 *position",
         "GolbShot *shot",
         "source_cell->attachment_template_record",
@@ -19491,7 +19526,7 @@
       "name": "ida_path_attachment_search_owner_abi",
       "artifact": "analysis/decompile/ida/functions/0042ca90-is_point_inside_track_attachment.c",
       "required_substrings": [
-        "bool __thiscall is_point_inside_track_attachment(Path *self, Vec3 probe, Vec3 swept_motion, TrackRowCell *cell)",
+        "bool __thiscall is_point_inside_track_attachment(cRPath *self, Vec3 probe, Vec3 swept_motion, cRSubLoc *cell)",
         "cell->anchor_position",
         "self->segment_count",
         "self->secondary_samples",
@@ -20087,11 +20122,11 @@
         "garbage_hazard_cursor = &garbage_hazard_cursor[1]",
         "struct SubRing* ring_effect_cursor = &game->ring_effects",
         "ring_effect_cursor = &ring_effect_cursor[1]",
-        "struct TrackRowCell* runtime_cell_cursor = &game->runtime_cells",
+        "struct cRSubLoc* runtime_cell_cursor = &game->runtime_cells",
         "runtime_cell_cursor = &runtime_cell_cursor[1]",
         "&game->runtime_rows",
         "initialize_track_row_runtime(row)",
-        "struct Path* path_template_cursor = &game->path_pairs",
+        "struct cRPath* path_template_cursor = &game->path_pairs",
         "path_template_cursor = &path_template_cursor[1]",
         "initialize_object_constructor_thunk(&game->smtrack_heightfield.movie)",
         "game->smtrack_heightfield.bod.bod.vtable = &g_face_callback_table"
@@ -20105,7 +20140,7 @@
         "struct BannerPool* bod",
         "struct SubGarbage (*",
         "struct SubRingPool* ring",
-        "struct TrackRowCell (*",
+        "struct cRSubLoc (*",
         "struct PathPair (*",
         "SingleWaitBlock",
         "_Vector_iterator",

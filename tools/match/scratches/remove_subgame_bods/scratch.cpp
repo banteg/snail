@@ -29,7 +29,7 @@ int report_errorf(char* format, ...);
 
 void SubgameRuntime::remove_subgame_bods()
 {
-    TrackRowCell* cell = &runtime_cells[0][0];
+    cRSubLoc* cell = &runtime_cells[0][0];
     BodNode** row_next = &runtime_rows[0].row_model.list_next;
     int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);
     do {

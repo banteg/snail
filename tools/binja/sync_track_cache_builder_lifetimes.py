@@ -22,7 +22,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Vec3": 0x0C,
     "BodBase": 0x38,
     "Fringe": 0x38,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "TextureRef": 0xA4,
     "ObjectFaceQuad": 0x30,
     "ObjectRenderVertex": 0x18,
@@ -42,7 +42,7 @@ EXPECTED_STRUCT_FIELDS = {
     "Fringe": {
         0x00: ("bod", "BodBase"),
     },
-    "TrackRowCell": {
+    "cRSubLoc": {
         0x10: ("anchor_position", "Vec3"),
         0x24: ("object", "Object*"),
         0x40: ("lane_and_flags", "uint32_t"),

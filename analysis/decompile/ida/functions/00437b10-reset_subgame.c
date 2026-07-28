@@ -2,6 +2,7 @@
 /* function: reset_subgame @ 0x437b10 */
 /* selector: reset_subgame */
 
+// Exact Windows implementation of authored `void cRSubGame::ReSet()`: rebinds the inline pickup, garbage, slug, and ring pools to their containing `SubgameRuntime`, restores or clears the replay score/timer snapshot, rearms the scan and camera latches, and empties the active garbage chain. Android preserves the same owner graph, replay-mode branch, timer handoff, and final latches despite platform-specific pool layouts. All five native callsites pass the active subgame receiver from `initialize_subgame`, matching Android `cRSubGame::Init()` ending in `ReSet(this)`.
 void __thiscall reset_subgame(SubgameRuntime *game)
 {
   int v2; // ecx

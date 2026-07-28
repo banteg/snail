@@ -28,13 +28,13 @@
 00420d49        uint32_t sample_index_5 = follow_state->sample_index
 00420d51        if (sample_index_5 != segment_count - 1)
 00420ddb        if (sample_index_5 == segment_count * 3 s/ 7)
-00420df7        struct TrackRowCell* primary_attachment_cell_transition_flags = (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]
+00420df7        struct cRSubLoc* primary_attachment_cell_transition_flags = (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]
 00420e03        primary_attachment_cell_transition_flags->bod.list_flags |= 0x80
-00420e23        struct Path* entry_transition_template = (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->attachment_template_record
+00420e23        struct cRPath* entry_transition_template = (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->attachment_template_record
 00420e29        int32_t eax_17 = get_track_cell_row_index(follow_state->source_cell)
 00420e4a        (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[eax_17 * 0x3d]->object = entry_transition_template->entry_transition_strip_mesh
 00420e6a        (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->color.a = 0.600000024f
-00420d74        struct Path* entry_base_template = (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->attachment_template_record
+00420d74        struct cRPath* entry_base_template = (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->attachment_template_record
 00420d77        int32_t eax_8 = get_track_cell_row_index(follow_state->source_cell)
 00420d97        (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[eax_8 * 0x3d]->object = entry_base_template->entry_base_strip_mesh
 00420db7        (&g_game_base->subgame.runtime_rows[0].primary_attachment_cell)[get_track_cell_row_index(follow_state->source_cell) * 0x3d]->color.a = 1f
@@ -121,7 +121,7 @@
 00421147        if (template_record_3->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 004212dc        struct PathTemplateSample* secondary_samples_3 = template_record_3->secondary_samples
 004212ec        struct PathTemplateSample* secondary_sample = secondary_samples_3 + eax_28
-004212ef        struct TrackRowCell* source_cell = follow_state->source_cell
+004212ef        struct cRSubLoc* source_cell = follow_state->source_cell
 004212fc        float var_174_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(*(&secondary_samples_3->delta_dir_to_next + eax_28)) * fconvert.t(lateral_scale) + fconvert.t(source_cell->anchor_position.x) + fconvert.t(secondary_sample->transform.position.x))
 00421314        float var_170_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(secondary_sample->delta_dir_to_next.y) * fconvert.t(lateral_scale) + fconvert.t(source_cell->anchor_position.y) + fconvert.t(secondary_sample->transform.position.y))
 00421328        float var_16c_2 = fconvert.s(fconvert.t(var_17c) * fconvert.t(secondary_sample->delta_dir_to_next.z) + fconvert.t(source_cell->anchor_position.z) + fconvert.t(secondary_sample->transform.position.z))

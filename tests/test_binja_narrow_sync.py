@@ -1880,8 +1880,8 @@ def test_parse_struct_layout_size() -> None:
 
 def test_normalize_type_name_canonicalizes_array_dimensions() -> None:
     assert _narrow_sync.normalize_type_name(
-        "struct TrackRowCell[0xc80][0x8]"
-    ) == _narrow_sync.normalize_type_name("TrackRowCell[3200][8]")
+        "struct cRSubLoc[0xc80][0x8]"
+    ) == _narrow_sync.normalize_type_name("cRSubLoc[3200][8]")
     assert _narrow_sync.normalize_type_name(
         "struct PathPair[0x3f]"
     ) == _narrow_sync.normalize_type_name("PathPair[63]")
@@ -2747,7 +2747,7 @@ def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
                     {
                         "offset": 0x3BFAC8,
                         "name": "runtime_cells",
-                        "type": "struct TrackRowCell[0xc80][0x8]",
+                        "type": "struct cRSubLoc[0xc80][0x8]",
                     }
                 ],
                 "Player": [
@@ -2767,7 +2767,7 @@ def test_current_struct_fields_batch_reads_all_layouts(monkeypatch) -> None:
         target="snail-mail.exe",
         struct_names=("SubgameRuntime", "Player"),
     ) == {
-        "SubgameRuntime": {0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]")},
+        "SubgameRuntime": {0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]")},
         "Player": {0x408: ("game", "SubgameRuntime*")},
     }
     assert len(calls) == 1
@@ -3637,7 +3637,7 @@ def test_path_sync_owns_golb_follow_abis() -> None:
 
     declarations = (
         "int32_t __thiscall initialize_path_follow_golb("
-        "GolbPathFollowState* state, TrackRowCell* source_cell, "
+        "GolbPathFollowState* state, cRSubLoc* source_cell, "
         "const Vec3* position, GolbShot* shot);",
         "int32_t __thiscall traverse_path_follow_golb("
         "GolbPathFollowState* state, float path_factor, "
@@ -3650,7 +3650,7 @@ def test_path_sync_owns_golb_follow_abis() -> None:
         assert compact_declaration in compact_ida_source
 
     assert "cRPath* template_record;" in header
-    assert "TrackRowCell* source_cell;" in header
+    assert "cRSubLoc* source_cell;" in header
     assert "GolbPathFollowState path_follow;" in header
     for symbol_update in (
         '("0x421770", "initialize_path_follow_golb")',
@@ -3902,7 +3902,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
     ):
         declaration = (
             f"void __thiscall {function_name}(SubgameRuntime* game, "
-            "TrackRowCell* cell, Player* player);"
+            "cRSubLoc* cell, Player* player);"
         )
         assert declaration in header
         assert declaration in ida_source
@@ -4535,10 +4535,10 @@ def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
         '"Banner": 0x60',
         '"SubGarbage": 0xC4',
         '"SubRing": 0x1F8',
-        '"TrackRowCell": 0x54',
+        '"cRSubLoc": 0x54',
         '"cRPath": 0xA8',
         '0x356000: ("health_pickups", "SubHealth[8]")',
-        '0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]")',
+        '0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]")',
         '0xFF2914: ("path_pairs", "PathPair[63]")',
         "RUNTIME_POOL_CONSTRUCTOR_CURSOR_USER_VAR_UPDATES",
         "current_struct_fields_batch",
@@ -4552,7 +4552,7 @@ def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
         (433, "banner_cursor", "Banner*"),
         (463, "garbage_hazard_cursor", "SubGarbage*"),
         (490, "ring_effect_cursor", "SubRing*"),
-        (628, "runtime_cell_cursor", "TrackRowCell*"),
+        (628, "runtime_cell_cursor", "cRSubLoc*"),
         (679, "path_template_cursor", "cRPath*"),
     ):
         update = (
@@ -4570,11 +4570,11 @@ def test_runtime_pool_constructor_replay_preserves_element_borrows() -> None:
         "struct Banner* banner_cursor",
         "struct SubGarbage* garbage_hazard_cursor",
         "struct SubRing* ring_effect_cursor",
-        "struct TrackRowCell* runtime_cell_cursor",
-        "struct Path* path_template_cursor",
+        "struct cRSubLoc* runtime_cell_cursor",
+        "struct cRPath* path_template_cursor",
         '"struct SubHealth (*"',
         '"struct SubGarbage (*"',
-        '"struct TrackRowCell (*"',
+        '"struct cRSubLoc (*"',
         '"struct PathPair (*"',
     ):
         assert fragment in health_checks
@@ -8814,7 +8814,7 @@ def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         repo_root / "tools/ida/apply_path_template_types.py"
     ).read_text(encoding="utf-8")
     assert "track_row_cell_tile_owner" in ida_path_sync
-    assert '"selector": "TrackRowCell.tile_id"' in ida_path_sync
+    assert '"selector": "cRSubLoc.tile_id"' in ida_path_sync
     assert '"type": "SubLocTileId"' in ida_path_sync
     for header in (analysis_header, matcher_tile_ids):
         assert "typedef" in header and "SubLocTileId;" in header
@@ -9468,7 +9468,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ("row_attachment_flags", "uint32_t*"),
         ("seed_lane_flags", "uint32_t*"),
         ("cell_lane_flags", "uint32_t*"),
-        ("cell", "TrackRowCell*"),
+        ("cell", "cRSubLoc*"),
         ("floor_tile_cursor", "uint8_t*"),
         ("floor_cleanup_lane_flags", "uint32_t*"),
         ("slide_lane_flags_cursor", "uint32_t*"),
@@ -9489,7 +9489,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert identity in binja_source
     for name, type_name in (
         ("row", "SubRow*"),
-        ("cell", "TrackRowCell*"),
+        ("cell", "cRSubLoc*"),
         ("row_cursor", "SubRow*"),
     ):
         assert f'"{name}"' in binja_source
@@ -9540,23 +9540,23 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert "typedef struct RuntimeRowStrideAnchor" in analysis_path_header
     assert "uint8_t runtime_prefix[0x5ccac8];" in analysis_path_header
     assert "typedef struct RuntimeCellStrideAnchor" in analysis_path_header
-    assert "TrackRowCell previous_row_same_lane;" in analysis_path_header
+    assert "cRSubLoc previous_row_same_lane;" in analysis_path_header
     assert (
         "uint8_t runtime_gap_previous_row_to_previous_lane[0x1f8];"
         in analysis_path_header
     )
-    assert "TrackRowCell previous_lane_same_row;" in analysis_path_header
-    assert "TrackRowCell next_lane_same_row;" in analysis_path_header
+    assert "cRSubLoc previous_lane_same_row;" in analysis_path_header
+    assert "cRSubLoc next_lane_same_row;" in analysis_path_header
     assert (
         "uint8_t runtime_gap_next_lane_to_next_row[0x1f8];"
         in analysis_path_header
     )
-    assert "TrackRowCell next_row_same_lane;" in analysis_path_header
+    assert "cRSubLoc next_row_same_lane;" in analysis_path_header
     assert (
         "uint8_t runtime_gap_next_row_to_projected_row[0xccc];"
         in analysis_path_header
     )
-    assert "TrackRowCell projected_row_six_ahead_same_lane;" in analysis_path_header
+    assert "cRSubLoc projected_row_six_ahead_same_lane;" in analysis_path_header
     assert "typedef struct TimeTrialRouteRecordCursor" in analysis_path_header
     assert "uint8_t subgame_prefix[0x944150];" in analysis_path_header
     assert "SubSolution record;" in analysis_path_header
@@ -9703,7 +9703,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert definition_address in ida_path_sync
     for name, declaration in (
         ("row", "SubRow *row;"),
-        ("cell", "TrackRowCell *cell;"),
+        ("cell", "cRSubLoc *cell;"),
         ("row_cursor", "SubRow *row_cursor;"),
         ("fringe_front_new", "Fringe *fringe_front_new;"),
         ("fringe_right_new", "Fringe *fringe_right_new;"),
@@ -9816,6 +9816,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     for definition_address in (
         "0x43B6EB",
         "0x43B6F0",
+        "0x43B6F8",
         "0x43B707",
         "0x43B70A",
         "0x43B711",
@@ -9830,8 +9831,12 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     ):
         assert definition_address in ida_path_sync
     for name, declaration in (
-        ("row_event_cell", "TrackRowCell *row_event_cell;"),
+        ("row_event_cell", "cRSubLoc *row_event_cell;"),
         ("row_event_game", "SubgameRuntime *row_event_game;"),
+        (
+            "row_event_source_cell",
+            "cRSubLoc *row_event_source_cell;",
+        ),
         ("row_event_row_index", "int32_t row_event_row_index;"),
         ("runtime_row", "SubRow *runtime_row;"),
         ("row_event_id", "int32_t row_event_id;"),
@@ -9839,16 +9844,16 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
             "sample_segment_view",
             "SubSegmentEventBiasView *sample_segment_view;",
         ),
-        ("current_cell", "TrackRowCell *current_cell;"),
+        ("current_cell", "cRSubLoc *current_cell;"),
         ("attachment_game", "SubgameRuntime *attachment_game;"),
         (
             "primary_attachment_cell",
-            "TrackRowCell *primary_attachment_cell;",
+            "cRSubLoc *primary_attachment_cell;",
         ),
         ("primary_row_index", "int32_t primary_row_index;"),
         (
             "secondary_attachment_cell",
-            "TrackRowCell *secondary_attachment_cell;",
+            "cRSubLoc *secondary_attachment_cell;",
         ),
         ("secondary_row_index", "int32_t secondary_row_index;"),
         (
@@ -10196,7 +10201,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         ("runtime_row", "SubRow *runtime_row;"),
         (
             "primary_attachment_cell",
-            "TrackRowCell *primary_attachment_cell;",
+            "cRSubLoc *primary_attachment_cell;",
         ),
         (
             "attachment_template_record",
@@ -10961,15 +10966,15 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         assert function_name in ida_sync
     assert (
         "void __thiscall spawn_slug_hazard(SubgameRuntime* game, "
-        "TrackRowCell* cell, Player* owner_player)"
+        "cRSubLoc* cell, Player* owner_player)"
         in pool_sync
     )
     assert (
         "void __thiscall spawn_slug_hazard(SubgameRuntime* game, "
-        "TrackRowCell* cell, Player* owner_player);"
+        "cRSubLoc* cell, Player* owner_player);"
         in ida_sync
     )
-    assert "void spawn_slug_hazard(SubLoc* cell, Player* owner_player);" in (
+    assert "void spawn_slug_hazard(cRSubLoc* cell, Player* owner_player);" in (
         repo_root / "tools/match/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
     assert "SPAWN_SLUG_HAZARD_LVAR_SPECS" in ida_sync
@@ -15635,7 +15640,7 @@ def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:
     for owner_name, expected_size in (
         ("Vec3", "0x0C"),
         ("Fringe", "0x38"),
-        ("TrackRowCell", "0x54"),
+        ("cRSubLoc", "0x54"),
         ("TextureRef", "0xA4"),
         ("ObjectFaceQuad", "0x30"),
         ("ObjectRenderVertex", "0x18"),
@@ -15646,7 +15651,7 @@ def test_track_cache_builder_lifetime_replay_stays_guarded() -> None:
 
     for struct_name, offset, field_name, field_type in (
         ("BodBase", "0x24", "object", "Object*"),
-        ("TrackRowCell", "0x40", "lane_and_flags", "uint32_t"),
+        ("cRSubLoc", "0x40", "lane_and_flags", "uint32_t"),
         ("ObjectFaceQuad", "0x0C", "texture_ref", "TextureRef*"),
         ("Object", "0xC0", "render_buffers", "ObjectRenderBuffers*"),
         ("Object", "0xC8", "index_buffer", "ObjectIndexBuffer*"),
@@ -17536,7 +17541,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
 
     for owner_name, expected_size in (
         ("SubRow", "0xF4"),
-        ("TrackRowCell", "0x54"),
+        ("cRSubLoc", "0x54"),
         ("Fringe", "0x38"),
         ("FringeManager", "0x5FB44"),
         ("RootTrackFringeBodCatalog", "0x3F00"),
@@ -17546,10 +17551,10 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
         assert f'"{owner_name}": {expected_size}' in replay
 
     for struct_name, offset, field_name, field_type in (
-        ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
-        ("TrackRowCell", "0x48", "fringe_right", "Fringe*"),
-        ("TrackRowCell", "0x4C", "fringe_left", "Fringe*"),
-        ("TrackRowCell", "0x50", "fringe_back", "Fringe*"),
+        ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
+        ("cRSubLoc", "0x48", "fringe_right", "Fringe*"),
+        ("cRSubLoc", "0x4C", "fringe_left", "Fringe*"),
+        ("cRSubLoc", "0x50", "fringe_back", "Fringe*"),
         ("Fringe", "0x00", "bod", "BodBase"),
         ("FringeManager", "0x00", "objects", "Fringe[7000]"),
         ("FringeManager", "0x5FB40", "count", "int32_t"),
@@ -17575,7 +17580,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
             "SubgameRuntime",
             "0x3BFAC8",
             "runtime_cells",
-            "TrackRowCell[3200][8]",
+            "cRSubLoc[3200][8]",
         ),
         (
             "SubgameRuntime",
@@ -17599,7 +17604,7 @@ def test_track_fringe_builder_lifetime_replay_stays_guarded() -> None:
         ("RegisterVariableSourceType", 30, 69, "edge_variant_a", "int32_t"),
         ("StackVariableSourceType", 34, -72, "row_index", "int32_t"),
         ("RegisterVariableSourceType", 44, 68, "row", "SubRow*"),
-        ("RegisterVariableSourceType", 52, 72, "cell", "TrackRowCell*"),
+        ("RegisterVariableSourceType", 52, 72, "cell", "cRSubLoc*"),
         ("StackVariableSourceType", 58, -68, "row_cursor", "SubRow*"),
         (
             "StackVariableSourceType",
@@ -17673,7 +17678,7 @@ def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
         ("RenderableBod", "0x80"),
         ("RowModel", "0x8C"),
         ("SubRow", "0xF4"),
-        ("TrackRowCell", "0x54"),
+        ("cRSubLoc", "0x54"),
         ("SubHealth", "0x74"),
         ("SubGarbage", "0xC4"),
         ("SubGarbagePool", "0x264C"),
@@ -17693,10 +17698,11 @@ def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
         ("BodList", "0x08", "free_top", "BodNode*"),
         ("RowModel", "0x00", "body", "RenderableBod"),
         ("SubRow", "0x04", "row_model", "RowModel"),
-        ("TrackRowCell", "0x00", "bod", "BodNode"),
+        ("cRSubLoc", "0x00", "bod", "BodNode"),
         ("SubHealth", "0x38", "state", "TrackPickupState"),
         ("SubGarbagePool", "0x04", "slots", "SubGarbage[50]"),
         ("SlugPool", "0x00", "slots", "Slug[8]"),
+        ("SubRing", "0x00", "body", "RenderableBod"),
         ("SubRingPool", "0x00", "slots", "SubRing[2]"),
         (
             "SubgameRuntime",
@@ -17716,7 +17722,7 @@ def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
             "SubgameRuntime",
             "0x3BFAC8",
             "runtime_cells",
-            "TrackRowCell[3200][8]",
+            "cRSubLoc[3200][8]",
         ),
         (
             "SubgameRuntime",
@@ -17729,6 +17735,13 @@ def test_subgame_bulk_teardown_lifetime_replay_stays_guarded() -> None:
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
 
     for source_type, index, storage, name, type_name in (
+        (
+            "RegisterVariableSourceType",
+            9,
+            73,
+            "runtime_cell_cursor",
+            "cRSubLoc*",
+        ),
         ("RegisterVariableSourceType", 21, 71, "rows_remaining", "int32_t"),
         ("RegisterVariableSourceType", 39, 67, "row_active_list", "BodList*"),
         ("RegisterVariableSourceType", 45, 66, "row_list_flags", "uint32_t"),
@@ -18205,7 +18218,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("Fringe", "0x38"),
         ("SubSegment", "0x4220"),
             ("SubTracks", "0x1A5978"),
-            ("TrackRowCell", "0x54"),
+            ("cRSubLoc", "0x54"),
             ("TrackRowCellLaneAndFlagsStrideCursor", "0x54"),
             ("TrackRowCellFringeFrontStrideCursor", "0x54"),
             ("SubRow", "0xF4"),
@@ -18217,10 +18230,10 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
     for struct_name, offset, field_name, field_type in (
         ("SubSegment", "0x04", "row_count", "int32_t"),
         ("SubTracks", "0x04", "segment_slots", "SubSegment[100]"),
-        ("TrackRowCell", "0x28", "color", "tColour"),
-        ("TrackRowCell", "0x3D", "open_edge_mask", "uint8_t"),
-            ("TrackRowCell", "0x40", "lane_and_flags", "uint32_t"),
-            ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
+        ("cRSubLoc", "0x28", "color", "tColour"),
+        ("cRSubLoc", "0x3D", "open_edge_mask", "uint8_t"),
+            ("cRSubLoc", "0x40", "lane_and_flags", "uint32_t"),
+            ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
             (
                 "TrackRowCellLaneAndFlagsStrideCursor",
                 "0x00",
@@ -18240,7 +18253,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
                 "Fringe*",
             ),
             ("SubRow", "0x90", "parcel_spawn_position", "Vec3"),
-            ("SubRow", "0xA4", "primary_attachment_cell", "TrackRowCell*"),
+            ("SubRow", "0xA4", "primary_attachment_cell", "cRSubLoc*"),
             ("SubRow", "0xEC", "source_segment", "SubSegment*"),
             (
                 "SubRowParcelSpawnYStrideCursor",
@@ -18265,7 +18278,7 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
             "SubgameRuntime",
             "0x3BFAC8",
             "runtime_cells",
-            "TrackRowCell[3200][8]",
+            "cRSubLoc[3200][8]",
         ),
         (
             "SubgameRuntime",
@@ -18793,7 +18806,7 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
         ("BodBase", "0x38"),
         ("Fringe", "0x38"),
         ("tColour", "0x10"),
-        ("TrackRowCell", "0x54"),
+        ("cRSubLoc", "0x54"),
         ("SubgameRuntime", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
@@ -18806,8 +18819,8 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
         ("Fringe", "0x00", "bod", "BodBase"),
         ("tColour", "0x00", "r", "float"),
         ("tColour", "0x0C", "a", "float"),
-        ("TrackRowCell", "0x44", "fringe_front", "Fringe*"),
-        ("TrackRowCell", "0x50", "fringe_back", "Fringe*"),
+        ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
+        ("cRSubLoc", "0x50", "fringe_back", "Fringe*"),
         (
             "SubgameRuntime",
             "0x355B64",
@@ -18818,7 +18831,7 @@ def test_update_subgame_fringe_lifetime_replay_stays_guarded() -> None:
             "SubgameRuntime",
             "0x3BFAC8",
             "runtime_cells",
-            "TrackRowCell[3200][8]",
+            "cRSubLoc[3200][8]",
         ),
     ):
         assert f'"{struct_name}": {{' in replay
@@ -18889,6 +18902,15 @@ def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     assert "TRACK_RENDER_CACHE_OWNER_MARKERS" in ida_path_sync
     assert "TRACK_RENDER_CACHE_OWNER_SIZES" in ida_path_sync
     assert "track_render_cache_owner_sizes" in ida_path_sync
+    assert "BUILD_TRACK_RENDER_CACHE_COUNTER_LVAR_SPECS" in ida_path_sync
+    for fragment in (
+        '"current_row_index",\n        "int32_t current_row_index;",\n'
+        "        0x433251,",
+        '"row_index",\n        "int32_t row_index;",\n'
+        "        0x433253,\n        60,",
+        "def _sync_build_track_render_cache_counter_lvars(",
+    ):
+        assert fragment in ida_path_sync
     for address in (
         "0x433060",
         "0x433220",
@@ -18913,7 +18935,7 @@ def test_segment_cache_and_generate_level_void_abis_are_persisted() -> None:
     assert "REQUIRED_CANONICAL_OWNER_MARKERS = (" in ida_runtime_sync
     for marker in (
         "SegmentCache segment_cache;",
-        "TrackRowCell runtime_cells[3200][8];",
+        "cRSubLoc runtime_cells[3200][8];",
         "SubRow runtime_rows[3200];",
     ):
         assert marker in ida_runtime_sync
@@ -19170,7 +19192,7 @@ def test_embedded_subgame_ai_void_abis_are_persisted() -> None:
     assert "void update_barrier_ai();" in barrier_header
 
     for stale in (
-        "TrackRowCell* __thiscall update_tutorial",
+        "cRSubLoc* __thiscall update_tutorial",
         "void* __thiscall update_barrier_ai",
     ):
         assert stale not in binja_sync
@@ -19370,16 +19392,16 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
         "void __thiscall try_enter_track_attachment_from_swept_motion("
         "cRPath* self, float world_x, float world_y, float world_z, "
         "float sweep_dx, float sweep_dy, float sweep_dz, "
-        "TrackRowCell* source_cell)"
+        "cRSubLoc* source_cell)"
     )
     assert attachment_entry_prototype in binja_sync
     assert attachment_entry_prototype + ";" in ida_sync
     assert "void __thiscall try_enter_track_attachment_from_swept_motion(" in analysis_header
-    assert "TrackRowCell* source_cell" in analysis_header
+    assert "cRSubLoc* source_cell" in analysis_header
 
     attachment_search_prototype = (
         "bool __thiscall is_point_inside_track_attachment("
-        "cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)"
+        "cRPath* self, Vec3 probe, Vec3 swept_motion, cRSubLoc* cell)"
     )
     assert attachment_search_prototype in binja_sync
     assert attachment_search_prototype + ";" in ida_sync
@@ -19399,7 +19421,7 @@ def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:
 
     follow_begin_prototype = (
         "void __thiscall begin_track_attachment_follow_state("
-        "cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, "
+        "cRPathFollowGoldy* follow_state, cRSubLoc* source_cell, "
         "const Vec3* world_position, Player* player)"
     )
     assert follow_begin_prototype in binja_sync
@@ -19490,7 +19512,7 @@ def test_path_receiver_replay_keeps_exact_abis_and_reanalyzes_callers() -> None:
 
     declarations = (
         "void __thiscall get_path_position_at_node(cRPath* self, Vec3* out, int32_t node, int32_t row_index, Vec3* local)",
-        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
+        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, cRSubLoc* cell)",
     )
     for source in (
         binja_sync,
@@ -19507,7 +19529,7 @@ def test_path_receiver_replay_keeps_exact_abis_and_reanalyzes_callers() -> None:
     for source in (binja_sync, ida_sync):
         for owner, size in (
             ('"Vec3"', "0xC"),
-            ('"TrackRowCell"', "0x54"),
+            ('"cRSubLoc"', "0x54"),
             ('"PathTemplateSample"', "0xA8"),
             ('"cRPath"', "0xA8"),
         ):
@@ -19565,7 +19587,7 @@ def test_remove_subgame_bods_cursor_ownership_is_replayed() -> None:
             in binja_sync
         )
     for name, type_name in (
-        ("runtime_cell_cursor", "TrackRowCell*"),
+        ("runtime_cell_cursor", "cRSubLoc*"),
         ("row_list_next_cursor", "BodNode**"),
         ("health_list_next_cursor", "BodNode**"),
         ("garbage_list_next_cursor", "BodNode**"),
@@ -19589,7 +19611,7 @@ def test_remove_subgame_bods_cursor_ownership_is_replayed() -> None:
     ):
         assert definition_address in ida_sync
     for name, declaration in (
-        ("runtime_cell_cursor", "TrackRowCell *runtime_cell_cursor;"),
+        ("runtime_cell_cursor", "cRSubLoc *runtime_cell_cursor;"),
         ("row_list_next_cursor", "BodNode **row_list_next_cursor;"),
         ("health_list_next_cursor", "BodNode **health_list_next_cursor;"),
         ("garbage_list_next_cursor", "BodNode **garbage_list_next_cursor;"),
@@ -20666,7 +20688,7 @@ def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
     assert "TrackRowCellObjectSlotView_must_stride_0x54" in header
 
     for type_name, width in (
-        ("TrackRowCell", "0x54"),
+        ("cRSubLoc", "0x54"),
         ("TrackRowCellObjectSlotView", "0x54"),
         ("TrackRowCellTileByteView", "0x54"),
         ("SubgameRuntime", "0x1272838"),
@@ -20711,7 +20733,7 @@ def test_track_warning_replay_preserves_field_first_cell_borrows() -> None:
         in replay
     )
     assert "TRACK_TILE_PROMOTION_USER_VAR_UPDATES" in replay
-    assert "TrackRowCell*" not in replay.split("TRACK_WARNING_USER_VAR_UPDATES", 1)[1]
+    assert "cRSubLoc*" not in replay.split("TRACK_WARNING_USER_VAR_UPDATES", 1)[1]
 
 
 def test_twister_path_replay_preserves_sample_and_facequad_lifetimes() -> None:
@@ -23236,7 +23258,7 @@ def test_golb_path_follow_replay_preserves_sample_and_flight_owners() -> None:
         ("TransformMatrix", "0x40"),
         ("PathTemplateSample", "0xA8"),
         ("PathTemplateSamplePairCursorView", "0x150"),
-        ("TrackRowCell", "0x54"),
+        ("cRSubLoc", "0x54"),
         ("GolbPathFollowState", "0x28"),
         ("GolbShot", "0x2E8"),
     ):
@@ -23384,8 +23406,8 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     assert "remove_user_var_updates" in replay
     assert '0x48: ("position", "Vec3")' in replay
-    assert '0x00: ("previous_row_same_lane", "TrackRowCell")' in replay
-    assert '0x54: ("intervening_cells", "TrackRowCell[7]")' in replay
+    assert '0x00: ("previous_row_same_lane", "cRSubLoc")' in replay
+    assert '0x54: ("intervening_cells", "cRSubLoc[7]")' in replay
     assert '0x3563A0: ("slug", "Slug")' in replay
     assert '0x80: ("next_active", "SubGarbage*")' in replay
 
@@ -23394,12 +23416,12 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
     ).read_text(encoding="utf-8")
     assert "typedef struct __ptr_offset(0x2a0)" in analysis_header
     assert (
-        "__base(TrackRowCell, 0x2a0) TrackRowCellSameLaneCursorView"
+        "__base(cRSubLoc, 0x2a0) TrackRowCellSameLaneCursorView"
         in analysis_header
     )
-    assert "TrackRowCell previous_row_same_lane;" in analysis_header
-    assert "TrackRowCell intervening_cells[7];" in analysis_header
-    assert "__inherited TrackRowCell current_cell;" in analysis_header
+    assert "cRSubLoc previous_row_same_lane;" in analysis_header
+    assert "cRSubLoc intervening_cells[7];" in analysis_header
+    assert "__inherited cRSubLoc current_cell;" in analysis_header
     assert "TrackRowCellSameLaneCursorView_must_be_0x2f4" in analysis_header
     assert '"TrackRowCellSameLaneCursorView",' in (
         BINJA_DIR / "sync_path_template_types.py"
@@ -23409,7 +23431,7 @@ def test_golb_ai_replay_preserves_collision_owner_lifetimes() -> None:
         "        765,\n"
         "        66,\n"
         '        "source_cell",\n'
-        '        "TrackRowCell*",'
+        '        "cRSubLoc*",'
     ) in replay
 
 
@@ -23940,12 +23962,12 @@ def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
             "        2068,\n"
             "        73,\n"
             '        "runtime_cell",\n'
-            '        "TrackRowCell*"'
+            '        "cRSubLoc*"'
         )
         assert rejected_alias in replay
 
     for name, declaration, definition_address in (
-        ("runtime_cell", "TrackRowCell *runtime_cell;", "0x4366C5"),
+        ("runtime_cell", "cRSubLoc *runtime_cell;", "0x4366C5"),
         (
             "selected_attachment_path",
             "cRPath *selected_attachment_path;",
@@ -23971,7 +23993,7 @@ def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
     }
     bn_health = health_checks["bn_runtime_cell_stride_owner_graph"]
     for marker in (
-        "struct Path* selected_attachment_path",
+        "struct cRPath* selected_attachment_path",
         "runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path",
         "int32_t attachment_span_index = 0",
         "attachment_span_index += 1",
@@ -23986,7 +24008,7 @@ def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
 
     ida_health = health_checks["ida_runtime_cell_stride_owner_graph"]
     for marker in (
-        "TrackRowCell *runtime_cell;",
+        "cRSubLoc *runtime_cell;",
         "cRPath *selected_attachment_path;",
         "int32_t attachment_span_index;",
         "runtime_cell_anchor->cell.attachment_template_record = selected_attachment_path",
@@ -23995,7 +24017,7 @@ def test_runtime_attachment_path_borrows_replay_cross_decompiler() -> None:
     ):
         assert marker in ida_health["required_substrings"]
     for marker in (
-        "TrackRowCell *p_cell;",
+        "cRSubLoc *p_cell;",
         "PathPair *p_secondary;",
         "signed int v83;",
         "runtime_cell_anchor->cell.attachment_template_record = &p_secondary->primary",
@@ -24475,3 +24497,163 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
     ):
         body = (repo_root / mobile_body).read_text(encoding="utf-8")
         assert "cRPath::Mirror(cRPath*)" in body
+
+
+def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    matcher_forward = (
+        repo_root / "tools/match/include/sub_loc_fwd.h"
+    ).read_text(encoding="utf-8")
+    matcher_runtime = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    analysis_header = (
+        repo_root / "analysis/headers/path_template_types.h"
+    ).read_text(encoding="utf-8")
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    binja_repair = (
+        BINJA_DIR / "repair_initialize_subgame_owner.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "struct cRSubLoc : public BodBase {" in matcher_header
+    assert "struct SubLoc : public BodBase {" not in matcher_header
+    assert "cRSubLoc_must_be_0x54" in matcher_header
+    assert "typedef cRSubLoc SubLoc;" in matcher_forward
+    assert "typedef cRSubLoc TrackRowCell;" in matcher_forward
+    assert "cRSubLoc runtime_cells[" in matcher_runtime
+    for scratch_name, declaration in (
+        ("initialize_sub_loc", "cRSubLoc* cRSubLoc::initialize_sub_loc()"),
+        ("remove_sub_loc", "void cRSubLoc::remove_sub_loc()"),
+        ("update_sub_loc", "void cRSubLoc::update_sub_loc()"),
+        (
+            "get_track_cell_row_index",
+            "int cRSubLoc::get_track_cell_row_index()",
+        ),
+    ):
+        scratch = (
+            repo_root
+            / f"tools/match/scratches/{scratch_name}/scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert declaration in scratch
+
+    assert "typedef struct cRSubLoc {" in analysis_header
+    assert "} cRSubLoc;" in analysis_header
+    assert "typedef cRSubLoc SubLoc;" in analysis_header
+    assert "typedef cRSubLoc TrackRowCell;" in analysis_header
+    assert "typedef struct TrackRowCell {" not in analysis_header
+    assert "cRSubLoc runtime_cells[3200][8];" in analysis_header
+    for declaration in (
+        "cRSubLoc* __thiscall initialize_sub_loc(cRSubLoc* cell);",
+        "void __thiscall remove_sub_loc(cRSubLoc* cell);",
+        "void __thiscall update_sub_loc(cRSubLoc* cell);",
+        "int32_t __thiscall get_track_cell_row_index(cRSubLoc* cell);",
+        "bool __thiscall is_neighbor_cell_solid(\n"
+        "    SubgameRuntime* game,\n"
+        "    cRSubLoc* cell,\n"
+        "    int32_t lane_offset,\n"
+        "    int32_t row_offset\n"
+        ");",
+    ):
+        assert declaration in analysis_header
+        if "\n" not in declaration:
+            assert f'"{declaration}"' in ida_sync
+    assert (
+        '"bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, '
+        'cRSubLoc* cell, int32_t lane_offset, int32_t row_offset);"'
+        in ida_sync
+    )
+    assert (
+        '"bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, '
+        'cRSubLoc* cell, int32_t lane_offset, int32_t row_offset)"'
+        in binja_sync
+    )
+
+    assert "--sub-loc-owner-only" in binja_sync
+    assert "ensure_c_r_sub_loc_owner_types" in binja_sync
+    assert "SUB_LOC_DEPENDENT_VIEW_TYPE_NAMES" in binja_sync
+    assert "ensure_c_r_sub_loc_dependent_view_types" in binja_sync
+    for dependent_view in (
+        "TrackRowCellSameLaneCursorView",
+        "SubRowParcelSpawnYStrideCursor",
+        "RuntimeCellStrideAnchor",
+    ):
+        assert f'"{dependent_view}",' in binja_sync
+    assert "collect_c_r_sub_loc_owner_proto_updates" in binja_sync
+    assert '("cRSubLoc", SUB_LOC_FIELD_UPDATES)' in binja_sync
+    assert '"cRSubLoc": 0x54' in ida_sync
+    assert "SUB_LOC_OWNER_MARKERS" in ida_sync
+    assert "SUB_LOC_OWNER_SIZES" in ida_sync
+    assert (
+        "from sync_path_template_types import "
+        "SPAWN_TRACK_PICKUP_CURSOR_USER_VAR_UPDATES"
+    ) in binja_repair
+    assert (
+        "from sync_pickup_list_lifetimes import "
+        "PICKUP_LIST_USER_VAR_UPDATES"
+    ) in binja_repair
+    assert "def _pickup_repair_variables(" in binja_repair
+    assert "def _stale_pickup_repair_annotations(" in binja_repair
+    assert '"TrackRowCell*"' in binja_repair
+    for function_name in (
+        "spawn_track_health_pickup",
+        "spawn_track_jetpack_pickup",
+    ):
+        repair_spec = binja_repair.split(f'"{function_name}": {{', 1)[1].split(
+            "\n    },", 1
+        )[0]
+        assert (
+            '"void __thiscall(struct SubgameRuntime* game, "\n'
+            '            "TrackRowCell* cell, struct Player* player)"'
+            in repair_spec
+        )
+        assert (
+            f'"variables": _pickup_repair_variables("{function_name}")'
+            in repair_spec
+        )
+        assert (
+            '"stale_variable_annotations": '
+            "_stale_pickup_repair_annotations("
+            in repair_spec
+        )
+    grid_repair_spec = binja_repair.split(
+        '"get_track_grid_cell_at_world_position": {', 1
+    )[1].split("\n    },", 1)[0]
+    assert (
+        '"TrackRowCell* __thiscall("\n'
+        '            "struct SubgameRuntime* game, struct Vec3* position)"'
+        in grid_repair_spec
+    )
+    assert '"stale_variable_annotations": (' in grid_repair_spec
+
+    for mobile_body, authored_method in (
+        (
+            "analysis/decompile/android/functions/"
+            "0006bcec-_ZN8cRSubLoc7IsFloorEv.c",
+            "cRSubLoc::IsFloor()",
+        ),
+        (
+            "analysis/decompile/android/functions/"
+            "00077760-_ZN8cRSubLoc2AIEv.c",
+            "cRSubLoc::AI()",
+        ),
+        (
+            "analysis/decompile/ios/functions/"
+            "00017d08-_ZN8cRSubLoc2YiEv.c",
+            "cRSubLoc::Yi()",
+        ),
+        (
+            "analysis/decompile/ios/functions/"
+            "00035a80-_ZN8cRSubLoc2AIEv.c",
+            "cRSubLoc::AI()",
+        ),
+    ):
+        body = (repo_root / mobile_body).read_text(encoding="utf-8")
+        assert authored_method in body

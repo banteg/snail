@@ -10,9 +10,9 @@
 #include "track_attachment_types.h"
 #include "segment_cache.h"
 
-unsigned char __fastcall is_sub_loc_floor(TrackRowCell* cell);
-unsigned char __fastcall is_sub_loc_slide(TrackRowCell* cell);
-unsigned char __fastcall is_sub_loc_ramp(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_floor(cRSubLoc* cell);
+unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
+unsigned char __fastcall is_sub_loc_ramp(cRSubLoc* cell);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 
@@ -138,7 +138,7 @@ void SegmentCache::build_track_render_caches(tColour skirt_color)
                     *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         &= ~SUBLOC_FLAG_UNCACHED_BODY;
                 } else if (is_sub_loc_floor(
-                    (TrackRowCell*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
+                    (cRSubLoc*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
                     && ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & SUBLOC_FLAG_UNCACHED_BODY) == SUBLOC_FLAG_UNCACHED_BODY)) {
                     if ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
@@ -189,7 +189,7 @@ void SegmentCache::build_track_render_caches(tColour skirt_color)
                     *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         &= ~SUBLOC_FLAG_UNCACHED_BODY;
                 } else if (is_sub_loc_slide(
-                    (TrackRowCell*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
+                    (cRSubLoc*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
                     && ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & SUBLOC_FLAG_UNCACHED_BODY) == SUBLOC_FLAG_UNCACHED_BODY)) {
                     if ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
@@ -240,7 +240,7 @@ void SegmentCache::build_track_render_caches(tColour skirt_color)
                     *(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         &= ~SUBLOC_FLAG_UNCACHED_BODY;
                 } else if (is_sub_loc_ramp(
-                    (TrackRowCell*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
+                    (cRSubLoc*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_BASE_OFFSET))
                     && ((*(int*)((char*)owner_subgame + cell_offset + RUNTIME_CELL_OFFSET(lane_and_flags))
                         & SUBLOC_FLAG_UNCACHED_BODY) == SUBLOC_FLAG_UNCACHED_BODY)) {
                     append_track_cache_object(
@@ -267,7 +267,7 @@ void SegmentCache::build_track_render_caches(tColour skirt_color)
                         &= ~SUBLOC_FLAG_UNCACHED_BODY;
                 }
 
-                cell_offset += sizeof(TrackRowCell);
+                cell_offset += sizeof(cRSubLoc);
                 --cells_remaining;
             } while (cells_remaining != 0);
 

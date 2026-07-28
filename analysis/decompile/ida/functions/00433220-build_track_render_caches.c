@@ -2,20 +2,20 @@
 /* function: build_track_render_caches @ 0x433220 */
 /* selector: build_track_render_caches */
 
-// Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime’s fixed runtime-cell slab and uses each embedded TrackRowCell anchor as the mesh-instance position. The final debug-report result is incidental call state.
+// Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning SubgameRuntime’s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state.
 void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_color)
 {
-  int32_t v3; // ecx
+  int32_t current_row_index; // ecx
   int32_t saved_cell_offset; // edi
   int32_t cache_row; // esi
   float *p_cache_row_base; // eax
-  int v7; // ecx
+  int i; // ecx
   int v8; // ebp
   SubgameRuntime *owner_subgame; // eax
   int v10; // edx
   SubgameRuntime *v11; // edx
   uint8_t *v12; // eax
-  int v13; // ecx
+  ObjectFaceQuad *facequads; // ecx
   Object *object; // eax
   SubgameRuntime *v15; // edx
   int v16; // ebp
@@ -26,72 +26,68 @@ void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_c
   int v21; // ecx
   int32_t *max_vertex_counts; // edi
   Object **p_object; // ebp
-  ObjectVertexBuffer *vertex_buffer; // eax
-  unsigned int v25; // eax
-  char *v26; // esi
+  unsigned int v24; // eax
+  char *v25; // esi
   char *locked_vertices; // edi
-  char *v28; // edi
-  char *v29; // esi
-  char v30; // cl
+  char *v27; // edi
+  char *v28; // esi
+  char v29; // cl
   int32_t work_value; // eax
   int32_t cells_remaining_or_family_index; // ecx
-  Object *v33; // eax
-  int32_t v34; // esi
-  int v35; // edx
+  Object *v32; // eax
+  int32_t v33; // esi
+  int v34; // edx
   int32_t *group_primitive_counts; // eax
-  int32_t v37; // esi
+  int32_t v36; // esi
   int32_t vertex_count; // edi
-  int v39; // ebp
-  int v40; // edx
-  Object **v41; // esi
+  int v38; // ebp
+  int v39; // edx
+  Object **v40; // esi
   uint32_t white_color; // [esp+18h] [ebp-64h]
-  ObjectVertexBuffer *v43; // [esp+1Ch] [ebp-60h]
+  ObjectVertexBuffer *vertex_buffer; // [esp+1Ch] [ebp-60h]
   int32_t row_index; // [esp+30h] [ebp-4Ch]
   struct TrackRenderCacheBuildLocals locals; // [esp+34h] [ebp-48h] BYREF
-  int32_t v46; // [esp+68h] [ebp-14h] BYREF
-  int32_t v47; // [esp+6Ch] [ebp-10h] BYREF
-  int32_t v48; // [esp+70h] [ebp-Ch] BYREF
-  int32_t v49; // [esp+74h] [ebp-8h] BYREF
+  int32_t v45; // [esp+68h] [ebp-14h] BYREF
+  int32_t v46; // [esp+6Ch] [ebp-10h] BYREF
+  int32_t v47; // [esp+70h] [ebp-Ch] BYREF
+  int32_t v48; // [esp+74h] [ebp-8h] BYREF
   int32_t index_count; // [esp+78h] [ebp-4h] BYREF
 
   noop_this_constructor(&locals);
   pack_color_rgba_u8(&manager->skirt_color_bgra, &skirt_color);
   locals.white_color = (tColourSmall)-1;
   noop_runtime_ai();
-  v3 = 0;
+  current_row_index = 0;
   row_index = 0;
   if ( manager->owner_subgame->runtime_row_count <= 0 )
     goto LABEL_37;
   saved_cell_offset = 0;
   while ( 2 )
   {
-    locals.row_mod = v3 % 24;
-    if ( v3 % 24 )
+    locals.row_mod = current_row_index % 24;
+    if ( current_row_index % 24 != 0 )
     {
       cache_row = locals.cache_row;
     }
     else
     {
-      cache_row = v3 / 24;
-      locals.cache_row = v3 / 24;
+      cache_row = current_row_index / 24;
+      locals.cache_row = current_row_index / 24;
+      v45 = 0;
       v46 = 0;
       v47 = 0;
       v48 = 0;
-      v49 = 0;
       index_count = 0;
-      p_cache_row_base = &manager->slots[v3 / 24][0].cache_row_base;
+      p_cache_row_base = &manager->slots[current_row_index / 24][0].cache_row_base;
       locals.vertex_counts[0] = 0;
       locals.vertex_counts[1] = 0;
-      manager->build_cache_row_base = (double)(v3 / 24) * 24.0;
+      manager->build_cache_row_base = (double)(current_row_index / 24) * 24.0;
       memset(&locals.vertex_counts[2], 0, 12);
-      v7 = 5;
-      do
+      for ( i = 5; i != 0; --i )
       {
         *p_cache_row_base = manager->build_cache_row_base;
         p_cache_row_base += 15;
-        --v7;
       }
-      while ( v7 );
     }
     locals.cells_remaining_or_family_index = 8;
     do
@@ -102,7 +98,7 @@ void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_c
       {
         owner_subgame = manager->owner_subgame;
         v10 = *(_DWORD *)(&owner_subgame->scan_reset + v8);
-        if ( v10 )
+        if ( v10 != 0 )
         {
           append_track_cache_object(
             manager,
@@ -124,7 +120,7 @@ void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_c
         v8 += 4;
         --locals.work_value;
       }
-      while ( locals.work_value );
+      while ( locals.work_value != 0 );
       v11 = manager->owner_subgame;
       v12 = &v11->scan_reset + saved_cell_offset;
       if ( (*(_DWORD *)&v11->runtime_cells[0][0]._pad_3e[saved_cell_offset + 2] & 0x20) != 0
@@ -138,16 +134,16 @@ void __thiscall build_track_render_caches(SegmentCache *manager, tColour skirt_c
           manager->shared_vertex_buffers[2],
           &locals.vertex_counts[2],
           manager->shared_index_buffers[2],
-          &v48,
+          &v47,
           manager->max_vertex_counts[2],
           manager->max_index_counts[2],
           *(_DWORD *)&locals.white_color,
           1u);
-        v13 = (*(_DWORD **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))[23];
+        facequads = (*(Object **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))->facequads;
         object = manager->slots[cache_row][2].bod.object;
         goto LABEL_28;
       }
-      if ( (unsigned __int8)is_sub_loc_floor((TrackRowCell *)(v12 + 3930824)) )
+      if ( (unsigned __int8)is_sub_loc_floor((cRSubLoc *)(v12 + 3930824)) != 0 )
       {
         v15 = manager->owner_subgame;
         v16 = *(_DWORD *)&v15->runtime_cells[0][0]._pad_3e[saved_cell_offset + 2];
@@ -166,18 +162,18 @@ LABEL_24:
             manager->shared_vertex_buffers[0],
             locals.vertex_counts,
             manager->shared_index_buffers[0],
-            &v46,
+            &v45,
             manager->max_vertex_counts[0],
             manager->max_index_counts[0],
             white_color,
             1u);
-          v13 = (*(_DWORD **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))[23];
+          facequads = (*(Object **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))->facequads;
           object = manager->slots[cache_row][0].bod.object;
           goto LABEL_28;
         }
       }
-      if ( (unsigned __int8)is_sub_loc_slide((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
-                                                            + saved_cell_offset)) )
+      if ( (unsigned __int8)is_sub_loc_slide((cRSubLoc *)((char *)manager->owner_subgame->runtime_cells[0]
+                                                        + saved_cell_offset)) != 0 )
       {
         v17 = &manager->owner_subgame->scan_reset + saved_cell_offset;
         v18 = *((_DWORD *)v17 + 982722);
@@ -195,15 +191,15 @@ LABEL_20:
             manager->shared_vertex_buffers[1],
             &locals.vertex_counts[1],
             manager->shared_index_buffers[1],
-            &v47,
+            &v46,
             manager->max_vertex_counts[1],
             manager->max_index_counts[1],
             white_color,
             1u);
-          v13 = (*(_DWORD **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))[23];
+          facequads = (*(Object **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))->facequads;
           object = manager->slots[cache_row][1].bod.object;
 LABEL_28:
-          *object->group_texture_refs = *(TextureRef **)(v13 + 12);
+          *object->group_texture_refs = facequads->texture_ref;
           v20 = &manager->owner_subgame->runtime_cells[0][0]._pad_3e[saved_cell_offset + 2];
           v21 = *(_DWORD *)v20;
           BYTE1(v21) = BYTE1(*(_DWORD *)v20) & 0xBF;
@@ -211,8 +207,8 @@ LABEL_28:
           goto LABEL_29;
         }
       }
-      if ( (unsigned __int8)is_sub_loc_ramp((TrackRowCell *)((char *)manager->owner_subgame->runtime_cells[0]
-                                                           + saved_cell_offset)) )
+      if ( (unsigned __int8)is_sub_loc_ramp((cRSubLoc *)((char *)manager->owner_subgame->runtime_cells[0]
+                                                       + saved_cell_offset)) != 0 )
       {
         v19 = &manager->owner_subgame->scan_reset + saved_cell_offset;
         if ( (*((_DWORD *)v19 + 982722) & 0x4000) == 0x4000 )
@@ -225,12 +221,12 @@ LABEL_28:
             manager->shared_vertex_buffers[3],
             &locals.vertex_counts[3],
             manager->shared_index_buffers[3],
-            &v49,
+            &v48,
             manager->max_vertex_counts[3],
             manager->max_index_counts[3],
             *(_DWORD *)&locals.white_color,
             0);
-          v13 = (*(_DWORD **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))[23];
+          facequads = (*(Object **)((char *)&manager->owner_subgame->runtime_cells[0][0].object + saved_cell_offset))->facequads;
           object = manager->slots[cache_row][3].bod.object;
           goto LABEL_28;
         }
@@ -239,7 +235,7 @@ LABEL_29:
       saved_cell_offset += 84;
       --locals.cells_remaining_or_family_index;
     }
-    while ( locals.cells_remaining_or_family_index );
+    while ( locals.cells_remaining_or_family_index != 0 );
     locals.saved_cell_offset = saved_cell_offset;
     if ( locals.row_mod == 23 || row_index == manager->owner_subgame->runtime_row_count - 1 )
     {
@@ -249,37 +245,41 @@ LABEL_29:
       p_object = &manager->slots[cache_row][0].bod.object;
       while ( 1 )
       {
-        vertex_buffer = (*p_object)->render_buffers->vertex_buffer;
-        vertex_buffer->vtbl->Lock(vertex_buffer, 0, 24 * *max_vertex_counts, &locals.locked_vertices, 0);
+        (*p_object)->render_buffers->vertex_buffer->vtbl->Lock(
+          (*p_object)->render_buffers->vertex_buffer,
+          0,
+          24 * *max_vertex_counts,
+          &locals.locked_vertices,
+          0);
         (*p_object)->index_buffer->buffer->vtbl->Lock(
           (*p_object)->index_buffer->buffer,
           0,
           2 * max_vertex_counts[5],
           &locals.locked_indices,
           0);
-        v25 = *max_vertex_counts;
-        v26 = (char *)max_vertex_counts[10];
+        v24 = *max_vertex_counts;
+        v25 = (char *)max_vertex_counts[10];
         locked_vertices = (char *)locals.locked_vertices;
-        v25 *= 24;
-        qmemcpy(locals.locked_vertices, v26, 4 * (v25 >> 2));
-        v29 = &v26[4 * (v25 >> 2)];
-        v28 = &locked_vertices[4 * (v25 >> 2)];
-        v30 = v25;
+        v24 *= 24;
+        qmemcpy(locals.locked_vertices, v25, 4 * (v24 >> 2));
+        v28 = &v25[4 * (v24 >> 2)];
+        v27 = &locked_vertices[4 * (v24 >> 2)];
+        v29 = v24;
         work_value = locals.work_value;
-        qmemcpy(v28, v29, v30 & 3);
+        qmemcpy(v27, v28, v29 & 3);
         qmemcpy(locals.locked_indices, *(const void **)(work_value + 60), 2 * *(_DWORD *)(work_value + 20));
-        v43 = (*p_object)->render_buffers->vertex_buffer;
-        v43->vtbl->Unlock(v43);
+        vertex_buffer = (*p_object)->render_buffers->vertex_buffer;
+        vertex_buffer->vtbl->Unlock(vertex_buffer);
         (*p_object)->index_buffer->buffer->vtbl->Unlock((*p_object)->index_buffer->buffer);
         cells_remaining_or_family_index = locals.cells_remaining_or_family_index;
-        v33 = *p_object;
-        v34 = locals.work_value;
+        v32 = *p_object;
+        v33 = locals.work_value;
         p_object += 15;
-        v33->grouped_vertex_count = *(int32_t *)((char *)locals.vertex_counts + locals.cells_remaining_or_family_index);
-        v35 = *(int32_t *)((char *)&v46 + cells_remaining_or_family_index) / 3;
+        v32->grouped_vertex_count = *(int32_t *)((char *)locals.vertex_counts + locals.cells_remaining_or_family_index);
+        v34 = *(int32_t *)((char *)&v45 + cells_remaining_or_family_index) / 3;
         group_primitive_counts = (*(p_object - 15))->group_primitive_counts;
-        locals.work_value = v34 + 4;
-        *group_primitive_counts = v35;
+        locals.work_value = v33 + 4;
+        *group_primitive_counts = v34;
         (*(p_object - 15))->vertex_count = *(int32_t *)((char *)locals.vertex_counts + cells_remaining_or_family_index);
         locals.cells_remaining_or_family_index = cells_remaining_or_family_index + 4;
         if ( cells_remaining_or_family_index + 4 >= 20 )
@@ -290,38 +290,58 @@ LABEL_29:
     }
     if ( ++row_index < manager->owner_subgame->runtime_row_count )
     {
-      v3 = row_index;
+      current_row_index = row_index;
       continue;
     }
     break;
   }
 LABEL_37:
-  v37 = 0;
+  v36 = 0;
   manager->next_cache_row_z = 0.0;
   manager->next_cache_row_index = 0;
   locals.cells_remaining_or_family_index = 0;
   do
   {
     vertex_count = 0;
-    v39 = 0;
-    v40 = manager->owner_subgame->runtime_row_count / 24;
-    if ( v40 > 0 )
+    v38 = 0;
+    v39 = manager->owner_subgame->runtime_row_count / 24;
+    if ( v39 > 0 )
     {
-      v41 = &manager->slots[0][v37].bod.object;
+      v40 = &manager->slots[0][v36].bod.object;
       do
       {
-        if ( (*v41)->vertex_count > vertex_count )
-          vertex_count = (*v41)->vertex_count;
-        if ( 4 * *(*v41)->group_primitive_counts > v39 )
-          v39 = 4 * *(*v41)->group_primitive_counts;
-        v41 += 75;
-        --v40;
+        if ( (*v40)->vertex_count > vertex_count )
+          vertex_count = (*v40)->vertex_count;
+        if ( 4 * *(*v40)->group_primitive_counts > v38 )
+          v38 = 4 * *(*v40)->group_primitive_counts;
+        v40 += 75;
+        --v39;
       }
-      while ( v40 );
-      v37 = locals.cells_remaining_or_family_index;
+      while ( v39 != 0 );
+      v36 = locals.cells_remaining_or_family_index;
     }
-    debug_report_stub();
-    locals.cells_remaining_or_family_index = ++v37;
+    switch ( v36 )
+    {
+      case 0:
+        row_index = (int32_t)aFloor;
+        break;
+      case 1:
+        row_index = (int32_t)aSlide;
+        break;
+      case 2:
+        row_index = (int32_t)aWarn;
+        break;
+      case 3:
+        row_index = (int32_t)aRamp;
+        break;
+      case 4:
+        row_index = (int32_t)aFringe_0;
+        break;
+      default:
+        break;
+    }
+    debug_report_stub("Max Cache Type=%s Vertices=%i   Indices=%i\n", (const char *)row_index, vertex_count, v38);
+    locals.cells_remaining_or_family_index = ++v36;
   }
-  while ( v37 < 5 );
+  while ( v36 < 5 );
 }

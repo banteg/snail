@@ -2,8 +2,8 @@
 /* function: update_sub_loc @ 0x439d50 */
 /* selector: update_sub_loc */
 
-// Windows `cRSubLoc::AI()`: updates one runtime `TrackRowCell`/SubLoc. Wall2 tile 14 fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z; tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. The Windows constructor callback and cross-port iOS symbol independently prove the owner.
-void __thiscall update_sub_loc(SubLoc *cell)
+// Windows `cRSubLoc::AI()`: updates one runtime cRSubLoc. Wall2 tile 14 builds its launch origin as the cell position plus `(0, 8, 0)` and its aim target as Goldy's position plus `(0, 0, jitter + 8)`, then fires through the owned 20-slot `SubLazerPool` after `first_block_row_count` passes Goldy's z. Android and iOS independently preserve both vector additions. Tiles 22/29/30 and the default path cull against the embedded player's interaction plane, while skirt tiles refresh `runtime_rows[row].attachment_body.color`. The source-shaped Windows transcription reaches 99.47% at 187/187 instructions with all references audited.
+void __thiscall update_sub_loc(cRSubLoc *cell)
 {
   GameRoot *v2; // ecx
   SubLocTileId tile_id; // al

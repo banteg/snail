@@ -28,7 +28,7 @@ typed owner arrays:
 - slug loop starts at `game+0x3563ac` and advances by `0xec`;
 - ring/special-effect loop starts at `game+0x35b798` and advances by `0x1f8`.
 
-Remaining allocator problem: native keeps the row `TrackRowCell` cursor in
+Remaining allocator problem: native keeps the row `cRSubLoc` cursor in
 `edi`, then reloads `this` into `ebx` after the track-render-cache call and
 uses `ebp` as zero. The scratch keeps the row cursor in `ebx`, reloads `this`
 into `ebp`, and hoists `~0x200` into `ebx` for later list-flag clears. That
@@ -153,7 +153,7 @@ with the same 63 clean operands and two documented string-order mismatches.
 
 The teardown retains next-link cursors because that source shape is required
 for native VC6 register scheduling, but their bounds and advances now come
-from the complete embedded owners: `SubRow[3200]`, `SubLoc[3200][8]`,
+from the complete embedded owners: `SubRow[3200]`, `cRSubLoc[3200][8]`,
 `SubHealth[8]`, `SubGarbage[50]`, `Slug[8]`, and `SubRing[2]`. This removes the
 parallel magic counts and strides without pretending the cursors own storage.
 Focused matching is byte-identical at 67.67%, 495/501 instructions, 63 clean
@@ -239,10 +239,10 @@ alignment-sensitive string mismatch.
 The Binary Ninja and IDA replay lanes now preserve the exact native iterator
 lifetimes rather than letting register inference choose whole-array pointers or
 anonymous temporaries. The opening `runtime_cell_cursor` advances one
-`TrackRowCell`; the row, health, garbage, slug, and ring variables are borrowed
+`cRSubLoc`; the row, health, garbage, slug, and ring variables are borrowed
 `BodNode::list_next` field cursors; and `golb_shot_cursor` advances one element
 of the Player-owned `GolbShot[12]` bank. In particular, this corrects Binary
-Ninja's prior `TrackRowCell (*)[3200][8]`, `SubHealth**`, and
+Ninja's prior `cRSubLoc (*)[3200][8]`, `SubHealth**`, and
 `GolbShot (*)[12]` interpretations without claiming that any intrusive-list
 cursor owns its embedded pool.
 

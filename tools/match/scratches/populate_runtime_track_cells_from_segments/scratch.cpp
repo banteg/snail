@@ -163,22 +163,22 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         CELL_RENDER_ARG_20 =
             RUNTIME_CELLS_BASE + offsetof(BodBase, render_arg_20),
         CELL_COLOR_INDEX_BIAS =
-            (RUNTIME_CELLS_BASE + offsetof(BodBase, color)) / sizeof(SubLoc),
-        CELL_TILE_ID = RUNTIME_CELLS_BASE + offsetof(SubLoc, tile_id),
+            (RUNTIME_CELLS_BASE + offsetof(BodBase, color)) / sizeof(cRSubLoc),
+        CELL_TILE_ID = RUNTIME_CELLS_BASE + offsetof(cRSubLoc, tile_id),
         PREVIOUS_ROW_CELL_TILE_ID =
-            CELL_TILE_ID - RUNTIME_LANE_COUNT * sizeof(SubLoc),
+            CELL_TILE_ID - RUNTIME_LANE_COUNT * sizeof(cRSubLoc),
         CELL_LANE_FLAGS =
-            RUNTIME_CELLS_BASE + offsetof(SubLoc, lane_and_flags),
+            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, lane_and_flags),
         CELL_FRINGE_FRONT =
-            RUNTIME_CELLS_BASE + offsetof(SubLoc, fringe_front),
+            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_front),
         CELL_FRINGE_RIGHT =
-            RUNTIME_CELLS_BASE + offsetof(SubLoc, fringe_right),
+            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_right),
         CELL_FRINGE_LEFT =
-            RUNTIME_CELLS_BASE + offsetof(SubLoc, fringe_left),
+            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_left),
         CELL_FRINGE_BACK =
-            RUNTIME_CELLS_BASE + offsetof(SubLoc, fringe_back),
+            RUNTIME_CELLS_BASE + offsetof(cRSubLoc, fringe_back),
         CELL_FRINGE_COUNT =
-            sizeof(((SubLoc*)0)->fringes) / sizeof(((SubLoc*)0)->fringes[0]),
+            sizeof(((cRSubLoc*)0)->fringes) / sizeof(((cRSubLoc*)0)->fringes[0]),
         PATH_PAIRS_BASE = offsetof(SubgameRuntime, path_pairs),
         PATH_PAIR_SECONDARY_DELTA = offsetof(PathPair, secondary),
         PATH_36_PRIMARY_SAMPLES =
@@ -282,17 +282,17 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
         ROW_CURSOR_TO_ROW_EVENT_ID =
             ((int)offsetof(SubRow, row_event_id) - ROW_CURSOR_BASE) / sizeof(int),
         CELL_FRINGE_TO_LANE_FLAGS =
-            (int)offsetof(SubLoc, lane_and_flags)
-            - (int)offsetof(SubLoc, fringe_front),
+            (int)offsetof(cRSubLoc, lane_and_flags)
+            - (int)offsetof(cRSubLoc, fringe_front),
         CELL_LANE_FLAGS_TO_TILE_FLAGS =
-            (int)offsetof(SubLoc, open_edge_mask)
-            - (int)offsetof(SubLoc, lane_and_flags),
+            (int)offsetof(cRSubLoc, open_edge_mask)
+            - (int)offsetof(cRSubLoc, lane_and_flags),
         CELL_LANE_FLAGS_TO_LIST_FLAGS =
             (int)offsetof(ContactTargetObject, list_flags)
-            - (int)offsetof(SubLoc, lane_and_flags),
+            - (int)offsetof(cRSubLoc, lane_and_flags),
         CELL_LANE_FLAGS_TO_COLOR =
             (int)offsetof(BodBase, color)
-            - (int)offsetof(SubLoc, lane_and_flags),
+            - (int)offsetof(cRSubLoc, lane_and_flags),
         ATTACHMENT_SAMPLE_POSITION_Y =
             offsetof(AttachmentSample, transform)
             + offsetof(TransformMatrix, position) + offsetof(Vector3, y),
@@ -327,7 +327,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(short*)cell_flags = 0;
             *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;
             ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->set_color_white();
-            cell_flags += sizeof(SubLoc);
+            cell_flags += sizeof(cRSubLoc);
         }
 
         char* cell_payload = cell_payload_cursor;
@@ -339,7 +339,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             *(int*)(cell_payload + 4) = 0;
             *(int*)(cell_payload + 8) = 0;
             *(int*)(cell_payload + 12) = 0;
-            cell_payload += sizeof(SubLoc);
+            cell_payload += sizeof(cRSubLoc);
         }
         cell_payload_cursor = cell_payload;
         row_cursor += sizeof(SubRow) / sizeof(int);
@@ -528,7 +528,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 authored_lane = lane;
 
             char* cell =
-                base + sizeof(SubLoc) * (lane + build_row * RUNTIME_LANE_COUNT);
+                base + sizeof(cRSubLoc) * (lane + build_row * RUNTIME_LANE_COUNT);
             int cell_word = *(int*)(cell + CELL_LANE_FLAGS);
             ((unsigned char*)&cell_word)[0] &= 0xe0;
             cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;
@@ -588,7 +588,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                         ->set_bod_object(ROOT_BOD_OBJECT(trampoline));
                     *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
                     ((tColour*)(
-                        base + sizeof(SubLoc)
+                        base + sizeof(cRSubLoc)
                             * (lane + build_row * RUNTIME_LANE_COUNT
                                + CELL_COLOR_INDEX_BIAS)))
                         ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);
@@ -720,7 +720,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
                 break;
             case 'P':
             case 'p': {
-                TrackRowCell* runtime_cell = (TrackRowCell*)(cell + CELL_BOD_BASE);
+                cRSubLoc* runtime_cell = (cRSubLoc*)(cell + CELL_BOD_BASE);
                 if (normalized == 'P')
                     *(unsigned char*)(cell + CELL_TILE_ID) =
                         SUBLOC_TILE_PATH_ENTRY_UPPERCASE;
@@ -941,7 +941,7 @@ void SubgameRuntime::populate_runtime_track_cells_from_segments()
             }
 
             Fringe** subobject_slot =
-                &((SubLoc*)(cell + CELL_BOD_BASE))->fringes[0];
+                &((cRSubLoc*)(cell + CELL_BOD_BASE))->fringes[0];
             for (int subobject_index = 0;
                  subobject_index < CELL_FRINGE_COUNT;
                  ++subobject_index) {

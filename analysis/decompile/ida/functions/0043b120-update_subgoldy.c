@@ -27,7 +27,7 @@ void __thiscall update_subgoldy(Player *player)
   SubgameRuntime *v22; // eax
   PlayerControlSource *control_source; // eax
   SubgameRuntime *v24; // eax
-  TrackRowCell *row_event_cell; // eax
+  cRSubLoc *row_event_cell; // eax
   SubgameRuntime *row_event_game; // edi
   int32_t row_event_row_index; // eax
   SubRow *runtime_row; // esi
@@ -39,11 +39,11 @@ void __thiscall update_subgoldy(Player *player)
   SubgameRuntime *v34; // ecx
   Vec3 *p_velocity; // esi
   double v36; // st7
-  TrackRowCell *track_grid_cell_at_world_position; // eax
+  cRSubLoc *track_grid_cell_at_world_position; // eax
   double v38; // st6
   double v39; // st7
   double v40; // st7
-  TrackRowCell *current_cell; // esi
+  cRSubLoc *current_cell; // esi
   SubgameRuntime *attachment_game; // edi
   int32_t primary_row_index; // eax
   int32_t secondary_row_index; // eax
@@ -55,8 +55,8 @@ void __thiscall update_subgoldy(Player *player)
   double v50; // st7
   double v51; // st7
   double v52; // st7
-  TrackRowCell *v53; // eax
-  TrackRowCell *v54; // esi
+  cRSubLoc *v53; // eax
+  cRSubLoc *v54; // esi
   float v55; // eax
   SubgameRuntime *v56; // ecx
   double v57; // st7
@@ -117,17 +117,17 @@ void __thiscall update_subgoldy(Player *player)
   float z; // [esp-Ch] [ebp-64h]
   float v113; // [esp-Ch] [ebp-64h]
   float v114; // [esp+0h] [ebp-58h]
-  TrackRowCell *primary_attachment_cell; // [esp+4h] [ebp-54h]
-  TrackRowCell *secondary_attachment_cell; // [esp+4h] [ebp-54h]
+  cRSubLoc *primary_attachment_cell; // [esp+4h] [ebp-54h]
+  cRSubLoc *secondary_attachment_cell; // [esp+4h] [ebp-54h]
   float value; // [esp+4h] [ebp-54h]
   float valuea; // [esp+4h] [ebp-54h]
   float valueb; // [esp+4h] [ebp-54h]
-  float source_celld; // [esp+18h] [ebp-40h]
-  TrackRowCell *source_cell; // [esp+18h] [ebp-40h]
-  float source_cella; // [esp+18h] [ebp-40h]
-  float source_cellb; // [esp+18h] [ebp-40h]
-  float source_celle; // [esp+18h] [ebp-40h]
   float source_cellc; // [esp+18h] [ebp-40h]
+  cRSubLoc *row_event_source_cell; // [esp+18h] [ebp-40h]
+  float source_cell; // [esp+18h] [ebp-40h]
+  float source_cella; // [esp+18h] [ebp-40h]
+  float source_celld; // [esp+18h] [ebp-40h]
+  float source_cellb; // [esp+18h] [ebp-40h]
   float v126; // [esp+1Ch] [ebp-3Ch]
   float v127; // [esp+1Ch] [ebp-3Ch]
   float v128; // [esp+1Ch] [ebp-3Ch]
@@ -222,7 +222,7 @@ LABEL_60:
           update_subgoldy_resurrect(player);
         row_event_cell = get_track_grid_cell_at_world_position(player->game, p_position);
         row_event_game = player->game;
-        source_cell = row_event_cell;
+        row_event_source_cell = row_event_cell;
         row_event_row_index = get_track_cell_row_index(row_event_cell);
         runtime_row = &row_event_game->runtime_rows[row_event_row_index];
         row_event_id = row_event_game->runtime_rows[row_event_row_index].row_event_id;
@@ -262,11 +262,11 @@ LABEL_60:
         }
         if ( player->attachment_exit_pending == 0 )
         {
-          tile_id = source_cell->tile_id;
+          tile_id = row_event_source_cell->tile_id;
           if ( (tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
             && player->follow_state.active == 0 )
           {
-            begin_track_attachment_follow_state(&player->follow_state, source_cell, p_position, player);
+            begin_track_attachment_follow_state(&player->follow_state, row_event_source_cell, p_position, player);
             if ( player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM )
               play_voice_manager(&g_voice_manager, 12, 0, -1);
           }
@@ -473,10 +473,10 @@ LABEL_101:
                   v48 = 0.80000001;
                 else
                   v48 = 1.0;
-                source_cella = 0.0;
+                source_cell = 0.0;
                 if ( (open_edge_mask & 1) != 0 )
-                  source_cella = 0.2;
-                if ( v47 < v48 && v47 > source_cella && player->attachment_exit_pending == 0 )
+                  source_cell = 0.2;
+                if ( v47 < v48 && v47 > source_cell && player->attachment_exit_pending == 0 )
                   begin_post_follow_carryover(player);
               }
               v49 = player->game;
@@ -640,8 +640,8 @@ LABEL_98:
             player->damage_retrigger_timer = 0.0;
         }
         v59 = player->game;
-        source_cellb = (float)v59->completion_row_start;
-        if ( player->body.transform.position.z < (double)source_cellb || player->attachment_exit_pending != 0 )
+        source_cella = (float)v59->completion_row_start;
+        if ( player->body.transform.position.z < (double)source_cella || player->attachment_exit_pending != 0 )
         {
           if ( player->boost_one_tick == 0 && player->control_override_active == 0 )
           {
@@ -661,7 +661,7 @@ LABEL_98:
           {
             if ( v59->level_mode == 4 )
             {
-              valuea = (1.0 - (player->body.transform.position.z - source_cellb) / player->velocity.z) * 0.016666668;
+              valuea = (1.0 - (player->body.transform.position.z - source_cella) / player->velocity.z) * 0.016666668;
               advance_timer_counters(&player->stopwatch, valuea);
             }
             v60 = player->game;
@@ -886,8 +886,8 @@ LABEL_287:
             v93 = player->body.transform.position.z + 20.0;
             if ( g_subgoldy_ghost_z >= v93 )
             {
-              source_celle = v93;
-              set_subgoldy_ghost_z(player, source_celle);
+              source_celld = v93;
+              set_subgoldy_ghost_z(player, source_celld);
             }
             else
             {
@@ -898,9 +898,9 @@ LABEL_287:
         valueb = player->body.transform.position.z / (double)player->game->runtime_row_count;
         set_backdrop_zoom(&g_game_base->backdrop, valueb);
         v94 = (double)player->game->completion_row_start - 30.0;
-        source_cellc = player->body.transform.position.z - 8.0;
-        if ( v94 >= source_cellc )
-          v94 = source_cellc;
+        source_cellb = player->body.transform.position.z - 8.0;
+        if ( v94 >= source_cellb )
+          v94 = source_cellb;
         v95 = player->sub_hover.state;
         player->interaction_max_z = v94;
         if ( v95 == SUB_HOVER_STATE_ACTIVE )
@@ -1096,11 +1096,11 @@ LABEL_40:
     }
     p_position = &player->body.transform.position;
     v18 = convert_math_type32_to_16(player->body.transform.position.x, 16.0);
-    source_celld = convert_math_type16_to_32(v18, 16.0);
-    player->body.transform.position.x = source_celld;
+    source_cellc = convert_math_type16_to_32(v18, 16.0);
+    player->body.transform.position.x = source_cellc;
     v19 = player->game;
     v19->current_high_score_record.run_records[v19->replay_update_cursor].lateral_x = convert_math_type32_to_16(
-                                                                                        source_celld,
+                                                                                        source_cellc,
                                                                                         16.0);
     v20 = player->game;
     if ( v20->replay_update_cursor != 0 )

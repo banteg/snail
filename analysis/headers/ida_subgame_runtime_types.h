@@ -12,7 +12,7 @@ typedef struct Player Player;
 typedef struct Sprite Sprite;
 typedef struct FrontendWidget FrontendWidget;
 typedef struct SubgameRuntime SubgameRuntime;
-typedef struct TrackRowCell TrackRowCell;
+typedef struct cRSubLoc cRSubLoc;
 typedef struct TransformMatrix TransformMatrix;
 typedef struct BodNode BodNode;
 
@@ -181,7 +181,7 @@ typedef struct JetPack {
     SubgameRuntime* owner_game;
     uint8_t unknown_48[0x64 - 0x48];
     Sprite* sprite;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     float bob_phase;
     float bob_phase_step;
     Vapour vapour_a;

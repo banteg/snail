@@ -4,7 +4,7 @@ Recovered `cRPathFollowGoldy::Init` ownership and behavior:
 
 - The receiver is the 0x40-byte `cRPathFollowGoldy` embedded in `Player`;
   `FollowState` remains only a compatibility alias.
-- The borrowed `TrackRowCell` supplies the selected `Path`, anchor position,
+- The borrowed `cRSubLoc` supplies the selected `Path`, anchor position,
   and runtime row index; the borrowed world position and owning Player are
   retained only through copied values/backlinks.
 - Initialization sets `active`, stores the Path and source cell, resets the

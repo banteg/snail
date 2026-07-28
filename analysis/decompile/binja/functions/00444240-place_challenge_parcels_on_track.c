@@ -75,7 +75,7 @@
 00444409        int32_t node = eax_6 - eax_5
 0044440b        if (eax_6 - eax_5 s< 0)
 0044440d        node = 0
-0044440f        struct TrackRowCell* primary_attachment_cell = projection_row->primary_attachment_cell
+0044440f        struct cRSubLoc* primary_attachment_cell = projection_row->primary_attachment_cell
 00444415        struct cRPath* attachment_template_record = primary_attachment_cell->attachment_template_record
 0044441c        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 00444471        int32_t row_index = get_track_cell_row_index(primary_attachment_cell)

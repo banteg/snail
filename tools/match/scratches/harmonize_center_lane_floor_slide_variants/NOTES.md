@@ -5,7 +5,7 @@
   `row & 7 == 5` compare against the same lane eight rows behind.
 - Promotes floor-object variants to slide-object variants, or the reverse, when
   the current/neighbor cache families match the center-lane transition shape.
-- The exact scratch keeps the shared `TrackRowCell`/`BodBase` views while
+- The exact scratch keeps the shared `cRSubLoc`/`BodBase` views while
   indexing `runtime_cells[row][lane]` directly. VC6 consequently retains the
   owning `SubgameRuntime*` plus `(lane + row * 8) * 0x54`, matching the native
   base cursor instead of materializing shifted current/neighbor pointers.
@@ -16,7 +16,7 @@
   but regressed to 48.09%. VC6 shrank the frame to `0x0c`, moved the
   transition flag into `ebp`, and used `ebx` for the lane counter, losing the
   native prologue/register skeleton. Keep the neighbor locals with the typed
-  `TrackRowCell*` cursor.
+  `cRSubLoc*` cursor.
 - 2026-06-21 predicate-direction fix: the four floor/slide helper predicates
   were reversed relative to the object replacements. The native masked audit
   expects floor-current/slide-neighbor before promoting floor objects to slide
@@ -78,11 +78,11 @@ fakematching.
 
 ## 2026-07-17 same-lane cell-neighborhood ownership
 
-The native ESI value in each row-phase arm is not a `TrackRowCell*`. It retains
+The native ESI value in each row-phase arm is not a `cRSubLoc*`. It retains
 `SubgameRuntime + (row * 8 + lane) * 0x54`, so the current cell remains at
 `+0x3bfac8` and the previous/next same-lane cells sit exactly one eight-cell
 row stride (`0x2a0`) behind/ahead. The shared `RuntimeCellStrideAnchor` now
-models all three real `TrackRowCell` owners instead of only the predecessor's
+models all three real `cRSubLoc` owners instead of only the predecessor's
 tile byte.
 
 Binary Ninja's exact register lifetimes are `(index=98, storage=72)` for the
@@ -108,7 +108,7 @@ leaves the prologue's zero in EAX, while the populated path leaves the final row
 loop index. Those are control-flow temporaries, not one stable semantic result.
 The void matcher member and the independent
 `cRSubGame::SlideSmoothTrack()` body agree that the operation owns only its
-in-place `SubLoc` mutations.
+in-place `cRSubLoc` mutations.
 
 The replayed analysis prototype is therefore
 `void __thiscall harmonize_center_lane_floor_slide_variants(SubgameRuntime*)`.
@@ -125,11 +125,11 @@ through the normal preview/apply/readback path instead of silently surviving.
 Android and iOS `cRSubGame::SlideSmoothTrack()` both retain source-level
 indexing over the owned row/lane grid. In particular, the forward phase reads
 the same lane in `row + 1`, the backward phase reads `row - 1`, and every
-replacement writes the current `SubLoc` through the containing `cRSubGame`.
+replacement writes the current `cRSubLoc` through the containing `cRSubGame`.
 
 Mirroring that ownership in Windows by using
 `runtime_cells[row][lane]` directly, rather than first materializing
-`TrackRowCell* cell`, `next`, and `previous` aliases, lets VC6 retain the native
+`cRSubLoc* cell`, `next`, and `previous` aliases, lets VC6 retain the native
 `SubgameRuntime* + flattened-index` cursor naturally. Rewriting only the
 forward phase raised the focused result from 58.98% to 76.55%; applying the
 same authored shape to the mirrored backward phase closes the function at
@@ -137,5 +137,5 @@ same authored shape to the mirrored backward phase closes the function at
 
 This is not a padded or register-shaped matcher view: the source now states the
 mobile-preserved owner and two-dimensional indexing directly, and the existing
-Windows `TrackRowCell[...][8]` layout produces the shipped code without
+Windows `cRSubLoc[...][8]` layout produces the shipped code without
 volatile reads, dummy dependencies, or duplicated operations.

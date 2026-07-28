@@ -270,14 +270,14 @@ separate rotated-product stack slots.
 
 ## 2026-07-14 authored path and source-cell ownership
 
-`GolbPathFollowState` now borrows the same shared `Path*` and `SubLoc*` owners
+`GolbPathFollowState` now borrows the same shared `Path*` and `cRSubLoc*` owners
 used by the player attachment lane. The private `GolbPathTemplate` and
 `GolbPathSourceCell` prefix views are gone; sample traversal uses the canonical
 `AttachmentSample` banks, and kind 42 calls the shared `Path` method without a
 cast. Focused matching stays honestly unchanged at 55.52%, `400/425`, with all
 seven masked operands clean. The exact 16-instruction initializer also remains
-proof-grade after loading `SubLoc::attachment_template_record` and
-`SubLoc::position` directly.
+proof-grade after loading `cRSubLoc::attachment_template_record` and
+`cRSubLoc::position` directly.
 
 ## 2026-07-17 durable Golb-follow owner export
 
@@ -289,7 +289,7 @@ native exits use `retn 0xc`. That agrees with iOS
 
 Refreshing the tracked decompile replaces the last remaining BN
 `struct PathTemplate*` owner with the complete `GolbPathFollowState` graph:
-borrowed `Path*` and `SubLoc*`, progress and output state, and the owning
+borrowed `Path*` and `cRSubLoc*`, progress and output state, and the owning
 `GolbShot` flight transform. The shared header and IDA replay now carry both
 the initializer and traverse ABIs, while health checks pin the owner and its
 consumer. No matching source was changed; focused matching remains honestly

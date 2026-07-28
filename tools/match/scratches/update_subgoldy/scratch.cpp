@@ -62,7 +62,7 @@ struct SubgoldyPathView {
     AttachmentSample* primary_samples; // +0x58
 
     void try_enter_track_attachment_from_swept_motion(
-        Vector3 position, Vector3 sweep, SubLoc* cell);
+        Vector3 position, Vector3 sweep, cRSubLoc* cell);
 };
 
 // The standalone helper body is exact with a double source declaration, but
@@ -282,7 +282,7 @@ steering_stored:
     if (resurrect_active)
         update_subgoldy_resurrect();
 
-    SubLoc* source_cell = game->get_track_grid_cell_at_world_position(p_position);
+    cRSubLoc* source_cell = game->get_track_grid_cell_at_world_position(p_position);
     SubgameRuntime* event_game = game;
     SubRow* row_record =
         &event_game->runtime_rows[source_cell->get_track_cell_row_index()];
@@ -418,7 +418,7 @@ steering_stored:
             velocity.x = 0.0f;
         }
         if (!completion_handoff_active) {
-            SubLoc* slide_cell;
+            cRSubLoc* slide_cell;
             if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
                     == SUBLOC_TILE_SLIDE_UNDERSCORE
                 || game->get_track_grid_cell_at_world_position(p_position)->tile_id
@@ -454,7 +454,7 @@ steering_stored:
             velocity.z = quantum + quantum + velocity.z;
             attachment_exit_pending = 0;
         } else {
-            SubLoc* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
+            cRSubLoc* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
             if (attachment_exit_pending) {
                 SubgameRuntime* drag_game = game;
                 if ((drag_game->runtime_rows[landing_cell->get_track_cell_row_index()]
@@ -626,7 +626,7 @@ steering_stored:
                 float gravity = rate * rate * -0.0099999998f;
                 velocity.y = gravity + velocity.y;
             }
-            SubLoc* trampoline_cell =
+            cRSubLoc* trampoline_cell =
                 game->get_track_grid_cell_at_world_position(p_position);
             if (trampoline_cell->tile_id == SUBLOC_TILE_TRAMPOLINE
                 && trampoline_cell->position.y + 0.49000001f > transform.position.y

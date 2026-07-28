@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: sample_track_floor_height_at_position @ 0x43d4d0 */
 
-0043d4d6        struct TrackRowCell* eax
+0043d4d6        struct cRSubLoc* eax
 0043d4d6        int16_t x87control
 0043d4d6        eax, x87control = get_track_grid_cell_at_world_position(game, position)
 0043d4db        enum SubLocTileId tile_id = eax->tile_id

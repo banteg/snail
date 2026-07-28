@@ -27,7 +27,7 @@
 
 struct RuntimeCellSlotBase {
     char before_cell[offsetof(SubgameRuntime, runtime_cells)];
-    TrackRowCell cell;
+    cRSubLoc cell;
 };
 
 
@@ -289,7 +289,7 @@ void SubgameRuntime::update_subgame()
                 if (cell_index >= zero && cell_index < runtime_row_count) {
                     RuntimeCellSlotBase* cell_slot =
                         (RuntimeCellSlotBase*)(game
-                            + sizeof(TrackRowCell)
+                            + sizeof(cRSubLoc)
                                 * (attachment_count
                                     + SUBGAME_TRACK_LANE_COUNT * cell_index));
                     if ((cell_slot->cell.list_flags & BOD_FLAG_LINKED) == zero) {

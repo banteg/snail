@@ -4,9 +4,9 @@
   cell in the next row is open.
 - Current retained shape is 81.33%: same instruction count as native, same
   frame/register loop skeleton, 6 clean masked operands, no unresolved operands.
-- Native keeps its row cursor at `TrackRowCell +0x24` (`BodBase::object`) and
+- Native keeps its row cursor at `cRSubLoc +0x24` (`BodBase::object`) and
   accesses flags at cursor `+0x1c`; the retained source uses the shared
-  `TrackRowCell*` cursor because that recovers the native stack/register
+  `cRSubLoc*` cursor because that recovers the native stack/register
   allocation. The remaining diffs are the expected `+0x24` base displacement
   shifts.
 - A raw object-slot cursor recovered the native `esi = this + 0x3bfaec` base,
@@ -17,7 +17,7 @@
   `BodBase*` adjustment only at the `set_bod_object` callsite still reproduced
   the same 66.67% regression. Splitting the neighbor pointer into a local and
   replacing the `promoted_flag` local with immediate `0x20` were also
-  codegen-identical to the bad shape. Keep the typed `TrackRowCell*` cursor
+  codegen-identical to the bad shape. Keep the typed `cRSubLoc*` cursor
   until a source form can recover the object-slot base without stealing `ebx`
   from the native `0x20` flag.
 
@@ -31,7 +31,7 @@ and rewrites neighbor as `lea ecx,[ebx+0x2a0]`, spilling the lane counter
 
 Rejected probes (all ≤81.33%, most 55–75%):
 
-- dual `TrackRowCell*` + `void** object_slot` (codegen-neutral at 81.33%)
+- dual `cRSubLoc*` + `void** object_slot` (codegen-neutral at 81.33%)
 - separate neighbor cursor advanced in lockstep (61–70%)
 - `TrackCellObjectView` starting at the object field (66.67%)
 - free/`__fastcall` set_bod wrappers (≤66.67%)
@@ -41,7 +41,7 @@ Rejected probes (all ≤81.33%, most 55–75%):
 Root cause: once the source mentions both `cursor-0x24` and `cursor+0x27c`,
 VC6 algebraically shares the `-0x24` base and steals `ebx` from the promoted
 flag. No durable original-looking spelling broke that without regressing the
-two-register cell-cursor frame. Pin the typed `TrackRowCell*` source.
+two-register cell-cursor frame. Pin the typed `cRSubLoc*` source.
 
 ## 2026-07-13 catalog-owner pass
 
@@ -101,7 +101,7 @@ only at BOD helper calls via `-0x24`.
 
 The analysis-only `TrackRowCellObjectSlotView` records those physical fields
 and the stride without claiming ownership of either complete cell. It is not
-used in matcher source: the retained `TrackRowCell*` spelling remains the
+used in matcher source: the retained `cRSubLoc*` spelling remains the
 honest 81.33%, 75/75 form because the source-level object-slot form triggers
 the already measured VC6 CSE/register-allocation regression. The analysis
 annotation therefore removes a fabricated giant `SubgameRuntime` rebase while

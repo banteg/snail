@@ -5,7 +5,7 @@
 
 0043d893        enum TrackPickupState* eax = &game->jetpack_pickup.state
 0043d89d        int32_t edx = 0
-0043d8a1        while ((eax - 0x355e9c)->jetpack_pickup.state != TRACK_PICKUP_STATE_INACTIVE)
+0043d8a1        while (*eax != TRACK_PICKUP_STATE_INACTIVE)
 0043d8a3        edx += 1
 0043d8a4        eax = &eax[0x67]
 0043d8ac        if (edx s>= 1)
@@ -14,10 +14,12 @@
 0043d8d0        jetpack_cursor->jetpack.state = TRACK_PICKUP_STATE_ACTIVE
 0043d8da        jetpack_cursor->jetpack.owner = player
 0043d8e9        float x = cell->anchor_position.x
+0043d8ec        float z = cell->anchor_position.z
 0043d8fb        float x_1 = x
+0043d8ff        float var_8 = fconvert.s(fconvert.t(cell->anchor_position.y) + fconvert.t(1.5f))
 0043d907        jetpack_cursor->jetpack.bod.position.x = x
-0043d90d        jetpack_cursor->jetpack.bod.position.y = fconvert.s(fconvert.t(cell->anchor_position.y) + fconvert.t(1.5f))
-0043d910        jetpack_cursor->jetpack.bod.position.z = cell->anchor_position.z
+0043d90d        jetpack_cursor->jetpack.bod.position.y = var_8
+0043d910        jetpack_cursor->jetpack.bod.position.z = z
 0043d916        int32_t eax_8 = cell->lane_and_flags & 7
 0043d92b        if (eax_8 == 3 && cell->__offset(0xffffffffffffffe8).b == 0xe && cell->__offset(0xe4).b == 0xe)
 0043d951        jetpack_cursor->jetpack.bod.position.x = fconvert.s(fconvert.t(jetpack_cursor->jetpack.bod.position.x) + fconvert.t(0.5f))
@@ -51,10 +53,10 @@
 0043d9fc        jetpack_cursor->jetpack.sprite->progress_step = 0f
 0043da05        jetpack_cursor->jetpack.sprite->size_start = 1.5f
 0043da0e        jetpack_cursor->jetpack.sprite->size_end = 1.5f
-0043da19        int32_t* edx_8 = &jetpack_cursor->jetpack.sprite->position
-0043da1c        *edx_8 = jetpack_cursor->jetpack.bod.position.x
-0043da21        edx_8[1] = jetpack_cursor->jetpack.bod.position.y
-0043da27        edx_8[2] = jetpack_cursor->jetpack.bod.position.z
+0043da19        int32_t* edx_7 = &jetpack_cursor->jetpack.sprite->position
+0043da1c        *edx_7 = jetpack_cursor->jetpack.bod.position.x
+0043da21        edx_7[1] = jetpack_cursor->jetpack.bod.position.y
+0043da27        edx_7[2] = jetpack_cursor->jetpack.bod.position.z
 0043da2a        jetpack_cursor->jetpack.source_cell = cell
 0043da30        jetpack_cursor->jetpack.bob_phase = 0f
 0043da45        int16_t x87control

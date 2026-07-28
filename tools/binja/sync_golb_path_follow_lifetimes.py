@@ -26,7 +26,7 @@ EXPECTED_TYPE_WIDTHS = {
     "TransformMatrix": 0x40,
     "PathTemplateSample": 0xA8,
     "PathTemplateSamplePairCursorView": 0x150,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "GolbPathFollowState": 0x28,
     "GolbShot": 0x2E8,
 }
@@ -55,12 +55,12 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("current", "PathTemplateSample"),
         0xA8: ("next", "PathTemplateSample"),
     },
-    "TrackRowCell": {
+    "cRSubLoc": {
         0x10: ("anchor_position", "Vec3"),
     },
     "GolbPathFollowState": {
         0x04: ("template_record", "cRPath*"),
-        0x08: ("source_cell", "TrackRowCell*"),
+        0x08: ("source_cell", "cRSubLoc*"),
         0x18: ("output_position", "Vec3"),
         0x24: ("shot", "GolbShot*"),
     },

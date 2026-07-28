@@ -24,7 +24,7 @@ void SubgameRuntime::build_track_fringe_objects()
     int row = 0;
     if (runtime_row_count > 0) {
         SubRow* row_record = runtime_rows;
-        TrackRowCell* cell = &runtime_cells[0][0];
+        cRSubLoc* cell = &runtime_cells[0][0];
         SubRow* row_record_head = row_record;
 
         do {

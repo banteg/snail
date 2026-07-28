@@ -3,7 +3,7 @@
 /* selector: is_point_inside_track_attachment */
 
 // Tests whether one by-value probe lies inside a borrowed attachment cell by subtracting each anchored secondary-sample origin as a real vector expression and rotating the result through the sample inverse matrix. Android retains `cRPath::SearchPos` by name, iOS Path.o gives `cRPath::SearchPos(tVector, tVector, cRSubLoc*)`, and the exact Windows candidate confirms that the second by-value vector remains ABI-owned even though this split does not read it.
-bool __thiscall is_point_inside_track_attachment(Path *self, Vec3 probe, Vec3 swept_motion, TrackRowCell *cell)
+bool __thiscall is_point_inside_track_attachment(cRPath *self, Vec3 probe, Vec3 swept_motion, cRSubLoc *cell)
 {
   signed int v5; // edi
   unsigned int i; // esi
@@ -18,7 +18,7 @@ bool __thiscall is_point_inside_track_attachment(Path *self, Vec3 probe, Vec3 sw
   v5 = self->segment_count - 1;
   anchor_position = cell->anchor_position;
   if ( v5 < 0 )
-    return 0;
+    return false;
   for ( i = v5; ; --i )
   {
     secondary_samples = self->secondary_samples;
@@ -40,7 +40,7 @@ bool __thiscall is_point_inside_track_attachment(Path *self, Vec3 probe, Vec3 sw
       break;
     }
     if ( --v5 < 0 )
-      return 0;
+      return false;
   }
-  return 1;
+  return true;
 }

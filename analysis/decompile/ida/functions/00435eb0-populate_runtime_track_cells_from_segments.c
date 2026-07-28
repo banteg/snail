@@ -2,7 +2,7 @@
 /* function: populate_runtime_track_cells_from_segments @ 0x435eb0 */
 /* selector: populate_runtime_track_cells_from_segments */
 
-// Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Each lane iteration writes the physical runtime `SubLoc` selected by `lane`, while a distinct mirrored authored lane indexes the borrowed active `SubSegment::glyph_rows`; first/last-block bounds produce the byte `edge_row` input consumed by the glyph normalizer. Runtime cell object selection reuses each `SubLoc` cell's shared `cRBod`/`BodBase` prefix and borrows render objects from the root catalog, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner.
+// Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Each lane iteration writes the physical runtime `cRSubLoc` selected by `lane`, while a distinct mirrored authored lane indexes the borrowed active `SubSegment::glyph_rows`; first/last-block bounds produce the byte `edge_row` input consumed by the glyph normalizer. Runtime cell object selection reuses each `cRSubLoc` cell's shared `cRBod`/`BodBase` prefix and borrows render objects from the root catalog, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner.
 void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
 {
   int32_t runtime_build_seed; // esi
@@ -52,7 +52,7 @@ void __thiscall populate_runtime_track_cells_from_segments(SubgameRuntime *game)
   int32_t v46; // ebp
   RuntimeCellStrideAnchor *runtime_cell_anchor; // esi
   uint32_t lane_and_flags; // eax
-  TrackRowCell *runtime_cell; // edi
+  cRSubLoc *runtime_cell; // edi
   char *v50; // ebp
   char v51; // al
   uint32_t list_flags; // eax

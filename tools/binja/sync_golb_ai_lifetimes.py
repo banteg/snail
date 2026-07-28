@@ -42,8 +42,8 @@ EXPECTED_STRUCT_FIELDS = {
         0x48: ("position", "Vec3"),
     },
     "TrackRowCellSameLaneCursorView": {
-        0x00: ("previous_row_same_lane", "TrackRowCell"),
-        0x54: ("intervening_cells", "TrackRowCell[7]"),
+        0x00: ("previous_row_same_lane", "cRSubLoc"),
+        0x54: ("intervening_cells", "cRSubLoc[7]"),
     },
     "Slug": {
         0x00: ("body", "RenderableBod"),
@@ -74,7 +74,7 @@ EXPECTED_STRUCT_FIELDS = {
 # render owner is proved to be a Sprite by create_golb and kill_golb. The slug
 # scan retains its byte offset and parallel slot index for the native VC6
 # schedule, but the offset-rooted pointer is the shared manager-relative
-# SlugSlotCursor. The path-entry probe keeps its real TrackRowCell return owner
+# SlugSlotCursor. The path-entry probe keeps its real cRSubLoc return owner
 # while an analysis-only offset pointer exposes the current cell and its
 # same-lane predecessor eight cells earlier without a synthetic __offset. The
 # direct and kind-two splash garbage passes walk separate lifetimes over one
@@ -87,7 +87,7 @@ GOLB_AI_USER_VAR_REMOVALS = (
         765,
         66,
         "source_cell",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
 )
 

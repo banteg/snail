@@ -29,7 +29,7 @@ EXPECTED_TYPE_WIDTHS = {
     "SubGarbagePool": 0x264C,
     "SubRing": 0x1F8,
     "SubRingPool": 0x3F0,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "cRPath": 0xA8,
     "PathPair": 0x150,
 }
@@ -41,7 +41,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x359080: ("banners", "BannerPool"),
         0x359140: ("garbage_hazards", "SubGarbagePool"),
         0x35B78C: ("ring_effects", "SubRingPool"),
-        0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]"),
+        0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
         0xFF2914: ("path_pairs", "PathPair[63]"),
     },
     "SlugPool": {
@@ -113,7 +113,7 @@ RUNTIME_POOL_CONSTRUCTOR_CURSOR_USER_VAR_UPDATES = (
         628,
         73,
         "runtime_cell_cursor",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "initialize_runtime_pools_and_path_template_bank",

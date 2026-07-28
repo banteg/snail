@@ -2,12 +2,12 @@
 /* function: spawn_track_health_pickup @ 0x43d6c0 */
 /* selector: spawn_track_health_pickup */
 
-// Allocates and seeds one live `SubHealth` from the eight-record owned array. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction now keeps the honest void contract instead of exporting incompatible incidental register values.
-void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)
+// Allocates and seeds one live `SubHealth` from the eight-record owned array, then inserts its zero-offset inherited `BodNode` into the borrowed `GameRoot::active_bod_list` head without transferring pickup ownership. Android and iOS retain `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract instead of exporting incompatible incidental register values.
+void __thiscall spawn_track_health_pickup(SubgameRuntime *game, cRSubLoc *cell, Player *player)
 {
   int v3; // ebx
   TrackPickupState *i; // eax
-  TrackRowCell *v5; // ebp
+  cRSubLoc *v5; // ebp
   SubHealthSlotCursor *health_cursor; // esi
   BodNode *health_node; // eax
   BodNode **p_first; // ecx
@@ -20,7 +20,7 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *ce
   float z; // [esp+10h] [ebp-4h]
 
   v3 = 0;
-  for ( i = &game->health_pickups[0].state; *i; i += 29 )
+  for ( i = &game->health_pickups[0].state; *i != TRACK_PICKUP_STATE_INACTIVE; i += 29 )
   {
     if ( ++v3 >= 8 )
       return;
@@ -43,7 +43,7 @@ void __thiscall spawn_track_health_pickup(SubgameRuntime *game, TrackRowCell *ce
   {
     p_first = &g_game_base->active_bod_list.first;
     first = g_game_base->active_bod_list.first;
-    if ( first )
+    if ( first != nullptr )
     {
       first->list_prev = health_node;
       (*p_first)->list_prev->list_next = *p_first;

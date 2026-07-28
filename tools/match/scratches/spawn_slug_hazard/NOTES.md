@@ -7,7 +7,7 @@ Recovered relationships:
 
 - scans the eight-slot slug pool at `game+0x3563a0`, stride `0xec`, using
   `state +0x80`;
-- seeds the renderable transform position from `TrackRowCell::position`
+- seeds the renderable transform position from `cRSubLoc::position`
   with a fixed `+1.7f` Y lift, then projects through
   `project_position_onto_track_attachment`;
 - inserts the slot's zero-offset `BodNode` before the shared BOD-list tail;
@@ -175,7 +175,7 @@ physical allocator cursors:
 - the selected-slot register retains `SubgameRuntime + slot_index * 0xec`, so
   `SlugSlotCursor` preserves that root-biased address and exposes its one
   embedded `slug` record without inventing independent storage;
-- IDA now carries the typed `SubgameRuntime`, `TrackRowCell`, and `Player`
+- IDA now carries the typed `SubgameRuntime`, `cRSubLoc`, and `Player`
   arguments plus the same two cursor views; the sprite, inherited BOD node,
   player tail, and position copy then recover transitively from real fields.
 

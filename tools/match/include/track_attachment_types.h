@@ -253,11 +253,11 @@ struct cRPath : public BodBase {
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,
         float sweep_x, float sweep_y, float sweep_z,
-        TrackRowCell* cell); // @ 0x42c770, cRPath::Search
+        cRSubLoc* cell); // @ 0x42c770, cRPath::Search
     void compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
     bool is_point_inside_track_attachment(
-        Vector3 probe, Vector3 swept_motion, TrackRowCell* cell); // @ 0x42ca90, cRPath::SearchPos
+        Vector3 probe, Vector3 swept_motion, cRSubLoc* cell); // @ 0x42ca90, cRPath::SearchPos
 
     PathTemplateKind kind;           // +0x38, after the inherited BodBase
     unsigned char is_mirrored_x;     // +0x3c
@@ -321,7 +321,7 @@ enum SubLocOpenEdgeFlag {
     SUBLOC_OPEN_EDGE_MASK = 0x0f,
 };
 
-// Packed runtime state at SubLoc +0x40. Keep the owning field as a dword:
+// Packed runtime state at cRSubLoc +0x40. Keep the owning field as a dword:
 // these masks have independent producers and consumers rather than a stable
 // compiler bitfield layout.
 enum SubLocFlag {
@@ -346,8 +346,8 @@ enum SubLocFlag {
 // as the exact Windows helper below. Its exact constructor proves the inherited
 // BodBase at +0x00 and its world/track anchor is BodBase::position at +0x10.
 // The complete Windows layout is 0x54 bytes.
-struct SubLoc : public BodBase {
-    SubLoc* initialize_sub_loc(); // @ 0x4088c0, cRSubLoc constructor wrapper
+struct cRSubLoc : public BodBase {
+    cRSubLoc* initialize_sub_loc(); // @ 0x4088c0, cRSubLoc constructor wrapper
 
     void remove_sub_loc(); // @ 0x439bc0, cRSubLoc::Remove
     void update_sub_loc(); // @ 0x439d50, cRSubLoc::AI
@@ -374,7 +374,7 @@ struct SubLoc : public BodBase {
     int get_track_cell_row_index(); // @ 0x447040, cRSubLoc::Yi
 };
 
-typedef char SubLoc_must_be_0x54[(sizeof(SubLoc) == 0x54) ? 1 : -1];
+typedef char cRSubLoc_must_be_0x54[(sizeof(cRSubLoc) == 0x54) ? 1 : -1];
 
 // Owned moving model embedded in each SubRow. iOS preserves the authored
 // class and callback as cRRowModel::AI().
@@ -426,8 +426,8 @@ struct SubRow {                          // stride 0xf4
     Vector3 parcel_spawn_position;       // +0x90, parcel-local then world-space
     int parcel_set_id;                   // +0x9c, authored parcel set/payload id
     int attachment_template_index;       // +0xa0, P/p template bank index
-    SubLoc* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
-    SubLoc* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
+    cRSubLoc* primary_attachment_cell; // +0xa4, first P/p entry spanning this row
+    cRSubLoc* secondary_attachment_cell; // +0xa8, overlapping P/p entry spanning this row
     float installed_heading_delta;        // +0xac, copied into an entered path template
     BodBase attachment_body;              // +0xb0, embedded attachment/fringe row actor
     float ring_speed;                     // +0xe8, authored ring/effect rate source
@@ -443,14 +443,14 @@ public:
     // 0x408600. The cRSubGame constructor passes Player::follow_state exactly.
     cRPathFollowGoldy* noop_runtime_slot_constructor();
     void begin_track_attachment_follow_state(
-        SubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
+        cRSubLoc* source_cell, const Vector3* world_position, Player* player); // @ 0x420c40
     int update_track_attachment_follow_state(
         float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
 
     unsigned char active;        // +0x00
     char unknown_01[3];
     cRPath* template_record; // +0x04
-    SubLoc* source_cell;         // +0x08
+    cRSubLoc* source_cell;         // +0x08
     int sample_index;            // +0x0c
     float progress;              // +0x10
     float vertical_offset;       // +0x14

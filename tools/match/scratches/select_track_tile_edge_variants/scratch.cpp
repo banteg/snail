@@ -20,13 +20,13 @@
 void SubgameRuntime::select_track_tile_edge_variants()
 {
     enum {
-        TILE_VIEW_TO_CELL_BASE = offsetof(SubLoc, tile_id),
-        TILE_VIEW_TO_PREVIOUS_LANE = sizeof(SubLoc) + offsetof(SubLoc, tile_id),
-        TILE_VIEW_TO_NEXT_LANE = sizeof(SubLoc) - offsetof(SubLoc, tile_id),
+        TILE_VIEW_TO_CELL_BASE = offsetof(cRSubLoc, tile_id),
+        TILE_VIEW_TO_PREVIOUS_LANE = sizeof(cRSubLoc) + offsetof(cRSubLoc, tile_id),
+        TILE_VIEW_TO_NEXT_LANE = sizeof(cRSubLoc) - offsetof(cRSubLoc, tile_id),
         TILE_VIEW_TO_PREVIOUS_ROW =
-            sizeof(runtime_cells[0]) + offsetof(SubLoc, tile_id),
+            sizeof(runtime_cells[0]) + offsetof(cRSubLoc, tile_id),
         TILE_VIEW_TO_NEXT_ROW =
-            sizeof(runtime_cells[0]) - offsetof(SubLoc, tile_id),
+            sizeof(runtime_cells[0]) - offsetof(cRSubLoc, tile_id),
     };
 
     int row = 0;
@@ -49,25 +49,25 @@ void SubgameRuntime::select_track_tile_edge_variants()
                     && skip_tile != SUBLOC_TILE_PATH_ENTRY_UPPERCASE
                     && skip_tile != SUBLOC_TILE_WALL2) {
                     if (lane == 0
-                        || ((SubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_LANE))
+                        || ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_LANE))
                                 ->is_sub_loc_empty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_PREVIOUS_LANE;
                     }
                     if (lane == SUBGAME_TRACK_LANE_COUNT - 1
-                        || ((SubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_LANE))
+                        || ((cRSubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_LANE))
                                 ->is_sub_loc_empty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_NEXT_LANE;
                     }
                     if (row == 0
-                        || ((SubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_ROW))
+                        || ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_PREVIOUS_ROW))
                                 ->is_sub_loc_empty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_PREVIOUS_ROW;
                     }
                     if (row >= runtime_row_count - 1
-                        || ((SubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_ROW))
+                        || ((cRSubLoc*)((char*)cell + TILE_VIEW_TO_NEXT_ROW))
                                 ->is_sub_loc_empty()
                             != 0) {
                         cell->open_edge_mask |= SUBLOC_OPEN_NEXT_ROW;
@@ -86,7 +86,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                             .object);
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
-                                && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
+                                && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
@@ -110,7 +110,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                             .object);
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
-                                && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
+                                && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
@@ -134,7 +134,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                             .object);
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
-                                && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
+                                && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
@@ -158,7 +158,7 @@ void SubgameRuntime::select_track_tile_edge_variants()
                                             .object);
                             } else if (tile != SUBLOC_TILE_TRAMPOLINE
                                 && tile != SUBLOC_TILE_WALL2
-                                && ((SubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
+                                && ((cRSubLoc*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
                                         ->is_sub_loc_ramp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))

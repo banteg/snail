@@ -28,7 +28,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Fringe": 0x38,
     "SubSegment": 0x4220,
     "SubTracks": 0x1A5978,
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "TrackRowCellLaneAndFlagsStrideCursor": 0x54,
     "TrackRowCellFringeFrontStrideCursor": 0x54,
     "SubRow": 0xF4,
@@ -47,7 +47,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("segment_count", "int32_t"),
         0x04: ("segment_slots", "SubSegment[100]"),
     },
-    "TrackRowCell": {
+    "cRSubLoc": {
         0x00: ("bod", "BodNode"),
         0x28: ("color", "tColour"),
         0x3C: ("tile_id", "SubLocTileId"),
@@ -76,7 +76,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x90: ("parcel_spawn_position", "Vec3"),
         0x9C: ("parcel_set_id", "int32_t"),
         0xA0: ("attachment_template_index", "int32_t"),
-        0xA4: ("primary_attachment_cell", "TrackRowCell*"),
+        0xA4: ("primary_attachment_cell", "cRSubLoc*"),
         0xAC: ("installed_heading_delta", "float"),
         0xE8: ("ring_speed", "float"),
         0xEC: ("source_segment", "SubSegment*"),
@@ -87,8 +87,8 @@ EXPECTED_STRUCT_FIELDS = {
         0x04: ("parcel_spawn_z", "float"),
         0x08: ("parcel_set_id", "int32_t"),
         0x0C: ("attachment_template_index", "int32_t"),
-        0x10: ("primary_attachment_cell", "TrackRowCell*"),
-        0x14: ("secondary_attachment_cell", "TrackRowCell*"),
+        0x10: ("primary_attachment_cell", "cRSubLoc*"),
+        0x14: ("secondary_attachment_cell", "cRSubLoc*"),
         0x18: ("installed_heading_delta", "float"),
         0x1C: ("attachment_body", "BodBase"),
         0x54: ("ring_speed", "float"),
@@ -97,14 +97,14 @@ EXPECTED_STRUCT_FIELDS = {
     },
     "SubgameRuntime": {
         0xA874: ("level_definition", "SubTracks"),
-        0x3BFAC8: ("runtime_cells", "TrackRowCell[3200][8]"),
+        0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
         0x5CCAC8: ("runtime_rows", "SubRow[3200]"),
     },
 }
 
 # The first loop borrows SubSegment::row_count from each authored segment slot.
 # The second uses three exact field-stride views: one based at
-# TrackRowCell::fringe_front, one based at TrackRowCell::lane_and_flags, and
+# cRSubLoc::fringe_front, one based at cRSubLoc::lane_and_flags, and
 # one based at SubRow::parcel_spawn_position.y. Preserve those physical cursor
 # shapes instead of inventing negatively biased whole-record pointers. Each
 # view is the size of its owning record only so native induction remains exact;
@@ -312,7 +312,7 @@ REJECTED_RUNTIME_CELL_ALIAS_REMOVALS = (
         2068,
         73,
         "runtime_cell",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
 )
 

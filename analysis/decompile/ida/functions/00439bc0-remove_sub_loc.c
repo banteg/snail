@@ -2,8 +2,8 @@
 /* function: remove_sub_loc @ 0x439bc0 */
 /* selector: remove_sub_loc */
 
-// Windows `cRSubLoc::Remove()`: tears down one live SubLoc by removing its own BOD, clearing `SubRow::attachment_body` for entry tiles when required, and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the Windows constructor table and both native callers independently confirm the owner.
-void __thiscall remove_sub_loc(SubLoc *cell)
+// Windows `cRSubLoc::Remove()`: tears down one live cRSubLoc through the shared inlined `cLinkedList<cRBod>::Remove` owner, clearing `SubRow::attachment_body` for entry tiles when required and unlinking its four borrowed fringe BODs. Android preserves the authored name and the same Yi/row-body/own-body lifecycle; the Windows constructor table and both native callers independently confirm the owner.
+void __thiscall remove_sub_loc(cRSubLoc *cell)
 {
   int32_t track_cell_row_index; // eax
   SubLocTileId tile_id; // cl
@@ -20,7 +20,7 @@ void __thiscall remove_sub_loc(SubLoc *cell)
   struct BodNode *v14; // eax
   struct BodNode *v15; // eax
   Fringe **p_fringe_front; // esi
-  int v17; // edi
+  int i; // edi
   Fringe *v18; // eax
   BodList *v19; // edx
   uint32_t v20; // ecx
@@ -48,10 +48,10 @@ void __thiscall remove_sub_loc(SubLoc *cell)
         else
         {
           list_next = p_attachment_body->bod.list_next;
-          if ( list_next )
+          if ( list_next != nullptr )
             list_next->list_prev = p_attachment_body->bod.list_prev;
           list_prev = p_attachment_body->bod.list_prev;
-          if ( list_prev )
+          if ( list_prev != nullptr )
             list_prev->list_next = p_attachment_body->bod.list_next;
           else
             p_active_bod_list->first = p_attachment_body->bod.list_next;
@@ -77,10 +77,10 @@ void __thiscall remove_sub_loc(SubLoc *cell)
     else
     {
       v14 = cell->bod.list_next;
-      if ( v14 )
+      if ( v14 != nullptr )
         v14->list_prev = cell->bod.list_prev;
       v15 = cell->bod.list_prev;
-      if ( v15 )
+      if ( v15 != nullptr )
         v15->list_next = cell->bod.list_next;
       else
         v13->first = cell->bod.list_next;
@@ -90,11 +90,10 @@ void __thiscall remove_sub_loc(SubLoc *cell)
     }
   }
   p_fringe_front = &cell->fringe_front;
-  v17 = 4;
-  do
+  for ( i = 4; i != 0; --i )
   {
     v18 = *p_fringe_front;
-    if ( *p_fringe_front && (v18->bod.bod.list_flags & 0x200) != 0 )
+    if ( *p_fringe_front != nullptr && (v18->bod.bod.list_flags & 0x200) != 0 )
     {
       v19 = &g_game_base->active_bod_list;
       v20 = v18->bod.bod.list_flags;
@@ -107,10 +106,10 @@ void __thiscall remove_sub_loc(SubLoc *cell)
         else
         {
           v21 = v18->bod.bod.list_next;
-          if ( v21 )
+          if ( v21 != nullptr )
             v21->list_prev = v18->bod.bod.list_prev;
           v22 = v18->bod.bod.list_prev;
-          if ( v22 )
+          if ( v22 != nullptr )
             v22->list_next = v18->bod.bod.list_next;
           else
             v19->first = v18->bod.bod.list_next;
@@ -125,7 +124,5 @@ void __thiscall remove_sub_loc(SubLoc *cell)
       }
     }
     ++p_fringe_front;
-    --v17;
   }
-  while ( v17 );
 }

@@ -71,7 +71,7 @@
 004082be        initialize_array_with_constructor(&game->player.golb_shots, 0x2e8, 0xc, initialize_golb_shot)
 004082c9        initialize_player_presentation_controller(&game->player.presentation)
 004082ce        game->player.body.bod.bod.vtable = &g_subgoldy_callback_table
-004082d4        struct TrackRowCell* runtime_cell_cursor = &game->runtime_cells
+004082d4        struct cRSubLoc* runtime_cell_cursor = &game->runtime_cells
 004082da        int32_t i_13 = 0x6400
 004082ea        int32_t i_5
 004082e1        initialize_sub_loc(runtime_cell_cursor)
@@ -87,7 +87,7 @@
 00408304        i_6 = i_14
 00408304        i_14 -= 1
 00408305        do while (i_6 != 1)
-00408307        struct Path* path_template_cursor = &game->path_pairs
+00408307        struct cRPath* path_template_cursor = &game->path_pairs
 0040830d        int32_t i_15 = 0x7e
 00408320        int32_t i_7
 00408314        initialize_path_template_record_pair(path_template_cursor)

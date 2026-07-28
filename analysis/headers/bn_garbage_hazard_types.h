@@ -13,7 +13,7 @@ typedef int int32_t;
 typedef struct Player Player;
 typedef struct SubgameRuntime SubgameRuntime;
 typedef struct TextureRef TextureRef;
-typedef struct TrackRowCell TrackRowCell;
+typedef struct cRSubLoc cRSubLoc;
 
 typedef struct Vec3 {
     float x;
@@ -165,7 +165,7 @@ struct SubGarbage {
     float smoke_timer;
     float smoke_timer_step;
     Sprite* sprite;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     uint8_t hidden;
     uint8_t unknown_bd[0x3];
     Player* owner_player;
@@ -215,7 +215,7 @@ void __thiscall spawn_garbage_smoke_particle(
     Player* owner_player);
 void __thiscall spawn_track_garbage_hazard(
     SubgameRuntime* game,
-    TrackRowCell* cell,
+    cRSubLoc* cell,
     Player* player);
 
 #endif

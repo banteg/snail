@@ -441,7 +441,7 @@
 00436c6d        object_7:2.b = game_base_8->root_bod_catalog.ramp_edges[1].object:2.b
 00436c6d        object_7:3.b = game_base_8->root_bod_catalog.ramp_edges[1].object:3.b
 00436c76        set_bod_object(&runtime_cell_anchor->cell, object_7)
-00436c7d        runtime_cell_anchor->cell.render_arg_1c = 0
+00436c7d        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436c83        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436c89        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LESS
 00436c90        uint32_t list_flags_24 = runtime_cell_anchor->cell.bod.list_flags
@@ -456,7 +456,7 @@
 00436ad0        case 0xd
 00436ad0        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != SUBLOC_TILE_RAMP_GREATER)
 00436b21        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[1].object)
-00436b26        runtime_cell_anchor->cell.render_arg_1c = 0
+00436b26        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436b2c        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436b32        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_GREATER
 00436b39        uint32_t list_flags_19 = runtime_cell_anchor->cell.bod.list_flags
@@ -469,7 +469,7 @@
 00436ad8        object_5:2.b = game_base_6->root_bod_catalog.ramp_edges[1].object:2.b
 00436ad8        object_5:3.b = game_base_6->root_bod_catalog.ramp_edges[1].object:3.b
 00436ae1        set_bod_object(&runtime_cell_anchor->cell, object_5)
-00436ae6        runtime_cell_anchor->cell.render_arg_1c = 0
+00436ae6        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436aec        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436af2        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_GREATER_RAISED
 00436af9        uint32_t list_flags_18 = runtime_cell_anchor->cell.bod.list_flags
@@ -525,7 +525,7 @@
 00436cef        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_PATH_ENTRY_LOWERCASE
 00436cfa        int32_t attachment_template_index = runtime_row_anchor->row.attachment_template_index
 00436d05        int32_t eax_89 = attachment_template_index << 3
-00436d0c        struct Path* selected_attachment_path
+00436d0c        struct cRPath* selected_attachment_path
 00436d0c        if (game->track_mirror_enabled == 0)
 00436d27        selected_attachment_path = &game->path_pairs + (eax_89 - attachment_template_index) * 0x30
 00436d16        selected_attachment_path = &game->path_pairs[0].secondary + (eax_89 - attachment_template_index) * 0x30
@@ -569,7 +569,7 @@
 00436742        runtime_cell_anchor->cell.bod.list_flags = list_flags_1
 00436cb1        case 0x15
 00436cb1        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[0].object)
-00436cb8        runtime_cell_anchor->cell.render_arg_1c = 0
+00436cb8        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436cbe        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436cc4        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACKET
 00436ccb        uint32_t list_flags_25 = runtime_cell_anchor->cell.bod.list_flags
@@ -596,14 +596,14 @@
 00436beb        case 0x19
 00436beb        if (build_row s<= 0 || runtime_cell_anchor->previous_row_same_lane.tile_id != SUBLOC_TILE_RAMP_GREATER)
 00436c3c        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[0].object)
-00436c41        runtime_cell_anchor->cell.render_arg_1c = 0
+00436c41        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436c47        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436c4d        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE
 00436c54        uint32_t list_flags_23 = runtime_cell_anchor->cell.bod.list_flags
 00436c5a        list_flags_23.b |= 0x20
 00436c5c        runtime_cell_anchor->cell.bod.list_flags = list_flags_23
 00436bfb        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[0].object)
-00436c00        runtime_cell_anchor->cell.render_arg_1c = 0
+00436c00        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436c06        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436c0c        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
 00436c13        uint32_t list_flags_22 = runtime_cell_anchor->cell.bod.list_flags
@@ -619,14 +619,14 @@
 00436ba6        object_6:2.b = game_base_7->root_bod_catalog.ramp_edges[2].object:2.b
 00436ba6        object_6:3.b = game_base_7->root_bod_catalog.ramp_edges[2].object:3.b
 00436baf        set_bod_object(&runtime_cell_anchor->cell, object_6)
-00436bb4        runtime_cell_anchor->cell.render_arg_1c = 0
+00436bb4        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436bba        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436bc0        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE
 00436bc7        uint32_t list_flags_21 = runtime_cell_anchor->cell.bod.list_flags
 00436bcd        list_flags_21.b |= 0x20
 00436bcf        runtime_cell_anchor->cell.bod.list_flags = list_flags_21
 00436b6e        set_bod_object(&runtime_cell_anchor->cell, g_game_base->root_bod_catalog.ramp_edges[2].object)
-00436b73        runtime_cell_anchor->cell.render_arg_1c = 0
+00436b73        runtime_cell_anchor->cell.render_arg_1c = 0f
 00436b79        runtime_cell_anchor->cell.render_arg_20 = 0f
 00436b7f        runtime_cell_anchor->cell.tile_id = SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
 00436b86        uint32_t list_flags_20 = runtime_cell_anchor->cell.bod.list_flags

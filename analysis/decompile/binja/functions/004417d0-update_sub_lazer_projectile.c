@@ -27,7 +27,7 @@
 0044190e        x87_r7_10 - temp4_1
 00441919        if ((((x87_r7_10 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_10, temp4_1) ? 1 : 0) << 0xa | (x87_r7_10 == temp4_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00441ac3        deactivate_sub_lazer_projectile(sub_lazer)
-0044192c        struct TrackRowCell* eax_7 = get_track_grid_cell_at_world_position(&g_game_base->subgame, &sub_lazer->body.transform.position.x)
+0044192c        struct cRSubLoc* eax_7 = get_track_grid_cell_at_world_position(&g_game_base->subgame, &sub_lazer->body.transform.position.x)
 00441940        struct SubRow* eax_8 = get_track_runtime_cell_at_world_z(&g_game_base->subgame, &sub_lazer->body.transform.position.x)
 00441947        int16_t eax_9
 00441947        eax_9.b = eax_7->tile_id
@@ -41,7 +41,7 @@
 00441ac3        deactivate_sub_lazer_projectile(sub_lazer)
 00441965        bool eax_10
 00441965        if ((eax_8->flags.b & 0x40) != 0)
-00441977        struct TrackRowCell* primary_attachment_cell = eax_8->primary_attachment_cell
+00441977        struct cRSubLoc* primary_attachment_cell = eax_8->primary_attachment_cell
 004419b0        float var_34_1 = fconvert.s(fconvert.t(sub_lazer->velocity.y) * fconvert.t(1.04999995f))
 004419c3        float var_30_1 = fconvert.s(fconvert.t(sub_lazer->velocity.z) * fconvert.t(1.04999995f))
 004419ec        float var_40_1 = fconvert.s(fconvert.t(sub_lazer->velocity.y) + fconvert.t(sub_lazer->body.transform.position.y))
@@ -52,7 +52,7 @@
 00441a06        var_2c_4 = "lazer path kill\n"
 00441ac3        deactivate_sub_lazer_projectile(sub_lazer)
 00441a13        if ((eax_8->flags.b & 0x80) != 0)
-00441a25        struct TrackRowCell* secondary_attachment_cell = eax_8->secondary_attachment_cell
+00441a25        struct cRSubLoc* secondary_attachment_cell = eax_8->secondary_attachment_cell
 00441a5e        float var_34_2 = fconvert.s(fconvert.t(sub_lazer->velocity.y) * fconvert.t(1.04999995f))
 00441a73        float var_30_2 = fconvert.s(fconvert.t(sub_lazer->velocity.z) * fconvert.t(1.04999995f))
 00441a9a        float var_40_2 = fconvert.s(fconvert.t(sub_lazer->velocity.y) + fconvert.t(sub_lazer->body.transform.position.y))

@@ -7,9 +7,9 @@ then scans each row's eight lanes for horizontal slide, floor, and worm-tunnel
 runs. Multi-cell runs replace the first cell's object with a wider mesh and
 clear render/contact bits on the continuation cells.
 
-The retained scratch uses the shared `TrackRowCell` and
+The retained scratch uses the shared `cRSubLoc` and
 `TrackAttachmentRuntimeRow` owners, but follows the field-first cursors carried
-by the native. Both passes walk `TrackRowCell::lane_and_flags` at a `0x54`-byte
+by the native. Both passes walk `cRSubLoc::lane_and_flags` at a `0x54`-byte
 stride. The second pass derives the owning cell at `-0x40`, while its row cursor
 starts at `SubRow::attachment_body.list_flags` and advances by the full `0xf4`
 row stride.
@@ -80,7 +80,7 @@ The four replacement objects now load through the canonical
 banks, the pillar bank, and the universe-hole fallback all retain their real
 root owner across the native call boundaries. Every eight-lane bound derives
 from `runtime_cells[0]`, and the field-first `lane_and_flags` cursor recovers
-its containing `SubLoc` through `offsetof` rather than a duplicated `0x40`.
+its containing `cRSubLoc` through `offsetof` rather than a duplicated `0x40`.
 
 Focused output is byte-identical at 54.77%, 290/276 instructions, prefix
 0/276, with all ten operands clean. The native/candidate frame and induction
@@ -95,7 +95,7 @@ continuation cell and the cleanup loop decrements the same owner to zero.
 Spelling that lifetime explicitly recovers the native `dec`/`test` entry and
 loop counter at all three call sites.
 
-The cleanup write also names the containing `SubLoc` directly from its
+The cleanup write also names the containing `cRSubLoc` directly from its
 `lane_and_flags` field cursor instead of keeping a redundant `clear_cell`
 local alive. This removes six candidate instructions while retaining the
 indexed `SubgameRuntime::runtime_cells[row][lane]` owner and the native
@@ -151,8 +151,8 @@ remains 67.50%, 284/276 instructions, with all 12 operands clean.
 
 The native register lifetimes now replay explicitly in both decompilers. The
 seed and current-cell owners are `uint32_t*` cursors over
-`TrackRowCell::lane_and_flags`; the genuine containing-cell lifetime is a
-`TrackRowCell*`; floor and wall scan `uint8_t*` tile cursors; slide scans a
+`cRSubLoc::lane_and_flags`; the genuine containing-cell lifetime is a
+`cRSubLoc*`; floor and wall scan `uint8_t*` tile cursors; slide scans a
 `uint32_t*` lane-flags cursor; and each branch's backward continuation cleanup
 has its own `uint32_t*` lane-flags cursor. The row stack slot is separately
 owned by `SubRow::attachment_body.list_flags`.

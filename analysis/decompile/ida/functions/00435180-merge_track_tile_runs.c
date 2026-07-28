@@ -2,17 +2,17 @@
 /* function: merge_track_tile_runs @ 0x435180 */
 /* selector: merge_track_tile_runs */
 
-// Authored void `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `SubLoc` cells. The iOS and Android epilogues establish no result and their zero-row paths leave incompatible incidental values in the return register, independently resolving the Windows ABI. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies.
+// Authored void `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `cRSubLoc` cells. The iOS and Android epilogues establish no result and their zero-row paths leave incompatible incidental values in the return register, independently resolving the Windows ABI. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies.
 void __thiscall merge_track_tile_runs(SubgameRuntime *game)
 {
   SubgameRuntime *v1; // esi
   int32_t v2; // edx
   uint32_t *seed_lane_flags; // eax
-  int v4; // ecx
+  int i; // ecx
   uint32_t v5; // ebp
   uint32_t *cell_lane_flags; // ebx
   int v7; // ebp
-  TrackRowCell *cell; // edi
+  cRSubLoc *cell; // edi
   int v9; // esi
   int v10; // edx
   uint8_t *floor_tile_cursor; // ecx
@@ -50,15 +50,12 @@ void __thiscall merge_track_tile_runs(SubgameRuntime *game)
     seed_lane_flags = &game->runtime_cells[0][0].lane_and_flags;
     do
     {
-      v4 = 8;
-      do
+      for ( i = 8; i != 0; --i )
       {
         v5 = *seed_lane_flags;
         seed_lane_flags += 21;
-        --v4;
         *(seed_lane_flags - 21) = v5 | 0x6000;
       }
-      while ( v4 );
       ++v2;
     }
     while ( v2 < v1->runtime_row_count );
@@ -74,12 +71,12 @@ void __thiscall merge_track_tile_runs(SubgameRuntime *game)
       v37 = 0;
       while ( 1 )
       {
-        cell = CONTAINING_RECORD(cell_lane_flags, TrackRowCell, lane_and_flags);
-        if ( !(unsigned __int8)is_sub_loc_floor((TrackRowCell *)(cell_lane_flags - 16))
+        cell = CONTAINING_RECORD(cell_lane_flags, cRSubLoc, lane_and_flags);
+        if ( (unsigned __int8)is_sub_loc_floor((cRSubLoc *)(cell_lane_flags - 16)) == 0
           || (BYTE1(*cell_lane_flags) & 0x80u) != 0
           || (*cell_lane_flags & 0x40) != 0 )
         {
-          if ( !(unsigned __int8)is_sub_loc_slide((TrackRowCell *)(cell_lane_flags - 16))
+          if ( (unsigned __int8)is_sub_loc_slide((cRSubLoc *)(cell_lane_flags - 16)) == 0
             || (BYTE1(*cell_lane_flags) & 0x80u) != 0
             || (*cell_lane_flags & 0x40) != 0 )
           {
@@ -126,7 +123,7 @@ void __thiscall merge_track_tile_runs(SubgameRuntime *game)
                     --v31;
                     wall_cleanup_lane_flags[21] &= 0xFFFF9FFF;
                   }
-                  while ( v31 );
+                  while ( v31 != 0 );
                 }
               }
             }
@@ -152,7 +149,7 @@ void __thiscall merge_track_tile_runs(SubgameRuntime *game)
             slide_lane_flags_cursor = cell_lane_flags;
             do
             {
-              if ( !(unsigned __int8)is_sub_loc_slide((TrackRowCell *)(slide_lane_flags_cursor - 16)) )
+              if ( (unsigned __int8)is_sub_loc_slide((cRSubLoc *)(slide_lane_flags_cursor - 16)) == 0 )
                 break;
               v19 = *slide_lane_flags_cursor;
               if ( (BYTE1(*slide_lane_flags_cursor) & 0x80u) != 0 )
@@ -183,7 +180,7 @@ void __thiscall merge_track_tile_runs(SubgameRuntime *game)
                   --v20;
                   slide_cleanup_lane_flags[21] &= 0xFFFF9FFF;
                 }
-                while ( v20 );
+                while ( v20 != 0 );
               }
             }
             v7 = v37;
@@ -226,7 +223,7 @@ void __thiscall merge_track_tile_runs(SubgameRuntime *game)
                 --v14;
                 floor_cleanup_lane_flags[21] &= 0xFFFF9FFF;
               }
-              while ( v14 );
+              while ( v14 != 0 );
             }
           }
         }

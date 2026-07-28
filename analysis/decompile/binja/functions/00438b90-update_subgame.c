@@ -257,7 +257,7 @@
 0043930a        spawn_track_health_pickup(game, &runtime_cell_anchor->cell, &game->player)
 00439320        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_SPEEDUP_PICKUP && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
 0043932e        uint32_t var_50_8 = &game->player.body.bod.bod.vtable
-0043932f        struct TrackRowCell* var_54_3 = &runtime_cell_anchor->cell
+0043932f        struct cRSubLoc* var_54_3 = &runtime_cell_anchor->cell
 00439348        if (runtime_cell_anchor->cell.tile_id == SUBLOC_TILE_JETPACK_PICKUP && runtime_row_scan_begin s>= game->first_block_row_count && runtime_row_scan_begin s< game->completion_row_start)
 0043935a        spawn_track_jetpack_pickup(game, &runtime_cell_anchor->cell, &game->player)
 0043935f        enum SubLocTileId tile_id_1 = runtime_cell_anchor->cell.tile_id

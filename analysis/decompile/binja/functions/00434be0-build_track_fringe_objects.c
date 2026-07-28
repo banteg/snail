@@ -11,7 +11,7 @@
 00434c06        if (runtime->runtime_row_count s<= 0)
 00434c06        return
 00434c0c        struct SubRow* row = &runtime->runtime_rows
-00434c14        struct TrackRowCell* cell = &runtime->runtime_cells
+00434c14        struct cRSubLoc* cell = &runtime->runtime_cells
 00434c1a        struct SubRow* row_cursor = row
 0043514c        bool cond:2_1
 00434c1e        int32_t cells_remaining = 8

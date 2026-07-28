@@ -87,7 +87,7 @@ FRINGE_MESH_CURSOR_SIZES = {
 }
 
 RUNTIME_GRID_CLEAR_CURSOR_SIZES = {
-    "TrackRowCell": 0x54,
+    "cRSubLoc": 0x54,
     "TrackRowCellLaneAndFlagsStrideCursor": 0x54,
     "TrackRowCellFringeFrontStrideCursor": 0x54,
     "SubRow": 0xF4,
@@ -167,6 +167,7 @@ SYMBOL_UPDATES = (
     ("0x433fd0", "initialize_thanks_for_playing_screen"),
     ("0x4340c0", "uninit_thanks_screen"),
     ("0x4340f0", "update_thanks_for_playing_screen"),
+    ("0x434b60", "is_neighbor_cell_solid"),
     ("0x4972b0", "g_noop_runtime_callback_table"),
     ("0x4972f8", "g_face_callback_table"),
     ("0x497314", "g_sub_speed_up_vtable"),
@@ -365,7 +366,7 @@ SNAIL_SKIN_FIELD_UPDATES = (
 GOLB_PATH_FOLLOW_STATE_FIELD_UPDATES = (
     ("0x00", "active", "uint8_t"),
     ("0x04", "template_record", "cRPath*"),
-    ("0x08", "source_cell", "TrackRowCell*"),
+    ("0x08", "source_cell", "cRSubLoc*"),
     ("0x0c", "sample_index", "int32_t"),
     ("0x10", "progress", "float"),
     ("0x14", "vertical_offset", "float"),
@@ -378,7 +379,7 @@ typedef struct GolbPathFollowState {
     uint8_t active;
     uint8_t _pad_01[0x3];
     cRPath* template_record;
-    TrackRowCell* source_cell;
+    cRSubLoc* source_cell;
     int32_t sample_index;
     float progress;
     float vertical_offset;
@@ -454,6 +455,18 @@ PATH_OWNER_TYPE_NAMES = (
 PATH_PAIR_FIELD_UPDATES = (
     ("0x00", "primary", "cRPath"),
     ("0xa8", "secondary", "cRPath"),
+)
+
+SUB_LOC_OWNER_TYPE_NAMES = (
+    "cRSubLoc",
+    "SubLoc",
+    "TrackRowCell",
+)
+
+SUB_LOC_DEPENDENT_VIEW_TYPE_NAMES = (
+    "TrackRowCellSameLaneCursorView",
+    "SubRowParcelSpawnYStrideCursor",
+    "RuntimeCellStrideAnchor",
 )
 
 REQUIRED_HEADER_STRUCTS = (
@@ -534,7 +547,7 @@ REQUIRED_HEADER_STRUCTS = (
     "SubLocOpenEdgeFlag",
     "SubLocTileId",
     "SubLocFlag",
-    "TrackRowCell",
+    "cRSubLoc",
     "TrackRowCellLaneAndFlagsStrideCursor",
     "TrackRowCellFringeFrontStrideCursor",
     "TrackRowCellSameLaneCursorView",
@@ -1877,7 +1890,7 @@ REMOVE_SUBGAME_BODS_CURSOR_USER_VAR_UPDATES = (
         9,
         73,
         "runtime_cell_cursor",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "remove_subgame_bods",
@@ -2312,7 +2325,7 @@ POPULATE_ATTACHMENT_INSTALL_USER_VAR_UPDATES = (
     ),
 )
 
-# This short-lived EDI alias is already auto-typed as TrackRowCell*. Persisting
+# This short-lived EDI alias is already auto-typed as cRSubLoc*. Persisting
 # it as a user variable makes no ownership visible in HLIL and weakens several
 # set_bod_object call arguments to BodVtable**. Keep it automatic.
 REJECTED_POPULATE_RUNTIME_CELL_ALIAS_REMOVALS = (
@@ -2322,7 +2335,7 @@ REJECTED_POPULATE_RUNTIME_CELL_ALIAS_REMOVALS = (
         2068,
         73,
         "runtime_cell",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
 )
 
@@ -2525,7 +2538,7 @@ MERGE_RUNTIME_USER_VAR_UPDATES = (
         105,
         73,
         "cell",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "merge_track_tile_runs",
@@ -2577,7 +2590,7 @@ MERGE_RUNTIME_USER_VAR_UPDATES = (
     ),
 )
 
-# MakeFringe owns a plain SubRow cursor and advances one TrackRowCell at a
+# MakeFringe owns a plain SubRow cursor and advances one cRSubLoc at a
 # time. BN otherwise interprets both register lifetimes as pointers to the
 # complete embedded arrays and compensates with GameRoot-sized subtraction.
 # Preserve the exact register and spill identities recovered from the native
@@ -2597,7 +2610,7 @@ FRINGE_RUNTIME_USER_VAR_UPDATES = (
         52,
         72,
         "cell",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "build_track_fringe_objects",
@@ -2699,7 +2712,7 @@ ATTACHMENT_FOLLOW_ROOT_TARGET_VAR = (
 )
 
 # The entry-mesh milestone branches repeatedly reload
-# SubRow::primary_attachment_cell. BN's SSA split loses the TrackRowCell*/cRPath*
+# SubRow::primary_attachment_cell. BN's SSA split loses the cRSubLoc*/cRPath*
 # field types after the indexed 0xf4-byte row calculation even though the
 # canonical owner graph proves every load. Reapply the exact nine variable
 # identities so the milestone writes retain their real cell and Path owners.
@@ -2710,7 +2723,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
         186,
         68,
         "primary_attachment_cell_restore",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "update_track_attachment_follow_state",
@@ -2726,7 +2739,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
         218,
         67,
         "primary_attachment_cell_restore_object",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "update_track_attachment_follow_state",
@@ -2734,7 +2747,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
         256,
         67,
         "primary_attachment_cell_restore_alpha",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "update_track_attachment_follow_state",
@@ -2742,7 +2755,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
         327,
         66,
         "primary_attachment_cell_transition_flags",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "update_track_attachment_follow_state",
@@ -2750,7 +2763,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
         364,
         67,
         "primary_attachment_cell_transition_template",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "update_track_attachment_follow_state",
@@ -2766,7 +2779,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
         397,
         68,
         "primary_attachment_cell_transition_object",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
     (
         "update_track_attachment_follow_state",
@@ -2774,7 +2787,7 @@ ATTACHMENT_FOLLOW_USER_VAR_UPDATES = (
         435,
         67,
         "primary_attachment_cell_transition_alpha",
-        "TrackRowCell*",
+        "cRSubLoc*",
     ),
 )
 
@@ -2839,7 +2852,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x3bb700", "blink_random_index", "int32_t"),
     ("0x3bb704", "blink_random_samples", "float[0x18]"),
     ("0x3bb764", "player", "Player"),
-    ("0x3bfac8", "runtime_cells", "TrackRowCell[0xc80][8]"),
+    ("0x3bfac8", "runtime_cells", "cRSubLoc[0xc80][8]"),
     ("0x5ccac8", "runtime_rows", "SubRow[0xc80]"),
     ("0x68b4c8", "sub_high_score", "SubHighScore"),
     ("0xfd2b10", "current_high_score_record", "SubSolution"),
@@ -2981,10 +2994,10 @@ FRINGE_MANAGER_FIELD_UPDATES = (
     ("0x5fb40", "count", "int32_t"),
 )
 
-TRACK_ROW_CELL_FIELD_UPDATES = (
+SUB_LOC_FIELD_UPDATES = (
     ("0x00", "bod", "BodNode"),
     ("0x10", "anchor_position", "Vec3"),
-    ("0x1c", "render_arg_1c", "int32_t"),
+    ("0x1c", "render_arg_1c", "float"),
     ("0x20", "render_arg_20", "float"),
     ("0x24", "object", "Object*"),
     ("0x28", "color", "tColour"),
@@ -3017,8 +3030,8 @@ SUB_ROW_FIELD_UPDATES = (
     ("0x90", "parcel_spawn_position", "Vec3"),
     ("0x9c", "parcel_set_id", "int32_t"),
     ("0xa0", "attachment_template_index", "int32_t"),
-    ("0xa4", "primary_attachment_cell", "TrackRowCell*"),
-    ("0xa8", "secondary_attachment_cell", "TrackRowCell*"),
+    ("0xa4", "primary_attachment_cell", "cRSubLoc*"),
+    ("0xa8", "secondary_attachment_cell", "cRSubLoc*"),
     ("0xac", "installed_heading_delta", "float"),
     ("0xb0", "attachment_body", "BodBase"),
     ("0xe8", "ring_speed", "float"),
@@ -3148,41 +3161,90 @@ DATA_VAR_UPDATES = (
 )
 
 
-def ensure_sub_loc_alias(*, target: str) -> dict[str, object]:
-    try:
-        current = run_bn(
-            REPO_ROOT,
-            "types",
-            "show",
-            "SubLoc",
-            "--target",
-            target,
-            "--format",
-            "json",
-        )
-    except RuntimeError:
-        current = None
+def ensure_c_r_sub_loc_owner_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Promote the exact mobile-authored cRSubLoc class identity."""
 
-    if isinstance(current, dict) and current.get("name") == "SubLoc":
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    missing_from_header = [
+        name for name in SUB_LOC_OWNER_TYPE_NAMES if name not in equivalence
+    ]
+    if missing_from_header:
+        raise RuntimeError(
+            "authoritative header omitted cRSubLoc owner types: "
+            + ", ".join(missing_from_header)
+        )
+
+    stale_types = tuple(
+        name for name in SUB_LOC_OWNER_TYPE_NAMES if not equivalence[name]
+    )
+    if not stale_types:
         return {
-            "op": "types_declare",
+            "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "SubLoc alias already present",
-            "declaration": "typedef struct TrackRowCell SubLoc;",
+            "reason": "cRSubLoc owner types already equivalent",
+            "types": SUB_LOC_OWNER_TYPE_NAMES,
         }
 
-    return {
-        "op": "types_declare",
-        "declaration": "typedef struct TrackRowCell SubLoc;",
-        "result": run_bn(
-            REPO_ROOT,
-            "types",
-            "declare",
-            "--target",
-            target,
-            "typedef struct TrackRowCell SubLoc;",
-        ),
-    }
+    result = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=SUB_LOC_OWNER_TYPE_NAMES,
+    )
+    result["stale_types"] = stale_types
+    return result
+
+
+def ensure_c_r_sub_loc_dependent_view_types(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Keep cell-bearing analysis views aligned with the primary owner."""
+
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    missing_from_header = [
+        name
+        for name in SUB_LOC_DEPENDENT_VIEW_TYPE_NAMES
+        if name not in equivalence
+    ]
+    if missing_from_header:
+        raise RuntimeError(
+            "authoritative header omitted cRSubLoc-dependent views: "
+            + ", ".join(missing_from_header)
+        )
+
+    stale_types = tuple(
+        name
+        for name in SUB_LOC_DEPENDENT_VIEW_TYPE_NAMES
+        if not equivalence[name]
+    )
+    if not stale_types:
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRSubLoc-dependent views already equivalent",
+            "types": SUB_LOC_DEPENDENT_VIEW_TYPE_NAMES,
+        }
+
+    result = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=stale_types,
+        include_types=SUB_LOC_DEPENDENT_VIEW_TYPE_NAMES,
+    )
+    result["stale_types"] = stale_types
+    return result
 
 
 def ensure_golb_path_follow_state(*, target: str) -> dict[str, object]:
@@ -3537,7 +3599,7 @@ GOLB_PROTO_UPDATES = (
     ),
     (
         "initialize_path_follow_golb",
-        "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, TrackRowCell* source_cell, const Vec3* position, GolbShot* shot)",
+        "int32_t __thiscall initialize_path_follow_golb(GolbPathFollowState* state, cRSubLoc* source_cell, const Vec3* position, GolbShot* shot)",
     ),
     (
         "traverse_path_follow_golb",
@@ -3831,19 +3893,19 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_sub_loc",
-        "SubLoc* __thiscall initialize_sub_loc(SubLoc* cell)",
+        "cRSubLoc* __thiscall initialize_sub_loc(cRSubLoc* cell)",
     ),
     (
         "remove_sub_loc",
-        "void __thiscall remove_sub_loc(SubLoc* cell)",
+        "void __thiscall remove_sub_loc(cRSubLoc* cell)",
     ),
     (
         "update_sub_loc",
-        "void __thiscall update_sub_loc(SubLoc* cell)",
+        "void __thiscall update_sub_loc(cRSubLoc* cell)",
     ),
     (
         "get_track_cell_row_index",
-        "int32_t __thiscall get_track_cell_row_index(SubLoc* cell)",
+        "int32_t __thiscall get_track_cell_row_index(cRSubLoc* cell)",
     ),
     *PATH_MANAGER_PROTO_UPDATES,
     (
@@ -4273,7 +4335,7 @@ PROTO_UPDATES = (
 GOLDY_PATH_FOLLOW_PROTO_UPDATES = (
     (
         "begin_track_attachment_follow_state",
-        "void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, TrackRowCell* source_cell, const Vec3* world_position, Player* player)",
+        "void __thiscall begin_track_attachment_follow_state(cRPathFollowGoldy* follow_state, cRSubLoc* source_cell, const Vec3* world_position, Player* player)",
     ),
     (
         "update_track_attachment_follow_state",
@@ -4320,8 +4382,12 @@ CORE_SUBGAME_PROTO_UPDATES = (
         "void __thiscall mark_track_warning_zones(SubgameRuntime* game)",
     ),
     (
+        "is_neighbor_cell_solid",
+        "bool __thiscall is_neighbor_cell_solid(SubgameRuntime* game, cRSubLoc* cell, int32_t lane_offset, int32_t row_offset)",
+    ),
+    (
         "try_enter_track_attachment_from_swept_motion",
-        "void __thiscall try_enter_track_attachment_from_swept_motion(cRPath* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, TrackRowCell* source_cell)",
+        "void __thiscall try_enter_track_attachment_from_swept_motion(cRPath* self, float world_x, float world_y, float world_z, float sweep_dx, float sweep_dy, float sweep_dz, cRSubLoc* source_cell)",
     ),
     (
         "get_path_position_at_node",
@@ -4329,7 +4395,7 @@ CORE_SUBGAME_PROTO_UPDATES = (
     ),
     (
         "is_point_inside_track_attachment",
-        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, TrackRowCell* cell)",
+        "bool __thiscall is_point_inside_track_attachment(cRPath* self, Vec3 probe, Vec3 swept_motion, cRSubLoc* cell)",
     ),
     *GOLDY_PATH_FOLLOW_PROTO_UPDATES,
     (
@@ -4369,7 +4435,7 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ),
     (
         "get_track_grid_cell_at_world_position",
-        "TrackRowCell* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position)",
+        "cRSubLoc* __thiscall get_track_grid_cell_at_world_position(SubgameRuntime* game, Vec3* position)",
     ),
     (
         "sample_track_floor_height_at_position",
@@ -4377,11 +4443,11 @@ DEFERRED_SUBGAME_OWNER_PROTO_UPDATES = (
     ),
     (
         "spawn_track_health_pickup",
-        "void __thiscall spawn_track_health_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player)",
+        "void __thiscall spawn_track_health_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player)",
     ),
     (
         "spawn_track_jetpack_pickup",
-        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, TrackRowCell* cell, Player* player)",
+        "void __thiscall spawn_track_jetpack_pickup(SubgameRuntime* game, cRSubLoc* cell, Player* player)",
     ),
     (
         "get_track_runtime_cell_at_world_z",
@@ -4569,6 +4635,32 @@ PATH_OWNER_REANALYSIS_CONSUMERS = (
     "update_cameraman",
 )
 
+SUB_LOC_OWNER_REANALYSIS_CONSUMERS = (
+    "initialize_runtime_pools_and_path_template_bank",
+    "initialize_sub_loc",
+    "is_sub_loc_floor",
+    "is_sub_loc_ramp",
+    "is_sub_loc_empty",
+    "is_sub_loc_slide",
+    "remove_sub_loc",
+    "update_sub_loc",
+    "get_track_cell_row_index",
+    "get_track_grid_cell_at_world_position",
+    "is_neighbor_cell_solid",
+    "sample_track_floor_height_at_position",
+    "begin_track_attachment_follow_state",
+    "update_track_attachment_follow_state",
+    "initialize_path_follow_golb",
+    "try_enter_track_attachment_from_swept_motion",
+    "is_point_inside_track_attachment",
+    "populate_runtime_track_cells_from_segments",
+    "build_track_render_caches",
+    "build_track_fringe_objects",
+    "remove_subgame_bods",
+    "update_subgoldy",
+    "update_golb_ai",
+)
+
 
 def collect_c_r_path_owner_proto_updates() -> tuple[tuple[str, str], ...]:
     """Collect every Windows cRPath receiver ABI from the canonical replay."""
@@ -4594,6 +4686,36 @@ def collect_c_r_path_owner_proto_updates() -> tuple[tuple[str, str], ...]:
     )
     updates.update(dict(DEFERRED_PATH_OWNER_PROTO_UPDATES))
     return tuple(updates.items())
+
+
+def collect_c_r_sub_loc_owner_proto_updates() -> tuple[tuple[str, str], ...]:
+    """Collect every directly replayable Windows cRSubLoc ABI."""
+
+    updates: dict[str, str] = {}
+    for proto_updates in (
+        PROTO_UPDATES,
+        GOLB_PROTO_UPDATES,
+        CORE_SUBGAME_PROTO_UPDATES,
+    ):
+        updates.update(
+            {
+                identifier: prototype
+                for identifier, prototype in proto_updates
+                if "cRSubLoc*" in prototype
+            }
+        )
+    return tuple(updates.items())
+
+
+def collect_deferred_c_r_sub_loc_owner_proto_updates(
+) -> tuple[tuple[str, str], ...]:
+    """Collect guarded owner ABIs that require the established repair lane."""
+
+    return tuple(
+        (identifier, prototype)
+        for identifier, prototype in DEFERRED_SUBGAME_OWNER_PROTO_UPDATES
+        if "cRSubLoc*" in prototype
+    )
 
 
 def report_deferred_owner_prototypes(
@@ -4773,6 +4895,14 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     focused_group.add_argument(
+        "--sub-loc-owner-only",
+        action="store_true",
+        help=(
+            "Replay only the authored cRSubLoc type, runtime-grid embeds, "
+            "borrowed cell links, and directly writable Windows member ABIs."
+        ),
+    )
+    focused_group.add_argument(
         "--path-manager-only",
         action="store_true",
         help=(
@@ -4866,7 +4996,7 @@ def main() -> int:
                 ("cRPath", PATH_FIELD_UPDATES),
                 ("PathPair", PATH_PAIR_FIELD_UPDATES),
                 (
-                    "TrackRowCell",
+                    "cRSubLoc",
                     (("0x38", "attachment_template_record", "cRPath*"),),
                 ),
                 (
@@ -4900,6 +5030,84 @@ def main() -> int:
                             )
                         )
                     ),
+                )
+            )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
+    if args.sub_loc_owner_only:
+        sub_loc_owner_type_result = ensure_c_r_sub_loc_owner_types(
+            target=args.target,
+            header_path=header_path,
+        )
+        operations.append(sub_loc_owner_type_result)
+        sub_loc_dependent_view_result = (
+            ensure_c_r_sub_loc_dependent_view_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.append(sub_loc_dependent_view_result)
+        sub_loc_owner_proto_updates = collect_c_r_sub_loc_owner_proto_updates()
+        sub_loc_owner_results = apply_struct_and_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_updates=(
+                ("cRSubLoc", SUB_LOC_FIELD_UPDATES),
+                (
+                    "SubgameRuntime",
+                    (("0x3bfac8", "runtime_cells", "cRSubLoc[0xc80][8]"),),
+                ),
+                (
+                    "SubRow",
+                    (
+                        ("0xa4", "primary_attachment_cell", "cRSubLoc*"),
+                        ("0xa8", "secondary_attachment_cell", "cRSubLoc*"),
+                    ),
+                ),
+                (
+                    "GolbPathFollowState",
+                    (("0x08", "source_cell", "cRSubLoc*"),),
+                ),
+                (
+                    "cRPathFollowGoldy",
+                    (("0x08", "source_cell", "cRSubLoc*"),),
+                ),
+                ("JetPack", (("0x68", "source_cell", "cRSubLoc*"),)),
+                ("SubHealth", (("0x68", "source_cell", "cRSubLoc*"),)),
+                ("Slug", (("0xb0", "source_cell", "cRSubLoc*"),)),
+                ("SubGarbage", (("0xb8", "source_cell", "cRSubLoc*"),)),
+            ),
+            proto_updates=sub_loc_owner_proto_updates,
+        )
+        operations.extend(sub_loc_owner_results)
+        operations.extend(
+            report_deferred_owner_prototypes(
+                target=args.target,
+                updates=collect_deferred_c_r_sub_loc_owner_proto_updates(),
+                stale_identity_reason=(
+                    "the exact SubgameRuntime receiver needs the established "
+                    "guarded recreation lane before its cRSubLoc borrow can "
+                    "be persisted"
+                ),
+            )
+        )
+        if _has_verified_mutation(
+            [
+                sub_loc_owner_type_result,
+                sub_loc_dependent_view_result,
+                *sub_loc_owner_results,
+            ]
+        ):
+            operations.extend(
+                reanalyze_functions(
+                    REPO_ROOT,
+                    target=args.target,
+                    identifiers=SUB_LOC_OWNER_REANALYSIS_CONSUMERS,
                 )
             )
         return emit_summary(
@@ -5031,7 +5239,7 @@ def main() -> int:
                 required_structs=(
                     *BOD_CORE_OWNER_SIZES,
                     *FRINGE_OWNER_SIZES,
-                    "TrackRowCell",
+                    "cRSubLoc",
                 ),
             )
         )
@@ -5051,7 +5259,7 @@ def main() -> int:
                 struct_updates=(
                     ("Fringe", FRINGE_FIELD_UPDATES),
                     ("FringeManager", FRINGE_MANAGER_FIELD_UPDATES),
-                    ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
+                    ("cRSubLoc", SUB_LOC_FIELD_UPDATES),
                 ),
                 proto_updates=FRINGE_PROTO_UPDATES,
             )
@@ -5502,6 +5710,12 @@ def main() -> int:
 
     if not args.golb_only:
         operations.append(
+            ensure_c_r_sub_loc_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.append(
             ensure_c_r_path_owner_types(
                 target=args.target,
                 header_path=header_path,
@@ -5607,7 +5821,6 @@ def main() -> int:
             operations=operations,
         )
 
-    operations.append(ensure_sub_loc_alias(target=args.target))
     operations.extend(
         apply_struct_and_proto_updates(
             REPO_ROOT,
@@ -5647,7 +5860,7 @@ def main() -> int:
                 ("BodBase", BOD_BASE_FIELD_UPDATES),
                 ("Fringe", FRINGE_FIELD_UPDATES),
                 ("FringeManager", FRINGE_MANAGER_FIELD_UPDATES),
-                ("TrackRowCell", TRACK_ROW_CELL_FIELD_UPDATES),
+                ("cRSubLoc", SUB_LOC_FIELD_UPDATES),
                 ("RowModel", ROW_MODEL_FIELD_UPDATES),
                 ("SubRow", SUB_ROW_FIELD_UPDATES),
                 ("PathTemplateSample", PATH_TEMPLATE_SAMPLE_FIELD_UPDATES),

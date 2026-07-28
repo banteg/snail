@@ -15,7 +15,7 @@ typedef struct BodNode BodNode;
 typedef struct Player Player;
 typedef struct Sprite Sprite;
 typedef struct SubgameRuntime SubgameRuntime;
-typedef struct TrackRowCell TrackRowCell;
+typedef struct cRSubLoc cRSubLoc;
 typedef struct TransformMatrix TransformMatrix;
 typedef struct AnimManager AnimManager;
 
@@ -111,7 +111,7 @@ typedef struct JetPack {
     SubgameRuntime* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
-    struct TrackRowCell* source_cell;
+    struct cRSubLoc* source_cell;
     float bob_phase;
     float bob_phase_step;
     Vapour vapour_a;
@@ -131,7 +131,7 @@ typedef struct SubHealth {
     SubgameRuntime* owner_game;
     uint8_t unknown_48[0x1c];
     struct Sprite* sprite;
-    struct TrackRowCell* source_cell;
+    struct cRSubLoc* source_cell;
     float bob_phase;
     float bob_phase_step;
 } SubHealth;
@@ -168,7 +168,7 @@ typedef struct Slug {
     float death_toss_secondary_progress;
     float death_toss_secondary_progress_step;
     struct Sprite* sprite;
-    struct TrackRowCell* source_cell;
+    struct cRSubLoc* source_cell;
     uint8_t passed_player;
     uint8_t unknown_b5[0x03];
     float lateral_phase;
@@ -290,7 +290,7 @@ typedef SubRingPool RingOrSpecialEffectPool;
 SubRing* __thiscall initialize_track_ring_or_special_effect_runtime(SubRing* ring);
 void __thiscall spawn_track_ring_or_special_effect(
     SubgameRuntime* game,
-    TrackRowCell* cell,
+    cRSubLoc* cell,
     int32_t requested_kind,
     Player* player,
     float ring_speed);

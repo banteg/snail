@@ -21,7 +21,7 @@ with `8` clean masked operands.
 The live BN prototype now matches that exact source evidence as
 `double __thiscall(SubgameRuntime*, Vec3*)` rather than the stale `Game*`
 identity. Refreshed BN and IDA output agree on the typed grid lookup,
-`TrackRowCell::tile_id`, and the stored `anchor_position.y` special case. The
+`cRSubLoc::tile_id`, and the stored `anchor_position.y` special case. The
 63/63 matcher remains byte-identical.
 
 ## 2026-07-19 tile identity vocabulary

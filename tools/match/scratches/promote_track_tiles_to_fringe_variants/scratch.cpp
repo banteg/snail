@@ -9,13 +9,13 @@
 #include "track_attachment_types.h"
 
 
-unsigned char __fastcall is_sub_loc_empty(TrackRowCell* cell);
+unsigned char __fastcall is_sub_loc_empty(cRSubLoc* cell);
 
 void SubgameRuntime::promote_track_tiles_to_fringe_variants()
 {
     int row = 0;
     if (runtime_row_count - 1 > 0) {
-        TrackRowCell* cell = &runtime_cells[0][0];
+        cRSubLoc* cell = &runtime_cells[0][0];
         int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;
         do {
             int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);

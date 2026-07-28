@@ -3,17 +3,18 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: is_neighbor_cell_solid @ 0x434b60 */
 
-00434b6a        int32_t result = get_track_cell_row_index(arg2)
-00434b76        int32_t ecx_2 = arg2->lane_and_flags & 7
-00434b7f        if (ecx_2 + arg3 u< 8)
-00434b85        result += arg4
-00434b8e        if (result s>= 0 && result s< *(arg1 + 0x54))
-00434b9e        int32_t eax_2 = (ecx_2 + (result << 3) + arg3) * 0x15
+00434b6a        int32_t eax = get_track_cell_row_index(cell)
+00434b76        int32_t ecx_2 = cell->lane_and_flags & 7
+00434b7f        if (ecx_2 + lane_offset u< 8)
+00434b85        eax += row_offset
+00434b8e        if (eax s>= 0 && eax s< game->runtime_row_count)
+00434b9e        int32_t eax_3 = (ecx_2 + (eax << 3) + lane_offset) * 0x15
 00434ba1        int32_t ecx_5 = 0
-00434ba3        ecx_5.b = *(arg1 + (eax_2 << 2) + 0x3bfb04)
-00434bb5        result = is_sub_loc_empty(arg1 + (eax_2 << 2) + 0x3bfac8)
-00434bcf        if (result.b == 0 && ecx_5 != 0 && ecx_5 != 0x23 && ecx_5 != 0x1c && ecx_5 != 0x16)
-00434bd2        result.b = 1
-00434bd5        return result
-00434bd9        result.b = 0
-00434bdc        return result
+00434ba3        ecx_5.b = (&game->runtime_cells[0][0].tile_id)[eax_3 << 2]
+00434bcf        if (is_sub_loc_empty(&game->runtime_cells + (eax_3 << 2)).b == 0 && ecx_5 != 0 && ecx_5 != 0x23 && ecx_5 != 0x1c && ecx_5 != 0x16)
+00434bd2        int32_t eax_5
+00434bd2        eax_5.b = 1
+00434bd5        return 1
+00434bd9        int32_t eax_6
+00434bd9        eax_6.b = 0
+00434bdc        return 0

@@ -130,7 +130,7 @@ SLUG_FIELD_UPDATES = (
     ("0xa4", "death_toss_secondary_progress", "float"),
     ("0xa8", "death_toss_secondary_progress_step", "float"),
     ("0xac", "sprite", "Sprite*"),
-    ("0xb0", "source_cell", "TrackRowCell*"),
+    ("0xb0", "source_cell", "cRSubLoc*"),
     ("0xc0", "owner_player", "Player*"),
 )
 
@@ -157,7 +157,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_slug_hazard",
-        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, TrackRowCell* cell, Player* owner_player)",
+        "void __thiscall spawn_slug_hazard(SubgameRuntime* game, cRSubLoc* cell, Player* owner_player)",
     ),
     (
         "update_slug_voice_ai",
@@ -215,7 +215,7 @@ PROTO_UPDATES = (
     ),
     (
         "spawn_track_ring_or_special_effect",
-        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, TrackRowCell* cell, int32_t requested_kind, Player* player, float ring_speed)",
+        "void __thiscall spawn_track_ring_or_special_effect(SubgameRuntime* game, cRSubLoc* cell, int32_t requested_kind, Player* player, float ring_speed)",
     ),
     (
         "initialize_ring_or_special_effect_particles",

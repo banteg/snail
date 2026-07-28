@@ -54,12 +54,7 @@
 0043330d        struct SubgameRuntime* owner_subgame = manager->owner_subgame
 00433310        struct Fringe* fringe_object = *(owner_subgame + fringe_byte_offset)
 00433315        if (fringe_object != 0)
-00433317        struct tColourSmall color_2
-00433317        color_2.b = manager->skirt_color_bgra.b
-00433317        color_2.g = manager->skirt_color_bgra.g
-00433317        color_2.r = manager->skirt_color_bgra.r
-00433317        color_2.a = manager->skirt_color_bgra.a
-00433349        append_track_cache_object(manager, row_index, fringe_object->bod.object, &owner_subgame->runtime_cells[0][0].anchor_position + cell_byte_offset, manager->shared_vertex_buffers[4], &vertex_count_5, manager->shared_index_buffers[4], &index_count_4, manager->max_vertex_counts[4], manager->max_index_counts[4], color_2, 0)
+00433349        append_track_cache_object(manager, row_index, fringe_object->bod.object, &owner_subgame->runtime_cells[0][0].anchor_position + cell_byte_offset, manager->shared_vertex_buffers[4], &vertex_count_5, manager->shared_index_buffers[4], &index_count_4, manager->max_vertex_counts[4], manager->max_index_counts[4], manager->skirt_color_bgra, 0)
 00433373        *(&manager->slots[0][4].bod.object)[cache_row_index * 0x4b]->group_texture_refs = (*(manager->owner_subgame + fringe_byte_offset))->bod.object->facequads->texture_ref
 00433378        *(manager->owner_subgame + fringe_byte_offset) = 0
 00433383        fringe_byte_offset += 4
@@ -137,16 +132,16 @@
 00433673        struct ObjectIndexBufferResource* index_buffer = (*cache_object_ref)->index_buffer->buffer
 0043367d        uint16_t* locked_indices
 0043367d        index_buffer->vtbl->Lock(index_buffer, 0, max_vertex_count_cursor[5] << 1, &locked_indices, 0)
-0043368c        int32_t ecx_50 = *max_vertex_count_cursor * 0x18
+0043368c        int32_t ecx_51 = *max_vertex_count_cursor * 0x18
 00433694        int32_t esi_2
 00433694        int32_t edi_1
-00433694        edi_1, esi_2 = __builtin_memcpy(locked_vertices, max_vertex_count_cursor[0xa], ecx_50 & 0xfffffffc)
-0043369f        __builtin_memcpy(edi_1, esi_2, ecx_50 & 3)
-004336ab        int32_t ecx_55 = family_staging_cursor[5] << 1
+00433694        edi_1, esi_2 = __builtin_memcpy(locked_vertices, max_vertex_count_cursor[0xa], ecx_51 & 0xfffffffc)
+0043369f        __builtin_memcpy(edi_1, esi_2, ecx_51 & 3)
+004336ab        int32_t ecx_56 = family_staging_cursor[5] << 1
 004336b2        int32_t esi_3
 004336b2        int32_t edi_2
-004336b2        edi_2, esi_3 = __builtin_memcpy(locked_indices, family_staging_cursor[0xf], ecx_55 & 0xfffffffc)
-004336b9        __builtin_memcpy(edi_2, esi_3, ecx_55 & 3)
+004336b2        edi_2, esi_3 = __builtin_memcpy(locked_indices, family_staging_cursor[0xf], ecx_56 & 0xfffffffc)
+004336b9        __builtin_memcpy(edi_2, esi_3, ecx_56 & 3)
 004336c4        struct ObjectVertexBuffer* vertex_buffer_1 = (*cache_object_ref)->render_buffers->vertex_buffer
 004336ca        vertex_buffer_1->vtbl->Unlock(vertex_buffer_1)
 004336d0        struct ObjectIndexBuffer* index_buffer_1 = (*cache_object_ref)->index_buffer

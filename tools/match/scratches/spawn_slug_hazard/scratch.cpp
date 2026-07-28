@@ -16,7 +16,7 @@
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-void SubgameRuntime::spawn_slug_hazard(TrackRowCell* cell, Player* owner_player)
+void SubgameRuntime::spawn_slug_hazard(cRSubLoc* cell, Player* owner_player)
 {
     int slot_index = 0;
     Slug* scan = slug_hazards.slots;

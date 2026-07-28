@@ -1,6 +1,6 @@
 # remove_sub_loc
 
-First relationship scratch for `SubLoc::remove_sub_loc()`
+First relationship scratch for `cRSubLoc::remove_sub_loc()`
 at `0x439bc0`.
 
 Android preserves the authored operation as `cRSubLoc::Remove()`: it begins
@@ -14,7 +14,7 @@ exact prefix, and all `17` masked operands clean.
 
 Recovered behavior:
 
-- the receiver is the full `SubLoc` runtime-grid object, not a
+- the receiver is the full `cRSubLoc` runtime-grid object, not a
   `SubLazerSlot`; its first `0x38` bytes are inherited `BodBase`, including
   zero-offset `BodNode` membership and `position +0x10`;
 - tile ids `0x1d` and `0x1e` may unlink
@@ -23,7 +23,7 @@ Recovered behavior:
   `SubRow::row_model +0x04`. The scratch keeps the native outer cursor and
   typed offset accesses instead of folding `0x6410e0` into the row pointer;
 - the cell's own BOD node is removed when active;
-- the four `SubLoc::fringe_*` pointers are scanned and any active fringe
+- the four `cRSubLoc::fringe_*` pointers are scanned and any active fringe
   BOD is unlinked back into the shared free list.
 
 This helper is called by the wall-2 emitter update path and by
@@ -38,7 +38,7 @@ fringe-array spelling.
 
 ## 2026-06-18 BN/IDA name sync
 
-At that stage, the analysis-side `TrackRowCell` prefix was promoted to
+At that stage, the analysis-side `cRSubLoc` prefix was promoted to
 `BodNode`, `+0x40` was renamed to `lane_and_flags`, and the four directional
 fringe pointers were synced as `fringe_front/right/left/back`. BN then resolved
 the cell unlink block through its zero-offset list prefix and started the final
@@ -118,13 +118,13 @@ the removable node begins at `attachment_body +0xb0` (`GameRoot +0x641190`),
 not `row_model +0x04`. Switching the scratch to the real attachment body clears
 all three mismatches without changing the honest 91.19%, 130/131 result.
 
-The analysis headers now retain `SubLoc` as the authored alias for the Windows
-0x54-byte `TrackRowCell` layout, and the repeatable BN/IDA syncs apply that
+The analysis headers now retain `cRSubLoc` as the authored alias for the Windows
+0x54-byte `cRSubLoc` layout, and the repeatable BN/IDA syncs apply that
 receiver plus the proven void/thiscall contract to `Remove` and `AI`, alongside
 the exact constructor and `Yi` signatures.
 
 2026-07-12 authored lifecycle name: Android's `cRSubLoc::Remove()`, the Windows
-constructor table, and both native callers prove this tears down one SubLoc,
+constructor table, and both native callers prove this tears down one cRSubLoc,
 not a SubLazer projectile. The stable harness name is now `remove_sub_loc`;
 the rename is codegen-neutral at the honest 91.19% baseline.
 
@@ -138,7 +138,7 @@ all 17 operands clean. The final fringe reload remains an honest CSE residual.
 ## 2026-07-14 cell-base ownership
 
 The receiver's own active-node precheck/removal now uses inherited
-`SubLoc::list_flags` and passes `this` through the real
+`cRSubLoc::list_flags` and passes `this` through the real
 `BodBase -> BodNode` chain. Exact constructor evidence and the complete 0x54
 slab stride fix that base independently of this near-match. Focused teardown is
 byte-stable at 91.19%, 130/131 instructions, with its 87-instruction prefix and
@@ -158,7 +158,7 @@ operands).
 ## 2026-07-14 fringe-array ownership
 
 The directional `fringe_front/right/left/back` tail is now also exposed as the
-four-entry `SubLoc::fringes` array. Directional builder code keeps its semantic
+four-entry `cRSubLoc::fringes` array. Directional builder code keeps its semantic
 field names, while teardown, subgame activation, and runtime-cell population
 derive their scan count and first cursor from the owned array. This closes the
 contiguous tail without erasing the four independently proven directions.
@@ -192,7 +192,7 @@ be removed. Focused output remains 91.19%, 130/131 instructions, prefix
 The decompiler replay now keeps `GameRoot::active_bod_list +0x5a8` and the
 complete `GameRoot::subgame +0x74618` owner live together. Rebinding
 `g_game_base` after root composition prevents IDA from retaining the earlier
-sparse frame-root pointer snapshot, while the authored `void` SubLoc teardown
+sparse frame-root pointer snapshot, while the authored `void` cRSubLoc teardown
 contract remains explicit in both views. Focused output is unchanged at
 91.19%, 130/131 instructions, prefix 87/131, with all 17 operands clean.
 

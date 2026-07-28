@@ -6,7 +6,7 @@
 void __thiscall project_position_onto_track_attachment(SubgameRuntime *game, Vec3 *position, float *out_angle)
 {
   SubRow *runtime_row; // eax
-  TrackRowCell *primary_attachment_cell; // edi
+  cRSubLoc *primary_attachment_cell; // edi
   cRPath *attachment_template_record; // ebx
   PathTemplateSample *sample; // eax
   float y; // edx

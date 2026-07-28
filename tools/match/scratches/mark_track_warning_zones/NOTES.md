@@ -13,8 +13,8 @@ synthetic dependency is warranted. The pinned semantics are:
   (`0x18`), suppressing both random salt (`0x08`) and garbage (`0x10`)
 - cell bank: game + 0x3bfb04, stride 84 (0x54), tile byte +0x00,
   lane/flags dword +0x04, 8 cells per row, row-major contiguous walk
-- relation to shared `TrackRowCell`: this cursor starts at the tile byte, so
-  its `+0x00/+0x04` fields are `TrackRowCell +0x3c/+0x40`. The shared
+- relation to shared `cRSubLoc`: this cursor starts at the tile byte, so
+  its `+0x00/+0x04` fields are `cRSubLoc +0x3c/+0x40`. The shared
   header now records the full 0x54 stride and names `+0x40` as
   `lane_and_flags`; this scratch keeps the tile-byte view because it preserves
   the current register/offset shape.
@@ -29,7 +29,7 @@ after the footprint. The scratch now spells that directly instead of using an
 independent `r` local. Focused Wibo improves to 36.27% (105/99 insns), but the
 remaining diff is still broad register ownership: VC6 keeps `this` outside
 `ecx` and strength-reduces the two-lane stamp. Adjacent exact
-`is_neighbor_cell_solid` independently confirms the same `TrackRowCell`
+`is_neighbor_cell_solid` independently confirms the same `cRSubLoc`
 `tile_id +0x3c` and `lane_and_flags +0x40` layout.
 
 2026-06-20 shared-owner consolidation: `runtime_row_count` and the
@@ -40,7 +40,7 @@ lateral-offset loop both regressed, so the prior pointer scan remains.
 
 2026-07-10 runtime-grid ownership pass: the tile-byte cursor is now obtained
 through `SubgameRuntime::runtime_cell_tile_views()`, an inline field-first view
-of the owned `TrackRowCell[3200][8]` slab. This preserves the 0x54 cursor
+of the owned `cRSubLoc[3200][8]` slab. This preserves the 0x54 cursor
 stride without pretending the tile-byte view owns separate storage.
 
 ## 2026-07-14 cell-owner and cursor recovery
@@ -48,7 +48,7 @@ stride without pretending the tile-byte view owns separate storage.
 - The warning write now names the complete owned cell directly as
   `runtime_cells[row][col + dc].lane_and_flags`. This keeps the outer tile-byte
   scan as a field-first view while making the stamped destination a real
-  `SubLoc`, and stops VC6 from strength-reducing the six-by-two footprint into
+  `cRSubLoc`, and stops VC6 from strength-reducing the six-by-two footprint into
   a synthetic moving lane pointer.
 - Native keeps two distinct scan cursors: an EAX next-row cursor and an EDX
   current-cell cursor. Each outer iteration borrows the row cursor, advances
@@ -81,7 +81,7 @@ independent loads remain intentionally unmatched rather than barrier-forced.
 
 Binary Ninja now carries the source-level `TrackRowCellTileByteView` across all
 three native pointer lifetimes: the EAX row cursor, EDX current-cell cursor,
-and saved stack copy. This view begins at `TrackRowCell::tile_id +0x3c` and has
+and saved stack copy. This view begins at `cRSubLoc::tile_id +0x3c` and has
 the exact `0x54` induction stride; its tail aliases surrounding grid storage
 and does not claim a standalone allocation or full-cell ownership.
 

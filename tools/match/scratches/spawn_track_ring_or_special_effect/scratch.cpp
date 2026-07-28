@@ -19,7 +19,7 @@ struct SubRingSlotCursor {
 };
 
 void SubgameRuntime::spawn_track_ring_or_special_effect(
-    TrackRowCell* cell,
+    cRSubLoc* cell,
     int requested_kind,
     Player* player,
     float ring_speed)
@@ -153,7 +153,7 @@ void SubgameRuntime::spawn_track_ring_or_special_effect(
         }
         }
 
-        TrackRowCell* result = get_track_grid_cell_at_world_position(
+        cRSubLoc* result = get_track_grid_cell_at_world_position(
             &slot_cursor->ring.transform.position);
         if (result->tile_id != SUBLOC_TILE_WALL2) {
             slot_cursor->ring.kind = (SubRingKind)requested_kind;

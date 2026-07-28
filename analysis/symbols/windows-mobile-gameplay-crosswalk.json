@@ -13807,16 +13807,16 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "cRSubGame::cRSubGame()",
+          "score": 0.7761,
+          "name_score": 0.675,
+          "size_score": 0.9278
+        },
+        {
           "symbol": "cRSubGame::CondenseTrack()",
           "score": 0.645,
           "name_score": 0.4151,
           "size_score": 0.9898
-        },
-        {
-          "symbol": "cRSubGame::cRSubGame()",
-          "score": 0.6411,
-          "name_score": 0.45,
-          "size_score": 0.9278
         },
         {
           "symbol": "cRPath::BuildTurnunder(float, int, bool, char*, char*)",
@@ -13839,6 +13839,18 @@
       ],
       "ios_candidates": [
         {
+          "symbol": "cRSubLoc::AI()",
+          "score": 0.7548,
+          "name_score": 0.6,
+          "size_score": 0.9871
+        },
+        {
+          "symbol": "cRSubGame::cRSubGame()",
+          "score": 0.643,
+          "name_score": 0.675,
+          "size_score": 0.5951
+        },
+        {
           "symbol": "cRPath::BuildInvert(float, int, bool, char*, char*)",
           "score": 0.6004,
           "name_score": 0.3478,
@@ -13855,18 +13867,6 @@
           "score": 0.5891,
           "name_score": 0.3571,
           "size_score": 0.9372
-        },
-        {
-          "symbol": "std::vector<OFRetainedPtr<NSString>, std::allocator<OFRetainedPtr<NSString>>>::_M_insert_aux(__gnu_cxx::__normal_iterator<OFRetainedPtr<NSString>*, std::vector<OFRetainedPtr<NSString>, std::allocator<OFRetainedPtr<NSString>>>>, OFRetainedPtr<NSString> const&)",
-          "score": 0.5798,
-          "name_score": 0.3704,
-          "size_score": 0.894
-        },
-        {
-          "symbol": "cRSubGame::CondenseTrack()",
-          "score": 0.5731,
-          "name_score": 0.4151,
-          "size_score": 0.81
         }
       ]
     },

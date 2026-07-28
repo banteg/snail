@@ -3,7 +3,7 @@
 /* selector: spawn_slug_hazard */
 
 // Void allocator for one live `Slug`: scans the eight owned 0xec-byte records for `SUB_SLUG_STATE_INACTIVE`, writes `SUB_SLUG_STATE_ACTIVE`, installs the borrowed owner Player, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning method as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`; both independently leave incompatible receiver and random/blink residues on exhaustion versus success, proving those values are incidental rather than a return contract. The honest Windows void reconstruction preserves the resulting two-instruction epilogue residual.
-void __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, Player *owner_player)
+void __thiscall spawn_slug_hazard(SubgameRuntime *game, cRSubLoc *cell, Player *owner_player)
 {
   int v3; // eax
   struct SlugStateStrideCursor *slug_state_cursor; // ecx
@@ -23,7 +23,7 @@ void __thiscall spawn_slug_hazard(SubgameRuntime *game, TrackRowCell *cell, Play
 
   v3 = 0;
   for ( slug_state_cursor = (struct SlugStateStrideCursor *)&game->slug_hazards.slots[0].state;
-        slug_state_cursor->state;
+        slug_state_cursor->state != SUB_SLUG_STATE_INACTIVE;
         ++slug_state_cursor )
   {
     if ( ++v3 >= 8 )

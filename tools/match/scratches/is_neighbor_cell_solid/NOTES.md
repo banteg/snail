@@ -39,13 +39,13 @@ Android preserves this method as `cRSubGame::TestLoc(cRSubLoc*, int, int)`.
 Its body calls `cRSubLoc::Yi()`, performs the same lane and row bounds checks,
 indexes the same eight-lane cell grid, calls `cRSubLoc::IsEmpty()`, and applies
 the same final exclusions for tile ids `35`, `0`, `22`, and `28`. The Windows
-scratch now calls the shared `SubLoc` predicate method directly and remains
+scratch now calls the shared `cRSubLoc` predicate method directly and remains
 exact at 47/47 with two clean operands.
 
 ## 2026-07-14 runtime-cell offset ownership
 
 The native helper still requires its separate byte-offset base before loading
-the tile id and forming the `SubLoc*` argument. Those two displacements now
+the tile id and forming the `cRSubLoc*` argument. Those two displacements now
 derive from `SubgameRuntime::runtime_cells` and
 `runtime_cells[0][0].tile_id` with `offsetof`, rather than repeating
 `0x3bfac8` and `0x3bfb04`. Binary Ninja confirms the same `0x54` cell with

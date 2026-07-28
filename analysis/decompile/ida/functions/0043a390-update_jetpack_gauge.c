@@ -9,7 +9,7 @@ void __thiscall update_jetpack_gauge(SubHover *sub_hover)
   char v4; // c0
   double v5; // st7
   float warning_intensity; // eax
-  Vec4 *p_position; // [esp-4h] [ebp-18h]
+  Vec3 *p_position; // [esp-4h] [ebp-18h]
   float v8; // [esp+0h] [ebp-14h]
   float v9; // [esp+0h] [ebp-14h]
   float v10; // [esp+0h] [ebp-14h]
@@ -33,7 +33,7 @@ void __thiscall update_jetpack_gauge(SubHover *sub_hover)
     else
     {
       v3 = v12;
-      if ( v4 )
+      if ( v4 != 0 )
       {
         sub_hover->warning_intensity = v3 * 10.0;
       }
@@ -42,11 +42,11 @@ void __thiscall update_jetpack_gauge(SubHover *sub_hover)
         sub_hover->warning_intensity = 1.0;
         if ( (BYTE1(get_track_runtime_cell_at_world_z(
                       &g_game_base->subgame,
-                      (Vec3 *)&g_game_base->subgame.player.body.transform.position)->flags)
+                      &g_game_base->subgame.player.body.transform.position)->flags)
             & 0x80u) != 0 )
         {
           sub_hover->progress = 0.94;
-          debug_report_stub();
+          debug_report_stub(aAutoShutoffJet);
         }
       }
       else

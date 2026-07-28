@@ -49,7 +49,7 @@ public:
     float death_toss_secondary_progress;      // +0xa4, write-only before teardown
     float death_toss_secondary_progress_step; // +0xa8, write-only before teardown
     Sprite* sprite;                    // +0xac, borrowed SpriteManager handle
-    TrackRowCell* source_cell;         // +0xb0, borrowed runtime-grid cell
+    cRSubLoc* source_cell;         // +0xb0, borrowed runtime-grid cell
     unsigned char passed_player;       // +0xb4
     char unknown_b5[0xb8 - 0xb5];
     float lateral_phase;               // +0xb8

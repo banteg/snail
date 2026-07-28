@@ -2,7 +2,7 @@
 /* function: update_track_attachment_follow_state @ 0x420cb0 */
 /* selector: update_track_attachment_follow_state */
 
-// Advances one live attachment-follow session along its borrowed Path and SubLoc, updates progress and local height, publishes the interpolated basis into the live Player matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets.
+// Advances one live attachment-follow session along its borrowed cRPath and cRSubLoc, updates progress and local height, publishes the interpolated basis into the live Player matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets.
 int32_t __thiscall update_track_attachment_follow_state(
         cRPathFollowGoldy *follow_state,
         float path_factor,
@@ -54,7 +54,7 @@ int32_t __thiscall update_track_attachment_follow_state(
   PathTemplateSample *v48; // ecx
   double v49; // st7
   TransformMatrix *v50; // esi
-  TrackRowCell *source_cell; // ecx
+  cRSubLoc *source_cell; // ecx
   double v52; // st7
   double v53; // st7
   double v54; // st6

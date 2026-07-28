@@ -45,7 +45,7 @@ and `update_subgoldy` remains 72.51%.
 candidate/target insns, no masked operands, and the same final
 `mov ecx, edx` residual. No source edit was accepted.
 
-2026-06-18 naming sync: rejected the stale `TrackRowCell*` interpretation for
+2026-06-18 naming sync: rejected the stale `cRSubLoc*` interpretation for
 `Player +0x98/+0x9c`. The exact `initialize_subgoldy_ghost` scratch proves both
 slots are allocated `Sprite*` values, and Binary Ninja/readback now names them
 `ghost_sprite_a` and `ghost_sprite_b`.

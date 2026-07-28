@@ -4,7 +4,7 @@ Exact VC6 match: 100.00% (111/111 instructions, full prefix, six clean
 masked operands).
 
 The function scans `secondary_samples` backward, adds the borrowed
-`TrackRowCell::position` to each sample origin, subtracts that world
+`cRSubLoc::position` to each sample origin, subtracts that world
 origin from the by-value probe, and rotates the resulting local vector through
 the sample's `inverse_matrix`. It accepts points inside the widened lane
 bounds: X within the integer half-width plus `0.3`, Y in `[-0.3, 0.3)`, and
@@ -19,7 +19,7 @@ ABI:
 
 - `Path` owns the method;
 - `probe` and `swept_motion` are passed by value;
-- `TrackRowCell* cell` is borrowed;
+- `cRSubLoc* cell` is borrowed;
 - the currently unused swept-motion value still accounts for native
   `ret 0x1c`.
 
@@ -51,7 +51,7 @@ No volatile, inline assembly, dummy alias, or operand masking was introduced.
 
 The live Windows ABI is now durable across both analysis backends: ECX owns a
 `Path*`, stack `+0x4` and `+0x10` contain the two by-value vectors, stack
-`+0x1c` contains the borrowed `TrackRowCell*`, and both native exits use
+`+0x1c` contains the borrowed `cRSubLoc*`, and both native exits use
 `ret 0x1c`.
 
 The sample member at `+0x40` is also proved as a full `TransformMatrix`, not

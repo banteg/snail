@@ -39,7 +39,7 @@ The row scanner uses the canonical `SubRow` owner at
 - track cell stride: `0x54` bytes;
 - four fringe-object pointers begin at the cell's `+0x44` lane.
 
-`RuntimeCellSlotBase` deliberately preserves the indexed slot base and accesses the cell through its native `+0x3bfac8` displacement. A direct typed `TrackRowCell*` caused VC6 to fold that displacement too early and materially changed register allocation.
+`RuntimeCellSlotBase` deliberately preserves the indexed slot base and accesses the cell through its native `+0x3bfac8` displacement. A direct typed `cRSubLoc*` caused VC6 to fold that displacement too early and materially changed register allocation.
 
 The runtime block includes plausible original insertion idioms for the two intrusive lists and semantic lanes for parcels, fringe objects, health pickups, speedups, jetpacks, garbage and salt hazards, slugs, and authored/ambient rings.
 
@@ -291,7 +291,7 @@ mismatches with 116 other operands clean; no aliases are registered.
 ## 2026-07-19 directional fringe-slot ownership
 
 The state-2 runtime-cell consumer walks the four contiguous directional
-`Fringe*` slots at `TrackRowCell +0x44..+0x50`. The cell owns those pointer
+`Fringe*` slots at `cRSubLoc +0x44..+0x50`. The cell owns those pointer
 slots; each non-null `Fringe` remains borrowed from the embedded
 `FringeManager`, is temporarily linked through
 `SubgameRuntime::fringe_attachment_list_head`, and receives a copied skirt
@@ -373,7 +373,7 @@ field chain closes exactly and leaves focused Wibo unchanged at 78.22%,
 1033/1033 instructions, with 116 clean operands and the same two honest
 jump-table mismatches.
 
-2026-07-13 shared runtime-cell AI dispatch: the active SubLoc slot-zero call
+2026-07-13 shared runtime-cell AI dispatch: the active cRSubLoc slot-zero call
 now uses the shared `BodAiDispatch` ABI overlay instead of a scratch-local
 virtual class. This preserves the explicit cRBod-compatible vtable word and
 does not change focused output: 78.22%, 1033/1033 instructions, 116 clean
@@ -393,7 +393,7 @@ operands, and the same two honest jump-table mismatches.
   `0x68b4c8 + 0x2b8c88 == 0x944150`. Direct owner access recovers the native
   index/address sequence and a further clean audited operand.
 - The runtime-cell body now names `object` and `render_arg_20`; adjacent lanes
-  use `SubLoc` pointer arithmetic, and the projected ring cell is explicitly
+  use `cRSubLoc` pointer arithmetic, and the projected ring cell is explicitly
   the same lane six rows ahead (`6 * 8` cells). `RuntimeCellSlotBase` remains
   only to preserve VC6's native late `+0x3bfac8` displacement and register
   allocation, as documented above.
@@ -407,7 +407,7 @@ masked-operand waiver is introduced.
 
 Runtime cells now expose their real inherited `BodBase`: active checks and
 list insertion use inherited `BodNode`, object/render fields stay on the same
-base, and all anchor reads use `SubLoc::position`. The exact constructor and
+base, and all anchor reads use `cRSubLoc::position`. The exact constructor and
 0x54 stride preserve the main-loop scratch byte-for-byte at 79.75%, 1036/1033
 instructions, with 117 clean operands and the same two honest table mismatches.
 
@@ -431,7 +431,7 @@ The state-3/4 pause branch now enters the authored `SubPause` embedded at
 The row scan now names the model-present and parcel-spawn lanes, while the
 ring dispatcher names all five authored ring modes and the explicit suppress
 bit. These are `SubRow` flags; they are intentionally separate from the
-adjacent `SubLoc::lane_and_flags` hazard/cache owner. Focused output remains
+adjacent `cRSubLoc::lane_and_flags` hazard/cache owner. Focused output remains
 byte-identical at 79.75%, 1036/1033 instructions, prefix 9/1033, 117 clean
 operands, and the same two table-identity mismatches.
 
@@ -494,7 +494,7 @@ IDA now composes the constructor-proven front-end block into the same
 `GameRoot` used by the subgame tail. This function consequently reaches the
 embedded `StarManager` and both `Intro` replay fields directly. The row and
 cell induction registers remain byte offsets: treating them as `SubRow *` or
-`TrackRowCell *` would invent ownership, so the replay deliberately leaves
+`cRSubLoc *` would invent ownership, so the replay deliberately leaves
 them alone.
 
 This is analysis-only. The honest focused frontier remains 79.75% at

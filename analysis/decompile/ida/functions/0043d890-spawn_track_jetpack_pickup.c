@@ -2,8 +2,8 @@
 /* function: spawn_track_jetpack_pickup @ 0x43d890 */
 /* selector: spawn_track_jetpack_pickup */
 
-// Seeds the owned `JetPack` singleton from the active runtime cell. Android and iOS retain `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract rather than exporting incompatible incidental register values.
-void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *cell, Player *player)
+// Seeds the owned `JetPack` singleton from the active runtime cell, then inserts its zero-offset inherited `BodNode` into the borrowed `GameRoot::active_bod_list` head without creating a list-owned JetPack view. Android and iOS retain `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`; Android establishes no result, so the Windows reconstruction keeps the honest void contract rather than exporting incompatible incidental register values.
+void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, cRSubLoc *cell, Player *player)
 {
   TrackPickupState *p_state; // eax
   int v4; // edx
@@ -24,7 +24,7 @@ void __thiscall spawn_track_jetpack_pickup(SubgameRuntime *game, TrackRowCell *c
 
   p_state = &game->jetpack_pickup.state;
   v4 = 0;
-  while ( *p_state )
+  while ( *p_state != TRACK_PICKUP_STATE_INACTIVE )
   {
     ++v4;
     p_state += 103;
@@ -62,7 +62,7 @@ LABEL_14:
   {
     p_first = &g_game_base->active_bod_list.first;
     first = g_game_base->active_bod_list.first;
-    if ( first )
+    if ( first != nullptr )
     {
       first->list_prev = jetpack_node;
       (*p_first)->list_prev->list_next = *p_first;

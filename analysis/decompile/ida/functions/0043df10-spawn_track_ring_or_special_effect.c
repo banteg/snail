@@ -5,7 +5,7 @@
 // Void Windows `cRSubGame::AddRing(cRSubLoc*, int, cRSubGoldy*, float)`: scans the two SubgameRuntime-owned SubRing slots, mutates the ordinary integer kind parameter when the default ring randomizes to slow, and stores the resulting typed `SubRingKind`. Its nine distinct authored paths preserve `RR` through `RR13`, dispatch Ring=* rows into ring, explode, slow, or power-up effects, link the inherited BOD, initialize ten inline SubRingStar children, and invoke slot-zero AI. All five Windows callers discard EAX; the independent iOS body likewise returns from failure paths without establishing a result.
 void __thiscall spawn_track_ring_or_special_effect(
         SubgameRuntime *game,
-        TrackRowCell *cell,
+        cRSubLoc *cell,
         int32_t requested_kind,
         Player *player,
         float ring_speed)

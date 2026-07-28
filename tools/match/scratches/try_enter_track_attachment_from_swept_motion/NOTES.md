@@ -32,7 +32,7 @@ Recovered behavior and ownership:
   the gate while a miss leaves the secondary candidate eligible.
 - The seeded block at game+0x430100 is the Player-embedded
   `cRPathFollowGoldy` at player+0x384,
-  not a standalone global. It owns the borrowed `Path`, borrowed `SubLoc`,
+  not a standalone global. It owns the borrowed `Path`, borrowed `cRSubLoc`,
   sample index, progress, vertical offset, orientation fields, and Player
   backlink.
 - The same Player owns the adjacent position, velocity, exit byte, and inline
@@ -44,7 +44,7 @@ Recovered behavior and ownership:
 
 The two native callers discard EAX, both empty exits return without producing
 a value, and the final helper result is not semantically consumed. Binary Ninja
-now records `void __thiscall(Path*, six floats, TrackRowCell*)`, replacing the
+now records `void __thiscall(Path*, six floats, cRSubLoc*)`, replacing the
 stale `int PathTemplate::*` view. iOS names the broader family
 `cRPath::Search(cRSubGoldy*, tVector, tVector, tVector, cRSubLoc*)`; the Windows
 split keeps only seven stack dwords for position, sweep, and the borrowed cell.
@@ -82,8 +82,8 @@ instructions, with the 16-instruction prefix and all 47 operands clean.
 
 The recovered Windows method ABI is now part of the shared analysis header and
 both replay paths: `Path*`, six scalar position/sweep components, and the
-borrowed `TrackRowCell*`. A fresh BN/IDA replay therefore recovers
-`Path::secondary_samples` and `TrackRowCell::anchor_position` without relying
+borrowed `cRSubLoc*`. A fresh BN/IDA replay therefore recovers
+`Path::secondary_samples` and `cRSubLoc::anchor_position` without relying
 on database-local argument edits.
 
 IDA had seven accepted-tail displacements rendered through unrelated symbols

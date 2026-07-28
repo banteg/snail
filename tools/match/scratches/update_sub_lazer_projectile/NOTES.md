@@ -85,7 +85,7 @@ plain truthiness test; the zero-register residual needs a stronger source owner
 than comparison spelling.
 
 2026-06-20 larger type audit: the local attachment body/record/runtime-cell
-stubs were replaced with the shared `TrackRowCell` and
+stubs were replaced with the shared `cRSubLoc` and
 `TrackAttachmentRuntimeRow` model. This keeps the focused score at `81.11%`
 while aligning the call receiver (`attachment_template_record`) and owner
 argument (`primary_attachment_cell` / `secondary_attachment_cell`) with the

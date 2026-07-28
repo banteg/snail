@@ -211,7 +211,7 @@ clean.
 Binary Ninja still exported this as `TrackPickupRuntime* __thiscall(Game*,
 ...)`, contradicting Android `cRSubGame::AddHealth`, the Windows callers, and
 the already honest matcher source. Guarded recreation now installs
-`void __thiscall(SubgameRuntime*, TrackRowCell*, Player*)`; IDA is replayed and
+`void __thiscall(SubgameRuntime*, cRSubLoc*, Player*)`; IDA is replayed and
 verified with the same receiver lvar and declaration. Both tracked artifacts
 expose the owned eight-slot `health_pickups` array and ordinary `return;`
 paths. No incidental EAX value is promoted into a fake result.

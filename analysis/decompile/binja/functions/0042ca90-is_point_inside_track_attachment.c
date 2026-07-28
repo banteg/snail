@@ -11,10 +11,11 @@
 0042cab7        if (segment_count - 1 s>= 0)
 0042cac9        int32_t esi_2 = i * 0xa8
 0042cacc        struct PathTemplateSample* secondary_samples = self->secondary_samples
-0042cb0d        struct Vec3 vector
-0042cb0d        vector.x = fconvert.s(fconvert.t(probe.x) - (fconvert.t(x) + fconvert.t(*(&secondary_samples->transform.position + esi_2))))
-0042cb21        vector.y = fconvert.s(fconvert.t(probe.y) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(*(&secondary_samples->transform.position.y + esi_2)))))
-0042cb31        vector.z = fconvert.s(fconvert.t(probe.z) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t((&secondary_samples->inverse_matrix + esi_2)->__offset(0xfffffffffffffff8).d))))
+0042cb31        struct Vec3 vector = struct Vec3 {
+    .x = fconvert.s(fconvert.t(probe.x) - (fconvert.t(x) + fconvert.t(*(&secondary_samples->transform.position + esi_2))))
+    .y = fconvert.s(fconvert.t(probe.y) - fconvert.t(fconvert.s(fconvert.t(y) + fconvert.t(*(&secondary_samples->transform.position.y + esi_2)))))
+    .z = fconvert.s(fconvert.t(probe.z) - fconvert.t(fconvert.s(fconvert.t(z) + fconvert.t((&secondary_samples->inverse_matrix + esi_2)->__offset(0xfffffffffffffff8).d))))
+}
 0042cb35        rotate_vector_by_matrix(&vector, &secondary_samples->inverse_matrix + esi_2)
 0042cb3a        uint32_t width_cells = self->width_cells
 0042cb3f        int32_t eax_7

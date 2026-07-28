@@ -12,11 +12,11 @@ constructor report remains unchanged.
 
 The same ledger now sources its `cRSubLoc` and `cRSubRow` totals from the
 recovered owner types. It reports `0x20d000` for 3200 rows of eight 0x54-byte
-`SubLoc` cells and `0xbea00` for 3200 0xf4-byte `SubRow` records; the later
+`cRSubLoc` cells and `0xbea00` for 3200 0xf4-byte `SubRow` records; the later
 single-object `cRSubLoc` report remains 0x54.
 
 The counter at `0x4dfadc` is now named `g_sub_loc_count`, following the native
-`LocCount=%i Memory=%i` report and its `count * sizeof(SubLoc)` calculation.
+`LocCount=%i Memory=%i` report and its `count * sizeof(cRSubLoc)` calculation.
 The exact constructor wrapper at `0x4088c0` increments it once for every cell;
 it is not the shared cRBod constructor count printed on the preceding line.
 

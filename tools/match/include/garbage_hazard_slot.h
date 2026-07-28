@@ -48,7 +48,7 @@ public:
     float smoke_timer;              // +0xac
     float smoke_timer_step;         // +0xb0
     Sprite* sprite; // +0xb4, borrowed SpriteManager handle
-    TrackRowCell* source_cell; // +0xb8, borrowed runtime-grid cell
+    cRSubLoc* source_cell; // +0xb8, borrowed runtime-grid cell
     unsigned char hidden; // +0xbc
     char unknown_bd[0xc0 - 0xbd];
     Player* owner_player; // +0xc0, borrowed embedded Player

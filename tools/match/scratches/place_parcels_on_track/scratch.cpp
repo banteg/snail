@@ -266,13 +266,13 @@ void SubgameRuntime::place_parcels_on_track()
     for (int row = 0; row < runtime_row_count; ++row, ++row_record) {
         if ((row_record->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0
             && (row_record->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {
-            TrackRowCell* cell = row_record->primary_attachment_cell;
+            cRSubLoc* cell = row_record->primary_attachment_cell;
             int node =
                 (int)row_record->parcel_spawn_position.z
                 - cell->get_track_cell_row_index();
             if (node < 0)
                 node = 0;
-            TrackRowCell* live_cell = row_record->primary_attachment_cell;
+            cRSubLoc* live_cell = row_record->primary_attachment_cell;
             Path* template_record = live_cell->attachment_template_record;
             if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
                 TransformMatrix transform;
