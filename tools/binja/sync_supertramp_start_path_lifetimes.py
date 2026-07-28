@@ -87,6 +87,102 @@ SUPERTRAMP_START_PATH_USER_VAR_UPDATES = tuple(
     for index, storage, variable_name, variable_type in specs
 )
 
+# Android and iOS independently preserve SuperTramp's portable control graph:
+# a seven-sample flat lead, a post-tested circular arc, and a fresh delta pass.
+# Windows remains authoritative for the exact definitions, native 0xa8-byte
+# sample cursors, curve count, radii, and ABI below. VC6 reuses the dead width
+# argument home for both lead and curve indices and the length argument home
+# for the derived primary radius.
+SUPERTRAMP_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x423f3a", "mlil", "RegisterVariableSourceType", 42, 66),
+            ("0x423f3f", "mlil", "StackVariableSourceType", 47, -40),
+        ),
+        ("RegisterVariableSourceType", 42, 66),
+        "curve_count",
+        "int32_t",
+    ),
+    (
+        (("0x423f6d", "mlil", "StackVariableSourceType", 93, 4),),
+        ("StackVariableSourceType", 93, 4),
+        "curve_radius",
+        "float",
+    ),
+    (
+        (
+            ("0x423f81", "mlil", "StackVariableSourceType", 113, 8),
+            ("0x423f8a", "mlil_ssa", "StackVariableSourceType", 122, 8),
+            ("0x424041", "mlil", "StackVariableSourceType", 305, 8),
+        ),
+        ("StackVariableSourceType", 113, 8),
+        "lead_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x423f88", "mlil", "RegisterVariableSourceType", 120, 73),
+            ("0x423f8a", "mlil_ssa", "RegisterVariableSourceType", 122, 73),
+            ("0x424030", "mlil", "RegisterVariableSourceType", 288, 73),
+        ),
+        ("RegisterVariableSourceType", 120, 73),
+        "lead_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42404f", "mlil", "StackVariableSourceType", 319, 8),
+            ("0x4240a5", "mlil_ssa", "StackVariableSourceType", 405, 8),
+            ("0x424260", "mlil", "StackVariableSourceType", 848, 8),
+        ),
+        ("StackVariableSourceType", 319, 8),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (("0x424095", "mlil", "StackVariableSourceType", 389, -36),),
+        ("StackVariableSourceType", 389, -36),
+        "secondary_radius",
+        "float",
+    ),
+    (
+        (
+            ("0x424099", "mlil", "RegisterVariableSourceType", 393, 73),
+            ("0x4240a5", "mlil_ssa", "RegisterVariableSourceType", 405, 73),
+            ("0x424258", "mlil", "RegisterVariableSourceType", 840, 73),
+        ),
+        ("RegisterVariableSourceType", 393, 73),
+        "curve_sample_offset",
+        "int32_t",
+    ),
+    (
+        (("0x4240ec", "mlil", "StackVariableSourceType", 476, -28),),
+        ("StackVariableSourceType", 476, -28),
+        "curve_phase",
+        "float",
+    ),
+    (
+        (
+            ("0x42426d", "mlil", "RegisterVariableSourceType", 861, 69),
+            ("0x424279", "mlil_ssa", "RegisterVariableSourceType", 873, 69),
+            ("0x424328", "mlil", "RegisterVariableSourceType", 1048, 69),
+        ),
+        ("RegisterVariableSourceType", 861, 69),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x424277", "mlil", "RegisterVariableSourceType", 871, 73),
+            ("0x424279", "mlil_ssa", "RegisterVariableSourceType", 873, 73),
+            ("0x424333", "mlil", "RegisterVariableSourceType", 1059, 73),
+        ),
+        ("RegisterVariableSourceType", 871, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
 # The exact Android and iOS BuildStart bodies independently preserve the
 # portable five-sample lead, eleven-sample tail, cosine middle, orientation,
 # and final-delta control graph. Windows remains authoritative for every
@@ -309,18 +405,25 @@ def main() -> int:
             target=args.target,
             updates=tuple(
                 (
-                    "initialize_start_path_template_pair",
+                    function_name,
                     definitions,
                     target_var,
                     variable_name,
                     variable_type,
                 )
-                for (
-                    definitions,
-                    target_var,
-                    variable_name,
-                    variable_type,
-                ) in START_CONTROL_LIFETIME_SPLITS
+                for function_name, split_specs in (
+                    (
+                        "initialize_supertramp_path_template_pair",
+                        SUPERTRAMP_CONTROL_LIFETIME_SPLITS,
+                    ),
+                    (
+                        "initialize_start_path_template_pair",
+                        START_CONTROL_LIFETIME_SPLITS,
+                    ),
+                )
+                for definitions, target_var, variable_name, variable_type in (
+                    split_specs
+                )
             ),
         ),
     ]

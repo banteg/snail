@@ -204,3 +204,36 @@ Promoting Windows `side_exit` from `int32_t` to `bool` is byte-identical:
 focused matching remains 54.53% (541/552 candidate/target instructions), with
 a 17-instruction exact prefix and 36 clean masked operands. The seven Windows
 stack arguments and all four texture owners remain unchanged.
+
+## 2026-07-28 paired-mobile control ownership
+
+Android and iOS independently retain SuperTramp's portable control graph: a
+seven-sample flat lead, a post-tested circular arc, and a fresh delta pass.
+They agree on the derived curve count, primary and secondary radii, curve
+phase, and separate sample index/cursor pairs. They are source-shape evidence
+only: the mobile ABI includes a leading lateral-center float and has a
+different texture split, while this Windows build's seven stack arguments,
+sample counts, constants, and `0xa8`-byte sample layout remain authoritative.
+
+Exact Windows MLIL definitions now recover `curve_count` across its EAX/spill
+lifetime, split the overwritten length home into `curve_radius`, and expose
+`lead_sample_index`/`lead_sample_offset`, `curve_index`/
+`curve_sample_offset`, `secondary_radius`, `curve_phase`, `delta_index`, and
+`delta_sample_offset`. This removes the false reuse of `width_cells_`,
+`length`, and generic EDI cursors across those three logical passes.
+
+A previewed `curve_count_f` annotation was rejected: the stored float is real,
+but current HLIL folds the spill away and never renders the owner. Keeping it
+would add replay state without improving the recovered source. The retained
+partition was previewed transactionally and rolled back cleanly before live
+application.
+
+The live transaction saved successfully and a second replay reported every
+control owner already current. Strict focused Binary Ninja and IDA 9.4 exports
+report zero mismatches, and all 1,142 decompile health checks pass. The IDA
+refresh also closes its stale artifact onto the independently proved Windows
+`Path*`, Boolean selector, and four-texture ABI.
+
+Matcher source and bytes are unchanged: focused matching remains **54.53%** at
+**541/552** candidate/target instructions, prefix **17/552**, with **36
+accepted, 0 unresolved, 0 mismatched, and 0 unaudited** masked operands.

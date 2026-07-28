@@ -12,14 +12,14 @@
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": true,
+  "binja_analysis_refreshed": false,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_cage2_path_template_pair",
-      "address": "0x42e720"
+      "name": "initialize_supertramp_path_template_pair",
+      "address": "0x423f10"
     }
   ],
   "health_check_count": 1142,

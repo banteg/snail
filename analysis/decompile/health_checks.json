@@ -12366,9 +12366,24 @@
       "required_substrings": [
         "self->kind = PATH_TEMPLATE_KIND_SUPERTRAMP",
         "self->width_cells = width_cells_",
-        "self->segment_count = eax_1 + 8",
+        "self->segment_count = curve_count + 8",
         "self->segment_count = segment_count - 1",
         "get_path_nodes(self)",
+        "int32_t curve_count =",
+        "float curve_radius =",
+        "int32_t lead_sample_index = 0",
+        "int32_t lead_sample_offset = 0",
+        "lead_sample_offset += 0xa8",
+        "lead_sample_index += 1",
+        "int32_t curve_index = 0",
+        "float secondary_radius =",
+        "int32_t curve_sample_offset = 0x498",
+        "float curve_phase =",
+        "curve_sample_offset += 0xa8",
+        "curve_index += 1",
+        "int32_t delta_index = 0",
+        "int32_t delta_sample_offset = 0",
+        "delta_sample_offset += 0xa8",
         "request_object_vertices(self->bod.object",
         "request_object_facequads(self->bod.object",
         "texture_path = cap_texture",
@@ -12389,13 +12404,18 @@
       "required_regexes": [
         "004241a0[^\\n]*self->primary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
         "00424207[^\\n]*self->secondary_samples[^\\n]*= struct Vec3 \\{\\n    \\.x = 0x3f800000\\n    \\.y = 0f\\n    \\.z = 0f\\n\\}",
-        "00424418[^\\n]*vertices\\[eax_43\\][^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
+        "00424418[^\\n]*vertices\\[[^\\]\\n]+\\][^\\n]*= struct Vec3 \\{\\n    \\.x = [^\\n]+\\n    \\.y = [^\\n]+\\n    \\.z = [^\\n]+\\n\\}"
       ],
       "forbidden_substrings": [
         "struct PathTemplate* self",
         "__offset",
         "arg2",
         "arg3",
+        "void* i = nullptr",
+        "void* edi = 0x498",
+        "void* edi_1 = nullptr",
+        "float var_24_1 =",
+        "float var_1c_2 =",
         "texture_path_2",
         "return calc_path_length_z"
       ]

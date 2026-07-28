@@ -21212,6 +21212,7 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
         )
 
     assert "SUPERTRAMP_START_PATH_USER_VAR_UPDATES" in replay
+    assert "SUPERTRAMP_CONTROL_LIFETIME_SPLITS" in replay
     assert "START_CONTROL_USER_VAR_UPDATES" in replay
     assert "START_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
@@ -21251,6 +21252,14 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
         assert f'        "{name}",\n        "{variable_type}",' in replay
 
     for address, view, source_type, index, storage in (
+        ("0x423f3a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x423f3f", "mlil", "StackVariableSourceType", 47, -40),
+        ("0x423f8a", "mlil_ssa", "StackVariableSourceType", 122, 8),
+        ("0x423f8a", "mlil_ssa", "RegisterVariableSourceType", 122, 73),
+        ("0x4240a5", "mlil_ssa", "StackVariableSourceType", 405, 8),
+        ("0x4240a5", "mlil_ssa", "RegisterVariableSourceType", 405, 73),
+        ("0x424279", "mlil_ssa", "RegisterVariableSourceType", 873, 69),
+        ("0x424279", "mlil_ssa", "RegisterVariableSourceType", 873, 73),
         ("0x42642a", "mlil", "RegisterVariableSourceType", 42, 66),
         ("0x42648e", "mlil_ssa", "StackVariableSourceType", 142, 8),
         ("0x42648e", "mlil_ssa", "RegisterVariableSourceType", 142, 73),
@@ -21265,6 +21274,38 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
             f'("{address}", "{view}", "{source_type}", {index}, {storage})'
             in replay
         )
+
+    health = json.loads(
+        (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    check = next(
+        check
+        for check in health["checks"]
+        if check["name"] == "bn_supertramp_path_full_owner_abi"
+    )
+    for control_owner in (
+        "int32_t curve_count =",
+        "float curve_radius =",
+        "int32_t lead_sample_index = 0",
+        "int32_t lead_sample_offset = 0",
+        "int32_t curve_index = 0",
+        "float secondary_radius =",
+        "int32_t curve_sample_offset = 0x498",
+        "float curve_phase =",
+        "int32_t delta_index = 0",
+        "int32_t delta_sample_offset = 0",
+    ):
+        assert control_owner in check["required_substrings"]
+    for stale_control in (
+        "void* i = nullptr",
+        "void* edi = 0x498",
+        "void* edi_1 = nullptr",
+        "float var_24_1 =",
+        "float var_1c_2 =",
+    ):
+        assert stale_control in check["forbidden_substrings"]
 
 
 def test_turnover_family_path_replay_preserves_mesh_owner_lifetimes() -> None:
