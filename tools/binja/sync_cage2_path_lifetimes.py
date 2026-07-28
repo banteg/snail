@@ -3,18 +3,18 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_split_away_user_var_update,
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -87,6 +87,64 @@ CAGE2_PATH_USER_VAR_UPDATES = tuple(
         variable_type,
     )
     for index, storage, variable_name, variable_type in CAGE2_PATH_LIFETIME_SPECS
+)
+
+# Android and iOS independently preserve Cage2's portable interior-sample
+# graph: one zero-based sample index, one byte cursor, separate center and roll
+# angles, and a fresh index/cursor pair for delta normalization. Windows
+# remains authoritative for the exact identities and constants below. Its
+# 22-sample body uses twenty interior samples, unlike the 30-sample mobile
+# bodies, and VC6 fragments the sample index across the dead width argument
+# home and EAX.
+CAGE2_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x42e878", "mlil", "StackVariableSourceType", 344, 4),
+            ("0x42e890", "mlil_ssa", "StackVariableSourceType", 368, 4),
+            ("0x42e90f", "mlil", "RegisterVariableSourceType", 495, 66),
+            ("0x42e910", "mlil", "StackVariableSourceType", 496, 4),
+            ("0x42eb5b", "mlil", "StackVariableSourceType", 1083, 4),
+        ),
+        ("StackVariableSourceType", 344, 4),
+        "sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42e88b", "mlil", "RegisterVariableSourceType", 363, 73),
+            ("0x42e890", "mlil_ssa", "RegisterVariableSourceType", 368, 73),
+            ("0x42eb4f", "mlil", "RegisterVariableSourceType", 1071, 73),
+        ),
+        ("RegisterVariableSourceType", 363, 73),
+        "sample_offset",
+        "int32_t",
+    ),
+    (
+        (("0x42e8a0", "mlil", "StackVariableSourceType", 384, -72),),
+        ("StackVariableSourceType", 384, -72),
+        "roll_angle",
+        "float",
+    ),
+    (
+        (
+            ("0x42eb68", "mlil", "RegisterVariableSourceType", 1096, 71),
+            ("0x42eb75", "mlil_ssa", "RegisterVariableSourceType", 1109, 71),
+            ("0x42ec24", "mlil", "RegisterVariableSourceType", 1284, 71),
+        ),
+        ("RegisterVariableSourceType", 1096, 71),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42eb73", "mlil", "RegisterVariableSourceType", 1107, 73),
+            ("0x42eb75", "mlil_ssa", "RegisterVariableSourceType", 1109, 73),
+            ("0x42ec2f", "mlil", "RegisterVariableSourceType", 1295, 73),
+        ),
+        ("RegisterVariableSourceType", 1107, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
 )
 
 
@@ -174,6 +232,24 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=CAGE2_PATH_USER_VAR_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    "initialize_cage2_path_template_pair",
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for definitions, target_var, variable_name, variable_type in (
+                    CAGE2_CONTROL_LIFETIME_SPLITS
+                )
+            ),
         )
     )
     return emit_summary(

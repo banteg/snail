@@ -22593,9 +22593,32 @@ def test_cage2_replay_splits_terminal_scalar_and_preserves_mesh_owners() -> None
         )
 
     assert "apply_split_away_user_var_update" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "CAGE2_PATH_USER_VAR_UPDATES" in replay
+    assert "CAGE2_CONTROL_LIFETIME_SPLITS" in replay
     assert "apply_user_var_updates" in replay
     assert '0x90: ("center_x", "float")' in replay
+    for control_owner in (
+        "sample_index",
+        "sample_offset",
+        "roll_angle",
+        "delta_index",
+        "delta_sample_offset",
+    ):
+        assert f'"{control_owner}"' in replay
+    for definition in (
+        ("0x42e878", "mlil", "StackVariableSourceType", 344, 4),
+        ("0x42e890", "mlil_ssa", "StackVariableSourceType", 368, 4),
+        ("0x42e90f", "mlil", "RegisterVariableSourceType", 495, 66),
+        ("0x42e890", "mlil_ssa", "RegisterVariableSourceType", 368, 73),
+        ("0x42eb75", "mlil_ssa", "RegisterVariableSourceType", 1109, 71),
+        ("0x42eb75", "mlil_ssa", "RegisterVariableSourceType", 1109, 73),
+    ):
+        expected_definition = (
+            f'("{definition[0]}", "{definition[1]}", '
+            f'"{definition[2]}", {definition[3]}, {definition[4]})'
+        )
+        assert expected_definition in replay
     for rejected_index in (659, 880, 1685):
         assert f"({rejected_index}, 66," not in replay
 
@@ -22623,6 +22646,23 @@ def test_cage2_replay_splits_terminal_scalar_and_preserves_mesh_owners() -> None
         "struct Vec3* secondary_terminal_delta",
     ):
         assert rendered_alias not in check["required_substrings"]
+    for control_owner in (
+        "int32_t sample_index = 0",
+        "int32_t sample_offset = 0xa8",
+        "float roll_angle =",
+        "sample_offset += 0xa8",
+        "sample_index += 1",
+        "int32_t delta_index = 0",
+        "int32_t delta_sample_offset = 0",
+        "delta_sample_offset += 0xa8",
+    ):
+        assert control_owner in check["required_substrings"]
+    for stale_control in (
+        "void* i = 0xa8",
+        "void* edi = nullptr",
+        "float var_48_1 =",
+    ):
+        assert stale_control in check["forbidden_substrings"]
 
 
 def test_loopbow_replay_preserves_control_staged_basis_and_mesh_owners() -> None:

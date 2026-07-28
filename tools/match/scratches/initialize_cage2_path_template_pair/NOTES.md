@@ -276,3 +276,30 @@ terminal-delta aliases, while HLIL now folds each three-scalar write into a
 typed aggregate at `0x42e9a2`, `0x42ea7f`, `0x42ec8d`, and `0x42ecd4`. The
 health contract follows the stronger aggregate rendering without discarding
 the useful lower-level names.
+
+## 2026-07-28 paired-mobile control ownership
+
+Android and iOS independently retain Cage2's portable control graph: one
+zero-based interior sample index, one sample-byte cursor, distinct center and
+roll angles, and a fresh index/cursor pair for delta normalization. They are
+source-shape evidence only. Both mobile bodies use 30 samples and 28 interior
+points; this Windows executable unambiguously uses 22 samples, 20 interior
+points, a `0.471238911f` center-angle step, and a `0.314159274f` roll-angle
+step.
+
+Exact Windows MLIL definitions now merge the dead incoming width home, its EAX
+increment, and the loop phi into `sample_index`. The independent EDI lifetime
+is `sample_offset`; the stored angular owner is `roll_angle`; and the later
+normalization pass owns `delta_index` plus `delta_sample_offset`. The center
+angle remains an inline x87 expression because forcing a named extended-
+precision temporary made the decompile less faithful. A preview that kept the
+EAX increment as a separate `next_sample_index` owner was likewise rejected:
+the native definitions render cleanly as one in-place index increment.
+
+The retained transaction adds no synthetic offsets beyond Cage2's thirteen
+pre-existing fixed-terminal views, snapshots successfully, and is idempotent
+on replay. Strict Binary Ninja and IDA 9.4 export reports zero mismatches, and
+all 1,142 decompile health checks pass. Matcher source and bytes are unchanged:
+focused matching remains **59.43%** at **651/648** candidate/target
+instructions, prefix **7/648**, with **46 accepted, 0 unresolved, 0
+mismatched, and 0 unaudited** masked operands.
