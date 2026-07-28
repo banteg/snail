@@ -3,388 +3,388 @@
 /* selector: initialize_halfpipe_path_template_pair */
 
 // Builds the Windows public HALFPIPE path-template pair at authored slot 42. The direct initialize_game_assets_and_world call targets pair base game+0x106a64c, seeds runtime kind 42 with 66 samples, and emits the generated strip mesh through the shared kind-42 transform helper; Android cRPath::BuildHalfPipe independently matches the shape.
-int32_t __thiscall initialize_halfpipe_path_template_pair(
-        PathTemplate *self,
-        int32_t arg2,
+void __thiscall initialize_halfpipe_path_template_pair(
+        Path *self,
+        float scale,
+        int32_t width_cells_,
+        bool side_exit,
         char *texture_a,
-        char *texture_b)
+        char *texture_b,
+        char *vertical_texture)
 {
-  int v5; // esi
-  double v6; // st7
-  double v7; // st7
-  int i; // esi
+  int v8; // esi
   double v9; // st7
-  int v10; // ebx
-  double v11; // st7
+  double v10; // st7
+  int i; // esi
+  double v12; // st7
+  int v13; // ebx
+  double v14; // st7
   PathTemplateSample *primary_samples; // eax
-  Vec4 *p_basis_up; // ecx
-  PathTemplateSample *v14; // eax
-  double v15; // st7
-  double v16; // st7
-  PathTemplateSample *v17; // ecx
+  Vec3 *p_basis_up; // ecx
+  PathTemplateSample *v17; // eax
   double v18; // st7
-  double v19; // st6
-  Vec4 *p_position; // eax
-  signed int v21; // edi
-  int v22; // esi
-  PathTemplateSample *v23; // ecx
+  double v19; // st7
+  PathTemplateSample *v20; // ecx
+  double v21; // st7
+  double v22; // st6
+  Vec3 *p_position; // eax
+  signed int v24; // edi
+  int v25; // esi
+  PathTemplateSample *v26; // ecx
   float *p_x; // eax
-  double v25; // st7
-  PathTemplateSample *secondary_samples; // edx
-  float *v27; // eax
   double v28; // st7
+  PathTemplateSample *secondary_samples; // edx
+  float *v30; // eax
+  double v31; // st7
   Vec3 *p_delta_dir_to_next; // ecx
-  Vec3 *v30; // eax
-  PathTemplateStripMesh *strip_mesh; // eax
+  Vec3 *v33; // eax
+  Object *object; // eax
   Vec3 *vertices; // edi
-  signed int v33; // esi
-  int v34; // eax
+  signed int v36; // esi
+  int v37; // eax
   signed int width_cells; // ecx
-  signed int v36; // ebx
-  double v37; // st7
-  float *v38; // eax
-  float *v39; // ecx
-  float v40; // edx
-  double v41; // st6
-  double v42; // st7
-  double v43; // st6
+  signed int v39; // ebx
+  double v40; // st7
+  float *v41; // eax
+  float *v42; // ecx
+  float v43; // edx
   double v44; // st6
-  signed int v45; // ecx
+  double v45; // st7
+  double v46; // st6
+  double v47; // st6
+  signed int v48; // ecx
   signed int k; // ebx
-  int v47; // esi
-  int v48; // ecx
-  ObjectFaceQuad *v49; // edi
-  float v51; // [esp+0h] [ebp-B0h]
-  float v52; // [esp+0h] [ebp-B0h]
-  int v53; // [esp+14h] [ebp-9Ch]
-  int v54; // [esp+14h] [ebp-9Ch]
+  int v50; // esi
+  int v51; // ecx
+  ObjectFaceQuad *v52; // edi
+  float v53; // [esp+0h] [ebp-B0h]
+  float v54; // [esp+0h] [ebp-B0h]
   int v55; // [esp+14h] [ebp-9Ch]
   int v56; // [esp+14h] [ebp-9Ch]
   int v57; // [esp+14h] [ebp-9Ch]
-  float v58; // [esp+14h] [ebp-9Ch]
-  float v59; // [esp+18h] [ebp-98h]
-  signed int v60; // [esp+18h] [ebp-98h]
-  float v61; // [esp+1Ch] [ebp-94h]
-  int j; // [esp+1Ch] [ebp-94h]
+  int v58; // [esp+14h] [ebp-9Ch]
+  int v59; // [esp+14h] [ebp-9Ch]
+  float v60; // [esp+14h] [ebp-9Ch]
+  float v61; // [esp+18h] [ebp-98h]
+  signed int v62; // [esp+18h] [ebp-98h]
   float v63; // [esp+1Ch] [ebp-94h]
-  float v64; // [esp+20h] [ebp-90h]
-  float v65; // [esp+20h] [ebp-90h]
+  int j; // [esp+1Ch] [ebp-94h]
+  float v65; // [esp+1Ch] [ebp-94h]
   float v66; // [esp+20h] [ebp-90h]
-  float v67; // [esp+24h] [ebp-8Ch]
-  float v68; // [esp+24h] [ebp-8Ch]
+  float v67; // [esp+20h] [ebp-90h]
+  float v68; // [esp+20h] [ebp-90h]
   float v69; // [esp+24h] [ebp-8Ch]
-  float v70; // [esp+28h] [ebp-88h]
-  float v71; // [esp+28h] [ebp-88h]
+  float v70; // [esp+24h] [ebp-8Ch]
+  float v71; // [esp+24h] [ebp-8Ch]
   float v72; // [esp+28h] [ebp-88h]
-  int v73; // [esp+2Ch] [ebp-84h]
-  float v74; // [esp+2Ch] [ebp-84h]
-  float v75; // [esp+30h] [ebp-80h]
-  float v76; // [esp+30h] [ebp-80h]
-  float v77; // [esp+34h] [ebp-7Ch]
-  float v78; // [esp+34h] [ebp-7Ch]
-  float v79; // [esp+38h] [ebp-78h]
-  float v80; // [esp+38h] [ebp-78h]
-  float v81; // [esp+3Ch] [ebp-74h]
-  int v82; // [esp+40h] [ebp-70h]
+  float v73; // [esp+28h] [ebp-88h]
+  float v74; // [esp+28h] [ebp-88h]
+  int v75; // [esp+2Ch] [ebp-84h]
+  float v76; // [esp+2Ch] [ebp-84h]
+  float v77; // [esp+30h] [ebp-80h]
+  float v78; // [esp+30h] [ebp-80h]
+  float v79; // [esp+34h] [ebp-7Ch]
+  float v80; // [esp+34h] [ebp-7Ch]
+  float v81; // [esp+38h] [ebp-78h]
+  float v82; // [esp+38h] [ebp-78h]
+  float v83; // [esp+3Ch] [ebp-74h]
+  int v84; // [esp+40h] [ebp-70h]
   ObjectFaceQuad *facequads; // [esp+44h] [ebp-6Ch]
-  float v84; // [esp+48h] [ebp-68h]
-  float v85; // [esp+4Ch] [ebp-64h]
-  float v86; // [esp+4Ch] [ebp-64h]
-  float v87; // [esp+50h] [ebp-60h]
+  float v86; // [esp+48h] [ebp-68h]
+  float v87; // [esp+4Ch] [ebp-64h]
+  float v88; // [esp+4Ch] [ebp-64h]
+  float v89; // [esp+50h] [ebp-60h]
   float out_angle[2]; // [esp+54h] [ebp-5Ch] BYREF
-  float v89; // [esp+5Ch] [ebp-54h]
-  float v90; // [esp+60h] [ebp-50h]
-  float v91; // [esp+64h] [ebp-4Ch]
-  float v92; // [esp+68h] [ebp-48h]
+  float v91; // [esp+5Ch] [ebp-54h]
+  float v92; // [esp+60h] [ebp-50h]
+  float v93; // [esp+64h] [ebp-4Ch]
+  float v94; // [esp+68h] [ebp-48h]
   TransformMatrix transform; // [esp+70h] [ebp-40h] BYREF
-  char *texture_path; // [esp+C0h] [ebp+10h]
-  char *v95; // [esp+C4h] [ebp+14h]
 
   self->kind = PATH_TEMPLATE_KIND_NONLINEAR_42;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
-  self->width_cells = (uint32_t)texture_a;
+  self->width_cells = width_cells_;
   self->width_or_scale = 1.0;
   self->segment_count = 66;
   self->segment_count_f = 66.0;
   get_path_nodes(self);
   self->has_entry_mesh_transition = 0;
-  v53 = 0;
-  v5 = 0;
+  v55 = 0;
+  v8 = 0;
   do
   {
-    v6 = (double)v53;
-    v61 = v6;
-    v51 = v6 * 0.0625 * 3.1415927 + 1.5707964;
-    v7 = ((0.5 - sine(v51) * 0.5) * 0.94999999 + 0.050000001) * 4.0;
-    self->primary_samples[v5].center_x = (double)(int)self->width_cells * 0.5 - 4.0;
-    self->primary_samples[v5].rotation_scalar_98 = 0.0;
-    self->primary_samples[v5].rotation_scalar_94 = 0.0;
-    self->primary_samples[v5].special_scalar = (v7 * v7 + 16.0) / (v7 + v7);
-    self->primary_samples[v5].lateral_scale = 1.0;
-    set_matrix_identity(&self->primary_samples[v5].transform);
-    self->primary_samples[v5].transform.position.x = self->primary_samples[v5].center_x;
-    self->primary_samples[v5].transform.position.y = 0.0;
-    self->primary_samples[v5].transform.position.z = v61;
-    self->primary_samples[v5].delta_length = 1.0;
-    set_matrix_identity(&self->secondary_samples[v5].transform);
-    self->secondary_samples[v5].transform.position.x = self->primary_samples[v5].center_x;
-    self->secondary_samples[v5].transform.position.y = 0.49000001;
-    self->secondary_samples[v5++].transform.position.z = v61;
-    self->secondary_samples[v5 - 1].delta_length = 1.0;
-    ++v53;
+    v9 = (double)v55;
+    v63 = v9;
+    v53 = v9 * 0.0625 * 3.1415927 + 1.5707964;
+    v10 = ((0.5 - sine(v53) * 0.5) * 0.94999999 + 0.050000001) * 4.0;
+    self->primary_samples[v8].center_x = (double)(int)self->width_cells * 0.5 - 4.0;
+    self->primary_samples[v8].rotation_scalar_98 = 0.0;
+    self->primary_samples[v8].rotation_scalar_94 = 0.0;
+    self->primary_samples[v8].special_scalar = (v10 * v10 + 16.0) / (v10 + v10);
+    self->primary_samples[v8].lateral_scale = 1.0;
+    set_matrix_identity(&self->primary_samples[v8].transform);
+    self->primary_samples[v8].transform.position.x = self->primary_samples[v8].center_x;
+    self->primary_samples[v8].transform.position.y = 0.0;
+    self->primary_samples[v8].transform.position.z = v63;
+    self->primary_samples[v8].delta_length = 1.0;
+    set_matrix_identity(&self->secondary_samples[v8].transform);
+    self->secondary_samples[v8].transform.position.x = self->primary_samples[v8].center_x;
+    self->secondary_samples[v8].transform.position.y = 0.49000001;
+    self->secondary_samples[v8++].transform.position.z = v63;
+    self->secondary_samples[v8 - 1].delta_length = 1.0;
+    ++v55;
   }
-  while ( v5 < 16 );
-  v54 = 0;
+  while ( v8 < 16 );
+  v56 = 0;
   for ( i = 50; i < 66; ++i )
   {
-    v52 = (1.0 - (double)v54 * 0.0625) * 3.1415927 + 1.5707964;
-    v9 = ((0.5 - sine(v52) * 0.5) * 0.94999999 + 0.050000001) * 4.0;
+    v54 = (1.0 - (double)v56 * 0.0625) * 3.1415927 + 1.5707964;
+    v12 = ((0.5 - sine(v54) * 0.5) * 0.94999999 + 0.050000001) * 4.0;
     self->primary_samples[i].center_x = 4.0 - (double)(int)self->width_cells * 0.5;
     self->primary_samples[i].rotation_scalar_98 = 0.0;
     self->primary_samples[i].rotation_scalar_94 = 0.0;
-    self->primary_samples[i].special_scalar = (v9 * v9 + 16.0) / (v9 + v9);
+    self->primary_samples[i].special_scalar = (v12 * v12 + 16.0) / (v12 + v12);
     self->primary_samples[i].lateral_scale = 1.0;
     set_matrix_identity(&self->primary_samples[i].transform);
     self->primary_samples[i].transform.position.x = self->primary_samples[i].center_x;
     self->primary_samples[i].transform.position.y = 0.0;
-    v59 = (float)(v54 + 50);
-    self->primary_samples[i].transform.position.z = v59;
+    v61 = (float)(v56 + 50);
+    self->primary_samples[i].transform.position.z = v61;
     self->primary_samples[i].delta_length = 1.0;
     set_matrix_identity(&self->secondary_samples[i].transform);
     self->secondary_samples[i].transform.position.x = self->primary_samples[i].center_x;
     self->secondary_samples[i].transform.position.y = 0.49000001;
-    self->secondary_samples[i].transform.position.z = v59;
+    self->secondary_samples[i].transform.position.z = v61;
     self->secondary_samples[i].delta_length = 1.0;
-    ++v54;
+    ++v56;
   }
-  v55 = 0;
-  v10 = 16;
+  v57 = 0;
+  v13 = 16;
   do
   {
-    v11 = (double)v55;
+    v14 = (double)v57;
     primary_samples = self->primary_samples;
-    out_angle[0] = v11 * 0.18479957;
-    primary_samples[v10].center_x = (primary_samples[50].center_x - primary_samples->center_x) * v11 * 0.029411765
+    out_angle[0] = v14 * 0.18479957;
+    primary_samples[v13].center_x = (primary_samples[50].center_x - primary_samples->center_x) * v14 * 0.029411765
                                   + primary_samples->center_x;
-    self->primary_samples[v10].rotation_scalar_98 = 0.0;
-    self->primary_samples[v10].rotation_scalar_94 = 0.0;
-    self->primary_samples[v10].special_scalar = 4.0;
-    self->primary_samples[v10].lateral_scale = 1.0;
-    set_matrix_identity(&self->primary_samples[v10].transform);
-    self->primary_samples[v10].transform.position.x = 0.0;
-    self->primary_samples[v10].transform.position.z = (float)(v55 + 16);
-    self->primary_samples[v10].transform.position.y = 0.0;
-    p_basis_up = &self->primary_samples[v10].transform.basis_up;
+    self->primary_samples[v13].rotation_scalar_98 = 0.0;
+    self->primary_samples[v13].rotation_scalar_94 = 0.0;
+    self->primary_samples[v13].special_scalar = 4.0;
+    self->primary_samples[v13].lateral_scale = 1.0;
+    set_matrix_identity(&self->primary_samples[v13].transform);
+    self->primary_samples[v13].transform.position.x = 0.0;
+    self->primary_samples[v13].transform.position.z = (float)(v57 + 16);
+    self->primary_samples[v13].transform.position.y = 0.0;
+    p_basis_up = &self->primary_samples[v13].transform.basis_up;
     p_basis_up->x = 0.0;
     p_basis_up->y = 1.0;
     p_basis_up->z = 0.0;
-    v14 = &self->primary_samples[v10];
-    v15 = v14->transform.position.x - v14[-1].transform.position.x;
-    v14 = (PathTemplateSample *)((char *)v14 + 32);
-    v64 = v15;
-    v67 = v14->transform.basis_up.y - v14[-1].transform.basis_up.y;
-    v16 = v14->transform.basis_up.z - v14[-1].transform.basis_up.z;
-    v14->transform.basis_right.x = v64;
-    v14->transform.basis_right.y = v67;
-    v70 = v16;
-    v14->transform.basis_right.z = v70;
-    normalize_vector((Vec3 *)&self->primary_samples[v10].transform.basis_forward);
+    v17 = &self->primary_samples[v13];
+    v18 = v17->transform.position.x - v17[-1].transform.position.x;
+    v17 = (PathTemplateSample *)((char *)v17 + 32);
+    v66 = v18;
+    v69 = v17->transform.basis_up.y - v17[-1].transform.basis_up.y;
+    v19 = v17->transform.basis_up.z - v17[-1].transform.basis_up.z;
+    v17->transform.basis_right.x = v66;
+    v17->transform.basis_right.y = v69;
+    v72 = v19;
+    v17->transform.basis_right.z = v72;
+    normalize_vector(&self->primary_samples[v13].transform.basis_forward);
     cross_vectors(
-      (Vec3 *)&self->primary_samples[v10],
-      (Vec3 *)&self->primary_samples[v10].transform.basis_up,
-      (Vec3 *)&self->primary_samples[v10].transform.basis_forward);
-    qmemcpy(&self->secondary_samples[v10], &self->primary_samples[v10], 0x40u);
-    v17 = self->primary_samples;
-    v18 = v17[v10].transform.basis_up.x * 0.49000001;
-    v85 = v17[v10].transform.basis_up.y * 0.49000001;
-    v19 = v17[v10].transform.basis_up.z * 0.49000001;
-    p_position = &self->secondary_samples[v10++].transform.position;
-    ++v55;
-    v87 = v19;
-    p_position->x = v18 + p_position->x;
-    p_position->y = v85 + p_position->y;
-    p_position->z = v87 + p_position->z;
+      &self->primary_samples[v13].transform.basis_right,
+      &self->primary_samples[v13].transform.basis_up,
+      &self->primary_samples[v13].transform.basis_forward);
+    qmemcpy(&self->secondary_samples[v13], &self->primary_samples[v13], 0x40u);
+    v20 = self->primary_samples;
+    v21 = v20[v13].transform.basis_up.x * 0.49000001;
+    v87 = v20[v13].transform.basis_up.y * 0.49000001;
+    v22 = v20[v13].transform.basis_up.z * 0.49000001;
+    p_position = &self->secondary_samples[v13++].transform.position;
+    ++v57;
+    v89 = v22;
+    p_position->x = v21 + p_position->x;
+    p_position->y = v87 + p_position->y;
+    p_position->z = v89 + p_position->z;
   }
-  while ( v10 < 50 );
-  v21 = 0;
+  while ( v13 < 50 );
+  v24 = 0;
   if ( (signed int)(self->segment_count - 1) > 0 )
   {
-    v22 = 0;
+    v25 = 0;
     do
     {
-      v23 = self->primary_samples;
-      p_x = &v23[v22].delta_dir_to_next.x;
-      v65 = v23[v22 + 1].transform.position.x - v23[v22].transform.position.x;
-      v68 = v23[v22 + 1].transform.position.y - v23[v22].transform.position.y;
-      v25 = v23[v22 + 1].transform.position.z - v23[v22].transform.position.z;
-      *p_x = v65;
-      p_x[1] = v68;
-      v71 = v25;
-      p_x[2] = v71;
-      self->primary_samples[v22].delta_length = normalize_vector(&self->primary_samples[v22].delta_dir_to_next);
+      v26 = self->primary_samples;
+      p_x = &v26[v25].delta_dir_to_next.x;
+      v67 = v26[v25 + 1].transform.position.x - v26[v25].transform.position.x;
+      v70 = v26[v25 + 1].transform.position.y - v26[v25].transform.position.y;
+      v28 = v26[v25 + 1].transform.position.z - v26[v25].transform.position.z;
+      *p_x = v67;
+      p_x[1] = v70;
+      v73 = v28;
+      p_x[2] = v73;
+      self->primary_samples[v25].delta_length = normalize_vector(&self->primary_samples[v25].delta_dir_to_next);
       secondary_samples = self->secondary_samples;
-      v27 = &secondary_samples[v22].delta_dir_to_next.x;
-      v75 = secondary_samples[v22 + 1].transform.position.x - secondary_samples[v22].transform.position.x;
-      v77 = secondary_samples[v22 + 1].transform.position.y - secondary_samples[v22].transform.position.y;
-      v28 = secondary_samples[v22 + 1].transform.position.z - secondary_samples[v22].transform.position.z;
-      *v27 = v75;
-      v27[1] = v77;
-      v79 = v28;
-      v27[2] = v79;
-      ++v21;
-      self->secondary_samples[v22].delta_length = normalize_vector(&self->secondary_samples[v22].delta_dir_to_next);
-      ++v22;
+      v30 = &secondary_samples[v25].delta_dir_to_next.x;
+      v77 = secondary_samples[v25 + 1].transform.position.x - secondary_samples[v25].transform.position.x;
+      v79 = secondary_samples[v25 + 1].transform.position.y - secondary_samples[v25].transform.position.y;
+      v31 = secondary_samples[v25 + 1].transform.position.z - secondary_samples[v25].transform.position.z;
+      *v30 = v77;
+      v30[1] = v79;
+      v81 = v31;
+      v30[2] = v81;
+      ++v24;
+      self->secondary_samples[v25].delta_length = normalize_vector(&self->secondary_samples[v25].delta_dir_to_next);
+      ++v25;
     }
-    while ( v21 < (signed int)(self->segment_count - 1) );
+    while ( v24 < (signed int)(self->segment_count - 1) );
   }
   p_delta_dir_to_next = &self->primary_samples[self->segment_count - 1].delta_dir_to_next;
   p_delta_dir_to_next->x = 0.0;
   p_delta_dir_to_next->y = 0.0;
   p_delta_dir_to_next->z = 1.0;
   self->primary_samples[self->segment_count - 1].delta_length = 1.0;
-  v30 = &self->secondary_samples[self->segment_count - 1].delta_dir_to_next;
-  v30->x = 0.0;
-  v30->y = 0.0;
-  v30->z = 1.0;
+  v33 = &self->secondary_samples[self->segment_count - 1].delta_dir_to_next;
+  v33->x = 0.0;
+  v33->y = 0.0;
+  v33->z = 1.0;
   self->secondary_samples[self->segment_count - 1].delta_length = 1.0;
-  request_object_vertices(self->strip_mesh, (self->segment_count + 1) * (self->width_cells + 1));
-  request_object_facequads(self->strip_mesh, 2 * self->segment_count * self->width_cells);
-  strip_mesh = self->strip_mesh;
-  vertices = strip_mesh->vertices;
-  facequads = strip_mesh->facequads;
+  request_object_vertices(self->bod.object, (self->segment_count + 1) * (self->width_cells + 1));
+  request_object_facequads(self->bod.object, 2 * self->segment_count * self->width_cells);
+  object = self->bod.object;
+  vertices = object->vertices;
+  facequads = object->facequads;
   set_matrix_identity(&transform);
-  v33 = 0;
+  v36 = 0;
   if ( (self->segment_count & 0x80000000) == 0 )
   {
-    v34 = 0;
-    v73 = 0;
+    v37 = 0;
+    v75 = 0;
     do
     {
       width_cells = self->width_cells;
-      v36 = 0;
-      v56 = 0;
-      for ( j = width_cells; v36 <= width_cells; v56 = v36 )
+      v39 = 0;
+      v58 = 0;
+      for ( j = width_cells; v39 <= width_cells; v58 = v39 )
       {
-        v37 = (double)v56 - (double)j * 0.5;
-        v38 = (float *)((char *)&self->primary_samples->transform.basis_right.x + v34);
-        if ( v33 == self->segment_count )
+        v40 = (double)v58 - (double)j * 0.5;
+        v41 = (float *)((char *)&self->primary_samples->transform.basis_right.x + v37);
+        if ( v36 == self->segment_count )
         {
-          v41 = v37 * *(v38 - 42);
-          v89 = *(v38 - 29);
-          v91 = v41;
-          v92 = v37 * *(v38 - 41);
-          v42 = v37 * *(v38 - 40);
-          v43 = *(v38 - 30);
-          v90 = *(v38 - 28) + 1.0;
-          v76 = v43 + v91;
-          v78 = v89 + v92;
-          v44 = v90 + v42;
-          v39 = &vertices[v36 + v33 * (width_cells + 1)].x;
-          *v39 = v76;
-          v80 = v44;
-          v40 = v80;
-          v39[1] = v78;
+          v44 = v40 * *(v41 - 42);
+          v91 = *(v41 - 29);
+          v93 = v44;
+          v94 = v40 * *(v41 - 41);
+          v45 = v40 * *(v41 - 40);
+          v46 = *(v41 - 30);
+          v92 = *(v41 - 28) + 1.0;
+          v78 = v46 + v93;
+          v80 = v91 + v94;
+          v47 = v92 + v45;
+          v42 = &vertices[v39 + v36 * (width_cells + 1)].x;
+          *v42 = v78;
+          v82 = v47;
+          v43 = v82;
+          v42[1] = v80;
         }
         else
         {
-          v84 = v37 * *v38;
-          v86 = v37 * v38[1];
-          v66 = v84 + v38[12];
-          v69 = v86 + v38[13];
-          v72 = v37 * v38[2] + v38[14];
-          v39 = &vertices[v36 + v33 * (width_cells + 1)].x;
-          *v39 = v66;
-          v40 = v72;
-          v39[1] = v69;
+          v86 = v40 * *v41;
+          v88 = v40 * v41[1];
+          v68 = v86 + v41[12];
+          v71 = v88 + v41[13];
+          v74 = v40 * v41[2] + v41[14];
+          v42 = &vertices[v39 + v36 * (width_cells + 1)].x;
+          *v42 = v68;
+          v43 = v74;
+          v42[1] = v71;
         }
-        v39[2] = v40;
-        v45 = v33 - 1;
-        if ( v33 != self->segment_count )
-          v45 = v33;
+        v42[2] = v43;
+        v48 = v36 - 1;
+        if ( v36 != self->segment_count )
+          v48 = v36;
         compute_kind42_attachment_transform(
           self,
-          self->primary_samples[v45].special_scalar,
-          vertices[v36 + v33 * (self->width_cells + 1)].x,
+          self->primary_samples[v48].special_scalar,
+          vertices[v39 + v36 * (self->width_cells + 1)].x,
           0.0,
           &transform,
           out_angle);
-        if ( v73 > 168 && v33 != self->segment_count )
+        if ( v75 > 168 && v36 != self->segment_count )
         {
-          vertices[v36 + v33 * (self->width_cells + 1)].x = transform.position.x;
-          vertices[v36 + v33 * (self->width_cells + 1)].y = transform.position.y;
+          vertices[v39 + v36 * (self->width_cells + 1)].x = transform.position.x;
+          vertices[v39 + v36 * (self->width_cells + 1)].y = transform.position.y;
         }
         width_cells = self->width_cells;
-        v34 = v73;
-        ++v36;
+        v37 = v75;
+        ++v39;
         j = width_cells;
       }
-      ++v33;
-      v34 += 168;
-      v73 = v34;
+      ++v36;
+      v37 += 168;
+      v75 = v37;
     }
-    while ( v33 <= (signed int)self->segment_count );
+    while ( v36 <= (signed int)self->segment_count );
   }
   for ( k = 0; k < (signed int)self->segment_count; ++k )
   {
-    v47 = 0;
-    v57 = 0;
+    v50 = 0;
+    v59 = 0;
     if ( (int)self->width_cells > 0 )
     {
-      v74 = (double)(k % 8) * 0.125;
-      v63 = (double)(k % 8 + 1) * 0.125;
+      v76 = (double)(k % 8) * 0.125;
+      v65 = (double)(k % 8 + 1) * 0.125;
       do
       {
-        v48 = 0;
-        v60 = v47 + 1;
-        v82 = 0;
-        v58 = (double)v57 * 0.125;
-        v81 = (double)(v47 + 1) * 0.125;
+        v51 = 0;
+        v62 = v50 + 1;
+        v84 = 0;
+        v60 = (double)v59 * 0.125;
+        v83 = (double)(v50 + 1) * 0.125;
         while ( 1 )
         {
-          v49 = &facequads[2 * v47 + 2 * k * self->width_cells + v48];
-          *(_WORD *)&v49->flags = 0;
-          if ( v48 )
+          v52 = &facequads[2 * v50 + 2 * k * self->width_cells + v51];
+          v52->header_word = 0;
+          if ( v51 != 0 )
           {
-            v49->vertex_0 = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->vertex_1 = v47 + k * (LOWORD(self->width_cells) + 1);
-            v49->vertex_2 = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
-            v49->vertex_3 = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->texture_ref = get_or_create_texture_ref(&g_texture_refs, v95, 0, 0);
-            v49->uv[0].u = v81;
-            v49->uv[0].v = v74;
-            v49->uv[1].u = v58;
-            v49->uv[1].v = v74;
-            v49->uv[2].u = v58;
-            v49->uv[2].v = v63;
-            v49->uv[3].u = v81;
+            v52->vertex_0 = k * (LOWORD(self->width_cells) + 1) + v50 + 1;
+            v52->vertex_1 = v50 + k * (LOWORD(self->width_cells) + 1);
+            v52->vertex_2 = v50 + (k + 1) * (LOWORD(self->width_cells) + 1);
+            v52->vertex_3 = (k + 1) * (LOWORD(self->width_cells) + 1) + v50 + 1;
+            v52->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_b, nullptr, 0);
+            v52->uv[0].u = v83;
+            v52->uv[0].v = v76;
+            v52->uv[1].u = v60;
+            v52->uv[1].v = v76;
+            v52->uv[2].u = v60;
+            v52->uv[2].v = v65;
+            v52->uv[3].u = v83;
           }
           else
           {
-            v49->vertex_0 = v47 + k * (LOWORD(self->width_cells) + 1);
-            v49->vertex_1 = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->vertex_2 = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->vertex_3 = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
-            v49->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, 0, 0);
-            v49->uv[0].u = v58;
-            v49->uv[0].v = v74;
-            v49->uv[1].u = v81;
-            v49->uv[1].v = v74;
-            v49->uv[2].u = v81;
-            v49->uv[2].v = v63;
-            v49->uv[3].u = v58;
+            v52->vertex_0 = v50 + k * (LOWORD(self->width_cells) + 1);
+            v52->vertex_1 = k * (LOWORD(self->width_cells) + 1) + v50 + 1;
+            v52->vertex_2 = (k + 1) * (LOWORD(self->width_cells) + 1) + v50 + 1;
+            v52->vertex_3 = v50 + (k + 1) * (LOWORD(self->width_cells) + 1);
+            v52->texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_a, nullptr, 0);
+            v52->uv[0].u = v60;
+            v52->uv[0].v = v76;
+            v52->uv[1].u = v83;
+            v52->uv[1].v = v76;
+            v52->uv[2].u = v83;
+            v52->uv[2].v = v65;
+            v52->uv[3].u = v60;
           }
-          v49->uv[3].v = v63;
-          if ( ++v82 >= 2 )
+          v52->uv[3].v = v65;
+          if ( ++v84 >= 2 )
             break;
-          v48 = v82;
+          v51 = v84;
         }
-        ++v47;
-        v57 = v60;
+        ++v50;
+        v59 = v62;
       }
-      while ( v60 < (signed int)self->width_cells );
+      while ( v62 < (signed int)self->width_cells );
     }
   }
-  return calc_path_length_z(self);
+  calc_path_length_z(self);
 }
-

@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -107,6 +107,234 @@ WIBBLE_INVERT_HALFPIPE_PATH_USER_VAR_UPDATES = tuple(
     for index, storage, variable_name, variable_type in specs
 )
 
+# The Android and iOS BuildWibble, BuildInvert, and BuildHalfPipe bodies
+# independently preserve the portable fixed-range control graph. Windows
+# remains authoritative for the exact native definitions below: Wibble and
+# Invert each have one interior counter fragmented across register and stack
+# homes, while HalfPipe has distinct lead, tail, and curved-middle counters.
+# The byte cursors deliberately remain int32_t offsets because forcing the
+# pre-biased Windows expressions to PathTemplateSample* regresses the HLIL.
+WIBBLE_INVERT_HALFPIPE_CONTROL_USER_VAR_UPDATES = (
+    (
+        "initialize_wibble_path_template_pair",
+        "StackVariableSourceType",
+        433,
+        -64,
+        "base_phase",
+        "float",
+    ),
+    (
+        "initialize_wibble_path_template_pair",
+        "StackVariableSourceType",
+        566,
+        -64,
+        "roll_phase",
+        "float",
+    ),
+    (
+        "initialize_halfpipe_path_template_pair",
+        "StackVariableSourceType",
+        105,
+        -176,
+        "lead_profile_phase",
+        "float",
+    ),
+    (
+        "initialize_halfpipe_path_template_pair",
+        "StackVariableSourceType",
+        400,
+        -176,
+        "tail_profile_phase",
+        "float",
+    ),
+)
+
+WIBBLE_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x428b34", "mlil", "RegisterVariableSourceType", 404, 73),
+            ("0x428b36", "mlil", "StackVariableSourceType", 406, 8),
+            ("0x428b42", "mlil_ssa", "RegisterVariableSourceType", 418, 73),
+            ("0x428b42", "mlil_ssa", "StackVariableSourceType", 418, 8),
+            ("0x428bb2", "mlil", "StackVariableSourceType", 530, 8),
+            ("0x428cb1", "mlil", "RegisterVariableSourceType", 785, 73),
+            ("0x428cc7", "mlil", "StackVariableSourceType", 807, 8),
+        ),
+        ("RegisterVariableSourceType", 404, 73),
+        "interior_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x428b29", "mlil", "RegisterVariableSourceType", 393, 69),
+            ("0x428b42", "mlil_ssa", "RegisterVariableSourceType", 418, 69),
+            ("0x428ce2", "mlil", "RegisterVariableSourceType", 834, 69),
+        ),
+        ("RegisterVariableSourceType", 393, 69),
+        "interior_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x428d13", "mlil", "RegisterVariableSourceType", 883, 73),
+            ("0x428d20", "mlil_ssa", "RegisterVariableSourceType", 896, 73),
+            ("0x428dcf", "mlil", "RegisterVariableSourceType", 1071, 73),
+        ),
+        ("RegisterVariableSourceType", 883, 73),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x428d1e", "mlil", "RegisterVariableSourceType", 894, 72),
+            ("0x428d20", "mlil_ssa", "RegisterVariableSourceType", 896, 72),
+            ("0x428dda", "mlil", "RegisterVariableSourceType", 1082, 72),
+        ),
+        ("RegisterVariableSourceType", 894, 72),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
+INVERT_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x4293e8", "mlil", "RegisterVariableSourceType", 408, 73),
+            ("0x4293ea", "mlil", "StackVariableSourceType", 410, 8),
+            ("0x4293f6", "mlil_ssa", "RegisterVariableSourceType", 422, 73),
+            ("0x4293f6", "mlil_ssa", "StackVariableSourceType", 422, 8),
+            ("0x429470", "mlil", "StackVariableSourceType", 544, -72),
+            ("0x429542", "mlil", "RegisterVariableSourceType", 754, 73),
+            ("0x429558", "mlil", "StackVariableSourceType", 776, 8),
+        ),
+        ("RegisterVariableSourceType", 408, 73),
+        "interior_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4293dd", "mlil", "RegisterVariableSourceType", 397, 69),
+            ("0x4293f6", "mlil_ssa", "RegisterVariableSourceType", 422, 69),
+            ("0x429573", "mlil", "RegisterVariableSourceType", 803, 69),
+        ),
+        ("RegisterVariableSourceType", 397, 69),
+        "interior_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429405", "mlil", "StackVariableSourceType", 437, 8),
+            ("0x42948a", "mlil", "RegisterVariableSourceType", 570, 72),
+        ),
+        ("StackVariableSourceType", 437, 8),
+        "curve_phase",
+        "float",
+    ),
+    (
+        (
+            ("0x4295a4", "mlil", "RegisterVariableSourceType", 852, 73),
+            ("0x4295b1", "mlil_ssa", "RegisterVariableSourceType", 865, 73),
+            ("0x429660", "mlil", "RegisterVariableSourceType", 1040, 73),
+        ),
+        ("RegisterVariableSourceType", 852, 73),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4295af", "mlil", "RegisterVariableSourceType", 863, 72),
+            ("0x4295b1", "mlil_ssa", "RegisterVariableSourceType", 865, 72),
+            ("0x42966b", "mlil", "RegisterVariableSourceType", 1051, 72),
+        ),
+        ("RegisterVariableSourceType", 863, 72),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
+HALFPIPE_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x429b68", "mlil", "StackVariableSourceType", 72, -156),
+            ("0x429b6e", "mlil_ssa", "StackVariableSourceType", 78, -156),
+            ("0x429c80", "mlil", "StackVariableSourceType", 352, -156),
+        ),
+        ("StackVariableSourceType", 72, -156),
+        "lead_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429b6c", "mlil", "RegisterVariableSourceType", 76, 72),
+            ("0x429b6e", "mlil_ssa", "RegisterVariableSourceType", 78, 72),
+            ("0x429c6f", "mlil", "RegisterVariableSourceType", 335, 72),
+        ),
+        ("RegisterVariableSourceType", 76, 72),
+        "lead_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429c8a", "mlil", "StackVariableSourceType", 362, -156),
+            ("0x429c93", "mlil_ssa", "StackVariableSourceType", 371, -156),
+            ("0x429dbd", "mlil", "StackVariableSourceType", 669, -156),
+        ),
+        ("StackVariableSourceType", 362, -156),
+        "tail_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429c8e", "mlil", "RegisterVariableSourceType", 366, 72),
+            ("0x429c93", "mlil_ssa", "RegisterVariableSourceType", 371, 72),
+            ("0x429db1", "mlil", "RegisterVariableSourceType", 657, 72),
+        ),
+        ("RegisterVariableSourceType", 366, 72),
+        "tail_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429dc7", "mlil", "StackVariableSourceType", 679, -156),
+            ("0x429dec", "mlil_ssa", "StackVariableSourceType", 716, -156),
+            ("0x429f4e", "mlil", "StackVariableSourceType", 1070, -156),
+        ),
+        ("StackVariableSourceType", 679, -156),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429de3", "mlil", "RegisterVariableSourceType", 707, 69),
+            ("0x429dec", "mlil_ssa", "RegisterVariableSourceType", 716, 69),
+            ("0x429f41", "mlil", "RegisterVariableSourceType", 1057, 69),
+        ),
+        ("RegisterVariableSourceType", 707, 69),
+        "curve_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429f77", "mlil", "RegisterVariableSourceType", 1111, 73),
+            ("0x429f84", "mlil_ssa", "RegisterVariableSourceType", 1124, 73),
+            ("0x42a033", "mlil", "RegisterVariableSourceType", 1299, 73),
+        ),
+        ("RegisterVariableSourceType", 1111, 73),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x429f82", "mlil", "RegisterVariableSourceType", 1122, 72),
+            ("0x429f84", "mlil_ssa", "RegisterVariableSourceType", 1124, 72),
+            ("0x42a03e", "mlil", "RegisterVariableSourceType", 1310, 72),
+        ),
+        ("RegisterVariableSourceType", 1122, 72),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -180,7 +408,43 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=WIBBLE_INVERT_HALFPIPE_PATH_USER_VAR_UPDATES,
+            updates=(
+                WIBBLE_INVERT_HALFPIPE_PATH_USER_VAR_UPDATES
+                + WIBBLE_INVERT_HALFPIPE_CONTROL_USER_VAR_UPDATES
+            ),
+        ),
+        *apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    function_name,
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for function_name, specs in (
+                    (
+                        "initialize_wibble_path_template_pair",
+                        WIBBLE_CONTROL_LIFETIME_SPLITS,
+                    ),
+                    (
+                        "initialize_invert_path_template_pair",
+                        INVERT_CONTROL_LIFETIME_SPLITS,
+                    ),
+                    (
+                        "initialize_halfpipe_path_template_pair",
+                        HALFPIPE_CONTROL_LIFETIME_SPLITS,
+                    ),
+                )
+                for (
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                ) in specs
+            ),
         ),
     ]
     return emit_summary(

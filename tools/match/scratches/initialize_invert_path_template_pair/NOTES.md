@@ -164,3 +164,25 @@ iOS also contains `BuildInvert1`, so the Windows-to-mobile name mapping remains
 conservatively medium confidence. That family split does not weaken the exact
 parameter type shared by the paired `BuildInvert` symbols. The residual Windows
 prologue is still an ESI/EDI owner swap; no register coercion is introduced.
+
+## 2026-07-28 paired mobile control ownership
+
+The exact Android and iOS `BuildInvert` bodies independently preserve endpoints
+0 and 33, 32 interior samples, a logical interior index starting at zero, and a
+separate `0xa8`-stride sample cursor. Their interior expression tree also
+preserves one `2*pi/32` curve phase, shared by the half-angle rotation scalar
+and sine/cosine up-vector construction. The `BuildInvert1` family ambiguity
+does not affect that portable control graph.
+
+Windows MLIL/SSA at `0x4293dd..0x429573` proves the exact native definition
+identities. A guarded transaction reunifies the register, argument-slot, and
+temporary-stack fragments as `interior_index`, keeps
+`interior_sample_offset` as an integer byte cursor, and recovers
+`curve_phase`. The Windows delta loop at `0x4295a4..0x42966b` independently
+proves `delta_index` and `delta_sample_offset`. Preview, application, live
+readback, and idempotent replay all pass without increasing the 16 existing
+fixed-index `__offset` occurrences.
+
+This is analysis-only. Focused matching remains **52.92%** (598/600), with a
+seven-instruction prefix and 35 clean masked operands. Strict paired Binary
+Ninja and IDA 9.4 export reports zero selector mismatches.

@@ -166,3 +166,24 @@ retained `t * 0.20943952f`. Collapsing the distinct turn and roll phase owners,
 however, changes the stack schedule and regresses focused agreement to 59.24%.
 That probe is rejected; mobile evidence closes the boolean owner without
 overriding the independently measured Windows lifetime shape.
+
+## 2026-07-28 paired mobile control ownership
+
+The exact Android and iOS `BuildWibble` bodies independently preserve the
+authored fixed topology: endpoints 0 and 31, 30 interior samples, a logical
+interior index starting at zero, and a separate `0xa8`-stride sample cursor.
+They also preserve distinct base and three-times roll phases. Windows MLIL/SSA
+at `0x428b29..0x428ce2` is authoritative for the native definitions and proves
+that the one source index was fragmented across register and stack homes.
+
+A guarded split transaction now reunifies that source owner as
+`interior_index`, keeps `interior_sample_offset` as an honest integer byte
+cursor, and recovers the separate `base_phase` and `roll_phase` lifetimes.
+Windows `0x428d13..0x428dda` likewise proves independent `delta_index` and
+`delta_sample_offset` owners. Preview, application, live readback, and an
+idempotent replay all pass; the constructor retains its existing 16 fixed-index
+`__offset` occurrences and gains none.
+
+This is analysis-only. Focused matching remains **60.73%** (604/608), with an
+85-instruction prefix and 39 clean masked operands. Strict paired Binary Ninja
+and IDA 9.4 export reports zero selector mismatches.

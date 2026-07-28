@@ -21416,13 +21416,54 @@ def test_wibble_invert_halfpipe_replay_preserves_mesh_owner_lifetimes() -> None:
         )
 
     assert "WIBBLE_INVERT_HALFPIPE_PATH_USER_VAR_UPDATES" in replay
+    assert "WIBBLE_INVERT_HALFPIPE_CONTROL_USER_VAR_UPDATES" in replay
+    assert "WIBBLE_CONTROL_LIFETIME_SPLITS" in replay
+    assert "INVERT_CONTROL_LIFETIME_SPLITS" in replay
+    assert "HALFPIPE_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
+    assert "apply_split_user_var_updates" in replay
     assert '0x80: ("delta_dir_to_next", "Vec3")' in replay
     assert '0x8C: ("delta_length", "float")' in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(896, 66," not in replay
+
+    for name, variable_type in (
+        ("base_phase", "float"),
+        ("roll_phase", "float"),
+        ("lead_profile_phase", "float"),
+        ("tail_profile_phase", "float"),
+        ("interior_index", "int32_t"),
+        ("interior_sample_offset", "int32_t"),
+        ("lead_index", "int32_t"),
+        ("lead_sample_offset", "int32_t"),
+        ("tail_index", "int32_t"),
+        ("tail_sample_offset", "int32_t"),
+        ("curve_index", "int32_t"),
+        ("curve_sample_offset", "int32_t"),
+        ("delta_index", "int32_t"),
+        ("delta_sample_offset", "int32_t"),
+    ):
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    compact_replay = "".join(replay.split())
+    for address, view, source_type, index, storage in (
+        ("0x428b42", "mlil_ssa", "RegisterVariableSourceType", 418, 73),
+        ("0x428b42", "mlil_ssa", "StackVariableSourceType", 418, 8),
+        ("0x428d20", "mlil_ssa", "RegisterVariableSourceType", 896, 72),
+        ("0x4293f6", "mlil_ssa", "RegisterVariableSourceType", 422, 73),
+        ("0x429405", "mlil", "StackVariableSourceType", 437, 8),
+        ("0x4295b1", "mlil_ssa", "RegisterVariableSourceType", 865, 72),
+        ("0x429b6e", "mlil_ssa", "StackVariableSourceType", 78, -156),
+        ("0x429c93", "mlil_ssa", "RegisterVariableSourceType", 371, 72),
+        ("0x429dec", "mlil_ssa", "StackVariableSourceType", 716, -156),
+        ("0x429f84", "mlil_ssa", "RegisterVariableSourceType", 1124, 72),
+    ):
+        assert (
+            f'("{address}","{view}","{source_type}",{index},{storage}'
+            in compact_replay
+        )
 
     health = json.loads(
         (Path(__file__).parents[1] / "analysis/decompile/health_checks.json").read_text(
@@ -21430,6 +21471,49 @@ def test_wibble_invert_halfpipe_replay_preserves_mesh_owner_lifetimes() -> None:
         )
     )
     checks = {check["name"]: check for check in health["checks"]}
+    for check_name, expected_owners, max_offset_count in (
+        (
+            "bn_wibble_path_full_owner_abi",
+            (
+                "int32_t interior_sample_offset = 0xa8",
+                "int32_t interior_index = 0",
+                "float roll_phase =",
+                "int32_t delta_index = 0",
+                "int32_t delta_sample_offset = 0",
+            ),
+            16,
+        ),
+        (
+            "bn_invert_path_full_owner_abi",
+            (
+                "int32_t interior_sample_offset = 0xa8",
+                "int32_t interior_index = 0",
+                "float curve_phase =",
+                "int32_t delta_index = 0",
+                "int32_t delta_sample_offset = 0",
+            ),
+            16,
+        ),
+        (
+            "bn_halfpipe_path_full_owner_abi",
+            (
+                "int32_t lead_index = 0",
+                "int32_t lead_sample_offset = 0",
+                "int32_t tail_index = 0",
+                "int32_t tail_sample_offset = 0x20d0",
+                "int32_t curve_index = 0",
+                "int32_t curve_sample_offset = 0xa80",
+                "int32_t delta_index = 0",
+                "int32_t delta_sample_offset = 0",
+            ),
+            1,
+        ),
+    ):
+        owner_check = checks[check_name]
+        for expected_owner in expected_owners:
+            assert expected_owner in owner_check["required_substrings"]
+        assert owner_check["max_counts"]["__offset"] == max_offset_count
+
     check = checks["bn_halfpipe_path_full_owner_abi"]
     regexes = check["required_regexes"]
     for address in ("00429e9a", "0042a09c", "0042a0e3"):

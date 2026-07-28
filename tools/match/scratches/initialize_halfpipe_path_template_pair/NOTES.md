@@ -284,3 +284,27 @@ normalization as `sin_value * -0.5f + 0.5f` was byte-identical and added no
 evidence. Recasting the middle loop through explicit byte offsets regressed to
 40.64%, reduced clean masked operands, and introduced two unaudited calls. No
 such match-driven rewrite is retained.
+
+## 2026-07-28 paired mobile control ownership
+
+The exact Android and iOS `BuildHalfPipe` bodies independently preserve the
+authored 66-sample partition: a 16-sample lead (`0..15`), a 34-sample curved
+middle (`16..49`), and a 16-sample tail (`50..65`). Each phase owns a logical
+index and a separate `0xa8`-stride byte cursor. The mobile expression trees also
+preserve mirrored lead/tail profile phases and the middle `2*pi/34` angle; they
+are used only as source-shape evidence.
+
+Windows MLIL/SSA is authoritative for the exact lifetimes. Guarded splits at
+`0x429b68..0x429c80`, `0x429c8a..0x429dbd`, and
+`0x429dc7..0x429f4e` recover `lead_index`/`lead_sample_offset`,
+`tail_index`/`tail_sample_offset`, and
+`curve_index`/`curve_sample_offset` without converting any pre-biased cursor
+to a pointer. The Windows delta loop at `0x429f77..0x42a03e` independently
+recovers `delta_index` and `delta_sample_offset`; lower IL also retains named
+lead and tail profile phases. Preview, application, live readback, and an
+idempotent replay all pass, with the single existing fixed-index `__offset`
+unchanged.
+
+This is analysis-only. Focused matching remains **43.20%** (691/707), with an
+18-instruction prefix and 55 clean masked operands. Strict paired Binary Ninja
+and IDA 9.4 export reports zero selector mismatches.
