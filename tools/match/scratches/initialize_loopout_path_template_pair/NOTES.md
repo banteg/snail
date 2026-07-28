@@ -128,3 +128,31 @@ the authored `bool side_exit`. Windows retains a sixth stack argument absent
 from both ports and cleans 24 bytes at return; that trailing texture remains a
 real Windows-only ABI input even though this body consumes neither it nor
 `side_exit`.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android and iOS `cRPath::BuildLoopOut(float, int, bool, char*, char*)`
+bodies independently preserve the portable constructor through `CalcLengthZ`:
+ten approach samples, four departure samples, a retained departure boundary,
+the outward circular pass with primary and secondary radii, and the final delta
+pass. Both ports stop there. Windows remains authoritative for the later
+strip-mesh and facequad tail and for its additional trailing texture argument.
+
+Windows MLIL proves 17 control owners on its own schedule: six stable scalar
+homes plus eleven split lifetimes spanning the curve count, derived segment
+count, loop radius, and the approach, departure, circular, and delta indices
+and byte offsets. The logical mobile `departure_start` is physically retained
+by Windows as `(curve_count + 10) * 0xa8`, so the native owner is named
+`departure_start_offset`. LoopOut does not have the separate terminal-sample
+lifetime present in the two LoopTheLoop siblings; none was copied into this
+replay.
+
+The 11-owner batch passed a transactional preview and rollback before apply.
+Saved readback finds all 17 owners user-defined with zero `__offset`
+expressions, and a second replay is fully idempotent. A strict Binary Ninja and
+IDA 9.4 export reports zero symbol mismatches and all 1,142 health checks pass.
+The refreshed IDA artifact also records the already-proved seven-parameter
+Windows `void Path*` ABI instead of its stale five-parameter prototype.
+
+This is ownership-only: focused matching remains **60.11%** (`726/718`), with
+52 masked operands clean and no unresolved, mismatched, or unaudited entries.

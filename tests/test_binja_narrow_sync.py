@@ -21496,6 +21496,8 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
     assert "LOOPTHELOOP_CONTROL_LIFETIME_SPLITS" in replay
     assert "LOOPTHELOOPW_CONTROL_USER_VAR_UPDATES" in replay
     assert "LOOPTHELOOPW_CONTROL_LIFETIME_SPLITS" in replay
+    assert "LOOPOUT_CONTROL_USER_VAR_UPDATES" in replay
+    assert "LOOPOUT_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_split_user_var_updates" in replay
@@ -21516,6 +21518,12 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
         (777, -76, "half_angle", "float"),
         (803, -64, "roll_wave_sine", "float"),
         (829, -64, "roll", "float"),
+        (82, -72, "curve_count_f", "float"),
+        (121, -76, "approach_sample_z", "float"),
+        (372, -64, "departure_start_offset", "int32_t"),
+        (636, -32, "loop_center_y", "float"),
+        (706, -68, "secondary_radius", "float"),
+        (739, -76, "angle", "float"),
     ):
         assert (
             f'        {index},\n'
@@ -21539,6 +21547,10 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
         ("curve_sample_offset", "int32_t"),
         ("delta_index", "int32_t"),
         ("delta_sample_offset", "int32_t"),
+        ("approach_sample_index", "int32_t"),
+        ("approach_sample_offset", "int32_t"),
+        ("departure_index", "int32_t"),
+        ("departure_sample_offset", "int32_t"),
     ):
         assert f'        "{name}",\n        "{variable_type}",' in replay
 
@@ -21573,6 +21585,20 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
         ("0x41be2c", "mlil_ssa", "RegisterVariableSourceType", 748, 73),
         ("0x41c09d", "mlil_ssa", "RegisterVariableSourceType", 1373, 69),
         ("0x41c09d", "mlil_ssa", "RegisterVariableSourceType", 1373, 73),
+        ("0x41c61a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x41c61f", "mlil", "StackVariableSourceType", 47, -80),
+        ("0x41c623", "mlil", "RegisterVariableSourceType", 51, 66),
+        ("0x41c626", "mlil", "StackVariableSourceType", 54, 4),
+        ("0x41c64c", "mlil", "StackVariableSourceType", 92, 4),
+        ("0x41c662", "mlil_ssa", "StackVariableSourceType", 114, 8),
+        ("0x41c662", "mlil_ssa", "RegisterVariableSourceType", 114, 73),
+        ("0x41c768", "mlil_ssa", "RegisterVariableSourceType", 376, 69),
+        ("0x41c768", "mlil_ssa", "StackVariableSourceType", 376, 8),
+        ("0x41c768", "mlil_ssa", "RegisterVariableSourceType", 376, 73),
+        ("0x41c8bb", "mlil_ssa", "StackVariableSourceType", 715, 8),
+        ("0x41c8bb", "mlil_ssa", "RegisterVariableSourceType", 715, 73),
+        ("0x41caeb", "mlil_ssa", "RegisterVariableSourceType", 1275, 69),
+        ("0x41caeb", "mlil_ssa", "RegisterVariableSourceType", 1275, 73),
     ):
         assert (
             f'("{address}", "{view}", "{source_type}", {index}, {storage})'
@@ -21621,6 +21647,29 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
             for component in (r"\.x =", r"\.y =", r"\.z ="):
                 assert component in matching_regex
         assert "struct Vec3* vertex" not in check["required_substrings"]
+
+    loopout_required = checks["bn_loopout_path_full_owner_abi"][
+        "required_substrings"
+    ]
+    for owner in (
+        "int32_t curve_count =",
+        "float curve_count_f =",
+        "float loop_radius =",
+        "int32_t approach_sample_index =",
+        "int32_t approach_sample_offset =",
+        "float approach_sample_z =",
+        "int32_t departure_index =",
+        "int32_t departure_sample_offset =",
+        "int32_t departure_start_offset =",
+        "int32_t curve_index =",
+        "float loop_center_y =",
+        "float secondary_radius =",
+        "int32_t curve_sample_offset =",
+        "float angle =",
+        "int32_t delta_index =",
+        "int32_t delta_sample_offset =",
+    ):
+        assert owner in loopout_required
 
 
 def test_dip_screw_replay_preserves_mesh_owner_lifetimes() -> None:

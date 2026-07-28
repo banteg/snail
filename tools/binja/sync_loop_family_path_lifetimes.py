@@ -495,6 +495,175 @@ LOOPTHELOOPW_CONTROL_LIFETIME_SPLITS = (
     ),
 )
 
+# Android and iOS BuildLoopOut independently retain the same portable graph:
+# ten approach samples, four departure samples, a saved departure boundary,
+# the outward circular pass, and the final delta pass through CalcLengthZ.
+# Windows MLIL proves that the saved boundary is represented here as a byte
+# offset, not the logical sample index visible in the portable source. It also
+# proves that LoopOut has no sibling-style terminal-sample lifetime. The later
+# Windows strip-mesh and facequad construction stays outside this replay.
+LOOPOUT_CONTROL_USER_VAR_UPDATES = (
+    (
+        "initialize_loopout_path_template_pair",
+        "StackVariableSourceType",
+        82,
+        -72,
+        "curve_count_f",
+        "float",
+    ),
+    (
+        "initialize_loopout_path_template_pair",
+        "StackVariableSourceType",
+        121,
+        -76,
+        "approach_sample_z",
+        "float",
+    ),
+    (
+        "initialize_loopout_path_template_pair",
+        "StackVariableSourceType",
+        372,
+        -64,
+        "departure_start_offset",
+        "int32_t",
+    ),
+    (
+        "initialize_loopout_path_template_pair",
+        "StackVariableSourceType",
+        636,
+        -32,
+        "loop_center_y",
+        "float",
+    ),
+    (
+        "initialize_loopout_path_template_pair",
+        "StackVariableSourceType",
+        706,
+        -68,
+        "secondary_radius",
+        "float",
+    ),
+    (
+        "initialize_loopout_path_template_pair",
+        "StackVariableSourceType",
+        739,
+        -76,
+        "angle",
+        "float",
+    ),
+)
+
+LOOPOUT_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x41c61a", "mlil", "RegisterVariableSourceType", 42, 66),
+            ("0x41c61f", "mlil", "StackVariableSourceType", 47, -80),
+        ),
+        ("RegisterVariableSourceType", 42, 66),
+        "curve_count",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41c623", "mlil", "RegisterVariableSourceType", 51, 66),
+            ("0x41c626", "mlil", "StackVariableSourceType", 54, 4),
+        ),
+        ("RegisterVariableSourceType", 51, 66),
+        "total_segment_count",
+        "int32_t",
+    ),
+    (
+        (("0x41c64c", "mlil", "StackVariableSourceType", 92, 4),),
+        ("StackVariableSourceType", 92, 4),
+        "loop_radius",
+        "float",
+    ),
+    (
+        (
+            ("0x41c65c", "mlil", "StackVariableSourceType", 108, 8),
+            ("0x41c73e", "mlil", "StackVariableSourceType", 334, 8),
+            ("0x41c662", "mlil_ssa", "StackVariableSourceType", 114, 8),
+        ),
+        ("StackVariableSourceType", 108, 8),
+        "approach_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41c660", "mlil", "RegisterVariableSourceType", 112, 73),
+            ("0x41c72d", "mlil", "RegisterVariableSourceType", 317, 73),
+            ("0x41c662", "mlil_ssa", "RegisterVariableSourceType", 114, 73),
+        ),
+        ("RegisterVariableSourceType", 112, 73),
+        "approach_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41c74c", "mlil", "RegisterVariableSourceType", 348, 69),
+            ("0x41c74e", "mlil", "StackVariableSourceType", 350, 8),
+            ("0x41c829", "mlil", "RegisterVariableSourceType", 569, 69),
+            ("0x41c831", "mlil", "StackVariableSourceType", 577, 8),
+            ("0x41c768", "mlil_ssa", "RegisterVariableSourceType", 376, 69),
+            ("0x41c768", "mlil_ssa", "StackVariableSourceType", 376, 8),
+        ),
+        ("RegisterVariableSourceType", 348, 69),
+        "departure_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41c761", "mlil", "RegisterVariableSourceType", 369, 73),
+            ("0x41c847", "mlil", "RegisterVariableSourceType", 599, 73),
+            ("0x41c768", "mlil_ssa", "RegisterVariableSourceType", 376, 73),
+        ),
+        ("RegisterVariableSourceType", 369, 73),
+        "departure_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41c866", "mlil", "StackVariableSourceType", 630, 8),
+            ("0x41cac8", "mlil", "RegisterVariableSourceType", 1240, 66),
+            ("0x41cad1", "mlil", "StackVariableSourceType", 1249, 8),
+            ("0x41c8bb", "mlil_ssa", "StackVariableSourceType", 715, 8),
+        ),
+        ("StackVariableSourceType", 630, 8),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41c8b6", "mlil", "RegisterVariableSourceType", 710, 73),
+            ("0x41cac9", "mlil", "RegisterVariableSourceType", 1241, 73),
+            ("0x41c8bb", "mlil_ssa", "RegisterVariableSourceType", 715, 73),
+        ),
+        ("RegisterVariableSourceType", 710, 73),
+        "curve_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41cade", "mlil", "RegisterVariableSourceType", 1262, 69),
+            ("0x41cb97", "mlil", "RegisterVariableSourceType", 1447, 69),
+            ("0x41caeb", "mlil_ssa", "RegisterVariableSourceType", 1275, 69),
+        ),
+        ("RegisterVariableSourceType", 1262, 69),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41cae9", "mlil", "RegisterVariableSourceType", 1273, 73),
+            ("0x41cba2", "mlil", "RegisterVariableSourceType", 1458, 73),
+            ("0x41caeb", "mlil_ssa", "RegisterVariableSourceType", 1275, 73),
+        ),
+        ("RegisterVariableSourceType", 1273, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -573,6 +742,7 @@ def main() -> int:
                 LOOP_FAMILY_PATH_USER_VAR_UPDATES
                 + LOOPTHELOOP_CONTROL_USER_VAR_UPDATES
                 + LOOPTHELOOPW_CONTROL_USER_VAR_UPDATES
+                + LOOPOUT_CONTROL_USER_VAR_UPDATES
             ),
         ),
         *apply_split_user_var_updates(
@@ -594,6 +764,10 @@ def main() -> int:
                     (
                         "initialize_looptheloopw_path_template_pair",
                         LOOPTHELOOPW_CONTROL_LIFETIME_SPLITS,
+                    ),
+                    (
+                        "initialize_loopout_path_template_pair",
+                        LOOPOUT_CONTROL_LIFETIME_SPLITS,
                     ),
                 )
                 for definitions, target_var, variable_name, variable_type in split_specs
