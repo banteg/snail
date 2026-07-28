@@ -16,7 +16,7 @@ Recovered relationships:
   `0x40` iterator guard;
 - the borrowed parent at owner `+0x98` is the real `Player*`; Android and iOS
   expose the authored signature `cRClickStart::Init(cRSubGoldy*)` and perform
-  the same parent `startup_track_index` clear;
+  the same parent `replay_start_cursor` clear;
 - the complete Windows child is exactly 0xac bytes at `Player +0xa0`, ending
   immediately before `Player::row_event_cutscene_started` at `+0x14c`.
 
@@ -34,3 +34,8 @@ borrowed `Player*`. Focused Wibo remains exact at 79/79 instructions.
 `SubgameRuntime::replay_launch_active`. These typed substitutions preserve the
 exact 79/79 instruction match and close the initializer's remaining raw root
 offsets.
+
+2026-07-28 ownership clarification: the parent `+0x304` clear initializes
+`Player::replay_start_cursor`. The later click-start, completion, reset, and
+Time Trial ghost paths close that identity; the mobile initializers corroborate
+the clear but do not supply the Windows offset. The exact match is unchanged.

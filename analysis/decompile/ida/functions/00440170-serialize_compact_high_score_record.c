@@ -33,7 +33,7 @@ int32_t __thiscall serialize_compact_high_score_record(SubSolution *record, Comp
   compact->challenge_difficulty_value = record->challenge_difficulty_value;
   compact->garbage_frequency.bits = record->garbage_frequency.bits;
   compact->salt_frequency.bits = record->salt_frequency.bits;
-  compact->source_tail = record->source_tail;
+  compact->replay_start_cursor = record->replay_start_cursor;
   compact->score = record->score;
   compact->checksum = (record->score * record->score) ^ 0xDEADBABE;
   compact->runtime_build_seed = record->runtime_build_seed;

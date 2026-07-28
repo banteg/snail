@@ -32,7 +32,7 @@ uint8_t __thiscall deserialize_compact_high_score_record(SubSolution *record, Co
     record->challenge_difficulty_value = compact->challenge_difficulty_value;
     record->garbage_frequency.bits = compact->garbage_frequency.bits;
     record->salt_frequency.bits = compact->salt_frequency.bits;
-    record->source_tail = compact->source_tail;
+    record->replay_start_cursor = compact->replay_start_cursor;
     record->runtime_build_seed = compact->runtime_build_seed;
     record->opaque_persistence_word_0 = compact->opaque_persistence_word_0;
     record->opaque_persistence_word_1 = compact->opaque_persistence_word_1;

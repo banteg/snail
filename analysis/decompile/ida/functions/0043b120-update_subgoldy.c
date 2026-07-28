@@ -92,7 +92,7 @@ void __thiscall update_subgoldy(Player *player)
   SubgameRuntime *v87; // ecx
   TimeTrialRouteRecordCursor *time_trial_route_cursor; // eax
   int32_t replay_sample_count; // ecx
-  int32_t startup_track_index; // edx
+  int32_t replay_start_cursor; // edx
   int v91; // ecx
   double v92; // st7
   double v93; // st7
@@ -869,9 +869,9 @@ LABEL_287:
             replay_sample_count = v87->replay_update_cursor;
             if ( replay_sample_count >= time_trial_route_cursor->record.replay_sample_count )
               replay_sample_count = time_trial_route_cursor->record.replay_sample_count;
-            startup_track_index = player->startup_track_index;
-            if ( startup_track_index != 0
-              && (v91 = time_trial_route_cursor->record.source_tail - startup_track_index + replay_sample_count) != 0 )
+            replay_start_cursor = player->replay_start_cursor;
+            if ( replay_start_cursor != 0
+              && (v91 = time_trial_route_cursor->record.replay_start_cursor - replay_start_cursor + replay_sample_count) != 0 )
             {
               v92 = convert_math_type16_to_32(time_trial_route_cursor->record.run_records[v91].delta_z, 32.0)
                   + g_subgoldy_ghost_z;

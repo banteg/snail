@@ -2212,7 +2212,7 @@ typedef struct SubSolution {
     int32_t score;
     SubSolutionScoreOrTime score_or_time;
     int32_t score_tail;
-    int32_t source_tail;
+    int32_t replay_start_cursor;
     int32_t replay_level_index;
     int32_t replay_mode_id;
     int32_t unknown_30;
@@ -2250,7 +2250,7 @@ typedef struct CompactHighScoreRecord {
     int32_t score;
     SubSolutionScoreOrTime score_or_time;
     int32_t score_tail;
-    int32_t source_tail;
+    int32_t replay_start_cursor;
     int32_t checksum;
     int32_t replay_level_index;
     int32_t replay_mode_id;
@@ -2469,7 +2469,7 @@ typedef struct Player {
     int32_t total_score;
     Time stopwatch;
     int32_t score_tail;
-    int32_t startup_track_index;
+    int32_t replay_start_cursor;
     int32_t shooting_tier;
     uint8_t _pad_30c[0x4];
     int32_t score_buckets[0x6];

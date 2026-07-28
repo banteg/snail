@@ -20,7 +20,7 @@ int SubSolution::serialize_compact_high_score_record(SubSolutionHeader* compact)
     compact->challenge_difficulty_value = challenge_difficulty_value;
     compact->garbage_frequency_bits = garbage_frequency_bits;
     compact->salt_frequency_bits = salt_frequency_bits;
-    compact->source_tail = source_tail;
+    compact->replay_start_cursor = replay_start_cursor;
     compact->score = score;
     compact->checksum = (score * score) ^ SUB_SOLUTION_CHECKSUM_MASK;
     compact->runtime_build_seed = runtime_build_seed;

@@ -29,7 +29,7 @@ void __thiscall initialize_click_start(ClickStart *click_start, Player *player)
   {
     p_first = &g_game_base->active_bod_list.first;
     first = g_game_base->active_bod_list.first;
-    if ( first )
+    if ( first != nullptr )
     {
       first->list_prev = &click_start->bod.bod.bod;
       (*p_first)->list_prev->list_next = *p_first;
@@ -47,11 +47,11 @@ void __thiscall initialize_click_start(ClickStart *click_start, Player *player)
   }
   owner_player = click_start->owner_player;
   click_start->state = CLICK_START_STATE_WAITING_FOR_START;
-  owner_player->startup_track_index = 0;
+  owner_player->replay_start_cursor = 0;
   click_start->bod.bod.render_arg_1c = 0.0;
   click_start->bod.bod.render_arg_20 = 0.0;
   prompt = click_start->prompt;
-  if ( g_game_base->subgame.selected_level_record_active )
+  if ( g_game_base->subgame.selected_level_record_active != 0 )
     hide_border_init(prompt);
   else
     unhide_border_init(prompt);

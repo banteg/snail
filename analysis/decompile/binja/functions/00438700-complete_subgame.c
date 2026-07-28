@@ -26,15 +26,15 @@
 004387a7        game->current_high_score_record.garbage_frequency.bits = garbage_frequency
 004387ad        float salt_frequency = game->salt_frequency
 004387b9        game->current_high_score_record.challenge_speed_value = challenge_speed_value
-004387bf        int32_t startup_track_index = game->player.startup_track_index
+004387bf        int32_t replay_start_cursor = game->player.replay_start_cursor
 004387c5        game->current_high_score_record.salt_frequency.bits = salt_frequency
 004387ce        game->current_high_score_record.active = 1
-004387d1        game->current_high_score_record.source_tail = startup_track_index
+004387d1        game->current_high_score_record.replay_start_cursor = replay_start_cursor
 004387d7        game->current_high_score_record.replay_mode_id = level_mode
-004387e2        if (level_mode == 1 && startup_track_index == 0)
+004387e2        if (level_mode == 1 && replay_start_cursor == 0)
 004387de        return
-004387e4        startup_track_index.b = game->selected_level_record_active
-004387f2        if (startup_track_index.b != 0 || completed != 1)
+004387e4        replay_start_cursor.b = game->selected_level_record_active
+004387f2        if (replay_start_cursor.b != 0 || completed != 1)
 004387f2        return
 004387f7        if (level_mode == 0)
 00438839        add_arcade_high_score(&game->sub_high_score, &game->current_high_score_record, game->level_mode_arg)
@@ -43,6 +43,6 @@
 00438824        add_survival_high_score(&game->sub_high_score, &game->current_high_score_record)
 0043882b        return
 004387ff        if (level_mode == 4)
-00438801        startup_track_index.b = game->player.completion_handoff_active
-00438813        add_time_trial_high_score(&game->sub_high_score, &game->current_high_score_record, game->level_mode_arg, startup_track_index.b)
+00438801        replay_start_cursor.b = game->player.completion_handoff_active
+00438813        add_time_trial_high_score(&game->sub_high_score, &game->current_high_score_record, game->level_mode_arg, replay_start_cursor.b)
 00438840        return

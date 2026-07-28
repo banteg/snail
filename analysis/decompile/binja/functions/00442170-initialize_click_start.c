@@ -28,7 +28,7 @@
 004421fa        report_errorf("List ADD")
 0044223a        struct Player* owner_player = click_start->owner_player
 00442240        click_start->state = CLICK_START_STATE_WAITING_FOR_START
-0044224a        owner_player->startup_track_index = 0
+0044224a        owner_player->replay_start_cursor = 0
 00442250        click_start->bod.bod.render_arg_1c = 0f
 00442253        click_start->bod.bod.render_arg_20 = 0f
 00442263        struct FrontendWidget* prompt = click_start->prompt

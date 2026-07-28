@@ -60,7 +60,7 @@ struct Player {
     uint8_t _pad_000[0xa0];
     ClickStart click_start;
     uint8_t _pad_14c[0x304 - 0x14c];
-    int32_t startup_track_index;
+    int32_t replay_start_cursor;
 };
 
 #endif

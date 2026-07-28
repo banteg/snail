@@ -18,6 +18,21 @@ if str(SCRIPT_ROOT) not in sys.path:
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
 
+REPLAY_START_CURSOR_FIELD_SPECS = (
+    ("Player", 0x4364, 0x304, ("startup_track_index", "replay_start_cursor")),
+    ("SubSolution", 0x1FAC0, 0x24, ("source_tail", "replay_start_cursor")),
+    (
+        "CompactHighScoreRecord",
+        0x8C,
+        0x24,
+        ("source_tail", "replay_start_cursor"),
+    ),
+)
+REPLAY_START_CURSOR_RUNTIME_OWNER_SIZE = 0x1272838
+REPLAY_START_CURSOR_RUNTIME_OFFSET = 0x3BBA68
+REPLAY_START_CURSOR_PLAYER_OFFSET = 0x3BB764
+
+
 TRUSTED_NAMES = [
     (0x4034D0, "update_input_ok"),
     (0x403560, "initialize_input_ok"),
@@ -3028,7 +3043,54 @@ def _sync_build_track_render_cache_lvar() -> dict[str, object]:
     if address == idc.BADADDR:
         return {"status": "failed", "reason": "missing_function"}
 
-    cfunc = ida_hexrays.decompile(address)
+    # IDA 9.4 can decline to regenerate this large function immediately after
+    # a broad type import even though the durable local override is already
+    # correct. Verify that saved fact first instead of needlessly requiring a
+    # fresh cfunc.
+    settings = ida_hexrays.lvar_uservec_t()
+    saved_matches = []
+    saved_conflicts = []
+    if ida_hexrays.restore_user_lvar_settings(settings, address):
+        for index in range(settings.lvvec.size()):
+            saved = settings.lvvec.at(index)
+            if not saved.ll.is_stk_var() or saved.ll.get_stkoff() != 64:
+                continue
+            if (
+                saved.name == "locals"
+                and "TrackRenderCacheBuildLocals" in str(saved.type)
+            ):
+                saved_matches.append(saved)
+            else:
+                saved_conflicts.append(saved)
+    if len(saved_matches) == 1 and not saved_conflicts:
+        return {
+            "status": "unchanged",
+            "name": saved_matches[0].name,
+            "type": str(saved_matches[0].type),
+            "verification_mode": "saved_lvar",
+        }
+    if saved_matches or saved_conflicts:
+        return {
+            "status": "failed",
+            "reason": "unexpected_saved_local_overrides",
+            "matching_count": len(saved_matches),
+            "conflicting_count": len(saved_conflicts),
+        }
+
+    try:
+        cfunc = ida_hexrays.decompile(address)
+    except ida_hexrays.DecompilationFailure as exc:
+        return {
+            "status": "failed",
+            "reason": "decompile_failed",
+            "error": str(exc),
+        }
+    if cfunc is None:
+        return {
+            "status": "failed",
+            "reason": "decompile_failed",
+            "error": "Hex-Rays returned no cfunc",
+        }
     candidates = [
         lvar
         for lvar in cfunc.get_lvars()
@@ -3065,6 +3127,266 @@ def _sync_build_track_render_cache_lvar() -> dict[str, object]:
         return {"status": "failed", "reason": "modify_user_lvar_info_failed"}
 
     return {"status": "applied", "name": "locals", "type": "TrackRenderCacheBuildLocals"}
+
+
+def _read_replay_start_cursor_field(
+    owner_name: str,
+    expected_owner_size: int,
+    offset: int,
+) -> tuple[ida_typeinf.tinfo_t | None, dict[str, object]]:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, owner_name, ida_typeinf.BTF_STRUCT):
+        return None, {
+            "status": "failed",
+            "owner": owner_name,
+            "reason": "missing_owner",
+        }
+    if owner.get_size() != expected_owner_size:
+        return None, {
+            "status": "failed",
+            "owner": owner_name,
+            "reason": "owner_size_mismatch",
+            "expected_size": expected_owner_size,
+            "observed_size": owner.get_size(),
+        }
+
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return None, {
+            "status": "failed",
+            "owner": owner_name,
+            "reason": "missing_owner_members",
+        }
+    candidates = [
+        (index, member)
+        for index, member in enumerate(members)
+        if int(member.offset) // 8 == offset
+    ]
+    if len(candidates) != 1:
+        return None, {
+            "status": "failed",
+            "owner": owner_name,
+            "reason": "unexpected_member_candidates",
+            "offset": hex(offset),
+            "candidate_count": len(candidates),
+        }
+
+    index, member = candidates[0]
+    field = {
+        "status": "verified",
+        "owner": owner_name,
+        "owner_size": owner.get_size(),
+        "index": index,
+        "offset": hex(offset),
+        "size": int(member.size) // 8,
+        "name": member.name,
+        "type": member.type.dstr(),
+        "integral": bool(member.type.is_integral()),
+    }
+    return owner, field
+
+
+def _read_replay_start_cursor_runtime_path(
+) -> tuple[ida_typeinf.tinfo_t | None, dict[str, object]]:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, "SubgameRuntime", ida_typeinf.BTF_STRUCT):
+        return None, {
+            "status": "failed",
+            "owner": "SubgameRuntime",
+            "reason": "missing_owner",
+        }
+    if owner.get_size() != REPLAY_START_CURSOR_RUNTIME_OWNER_SIZE:
+        return None, {
+            "status": "failed",
+            "owner": "SubgameRuntime",
+            "reason": "owner_size_mismatch",
+            "expected_size": REPLAY_START_CURSOR_RUNTIME_OWNER_SIZE,
+            "observed_size": owner.get_size(),
+        }
+
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return None, {
+            "status": "failed",
+            "owner": "SubgameRuntime",
+            "reason": "missing_owner_members",
+        }
+    direct = [
+        (index, member)
+        for index, member in enumerate(members)
+        if int(member.offset) // 8 == REPLAY_START_CURSOR_RUNTIME_OFFSET
+    ]
+    if len(direct) == 1:
+        index, member = direct[0]
+        return owner, {
+            "status": "verified",
+            "owner": "SubgameRuntime",
+            "owner_size": owner.get_size(),
+            "mode": "direct_overlay",
+            "index": index,
+            "offset": hex(REPLAY_START_CURSOR_RUNTIME_OFFSET),
+            "size": int(member.size) // 8,
+            "name": member.name,
+            "type": member.type.dstr(),
+            "integral": bool(member.type.is_integral()),
+        }
+    if direct:
+        return None, {
+            "status": "failed",
+            "owner": "SubgameRuntime",
+            "reason": "unexpected_direct_member_candidates",
+            "candidate_count": len(direct),
+        }
+
+    player_members = [
+        member
+        for member in members
+        if int(member.offset) // 8 == REPLAY_START_CURSOR_PLAYER_OFFSET
+    ]
+    if len(player_members) != 1:
+        return None, {
+            "status": "failed",
+            "owner": "SubgameRuntime",
+            "reason": "missing_embedded_player_path",
+            "candidate_count": len(player_members),
+        }
+    player = player_members[0]
+    if (
+        int(player.size) // 8 != 0x4364
+        or "Player" not in player.type.dstr()
+    ):
+        return None, {
+            "status": "failed",
+            "owner": "SubgameRuntime",
+            "reason": "unexpected_embedded_player_path",
+            "offset": hex(REPLAY_START_CURSOR_PLAYER_OFFSET),
+            "size": int(player.size) // 8,
+            "name": player.name,
+            "type": player.type.dstr(),
+        }
+    return None, {
+        "status": "verified",
+        "owner": "SubgameRuntime",
+        "owner_size": owner.get_size(),
+        "mode": "embedded_player",
+        "offset": hex(REPLAY_START_CURSOR_PLAYER_OFFSET),
+        "size": int(player.size) // 8,
+        "name": player.name,
+        "type": player.type.dstr(),
+    }
+
+
+def _sync_replay_start_cursor_fields() -> dict[str, object]:
+    plans = []
+    for owner_name, owner_size, offset, allowed_names in REPLAY_START_CURSOR_FIELD_SPECS:
+        owner, field = _read_replay_start_cursor_field(owner_name, owner_size, offset)
+        if owner is None:
+            return field
+        if (
+            field["size"] != 4
+            or not field["integral"]
+            or field["name"] not in allowed_names
+        ):
+            return {
+                "status": "failed",
+                "reason": "unexpected_replay_start_cursor_field",
+                "field": field,
+                "allowed_names": list(allowed_names),
+            }
+        plans.append((owner, field))
+
+    runtime_owner, runtime_path = _read_replay_start_cursor_runtime_path()
+    if runtime_path["status"] != "verified":
+        return runtime_path
+    if runtime_path["mode"] == "direct_overlay":
+        if (
+            runtime_path["size"] != 4
+            or not runtime_path["integral"]
+            or runtime_path["name"] not in ("source_tail", "replay_start_cursor")
+        ):
+            return {
+                "status": "failed",
+                "reason": "unexpected_replay_start_cursor_runtime_field",
+                "field": runtime_path,
+            }
+        plans.append((runtime_owner, runtime_path))
+
+    renamed = []
+    for owner, field in plans:
+        if field["name"] == "replay_start_cursor":
+            continue
+        code = owner.rename_udm(int(field["index"]), "replay_start_cursor")
+        if code != ida_typeinf.TERR_OK:
+            rollback = []
+            for prior_owner, prior_field in reversed(renamed):
+                rollback_code = prior_owner.rename_udm(
+                    int(prior_field["index"]),
+                    str(prior_field["name"]),
+                )
+                rollback.append(
+                    {
+                        "owner": prior_field["owner"],
+                        "status": ida_typeinf.tinfo_errstr(rollback_code),
+                    }
+                )
+            return {
+                "status": "failed",
+                "reason": "rename_member_failed",
+                "field": field,
+                "error": ida_typeinf.tinfo_errstr(code),
+                "rollback": rollback,
+            }
+        renamed.append((owner, field))
+
+    readback = []
+    for owner_name, owner_size, offset, _allowed_names in REPLAY_START_CURSOR_FIELD_SPECS:
+        _owner, field = _read_replay_start_cursor_field(owner_name, owner_size, offset)
+        readback.append(field)
+    _runtime_owner, runtime_readback = _read_replay_start_cursor_runtime_path()
+    if any(
+        field.get("status") != "verified"
+        or field.get("name") != "replay_start_cursor"
+        for field in readback
+    ) or (
+        runtime_readback.get("status") != "verified"
+        or (
+            runtime_readback.get("mode") == "direct_overlay"
+            and runtime_readback.get("name") != "replay_start_cursor"
+        )
+    ):
+        rollback = []
+        for prior_owner, prior_field in reversed(renamed):
+            rollback_code = prior_owner.rename_udm(
+                int(prior_field["index"]),
+                str(prior_field["name"]),
+            )
+            rollback.append(
+                {
+                    "owner": prior_field["owner"],
+                    "status": ida_typeinf.tinfo_errstr(rollback_code),
+                }
+            )
+        return {
+            "status": "failed",
+            "reason": "rename_readback_failed",
+            "readback": readback,
+            "runtime_readback": runtime_readback,
+            "rollback": rollback,
+        }
+
+    return {
+        "status": "applied" if renamed else "unchanged",
+        "renamed_count": len(renamed),
+        "fields": [
+            {key: value for key, value in field.items() if key != "index"}
+            for field in readback
+        ],
+        "runtime_path": {
+            key: value
+            for key, value in runtime_readback.items()
+            if key != "index"
+        },
+    }
 
 
 def _sync_color_lvars(selector: str) -> dict[str, object]:
@@ -5284,7 +5606,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
 def main() -> None:
     argv = list(idc.ARGV)
     if len(argv) < 2:
-        print("usage: apply_path_template_types.py <header-path>", file=sys.stderr)
+        print(
+            "usage: apply_path_template_types.py <header-path> "
+            "[--replay-start-cursor-only]",
+            file=sys.stderr,
+        )
         ida_pro.qexit(2)
         return
 
@@ -5294,7 +5620,25 @@ def main() -> None:
         ida_pro.qexit(2)
         return
 
-    exit_code = _sync_types(header_path)
+    mode_args = set(argv[2:])
+    if mode_args == {"--replay-start-cursor-only"}:
+        result = _sync_replay_start_cursor_fields()
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "mode": "replay_start_cursor_only",
+                    "result": result,
+                },
+                indent=2,
+            )
+        )
+        exit_code = 1 if result.get("status") == "failed" else 0
+    elif mode_args:
+        print(f"unsupported mode arguments: {sorted(mode_args)!r}", file=sys.stderr)
+        exit_code = 2
+    else:
+        exit_code = _sync_types(header_path)
     try:
         idc.save_database(idc.get_idb_path(), 0)
     except Exception as exc:  # pragma: no cover - IDA runtime dependent

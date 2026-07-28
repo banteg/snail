@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 2,
+  "function_count": 7,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 2,
-  "ida_exported": 2,
+  "bn_exported": 7,
+  "ida_exported": 7,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,12 +18,32 @@
   "strict": true,
   "selected_functions": [
     {
+      "name": "reset_subgame",
+      "address": "0x437b10"
+    },
+    {
+      "name": "complete_subgame",
+      "address": "0x438700"
+    },
+    {
       "name": "update_subgoldy",
       "address": "0x43b120"
     },
     {
-      "name": "initialize_tip",
-      "address": "0x448a40"
+      "name": "deserialize_compact_high_score_record",
+      "address": "0x440020"
+    },
+    {
+      "name": "serialize_compact_high_score_record",
+      "address": "0x440170"
+    },
+    {
+      "name": "initialize_click_start",
+      "address": "0x442170"
+    },
+    {
+      "name": "update_click_start",
+      "address": "0x442290"
     }
   ],
   "health_check_count": 1143,

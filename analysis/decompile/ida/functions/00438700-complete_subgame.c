@@ -13,7 +13,7 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
   SubSolutionScalar v8; // esi
   int32_t level_mode; // eax
   SubSolutionScalar v10; // esi
-  int32_t startup_track_index; // ecx
+  int32_t replay_start_cursor; // ecx
   int v12; // eax
 
   display_score_stats(&runtime->player);
@@ -41,12 +41,12 @@ void __thiscall complete_subgame(SubgameRuntime *runtime, unsigned __int8 comple
     runtime->current_high_score_record.garbage_frequency = v8;
     v10.bits = (int32_t)LODWORD(runtime->salt_frequency);
     runtime->current_high_score_record.challenge_speed_value = challenge_speed_value;
-    startup_track_index = runtime->player.startup_track_index;
+    replay_start_cursor = runtime->player.replay_start_cursor;
     runtime->current_high_score_record.salt_frequency = v10;
     runtime->current_high_score_record.active = 1;
-    runtime->current_high_score_record.source_tail = startup_track_index;
+    runtime->current_high_score_record.replay_start_cursor = replay_start_cursor;
     runtime->current_high_score_record.replay_mode_id = level_mode;
-    if ( (level_mode != 1 || startup_track_index != 0) && runtime->selected_level_record_active == 0 && completed == 1 )
+    if ( (level_mode != 1 || replay_start_cursor != 0) && runtime->selected_level_record_active == 0 && completed == 1 )
     {
       if ( level_mode != 0 )
       {

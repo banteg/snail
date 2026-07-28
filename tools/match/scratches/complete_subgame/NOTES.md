@@ -91,11 +91,11 @@ Rejected experiments:
   blocker. Reordering the post-copy fields to store `score_tail`,
   replay-level, replay-speed, and difficulty lanes kept the same
   75.28% headline score but worsened the localized snapshot region; delaying
-  only `source_tail` until after the first timer snapshot regressed to
+  only `replay_start_cursor` until after the first timer snapshot regressed to
   74.16%. Keep the current store order.
 - A follow-up `snail match dump` comparison made the native post-copy schedule
   explicit (`score_tail`, replay-level/difficulty/replay-speed lanes, timer A,
-  `source_tail`, timer B), but spelling that order directly in the scratch
+  `replay_start_cursor`, timer B), but spelling that order directly in the scratch
   regressed to 74.16%. Leave this as register-allocation/scheduling residual,
   not a source-order mandate.
 - 2026-06-14 recheck: the current localized diff still isolates the same
@@ -153,7 +153,7 @@ residual rather than a reason to introduce an alias or volatile fakematch.
 The exact `0x4364`-byte `Player` begins at `SubgameRuntime +0x3bb764` and ends
 at the first runtime track cell. `complete_subgame` therefore snapshots
 `player.total_score`, the six-dword `player.stopwatch`, `player.score_tail`,
-`player.startup_track_index`, and `player.completion_handoff_active`; none are
+`player.replay_start_cursor`, and `player.completion_handoff_active`; none are
 independent SubgameRuntime fields. BN has only one reference to
 `Player +0x300`, the dword copy into `SubSolution::score_tail`, so that
 name remains deliberately narrow.
@@ -219,7 +219,7 @@ The symbol-rich iPhone binary retains `cRSubGame::Complete(bool)` in
 `SubGame.o` at `0x1a200` with an exact `0x214`-byte extent. Its emitted stores
 independently identify the working-record owner and the snapshot lanes after
 the `cRTime` copy: score tail, challenge speed, challenge difficulty, player
-source tail, replay speed, mode, challenge-difficulty scalar, then the two
+replay start cursor, replay speed, mode, challenge-difficulty scalar, then the two
 hazard frequencies. Android's `cRSubGame::Complete(bool)` corroborates the
 same record fields and scalar mapping despite its different class offsets.
 
@@ -253,3 +253,14 @@ level builder close their slider/config producers. The former generic
 completion-source names are retired; completion scoring is one consumer, not
 the owner identity. The Windows body remains exact at 88/88 instructions with
 all eight operands clean.
+
+## 2026-07-28 replay-origin cursor ownership
+
+The Player snapshot lane at `+0x304` and `SubSolution +0x24` are now both
+`replay_start_cursor`. `update_click_start` captures the same
+`replay_update_cursor` into both owners, this exact completion body persists
+the Player side, `reset_subgame` restores it, and `update_subgoldy` uses their
+difference to align Time Trial ghost samples. Android and iOS
+`cRSubGame::Complete(bool)` preserve the same snapshot edge despite their
+different Player layouts. The rename is codegen-neutral; the scratch remains
+exact at 88/88 with all eight operands clean.

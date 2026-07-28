@@ -7,13 +7,13 @@ void __thiscall reset_subgame(SubgameRuntime *game)
   int v2; // ecx
   SubgameRuntime **p_owner_game; // eax
   SubgameRuntime **v4; // eax
-  int v5; // ecx
+  int i; // ecx
   SubgameRuntime **v6; // eax
-  int v7; // ecx
+  int j; // ecx
   SubgameRuntime **p_rate_source; // eax
-  int v9; // ecx
+  int k; // ecx
   int32_t score_tail; // edx
-  int32_t source_tail; // eax
+  int32_t replay_start_cursor; // eax
 
   v2 = 8;
   p_owner_game = &game->health_pickups[0].owner_game;
@@ -24,50 +24,41 @@ void __thiscall reset_subgame(SubgameRuntime *game)
     p_owner_game += 29;
     --v2;
   }
-  while ( v2 );
+  while ( v2 != 0 );
   game->speedup_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
   game->speedup_pickup.owner_game = game;
   game->jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
   game->jetpack_pickup.owner_game = game;
   v4 = &game->garbage_hazards.slots[0].owner_game;
-  v5 = 50;
-  do
+  for ( i = 50; i != 0; --i )
   {
     *(v4 - 2) = nullptr;
     *v4 = game;
     *(v4 - 3) = nullptr;
     v4 += 49;
-    --v5;
   }
-  while ( v5 );
   v6 = &game->slug_hazards.slots[0].owner_game;
-  v7 = 8;
-  do
+  for ( j = 8; j != 0; --j )
   {
     *(v6 - 2) = nullptr;
     *v6 = game;
     v6 += 59;
-    --v7;
   }
-  while ( v7 );
   p_rate_source = &game->ring_effects.slots[0].rate_source;
-  v9 = 2;
-  do
+  for ( k = 2; k != 0; --k )
   {
     *(p_rate_source - 84) = nullptr;
     *p_rate_source = game;
     p_rate_source += 126;
-    --v9;
   }
-  while ( v9 );
   if ( game->selected_level_record_active == 1 && game->level_mode == game->current_high_score_record.replay_mode_id )
   {
     score_tail = game->current_high_score_record.score_tail;
-    source_tail = game->current_high_score_record.source_tail;
+    replay_start_cursor = game->current_high_score_record.replay_start_cursor;
     game->player.total_score = game->current_high_score_record.score;
     game->player.score_tail = score_tail;
     qmemcpy(&game->player.stopwatch, &game->current_high_score_record.score_or_time, sizeof(game->player.stopwatch));
-    game->player.startup_track_index = source_tail;
+    game->player.replay_start_cursor = replay_start_cursor;
   }
   else
   {
@@ -78,7 +69,7 @@ void __thiscall reset_subgame(SubgameRuntime *game)
     }
     zero_timer_counters(&game->player.stopwatch);
     game->player.score_tail = 0;
-    game->player.startup_track_index = 0;
+    game->player.replay_start_cursor = 0;
   }
   game->player.last_ring_spawn_z = 0.0;
   game->scan_reset = 1;

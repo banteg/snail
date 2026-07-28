@@ -60,10 +60,11 @@ void SubgameRuntime::reset_subgame()
         DWORD saved_score = current_high_score_record.score;
         DWORD saved_tail_a = current_high_score_record.score_tail;
         player.total_score = saved_score;
-        DWORD saved_tail_b = current_high_score_record.source_tail;
+        DWORD saved_replay_start_cursor =
+            current_high_score_record.replay_start_cursor;
         player.score_tail = saved_tail_a;
         memcpy(&player.stopwatch, &current_high_score_record.timer, sizeof(Time));
-        player.startup_track_index = saved_tail_b;
+        player.replay_start_cursor = saved_replay_start_cursor;
     } else {
         if (subgame_rebuild_selector == 2) {
             player.total_score = 0;
@@ -71,7 +72,7 @@ void SubgameRuntime::reset_subgame()
         }
         player.stopwatch.Zero();
         player.score_tail = 0;
-        player.startup_track_index = 0;
+        player.replay_start_cursor = 0;
     }
 
     player.last_ring_spawn_z = 0.0f;

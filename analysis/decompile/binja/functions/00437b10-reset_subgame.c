@@ -50,12 +50,13 @@
 00437bfa        clear_subgoldy_score_buckets(&game->player)
 00437c05        zero_timer_counters(&game->player.stopwatch)
 00437c0a        game->player.score_tail = 0
-00437c10        game->player.startup_track_index = 0
-00437bb4        int32_t source_tail = game->current_high_score_record.source_tail
+00437c10        game->player.replay_start_cursor = 0
+00437bae        int32_t score_tail = game->current_high_score_record.score_tail
+00437bb4        int32_t replay_start_cursor = game->current_high_score_record.replay_start_cursor
 00437bbc        game->player.total_score = game->current_high_score_record.score
-00437bd3        game->player.score_tail = game->current_high_score_record.score_tail
+00437bd3        game->player.score_tail = score_tail
 00437bd9        __builtin_memcpy(&game->player.stopwatch, &game->current_high_score_record.score_or_time, 0x18)
-00437bdc        game->player.startup_track_index = source_tail
+00437bdc        game->player.replay_start_cursor = replay_start_cursor
 00437c16        game->player.last_ring_spawn_z = 0f
 00437c1c        game->scan_reset = 1
 00437c20        game->camera_snap_requested = 1

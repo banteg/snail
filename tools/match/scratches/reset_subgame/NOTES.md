@@ -115,6 +115,15 @@ The intrinsic `memcpy` is retained because it is the source-plausible form that
 produces the native six-dword `Time` copy. All ownership substitutions remain
 byte-exact at 75/75 instructions with both masked operands clean.
 
+## 2026-07-28 replay-origin cursor ownership
+
+The restored `SubSolution +0x24` value and `Player +0x304` destination are the
+persisted and live sides of `replay_start_cursor`. Windows restores this pair
+here after `complete_subgame` snapshots it. Android
+`cRSubGame::ReSet()` independently performs the same record-to-Player restore;
+its physical Player offset is deliberately not transferred to Windows.
+The field rename remains exact at 75/75 instructions with both operands clean.
+
 ## 2026-07-14 reset-pool extent derivation
 
 The health, garbage, slug, and ring reset loops now derive their bounds from

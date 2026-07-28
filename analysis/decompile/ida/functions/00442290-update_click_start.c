@@ -40,13 +40,13 @@ void __thiscall update_click_start(ClickStart *click_start)
         {
           return;
         }
-        click_start->owner_player->startup_track_index = v3->subgame.replay_update_cursor;
+        click_start->owner_player->replay_start_cursor = v3->subgame.replay_update_cursor;
         click_start->state = CLICK_START_STATE_START_PENDING;
         if ( g_game_base->subgame.selected_level_record_active == 0 )
         {
           LOBYTE(g_game_base->subgame.current_high_score_record.run_records[g_game_base->subgame.replay_update_cursor].flags) |= 0x20u;
           g_game_base->subgame.current_high_score_record.run_records[g_game_base->subgame.replay_update_cursor].flags &= ~1u;
-          g_game_base->subgame.current_high_score_record.source_tail = g_game_base->subgame.replay_update_cursor;
+          g_game_base->subgame.current_high_score_record.replay_start_cursor = g_game_base->subgame.replay_update_cursor;
         }
         set_input_controller_pointer_authored_xy(0, 320.0, 240.0);
         set_input_controller_pointer_authored_xy(1, 320.0, 240.0);

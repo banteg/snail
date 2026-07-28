@@ -52,7 +52,7 @@ worse and still produced a compare tree, so no jump-table fakematch was kept.
 `replay_update_cursor` fields. Live input records are addressed through
 `current_high_score_record.run_records[cursor]`; the 16-bit `flags` owner is
 ORed with `0x20` and then has bit zero cleared, while
-`current_high_score_record.source_tail` receives the cursor. State 3 seeds the
+`current_high_score_record.replay_start_cursor` receives the cursor. State 3 seeds the
 RNG from `current_high_score_record.runtime_build_seed`. Prompt teardown and
 BOD recycling now use `GameRoot::border_manager` and `active_bod_list`.
 
@@ -130,3 +130,12 @@ followed by the word AND. `update_click_start` is now exact at 138/138
 instructions with full prefix and all 24 masked operands clean, including the
 audited five-entry jump table. The source lost an aliasing cast; no scheduling
 hint or fakematch was added.
+
+## 2026-07-28 replay-origin cursor ownership
+
+State 2 writes the same `replay_update_cursor` to
+`Player::replay_start_cursor` and `SubSolution::replay_start_cursor`.
+Completion later persists the Player lane, reset restores it, and ghost
+playback consumes the delta. Android and iOS `cRClickStart::AI()` preserve the
+same dual write, so the former startup/source-tail names are retired without
+borrowing either mobile layout. The exact 138/138 result is unchanged.

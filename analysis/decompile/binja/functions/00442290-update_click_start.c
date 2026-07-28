@@ -23,7 +23,7 @@
 00442346        goto label_442358
 00442322        if ((*&game_base_1->subgame.selected_level_record->run_records[0 + game_base_1->subgame.replay_update_cursor].flags & 0x20) != 0)
 00442358        label_442358:
-00442358        click_start->owner_player->startup_track_index = game_base_1->subgame.replay_update_cursor
+00442358        click_start->owner_player->replay_start_cursor = game_base_1->subgame.replay_update_cursor
 0044235e        click_start->state = CLICK_START_STATE_START_PENDING
 00442368        struct GameRoot* game_base_3 = g_game_base
 00442376        if (game_base_3->subgame.selected_level_record_active == 0)
@@ -33,7 +33,7 @@
 0044239c        int32_t edx_2 = game_base_4->subgame.replay_update_cursor * 3
 0044239f        *&(&game_base_4->subgame.current_high_score_record.run_records[0].flags)[edx_2] &= 0xfffe
 004423b0        struct GameRoot* game_base_2 = g_game_base
-004423bb        game_base_2->subgame.current_high_score_record.source_tail = game_base_2->subgame.replay_update_cursor
+004423bb        game_base_2->subgame.current_high_score_record.replay_start_cursor = game_base_2->subgame.replay_update_cursor
 004423cd        set_input_controller_pointer_authored_xy(0, 320f, 240f)
 004423de        set_input_controller_pointer_authored_xy(1, 320f, 240f)
 004423ed        play_sound_effect(&g_sound_effect_manager, 8)

@@ -26,7 +26,7 @@ unsigned char SubSolution::deserialize_compact_high_score_record(
     challenge_difficulty_value = compact->challenge_difficulty_value;
     garbage_frequency_bits = compact->garbage_frequency_bits;
     salt_frequency_bits = compact->salt_frequency_bits;
-    source_tail = compact->source_tail;
+    replay_start_cursor = compact->replay_start_cursor;
     runtime_build_seed = compact->runtime_build_seed;
     opaque_persistence_word_0 = compact->opaque_persistence_word_0;
     opaque_persistence_word_1 = compact->opaque_persistence_word_1;

@@ -885,7 +885,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2e4", "total_score", "int32_t"),
     ("0x2e8", "stopwatch", "Time"),
     ("0x300", "score_tail", "int32_t"),
-    ("0x304", "startup_track_index", "int32_t"),
+    ("0x304", "replay_start_cursor", "int32_t"),
     ("0x308", "shooting_tier", "int32_t"),
     ("0x310", "score_buckets", "int32_t[0x6]"),
     ("0x338", "shoot_flags", "uint32_t"),

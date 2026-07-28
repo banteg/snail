@@ -24092,3 +24092,41 @@ def test_mobile_utility_abis_and_overlay_owners_are_persisted() -> None:
     for header in frame_headers:
         assert "uint32_t render_mask;" in header
         assert "float overlay_rotation_angle;" in header
+
+
+def test_replay_start_cursor_ownership_has_guarded_ida_replay() -> None:
+    repo_root = Path(__file__).parents[1]
+    ida_apply = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_wrapper = (IDA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert (
+        '("Player", 0x4364, 0x304, ("startup_track_index", '
+        '"replay_start_cursor"))'
+    ) in ida_apply
+    assert "REPLAY_START_CURSOR_RUNTIME_OWNER_SIZE = 0x1272838" in ida_apply
+    assert "REPLAY_START_CURSOR_RUNTIME_OFFSET = 0x3BBA68" in ida_apply
+    assert "REPLAY_START_CURSOR_PLAYER_OFFSET = 0x3BB764" in ida_apply
+    assert '"mode": "embedded_player"' in ida_apply
+    assert '"mode": "direct_overlay"' in ida_apply
+    assert '"SubSolution", 0x1FAC0, 0x24' in ida_apply
+    assert '"CompactHighScoreRecord",' in ida_apply
+    assert "owner.rename_udm" in ida_apply
+    assert '"rename_readback_failed"' in ida_apply
+    assert '"rollback": rollback' in ida_apply
+    assert '"verification_mode": "saved_lvar"' in ida_apply
+    assert "--replay-start-cursor-only" in ida_wrapper
+
+    matcher_player = (
+        repo_root / "tools/match/include/player.h"
+    ).read_text(encoding="utf-8")
+    matcher_record = (
+        repo_root / "tools/match/include/sub_solution.h"
+    ).read_text(encoding="utf-8")
+    for source in (matcher_player, matcher_record):
+        assert "replay_start_cursor" in source
+        assert "startup_track_index" not in source
+        assert "source_tail" not in source

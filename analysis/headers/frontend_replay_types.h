@@ -256,7 +256,7 @@ typedef struct SubSolution {
     int32_t score;
     ScoreOrTime score_or_time;
     int32_t score_tail;
-    int32_t source_tail;
+    int32_t replay_start_cursor;
     int32_t replay_level_index;
     int32_t replay_mode_id;
     int32_t unknown_30;

@@ -98,6 +98,15 @@ The current high-confidence `Player` fields are:
   - current live snail visual root
 - `+0x2964`: `cached_camera_target_world`
   - world-space camera anchor consumed by `update_cameraman`
+- `+0x2e4`: `total_score`
+- `+0x2e8`: six-dword `stopwatch`
+- `+0x300`: `score_tail`
+- `+0x304`: `replay_start_cursor`
+  - `update_click_start` captures `SubgameRuntime::replay_update_cursor` here
+    and in `SubSolution +0x24`
+  - `complete_subgame` persists the Player value, `reset_subgame` restores it,
+    and Time Trial ghost playback subtracts it from the record value before
+    adding the current replay cursor
 - `+0x42dc`: `presentation.cutscene` (authored `cRCutScene`)
 - `+0x4340`: `visible_life_stock`
   - seeded to `3` by `populate_runtime_track_cells_from_segments` before `initialize_subgoldy`
@@ -674,6 +683,7 @@ only as historical decompiler spelling in older evidence.
 - `+0xff25d4`: `selected_level_record`
   - pointer to the expanded in-memory selected replay/high-score entry, not the compact on-disk `0x88 + 5*n` record
   - closed gameplay slice:
+    - `+0x24`: `replay_start_cursor`
     - `+0x28`: `replay_level_index`
     - `+0x38`: `runtime_build_flags`
     - `+0x48`: `replay_speed_scalar`
@@ -687,6 +697,10 @@ only as historical decompiler spelling in older evidence.
 The `+0x72` sample lane is not a steering lane. `update_subgoldy` uses it on the non-selected
 Time Trial replay/ghost path by accumulating `convert_math_type16_to_32(sample, 32.0)` into
 `data_643190`; selected replay playback reads `+0x70` lateral X and `+0x74` flags directly.
+The ghost sample index is aligned as
+`record.replay_start_cursor - player.replay_start_cursor + replay_update_cursor`;
+the two `+0x24/+0x304` owners are therefore the persisted and live sides of
+one replay-origin cursor, not unrelated tail/index values.
 That Time Trial ghost path marks the two `SPRITES/GHOST.TGA` sprite slots visible, writes the
 accumulated ghost `z` into their payload lane, and clamps it to no more than 20 rows ahead of
 Turbo. Selected-record playback instead forces that payload to Turbo's live `z`.

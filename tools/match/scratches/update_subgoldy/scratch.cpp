@@ -904,12 +904,12 @@ steering_stored:
                 >= TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count)
                 cursor =
                     TIME_TRIAL_RECORD_AT(record_block)->replay_sample_count;
-            int anchor = startup_track_index;
+            int anchor = replay_start_cursor;
             int offset_cursor;
             float ghost_z;
             if (!anchor
                 || (offset_cursor =
-                        TIME_TRIAL_RECORD_AT(record_block)->source_tail
+                        TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
                             - anchor + cursor)
                     == 0)
                 ghost_z = convert_math_type16_to_32(

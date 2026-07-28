@@ -73,3 +73,11 @@ matching native register ownership while keeping the `int16[]`, `int16[]`,
   `opaque_persistence_word_0/1` names. Android's symbol-backed
   `cRSubSolution::Tip` method does not consume either word, so the rename
   records the persistence contract without fakematching a meaning.
+
+2026-07-28 replay-origin cursor ownership:
+
+- The expanded and compact `+0x24` lanes are now `replay_start_cursor`.
+  Windows click-start/completion/reset/ghost consumers close its semantics,
+  while Android `cRSubSolution::Save` independently persists the same lane.
+- This is a field-only clarification. The serializer remains exact at 109/109
+  instructions with its masked operand clean.

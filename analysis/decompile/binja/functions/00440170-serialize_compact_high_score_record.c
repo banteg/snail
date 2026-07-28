@@ -17,7 +17,7 @@
 004401ca        compact->challenge_difficulty_value = record->challenge_difficulty_value
 004401d3        compact->garbage_frequency.bits = record->garbage_frequency.bits
 004401dc        compact->salt_frequency.bits = record->salt_frequency.bits
-004401e2        compact->source_tail = record->source_tail
+004401e2        compact->replay_start_cursor = record->replay_start_cursor
 004401e8        compact->score = record->score
 004401eb        int32_t score = record->score
 004401f9        compact->checksum = (score * score) ^ 0xdeadbabe

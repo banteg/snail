@@ -198,9 +198,9 @@ public:
     Time stopwatch;                         // +0x2e8, authored cRTime value
     // Only confirmed consumer copies this value into SubSolution::score_tail.
     int score_tail;                         // +0x300
-    // Click-start captures the replay cursor; completion persists it as the
-    // source-tail anchor and ghost playback uses it to align the source run.
-    int startup_track_index;                // +0x304
+    // Click-start captures the replay cursor; completion persists it and
+    // ghost playback uses it to align the source run.
+    int replay_start_cursor;                // +0x304
     // Authored cRSubGoldy::SetShootFlags maps this tier to shoot_flags. Ring
     // kinds 4/5/8 advance it and PlayShootSfx uses the resulting mask.
     int shooting_tier;                      // +0x308

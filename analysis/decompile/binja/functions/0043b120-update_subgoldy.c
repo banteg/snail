@@ -1359,15 +1359,15 @@
 0043cd2a        int32_t replay_sample_count = time_trial_route_cursor->record.replay_sample_count
 0043cd32        if (replay_update_cursor s>= replay_sample_count)
 0043cd34        replay_update_cursor = replay_sample_count
-0043cd36        int32_t startup_track_index = player->startup_track_index
+0043cd36        int32_t replay_start_cursor = player->replay_start_cursor
 0043cd3e        int32_t edi_8
 0043cd3e        int32_t replay_update_cursor_1
-0043cd3e        if (startup_track_index != 0)
-0043cd46        edi_8 = time_trial_route_cursor->record.source_tail - startup_track_index
+0043cd3e        if (replay_start_cursor != 0)
+0043cd46        edi_8 = time_trial_route_cursor->record.replay_start_cursor - replay_start_cursor
 0043cd48        replay_update_cursor_1 = replay_update_cursor
 0043cd48        replay_update_cursor += edi_8
 0043cd4a        int16_t top_213
-0043cd4a        if (startup_track_index != 0 && replay_update_cursor_1 != neg.d(edi_8))
+0043cd4a        if (replay_start_cursor != 0 && replay_update_cursor_1 != neg.d(edi_8))
 0043cd6b        time_trial_route_cursor.w = time_trial_route_cursor->record.run_records[replay_update_cursor].delta_z
 0043cd74        top_213 = top_212 - 1
 0043cd74        unimplemented  {call 0x44c8b0}

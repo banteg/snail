@@ -57,7 +57,7 @@ waiting_for_start: {
             return;
 
 start_subgame:
-        owner_player->startup_track_index = g_game->subgame.replay_update_cursor;
+        owner_player->replay_start_cursor = g_game->subgame.replay_update_cursor;
         state = CLICK_START_STATE_START_PENDING;
 
         if (g_game->subgame.replay_launch_active == 0) {
@@ -67,7 +67,7 @@ start_subgame:
             g_game->subgame.current_high_score_record
                 .run_records[g_game->subgame.replay_update_cursor]
                 .flags &= 0xfffe;
-            g_game->subgame.current_high_score_record.source_tail =
+            g_game->subgame.current_high_score_record.replay_start_cursor =
                 g_game->subgame.replay_update_cursor;
         }
 

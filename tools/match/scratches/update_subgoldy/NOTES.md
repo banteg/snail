@@ -120,7 +120,7 @@ scratch additionally pins:
   hypothesis is dead; it's ring/speedup cadence.
 - **Ghost marking (level_mode 4)**: the selected bank has
   `sizeof(SubSolution)` stride; an offset-preserving `SubSolution` view at
-  game+0x944150 owns `active`, `source_tail`, `replay_sample_count`, and the
+  game+0x944150 owns `active`, `replay_start_cursor`, `replay_sample_count`, and the
   six-byte `run_records`; ghost z = min(accumulated ghost z, z+20) through
   flt_643190, anchored by player+0x304;
   `set_subgoldy_ghost_z(float)` each tick.
@@ -696,7 +696,7 @@ The native time-trial expression deliberately remains
 is now a borrowed `TimeTrialRouteRecordCursor *`, rooted at
 `SubgameRuntime + offsetof(SubgameRuntime, sub_high_score) +
 offsetof(SubHighScore, time_trial_route_records)`. This recovers
-`SubSolution::{active,source_tail,replay_sample_count,run_records}` in both
+`SubSolution::{active,replay_start_cursor,replay_sample_count,run_records}` in both
 tracked decompilers without flattening the `SubHighScore` owner or claiming a
 second record allocation. The analytical cursor size is `0x963c10`, its
 terminal `record` starts at `0x944150`, and the owned record remains exactly
@@ -854,3 +854,13 @@ Windows initializer consumes them in the same argument positions. The former
 This ownership correction is codegen-neutral. The focused result remains
 82.67%, 2,086/2,087 instructions, with 314 clean masked operands and no
 unresolved or mismatched references.
+
+## 2026-07-28 replay-origin cursor ownership
+
+The Time Trial index expression is now explicit:
+`record.replay_start_cursor - player.replay_start_cursor + cursor`.
+Windows producers close both sides through click-start, completion, and reset;
+Android and iOS `cRSubGoldy::AI()` independently preserve the same subtraction
+and cursor addition. This identifies one replay-origin cursor while leaving
+mobile offsets non-authoritative. The focused result remains honestly
+unchanged at 82.67%, 2,086/2,087 instructions with 314 clean operands.

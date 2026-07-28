@@ -75,3 +75,11 @@ Evidence from the paired serializer:
 - The paired fields are therefore named `opaque_persistence_word_0/1`: their
   stable ownership and round-trip contract are proven, while their absent
   gameplay semantics remain explicit. No speculative semantic name is used.
+
+2026-07-28 replay-origin cursor ownership:
+
+- The compact and expanded `+0x24` lanes are now `replay_start_cursor`.
+  Windows restores this value into the Player before ghost alignment, and
+  Android `cRSubSolution::Load` independently preserves the same lane.
+- This semantic clarification leaves the exact 114/114 result and clean
+  masked operand unchanged.

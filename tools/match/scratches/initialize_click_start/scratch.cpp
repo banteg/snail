@@ -41,7 +41,7 @@ void ClickStart::initialize_click_start(Player* new_player)
     }
 
     state = CLICK_START_STATE_WAITING_FOR_START;
-    owner_player->startup_track_index = 0;
+    owner_player->replay_start_cursor = 0;
     render_arg_1c = 0;
     render_arg_20 = 0.0f;
 

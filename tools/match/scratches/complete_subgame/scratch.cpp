@@ -22,14 +22,14 @@ void SubgameRuntime::complete_subgame(unsigned char completed)
         current_high_score_record.challenge_speed_value = challenge_speed_value;
         current_high_score_record.challenge_difficulty_value =
             challenge_difficulty_value;
-        current_high_score_record.source_tail = player.startup_track_index;
+        current_high_score_record.replay_start_cursor = player.replay_start_cursor;
         current_high_score_record.replay_speed_scalar = base_rate;
         current_high_score_record.replay_mode_id = level_mode;
         current_high_score_record.challenge_difficulty_scalar = challenge_difficulty_scalar;
         current_high_score_record.garbage_frequency = garbage_frequency;
         current_high_score_record.salt_frequency = salt_frequency;
 
-        if ((level_mode != 1 || player.startup_track_index != 0)
+        if ((level_mode != 1 || player.replay_start_cursor != 0)
             && !selected_level_record_active
             && completed == 1) {
             switch (level_mode) {
