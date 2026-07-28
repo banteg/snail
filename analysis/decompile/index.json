@@ -18,12 +18,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_hill_valley_path_template_pair",
-      "address": "0x42d570"
+      "name": "initialize_slalom_path_template_pair",
+      "address": "0x41f760"
     },
     {
-      "name": "initialize_sbend_path_template_pair",
-      "address": "0x42df00"
+      "name": "initialize_slalombig_path_template_pair",
+      "address": "0x4221f0"
     }
   ],
   "health_check_count": 1142,

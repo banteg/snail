@@ -170,3 +170,27 @@ Binary Ninja preview, apply, readback, and lifetime replay kept every recovered
 owner current. The focused build remains **33.80%**, **653/696** candidate
 instructions, and a two-instruction exact prefix; its masked audit has 35
 accepted and 10 unaudited operands with no unresolved or mismatched operands.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android and iOS bodies independently preserve the four-sample
+lead-in/out loops, the logical curve induction variable, the curve phase, and
+the two absolute center-distance values used by the squared falloff. Those
+cross-port bodies establish the authored source graph; the Windows instructions
+remain authoritative for exact stack/register lifetimes and for the
+Windows-only cap-texture, strip-mesh, and UV tail.
+
+SlalomBig is an exact Windows instruction homology of the smaller Slalom
+constructor across this ownership graph. The guarded replay therefore
+translates one reviewed address set by the exact function-base delta, then
+requires every translated MLIL identity to resolve before applying it. The
+stack splits include the loop SSA Phi definitions; a separate branch-local
+`face_width_plus_one` register owner keeps partial `ecx` width loads from
+contaminating the two-pass `face_pass` induction variable.
+
+Replay, readback, strict export, and decompile health checks produce zero
+negative `__offset` expressions and reject the former false curve-to-mesh and
+face-pass-to-width dependencies. This is analysis-only: focused matching stays
+at **33.80%**, **653/696** candidate instructions, a two-instruction exact
+prefix, and 35 accepted plus 10 unaudited operands with no unresolved or
+mismatched operands.

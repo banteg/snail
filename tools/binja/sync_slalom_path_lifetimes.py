@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_user_var_update,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -75,6 +75,244 @@ SLALOM_PATH_USER_VAR_UPDATES = tuple(
     )
     for index, storage, variable_name, variable_type in SLALOM_PATH_LIFETIME_SPECS
 )
+
+SLALOM_CONTROL_USER_VAR_UPDATES = tuple(
+    (
+        function_name,
+        "StackVariableSourceType",
+        index,
+        storage,
+        variable_name,
+        variable_type,
+    )
+    for function_name in (
+        "initialize_slalom_path_template_pair",
+        "initialize_slalombig_path_template_pair",
+    )
+    for index, storage, variable_name, variable_type in (
+        (164, -68, "lead_sample_z", "float"),
+        (499, -68, "curve_segments_f", "float"),
+        (519, -76, "curve_phase", "float"),
+        (546, -72, "center_distance_a", "float"),
+    )
+)
+
+# The two Windows constructors are instruction-for-instruction homologues from
+# their prologues through the mesh tail. Keep one set of reference addresses
+# and translate them by function base; every definition still has to resolve
+# to the exact per-function MLIL identity before the guarded replay can apply.
+SLALOM_REFERENCE_BASE = 0x41F760
+SLALOM_FUNCTION_BASES = (
+    ("initialize_slalom_path_template_pair", 0x41F760),
+    ("initialize_slalombig_path_template_pair", 0x4221F0),
+)
+
+# Android and iOS preserve the logical curve induction owner, the four-sample
+# lead-in/out boundaries, and two independent absolute center distances.
+# Windows implements the same graph but repeatedly reuses the width argument
+# home as an integer counter and then as a converted float. Include the exact
+# loop Phi definitions so downstream reads join the new owners rather than
+# falling back to the incoming width parameter.
+SLALOM_CONTROL_STACK_LIFETIME_SPLITS = (
+    (
+        (("0x41f793", "mlil", "StackVariableSourceType", 51, 8),),
+        ("StackVariableSourceType", 51, 8),
+        "segment_count_value",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41f7ad", "mlil", "StackVariableSourceType", 77, 8),
+            ("0x41f85d", "mlil", "StackVariableSourceType", 253, 8),
+            ("0x41f7b3", "mlil_ssa", "StackVariableSourceType", 83, 8),
+        ),
+        ("StackVariableSourceType", 77, 8),
+        "lead_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41f879", "mlil", "StackVariableSourceType", 281, 8),
+            ("0x41f92b", "mlil", "StackVariableSourceType", 459, 8),
+            ("0x41f889", "mlil_ssa", "StackVariableSourceType", 297, 8),
+        ),
+        ("StackVariableSourceType", 281, 8),
+        "tail_sample_index",
+        "int32_t",
+    ),
+    (
+        (("0x41f8de", "mlil", "StackVariableSourceType", 382, 8),),
+        ("StackVariableSourceType", 382, 8),
+        "tail_sample_z",
+        "float",
+    ),
+    (
+        (
+            ("0x41f940", "mlil", "StackVariableSourceType", 480, 8),
+            ("0x41fc33", "mlil", "StackVariableSourceType", 1235, 8),
+            ("0x41f957", "mlil_ssa", "StackVariableSourceType", 503, 8),
+        ),
+        ("StackVariableSourceType", 480, 8),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (("0x41f99f", "mlil", "StackVariableSourceType", 575, 8),),
+        ("StackVariableSourceType", 575, 8),
+        "center_distance_b",
+        "float",
+    ),
+    (
+        (("0x41fa20", "mlil", "StackVariableSourceType", 704, 8),),
+        ("StackVariableSourceType", 704, 8),
+        "curve_sample_index",
+        "int32_t",
+    ),
+    (
+        (("0x41fa31", "mlil", "StackVariableSourceType", 721, 8),),
+        ("StackVariableSourceType", 721, 8),
+        "curve_sample_z",
+        "float",
+    ),
+)
+
+# Windows owns a mesh tail absent from the Android and iOS bodies. Raw Windows
+# instructions prove that VC6 reuses the dead curve-count and width argument
+# homes for mesh-column and UV values. Split only those definition-bounded
+# lifetimes so the authored constructor inputs do not appear to mutate into
+# pointers, loop counters, or floats.
+SLALOM_MESH_STACK_LIFETIME_SPLITS = (
+    (
+        (("0x41fdf4", "mlil", "StackVariableSourceType", 1684, -64),),
+        ("StackVariableSourceType", 1684, -64),
+        "mesh_facequads",
+        "ObjectFaceQuad*",
+    ),
+    (
+        (("0x41fdfb", "mlil", "StackVariableSourceType", 1691, -72),),
+        ("StackVariableSourceType", 1691, -72),
+        "mesh_vertices",
+        "Vec3*",
+    ),
+    (
+        (
+            ("0x41fe12", "mlil", "StackVariableSourceType", 1714, 4),
+            ("0x41ff1a", "mlil", "StackVariableSourceType", 1978, 4),
+            ("0x41fe20", "mlil_ssa", "StackVariableSourceType", 1728, 4),
+        ),
+        ("StackVariableSourceType", 1714, 4),
+        "mesh_column",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41fe16", "mlil", "StackVariableSourceType", 1718, 8),
+            ("0x41ff1e", "mlil", "StackVariableSourceType", 1982, 8),
+            ("0x41fe20", "mlil_ssa", "StackVariableSourceType", 1728, 8),
+        ),
+        ("StackVariableSourceType", 1718, 8),
+        "mesh_width_cells",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41ff4e", "mlil", "StackVariableSourceType", 2030, 4),
+            ("0x420133", "mlil", "StackVariableSourceType", 2515, 4),
+            ("0x41ff8d", "mlil_ssa", "StackVariableSourceType", 2093, 4),
+        ),
+        ("StackVariableSourceType", 2030, 4),
+        "face_column_for_uv",
+        "int32_t",
+    ),
+    (
+        (("0x41ff68", "mlil", "StackVariableSourceType", 2056, 8),),
+        ("StackVariableSourceType", 2056, 8),
+        "v0_index",
+        "int32_t",
+    ),
+    (
+        (("0x41ff71", "mlil", "StackVariableSourceType", 2065, -68),),
+        ("StackVariableSourceType", 2065, -68),
+        "v1_index",
+        "int32_t",
+    ),
+    (
+        (("0x41ff7b", "mlil", "StackVariableSourceType", 2075, 8),),
+        ("StackVariableSourceType", 2075, 8),
+        "v0",
+        "float",
+    ),
+    (
+        (("0x41ff89", "mlil", "StackVariableSourceType", 2089, -76),),
+        ("StackVariableSourceType", 2089, -76),
+        "v1",
+        "float",
+    ),
+    (
+        (("0x41ff96", "mlil", "StackVariableSourceType", 2102, -68),),
+        ("StackVariableSourceType", 2102, -68),
+        "u1_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x41ff9a", "mlil", "StackVariableSourceType", 2106, -72),
+            ("0x420120", "mlil", "StackVariableSourceType", 2496, -72),
+            ("0x41ff8d", "mlil_ssa", "StackVariableSourceType", 2093, -72),
+            ("0x41ffbc", "mlil_ssa", "StackVariableSourceType", 2140, -72),
+        ),
+        ("StackVariableSourceType", 2106, -72),
+        "face_pass",
+        "int32_t",
+    ),
+    (
+        (("0x41ffa4", "mlil", "StackVariableSourceType", 2116, 4),),
+        ("StackVariableSourceType", 2116, 4),
+        "u0",
+        "float",
+    ),
+    (
+        (("0x41ffb2", "mlil", "StackVariableSourceType", 2130, -80),),
+        ("StackVariableSourceType", 2130, -80),
+        "u1",
+        "float",
+    ),
+)
+
+# The two face-winding arms both reuse ECX after testing the face pass. Their
+# 16-bit width loads are a separate `width + 1` lifetime; without this split,
+# naming the pass Phi makes the decompiler falsely show the pass counter itself
+# acquiring the path width.
+SLALOM_FACE_REGISTER_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x41ffe1", "mlil", "RegisterVariableSourceType", 2177, 67),
+            ("0x41ffe7", "mlil", "RegisterVariableSourceType", 2183, 67),
+            ("0x420096", "mlil", "RegisterVariableSourceType", 2358, 67),
+            ("0x42009a", "mlil", "RegisterVariableSourceType", 2362, 67),
+        ),
+        ("RegisterVariableSourceType", 2177, 67),
+        "face_width_plus_one",
+        "int32_t",
+    ),
+)
+
+
+def translated_definitions(
+    function_base: int,
+    definitions: tuple[tuple[str, str, str, int, int], ...],
+) -> tuple[tuple[str, str, str, int, int], ...]:
+    delta = function_base - SLALOM_REFERENCE_BASE
+    return tuple(
+        (
+            f"{int(address, 0) + delta:#x}",
+            view,
+            source_type,
+            index,
+            storage,
+        )
+        for address, view, source_type, index, storage in definitions
+    )
 
 
 def parse_args() -> argparse.Namespace:
@@ -149,9 +387,32 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=SLALOM_PATH_USER_VAR_UPDATES,
+            updates=(
+                SLALOM_PATH_USER_VAR_UPDATES
+                + SLALOM_CONTROL_USER_VAR_UPDATES
+            ),
         ),
     ]
+    for function_name, function_base in SLALOM_FUNCTION_BASES:
+        for definitions, target_var, variable_name, variable_type in (
+            SLALOM_CONTROL_STACK_LIFETIME_SPLITS
+            + SLALOM_MESH_STACK_LIFETIME_SPLITS
+            + SLALOM_FACE_REGISTER_LIFETIME_SPLITS
+        ):
+            operations.extend(
+                apply_split_user_var_update(
+                    REPO_ROOT,
+                    target=args.target,
+                    identifier=function_name,
+                    definitions=translated_definitions(
+                        function_base,
+                        definitions,
+                    ),
+                    target_var=target_var,
+                    variable_name=variable_name,
+                    variable_type=variable_type,
+                )
+            )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

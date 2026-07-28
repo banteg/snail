@@ -167,3 +167,27 @@ candidate instructions, and a one-instruction exact prefix. Its masked audit
 has 34 accepted and 12 unaudited operands with no unresolved or mismatched
 operands. The already-retained logical first-curve guard agrees with both
 mobile bodies; no new source expression was inferred from the ABI evidence.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android and iOS bodies independently preserve the four-sample
+lead-in/out loops, the logical curve induction variable, the curve phase, and
+the two absolute center-distance values used by the squared falloff. Those
+cross-port bodies establish the authored source graph; the Windows instructions
+remain authoritative for exact stack/register lifetimes and for the
+Windows-only cap-texture, strip-mesh, and UV tail.
+
+Binary Ninja's shared stack homes had previously made the width argument appear
+to own curve counters, mesh columns, mesh width, face columns, and UV values.
+Guarded lifetime splits now include the relevant MLIL SSA Phi definitions, so
+reads join the recovered lead, tail, curve, mesh, and face owners instead of
+falling back to incoming arguments. A separate branch-local
+`face_width_plus_one` register owner prevents the partial `ecx` width loads from
+leaking into the two-pass `face_pass` induction variable.
+
+Replay, readback, strict export, and decompile health checks produce zero
+negative `__offset` expressions and reject the former false curve-to-mesh and
+face-pass-to-width dependencies. This is analysis-only: focused matching stays
+at **32.15%**, **654/696** candidate instructions, a one-instruction exact
+prefix, and 34 accepted plus 12 unaudited operands with no unresolved or
+mismatched operands.

@@ -20546,6 +20546,50 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
         )
 
     assert "SLALOM_PATH_USER_VAR_UPDATES" in replay
+    assert "SLALOM_CONTROL_USER_VAR_UPDATES" in replay
+    assert "SLALOM_CONTROL_STACK_LIFETIME_SPLITS" in replay
+    assert "SLALOM_MESH_STACK_LIFETIME_SPLITS" in replay
+    assert "SLALOM_FACE_REGISTER_LIFETIME_SPLITS" in replay
+    assert "apply_split_user_var_update" in replay
+    assert '"mlil_ssa", "StackVariableSourceType", 1728, 4' in replay
+    assert '"mlil_ssa", "StackVariableSourceType", 1728, 8' in replay
+    assert '"mlil_ssa", "StackVariableSourceType", 2093, 4' in replay
+    assert '"mlil_ssa", "StackVariableSourceType", 2093, -72' in replay
+    assert '"mlil_ssa", "StackVariableSourceType", 2140, -72' in replay
+    for name, variable_type in (
+        ("lead_sample_z", "float"),
+        ("curve_segments_f", "float"),
+        ("curve_phase", "float"),
+        ("center_distance_a", "float"),
+        ("segment_count_value", "int32_t"),
+        ("lead_sample_index", "int32_t"),
+        ("tail_sample_index", "int32_t"),
+        ("tail_sample_z", "float"),
+        ("curve_index", "int32_t"),
+        ("center_distance_b", "float"),
+        ("curve_sample_index", "int32_t"),
+        ("curve_sample_z", "float"),
+    ):
+        assert f'"{name}"' in replay
+        assert f'"{variable_type}"' in replay
+    for name, variable_type in (
+        ("mesh_facequads", "ObjectFaceQuad*"),
+        ("mesh_vertices", "Vec3*"),
+        ("mesh_column", "int32_t"),
+        ("mesh_width_cells", "int32_t"),
+        ("face_column_for_uv", "int32_t"),
+        ("v0_index", "int32_t"),
+        ("v1_index", "int32_t"),
+        ("v0", "float"),
+        ("v1", "float"),
+        ("u1_index", "int32_t"),
+        ("face_pass", "int32_t"),
+        ("u0", "float"),
+        ("u1", "float"),
+        ("face_width_plus_one", "int32_t"),
+    ):
+        assert f'        "{name}",' in replay
+        assert f'        "{variable_type}",' in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_user_var_updates" in replay
