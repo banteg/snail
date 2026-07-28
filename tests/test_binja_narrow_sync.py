@@ -21494,6 +21494,8 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
     assert "LOOP_FAMILY_PATH_USER_VAR_UPDATES" in replay
     assert "LOOPTHELOOP_CONTROL_USER_VAR_UPDATES" in replay
     assert "LOOPTHELOOP_CONTROL_LIFETIME_SPLITS" in replay
+    assert "LOOPTHELOOPW_CONTROL_USER_VAR_UPDATES" in replay
+    assert "LOOPTHELOOPW_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
     assert "apply_split_user_var_updates" in replay
@@ -21507,6 +21509,13 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
         (137, -76, "lead_sample_z", "float"),
         (711, -76, "secondary_radius", "float"),
         (764, -68, "angle", "float"),
+        (102, -84, "curve_count_f", "float"),
+        (141, -96, "lead_sample_z", "float"),
+        (715, -72, "secondary_radius", "float"),
+        (767, -80, "angle", "float"),
+        (777, -76, "half_angle", "float"),
+        (803, -64, "roll_wave_sine", "float"),
+        (829, -64, "roll", "float"),
     ):
         assert (
             f'        {index},\n'
@@ -21549,6 +21558,21 @@ def test_loop_family_replay_preserves_control_and_mesh_owner_lifetimes() -> None
         ("0x41b3d8", "mlil_ssa", "RegisterVariableSourceType", 744, 73),
         ("0x41b5f4", "mlil_ssa", "RegisterVariableSourceType", 1284, 69),
         ("0x41b5f4", "mlil_ssa", "RegisterVariableSourceType", 1284, 73),
+        ("0x41bb55", "mlil", "StackVariableSourceType", 21, -92),
+        ("0x41bb6a", "mlil_ssa", "StackVariableSourceType", 42, -92),
+        ("0x41bb7e", "mlil", "RegisterVariableSourceType", 62, 66),
+        ("0x41bb83", "mlil", "StackVariableSourceType", 67, -88),
+        ("0x41bbb0", "mlil", "StackVariableSourceType", 112, 4),
+        ("0x41bbc6", "mlil_ssa", "StackVariableSourceType", 134, 8),
+        ("0x41bbc6", "mlil_ssa", "RegisterVariableSourceType", 134, 73),
+        ("0x41bcc8", "mlil_ssa", "RegisterVariableSourceType", 392, 69),
+        ("0x41bcc8", "mlil_ssa", "StackVariableSourceType", 392, 8),
+        ("0x41bcc8", "mlil_ssa", "RegisterVariableSourceType", 392, 73),
+        ("0x41be2c", "mlil_ssa", "RegisterVariableSourceType", 748, 69),
+        ("0x41be2c", "mlil_ssa", "StackVariableSourceType", 748, 8),
+        ("0x41be2c", "mlil_ssa", "RegisterVariableSourceType", 748, 73),
+        ("0x41c09d", "mlil_ssa", "RegisterVariableSourceType", 1373, 69),
+        ("0x41c09d", "mlil_ssa", "RegisterVariableSourceType", 1373, 73),
     ):
         assert (
             f'("{address}", "{view}", "{source_type}", {index}, {storage})'

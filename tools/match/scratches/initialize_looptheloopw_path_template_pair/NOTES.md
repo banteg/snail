@@ -117,3 +117,38 @@ code-generation neutral and focused matching remains honestly at 65.73%.
 Windows still cleans six stack arguments and its callers supply one trailing
 texture beyond the five-argument mobile method. That platform-specific input
 is retained rather than deleting a proven Windows ABI slot.
+
+## 2026-07-28 mobile-backed control ownership
+
+The exact Android
+`analysis/decompile/android/functions/00058158-_ZN6cRPath17BuildLoopTheLoopWEfibPcS0_.c`
+and iOS
+`analysis/decompile/ios/functions/00052d7c-_ZN6cRPath17BuildLoopTheLoopWEfibPcS0_.c`
+bodies independently preserve the portable builder graph through
+`CalcLengthZ`: derived curve count and radius, fixed seven-sample lead and tail
+passes, the circular sample pass, the W-roll expression
+`sin(angle * 0.5) * sin(angle * 8.0) * (pi / 8)`, and the delta-normalization
+pass. Neither mobile body contains the later Windows strip-mesh and facequad
+construction.
+
+Windows machine code remains authoritative for every exact address and
+lifetime. Transactional Binary Ninja replay separates 41 MLIL definitions into
+fourteen logical owners: wiggle, derived counts/radius, lead and tail
+index/byte-offset pairs, terminal sample offset, curve index/offset, and delta
+index/offset. Seven independently bounded scalar homes recover the floating
+curve count, lead sample Z, secondary radius, angle, half-angle, roll-wave
+sine, and final roll. In particular, the old anonymous local named `angle`
+at `0x41be7d` is the value consumed by both local-Z rotations and is now
+correctly owned as `roll`.
+
+The replay previewed and rolled back before applying, saved the database, and
+was fully idempotent on a second run. Strict Binary Ninja/IDA 9.4 export
+reported zero symbol mismatches and all 1,142 decompile health checks passed.
+The IDA refresh also replaces the tracked artifact's stale five-argument
+`PathTemplate` view with the proven seven-argument Windows `Path*` ABI.
+
+The candidate source and masks are intentionally unchanged: focused matching
+remains 65.73% (745 target / 746 candidate instructions), prefix 10/745, with
+55 clean masked operands and no unresolved, mismatched, or unaudited operands.
+Repository validation is 497 tests passed, exact-only masked audit clean,
+extern lint clean, and generated status deterministic.
