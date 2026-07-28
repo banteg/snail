@@ -79,7 +79,7 @@ Rejected probes:
 
 2026-07-11 blink-source ownership:
 
-- The blink cadence call now targets `cRSubGame::advance_blink_random()`
+- The blink cadence call now targets `cRSubGame::BlinkRand()`
   directly; the synthetic `BlinkRandomTable` cast and header are gone.
 - The global-root address expression is retained because the native callsite
   itself passes `g_game_base +0x74618`, rather than the slug's borrowed owner
@@ -114,7 +114,7 @@ list-string mismatches. No label, padding, or dummy-local fakematch is used.
 ## 2026-07-14 root graph closure
 
 The duplicated removal tails now name `GameRoot::active_bod_list`, and blink
-cadence calls `GameRoot::subgame.advance_blink_random()`. Focused output stays
+cadence calls `GameRoot::subgame.BlinkRand()`. Focused output stays
 at 66.15%, 434/464 instructions, with 47 clean operands and the same two
 documented structural mismatches.
 

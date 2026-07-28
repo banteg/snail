@@ -10,7 +10,7 @@ Recovered semantics:
 - pushes the slot onto `game+0x359140` active garbage chain via `+0x80`;
 - seeds random presentation scale at `+0x9c`, state `1`, and the live matrix
   position at `+0x68..+0x70`;
-- calls `project_position_onto_track_attachment(game, &position,
+- calls `cRSubGame::CalcRealPos(&position,
   &slot+0xa0)` before linking the shared body-list node;
 - inserts the body node before the tail sentinel at `game+0x3bb764`;
 - allocates a garbage sprite with the second RNG draw, mirrors the slot scale

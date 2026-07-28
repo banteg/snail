@@ -44,7 +44,7 @@ Source-shape changes kept:
 Rejected variant:
 
 - spelling the neighbor probes as explicit `== 1` / `!= 1` tests together with
-  global `get_track_skirt_color(data_4df904 + 0x74618, ...)` regressed to
+  global `cRSubGame::GetSkirtColour(data_4df904 + 0x74618, ...)` regressed to
   `38.52%` by changing the frame from `0x50` to `0x54` and moving the live game
   pointer through stack loads too early.
 

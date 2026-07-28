@@ -6,5 +6,5 @@
 void Tutorial::update_tutorial()
 {
     cRSubGame* owner = game;
-    owner->get_track_grid_cell_at_world_position(&owner->player.transform.position);
+    owner->LocFromPos(&owner->player.transform.position);
 }

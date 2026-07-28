@@ -763,6 +763,149 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
     )
 
 
+def test_mobile_subgame_utilities_recover_authored_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    subgame_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    expected_methods = (
+        (
+            "is_neighbor_cell_solid",
+            "TestLoc",
+            "cRSubGame::TestLoc(cRSubLoc*, int, int)",
+            "?TestLoc@cRSubGame@@QAE_NPAUcRSubLoc@@HH@Z",
+        ),
+        (
+            "switch_track_mirror",
+            "SwitchMirror",
+            "cRSubGame::SwitchMirror()",
+            "?SwitchMirror@cRSubGame@@QAEXXZ",
+        ),
+        (
+            "normalize_segment_glyph_for_track_flags",
+            "LevelConvert",
+            "cRSubGame::LevelConvert(char, int, bool)",
+            "?LevelConvert@cRSubGame@@QAEDDHD@Z",
+        ),
+        (
+            "calc_slider_to_rate",
+            "CalcSliderToRate",
+            "cRSubGame::CalcSliderToRate(float)",
+            "?CalcSliderToRate@cRSubGame@@QAEMM@Z",
+        ),
+        (
+            "get_track_grid_cell_at_world_position",
+            "LocFromPos",
+            "cRSubGame::LocFromPos(tVector)",
+            "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUVector3@@@Z",
+        ),
+        (
+            "get_track_runtime_cell_at_world_z",
+            "RowFromPos",
+            "cRSubGame::RowFromPos(tVector)",
+            "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUVector3@@@Z",
+        ),
+        (
+            "sample_track_floor_height_at_position",
+            "GetY",
+            "cRSubGame::GetY(tVector)",
+            "?GetY@cRSubGame@@QAENPAUVector3@@@Z",
+        ),
+        (
+            "set_subgame_rate",
+            "SetRate",
+            "cRSubGame::SetRate(float)",
+            "?SetRate@cRSubGame@@QAEXM@Z",
+        ),
+        (
+            "calc_subgame_rate",
+            "CalcRate",
+            "cRSubGame::CalcRate()",
+            "?CalcRate@cRSubGame@@QAEXXZ",
+        ),
+        (
+            "advance_blink_random",
+            "BlinkRand",
+            "cRSubGame::BlinkRand()",
+            "?BlinkRand@cRSubGame@@QAENXZ",
+        ),
+        (
+            "initialize_blink_random",
+            "BlinkRandInit",
+            "cRSubGame::BlinkRandInit()",
+            "?BlinkRandInit@cRSubGame@@QAEXXZ",
+        ),
+        (
+            "get_track_skirt_color",
+            "GetSkirtColour",
+            "cRSubGame::GetSkirtColour(tColourSmall*)",
+            "?GetSkirtColour@cRSubGame@@QAEPAUtColour@@PAU2@@Z",
+        ),
+        (
+            "place_challenge_parcels_on_track",
+            "PlaceParcelsSurvival",
+            "cRSubGame::PlaceParcelsSurvival()",
+            "?PlaceParcelsSurvival@cRSubGame@@QAEXXZ",
+        ),
+        (
+            "project_position_onto_track_attachment",
+            "CalcRealPos",
+            "cRSubGame::CalcRealPos(tVector&, float&)",
+            "?CalcRealPos@cRSubGame@@QAEXPAUVector3@@PAM@Z",
+        ),
+    )
+
+    for windows_name, authored_name, mobile_symbol, object_symbol in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+        assert f"cRSubGame_{authored_name}" in (
+            functions_by_name[windows_name]["aliases"]
+        )
+        assert f"{authored_name}(" in subgame_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSubGame::{authored_name}(" in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+    subgoldy = (
+        repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "float sample_track_floor_height_at_position(" in subgoldy
+    assert "SubgoldyFloorSamplerCallView" in subgoldy
+
+
 def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

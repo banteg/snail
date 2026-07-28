@@ -12,7 +12,7 @@ void Fringe::refresh_fringe_object_draw_list()
 {
     tColour color;
     tColour* resolved =
-        g_game->subgame.get_track_skirt_color(&color);
+        g_game->subgame.GetSkirtColour(&color);
 
     float current_z = position.z;
     this->color = *resolved;

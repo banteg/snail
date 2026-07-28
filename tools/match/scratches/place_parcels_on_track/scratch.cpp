@@ -23,7 +23,7 @@ void report_errorf(const char* format, ...);
 void cRSubGame::PlaceParcels()
 {
     if (level_mode == 1) {
-        place_challenge_parcels_on_track();
+        PlaceParcelsSurvival();
         return;
     }
     if (level_mode != 0 && level_mode != 7)

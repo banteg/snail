@@ -41,7 +41,7 @@ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
     Vector3* live_position =
         &slug_hazards.slots[slot_index].transform.position;
     *live_position = staged_position;
-    project_position_onto_track_attachment(
+    CalcRealPos(
         live_position,
         &slug_hazards.slots[slot_index].attachment_facing_angle);
 

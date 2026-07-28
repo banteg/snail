@@ -279,7 +279,7 @@ arithmetic here is source-shape preservation, not an unresolved owner.
                         payload directly (x = lane-3.5, mirrored *-1)
   '<' 6                 '='/'|' 14 (wall2)   '>' 3, after prior-row 3:
                         9 + prior cell retagged 12
-  '@' 0 + switch_track_mirror (the mirror toggle glyph)
+  '@' 0 + `cRSubGame::SwitchMirror()` (the mirror toggle glyph)
   'F' 19                'G' 17               'J' 25
   'M' 18                'P' 30 / 'p' 29 (attachment entry pair; first
                         cell of the row arms the install: template from

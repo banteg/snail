@@ -36,9 +36,9 @@ void SubLazer::update_sub_lazer_projectile()
         if (transform.position.y >= 0.0f
             && transform.position.z >= owner_game->player.interaction_max_z) {
             cRSubLoc* grid =
-                g_game->subgame.get_track_grid_cell_at_world_position(live_position);
+                g_game->subgame.LocFromPos(live_position);
             SubRow* cell =
-                g_game->subgame.get_track_runtime_cell_at_world_z(live_position);
+                g_game->subgame.RowFromPos(live_position);
             if (grid->tile_id != SUBLOC_TILE_WALL2
                 || transform.position.y >= 7.0f) {
                 if ((cell->flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0

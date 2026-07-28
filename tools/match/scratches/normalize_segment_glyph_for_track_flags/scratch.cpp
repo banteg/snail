@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-char cRSubGame::normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row)
+char cRSubGame::LevelConvert(char glyph, int row, char edge_row)
 {
     if (row > completion_row_start)
         return glyph;

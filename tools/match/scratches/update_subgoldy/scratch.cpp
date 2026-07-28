@@ -283,7 +283,7 @@ steering_stored:
     if (resurrect_active)
         RessurectAI();
 
-    cRSubLoc* source_cell = game->get_track_grid_cell_at_world_position(p_position);
+    cRSubLoc* source_cell = game->LocFromPos(p_position);
     cRSubGame* event_game = game;
     SubRow* row_record =
         &event_game->runtime_rows[source_cell->get_track_cell_row_index()];
@@ -420,16 +420,16 @@ steering_stored:
         }
         if (!completion_handoff_active) {
             cRSubLoc* slide_cell;
-            if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            if (game->LocFromPos(p_position)->tile_id
                     == SUBLOC_TILE_SLIDE_UNDERSCORE
-                || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                || game->LocFromPos(p_position)->tile_id
                     == SUBLOC_TILE_SLIDE_O
-                || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                || game->LocFromPos(p_position)->tile_id
                     == SUBLOC_TILE_SLUG_HAZARD
-                || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                || game->LocFromPos(p_position)->tile_id
                     == SUBLOC_TILE_SLIDE_F
                 || damage_gauge.state == DAMAGE_GUAGE_STATE_DRAINING
-                       && (slide_cell = game->get_track_grid_cell_at_world_position(p_position),
+                       && (slide_cell = game->LocFromPos(p_position),
                            slide_cell->is_sub_loc_floor())) {
                 float rate = game->subgame_rate;
                 float quantum = rate * rate * 0.0040000002f;
@@ -455,7 +455,7 @@ steering_stored:
             velocity.z = quantum + quantum + velocity.z;
             attachment_exit_pending = 0;
         } else {
-            cRSubLoc* landing_cell = game->get_track_grid_cell_at_world_position(p_position);
+            cRSubLoc* landing_cell = game->LocFromPos(p_position);
             if (attachment_exit_pending) {
                 cRSubGame* drag_game = game;
                 if ((drag_game->runtime_rows[landing_cell->get_track_cell_row_index()]
@@ -540,7 +540,7 @@ steering_stored:
                 }
                 cRSubGame* probe_game = game;
                 if (probe_game->level_mode == 3)
-                    probe_game->get_track_grid_cell_at_world_position(p_position);
+                    probe_game->LocFromPos(p_position);
                 if (((game->runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) == 0
                         || (g_cheat_state.flags & 2) != 0)
                     && transform.position.y < 0.49000001f) {
@@ -568,30 +568,30 @@ steering_stored:
             if (floor_top > transform.position.y) {
                 if (velocity.y <= 0.0f)
                     transform.position.y = floor_top;
-                if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                if (game->LocFromPos(p_position)->tile_id
                         == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    || game->LocFromPos(p_position)->tile_id
                         == SUBLOC_TILE_RAMP_GREATER_RAISED
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    || game->LocFromPos(p_position)->tile_id
                         == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    || game->LocFromPos(p_position)->tile_id
                         == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    || game->LocFromPos(p_position)->tile_id
                         == SUBLOC_TILE_RAMP_GREATER_BACKPATCH
-                    || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                    || game->LocFromPos(p_position)->tile_id
                         == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH) {
                     velocity.y = game->subgame_rate * 0.30000001f;
-                } else if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                } else if (game->LocFromPos(p_position)->tile_id
                                == SUBLOC_TILE_RAMP_LEFT_BRACE
-                           || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                           || game->LocFromPos(p_position)->tile_id
                                   == SUBLOC_TILE_RAMP_GREATER
-                           || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                           || game->LocFromPos(p_position)->tile_id
                                   == SUBLOC_TILE_RAMP_RIGHT_BRACE
-                           || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                           || game->LocFromPos(p_position)->tile_id
                                   == SUBLOC_TILE_RAMP_LEFT_BRACKET
-                           || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                           || game->LocFromPos(p_position)->tile_id
                                   == SUBLOC_TILE_RAMP_LESS
-                           || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                           || game->LocFromPos(p_position)->tile_id
                                   == SUBLOC_TILE_RAMP_RIGHT_BRACKET) {
                     if (surface_reaction_timer == 0.0f)
                         surface_reaction_timer = surface_reaction_step;
@@ -606,10 +606,10 @@ steering_stored:
                         presentation.dispatch_cutscene_animation(
                             1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
                     }
-                } else if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
-                           && game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                } else if (game->LocFromPos(p_position)->tile_id
+                           && game->LocFromPos(p_position)->tile_id
                                   != SUBLOC_TILE_RING_MARKER
-                           && game->get_track_grid_cell_at_world_position(p_position)->tile_id
+                           && game->LocFromPos(p_position)->tile_id
                                   != SUBLOC_TILE_TRAMPOLINE) {
                     trampoline_bounce_active = 0;
                     velocity.y = 0.0f;
@@ -628,7 +628,7 @@ steering_stored:
                 velocity.y = gravity + velocity.y;
             }
             cRSubLoc* trampoline_cell =
-                game->get_track_grid_cell_at_world_position(p_position);
+                game->LocFromPos(p_position);
             if (trampoline_cell->tile_id == SUBLOC_TILE_TRAMPOLINE
                 && trampoline_cell->position.y + 0.49000001f > transform.position.y
                 && trampoline_cell->position.y - 0.49000001f < transform.position.y) {
@@ -651,7 +651,7 @@ steering_stored:
             || (wall_probe.z = p_position->z + 0.49000001f,
                 wall_probe.x = p_position->x, wall_probe.y = p_position->y,
                 wall_lookup = wall_probe,
-                game->get_track_grid_cell_at_world_position(&wall_lookup)->tile_id
+                game->LocFromPos(&wall_lookup)->tile_id
                     != SUBLOC_TILE_WALL2)
             || transform.position.y >= 6.5f) {
             barrier_hold_progress = 0.0f;
@@ -672,33 +672,33 @@ steering_stored:
     }
 
     if (!lane_lean_state
-        && (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+        && (game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACE
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_RIGHT_BRACE
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACKET
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_RIGHT_BRACKET
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_RIGHT_BRACE_BACKPATCH)
         && !attachment_exit_pending && transform.position.y <= 0.98000002f) {
         lane_lean_progress_step = game->subgame_rate * 0.037037037f;
-        if (game->get_track_grid_cell_at_world_position(p_position)->tile_id
+        if (game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACE
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACKET
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED
-            || game->get_track_grid_cell_at_world_position(p_position)->tile_id
+            || game->LocFromPos(p_position)->tile_id
                 == SUBLOC_TILE_RAMP_LEFT_BRACE_BACKPATCH) {
             lane_lean_state = 1;
             lane_lean_amplitude = 1.0f;

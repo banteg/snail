@@ -20,6 +20,28 @@ ordering anchors, especially `rebuild_track_runtime_from_segments`,
 `initialize_runtime_pools_and_path_template_bank`, `update_subgame`, and
 `activate_landscape_entry`.
 
+## 2026-07-28 mobile-authored utility surface
+
+Android and iOS evidence recovers fourteen high-confidence methods on the
+shared Windows owner: `TestLoc`, `SwitchMirror`, `LevelConvert`,
+`CalcSliderToRate`, `LocFromPos`, `RowFromPos`, `GetY`, `SetRate`, `CalcRate`,
+`BlinkRand`, `BlinkRandInit`, `GetSkirtColour`, `PlaceParcelsSurvival`, and
+`CalcRealPos`. The matcher headers and focused definitions now use those
+authored names, and every scratch targets its exact owner-qualified VC6 symbol
+rather than an ownerless alias.
+
+The mobile signatures are semantic evidence, not an ABI template. Windows
+continues to use the pointer, `char`, and `double` forms proven by its calls and
+decorated symbols. In particular, `update_subgoldy` retains a narrow
+float-return `SubgoldyFloorSamplerCallView` for its caller-side x87
+consumption, while the primary `cRSubGame::GetY(Vector3*)` definition retains
+the Windows `double` return. This is an explicit compatibility view, not a
+second inferred owner.
+
+The authored-name replay is codegen-neutral: the proof-grade status remains
+`532` functions at `79.11%`, and exact-only audit remains the acceptance
+boundary.
+
 ## Recovered source shape
 
 The accepted candidate models the complete function rather than returning

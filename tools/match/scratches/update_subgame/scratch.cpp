@@ -56,7 +56,7 @@ void cRSubGame::AI()
     tColour replay_color_alt;
     tColour skirt_color;
 
-    calc_subgame_rate();
+    CalcRate();
     int one = 1;
 
     switch (subgame_state) {
@@ -365,7 +365,7 @@ void cRSubGame::AI()
                                     node->list_flags |= BOD_FLAG_LINKED;
                                 }
                                 tColour* color =
-                                    g_game->subgame.get_track_skirt_color(&skirt_color);
+                                    g_game->subgame.GetSkirtColour(&skirt_color);
                                 (*fringe)->color = *color;
                             }
                             ++fringe;

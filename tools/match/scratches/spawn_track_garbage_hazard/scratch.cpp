@@ -63,7 +63,7 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
     Vector3* live_position =
         &garbage_hazards.slots[slot_index].transform.position;
     *live_position = staged_position;
-    project_position_onto_track_attachment(
+    CalcRealPos(
         live_position,
         &garbage_hazards.slots[slot_index].attachment_facing_angle);
 

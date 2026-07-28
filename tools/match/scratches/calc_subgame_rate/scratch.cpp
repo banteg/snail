@@ -4,7 +4,7 @@
 
 float sine(float angle);
 
-void cRSubGame::calc_subgame_rate()
+void cRSubGame::CalcRate()
 {
     if (subgame_state == 2) {
         float completion_fraction = player.transform.position.z / (float)completion_row_start;

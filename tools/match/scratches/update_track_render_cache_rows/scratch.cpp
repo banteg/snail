@@ -36,7 +36,7 @@ void SegmentCache::update_track_render_cache_rows()
         position->x = 0.0f;
         tColour skirt_color;
         slots[next_cache_row_index][TRACK_RENDER_CACHE_FRINGE].color =
-            *g_game->subgame.get_track_skirt_color(&skirt_color);
+            *g_game->subgame.GetSkirtColour(&skirt_color);
 
         active_list = &g_game->subgame.track_body_list_head;
         slot = &slots[next_cache_row_index][TRACK_RENDER_CACHE_FLOOR];

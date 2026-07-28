@@ -403,7 +403,7 @@ void cRSubGame::BuildLevel()
             selected_new_segment = true;
         }
         if (selected_new_segment)
-            switch_track_mirror();
+            SwitchMirror();
 
         if (level_mode != 2 && build_row >= completion_row_start) {
             if (level_mode == 0 || level_mode == 4 || level_mode == 1 || level_mode == 7) {
@@ -562,7 +562,7 @@ void cRSubGame::BuildLevel()
             char* glyph_ptr = active_segment
                 + authored_lane * SEGMENT_GLYPH_ROW_STRIDE + segment_row
                 + SEGMENT_GLYPH_ROWS_BASE;
-            char normalized = normalize_segment_glyph_for_track_flags(
+            char normalized = LevelConvert(
                 *glyph_ptr, build_row, edge_row);
             switch (normalized) {
             case ' ':
@@ -699,7 +699,7 @@ void cRSubGame::BuildLevel()
             case '@':
                 *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;
                 *(int*)(cell + CELL_LIST_FLAGS) &= 0xffffffdf;
-                switch_track_mirror();
+                SwitchMirror();
                 break;
             case 'F':
                 ((BodBase*)(cell + CELL_BOD_BASE))
@@ -859,7 +859,7 @@ void cRSubGame::BuildLevel()
             default:
                 debug_report_stub(
                     "TrackError:%c in Segment %s\n",
-                    normalize_segment_glyph_for_track_flags(
+                    LevelConvert(
                         *glyph_ptr, build_row, 1),
                     ((SubSegment*)active_segment)->source_name);
                 break;
@@ -886,7 +886,7 @@ void cRSubGame::BuildLevel()
 
                     tColour skirt_color;
                     tColour* resolved_color =
-                        g_game->subgame.get_track_skirt_color(&skirt_color);
+                        g_game->subgame.GetSkirtColour(&skirt_color);
                     *(tColour*)(row_record + ROW_ATTACHMENT_COLOR) = *resolved_color;
                     set_object_color(
                         ((SubRow*)row_record)->attachment_body.object,

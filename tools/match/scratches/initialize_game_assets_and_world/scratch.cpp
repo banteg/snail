@@ -100,8 +100,8 @@ char GameRoot::initialize_game_assets_and_world()
 
     g_cheat_state.initialize_cheat();
     intro.hide_for_replay_latch = 0;
-    subgame.initialize_blink_random();
-    subgame.set_subgame_rate(1.1f);
+    subgame.BlinkRandInit();
+    subgame.SetRate(1.1f);
     render_skip_count = 2;
     fixed_update_count = 1;
 

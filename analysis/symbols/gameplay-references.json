@@ -1055,6 +1055,15 @@
       "description": "Compiler-emitted lifecycle-state switch jump table that follows update_star_field immediately after the terminal return."
     },
     {
+      "address": "0x434b60",
+      "name": "is_neighbor_cell_solid",
+      "kind": "function",
+      "aliases": [
+        "?TestLoc@cRSubGame@@QAE_NPAUcRSubLoc@@HH@Z"
+      ],
+      "description": "Exact Windows cRSubGame::TestLoc(cRSubLoc*,int,int) entry with its authored decorated relocation name."
+    },
+    {
       "address": "0x435d1c",
       "name": "select_track_tile_edge_variants_jump_table",
       "kind": "jump_table",
@@ -1071,6 +1080,15 @@
       ],
       "size": "0x20",
       "description": "Compiler-emitted switch jump table that follows set_subgame_features immediately after the final return."
+    },
+    {
+      "address": "0x435e60",
+      "name": "switch_track_mirror",
+      "kind": "function",
+      "aliases": [
+        "?SwitchMirror@cRSubGame@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGame::SwitchMirror() entry with its authored decorated relocation name."
     },
     {
       "address": "0x437194",
@@ -1091,6 +1109,15 @@
       ],
       "size": "0x5e",
       "description": "Compiler-emitted byte lookup table mapping glyph values 0x20..0x7d to populate_runtime_track_cells_from_segments switch case indexes."
+    },
+    {
+      "address": "0x437270",
+      "name": "normalize_segment_glyph_for_track_flags",
+      "kind": "function",
+      "aliases": [
+        "?LevelConvert@cRSubGame@@QAEDDHD@Z"
+      ],
+      "description": "Exact Windows cRSubGame::LevelConvert(char,int,char) entry; Windows keeps the third parameter byte-sized."
     },
     {
       "address": "0x437418",
@@ -1125,6 +1152,15 @@
       "kind": "jump_table",
       "size": "0x20",
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
+    },
+    {
+      "address": "0x437e80",
+      "name": "calc_slider_to_rate",
+      "kind": "function",
+      "aliases": [
+        "?CalcSliderToRate@cRSubGame@@QAEMM@Z"
+      ],
+      "description": "Exact Windows cRSubGame::CalcSliderToRate(float) entry with its authored decorated relocation name."
     },
     {
       "address": "0x4386dc",
@@ -1249,6 +1285,33 @@
       "description": "Exact Windows cRSubGoldy::GhostDraw(float) entry with its authored decorated relocation name."
     },
     {
+      "address": "0x43d410",
+      "name": "get_track_grid_cell_at_world_position",
+      "kind": "function",
+      "aliases": [
+        "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUVector3@@@Z"
+      ],
+      "description": "Exact Windows cRSubGame::LocFromPos(Vector3*) entry; Windows pointer ABI remains authoritative."
+    },
+    {
+      "address": "0x43d480",
+      "name": "get_track_runtime_cell_at_world_z",
+      "kind": "function",
+      "aliases": [
+        "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUVector3@@@Z"
+      ],
+      "description": "Exact Windows cRSubGame::RowFromPos(Vector3*) entry; Windows pointer ABI remains authoritative."
+    },
+    {
+      "address": "0x43d4d0",
+      "name": "sample_track_floor_height_at_position",
+      "kind": "function",
+      "aliases": [
+        "?GetY@cRSubGame@@QAENPAUVector3@@@Z"
+      ],
+      "description": "Exact Windows cRSubGame::GetY(Vector3*) entry with its native double-return ABI."
+    },
+    {
       "address": "0x43e44c",
       "name": "spawn_track_ring_or_special_effect_kind_jump_table",
       "kind": "jump_table",
@@ -1325,6 +1388,42 @@
       "description": "Exact Windows cRSubGoldy::ScoreStatsDisplay() entry with its authored decorated relocation name."
     },
     {
+      "address": "0x4404c0",
+      "name": "set_subgame_rate",
+      "kind": "function",
+      "aliases": [
+        "?SetRate@cRSubGame@@QAEXM@Z"
+      ],
+      "description": "Exact Windows cRSubGame::SetRate(float) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x4404d0",
+      "name": "calc_subgame_rate",
+      "kind": "function",
+      "aliases": [
+        "?CalcRate@cRSubGame@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGame::CalcRate() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x4408a0",
+      "name": "advance_blink_random",
+      "kind": "function",
+      "aliases": [
+        "?BlinkRand@cRSubGame@@QAENXZ"
+      ],
+      "description": "Exact Windows cRSubGame::BlinkRand() entry with its native double-return ABI."
+    },
+    {
+      "address": "0x4408c0",
+      "name": "initialize_blink_random",
+      "kind": "function",
+      "aliases": [
+        "?BlinkRandInit@cRSubGame@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGame::BlinkRandInit() entry with its authored decorated relocation name."
+    },
+    {
       "address": "0x441b70",
       "name": "zero_timer_counters",
       "kind": "function",
@@ -1361,6 +1460,15 @@
       "description": "Exact Windows cRSubGoldy::RessurectAI() entry with the authored spelling and owner."
     },
     {
+      "address": "0x442120",
+      "name": "get_track_skirt_color",
+      "kind": "function",
+      "aliases": [
+        "?GetSkirtColour@cRSubGame@@QAEPAUtColour@@PAU2@@Z"
+      ],
+      "description": "Exact Windows cRSubGame::GetSkirtColour(tColour*) entry; Windows keeps its wider color owner and pointer ABI."
+    },
+    {
       "address": "0x4424ec",
       "name": "update_click_start_state_jump_table",
       "kind": "jump_table",
@@ -1387,6 +1495,24 @@
       ],
       "size": "0x20",
       "description": "Compiler-emitted eight-entry gameplay-mode switch table used by SubTracks::Load; modes 5 and 6 share the default arm."
+    },
+    {
+      "address": "0x444240",
+      "name": "place_challenge_parcels_on_track",
+      "kind": "function",
+      "aliases": [
+        "?PlaceParcelsSurvival@cRSubGame@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGame::PlaceParcelsSurvival() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x4444b0",
+      "name": "project_position_onto_track_attachment",
+      "kind": "function",
+      "aliases": [
+        "?CalcRealPos@cRSubGame@@QAEXPAUVector3@@PAM@Z"
+      ],
+      "description": "Exact Windows cRSubGame::CalcRealPos(Vector3*,float*) entry; Windows pointer ABI remains authoritative."
     },
     {
       "address": "0x444ce0",

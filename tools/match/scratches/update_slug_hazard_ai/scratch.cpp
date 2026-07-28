@@ -63,7 +63,7 @@ void Slug::update_slug_hazard_ai()
             if (blink_progress < 0.0f) {
                 blink_progress = 0.0f;
                 blink_step =
-                    (float)g_game->subgame.advance_blink_random();
+                    (float)g_game->subgame.BlinkRand();
             } else if (blink_progress > 1.0f) {
                 blink_progress = 1.0f;
                 blink_step = -0.166666672f;

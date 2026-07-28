@@ -14,7 +14,7 @@ Recovered behavior:
 - it ramps warning intensity at the start, holds it through the middle range,
   and fades it out after `0.94`;
 - while in the middle range it samples the current runtime row through
-  `get_track_runtime_cell_at_world_z(game+0x74618, game+0x42fde4)` and forces
+  `cRSubGame::RowFromPos(game+0x42fde4)` on the owner at `game+0x74618` and forces
   `progress = 0.94` when `BYTE1(row->flags) & 0x80` is set, i.e. the 32-bit
   flag mask is `0x8000`;
 - once active, it updates wobble x/y/alpha and calls the one-instruction

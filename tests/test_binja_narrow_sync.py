@@ -702,8 +702,8 @@ def test_mobile_subgame_utility_evidence_recovers_authored_owners() -> None:
     health_checks = (
         repo_root / "analysis/decompile/health_checks.json"
     ).read_text(encoding="utf-8")
-    assert "void initialize_blink_random();" in matcher_header
-    assert "void cRSubGame::initialize_blink_random()" in blink_source
+    assert "void BlinkRandInit();" in matcher_header
+    assert "void cRSubGame::BlinkRandInit()" in blink_source
     assert "return result;" not in blink_source
     assert '"00440909        return"' in health_checks
     assert '"return result"' in health_checks
@@ -24219,7 +24219,7 @@ def test_mobile_utility_abis_and_overlay_owners_are_persisted() -> None:
     )
     assert switch_prototype in binja_subgame_sync
     assert switch_prototype + ";" in ida_subgame_sync
-    assert "void switch_track_mirror();" in matcher_subgame_header
+    assert "void SwitchMirror();" in matcher_subgame_header
     assert "TRACK_MIRROR_REANALYSIS_FUNCTIONS" in binja_subgame_sync
     assert (
         '"populate_runtime_track_cells_from_segments",'

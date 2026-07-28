@@ -80,21 +80,21 @@ void cRSubGame::StartLevel(int level_index)
             base_rate = g_runtime_config.default_challenge_speed_slider;
         } else if (mode == 0 || mode == 4 || mode == 7) {
             if (level_definition.selected_speed_bits == (int)0xbf800000) {
-                base_rate = calc_slider_to_rate(0.0f);
+                base_rate = CalcSliderToRate(0.0f);
             } else {
                 float normalized_speed =
                     level_definition.selected_speed * 0.00999999978f;
                 base_rate = normalized_speed * 0.900000036f + 0.200000003f;
             }
         } else if (mode == 1) {
-            base_rate = calc_slider_to_rate(
+            base_rate = CalcSliderToRate(
                 (float)g_runtime_config.challenge_speed_percent
                 * 0.00999999978f);
             challenge_difficulty_scalar =
                 (float)g_runtime_config.challenge_difficulty_percent
                 * 0.00999999978f;
         } else if (mode == 2) {
-            base_rate = calc_slider_to_rate(
+            base_rate = CalcSliderToRate(
                 g_runtime_config.default_challenge_speed_slider);
         }
     }
@@ -404,5 +404,5 @@ void cRSubGame::StartLevel(int level_index)
     player.track_z_offset = 320.0f;
     player.track_z_anchor = 320.0f;
     scan_reset = 1;
-    calc_subgame_rate();
+    CalcRate();
 }

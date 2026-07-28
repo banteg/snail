@@ -5,7 +5,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment.h"
 
-bool cRSubGame::is_neighbor_cell_solid(cRSubLoc* cell, int dx, int dz)
+bool cRSubGame::TestLoc(cRSubLoc* cell, int dx, int dz)
 {
     int row = cell->get_track_cell_row_index();
     int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;

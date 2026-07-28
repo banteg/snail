@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-float cRSubGame::calc_slider_to_rate(float slider)
+float cRSubGame::CalcSliderToRate(float slider)
 {
     if (slider == 1.0f) {
         return 1.1f;

@@ -118,7 +118,7 @@ and both exits use `retn 8`. Its only callers, `spawn_track_garbage_hazard` and
 `spawn_slug_hazard`, pass a `Vec3*` plus `float*` and discard EAX immediately.
 Together with the exact cross-port `cRSubGame::CalcRealPos(tVector&, float&)`
 signature, this closes the Windows ABI as
-`void cRSubGame::project_position_onto_track_attachment(Vec3*, float*)`.
+`void cRSubGame::CalcRealPos(Vec3*, float*)`.
 The guarded Binary Ninja repair records and replaces only the observed stale
 `char* (int32_t, int32_t*, float*)` identity; the shared header and BN/IDA
 replay catalogs now preserve the recovered owner and argument types.

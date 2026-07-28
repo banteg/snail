@@ -28,7 +28,9 @@ afterward compiled identically. VC6 still cross-jump-merged the two
 `track_mirror_enabled = mirror_enabled; return mirror_enabled` tails, so keep
 the clear strict-threshold source.
 
-2026-06-18 name correction: the scratch now spells this as `Game::switch_track_mirror()`.
+2026-06-18 owner correction: the scratch first moved this onto `cRSubGame`;
+the later mobile-symbol replay recovers the authored spelling
+`cRSubGame::SwitchMirror()`.
 The callsites in `populate_runtime_track_cells_from_segments` and the row-flag
 consumer prove +0x02 is the current track mirror flag, not a generic
 `last_coin`, and +0x04 is the repeat guard for that flag.

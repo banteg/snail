@@ -153,7 +153,7 @@ void cRSubGame::AddRing(
         }
         }
 
-        cRSubLoc* result = get_track_grid_cell_at_world_position(
+        cRSubLoc* result = LocFromPos(
             &slot_cursor->ring.transform.position);
         if (result->tile_id != SUBLOC_TILE_WALL2) {
             slot_cursor->ring.kind = (SubRingKind)requested_kind;

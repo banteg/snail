@@ -72,15 +72,15 @@ void cRSubGame::FringeEdgeTrack()
                     cell->fringe_right = 0;
                     cell->fringe_left = 0;
                     cell->fringe_back = 0;
-                } else if (is_neighbor_cell_solid(cell, 0, 0) == 1) {
-                    if (!is_neighbor_cell_solid(cell, 0, 1)) {
-                        if (is_neighbor_cell_solid(cell, 1, 1) != 1)
-                            edge_a = (is_neighbor_cell_solid(cell, 1, 0) != 1) + 1;
+                } else if (TestLoc(cell, 0, 0) == 1) {
+                    if (!TestLoc(cell, 0, 1)) {
+                        if (TestLoc(cell, 1, 1) != 1)
+                            edge_a = (TestLoc(cell, 1, 0) != 1) + 1;
                         int edge_b;
-                        if (is_neighbor_cell_solid(cell, -1, 1) == 1)
+                        if (TestLoc(cell, -1, 1) == 1)
                             edge_b = 0;
                         else
-                            edge_b = (is_neighbor_cell_solid(cell, -1, 0) != 1) + 1;
+                            edge_b = (TestLoc(cell, -1, 0) != 1) + 1;
 
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
@@ -90,21 +90,21 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_front->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_front->position = cell->position;
                         tColour color0;
-                        tColour* skirt_color = get_track_skirt_color(&color0);
+                        tColour* skirt_color = GetSkirtColour(&color0);
                         edge_a = 0;
                         cell->fringe_front->color = *skirt_color;
                     } else {
                         cell->fringe_front = 0;
                     }
 
-                    if (!is_neighbor_cell_solid(cell, 1, 0)) {
-                        if (is_neighbor_cell_solid(cell, 1, -1) != 1)
-                            edge_a = (is_neighbor_cell_solid(cell, 0, -1) != 1) + 1;
+                    if (!TestLoc(cell, 1, 0)) {
+                        if (TestLoc(cell, 1, -1) != 1)
+                            edge_a = (TestLoc(cell, 0, -1) != 1) + 1;
                         int edge_b;
-                        if (is_neighbor_cell_solid(cell, 1, 1) == 1)
+                        if (TestLoc(cell, 1, 1) == 1)
                             edge_b = 0;
                         else
-                            edge_b = (is_neighbor_cell_solid(cell, 0, 1) != 1) + 1;
+                            edge_b = (TestLoc(cell, 0, 1) != 1) + 1;
 
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
@@ -114,21 +114,21 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_right->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_right->position = cell->position;
                         tColour color1;
-                        tColour* skirt_color = get_track_skirt_color(&color1);
+                        tColour* skirt_color = GetSkirtColour(&color1);
                         edge_a = 0;
                         cell->fringe_right->color = *skirt_color;
                     } else {
                         cell->fringe_right = 0;
                     }
 
-                    if (!is_neighbor_cell_solid(cell, -1, 0)) {
-                        if (is_neighbor_cell_solid(cell, -1, 1) != 1)
-                            edge_a = (is_neighbor_cell_solid(cell, 0, 1) != 1) + 1;
+                    if (!TestLoc(cell, -1, 0)) {
+                        if (TestLoc(cell, -1, 1) != 1)
+                            edge_a = (TestLoc(cell, 0, 1) != 1) + 1;
                         int edge_b;
-                        if (is_neighbor_cell_solid(cell, -1, -1) == 1)
+                        if (TestLoc(cell, -1, -1) == 1)
                             edge_b = 0;
                         else
-                            edge_b = (is_neighbor_cell_solid(cell, 0, -1) != 1) + 1;
+                            edge_b = (TestLoc(cell, 0, -1) != 1) + 1;
 
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
@@ -138,21 +138,21 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_left->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_left->position = cell->position;
                         tColour color2;
-                        tColour* skirt_color = get_track_skirt_color(&color2);
+                        tColour* skirt_color = GetSkirtColour(&color2);
                         edge_a = 0;
                         cell->fringe_left->color = *skirt_color;
                     } else {
                         cell->fringe_left = 0;
                     }
 
-                    if (!is_neighbor_cell_solid(cell, 0, -1)) {
-                        if (is_neighbor_cell_solid(cell, -1, -1) != 1)
-                            edge_a = (is_neighbor_cell_solid(cell, -1, 0) != 1) + 1;
+                    if (!TestLoc(cell, 0, -1)) {
+                        if (TestLoc(cell, -1, -1) != 1)
+                            edge_a = (TestLoc(cell, -1, 0) != 1) + 1;
                         int edge_b;
-                        if (is_neighbor_cell_solid(cell, 1, -1) == 1)
+                        if (TestLoc(cell, 1, -1) == 1)
                             edge_b = 0;
                         else
-                            edge_b = (is_neighbor_cell_solid(cell, 1, 0) != 1) + 1;
+                            edge_b = (TestLoc(cell, 1, 0) != 1) + 1;
 
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
@@ -162,7 +162,7 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_back->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_back->position = cell->position;
                         tColour color3;
-                        tColour* skirt_color = get_track_skirt_color(&color3);
+                        tColour* skirt_color = GetSkirtColour(&color3);
                         edge_a = 0;
                         cell->fringe_back->color = *skirt_color;
                     } else {

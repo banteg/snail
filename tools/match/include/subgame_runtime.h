@@ -79,12 +79,12 @@ class cRSubGame {
 public:
     cRSubGame* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
     void SetFeatures(); // @ 0x435df0
-    void switch_track_mirror(); // @ 0x435e60; mobile cRSubGame::SwitchMirror()
+    void SwitchMirror(); // @ 0x435e60; mobile cRSubGame::SwitchMirror()
     void BuildLevel(); // @ 0x435eb0
     void Init(); // @ 0x4374b0
     void ReSet(); // @ 0x437b10
     void GenerateLevel(int level_index); // @ 0x437de0
-    float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
+    float CalcSliderToRate(float slider); // @ 0x437e80, receiver unused by body
     void StartLevel(int level_index); // @ 0x437eb0
     cRSubGoldy* embedded_player(); // borrowed pointer to owned player at +0x3bb764
     Vector3* parcel_delivery_arc_basis(); // cRSubGoldy.presentation.transform.basis_up
@@ -108,35 +108,35 @@ public:
         int requested_kind,
         cRSubGoldy* player,
         float ring_speed); // @ 0x43df10
-    void set_subgame_rate(float rate); // @ 0x4404c0
-    void calc_subgame_rate(); // @ 0x4404d0
-    double advance_blink_random(); // @ 0x4408a0
-    void initialize_blink_random(); // @ 0x4408c0
+    void SetRate(float rate); // @ 0x4404c0
+    void CalcRate(); // @ 0x4404d0
+    double BlinkRand(); // @ 0x4408a0
+    void BlinkRandInit(); // @ 0x4408c0
     void RemoveBods(); // @ 0x440910
     void HideScores(); // @ 0x445f10
     void UnHideScores(); // @ 0x445f40
     void update_subgame_camera(); // @ 0x446020
-    tColour* get_track_skirt_color(tColour* out); // @ 0x442120
+    tColour* GetSkirtColour(tColour* out); // @ 0x442120
     Parcel* AddParcel(
         Vector3* world_position,
         cRSubGoldy* ignored_player); // @ 0x443730, native binds embedded_player()
-    cRSubLoc* get_track_grid_cell_at_world_position(Vector3* position);
-    SubRow* get_track_runtime_cell_at_world_z(Vector3* position);
-    double sample_track_floor_height_at_position(Vector3* position);
-    void project_position_onto_track_attachment(Vector3* position, float* out_angle);
+    cRSubLoc* LocFromPos(Vector3* position);
+    SubRow* RowFromPos(Vector3* position);
+    double GetY(Vector3* position);
+    void CalcRealPos(Vector3* position, float* out_angle);
     void Complete(unsigned char completed); // @ 0x438700
     void BuildColours(); // @ 0x435d40
     void PlaceParcels(); // @ 0x4438e0
-    void place_challenge_parcels_on_track();
+    void PlaceParcelsSurvival();
     void SmoothTrack(); // @ 0x435a80
     void WarnTrack(); // @ 0x4355f0
     void SlideSmoothTrack(); // @ 0x4356f0
     void CondenseTrack(); // @ 0x435180
     void DeSaltTrack(); // @ 0x4354f0
     void FringeEdgeTrack(); // @ 0x434be0
-    bool is_neighbor_cell_solid(cRSubLoc* cell, int dx, int dz); // cRSubGame::TestLoc
+    bool TestLoc(cRSubLoc* cell, int dx, int dz); // cRSubGame::TestLoc
     // Authored cRSubGame::LevelConvert(char, int, bool), preserved by Android.
-    char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);
+    char LevelConvert(char glyph, int row, char edge_row);
 
     unsigned char scan_reset; // +0x00, row scanner start-window reset
     unsigned char camera_snap_requested; // +0x01, transient camera source switch flag

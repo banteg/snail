@@ -21,6 +21,6 @@ void cRSubGame::GenerateLevel(int level_index)
 
     tColour skirt_color;
     tColour* resolved_color =
-        g_game->subgame.get_track_skirt_color(&skirt_color);
+        g_game->subgame.GetSkirtColour(&skirt_color);
     segment_cache.build_track_render_caches(*resolved_color);
 }

@@ -60,7 +60,7 @@ cull_check:
             color.set_color_alpha(0.800000012f);
         }
         tColour scratch;
-        tColour* skirt = g_game->subgame.get_track_skirt_color(&scratch);
+        tColour* skirt = g_game->subgame.GetSkirtColour(&scratch);
         g_game->subgame.runtime_rows[get_track_cell_row_index()]
             .attachment_body.color = *skirt;
         if (g_game->subgame.embedded_player()->interaction_max_z
