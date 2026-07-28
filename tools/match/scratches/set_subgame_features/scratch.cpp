@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-void cRSubGame::set_subgame_features()
+void cRSubGame::SetFeatures()
 {
     if (selected_level_record_active != 0) {
         SubSolution* record = selected_level_record;

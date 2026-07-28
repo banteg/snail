@@ -3,10 +3,10 @@
 ## Scope
 
 This scratch reconstructs Windows-local
-`cRSubGame::build_subgame_level(int level_index)` at `0x437eb0` through
-the shared `cRSubGame` and `GameRoot` owner graphs. Cross-port symbol and
-body evidence identifies the authored method as `cRSubGame::StartLevel(int)`,
-not `BuildLevel()`.
+`cRSubGame::StartLevel(int level_index)` at `0x437eb0` through the shared
+`cRSubGame` and `GameRoot` owner graphs. The stable matcher target remains
+`build_subgame_level`; cross-port symbol and body evidence proves the authored
+method is `StartLevel(int)`, not `BuildLevel()`.
 
 The source shape was recovered from both decompile exports:
 
@@ -33,7 +33,7 @@ early after the easier prefix. Its major phases are:
 4. Apply selected-record replay values or normal-mode speed and difficulty
    defaults.
 5. Initialize track parcel slots, honor the score-widget hide latch, and call
-   the exact `rebuild_track_runtime_from_segments(level_index)` anchor.
+   the exact `GenerateLevel(level_index)` anchor.
 6. Select and activate a landscape, including the four space scripts and the
    random starfield mirror byte.
 7. Insert and initialize the start/completion row controllers.
@@ -64,7 +64,7 @@ mismatch).
   which loses the target's two-stage multiply sequence.
 - The completion X/Y sources and default challenge speed are distinct fields in
   the shared `RuntimeConfig`, preserving the saved-config scalar split.
-- `rebuild_track_runtime_from_segments(level_index)` stays as a member call and
+- `GenerateLevel(level_index)` stays as a member call and
   is not reimplemented inline.
 - The landscape default branch reloads the incoming `level_index` through a
   volatile parameter view. This recovers the native stack reload in the random
@@ -101,7 +101,7 @@ mismatch).
   scratch out of the `FrontendWidget`, `Player`, `GolbPathBank`,
   `SubLazerPool`, and `SaltHazardPool` rows.
 - 2026-06-21 receiver cleanup: the scratch now defines
-  `cRSubGame::build_subgame_level` directly and declares the unused-receiver
+  `cRSubGame::StartLevel` directly and declares the unused-receiver
   `calc_slider_to_rate` call surface on `cRSubGame`. Focused Wibo stays at
   `86.10%`, `560/555`, prefix `244/555`, with the same `105 ok / 1 mismatch`
   masked audit. A trial using the standalone `__stdcall calc_slider_to_rate`

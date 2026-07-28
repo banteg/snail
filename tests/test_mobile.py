@@ -331,7 +331,7 @@ def test_mobile_utility_owner_mappings_are_exact_and_verified() -> None:
     assert "ios_symbol" not in input_ok
 
 
-def test_mobile_track_pipeline_keeps_warn_and_desalt_owners_distinct() -> None:
+def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = {
@@ -345,28 +345,135 @@ def test_mobile_track_pipeline_keeps_warn_and_desalt_owners_distinct() -> None:
         entry["name"]: entry
         for entry in functions["functions"]
     }
-
-    warn = entries["promote_track_tiles_to_fringe_variants"]
-    assert warn["status"] == "verified"
-    assert warn["confidence"] == "high"
-    assert warn["android_symbol"] == "cRSubGame::WarnTrack()"
-    assert warn["android_body_count"] == 1
-    assert "ios_symbol" not in warn
-    assert "WarnTrack" in (
-        functions_by_name["promote_track_tiles_to_fringe_variants"][
-            "aliases"
-        ]
+    expected_members = (
+        (
+            "set_subgame_features",
+            "SetFeatures",
+            "?SetFeatures@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "build_track_colours",
+            "BuildColours",
+            "?BuildColours@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "populate_runtime_track_cells_from_segments",
+            "BuildLevel",
+            "?BuildLevel@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "place_parcels_on_track",
+            "PlaceParcels",
+            "?PlaceParcels@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "select_track_tile_edge_variants",
+            "SmoothTrack",
+            "?SmoothTrack@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "promote_track_tiles_to_fringe_variants",
+            "WarnTrack",
+            "?WarnTrack@cRSubGame@@QAEXXZ",
+            False,
+        ),
+        (
+            "harmonize_center_lane_floor_slide_variants",
+            "SlideSmoothTrack",
+            "?SlideSmoothTrack@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "merge_track_tile_runs",
+            "CondenseTrack",
+            "?CondenseTrack@cRSubGame@@QAEXXZ",
+            True,
+        ),
+        (
+            "mark_track_warning_zones",
+            "DeSaltTrack",
+            "?DeSaltTrack@cRSubGame@@QAEXXZ",
+            False,
+        ),
+        (
+            "build_track_fringe_objects",
+            "FringeEdgeTrack",
+            "?FringeEdgeTrack@cRSubGame@@QAEXXZ",
+            True,
+        ),
     )
+    matcher_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
 
-    desalt = entries["mark_track_warning_zones"]
-    assert desalt["status"] == "verified"
-    assert desalt["confidence"] == "high"
-    assert desalt["android_symbol"] == "cRSubGame::DeSaltTrack()"
-    assert desalt["android_body_count"] == 1
-    assert "ios_symbol" not in desalt
-    assert "DeSaltTrack" in (
-        functions_by_name["mark_track_warning_zones"]["aliases"]
+    for windows_name, authored_name, symbol, has_ios_body in expected_members:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == f"cRSubGame::{authored_name}()"
+        assert entry["android_body_count"] == 1
+        if has_ios_body:
+            assert entry["ios_symbol"] == f"cRSubGame::{authored_name}()"
+            assert entry["ios_body_count"] == 1
+        else:
+            assert "ios_symbol" not in entry
+
+        assert authored_name in functions_by_name[windows_name]["aliases"]
+        assert f"void {authored_name}();" in matcher_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"void cRSubGame::{authored_name}()" in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={symbol}\n" in scratch_config
+
+    expected_lifecycle_members = (
+        (
+            "rebuild_track_runtime_from_segments",
+            "GenerateLevel",
+            "?GenerateLevel@cRSubGame@@QAEXH@Z",
+        ),
+        (
+            "build_subgame_level",
+            "StartLevel",
+            "?StartLevel@cRSubGame@@QAEXH@Z",
+        ),
     )
+    for windows_name, authored_name, symbol in expected_lifecycle_members:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        expected_mobile_symbol = f"cRSubGame::{authored_name}(int)"
+        assert entry["android_symbol"] == expected_mobile_symbol
+        assert entry["ios_symbol"] == expected_mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert authored_name in functions_by_name[windows_name]["aliases"]
+        assert f"void {authored_name}(int level_index);" in matcher_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert (
+            f"void cRSubGame::{authored_name}(int level_index)"
+            in scratch_source
+        )
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}\n" in scratch_config
+        assert f"SYMBOL={symbol}\n" in scratch_config
 
     generate_level = (
         repo_root
@@ -385,6 +492,23 @@ def test_mobile_track_pipeline_keeps_warn_and_desalt_owners_distinct() -> None:
     )
     call_offsets = [generate_level.index(call) for call in ordered_calls]
     assert call_offsets == sorted(call_offsets)
+
+    windows_dispatcher = (
+        repo_root
+        / (
+            "tools/match/scratches/rebuild_track_runtime_from_segments/"
+            "scratch.cpp"
+        )
+    ).read_text(encoding="utf-8")
+    windows_calls = tuple(
+        f"{authored_name}();"
+        for _, authored_name, _, _ in expected_members
+    )
+    windows_offsets = [
+        windows_dispatcher.index(call)
+        for call in windows_calls
+    ]
+    assert windows_offsets == sorted(windows_offsets)
 
 
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:

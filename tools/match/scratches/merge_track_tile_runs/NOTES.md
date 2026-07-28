@@ -1,6 +1,6 @@
 # merge_track_tile_runs
 
-`cRSubGame::merge_track_tile_runs` makes a second pass over the populated
+`cRSubGame::CondenseTrack` makes a second pass over the populated
 runtime track cells. It seeds every cell with the independent
 `SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY` (`0x6000`) bits,
 then scans each row's eight lanes for horizontal slide, floor, and worm-tunnel

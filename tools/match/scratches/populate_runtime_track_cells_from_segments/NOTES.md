@@ -141,7 +141,7 @@ The remaining glyph-switch debt is a real table-layout mismatch, not an
 unknown local-label relocation.
 
 2026-06-21 receiver cleanup: the scratch now defines
-`cRSubGame::populate_runtime_track_cells_from_segments` directly and
+`cRSubGame::BuildLevel` directly and
 removes the duplicate local `Game` field window. Focused Wibo remains `28.25%`,
 1190/1245 candidate instructions, prefix 0/1245, with the same `57 ok / 1
 mismatch` masked audit. `uv run snail match types --paths` now reports

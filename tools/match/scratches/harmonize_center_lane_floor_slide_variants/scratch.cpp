@@ -9,7 +9,7 @@
 unsigned char __fastcall is_sub_loc_floor(cRSubLoc* cell);
 unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
 
-void cRSubGame::harmonize_center_lane_floor_slide_variants()
+void cRSubGame::SlideSmoothTrack()
 {
     cRSubGame* game_runtime = this;
     int row = 0;

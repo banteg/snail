@@ -78,14 +78,14 @@ enum SubgameRuntimeFlagPreset {
 class cRSubGame {
 public:
     cRSubGame* initialize_runtime_pools_and_path_template_bank(); // @ 0x408060
-    void set_subgame_features(); // @ 0x435df0
+    void SetFeatures(); // @ 0x435df0
     void switch_track_mirror(); // @ 0x435e60; mobile cRSubGame::SwitchMirror()
-    void populate_runtime_track_cells_from_segments(); // @ 0x435eb0
+    void BuildLevel(); // @ 0x435eb0
     void initialize_subgame(); // @ 0x4374b0
     void reset_subgame(); // @ 0x437b10; Android cRSubGame::ReSet()
-    void rebuild_track_runtime_from_segments(int level_index); // @ 0x437de0
+    void GenerateLevel(int level_index); // @ 0x437de0
     float calc_slider_to_rate(float slider); // @ 0x437e80, receiver unused by body
-    void build_subgame_level(int level_index); // @ 0x437eb0
+    void StartLevel(int level_index); // @ 0x437eb0
     Player* embedded_player(); // borrowed pointer to owned player at +0x3bb764
     Vector3* parcel_delivery_arc_basis(); // Player.presentation.transform.basis_up
     Vector3* parcel_home_anchor(); // Player.presentation.snail_hotspots_world[11]
@@ -118,15 +118,15 @@ public:
     double sample_track_floor_height_at_position(Vector3* position);
     void project_position_onto_track_attachment(Vector3* position, float* out_angle);
     void complete_subgame(unsigned char completed);
-    void build_track_colours();
-    void place_parcels_on_track();
+    void BuildColours(); // @ 0x435d40
+    void PlaceParcels(); // @ 0x4438e0
     void place_challenge_parcels_on_track();
-    void select_track_tile_edge_variants();
-    void promote_track_tiles_to_fringe_variants();
-    void harmonize_center_lane_floor_slide_variants();
-    void merge_track_tile_runs();
-    void mark_track_warning_zones();
-    void build_track_fringe_objects();
+    void SmoothTrack(); // @ 0x435a80
+    void WarnTrack(); // @ 0x4355f0
+    void SlideSmoothTrack(); // @ 0x4356f0
+    void CondenseTrack(); // @ 0x435180
+    void DeSaltTrack(); // @ 0x4354f0
+    void FringeEdgeTrack(); // @ 0x434be0
     bool is_neighbor_cell_solid(cRSubLoc* cell, int dx, int dz); // cRSubGame::TestLoc
     // Authored cRSubGame::LevelConvert(char, int, bool), preserved by Android.
     char normalize_segment_glyph_for_track_flags(char glyph, int row, char edge_row);

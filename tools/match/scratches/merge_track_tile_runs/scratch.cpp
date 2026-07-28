@@ -41,7 +41,7 @@ unsigned char __fastcall is_sub_loc_slide(cRSubLoc* cell);
         }                                                                      \
     } while (0)
 
-void cRSubGame::merge_track_tile_runs()
+void cRSubGame::CondenseTrack()
 {
     int row = 0;
     if (runtime_row_count > 0) {

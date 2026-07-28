@@ -111,7 +111,7 @@ another row consumer agrees on the lane meanings.
 
 ## Receiver cleanup (2026-06-21)
 
-The scratch now defines `cRSubGame::place_parcels_on_track` directly and
+The scratch now defines `cRSubGame::PlaceParcels` directly and
 calls the shared `place_challenge_parcels_on_track` declaration for mode 1.
 The fragile candidate-bank and segment-record shapes stay scratch-local, with
 the segment base still addressed as `this + 0xa878`. Focused Wibo remains

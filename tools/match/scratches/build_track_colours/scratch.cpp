@@ -4,7 +4,7 @@
 #include "subgame_runtime.h"
 #include "track_colour_banks.h"
 
-void cRSubGame::build_track_colours()
+void cRSubGame::BuildColours()
 {
     for (int offset = 0;
          offset < (int)sizeof(g_loc_colour_lookup_check_black);

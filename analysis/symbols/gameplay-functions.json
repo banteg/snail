@@ -2600,11 +2600,17 @@
     {
       "address": "0x434be0",
       "name": "build_track_fringe_objects",
+      "aliases": [
+        "FringeEdgeTrack"
+      ],
       "description": "Windows `void cRSubGame::FringeEdgeTrack()`: allocates directional `Fringe` objects around runtime cRSubLoc cells for the post-build renderer, borrowing them from the embedded 7000-entry cRFringeManager pool at `data_4df904 + 0x3d01d4`. Android and iOS preserve the owner, method name, and void contract."
     },
     {
       "address": "0x435180",
       "name": "merge_track_tile_runs",
+      "aliases": [
+        "CondenseTrack"
+      ],
       "description": "Authored void `cRSubGame::CondenseTrack()`: collapses horizontal floor and slide runs into the matching `RootBodCatalog` slice length, maps tile-0x0e runs onto the pillar mesh bank, and clears render/contact flags on continuation `cRSubLoc` cells. The iOS and Android epilogues establish no result and their zero-row paths leave incompatible incidental values in the return register, independently resolving the Windows ABI. Reusing each consumed run length for cleanup raises the source-shaped transcription to 67.50% at 284/276 instructions without synthetic dependencies."
     },
     {
@@ -2634,16 +2640,25 @@
     {
       "address": "0x435a80",
       "name": "select_track_tile_edge_variants",
+      "aliases": [
+        "SmoothTrack"
+      ],
       "description": "Void cRSubGame normalization pass that computes neighbor masks and chooses edge or corner variants for special runtime tile classes. Cross-port Android and iOS symbols match this pass to `cRSubGame::SmoothTrack()`."
     },
     {
       "address": "0x435d40",
       "name": "build_track_colours",
+      "aliases": [
+        "BuildColours"
+      ],
       "description": "Exact Windows `cRSubGame::BuildColours()`: seeds the CheckBlack, Floor, two physical Slide, Wall, Trampoline, Ramp, Empty, Path, PathWorm, and PathWarp banks. Android and iOS preserve the ten original gLocColourLookup* symbols and the same 13-call order; their two Slide calls alias one owner while Windows keeps separate storage."
     },
     {
       "address": "0x435df0",
       "name": "set_subgame_features",
+      "aliases": [
+        "SetFeatures"
+      ],
       "description": "Windows `void cRSubGame::SetFeatures()`: derives the active subgame feature flags from the current mode, level, and challenge setup before runtime rows and pickups are built. Android and iOS preserve the owner and void contract."
     },
     {
@@ -2654,6 +2669,9 @@
     {
       "address": "0x435eb0",
       "name": "populate_runtime_track_cells_from_segments",
+      "aliases": [
+        "BuildLevel"
+      ],
       "description": "Windows implementation of authored `cRSubGame::BuildLevel()`. It copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows. Each lane iteration writes the physical runtime `cRSubLoc` selected by `lane`, while a distinct mirrored authored lane indexes the borrowed active `SubSegment::glyph_rows`; first/last-block bounds produce the byte `edge_row` input consumed by the glyph normalizer. Runtime cell object selection reuses each `cRSubLoc` cell's shared `cRBod`/`BodBase` prefix and borrows render objects from the root catalog, while authored row models and installed path strips belong to the embedded `SubRow::row_model` and `SubRow::attachment_body`; there is no separate track-row BOD-slot owner."
     },
     {
@@ -2682,6 +2700,9 @@
     {
       "address": "0x437de0",
       "name": "rebuild_track_runtime_from_segments",
+      "aliases": [
+        "GenerateLevel"
+      ],
       "description": "Exact authored void `cRSubGame::GenerateLevel(int)`: stores the level argument, applies mode features and colours, calls `BuildLevel()` to populate runtime rows, then places parcels and runs the normalization, warning, fringe, and render-cache passes. Windows and Android `StartLevel(int)` discard its incidental final callee result."
     },
     {
@@ -2695,6 +2716,9 @@
     {
       "address": "0x437eb0",
       "name": "build_subgame_level",
+      "aliases": [
+        "StartLevel"
+      ],
       "description": "Windows implementation of authored `cRSubGame::StartLevel(int)`. It performs the outer level-file load and manager resets, invokes `GenerateLevel(int)` for the runtime track rebuild, then sets up mode-specific HUD state, backdrop and landscape selection, player state, music, and the first gameplay object lists."
     },
     {
@@ -3288,6 +3312,9 @@
     {
       "address": "0x4438e0",
       "name": "place_parcels_on_track",
+      "aliases": [
+        "PlaceParcels"
+      ],
       "description": "Implements the authored void `cRSubGame::PlaceParcels()` method on the verified cRSubGame receiver: borrows a row_count-rooted cursor across the embedded SubTracks segment slots, scans authored rows and glyphs into the cross-port `gGroup`/`gGroup0` global ParcelBucket scratch banks, claims rows in the owned runtime_rows slab, and projects flagged parcel offsets onto their track attachments. Mobile and Windows keep digit 0 on the natural catalog path; Windows and Android reset the maximum parcel-set size for each segment and retain only the final segment's maximum when deriving the 80-percent set target."
     },
     {

@@ -22,7 +22,7 @@ int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 void set_object_color(Object* object, tColour color);
 
-void cRSubGame::populate_runtime_track_cells_from_segments()
+void cRSubGame::BuildLevel()
 {
     int runtime_build_seed;
 

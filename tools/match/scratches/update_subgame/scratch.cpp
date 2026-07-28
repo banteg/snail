@@ -73,13 +73,13 @@ void cRSubGame::update_subgame()
     case 7:
         if (selected_level_record_persistent == one) {
             selected_level_record_active = (unsigned char)one;
-            build_subgame_level(0);
+            StartLevel(0);
             subgame_state = 2;
             g_game->render_skip_count = one;
             return;
         }
         selected_level_record_active = 0;
-        build_subgame_level(0);
+        StartLevel(0);
         subgame_state = 2;
         g_game->render_skip_count = one;
         return;
@@ -94,7 +94,7 @@ void cRSubGame::update_subgame()
 
         if (selected_level_record_persistent == one) {
             selected_level_record_active = (unsigned char)one;
-            build_subgame_level(selected_level_record->replay_level_index);
+            StartLevel(selected_level_record->replay_level_index);
             return;
         }
 
@@ -117,13 +117,13 @@ void cRSubGame::update_subgame()
             if (result == one) {
                 subgame_rebuild_selector = 3;
                 g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
-                build_subgame_level(level_mode_arg);
+                StartLevel(level_mode_arg);
                 return;
             }
             if (result == 2) {
                 subgame_rebuild_selector = one;
                 g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
-                build_subgame_level(level_mode_arg);
+                StartLevel(level_mode_arg);
                 return;
             }
             if (result != 3)
@@ -149,7 +149,7 @@ void cRSubGame::update_subgame()
             result = gui.update_challenge_setup_screen();
             if (result == one) {
                 subgame_rebuild_selector = 2;
-                build_subgame_level(0);
+                StartLevel(0);
                 return;
             }
             if (result != 3)
@@ -160,7 +160,7 @@ void cRSubGame::update_subgame()
 
         case 7:
             subgame_rebuild_selector = 2;
-            build_subgame_level(0);
+            StartLevel(0);
             return;
         }
         break;
@@ -642,5 +642,5 @@ after_authored_ring:
     return;
 
 build_selected_level:
-    build_subgame_level(level_mode_arg);
+    StartLevel(level_mode_arg);
 }

@@ -20,7 +20,7 @@ void report_errorf(const char* format, ...);
 // +0x90, count accumulator +0x94, row-center accumulator +0x98, and primary
 // attachment cell ptr +0xa4. SubRowFlag owns the packed state transitions.
 
-void cRSubGame::place_parcels_on_track()
+void cRSubGame::PlaceParcels()
 {
     if (level_mode == 1) {
         place_challenge_parcels_on_track();

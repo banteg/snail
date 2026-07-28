@@ -5,7 +5,7 @@
 
 #include "subgame_runtime.h"
 
-void cRSubGame::mark_track_warning_zones()
+void cRSubGame::DeSaltTrack()
 {
     int row = 0;
     int saved_row = row;

@@ -28,7 +28,7 @@ int report_errorf(char* format, ...);
 int sprintf(char* buffer, char* format, ...);
 void set_input_controller_pointer_authored_xy(int controller, float x, float y);
 
-void cRSubGame::build_subgame_level(int level_index)
+void cRSubGame::StartLevel(int level_index)
 {
     g_game->star_manager.unhide_star_field();
     if (level_mode == 7)
@@ -130,7 +130,7 @@ void cRSubGame::build_subgame_level(int level_index)
         bottom_score_widget->hide_border_init();
     }
 
-    rebuild_track_runtime_from_segments(level_index);
+    GenerateLevel(level_index);
 
     if (level_definition.track_texture_set == 5) {
         int landscape_index;

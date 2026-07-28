@@ -45,3 +45,19 @@ incidental result of its final `cRWorld::ReSet` call; Windows similarly leaves
 the final cache-builder/debug-report state in EAX. Modeling the member and its
 cache edge as void preserves the exact 44/44 Windows instruction stream with
 all 13 operands clean.
+
+## Authored matcher surface (2026-07-28)
+
+The verified Android and iOS bodies now supply the actual C++ member spellings
+to the matcher while the stable Windows target IDs remain unchanged:
+
+`SetFeatures`, `BuildColours`, `BuildLevel`, `PlaceParcels`, `SmoothTrack`,
+`WarnTrack`, `SlideSmoothTrack`, `CondenseTrack`, `DeSaltTrack`, and
+`FringeEdgeTrack`, nested under `GenerateLevel(int)` and `StartLevel(int)`.
+
+This transfers names, owner, signatures, and call order only. Windows remains
+authoritative for class layout, field offsets, types, and code generation. A
+full eight-job rebuild preserves all focused results: the dispatcher remains
+exact at 44/44; `BuildColours`, `SetFeatures`, `SlideSmoothTrack`, and
+`SmoothTrack` remain exact; and every partial pass retains its prior score and
+operand-audit state.

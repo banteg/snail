@@ -102,7 +102,7 @@ residuals.
 
 ## 2026-06-21 subgame receiver cleanup
 
-The scratch now defines `cRSubGame::build_track_fringe_objects`, and the
+The scratch now defines `cRSubGame::FringeEdgeTrack`, and the
 shared declaration was corrected from `void` to `int` to match the native
 release-stripped debug-report tail. Focused Wibo is unchanged at `53.76%`,
 `476/495`, with `47` clean masked operands; the remaining diff is still the
