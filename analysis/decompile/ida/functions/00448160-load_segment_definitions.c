@@ -2,8 +2,8 @@
 /* function: load_segment_definitions @ 0x448160 */
 /* selector: load_segment_definitions */
 
-// Implements the void `cRSMTracks::Import()` member: parses SEGMENTS/*.TXT into the exact 0x25cfb4-byte SMTracks owner, stores the internal `Name:'...'` display label separately from the enumerated filename, and fills each 0x4088-byte entry's complete 256-row authored metadata bank with parcel, model, velocity, path, ring, ring-speed, and jetpack-off data.
-void __thiscall load_segment_definitions(SMTracks *tracks)
+// Implements the void `cRSMTracks::Import()` member: parses SEGMENTS/*.TXT into the exact 0x25cfb4-byte cRSMTracks owner, stores the internal `Name:'...'` display label separately from the enumerated filename, and fills each 0x4088-byte entry's complete 256-row authored metadata bank with parcel, model, velocity, path, ring, ring-speed, and jetpack-off data.
+void __thiscall load_segment_definitions(cRSMTracks *tracks)
 {
   int32_t count; // eax
   int32_t segment_index; // ebp
@@ -23,7 +23,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   char *v17; // eax
   char *data_line_cursor; // edi
   int32_t flattened_row_index; // ebp
-  SMTracks *glyph_catalog; // ecx
+  cRSMTracks *glyph_catalog; // ecx
   char *glyph_cursor; // edi
   SegmentCatalogRowStrideAnchor *row_stride_anchor; // esi
   int32_t lane_index; // eax
@@ -67,7 +67,7 @@ void __thiscall load_segment_definitions(SMTracks *tracks)
   char *parse_cursor; // [esp+10h] [ebp-114E0h] BYREF
   int32_t *row_count_cursor; // [esp+14h] [ebp-114DCh]
   char *segment_file_name_cursor; // [esp+18h] [ebp-114D8h]
-  SMTracks *tracks_after_stack_probe; // [esp+1Ch] [ebp-114D4h]
+  cRSMTracks *tracks_after_stack_probe; // [esp+1Ch] [ebp-114D4h]
   int32_t segment_index_spill; // [esp+20h] [ebp-114D0h]
   int32_t glyph_row_base; // [esp+24h] [ebp-114CCh]
   int32_t segment_row_base; // [esp+28h] [ebp-114C8h]

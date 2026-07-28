@@ -58,20 +58,21 @@ struct SegmentCatalogEntry {
 typedef char SegmentCatalogEntry_must_be_0x4088[
     (sizeof(SegmentCatalogEntry) == 0x4088) ? 1 : -1];
 
-// Root-owned authored-definition catalog. The constructor starts its 150
-// records four bytes after the receiver and their exact extent reaches the
-// following parcel pool, proving the leading count plus embedded entry array.
-class SMTracks {
+// Root-owned authored-definition catalog. Android and iOS preserve the
+// cRSMTracks::Import() and cRSMTracks::OpenLevels() member names, while the
+// Windows constructor independently proves this larger inline-storage layout.
+class cRSMTracks {
 public:
-    void load_segment_definitions(); // @ 0x448160
-    void load_level_definitions(); // @ 0x448900, receiver unused by body
+    void Import(); // @ 0x448160, cRSMTracks::Import()
+    void OpenLevels(); // @ 0x448900, receiver unused by body
 
     int count; // +0x00
     SegmentCatalogEntry entries[150]; // +0x04
 };
 
-typedef char SMTracks_must_be_0x25cfb4[
-    (sizeof(SMTracks) == 0x25cfb4) ? 1 : -1];
+typedef cRSMTracks SMTracks;
+typedef char cRSMTracks_must_be_0x25cfb4[
+    (sizeof(cRSMTracks) == 0x25cfb4) ? 1 : -1];
 
 // Windows cRSubSegment layout. Unlike later iOS ports, Windows owns its glyph
 // and authored-row storage inline.

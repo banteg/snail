@@ -9117,7 +9117,7 @@ def test_segment_copy_borrowed_row_cursors_stay_replayable() -> None:
 
     assert "SEGMENT_COPY_USER_VAR_UPDATES" in binja_sync
     for index, storage, name, declaration in (
-        ("13", "73", "catalog", "SMTracks*"),
+        ("13", "73", "catalog", "cRSMTracks*"),
         ("19", "72", "catalog_index", "int32_t"),
         ("26", "71", "catalog_filename_cursor", "char*"),
         ("91", "71", "destination_segment", "SubSegment*"),
@@ -9157,7 +9157,7 @@ def test_segment_copy_borrowed_row_cursors_stay_replayable() -> None:
 
     assert "SEGMENT_COPY_LVAR_SPECS" in ida_sync
     for definition_address, stack_offset, name, declaration in (
-        ("0x44730E", "None", "catalog", "SMTracks *catalog;"),
+        ("0x44730E", "None", "catalog", "cRSMTracks *catalog;"),
         ("0x447314", "None", "catalog_index", "int32_t catalog_index;"),
         (
             "0x44731B",
@@ -9229,7 +9229,7 @@ def test_segment_copy_borrowed_row_cursors_stay_replayable() -> None:
 
     binja_check = health_checks["bn_copy_segment_definition_parser_context"]
     for marker in (
-        "struct SMTracks* catalog",
+        "struct cRSMTracks* catalog",
         "int32_t glyph_lane_remaining = 8",
         "char* destination_glyph_row_cursor",
         "char* source_glyph_column_cursor",
@@ -9256,7 +9256,7 @@ def test_segment_copy_borrowed_row_cursors_stay_replayable() -> None:
 
     ida_check = health_checks["ida_copy_segment_definition_owner"]
     for marker in (
-        "SMTracks *catalog",
+        "cRSMTracks *catalog",
         "int32_t glyph_lane_remaining",
         "char *destination_glyph_row_cursor",
         "char *source_glyph_column_cursor",
@@ -9278,7 +9278,7 @@ def test_segment_copy_borrowed_row_cursors_stay_replayable() -> None:
             for required in ida_check["required_substrings"]
         )
     for old_shape in (
-        "SMTracks *p_sm_tracks",
+        "cRSMTracks *p_sm_tracks",
         "int ArgList;",
         "int32_t *p_object_id",
         "int32_t *v15",
@@ -9361,7 +9361,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
         assert '"SegmentCatalogEntry": 0x4088' in sync_source
         assert '"SegmentCatalogEntryAnchor": 0x408C' in sync_source
         assert '"SegmentCatalogRowStrideAnchor": 0x8C4' in sync_source
-        assert '"SMTracks": 0x25CFB4' in sync_source
+        assert '"cRSMTracks": 0x25CFB4' in sync_source
         assert '"SubSegment": 0x4220' in sync_source
         assert '"SubTracks": 0x1A5978' in sync_source
         assert '"SubSegmentRaw": 0x48' in sync_source
@@ -9375,7 +9375,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert '"load_segment_definitions"' in binja_segment_sync
     assert '"RegisterVariableSourceType",\n        5,\n        67,' in binja_segment_sync
     assert '"tracks_after_stack_probe"' in binja_segment_sync
-    assert '"SMTracks*"' in binja_segment_sync
+    assert '"cRSMTracks*"' in binja_segment_sync
     assert '"RegisterVariableSourceType",\n        469,\n        72,' in binja_segment_sync
     assert '"row_stride_anchor"' in binja_segment_sync
     assert '"SegmentCatalogRowStrideAnchor*"' in binja_segment_sync
@@ -10272,7 +10272,7 @@ def test_sub_row_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     assert 'info.name = "grid_offset"' in ida_segment_sync
     assert "SEGMENT_IMPORT_LVAR_SPECS" in ida_segment_sync
     for definition_address, stack_offset, name, declaration in (
-        ("0x448186", "64", "tracks_after_stack_probe", "SMTracks *"),
+        ("0x448186", "64", "tracks_after_stack_probe", "cRSMTracks *"),
         ("0x4481D8", "60", "segment_file_name_cursor", "char *"),
         ("0x448301", "80", "row_index", "int32_t"),
         ("0x448387", "148", "option_text", "char option_text[512]"),
@@ -24042,7 +24042,7 @@ def test_segment_import_cursor_lifetimes_replay_cross_decompiler() -> None:
         (0, "parse_cursor", "char*"),
         (4, "row_count_cursor", "int32_t*"),
         (8, "segment_file_name_saved", "EnumeratedEntryName*"),
-        (12, "ring_speed_catalog_owner", "SMTracks*"),
+        (12, "ring_speed_catalog_owner", "cRSMTracks*"),
         (16, "segment_index_spill", "int32_t"),
         (20, "glyph_row_base", "int32_t"),
         (24, "segment_row_base", "int32_t"),
@@ -24785,6 +24785,128 @@ def test_c_r_sub_loc_primary_ownership_stays_aligned() -> None:
             "analysis/decompile/ios/functions/"
             "00035a80-_ZN8cRSubLoc2AIEv.c",
             "cRSubLoc::AI()",
+        ),
+    ):
+        body = (repo_root / mobile_body).read_text(encoding="utf-8")
+        assert authored_method in body
+
+
+def test_c_r_sm_tracks_primary_ownership_stays_aligned() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_header = (
+        repo_root / "tools/match/include/segment_catalog_types.h"
+    ).read_text(encoding="utf-8")
+    matcher_runtime = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    importer = (
+        repo_root
+        / "tools/match/scratches/load_segment_definitions/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    importer_config = (
+        repo_root
+        / "tools/match/scratches/load_segment_definitions/scratch.conf"
+    ).read_text(encoding="utf-8")
+    level_loader = (
+        repo_root
+        / "tools/match/scratches/load_level_definitions/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    level_loader_config = (
+        repo_root
+        / "tools/match/scratches/load_level_definitions/scratch.conf"
+    ).read_text(encoding="utf-8")
+    bootstrap = (
+        repo_root
+        / "tools/match/scratches/initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    binja_segment_sync = (
+        BINJA_DIR / "sync_segment_catalog_types.py"
+    ).read_text(encoding="utf-8")
+    binja_runtime_sync = (
+        BINJA_DIR / "sync_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (IDA_DIR / "apply_segment_catalog_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRSMTracks {" in matcher_header
+    assert "typedef cRSMTracks SMTracks;" in matcher_header
+    assert "cRSMTracks_must_be_0x25cfb4" in matcher_header
+    assert "cRSMTracks sm_tracks; // +0x10014cc" in matcher_runtime
+    assert "void cRSMTracks::Import()" in importer
+    assert "SYMBOL=?Import@cRSMTracks@@QAEXXZ" in importer_config
+    assert "void cRSMTracks::OpenLevels()" in level_loader
+    assert "SYMBOL=?OpenLevels@cRSMTracks@@QAEXXZ" in level_loader_config
+    assert "cRSMTracks* sm_tracks = &subgame.sm_tracks;" in bootstrap
+    assert "sm_tracks->Import();" in bootstrap
+    assert "sm_tracks->OpenLevels();" in bootstrap
+
+    for header_name in (
+        "segment_catalog_types.h",
+        "path_template_types.h",
+    ):
+        header = (HEADER_DIR / header_name).read_text(encoding="utf-8")
+        assert "typedef struct cRSMTracks {" in header
+        assert "} cRSMTracks;\ntypedef cRSMTracks SMTracks;" in header
+    runtime_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRSMTracks sm_tracks;" in runtime_header
+
+    for prototype in (
+        "void __thiscall load_segment_definitions(cRSMTracks* tracks)",
+        "void __thiscall load_level_definitions(cRSMTracks* tracks)",
+    ):
+        assert f'"{prototype}"' in binja_segment_sync
+    assert '"cRSMTracks": 0x25CFB4' in binja_segment_sync
+    assert '"cRSMTracks",' in binja_runtime_sync
+    assert '("0x10014cc", "sm_tracks", "cRSMTracks")' in binja_runtime_sync
+    assert '"cRSMTracks": 0x25CFB4' in ida_sync
+    assert (
+        '"void __thiscall load_segment_definitions(cRSMTracks *tracks);"'
+        in ida_sync
+    )
+    assert (
+        '"void __thiscall load_level_definitions(cRSMTracks *tracks);"'
+        in ida_sync
+    )
+
+    gameplay_functions = json.loads(
+        (repo_root / "analysis/symbols/gameplay-functions.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    entries = {
+        entry["name"]: entry
+        for entry in gameplay_functions["functions"]
+        if entry["name"] in {
+            "load_segment_definitions",
+            "load_level_definitions",
+        }
+    }
+    assert entries["load_segment_definitions"]["aliases"] == ["Import"]
+    assert entries["load_level_definitions"]["aliases"] == ["OpenLevels"]
+
+    for mobile_body, authored_method in (
+        (
+            "analysis/decompile/android/functions/"
+            "00083f80-_ZN10cRSMTracks6ImportEv.c",
+            "cRSMTracks::Import()",
+        ),
+        (
+            "analysis/decompile/ios/functions/"
+            "000360e4-_ZN10cRSMTracks6ImportEv.c",
+            "cRSMTracks::Import()",
+        ),
+        (
+            "analysis/decompile/android/functions/"
+            "0008658c-_ZN10cRSMTracks10OpenLevelsEv.c",
+            "cRSMTracks::OpenLevels()",
+        ),
+        (
+            "analysis/decompile/ios/functions/"
+            "00038020-_ZN10cRSMTracks10OpenLevelsEv.c",
+            "cRSMTracks::OpenLevels()",
         ),
     ):
         body = (repo_root / mobile_body).read_text(encoding="utf-8")

@@ -86,9 +86,9 @@ typedef struct SegmentCatalogEntry {
     AuthoredSegmentRow rows[256];
 } SegmentCatalogEntry;
 
-/* The native importer strides 0x4088 bytes from the SMTracks base, leaving
+/* The native importer strides 0x4088 bytes from the cRSMTracks base, leaving
  * its EDX cursor four bytes before the selected entry. At index zero the
- * prefix is SMTracks::count; at later indices it overlaps the previous
+ * prefix is cRSMTracks::count; at later indices it overlaps the previous
  * entry's final word. Only entry is consumed through this analysis view. */
 typedef struct SegmentCatalogEntryAnchor {
     int32_t stride_prefix_word;
@@ -96,17 +96,18 @@ typedef struct SegmentCatalogEntryAnchor {
 } SegmentCatalogEntryAnchor;
 
 /* The importer flattens (segment, row) into a 0x38-byte induction from the
- * SMTracks base, then consumes the authored row at +0x88c. For later rows the
+ * cRSMTracks base, then consumes the authored row at +0x88c. For later rows the
  * prefix overlaps earlier catalog storage; only row is consumed. */
 typedef struct SegmentCatalogRowStrideAnchor {
     uint8_t catalog_prefix[0x88c];
     AuthoredSegmentRow row;
 } SegmentCatalogRowStrideAnchor;
 
-typedef struct SMTracks {
+typedef struct cRSMTracks {
     int32_t count;
     SegmentCatalogEntry entries[150];
-} SMTracks;
+} cRSMTracks;
+typedef cRSMTracks SMTracks;
 
 /* Windows cRSubSegment with inline glyph and authored-row storage. */
 typedef struct SubSegment {

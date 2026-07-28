@@ -2,7 +2,7 @@
 /* function: load_builtin_segment_definitions @ 0x448060 */
 /* selector: load_builtin_segment_definitions */
 
-// Initializes the secondary SubTracks owner from the shipped `SubSegmentRaw*` table at `0x4a63d0`, including records such as `Start`, `Finish`, and `Filler` plus their eight authored glyph rows and path metadata. The inconsistent incidental return register proves the Windows member is void; symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`.
+// Initializes the secondary SubTracks owner from the shipped `SubSegmentRaw*` table at `0x4a63d0`, including records such as `Start`, `Finish`, and `Filler` plus their eight authored glyph rows and path metadata. Every live 0x48-byte raw record also owns a distinct `marker_row` pointer at +0x24 whose width matches the glyph rows and whose text contains one `*`; Windows does not consume that lane or the preceding six metadata dwords here. The inconsistent incidental return register proves the member is void; symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`.
 void __thiscall load_builtin_segment_definitions(SubTracks *tracks, SubSegmentRaw **raw_segments)
 {
   char *v3; // esi
@@ -17,17 +17,17 @@ void __thiscall load_builtin_segment_definitions(SubTracks *tracks, SubSegmentRa
 
   tracks->segment_count = 0;
   tracks->random_length = 1000;
-  if ( *(*raw_segments)->glyph_rows[0] )
+  if ( *(*raw_segments)->glyph_rows[0] != 0 )
   {
     do
     {
       v3 = raw_segments[tracks->segment_count]->glyph_rows[0];
       v4 = 0;
-      if ( *v3 )
+      if ( *v3 != 0 )
       {
         do
           ++v4;
-        while ( v3[v4] );
+        while ( v3[v4] != 0 );
       }
       grid_offset = 0;
       v5 = 40;
@@ -46,7 +46,7 @@ void __thiscall load_builtin_segment_definitions(SubTracks *tracks, SubSegmentRa
           segment_count = tracks->segment_count;
           v8 = *(_BYTE *)(*(int32_t *)((char *)&raw_segments[tracks->segment_count]->row_count + v5) + v7);
         }
-        while ( v8 );
+        while ( v8 != 0 );
         v5 += 4;
         grid_offset += 256;
       }
@@ -56,6 +56,6 @@ void __thiscall load_builtin_segment_definitions(SubTracks *tracks, SubSegmentRa
       v10 = tracks->segment_count + 1;
       tracks->segment_count = v10;
     }
-    while ( *raw_segments[v10]->glyph_rows[0] );
+    while ( *raw_segments[v10]->glyph_rows[0] != 0 );
   }
 }

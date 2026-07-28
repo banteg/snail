@@ -131,8 +131,8 @@ char GameRoot::initialize_game_assets_and_world()
     loader->initialize_directx_loader();
     LandscapeManager* landscape = &subgame.landscape_manager;
     landscape->reset_landscape_manager();
-    SMTracks* sm_tracks = &subgame.sm_tracks;
-    sm_tracks->load_segment_definitions();
+    cRSMTracks* sm_tracks = &subgame.sm_tracks;
+    sm_tracks->Import();
     landscape->load_landscape_script_by_name((char*)"Starmap.txt");
     landscape->load_landscape_script_by_name((char*)"Splash.txt");
     landscape->load_landscape_script_by_name(g_help_script_path);
@@ -146,7 +146,7 @@ char GameRoot::initialize_game_assets_and_world()
     g_sound_effect_manager.initialize_sound_bank(g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
     options.apply_audio_config_volumes();
-    sm_tracks->load_level_definitions();
+    sm_tracks->OpenLevels();
     g_game->subgame.landscape_manager
         .load_landscape_script_by_name(g_menu_background_script_path);
     subgame.level_definition_scratch.load_builtin_segment_definitions(

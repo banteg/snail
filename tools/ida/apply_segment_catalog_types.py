@@ -55,7 +55,7 @@ SEGMENT_COPY_LVAR_SPECS = (
         0x44730E,
         None,
         "catalog",
-        "SMTracks *catalog;",
+        "cRSMTracks *catalog;",
     ),
     (
         "copy_segment_definition_to_level_slot",
@@ -183,7 +183,7 @@ SEGMENT_IMPORT_LVAR_SPECS = (
         0x448186,
         64,
         "tracks_after_stack_probe",
-        "SMTracks *tracks_after_stack_probe;",
+        "cRSMTracks *tracks_after_stack_probe;",
     ),
     (
         "load_segment_definitions",
@@ -288,7 +288,7 @@ SEGMENT_IMPORT_LVAR_SPECS = (
         0x448328,
         None,
         "glyph_catalog",
-        "SMTracks *glyph_catalog;",
+        "cRSMTracks *glyph_catalog;",
     ),
     (
         "load_segment_definitions",
@@ -511,8 +511,9 @@ SEGMENT_OWNER_MARKERS = (
     "typedef struct SegmentCatalogEntry {",
     "typedef struct SegmentCatalogEntryAnchor {",
     "typedef struct SegmentCatalogRowStrideAnchor {",
-    "typedef struct SMTracks {",
+    "typedef struct cRSMTracks {",
     "SegmentCatalogEntry entries[150];",
+    "typedef cRSMTracks SMTracks;",
     "typedef struct SubSegment {",
     "AuthoredSegmentRow rows[256];",
     "typedef struct SubTracks {",
@@ -526,7 +527,7 @@ EXPECTED_OWNER_SIZES = {
     "SegmentCatalogEntry": 0x4088,
     "SegmentCatalogEntryAnchor": 0x408C,
     "SegmentCatalogRowStrideAnchor": 0x8C4,
-    "SMTracks": 0x25CFB4,
+    "cRSMTracks": 0x25CFB4,
     "SubSegment": 0x4220,
     "SubTracks": 0x1A5978,
     "SubSegmentRaw": 0x48,
@@ -552,11 +553,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_segment_definitions",
-        "void __thiscall load_segment_definitions(SMTracks *tracks);",
+        "void __thiscall load_segment_definitions(cRSMTracks *tracks);",
     ),
     (
         "load_level_definitions",
-        "void __thiscall load_level_definitions(SMTracks *tracks);",
+        "void __thiscall load_level_definitions(cRSMTracks *tracks);",
     ),
 ]
 

@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: load_segment_definitions @ 0x448160 */
 
-00448165        struct SMTracks* tracks_after_stack_probe = chkstk(0x114e0)
+00448165        struct cRSMTracks* tracks_after_stack_probe = chkstk(0x114e0)
 00448189        tracks_after_stack_probe->count = 0
 0044818b        EnumeratedEntryName segment_files[0x200]
 0044818b        enumerate_matching_archive_or_fs_entries("Segments", "*.txt", tracks_after_stack_probe, &segment_files)

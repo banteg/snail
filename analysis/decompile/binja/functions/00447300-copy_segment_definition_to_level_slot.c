@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: copy_segment_definition_to_level_slot @ 0x447300 */
 
-0044730d        struct SMTracks* catalog = &g_game_base->subgame.sm_tracks
+0044730d        struct cRSMTracks* catalog = &g_game_base->subgame.sm_tracks
 00447313        int32_t catalog_index = 0
 00447318        if (catalog->count s> 0)
 0044731a        char* catalog_filename_cursor = &catalog->entries[0].filename

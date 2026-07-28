@@ -3,7 +3,7 @@
 /* selector: load_level_definitions */
 
 // Implements the void `cRSMTracks::OpenLevels()` member by enumerating LEVELS/*.TXT and parsing each name into the root-owned SubTracks scratch definition.
-void __thiscall load_level_definitions(SMTracks *tracks)
+void __thiscall load_level_definitions(cRSMTracks *tracks)
 {
   int v1; // esi
   char *v2; // edi

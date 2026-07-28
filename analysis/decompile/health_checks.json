@@ -17166,7 +17166,7 @@
       "required_substrings": [
         "&g_game_base->subgame.sm_tracks",
         "g_current_level_definition_name",
-        "struct SMTracks* catalog",
+        "struct cRSMTracks* catalog",
         "int32_t catalog_index",
         "char* catalog_filename_cursor",
         "struct SubSegment* destination_segment",
@@ -17207,14 +17207,15 @@
         "ecx_3 - 0x828",
         "eax_7 - 0x8a0",
         "entry.glyph_columns[0xff]",
-        "glyph_rows[7][0xf8]"
+        "glyph_rows[7][0xf8]",
+        "struct SMTracks* catalog"
       ]
     },
     {
       "name": "bn_load_segment_definitions_catalog_owners",
       "artifact": "analysis/decompile/binja/functions/00448160-load_segment_definitions.c",
       "required_substrings": [
-        "struct SMTracks* tracks_after_stack_probe",
+        "struct cRSMTracks* tracks_after_stack_probe",
         "EnumeratedEntryName segment_files[0x200]",
         "int32_t segment_index = 0",
         "int32_t segment_index_spill = 0",
@@ -17259,7 +17260,8 @@
         "int32_t arg_1c = 0",
         "EnumeratedEntryName (* arg_8)",
         "void arg_60",
-        "__return_addr"
+        "__return_addr",
+        "struct SMTracks* tracks_after_stack_probe"
       ]
     },
     {
@@ -17268,7 +17270,7 @@
       "required_substrings": [
         "SegmentCatalogRowStrideAnchor *row_stride_anchor",
         "char *segment_file_name_cursor",
-        "SMTracks *tracks_after_stack_probe",
+        "cRSMTracks *tracks_after_stack_probe",
         "int32_t segment_index",
         "int32_t segment_index_spill",
         "int32_t glyph_row_base",
@@ -17359,7 +17361,7 @@
       "artifact": "analysis/decompile/ida/functions/00447300-copy_segment_definition_to_level_slot.c",
       "required_substrings": [
         "void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks",
-        "SMTracks *catalog",
+        "cRSMTracks *catalog",
         "int32_t catalog_index",
         "char *catalog_filename_cursor",
         "SubSegment *destination_segment",
@@ -17400,7 +17402,7 @@
         "selected_entry_anchor->row_count",
         "selected_entry_anchor->glyph_columns",
         "return (_DWORD *)report_errorf",
-        "SMTracks *p_sm_tracks",
+        "cRSMTracks *p_sm_tracks",
         "int ArgList;",
         "int32_t *p_object_id",
         "int32_t *v15",
@@ -17460,7 +17462,7 @@
       "name": "ida_level_catalog_open_levels_owner_and_void_abi",
       "artifact": "analysis/decompile/ida/functions/00448900-load_level_definitions.c",
       "required_substrings": [
-        "void __thiscall load_level_definitions(SMTracks *tracks)",
+        "void __thiscall load_level_definitions(cRSMTracks *tracks)",
         "EnumeratedEntryName filename[128]",
         "&out_count",
         "load_level_definition_file(&g_game_base->subgame.level_definition_scratch, v2);"
@@ -17468,7 +17470,8 @@
       "forbidden_substrings": [
         "int32_t __thiscall load_level_definitions",
         "(char *)g_game_base + 2246660",
-        "return result"
+        "return result",
+        "void __thiscall load_level_definitions(SMTracks *tracks)"
       ]
     },
     {

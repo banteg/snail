@@ -11,7 +11,7 @@ void enumerate_matching_archive_or_fs_entries(
     int* out_count,
     char* out_names); // @ 0x431740
 
-void SMTracks::load_level_definitions()
+void cRSMTracks::OpenLevels()
 {
     int count;
     char names[0x4000];

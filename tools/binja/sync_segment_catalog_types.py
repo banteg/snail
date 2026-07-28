@@ -27,7 +27,7 @@ EXPECTED_OWNER_SIZES = {
     "SegmentCatalogEntry": 0x4088,
     "SegmentCatalogEntryAnchor": 0x408C,
     "SegmentCatalogRowStrideAnchor": 0x8C4,
-    "SMTracks": 0x25CFB4,
+    "cRSMTracks": 0x25CFB4,
     "SubSegment": 0x4220,
     "SubTracks": 0x1A5978,
     "SubSegmentRaw": 0x48,
@@ -44,7 +44,7 @@ DATA_VAR_UPDATES = (
 )
 
 # The selected entry is materialized as an EDX SSA owner after a native
-# 0x4088-stride calculation from the SMTracks base. That leaves the register
+# 0x4088-stride calculation from the cRSMTracks base. That leaves the register
 # four bytes before the entry, so the exact anchor view preserves the count /
 # previous-tail prefix without shifting any entry field.
 SEGMENT_USER_VAR_UPDATES = (
@@ -58,7 +58,7 @@ SEGMENT_USER_VAR_UPDATES = (
     ),
     # chkstk preserves ECX, but Binary Ninja conservatively starts a new SSA
     # variable for the register after the call. Recover that exact split as
-    # the same SMTracks owner without changing chkstk's global call model,
+    # the same cRSMTracks owner without changing chkstk's global call model,
     # whose stack-adjust semantics are needed by other large-frame callers.
     (
         "load_segment_definitions",
@@ -66,7 +66,7 @@ SEGMENT_USER_VAR_UPDATES = (
         5,
         67,
         "tracks_after_stack_probe",
-        "SMTracks*",
+        "cRSMTracks*",
     ),
     (
         "load_segment_definitions",
@@ -83,7 +83,7 @@ SEGMENT_USER_VAR_UPDATES = (
 # and the return address. Pin the physical frame slots and the register
 # lifetimes that borrow from them. The two base indices are measured in
 # complete 0x38-byte authored rows and 8-byte glyph rows respectively; neither
-# owns storage independently of SMTracks.
+# owns storage independently of cRSMTracks.
 SEGMENT_IMPORT_CURSOR_USER_VAR_UPDATES = (
     (
         "load_segment_definitions",
@@ -115,7 +115,7 @@ SEGMENT_IMPORT_CURSOR_USER_VAR_UPDATES = (
         0,
         12,
         "ring_speed_catalog_owner",
-        "SMTracks*",
+        "cRSMTracks*",
     ),
     (
         "load_segment_definitions",
@@ -251,7 +251,7 @@ SEGMENT_IMPORT_CURSOR_USER_VAR_UPDATES = (
         455,
         67,
         "glyph_catalog",
-        "SMTracks*",
+        "cRSMTracks*",
     ),
     (
         "load_segment_definitions",
@@ -346,7 +346,7 @@ SEGMENT_COPY_USER_VAR_UPDATES = (
         13,
         73,
         "catalog",
-        "SMTracks*",
+        "cRSMTracks*",
     ),
     (
         "copy_segment_definition_to_level_slot",
@@ -655,11 +655,11 @@ PROTO_UPDATES = (
     ),
     (
         "load_segment_definitions",
-        "void __thiscall load_segment_definitions(SMTracks* tracks)",
+        "void __thiscall load_segment_definitions(cRSMTracks* tracks)",
     ),
     (
         "load_level_definitions",
-        "void __thiscall load_level_definitions(SMTracks* tracks)",
+        "void __thiscall load_level_definitions(cRSMTracks* tracks)",
     ),
 )
 

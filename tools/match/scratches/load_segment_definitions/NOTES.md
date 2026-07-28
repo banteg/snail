@@ -261,3 +261,32 @@ after terminating `option_text`. Writing `RingSpeed` through a fresh containing
 array expression also expands the exact stack frame and regresses below 55%.
 Those differences remain visible instead of being hidden with a cast or a
 synthetic spill.
+
+## 2026-07-28 authored cRSMTracks owner
+
+The exact Android and iOS symbols now promote the Windows catalog's primary
+owner from the semantic `SMTracks` name to authored `cRSMTracks`. Both ports
+independently preserve `cRSMTracks::Import()` and
+`cRSMTracks::OpenLevels()`; Windows independently supplies the authoritative
+`0x25cfb4` inline layout, including its 150 complete `0x4088`-byte entries.
+`SMTracks` remains only as a compatibility typedef.
+
+The matcher definitions now use the exact `Import()` and `OpenLevels()` member
+names while the Windows manifest retains its stable semantic function names
+through explicit aliases. The root `cRSubGame::sm_tracks` embed, producer,
+level loader, catalog-copy consumer, bootstrap caller, Binary Ninja replay,
+and IDA replay all share `cRSMTracks` as their primary type.
+
+The focused six-function BN/IDA 9.4 export has zero symbol mismatches, and all
+1,144 strict decompile-health checks pass. The catalog-owner checks now require
+`cRSMTracks` and reject the retired compatibility spelling at the recovered
+local and receiver sites.
+
+A direct source probe that derived `id`, `filename`, and `display_name`
+backward from the retained `row_count` cursor was rejected: it reduced the
+candidate from 575 to 572 instructions but regressed alignment from 65.79% to
+64.92% and left the wrong long-lived register assignment intact. The proven
+member-cursor semantics remain documented without replacing real containing
+entry ownership with pointer arithmetic. The retained importer remains at
+65.79%, 575/571 instructions, with 91 clean resolved operands and the same
+five unaudited peeled-tail references.

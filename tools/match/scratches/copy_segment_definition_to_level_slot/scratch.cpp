@@ -11,7 +11,7 @@ void SubTracks::copy_segment_definition_to_level_slot(
     char* segment_name,
     SubSegment* slot)
 {
-    SMTracks* catalog = &g_game->subgame.sm_tracks;
+    cRSMTracks* catalog = &g_game->subgame.sm_tracks;
     int index = 0;
     SegmentCatalogEntry* scan = catalog->entries;
     while (index < catalog->count) {

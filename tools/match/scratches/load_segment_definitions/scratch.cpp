@@ -15,7 +15,7 @@ void enumerate_matching_archive_or_fs_entries(
     char* out_names); // @ 0x431740
 int load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);
 
-void SMTracks::load_segment_definitions()
+void cRSMTracks::Import()
 {
     char path_name[64];
     char option_text[512];

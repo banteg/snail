@@ -46,7 +46,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRPathManager %i\n", sizeof(cRPathManager)); \
     debug_report_stub("   Size of cRPath %i\n", sizeof(((cRSubGame*)0)->path_pairs)); \
     debug_report_stub("   Size of cRLandscapeManager %i\n", sizeof(LandscapeManager)); \
-    debug_report_stub("   Size of cRSMTracks %i\n", sizeof(SMTracks)); \
+    debug_report_stub("   Size of cRSMTracks %i\n", sizeof(cRSMTracks)); \
     debug_report_stub("   Size of cRParcelManager %i\n", sizeof(ParcelManager)); \
     debug_report_stub("   Size of cRGUI %i\n", sizeof(GUI)); \
     debug_report_stub("   Size of cRGalaxy %i\n", sizeof(Galaxy)); \

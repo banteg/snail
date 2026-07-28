@@ -1328,7 +1328,7 @@ typedef struct SegmentCatalogEntry {
 } SegmentCatalogEntry;
 
 /* Native selected-entry cursor anchored four bytes before the entry while
- * indexing 0x4088-byte records from the SMTracks base. */
+ * indexing 0x4088-byte records from the cRSMTracks base. */
 typedef struct SegmentCatalogEntryAnchor {
     int32_t stride_prefix_word;
     SegmentCatalogEntry entry;
@@ -1341,10 +1341,11 @@ typedef struct SegmentCatalogRowStrideAnchor {
     AuthoredSegmentRow row;
 } SegmentCatalogRowStrideAnchor;
 
-typedef struct SMTracks {
+typedef struct cRSMTracks {
     int32_t count;
     SegmentCatalogEntry entries[150];
-} SMTracks;
+} cRSMTracks;
+typedef cRSMTracks SMTracks;
 
 #define TEXTURE_REF_LIST_CAPACITY 500
 
@@ -2657,7 +2658,7 @@ typedef struct cRSubGame {
     BarrierActor barrier;
     LandscapeManager landscape_manager;
     Face smtrack_heightfield;
-    SMTracks sm_tracks;
+    cRSMTracks sm_tracks;
     ParcelManager parcel_manager;
     float garbage_frequency;
     float salt_frequency;

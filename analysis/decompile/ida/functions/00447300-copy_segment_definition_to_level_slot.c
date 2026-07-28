@@ -5,7 +5,7 @@
 // Implements the void `cRSubTracks::ImportSegment(char*, cRSubSegment*)` member: finds a root-owned catalog entry by its enumerated filename, transposes its column-major eight-lane glyph grid into a caller-selected SubSegment, and copies the authored row metadata including position and velocity vectors, path template, and ring-speed fields. The Windows body does not read its receiver, but all three callers establish the SubTracks owner in ECX before passing an ordinary, First, or Last 0x4220-byte inline destination.
 void __thiscall copy_segment_definition_to_level_slot(SubTracks *tracks, char *segment_name, SubSegment *segment)
 {
-  SMTracks *catalog; // edi
+  cRSMTracks *catalog; // edi
   int32_t catalog_index; // esi
   char *catalog_filename_cursor; // ebp
   SubSegment *destination_segment; // ebp

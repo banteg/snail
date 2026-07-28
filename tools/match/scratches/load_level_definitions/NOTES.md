@@ -45,3 +45,14 @@ definition from silently drifting across adjacent root storage. Dedicated
 health checks reject the former incidental `int32_t` return and raw
 `g_game_base + 0x224804` view. The source remains proof-grade at 100.00%,
 30/30 instructions, with all six operands clean.
+
+## 2026-07-28 authored owner and member
+
+Dual mobile symbols promote the primary Windows owner to `cRSMTracks` and this
+exact member to `cRSMTracks::OpenLevels()`. Windows remains authoritative for
+the much larger inline catalog layout; `SMTracks` is retained only as a
+compatibility typedef. The authored member spelling is code-neutral and keeps
+the focused Windows result proof-grade at 30/30 instructions with all six
+masked operands clean. A focused BN/IDA 9.4 replay has zero symbol mismatches,
+and the strict export health check now rejects the compatibility spelling at
+this receiver.
