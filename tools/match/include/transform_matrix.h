@@ -4,10 +4,9 @@
 #define TRANSFORM_MATRIX_H
 
 #include "transform_matrix_fwd.h"
+#include "quaternion_fwd.h"
 #include "vector3.h"
 #include "vector_types.h"
-
-struct Quaternion;
 
 struct tMatrix {
     tMatrix() {}
@@ -17,7 +16,7 @@ struct tMatrix {
         float m10, float m11, float m12, float m13,
         float m20, float m21, float m22, float m23,
         float m30, float m31, float m32, float m33); // @ 0x44cfe0
-    tMatrix(const Quaternion& quaternion); // @ 0x44d820
+    tMatrix(const tQuaternian& quaternion); // @ 0x44d820
     // ABI compatibility view for partial callers that copy from the
     // constructor's EAX result. The owned definition is the overload above.
     tMatrix* initialize_matrix_from_values(

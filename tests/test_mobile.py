@@ -1483,8 +1483,8 @@ def test_mobile_tmatrix_methods_recover_authored_surface() -> None:
             "tMatrix::tMatrix(tQuaternian const&)",
             "tMatrix_ctor_quaternion",
             "tMatrix::tMatrix(",
-            "tMatrix(const Quaternion& quaternion);",
-            "??0tMatrix@@QAE@ABUQuaternion@@@Z",
+            "tMatrix(const tQuaternian& quaternion);",
+            "??0tMatrix@@QAE@ABUtQuaternian@@@Z",
         ),
         (
             "interpolate_matrix_rotation",
@@ -1569,6 +1569,120 @@ def test_mobile_tmatrix_methods_recover_authored_surface() -> None:
             assert f".{name}(" not in source
             assert f"->{name}(" not in source
             assert f"::{name}(" not in source
+
+
+def test_mobile_tquaternian_and_taxis_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    quaternion_header = (
+        repo_root / "tools/match/include/quaternion.h"
+    ).read_text(encoding="utf-8")
+    quaternion_fwd = (
+        repo_root / "tools/match/include/quaternion_fwd.h"
+    ).read_text(encoding="utf-8")
+    axis_header = (
+        repo_root / "tools/match/include/axis.h"
+    ).read_text(encoding="utf-8")
+    axis_fwd = (
+        repo_root / "tools/match/include/axis_fwd.h"
+    ).read_text(encoding="utf-8")
+
+    assert "struct tQuaternian {" in quaternion_header
+    assert "typedef tQuaternian Quaternion;" in quaternion_fwd
+    assert "struct tAxis {" in axis_header
+    assert "typedef tAxis AxisAngle;" in axis_fwd
+    assert "typedef tAxis Axis;" in axis_fwd
+
+    expected_methods = (
+        (
+            "initialize_quaternion_from_axis",
+            "tQuaternian::tQuaternian(tAxis const&)",
+            "tQuaternian_operator_assign_axis",
+            "void tQuaternian::operator=(const tAxis& axis)",
+            "void operator=(const tAxis& axis);",
+            "??4tQuaternian@@QAEXABUtAxis@@@Z",
+        ),
+        (
+            "initialize_axis_from_quaternion",
+            "tAxis::operator=(tQuaternian const&)",
+            "tAxis_operator_assign_quaternion",
+            "void tAxis::operator=(const tQuaternian& quaternion)",
+            "void operator=(const tQuaternian& quaternion);",
+            "??4tAxis@@QAEXABUtQuaternian@@@Z",
+        ),
+        (
+            "initialize_quaternion_from_matrix",
+            "tQuaternian::tQuaternian(tMatrix const&)",
+            "tQuaternian_ctor_matrix",
+            "tQuaternian::tQuaternian(const tMatrix& matrix)",
+            "tQuaternian(const tMatrix& matrix);",
+            "??0tQuaternian@@QAE@ABUtMatrix@@@Z",
+        ),
+    )
+
+    for (
+        windows_name,
+        mobile_symbol,
+        alias,
+        source_spelling,
+        header_declaration,
+        object_symbol,
+    ) in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert source_spelling in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+
+        owner_header = (
+            quaternion_header
+            if windows_name != "initialize_axis_from_quaternion"
+            else axis_header
+        )
+        assert header_declaration in owner_header
+
+    quaternion_axis_source = (
+        repo_root
+        / "tools/match/scratches/initialize_quaternion_from_axis/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "void tQuaternian::operator=" in quaternion_axis_source
+    assert "tQuaternian::tQuaternian(const tAxis&" not in quaternion_axis_source
+
+    trivial_aliases = references_by_name["noop_this_constructor"]["aliases"]
+    assert "??0tAxis@@QAE@XZ" in trivial_aliases
+    assert "??0tQuaternian@@QAE@XZ" in trivial_aliases
 
 
 def test_mobile_subgoldy_methods_recover_authored_surface() -> None:

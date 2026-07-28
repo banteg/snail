@@ -7,7 +7,7 @@
 float square_root(float value);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
-Quaternion::Quaternion(const TransformMatrix& matrix)
+tQuaternian::tQuaternian(const tMatrix& matrix)
 {
     const float* matrix_rows = &matrix.basis_right.x;
     float trace = matrix_rows[5] + matrix_rows[0] + matrix_rows[10] + 1.0f;

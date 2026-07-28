@@ -1,13 +1,12 @@
 #ifndef AXIS_H
 #define AXIS_H
 
-struct Quaternion;
+#include "axis_fwd.h"
+#include "quaternion_fwd.h"
 
-// Windows constructor callsites preserve the AxisAngle owner name; Android's
-// equivalent math type is tAxis, retained below as a compatibility alias.
-struct AxisAngle {
-    AxisAngle(); // folded trivial constructor @ 0x44db50
-    void operator=(const Quaternion& quaternion); // @ 0x44d580
+struct tAxis {
+    tAxis(); // folded trivial constructor @ 0x44db50
+    void operator=(const tQuaternian& quaternion); // @ 0x44d580
 
     float x;     // +0x00
     float y;     // +0x04
@@ -16,9 +15,6 @@ struct AxisAngle {
 
 };
 
-typedef AxisAngle Axis;
-
-typedef char AxisAngle_must_be_0x10[
-    (sizeof(AxisAngle) == 0x10) ? 1 : -1];
+typedef char tAxis_must_be_0x10[(sizeof(tAxis) == 0x10) ? 1 : -1];
 
 #endif

@@ -24151,10 +24151,10 @@
           "size_score": 1.0
         },
         {
-          "symbol": "tColour::tColour()",
-          "score": 0.7,
-          "name_score": 1.0,
-          "size_score": 0.25
+          "symbol": "tColourSmall::Set(unsigned char, unsigned char, unsigned char, unsigned char)",
+          "score": 0.6717,
+          "name_score": 0.675,
+          "size_score": 0.6667
         }
       ],
       "ios_candidates": [
@@ -24171,22 +24171,22 @@
           "size_score": 1.0
         },
         {
-          "symbol": "tColour::tColour()",
-          "score": 0.7,
-          "name_score": 1.0,
-          "size_score": 0.25
-        },
-        {
-          "symbol": "tColourSmall::tColourSmall()",
-          "score": 0.7,
-          "name_score": 1.0,
-          "size_score": 0.25
-        },
-        {
           "symbol": "tColourSmall::White()",
           "score": 0.6717,
           "name_score": 0.675,
           "size_score": 0.6667
+        },
+        {
+          "symbol": "MacOFGetHighScore()",
+          "score": 0.6666,
+          "name_score": 0.4444,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "MacOFSetHighScore()",
+          "score": 0.6545,
+          "name_score": 0.4242,
+          "size_score": 1.0
         }
       ]
     },

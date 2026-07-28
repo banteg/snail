@@ -2,14 +2,17 @@
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
+#include "axis_fwd.h"
+#include "quaternion_fwd.h"
 #include "transform_matrix_fwd.h"
 
-struct AxisAngle;
-
-struct Quaternion {
-    Quaternion(); // out-of-line default constructor used by interpolation
-    void operator=(const AxisAngle& axis); // @ 0x44d530
-    Quaternion(const TransformMatrix& matrix); // @ 0x44d5d0
+struct tQuaternian {
+    tQuaternian(); // folded trivial constructor @ 0x44db50
+    // Windows emits this conversion as a void assignment. Android exposes
+    // the analogous body as a constructor, but adding a receiver return here
+    // would be fakematching rather than recovering the Windows source shape.
+    void operator=(const tAxis& axis); // @ 0x44d530
+    tQuaternian(const tMatrix& matrix); // @ 0x44d5d0
 
     float x; // +0x00
     float y; // +0x04
@@ -17,6 +20,7 @@ struct Quaternion {
     float w; // +0x0c
 };
 
-typedef char Quaternion_must_be_0x10[(sizeof(Quaternion) == 0x10) ? 1 : -1];
+typedef char tQuaternian_must_be_0x10[
+    (sizeof(tQuaternian) == 0x10) ? 1 : -1];
 
 #endif

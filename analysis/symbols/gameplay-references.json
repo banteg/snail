@@ -1936,38 +1936,42 @@
       "name": "initialize_quaternion_from_axis",
       "kind": "function",
       "aliases": [
+        "??4tQuaternian@@QAEXABUtAxis@@@Z",
         "??4Quaternion@@QAEXABUAxisAngle@@@Z"
       ],
-      "description": "Exact Windows void Quaternion assignment from AxisAngle; Android uses a constructor for the analogous conversion."
+      "description": "Exact Windows void tQuaternian assignment from tAxis; Android uses a constructor for the analogous conversion, but Windows never establishes a constructor return."
     },
     {
       "address": "0x44d580",
       "name": "initialize_axis_from_quaternion",
       "kind": "function",
       "aliases": [
+        "??4tAxis@@QAEXABUtQuaternian@@@Z",
         "??4AxisAngle@@QAEXABUQuaternion@@@Z"
       ],
-      "description": "Exact Windows void AxisAngle assignment from Quaternion, retained by Android as tAxis::operator=(const tQuaternian&)."
+      "description": "Exact Windows void tAxis assignment from tQuaternian, retained by both mobile ports."
     },
     {
       "address": "0x44d5d0",
       "name": "initialize_quaternion_from_matrix",
       "kind": "function",
       "aliases": [
+        "??0tQuaternian@@QAE@ABUtMatrix@@@Z",
         "??0Quaternion@@QAE@ABUtMatrix@@@Z",
         "??0Quaternion@@QAE@ABUTransformMatrix@@@Z"
       ],
-      "description": "Quaternion matrix-argument constructor using the recovered tMatrix owner; Android symbols identify the remaining owner as tQuaternian."
+      "description": "Exact authored tQuaternian matrix-argument constructor retained by both mobile ports."
     },
     {
       "address": "0x44d820",
       "name": "initialize_matrix_from_quaternion",
       "kind": "function",
       "aliases": [
+        "??0tMatrix@@QAE@ABUtQuaternian@@@Z",
         "??0tMatrix@@QAE@ABUQuaternion@@@Z",
         "??0TransformMatrix@@QAE@ABUQuaternion@@@Z"
       ],
-      "description": "Exact tMatrix quaternion-argument constructor retained by Android as tMatrix::tMatrix(const tQuaternian&); Quaternion remains the current compatibility owner."
+      "description": "Exact authored tMatrix quaternion-argument constructor retained by Android."
     },
     {
       "address": "0x44d920",
@@ -1994,6 +1998,8 @@
       "aliases": [
         "?0AxisAngle",
         "?0Quaternion",
+        "??0tAxis@@QAE@XZ",
+        "??0tQuaternian@@QAE@XZ",
         "??0AxisAngle@@QAE@XZ",
         "??0Quaternion@@QAE@XZ",
         "sub_44db50"

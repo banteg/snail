@@ -1,5 +1,5 @@
 // interpolate_matrix_rotation @ 0x44d920 (thiscall, ret 0x4)
-// Quaternion-based rotation interpolation: extract quat from the matrix,
+// tQuaternian-based rotation interpolation: extract quat from the matrix,
 // snap near-zero imaginary lanes, convert to axis-angle, scale the angle
 // by alpha, recompose. When the axis collapses, rebuild from the snapped
 // quaternion directly; when the angle is exactly zero, leave the matrix.
@@ -9,9 +9,9 @@
 
 void tMatrix::Interpolate(float alpha)
 {
-    Quaternion working;
-    AxisAngle axis;
-    Quaternion extracted(*this);
+    tQuaternian working;
+    tAxis axis;
+    tQuaternian extracted(*this);
     working = extracted;
     if (working.x > -0.001f && working.x < 0.001f)
         working.x = 0.0f;

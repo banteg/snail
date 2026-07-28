@@ -6,7 +6,7 @@
 float sine(float angle);
 float cosine(float angle);
 
-void Quaternion::operator=(const AxisAngle& axis)
+void tQuaternian::operator=(const tAxis& axis)
 {
     double scale = sine(axis.angle * 0.5f);
     x = (float)scale * axis.x;
