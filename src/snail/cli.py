@@ -213,6 +213,82 @@ def _print_source_section(
     return True
 
 
+def _mobile_backed_pending_rows(manifest, statuses, crosswalk):
+    functions_by_name = {
+        function.name: function for function in manifest.functions
+    }
+    entries_by_name = {
+        entry["windows_name"]: entry
+        for entry in crosswalk.get("entries", ())
+    }
+    rows = []
+    for status in statuses:
+        function = functions_by_name.get(status.config.function)
+        if (
+            function is None
+            or not function.is_port_relevant
+            or status.state == "match"
+            or status.ratio is None
+        ):
+            continue
+        entry = entries_by_name.get(function.name)
+        if entry is None or entry.get("status") != "verified":
+            continue
+        android_bodies = int(entry.get("android_body_count", 0) or 0)
+        ios_bodies = int(entry.get("ios_body_count", 0) or 0)
+        if android_bodies == 0 and ios_bodies == 0:
+            continue
+        fuzzy_gap = status.target_size * (1.0 - status.ratio)
+        rows.append(
+            (
+                fuzzy_gap,
+                status.ratio,
+                status.target_size,
+                android_bodies,
+                ios_bodies,
+                entry.get("confidence") or "-",
+                entry.get("source_object") or "-",
+                function.name,
+            )
+        )
+    rows.sort(key=lambda row: (-row[0], row[1], row[-1]))
+    return rows
+
+
+def _print_mobile_backed_pending(rows, *, limit: int) -> None:
+    print(
+        "verified mobile bodies for non-proof Windows targets: "
+        f"{len(rows)}"
+    )
+    print(
+        "fuzzy-gap  match    bytes  bodies  confidence  source object       "
+        "function"
+    )
+    for (
+        fuzzy_gap,
+        ratio,
+        target_size,
+        android_bodies,
+        ios_bodies,
+        confidence,
+        source_object,
+        function,
+    ) in rows[:limit]:
+        bodies = "/".join(
+            part
+            for count, part in (
+                (android_bodies, f"A{android_bodies}"),
+                (ios_bodies, f"I{ios_bodies}"),
+            )
+            if count
+        )
+        print(
+            f"{fuzzy_gap:9.1f}  {ratio:6.2%}  {target_size:5d}  "
+            f"{bodies:6}  {confidence:10}  {source_object:18}  "
+            f"{function}"
+        )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="snail",
@@ -467,11 +543,32 @@ def build_parser() -> argparse.ArgumentParser:
 
     match_mobile_parser = match_subparsers.add_parser(
         "mobile",
-        help="Show one Windows decompile beside verified mobile source bodies.",
+        help=(
+            "Show one Windows decompile beside verified mobile source bodies, "
+            "or rank mobile-backed non-proof targets."
+        ),
     )
     match_mobile_parser.add_argument(
         "function",
-        help="Curated Windows function name or alias from the symbol manifest.",
+        nargs="?",
+        help=(
+            "Curated Windows function name or alias from the symbol manifest; "
+            "omit with --pending."
+        ),
+    )
+    match_mobile_parser.add_argument(
+        "--pending",
+        action="store_true",
+        help=(
+            "Rank non-proof Windows targets with verified mobile bodies by "
+            "their current fuzzy byte gap."
+        ),
+    )
+    match_mobile_parser.add_argument(
+        "--limit",
+        type=_positive_int,
+        default=25,
+        help="Maximum pending targets to show (default: 25).",
     )
     match_mobile_parser.add_argument(
         "--port",
@@ -519,6 +616,24 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=DEFAULT_IOS_CORPUS_ROOT / "index.json",
         help="Path to the iOS decompile corpus index.",
+    )
+    match_mobile_parser.add_argument(
+        "--image",
+        type=Path,
+        help=(
+            "Path to the original image used by --pending "
+            "(default: the manifest primary target)."
+        ),
+    )
+    match_mobile_parser.add_argument(
+        "-j",
+        "--jobs",
+        type=_positive_int,
+        default=DEFAULT_MATCH_JOBS,
+        help=(
+            "Maximum concurrent scratch jobs needed by --pending "
+            f"(default: {DEFAULT_MATCH_JOBS})."
+        ),
     )
 
     match_scratch_parser = match_subparsers.add_parser(
@@ -946,6 +1061,25 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "match" and args.match_command == "mobile":
         manifest = load_function_symbol_manifest(args.manifest)
+        if args.pending:
+            if args.function is not None:
+                parser.error("match mobile --pending does not take a function")
+            image_path = args.image or REPO_ROOT / manifest.primary_target
+            statuses = collect_scratch_statuses(
+                manifest,
+                image_path,
+                jobs=args.jobs,
+            )
+            crosswalk = load_json(args.crosswalk)
+            rows = _mobile_backed_pending_rows(
+                manifest,
+                statuses,
+                crosswalk,
+            )
+            _print_mobile_backed_pending(rows, limit=args.limit)
+            return 0
+        if args.function is None:
+            parser.error("match mobile requires a function or --pending")
         function = next(
             (
                 candidate

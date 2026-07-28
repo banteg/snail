@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 from snail.cli import main
 from snail.mobile import (
@@ -1006,6 +1007,90 @@ def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     assert "cRPath::BuildSlalom(" in output
     assert "android: verified" in output
     assert "ios: verified" in output
+
+
+def test_mobile_cli_ranks_pending_verified_bodies(
+    capsys,
+    monkeypatch,
+    tmp_path: Path,
+) -> None:
+    crosswalk = tmp_path / "crosswalk.json"
+    crosswalk.write_text(
+        """{
+  "entries": [
+    {
+      "windows_name": "update_subgoldy",
+      "status": "verified",
+      "android_body_count": 1,
+      "ios_body_count": 1,
+      "confidence": "high",
+      "source_object": "SubGoldy.o"
+    },
+    {
+      "windows_name": "update_input",
+      "status": "verified",
+      "android_body_count": 1,
+      "confidence": "high",
+      "source_object": null
+    },
+    {
+      "windows_name": "initialize_input_ok",
+      "status": "verified",
+      "android_body_count": 1,
+      "confidence": "high",
+      "source_object": null
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    statuses = [
+        SimpleNamespace(
+            config=SimpleNamespace(function="update_subgoldy"),
+            state="wip",
+            ratio=0.75,
+            target_size=800,
+        ),
+        SimpleNamespace(
+            config=SimpleNamespace(function="update_input"),
+            state="wip",
+            ratio=0.5,
+            target_size=40,
+        ),
+        SimpleNamespace(
+            config=SimpleNamespace(function="initialize_input_ok"),
+            state="match",
+            ratio=1.0,
+            target_size=64,
+        ),
+    ]
+    monkeypatch.setattr(
+        "snail.cli.collect_scratch_statuses",
+        lambda manifest, image_path, jobs: statuses,
+    )
+
+    result = main(
+        [
+            "match",
+            "mobile",
+            "--pending",
+            "--limit",
+            "2",
+            "--crosswalk",
+            str(crosswalk),
+        ]
+    )
+
+    output = capsys.readouterr().out
+    assert result == 0
+    assert "verified mobile bodies for non-proof Windows targets: 2" in output
+    assert "200.0  75.00%    800  A1/I1" in output
+    assert "SubGoldy.o" in output
+    assert "update_subgoldy" in output
+    assert "20.0  50.00%     40  A1" in output
+    assert "update_input" in output
+    assert "initialize_input_ok" not in output
 
 
 def test_mobile_object_vertex_dedup_preserves_platform_layout_boundary() -> None:
