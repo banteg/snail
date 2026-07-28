@@ -2,7 +2,7 @@
 
 #include "object_render_types.h"
 
-void ObjectDistort::initialize_object_distort()
+void Distort::initialize_object_distort()
 {
     z_wave = 0.0f;
     unknown_10 = 0.0f;

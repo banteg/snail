@@ -3,7 +3,7 @@
 /* selector: initialize_object_distort */
 
 // Initializes the five-float cRDistort subobject embedded at Object +0x80. Android independently exports cRDistort::Init and calls it from cRSubGoldy::Init on the same presentation object.
-void __thiscall initialize_object_distort(ObjectDistort *distort)
+void __thiscall initialize_object_distort(Distort *distort)
 {
   distort->z_wave = 0.0;
   distort->unknown_10 = 0.0;

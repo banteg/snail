@@ -5,25 +5,25 @@
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
   "bn_exported": 2,
-  "ida_exported": 731,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
-  "ida_refreshed": false,
+  "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_track_attachment_follow_state",
-      "address": "0x420cb0"
+      "name": "initialize_object_distort",
+      "address": "0x41aa30"
     },
     {
-      "name": "traverse_path_follow_golb",
-      "address": "0x4217b0"
+      "name": "apply_distort_to_object",
+      "address": "0x41aa50"
     }
   ],
   "health_check_count": 1143,

@@ -14570,7 +14570,7 @@
       "name": "bn_object_distort_owner",
       "artifact": "analysis/decompile/binja/functions/0041aa50-apply_distort_to_object.c",
       "required_substrings": [
-        "struct ObjectDistort* distort_3 = distort",
+        "struct Distort* distort_3 = distort",
         "struct Object* object_1 = object",
         "distort_3->z_wave",
         "distort_3->y_squash",
@@ -14591,6 +14591,7 @@
         "float* ebx_1",
         "float* ecx_2",
         "void* ecx_2",
+        "struct ObjectDistort",
         "unimplemented"
       ]
     },
@@ -14761,7 +14762,7 @@
       "name": "ida_object_distort_owner",
       "artifact": "analysis/decompile/ida/functions/0041aa50-apply_distort_to_object.c",
       "required_substrings": [
-        "void __thiscall apply_distort_to_object(ObjectDistort *distort, Object *object)",
+        "void __thiscall apply_distort_to_object(Distort *distort, Object *object)",
         "distort->z_wave",
         "distort->y_squash",
         "distort->xyz_scale",
@@ -14783,6 +14784,7 @@
         "float *p_z",
         "float *v27",
         "float *v32",
+        "ObjectDistort *distort",
         "unimplemented"
       ]
     },

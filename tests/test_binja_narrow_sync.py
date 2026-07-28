@@ -2518,6 +2518,33 @@ def test_current_type_widths_batches_readback(monkeypatch) -> None:
     assert calls[0][:2] == ("py", "exec")
 
 
+def test_current_type_alias_targets_batches_readback(monkeypatch) -> None:
+    calls = []
+
+    def fake_run_bn(_repo_root, *args):
+        calls.append(args)
+        return {
+            "result": {
+                "ObjectDistort": "Distort",
+                "Distort": None,
+            }
+        }
+
+    monkeypatch.setattr(_narrow_sync, "run_bn", fake_run_bn)
+
+    assert _narrow_sync.current_type_alias_targets(
+        Path("."),
+        target="snail-mail.exe",
+        type_names=("ObjectDistort", "Distort"),
+    ) == {
+        "ObjectDistort": "Distort",
+        "Distort": None,
+    }
+    assert len(calls) == 1
+    assert calls[0][:2] == ("py", "exec")
+    assert "NamedTypeReferenceClass" in calls[0][calls[0].index("--code") + 1]
+
+
 def test_current_enum_members_batches_exact_readback(monkeypatch) -> None:
     calls = []
 
@@ -7500,7 +7527,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         ("TextureRef", "0xA4"),
         ("ObjectFaceQuad", "0x30"),
         ("ObjectToonEdge", "0x24"),
-        ("ObjectDistort", "0x14"),
+        ("Distort", "0x14"),
         ("Object", "0xDC"),
         ("DuplicateVertices", "0x8"),
         ("CachedXMeshSlot", "0xBC"),
@@ -7564,7 +7591,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "Object* object, int32_t options_flags);"
     ) in ida_sync_source
     assert (
-        "void __thiscall apply_distort_to_object(ObjectDistort* distort, "
+        "void __thiscall apply_distort_to_object(Distort* distort, "
         "Object* object);"
     ) in ida_sync_source
 
@@ -7752,6 +7779,26 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     matcher_header = (
         repo_root / "tools/match/include/object_render_types.h"
     ).read_text(encoding="utf-8")
+    mobile_crosswalk = {
+        entry["address"]: entry
+        for entry in json.loads(
+            (
+                repo_root
+                / "analysis/symbols/windows-mobile-gameplay-crosswalk.json"
+            ).read_text(encoding="utf-8")
+        )["entries"]
+        if "address" in entry
+    }
+    ios_crosswalk = {
+        entry["address"]: entry
+        for entry in json.loads(
+            (
+                repo_root
+                / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+            ).read_text(encoding="utf-8")
+        )["entries"]
+        if "address" in entry
+    }
 
     for function_name in (
         "copy_object_vertices",
@@ -7766,7 +7813,7 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         assert f'"{function_name}"' in sync_source
 
     assert (
-        "void __thiscall apply_distort_to_object(ObjectDistort* distort, "
+        "void __thiscall apply_distort_to_object(Distort* distort, "
         "Object* object)"
     ) in sync_source
     assert (
@@ -7812,11 +7859,31 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
             "void __fastcall request_object_vertex_colours(Object* object);"
             in header
         )
-        assert "ObjectDistort* distort, Object* object);" in header
+        assert "Distort* distort, Object* object);" in header
+        assert "typedef Distort ObjectDistort;" in header
         assert "void __thiscall replace_object_list_texture_refs(" in header
         assert "extern int32_t g_object_grouped_vertex_cursor;" in header
         assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in header
         assert "void __cdecl sort_object_faces_by_texture_group(Object* object);" in header
+
+    assert "apply_type_renames" in sync_source
+    assert 'renames=(("ObjectDistort", "Distort"),)' in sync_source
+    assert '("0x80", "distort", "Distort")' in sync_source
+    assert "struct Distort" in matcher_header
+    assert "Distort distort; // +0x80" in matcher_header
+    assert (
+        mobile_crosswalk["0x41aa30"]["android_symbol"]
+        == "cRDistort::Init()"
+    )
+    assert mobile_crosswalk["0x41aa30"]["ios_symbol"] == "cRDistort::Init()"
+    assert (
+        mobile_crosswalk["0x41aa50"]["android_symbol"]
+        == "cRDistort::Build(cRObject*)"
+    )
+    assert "final two remain unnamed" in mobile_crosswalk["0x41aa30"]["notes"]
+    assert "cRDistort::BuildMatrix" in mobile_crosswalk["0x41aa50"]["notes"]
+    assert "canonical Distort owner" in ios_crosswalk["0x41aa30"]["notes"]
+    assert "no consumers for the two tail floats" in ios_crosswalk["0x41aa50"]["notes"]
 
     assert "int get_or_append_object_texture_group_vertex(" in matcher_header
     assert "void sort_object_faces_by_texture_group(Object* object);" in matcher_header
@@ -14387,6 +14454,47 @@ def test_type_rename_replay_skips_when_target_is_current(monkeypatch) -> None:
             "reason": "already current",
             "old_name": "FontGlyphV0Cursor",
             "new_name": "FontGlyphAtlasCursor",
+        }
+    ]
+
+
+def test_type_rename_replay_accepts_compatibility_alias(monkeypatch) -> None:
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_type_widths",
+        lambda *_args, **_kwargs: {
+            "ObjectDistort": 0x14,
+            "Distort": 0x14,
+        },
+    )
+    monkeypatch.setattr(
+        _narrow_sync,
+        "current_type_alias_targets",
+        lambda *_args, **_kwargs: {
+            "ObjectDistort": "Distort",
+        },
+    )
+    monkeypatch.setattr(
+        _narrow_sync,
+        "run_previewed_bn_batch",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            AssertionError("a compatibility alias must not open a transaction")
+        ),
+    )
+
+    result = _narrow_sync.apply_type_renames(
+        Path("."),
+        target="snail-mail.exe",
+        renames=(("ObjectDistort", "Distort"),),
+    )
+
+    assert result == [
+        {
+            "op": "rename_type",
+            "status": "skipped",
+            "reason": "already current via compatibility alias",
+            "old_name": "ObjectDistort",
+            "new_name": "Distort",
         }
     ]
 

@@ -1575,7 +1575,7 @@
     {
       "address": "0x41aa50",
       "name": "apply_distort_to_object",
-      "description": "Authored `cRDistort::Build(cRObject*)` member: applies the embedded ObjectDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior."
+      "description": "Authored `cRDistort::Build(cRObject*)` member: applies the embedded Distort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior; Android and iOS leave the final two floats without recovered consumers, so they remain unnamed."
     },
     {
       "address": "0x41ace0",

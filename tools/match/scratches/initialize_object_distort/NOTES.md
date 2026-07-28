@@ -2,7 +2,7 @@
 
 `initialize_object_distort` is the tiny authored `cRDistort::Init` helper
 reached from `initialize_subgoldy` at `0x43aa6c`. It clears the five-float
-`ObjectDistort` embedded at `Player::presentation.object +0x80` before SubGoldy
+`Distort` embedded at `Player::presentation.object +0x80` before SubGoldy
 seeds the rest of its runtime state.
 
 Boundary evidence:
@@ -27,7 +27,13 @@ Current focused result:
 - masked operands: none
 
 2026-07-14 owner correction: the former `SpringFloat` identity was disproved by
-the cross-port symbol and caller evidence. The shared `ObjectDistort` now owns
+the cross-port symbol and caller evidence. The shared `Distort` now owns
 all five words, and `initialize_subgoldy` calls it through
 `presentation.object->distort`. Focused Wibo remains exact at 7/7 instructions
 with no masked operands.
+
+2026-07-28 class identity closure: Android and iOS independently preserve the
+exact `cRDistort` class name. The normalized primary type is therefore
+`Distort`, with `ObjectDistort` retained only as a compatibility typedef. Cross-
+port reads stop after the three leading controls, so `+0x0c` and `+0x10`
+remain unnamed.

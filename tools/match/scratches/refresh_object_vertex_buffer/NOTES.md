@@ -28,7 +28,7 @@ Recovered relationships:
 
 Corrected assumptions:
 
-- `Object +0x80` is a real five-float, 0x14-byte `ObjectDistort` subobject.
+- `Object +0x80` is a real five-float, 0x14-byte `Distort` subobject.
   Three controls are understood and two trailing floats remain unknown. The
   shared complete `Object` layout owns that member directly; the older
   explicit cast was a temporary renderer-local view.

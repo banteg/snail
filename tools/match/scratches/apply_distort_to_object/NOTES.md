@@ -1,6 +1,6 @@
 # apply_distort_to_object
 
-`Object +0x80` is a five-float, 0x14-byte `ObjectDistort` subobject used only
+`Object +0x80` is a five-float, 0x14-byte `Distort` subobject used only
 when the object has dynamic vertex data (`flags & 0x800000` in
 `refresh_object_vertex_buffer`). The first three floats are the recovered
 controls below; the final two remain unknown.
@@ -36,7 +36,7 @@ Current scratch status:
   orderings in scale-1 x86 SIB addresses. No ownership, control-flow, call, or
   data-flow mismatch remains, so the source deliberately avoids artificial
   pointer arithmetic to choose an encoding.
-- 2026-06-21 owner-local retry: adding an explicit `ObjectDistort* self = this`
+- 2026-06-21 owner-local retry: adding an explicit `Distort* self = this`
   and reading all three distort fields through it is codegen-neutral at 52.15%.
   VC6 still anchors `this` in `ebp` instead of native `edi`; a simple owner
   name does not free `ebp` for the loop/index role.
@@ -44,7 +44,7 @@ Current scratch status:
 ## 2026-07-15 receiver replay
 
 The repeatable Binary Ninja sync now records both real owners:
-`ObjectDistort*` is the `this` receiver and `Object*` is the borrowed geometry
+`Distort*` is the `this` receiver and `Object*` is the borrowed geometry
 target. The refreshed artifact names all three distortion controls, the Object
 bounds/live/copy views, and the final simple-normal rebuild. This replaces the
 old `int(float*, float)` interpretation without changing the honest 95.43%
@@ -53,7 +53,7 @@ matcher frontier or its nine equivalent SIB base/index order residuals.
 ## 2026-07-18 checked-in IDA owner closure
 
 The IDA replay now owns this helper by address as well as name, verifies the
-0x14-byte `ObjectDistort` and 0xdc-byte `Object` layouts before applying the
+0x14-byte `Distort` and 0xdc-byte `Object` layouts before applying the
 prototype, and refreshes `refresh_object_vertex_buffer` as its sole caller.
 The tracked IDA artifact now exposes all three distort controls, the borrowed
 live vertex view, the owned copy buffer, bounds, and final normal rebuild.
@@ -98,3 +98,17 @@ redirecting the live vertex view, while Android's rendering path has a
 different tail. No mobile offset or tail is transplanted. The honest Windows
 frontier remains 95.43%, 197/197 instructions, with only the nine equivalent
 SIB base/index encodings outstanding.
+
+## 2026-07-28 dual-mobile class identity
+
+Android's exact `cRDistort::Init` and `cRDistort::Build(cRObject*)` symbols,
+plus iOS's exact `cRDistort::Init` and `cRDistort::BuildMatrix` symbols, recover
+the authored class identity independently of the Windows machine-code work.
+The canonical normalized owner is now `Distort`; `ObjectDistort` remains only
+as a compatibility typedef for older analysis consumers.
+
+The three ports agree on the five-float extent, but recovered consumers touch
+only `z_wave`, `y_squash`, and `xyz_scale`. The `+0x0c` and `+0x10` words are
+initialized and otherwise unread, so they remain explicitly unknown rather
+than being named from constants or neighboring mobile code. Windows remains
+authoritative for its embedded `Object +0x80` layout and Build behavior.

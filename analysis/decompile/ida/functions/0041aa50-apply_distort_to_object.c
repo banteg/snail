@@ -2,8 +2,8 @@
 /* function: apply_distort_to_object @ 0x41aa50 */
 /* selector: apply_distort_to_object */
 
-// Authored `cRDistort::Build(cRObject*)` member: applies the embedded ObjectDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior.
-void __thiscall apply_distort_to_object(ObjectDistort *distort, Object *object)
+// Authored `cRDistort::Build(cRObject*)` member: applies the embedded Distort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior; Android and iOS leave the final two floats without recovered consumers, so they remain unnamed.
+void __thiscall apply_distort_to_object(Distort *distort, Object *object)
 {
   char v4; // cl
   Vec3 *vertices; // ebx
@@ -35,7 +35,7 @@ void __thiscall apply_distort_to_object(ObjectDistort *distort, Object *object)
   float v36; // [esp+0h] [ebp-1Ch]
   float v37; // [esp+0h] [ebp-1Ch]
   float v38; // [esp+0h] [ebp-1Ch]
-  ObjectDistort *v39; // [esp+14h] [ebp-8h]
+  Distort *v39; // [esp+14h] [ebp-8h]
   float v40; // [esp+14h] [ebp-8h]
   float v41; // [esp+18h] [ebp-4h]
   float v42; // [esp+18h] [ebp-4h]

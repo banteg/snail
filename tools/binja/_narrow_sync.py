@@ -863,6 +863,17 @@ def apply_type_renames(
         target=target,
         type_names=type_names,
     )
+    ambiguous_old_names = tuple(
+        old_name
+        for old_name, new_name in rename_list
+        if widths.get(old_name) is not None
+        and widths.get(new_name) is not None
+    )
+    alias_targets = current_type_alias_targets(
+        repo_root,
+        target=target,
+        type_names=ambiguous_old_names,
+    )
     skipped: list[dict[str, object]] = []
     pending: list[dict[str, object]] = []
     for old_name, new_name in rename_list:
@@ -884,6 +895,17 @@ def apply_type_renames(
             )
             continue
         if new_exists:
+            if alias_targets.get(old_name) == new_name:
+                skipped.append(
+                    {
+                        "op": "rename_type",
+                        "status": "skipped",
+                        "reason": "already current via compatibility alias",
+                        "old_name": old_name,
+                        "new_name": new_name,
+                    }
+                )
+                continue
             raise RuntimeError(
                 f"refusing ambiguous type rename {old_name} -> {new_name}: "
                 "both names already exist"
@@ -1534,6 +1556,45 @@ for name in names:
         return {name: None for name in names}
     return {
         name: value if isinstance(value := payload.get(name), int) else None
+        for name in names
+    }
+
+
+def current_type_alias_targets(
+    repo_root: Path, *, target: str, type_names: Iterable[str]
+) -> dict[str, str | None]:
+    names = tuple(type_names)
+    if not names:
+        return {}
+    code = f"""
+names = {json.dumps(names)}
+result = {{}}
+for name in names:
+    current = bv.get_type_by_name(name)
+    if current is None or not str(current.type_class).endswith("NamedTypeReferenceClass"):
+        result[name] = None
+        continue
+    try:
+        result[name] = str(current.name)
+    except (AttributeError, NotImplementedError):
+        result[name] = None
+"""
+    response = run_bn(
+        repo_root,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        return {name: None for name in names}
+    return {
+        name: value if isinstance(value := payload.get(name), str) else None
         for name in names
     }
 

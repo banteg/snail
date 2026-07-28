@@ -227,13 +227,20 @@ typedef struct ObjectRenderBuffers {
     ObjectVertexBuffer* vertex_buffer;
 } ObjectRenderBuffers;
 
-typedef struct ObjectDistort {
+/*
+ * Android and iOS preserve this exact owner as cRDistort. Windows embeds the
+ * same five-float record at Object +0x80. The two tail floats have no recovered
+ * consumers on any port and remain intentionally unnamed.
+ */
+typedef struct Distort {
     float z_wave;
     float y_squash;
     float xyz_scale;
     float unknown_0c;
     float unknown_10;
-} ObjectDistort;
+} Distort;
+
+typedef Distort ObjectDistort;
 
 typedef struct ObjectIndexBufferResource ObjectIndexBufferResource;
 
@@ -291,7 +298,7 @@ typedef struct Object {
     int32_t edge_count;
     ObjectToonEdge* edges;
     uint8_t _pad_78[0x80 - 0x78];
-    ObjectDistort distort;
+    Distort distort;
     float bounding_radius;
     uint8_t _pad_98[0xa4 - 0x98];
     Vec3 bounds_min;
@@ -571,7 +578,7 @@ void __thiscall calc_object_texture_groups(Object* object);
 void __thiscall add_object_edge(
     Object* object, int32_t vertex_a, int32_t vertex_b, int32_t normal_index);
 void __thiscall calc_object_edges(Object* object);
-void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object);
+void __thiscall apply_distort_to_object(Distort* distort, Object* object);
 
 void __thiscall request_object_animation(
     Object* object, int32_t keyframe_count, XAnimationKeyframe* keyframes,

@@ -133,7 +133,10 @@ struct Object;
 // Authored ObjectProcNull(cRObject*) free function in Android and iOS.
 void disable_object_rendering(Object* object); // @ 0x41a0a0
 
-struct ObjectDistort {
+// Android and iOS preserve this exact owner as cRDistort. Windows embeds the
+// same five-float record at Object +0x80; only the first three controls have
+// consumers on any recovered port, so the tail remains intentionally unnamed.
+struct Distort {
     void initialize_object_distort(); // @ 0x41aa30, cRDistort::Init
     float z_wave; // +0x00, y offset envelope from vertex z
     float y_squash; // +0x04, x stretch plus y squash around bounds_min.y
@@ -144,8 +147,11 @@ struct ObjectDistort {
     void apply_distort_to_object(Object* object); // @ 0x41aa50; Android cRDistort::Build(cRObject*)
 };
 
-typedef char ObjectDistort_must_be_0x14[
-    (sizeof(ObjectDistort) == 0x14) ? 1 : -1];
+typedef char Distort_must_be_0x14[
+    (sizeof(Distort) == 0x14) ? 1 : -1];
+
+// Compatibility vocabulary for older notes and out-of-tree analysis scripts.
+typedef Distort ObjectDistort;
 
 struct ObjectIndexBufferResourceVtbl {
     char unknown_00[0x2c];
@@ -212,7 +218,7 @@ struct Object {
     int edge_count; // +0x70
     ObjectToonEdge* edges; // +0x74
     char unknown_78[0x80 - 0x78];
-    ObjectDistort distort; // +0x80
+    Distort distort; // +0x80
     float bounding_radius; // +0x94
     char unknown_98[0xa4 - 0x98];
     Vector3 bounds_min; // +0xa4

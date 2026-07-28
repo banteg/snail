@@ -148,7 +148,7 @@ Exact embedded children now used here are `Nuke` +0x150,
 +0x4344. Damage-gauge state is the first field and skin_hold_ticks is +0x18.
 The presentation owns
 (`Object* +0x24`; the lateral/squidge writes are its
-`ObjectDistort::{z_wave,y_squash,xyz_scale}` at +0x80/84/88, live
+`Distort::{z_wave,y_squash,xyz_scale}` at +0x80/84/88, live
 basis_up.x +0x48, cutscene state +0x1964), authored cRSquidge +0x4344
 (y output/velocity/phase +0x00/+0x04/+0x08, z output/velocity/phase
 +0x0c/+0x10/+0x14), slow commentary +0x435c/+0x4360, movement fire +0x2730/4,
@@ -179,7 +179,7 @@ instructions; no register-shaped adapter was retained.
 2026-07-12 presentation-object ownership: the scratch-local `VisualRoot` shell
 is retired. The Snail's `+0x24` link is the shared animated `Object*`; the
 three apparent presentation scalars at object `+0x80/+0x84/+0x88` are exactly
-the shared `ObjectDistort` lanes. Focused matching remains 72.51%, 2067/2087,
+the shared `Distort` lanes. Focused matching remains 72.51%, 2067/2087,
 with all existing operand evidence unchanged.
 
 Game side: the compact outer call view still owns level_mode +0x40 (NOT

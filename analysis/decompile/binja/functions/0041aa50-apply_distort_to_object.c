@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: apply_distort_to_object @ 0x41aa50 */
 
-0041aa57        struct ObjectDistort* distort_3 = distort
+0041aa57        struct Distort* distort_3 = distort
 0041aa59        struct Object* object_1 = object
 0041aa5d        distort.b = 0
 0041aa63        long double x87_r7 = fconvert.t(distort_3->z_wave)
@@ -65,7 +65,7 @@
 0041ab7f        long double temp2 = fconvert.t(0f)
 0041ab7f        x87_r7_17 - temp2
 0041ab8a        if ((((x87_r7_17 < temp2 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_17, temp2) ? 1 : 0) << 0xa | (x87_r7_17 == temp2 ? 1 : 0) << 0xe):1.b & 0x40) == 0)
-0041ab99        struct ObjectDistort* distort_1 = distort
+0041ab99        struct Distort* distort_1 = distort
 0041aba8        float var_8_1 = fconvert.s(sine(fconvert.s(fconvert.t(distort_3->y_squash) * fconvert.t(1.57079637f))) + fconvert.t(1f))
 0041abbd        long double x87_r7_25 = fconvert.t(1f) - sine(fconvert.s(fconvert.t(distort_3->y_squash) * fconvert.t(1.57079637f)))
 0041abc6        distort = object_1->bounds_min.y
@@ -88,7 +88,7 @@
 0041ac26        long double temp4 = fconvert.t(0f)
 0041ac26        x87_r7_32 - temp4
 0041ac31        if ((((x87_r7_32 < temp4 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_32, temp4) ? 1 : 0) << 0xa | (x87_r7_32 == temp4 ? 1 : 0) << 0xe):1.b & 0x40) == 0)
-0041ac40        struct ObjectDistort* distort_2 = distort
+0041ac40        struct Distort* distort_2 = distort
 0041ac55        object = fconvert.s(sine(fconvert.s(fconvert.t(distort_3->xyz_scale) * fconvert.t(1.57079637f))) * fconvert.t(0.100000001f) + fconvert.t(1f))
 0041ac6a        long double x87_r7_41 = fconvert.t(1f) - sine(fconvert.s(fconvert.t(distort_3->xyz_scale) * fconvert.t(1.57079637f)))
 0041ac76        int32_t i_2 = 0

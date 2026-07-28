@@ -7,7 +7,7 @@ float sine(float angle); // @ 0x44c9d0
 #define ABS_FLOAT(value) ((value) < 0.0f ? -(value) : (value))
 #define MAX_FLOAT(lhs, rhs) ((lhs) < (rhs) ? (rhs) : (lhs))
 
-void ObjectDistort::apply_distort_to_object(Object* object)
+void Distort::apply_distort_to_object(Object* object)
 {
     bool distorted = false;
     Vector3* source = object->vertices;

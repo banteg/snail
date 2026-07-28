@@ -182,6 +182,10 @@ intentional.
     inventing a capacity for the transient stack.
 - `bn_object_render_types.h`
 - `uv run python tools/binja/sync_object_render_types.py`
+  - Promotes the dual-mobile `cRDistort` identity to canonical `Distort` while
+    retaining `ObjectDistort` only as a compatibility typedef. The shared
+    rename helper recognizes that alias as an already-current replay state
+    instead of treating it as a competing owner.
   - Preserves `Object::vertices` and `Object::copied_vertices` as the real
     buffer owners while typing the stable Z-wave and XYZ-scale interior
     `Vec3::z` cursor lifetimes. The paired IDA replay binds all three distort

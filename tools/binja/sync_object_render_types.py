@@ -13,6 +13,7 @@ from _narrow_sync import (
     apply_symbol_removals,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
@@ -94,7 +95,7 @@ OBJECT_FIELDS = (
     ("0x6c", "texture_group_ends", "int32_t*"),
     ("0x70", "edge_count", "int32_t"),
     ("0x74", "edges", "ObjectToonEdge*"),
-    ("0x80", "distort", "ObjectDistort"),
+    ("0x80", "distort", "Distort"),
     ("0x94", "bounding_radius", "float"),
     ("0xa4", "bounds_min", "Vec3"),
     ("0xb0", "bounds_max", "Vec3"),
@@ -337,11 +338,11 @@ PROTO_UPDATES = (
     ("reset_render_counters", "int32_t __cdecl reset_render_counters()"),
     (
         "initialize_object_distort",
-        "void __thiscall initialize_object_distort(ObjectDistort* distort)",
+        "void __thiscall initialize_object_distort(Distort* distort)",
     ),
     (
         "apply_distort_to_object",
-        "void __thiscall apply_distort_to_object(ObjectDistort* distort, Object* object)",
+        "void __thiscall apply_distort_to_object(Distort* distort, Object* object)",
     ),
     (
         "initialize_object",
@@ -640,7 +641,11 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = []
+    operations: list[dict[str, object]] = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=(("ObjectDistort", "Distort"),),
+    )
     operations.append(
         types_declare_if_changed(
             REPO_ROOT,
