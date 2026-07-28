@@ -62,7 +62,7 @@ static __forceinline void compute_path_deltas(Path* path)
             primary_next->transform.position.x - primary->transform.position.x,
             primary_next->transform.position.y - primary->transform.position.y,
             primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.normalize_vector();
+        primary->delta_length = primary->delta_dir_to_next.Normalize();
 
         PathTemplateSample* secondary = &path->secondary_samples[i];
         PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
@@ -70,7 +70,7 @@ static __forceinline void compute_path_deltas(Path* path)
             secondary_next->transform.position.x - secondary->transform.position.x,
             secondary_next->transform.position.y - secondary->transform.position.y,
             secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
+        secondary->delta_length = secondary->delta_dir_to_next.Normalize();
     }
 
     path->primary_samples[path->segment_count - 1].delta_dir_to_next =
@@ -271,7 +271,7 @@ void cRPath::initialize_invert_path_template_pair(
                 primary_samples[sample_index - 1].transform.position.y,
             primary_samples[sample_index].transform.position.z -
                 primary_samples[sample_index - 1].transform.position.z);
-        primary_samples[sample_index].transform.basis_forward.normalize_vector();
+        primary_samples[sample_index].transform.basis_forward.Normalize();
         primary_samples[sample_index].transform.basis_right.cross_vectors(
             &primary_samples[sample_index].transform.basis_up,
             &primary_samples[sample_index].transform.basis_forward);

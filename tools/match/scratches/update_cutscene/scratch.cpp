@@ -73,7 +73,7 @@ void CutScene::update_cutscene()
             sine(progress * 1.5707964f));
 
         target_delta = live_matrix.position - presentation->transform.position;
-        float distance = target_delta.normalize_vector();
+        float distance = target_delta.Normalize();
         if (distance < 1.5f) {
             float push = 1.5f - distance;
             live_matrix.position += target_delta * push;

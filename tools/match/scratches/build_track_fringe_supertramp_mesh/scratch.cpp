@@ -26,7 +26,7 @@ void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
 
             Vector3 direction;
             direction = row_vertices[1] - row_vertices[0];
-            direction.normalize_vector();
+            direction.Normalize();
             row_vertices[0] = row_vertices[1] + direction * 0.40000001f;
 
             row_vertices[2] =
@@ -35,7 +35,7 @@ void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
                 strip_mesh->vertices[row * (width_cells + 1) + width_cells];
 
             direction = row_vertices[3] - row_vertices[2];
-            direction.normalize_vector();
+            direction.Normalize();
 
             ++row;
             row_vertices[2] = row_vertices[3] + direction * 0.40000001f;

@@ -8,9 +8,9 @@ void TransformMatrix::orthogonalize_matrix()
     Vector3* up = &basis_up;
     Vector3* forward = &basis_forward;
 
-    right->normalize_vector();
-    up->normalize_vector();
-    forward->normalize_vector();
+    right->Normalize();
+    up->Normalize();
+    forward->Normalize();
     right->cross_vectors(up, forward);
     forward->cross_vectors(right, up);
 }

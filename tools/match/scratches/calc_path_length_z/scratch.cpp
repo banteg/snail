@@ -47,7 +47,7 @@ void __fastcall cRPath::calc_path_length_z()
 
             *(float*)((char*)this->primary_samples + sample_offset
                 + offsetof(AttachmentSample, lateral_source)) =
-                (float)cross.dot_vector(
+                (float)cross.Dot(
                     *(Vector3*)((char*)this->primary_samples + sample_offset));
 
             if (this->is_mirrored_x)

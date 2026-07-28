@@ -17,7 +17,7 @@ void Galaxy::draw_galaxy_line(
     normal.x = x1 - x0;
     normal.y = y1 - y0;
     normal.z = 0.0f;
-    normal.normalize_vector();
+    normal.Normalize();
 
     float offset_x = normal.y * width * -0.5f;
     float offset_y = normal.x * width * 0.5f;

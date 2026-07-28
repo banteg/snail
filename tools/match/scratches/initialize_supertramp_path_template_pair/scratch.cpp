@@ -225,7 +225,7 @@ void cRPath::initialize_supertramp_path_template_pair(
                 radius - primary_samples[sample_index].transform.position.y;
             primary_samples[sample_index].transform.basis_up.z =
                 7.0f - primary_samples[sample_index].transform.position.z;
-            primary_samples[sample_index].transform.basis_up.normalize_vector();
+            primary_samples[sample_index].transform.basis_up.Normalize();
             primary_samples[sample_index].transform.basis_forward.cross_vectors(
                 &primary_samples[sample_index].transform.basis_right,
                 &primary_samples[sample_index].transform.basis_up);
@@ -237,7 +237,7 @@ void cRPath::initialize_supertramp_path_template_pair(
                 radius - secondary_samples[sample_index].transform.position.y;
             secondary_samples[sample_index].transform.basis_up.z =
                 7.0f - secondary_samples[sample_index].transform.position.z;
-            secondary_samples[sample_index].transform.basis_up.normalize_vector();
+            secondary_samples[sample_index].transform.basis_up.Normalize();
             secondary_samples[sample_index].transform.basis_forward.cross_vectors(
                 &secondary_samples[sample_index].transform.basis_right,
                 &secondary_samples[sample_index].transform.basis_up);
@@ -256,7 +256,7 @@ void cRPath::initialize_supertramp_path_template_pair(
                 primary_samples[delta_index + 1].transform.position.z -
                     primary_samples[delta_index].transform.position.z);
             primary_samples[delta_index].delta_length =
-                primary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                primary_samples[delta_index].delta_dir_to_next.Normalize();
 
             secondary_samples[delta_index].delta_dir_to_next = Vector3(
                 secondary_samples[delta_index + 1].transform.position.x -
@@ -266,7 +266,7 @@ void cRPath::initialize_supertramp_path_template_pair(
                 secondary_samples[delta_index + 1].transform.position.z -
                     secondary_samples[delta_index].transform.position.z);
             secondary_samples[delta_index].delta_length =
-                secondary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                secondary_samples[delta_index].delta_dir_to_next.Normalize();
 
             ++delta_index;
         } while (delta_index < segment_count);

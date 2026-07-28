@@ -231,7 +231,7 @@ void cRPath::initialize_start_path_template_pair(
                             primary_samples[i - 1]
                                 .transform.position.z);
                 primary_samples[i - 1]
-                    .transform.basis_forward.normalize_vector();
+                    .transform.basis_forward.Normalize();
                 primary_samples[i - 1].transform.basis_up.cross_vectors(
                     &primary_samples[i - 1].transform.basis_forward,
                     &primary_samples[i - 1].transform.basis_right);
@@ -250,7 +250,7 @@ void cRPath::initialize_start_path_template_pair(
                             secondary_samples[i - 1]
                                 .transform.position.z);
                 secondary_samples[i - 1]
-                    .transform.basis_forward.normalize_vector();
+                    .transform.basis_forward.Normalize();
                 secondary_samples[i - 1].transform.basis_up.cross_vectors(
                     &secondary_samples[i - 1].transform.basis_forward,
                     &secondary_samples[i - 1].transform.basis_right);
@@ -271,7 +271,7 @@ void cRPath::initialize_start_path_template_pair(
                 primary_samples[delta_index + 1].transform.position.z -
                     primary_samples[delta_index].transform.position.z);
             primary_samples[delta_index].delta_length =
-                primary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                primary_samples[delta_index].delta_dir_to_next.Normalize();
 
             secondary_samples[delta_index].delta_dir_to_next = Vector3(
                 secondary_samples[delta_index + 1].transform.position.x -
@@ -281,7 +281,7 @@ void cRPath::initialize_start_path_template_pair(
                 secondary_samples[delta_index + 1].transform.position.z -
                     secondary_samples[delta_index].transform.position.z);
             secondary_samples[delta_index].delta_length =
-                secondary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                secondary_samples[delta_index].delta_dir_to_next.Normalize();
 
             ++delta_index;
         } while (delta_index < segment_count);

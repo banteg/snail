@@ -1,10 +1,10 @@
-// vector_magnitude @ 0x44ccf0 (thiscall)
+// vector_magnitude @ 0x44ccf0 (thiscall) — tVector::Magnitude() const
 
 #include "vector3.h"
 
 float square_root(float value);
 
-float Vector3::vector_magnitude() const
+float tVector::Magnitude() const
 {
     float magnitude = square_root(x * x + y * y + z * z);
     return magnitude;

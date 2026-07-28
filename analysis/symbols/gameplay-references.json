@@ -60,6 +60,15 @@
       "description": "Exact cRGalaxyStar::AI thiscall helper on a 0x2a0-byte GalaxyStar child that interpolates route_tint_alpha +0x18 toward highlight_target +0x1c by 0.1 each tick."
     },
     {
+      "address": "0x410710",
+      "name": "zero_vector3",
+      "kind": "function",
+      "aliases": [
+        "?zero_vector3@tVector@@QAEHXZ"
+      ],
+      "description": "Exact tVector-owned zeroing helper; the authored method name remains unverified."
+    },
+    {
       "address": "0x410730",
       "name": "select_level_track_texture_set",
       "kind": "function",
@@ -1343,27 +1352,27 @@
       "name": "get_track_grid_cell_at_world_position",
       "kind": "function",
       "aliases": [
-        "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUVector3@@@Z"
+        "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUtVector@@@Z"
       ],
-      "description": "Exact Windows cRSubGame::LocFromPos(Vector3*) entry; Windows pointer ABI remains authoritative."
+      "description": "Exact Windows cRSubGame::LocFromPos(tVector*) entry; Windows pointer ABI remains authoritative."
     },
     {
       "address": "0x43d480",
       "name": "get_track_runtime_cell_at_world_z",
       "kind": "function",
       "aliases": [
-        "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUVector3@@@Z"
+        "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUtVector@@@Z"
       ],
-      "description": "Exact Windows cRSubGame::RowFromPos(Vector3*) entry; Windows pointer ABI remains authoritative."
+      "description": "Exact Windows cRSubGame::RowFromPos(tVector*) entry; Windows pointer ABI remains authoritative."
     },
     {
       "address": "0x43d4d0",
       "name": "sample_track_floor_height_at_position",
       "kind": "function",
       "aliases": [
-        "?GetY@cRSubGame@@QAENPAUVector3@@@Z"
+        "?GetY@cRSubGame@@QAENPAUtVector@@@Z"
       ],
-      "description": "Exact Windows cRSubGame::GetY(Vector3*) entry with its native double-return ABI."
+      "description": "Exact Windows cRSubGame::GetY(tVector*) entry with its native double-return ABI."
     },
     {
       "address": "0x43e44c",
@@ -1551,6 +1560,15 @@
       "description": "Compiler-emitted eight-entry gameplay-mode switch table used by SubTracks::Load; modes 5 and 6 share the default arm."
     },
     {
+      "address": "0x443730",
+      "name": "spawn_track_parcel",
+      "kind": "function",
+      "aliases": [
+        "?AddParcel@cRSubGame@@QAEPAVParcel@@PAUtVector@@PAVcRSubGoldy@@@Z"
+      ],
+      "description": "Exact Windows cRSubGame::AddParcel(tVector*, cRSubGoldy*) entry."
+    },
+    {
       "address": "0x444240",
       "name": "place_challenge_parcels_on_track",
       "kind": "function",
@@ -1564,9 +1582,9 @@
       "name": "project_position_onto_track_attachment",
       "kind": "function",
       "aliases": [
-        "?CalcRealPos@cRSubGame@@QAEXPAUVector3@@PAM@Z"
+        "?CalcRealPos@cRSubGame@@QAEXPAUtVector@@PAM@Z"
       ],
-      "description": "Exact Windows cRSubGame::CalcRealPos(Vector3*,float*) entry; Windows pointer ABI remains authoritative."
+      "description": "Exact Windows cRSubGame::CalcRealPos(tVector*, float*) entry; Windows pointer ABI remains authoritative."
     },
     {
       "address": "0x444ce0",
@@ -1689,18 +1707,83 @@
       "name": "multiply_vector_by_matrix_copy",
       "kind": "function",
       "aliases": [
+        "??DtVector@@QBE?AU0@ABUTransformMatrix@@@Z",
         "??DVector3@@QBE?AU0@ABUTransformMatrix@@@Z"
       ],
-      "description": "Exact value-returning Vector3 affine matrix operator with a hidden VC6 output pointer."
+      "description": "Exact value-returning tVector affine matrix operator with a hidden VC6 output pointer."
+    },
+    {
+      "address": "0x44cb50",
+      "name": "dot_vectors",
+      "kind": "function",
+      "aliases": [
+        "?Dot@tVector@@SGNABU1@0@Z"
+      ],
+      "description": "Exact static double tVector::Dot(const tVector&, const tVector&) entry."
+    },
+    {
+      "address": "0x44cb70",
+      "name": "dot_vector",
+      "kind": "function",
+      "aliases": [
+        "?Dot@tVector@@QAEMABU1@@Z"
+      ],
+      "description": "Exact float tVector::Dot(const tVector&) entry."
     },
     {
       "address": "0x44cb90",
       "name": "multiply_vector_by_matrix",
       "kind": "function",
       "aliases": [
+        "??XtVector@@QAEXUTransformMatrix@@@Z",
         "??XVector3@@QAEXUTransformMatrix@@@Z"
       ],
-      "description": "Void in-place Vector3 matrix operator; Windows passes the complete TransformMatrix by value."
+      "description": "Void in-place tVector matrix operator; Windows passes the complete TransformMatrix by value."
+    },
+    {
+      "address": "0x44cc20",
+      "name": "rotate_vector_by_matrix",
+      "kind": "function",
+      "aliases": [
+        "?Rotate@tVector@@QAEAAU1@ABUTransformMatrix@@@Z"
+      ],
+      "description": "Exact reference-returning tVector::Rotate(const TransformMatrix&) entry."
+    },
+    {
+      "address": "0x44cca0",
+      "name": "normalize_vector",
+      "kind": "function",
+      "aliases": [
+        "?Normalize@tVector@@QAEMXZ"
+      ],
+      "description": "Exact float tVector::Normalize() entry."
+    },
+    {
+      "address": "0x44ccf0",
+      "name": "vector_magnitude",
+      "kind": "function",
+      "aliases": [
+        "?Magnitude@tVector@@QBEMXZ"
+      ],
+      "description": "Exact const float tVector::Magnitude() entry."
+    },
+    {
+      "address": "0x44cd20",
+      "name": "normalize_vector_from_source",
+      "kind": "function",
+      "aliases": [
+        "?Normalize@tVector@@QAEMABU1@@Z"
+      ],
+      "description": "Exact float tVector::Normalize(const tVector&) entry."
+    },
+    {
+      "address": "0x44cd40",
+      "name": "cross_vectors",
+      "kind": "function",
+      "aliases": [
+        "?Cross@tVector@@QAEXABU1@0@Z"
+      ],
+      "description": "Exact void tVector::Cross(const tVector&, const tVector&) entry."
     },
     {
       "address": "0x44cdd0",
@@ -1710,7 +1793,7 @@
         "$E2",
         "sub_44cdd0"
       ],
-      "description": "Compiler-generated static-destruction stub registered by cross_vectors for its function-local static result."
+      "description": "Compiler-generated static-destruction stub registered by Cross for its function-local static tVector result."
     },
     {
       "address": "0x44d1a0",
@@ -5604,9 +5687,10 @@
         "?$S1@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4EA",
         "?$S1@?1??cross_vectors@Vector3@@QAEXPBU2@0@Z@4EA",
         "?$S1@?1??cross_vectors@Vec3@@QAEXABU2@0@Z@4EA",
-        "?$S1@?1??cross_vectors@Vector3@@QAEXABU2@0@Z@4EA"
+        "?$S1@?1??cross_vectors@Vector3@@QAEXABU2@0@Z@4EA",
+        "?$S1@?1??Cross@tVector@@QAEXABU2@0@Z@4EA"
       ],
-      "description": "Compiler-generated guard byte for the function-local static Vector3 result in cross_vectors; it shares storage with the synthetic trigonometry init-base reference."
+      "description": "Compiler-generated guard byte for the function-local static tVector result in Cross; it shares storage with the synthetic trigonometry init-base reference."
     },
     {
       "address": "0x77ff3c",
@@ -5634,10 +5718,11 @@
         "?result@?1??cross_vectors@Vec3@@QAEXPBU2@0@Z@4U2@A",
         "?result@?1??cross_vectors@Vector3@@QAEXPBU2@0@Z@4U2@A",
         "?result@?1??cross_vectors@Vec3@@QAEXABU2@0@Z@4U2@A",
-        "?result@?1??cross_vectors@Vector3@@QAEXABU2@0@Z@4U2@A"
+        "?result@?1??cross_vectors@Vector3@@QAEXABU2@0@Z@4U2@A",
+        "?result@?1??Cross@tVector@@QAEXABU2@0@Z@4U2@A"
       ],
       "size": "0xc",
-      "description": "Function-local static Vector3 result storage used by cross_vectors before copying back to the destination vector."
+      "description": "Function-local static tVector result storage used by Cross before copying back to the destination vector."
     },
     {
       "address": "0x77ff88",

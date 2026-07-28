@@ -758,7 +758,7 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
     assert "FUNCTION=spawn_track_parcel\n" in parcel_config
     assert (
         "SYMBOL=?AddParcel@cRSubGame@@QAEPAVParcel@@"
-        "PAUVector3@@PAVcRSubGoldy@@@Z\n"
+        "PAUtVector@@PAVcRSubGoldy@@@Z\n"
         in parcel_config
     )
 
@@ -816,19 +816,19 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
             "get_track_grid_cell_at_world_position",
             "LocFromPos",
             "cRSubGame::LocFromPos(tVector)",
-            "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUVector3@@@Z",
+            "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUtVector@@@Z",
         ),
         (
             "get_track_runtime_cell_at_world_z",
             "RowFromPos",
             "cRSubGame::RowFromPos(tVector)",
-            "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUVector3@@@Z",
+            "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUtVector@@@Z",
         ),
         (
             "sample_track_floor_height_at_position",
             "GetY",
             "cRSubGame::GetY(tVector)",
-            "?GetY@cRSubGame@@QAENPAUVector3@@@Z",
+            "?GetY@cRSubGame@@QAENPAUtVector@@@Z",
         ),
         (
             "set_subgame_rate",
@@ -870,7 +870,7 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
             "project_position_onto_track_attachment",
             "CalcRealPos",
             "cRSubGame::CalcRealPos(tVector&, float&)",
-            "?CalcRealPos@cRSubGame@@QAEXPAUVector3@@PAM@Z",
+            "?CalcRealPos@cRSubGame@@QAEXPAUtVector@@PAM@Z",
         ),
     )
 
@@ -1155,6 +1155,167 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
     assert "not the exact Windows VC6 source shape" in store_entry["notes"]
     assert "void tColour::store_color4f(" in store_source
     assert "tColour::tColour(" not in store_source
+
+
+def test_mobile_tvector_methods_recover_authored_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    vector_header = (
+        repo_root / "tools/match/include/vector3.h"
+    ).read_text(encoding="utf-8")
+    expected_methods = (
+        (
+            "multiply_vector_by_matrix_copy",
+            "tVector::operator*(tMatrix const&) const",
+            "tVector_operator_multiply",
+            "tVector::operator*(",
+            "tVector operator*(const TransformMatrix& matrix) const;",
+            "??DtVector@@QBE?AU0@ABUTransformMatrix@@@Z",
+        ),
+        (
+            "dot_vectors",
+            "tVector::Dot(tVector const&, tVector const&)",
+            "tVector_DotStatic",
+            "tVector::Dot(",
+            "static double __stdcall Dot(",
+            "?Dot@tVector@@SGNABU1@0@Z",
+        ),
+        (
+            "dot_vector",
+            "tVector::Dot(tVector const&)",
+            "tVector_Dot",
+            "tVector::Dot(",
+            "float Dot(const tVector& rhs);",
+            "?Dot@tVector@@QAEMABU1@@Z",
+        ),
+        (
+            "multiply_vector_by_matrix",
+            "tVector::operator*=(tMatrix)",
+            "tVector_operator_multiply_assign",
+            "tVector::operator*=(",
+            "void operator*=(TransformMatrix matrix);",
+            "??XtVector@@QAEXUTransformMatrix@@@Z",
+        ),
+        (
+            "rotate_vector_by_matrix",
+            "tVector::Rotate(tMatrix const&)",
+            "tVector_Rotate",
+            "tVector::Rotate(",
+            "tVector& Rotate(const TransformMatrix& matrix);",
+            "?Rotate@tVector@@QAEAAU1@ABUTransformMatrix@@@Z",
+        ),
+        (
+            "normalize_vector",
+            "tVector::Normalize()",
+            "tVector_Normalize",
+            "tVector::Normalize(",
+            "float Normalize();",
+            "?Normalize@tVector@@QAEMXZ",
+        ),
+        (
+            "vector_magnitude",
+            "tVector::Magnitude() const",
+            "tVector_Magnitude",
+            "tVector::Magnitude(",
+            "float Magnitude() const;",
+            "?Magnitude@tVector@@QBEMXZ",
+        ),
+        (
+            "normalize_vector_from_source",
+            "tVector::Normalize(tVector const&)",
+            "tVector_NormalizeFromSource",
+            "tVector::Normalize(",
+            "float Normalize(const tVector& source);",
+            "?Normalize@tVector@@QAEMABU1@@Z",
+        ),
+        (
+            "cross_vectors",
+            "tVector::Cross(tVector const&, tVector const&)",
+            "tVector_Cross",
+            "tVector::Cross(",
+            "void Cross(const tVector& lhs, const tVector& rhs);",
+            "?Cross@tVector@@QAEXABU1@0@Z",
+        ),
+    )
+
+    for (
+        windows_name,
+        mobile_symbol,
+        alias,
+        source_spelling,
+        header_declaration,
+        object_symbol,
+    ) in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert header_declaration in vector_header
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert source_spelling in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"FUNCTION={windows_name}" in scratch_config
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+    assert "struct tVector {" in vector_header
+    assert "typedef tVector Vector3;" in vector_header
+    assert "tVector_must_be_0x0c" in vector_header
+    assert "struct Vector3 {" not in vector_header
+    assert "void cross_vectors(const tVector* lhs, const tVector* rhs);" in (
+        vector_header
+    )
+
+    old_member_names = (
+        "dot_vectors",
+        "dot_vector",
+        "normalize_vector",
+        "normalize_vector_from_source",
+        "vector_magnitude",
+        "rotate_vector_by_matrix",
+    )
+    for path in (repo_root / "tools/match/scratches").rglob("*.cpp"):
+        if "build" in path.parts:
+            continue
+        source = path.read_text(encoding="utf-8")
+        for name in old_member_names:
+            assert f".{name}(" not in source
+            assert f"->{name}(" not in source
+            assert f"::{name}(" not in source
+
+    zero_source = (
+        repo_root / "tools/match/scratches/zero_vector3/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "int tVector::zero_vector3()" in zero_source
+    assert entries["zero_vector3"]["status"] == "unverified"
 
 
 def test_mobile_subgoldy_methods_recover_authored_surface() -> None:

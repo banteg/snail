@@ -18,7 +18,7 @@ void SoundEffectManager::play_sound_effect_at_position(int sound_id, Vector3& po
         delta.z = position.z - listener_position.z;
 
         Vector3 magnitude_delta = delta;
-        float magnitude = magnitude_delta.vector_magnitude();
+        float magnitude = magnitude_delta.Magnitude();
         if (magnitude < distance)
             distance = magnitude;
     }

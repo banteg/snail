@@ -1,12 +1,12 @@
-// Vector3::normalize_vector @ 0x44cca0
+// normalize_vector @ 0x44cca0 — tVector::Normalize()
 
 #include "vector3.h"
 
 float square_root(float value);
 
-float Vector3::normalize_vector()
+float tVector::Normalize()
 {
-    float length = square_root((float)Vector3::dot_vectors(*this, *this));
+    float length = square_root((float)tVector::Dot(*this, *this));
     if (length == 0.0f) {
         return 0.0f;
     }

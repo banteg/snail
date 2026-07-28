@@ -6,7 +6,8 @@
 
 class Sprite;
 class cRSubGame;
-struct Vector3;
+struct tVector;
+typedef tVector Vector3;
 
 struct JetParticleSlot {
     Sprite* sprite; // +0x00

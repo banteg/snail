@@ -54,7 +54,7 @@ void Object::calc_object_facequad_normals()
 
             Vector3 normal_a;
             normal_a.cross_vectors(&lhs, &rhs);
-            normal_a.normalize_vector();
+            normal_a.Normalize();
 
             *(Vector3*)((char*)facequad_normals + normal_offset) = normal_a;
 
@@ -77,7 +77,7 @@ void Object::calc_object_facequad_normals()
                 rhs = quad_rhs_value;
 
                 normal_b.cross_vectors(&lhs, &rhs);
-                normal_b.normalize_vector();
+                normal_b.Normalize();
 
                 *(Vector3*)((char*)facequad_normals + normal_offset + sizeof(Vector3)) =
                     normal_b;
@@ -127,7 +127,7 @@ void Object::calc_object_facequad_normals()
                 normal->y = normal->y / tally;
                 normal->z = normal->z / tally;
             }
-            ((Vector3*)((char*)vertex_normals + vertex_offset))->normalize_vector();
+            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();
 
             Vector3* inverted = (Vector3*)((char*)vertex_normals + vertex_offset);
             vertex_offset += sizeof(Vector3);

@@ -17,7 +17,7 @@ ContactTargetEntry* EnemyManager::search_path_for_golb(
             delta.z = cursor[0] - position->z;
             Vector3 probe = delta;
             if (delta.z > 0.0f && delta.z < 30.0f) {
-                float m = probe.vector_magnitude();
+                float m = probe.Magnitude();
                 if (m < best) {
                     best = m;
                     found = (ContactTargetEntry*)(cursor - 3);

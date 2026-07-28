@@ -53,14 +53,14 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
 
             Vector3 direction;
             direction = row_vertices[1] - row_vertices[0];
-            direction.normalize_vector();
+            direction.Normalize();
             row_vertices[0] = row_vertices[1] + direction * 0.40000001f;
 
             row_vertices[2] = strip_mesh->vertices[far_inner_column + row * (width_cells + 1)];
             row_vertices[3] = strip_mesh->vertices[near_inner_column + row * (width_cells + 1)];
 
             direction = row_vertices[3] - row_vertices[2];
-            direction.normalize_vector();
+            direction.Normalize();
             row_vertices[2] = row_vertices[3] + direction * 0.40000001f;
 
             if (clamp_side == -1.0f) {

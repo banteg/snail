@@ -28,7 +28,7 @@ static __forceinline void orient_previous_with_up(
         current->transform.position.x - previous->transform.position.x,
         current->transform.position.y - previous->transform.position.y,
         current->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.normalize_vector();
+    previous->transform.basis_forward.Normalize();
     previous->transform.basis_right.cross_vectors(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
@@ -247,7 +247,7 @@ void cRPath::initialize_sweep_path_template_pair(
                 primary_samples[delta_index + 1].transform.position.z -
                     primary_samples[delta_index].transform.position.z);
             primary_samples[delta_index].delta_length =
-                primary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                primary_samples[delta_index].delta_dir_to_next.Normalize();
 
             secondary_samples[delta_index].delta_dir_to_next = Vector3(
                 secondary_samples[delta_index + 1].transform.position.x -
@@ -257,7 +257,7 @@ void cRPath::initialize_sweep_path_template_pair(
                 secondary_samples[delta_index + 1].transform.position.z -
                     secondary_samples[delta_index].transform.position.z);
             secondary_samples[delta_index].delta_length =
-                secondary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                secondary_samples[delta_index].delta_dir_to_next.Normalize();
 
             ++delta_index;
         } while (delta_index < segment_count - 1);

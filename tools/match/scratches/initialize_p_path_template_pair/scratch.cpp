@@ -238,7 +238,7 @@ void cRPath::initialize_p_path_template_pair(
                     primary_current->transform.position.x - primary_previous->transform.position.x,
                     primary_current->transform.position.y - primary_previous->transform.position.y,
                     primary_current->transform.position.z - primary_previous->transform.position.z);
-                primary_previous->transform.basis_forward.normalize_vector();
+                primary_previous->transform.basis_forward.Normalize();
                 primary_previous->transform.basis_right.cross_vectors(
                     &primary_previous->transform.basis_up,
                     &primary_previous->transform.basis_forward);
@@ -248,7 +248,7 @@ void cRPath::initialize_p_path_template_pair(
                     secondary_current->transform.position.x - secondary_previous->transform.position.x,
                     secondary_current->transform.position.y - secondary_previous->transform.position.y,
                     secondary_current->transform.position.z - secondary_previous->transform.position.z);
-                secondary_previous->transform.basis_forward.normalize_vector();
+                secondary_previous->transform.basis_forward.Normalize();
                 secondary_previous->transform.basis_right.cross_vectors(
                     &secondary_previous->transform.basis_up,
                     &secondary_previous->transform.basis_forward);
@@ -268,7 +268,7 @@ void cRPath::initialize_p_path_template_pair(
                 primary_samples[delta_index + 1].transform.position.z -
                     primary_samples[delta_index].transform.position.z);
             primary_samples[delta_index].delta_length =
-                primary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                primary_samples[delta_index].delta_dir_to_next.Normalize();
 
             secondary_samples[delta_index].delta_dir_to_next = Vector3(
                 secondary_samples[delta_index + 1].transform.position.x -
@@ -278,7 +278,7 @@ void cRPath::initialize_p_path_template_pair(
                 secondary_samples[delta_index + 1].transform.position.z -
                     secondary_samples[delta_index].transform.position.z);
             secondary_samples[delta_index].delta_length =
-                secondary_samples[delta_index].delta_dir_to_next.normalize_vector();
+                secondary_samples[delta_index].delta_dir_to_next.Normalize();
             ++delta_index;
         } while (delta_index < segment_count - 1);
     }

@@ -1,11 +1,11 @@
-# Vector3::dot_vectors @ 0x44cb50
+# tVector::Dot(const tVector&, const tVector&) @ 0x44cb50
 
 Exact static two-argument dot-product overload. Its stdcall ABI has no receiver,
 but Android independently preserves the authored namespace as
 `tVector::Dot(const tVector&, const tVector&)`; the adjacent one-argument
-overload is already recovered as `Vector3::dot_vector`.
+overload is recovered as `tVector::Dot(const tVector&)`.
 
-The exact `Vector3::normalize_vector` caller now names this static owner
+The exact `tVector::Normalize` caller now names this static owner
 directly. Both functions remain instruction-for-instruction exact.
 
 2026-07-14 const-reference pass: the shared declaration and exact definition

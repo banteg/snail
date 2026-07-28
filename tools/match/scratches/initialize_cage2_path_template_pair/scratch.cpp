@@ -87,7 +87,7 @@ void cRPath::initialize_cage2_path_template_pair(
                     - primary_samples[i - 1].transform.position.y,
                 primary_samples[i].transform.position.z
                     - primary_samples[i - 1].transform.position.z);
-            primary_samples[i - 1].transform.basis_forward.normalize_vector();
+            primary_samples[i - 1].transform.basis_forward.Normalize();
             primary_samples[i - 1].transform.basis_right.cross_vectors(
                 &primary_samples[i - 1].transform.basis_up,
                 &primary_samples[i - 1].transform.basis_forward);
@@ -103,7 +103,7 @@ void cRPath::initialize_cage2_path_template_pair(
                     - secondary_samples[i - 1].transform.position.y,
                 secondary_samples[i].transform.position.z
                     - secondary_samples[i - 1].transform.position.z);
-            secondary_samples[i - 1].transform.basis_forward.normalize_vector();
+            secondary_samples[i - 1].transform.basis_forward.Normalize();
             secondary_samples[i - 1].transform.basis_right.cross_vectors(
                 &secondary_samples[i - 1].transform.basis_up,
                 &secondary_samples[i - 1].transform.basis_forward);
@@ -125,7 +125,7 @@ void cRPath::initialize_cage2_path_template_pair(
                 primary_samples[sample_offset + 1].transform.position.z
                     - primary_samples[sample_offset].transform.position.z);
             primary_samples[sample_offset].delta_length =
-                primary_samples[sample_offset].delta_dir_to_next.normalize_vector();
+                primary_samples[sample_offset].delta_dir_to_next.Normalize();
 
             secondary_samples[sample_offset].delta_dir_to_next = Vector3(
                 secondary_samples[sample_offset + 1].transform.position.x
@@ -136,7 +136,7 @@ void cRPath::initialize_cage2_path_template_pair(
                     - secondary_samples[sample_offset].transform.position.z);
             ++completed;
             secondary_samples[sample_offset].delta_length =
-                secondary_samples[sample_offset].delta_dir_to_next.normalize_vector();
+                secondary_samples[sample_offset].delta_dir_to_next.Normalize();
             ++sample_offset;
         } while (completed < segment_count - 1);
     }

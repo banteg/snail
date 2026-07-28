@@ -34,8 +34,8 @@ void render_object_toon(Object* object, TransformMatrix* matrix)
 
     TransformMatrix inverse = *matrix;
     inverse.invert_matrix_in_place();
-    view_vector.rotate_vector_by_matrix(inverse);
-    view_vector.vector_magnitude();
+    view_vector.Rotate(inverse);
+    view_vector.Magnitude();
 
     g_d3d_device->vtbl->SetIndices(g_d3d_device, object->toon_index_buffer->buffer, 0);
     g_d3d_device->vtbl->SetStreamSource(
@@ -71,8 +71,8 @@ void render_object_toon(Object* object, TransformMatrix* matrix)
                 vertex_delta.z = view_vector.z - vertex->z;
                 Vector3 delta = vertex_delta;
 
-                float side_b = delta.dot_vector(*normal_b);
-                if (delta.dot_vector(*normal_a) * side_b <
+                float side_b = delta.Dot(*normal_b);
+                if (delta.Dot(*normal_a) * side_b <
                     0.00999999978f) {
                     indices[0] =
                         ((ObjectToonEdge*)((char*)object->edges + edge_offset))->vertex_a;

@@ -110,7 +110,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
                 - primary_samples[i - 1].transform.position.y,
             primary_samples[i].transform.position.z
                 - primary_samples[i - 1].transform.position.z);
-        primary_samples[i].transform.basis_forward.normalize_vector();
+        primary_samples[i].transform.basis_forward.Normalize();
         primary_samples[i].transform.basis_right.cross_vectors(
             &primary_samples[i].transform.basis_up,
             &primary_samples[i].transform.basis_forward);
@@ -136,7 +136,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
                 primary_samples[sample_index + 1].transform.position.z
                     - primary_samples[sample_index].transform.position.z);
             primary_samples[sample_index].delta_length =
-                primary_samples[sample_index].delta_dir_to_next.normalize_vector();
+                primary_samples[sample_index].delta_dir_to_next.Normalize();
 
             secondary_samples[sample_index].delta_dir_to_next = Vector3(
                 secondary_samples[sample_index + 1].transform.position.x
@@ -146,7 +146,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
                 secondary_samples[sample_index + 1].transform.position.z
                     - secondary_samples[sample_index].transform.position.z);
             secondary_samples[sample_index].delta_length =
-                secondary_samples[sample_index].delta_dir_to_next.normalize_vector();
+                secondary_samples[sample_index].delta_dir_to_next.Normalize();
             ++sample_index;
         } while (sample_index < segment_count - 1);
     }

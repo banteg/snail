@@ -34,7 +34,7 @@ void cRSubLoc::AI()
             direction = target - spawn;
             if (direction.z >= -4.0f)
                 goto cull_check;
-            direction.normalize_vector();
+            direction.Normalize();
             direction.x *= 0.40000001f;
             direction.y *= 0.40000001f;
             direction.z *= 0.40000001f;

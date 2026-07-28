@@ -2,7 +2,7 @@
 
 Exact match: 100.00%, 40/40 instructions.
 
-This is the Windows void `Vector3::operator*=(TransformMatrix)` affine
+This is the Windows void `tVector::operator*=(TransformMatrix)` affine
 transform, retained by iOS as `tVector::operator*=(tMatrix)`. The full matrix is
 passed by value (`thiscall`, 0x40-byte stack cleanup), and the body preserves the
 source vector through a stack `Vec3` before writing x/y/z. Native establishes no

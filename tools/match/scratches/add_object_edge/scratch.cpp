@@ -7,7 +7,7 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
 {
     Vector3 direction;
-    if (facequad_normals[normal_index].vector_magnitude() < 0.89999998f) {
+    if (facequad_normals[normal_index].Magnitude() < 0.89999998f) {
         return;
     }
 
@@ -53,7 +53,7 @@ void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
         edge_delta.z = end->z - start->z;
         direction = edge_delta;
         g_object_edge_build_edges[g_object_edge_build_count].length =
-            direction.normalize_vector();
+            direction.Normalize();
         g_object_edge_build_edges[g_object_edge_build_count].direction = direction;
         ++g_object_edge_build_count;
         return;
@@ -71,9 +71,9 @@ void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
             Vector3 rhs = facequad_normals[g_object_edge_build_edges[index].normal_b];
             Vector3 cross;
             cross.cross_vectors(&lhs, &rhs);
-            float cross_length = cross.vector_magnitude();
+            float cross_length = cross.Magnitude();
             if (cross_length <= 0.050000001f
-                || cross.dot_vector(g_object_edge_build_edges[index].direction)
+                || cross.Dot(g_object_edge_build_edges[index].direction)
                     > 0.0020000001f) {
                 int shift_index = index;
                 if (index < g_object_edge_build_count - 1) {

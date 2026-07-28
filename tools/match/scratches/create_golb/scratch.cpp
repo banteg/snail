@@ -296,7 +296,7 @@ after_shoot_flag_source:
         path_entry_z_latch = -1.0f;
     }
 
-    path_factor = velocity.vector_magnitude();
+    path_factor = velocity.Magnitude();
     Vec3* previous_output = &previous_flight_transform.position;
     *previous_output = *position;
 

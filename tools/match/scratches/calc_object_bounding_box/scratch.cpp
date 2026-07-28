@@ -66,7 +66,7 @@ void Object::calc_object_bounding_box()
             }
             bounds_min.z = min_z;
 
-            float radius = vertex->vector_magnitude();
+            float radius = vertex->Magnitude();
             if (radius > bounding_radius) {
                 bounding_radius = radius;
             }

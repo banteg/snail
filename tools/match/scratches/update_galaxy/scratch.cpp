@@ -182,7 +182,7 @@ int Galaxy::update_galaxy()
             GalaxyRouteRecord* selected_record = &route_slots[selected_index].record;
             Vector3 selected_probe = subtract_screen_xy(
                 *(Vector3*)&selected_record->map_x, mouse_x, mouse_y);
-            if (selected_probe.normalize_vector() < 17.0f && hover_state == 0) {
+            if (selected_probe.Normalize() < 17.0f && hover_state == 0) {
                 hovered_route_index = selected_index;
                 hover_state = 2;
                 route_slots[hovered_route_index].record.highlight_target = 1.0f;
@@ -194,7 +194,7 @@ int Galaxy::update_galaxy()
             do {
                 Vector3 probe = subtract_screen_xy(
                     *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);
-                if (probe.normalize_vector() < 17.0f && hover_state == 0) {
+                if (probe.Normalize() < 17.0f && hover_state == 0) {
                     hover_state = 2;
                     hovered_route_index = probe_index;
                     probe_slot->record.highlight_target = 1.0f;

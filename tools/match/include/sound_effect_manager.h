@@ -3,7 +3,8 @@
 #ifndef SOUND_EFFECT_MANAGER_H
 #define SOUND_EFFECT_MANAGER_H
 
-struct Vector3;
+struct tVector;
+typedef tVector Vector3;
 
 // Windows layout of one authored cRSoundBank entry. The shipped global holds
 // 51 samples followed by one entry whose path points at an empty string.

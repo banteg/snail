@@ -6417,6 +6417,18 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "tVector::tVector(float*)",
+          "score": 0.7686,
+          "name_score": 0.9,
+          "size_score": 0.5714
+        },
+        {
+          "symbol": "tVector::tVector(float*)",
+          "score": 0.7686,
+          "name_score": 0.9,
+          "size_score": 0.5714
+        },
+        {
           "symbol": "tVector::Normalize(tVector const&)",
           "score": 0.696,
           "name_score": 0.6267,
@@ -6433,18 +6445,6 @@
           "score": 0.6707,
           "name_score": 0.4512,
           "size_score": 1.0
-        },
-        {
-          "symbol": "cRObject::GLVBO()",
-          "score": 0.6654,
-          "name_score": 0.4424,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tVector::MagnitudeSquaredXZ() const",
-          "score": 0.6427,
-          "name_score": 0.6267,
-          "size_score": 0.6667
         }
       ],
       "ios_candidates": [
@@ -23641,6 +23641,24 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "tVector::tVector(float*)",
+          "score": 0.7686,
+          "name_score": 0.9,
+          "size_score": 0.5714
+        },
+        {
+          "symbol": "tVector::tVector(float*)",
+          "score": 0.7686,
+          "name_score": 0.9,
+          "size_score": 0.5714
+        },
+        {
+          "symbol": "tVector::Normalize(tVector const&)",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
+        {
           "symbol": "ObjectProcVertexCompare(void const*, void const*)",
           "score": 0.6264,
           "name_score": 0.3774,
@@ -23651,24 +23669,6 @@
           "score": 0.6194,
           "name_score": 0.3657,
           "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.6182,
-          "name_score": 0.3636,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcWorldReset(cRObject*)",
-          "score": 0.5867,
-          "name_score": 0.3111,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tVector::Normalize(tVector const&)",
-          "score": 0.5704,
-          "name_score": 0.4174,
-          "size_score": 0.8
         }
       ],
       "ios_candidates": [
@@ -23691,15 +23691,15 @@
           "size_score": 1.0
         },
         {
+          "symbol": "tVector::Cross(tVector const&, tVector const&)",
+          "score": 0.5832,
+          "name_score": 0.9,
+          "size_score": 0.1081
+        },
+        {
           "symbol": "RShellMemoryFree(void*)",
           "score": 0.5826,
           "name_score": 0.3043,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellMemoryMalloc(int, char*)",
-          "score": 0.575,
-          "name_score": 0.2917,
           "size_score": 1.0
         }
       ]

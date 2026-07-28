@@ -53,7 +53,7 @@ static __forceinline void orient_previous_with_up(
         current->transform.position.x - previous->transform.position.x,
         current->transform.position.y - previous->transform.position.y,
         current->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.normalize_vector();
+    previous->transform.basis_forward.Normalize();
     previous->transform.basis_right.cross_vectors(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
@@ -70,7 +70,7 @@ static __forceinline void compute_terminal_deltas(Path* path)
             primary_next->transform.position.x - primary->transform.position.x,
             primary_next->transform.position.y - primary->transform.position.y,
             primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.normalize_vector();
+        primary->delta_length = primary->delta_dir_to_next.Normalize();
 
         PathTemplateSample* secondary = &path->secondary_samples[i];
         PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
@@ -78,7 +78,7 @@ static __forceinline void compute_terminal_deltas(Path* path)
             secondary_next->transform.position.x - secondary->transform.position.x,
             secondary_next->transform.position.y - secondary->transform.position.y,
             secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
+        secondary->delta_length = secondary->delta_dir_to_next.Normalize();
     }
 
     path->primary_samples[path->segment_count - 1].delta_dir_to_next =

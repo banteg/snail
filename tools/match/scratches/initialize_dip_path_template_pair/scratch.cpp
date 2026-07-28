@@ -53,7 +53,7 @@ static inline void orient_loop_sample(
 {
     sample->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
     sample->transform.basis_up = Vector3(0.0f, up_y, up_z);
-    sample->transform.basis_up.normalize_vector();
+    sample->transform.basis_up.Normalize();
     sample->transform.basis_forward.cross_vectors(
         &sample->transform.basis_right,
         &sample->transform.basis_up);
@@ -68,7 +68,7 @@ static inline void orient_previous_with_fixed_right(
         next->transform.position.x - previous->transform.position.x,
         next->transform.position.y - previous->transform.position.y,
         next->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.normalize_vector();
+    previous->transform.basis_forward.Normalize();
     previous->transform.basis_up.cross_vectors(
         &previous->transform.basis_forward,
         &previous->transform.basis_right);
@@ -87,7 +87,7 @@ static inline void orient_previous_with_fixed_up(
         next->transform.position.x - previous->transform.position.x,
         next->transform.position.y - previous->transform.position.y,
         next->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.normalize_vector();
+    previous->transform.basis_forward.Normalize();
     previous->transform.basis_right.cross_vectors(
         &previous->transform.basis_up,
         &previous->transform.basis_forward);
@@ -634,7 +634,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 primary_samples[i + 1].transform.position.z
                     - primary_samples[i].transform.position.z);
             primary_samples[i].delta_length =
-                primary_samples[i].delta_dir_to_next.normalize_vector();
+                primary_samples[i].delta_dir_to_next.Normalize();
 
             secondary_samples[i].delta_dir_to_next = Vector3(
                 secondary_samples[i + 1].transform.position.x
@@ -644,7 +644,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 secondary_samples[i + 1].transform.position.z
                     - secondary_samples[i].transform.position.z);
             secondary_samples[i].delta_length =
-                secondary_samples[i].delta_dir_to_next.normalize_vector();
+                secondary_samples[i].delta_dir_to_next.Normalize();
         }
     }
 

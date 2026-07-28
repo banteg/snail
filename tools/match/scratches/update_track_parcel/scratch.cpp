@@ -52,13 +52,13 @@ void Parcel::update_track_parcel()
         position.y = bob_lift + position.y;
 
         delta = *home_anchor - position;
-        float distance = delta.vector_magnitude();
+        float distance = delta.Magnitude();
 
         Vector3* direction_home_anchor = owner_subgame->parcel_home_anchor();
         state = PARCEL_STATE_COLLECTING;
         target_distance = distance;
         travel_dir = position - *direction_home_anchor;
-        travel_dir.normalize_vector();
+        travel_dir.Normalize();
     }
         /* fall through */
 

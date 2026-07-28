@@ -1,6 +1,6 @@
 #include "vector3.h"
 
-double __stdcall Vector3::dot_vectors(const Vector3& lhs, const Vector3& rhs)
+double __stdcall tVector::Dot(const tVector& lhs, const tVector& rhs)
 {
     return lhs.z * rhs.z + lhs.y * rhs.y + lhs.x * rhs.x;
 }

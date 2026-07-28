@@ -25,7 +25,7 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
             path->primary_samples[current_index].transform.position.z -
                 path->primary_samples[current_index - 1].transform.position.z);
         path->primary_samples[current_index - 1]
-            .transform.basis_forward.normalize_vector();
+            .transform.basis_forward.Normalize();
         path->primary_samples[current_index - 1].transform.basis_right.cross_vectors(
             &path->primary_samples[current_index - 1].transform.basis_up,
             &path->primary_samples[current_index - 1].transform.basis_forward);
@@ -44,7 +44,7 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
             path->secondary_samples[current_index].transform.position.z -
                 path->secondary_samples[current_index - 1].transform.position.z);
         path->secondary_samples[current_index - 1]
-            .transform.basis_forward.normalize_vector();
+            .transform.basis_forward.Normalize();
         path->secondary_samples[current_index - 1]
             .transform.basis_right.cross_vectors(
                 &path->secondary_samples[current_index - 1].transform.basis_up,
@@ -73,7 +73,7 @@ static __forceinline void compute_path_deltas(Path* path)
             primary_next->transform.position.x - primary->transform.position.x,
             primary_next->transform.position.y - primary->transform.position.y,
             primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.normalize_vector();
+        primary->delta_length = primary->delta_dir_to_next.Normalize();
 
         PathTemplateSample* secondary = &path->secondary_samples[i];
         PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
@@ -81,7 +81,7 @@ static __forceinline void compute_path_deltas(Path* path)
             secondary_next->transform.position.x - secondary->transform.position.x,
             secondary_next->transform.position.y - secondary->transform.position.y,
             secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.normalize_vector();
+        secondary->delta_length = secondary->delta_dir_to_next.Normalize();
     }
 
     path->primary_samples[path->segment_count - 1].delta_dir_to_next =
