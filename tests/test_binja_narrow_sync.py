@@ -21184,13 +21184,59 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
         )
 
     assert "SUPERTRAMP_START_PATH_USER_VAR_UPDATES" in replay
+    assert "START_CONTROL_USER_VAR_UPDATES" in replay
+    assert "START_CONTROL_LIFETIME_SPLITS" in replay
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "apply_split_user_var_updates" in replay
     assert "apply_user_var_updates" in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(1035, 66," not in replay
     assert "if (i <= 5)" in start_scratch
     assert "if (curve_index == 0)" not in start_scratch
+
+    for index, storage, name, variable_type in (
+        (83, -64, "curve_count_f", "float"),
+        (342, -60, "tail_samples_remaining", "int32_t"),
+        (665, -52, "curve_sample_index", "int32_t"),
+        (708, -88, "angle", "float"),
+    ):
+        assert (
+            f"        {index},\n"
+            f"        {storage},\n"
+            f'        "{name}",\n'
+            f'        "{variable_type}",'
+        ) in replay
+
+    for name, variable_type in (
+        ("curve_count", "int32_t"),
+        ("curve_radius", "float"),
+        ("lead_sample_index", "int32_t"),
+        ("lead_sample_offset", "int32_t"),
+        ("tail_sample_index", "int32_t"),
+        ("tail_sample_offset", "int32_t"),
+        ("curve_index", "int32_t"),
+        ("curve_sample_offset", "int32_t"),
+        ("delta_index", "int32_t"),
+        ("delta_sample_offset", "int32_t"),
+    ):
+        assert f'        "{name}",\n        "{variable_type}",' in replay
+
+    for address, view, source_type, index, storage in (
+        ("0x42642a", "mlil", "RegisterVariableSourceType", 42, 66),
+        ("0x42648e", "mlil_ssa", "StackVariableSourceType", 142, 8),
+        ("0x42648e", "mlil_ssa", "RegisterVariableSourceType", 142, 73),
+        ("0x426574", "mlil_ssa", "StackVariableSourceType", 372, 8),
+        ("0x426574", "mlil_ssa", "RegisterVariableSourceType", 372, 73),
+        ("0x42664f", "mlil_ssa", "StackVariableSourceType", 591, 8),
+        ("0x42664f", "mlil_ssa", "RegisterVariableSourceType", 591, 73),
+        ("0x4268c3", "mlil_ssa", "RegisterVariableSourceType", 1219, 69),
+        ("0x4268c3", "mlil_ssa", "RegisterVariableSourceType", 1219, 73),
+    ):
+        assert (
+            f'("{address}", "{view}", "{source_type}", {index}, {storage})'
+            in replay
+        )
 
 
 def test_turnover_family_path_replay_preserves_mesh_owner_lifetimes() -> None:
@@ -22067,6 +22113,24 @@ def test_transition_family_aggregate_health_stays_address_anchored() -> None:
             assert (
                 rendered_alias not in checks[check_name]["required_substrings"]
             )
+
+    for control_owner in (
+        "int32_t curve_count =",
+        "float curve_radius =",
+        "int32_t lead_sample_index =",
+        "int32_t lead_sample_offset =",
+        "int32_t tail_samples_remaining =",
+        "int32_t tail_sample_index =",
+        "int32_t tail_sample_offset =",
+        "int32_t curve_index =",
+        "int32_t curve_sample_offset =",
+        "int32_t delta_index =",
+        "int32_t delta_sample_offset =",
+    ):
+        assert (
+            control_owner
+            in checks["bn_start_path_full_owner_abi"]["required_substrings"]
+        )
 
 
 def test_wibble_twister_aggregate_health_stays_address_anchored() -> None:

@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_split_user_var_updates,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -87,12 +87,151 @@ SUPERTRAMP_START_PATH_USER_VAR_UPDATES = tuple(
     for index, storage, variable_name, variable_type in specs
 )
 
+# The exact Android and iOS BuildStart bodies independently preserve the
+# portable five-sample lead, eleven-sample tail, cosine middle, orientation,
+# and final-delta control graph. Windows remains authoritative for every
+# definition identity, the native 0xa8-byte sample cursors, and the strip-mesh
+# tail. These isolated stack values do not share storage identities with the
+# mesh builder.
+START_CONTROL_USER_VAR_UPDATES = (
+    (
+        "initialize_start_path_template_pair",
+        "StackVariableSourceType",
+        83,
+        -64,
+        "curve_count_f",
+        "float",
+    ),
+    (
+        "initialize_start_path_template_pair",
+        "StackVariableSourceType",
+        342,
+        -60,
+        "tail_samples_remaining",
+        "int32_t",
+    ),
+    (
+        "initialize_start_path_template_pair",
+        "StackVariableSourceType",
+        665,
+        -52,
+        "curve_sample_index",
+        "int32_t",
+    ),
+    (
+        "initialize_start_path_template_pair",
+        "StackVariableSourceType",
+        708,
+        -88,
+        "angle",
+        "float",
+    ),
+)
+
+START_CONTROL_LIFETIME_SPLITS = (
+    (
+        (
+            ("0x42642a", "mlil", "RegisterVariableSourceType", 42, 66),
+            ("0x42642f", "mlil", "StackVariableSourceType", 47, -68),
+        ),
+        ("RegisterVariableSourceType", 42, 66),
+        "curve_count",
+        "int32_t",
+    ),
+    (
+        (("0x42645d", "mlil", "StackVariableSourceType", 93, 4),),
+        ("StackVariableSourceType", 93, 4),
+        "curve_radius",
+        "float",
+    ),
+    (
+        (
+            ("0x426477", "mlil", "StackVariableSourceType", 119, 8),
+            ("0x426544", "mlil", "StackVariableSourceType", 324, 8),
+            ("0x42648e", "mlil_ssa", "StackVariableSourceType", 142, 8),
+        ),
+        ("StackVariableSourceType", 119, 8),
+        "lead_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42647e", "mlil", "RegisterVariableSourceType", 126, 73),
+            ("0x426538", "mlil", "RegisterVariableSourceType", 312, 73),
+            ("0x42648e", "mlil_ssa", "RegisterVariableSourceType", 142, 73),
+        ),
+        ("RegisterVariableSourceType", 126, 73),
+        "lead_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x426561", "mlil", "StackVariableSourceType", 353, 8),
+            ("0x42662c", "mlil", "StackVariableSourceType", 556, 8),
+            ("0x426574", "mlil_ssa", "StackVariableSourceType", 372, 8),
+        ),
+        ("StackVariableSourceType", 353, 8),
+        "tail_sample_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x426571", "mlil", "RegisterVariableSourceType", 369, 73),
+            ("0x426624", "mlil", "RegisterVariableSourceType", 548, 73),
+            ("0x426574", "mlil_ssa", "RegisterVariableSourceType", 372, 73),
+        ),
+        ("RegisterVariableSourceType", 369, 73),
+        "tail_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42663e", "mlil", "StackVariableSourceType", 574, 8),
+            ("0x4268aa", "mlil", "StackVariableSourceType", 1194, 8),
+            ("0x42664f", "mlil_ssa", "StackVariableSourceType", 591, 8),
+        ),
+        ("StackVariableSourceType", 574, 8),
+        "curve_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x42664a", "mlil", "RegisterVariableSourceType", 586, 73),
+            ("0x4268a2", "mlil", "RegisterVariableSourceType", 1186, 73),
+            ("0x42664f", "mlil_ssa", "RegisterVariableSourceType", 591, 73),
+        ),
+        ("RegisterVariableSourceType", 586, 73),
+        "curve_sample_offset",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4268b7", "mlil", "RegisterVariableSourceType", 1207, 69),
+            ("0x426972", "mlil", "RegisterVariableSourceType", 1394, 69),
+            ("0x4268c3", "mlil_ssa", "RegisterVariableSourceType", 1219, 69),
+        ),
+        ("RegisterVariableSourceType", 1207, 69),
+        "delta_index",
+        "int32_t",
+    ),
+    (
+        (
+            ("0x4268c1", "mlil", "RegisterVariableSourceType", 1217, 73),
+            ("0x42697d", "mlil", "RegisterVariableSourceType", 1405, 73),
+            ("0x4268c3", "mlil_ssa", "RegisterVariableSourceType", 1219, 73),
+        ),
+        ("RegisterVariableSourceType", 1217, 73),
+        "delta_sample_offset",
+        "int32_t",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Replay the sample, basis-vector, mesh-vertex, and facequad "
-            "lifetimes in the supertramp and start path constructors."
+            "Replay the control, sample, basis-vector, mesh-vertex, and "
+            "facequad lifetimes in the supertramp and start path constructors."
         )
     )
     parser.add_argument(
@@ -160,7 +299,29 @@ def main() -> int:
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,
-            updates=SUPERTRAMP_START_PATH_USER_VAR_UPDATES,
+            updates=(
+                SUPERTRAMP_START_PATH_USER_VAR_UPDATES
+                + START_CONTROL_USER_VAR_UPDATES
+            ),
+        ),
+        *apply_split_user_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=tuple(
+                (
+                    "initialize_start_path_template_pair",
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                )
+                for (
+                    definitions,
+                    target_var,
+                    variable_name,
+                    variable_type,
+                ) in START_CONTROL_LIFETIME_SPLITS
+            ),
         ),
     ]
     return emit_summary(

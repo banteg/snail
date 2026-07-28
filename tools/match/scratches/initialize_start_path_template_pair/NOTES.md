@@ -238,3 +238,28 @@ the native-equivalent `i <= 5` guard with `curve_index == 0` changes the frame
 and register schedule and regresses focused agreement to 44.99% (608/610).
 The probe is rejected; mobile evidence closes the boolean owner without
 overriding the independently measured Windows control shape.
+
+## 2026-07-28 paired-mobile control ownership
+
+The exact Android
+`analysis/decompile/android/functions/0005379c-_ZN6cRPath10BuildStartEfibPcS0_.c`
+and iOS
+`analysis/decompile/ios/functions/0005edd0-_ZN6cRPath10BuildStartEfibPcS0_.c`
+bodies independently preserve the portable five-sample lead, eleven-sample
+tail, cosine middle, adjacent-sample orientation, and final
+delta/`CalcLengthZ` passes. Windows remains authoritative for exact definition
+identities, `0xa8` sample-byte cursors, the six-argument ABI, and its
+native-only cap-texture/strip-mesh tail.
+
+A transactional Binary Ninja replay now records 14 exact Windows owners: four
+isolated stack values plus ten merged definition clusters covering the curve
+count and radius, lead and tail indices/offsets, curved-sample index/offset,
+and delta index/offset. The preview changed every proposed owner, rolled the
+split clusters back before application, and introduced no `__offset`
+expression. Live readback renders the distinct loops directly, and a second
+replay found every operation already current.
+
+This is analysis-only. Focused Windows matching remains honestly **63.70%**,
+**605/610** candidate instructions, a zero-instruction exact prefix, and 35
+accepted masked operands with no unresolved, mismatched, or unaudited
+operands. No source expression or matcher exception changed.
