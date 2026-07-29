@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "result-and-byte-count-owner",
+      "find": "    int texture_result;\n    int byte_count;",
+      "replacements": [
+        {
+          "name": "byte-count-first",
+          "text": "    int byte_count;\n    int texture_result;"
+        },
+        {
+          "name": "zero-byte-count-first",
+          "text": "    int byte_count = 0;\n    int texture_result;"
+        },
+        {
+          "name": "zero-byte-count-second",
+          "text": "    int texture_result;\n    int byte_count = 0;"
+        },
+        {
+          "name": "zero-result-first",
+          "text": "    int texture_result = 0;\n    int byte_count;"
+        },
+        {
+          "name": "register-result",
+          "text": "    register int texture_result;\n    int byte_count;"
+        }
+      ]
+    },
+    {
+      "name": "loading-bar-tail-owner",
+      "find": "    begin_overlay_render_state();\n    last_loading_budget = 0;\n    previous_percent = 0;\n    active = 1;",
+      "replacements": [
+        {
+          "name": "const-receiver-before-call",
+          "text": "    LoadingBar* const screen = this;\n    begin_overlay_render_state();\n    screen->last_loading_budget = 0;\n    screen->previous_percent = 0;\n    screen->active = 1;"
+        },
+        {
+          "name": "receiver-reference-before-call",
+          "text": "    LoadingBar& screen = *this;\n    begin_overlay_render_state();\n    screen.last_loading_budget = 0;\n    screen.previous_percent = 0;\n    screen.active = 1;"
+        },
+        {
+          "name": "integer-state-base-before-call",
+          "text": "    int* state = &active;\n    begin_overlay_render_state();\n    state[2] = 0;\n    state[1] = 0;\n    state[0] = 1;"
+        },
+        {
+          "name": "field-pointers-before-call",
+          "text": "    int* budget = &last_loading_budget;\n    int* percent = &previous_percent;\n    int* active_state = &active;\n    begin_overlay_render_state();\n    *budget = 0;\n    *percent = 0;\n    *active_state = 1;"
+        },
+        {
+          "name": "receiver-after-call",
+          "text": "    begin_overlay_render_state();\n    LoadingBar* screen = this;\n    screen->last_loading_budget = 0;\n    screen->previous_percent = 0;\n    screen->active = 1;"
+        }
+      ]
+    }
+  ]
+}

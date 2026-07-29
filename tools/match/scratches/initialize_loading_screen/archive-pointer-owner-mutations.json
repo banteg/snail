@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "background-archive-pointer-owner",
+      "find": "        char* archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\"Sprites/Loading.tga\", archive_base, &byte_count);",
+      "replacements": [
+        {
+          "name": "const-pointer",
+          "text": "        char* const archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\"Sprites/Loading.tga\", archive_base, &byte_count);"
+        },
+        {
+          "name": "register-pointer",
+          "text": "        register char* archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\"Sprites/Loading.tga\", archive_base, &byte_count);"
+        },
+        {
+          "name": "split-assignment",
+          "text": "        char* archive_base;\n        archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\"Sprites/Loading.tga\", archive_base, &byte_count);"
+        },
+        {
+          "name": "void-pointer",
+          "text": "        void* archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\"Sprites/Loading.tga\", (char*)archive_base, &byte_count);"
+        },
+        {
+          "name": "unsigned-byte-pointer",
+          "text": "        unsigned char* archive_base = (unsigned char*)get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\"Sprites/Loading.tga\", (char*)archive_base, &byte_count);"
+        }
+      ]
+    },
+    {
+      "name": "progress-archive-pointer-owner",
+      "find": "        char* archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\n            \"Sprites/LoadingBarOn.tga\", archive_base, &byte_count);",
+      "replacements": [
+        {
+          "name": "const-pointer",
+          "text": "        char* const archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\n            \"Sprites/LoadingBarOn.tga\", archive_base, &byte_count);"
+        },
+        {
+          "name": "register-pointer",
+          "text": "        register char* archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\n            \"Sprites/LoadingBarOn.tga\", archive_base, &byte_count);"
+        },
+        {
+          "name": "split-assignment",
+          "text": "        char* archive_base;\n        archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\n            \"Sprites/LoadingBarOn.tga\", archive_base, &byte_count);"
+        },
+        {
+          "name": "void-pointer",
+          "text": "        void* archive_base = get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\n            \"Sprites/LoadingBarOn.tga\", (char*)archive_base, &byte_count);"
+        },
+        {
+          "name": "unsigned-byte-pointer",
+          "text": "        unsigned char* archive_base = (unsigned char*)get_archive_data_base();\n        load_file_bytes_from_archive_or_fs(\n            \"Sprites/LoadingBarOn.tga\", (char*)archive_base, &byte_count);"
+        }
+      ]
+    }
+  ]
+}

@@ -101,3 +101,27 @@ reference debt. The retained 83.00%, 253/253, prefix-5 source therefore keeps
 the verified void member ABI and direct device owner. Its inverse
 `this`/archive saved-register assignment is backend allocation, not evidence
 for a missing dependency or a forced calling convention.
+
+## 2026-07-29 receiver and archive-owner closure
+
+Two further sweeps formally close the saved-register question. The first
+compiles all 35 one- and two-site combinations between texture-result/count
+declaration order and LoadingBar tail owners. Receiver pointers, references,
+an integer state base, individual field pointers, late aliases, `register`
+hints, and harmless initializer forms either compile byte-identically or
+regress; none moves `this` from EDI to native EBX.
+
+The second sweep compiles all 35 combinations of the two archive branches as
+const, register, split-assignment, `void*`, and unsigned-byte pointer owners.
+Every variant is byte-identical to the 83.00% baseline and preserves the same
+EBX archive cursor. Together with the earlier shared-lifetime sweep and ABI
+probe, the ledger covers 85 unique variants: zero improvements, 70 neutral
+results, and 15 regressions, with no repeats or errors. It is formally stalled.
+
+The eight unaudited operands are bounded alignment debt rather than unknown
+symbols: four target-only entries are the already named background texture and
+device globals, and four candidate-only entries are the same named globals.
+Sequence alignment cannot pair them after the whole-function EBX/EDI swap and
+nearby independent load scheduling. All other 50 masked operands audit clean.
+The verified thiscall/void source remains unchanged; forcing the register split
+would reduce both the fuzzy match and reference evidence.
