@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "node-and-gate-owner",
+      "find": "            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }",
+      "replacements": [
+        {
+          "name": "node-with-member-flags-pointer",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            int* flags_ref = &node->list_flags;\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "node-with-cursor-flags-pointer",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "flags-pointer-before-node",
+          "text": "            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "branch-local-node-after-list",
+          "text": "            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "branch-local-node-before-list",
+          "text": "            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "node-reference-with-flags-pointer",
+          "text": "            BodNode& node = *BOD_NODE_FROM_NEXT_LINK(next_ref);\n            int* flags_ref = &node.list_flags;\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(&node);\n            }"
+        },
+        {
+          "name": "node-with-flags-snapshot",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int flags = node->list_flags;\n            if ((flags & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "const-node-with-cursor-flags-pointer",
+          "text": "            BodNode* const node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }"
+        }
+      ]
+    }
+  ]
+}

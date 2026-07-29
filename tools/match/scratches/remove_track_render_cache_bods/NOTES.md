@@ -181,3 +181,29 @@ five references clean. Native's single ESI cursor plus full-width EBX/EBP
 linked/clear masks versus the candidate's parallel EBX row cursor is a bounded
 inlining/allocation residual; the clean reference audit takes precedence over
 the two metric-tradeoff variants.
+
+## 2026-07-29 node, gate, and list owner closure
+
+Three follow-up sweeps test whether the nominal 71.79% node-borrow shape can
+retain the baseline's complete reference proof. Keeping a typed `BodNode*` or
+`BodNode&` alongside an independent signed `list_flags` pointer is
+byte-identical to the proof-clean 70.59% baseline, regardless of declaration
+order or branch-local lifetime. The initial unsigned member-pointer forms are
+ill-typed because `BodNode::list_flags` is signed; their corrected signed forms
+compile cleanly and are neutral.
+
+Every scalar flags-snapshot form reaches the same 71.79%, 59-instruction
+candidate. Pointer, reference, direct-root, and explicit `GameRoot` owner
+spellings all produce identical bytes and the same audit debt: the target
+`g_game_base` load and candidate `g_game` load no longer align, reducing clean
+references from five to four and creating two unaudited operands. The addresses
+are semantically aliased, but accepting an unpaired relocation would weaken the
+proof contract, so none is retained.
+
+The complete ledger now has 184 recorded results across six sweeps and 177
+unique source variants: 173 are byte-identical, nine are the same
+reference-debt tradeoff, and two first-pass type errors were corrected in the
+following sweep. There is no proof-clean improvement. The retained frontier
+remains **70.59%** (`61/58`, prefix 5) with all five references audited; the
+remaining register allocation is bounded without forcing masks or weakening
+reference evidence.

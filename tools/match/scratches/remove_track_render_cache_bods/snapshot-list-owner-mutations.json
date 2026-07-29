@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "snapshot-and-list-owner",
+      "find": "            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }",
+      "replacements": [
+        {
+          "name": "node-snapshot-list-pointer",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int flags = node->list_flags;\n            if ((flags & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "node-snapshot-list-reference",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int flags = node->list_flags;\n            if ((flags & BOD_FLAG_LINKED) != 0) {\n                BodList& list = g_game->active_bod_list;\n                list.remove_bod(node);\n            }"
+        },
+        {
+          "name": "node-snapshot-direct-root-list",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int flags = node->list_flags;\n            if ((flags & BOD_FLAG_LINKED) != 0) {\n                g_game->active_bod_list.remove_bod(node);\n            }"
+        },
+        {
+          "name": "node-snapshot-root-pointer",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int flags = node->list_flags;\n            if ((flags & BOD_FLAG_LINKED) != 0) {\n                GameRoot* root = g_game;\n                BodList* list = &root->active_bod_list;\n                list->remove_bod(node);\n            }"
+        },
+        {
+          "name": "node-snapshot-root-reference",
+          "text": "            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);\n            unsigned int flags = node->list_flags;\n            if ((flags & BOD_FLAG_LINKED) != 0) {\n                GameRoot& root = *g_game;\n                BodList& list = root.active_bod_list;\n                list.remove_bod(node);\n            }"
+        }
+      ]
+    }
+  ]
+}
