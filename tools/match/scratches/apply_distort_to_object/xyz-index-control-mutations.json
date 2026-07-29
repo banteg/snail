@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "xyz-index-type",
+      "find": "        int index = 0;",
+      "occurrence": 3,
+      "replacements": [
+        {
+          "name": "signed-int",
+          "text": "        signed int index = 0;"
+        },
+        {
+          "name": "long",
+          "text": "        long index = 0;"
+        },
+        {
+          "name": "unsigned-int",
+          "text": "        unsigned int index = 0;"
+        },
+        {
+          "name": "unsigned-long",
+          "text": "        unsigned long index = 0;"
+        },
+        {
+          "name": "register-int",
+          "text": "        register int index = 0;"
+        }
+      ]
+    },
+    {
+      "name": "xyz-entry-guard",
+      "find": "        if (object->vertex_count > 0) {",
+      "occurrence": 3,
+      "replacements": [
+        {
+          "name": "zero-first",
+          "text": "        if (0 < object->vertex_count) {"
+        },
+        {
+          "name": "greater-equal-one",
+          "text": "        if (object->vertex_count >= 1) {"
+        },
+        {
+          "name": "explicit-int-zero",
+          "text": "        if (object->vertex_count > (int)0) {"
+        }
+      ]
+    },
+    {
+      "name": "xyz-increment-and-backedge",
+      "find": "                ++index;\n            } while (index < object->vertex_count);",
+      "occurrence": 3,
+      "replacements": [
+        {
+          "name": "post-increment",
+          "text": "                index++;\n            } while (index < object->vertex_count);"
+        },
+        {
+          "name": "plus-equals-one",
+          "text": "                index += 1;\n            } while (index < object->vertex_count);"
+        },
+        {
+          "name": "assigned-add",
+          "text": "                index = index + 1;\n            } while (index < object->vertex_count);"
+        },
+        {
+          "name": "assigned-reversed-add",
+          "text": "                index = 1 + index;\n            } while (index < object->vertex_count);"
+        },
+        {
+          "name": "reversed-less-than",
+          "text": "                ++index;\n            } while (object->vertex_count > index);"
+        },
+        {
+          "name": "not-equal",
+          "text": "                ++index;\n            } while (index != object->vertex_count);"
+        },
+        {
+          "name": "inclusive-predecessor",
+          "text": "                ++index;\n            } while (index <= object->vertex_count - 1);"
+        },
+        {
+          "name": "increment-in-condition",
+          "text": "            } while (++index < object->vertex_count);"
+        }
+      ]
+    }
+  ]
+}

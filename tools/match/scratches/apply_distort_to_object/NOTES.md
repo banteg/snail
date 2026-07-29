@@ -120,3 +120,32 @@ not churn. Binary Ninja confirms the sole Windows caller forms ECX as
 `object + 0x80` and passes the same object on the stack. The ownership change
 leaves the honest frontier at 95.43%, 197/197 instructions and 26 clean
 relocations; no mismatch is hidden.
+
+## 2026-07-29 destination-SIB compiler boundary
+
+Three recorded mutation sweeps evaluated 43 unique source variants around the
+nine remaining stores. None improved the 95.43%, exact 197/197-instruction,
+prefix-58 baseline: 31 variants were byte-identical and 12 degraded.
+
+- The Z-wave sweep changed each destination lane independently through pointer
+  addition in both orders, index-first subscripting, explicit dereference,
+  address-of-element, and byte-offset forms. All 18 variants compile to the
+  retained bytes, including every deliberately reversed expression tree.
+- The Y-squash sweep tested pass-local destination pointers, const pointers,
+  pointer references, member pointers, explicit object ownership,
+  per-iteration element pointers/references/byte offsets, and an incremented
+  destination cursor. The reference, member-pointer, and object-owner forms are
+  neutral. Materializing a destination or element cursor perturbs allocation
+  from the prologue and regresses; none changes an isolated SIB role.
+- The XYZ-scale sweep covered signed, unsigned, long, and register-qualified
+  indices; equivalent positive-entry guards; and eight increment/backedge
+  spellings. Ten are neutral and six regress. Unsigned comparisons alter the
+  branch opcode, while stronger lifetime/control rewrites disturb otherwise
+  exact scheduling.
+
+The experiment ledger is stalled after three consecutive non-improving
+sweeps. Native and candidate still differ only where scale-one x86 SIB permits
+the same two registers to exchange base and index roles. All surrounding
+instructions, effective addresses, control flow, and 26 masked operands agree.
+Changing the honest direct indexed stores would therefore add source
+artifice without recovering evidence of a different owner or algorithm.

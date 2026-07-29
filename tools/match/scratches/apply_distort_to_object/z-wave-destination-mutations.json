@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "z-wave-destination-x",
+      "find": "                object->copied_vertices[index].x = source[index].x;",
+      "replacements": [
+        {
+          "name": "pointer-add",
+          "text": "                (object->copied_vertices + index)->x = source[index].x;"
+        },
+        {
+          "name": "index-first-pointer-add",
+          "text": "                (index + object->copied_vertices)->x = source[index].x;"
+        },
+        {
+          "name": "index-first-subscript",
+          "text": "                index[object->copied_vertices].x = source[index].x;"
+        },
+        {
+          "name": "explicit-dereference",
+          "text": "                (*(object->copied_vertices + index)).x = source[index].x;"
+        },
+        {
+          "name": "address-of-element",
+          "text": "                (&object->copied_vertices[index])->x = source[index].x;"
+        },
+        {
+          "name": "byte-offset",
+          "text": "                ((Vector3*)((char*)object->copied_vertices + index * sizeof(Vector3)))->x = source[index].x;"
+        }
+      ]
+    },
+    {
+      "name": "z-wave-destination-y",
+      "find": "                object->copied_vertices[index].y =\n                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)\n                    * z_wave + source[index].y;",
+      "replacements": [
+        {
+          "name": "pointer-add",
+          "text": "                (object->copied_vertices + index)->y =\n                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)\n                    * z_wave + source[index].y;"
+        },
+        {
+          "name": "index-first-pointer-add",
+          "text": "                (index + object->copied_vertices)->y =\n                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)\n                    * z_wave + source[index].y;"
+        },
+        {
+          "name": "index-first-subscript",
+          "text": "                index[object->copied_vertices].y =\n                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)\n                    * z_wave + source[index].y;"
+        },
+        {
+          "name": "explicit-dereference",
+          "text": "                (*(object->copied_vertices + index)).y =\n                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)\n                    * z_wave + source[index].y;"
+        },
+        {
+          "name": "address-of-element",
+          "text": "                (&object->copied_vertices[index])->y =\n                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)\n                    * z_wave + source[index].y;"
+        },
+        {
+          "name": "byte-offset",
+          "text": "                ((Vector3*)((char*)object->copied_vertices + index * sizeof(Vector3)))->y =\n                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)\n                    * z_wave + source[index].y;"
+        }
+      ]
+    },
+    {
+      "name": "z-wave-destination-z",
+      "find": "                object->copied_vertices[index].z = source[index].z;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "pointer-add",
+          "text": "                (object->copied_vertices + index)->z = source[index].z;"
+        },
+        {
+          "name": "index-first-pointer-add",
+          "text": "                (index + object->copied_vertices)->z = source[index].z;"
+        },
+        {
+          "name": "index-first-subscript",
+          "text": "                index[object->copied_vertices].z = source[index].z;"
+        },
+        {
+          "name": "explicit-dereference",
+          "text": "                (*(object->copied_vertices + index)).z = source[index].z;"
+        },
+        {
+          "name": "address-of-element",
+          "text": "                (&object->copied_vertices[index])->z = source[index].z;"
+        },
+        {
+          "name": "byte-offset",
+          "text": "                ((Vector3*)((char*)object->copied_vertices + index * sizeof(Vector3)))->z = source[index].z;"
+        }
+      ]
+    }
+  ]
+}

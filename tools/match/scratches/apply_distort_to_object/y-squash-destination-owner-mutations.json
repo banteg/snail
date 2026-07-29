@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "y-squash-destination-owner",
+      "find": "        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                object->copied_vertices[index].x = scale_x * source[index].x;\n                object->copied_vertices[index].y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                object->copied_vertices[index].z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }",
+      "replacements": [
+        {
+          "name": "destination-pointer",
+          "text": "        Vector3* destination = object->copied_vertices;\n        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                destination[index].x = scale_x * source[index].x;\n                destination[index].y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination[index].z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "const-destination-pointer",
+          "text": "        Vector3* const destination = object->copied_vertices;\n        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                destination[index].x = scale_x * source[index].x;\n                destination[index].y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination[index].z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "destination-pointer-reference",
+          "text": "        Vector3*& destination = object->copied_vertices;\n        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                destination[index].x = scale_x * source[index].x;\n                destination[index].y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination[index].z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "destination-owner-pointer",
+          "text": "        cRObject* destination_owner = object;\n        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                destination_owner->copied_vertices[index].x =\n                    scale_x * source[index].x;\n                destination_owner->copied_vertices[index].y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination_owner->copied_vertices[index].z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "destination-member-pointer",
+          "text": "        Vector3** destination = &object->copied_vertices;\n        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                (*destination)[index].x = scale_x * source[index].x;\n                (*destination)[index].y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                (*destination)[index].z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "per-iteration-element-pointer",
+          "text": "        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                Vector3* destination = object->copied_vertices + index;\n                destination->x = scale_x * source[index].x;\n                destination->y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination->z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "per-iteration-element-reference",
+          "text": "        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                Vector3& destination = object->copied_vertices[index];\n                destination.x = scale_x * source[index].x;\n                destination.y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination.z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "per-iteration-byte-offset",
+          "text": "        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                int destination_offset = index * sizeof(Vector3);\n                Vector3* destination = (Vector3*)((char*)object->copied_vertices + destination_offset);\n                destination->x = scale_x * source[index].x;\n                destination->y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination->z = source[index].z;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        },
+        {
+          "name": "incremented-destination-cursor",
+          "text": "        Vector3* destination = object->copied_vertices;\n        int index = 0;\n        if (object->vertex_count > 0) {\n            do {\n                destination->x = scale_x * source[index].x;\n                destination->y =\n                    (source[index].y - base_y) * squash_y + base_y;\n                destination->z = source[index].z;\n                ++destination;\n                ++index;\n            } while (index < object->vertex_count);\n        }"
+        }
+      ]
+    }
+  ]
+}
