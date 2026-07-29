@@ -207,3 +207,21 @@ No source change is retained. The proof-grade frontier remains **75.41%**
 (`275/274`, 54 accepted operands, one mismatch, and four unaudited operands).
 Further work requires new Windows provenance for a genuinely memory-resident
 glyph index; declaration reshuffling and invented cursor state are now closed.
+
+## 2026-07-29 entry split-lifetime boundary
+
+A final five-variant family records the remaining entry-order question instead
+of leaving it as an informal probe. Adding braces around the capacity check is
+byte-identical to the 75.41% baseline. Moving `split_x` initialization after
+that check—whether declared early or late, and with or without braces—moves the
+exact prefix from zero to one instruction but regresses weighted agreement by
+15 bytes to 73.95%. All five forms preserve the same 54 accepted operands, one
+mismatch, and four unaudited operands, so none resolves the glyph-slot owner
+swap.
+
+The ledger now contains 65 unique variants across three sweeps: 0 improve, 15
+are byte-identical, and 50 regress. With three consecutive non-improving
+sweeps, this lane is formally stalled at the retained 75.41% frontier. The
+remaining work is contingent on new Windows source provenance; the in-repo
+declaration, increment, publication, snapshot, lexical-scope, and entry-order
+families are exhausted.

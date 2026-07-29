@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "entry-split-lifetime",
+      "find": "    int split_x = 0;\n    if (g_registered_font_count == FONT_SHEET_CAPACITY)\n        report_errorf(\"Too many Fonts RFONT_FONT_MAX in font.h\");",
+      "replacements": [
+        {
+          "name": "capacity-check-before-split",
+          "text": "    if (g_registered_font_count == FONT_SHEET_CAPACITY)\n        report_errorf(\"Too many Fonts RFONT_FONT_MAX in font.h\");\n    int split_x = 0;"
+        },
+        {
+          "name": "deferred-split-after-capacity-check",
+          "text": "    int split_x;\n    if (g_registered_font_count == FONT_SHEET_CAPACITY)\n        report_errorf(\"Too many Fonts RFONT_FONT_MAX in font.h\");\n    split_x = 0;"
+        },
+        {
+          "name": "braced-capacity-check-before-split",
+          "text": "    if (g_registered_font_count == FONT_SHEET_CAPACITY) {\n        report_errorf(\"Too many Fonts RFONT_FONT_MAX in font.h\");\n    }\n    int split_x = 0;"
+        },
+        {
+          "name": "deferred-split-with-braced-check",
+          "text": "    int split_x;\n    if (g_registered_font_count == FONT_SHEET_CAPACITY) {\n        report_errorf(\"Too many Fonts RFONT_FONT_MAX in font.h\");\n    }\n    split_x = 0;"
+        },
+        {
+          "name": "braced-check-after-split",
+          "text": "    int split_x = 0;\n    if (g_registered_font_count == FONT_SHEET_CAPACITY) {\n        report_errorf(\"Too many Fonts RFONT_FONT_MAX in font.h\");\n    }"
+        }
+      ]
+    }
+  ]
+}
