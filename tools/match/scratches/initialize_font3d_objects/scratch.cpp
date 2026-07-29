@@ -13,41 +13,42 @@ void initialize_font3d_objects(short font_id)
         float* scale_out = g_font3d_scales;
         do {
             BodBase* bod = &g_font3d_bods[index];
+            Object*& object = bod->object;
             float scale = g_font_sheets[font].glyph_width[index]
                 / g_font_sheets[font].line_marker_y;
             bod->SetObject(g_object_list.Add());
 
-            load_object_definition("Objects/Font3D", bod->object);
+            load_object_definition("Objects/Font3D", object);
             bod->render_arg_1c = 0;
             bod->render_arg_20 = 0.0f;
 
             int texture_page = g_font_sheets[font].texture_page[index];
-            bod->object->facequads[0].texture_ref =
+            object->facequads[0].texture_ref =
                 (&g_font_sheets[font].texture_ref_a)[texture_page];
-            bod->object->facequads[0].uv[0].u =
+            object->facequads[0].uv[0].u =
                 g_font_sheets[font].glyph_u0[index];
-            bod->object->facequads[0].uv[0].v =
+            object->facequads[0].uv[0].v =
                 1.0f - g_font_sheets[font].glyph_v0;
-            bod->object->facequads[0].uv[1].u =
+            object->facequads[0].uv[1].u =
                 g_font_sheets[font].glyph_u1[index];
-            bod->object->facequads[0].uv[1].v =
+            object->facequads[0].uv[1].v =
                 1.0f - g_font_sheets[font].glyph_v0;
-            bod->object->facequads[0].uv[2].u =
+            object->facequads[0].uv[2].u =
                 g_font_sheets[font].glyph_u1[index];
-            bod->object->facequads[0].uv[2].v =
+            object->facequads[0].uv[2].v =
                 1.0f - g_font_sheets[font].glyph_v1;
-            bod->object->facequads[0].uv[3].u =
+            object->facequads[0].uv[3].u =
                 g_font_sheets[font].glyph_u0[index];
-            bod->object->facequads[0].uv[3].v =
+            object->facequads[0].uv[3].v =
                 1.0f - g_font_sheets[font].glyph_v1;
 
-            bod->object->vertices[0].x = scale * bod->object->vertices[0].x;
-            bod->object->vertices[1].x = scale * bod->object->vertices[1].x;
-            bod->object->vertices[2].x = scale * bod->object->vertices[2].x;
-            bod->object->vertices[3].x = scale * bod->object->vertices[3].x;
+            object->vertices[0].x = scale * object->vertices[0].x;
+            object->vertices[1].x = scale * object->vertices[1].x;
+            object->vertices[2].x = scale * object->vertices[2].x;
+            object->vertices[3].x = scale * object->vertices[3].x;
 
-            bod->object->blend_mode = 1;
-            bod->object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
+            object->blend_mode = 1;
+            object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;
             *scale_out = scale;
             ++index;
             ++scale_out;

@@ -142,3 +142,23 @@ confirm the same owner and shared core:
 Windows alone activates ten repeated 0x90-byte DirectX BOD slices backed by the
 record's cached X mesh. That platform-specific prefix explains the body-size
 difference without weakening the common `Init(int)` lifecycle boundary.
+
+## 2026-07-29 native interior flag borrow
+
+The native loop keeps ESI rooted at each entry's inherited `list_flags` word,
+four bytes inside the enclosing `ActiveLandscapeEntry`; all derived state,
+object, transform, and reference accesses are relative to that stable interior
+borrow. Expressing the relationship as one loop-scoped `int& list_flags`
+recovers the final store/load schedule without volatility: the state store now
+stays before the render-enabled flag reload, exactly as in the shipped body.
+
+A bounded eight-shape sweep first showed that direct compound assignment,
+direct assignment, and an ordinary scalar temporary all retain the 99.19%
+hoist, while field pointers and references preserve native ordering. A second
+focused sweep borrowed the inherited flag for the complete loop rather than
+only around the mismatch; both the pointer and reference spellings match
+exactly. The reference is retained because it states the proved non-owning
+interior relationship without exposing pointer arithmetic.
+
+Focused matching is now **100.00%**, 123/123 instructions, with all 20 masked
+operands clean.

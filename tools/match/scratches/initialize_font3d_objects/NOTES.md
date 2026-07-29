@@ -154,3 +154,26 @@ BOD retains that object, the first facequad borrows the atlas texture, and the
 four vertex X lanes are scaled by glyph width. Mobile uses a `0x2c` BOD stride
 and a `0xa28` font sheet, so those offsets are deliberately not transferred to
 the Windows `BodBase[128]` and `FontSheet` owners.
+
+## 2026-07-29 BOD object-lane borrow
+
+The native ESI induction value is the address of each `BodBase::object` field,
+not a cached `Object*`: the loop reloads the pointed-to object for every quad,
+vertex, blend, and flags access, then advances the field address by the exact
+`sizeof(BodBase) == 0x38` stride. Keeping that relationship in source as
+`Object*& object = bod->object` removes the complete object-reload/x87
+scheduling region without changing ownership or inventing a separate array.
+
+Focused matching rises from 96.83% (406/419 fuzzy bytes, prefix 37) to
+**99.21%** (416/419, prefix 106), with the same 126/126 instruction count and
+all 20 masked operands clean. Pointer/reference placement and enclosing
+`BodBase&` variants are codegen-neutral.
+
+The sole residual is now the order of two independent strength-reduced loop
+updates: native advances the BOD object-field cursor before the synchronized
+glyph cursor, while VC6 emits the reverse order for the clearest indexed
+source. Reversing the authored `index`/scale updates regresses to 92.86%.
+Explicit BOD and paired BOD/glyph cursors do recover the update order, but
+disturb the prologue, texture-page schedule, and final flag register, scoring
+94.44% and 78.88% respectively. Those broader cursor views are not retained;
+the isolated three-byte scheduler residual remains visible.
