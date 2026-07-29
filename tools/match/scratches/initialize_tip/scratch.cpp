@@ -15,12 +15,13 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
     else
         definition = &g_default_tip_message;
 
-    widget_main = g_game->border_manager.allocate_border();
+    FrontendWidget*& main_widget = widget_main;
+    main_widget = g_game->border_manager.allocate_border();
     int definition_flags = definition->flags;
     unsigned int alignment = (int)(char)~definition_flags;
     alignment &= 4;
     tColour color;
-    widget_main->initialize_frontend_widget(
+    main_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         definition->text,
         0x14,

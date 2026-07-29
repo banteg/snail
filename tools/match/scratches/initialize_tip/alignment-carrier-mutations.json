@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "definition-alignment-carrier",
+      "find": "    int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);",
+      "replacements": [
+        {
+          "name": "signed-char-then-int",
+          "text": "    int definition_flags = definition->flags;\n    signed char inverted_flags = (signed char)~definition_flags;\n    int alignment = (int)inverted_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "char-then-int",
+          "text": "    int definition_flags = definition->flags;\n    char inverted_flags = (char)~definition_flags;\n    int alignment = (int)inverted_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "signed-char-mask-at-use",
+          "text": "    int definition_flags = definition->flags;\n    signed char alignment = (signed char)~definition_flags;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        ((int)alignment & 4) >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "explicit-signed-char-cast",
+          "text": "    int definition_flags = definition->flags;\n    int alignment = (int)(signed char)(~definition_flags);\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "cast-flags-before-invert",
+          "text": "    int definition_flags = definition->flags;\n    int alignment = (int)(signed char)~(signed char)definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "xor-inversion",
+          "text": "    int definition_flags = definition->flags;\n    int alignment = (int)(signed char)(definition_flags ^ -1);\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "final-alignment-value",
+          "text": "    int definition_flags = definition->flags;\n    int alignment = (int)(signed char)~definition_flags;\n    alignment = (alignment & 4) >> 1;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment,\n        definition->anchor_x);"
+        },
+        {
+          "name": "flags-reference",
+          "text": "    unsigned int& definition_flags = definition->flags;\n    int alignment = (int)(signed char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "flags-pointer",
+          "text": "    unsigned int* definition_flags = &definition->flags;\n    int alignment = (int)(signed char)~*definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "direct-definition-flags",
+          "text": "    int alignment = (int)(signed char)~definition->flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "main-widget-argument-lifetimes",
+      "find": "    widget_main = g_game->border_manager.allocate_border();\n    int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    widget_main->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);",
+      "replacements": [
+        {
+          "name": "single-definition-borrow",
+          "text": "    widget_main = g_game->border_manager.allocate_border();\n    TipData* main_definition = definition;\n    int definition_flags = main_definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    widget_main->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        main_definition->text,\n        0x14,\n        main_definition->anchor_x,\n        main_definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        main_definition->anchor_x);"
+        },
+        {
+          "name": "split-flag-and-content-borrows",
+          "text": "    widget_main = g_game->border_manager.allocate_border();\n    TipData* flag_definition = definition;\n    TipData* main_definition = definition;\n    int definition_flags = flag_definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    widget_main->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        main_definition->text,\n        0x14,\n        main_definition->anchor_x,\n        main_definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        main_definition->anchor_x);"
+        },
+        {
+          "name": "char-alignment-carrier",
+          "text": "    widget_main = g_game->border_manager.allocate_border();\n    int definition_flags = definition->flags;\n    char alignment = (char)~definition_flags;\n    tColour color;\n    widget_main->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        ((int)alignment & 4) >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "single-borrow-char-alignment",
+          "text": "    widget_main = g_game->border_manager.allocate_border();\n    TipData* main_definition = definition;\n    int definition_flags = main_definition->flags;\n    char alignment = (char)~definition_flags;\n    tColour color;\n    widget_main->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        main_definition->text,\n        0x14,\n        main_definition->anchor_x,\n        main_definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        ((int)alignment & 4) >> 1,\n        main_definition->anchor_x);"
+        },
+        {
+          "name": "split-borrows-char-alignment",
+          "text": "    widget_main = g_game->border_manager.allocate_border();\n    TipData* flag_definition = definition;\n    TipData* main_definition = definition;\n    int definition_flags = flag_definition->flags;\n    char alignment = (char)~definition_flags;\n    tColour color;\n    widget_main->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        main_definition->text,\n        0x14,\n        main_definition->anchor_x,\n        main_definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        ((int)alignment & 4) >> 1,\n        main_definition->anchor_x);"
+        },
+        {
+          "name": "local-main-widget",
+          "text": "    FrontendWidget* main_widget =\n        g_game->border_manager.allocate_border();\n    widget_main = main_widget;\n    int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "main-widget-reference",
+          "text": "    FrontendWidget*& main_widget = widget_main;\n    main_widget = g_game->border_manager.allocate_border();\n    int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    tColour color;\n    main_widget->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        definition->text,\n        0x14,\n        definition->anchor_x,\n        definition->layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        definition->anchor_x);"
+        },
+        {
+          "name": "staged-call-fields",
+          "text": "    widget_main = g_game->border_manager.allocate_border();\n    TipData* main_definition = definition;\n    int definition_flags = main_definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;\n    char* text = main_definition->text;\n    float anchor_x = main_definition->anchor_x;\n    float layout_y = main_definition->layout_y;\n    tColour color;\n    widget_main->initialize_frontend_widget(\n        FRONTEND_WIDGET_FLAG_HIGHLIGHTED,\n        text,\n        0x14,\n        anchor_x,\n        layout_y,\n        color.Set(1.0f, 1.0f, 1.0f, 1.0f),\n        alignment >> 1,\n        anchor_x);"
+        }
+      ]
+    },
+    {
+      "name": "post-main-live-flags",
+      "find": "    TipData* live_definition = definition;\n    int live_flags = live_definition->flags;\n    if ((live_flags & 2) != 0) {\n        dismiss_progress = 0.0f;\n        dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);\n    }\n\n    if ((live_flags & 1) != 0) {",
+      "replacements": [
+        {
+          "name": "direct-definition-tests",
+          "text": "    TipData* live_definition = definition;\n    if ((live_definition->flags & 2) != 0) {\n        dismiss_progress = 0.0f;\n        dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);\n    }\n\n    if ((live_definition->flags & 1) != 0) {"
+        },
+        {
+          "name": "reload-flags-for-second-test",
+          "text": "    TipData* live_definition = definition;\n    int live_flags = live_definition->flags;\n    if ((live_flags & 2) != 0) {\n        dismiss_progress = 0.0f;\n        dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);\n    }\n\n    live_flags = live_definition->flags;\n    if ((live_flags & 1) != 0) {"
+        },
+        {
+          "name": "byte-live-flags",
+          "text": "    TipData* live_definition = definition;\n    unsigned char live_flags = (unsigned char)live_definition->flags;\n    if ((live_flags & 2) != 0) {\n        dismiss_progress = 0.0f;\n        dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);\n    }\n\n    if ((live_flags & 1) != 0) {"
+        },
+        {
+          "name": "direct-member-without-borrow",
+          "text": "    TipData* live_definition = definition;\n    if ((definition->flags & 2) != 0) {\n        dismiss_progress = 0.0f;\n        dismiss_step = 1.0f / (live_definition->dismiss_seconds * 60.0f);\n    }\n\n    if ((definition->flags & 1) != 0) {"
+        }
+      ]
+    }
+  ]
+}

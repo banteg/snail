@@ -83,3 +83,25 @@ before enqueueing it.
 The shared owner now names these fields `anchor_x` and `layout_y`. This is a
 layout-preserving ownership correction: focused matching remains honestly at
 83.12%, 154/154 instructions, prefix 16, with all audited operands clean.
+
+## 2026-07-29 main-widget member borrow
+
+Two recorded sweeps evaluated 54 ordinary widget, definition, flag, and
+alignment lifetimes. Borrowing the owned `widget_main` slot as a
+`FrontendWidget*&` before allocation is the only retained improvement. It
+prevents VC6 from hoisting the following definition load across publication
+of the newly allocated widget, recovering the native store and the next two
+loads without a volatile barrier.
+
+Focused matching rises from 83.12% to **84.42%**, still 154/154 instructions,
+and the exact prefix grows from 16 to 19 instructions. All 26 aligned
+references remain clean; the two existing unmatched global-load operands stay
+explicitly unaudited.
+
+Pointer/value aliases for the widget and definition, staged call fields,
+direct or byte-sized post-call flag tests, and ten signed-character alignment
+carriers are neutral or worse. In particular, spelling the signed conversion
+more explicitly changes the final shift but does not recover native's
+`not cl` / `movsx eax, cl` register split. The retained member reference states
+real ownership; no volatile qualifier, raw offset, or register-shaped cast is
+introduced.
