@@ -28,10 +28,11 @@ Current focused result:
 Remaining gap:
 
 The candidate now has the target's exact `0x5c` frame, instruction count, and
-major register/lifetime shape. Its seven bounded mismatch regions contain only
-independent store scheduling: two vector-temporary stores, face-index and UV
-stores, one component store in each cap expression, cap copy/push scheduling,
-and a final UV/epilogue reorder. No behavior or ownership gap remains.
+major register/lifetime shape. Its three localized mismatch regions contain
+only independent store scheduling: two two-instruction moves while copying the
+shared vector-subtraction result, and one face-pair region with nineteen
+face-index/UV store-order differences. The cap expressions, cap copies, final
+face, and epilogue are now exact. No behavior or ownership gap remains.
 
 ## 2026-07-12 shared fringe source recovery
 
@@ -126,3 +127,28 @@ correctly while leaving those post-increment references raw, rather than
 inventing field ownership. Binary Ninja likewise retains honest raw offsets in
 the cap tail. Matching source and the focused result remain unchanged at
 94.54%, 421/421 instructions, prefix 69/421, with all 25 masked operands clean.
+
+## 2026-07-29 recorded store-scheduling frontier
+
+Three recorded mutation sweeps evaluated 41 unique source variants around all
+three remaining regions. None improved the 94.54%, exact 421/421-instruction,
+prefix-69 baseline: 27 variants were byte-identical and 14 degraded.
+
+- Fifteen left/right edge-direction forms cover initialization versus
+  assignment, explicit shared-operator and assignment calls, named and const
+  difference values, and borrowed row pointers/references. Every form is
+  byte-identical, leaving the same two shared vector-return copy schedules.
+- Ten first-face index forms cover signed, unsigned, and 16-bit bases; shifted
+  bases; named scalar indices; and pointer/reference face owners. Named
+  indices and face borrows are neutral. Retaining a reusable base removes
+  native instructions or perturbs allocation and regresses.
+- Sixteen first/second-face UV forms cover face and UV borrows, union-field
+  aliases, named constants, per-corner pointers, and whole-`ObjectUv` values.
+  Scalar aliases are neutral; materializing corner or aggregate owners changes
+  instruction count and regresses.
+
+The ledger is formally stalled after three consecutive non-improving sweeps.
+The canonical direct indexing and scalar UV publication remain the strongest
+source-backed forms, consistent with the authored mobile builder. The
+residuals are bounded VC6 scheduling differences rather than missing geometry,
+ownership, or control flow.

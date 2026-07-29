@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-uv-owner",
+      "find": "            face[0].uv[3].u = 0.5f;\n            face[0].uv[3].v = 1.0f;\n            face[0].uv[0].u = 0.5f;\n            face[0].uv[0].v = 1.0f;\n            face[0].uv[1].u = 0.5f;\n            face[0].uv[1].v = 0.0f;\n            face[0].uv[2].u = 0.5f;\n            face[0].uv[2].v = 0.0f;",
+      "replacements": [
+        {
+          "name": "face-pointer",
+          "text": "            cRFaceQuad* first_face = face;\n            first_face->uv[3].u = 0.5f;\n            first_face->uv[3].v = 1.0f;\n            first_face->uv[0].u = 0.5f;\n            first_face->uv[0].v = 1.0f;\n            first_face->uv[1].u = 0.5f;\n            first_face->uv[1].v = 0.0f;\n            first_face->uv[2].u = 0.5f;\n            first_face->uv[2].v = 0.0f;"
+        },
+        {
+          "name": "face-reference",
+          "text": "            cRFaceQuad& first_face = face[0];\n            first_face.uv[3].u = 0.5f;\n            first_face.uv[3].v = 1.0f;\n            first_face.uv[0].u = 0.5f;\n            first_face.uv[0].v = 1.0f;\n            first_face.uv[1].u = 0.5f;\n            first_face.uv[1].v = 0.0f;\n            first_face.uv[2].u = 0.5f;\n            first_face.uv[2].v = 0.0f;"
+        },
+        {
+          "name": "uv-pointer",
+          "text": "            ObjectUv* first_uv = face[0].uv;\n            first_uv[3].u = 0.5f;\n            first_uv[3].v = 1.0f;\n            first_uv[0].u = 0.5f;\n            first_uv[0].v = 1.0f;\n            first_uv[1].u = 0.5f;\n            first_uv[1].v = 0.0f;\n            first_uv[2].u = 0.5f;\n            first_uv[2].v = 0.0f;"
+        },
+        {
+          "name": "direct-union-fields",
+          "text": "            face[0].u3 = 0.5f;\n            face[0].v3 = 1.0f;\n            face[0].u0 = 0.5f;\n            face[0].v0 = 1.0f;\n            face[0].u1 = 0.5f;\n            face[0].v1 = 0.0f;\n            face[0].u2 = 0.5f;\n            face[0].v2 = 0.0f;"
+        },
+        {
+          "name": "named-values",
+          "text": "            float uv_half = 0.5f;\n            float uv_one = 1.0f;\n            float uv_zero = 0.0f;\n            face[0].uv[3].u = uv_half;\n            face[0].uv[3].v = uv_one;\n            face[0].uv[0].u = uv_half;\n            face[0].uv[0].v = uv_one;\n            face[0].uv[1].u = uv_half;\n            face[0].uv[1].v = uv_zero;\n            face[0].uv[2].u = uv_half;\n            face[0].uv[2].v = uv_zero;"
+        },
+        {
+          "name": "const-named-values",
+          "text": "            const float uv_half = 0.5f;\n            const float uv_one = 1.0f;\n            const float uv_zero = 0.0f;\n            face[0].uv[3].u = uv_half;\n            face[0].uv[3].v = uv_one;\n            face[0].uv[0].u = uv_half;\n            face[0].uv[0].v = uv_one;\n            face[0].uv[1].u = uv_half;\n            face[0].uv[1].v = uv_zero;\n            face[0].uv[2].u = uv_half;\n            face[0].uv[2].v = uv_zero;"
+        },
+        {
+          "name": "corner-pointers",
+          "text": "            ObjectUv* uv_3 = &face[0].uv[3];\n            ObjectUv* uv_0 = &face[0].uv[0];\n            ObjectUv* uv_1 = &face[0].uv[1];\n            ObjectUv* uv_2 = &face[0].uv[2];\n            uv_3->u = 0.5f;\n            uv_3->v = 1.0f;\n            uv_0->u = 0.5f;\n            uv_0->v = 1.0f;\n            uv_1->u = 0.5f;\n            uv_1->v = 0.0f;\n            uv_2->u = 0.5f;\n            uv_2->v = 0.0f;"
+        },
+        {
+          "name": "whole-uv-values",
+          "text": "            ObjectUv half_one;\n            half_one.u = 0.5f;\n            half_one.v = 1.0f;\n            ObjectUv half_zero;\n            half_zero.u = 0.5f;\n            half_zero.v = 0.0f;\n            face[0].uv[3] = half_one;\n            face[0].uv[0] = half_one;\n            face[0].uv[1] = half_zero;\n            face[0].uv[2] = half_zero;"
+        }
+      ]
+    },
+    {
+      "name": "second-face-uv-owner",
+      "find": "            face[1].uv[3].u = 0.5f;\n            face[1].uv[3].v = 0.0f;\n            face[1].uv[0].u = 0.5f;\n            face[1].uv[0].v = 0.0f;\n            face[1].uv[1].u = 0.5f;\n            face[1].uv[1].v = 1.0f;\n            face[1].uv[2].u = 0.5f;\n            face[1].uv[2].v = 1.0f;",
+      "replacements": [
+        {
+          "name": "face-pointer",
+          "text": "            cRFaceQuad* second_face = face + 1;\n            second_face->uv[3].u = 0.5f;\n            second_face->uv[3].v = 0.0f;\n            second_face->uv[0].u = 0.5f;\n            second_face->uv[0].v = 0.0f;\n            second_face->uv[1].u = 0.5f;\n            second_face->uv[1].v = 1.0f;\n            second_face->uv[2].u = 0.5f;\n            second_face->uv[2].v = 1.0f;"
+        },
+        {
+          "name": "face-reference",
+          "text": "            cRFaceQuad& second_face = face[1];\n            second_face.uv[3].u = 0.5f;\n            second_face.uv[3].v = 0.0f;\n            second_face.uv[0].u = 0.5f;\n            second_face.uv[0].v = 0.0f;\n            second_face.uv[1].u = 0.5f;\n            second_face.uv[1].v = 1.0f;\n            second_face.uv[2].u = 0.5f;\n            second_face.uv[2].v = 1.0f;"
+        },
+        {
+          "name": "uv-pointer",
+          "text": "            ObjectUv* second_uv = face[1].uv;\n            second_uv[3].u = 0.5f;\n            second_uv[3].v = 0.0f;\n            second_uv[0].u = 0.5f;\n            second_uv[0].v = 0.0f;\n            second_uv[1].u = 0.5f;\n            second_uv[1].v = 1.0f;\n            second_uv[2].u = 0.5f;\n            second_uv[2].v = 1.0f;"
+        },
+        {
+          "name": "direct-union-fields",
+          "text": "            face[1].u3 = 0.5f;\n            face[1].v3 = 0.0f;\n            face[1].u0 = 0.5f;\n            face[1].v0 = 0.0f;\n            face[1].u1 = 0.5f;\n            face[1].v1 = 1.0f;\n            face[1].u2 = 0.5f;\n            face[1].v2 = 1.0f;"
+        },
+        {
+          "name": "named-values",
+          "text": "            float uv_half = 0.5f;\n            float uv_zero = 0.0f;\n            float uv_one = 1.0f;\n            face[1].uv[3].u = uv_half;\n            face[1].uv[3].v = uv_zero;\n            face[1].uv[0].u = uv_half;\n            face[1].uv[0].v = uv_zero;\n            face[1].uv[1].u = uv_half;\n            face[1].uv[1].v = uv_one;\n            face[1].uv[2].u = uv_half;\n            face[1].uv[2].v = uv_one;"
+        },
+        {
+          "name": "const-named-values",
+          "text": "            const float uv_half = 0.5f;\n            const float uv_zero = 0.0f;\n            const float uv_one = 1.0f;\n            face[1].uv[3].u = uv_half;\n            face[1].uv[3].v = uv_zero;\n            face[1].uv[0].u = uv_half;\n            face[1].uv[0].v = uv_zero;\n            face[1].uv[1].u = uv_half;\n            face[1].uv[1].v = uv_one;\n            face[1].uv[2].u = uv_half;\n            face[1].uv[2].v = uv_one;"
+        },
+        {
+          "name": "corner-pointers",
+          "text": "            ObjectUv* uv_3 = &face[1].uv[3];\n            ObjectUv* uv_0 = &face[1].uv[0];\n            ObjectUv* uv_1 = &face[1].uv[1];\n            ObjectUv* uv_2 = &face[1].uv[2];\n            uv_3->u = 0.5f;\n            uv_3->v = 0.0f;\n            uv_0->u = 0.5f;\n            uv_0->v = 0.0f;\n            uv_1->u = 0.5f;\n            uv_1->v = 1.0f;\n            uv_2->u = 0.5f;\n            uv_2->v = 1.0f;"
+        },
+        {
+          "name": "whole-uv-values",
+          "text": "            ObjectUv half_zero;\n            half_zero.u = 0.5f;\n            half_zero.v = 0.0f;\n            ObjectUv half_one;\n            half_one.u = 0.5f;\n            half_one.v = 1.0f;\n            face[1].uv[3] = half_zero;\n            face[1].uv[0] = half_zero;\n            face[1].uv[1] = half_one;\n            face[1].uv[2] = half_one;"
+        }
+      ]
+    }
+  ]
+}

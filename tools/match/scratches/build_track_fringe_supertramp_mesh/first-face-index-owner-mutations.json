@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-index-owner",
+      "find": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            face[0].vertex_0 = row * 4 + 4;\n            face[0].vertex_1 = row * 4 + 5;\n            face[0].vertex_2 = row * 4 + 1;\n            face[0].vertex_3 = row * 4;",
+      "replacements": [
+        {
+          "name": "signed-vertex-base",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            int vertex_base = row * 4;\n            face[0].vertex_0 = vertex_base + 4;\n            face[0].vertex_1 = vertex_base + 5;\n            face[0].vertex_2 = vertex_base + 1;\n            face[0].vertex_3 = vertex_base;"
+        },
+        {
+          "name": "unsigned-vertex-base",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            unsigned int vertex_base = (unsigned int)row * 4;\n            face[0].vertex_0 = vertex_base + 4;\n            face[0].vertex_1 = vertex_base + 5;\n            face[0].vertex_2 = vertex_base + 1;\n            face[0].vertex_3 = vertex_base;"
+        },
+        {
+          "name": "short-vertex-base",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            unsigned short vertex_base = (unsigned short)(row * 4);\n            face[0].vertex_0 = vertex_base + 4;\n            face[0].vertex_1 = vertex_base + 5;\n            face[0].vertex_2 = vertex_base + 1;\n            face[0].vertex_3 = vertex_base;"
+        },
+        {
+          "name": "shifted-vertex-base",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            int vertex_base = row << 2;\n            face[0].vertex_0 = vertex_base + 4;\n            face[0].vertex_1 = vertex_base + 5;\n            face[0].vertex_2 = vertex_base + 1;\n            face[0].vertex_3 = vertex_base;"
+        },
+        {
+          "name": "staged-shifted-base",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            int vertex_base = row;\n            vertex_base <<= 2;\n            face[0].vertex_0 = vertex_base + 4;\n            face[0].vertex_1 = vertex_base + 5;\n            face[0].vertex_2 = vertex_base + 1;\n            face[0].vertex_3 = vertex_base;"
+        },
+        {
+          "name": "first-face-pointer",
+          "text": "            cRFaceQuad* first_face = face;\n            first_face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            first_face->vertex_0 = row * 4 + 4;\n            first_face->vertex_1 = row * 4 + 5;\n            first_face->vertex_2 = row * 4 + 1;\n            first_face->vertex_3 = row * 4;"
+        },
+        {
+          "name": "first-face-reference",
+          "text": "            cRFaceQuad& first_face = face[0];\n            first_face.texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            first_face.vertex_0 = row * 4 + 4;\n            first_face.vertex_1 = row * 4 + 5;\n            first_face.vertex_2 = row * 4 + 1;\n            first_face.vertex_3 = row * 4;"
+        },
+        {
+          "name": "named-indices",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            int vertex_0 = row * 4 + 4;\n            int vertex_1 = row * 4 + 5;\n            int vertex_2 = row * 4 + 1;\n            int vertex_3 = row * 4;\n            face[0].vertex_0 = vertex_0;\n            face[0].vertex_1 = vertex_1;\n            face[0].vertex_2 = vertex_2;\n            face[0].vertex_3 = vertex_3;"
+        },
+        {
+          "name": "named-short-indices",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            unsigned short vertex_0 = (unsigned short)(row * 4 + 4);\n            unsigned short vertex_1 = (unsigned short)(row * 4 + 5);\n            unsigned short vertex_2 = (unsigned short)(row * 4 + 1);\n            unsigned short vertex_3 = (unsigned short)(row * 4);\n            face[0].vertex_0 = vertex_0;\n            face[0].vertex_1 = vertex_1;\n            face[0].vertex_2 = vertex_2;\n            face[0].vertex_3 = vertex_3;"
+        },
+        {
+          "name": "base-and-face-pointer",
+          "text": "            cRFaceQuad* first_face = face;\n            first_face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            int vertex_base = row * 4;\n            first_face->vertex_0 = vertex_base + 4;\n            first_face->vertex_1 = vertex_base + 5;\n            first_face->vertex_2 = vertex_base + 1;\n            first_face->vertex_3 = vertex_base;"
+        }
+      ]
+    }
+  ]
+}
