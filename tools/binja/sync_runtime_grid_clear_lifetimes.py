@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
+import json
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_split_away_user_var_update,
@@ -14,9 +15,9 @@ from _narrow_sync import (
     current_type_widths,
     emit_summary,
     remove_user_var_updates,
+    run_bn,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -58,13 +59,6 @@ EXPECTED_STRUCT_FIELDS = {
         0x4C: ("fringe_left", "Fringe*"),
         0x50: ("fringe_back", "Fringe*"),
     },
-    "TrackRowCellLaneAndFlagsStrideCursor": {
-        0x00: ("lane_and_flags", "uint32_t"),
-        0x04: ("fringe_front", "Fringe*"),
-        0x08: ("fringe_right", "Fringe*"),
-        0x0C: ("fringe_left", "Fringe*"),
-        0x10: ("fringe_back", "Fringe*"),
-    },
     "TrackRowCellFringeFrontStrideCursor": {
         0x00: ("fringe_front", "Fringe*"),
         0x04: ("fringe_right", "Fringe*"),
@@ -82,23 +76,25 @@ EXPECTED_STRUCT_FIELDS = {
         0xEC: ("source_segment", "SubSegment*"),
         0xF0: ("row_event_id", "int32_t"),
     },
-    "SubRowParcelSpawnYStrideCursor": {
-        0x00: ("parcel_spawn_y", "float"),
-        0x04: ("parcel_spawn_z", "float"),
-        0x08: ("parcel_set_id", "int32_t"),
-        0x0C: ("attachment_template_index", "int32_t"),
-        0x10: ("primary_attachment_cell", "cRSubLoc*"),
-        0x14: ("secondary_attachment_cell", "cRSubLoc*"),
-        0x18: ("installed_heading_delta", "float"),
-        0x1C: ("attachment_body", "BodBase"),
-        0x54: ("ring_speed", "float"),
-        0x58: ("source_segment", "SubSegment*"),
-        0x5C: ("row_event_id", "int32_t"),
-    },
     "cRSubGame": {
         0xA874: ("level_definition", "SubTracks"),
         0x3BFAC8: ("runtime_cells", "cRSubLoc[3200][8]"),
         0x5CCAC8: ("runtime_rows", "SubRow[3200]"),
+    },
+}
+
+EXPECTED_OFFSET_CURSOR_VIEWS = {
+    "TrackRowCellLaneAndFlagsStrideCursor": {
+        "pointer_offset": 0x40,
+        "base_offset": 0x00,
+        "base_type": "struct cRSubLoc",
+        "base_width": 0x54,
+    },
+    "SubRowParcelSpawnYStrideCursor": {
+        "pointer_offset": 0x94,
+        "base_offset": 0x00,
+        "base_type": "struct SubRow",
+        "base_width": 0xF4,
     },
 }
 
@@ -471,6 +467,46 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def current_offset_cursor_views(target: str) -> dict[str, object]:
+    names = tuple(EXPECTED_OFFSET_CURSOR_VIEWS)
+    code = f"""
+names = {json.dumps(names)}
+result = {{}}
+for name in names:
+    current = bv.get_type_by_name(name)
+    if current is None:
+        result[name] = None
+        continue
+    bases = list(current.base_structures)
+    result[name] = {{
+        "pointer_offset": int(current.pointer_offset),
+        "bases": [
+            {{
+                "offset": int(base.offset),
+                "type": str(base.type),
+                "width": int(base.width),
+            }}
+            for base in bases
+        ],
+    }}
+"""
+    response = run_bn(
+        REPO_ROOT,
+        "py",
+        "exec",
+        "--target",
+        target,
+        "--format",
+        "json",
+        "--code",
+        code,
+    )
+    payload = response.get("result") if isinstance(response, dict) else None
+    if not isinstance(payload, dict):
+        raise TypeError("Binary Ninja returned no offset-cursor metadata")
+    return payload
+
+
 def verify_owner_layouts(target: str) -> dict[str, object]:
     widths = current_type_widths(
         REPO_ROOT,
@@ -482,6 +518,7 @@ def verify_owner_layouts(target: str) -> dict[str, object]:
         target=target,
         struct_names=EXPECTED_STRUCT_FIELDS,
     )
+    cursor_views = current_offset_cursor_views(target)
     mismatches: list[str] = []
     for type_name, expected_width in EXPECTED_TYPE_WIDTHS.items():
         observed_width = widths[type_name]
@@ -499,6 +536,32 @@ def verify_owner_layouts(target: str) -> dict[str, object]:
                     f"{struct_name}+{offset:#x}: expected {expected!r}, "
                     f"observed {observed!r}"
                 )
+    for type_name, expected in EXPECTED_OFFSET_CURSOR_VIEWS.items():
+        observed = cursor_views.get(type_name)
+        expected_base = [
+            {
+                "offset": expected["base_offset"],
+                "type": expected["base_type"],
+                "width": expected["base_width"],
+            }
+        ]
+        if not isinstance(observed, dict):
+            mismatches.append(
+                f"{type_name}: expected offset-pointer metadata, "
+                f"observed {observed!r}"
+            )
+            continue
+        if observed.get("pointer_offset") != expected["pointer_offset"]:
+            mismatches.append(
+                f"{type_name}: expected pointer offset "
+                f"{expected['pointer_offset']:#x}, "
+                f"observed {observed.get('pointer_offset')!r}"
+            )
+        if observed.get("bases") != expected_base:
+            mismatches.append(
+                f"{type_name}: expected bases {expected_base!r}, "
+                f"observed {observed.get('bases')!r}"
+            )
     if mismatches:
         raise RuntimeError(
             "canonical runtime-grid clear ownership layout is not current:\n"

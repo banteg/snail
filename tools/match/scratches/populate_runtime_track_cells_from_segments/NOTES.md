@@ -957,3 +957,27 @@ jump-table mismatch). A fresh authored nested-loop probe reached 31.23%, so it
 was rejected rather than score-shaped. The source now records both the real
 borrowed fringe ownership and the cross-port transition semantics without a
 compiler barrier, dummy dependency, register coercion, or other fakematch.
+
+## 2026-07-29 runtime clear owner-offset views
+
+The Windows clear loop carries two interior-field cursors: EDI points at
+`SubRow::parcel_spawn_position.y` (`SubRow + 0x94`), while ESI points at
+`cRSubLoc::lane_and_flags` (`cRSubLoc + 0x40`). The stores at `0x436102`,
+`0x436133`, and `0x43614d` therefore reach the owning row `flags`, cell
+`open_edge_mask`, and inherited `bod.list_flags` fields. Binary Ninja's
+offset-pointer views now encode those two physical bases directly. IDA keeps
+the equivalent field-first stride cursors because its parser does not support
+the Binary Ninja pointer-offset annotations.
+
+The runtime-grid replay now verifies the pointer offsets and exact inherited
+base metadata before touching user variables. The refreshed Binary Ninja
+artifact names all three owner fields and forbids the former raw
+`__offset(...)` expressions. The independent fringe cursor remains
+field-first so its four borrowed pointer clears stay explicit rather than
+collapsing into an analysis-generated `memset`.
+
+This is an analysis-fidelity improvement, not a matcher-source change. Focused
+matching remains at 32.32% (1,230/1,245 instructions, two-instruction prefix,
+78 clean operands, 115 unaudited, and the existing jump-table mismatch).
+Guarded replay is idempotent, and the strict paired export reports zero
+Binary Ninja or IDA mismatches with all 1,149 decompile-health checks passing.

@@ -18375,13 +18375,13 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("tColour", "0x10"),
         ("Fringe", "0x38"),
         ("SubSegment", "0x4220"),
-            ("SubTracks", "0x1A5978"),
-            ("cRSubLoc", "0x54"),
-            ("TrackRowCellLaneAndFlagsStrideCursor", "0x54"),
-            ("TrackRowCellFringeFrontStrideCursor", "0x54"),
-            ("SubRow", "0xF4"),
-            ("SubRowParcelSpawnYStrideCursor", "0xF4"),
-            ("cRSubGame", "0x1272838"),
+        ("SubTracks", "0x1A5978"),
+        ("cRSubLoc", "0x54"),
+        ("TrackRowCellLaneAndFlagsStrideCursor", "0x54"),
+        ("TrackRowCellFringeFrontStrideCursor", "0x54"),
+        ("SubRow", "0xF4"),
+        ("SubRowParcelSpawnYStrideCursor", "0xF4"),
+        ("cRSubGame", "0x1272838"),
     ):
         assert f'"{owner_name}": {expected_size}' in replay
 
@@ -18390,47 +18390,17 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
         ("SubTracks", "0x04", "segment_slots", "SubSegment[100]"),
         ("cRSubLoc", "0x28", "color", "tColour"),
         ("cRSubLoc", "0x3D", "open_edge_mask", "uint8_t"),
-            ("cRSubLoc", "0x40", "lane_and_flags", "uint32_t"),
-            ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
-            (
-                "TrackRowCellLaneAndFlagsStrideCursor",
-                "0x00",
-                "lane_and_flags",
-                "uint32_t",
-            ),
-            (
-                "TrackRowCellLaneAndFlagsStrideCursor",
-                "0x04",
-                "fringe_front",
-                "Fringe*",
-            ),
-            (
-                "TrackRowCellFringeFrontStrideCursor",
-                "0x00",
-                "fringe_front",
-                "Fringe*",
-            ),
-            ("SubRow", "0x90", "parcel_spawn_position", "Vec3"),
-            ("SubRow", "0xA4", "primary_attachment_cell", "cRSubLoc*"),
-            ("SubRow", "0xEC", "source_segment", "SubSegment*"),
-            (
-                "SubRowParcelSpawnYStrideCursor",
-                "0x00",
-                "parcel_spawn_y",
-                "float",
-            ),
-            (
-                "SubRowParcelSpawnYStrideCursor",
-                "0x1C",
-                "attachment_body",
-                "BodBase",
-            ),
-            (
-                "SubRowParcelSpawnYStrideCursor",
-                "0x58",
-                "source_segment",
-                "SubSegment*",
-            ),
+        ("cRSubLoc", "0x40", "lane_and_flags", "uint32_t"),
+        ("cRSubLoc", "0x44", "fringe_front", "Fringe*"),
+        (
+            "TrackRowCellFringeFrontStrideCursor",
+            "0x00",
+            "fringe_front",
+            "Fringe*",
+        ),
+        ("SubRow", "0x90", "parcel_spawn_position", "Vec3"),
+        ("SubRow", "0xA4", "primary_attachment_cell", "cRSubLoc*"),
+        ("SubRow", "0xEC", "source_segment", "SubSegment*"),
         ("cRSubGame", "0xA874", "level_definition", "SubTracks"),
         (
             "cRSubGame",
@@ -18447,6 +18417,25 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
     ):
         assert f'"{struct_name}": {{' in replay
         assert f'{offset}: ("{field_name}", "{field_type}")' in replay
+
+    for type_name, pointer_offset, base_type, base_width in (
+        (
+            "TrackRowCellLaneAndFlagsStrideCursor",
+            "0x40",
+            "struct cRSubLoc",
+            "0x54",
+        ),
+        (
+            "SubRowParcelSpawnYStrideCursor",
+            "0x94",
+            "struct SubRow",
+            "0xF4",
+        ),
+    ):
+        assert f'"{type_name}": {{' in replay
+        assert f'"pointer_offset": {pointer_offset}' in replay
+        assert f'"base_type": "{base_type}"' in replay
+        assert f'"base_width": {base_width}' in replay
 
     for source_type, index, storage, name, type_name in (
         ("RegisterVariableSourceType", 435, 66, "segment_slot_index", "int32_t"),
@@ -18591,6 +18580,9 @@ def test_runtime_grid_builder_lifetime_replay_stays_guarded() -> None:
 
     assert "current_type_widths" in replay
     assert "current_struct_fields_batch" in replay
+    assert "current_offset_cursor_views" in replay
+    assert "current.pointer_offset" in replay
+    assert "current.base_structures" in replay
     assert "apply_split_user_var_update" in replay
     assert "apply_split_away_user_var_update" in replay
     assert "apply_user_var_updates" in replay
@@ -18655,6 +18647,12 @@ def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None
         "float parcel_spawn_y;",
         "BodBase attachment_body;",
         "SubSegment* source_segment;",
+        "typedef struct __ptr_offset(0x40)",
+        "__base(cRSubLoc, 0x00) TrackRowCellLaneAndFlagsStrideCursor",
+        "__inherited cRSubLoc cell;",
+        "typedef struct __ptr_offset(0x94)",
+        "__base(SubRow, 0x00) SubRowParcelSpawnYStrideCursor",
+        "__inherited SubRow row;",
     ):
         assert marker in analysis_header
 
@@ -18744,6 +18742,9 @@ def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None
         "struct SubRowParcelSpawnYStrideCursor* parcel_spawn_y_cursor",
         "struct TrackRowCellLaneAndFlagsStrideCursor* lane_and_flags_cursor",
         "lane_and_flags_cursor = &lane_and_flags_cursor[1]",
+        "parcel_spawn_y_cursor->flags = 0",
+        "lane_and_flags_cursor->open_edge_mask = 0",
+        "lane_and_flags_cursor->bod.list_flags",
         "cell_fringe_front_cursor->fringe_front = 0",
         "parcel_spawn_y_cursor = &parcel_spawn_y_cursor[1]",
     ):
@@ -18754,6 +18755,9 @@ def test_runtime_grid_clear_field_cursors_are_borrowed_and_fail_closed() -> None
         "uint32_t* lane_and_flags_cursor",
         "lane_and_flags_cursor = &lane_and_flags_cursor[0x15]",
         "parcel_spawn_y_cursor = &parcel_spawn_y_cursor[0x3d]",
+        "parcel_spawn_y_cursor->__offset(",
+        "parcel_spawn_y_cursor->parcel_spawn_y:-4.d",
+        "lane_and_flags_cursor->__offset(",
     ):
         assert old_shape in bn_health["forbidden_substrings"]
 

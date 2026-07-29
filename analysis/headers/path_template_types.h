@@ -1441,12 +1441,19 @@ typedef char cRSubLoc_must_be_0x54[
 ];
 
 /*
- * Analysis-only field-first views for BuildLevel's runtime-cell clear pass.
+ * Analysis-only cursor views for BuildLevel's runtime-cell clear pass.
  * Native carries either cRSubLoc::lane_and_flags or
  * cRSubLoc::fringe_front and advances by the complete 0x54-byte cell
- * stride. The tails alias the following cell's prefix solely to preserve that
- * induction; neither view owns a cell or any borrowed Fringe.
+ * stride. Binary Ninja's offset-pointer view exposes fields accessed behind
+ * lane_and_flags; the field-first fallback preserves the same physical cursor
+ * in IDA. Neither view owns a cell or any borrowed Fringe.
  */
+#ifdef BN_TYPE_PARSER
+typedef struct __ptr_offset(0x40)
+    __base(cRSubLoc, 0x00) TrackRowCellLaneAndFlagsStrideCursor {
+    __inherited cRSubLoc cell;
+} TrackRowCellLaneAndFlagsStrideCursor;
+#else
 typedef struct TrackRowCellLaneAndFlagsStrideCursor {
     uint32_t lane_and_flags;
     Fringe* fringe_front;
@@ -1455,6 +1462,7 @@ typedef struct TrackRowCellLaneAndFlagsStrideCursor {
     Fringe* fringe_back;
     uint8_t _stride_tail[0x40];
 } TrackRowCellLaneAndFlagsStrideCursor;
+#endif
 typedef char TrackRowCellLaneAndFlagsStrideCursor_must_be_0x54[
     (sizeof(TrackRowCellLaneAndFlagsStrideCursor) == 0x54) ? 1 : -1
 ];
@@ -1562,12 +1570,19 @@ typedef struct SubRow {
 } SubRow;
 
 /*
- * Analysis-only field-first view for BuildLevel's runtime-row clear pass.
+ * Analysis-only cursor view for BuildLevel's runtime-row clear pass.
  * Native carries SubRow::parcel_spawn_position.y and advances by the complete
  * 0xf4-byte row stride while clearing fields on both sides of that address.
- * cRSubGame::runtime_rows remains the sole owner; the tail aliases the
- * next row's prefix and owns neither row.
+ * Binary Ninja's offset-pointer view exposes fields accessed behind that
+ * address; the field-first fallback preserves the same physical cursor in
+ * IDA. cRSubGame::runtime_rows remains the sole owner.
  */
+#ifdef BN_TYPE_PARSER
+typedef struct __ptr_offset(0x94)
+    __base(SubRow, 0x00) SubRowParcelSpawnYStrideCursor {
+    __inherited SubRow row;
+} SubRowParcelSpawnYStrideCursor;
+#else
 typedef struct SubRowParcelSpawnYStrideCursor {
     float parcel_spawn_y;
     float parcel_spawn_z;
@@ -1582,6 +1597,7 @@ typedef struct SubRowParcelSpawnYStrideCursor {
     int32_t row_event_id;
     uint8_t _stride_tail[0x94];
 } SubRowParcelSpawnYStrideCursor;
+#endif
 typedef char SubRowParcelSpawnYStrideCursor_must_be_0xf4[
     (sizeof(SubRowParcelSpawnYStrideCursor) == 0xf4) ? 1 : -1
 ];
