@@ -97,3 +97,18 @@ position, and gravity fields. Strict health checks reject the stale
 `NukeController`, raw root offset, and pointer-to-array subtraction views.
 Focused matching remains an honest 93.75%, 64/64 instructions, prefix 30/64,
 with all five operands clean.
+
+## 2026-07-29 bounded post-allocation lifetime sweep
+
+The four-instruction residual after `allocate_sprite` was retried as two
+independent lifetime sites. The flag write covered unsigned, signed, and
+combined named values plus direct pointer/reference aliases. The first slot
+reload covered named-current, size-before/after-current, and one-use
+pointer/reference forms. All 10 one-site variants and all 25 pairwise
+combinations compile byte-identically to the retained source.
+
+The 35-variant ledger therefore closes these honest source-shape routes without
+changing the scratch. Focused Wibo remains 93.75%, 64/64 instructions, prefix
+30/64, with all five masked operands clean. Native's `edx` flag temporary and
+later `ecx` slot reload remain a bounded register/scheduling residue; further
+progress needs new owner/source evidence rather than another local spelling.

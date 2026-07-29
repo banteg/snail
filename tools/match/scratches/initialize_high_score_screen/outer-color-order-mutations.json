@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-color-declaration-order",
+      "find": "    tColour shared_action_color;\n    tColour alternating_background_color;\n    tColour challenge_heading_rank_color;\n    tColour postal_heading_challenge_background_color;",
+      "replacements": [
+        {
+          "name": "postal-alternating-challenge-shared",
+          "text": "    tColour postal_heading_challenge_background_color;\n    tColour alternating_background_color;\n    tColour challenge_heading_rank_color;\n    tColour shared_action_color;"
+        },
+        {
+          "name": "shared-alternating-postal-challenge",
+          "text": "    tColour shared_action_color;\n    tColour alternating_background_color;\n    tColour postal_heading_challenge_background_color;\n    tColour challenge_heading_rank_color;"
+        },
+        {
+          "name": "postal-alternating-shared-challenge",
+          "text": "    tColour postal_heading_challenge_background_color;\n    tColour alternating_background_color;\n    tColour shared_action_color;\n    tColour challenge_heading_rank_color;"
+        },
+        {
+          "name": "postal-challenge-alternating-shared",
+          "text": "    tColour postal_heading_challenge_background_color;\n    tColour challenge_heading_rank_color;\n    tColour alternating_background_color;\n    tColour shared_action_color;"
+        },
+        {
+          "name": "postal-shared-challenge-alternating",
+          "text": "    tColour postal_heading_challenge_background_color;\n    tColour shared_action_color;\n    tColour challenge_heading_rank_color;\n    tColour alternating_background_color;"
+        },
+        {
+          "name": "alternating-shared-challenge-postal",
+          "text": "    tColour alternating_background_color;\n    tColour shared_action_color;\n    tColour challenge_heading_rank_color;\n    tColour postal_heading_challenge_background_color;"
+        },
+        {
+          "name": "alternating-postal-challenge-shared",
+          "text": "    tColour alternating_background_color;\n    tColour postal_heading_challenge_background_color;\n    tColour challenge_heading_rank_color;\n    tColour shared_action_color;"
+        },
+        {
+          "name": "challenge-alternating-shared-postal",
+          "text": "    tColour challenge_heading_rank_color;\n    tColour alternating_background_color;\n    tColour shared_action_color;\n    tColour postal_heading_challenge_background_color;"
+        },
+        {
+          "name": "challenge-postal-shared-alternating",
+          "text": "    tColour challenge_heading_rank_color;\n    tColour postal_heading_challenge_background_color;\n    tColour shared_action_color;\n    tColour alternating_background_color;"
+        },
+        {
+          "name": "postal-challenge-shared-alternating",
+          "text": "    tColour postal_heading_challenge_background_color;\n    tColour challenge_heading_rank_color;\n    tColour shared_action_color;\n    tColour alternating_background_color;"
+        },
+        {
+          "name": "shared-postal-challenge-alternating",
+          "text": "    tColour shared_action_color;\n    tColour postal_heading_challenge_background_color;\n    tColour challenge_heading_rank_color;\n    tColour alternating_background_color;"
+        },
+        {
+          "name": "shared-challenge-alternating-postal",
+          "text": "    tColour shared_action_color;\n    tColour challenge_heading_rank_color;\n    tColour alternating_background_color;\n    tColour postal_heading_challenge_background_color;"
+        }
+      ]
+    }
+  ]
+}

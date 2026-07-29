@@ -155,3 +155,22 @@ This is codegen-neutral ownership recovery. Focused Wibo remains 98.00%,
 residuals are still twelve `tColour` stack-slot permutations. No aggregate,
 padding, volatile access, or other synthetic stack-shaping was introduced to
 hide them.
+
+## 2026-07-29 bounded colour-allocation sweeps
+
+The remaining twelve differences were replayed as allocation hypotheses rather
+than patched with synthetic stack shaping. All twelve selected permutations of
+the four outer colour declarations compile byte-identically: VC6 assigns their
+objects from use/lifetime information, not declaration order.
+
+The five Postal-only and three Challenge-only row colours were then replaced,
+individually and in every combination, with semantically equivalent
+full-expression `tColour()` temporaries. All 8 one-site probes and all 255
+interaction variants are byte-identical to the retained source. Together with
+the declaration-order sweep, the ledger records 275 neutral evaluations
+(267 distinct sources), no regressions, and no improvements.
+
+The focused result therefore remains 98.00%, 600/600 instructions, prefix 80,
+with all 137 masked operands clean. The residual is now bounded to VC6's
+otherwise-equivalent stack-slot colouring: honest declaration ordering,
+branch-local scoping, and temporary lifetimes do not influence it.

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "sprite-flag-lifetime",
+      "find": "            *slots = sprite;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;",
+      "replacements": [
+        {
+          "name": "named-unsigned-flags",
+          "text": "            *slots = sprite;\n            unsigned int sprite_flags = sprite->flags;\n            sprite_flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            sprite->flags = sprite_flags;"
+        },
+        {
+          "name": "named-combined-flags",
+          "text": "            *slots = sprite;\n            unsigned int sprite_flags =\n                sprite->flags | SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            sprite->flags = sprite_flags;"
+        },
+        {
+          "name": "named-signed-flags",
+          "text": "            *slots = sprite;\n            int sprite_flags = sprite->flags;\n            sprite_flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            sprite->flags = sprite_flags;"
+        },
+        {
+          "name": "flags-pointer",
+          "text": "            *slots = sprite;\n            unsigned int* sprite_flags = &sprite->flags;\n            *sprite_flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        },
+        {
+          "name": "flags-reference",
+          "text": "            *slots = sprite;\n            unsigned int& sprite_flags = sprite->flags;\n            sprite_flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        }
+      ]
+    },
+    {
+      "name": "first-slot-reload-lifetime",
+      "find": "            (*(slots - 1))->progress = 0.0f;\n            (*(slots - 1))->progress_step = 0.0f;\n            (*(slots - 1))->size_start = 3.0f;\n            (*(slots - 1))->size_end = 3.0f;",
+      "replacements": [
+        {
+          "name": "one-use-current",
+          "text": "            cRSprite* current = *(slots - 1);\n            current->progress = 0.0f;\n            (*(slots - 1))->progress_step = 0.0f;\n            (*(slots - 1))->size_start = 3.0f;\n            (*(slots - 1))->size_end = 3.0f;"
+        },
+        {
+          "name": "current-before-size-local",
+          "text": "            cRSprite* current = *(slots - 1);\n            float sprite_size = 3.0f;\n            current->progress = 0.0f;\n            (*(slots - 1))->progress_step = 0.0f;\n            (*(slots - 1))->size_start = sprite_size;\n            (*(slots - 1))->size_end = sprite_size;"
+        },
+        {
+          "name": "size-local-after-current-store",
+          "text": "            cRSprite* current = *(slots - 1);\n            current->progress = 0.0f;\n            (*(slots - 1))->progress_step = 0.0f;\n            float sprite_size = 3.0f;\n            (*(slots - 1))->size_start = sprite_size;\n            (*(slots - 1))->size_end = sprite_size;"
+        },
+        {
+          "name": "one-use-slot-pointer",
+          "text": "            cRSprite** current_slot = slots - 1;\n            (*current_slot)->progress = 0.0f;\n            (*(slots - 1))->progress_step = 0.0f;\n            (*(slots - 1))->size_start = 3.0f;\n            (*(slots - 1))->size_end = 3.0f;"
+        },
+        {
+          "name": "one-use-slot-reference",
+          "text": "            cRSprite*& current = *(slots - 1);\n            current->progress = 0.0f;\n            (*(slots - 1))->progress_step = 0.0f;\n            (*(slots - 1))->size_start = 3.0f;\n            (*(slots - 1))->size_end = 3.0f;"
+        }
+      ]
+    }
+  ]
+}
