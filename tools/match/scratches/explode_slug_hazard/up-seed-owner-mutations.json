@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "up-seed-owner-lifetime",
+      "find": "        random_velocity.y =\n            (float)next_math_random_value() * (spread + 0.30000001f) * 0.000030517578f;\n        cRSubGame* game = owner_game;",
+      "replacements": [
+        {
+          "name": "integer-seed-owner-before-conversion",
+          "text": "        int up_seed = next_math_random_value();\n        cRSubGame* game = owner_game;\n        random_velocity.y =\n            (float)up_seed * (spread + 0.30000001f) * 0.000030517578f;"
+        },
+        {
+          "name": "integer-seed-owner-after-conversion",
+          "text": "        int up_seed = next_math_random_value();\n        random_velocity.y =\n            (float)up_seed * (spread + 0.30000001f) * 0.000030517578f;\n        cRSubGame* game = owner_game;"
+        },
+        {
+          "name": "long-seed-owner-before-conversion",
+          "text": "        long up_seed = next_math_random_value();\n        cRSubGame* game = owner_game;\n        random_velocity.y =\n            (float)up_seed * (spread + 0.30000001f) * 0.000030517578f;"
+        },
+        {
+          "name": "unsigned-seed-owner-before-conversion",
+          "text": "        unsigned int up_seed = next_math_random_value();\n        cRSubGame* game = owner_game;\n        random_velocity.y =\n            (float)up_seed * (spread + 0.30000001f) * 0.000030517578f;"
+        },
+        {
+          "name": "float-seed-owner-after-conversion",
+          "text": "        float up_random = (float)next_math_random_value();\n        cRSubGame* game = owner_game;\n        random_velocity.y =\n            up_random * (spread + 0.30000001f) * 0.000030517578f;"
+        },
+        {
+          "name": "split-float-after-owner-load",
+          "text": "        int up_seed = next_math_random_value();\n        cRSubGame* game = owner_game;\n        float up_random = (float)up_seed;\n        random_velocity.y =\n            up_random * (spread + 0.30000001f) * 0.000030517578f;"
+        },
+        {
+          "name": "split-float-before-owner-load",
+          "text": "        int up_seed = next_math_random_value();\n        float up_random = (float)up_seed;\n        cRSubGame* game = owner_game;\n        random_velocity.y =\n            up_random * (spread + 0.30000001f) * 0.000030517578f;"
+        },
+        {
+          "name": "owner-before-random-call",
+          "text": "        cRSubGame* game = owner_game;\n        random_velocity.y =\n            (float)next_math_random_value() * (spread + 0.30000001f) * 0.000030517578f;"
+        },
+        {
+          "name": "named-up-range",
+          "text": "        float up_range = spread + 0.30000001f;\n        int up_seed = next_math_random_value();\n        cRSubGame* game = owner_game;\n        random_velocity.y =\n            (float)up_seed * up_range * 0.000030517578f;"
+        }
+      ]
+    }
+  ]
+}

@@ -143,3 +143,26 @@ prefix 79, with all 32 masks clean.
 
 The platform-specific particle count, texture, and range values remain
 untouched; mobile supplies source provenance rather than replacement constants.
+
+## 2026-07-29 owner/x87 scheduling boundary
+
+Three recorded mutation sweeps exhaust the credible source-level ways to move
+the up-seed conversion, owner load, and scaled-vector expression without
+inventing a dependency. Across 50 evaluated variants (41 unique), none improve:
+13 are score-neutral and 37 regress. The owner/seed sweep contributes 9
+variants, the vector spelling/order sweep 12, and their complete two-site
+interaction 29.
+
+The score-neutral alternatives either compile byte-identically or move the
+owner load earlier while shortening the exact prefix from 79 to 72.
+Integer-seed provenance, delayed float conversion, component reordering, and
+copy-then-scale forms all regress. Binary Ninja confirms the native sequence
+loads `owner_game` at `0x43f7c3`, before converting the saved up draw, then
+keeps the rate live across the three products and emits the otherwise
+unrecovered `fxch` at `0x43f826`.
+
+The honest result therefore remains 97.61%, 146/147 instructions, prefix 79,
+with all 32 masked operands clean. Android/iOS range provenance supports the
+current random-vector semantics, but no mobile-backed owner or component
+spelling recovers that Windows VC6 x87 schedule. Do not force it with
+`volatile`, a dummy dependency, or a fake alias.

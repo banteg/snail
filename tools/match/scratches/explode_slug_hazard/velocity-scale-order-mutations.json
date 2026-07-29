@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "velocity-scale-order",
+      "find": "        float speed = game->subgame_rate;\n        sprite->velocity = random_velocity * speed;",
+      "replacements": [
+        {
+          "name": "explicit-xyz",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity;\n        scaled_velocity.x = random_velocity.x * speed;\n        scaled_velocity.y = random_velocity.y * speed;\n        scaled_velocity.z = random_velocity.z * speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "explicit-xzy",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity;\n        scaled_velocity.x = random_velocity.x * speed;\n        scaled_velocity.z = random_velocity.z * speed;\n        scaled_velocity.y = random_velocity.y * speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "explicit-yxz",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity;\n        scaled_velocity.y = random_velocity.y * speed;\n        scaled_velocity.x = random_velocity.x * speed;\n        scaled_velocity.z = random_velocity.z * speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "explicit-yzx",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity;\n        scaled_velocity.y = random_velocity.y * speed;\n        scaled_velocity.z = random_velocity.z * speed;\n        scaled_velocity.x = random_velocity.x * speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "explicit-zxy",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity;\n        scaled_velocity.z = random_velocity.z * speed;\n        scaled_velocity.x = random_velocity.x * speed;\n        scaled_velocity.y = random_velocity.y * speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "explicit-zyx",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity;\n        scaled_velocity.z = random_velocity.z * speed;\n        scaled_velocity.y = random_velocity.y * speed;\n        scaled_velocity.x = random_velocity.x * speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "copy-then-scale",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity = random_velocity;\n        scaled_velocity *= speed;\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "scale-random-in-place",
+          "text": "        float speed = game->subgame_rate;\n        random_velocity *= speed;\n        sprite->velocity = random_velocity;"
+        },
+        {
+          "name": "three-argument-constructor",
+          "text": "        float speed = game->subgame_rate;\n        Vector3 scaled_velocity(\n            random_velocity.x * speed,\n            random_velocity.y * speed,\n            random_velocity.z * speed);\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "named-scalars",
+          "text": "        float speed = game->subgame_rate;\n        float scaled_x = random_velocity.x * speed;\n        float scaled_y = random_velocity.y * speed;\n        float scaled_z = random_velocity.z * speed;\n        Vector3 scaled_velocity(scaled_x, scaled_y, scaled_z);\n        sprite->velocity = scaled_velocity;"
+        },
+        {
+          "name": "direct-sprite-components",
+          "text": "        float speed = game->subgame_rate;\n        sprite->velocity.x = random_velocity.x * speed;\n        sprite->velocity.y = random_velocity.y * speed;\n        sprite->velocity.z = random_velocity.z * speed;"
+        },
+        {
+          "name": "explicit-member-operator",
+          "text": "        float speed = game->subgame_rate;\n        sprite->velocity = random_velocity.operator*(speed);"
+        }
+      ]
+    }
+  ]
+}
