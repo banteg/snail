@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-publication",
+      "find": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }",
+      "replacements": [
+        {
+          "name": "direct-local-store",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            cell->phase = phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "direct-sum-local",
+          "text": "            phase = cell->phase + cell->phase_step;\n            cell->phase = phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "step-first-sum-local",
+          "text": "            phase = cell->phase_step + cell->phase;\n            cell->phase = phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "compound-member-then-local",
+          "text": "            cell->phase += cell->phase_step;\n            phase = cell->phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "local-from-compound-member",
+          "text": "            phase = (cell->phase += cell->phase_step);\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "chained-local-and-member",
+          "text": "            cell->phase = phase = cell->phase_step + cell->phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "named-next-phase",
+          "text": "            float next_phase = cell->phase_step + cell->phase;\n            cell->phase = next_phase;\n            if (next_phase > 6.28318548f) {\n                cell->phase = next_phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "member-store-then-local-reload",
+          "text": "            cell->phase = cell->phase_step + cell->phase;\n            phase = cell->phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "local-store-through-pointer",
+          "text": "            float* cell_phase = &cell->phase;\n            phase = cell->phase_step + *cell_phase;\n            *cell_phase = phase;\n            if (phase > 6.28318548f) {\n                *cell_phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "local-store-through-reference",
+          "text": "            float& cell_phase = cell->phase;\n            phase = cell->phase_step + cell_phase;\n            cell_phase = phase;\n            if (phase > 6.28318548f) {\n                cell_phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "bit-shadow-only-for-compare",
+          "text": "            phase = cell->phase_step + cell->phase;\n            phase_bits = *(int*)&phase;\n            cell->phase = phase;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "float-store-after-bit-shadow",
+          "text": "            phase = cell->phase_step + cell->phase;\n            phase_bits = *(int*)&phase;\n            phase = *(float*)&phase_bits;\n            cell->phase = phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        }
+      ]
+    }
+  ]
+}

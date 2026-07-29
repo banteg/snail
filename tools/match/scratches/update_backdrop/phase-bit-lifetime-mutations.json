@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-bit-lifetime",
+      "find": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }",
+      "replacements": [
+        {
+          "name": "retain-phase-for-compare",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "compare-bit-shadow-directly",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            if (*(float*)&phase_bits > 6.28318548f) {\n                cell->phase = *(float*)&phase_bits - 6.28318548f;\n            }"
+        },
+        {
+          "name": "chained-bit-publication",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            *(int*)&cell->phase = phase_bits = *(int*)&phase;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "chained-bits-retain-phase",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            *(int*)&cell->phase = phase_bits = *(int*)&phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "member-bit-pointer",
+          "text": "            int* cell_phase_bits = (int*)&cell->phase;\n            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *cell_phase_bits = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "member-bit-reference",
+          "text": "            int& cell_phase_bits = *(int*)&cell->phase;\n            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            cell_phase_bits = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "member-float-reference",
+          "text": "            float& cell_phase = cell->phase;\n            phase = cell->phase_step;\n            phase += cell_phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell_phase = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell_phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "phase-bit-pointer",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            int* local_phase_bits = (int*)&phase;\n            phase_bits = *local_phase_bits;\n            *(int*)&cell->phase = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "union-phase-shadow",
+          "text": "            union PhaseShadow {\n                float value;\n                int bits;\n            } phase_shadow;\n            phase_shadow.value = cell->phase_step + cell->phase;\n            *(int*)&cell->phase = phase_shadow.bits;\n            if (phase_shadow.value > 6.28318548f) {\n                cell->phase = phase_shadow.value - 6.28318548f;\n            }"
+        },
+        {
+          "name": "union-shadow-with-bit-copy",
+          "text": "            union PhaseShadow {\n                float value;\n                int bits;\n            } phase_shadow;\n            phase_shadow.value = cell->phase_step + cell->phase;\n            phase_bits = phase_shadow.bits;\n            *(int*)&cell->phase = phase_bits;\n            phase_shadow.bits = phase_bits;\n            if (phase_shadow.value > 6.28318548f) {\n                cell->phase = phase_shadow.value - 6.28318548f;\n            }"
+        },
+        {
+          "name": "phase-bits-as-condition-source",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            float phase_for_compare = *(float*)&phase_bits;\n            if (phase_for_compare > 6.28318548f) {\n                cell->phase = phase_for_compare - 6.28318548f;\n            }"
+        },
+        {
+          "name": "member-float-store-after-shadow",
+          "text": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            float phase_value = *(float*)&phase_bits;\n            cell->phase = phase_value;\n            if (phase_value > 6.28318548f) {\n                cell->phase = phase_value - 6.28318548f;\n            }"
+        }
+      ]
+    }
+  ]
+}

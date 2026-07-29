@@ -100,3 +100,21 @@ A natural Windows `void` probe regressed focused matching from 88.24% to
 schedule around the folded dispatch. The observed Windows `int32_t` contract
 is therefore retained. This is an intentional platform ABI boundary, not a
 reason to copy the mobile declaration or shape a fake return.
+
+## 2026-07-29 current-X borrow
+
+Three recorded sweeps evaluated 36 phase, offset-publication, and bit-lifetime
+forms. Borrowing `BackdropDistortCell::current_x_offset` as a `float&` is the
+only retained improvement. It prevents VC6 from hoisting the following cosine
+argument load across the completed sine-result store, exactly recovering the
+native X/Y publication schedule. Pointer and paired-pointer forms emit the same
+bytes, but the single reference states the narrow ownership relationship most
+clearly.
+
+Focused matching rises from 88.24% to **89.71%**, still 69/67 instructions,
+with all seven references clean. The remaining difference is isolated to phase
+publication: native duplicates the live x87 sum into the stack spill and cell
+with `fst`/`fstp`, while the best source-shaped bit-preserving form materializes
+the same bits through four integer instructions. Plain float, pointer,
+reference, union, chained-assignment, and alternate bit-shadow forms are
+neutral or worse; no volatile dependency is retained.

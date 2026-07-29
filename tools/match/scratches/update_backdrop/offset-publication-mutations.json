@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "current-offset-publication",
+      "find": "            cell->current_x_offset = sine(cell->phase) * cell->x_offset;\n            cell->current_y_offset = cosine(cell->phase) * cell->y_offset;",
+      "replacements": [
+        {
+          "name": "named-current-x",
+          "text": "            float current_x = sine(cell->phase) * cell->x_offset;\n            cell->current_x_offset = current_x;\n            cell->current_y_offset = cosine(cell->phase) * cell->y_offset;"
+        },
+        {
+          "name": "named-current-x-and-y",
+          "text": "            float current_x = sine(cell->phase) * cell->x_offset;\n            cell->current_x_offset = current_x;\n            float current_y = cosine(cell->phase) * cell->y_offset;\n            cell->current_y_offset = current_y;"
+        },
+        {
+          "name": "named-sine-result",
+          "text": "            float phase_sine = sine(cell->phase);\n            cell->current_x_offset = phase_sine * cell->x_offset;\n            cell->current_y_offset = cosine(cell->phase) * cell->y_offset;"
+        },
+        {
+          "name": "named-sine-and-cosine-results",
+          "text": "            float phase_sine = sine(cell->phase);\n            cell->current_x_offset = phase_sine * cell->x_offset;\n            float phase_cosine = cosine(cell->phase);\n            cell->current_y_offset = phase_cosine * cell->y_offset;"
+        },
+        {
+          "name": "snapshot-phase-for-cosine",
+          "text": "            cell->current_x_offset = sine(cell->phase) * cell->x_offset;\n            float cosine_phase = cell->phase;\n            cell->current_y_offset = cosine(cosine_phase) * cell->y_offset;"
+        },
+        {
+          "name": "snapshot-phase-after-named-x",
+          "text": "            float current_x = sine(cell->phase) * cell->x_offset;\n            cell->current_x_offset = current_x;\n            float cosine_phase = cell->phase;\n            cell->current_y_offset = cosine(cosine_phase) * cell->y_offset;"
+        },
+        {
+          "name": "x-destination-pointer",
+          "text": "            float* current_x = &cell->current_x_offset;\n            *current_x = sine(cell->phase) * cell->x_offset;\n            cell->current_y_offset = cosine(cell->phase) * cell->y_offset;"
+        },
+        {
+          "name": "offset-destination-pointers",
+          "text": "            float* current_x = &cell->current_x_offset;\n            float* current_y = &cell->current_y_offset;\n            *current_x = sine(cell->phase) * cell->x_offset;\n            *current_y = cosine(cell->phase) * cell->y_offset;"
+        },
+        {
+          "name": "x-destination-reference",
+          "text": "            float& current_x = cell->current_x_offset;\n            current_x = sine(cell->phase) * cell->x_offset;\n            cell->current_y_offset = cosine(cell->phase) * cell->y_offset;"
+        },
+        {
+          "name": "commuted-offset-products",
+          "text": "            cell->current_x_offset = cell->x_offset * sine(cell->phase);\n            cell->current_y_offset = cell->y_offset * cosine(cell->phase);"
+        },
+        {
+          "name": "named-offset-inputs",
+          "text": "            float x_offset = cell->x_offset;\n            float y_offset = cell->y_offset;\n            cell->current_x_offset = sine(cell->phase) * x_offset;\n            cell->current_y_offset = cosine(cell->phase) * y_offset;"
+        },
+        {
+          "name": "phase-pointer-view",
+          "text": "            float* cell_phase = &cell->phase;\n            cell->current_x_offset = sine(*cell_phase) * cell->x_offset;\n            cell->current_y_offset = cosine(*cell_phase) * cell->y_offset;"
+        }
+      ]
+    }
+  ]
+}

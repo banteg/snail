@@ -35,7 +35,8 @@ int Backdrop::update_backdrop()
                 cell->phase = phase - 6.28318548f;
             }
 
-            cell->current_x_offset = sine(cell->phase) * cell->x_offset;
+            float& current_x = cell->current_x_offset;
+            current_x = sine(cell->phase) * cell->x_offset;
             cell->current_y_offset = cosine(cell->phase) * cell->y_offset;
             cell += GRID_COLUMN_COUNT;
             row_count--;
