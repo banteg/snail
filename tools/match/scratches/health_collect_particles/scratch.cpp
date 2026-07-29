@@ -16,7 +16,7 @@ void cRSubGoldy::HealthCollect(SubHealth* pickup)
         int index = 0;
         do {
             cRSprite* sprite =
-                g_sprite_manager.allocate_sprite(player_slot, 0x80, -1, -1);
+                g_sprite_manager.New(player_slot, 0x80, -1, -1);
 
             sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
             sprite->progress = 0.0f;

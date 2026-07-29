@@ -69,3 +69,8 @@ active heads, and the free head, for a total manager size of `0x83d7c`.
 Pointer-only dependents use `sprite_fwd.h`; the compatibility aliases remain
 available there for older analysis code without reversing ownership or
 transferring the mobile `0xb0` stride.
+
+The exact initializer now compiles as the authored
+`cRSpriteManager::Init()`. Its stable matcher target remains
+`initialize_sprite_manager`, and the VC6-decorated alias proves the startup
+call relocation without changing the Windows layout or 45/45 body.

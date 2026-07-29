@@ -4082,7 +4082,7 @@
       "ios_symbol": "cRSpriteManager::Load(char*, int, int)",
       "source_object": "RSprite.o",
       "confidence": "medium",
-      "notes": "iOS also exposes `cRSpriteManager::LoadSet(char*, int, int)`; Windows texture registration is the direct single-texture split.",
+      "notes": "iOS also exposes `cRSpriteManager::LoadSet(char*, int, int)`; Windows texture registration is the direct single-texture split. Android and iOS decompile Load as void, and all 69 direct Windows callsites discard EAX. Compiling the Windows member as void preserves its exact 35/35 body because VC6 incidentally leaves the selected texture pointer in EAX after the final store.",
       "android_symbol": "cRSpriteManager::Load(char*, int, int)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -4138,6 +4138,7 @@
       "ios_symbol": "cRSpriteManager::Pause(bool)",
       "source_object": "RSprite.o",
       "confidence": "high",
+      "notes": "Android and iOS independently preserve `void cRSpriteManager::Pause(bool)`. All six direct Windows callsites pass zero or one and discard AL; the authored void/bool signature preserves the exact three-instruction Windows body.",
       "android_symbol": "cRSpriteManager::Pause(bool)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

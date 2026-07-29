@@ -201,13 +201,13 @@ typedef char SpriteDepthNode_must_be_0x18[
 
 class cRSpriteManager {
 public:
-    void initialize_sprite_manager(); // @ 0x44e160
-    cRTexture* register_sprite_texture(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
-    cRSprite* allocate_sprite(int owner, int texture_id, int texture_a, int texture_b); // @ 0x44e2a0
-    void kill_game_sprites(); // @ 0x44e3d0
-    char set_sprite_manager_paused(char paused_); // @ 0x44e540
-    cRTexture* get_sprite_texture(int texture_id); // @ 0x44e570
-    TgaImageView* get_sprite_tga(int texture_id); // @ 0x44e580, iOS/Android GetTga
+    void Load(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
+    void Init(); // @ 0x44e160
+    cRSprite* New(int owner, int texture_id, int texture_a, int texture_b); // @ 0x44e2a0
+    void KillGame(); // @ 0x44e3d0
+    void Pause(bool paused_); // @ 0x44e540
+    cRTexture* GetTexture(int texture_id); // @ 0x44e570
+    TgaImageView* GetTga(int texture_id); // @ 0x44e580
 
     unsigned char paused; // +0x00000
     char unknown_00001[0x04 - 0x01];

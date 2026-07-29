@@ -2380,6 +2380,24 @@
       "description": "Exact Windows cRSprite::AI() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x44e0f0",
+      "name": "register_sprite_texture",
+      "kind": "function",
+      "aliases": [
+        "?Load@cRSpriteManager@@QAEXPADHH@Z"
+      ],
+      "description": "Exact Windows void cRSpriteManager::Load(char*, int, int) entry; both mobile ports recover void and every Windows caller discards EAX."
+    },
+    {
+      "address": "0x44e160",
+      "name": "initialize_sprite_manager",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSpriteManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSpriteManager::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x44e200",
       "name": "kill_sprite",
       "kind": "function",
@@ -2387,6 +2405,24 @@
         "?Kill@cRSprite@@QAEXXZ"
       ],
       "description": "Exact Windows cRSprite::Kill() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x44e2a0",
+      "name": "allocate_sprite",
+      "kind": "function",
+      "aliases": [
+        "?New@cRSpriteManager@@QAEPAVcRSprite@@HHHH@Z"
+      ],
+      "description": "Exact Windows cRSpriteManager::New(int, int, int, int) entry returning an owned-pool cRSprite pointer."
+    },
+    {
+      "address": "0x44e3d0",
+      "name": "kill_game_sprites",
+      "kind": "function",
+      "aliases": [
+        "?KillGame@cRSpriteManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows void cRSpriteManager::KillGame() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x44e410",
@@ -2398,6 +2434,15 @@
       "description": "Near-exact Windows cRSprite::BuildTail(tMatrix*) entry; both mobile ports preserve the same owner, method, and parameter type."
     },
     {
+      "address": "0x44e540",
+      "name": "set_sprite_manager_paused",
+      "kind": "function",
+      "aliases": [
+        "?Pause@cRSpriteManager@@QAEX_N@Z"
+      ],
+      "description": "Exact Windows void cRSpriteManager::Pause(bool) entry; both mobile ports recover the same contract and every Windows caller discards AL."
+    },
+    {
       "address": "0x44e550",
       "name": "set_sprite_texture_ref",
       "kind": "function",
@@ -2405,6 +2450,24 @@
         "?SetTextureRef@cRSprite@@QAEXHH@Z"
       ],
       "description": "Exact Windows void cRSprite::SetTextureRef(int, int) entry; all Windows callers discard EAX and both mobile decompilers recover void."
+    },
+    {
+      "address": "0x44e570",
+      "name": "get_sprite_texture",
+      "kind": "function",
+      "aliases": [
+        "?GetTexture@cRSpriteManager@@QAEPAUcRTexture@@H@Z"
+      ],
+      "description": "Exact Windows cRSpriteManager::GetTexture(int) entry returning a borrowed cRTexture pointer."
+    },
+    {
+      "address": "0x44e580",
+      "name": "get_sprite_tga",
+      "kind": "function",
+      "aliases": [
+        "?GetTga@cRSpriteManager@@QAEPAUTgaImageView@@H@Z"
+      ],
+      "description": "Exact Windows cRSpriteManager::GetTga(int) entry returning a borrowed TgaImageView pointer."
     },
     {
       "address": "0x44ebc1",

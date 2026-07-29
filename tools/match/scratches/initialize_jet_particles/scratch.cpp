@@ -10,7 +10,7 @@ void SubHover::initialize_jet_particles()
     do {
         int columns = JET_PARTICLE_COLUMN_COUNT;
         do {
-            slot->sprite = g_sprite_manager.allocate_sprite(1, 0x9e, -1, -1);
+            slot->sprite = g_sprite_manager.New(1, 0x9e, -1, -1);
             unsigned int flags = slot->sprite->flags;
             flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
             slot->sprite->flags = flags;

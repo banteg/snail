@@ -68,13 +68,13 @@ void Exit::update_completion_screen()
                 destroy_completion_screen();
                 g_game->subgame.sub_pause.uninit_pause_menu();
                 g_game->subgame.subgame_pause_gate = 0;
-                g_sprite_manager.set_sprite_manager_paused(0);
+                g_sprite_manager.Pause(0);
                 g_game->subgame.UnInit();
             } else {
                 destroy_completion_screen();
                 g_game->subgame.sub_pause.uninit_pause_menu();
                 g_game->subgame.subgame_pause_gate = 0;
-                g_sprite_manager.set_sprite_manager_paused(0);
+                g_sprite_manager.Pause(0);
                 g_game->subgame.UnInit();
                 int mode = g_game->subgame.level_mode;
                 if (mode == 4 || mode == 1)
@@ -94,7 +94,7 @@ void Exit::update_completion_screen()
             destroy_completion_screen();
             g_game->subgame.sub_pause.uninit_pause_menu();
             g_game->subgame.subgame_pause_gate = 0;
-            g_sprite_manager.set_sprite_manager_paused(0);
+            g_sprite_manager.Pause(0);
             g_game->subgame.UnInit();
             g_game->players[0].frontend_state = 2;
         }
@@ -109,7 +109,7 @@ void Exit::update_completion_screen()
             destroy_completion_screen();
             g_game->subgame.sub_pause.uninit_pause_menu();
             g_game->subgame.subgame_pause_gate = 0;
-            g_sprite_manager.set_sprite_manager_paused(0);
+            g_sprite_manager.Pause(0);
             g_game->subgame.UnInit();
             g_game->players[0].frontend_state =
                 g_game->subgame.replay_launch_return_state;

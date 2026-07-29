@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-cRSprite* cRSpriteManager::allocate_sprite(int owner, int texture_id, int texture_a, int texture_b)
+cRSprite* cRSpriteManager::New(int owner, int texture_id, int texture_a, int texture_b)
 {
     int zero = 0;
     int primary_texture_id = texture_id;

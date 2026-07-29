@@ -85,7 +85,7 @@ void render_object_toon(Object* object, TransformMatrix* matrix)
             object->toon_index_buffer->buffer->vtbl->Unlock(object->toon_index_buffer->buffer);
 
             if (emitted > 0) {
-                bind_texture_ref(g_sprite_manager.get_sprite_texture(0x5d));
+                bind_texture_ref(g_sprite_manager.GetTexture(0x5d));
                 Direct3DDevice8* device = g_d3d_device;
                 int primitive_count = emitted / 2;
                 device->vtbl->DrawIndexedPrimitive(

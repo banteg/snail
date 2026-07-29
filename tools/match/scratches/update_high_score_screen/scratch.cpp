@@ -16,7 +16,7 @@ void HighScore::update_high_score_screen()
             selected_name->widget_flags = selected_flags;
 
             destroy_high_score_screen();
-            g_sprite_manager.kill_game_sprites();
+            g_sprite_manager.KillGame();
 
             int rank = selected_rank;
             rstrcpy_checked_ascii(
@@ -49,7 +49,7 @@ void HighScore::update_high_score_screen()
             cancel->widget_flags = result;
 
             destroy_high_score_screen();
-            g_sprite_manager.kill_game_sprites();
+            g_sprite_manager.KillGame();
             g_game->subgame.sub_high_score.mini_delete_high_score_entry(
                 selected_rank);
             exit_high_score_screen();

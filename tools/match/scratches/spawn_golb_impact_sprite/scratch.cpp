@@ -11,7 +11,7 @@ void GolbShot::spawn_golb_impact_sprite(Vector3* position)
 
     if ((render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) != 0) {
         int owner = owner_player->player_slot;
-        cRSprite* sprite = g_sprite_manager.allocate_sprite(owner, 0x21, -1, -1);
+        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);
         int flags = sprite->flags;
         flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         Vector3 velocity;

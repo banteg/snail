@@ -6,7 +6,7 @@
 
 cRSprite* GolbShot::spawn_golb_trail_sprite(Vector3* position)
 {
-    cRSprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x21, -1, -1);
+    cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x21, -1, -1);
     int flags = sprite->flags;
     flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     sprite->progress = 0.0f;

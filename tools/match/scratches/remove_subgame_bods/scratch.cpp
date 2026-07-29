@@ -151,5 +151,5 @@ void cRSubGame::RemoveBods()
             (BodNode*)&player.click_start);
         player.click_start.state = CLICK_START_STATE_INACTIVE;
     }
-    g_sprite_manager.kill_game_sprites();
+    g_sprite_manager.KillGame();
 }

@@ -17,7 +17,7 @@ void StarManager::initialize_star_field()
         int offset = 0;
         do {
             *(cRSprite**)((char*)entries + offset + 0x1c) =
-                g_sprite_manager.allocate_sprite(2, 0x20, -1, -1);
+                g_sprite_manager.New(2, 0x20, -1, -1);
             ++i;
             offset += sizeof(StarManagerEntry);
         } while (i < count);

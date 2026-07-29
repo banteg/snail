@@ -93,7 +93,7 @@ load_script:
 
         if (archive_or_file_exists(
                 scripts[script_count].backdrop_texture_path, 0) != 0) {
-            g_sprite_manager.register_sprite_texture(
+            g_sprite_manager.Load(
                 scripts[script_count].backdrop_texture_path,
                 scripts[script_count].backdrop_texture_id, 0x400);
             scripts[script_count].split_backdrop_texture_pair = 0;
@@ -133,9 +133,9 @@ load_script:
             dot[5] = 'a';
             dot[6] = 0;
 
-            g_sprite_manager.register_sprite_texture(split_texture_a,
+            g_sprite_manager.Load(split_texture_a,
                 scripts[script_count].backdrop_texture_id, 0x400);
-            g_sprite_manager.register_sprite_texture(split_texture_b,
+            g_sprite_manager.Load(split_texture_b,
                 scripts[script_count].backdrop_texture_id + 1, 0x400);
         }
 

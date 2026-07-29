@@ -10,7 +10,7 @@ Parcel* cRSubGame::AddParcel(Vector3* world_position, cRSubGoldy*)
         parcel->position = *world_position;
         parcel->owner_player = &player;
 
-        cRSprite* sprite = g_sprite_manager.allocate_sprite(player.player_slot, 0x79, -1, -1);
+        cRSprite* sprite = g_sprite_manager.New(player.player_slot, 0x79, -1, -1);
         parcel->sprite = sprite;
         sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
         parcel->sprite->progress = 0.0f;

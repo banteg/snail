@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void cRSpriteManager::kill_game_sprites()
+void cRSpriteManager::KillGame()
 {
     cRSprite** bucket = g_sprite_active_heads;
     unsigned int game_sprite_flag = SPRITE_FLAG_GAMEPLAY_OWNED;

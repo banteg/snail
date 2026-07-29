@@ -7,7 +7,7 @@ void cRSubGoldy::GhostInit(int owner)
 {
     tColour color;
 
-    ghost_sprite_a = g_sprite_manager.allocate_sprite(owner, 159, -1, -1);
+    ghost_sprite_a = g_sprite_manager.New(owner, 159, -1, -1);
     ghost_sprite_a->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     ghost_sprite_a->progress = 0.0f;
     ghost_sprite_a->progress_step = 0.0f;
@@ -19,7 +19,7 @@ void cRSubGoldy::GhostInit(int owner)
     ghost_sprite_a->position.y = 1.0f;
     ghost_sprite_a->position.z = 0.0f;
 
-    ghost_sprite_b = g_sprite_manager.allocate_sprite(owner, 159, -1, -1);
+    ghost_sprite_b = g_sprite_manager.New(owner, 159, -1, -1);
     ghost_sprite_b->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
     ghost_sprite_b->progress = 0.0f;
     ghost_sprite_b->progress_step = 0.0f;

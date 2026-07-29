@@ -44,3 +44,8 @@ returns the primary Windows `cRSprite*` type. Mobile provides the authored
 allocation invokes the sprite initializer; the Windows body and its `0xb4`
 pool stride continue to define ABI and layout. The type promotion changes no
 source operations or matching bytes.
+
+The compiled member now uses that exact `cRSpriteManager::New(int, int, int,
+int)` name and returns `cRSprite*`. Its owner-qualified decorated alias keeps
+the stable `allocate_sprite` target auditable at every caller while preserving
+the exact 81/81 Windows body.

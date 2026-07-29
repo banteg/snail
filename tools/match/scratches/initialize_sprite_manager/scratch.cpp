@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void cRSpriteManager::initialize_sprite_manager()
+void cRSpriteManager::Init()
 {
     paused = 0;
     for (int bucket = 0; bucket < SPRITE_ACTIVE_LIST_COUNT; ++bucket) {

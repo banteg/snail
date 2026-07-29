@@ -197,7 +197,7 @@ void cRSubGame::AI()
         if (resume_requested == one) {
             subgame_pause_gate = (unsigned char)zero;
             resume_requested = (unsigned char)zero;
-            g_sprite_manager.set_sprite_manager_paused(0);
+            g_sprite_manager.Pause(0);
         }
 
         GameRoot* app = g_game;
@@ -212,7 +212,7 @@ void cRSubGame::AI()
             && g_game->fade.state == zero) {
             *(unsigned char*)(game + offsetof(cRSubGame, subgame_pause_gate)) = one;
             subgame_state = three;
-            g_sprite_manager.set_sprite_manager_paused((char)one);
+            g_sprite_manager.Pause((char)one);
             if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)
                 player.click_start.prompt->hide_border_init();
             return;

@@ -4,7 +4,7 @@
 
 void report_errorf(const char* format, ...);
 
-cRTexture* cRSpriteManager::register_sprite_texture(char* texture_path, int texture_id, int flags)
+void cRSpriteManager::Load(char* texture_path, int texture_id, int flags)
 {
     char* dot = texture_path;
     if (*texture_path != '.') {
@@ -23,5 +23,4 @@ cRTexture* cRSpriteManager::register_sprite_texture(char* texture_path, int text
 
     cRTexture* result = g_sprite_texture_table[texture_id];
     result->frame_count = 0;
-    return result;
 }

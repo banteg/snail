@@ -15,7 +15,7 @@ void SubRingStar::emit_ring_star_shower(cRSubGoldy* owner)
         Vector3 velocity;
         Vector3 orbit_velocity;
         velocity.z = 0.0f;
-        cRSprite* star = g_sprite_manager.allocate_sprite(
+        cRSprite* star = g_sprite_manager.New(
             owner->player_slot,
             parent->star_sprite_id,
             -1,

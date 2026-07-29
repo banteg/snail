@@ -68,7 +68,7 @@ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
     }
 
     cRSprite* sprite =
-        g_sprite_manager.allocate_sprite(owner_player->player_slot, 118, -1, -1);
+        g_sprite_manager.New(owner_player->player_slot, 118, -1, -1);
     slug_hazards.slots[slot_index].sprite = sprite;
     unsigned int flags = sprite->flags;
     flags |= SPRITE_FLAG_GAMEPLAY_OWNED;

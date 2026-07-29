@@ -7,5 +7,5 @@
 void MainMenu::destroy_main_menu()
 {
     g_game->border_manager.kill_all_borders();
-    g_sprite_manager.kill_game_sprites();
+    g_sprite_manager.KillGame();
 }

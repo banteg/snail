@@ -1,9 +1,8 @@
-// set_sprite_manager_paused @ 0x44e540 (thiscall, ret byte)
+// set_sprite_manager_paused @ 0x44e540 (thiscall, ret 0x4)
 
 #include "sprite.h"
 
-char cRSpriteManager::set_sprite_manager_paused(char paused_)
+void cRSpriteManager::Pause(bool paused_)
 {
     paused = paused_;
-    return paused_;
 }

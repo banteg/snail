@@ -21,7 +21,7 @@ void Nuke::initialize_nuke()
         orbit_center_z_step = rate + rate;
 
         do {
-            cRSprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x83, -1, -1);
+            cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);
             *slots = sprite;
             sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
             slots++;

@@ -23,3 +23,10 @@ All recovered producers now use the shared policy name: jet and ring particle
 pools, both SubGoldy ghosts, Golb impact/smoke/trail sprites, slug sprites, ring
 star showers, and the track health/jetpack pickups. The substitutions are
 byte-identical and make each allocation's pause/bulk-cleanup lifetime explicit.
+
+## 2026-07-29 authored method
+
+Android and iOS independently preserve this traversal as
+`void cRSpriteManager::KillGame()`. The matcher now compiles the exact owner and
+method name, maps its decorated relocation to the stable `kill_game_sprites`
+target, and retains the byte-identical 23/23 Windows implementation.

@@ -2511,6 +2511,173 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
             assert "class SpriteManager;" not in header_text
 
 
+def test_mobile_sprite_manager_recovers_authored_methods_and_contracts() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    verified = load_json(
+        repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    verified_entries = {
+        entry["windows_name"]: entry
+        for entry in verified["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    expected_methods = (
+        (
+            "register_sprite_texture",
+            "cRSpriteManager::Load(char*, int, int)",
+            "medium",
+            "cRSpriteManager_Load",
+            "void cRSpriteManager::Load(char* texture_path, int texture_id, int flags)",
+            "?Load@cRSpriteManager@@QAEXPADHH@Z",
+        ),
+        (
+            "initialize_sprite_manager",
+            "cRSpriteManager::Init()",
+            "high",
+            "cRSpriteManager_Init",
+            "void cRSpriteManager::Init()",
+            "?Init@cRSpriteManager@@QAEXXZ",
+        ),
+        (
+            "allocate_sprite",
+            "cRSpriteManager::New(int, int, int, int)",
+            "high",
+            "cRSpriteManager_New",
+            "cRSprite* cRSpriteManager::New(int owner, int texture_id, int texture_a, int texture_b)",
+            "?New@cRSpriteManager@@QAEPAVcRSprite@@HHHH@Z",
+        ),
+        (
+            "kill_game_sprites",
+            "cRSpriteManager::KillGame()",
+            "high",
+            "cRSpriteManager_KillGame",
+            "void cRSpriteManager::KillGame()",
+            "?KillGame@cRSpriteManager@@QAEXXZ",
+        ),
+        (
+            "set_sprite_manager_paused",
+            "cRSpriteManager::Pause(bool)",
+            "high",
+            "cRSpriteManager_Pause",
+            "void cRSpriteManager::Pause(bool paused_)",
+            "?Pause@cRSpriteManager@@QAEX_N@Z",
+        ),
+        (
+            "get_sprite_texture",
+            "cRSpriteManager::GetTexture(int)",
+            "high",
+            "cRSpriteManager_GetTexture",
+            "cRTexture* cRSpriteManager::GetTexture(int texture_id)",
+            "?GetTexture@cRSpriteManager@@QAEPAUcRTexture@@H@Z",
+        ),
+        (
+            "get_sprite_tga",
+            "cRSpriteManager::GetTga(int)",
+            "high",
+            "cRSpriteManager_GetTga",
+            "TgaImageView* cRSpriteManager::GetTga(int texture_id)",
+            "?GetTga@cRSpriteManager@@QAEPAUTgaImageView@@H@Z",
+        ),
+    )
+    for (
+        windows_name,
+        mobile_symbol,
+        confidence,
+        semantic_alias,
+        definition,
+        object_symbol,
+    ) in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == confidence
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert semantic_alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in scratch_source
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+
+    sprite_header = (
+        repo_root / "tools/match/include/sprite.h"
+    ).read_text(encoding="utf-8")
+    expected_declarations = (
+        "void Load(char* texture_path, int texture_id, int flags);",
+        "void Init();",
+        "cRSprite* New(int owner, int texture_id, int texture_a, int texture_b);",
+        "void KillGame();",
+        "void Pause(bool paused_);",
+        "cRTexture* GetTexture(int texture_id);",
+        "TgaImageView* GetTga(int texture_id);",
+    )
+    for declaration in expected_declarations:
+        assert declaration in sprite_header
+
+    legacy_methods = (
+        "register_sprite_texture",
+        "initialize_sprite_manager",
+        "allocate_sprite",
+        "kill_game_sprites",
+        "set_sprite_manager_paused",
+        "get_sprite_texture",
+        "get_sprite_tga",
+    )
+    matcher_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (repo_root / "tools/match/scratches").glob(
+            "*/scratch.cpp"
+        )
+    )
+    for legacy_method in legacy_methods:
+        assert f".{legacy_method}(" not in matcher_sources
+        assert f"::{legacy_method}(" not in matcher_sources
+        assert f"{legacy_method}(" not in sprite_header
+
+    load_source = (
+        repo_root
+        / "tools/match/scratches/register_sprite_texture/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    pause_source = (
+        repo_root
+        / "tools/match/scratches/set_sprite_manager_paused/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "return result;" not in load_source
+    assert "return paused_;" not in pause_source
+    assert "all 69 direct Windows callsites discard EAX" in (
+        verified_entries["register_sprite_texture"]["notes"]
+    )
+    assert "All six direct Windows callsites" in (
+        verified_entries["set_sprite_manager_paused"]["notes"]
+    )
+
+
 def test_mobile_animation_keyframes_recover_crbodpos_tail_lane() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

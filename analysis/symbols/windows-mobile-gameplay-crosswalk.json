@@ -24546,6 +24546,18 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
+        {
           "symbol": "ObjectProcWorldReset(cRObject*)",
           "score": 0.6087,
           "name_score": 0.3478,
@@ -24561,18 +24573,6 @@
           "symbol": "cRBorderStack::Init()",
           "score": 0.592,
           "name_score": 0.32,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tColourSmall::Set(unsigned char, unsigned char, unsigned char)",
-          "score": 0.5876,
-          "name_score": 0.3126,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.5867,
-          "name_score": 0.3111,
           "size_score": 1.0
         }
       ],
@@ -24686,6 +24686,18 @@
       "status": "unverified",
       "android_candidates": [
         {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.68,
+          "name_score": 0.6,
+          "size_score": 0.8
+        },
+        {
           "symbol": "tColour::Set(float, float, float)",
           "score": 0.592,
           "name_score": 0.32,
@@ -24698,22 +24710,10 @@
           "size_score": 1.0
         },
         {
-          "symbol": "tColourSmall::Set(unsigned char, unsigned char, unsigned char)",
-          "score": 0.5716,
-          "name_score": 0.286,
+          "symbol": "cAccelerometer::Input(float, float, float)",
+          "score": 0.58,
+          "name_score": 0.3,
           "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.5714,
-          "name_score": 0.2857,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFState()",
-          "score": 0.5367,
-          "name_score": 0.45,
-          "size_score": 0.6667
         }
       ],
       "ios_candidates": [

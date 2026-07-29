@@ -26,7 +26,7 @@ void SubRing::initialize_ring_or_special_effect_particles(int)
         if (effect_kind == SUB_RING_KIND_NORMAL_DEFAULT
             || effect_kind == SUB_RING_KIND_NORMAL_AUTHORED
             || effect_kind == SUB_RING_KIND_POWER_UP_AUTHORED) {
-            particle->sprite = g_sprite_manager.allocate_sprite(
+            particle->sprite = g_sprite_manager.New(
                 owner_player->player_slot,
                 0x87,
                 -1,
@@ -35,7 +35,7 @@ void SubRing::initialize_ring_or_special_effect_particles(int)
             particle->sprite->draw_mode = 9;
         } else if (effect_kind == SUB_RING_KIND_EXPLODE_RAMP
             || effect_kind == SUB_RING_KIND_EXPLODE_AUTHORED) {
-            particle->sprite = g_sprite_manager.allocate_sprite(
+            particle->sprite = g_sprite_manager.New(
                 owner_player->player_slot,
                 0x83,
                 -1,
@@ -44,7 +44,7 @@ void SubRing::initialize_ring_or_special_effect_particles(int)
             particle->sprite->draw_mode = 0xd;
         } else if (effect_kind == SUB_RING_KIND_SLOW_DEFAULT
             || effect_kind == SUB_RING_KIND_SLOW_AUTHORED) {
-            particle->sprite = g_sprite_manager.allocate_sprite(
+            particle->sprite = g_sprite_manager.New(
                 owner_player->player_slot,
                 0x85,
                 -1,

@@ -253,7 +253,7 @@ after_shoot_flag_source:
         case 0: {
             lifetime = 0.0f;
             lifetime_step = game->subgame_rate * 0.041666668f;
-            render_sprite = g_sprite_manager.allocate_sprite(
+            render_sprite = g_sprite_manager.New(
                 owner_player->player_slot,
                 130,
                 -1,

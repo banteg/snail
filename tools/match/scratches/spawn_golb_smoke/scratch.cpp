@@ -6,7 +6,7 @@
 
 void GolbShot::spawn_golb_smoke(Vector3* position)
 {
-    cRSprite* sprite = g_sprite_manager.allocate_sprite(
+    cRSprite* sprite = g_sprite_manager.New(
         owner_player->player_slot,
         128,
         -1,

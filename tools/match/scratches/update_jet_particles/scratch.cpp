@@ -65,7 +65,7 @@ void SubHover::update_jet_particles()
                 && (float)next_math_random_value() * 0.0000305175781f
                        > 0.899999976f) {
                 cRSprite* sprite =
-                    g_sprite_manager.allocate_sprite(
+                    g_sprite_manager.New(
                         game->embedded_player()->player_slot, 0x21, -1, -1);
                 sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
                 sprite->progress = 0.0f;

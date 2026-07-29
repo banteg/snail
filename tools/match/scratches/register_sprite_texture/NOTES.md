@@ -14,7 +14,7 @@ Registers one sprite texture id into `g_sprite_texture_table`.
 Windows startup and landscape-script callers load `g_sprite_manager @
 0x790f30` into `ecx` before calling this helper; iOS names the same owner
 `cRSpriteManager::Load(char*, int, int)`. Defining the exact body on
-`SpriteManager` closes that ABI relationship while preserving all 35
+`cRSpriteManager` closes that ABI relationship while preserving all 35
 instructions and six operand proofs. The receiver is legitimately unused
 because the registered texture-id table remains a separate global on Windows.
 
@@ -39,3 +39,14 @@ and `49c8696ecafced0fc365f962d9087162719202a2bb9819d0f14d77f6f2d36d68`.
 accessors. The receiver remains intentionally unused in the Windows body; it
 is ownership evidence, not a pretext to move the separately addressed texture
 table into the manager layout.
+
+## 2026-07-29 authored method and return contract
+
+Android and iOS independently preserve
+`void cRSpriteManager::Load(char*, int, int)`. Binary Ninja finds 69 direct
+Windows callsites across startup and landscape loading; every one discards
+EAX. Removing the analytical `cRTexture*` source return still produces the
+same 35/35 Windows instructions because VC6 incidentally leaves the selected
+texture pointer in EAX after clearing its frame count. The matcher now compiles
+the authored void member and maps its decorated relocation back to the stable
+`register_sprite_texture` target.

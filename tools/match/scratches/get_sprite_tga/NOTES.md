@@ -13,7 +13,7 @@ Android distinguish three sprite-manager accessors: `GetTexture` returns the
 texture record, `GetTextureRef` returns record `+0x8c`, and `GetTga` returns
 record `+0x98`. This Windows helper returns `TextureRef::texture_ref` at
 `+0x98`, and `cRBorder::MouseTest()` consumes it as an inline TGA header plus
-pixels. The source is now the real `SpriteManager::get_sprite_tga()` member
+pixels. The source is now the real `cRSpriteManager::GetTga(int)` member
 with a borrowed `TgaImageView*` result. It remains exact at 4/4 instructions.
 
 ## 2026-07-23 cross-decompiler return ownership

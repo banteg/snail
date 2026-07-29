@@ -17,7 +17,7 @@ void FireWork::firework_shoot(
 
     int remaining = count;
     do {
-        cRSprite* sprite = g_sprite_manager.allocate_sprite(owner, texture_id, -1, -1);
+        cRSprite* sprite = g_sprite_manager.New(owner, texture_id, -1, -1);
         sprite->draw_mode = 10;
         sprite->flags |=
             SPRITE_FLAG_GAMEPLAY_OWNED | SPRITE_FLAG_ORIENT_TO_MOTION;

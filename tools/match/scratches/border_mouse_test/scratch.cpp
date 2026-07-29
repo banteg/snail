@@ -24,7 +24,7 @@ unsigned char FrontendWidget::border_mouse_test()
             float v = texture_hit_y;
             v = (mouse->saved_y - v) / texture_hit_height;
             TgaImageView* mask =
-                g_sprite_manager.get_sprite_tga(texture_hit_test_sprite);
+                g_sprite_manager.GetTga(texture_hit_test_sprite);
 
             int width = mask->width;
             int x = (int)((float)width * u);
