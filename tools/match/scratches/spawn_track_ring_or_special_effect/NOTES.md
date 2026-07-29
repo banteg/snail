@@ -4,10 +4,11 @@ Live source map for the authored ring/special-effect spawner.
 
 Current match:
 
-- `99.71%`, `347/347` candidate/target instructions, prefix `294/347`, with
+- `100.00%`, `347/347` candidate/target instructions and prefix, with
   all `75` masked operands clean and no unresolved or mismatched operands.
 - All nine authored kind paths are present with their native RNG streams. The
-  only remaining difference is one activation-store schedule.
+  placement, activation, list insertion, child initialization, and AI dispatch
+  are now proof-grade.
 - No compiler flag, volatile barrier, artificial return, or matcher-only state
   is retained.
 
@@ -392,3 +393,24 @@ tuples across the nine kind arms: `(0, 2.5, 6)`, `(0, 3.5, 17)`, and
 manually. VC6 emits the same 347 instructions and switch graph, retaining the
 99.71% score, 294-instruction prefix, and all 75 clean references. The sole
 state-versus-lives store-order residual remains independent.
+
+## 2026-07-29 owner-lives field borrow
+
+Android and iOS independently preserve the authored activation order: store
+the selected kind, snapshot the owner's lives, then activate the parent.
+Windows performs the same three writes before its `RT1` direction draw.
+
+Taking an explicit `int*` borrow of the real `owner_lives_snapshot` field for
+that one ownership transfer keeps the snapshot lvalue distinct from the
+adjacent lifecycle lane. VC6 then emits the native snapshot-before-state
+schedule without materializing the pointer or changing any other instruction.
+Focused matching closes from `99.71%` to `100.00%`: the candidate and target
+are both `347/347` instructions, the exact prefix is `347/347`, and all `75`
+masked operands are clean with no unresolved, mismatched, or unaudited
+references.
+
+Changing the shared field representation from `SubRingState` to `int` compiled
+identically at `99.71%`; wrapping both assignments in an inline activation
+method materialized the parent base early and regressed to `93.66%`. Neither
+probe is retained. The exact source uses no raw offset, volatile qualifier,
+dummy state, compiler flag, or artificial control flow.

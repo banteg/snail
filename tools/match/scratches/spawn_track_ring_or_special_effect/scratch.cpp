@@ -157,7 +157,9 @@ void cRSubGame::AddRing(
             &slot_cursor->ring.transform.position);
         if (result->tile_id != SUBLOC_TILE_WALL2) {
             slot_cursor->ring.kind = (SubRingKind)requested_kind;
-            slot_cursor->ring.owner_lives_snapshot = player->lives;
+            int* owner_lives_snapshot =
+                &slot_cursor->ring.owner_lives_snapshot;
+            *owner_lives_snapshot = player->lives;
             slot_cursor->ring.state = SUB_RING_STATE_ACTIVE;
             if (random_float_below(1.0f, "RT1") > 0.5f)
                 slot_cursor->ring.active_phase_step =
