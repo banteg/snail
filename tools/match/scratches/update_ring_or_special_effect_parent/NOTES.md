@@ -4,8 +4,8 @@ Live source map for the ring/special-effect parent virtual updater.
 
 Current match:
 
-- `98.21%`, `336/336` candidate/target instructions, with `37` masked
-  operands clean and no unresolved or mismatched operands.
+- `100.00%`, `336/336` candidate/target instructions, full `336/336` exact
+  prefix, and all `38` masked operands clean.
 - A score-improving `>= tau` phase-wrap spelling was rejected because native
   uses the strict `> tau` x87 condition (`test ah, 0x41` after compare).
 - The method is modeled as `void`: native exits do not establish a meaningful
@@ -14,8 +14,8 @@ Current match:
 
 Cross-port owner: iOS preserves this callback as `cRSubRing::AI()`, and the
 Windows constructor table at `0x49732c` points directly here. The shared source
-now defines it on `SubRing` and its children as `SubRingStar`; focused matching
-remains 98.21%, 336/336 instructions, with 37 clean operands.
+defines it on `SubRing` and its children as `SubRingStar`; focused matching is
+now proof-grade exact at 100.00%, 336/336 instructions, with 38 clean operands.
 
 Evidence:
 
@@ -284,3 +284,25 @@ root load at the expansion-removal tail. Native chooses `edx` followed by
 do not align, the operand auditor cannot pair the otherwise proved aliases.
 The focused sweep shows that no ordinary owner lifetime or pointer/reference
 spelling recovers that schedule, so the source and manifest remain unchanged.
+
+## 2026-07-29 exact camera-target publication
+
+The remaining mismatch was not a child-loop or root-list ownership gap. Five
+lexical loop-owner variants confirm that moving the counter, naming an indexed
+particle base, borrowing the fixed array, or naming each element is neutral or
+worse. The accepted change instead restores the camera target's ordinary XYZ
+publication order: copy X, copy Y, then publish biased Z.
+
+That source order lets VC6 keep target X live on the x87 stack, prepare biased
+Z, stage target Y, and only then derive the child-radius cursor, exactly
+matching native's state-3 collapse schedule. The resulting whole-function
+register allocation also selects native's EDX/LEA form for the third duplicated
+root-list removal tail, so the two formerly unaudited `g_game_base`/`g_game`
+loads align and audit cleanly without any owner cast or manifest change.
+
+Focused matching is now proof-grade: 100.00%, 336/336 instructions, full
+336-instruction prefix, and 38 clean references with zero unresolved,
+mismatched, or unaudited operands. The three recorded sweeps cover 19 unique
+variants: one exact improvement, 13 neutral, and five regressions, with no
+errors or repeats. The retained change is semantic aggregate ordering, not
+register shaping or byte-layout fakematching.

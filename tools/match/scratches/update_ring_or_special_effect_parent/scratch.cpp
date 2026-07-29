@@ -107,8 +107,8 @@ void SubRing::update_ring_or_special_effect_parent()
                 &owner_player->cached_camera_target_world;
             Vector3 target_position;
             target_position.x = target_source->x;
-            target_position.z = target_source->z + 0.200000003f;
             target_position.y = target_source->y;
+            target_position.z = target_source->z + 0.200000003f;
             Vector3* current_position = &transform.position;
             Vector3 delta;
             delta.x = target_position.x - current_position->x;

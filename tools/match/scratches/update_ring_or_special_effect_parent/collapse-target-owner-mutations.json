@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "collapse-target-owner",
+      "find": "            Vector3* target_source =\n                &owner_player->cached_camera_target_world;\n            Vector3 target_position;\n            target_position.x = target_source->x;\n            target_position.z = target_source->z + 0.200000003f;\n            target_position.y = target_source->y;",
+      "replacements": [
+        {
+          "name": "const-target-pointer",
+          "text": "            const Vector3* target_source =\n                &owner_player->cached_camera_target_world;\n            Vector3 target_position;\n            target_position.x = target_source->x;\n            target_position.z = target_source->z + 0.200000003f;\n            target_position.y = target_source->y;"
+        },
+        {
+          "name": "target-reference",
+          "text": "            Vector3& target_source =\n                owner_player->cached_camera_target_world;\n            Vector3 target_position;\n            target_position.x = target_source.x;\n            target_position.z = target_source.z + 0.200000003f;\n            target_position.y = target_source.y;"
+        },
+        {
+          "name": "copy-then-bias-z",
+          "text": "            Vector3* target_source =\n                &owner_player->cached_camera_target_world;\n            Vector3 target_position = *target_source;\n            target_position.z += 0.200000003f;"
+        },
+        {
+          "name": "aggregate-constructor",
+          "text": "            Vector3* target_source =\n                &owner_player->cached_camera_target_world;\n            Vector3 target_position(\n                target_source->x,\n                target_source->y,\n                target_source->z + 0.200000003f);"
+        },
+        {
+          "name": "xyz-assignment-order",
+          "text": "            Vector3* target_source =\n                &owner_player->cached_camera_target_world;\n            Vector3 target_position;\n            target_position.x = target_source->x;\n            target_position.y = target_source->y;\n            target_position.z = target_source->z + 0.200000003f;"
+        },
+        {
+          "name": "staged-target-y",
+          "text": "            Vector3* target_source =\n                &owner_player->cached_camera_target_world;\n            float target_y = target_source->y;\n            Vector3 target_position;\n            target_position.x = target_source->x;\n            target_position.z = target_source->z + 0.200000003f;\n            target_position.y = target_y;"
+        }
+      ]
+    }
+  ]
+}

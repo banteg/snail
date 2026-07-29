@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**541/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **98655/294937** bytes (**33.45%**) are proof-grade, and overall fuzzy is **79.33%**.
+**542/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **99811/294937** bytes (**33.84%**) are proof-grade, and overall fuzzy is **79.34%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (541)
+## Proof Grade (542)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -328,6 +328,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | spawn_track_ring_or_special_effect | 0x43df10 | 1376 | 347/347 | 100.00% | 347/347 | 75 ok |  | core |
 | ✅ | initialize_ring_or_special_effect_particles | 0x43e470 | 535 | 153/153 | 100.00% | 153/153 | 10 ok |  | core |
 | ✅ | emit_ring_star_shower | 0x43e690 | 236 | 65/65 | 100.00% | 65/65 | 9 ok |  | core |
+| ✅ | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 100.00% | 336/336 | 38 ok |  | core |
 | ✅ | update_track_health_pickup | 0x43ecc0 | 390 | 128/128 | 100.00% | 128/128 | 21 ok |  | core |
 | ✅ | update_track_speedup | 0x43ee50 | 340 | 103/103 | 100.00% | 103/103 | 15 ok |  | core |
 | ✅ | update_track_jetpack_pickup | 0x43efb0 | 384 | 127/127 | 100.00% | 127/127 | 20 ok |  | core |
@@ -552,7 +553,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (25)
+## Near Match (95-99.99%) (24)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -573,7 +574,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  | core |
 | 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 99.18% | 16/122 | 7 ok |  | core |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  | core |
-| 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 2 unaudited, 37 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  | core |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 218/218 | 97.25% | 82/218 | 24 ok |  | core |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  | core |
