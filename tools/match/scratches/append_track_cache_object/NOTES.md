@@ -96,3 +96,26 @@ Both paths compare the same recovered `*index_count` and `max_indices`, and all
 six references remain clean. This local post-loop register allocation has no
 source-level callee or neighboring definition whose TU placement can alter
 the relationship, so no TU probe or register-directed source is retained.
+
+## 2026-07-29 formal capacity-tail boundary
+
+Three recorded sweeps cover the capacity check's control, owners, and integer
+types. Five branch forms include reversed comparison, success-first in both
+polarities, explicit `else`, and a conditional result. Three are
+byte-identical; reversing operand polarity adds a second comparison mismatch
+and regresses to 98.20%.
+
+Six local-owner forms retain the count and limit in both declaration orders,
+with const or deferred initialization, plus a borrowed count pointer. Every
+form is byte-identical: even spelling the limit before the count does not
+change VC6's final register schedule. Five signed/unsigned `int`/`long`
+combinations produce three more neutral builds; the two unsigned-count forms
+again regress to 98.20% by changing comparison polarity.
+
+The ledger contains 16 unique variants: 0 improve, 12 are byte-identical, and
+4 regress. Three consecutive non-improving sweeps formally stall this lane at
+**98.80%** (`167/167`, prefix 155, all six references clean). Native loads
+`max_indices` into `edx` before loading `*index_count` into `eax`; VC6 loads
+the count first and carries the same limit in `ecx`. Further work needs
+compiler provenance, not another branch, local, width, pointer, or
+register-directed spelling.

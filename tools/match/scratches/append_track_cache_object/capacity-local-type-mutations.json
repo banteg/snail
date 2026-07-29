@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "capacity-local-type",
+      "find": "    if (*index_count > max_indices)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return *index_count;",
+      "replacements": [
+        {
+          "name": "long-count-and-limit",
+          "text": "    long result = *index_count;\n    long limit = max_indices;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "unsigned-count-and-limit",
+          "text": "    unsigned int result = (unsigned int)*index_count;\n    unsigned int limit = (unsigned int)max_indices;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "long-count-int-limit",
+          "text": "    long result = *index_count;\n    int limit = max_indices;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "int-count-long-limit",
+          "text": "    int result = *index_count;\n    long limit = max_indices;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "unsigned-count-int-limit",
+          "text": "    unsigned int result = (unsigned int)*index_count;\n    int limit = max_indices;\n    if (result > (unsigned int)limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "capacity-control",
+      "find": "    if (*index_count > max_indices)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return *index_count;",
+      "replacements": [
+        {
+          "name": "reversed-comparison",
+          "text": "    if (max_indices < *index_count)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return *index_count;"
+        },
+        {
+          "name": "success-first",
+          "text": "    if (*index_count <= max_indices)\n        return *index_count;\n    return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");"
+        },
+        {
+          "name": "reversed-success-first",
+          "text": "    if (max_indices >= *index_count)\n        return *index_count;\n    return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");"
+        },
+        {
+          "name": "explicit-else",
+          "text": "    if (*index_count > max_indices) {\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    } else {\n        return *index_count;\n    }"
+        },
+        {
+          "name": "conditional-result",
+          "text": "    return *index_count > max_indices\n        ? report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\")\n        : *index_count;"
+        }
+      ]
+    }
+  ]
+}

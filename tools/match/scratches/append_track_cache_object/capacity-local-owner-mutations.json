@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "capacity-local-owner",
+      "find": "    if (*index_count > max_indices)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return *index_count;",
+      "replacements": [
+        {
+          "name": "count-then-limit",
+          "text": "    int result = *index_count;\n    int limit = max_indices;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "limit-then-count",
+          "text": "    int limit = max_indices;\n    int result = *index_count;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "const-count-then-limit",
+          "text": "    const int result = *index_count;\n    const int limit = max_indices;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "const-limit-then-count",
+          "text": "    const int limit = max_indices;\n    const int result = *index_count;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "declared-then-count-limit",
+          "text": "    int result;\n    int limit;\n    result = *index_count;\n    limit = max_indices;\n    if (result > limit)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        },
+        {
+          "name": "borrowed-count-owner",
+          "text": "    int* count_owner = index_count;\n    int result = *count_owner;\n    if (result > max_indices)\n        return report_errorf(\"Index Cache overflow increase RSEGMENTCACHE_INDEX_MAX\");\n    return result;"
+        }
+      ]
+    }
+  ]
+}
