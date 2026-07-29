@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "state-mapping",
+      "find": "    int input_state = state;\n    register int target_state;\n\n    switch (input_state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = input_state;\n        break;\n    }",
+      "replacements": [
+        {
+          "name": "direct-switch",
+          "text": "    int target_state;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }"
+        },
+        {
+          "name": "target-before-copy",
+          "text": "    int target_state;\n    int input_state = state;\n\n    switch (input_state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = input_state;\n        break;\n    }"
+        },
+        {
+          "name": "separate-copy-assignment",
+          "text": "    int target_state;\n    int input_state;\n    input_state = state;\n\n    switch (input_state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = input_state;\n        break;\n    }"
+        },
+        {
+          "name": "unsigned-target",
+          "text": "    int input_state = state;\n    unsigned int target_state;\n\n    switch (input_state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = input_state;\n        break;\n    }"
+        },
+        {
+          "name": "long-target",
+          "text": "    int input_state = state;\n    long target_state;\n\n    switch (input_state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = input_state;\n        break;\n    }"
+        },
+        {
+          "name": "nested-zero-first",
+          "text": "    int target_state;\n    if (state == 0) {\n        target_state = 0;\n    } else if (state == 1) {\n        target_state = 4;\n    } else {\n        target_state = state;\n    }"
+        },
+        {
+          "name": "nested-nonzero-first",
+          "text": "    int target_state;\n    if (state != 0) {\n        if (state == 1)\n            target_state = 4;\n        else\n            target_state = state;\n    } else {\n        target_state = 0;\n    }"
+        },
+        {
+          "name": "passthrough-then-remap",
+          "text": "    int target_state = state;\n    if (target_state == 0)\n        target_state = 0;\n    else if (target_state == 1)\n        target_state = 4;"
+        },
+        {
+          "name": "default-initialized-switch",
+          "text": "    int target_state = state;\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        break;\n    }"
+        },
+        {
+          "name": "nested-conditional",
+          "text": "    int target_state =\n        state == 0 ? 0 : (state == 1 ? 4 : state);"
+        },
+        {
+          "name": "case-one-first",
+          "text": "    int target_state;\n    switch (state) {\n    case 1:\n        target_state = 4;\n        break;\n    case 0:\n        target_state = 0;\n        break;\n    default:\n        target_state = state;\n        break;\n    }"
+        },
+        {
+          "name": "default-first",
+          "text": "    int target_state;\n    switch (state) {\n    default:\n        target_state = state;\n        break;\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    }"
+        },
+        {
+          "name": "scoped-default-copy",
+          "text": "    int target_state;\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default: {\n        int passthrough_state = state;\n        target_state = passthrough_state;\n        break;\n    }\n    }"
+        },
+        {
+          "name": "const-reference-selector",
+          "text": "    int target_state;\n    const int& input_state = state;\n    switch (input_state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = input_state;\n        break;\n    }"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "jetpack-owner-publication-order",
+      "find": "        float forward_z = owner_player->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "replacements": [
+        {
+          "name": "destination-before-owner-load",
+          "text": "        Vector3* release_step = &jetpack_channel.release_step;\n        float forward_z = owner_player->velocity.z;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "owner-alias",
+          "text": "        cRSubGoldy* first_owner = owner_player;\n        float forward_z = first_owner->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "destination-reference",
+          "text": "        float forward_z = owner_player->velocity.z;\n        Vector3& first_release_step = jetpack_channel.release_step;\n        Vector3* release_step;\n        first_release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "direct-destination",
+          "text": "        float forward_z = owner_player->velocity.z;\n        Vector3* release_step;\n        jetpack_channel.release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "predeclared-forward-and-destination",
+          "text": "        float forward_z;\n        Vector3* release_step;\n        forward_z = owner_player->velocity.z;\n        release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        }
+      ]
+    },
+    {
+      "name": "weapon-two-owner-publication-order",
+      "find": "        forward_z = owner_player->velocity.z;\n        release_step = &weapon_channels[2].release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "replacements": [
+        {
+          "name": "destination-before-owner-load",
+          "text": "        release_step = &weapon_channels[2].release_step;\n        forward_z = owner_player->velocity.z;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "owner-alias",
+          "text": "        cRSubGoldy* third_owner = owner_player;\n        forward_z = third_owner->velocity.z;\n        release_step = &weapon_channels[2].release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "dedicated-destination-pointer",
+          "text": "        forward_z = owner_player->velocity.z;\n        Vector3* third_release_step = &weapon_channels[2].release_step;\n        *third_release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "dedicated-destination-reference",
+          "text": "        forward_z = owner_player->velocity.z;\n        Vector3& third_release_step = weapon_channels[2].release_step;\n        third_release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "direct-destination",
+          "text": "        forward_z = owner_player->velocity.z;\n        weapon_channels[2].release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "inline-owner-z",
+          "text": "        release_step = &weapon_channels[2].release_step;\n        *release_step = Vector3(random_x, random_y, owner_player->velocity.z)\n            * 0.30000001f;"
+        }
+      ]
+    }
+  ]
+}

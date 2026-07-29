@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-channel-lifetimes",
+      "find": "        float random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        float forward_z = owner_player->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "replacements": [
+        {
+          "name": "inline-random-y-adjustment",
+          "text": "        float random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y = random_float_below(1.0f, 0) + 0.5f;\n        float forward_z = owner_player->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "predeclare-all-reused-locals",
+          "text": "        float random_x;\n        float random_y;\n        float forward_z;\n        Vector3* release_step;\n        random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        forward_z = owner_player->velocity.z;\n        release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "predeclare-random-x",
+          "text": "        float random_x;\n        random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        float forward_z = owner_player->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "predeclare-random-y",
+          "text": "        float random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        float forward_z = owner_player->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "predeclare-forward-z",
+          "text": "        float forward_z;\n        float random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        forward_z = owner_player->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "predeclare-release-step",
+          "text": "        Vector3* release_step;\n        float random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        float forward_z = owner_player->velocity.z;\n        release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "first-owner-alias",
+          "text": "        float random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        cRSubGoldy* first_owner = owner_player;\n        float forward_z = first_owner->velocity.z;\n        Vector3* release_step = &jetpack_channel.release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "direct-first-destination",
+          "text": "        Vector3* release_step;\n        float random_x =\n            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        float random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        float forward_z = owner_player->velocity.z;\n        jetpack_channel.release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        }
+      ]
+    },
+    {
+      "name": "third-channel-scheduling",
+      "find": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        forward_z = owner_player->velocity.z;\n        release_step = &weapon_channels[2].release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "replacements": [
+        {
+          "name": "inline-random-y-adjustment",
+          "text": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0) + 0.5f;\n        forward_z = owner_player->velocity.z;\n        release_step = &weapon_channels[2].release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "destination-before-owner-load",
+          "text": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        release_step = &weapon_channels[2].release_step;\n        forward_z = owner_player->velocity.z;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "third-owner-alias",
+          "text": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        cRSubGoldy* third_owner = owner_player;\n        forward_z = third_owner->velocity.z;\n        release_step = &weapon_channels[2].release_step;\n        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "dedicated-destination-pointer",
+          "text": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        forward_z = owner_player->velocity.z;\n        Vector3* third_release_step = &weapon_channels[2].release_step;\n        *third_release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "dedicated-destination-reference",
+          "text": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        forward_z = owner_player->velocity.z;\n        Vector3& third_release_step = weapon_channels[2].release_step;\n        third_release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "direct-third-destination",
+          "text": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        forward_z = owner_player->velocity.z;\n        weapon_channels[2].release_step =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        },
+        {
+          "name": "inline-owner-z",
+          "text": "        random_x = ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;\n        random_y = random_float_below(1.0f, 0);\n        random_y = random_y + 0.5f;\n        release_step = &weapon_channels[2].release_step;\n        *release_step = Vector3(random_x, random_y, owner_player->velocity.z)\n+            * 0.30000001f;"
+        }
+      ]
+    }
+  ]
+}

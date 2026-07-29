@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "state-local-lifetimes",
+      "find": "    int input_state = state;\n    register int target_state;\n\n    switch (input_state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = input_state;\n        break;\n    }\n\n    int selected_state = jetpack_channel.selected_state;\n    bool immediate = true;",
+      "replacements": [
+        {
+          "name": "predeclare-all",
+          "text": "    int target_state;\n    int selected_state;\n    bool immediate;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }\n\n    selected_state = jetpack_channel.selected_state;\n    immediate = true;"
+        },
+        {
+          "name": "predeclare-selected-target-immediate",
+          "text": "    int selected_state;\n    int target_state;\n    bool immediate;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }\n\n    selected_state = jetpack_channel.selected_state;\n    immediate = true;"
+        },
+        {
+          "name": "predeclare-immediate-target-selected",
+          "text": "    bool immediate;\n    int target_state;\n    int selected_state;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }\n\n    selected_state = jetpack_channel.selected_state;\n    immediate = true;"
+        },
+        {
+          "name": "predeclare-target-selected",
+          "text": "    int target_state;\n    int selected_state;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }\n\n    selected_state = jetpack_channel.selected_state;\n    bool immediate = true;"
+        },
+        {
+          "name": "predeclare-target-immediate",
+          "text": "    int target_state;\n    bool immediate;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }\n\n    int selected_state = jetpack_channel.selected_state;\n    immediate = true;"
+        },
+        {
+          "name": "initialize-immediate-before-map",
+          "text": "    bool immediate = true;\n    int target_state;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }\n\n    int selected_state = jetpack_channel.selected_state;"
+        },
+        {
+          "name": "scoped-selector",
+          "text": "    int target_state;\n    {\n        int input_state = state;\n        switch (input_state) {\n        case 0:\n            target_state = 0;\n            break;\n        case 1:\n            target_state = 4;\n            break;\n        default:\n            target_state = input_state;\n            break;\n        }\n    }\n\n    int selected_state = jetpack_channel.selected_state;\n    bool immediate = true;"
+        },
+        {
+          "name": "nested-map-predeclare-all",
+          "text": "    int target_state;\n    int selected_state;\n    bool immediate;\n\n    if (state != 0) {\n        if (state == 1)\n            target_state = 4;\n        else\n            target_state = state;\n    } else {\n        target_state = 0;\n    }\n\n    selected_state = jetpack_channel.selected_state;\n    immediate = true;"
+        },
+        {
+          "name": "selected-snapshot-before-map",
+          "text": "    int selected_state = jetpack_channel.selected_state;\n    int target_state;\n\n    switch (state) {\n    case 0:\n        target_state = 0;\n        break;\n    case 1:\n        target_state = 4;\n        break;\n    default:\n        target_state = state;\n        break;\n    }\n\n    bool immediate = true;"
+        },
+        {
+          "name": "enum-target",
+          "text": "    enum JetpackTargetState {\n        JETPACK_TARGET_HIDDEN = 0,\n        JETPACK_TARGET_ACTIVE = 4\n    };\n    JetpackTargetState target_state;\n\n    switch (state) {\n    case 0:\n        target_state = JETPACK_TARGET_HIDDEN;\n        break;\n    case 1:\n        target_state = JETPACK_TARGET_ACTIVE;\n        break;\n    default:\n        target_state = (JetpackTargetState)state;\n        break;\n    }\n\n    int selected_state = jetpack_channel.selected_state;\n    bool immediate = true;"
+        }
+      ]
+    }
+  ]
+}

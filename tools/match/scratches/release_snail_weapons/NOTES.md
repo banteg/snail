@@ -75,3 +75,20 @@ ends immediately before those lanes, just as the Windows owner ends at
 `Snail +0x192c`. The three fields now belong directly to `Snail`; the Windows
 `Invincible` extent is the cross-port-consistent 0x98 bytes. This is
 codegen-neutral ownership recovery, not a matching shim.
+
+## 2026-07-29 bounded release-vector audit
+
+Four recorded sweeps evaluated 143 variants across channel-local lifetimes,
+vector publication, owner/destination order, and branch scope. Inlining the
+authored `random_float_below(1.0f, 0) + 0.5f` expression extends the exact
+prefix from 5 to 13 instructions while preserving the 92.80%, 125/125 result
+and all 33 clean references. The same spelling is retained for all four
+channels because both mobile bodies preserve that expression directly.
+
+No variant improved the fuzzy score: 122 were neutral and 21 regressed. Named
+or in-place vectors, component stores, pointer/reference destinations,
+owner aliases, declaration reorderings, and moving reused locals outside the
+one-shot branch do not recover the native first-`random_x` stack slot or the
+third-channel publication schedule. Three consecutive no-improvement sweeps
+now mark this scratch stalled. Do not revisit ordinary lifetime or publication
+syntax without new translation-unit or compiler evidence.

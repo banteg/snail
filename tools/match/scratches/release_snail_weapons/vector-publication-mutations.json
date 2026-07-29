@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "jetpack-vector-publication",
+      "find": "        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "named-input-vector",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        *release_step = release_vector * 0.30000001f;"
+        },
+        {
+          "name": "named-scaled-vector",
+          "text": "        Vector3 release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-named-vector-in-place",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        release_vector *= 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-destination-in-place",
+          "text": "        *release_step = Vector3(random_x, random_y, forward_z);\n        *release_step *= 0.30000001f;"
+        },
+        {
+          "name": "direct-components",
+          "text": "        release_step->x = random_x * 0.30000001f;\n        release_step->y = random_y * 0.30000001f;\n        release_step->z = forward_z * 0.30000001f;"
+        },
+        {
+          "name": "destination-reference",
+          "text": "        Vector3& release_vector = *release_step;\n        release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        }
+      ]
+    },
+    {
+      "name": "weapon-zero-vector-publication",
+      "find": "        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "named-input-vector",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        *release_step = release_vector * 0.30000001f;"
+        },
+        {
+          "name": "named-scaled-vector",
+          "text": "        Vector3 release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-named-vector-in-place",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        release_vector *= 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-destination-in-place",
+          "text": "        *release_step = Vector3(random_x, random_y, forward_z);\n        *release_step *= 0.30000001f;"
+        },
+        {
+          "name": "direct-components",
+          "text": "        release_step->x = random_x * 0.30000001f;\n        release_step->y = random_y * 0.30000001f;\n        release_step->z = forward_z * 0.30000001f;"
+        },
+        {
+          "name": "destination-reference",
+          "text": "        Vector3& release_vector = *release_step;\n        release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        }
+      ]
+    },
+    {
+      "name": "weapon-two-vector-publication",
+      "find": "        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "occurrence": 3,
+      "replacements": [
+        {
+          "name": "named-input-vector",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        *release_step = release_vector * 0.30000001f;"
+        },
+        {
+          "name": "named-scaled-vector",
+          "text": "        Vector3 release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-named-vector-in-place",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        release_vector *= 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-destination-in-place",
+          "text": "        *release_step = Vector3(random_x, random_y, forward_z);\n        *release_step *= 0.30000001f;"
+        },
+        {
+          "name": "direct-components",
+          "text": "        release_step->x = random_x * 0.30000001f;\n        release_step->y = random_y * 0.30000001f;\n        release_step->z = forward_z * 0.30000001f;"
+        },
+        {
+          "name": "destination-reference",
+          "text": "        Vector3& release_vector = *release_step;\n        release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        }
+      ]
+    },
+    {
+      "name": "weapon-one-vector-publication",
+      "find": "        *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;",
+      "occurrence": 4,
+      "replacements": [
+        {
+          "name": "named-input-vector",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        *release_step = release_vector * 0.30000001f;"
+        },
+        {
+          "name": "named-scaled-vector",
+          "text": "        Vector3 release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-named-vector-in-place",
+          "text": "        Vector3 release_vector(random_x, random_y, forward_z);\n        release_vector *= 0.30000001f;\n        *release_step = release_vector;"
+        },
+        {
+          "name": "scale-destination-in-place",
+          "text": "        *release_step = Vector3(random_x, random_y, forward_z);\n        *release_step *= 0.30000001f;"
+        },
+        {
+          "name": "direct-components",
+          "text": "        release_step->x = random_x * 0.30000001f;\n        release_step->y = random_y * 0.30000001f;\n        release_step->z = forward_z * 0.30000001f;"
+        },
+        {
+          "name": "destination-reference",
+          "text": "        Vector3& release_vector = *release_step;\n        release_vector =\n            Vector3(random_x, random_y, forward_z) * 0.30000001f;"
+        }
+      ]
+    }
+  ]
+}

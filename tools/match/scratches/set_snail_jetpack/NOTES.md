@@ -71,3 +71,18 @@ Tracked decompile health checks reject a return to the old `mode_flags`,
 `v3`, or `statea` views. Focused Windows matching is intentionally unchanged at
 86.18%, 61/62 instructions, with eight clean masked operands: the remaining
 gap is still the native prologue/register schedule, not missing ownership.
+
+## 2026-07-29 bounded state-lifetime audit
+
+Three recorded mutation sweeps evaluated 51 source variants around the last
+native-only instruction gap:
+
+- mapping forms varied switch, if, ternary, scalar type, and source expression;
+- declaration and scope forms varied the `state` and `target_state` lifetimes;
+- a cross-product varied the mapping together with transition-control spelling.
+
+None improved the canonical 86.18% result: 21 variants were neutral and 30
+regressed. The native load-before-save prologue and default-path reload remain
+unexplained by ordinary source spelling. Mark this scratch stalled; another
+syntax sweep is not justified without new evidence about the source type,
+translation-unit context, or compiler relationship.
