@@ -114,5 +114,5 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
     if (keyframe_count == 1)
         progress_step = 1.0f;
 
-    object->request_object_animation(keyframe_count, keyframes, progress_step, mode_flags);
+    object->RequestAnim(keyframe_count, keyframes, progress_step, mode_flags);
 }

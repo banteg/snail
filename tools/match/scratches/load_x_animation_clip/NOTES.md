@@ -106,7 +106,7 @@ bounded animation block/end pointers, progress step, and mode flags.
 This makes the tracked decompile carry the same ownership graph as the exact
 matcher source: the keyframe bank is allocated once, populated through
 `XAnimationKeyframe::object/frame_number`, and retained by
-`Object::request_object_animation`; the animation text cursors only borrow
+`cRObject::RequestAnim`; the animation text cursors only borrow
 storage from `DirectXLoader::animation_bytes`. The Windows default-path
 `allocated_keyframes | 1` mode value remains visible as the already documented
 uninitialized-register bug rather than being sanitized by a misleading type or
@@ -128,3 +128,11 @@ Object and frame lanes at `+0x24/+0x7c`. The shared matcher now expresses
 `XAnimationKeyframe` as a role alias for `cRBodPos` instead of inventing a
 second `BodBase` subclass with opaque padding. Focused matching remains exact
 at 228/228 instructions with all 50 operands clean.
+
+## 2026-07-29 authored RequestAnim handoff
+
+With `cRBodPos` established as the primary Windows keyframe owner, the exact
+Android and iOS symbol can now transfer without a typedef trick:
+`cRObject::RequestAnim(int, cRBodPos*, float, int)`. The loader's sole callsite
+uses that authored method directly and remains proof-grade at 228/228
+instructions with all 50 operands clean.

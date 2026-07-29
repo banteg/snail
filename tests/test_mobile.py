@@ -1349,7 +1349,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
             "request_object_animation",
             "cRObject",
             (
-                "?request_object_animation@cRObject"
+                "?RequestAnim@cRObject"
                 "@@QAEXHPAVcRBodPos@@MH@Z"
             ),
         ),
@@ -1429,6 +1429,19 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
             entry.get("android_symbol"),
             entry.get("ios_symbol"),
         }
+
+    request_anim_source = (
+        repo_root
+        / "tools/match/scratches/request_object_animation/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    animation_loader_source = (
+        repo_root
+        / "tools/match/scratches/load_x_animation_clip/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "void cRObject::RequestAnim(" in request_anim_source
+    assert "object->RequestAnim(" in animation_loader_source
+    assert "cRObject::request_object_animation" not in request_anim_source
+    assert "object->request_object_animation" not in animation_loader_source
 
     constructor_source = (
         repo_root / "tools/match/scratches/initialize_object/scratch.cpp"

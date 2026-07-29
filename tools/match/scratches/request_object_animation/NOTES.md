@@ -195,3 +195,13 @@ declaration and reference manifest now expose that real owner directly. The
 stable descriptive method name is retained in this ownership commit so the
 separate authored `RequestAnim` rename can be validated as its own no-codegen
 change.
+
+## 2026-07-29 authored RequestAnim identity
+
+Android and iOS both retain the exact
+`cRObject::RequestAnim(int, cRBodPos*, float, int)` symbol and independently
+preserve the same validation, tween generation, and retained frame-graph
+semantics. The Windows definition and its only loader caller now use that
+authored method name directly. The stable scratch identity remains
+`request_object_animation` so status history and address-based analysis links
+do not churn.

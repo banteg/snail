@@ -1125,10 +1125,10 @@
       "name": "request_object_animation",
       "kind": "function",
       "aliases": [
-        "?request_object_animation@cRObject@@QAEXHPAVcRBodPos@@MH@Z",
+        "?RequestAnim@cRObject@@QAEXHPAVcRBodPos@@MH@Z",
         "sub_430a70"
       ],
-      "description": "Exact cRObject-owned Windows animation builder with the primary cRBodPos keyframe owner, retained by both mobile ports as cRObject::RequestAnim(int, cRBodPos*, float, int)."
+      "description": "Exact cRObject::RequestAnim(int, cRBodPos*, float, int) animation builder retained under the same authored owner, name, and parameter types by Android and iOS."
     },
     {
       "address": "0x432d40",

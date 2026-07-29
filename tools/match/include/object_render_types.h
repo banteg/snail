@@ -186,7 +186,7 @@ struct cRObject {
     void AddEdge(int vertex_a, int vertex_b, int normal_index); // @ 0x4305a0; cRObject::AddEdge
     void RequestEdges(int edge_count); // @ 0x430570; Android cRObject::RequestEdges(int)
     void CalcEdges(); // @ 0x4308b0; cRObject::CalcEdges
-    void request_object_animation(
+    void RequestAnim(
         int keyframe_count, cRBodPos* keyframes,
         float progress_step, int flags); // @ 0x430a70
 

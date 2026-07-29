@@ -9,7 +9,7 @@ void* allocate_tracked_memory(int size, char* name); // @ 0x431b60
 int report_errorf(char* format, ...); // @ 0x431cc0
 extern "C" double __cdecl floor(double value);
 
-void cRObject::request_object_animation(
+void cRObject::RequestAnim(
     int keyframe_count, XAnimationKeyframe* keyframes,
     float progress_step, int flags)
 {
