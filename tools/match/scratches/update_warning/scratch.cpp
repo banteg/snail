@@ -10,9 +10,11 @@
 
 void Warning::update_warning()
 {
-    if (!g_game->subgame.subgame_pause_gate && state) {
+    if (!g_game->subgame.subgame_pause_gate) {
         float advanced;
         switch (state) {
+        case WARNING_STATE_INACTIVE:
+            return;
         case WARNING_STATE_FADING:
             if (phase < 0.5f)
                 border->hot_text_color.a = 1.0f - (phase + phase);

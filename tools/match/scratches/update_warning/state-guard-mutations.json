@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "state-guard",
+      "find": "    if (!g_game->subgame.subgame_pause_gate && state) {",
+      "replacements": [
+        {
+          "name": "explicit-inactive-compare",
+          "text": "    if (!g_game->subgame.subgame_pause_gate\n        && state != WARNING_STATE_INACTIVE) {"
+        },
+        {
+          "name": "reversed-inactive-compare",
+          "text": "    if (!g_game->subgame.subgame_pause_gate\n        && WARNING_STATE_INACTIVE != state) {"
+        },
+        {
+          "name": "pause-equals-zero",
+          "text": "    if (g_game->subgame.subgame_pause_gate == 0 && state) {"
+        },
+        {
+          "name": "pause-first-explicit-state",
+          "text": "    if (g_game->subgame.subgame_pause_gate == 0\n        && state != WARNING_STATE_INACTIVE) {"
+        },
+        {
+          "name": "state-first",
+          "text": "    if (state && !g_game->subgame.subgame_pause_gate) {"
+        },
+        {
+          "name": "state-first-explicit",
+          "text": "    if (state != WARNING_STATE_INACTIVE\n        && !g_game->subgame.subgame_pause_gate) {"
+        },
+        {
+          "name": "negated-or",
+          "text": "    if (!(g_game->subgame.subgame_pause_gate || !state)) {"
+        },
+        {
+          "name": "double-negated-state",
+          "text": "    if (!g_game->subgame.subgame_pause_gate && !!state) {"
+        },
+        {
+          "name": "state-minus-inactive",
+          "text": "    if (!g_game->subgame.subgame_pause_gate\n        && state - WARNING_STATE_INACTIVE) {"
+        },
+        {
+          "name": "state-plus-zero",
+          "text": "    if (!g_game->subgame.subgame_pause_gate && state + 0) {"
+        },
+        {
+          "name": "state-xor-zero",
+          "text": "    if (!g_game->subgame.subgame_pause_gate && (state ^ 0)) {"
+        },
+        {
+          "name": "state-or-zero",
+          "text": "    if (!g_game->subgame.subgame_pause_gate && (state | 0)) {"
+        },
+        {
+          "name": "conditional-gate",
+          "text": "    if (g_game->subgame.subgame_pause_gate\n        ? 0 : state != WARNING_STATE_INACTIVE) {"
+        },
+        {
+          "name": "bitwise-guards",
+          "text": "    if ((!g_game->subgame.subgame_pause_gate)\n        & (state != WARNING_STATE_INACTIVE)) {"
+        },
+        {
+          "name": "positive-state",
+          "text": "    if (!g_game->subgame.subgame_pause_gate && state > 0) {"
+        }
+      ]
+    }
+  ]
+}

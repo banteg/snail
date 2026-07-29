@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "pause-only-outer-guard",
+      "find": "    if (!g_game->subgame.subgame_pause_gate && state) {",
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "    if (!g_game->subgame.subgame_pause_gate) {"
+        },
+        {
+          "name": "equals-zero",
+          "text": "    if (g_game->subgame.subgame_pause_gate == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "inactive-switch-arm",
+      "find": "        switch (state) {\n        case WARNING_STATE_FADING:",
+      "replacements": [
+        {
+          "name": "inactive-break",
+          "text": "        switch (state) {\n        case WARNING_STATE_INACTIVE:\n            break;\n        case WARNING_STATE_FADING:"
+        },
+        {
+          "name": "inactive-return",
+          "text": "        switch (state) {\n        case WARNING_STATE_INACTIVE:\n            return;\n        case WARNING_STATE_FADING:"
+        },
+        {
+          "name": "literal-zero-break",
+          "text": "        switch (state) {\n        case 0:\n            break;\n        case WARNING_STATE_FADING:"
+        },
+        {
+          "name": "inactive-and-default-break",
+          "text": "        switch (state) {\n        case WARNING_STATE_INACTIVE:\n        default:\n            break;\n        case WARNING_STATE_FADING:"
+        },
+        {
+          "name": "default-before-inactive",
+          "text": "        switch (state) {\n        default:\n            break;\n        case WARNING_STATE_INACTIVE:\n            break;\n        case WARNING_STATE_FADING:"
+        },
+        {
+          "name": "default-return",
+          "text": "        switch (state) {\n        case WARNING_STATE_INACTIVE:\n        default:\n            return;\n        case WARNING_STATE_FADING:"
+        }
+      ]
+    }
+  ]
+}

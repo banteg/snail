@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**538/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **97598/294937** bytes (**33.09%**) are proof-grade, and overall fuzzy is **79.17%**.
+**539/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **97777/294937** bytes (**33.15%**) are proof-grade, and overall fuzzy is **79.18%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (538)
+## Proof Grade (539)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -413,6 +413,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | start_warning | 0x446f30 | 21 | 4/4 | 100.00% | 4/4 | 1 ok |  | core |
 | ✅ | stop_warning | 0x446f50 | 14 | 3/3 | 100.00% | 3/3 | 1 ok |  | core |
 | ✅ | stop_warning_sample | 0x446f60 | 24 | 7/7 | 100.00% | 7/7 | 4 ok |  | core |
+| ✅ | update_warning | 0x446f80 | 179 | 52/52 | 100.00% | 52/52 | 7 ok |  | core |
 | ✅ | get_track_cell_row_index | 0x447040 | 65 | 22/22 | 100.00% | 22/22 | 2 ok |  | core |
 | ✅ | initialize_fringe_manager | 0x447090 | 11 | 2/2 | 100.00% | 2/2 | - |  | core |
 | ✅ | allocate_fringe_object | 0x4470a0 | 50 | 14/14 | 100.00% | 14/14 | 2 ok |  | core |
@@ -549,7 +550,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (25)
+## Near Match (95-99.99%) (24)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -572,7 +573,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 2 unaudited, 37 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  | core |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 218/218 | 97.25% | 82/218 | 24 ok |  | core |
-| 🚧 | update_warning | 0x446f80 | 179 | 52/52 | 98.08% | 8/52 | 7 ok |  | core |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  | core |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 65/65 | 95.38% | 43/65 | 2 unaudited, 19 ok |  | boundary |
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 66/66 | 98.48% | 42/66 | 20 ok |  | boundary |

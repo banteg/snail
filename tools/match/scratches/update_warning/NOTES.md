@@ -1,4 +1,4 @@
-# Source-shaped — 98.08%, 52/52 insns (one zero-test residual remains)
+# Exact — 100.00%, 52/52 instructions
 
 The warning actor decoded: state 1 pins the target text alpha to
 0.99900001f (bits 1065336439, `0x3f7fbe77`) while the phase fills; state 2 fades alpha
@@ -101,3 +101,23 @@ not alter matching source: focused output remains an honest 98.08%, 52/52
 instructions, prefix 8, with seven clean masked operands and only native
 `sub eax, edx` versus source-shaped `cmp eax, edx`. The rejected
 subtract-through-zero fakematch remains absent.
+
+## 2026-07-29 explicit inactive-state closure
+
+A recorded state-guard sweep first confirmed that fifteen ordinary zero-test,
+comparison, condition-order, and boolean spellings either preserve the
+98.08% `cmp eax, edx` result or regress. A second 20-variant sweep then tested
+the lifecycle-backed three-state dispatch directly.
+
+Removing the redundant outer `&& state` test and adding
+`case WARNING_STATE_INACTIVE: return` recovers native's switch normalization:
+the already-zero EDX register is subtracted from the state in EAX before the
+zero/one/two decrement ladder. This is not a subtract-through-zero source
+trick. `initialize_warning` and `stop_warning` own the inactive state, and the
+Android `cRWarning::AI()` body independently retains an explicit state-zero
+return.
+
+The accepted form preserves the pause exit, both live state arms, the inactive
+exit, and the no-op behavior for unknown states. Focused matching is now exact:
+**100.00%, 52/52 instructions, prefix 52/52, with all seven masked operands
+clean**.
