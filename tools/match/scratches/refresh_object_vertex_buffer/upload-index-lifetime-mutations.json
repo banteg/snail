@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "animated-upload-loop",
+      "find": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[i] = object->vertices[i];\n        }",
+      "replacements": [
+        {
+          "name": "three-index-for",
+          "text": "for (int i = 0, source_index = 0, destination_index = 0;\n             i < object->grouped_vertex_count;\n             ++i, ++source_index, ++destination_index) {\n            *(Vector3*)&vertices[destination_index] =\n                object->vertices[source_index];\n        }"
+        },
+        {
+          "name": "declared-indices",
+          "text": "int source_index = 0;\n        int destination_index = 0;\n        for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[destination_index] =\n                object->vertices[source_index];\n            ++source_index;\n            ++destination_index;\n        }"
+        }
+      ]
+    },
+    {
+      "name": "dynamic-upload-loop",
+      "find": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[i] = object->vertices[i];\n            vertices[i].u = object->facequads[i / 4].uv[i & 3].u;\n            vertices[i].v = object->facequads[i / 4].uv[i & 3].v;\n        }",
+      "replacements": [
+        {
+          "name": "three-index-for",
+          "text": "for (int i = 0, source_index = 0, destination_index = 0;\n             i < object->grouped_vertex_count;\n             ++i, ++source_index, ++destination_index) {\n            *(Vector3*)&vertices[destination_index] =\n                object->vertices[source_index];\n            vertices[destination_index].u =\n                object->facequads[i / 4].uv[i & 3].u;\n            vertices[destination_index].v =\n                object->facequads[i / 4].uv[i & 3].v;\n        }"
+        },
+        {
+          "name": "declared-indices",
+          "text": "int source_index = 0;\n        int destination_index = 0;\n        for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[destination_index] =\n                object->vertices[source_index];\n            vertices[destination_index].u =\n                object->facequads[i / 4].uv[i & 3].u;\n            vertices[destination_index].v =\n                object->facequads[i / 4].uv[i & 3].v;\n            ++source_index;\n            ++destination_index;\n        }"
+        }
+      ]
+    }
+  ]
+}

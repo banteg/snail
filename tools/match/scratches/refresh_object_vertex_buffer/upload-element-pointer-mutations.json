@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "animated-upload-loop",
+      "find": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[i] = object->vertices[i];\n        }",
+      "replacements": [
+        {
+          "name": "source-pointer",
+          "text": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            Vector3* source = &object->vertices[i];\n            *(Vector3*)&vertices[i] = *source;\n        }"
+        },
+        {
+          "name": "destination-pointer",
+          "text": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            Vector3* destination = (Vector3*)&vertices[i];\n            *destination = object->vertices[i];\n        }"
+        },
+        {
+          "name": "source-and-destination-pointers",
+          "text": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            Vector3* source = &object->vertices[i];\n            Vector3* destination = (Vector3*)&vertices[i];\n            *destination = *source;\n        }"
+        }
+      ]
+    },
+    {
+      "name": "dynamic-upload-loop",
+      "find": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[i] = object->vertices[i];\n            vertices[i].u = object->facequads[i / 4].uv[i & 3].u;\n            vertices[i].v = object->facequads[i / 4].uv[i & 3].v;\n        }",
+      "replacements": [
+        {
+          "name": "source-pointer",
+          "text": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            Vector3* source = &object->vertices[i];\n            *(Vector3*)&vertices[i] = *source;\n            vertices[i].u = object->facequads[i / 4].uv[i & 3].u;\n            vertices[i].v = object->facequads[i / 4].uv[i & 3].v;\n        }"
+        },
+        {
+          "name": "destination-pointer",
+          "text": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            ObjectRenderVertex* destination = &vertices[i];\n            *(Vector3*)destination = object->vertices[i];\n            destination->u = object->facequads[i / 4].uv[i & 3].u;\n            destination->v = object->facequads[i / 4].uv[i & 3].v;\n        }"
+        },
+        {
+          "name": "source-and-destination-pointers",
+          "text": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            Vector3* source = &object->vertices[i];\n            ObjectRenderVertex* destination = &vertices[i];\n            *(Vector3*)destination = *source;\n            destination->u = object->facequads[i / 4].uv[i & 3].u;\n            destination->v = object->facequads[i / 4].uv[i & 3].v;\n        }"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "animated-upload-loop",
+      "find": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[i] = object->vertices[i];\n        }",
+      "replacements": [
+        {
+          "name": "integer-offset-expressions",
+          "text": "int source_offset = 0;\n        int destination_offset = 0;\n        for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)((char*)vertices + destination_offset) =\n                *(Vector3*)((char*)object->vertices + source_offset);\n            source_offset += sizeof(Vector3);\n            destination_offset += sizeof(ObjectRenderVertex);\n        }"
+        },
+        {
+          "name": "integer-offset-pointers",
+          "text": "int source_offset = 0;\n        int destination_offset = 0;\n        for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            Vector3* source_vertex =\n                (Vector3*)((char*)object->vertices + source_offset);\n            Vector3* destination_vertex =\n                (Vector3*)((char*)vertices + destination_offset);\n            *destination_vertex = *source_vertex;\n            source_offset += sizeof(Vector3);\n            destination_offset += sizeof(ObjectRenderVertex);\n        }"
+        }
+      ]
+    },
+    {
+      "name": "dynamic-upload-loop",
+      "find": "for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            *(Vector3*)&vertices[i] = object->vertices[i];\n            vertices[i].u = object->facequads[i / 4].uv[i & 3].u;\n            vertices[i].v = object->facequads[i / 4].uv[i & 3].v;\n        }",
+      "replacements": [
+        {
+          "name": "integer-offset-expressions",
+          "text": "int source_offset = 0;\n        int destination_offset = 0;\n        for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            ObjectRenderVertex* destination =\n                (ObjectRenderVertex*)((char*)vertices + destination_offset);\n            *(Vector3*)destination =\n                *(Vector3*)((char*)object->vertices + source_offset);\n            destination->u = object->facequads[i / 4].uv[i & 3].u;\n            destination->v = object->facequads[i / 4].uv[i & 3].v;\n            source_offset += sizeof(Vector3);\n            destination_offset += sizeof(ObjectRenderVertex);\n        }"
+        },
+        {
+          "name": "integer-offset-pointers",
+          "text": "int source_offset = 0;\n        int destination_offset = 0;\n        for (int i = 0; i < object->grouped_vertex_count; ++i) {\n            Vector3* source_vertex =\n                (Vector3*)((char*)object->vertices + source_offset);\n            ObjectRenderVertex* destination =\n                (ObjectRenderVertex*)((char*)vertices + destination_offset);\n            *(Vector3*)destination = *source_vertex;\n            destination->u = object->facequads[i / 4].uv[i & 3].u;\n            destination->v = object->facequads[i / 4].uv[i & 3].v;\n            source_offset += sizeof(Vector3);\n            destination_offset += sizeof(ObjectRenderVertex);\n        }"
+        }
+      ]
+    }
+  ]
+}

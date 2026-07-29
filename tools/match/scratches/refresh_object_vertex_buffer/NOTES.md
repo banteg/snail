@@ -161,3 +161,19 @@ different build-time work. Those candidates are explicitly rejected rather
 than transferred across renderer architectures. Focused Wibo remains the
 honest `90.58%`, `137/139` result with two address-formation scheduling
 residuals.
+
+## 2026-07-29 upload cursor closure
+
+Three bounded mutation sweeps exhausted the source-plausible spellings for the
+two missing address-formation moves. Explicit integer byte offsets regress the
+animated loop to `86.23%`, the dynamic loop to `69.75%`, and both together to
+`65.48%`. Separate typed source/destination indices, whether declared before
+the loop or in its initializer, are byte-neutral in all eight combinations.
+Per-iteration source pointers are also neutral; a destination pointer is
+neutral in the animated loop but drops the dynamic loop to `70.46%`.
+
+The retained aggregate indexed copies therefore remain the clearest authored
+form. Focused Wibo stays `90.58%`, `137/139`, prefix `7`, with four clean
+references. The two residual instructions are bounded to allocator/register
+address formation, and no synthetic byte cursor is retained to manufacture
+them.
