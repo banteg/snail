@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cell-lifetime",
+      "find": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n\n    Vector3 staged_position =\n        cell->position + Vector3(0.0f, 0.60000002f, 0.0f);",
+      "replacements": [
+        {
+          "name": "pointer-before-offset",
+          "text": "    cRSubLoc* source_cell = cell;\n    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n\n    Vector3 staged_position =\n        source_cell->position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "pointer-after-offset",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubLoc* source_cell = cell;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n\n    Vector3 staged_position =\n        source_cell->position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "pointer-after-slot",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    cRSubLoc* source_cell = cell;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n\n    Vector3 staged_position =\n        source_cell->position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "pointer-after-owner",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n    cRSubLoc* source_cell = cell;\n\n    Vector3 staged_position =\n        source_cell->position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "split-pointer-after-slot",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    cRSubLoc* source_cell;\n    source_cell = cell;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n\n    Vector3 staged_position =\n        source_cell->position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "object-reference-after-slot",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    cRSubLoc& source_cell = *cell;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n\n    Vector3 staged_position =\n        source_cell.position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "object-reference-after-owner",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n    cRSubLoc& source_cell = *cell;\n\n    Vector3 staged_position =\n        source_cell.position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "position-pointer-after-owner",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n    Vector3* cell_position = &cell->position;\n\n    Vector3 staged_position =\n        *cell_position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "position-copy-after-owner",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n    Vector3 cell_position = cell->position;\n\n    Vector3 staged_position =\n        cell_position + Vector3(0.0f, 0.60000002f, 0.0f);"
+        },
+        {
+          "name": "copy-then-compound-offset",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;\n\n    Vector3 staged_position = cell->position;\n    staged_position += Vector3(0.0f, 0.60000002f, 0.0f);"
+        }
+      ]
+    }
+  ]
+}

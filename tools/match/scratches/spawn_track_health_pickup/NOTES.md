@@ -151,7 +151,7 @@ non-empty-splice `mov ecx, [ecx]` versus `mov eax, [ecx]` reload lane; staged
 anchor-pointer staging were all codegen-neutral at `97.54%`.
 
 2026-07-03 empty-list reload probes: the remaining 3-instruction residual is
-one prologue transposition (`sub eax, ebx` vs the `player` arg load) plus the
+one prologue transposition (`sub eax, ebx` vs the `cell` arg load) plus the
 empty-list branch reload register (`mov ecx, [ecx]` native vs `mov eax, [ecx]`
 candidate). Three source shapes for the reload — direct
 `(*first_ref)->list_next = 0`, a fresh `installed` local, and reusing the
@@ -261,14 +261,23 @@ without restoring the rejected artificial return value.
 This raises focused matching from 90.08% (`120/122`, prefix 6) through 92.68%
 to **99.18%** (`122/122`, prefix 16), with all seven references clean. The
 register-allocation improvement also aligns the formerly divergent list
-splice, bob-phase tail, final store, and void epilogue. Four recorded sweeps
-cover 25 unique loop, exit, slot-offset, and owner-publication variants:
-three improve, 13 are byte-identical to their sweep baselines, and nine
-regress.
+splice, bob-phase tail, final store, and void epilogue. Five recorded sweeps
+cover 35 unique loop, exit, slot-offset, owner-publication, and cell-lifetime
+variants: three improve, 21 are byte-identical to their sweep baselines, and
+11 regress.
 
 The sole residual is now one independent scheduling swap after the scan:
 native completes `sub eax, ebx` for the 29-word slot offset before loading the
-`player` argument into `ebp`; the candidate performs those two operations in
-the opposite order. Seven natural offset factorizations and six slot/owner
-declaration forms compile byte-identically at 99.18%. Do not force the last
-swap with a dummy dependency or raw register-shaped alias.
+`cell` argument into `ebp`; the candidate performs those two operations in
+the opposite order. This attribution follows the exact thiscall stack:
+after `sub esp, 0x10; push ebx; push ebp`, `[esp+0x1c]` is the first explicit
+argument, `cRSubLoc* cell`; `player` is loaded later from `[esp+0x28]`.
+
+The final ten-variant sweep rechecks that corrected owner at the current
+99.18% baseline. Pointer aliases in four declaration positions, split
+assignment, object references, and a borrowed position pointer are all
+byte-identical. Copying the position into another vector or using compound
+addition instead selects a different temporary family and regresses to
+45.24%–50.00%. The three-sweep non-improvement streak formally stalls the
+target at 122/122 instructions with all seven references clean. Do not force
+the last swap with a dummy dependency or raw register-shaped alias.
