@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-index-lifetime",
+      "find": "        terminal_index = current_template->segment_count - 1;",
+      "replacements": [
+        {
+          "name": "signed-count-local",
+          "text": "        int segment_count = current_template->segment_count;\n        terminal_index = segment_count - 1;"
+        },
+        {
+          "name": "unsigned-count-local",
+          "text": "        unsigned int segment_count = current_template->segment_count;\n        terminal_index = (int)segment_count - 1;"
+        },
+        {
+          "name": "assign-then-decrement",
+          "text": "        terminal_index = current_template->segment_count;\n        --terminal_index;"
+        },
+        {
+          "name": "assign-then-subtract",
+          "text": "        terminal_index = current_template->segment_count;\n        terminal_index -= 1;"
+        },
+        {
+          "name": "add-negative-one",
+          "text": "        terminal_index = current_template->segment_count + -1;"
+        },
+        {
+          "name": "explicit-cast",
+          "text": "        terminal_index = (int)(current_template->segment_count - 1);"
+        }
+      ]
+    }
+  ]
+}

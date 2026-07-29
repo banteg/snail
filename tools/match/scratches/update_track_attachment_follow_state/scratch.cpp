@@ -87,7 +87,8 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
         out_angle = delta + progress;
         progress = out_angle;
         current_template = this->template_record;
-        terminal_index = current_template->segment_count - 1;
+        int segment_count = current_template->segment_count;
+        terminal_index = segment_count - 1;
         if (current_index == (unsigned int)terminal_index) {
             v85 = current_template->primary_samples[current_index].center_x;
         } else {
@@ -258,14 +259,10 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
                 *out_position = output_position;
                 player->heading_roll =
                     this->template_record->installed_heading_delta + player->heading_roll;
-                if (out_position->x < -4.0f) {
-                    out_position->x = -4.0f;
-                    return this->template_record->side_exit_mode == 0;
-                }
-                if (out_position->x > 4.0f) {
-                    out_position->x = 4.0f;
-                    return this->template_record->side_exit_mode == 0;
-                }
+                float clamped_x = out_position->x < -4.0f
+                    ? -4.0f
+                    : (out_position->x > 4.0f ? 4.0f : out_position->x);
+                out_position->x = clamped_x;
                 return this->template_record->side_exit_mode == 0;
             }
         }

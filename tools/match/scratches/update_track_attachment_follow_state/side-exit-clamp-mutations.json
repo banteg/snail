@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "side-exit-clamp",
+      "find": "                if (out_position->x < -4.0f) {\n                    out_position->x = -4.0f;\n                    return this->template_record->side_exit_mode == 0;\n                }\n                if (out_position->x > 4.0f) {\n                    out_position->x = 4.0f;\n                    return this->template_record->side_exit_mode == 0;\n                }\n                return this->template_record->side_exit_mode == 0;",
+      "replacements": [
+        {
+          "name": "local-independent-clamps",
+          "text": "                float clamped_x = out_position->x;\n                if (clamped_x < -4.0f)\n                    clamped_x = -4.0f;\n                if (clamped_x > 4.0f)\n                    clamped_x = 4.0f;\n                out_position->x = clamped_x;\n                return this->template_record->side_exit_mode == 0;"
+        },
+        {
+          "name": "local-else-if-clamp",
+          "text": "                float clamped_x = out_position->x;\n                if (clamped_x < -4.0f)\n                    clamped_x = -4.0f;\n                else if (clamped_x > 4.0f)\n                    clamped_x = 4.0f;\n                out_position->x = clamped_x;\n                return this->template_record->side_exit_mode == 0;"
+        },
+        {
+          "name": "local-member-comparisons",
+          "text": "                float clamped_x = out_position->x;\n                if (out_position->x < -4.0f)\n                    clamped_x = -4.0f;\n                else if (out_position->x > 4.0f)\n                    clamped_x = 4.0f;\n                out_position->x = clamped_x;\n                return this->template_record->side_exit_mode == 0;"
+        },
+        {
+          "name": "conditional-expression",
+          "text": "                float clamped_x = out_position->x < -4.0f\n                    ? -4.0f\n                    : (out_position->x > 4.0f ? 4.0f : out_position->x);\n                out_position->x = clamped_x;\n                return this->template_record->side_exit_mode == 0;"
+        },
+        {
+          "name": "direct-else-if-clamp",
+          "text": "                if (out_position->x < -4.0f)\n                    out_position->x = -4.0f;\n                else if (out_position->x > 4.0f)\n                    out_position->x = 4.0f;\n                return this->template_record->side_exit_mode == 0;"
+        },
+        {
+          "name": "direct-independent-clamps",
+          "text": "                if (out_position->x < -4.0f)\n                    out_position->x = -4.0f;\n                if (out_position->x > 4.0f)\n                    out_position->x = 4.0f;\n                return this->template_record->side_exit_mode == 0;"
+        },
+        {
+          "name": "local-early-returns",
+          "text": "                float clamped_x = out_position->x;\n                if (clamped_x < -4.0f) {\n                    clamped_x = -4.0f;\n                    out_position->x = clamped_x;\n                    return this->template_record->side_exit_mode == 0;\n                }\n                if (clamped_x > 4.0f) {\n                    clamped_x = 4.0f;\n                    out_position->x = clamped_x;\n                    return this->template_record->side_exit_mode == 0;\n                }\n                out_position->x = clamped_x;\n                return this->template_record->side_exit_mode == 0;"
+        },
+        {
+          "name": "local-arm-store-shared-return",
+          "text": "                float clamped_x = out_position->x;\n                if (clamped_x < -4.0f) {\n                    clamped_x = -4.0f;\n                    out_position->x = clamped_x;\n                } else if (clamped_x > 4.0f) {\n                    clamped_x = 4.0f;\n                    out_position->x = clamped_x;\n                } else {\n                    out_position->x = clamped_x;\n                }\n                return this->template_record->side_exit_mode == 0;"
+        }
+      ]
+    }
+  ]
+}

@@ -420,3 +420,27 @@ The IDA 9.4 export also recovers several whole-aggregate transform assignments
 that the prior decompiler rendered as `qmemcpy` and row-by-row copies. This is
 decompiler presentation only; Windows code bytes and the matcher candidate are
 unchanged.
+
+## 2026-07-29 clamp and terminal-index recovery
+
+Six recorded sweeps evaluated 112 bounded variants against the canonical
+owner graph. The side-exit clamp was the material gap: spelling its bounded x
+value as one conditional expression raises focused Wibo from `72.89%`,
+698/726 instructions, with 63 clean and two unaudited operands to `74.97%`,
+712/726, with all 65 operands clean. This restores native's x87 `-4.0f` and
+`4.0f` constant paths without volatile storage or duplicated returns.
+
+Naming the signed `Path::segment_count` before deriving `terminal_index`
+further improves alignment to `75.66%` while preserving the 122-instruction
+prefix, 712/726 instruction shape, exact 0x180-byte frame, and zero reference
+debt. Signed and unsigned count locals compile identically; the signed form is
+retained because it matches the shared field type.
+
+The remaining ordinary-path hypotheses are bounded. Five aggregate result
+forms regress to `66.43%`–`66.81%`; a shared output-position pointer is neutral
+or worse; all complete hoisted `path_x/y/z` lifetimes are byte-neutral; and all
+63 combinations of anchor/sample operand order compile identically. Three
+consecutive non-improving sweeps therefore leave the last 14 instructions as
+matrix-stack and x87 scheduling residue rather than missing ownership or
+arithmetic. The improved source remains free of padding, dummy locals, and
+score-only control flow.

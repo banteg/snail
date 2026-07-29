@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "path-component-owners",
+      "find": "    float v85;\n    TransformMatrix transform;",
+      "replacements": [
+        {
+          "name": "hoist-three-components",
+          "text": "    float v85;\n    float path_x;\n    float path_y;\n    float path_z;\n    TransformMatrix transform;"
+        }
+      ]
+    },
+    {
+      "name": "path-x-lifetime",
+      "find": "            float path_x = out_angle * sample->delta_dir_to_next.x;",
+      "replacements": [
+        {
+          "name": "use-hoisted-owner",
+          "text": "            path_x = out_angle * sample->delta_dir_to_next.x;"
+        }
+      ]
+    },
+    {
+      "name": "path-y-lifetime",
+      "find": "            float path_y = out_angle * sample->delta_dir_to_next.y;",
+      "replacements": [
+        {
+          "name": "use-hoisted-owner",
+          "text": "            path_y = out_angle * sample->delta_dir_to_next.y;"
+        }
+      ]
+    },
+    {
+      "name": "path-z-lifetime",
+      "find": "            float path_z = out_angle * sample->delta_dir_to_next.z;",
+      "replacements": [
+        {
+          "name": "use-hoisted-owner",
+          "text": "            path_z = out_angle * sample->delta_dir_to_next.z;"
+        }
+      ]
+    }
+  ]
+}

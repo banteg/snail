@@ -4,14 +4,14 @@
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 46.44% | **72.89%** |
+| Match | 46.44% | **75.66%** |
 | Target instructions | 726 | 726 |
-| Candidate instructions | 678 | 698 |
+| Candidate instructions | 678 | 712 |
 | Exact prefix | 0 / 726 | **122 / 726** |
 | Stack frame | `0x160` | **`0x180`** |
-| Masked operands | 45 ok, 0 unresolved, 0 mismatch | **63 ok, 0 unresolved, 0 mismatch** |
+| Masked operands | 45 ok, 0 unresolved, 0 mismatch | **65 ok, 0 unresolved, 0 mismatch, 0 unaudited** |
 
-The measured improvement is **+26.45 percentage points**. The first remaining mismatch is target instruction 122, where both sides emit `je` but branch to differently laid-out blocks.
+The measured improvement is **+29.22 percentage points**. The first remaining mismatch is target instruction 122, where both sides emit `je` but branch to differently laid-out blocks.
 
 ## Accepted source-shape changes
 
@@ -25,7 +25,8 @@ The measured improvement is **+26.45 percentage points**. The first remaining mi
 - Recovered aggregate `Vec3` publication into the embedded Player live-matrix rows.
 - Replaced the final field-first row and matrix globals with canonical `GameRoot`, `cRSubGame`, `SubRow`, and `Player` ownership paths.
 - Recovered `FollowState +0x20..+0x28` as one `orientation_up` vector and the side-exit output as a whole-vector copy.
-- Kept separate semantic clamp returns for the side-exit path.
+- Recovered the side-exit x clamp as one conditional expression, restoring the native x87 `-4/+4` constants and clearing both unaudited operands.
+- Named the signed path segment count before deriving the terminal index, improving the native last-index lifetime and downstream alignment.
 
 ## Rejected trials
 
@@ -36,9 +37,12 @@ The measured improvement is **+26.45 percentage points**. The first remaining mi
 - Active sample-pointer kind-42 form: `65.52%`.
 - Literal nested IDA clamp tail: `67.80%`, below the simpler semantic return shape.
 - Several row-local, voice-expression, terminal-boolean, and expression-order probes were codegen-neutral.
+- Five ordinary result-vector forms fell to `66.43%`–`66.81%`.
+- Shared output-position pointer lifetimes were neutral or regressed to `74.69%`.
+- Hoisted path-component owners and all 63 ordinary position operand orders were byte-neutral.
 
 ## Final audit
 
 - Fixed toolchain: `msvc6.5 /O2 /G5 /W3`.
 - No inline assembly, volatile padding, fake globals, dummy externs, or normalizer-specific tricks.
-- Final matcher output: `72.89%`, target `726`, candidate `698`, prefix `122`, masks `63/0/0`.
+- Final matcher output: `75.66%`, target `726`, candidate `712`, prefix `122`, masks `65/0/0/0`.

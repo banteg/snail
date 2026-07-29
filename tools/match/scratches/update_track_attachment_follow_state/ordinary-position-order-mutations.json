@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-position-x",
+      "find": "            v82 = path_x * v79 + anchor->x + sample->transform.position.x;",
+      "replacements": [
+        {
+          "name": "sample-then-anchor",
+          "text": "            v82 = path_x * v79 + sample->transform.position.x + anchor->x;"
+        },
+        {
+          "name": "anchor-first",
+          "text": "            v82 = anchor->x + path_x * v79 + sample->transform.position.x;"
+        },
+        {
+          "name": "sample-first",
+          "text": "            v82 = sample->transform.position.x + path_x * v79 + anchor->x;"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-position-y",
+      "find": "            v83 = path_y * v79 + anchor->y + sample->transform.position.y;",
+      "replacements": [
+        {
+          "name": "sample-then-anchor",
+          "text": "            v83 = path_y * v79 + sample->transform.position.y + anchor->y;"
+        },
+        {
+          "name": "anchor-first",
+          "text": "            v83 = anchor->y + path_y * v79 + sample->transform.position.y;"
+        },
+        {
+          "name": "sample-first",
+          "text": "            v83 = sample->transform.position.y + path_y * v79 + anchor->y;"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-position-z",
+      "find": "            v84 = path_z + anchor->z + sample->transform.position.z;",
+      "replacements": [
+        {
+          "name": "sample-then-anchor",
+          "text": "            v84 = path_z + sample->transform.position.z + anchor->z;"
+        },
+        {
+          "name": "anchor-first",
+          "text": "            v84 = anchor->z + path_z + sample->transform.position.z;"
+        },
+        {
+          "name": "sample-first",
+          "text": "            v84 = sample->transform.position.z + path_z + anchor->z;"
+        }
+      ]
+    }
+  ]
+}
