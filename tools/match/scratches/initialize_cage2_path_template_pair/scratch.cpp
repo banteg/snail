@@ -146,8 +146,8 @@ void cRPath::initialize_cage2_path_template_pair(
     secondary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
-    strip_mesh->request_object_vertices((width_cells + 1) * (segment_count + 1));
-    strip_mesh->request_object_facequads(2 * width_cells * segment_count);
+    strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
+    strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
 
     Vector3* vertices = strip_mesh->vertices;
     ObjectFaceQuad* facequads = strip_mesh->facequads;

@@ -5,8 +5,8 @@
 
 void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset)
 {
-    object->request_object_vertices(4);
-    object->request_object_facequads(1);
+    object->RequestVertices(4);
+    object->RequestFaceQuads(1);
 
     float left_x = x_offset + 0.5f;
     Vector3* vertices = object->vertices;

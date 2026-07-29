@@ -11,8 +11,8 @@ void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
     Object* mesh = fringe_mesh_bod.object;
     mesh->blend_mode = 5;
     mesh->flags |= OBJECT_FLAG_DISABLE_CULLING;
-    mesh->request_object_vertices((segment_count << 2) + 6);
-    mesh->request_object_facequads((segment_count << 1) + 1);
+    mesh->RequestVertices((segment_count << 2) + 6);
+    mesh->RequestFaceQuads((segment_count << 1) + 1);
 
     Vector3* vertices = mesh->vertices;
     ObjectFaceQuad* facequads = mesh->facequads;

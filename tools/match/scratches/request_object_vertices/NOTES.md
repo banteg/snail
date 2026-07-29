@@ -10,7 +10,7 @@ Semantics:
 - allocates `vertex_count * sizeof(Vector3)` bytes at `+0x38`;
 - stores the count at `+0x2c`;
 - immediately requests the matching vertex-colour buffer through exact
-  `request_object_vertex_colours`.
+  `cRObject::RequestColours()`.
 
 2026-07-14 allocation ownership: the complete `Vector3` type now supplies the
 vertex stride. Matching remains exact at 37/37 instructions with all eight
@@ -28,3 +28,12 @@ tracked artifact now shows the canonical Object-owned `Vec3* vertices` bank,
 the `vertex_count` capacity decision, and the linked colour-bank request. This
 retires IDA's stale `PathTemplateStripMesh` owner without changing the exact
 37/37 matcher.
+
+## 2026-07-29 mobile-authored allocation surface
+
+Android and iOS preserve this body as `cRObject::RequestVertices(int)`.
+The same `RObject.o` family recovers `CopyVertices`, `RequestVerticesCopy`,
+`RequestFaceQuadNormals`, `RequestColours`, `RequestFaceQuads`,
+`RequestFaceQuadTextureGroups`, `RequestEdges`, and `ApplyToon`. The matcher
+now uses those authored member names at every typed callsite while retaining
+the stable Windows scratch IDs and exact calling conventions.

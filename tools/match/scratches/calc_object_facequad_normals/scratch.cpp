@@ -25,7 +25,7 @@ int report_errorf(char* format, ...);
 
 void cRObject::calc_object_facequad_normals()
 {
-    request_object_facequad_normals();
+    RequestFaceQuadNormals();
 
     float* normal_tally = (float*)allocate_tracked_memory(vertex_count * 4, "Normal Tally");
     memset(normal_tally, 0, vertex_count * 4);

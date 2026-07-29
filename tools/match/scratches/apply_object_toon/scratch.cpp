@@ -1,10 +1,10 @@
-// apply_object_toon @ 0x42fa80 (thiscall)
+// ApplyToon @ 0x42fa80 (thiscall)
 
 #include "object_render_types.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
-void cRObject::apply_object_toon(int toon_flags)
+void cRObject::ApplyToon(int toon_flags)
 {
     toon_flags |= OBJECT_FLAG_TOON_ENABLED | OBJECT_FLAG_BUILD_TOON_EDGES;
     flags |= toon_flags;

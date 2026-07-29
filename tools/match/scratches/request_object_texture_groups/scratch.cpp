@@ -1,11 +1,11 @@
-// request_object_texture_groups @ 0x42f930 (thiscall, ret 0x4)
+// RequestFaceQuadTextureGroups @ 0x42f930 (thiscall, ret 0x4)
 
 #include "object_render_types.h"
 
 void* allocate_tracked_memory(int size, char* name);
 int report_errorf(char* format, ...);
 
-void cRObject::request_object_texture_groups(int requested_count)
+void cRObject::RequestFaceQuadTextureGroups(int requested_count)
 {
     if (texture_group_count == 0) {
         void* result = allocate_tracked_memory(

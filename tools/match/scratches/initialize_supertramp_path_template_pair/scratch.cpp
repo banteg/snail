@@ -17,9 +17,9 @@ static __forceinline void build_direct_strip_mesh(
     char* bottom_texture,
     char* cap_texture)
 {
-    path->strip_mesh->request_object_vertices(
+    path->strip_mesh->RequestVertices(
         (path->width_cells + 1) * (path->segment_count + 1));
-    path->strip_mesh->request_object_facequads(
+    path->strip_mesh->RequestFaceQuads(
         2 * path->width_cells * path->segment_count);
 
     Vector3* vertices = path->strip_mesh->vertices;

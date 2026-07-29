@@ -66,7 +66,7 @@ void cRObject::calc_object_edges()
         }
     }
 
-    request_object_edges(edge_count);
+    RequestEdges(edge_count);
     memcpy(edges, g_object_edge_build_edges,
         sizeof(ObjectToonEdge) * g_object_edge_build_count);
 }

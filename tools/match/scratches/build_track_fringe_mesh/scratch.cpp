@@ -20,8 +20,8 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
 
     mesh->flags |= OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_TINT_DIRTY;
     mesh->blend_mode = 5;
-    mesh->request_object_vertices((segment_count << 2) + 4);
-    mesh->request_object_facequads(segment_count << 1);
+    mesh->RequestVertices((segment_count << 2) + 4);
+    mesh->RequestFaceQuads(segment_count << 1);
 
     Vector3* destination = mesh->vertices;
     ObjectFaceQuad* facequads = mesh->facequads;

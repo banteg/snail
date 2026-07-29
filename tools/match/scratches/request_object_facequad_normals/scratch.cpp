@@ -1,10 +1,10 @@
-// request_object_facequad_normals @ 0x42f800 (thiscall, ret)
+// RequestFaceQuadNormals @ 0x42f800 (thiscall, ret)
 
 #include "object_render_types.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
-Vector3* cRObject::request_object_facequad_normals()
+Vector3* cRObject::RequestFaceQuadNormals()
 {
     if (vertex_normals == 0)
         vertex_normals =

@@ -225,9 +225,9 @@ void cRPath::initialize_loopbow_path_template_pair(
         Vector3(0.0f, 0.0f, 1.0f);
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
-    strip_mesh->request_object_vertices(
+    strip_mesh->RequestVertices(
         (segment_count + 1) * (width_cells + 1));
-    strip_mesh->request_object_facequads(
+    strip_mesh->RequestFaceQuads(
         2 * segment_count * width_cells);
 
     ObjectFaceQuad* facequads = strip_mesh->facequads;

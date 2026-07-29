@@ -1,4 +1,4 @@
-// request_object_vertices @ 0x42f710 (thiscall, ret 0x4)
+// RequestVertices @ 0x42f710 (thiscall, ret 0x4)
 
 #include "object_render_types.h"
 
@@ -6,7 +6,7 @@ void* allocate_tracked_memory(int size, char* name);
 void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
 
-void cRObject::request_object_vertices(int requested_count)
+void cRObject::RequestVertices(int requested_count)
 {
     if (requested_count > 0x10000)
         report_errorf("Too many Vertices");
@@ -22,6 +22,6 @@ void cRObject::request_object_vertices(int requested_count)
         vertex_count = requested_count;
         vertices = (Vector3*)allocate_tracked_memory(
             requested_count * sizeof(Vector3), "Object Vertex List");
-        request_object_vertex_colours();
+        RequestColours();
     }
 }

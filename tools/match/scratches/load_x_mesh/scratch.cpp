@@ -77,8 +77,8 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
             mesh_file_path);
 
     int facequad_count = parsed_facequad_count;
-    object->request_object_facequads(facequad_count);
-    object->request_object_vertices(vertex_count);
+    object->RequestFaceQuads(facequad_count);
+    object->RequestVertices(vertex_count);
 
     int* vertex_remap =
         (int*)allocate_tracked_memory(vertex_count << 2, "Mesh vertex remap");

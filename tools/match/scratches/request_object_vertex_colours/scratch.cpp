@@ -1,11 +1,11 @@
-// cRObject::RequestColours() / request_object_vertex_colours @ 0x42f850
+// cRObject::RequestColours() / RequestColours @ 0x42f850
 
 #include "object_render_types.h"
 #include "sprite.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
-void cRObject::request_object_vertex_colours()
+void cRObject::RequestColours()
 {
     vertex_colours =
         (tColour*)allocate_tracked_memory(

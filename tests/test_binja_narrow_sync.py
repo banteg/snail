@@ -7625,7 +7625,8 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         "int32_t __thiscall calc_object_facequad_normals_simple(Object* object)"
         in sync_source
     )
-    assert "Vector3* request_object_facequad_normals();" in matcher_header
+    assert "Vector3* RequestFaceQuadNormals();" in matcher_header
+    assert "Vector3* request_object_facequad_normals();" not in matcher_header
     for header in analysis_headers:
         assert (
             "void __thiscall request_object_vertices("

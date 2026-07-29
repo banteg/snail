@@ -5,7 +5,7 @@
 
 int cRObject::calc_object_facequad_normals_simple()
 {
-    request_object_facequad_normals();
+    RequestFaceQuadNormals();
 
     int result = facequad_count;
     int normal_offset = 0;

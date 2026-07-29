@@ -30,8 +30,8 @@ void initialize_backdrop_tile_quad(
     float row_offset = (float)row_selector * 0.40000001f;
     float column_offset = (float)column_selector * 0.40000001f;
 
-    object->request_object_vertices(4);
-    object->request_object_facequads(1);
+    object->RequestVertices(4);
+    object->RequestFaceQuads(1);
 
     Vector3* vertices = object->vertices;
     ObjectFaceQuad* quad = object->facequads;

@@ -130,7 +130,7 @@
       "name": "request_object_vertices",
       "kind": "function",
       "aliases": [
-        "?request_object_vertices@cRObject@@QAEXH@Z"
+        "?RequestVertices@cRObject@@QAEXH@Z"
       ],
       "description": "Exact cRObject-owned vertex allocation body, retained by both mobile ports as cRObject::RequestVertices(int)."
     },
@@ -139,7 +139,7 @@
       "name": "copy_object_vertices",
       "kind": "function",
       "aliases": [
-        "?copy_object_vertices@cRObject@@QAEXXZ"
+        "?CopyVertices@cRObject@@QAEXXZ"
       ],
       "description": "Exact cRObject-owned vertex-copy body, retained by Android as cRObject::CopyVertices()."
     },
@@ -148,7 +148,7 @@
       "name": "request_object_vertices_copy",
       "kind": "function",
       "aliases": [
-        "?request_object_vertices_copy@cRObject@@QAEXXZ"
+        "?RequestVerticesCopy@cRObject@@QAEXXZ"
       ],
       "description": "Exact cRObject-owned copied-vertex allocation body, retained by both mobile ports."
     },
@@ -157,7 +157,7 @@
       "name": "request_object_facequad_normals",
       "kind": "function",
       "aliases": [
-        "?request_object_facequad_normals@cRObject@@QAEPAUtVector@@XZ"
+        "?RequestFaceQuadNormals@cRObject@@QAEPAUtVector@@XZ"
       ],
       "description": "Exact cRObject-owned facequad-normal allocation body, retained by Android."
     },
@@ -166,7 +166,7 @@
       "name": "request_object_vertex_colours",
       "kind": "function",
       "aliases": [
-        "?request_object_vertex_colours@cRObject@@QAEXXZ"
+        "?RequestColours@cRObject@@QAEXXZ"
       ],
       "description": "Exact cRObject-owned vertex-colour allocation body, retained by Android as cRObject::RequestColours()."
     },
@@ -175,7 +175,7 @@
       "name": "request_object_facequads",
       "kind": "function",
       "aliases": [
-        "?request_object_facequads@cRObject@@QAEXH@Z"
+        "?RequestFaceQuads@cRObject@@QAEXH@Z"
       ],
       "description": "Exact cRObject-owned facequad allocation body, retained by both mobile ports."
     },
@@ -184,7 +184,7 @@
       "name": "request_object_texture_groups",
       "kind": "function",
       "aliases": [
-        "?request_object_texture_groups@cRObject@@QAEXH@Z"
+        "?RequestFaceQuadTextureGroups@cRObject@@QAEXH@Z"
       ],
       "description": "Exact cRObject-owned texture-group allocation body, retained by Android as cRObject::RequestFaceQuadTextureGroups(int)."
     },
@@ -211,7 +211,7 @@
       "name": "apply_object_toon",
       "kind": "function",
       "aliases": [
-        "?apply_object_toon@cRObject@@QAEXH@Z"
+        "?ApplyToon@cRObject@@QAEXH@Z"
       ],
       "description": "Exact cRObject-owned toon setup body, retained by both mobile ports as cRObject::ApplyToon(int)."
     },
@@ -256,7 +256,7 @@
       "name": "request_object_edges",
       "kind": "function",
       "aliases": [
-        "?request_object_edges@cRObject@@QAEXH@Z"
+        "?RequestEdges@cRObject@@QAEXH@Z"
       ],
       "description": "Exact cRObject-owned edge allocation body, retained by Android as cRObject::RequestEdges(int)."
     },

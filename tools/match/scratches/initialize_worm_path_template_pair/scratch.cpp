@@ -5,8 +5,6 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-void __fastcall request_object_vertex_colours(Object* object);
-
 const float WORM_TAU = 6.2831855f;
 const float WORM_RADIUS = 4.0f;
 const float WORM_UNDERSIDE_SCALE = 0.30000001f;
@@ -177,9 +175,9 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
     secondary_samples[segment_count - 1].delta_length = width_or_scale;
 
     strip_mesh->flags |= OBJECT_FLAG_TEXTURE_TRANSFORM;
-    strip_mesh->request_object_vertices((segment_count + 1) * width_cells);
-    strip_mesh->request_object_facequads(2 * segment_count * width_cells);
-    request_object_vertex_colours(strip_mesh);
+    strip_mesh->RequestVertices((segment_count + 1) * width_cells);
+    strip_mesh->RequestFaceQuads(2 * segment_count * width_cells);
+    strip_mesh->RequestColours();
     int row = 0;
     strip_mesh->flags |= OBJECT_FLAG_USE_VERTEX_COLOURS;
 

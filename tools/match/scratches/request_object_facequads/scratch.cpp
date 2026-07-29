@@ -1,4 +1,4 @@
-// request_object_facequads @ 0x42f8c0 (thiscall, ret 0x4)
+// RequestFaceQuads @ 0x42f8c0 (thiscall, ret 0x4)
 
 #include "object_render_types.h"
 
@@ -6,7 +6,7 @@ void* allocate_tracked_memory(int size, char* name);
 void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
 
-void cRObject::request_object_facequads(int requested_count)
+void cRObject::RequestFaceQuads(int requested_count)
 {
     if (requested_count == 0) {
         facequad_count = 0;

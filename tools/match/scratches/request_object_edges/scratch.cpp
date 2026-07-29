@@ -1,10 +1,10 @@
-// request_object_edges @ 0x430570 (thiscall, ret)
+// RequestEdges @ 0x430570 (thiscall, ret)
 
 #include "object_render_types.h"
 
 void* allocate_tracked_memory(int size, char* name);
 
-void cRObject::request_object_edges(int requested_count)
+void cRObject::RequestEdges(int requested_count)
 {
     if (edge_count == 0) {
         edge_count = requested_count;

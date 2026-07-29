@@ -2625,7 +2625,7 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         Object* animation_object = animation_slot->body.object;
         animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        animation_object->apply_object_toon(0);
+        animation_object->ApplyToon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
         animation_object->distort.xyz_scale = 0.0f;
@@ -2633,7 +2633,7 @@ char GameRoot::initialize_game_assets_and_world()
     } while (--animation_count != 0);
 
     subgame.player.presentation.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-    subgame.player.presentation.object->apply_object_toon(0);
+    subgame.player.presentation.object->ApplyToon(0);
     subgame.player.presentation.object->distort.z_wave = 0.0f;
     subgame.player.presentation.object->distort.y_squash = 0.0f;
     subgame.player.presentation.object->distort.xyz_scale = 0.0f;
@@ -2664,7 +2664,7 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         Object* animation_object = animation_slot->body.object;
         animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        animation_object->apply_object_toon(0);
+        animation_object->ApplyToon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
         animation_object->distort.xyz_scale = 0.0f;
@@ -2673,7 +2673,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     subgame.player.presentation.jetpack_channel.object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
-    subgame.player.presentation.jetpack_channel.object->apply_object_toon(0);
+    subgame.player.presentation.jetpack_channel.object->ApplyToon(0);
     subgame.player.presentation.jetpack_channel.object->distort.z_wave = 0.0f;
     subgame.player.presentation.jetpack_channel.object->distort.y_squash = 0.0f;
     subgame.player.presentation.jetpack_channel.object->distort.xyz_scale = 0.0f;
@@ -2722,7 +2722,7 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         Object* animation_object = animation_slot->body.object;
         animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        animation_object->apply_object_toon(0);
+        animation_object->ApplyToon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
         animation_object->distort.xyz_scale = 0.0f;
@@ -2731,7 +2731,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     subgame.player.presentation.weapon_channels[0].object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
-    subgame.player.presentation.weapon_channels[0].object->apply_object_toon(0);
+    subgame.player.presentation.weapon_channels[0].object->ApplyToon(0);
     subgame.player.presentation.weapon_channels[0].object->distort.z_wave = 0.0f;
     subgame.player.presentation.weapon_channels[0].object->distort.y_squash = 0.0f;
     subgame.player.presentation.weapon_channels[0].object->distort.xyz_scale = 0.0f;
@@ -2780,7 +2780,7 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         Object* animation_object = animation_slot->body.object;
         animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        animation_object->apply_object_toon(0);
+        animation_object->ApplyToon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
         animation_object->distort.xyz_scale = 0.0f;
@@ -2789,7 +2789,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     subgame.player.presentation.weapon_channels[1].object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
-    subgame.player.presentation.weapon_channels[1].object->apply_object_toon(0);
+    subgame.player.presentation.weapon_channels[1].object->ApplyToon(0);
     subgame.player.presentation.weapon_channels[1].object->distort.z_wave = 0.0f;
     subgame.player.presentation.weapon_channels[1].object->distort.y_squash = 0.0f;
     subgame.player.presentation.weapon_channels[1].object->distort.xyz_scale = 0.0f;
@@ -2838,7 +2838,7 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         Object* animation_object = animation_slot->body.object;
         animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
-        animation_object->apply_object_toon(0);
+        animation_object->ApplyToon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
         animation_object->distort.xyz_scale = 0.0f;
@@ -2847,7 +2847,7 @@ char GameRoot::initialize_game_assets_and_world()
 
     subgame.player.presentation.weapon_channels[2].object->flags |=
         OBJECT_FLAG_DYNAMIC_VERTICES;
-    subgame.player.presentation.weapon_channels[2].object->apply_object_toon(0);
+    subgame.player.presentation.weapon_channels[2].object->ApplyToon(0);
     subgame.player.presentation.weapon_channels[2].object->distort.z_wave = 0.0f;
     subgame.player.presentation.weapon_channels[2].object->distort.y_squash = 0.0f;
     subgame.player.presentation.weapon_channels[2].object->distort.xyz_scale = 0.0f;

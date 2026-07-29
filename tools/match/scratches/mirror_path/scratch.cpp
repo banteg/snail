@@ -72,13 +72,13 @@ void cRPath::mirror_path(cRPath* source)
         } while (sample_index < segment_count);
     }
 
-    ((Object*)strip_mesh)->request_object_vertices((width_cells + 1) * (segment_count + 1));
-    ((Object*)strip_mesh)->request_object_facequads(2 * width_cells * segment_count);
+    ((Object*)strip_mesh)->RequestVertices((width_cells + 1) * (segment_count + 1));
+    ((Object*)strip_mesh)->RequestFaceQuads(2 * width_cells * segment_count);
 
     Object* destination_mesh = strip_mesh;
     tColour* destination_colours = 0;
     if ((destination_mesh->flags & OBJECT_FLAG_USE_VERTEX_COLOURS) != 0) {
-        destination_mesh->request_object_vertex_colours();
+        destination_mesh->RequestColours();
         destination_mesh = strip_mesh;
         destination_colours = destination_mesh->vertex_colours;
     }

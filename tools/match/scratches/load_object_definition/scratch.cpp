@@ -43,7 +43,7 @@ void load_object_definition(char* path, Object* object)
                         } while (!strings_equal_case_insensitive(line_cursor, "[VERTEX END]"));
                     }
 
-                    object->request_object_vertices(vertex_count);
+                    object->RequestVertices(vertex_count);
 
                     while (!strings_equal_case_insensitive(cursor, "[VERTEX END]")) {
                         line_cursor = cursor;
@@ -71,7 +71,7 @@ void load_object_definition(char* path, Object* object)
                         } while (!strings_equal_case_insensitive(line_cursor, "[FACEQUAD END]"));
                     }
 
-                    object->request_object_facequads(facequad_count);
+                    object->RequestFaceQuads(facequad_count);
 
                     while (!strings_equal_case_insensitive(cursor, "[FACEQUAD END]")) {
                         line_cursor = cursor;

@@ -41,7 +41,7 @@ void cRObject::calc_object_texture_groups()
         if (pass == 1) {
             texture_group_ends[group] = face_index;
         } else if (pass == 0) {
-            request_object_texture_groups(group + 1);
+            RequestFaceQuadTextureGroups(group + 1);
         }
         ++pass;
     } while (pass < 2);

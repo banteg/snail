@@ -1219,6 +1219,33 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     assert "struct cRObjects;" in object_fwd
     assert "typedef cRObjects ObjectList;" in object_fwd
 
+    authored_allocation_methods = (
+        "void RequestVertices(int vertex_count);",
+        "void RequestVerticesCopy();",
+        "void CopyVertices();",
+        "Vector3* RequestFaceQuadNormals();",
+        "void RequestColours();",
+        "void RequestFaceQuads(int facequad_count);",
+        "void RequestFaceQuadTextureGroups(int group_count);",
+        "void ApplyToon(int toon_flags);",
+        "void RequestEdges(int edge_count);",
+    )
+    for declaration in authored_allocation_methods:
+        assert declaration in object_header
+
+    for descriptive_name in (
+        "request_object_vertices",
+        "request_object_vertices_copy",
+        "copy_object_vertices",
+        "request_object_facequad_normals",
+        "request_object_vertex_colours",
+        "request_object_facequads",
+        "request_object_texture_groups",
+        "apply_object_toon",
+        "request_object_edges",
+    ):
+        assert f" {descriptive_name}(" not in object_header
+
     expected_owners = (
         (
             "initialize_object_constructor_thunk",
@@ -1233,42 +1260,42 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         (
             "request_object_vertices",
             "cRObject",
-            "?request_object_vertices@cRObject@@QAEXH@Z",
+            "?RequestVertices@cRObject@@QAEXH@Z",
         ),
         (
             "copy_object_vertices",
             "cRObject",
-            "?copy_object_vertices@cRObject@@QAEXXZ",
+            "?CopyVertices@cRObject@@QAEXXZ",
         ),
         (
             "request_object_vertices_copy",
             "cRObject",
-            "?request_object_vertices_copy@cRObject@@QAEXXZ",
+            "?RequestVerticesCopy@cRObject@@QAEXXZ",
         ),
         (
             "request_object_facequad_normals",
             "cRObject",
-            "?request_object_facequad_normals@cRObject@@QAEPAUtVector@@XZ",
+            "?RequestFaceQuadNormals@cRObject@@QAEPAUtVector@@XZ",
         ),
         (
             "request_object_vertex_colours",
             "cRObject",
-            "?request_object_vertex_colours@cRObject@@QAEXXZ",
+            "?RequestColours@cRObject@@QAEXXZ",
         ),
         (
             "request_object_facequads",
             "cRObject",
-            "?request_object_facequads@cRObject@@QAEXH@Z",
+            "?RequestFaceQuads@cRObject@@QAEXH@Z",
         ),
         (
             "request_object_texture_groups",
             "cRObject",
-            "?request_object_texture_groups@cRObject@@QAEXH@Z",
+            "?RequestFaceQuadTextureGroups@cRObject@@QAEXH@Z",
         ),
         (
             "apply_object_toon",
             "cRObject",
-            "?apply_object_toon@cRObject@@QAEXH@Z",
+            "?ApplyToon@cRObject@@QAEXH@Z",
         ),
         (
             "calc_object_bounding_box",
@@ -1293,7 +1320,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         (
             "request_object_edges",
             "cRObject",
-            "?request_object_edges@cRObject@@QAEXH@Z",
+            "?RequestEdges@cRObject@@QAEXH@Z",
         ),
         (
             "add_object_edge",
