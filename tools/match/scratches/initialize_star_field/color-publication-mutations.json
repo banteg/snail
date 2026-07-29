@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "sprite-color-publication",
+      "find": "            tColour color;\n            entries[index].sprite->color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);",
+      "replacements": [
+        {
+          "name": "named-set-result",
+          "text": "            tColour color;\n            tColour* set_color =\n                color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);\n            entries[index].sprite->color = *set_color;"
+        },
+        {
+          "name": "separate-set-and-copy",
+          "text": "            tColour color;\n            color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);\n            entries[index].sprite->color = color;"
+        },
+        {
+          "name": "existing-sprite-owner",
+          "text": "            tColour color;\n            sprite->color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);"
+        },
+        {
+          "name": "localized-sprite-owner",
+          "text": "            tColour color;\n            cRSprite* color_sprite = entries[index].sprite;\n            color_sprite->color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);"
+        },
+        {
+          "name": "destination-pointer",
+          "text": "            tColour color;\n            tColour* sprite_color = &entries[index].sprite->color;\n            *sprite_color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);"
+        },
+        {
+          "name": "destination-reference",
+          "text": "            tColour color;\n            tColour& sprite_color = entries[index].sprite->color;\n            sprite_color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);"
+        },
+        {
+          "name": "named-red-green",
+          "text": "            tColour color;\n            float red_green = 0.800000012f;\n            entries[index].sprite->color =\n                *color.Set(red_green, red_green, 1.0f, 0.400000006f);"
+        },
+        {
+          "name": "named-all-components",
+          "text": "            tColour color;\n            float red = 0.800000012f;\n            float green = 0.800000012f;\n            float blue = 1.0f;\n            float alpha = 0.400000006f;\n            entries[index].sprite->color =\n                *color.Set(red, green, blue, alpha);"
+        },
+        {
+          "name": "named-alpha",
+          "text": "            tColour color;\n            float alpha = 0.400000006f;\n            entries[index].sprite->color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, alpha);"
+        },
+        {
+          "name": "constant-expressions",
+          "text": "            tColour color;\n            entries[index].sprite->color =\n                *color.Set(4.0f / 5.0f, 4.0f / 5.0f, 1.0f, 2.0f / 5.0f);"
+        }
+      ]
+    }
+  ]
+}

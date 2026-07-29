@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "corner-scale-owner",
+      "find": "            entries[index].sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;",
+      "replacements": [
+        {
+          "name": "localized-sprite",
+          "text": "            cRSprite* corner_sprite = entries[index].sprite;\n            corner_sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "named-speed-and-sprite",
+          "text": "            float speed = entries[index].speed;\n            cRSprite* corner_sprite = entries[index].sprite;\n            corner_sprite->corner_scale = (speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "named-value-and-sprite",
+          "text": "            float corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;\n            cRSprite* corner_sprite = entries[index].sprite;\n            corner_sprite->corner_scale = corner_scale;"
+        },
+        {
+          "name": "destination-pointer",
+          "text": "            float* corner_scale =\n                &entries[index].sprite->corner_scale;\n            *corner_scale = (entries[index].speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "destination-reference",
+          "text": "            float& corner_scale =\n                entries[index].sprite->corner_scale;\n            corner_scale = (entries[index].speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "speed-pointer",
+          "text": "            const float* speed = &entries[index].speed;\n            entries[index].sprite->corner_scale = (*speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "speed-reference",
+          "text": "            const float& speed = entries[index].speed;\n            entries[index].sprite->corner_scale = (speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "split-add",
+          "text": "            float corner_scale = entries[index].speed + 1.0f;\n            entries[index].sprite->corner_scale = corner_scale * 4.0f;"
+        },
+        {
+          "name": "split-add-and-sprite",
+          "text": "            float corner_scale = entries[index].speed + 1.0f;\n            cRSprite* corner_sprite = entries[index].sprite;\n            corner_sprite->corner_scale = corner_scale * 4.0f;"
+        }
+      ]
+    }
+  ]
+}

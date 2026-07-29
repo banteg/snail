@@ -122,3 +122,28 @@ prove the same authored manager/entry/Sprite relationships but use different
 platform layouts, so there is no missing Windows inline helper to recover by
 co-location. The current function-local source remains canonical and no TU
 cluster is introduced.
+
+## 2026-07-29 recorded scheduling frontier
+
+Eight bounded mutation sweeps now preserve the remaining search rather than
+leaving it as manual probe history: 83 variants were evaluated and 66 compiled.
+The honest scalar and ownership alternatives are closed cleanly. Moving the
+`tColour` lifetime, naming its call result or components, folding the travel
+scale, naming the random/travel values, and nine localized corner
+value/pointer/reference shapes are all byte-identical. Extending entry,
+Sprite, or destination ownership changes register allocation and regresses.
+
+One forced intermediate travel multiply rises to 98.18%, but it has 248/247
+instructions, only 25 clean masks plus three unaudited constants, and a
+29-instruction prefix. It is rejected as a multi-axis tradeoff rather than
+ranked above the proof-clean 97.57%, 247/247, prefix-126 baseline.
+
+Replaying the pre-consolidation constructor-return vector addition confirms
+the historical 98.38% score comes only from the camera-position sum. Combined
+with a named corner speed it reaches a 124-instruction prefix and leaves four
+scheduling moves in two regions, but the helper is deliberately not retained:
+sixteen addition consumers and multiple exact callers prove the shared
+explicit-result `operator+`, and a per-caller constructor implementation would
+reintroduce the operator fakematch rejected during shared arithmetic
+ownership. The canonical scratch therefore remains source-unchanged at
+97.57%, 247/247 instructions, prefix 126, with all 26 masks clean.

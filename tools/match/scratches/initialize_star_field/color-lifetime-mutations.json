@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "color-at-loop-entry",
+      "find": "        do {\n            entries[index].active = 1;",
+      "replacements": [
+        {
+          "name": "early-color",
+          "text": "        do {\n            tColour early_color;\n            entries[index].active = 1;"
+        }
+      ]
+    },
+    {
+      "name": "color-before-travel",
+      "find": "            entries[index].speed = entries[index].velocity.Magnitude();\n            entries[index].travel_distance =",
+      "replacements": [
+        {
+          "name": "early-color",
+          "text": "            entries[index].speed = entries[index].velocity.Magnitude();\n            tColour early_color;\n            entries[index].travel_distance ="
+        }
+      ]
+    },
+    {
+      "name": "color-after-travel",
+      "find": "                (float)next_math_random_value() * 0.0000305175781f * 35.0f;\n\n            entries[index].position =",
+      "replacements": [
+        {
+          "name": "early-color",
+          "text": "                (float)next_math_random_value() * 0.0000305175781f * 35.0f;\n\n            tColour early_color;\n            entries[index].position ="
+        }
+      ]
+    },
+    {
+      "name": "color-before-sprite",
+      "find": "                entries[index].position;\n\n            cRSprite* sprite = entries[index].sprite;",
+      "replacements": [
+        {
+          "name": "early-color",
+          "text": "                entries[index].position;\n\n            tColour early_color;\n            cRSprite* sprite = entries[index].sprite;"
+        }
+      ]
+    },
+    {
+      "name": "use-early-color",
+      "find": "            tColour color;\n            entries[index].sprite->color =\n                *color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);",
+      "replacements": [
+        {
+          "name": "replace-late-color",
+          "text": "            entries[index].sprite->color =\n                *early_color.Set(0.800000012f, 0.800000012f, 1.0f, 0.400000006f);"
+        }
+      ]
+    }
+  ]
+}

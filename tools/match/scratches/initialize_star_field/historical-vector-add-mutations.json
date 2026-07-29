@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "constructor-add-helper",
+      "find": "inline Vector3 operator/(const Vector3& vector, float scale)\n{",
+      "replacements": [
+        {
+          "name": "historical-constructor-return",
+          "text": "inline Vector3 add_star_vectors(const Vector3& lhs, const Vector3& rhs)\n{\n    return Vector3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);\n}\n\ninline Vector3 operator/(const Vector3& vector, float scale)\n{"
+        }
+      ]
+    },
+    {
+      "name": "camera-position-add",
+      "find": "            entries[index].position =\n                root->overlay_0.transform.basis_forward * 50.0f +\n                root->overlay_0.transform.position;",
+      "replacements": [
+        {
+          "name": "constructor-helper",
+          "text": "            entries[index].position = add_star_vectors(\n                root->overlay_0.transform.basis_forward * 50.0f,\n                root->overlay_0.transform.position);"
+        }
+      ]
+    },
+    {
+      "name": "travel-position-add",
+      "find": "            entries[index].position =\n                entries[index].velocity * entries[index].travel_distance /\n                    entries[index].speed +\n                entries[index].position;",
+      "replacements": [
+        {
+          "name": "constructor-helper",
+          "text": "            entries[index].position = add_star_vectors(\n                entries[index].velocity * entries[index].travel_distance /\n                    entries[index].speed,\n                entries[index].position);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "travel-distance-publication",
+      "find": "            entries[index].travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f * 35.0f;",
+      "replacements": [
+        {
+          "name": "folded-scale",
+          "text": "            entries[index].travel_distance =\n                (float)next_math_random_value() * 0.00106811523f;"
+        },
+        {
+          "name": "named-random-int",
+          "text": "            int travel_random = next_math_random_value();\n            entries[index].travel_distance =\n                (float)travel_random * 0.0000305175781f * 35.0f;"
+        },
+        {
+          "name": "named-random-float",
+          "text": "            float travel_random = (float)next_math_random_value();\n            entries[index].travel_distance =\n                travel_random * 0.0000305175781f * 35.0f;"
+        },
+        {
+          "name": "named-complete-value",
+          "text": "            float travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f * 35.0f;\n            entries[index].travel_distance = travel_distance;"
+        },
+        {
+          "name": "named-random-and-value",
+          "text": "            int travel_random = next_math_random_value();\n            float travel_distance =\n                (float)travel_random * 0.0000305175781f * 35.0f;\n            entries[index].travel_distance = travel_distance;"
+        },
+        {
+          "name": "split-scale-value",
+          "text": "            float travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f;\n            travel_distance *= 35.0f;\n            entries[index].travel_distance = travel_distance;"
+        },
+        {
+          "name": "field-pointer",
+          "text": "            float* travel_distance = &entries[index].travel_distance;\n            *travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f * 35.0f;"
+        },
+        {
+          "name": "field-reference",
+          "text": "            float& travel_distance = entries[index].travel_distance;\n            travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f * 35.0f;"
+        },
+        {
+          "name": "entry-pointer",
+          "text": "            StarManagerEntry* travel_entry = &entries[index];\n            travel_entry->travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f * 35.0f;"
+        },
+        {
+          "name": "entry-reference",
+          "text": "            StarManagerEntry& travel_entry = entries[index];\n            travel_entry.travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f * 35.0f;"
+        },
+        {
+          "name": "entries-base",
+          "text": "            StarManagerEntry* star_entries = entries;\n            star_entries[index].travel_distance =\n                (float)next_math_random_value() * 0.0000305175781f * 35.0f;"
+        }
+      ]
+    }
+  ]
+}

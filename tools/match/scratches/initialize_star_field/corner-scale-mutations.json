@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "corner-scale-publication",
+      "find": "            entries[index].sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;",
+      "replacements": [
+        {
+          "name": "named-complete-value",
+          "text": "            float corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;\n            entries[index].sprite->corner_scale = corner_scale;"
+        },
+        {
+          "name": "named-add-then-multiply",
+          "text": "            float corner_scale = entries[index].speed + 1.0f;\n            corner_scale *= 4.0f;\n            entries[index].sprite->corner_scale = corner_scale;"
+        },
+        {
+          "name": "retained-sprite-owner",
+          "text": "            sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "named-complete-value-retained-sprite",
+          "text": "            float corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;\n            sprite->corner_scale = corner_scale;"
+        },
+        {
+          "name": "named-entry-owner",
+          "text": "            StarManagerEntry* corner_entry = &entries[index];\n            corner_entry->sprite->corner_scale =\n                (corner_entry->speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "named-speed-value",
+          "text": "            float speed = entries[index].speed;\n            entries[index].sprite->corner_scale = (speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "commuted-product",
+          "text": "            entries[index].sprite->corner_scale =\n                4.0f * (entries[index].speed + 1.0f);"
+        },
+        {
+          "name": "commuted-add-and-product",
+          "text": "            entries[index].sprite->corner_scale =\n                4.0f * (1.0f + entries[index].speed);"
+        }
+      ]
+    }
+  ]
+}
