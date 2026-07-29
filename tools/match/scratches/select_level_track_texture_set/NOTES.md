@@ -72,3 +72,33 @@ Windows machine code and the sole root callsite independently retain the exact
 The matcher, Binary Ninja, and IDA therefore now use `cRTrack` as the primary
 type while keeping `Track` only as a compatibility alias. The source-shape
 rename leaves the honest 76.19% machine-code score unchanged.
+
+## 2026-07-29 selector/default lifetime boundary
+
+Three recorded sweeps exhaust the ordinary source shapes that could keep the
+signed parameter selector distinct from the selected texture-bank index.
+Zero, minus-one, and parameter initializers are byte-identical to the baseline.
+Separate signed, unsigned, and const selector locals in both declaration orders
+are also neutral, alone and with a scoped default copy or a fallthrough default
+assignment. Adding an explicit `case 4` produces the target instruction count
+but regresses to 74.42% because it emits a constant case body rather than the
+native out-of-range/default reload.
+
+Signed and unsigned 32-bit selected-index spellings are likewise neutral. The
+`DWORD` spelling does not compile because this scratch intentionally does not
+import a Windows typedef header; it contributes no match result. Across the 25
+compilable variants, none improve: 20 are byte-identical and 5 regress.
+
+The experiment ledger therefore formally stalls this lane at **76.19%**
+(`41/43`, prefix 0, six clean references). Both unaudited operands are the same
+jump-table relationship displaced by the opening register schedule: native
+indexes it through `eax`, while the candidate indexes its candidate-local table
+through `edi`. Native alone preloads the selector before the saved registers
+and later reloads the default value into `edi`; VC6 coalesces those lifetimes in
+every ordinary form tested.
+
+Do not restore the formerly exact volatile parameter view, take the parameter's
+address, or add another register-allocation coercion. The mobile bodies confirm
+the owner and algorithm but use different texture-set counts and cannot prove
+the Windows source lifetime. Further progress needs original Windows source or
+compiler provenance, neither of which is currently available.

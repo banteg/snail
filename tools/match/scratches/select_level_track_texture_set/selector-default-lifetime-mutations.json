@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "selector-owner",
+      "find": "    int selected;\n\n    switch (texture_set) {",
+      "replacements": [
+        {
+          "name": "selector-before-selected",
+          "text": "    int selector = texture_set;\n    int selected;\n\n    switch (selector) {"
+        },
+        {
+          "name": "selected-before-selector",
+          "text": "    int selected;\n    int selector = texture_set;\n\n    switch (selector) {"
+        },
+        {
+          "name": "const-selector-before-selected",
+          "text": "    const int selector = texture_set;\n    int selected;\n\n    switch (selector) {"
+        },
+        {
+          "name": "unsigned-selector-before-selected",
+          "text": "    unsigned int selector = (unsigned int)texture_set;\n    int selected;\n\n    switch (selector) {"
+        }
+      ]
+    },
+    {
+      "name": "default-owner",
+      "find": "    default:\n        selected = texture_set;\n        break;",
+      "replacements": [
+        {
+          "name": "scoped-default-copy",
+          "text": "    default: {\n        int default_selected = texture_set;\n        selected = default_selected;\n        break;\n    }"
+        },
+        {
+          "name": "fallthrough-default-assignment",
+          "text": "    default:\n        selected = texture_set;"
+        },
+        {
+          "name": "explicit-four-and-default",
+          "text": "    case 4:\n        selected = texture_set;\n        break;\n    default:\n        selected = texture_set;\n        break;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "selected-initializer",
+      "find": "    int selected;",
+      "replacements": [
+        {
+          "name": "zero-initialized",
+          "text": "    int selected = 0;"
+        },
+        {
+          "name": "minus-one-initialized",
+          "text": "    int selected = -1;"
+        },
+        {
+          "name": "selector-initialized",
+          "text": "    int selected = texture_set;"
+        }
+      ]
+    }
+  ]
+}

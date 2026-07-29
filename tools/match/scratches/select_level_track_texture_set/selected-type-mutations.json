@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "selected-type",
+      "find": "    int selected;",
+      "replacements": [
+        {
+          "name": "unsigned-int",
+          "text": "    unsigned int selected;"
+        },
+        {
+          "name": "long",
+          "text": "    long selected;"
+        },
+        {
+          "name": "unsigned-long",
+          "text": "    unsigned long selected;"
+        },
+        {
+          "name": "dword",
+          "text": "    DWORD selected;"
+        }
+      ]
+    }
+  ]
+}
