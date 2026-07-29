@@ -135,11 +135,11 @@ typedef char TextureRefList_must_be_0x14058[
 
 class cRSprite {
 public:
-    void initialize_sprite(); // @ 0x44de90, Android cRSprite::Init()
-    void update_sprite();     // @ 0x44df30
-    void kill_sprite();       // @ 0x44e200
-    void build_sprite_tail(const TransformMatrix* matrix); // @ 0x44e410
-    cRTexture* set_sprite_texture_ref(int texture_id, int frame); // @ 0x44e550
+    void Init(); // @ 0x44de90
+    void AI(); // @ 0x44df30
+    void Kill(); // @ 0x44e200
+    void BuildTail(tMatrix* matrix); // @ 0x44e410
+    void SetTextureRef(int texture_id, int frame); // @ 0x44e550
 
     void* object_ref; // +0x00, initialized to sentinel -1
     unsigned int flags; // +0x04

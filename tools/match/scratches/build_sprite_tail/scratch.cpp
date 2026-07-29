@@ -5,7 +5,7 @@
 
 float atan2_positive(float y, float x);
 
-void cRSprite::build_sprite_tail(const TransformMatrix* matrix)
+void cRSprite::BuildTail(tMatrix* matrix)
 {
     Vector3 rotated;
     if ((flags & SPRITE_FLAG_THROTTLE_FACING_REFRESH) != 0) {

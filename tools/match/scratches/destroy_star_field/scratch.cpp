@@ -8,7 +8,7 @@ void StarManager::destroy_star_field()
     int result = count;
     for (; i < result; ++i) {
         entries[i].active = 0;
-        entries[i].sprite->kill_sprite();
+        entries[i].sprite->Kill();
         result = count;
     }
 

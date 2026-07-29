@@ -2378,6 +2378,13 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
         entry["name"]: entry
         for entry in functions["functions"]
     }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
 
     sprite = entries["initialize_sprite"]
     assert sprite["status"] == "verified"
@@ -2388,6 +2395,29 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     assert "0xb0" in verified_entries["initialize_sprite"]["notes"]
     assert "0xb4" in verified_entries["initialize_sprite"]["notes"]
     assert "cRSprite_Init" in functions_by_name["initialize_sprite"]["aliases"]
+    assert "cRSprite_AI" in functions_by_name["update_sprite"]["aliases"]
+    assert "cRSprite_Kill" in functions_by_name["kill_sprite"]["aliases"]
+    assert "cRSprite_BuildTail" in (
+        functions_by_name["build_sprite_tail"]["aliases"]
+    )
+    assert "cRSprite_SetTextureRef" in (
+        functions_by_name["set_sprite_texture_ref"]["aliases"]
+    )
+    assert "?Init@cRSprite@@QAEXXZ" in (
+        references_by_name["initialize_sprite"]["aliases"]
+    )
+    assert "?AI@cRSprite@@QAEXXZ" in (
+        references_by_name["update_sprite"]["aliases"]
+    )
+    assert "?Kill@cRSprite@@QAEXXZ" in (
+        references_by_name["kill_sprite"]["aliases"]
+    )
+    assert "?BuildTail@cRSprite@@QAEXPAUtMatrix@@@Z" in (
+        references_by_name["build_sprite_tail"]["aliases"]
+    )
+    assert "?SetTextureRef@cRSprite@@QAEXHH@Z" in (
+        references_by_name["set_sprite_texture_ref"]["aliases"]
+    )
 
     ghost = entries["initialize_subgoldy_ghost"]
     assert ghost["status"] == "verified"
@@ -2425,6 +2455,46 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     assert "typedef char cRSpriteManager_must_be_0x83d7c[" in sprite_header
     assert "extern cRSpriteManager g_sprite_manager;" in sprite_header
     assert "extern cRSprite g_sprite_sentinel;" in sprite_header
+    assert "void Init();" in sprite_header
+    assert "void AI();" in sprite_header
+    assert "void Kill();" in sprite_header
+    assert "void BuildTail(tMatrix* matrix);" in sprite_header
+    assert "void SetTextureRef(int texture_id, int frame);" in sprite_header
+    assert "initialize_sprite()" not in sprite_header
+    assert "update_sprite()" not in sprite_header
+    assert "kill_sprite()" not in sprite_header
+    assert "build_sprite_tail(" not in sprite_header
+    assert "set_sprite_texture_ref(" not in sprite_header
+    authored_sprite_scratches = {
+        "initialize_sprite": (
+            "void cRSprite::Init()",
+            "SYMBOL=?Init@cRSprite@@QAEXXZ",
+        ),
+        "update_sprite": (
+            "void cRSprite::AI()",
+            "SYMBOL=?AI@cRSprite@@QAEXXZ",
+        ),
+        "kill_sprite": (
+            "void cRSprite::Kill()",
+            "SYMBOL=?Kill@cRSprite@@QAEXXZ",
+        ),
+        "build_sprite_tail": (
+            "void cRSprite::BuildTail(tMatrix* matrix)",
+            "SYMBOL=?BuildTail@cRSprite@@QAEXPAUtMatrix@@@Z",
+        ),
+        "set_sprite_texture_ref": (
+            "void cRSprite::SetTextureRef(int texture_id, int frame)",
+            "SYMBOL=?SetTextureRef@cRSprite@@QAEXHH@Z",
+        ),
+    }
+    for scratch_name, (definition, symbol) in authored_sprite_scratches.items():
+        scratch_root = repo_root / "tools/match/scratches" / scratch_name
+        assert definition in (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert symbol in (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
     assert "class cRSubGoldy : public RenderableBod" in player_header
     assert "typedef cRSubGoldy Player;" in player_forward_header
     assert "class Player;" not in player_header

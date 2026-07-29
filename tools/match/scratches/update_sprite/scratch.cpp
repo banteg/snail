@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void cRSprite::update_sprite()
+void cRSprite::AI()
 {
     unsigned int current_flags = flags;
     if ((current_flags & SPRITE_FLAG_GAMEPLAY_OWNED) != 0
@@ -16,7 +16,7 @@ void cRSprite::update_sprite()
         if (next_progress > 1.0f || next_progress < 0.0f) {
             progress = 1.0f;
             if ((current_flags & SPRITE_FLAG_PRESERVE_AT_PROGRESS_END) == 0) {
-                kill_sprite();
+                Kill();
             }
             return;
         }
@@ -78,6 +78,6 @@ void cRSprite::update_sprite()
             }
         }
 
-        set_sprite_texture_ref(texture_id, frame);
+        SetTextureRef(texture_id, frame);
     }
 }

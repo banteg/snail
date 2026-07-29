@@ -12,7 +12,7 @@ void cRSpriteManager::initialize_sprite_manager()
 
     int index = 0;
     do {
-        sprites[index].initialize_sprite();
+        sprites[index].Init();
 
         if (index == 0) {
             sprites[index].prev = 0;

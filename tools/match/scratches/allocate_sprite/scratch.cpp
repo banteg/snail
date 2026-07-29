@@ -22,7 +22,7 @@ cRSprite* cRSpriteManager::allocate_sprite(int owner, int texture_id, int textur
     sprite->next = active_heads[owner];
     active_heads[owner] = sprite;
 
-    sprite->initialize_sprite();
+    sprite->Init();
 
     sprite->flags |= 1 << (owner + RENDER_SCENE_BIT_BASE);
     sprite->texture_ref = g_sprite_texture_table[primary_texture_id];

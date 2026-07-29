@@ -42,20 +42,20 @@ void Slug::update_slug_hazard_ai()
                 blink_step = -0.166666672f;
                 sprite->draw_mode = 0;
                 sprite->color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                sprite->set_sprite_texture_ref(0x77, 0);
+                sprite->SetTextureRef(0x77, 0);
             } else {
                 sprite->draw_mode = 5;
-                sprite->set_sprite_texture_ref(0x78, 0);
+                sprite->SetTextureRef(0x78, 0);
                 sprite->color.store_color4f(1.0f, 0.0f, 0.0f, 0.99000001f);
                 goto active_state_tail;
             }
         } else {
             blink_progress = blink_step + blink_progress;
             if (blink_step > 0.0f) {
-                sprite->set_sprite_texture_ref(0x76, 0);
+                sprite->SetTextureRef(0x76, 0);
                 sprite->draw_mode = 0;
             } else {
-                sprite->set_sprite_texture_ref(0x77, 0);
+                sprite->SetTextureRef(0x77, 0);
                 sprite->draw_mode = 0;
             }
             sprite->color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -97,7 +97,7 @@ active_state_tail:
         if (transform.position.z < owner_player->interaction_max_z) {
             state = SUB_SLUG_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
-            sprite->kill_sprite();
+            sprite->Kill();
             return;
         }
         if (owner_player->nuke_effect_progress > 0.0f)
@@ -127,7 +127,7 @@ update_tail:
         if (transform.position.z < owner_player->interaction_max_z) {
             state = SUB_SLUG_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
-            sprite->kill_sprite();
+            sprite->Kill();
             return;
         }
         if (owner_player->nuke_effect_progress > 0.0f)
@@ -176,7 +176,7 @@ direction_adjustment_complete:
     case SUB_SLUG_STATE_TEARDOWN_PENDING:
         state = SUB_SLUG_STATE_INACTIVE;
         g_game->active_bod_list.remove_bod(this);
-        sprite->kill_sprite();
+        sprite->Kill();
         return;
 
     default:

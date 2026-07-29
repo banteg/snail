@@ -92,7 +92,7 @@ int GameRoot::run_frame_update()
                     cRSprite* next_sprite;
                     do {
                         next_sprite = sprite->next;
-                        sprite->update_sprite();
+                        sprite->AI();
                         ++sprite_update_count;
                         sprite = next_sprite;
                     } while (next_sprite != 0);

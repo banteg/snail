@@ -60,3 +60,7 @@ forward-header compatibility alias. This reflects the direct Android
 preserving every Windows field, the exact `0xb4` size contract, and the native
 initializer body. No mobile-only field offset or default crossed the port
 boundary.
+
+The matcher target and scratch directory retain the stable
+`initialize_sprite` navigation name, while the compiled member is now the
+authored `cRSprite::Init()` selected through its VC6-decorated symbol.

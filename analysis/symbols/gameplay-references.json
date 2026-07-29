@@ -2362,6 +2362,51 @@
       "description": "Exact Windows void tColour::Black() entry."
     },
     {
+      "address": "0x44de90",
+      "name": "initialize_sprite",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSprite@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSprite::Init() entry; Android preserves the same authored member and iOS folds it into cRSpriteManager::Init()."
+    },
+    {
+      "address": "0x44df30",
+      "name": "update_sprite",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSprite@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSprite::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x44e200",
+      "name": "kill_sprite",
+      "kind": "function",
+      "aliases": [
+        "?Kill@cRSprite@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSprite::Kill() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x44e410",
+      "name": "build_sprite_tail",
+      "kind": "function",
+      "aliases": [
+        "?BuildTail@cRSprite@@QAEXPAUtMatrix@@@Z"
+      ],
+      "description": "Near-exact Windows cRSprite::BuildTail(tMatrix*) entry; both mobile ports preserve the same owner, method, and parameter type."
+    },
+    {
+      "address": "0x44e550",
+      "name": "set_sprite_texture_ref",
+      "kind": "function",
+      "aliases": [
+        "?SetTextureRef@cRSprite@@QAEXHH@Z"
+      ],
+      "description": "Exact Windows void cRSprite::SetTextureRef(int, int) entry; all Windows callers discard EAX and both mobile decompilers recover void."
+    },
+    {
       "address": "0x44ebc1",
       "name": "D3DXVec3Normalize",
       "kind": "function",

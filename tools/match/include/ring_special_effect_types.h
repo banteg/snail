@@ -42,7 +42,7 @@ public:
     void update_ring_or_special_effect_particle(); // @ 0x43e780
     void emit_ring_star_shower(cRSubGoldy* owner); // @ 0x43e690
 
-    // cRSpriteManager allocation handle; removal returns it through kill_sprite().
+    // cRSpriteManager allocation handle; removal returns it through Kill().
     cRSprite* sprite; // +0x00, not inline storage owned by the particle
     SubRing* parent; // +0x04, non-owning backlink to embedded parent
     Vector3 base_position; // +0x08

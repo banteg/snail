@@ -58,7 +58,7 @@ void SubRing::update_ring_or_special_effect_parent()
                 particles;
             int count = SUB_RING_PARTICLE_COUNT;
             do {
-                particle->sprite->kill_sprite();
+                particle->sprite->Kill();
                 particle++;
                 count--;
             } while (count != 0);
@@ -96,7 +96,7 @@ void SubRing::update_ring_or_special_effect_parent()
                 particles;
             int count = SUB_RING_PARTICLE_COUNT;
             do {
-                particle->sprite->kill_sprite();
+                particle->sprite->Kill();
                 particle++;
                 count--;
             } while (count != 0);
@@ -156,7 +156,7 @@ void SubRing::update_ring_or_special_effect_parent()
                 particles;
             int count = SUB_RING_PARTICLE_COUNT;
             do {
-                particle->sprite->kill_sprite();
+                particle->sprite->Kill();
                 particle++;
                 count--;
             } while (count != 0);

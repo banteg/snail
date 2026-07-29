@@ -53,3 +53,8 @@ symbols; `Sprite` remains a compatibility alias for analysis consumers.
 Windows still defines the `0xb4` record, field offsets, `char` pause gate, and
 code generation. The iOS `cRSprite::AI()` symbol supplies semantics only and
 does not justify importing the mobile `0xb0` layout.
+
+The compiled member now uses the exact cross-port `cRSprite::AI()` name. The
+stable `update_sprite` target name remains in the manifest and dashboard, with
+its decorated member alias proving internal call relocations rather than
+silently masking them.

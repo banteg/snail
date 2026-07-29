@@ -34,14 +34,14 @@ void SubHealth::update_track_health_pickup()
 state_two:
     state = TRACK_PICKUP_STATE_INACTIVE;
     g_game->active_bod_list.remove_bod(this);
-    sprite->kill_sprite();
+    sprite->Kill();
     return;
 
 state_one:
     if (position.z < owner->interaction_max_z) {
         state = TRACK_PICKUP_STATE_INACTIVE;
         g_game->active_bod_list.remove_bod(this);
-        sprite->kill_sprite();
+        sprite->Kill();
         return;
     }
 

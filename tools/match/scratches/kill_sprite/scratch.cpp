@@ -4,7 +4,7 @@
 
 int report_errorf(char* format, ...);
 
-void cRSprite::kill_sprite()
+void cRSprite::Kill()
 {
     if ((flags & SPRITE_FLAG_ACTIVE) == 0) {
         report_errorf("Sprite kill error, already dead (%s)", texture_ref->name);

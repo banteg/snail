@@ -19,7 +19,7 @@ void Parcel::update_track_parcel()
 
     case PARCEL_STATE_TRACK_ACTIVE: {
         if (subgame->embedded_player()->interaction_max_z - 10.0f > position.z) {
-            sprite->kill_sprite();
+            sprite->Kill();
             state = PARCEL_STATE_INACTIVE;
         }
 
@@ -79,7 +79,7 @@ void Parcel::update_track_parcel()
         if (advanced_progress > 1.0f) {
             cRSprite* dying_sprite = sprite;
             state = PARCEL_STATE_INACTIVE;
-            dying_sprite->kill_sprite();
+            dying_sprite->Kill();
         }
         return;
     }
@@ -121,7 +121,7 @@ void Parcel::update_track_parcel()
             owner_subgame->completion.register_parcel_delivery();
             cRSprite* dying_sprite = sprite;
             state = PARCEL_STATE_INACTIVE;
-            dying_sprite->kill_sprite();
+            dying_sprite->Kill();
         }
         break;
     }

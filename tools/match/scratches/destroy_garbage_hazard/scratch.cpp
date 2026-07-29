@@ -40,7 +40,7 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
         }
     }
 
-    sprite->kill_sprite();
+    sprite->Kill();
 
     SubGarbage* cursor = owner_game->garbage_hazards.active_head;
     if (cursor == this) {

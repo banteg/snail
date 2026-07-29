@@ -14,7 +14,7 @@ void cRSpriteManager::kill_game_sprites()
                 unsigned int flags = sprite->flags;
                 cRSprite* next = sprite->next;
                 if ((flags & game_sprite_flag) != 0) {
-                    sprite->kill_sprite();
+                    sprite->Kill();
                 }
                 sprite = next;
             } while (sprite != 0);

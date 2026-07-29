@@ -33,7 +33,7 @@ void SubSpeedUp::update_track_speedup()
 state_two:
     state = TRACK_PICKUP_STATE_INACTIVE;
     g_game->active_bod_list.remove_bod(this);
-    sprite->kill_sprite();
+    sprite->Kill();
     return;
 
 state_one:
@@ -43,5 +43,5 @@ state_one:
 
     state = TRACK_PICKUP_STATE_INACTIVE;
     g_game->active_bod_list.remove_bod(this);
-    sprite->kill_sprite();
+    sprite->Kill();
 }

@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void cRSprite::initialize_sprite()
+void cRSprite::Init()
 {
     flags = SPRITE_FLAG_ACTIVE | SPRITE_FLAG_SKIP_INITIAL_PROGRESS
         | SPRITE_FLAG_RENDER_ENABLED;

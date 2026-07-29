@@ -95,9 +95,15 @@ Android and iOS independently export this exact body as
 `cRSprite::BuildTail(tMatrix*)`; both ports preserve one corresponding body,
 and Windows has one call from `cRGame::Render` immediately before drawing an
 orientation-to-motion sprite. The canonical Windows owner is therefore
-`build_sprite_tail`, with `update_sprite_facing_angle` retained only as a
-compatibility alias.
+the `cRSprite::BuildTail(tMatrix*)` source method; `build_sprite_tail` remains
+the stable matcher target and `update_sprite_facing_angle` remains only a
+compatibility target alias.
 
 The mobile symbols recover the method owner and authored name, not additional
 member names. The conservative `facing_angle` and refresh-field labels remain
 unchanged, and focused Windows matching remains honestly at 97.67%.
+
+The former `const TransformMatrix*` matcher spelling described the observed
+read-only use but not the cross-port source signature. Replacing it with the
+primary authored `tMatrix*` type changes neither the 86-instruction candidate
+nor the two honest dead-Z spill mismatches.

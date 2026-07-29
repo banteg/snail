@@ -15,3 +15,10 @@ Rejected source-shaped probe:
 - assigning `g_sprite_active_heads[owner] = next_sprite` instead of `next`
   regressed the block layout and removed the native reload; the correct fix is
   the manager relationship, not an expression-order tweak.
+
+## 2026-07-29 authored method
+
+Android and iOS independently preserve this owner and body as
+`cRSprite::Kill()`. The matcher now compiles that authored member name and
+maps its decorated relocation back to the stable `kill_sprite` target. The
+Windows unlink/free-list source remains byte-identical at 45/45 instructions.

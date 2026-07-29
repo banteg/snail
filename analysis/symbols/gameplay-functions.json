@@ -4715,6 +4715,9 @@
     {
       "address": "0x44df30",
       "name": "update_sprite",
+      "aliases": [
+        "cRSprite_AI"
+      ],
       "description": "Exact Windows cRSprite per-frame state update; iOS RSprite.o names this `cRSprite::AI()`."
     },
     {
@@ -4730,6 +4733,9 @@
     {
       "address": "0x44e200",
       "name": "kill_sprite",
+      "aliases": [
+        "cRSprite_Kill"
+      ],
       "description": "Unlinks and returns one live cRSprite to the cRSpriteManager free list; iOS RSprite.o names this `cRSprite::Kill()`."
     },
     {
@@ -4747,7 +4753,8 @@
       "name": "build_sprite_tail",
       "aliases": [
         "update_sprite_facing_angle",
-        "BuildTail"
+        "BuildTail",
+        "cRSprite_BuildTail"
       ],
       "description": "Windows `cRSprite::BuildTail(tMatrix*)`: derives the sprite tail/facing angle at `+0x7c` from its camera-space motion delta, optionally throttled by the refresh timer at `+0x8c/+0x90`. Android and iOS independently preserve the exact authored owner, symbol, and corresponding body; the former `update_sprite_facing_angle` label remains a compatibility alias."
     },
@@ -4759,7 +4766,10 @@
     {
       "address": "0x44e550",
       "name": "set_sprite_texture_ref",
-      "description": "Assigns one sprite's texture reference and frame metadata from a manager texture id; iOS RSprite.o names this `cRSprite::SetTextureRef(int, int)`."
+      "aliases": [
+        "cRSprite_SetTextureRef"
+      ],
+      "description": "Exact void Windows cRSprite::SetTextureRef(int, int): assigns one sprite's texture reference and frame metadata from a manager texture id. Every Windows caller discards EAX, and both mobile decompilers recover void."
     },
     {
       "address": "0x44e570",

@@ -2,9 +2,8 @@
 
 #include "sprite.h"
 
-cRTexture* cRSprite::set_sprite_texture_ref(int texture_id, int frame)
+void cRSprite::SetTextureRef(int texture_id, int frame)
 {
     cRTexture* ref = g_sprite_texture_table[texture_id] + frame;
     texture_ref = ref;
-    return ref;
 }
