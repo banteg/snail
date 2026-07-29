@@ -141,3 +141,21 @@ Native stores lower-bound zero and jumps to one shared scaled-playback tail;
 every ordinary source form under the recovered build profile duplicates that
 tail. The clear clamp remains canonical, with 19 clean references and the two
 candidate-only duplicated call references explicitly unaudited.
+
+## 2026-07-29 outer playback branch closure
+
+A third recorded sweep moves direct playback ahead of attenuation so the
+scaled call is structurally outside the attachment guard. Both an early-return
+guard and an inverted `if/else` eliminate the duplicated candidate-only
+references, but disturb the recovered native branch order and regress the
+fuzzy result from 89.13% to 85.23%. A labeled direct tail is not valid C++ in
+this function because its jump bypasses the initialized `Vector3` locals; VC6
+correctly rejects it, so it supplies no missing source form.
+
+The complete ledger now covers 20 unique variants: none improve, eight are
+byte-identical, and twelve regress or fail to compile. Three consecutive
+non-improving sweeps formally stall the scratch. The retained attachment-first
+control flow preserves the stronger 299/335 fuzzy-byte result, 26-instruction
+prefix, and all 19 aligned references. The lower-clamp call duplication remains
+visible rather than being forced with an invalid jump or artificial side
+effect.
