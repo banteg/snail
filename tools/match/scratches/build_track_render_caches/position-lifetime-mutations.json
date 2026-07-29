@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-fringe-position-lifetime",
+      "find": "                    if (fringe_object != 0) {\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position\n                                + cell_offset),",
+      "replacements": [
+        {
+          "name": "integer-sum-local",
+          "text": "                    if (fringe_object != 0) {\n                        int cell_position_address =\n                            cell_offset + (int)owner_subgame;\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_position_address\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "integer-offset-then-owner",
+          "text": "                    if (fringe_object != 0) {\n                        int cell_position_address = cell_offset;\n                        cell_position_address += (int)owner_subgame;\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_position_address\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "integer-owner-then-offset",
+          "text": "                    if (fringe_object != 0) {\n                        int cell_position_address = (int)owner_subgame;\n                        cell_position_address += cell_offset;\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_position_address\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "integer-field-offset-local",
+          "text": "                    if (fringe_object != 0) {\n                        int cell_position_offset =\n                            cell_offset + RUNTIME_CELL_OFFSET(position);\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_position_offset\n                                + (int)owner_subgame),"
+        },
+        {
+          "name": "owner-integer-local",
+          "text": "                    if (fringe_object != 0) {\n                        int owner_address = (int)owner_subgame;\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_offset + owner_address\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "byte-pointer-sum-local",
+          "text": "                    if (fringe_object != 0) {\n                        char* cell_position =\n                            (char*)owner_subgame + cell_offset;\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_position\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "byte-pointer-commuted-local",
+          "text": "                    if (fringe_object != 0) {\n                        char* cell_position =\n                            cell_offset + (char*)owner_subgame;\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_position\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "typed-position-local",
+          "text": "                    if (fringe_object != 0) {\n                        Vector3* cell_position =\n                            (Vector3*)((char*)owner_subgame + cell_offset\n                                + RUNTIME_CELL_OFFSET(position));\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            cell_position,"
+        },
+        {
+          "name": "typed-cell-local",
+          "text": "                    if (fringe_object != 0) {\n                        cRSubLoc* current_cell =\n                            (cRSubLoc*)((char*)owner_subgame->runtime_cells\n                                + cell_offset);\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            &current_cell->position,"
+        },
+        {
+          "name": "owner-byte-pointer-local",
+          "text": "                    if (fringe_object != 0) {\n                        char* owner_bytes = (char*)owner_subgame;\n                        append_track_cache_object(\n                            row_index,\n                            fringe_object->object,\n                            (Vector3*)(cell_offset + owner_bytes\n                                + RUNTIME_CELL_OFFSET(position)),"
+        }
+      ]
+    }
+  ]
+}

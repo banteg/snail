@@ -1,0 +1,64 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-fringe-position-indexing",
+      "find": "                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position\n                                + cell_offset),",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "owner-byte-subscript",
+          "text": "                            (Vector3*)&((char*)owner_subgame)\n                                [cell_offset + RUNTIME_CELL_OFFSET(position)],"
+        },
+        {
+          "name": "owner-byte-subscript-field-first",
+          "text": "                            (Vector3*)&((char*)owner_subgame)\n                                [RUNTIME_CELL_OFFSET(position) + cell_offset],"
+        },
+        {
+          "name": "offset-subscript-then-field",
+          "text": "                            (Vector3*)(&((char*)owner_subgame)[cell_offset]\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "field-subscript-then-offset",
+          "text": "                            (Vector3*)(&((char*)owner_subgame)\n                                [RUNTIME_CELL_OFFSET(position)] + cell_offset),"
+        },
+        {
+          "name": "position-byte-subscript",
+          "text": "                            (Vector3*)&((char*)\n                                &owner_subgame->runtime_cells[0][0].position)\n                                [cell_offset],"
+        },
+        {
+          "name": "commuted-position-subscript",
+          "text": "                            (Vector3*)(cell_offset + &((char*)owner_subgame)\n                                [RUNTIME_CELL_OFFSET(position)]),"
+        },
+        {
+          "name": "unsigned-offset",
+          "text": "                            (Vector3*)((char*)owner_subgame\n                                + (unsigned int)cell_offset\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "unsigned-offset-first",
+          "text": "                            (Vector3*)((unsigned int)cell_offset\n                                + (char*)owner_subgame\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "long-integer-sum",
+          "text": "                            (Vector3*)((long)cell_offset\n                                + (long)owner_subgame\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "size-t-offset",
+          "text": "                            (Vector3*)((char*)owner_subgame\n                                + (size_t)cell_offset\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "reinterpret-owner-sum",
+          "text": "                            reinterpret_cast<Vector3*>(\n                                reinterpret_cast<char*>(owner_subgame)\n                                + cell_offset + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "reinterpret-commuted-sum",
+          "text": "                            reinterpret_cast<Vector3*>(cell_offset\n                                + reinterpret_cast<char*>(owner_subgame)\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "void-pointer-roundtrip",
+          "text": "                            (Vector3*)(void*)((char*)owner_subgame\n                                + cell_offset + RUNTIME_CELL_OFFSET(position)),"
+        }
+      ]
+    }
+  ]
+}

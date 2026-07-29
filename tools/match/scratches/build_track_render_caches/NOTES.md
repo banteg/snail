@@ -288,3 +288,34 @@ families in the embedded `SegmentCache`, and
 advances. No mobile field offset or `cRWorld::Add` symbol is transferred to
 either Windows function. Recording the split prevents the tempting but false
 direct match while preserving the useful owner and lifecycle evidence.
+
+## 2026-07-29 equivalent-SIB compiler boundary
+
+Three recorded mutation sweeps evaluate 37 distinct source forms around the
+sole mismatch. Every one is byte-identical to the retained candidate:
+99.79%, exact `475/475` instruction parity, prefix 90, and all 20 references
+clean. The experiment ledger therefore marks this scratch stalled after three
+consecutive non-improving sweeps.
+
+The first sweep covers pointer addition order, grouped and ungrouped owner
+offsets, integer owner arithmetic, and three typed `cRSubLoc` formations. The
+second introduces explicit integer, byte-pointer, `Vector3*`, and `cRSubLoc*`
+locals with both assignment orders. The third covers byte subscripting,
+address-of forms, signed and unsigned casts, `size_t`, C++ reinterpret casts,
+and a `void*` round trip. VC6 canonicalizes all 37 spellings to:
+
+```text
+lea eax, [eax+edi+0x3bfad8]
+```
+
+Native uses the equivalent scale-one SIB encoding:
+
+```text
+lea eax, [edi+eax+0x3bfad8]
+```
+
+The registers, displacement, effective address, surrounding 474 instructions,
+and complete reference audit are otherwise identical. This is now a measured
+backend encoding boundary rather than an untried pointer-owner expression; no
+integer-to-pointer trick or synthetic dependency is retained to exchange
+commutative SIB roles.

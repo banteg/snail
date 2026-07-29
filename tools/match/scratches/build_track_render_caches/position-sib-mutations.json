@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-fringe-position",
+      "find": "                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0].position\n                                + cell_offset),",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "commuted-field-pointer",
+          "text": "                            (Vector3*)(cell_offset\n                                + (char*)&owner_subgame->runtime_cells[0][0].position),"
+        },
+        {
+          "name": "owner-offset-then-field",
+          "text": "                            (Vector3*)((char*)owner_subgame + cell_offset\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "owner-field-then-offset",
+          "text": "                            (Vector3*)((char*)owner_subgame\n                                + RUNTIME_CELL_OFFSET(position) + cell_offset),"
+        },
+        {
+          "name": "owner-grouped-offset",
+          "text": "                            (Vector3*)((char*)owner_subgame\n                                + (cell_offset + RUNTIME_CELL_OFFSET(position))),"
+        },
+        {
+          "name": "commuted-owner-pointer",
+          "text": "                            (Vector3*)(cell_offset + (char*)owner_subgame\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "offset-first-group",
+          "text": "                            (Vector3*)(RUNTIME_CELL_OFFSET(position)\n                                + cell_offset + (char*)owner_subgame),"
+        },
+        {
+          "name": "integer-owner-addition",
+          "text": "                            (Vector3*)((int)owner_subgame + cell_offset\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "integer-offset-first",
+          "text": "                            (Vector3*)(cell_offset + (int)owner_subgame\n                                + RUNTIME_CELL_OFFSET(position)),"
+        },
+        {
+          "name": "typed-cell-from-owner",
+          "text": "                            &((cRSubLoc*)((char*)owner_subgame + cell_offset\n                                + RUNTIME_CELL_BASE_OFFSET))->position,"
+        },
+        {
+          "name": "typed-cell-from-array",
+          "text": "                            &((cRSubLoc*)((char*)&owner_subgame->runtime_cells[0][0]\n                                + cell_offset))->position,"
+        },
+        {
+          "name": "typed-cell-from-decayed-array",
+          "text": "                            &((cRSubLoc*)((char*)owner_subgame->runtime_cells\n                                + cell_offset))->position,"
+        },
+        {
+          "name": "array-byte-base",
+          "text": "                            (Vector3*)((char*)owner_subgame->runtime_cells\n                                + cell_offset + offsetof(cRSubLoc, position)),"
+        },
+        {
+          "name": "array-field-byte-base",
+          "text": "                            (Vector3*)((char*)&owner_subgame->runtime_cells[0][0]\n                                + cell_offset + offsetof(cRSubLoc, position)),"
+        },
+        {
+          "name": "owner-integer-field-first",
+          "text": "                            (Vector3*)(RUNTIME_CELL_OFFSET(position)\n                                + (int)owner_subgame + cell_offset),"
+        }
+      ]
+    }
+  ]
+}
