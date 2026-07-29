@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-bank-address",
+      "find": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;",
+      "replacements": [
+        {
+          "name": "integer-bank-offset-pointer",
+          "text": "                    int face_bank_address =\n                        (int)((Object*)object_cursor)->facequads;\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)face_offset\n                        + face_bank_address);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        },
+        {
+          "name": "integer-bank-offset-subscript",
+          "text": "                    int face_bank_address =\n                        (int)((Object*)object_cursor)->facequads;\n                    cRTexture** texture_slot =\n                        (cRTexture**)&((char*)face_offset)[face_bank_address + 0x0c];"
+        },
+        {
+          "name": "unsigned-bank-offset-pointer",
+          "text": "                    unsigned int face_bank_address =\n                        (unsigned int)((Object*)object_cursor)->facequads;\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)face_offset\n                        + face_bank_address);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        },
+        {
+          "name": "staged-pointer-then-integer",
+          "text": "                    cRFaceQuad* face_bank =\n                        ((Object*)object_cursor)->facequads;\n                    int face_bank_address = (int)face_bank;\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)face_offset\n                        + face_bank_address);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        },
+        {
+          "name": "integer-lvalue-bank",
+          "text": "                    int face_bank_address =\n                        *(int*)&((Object*)object_cursor)->facequads;\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)face_offset\n                        + face_bank_address);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        }
+      ]
+    }
+  ]
+}

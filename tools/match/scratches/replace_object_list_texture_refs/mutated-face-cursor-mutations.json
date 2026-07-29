@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mutated-face-cursor",
+      "find": "                int face_offset = 0;\n                do {\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset += sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);",
+      "replacements": [
+        {
+          "name": "separate-relative-spill",
+          "text": "                int face_offset = 0;\n                int face_offset_spill = 0;\n                do {\n                    face_offset +=\n                        (int)((Object*)object_cursor)->facequads;\n                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)face_offset)->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset_spill += sizeof(cRFaceQuad);\n                    face_offset = face_offset_spill;\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        },
+        {
+          "name": "restore-base-then-advance",
+          "text": "                int face_offset = 0;\n                do {\n                    face_offset +=\n                        (int)((Object*)object_cursor)->facequads;\n                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)face_offset)->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset -=\n                        (int)((Object*)object_cursor)->facequads;\n                    face_offset += sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        },
+        {
+          "name": "restore-and-advance-expression",
+          "text": "                int face_offset = 0;\n                do {\n                    face_offset +=\n                        (int)((Object*)object_cursor)->facequads;\n                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)face_offset)->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset = face_offset\n                        - (int)((Object*)object_cursor)->facequads\n                        + sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        },
+        {
+          "name": "staged-bank-restore",
+          "text": "                int face_offset = 0;\n                do {\n                    int face_bank =\n                        (int)((Object*)object_cursor)->facequads;\n                    face_offset += face_bank;\n                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)face_offset)->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset -= face_bank;\n                    face_offset += sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        }
+      ]
+    }
+  ]
+}

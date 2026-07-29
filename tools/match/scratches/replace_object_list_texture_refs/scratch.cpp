@@ -14,26 +14,28 @@ void cRObjects::ReTextureObjects(cRTexture* new_texture,
 
     int object_offset = 0;
     do {
-        Object* object = (Object*)((char*)objects + object_cursor);
-        if (object->vertex_count != 0) {
+        object_cursor += (int)objects;
+        if (((Object*)object_cursor)->vertex_count != 0) {
             int face_index = 0;
-            if (object->facequad_count > 0) {
+            if (((Object*)object_cursor)->facequad_count > 0) {
                 int face_offset = 0;
                 do {
-                    cRFaceQuad* quad =
-                        (cRFaceQuad*)((char*)object->facequads + face_offset);
-                    if (quad->texture_ref == old_texture) {
-                        quad->texture_ref = new_texture;
+                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads
+                        + face_offset);
+                    cRTexture** texture_slot = &quad->texture_ref;
+                    if (*texture_slot == old_texture) {
+                        *texture_slot = new_texture;
                     }
                     ++face_index;
                     face_offset += sizeof(cRFaceQuad);
-                } while (face_index < object->facequad_count);
+                } while (face_index < ((Object*)object_cursor)->facequad_count);
             }
 
-            replace_object_group_texture_refs(object, new_texture, old_texture);
+            replace_object_group_texture_refs(
+                (Object*)object_cursor, new_texture, old_texture);
         }
         ++object_index;
-        object_cursor = object_offset + sizeof(Object);
-        object_offset = object_cursor;
+        object_offset += sizeof(Object);
+        object_cursor = object_offset;
     } while (object_index < count);
 }

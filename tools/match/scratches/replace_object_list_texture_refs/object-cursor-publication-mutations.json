@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "current-object-publication",
+      "find": "        Object* object = (Object*)((char*)objects + object_cursor);",
+      "replacements": [
+        {
+          "name": "mutate-cursor-then-cast",
+          "text": "        object_cursor += (int)objects;\n        Object* object = (Object*)object_cursor;"
+        },
+        {
+          "name": "assignment-expression-add-base",
+          "text": "        Object* object =\n            (Object*)(object_cursor += (int)objects);"
+        },
+        {
+          "name": "mutate-cursor-base-first",
+          "text": "        object_cursor = (int)objects + object_cursor;\n        Object* object = (Object*)object_cursor;"
+        },
+        {
+          "name": "assignment-expression-base-first",
+          "text": "        Object* object =\n            (Object*)(object_cursor = (int)objects + object_cursor);"
+        },
+        {
+          "name": "cursor-cast-then-pointer-add",
+          "text": "        char* object_bytes = (char*)object_cursor;\n        object_bytes += (int)objects;\n        Object* object = (Object*)object_bytes;"
+        },
+        {
+          "name": "cursor-pointer-plus-base",
+          "text": "        char* object_bytes = (char*)object_cursor;\n        Object* object = (Object*)(object_bytes + (int)objects);"
+        }
+      ]
+    }
+  ]
+}

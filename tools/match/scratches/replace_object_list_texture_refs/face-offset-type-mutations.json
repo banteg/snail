@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-offset-type",
+      "find": "                int face_offset = 0;\n                do {\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset += sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);",
+      "replacements": [
+        {
+          "name": "unsigned-byte-offset",
+          "text": "                unsigned int face_offset = 0;\n                do {\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset += sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        },
+        {
+          "name": "char-pointer-byte-offset",
+          "text": "                char* face_offset = 0;\n                do {\n                    cRFaceQuad* quad = (cRFaceQuad*)(face_offset\n                        + (int)((Object*)object_cursor)->facequads);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset += sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        },
+        {
+          "name": "char-pointer-subscript-offset",
+          "text": "                char* face_offset = 0;\n                do {\n                    cRTexture** texture_slot =\n                        (cRTexture**)&face_offset[\n                            (int)((Object*)object_cursor)->facequads + 0x0c];\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    face_offset += sizeof(cRFaceQuad);\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        },
+        {
+          "name": "face-pointer-record-offset",
+          "text": "                cRFaceQuad* face_offset = 0;\n                do {\n                    cRFaceQuad* quad = (cRFaceQuad*)((char*)face_offset\n                        + (int)((Object*)object_cursor)->facequads);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    ++face_offset;\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        },
+        {
+          "name": "face-pointer-subscript-offset",
+          "text": "                cRFaceQuad* face_offset = 0;\n                do {\n                    cRTexture** texture_slot =\n                        (cRTexture**)&((char*)face_offset)[\n                            (int)((Object*)object_cursor)->facequads + 0x0c];\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }\n                    ++face_index;\n                    ++face_offset;\n                } while (face_index < ((Object*)object_cursor)->facequad_count);"
+        }
+      ]
+    }
+  ]
+}

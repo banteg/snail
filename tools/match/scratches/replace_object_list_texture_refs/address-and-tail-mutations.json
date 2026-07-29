@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-address-order",
+      "find": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;",
+      "replacements": [
+        {
+          "name": "offset-plus-base-quad",
+          "text": "                    cRFaceQuad* quad = (cRFaceQuad*)(face_offset\n                        + (int)((Object*)object_cursor)->facequads);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        },
+        {
+          "name": "offset-plus-base-direct-slot",
+          "text": "                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)(face_offset\n                            + (int)((Object*)object_cursor)->facequads))->texture_ref;"
+        },
+        {
+          "name": "offset-plus-char-base",
+          "text": "                    cRFaceQuad* quad = (cRFaceQuad*)(face_offset\n                        + (char*)((Object*)object_cursor)->facequads);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        },
+        {
+          "name": "offset-plus-char-base-direct-slot",
+          "text": "                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)(face_offset\n                            + (char*)((Object*)object_cursor)->facequads))->texture_ref;"
+        }
+      ]
+    },
+    {
+      "name": "object-tail-publication",
+      "find": "        ++object_index;\n        object_cursor = object_offset + sizeof(Object);\n        object_offset = object_cursor;",
+      "replacements": [
+        {
+          "name": "advance-offset-then-copy",
+          "text": "        ++object_index;\n        object_offset += sizeof(Object);\n        object_cursor = object_offset;"
+        },
+        {
+          "name": "assign-advanced-offset",
+          "text": "        ++object_index;\n        object_offset = object_offset + sizeof(Object);\n        object_cursor = object_offset;"
+        },
+        {
+          "name": "publish-assignment-expression",
+          "text": "        ++object_index;\n        object_cursor = (object_offset += sizeof(Object));"
+        },
+        {
+          "name": "advance-cursor-and-offset",
+          "text": "        ++object_index;\n        object_cursor = object_offset;\n        object_cursor += sizeof(Object);\n        object_offset += sizeof(Object);"
+        },
+        {
+          "name": "copy-then-advance-and-publish",
+          "text": "        ++object_index;\n        object_cursor = object_offset;\n        object_offset += sizeof(Object);\n        object_cursor = object_offset;"
+        }
+      ]
+    }
+  ]
+}

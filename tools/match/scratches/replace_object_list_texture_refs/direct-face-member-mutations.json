@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-face-member",
+      "find": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }",
+      "replacements": [
+        {
+          "name": "repeat-direct-member",
+          "text": "                    if (((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref == old_texture) {\n                        ((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref = new_texture;\n                    }"
+        },
+        {
+          "name": "direct-member-reference",
+          "text": "                    cRTexture*& texture_ref =\n                        ((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref;\n                    if (texture_ref == old_texture) {\n                        texture_ref = new_texture;\n                    }"
+        },
+        {
+          "name": "repeat-direct-slot",
+          "text": "                    if (*(&((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref) == old_texture) {\n                        *(&((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref) = new_texture;\n                    }"
+        },
+        {
+          "name": "direct-slot-local",
+          "text": "                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }"
+        }
+      ]
+    }
+  ]
+}

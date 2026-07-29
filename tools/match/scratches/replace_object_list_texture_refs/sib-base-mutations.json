@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-offset-pointer-base",
+      "find": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;",
+      "replacements": [
+        {
+          "name": "offset-pointer-plus-face-address",
+          "text": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)face_offset\n                        + (int)((Object*)object_cursor)->facequads);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        },
+        {
+          "name": "offset-pointer-direct-slot",
+          "text": "                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)((char*)face_offset\n                            + (int)((Object*)object_cursor)->facequads))->texture_ref;"
+        },
+        {
+          "name": "unsigned-offset-pointer-plus-face-address",
+          "text": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)(unsigned int)face_offset\n                        + (unsigned int)((Object*)object_cursor)->facequads);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        },
+        {
+          "name": "offset-pointer-reference",
+          "text": "                    cRTexture*& texture_ref =\n                        ((cRFaceQuad*)((char*)face_offset\n                            + (int)((Object*)object_cursor)->facequads))->texture_ref;\n                    cRTexture** texture_slot = &texture_ref;"
+        },
+        {
+          "name": "staged-offset-pointer",
+          "text": "                    char* face_address = (char*)face_offset;\n                    cRFaceQuad* quad = (cRFaceQuad*)(face_address\n                        + (int)((Object*)object_cursor)->facequads);\n                    cRTexture** texture_slot = &quad->texture_ref;"
+        }
+      ]
+    }
+  ]
+}

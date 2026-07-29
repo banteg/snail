@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-texture-slot",
+      "find": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    if (quad->texture_ref == old_texture) {\n                        quad->texture_ref = new_texture;\n                    }",
+      "replacements": [
+        {
+          "name": "slot-from-quad",
+          "text": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }"
+        },
+        {
+          "name": "direct-slot",
+          "text": "                    cRTexture** texture_slot =\n                        &((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }"
+        },
+        {
+          "name": "texture-reference",
+          "text": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture*& texture_ref = quad->texture_ref;\n                    if (texture_ref == old_texture) {\n                        texture_ref = new_texture;\n                    }"
+        },
+        {
+          "name": "direct-texture-reference",
+          "text": "                    cRTexture*& texture_ref =\n                        ((cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                            + face_offset))->texture_ref;\n                    if (texture_ref == old_texture) {\n                        texture_ref = new_texture;\n                    }"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-slot-lvalue",
+      "find": "                    cRFaceQuad* quad = (cRFaceQuad*)((char*)((Object*)object_cursor)->facequads\n                        + face_offset);\n                    cRTexture** texture_slot = &quad->texture_ref;\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }",
+      "replacements": [
+        {
+          "name": "offset-pointer-subscript",
+          "text": "                    char* offset_pointer = (char*)face_offset;\n                    cRTexture** texture_slot = (cRTexture**)&offset_pointer[\n                        (int)((Object*)object_cursor)->facequads + 0x0c];\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }"
+        },
+        {
+          "name": "direct-offset-pointer-subscript",
+          "text": "                    cRTexture** texture_slot =\n                        (cRTexture**)&((char*)face_offset)[\n                            (int)((Object*)object_cursor)->facequads + 0x0c];\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }"
+        },
+        {
+          "name": "reversed-offset-pointer-subscript",
+          "text": "                    cRTexture** texture_slot =\n                        (cRTexture**)&((int)((Object*)object_cursor)->facequads\n                            + 0x0c)[(char*)face_offset];\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }"
+        },
+        {
+          "name": "repeated-integer-slot",
+          "text": "                    if (*(cRTexture**)(face_offset\n                            + (int)((Object*)object_cursor)->facequads + 0x0c)\n                            == old_texture) {\n                        *(cRTexture**)(face_offset\n                            + (int)((Object*)object_cursor)->facequads + 0x0c)\n                            = new_texture;\n                    }"
+        },
+        {
+          "name": "repeated-offset-pointer-slot",
+          "text": "                    if (*(cRTexture**)((char*)face_offset\n                            + (int)((Object*)object_cursor)->facequads + 0x0c)\n                            == old_texture) {\n                        *(cRTexture**)((char*)face_offset\n                            + (int)((Object*)object_cursor)->facequads + 0x0c)\n                            = new_texture;\n                    }"
+        },
+        {
+          "name": "staged-integer-slot",
+          "text": "                    int face_address = face_offset\n                        + (int)((Object*)object_cursor)->facequads;\n                    cRTexture** texture_slot =\n                        (cRTexture**)(face_address + 0x0c);\n                    if (*texture_slot == old_texture) {\n                        *texture_slot = new_texture;\n                    }"
+        }
+      ]
+    }
+  ]
+}

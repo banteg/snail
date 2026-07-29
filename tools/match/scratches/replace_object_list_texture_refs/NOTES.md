@@ -122,3 +122,31 @@ both mobile `RTexture.o` objects. `TextureRef` remains only a compatibility
 alias; the Windows pointer ABI and the known byte-cursor codegen residual do
 not change. Focused matching therefore remains honestly 74.77%, 54/53
 instructions, prefix 14/53, with one clean operand.
+
+## 2026-07-30 cursor and texture-slot lifetimes
+
+Focused Wibo improves from 74.77% to **96.23%**, with 53/53 candidate/target
+instructions, a 24/53 exact prefix, and the existing clean masked call
+reference. The retained source recovers three interacting native lifetimes:
+
+- the current object byte cursor is temporarily advanced by the owned object
+  allocation, keeping the complete current `Object*` in `eax`;
+- the face texture field is retained as a borrowed `cRTexture**`, producing
+  native's compare-before-`lea` and slot store;
+- the relative object offset is advanced before it is republished to the next
+  cursor, recovering the complete native loop-tail schedule and branch
+  destinations.
+
+The only remaining diff is the interchangeable scale-one SIB spelling on the
+face comparison and `lea`: native encodes `[edx+ecx*1+0x0c]`, while VC6
+re-emits the same address as `[ecx+edx*1+0x0c]`. Both use `edx` for the
+0x30-byte face offset and `ecx` for `Object::facequads`; no value, control-flow,
+or ownership difference remains.
+
+Eleven bounded sweeps covered 78 variants. Source-order reversals, direct
+member rematerialization patterned after the exact face-normal sibling,
+integer and pointer address carriers, offset types, subscript lvalues, and a
+mutated inner cursor were neutral or worse. The final seven sweeps produced no
+improvement, so the commutative SIB encoding is left visible rather than
+introducing volatile state, inline assembly, or another codegen-only
+constraint.
