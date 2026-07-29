@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "default-uv-owner",
+      "find": "                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;",
+      "replacements": [
+        {
+          "name": "single-indexed-pointer",
+          "text": "                float* stored_uv = &entry->u0;\n                stored_uv[0] = 0.0f;\n                stored_uv[1] = 0.0f;\n                stored_uv[2] = 1.0f;\n                stored_uv[3] = 1.0f;"
+        },
+        {
+          "name": "single-incrementing-pointer",
+          "text": "                float* stored_uv = &entry->u0;\n                *stored_uv++ = 0.0f;\n                *stored_uv++ = 0.0f;\n                *stored_uv++ = 1.0f;\n                *stored_uv = 1.0f;"
+        },
+        {
+          "name": "zero-one-pair-pointers",
+          "text": "                float* stored_zero_uv = &entry->u0;\n                float* stored_one_uv = &entry->u1;\n                stored_zero_uv[0] = 0.0f;\n                stored_zero_uv[1] = 0.0f;\n                stored_one_uv[0] = 1.0f;\n                stored_one_uv[1] = 1.0f;"
+        },
+        {
+          "name": "u-v-pair-pointers",
+          "text": "                float* stored_u = &entry->u0;\n                float* stored_v = &entry->v0;\n                stored_u[0] = 0.0f;\n                stored_v[0] = 0.0f;\n                stored_u[2] = 1.0f;\n                stored_v[2] = 1.0f;"
+        },
+        {
+          "name": "individual-pointers",
+          "text": "                float* stored_u0 = &entry->u0;\n                float* stored_v0 = &entry->v0;\n                float* stored_u1 = &entry->u1;\n                float* stored_v1 = &entry->v1;\n                *stored_u0 = 0.0f;\n                *stored_v0 = 0.0f;\n                *stored_u1 = 1.0f;\n                *stored_v1 = 1.0f;"
+        },
+        {
+          "name": "entry-owner-reference",
+          "text": "                cFontPrintBuffer& uv_entry = *entry;\n                uv_entry.u0 = 0.0f;\n                uv_entry.v0 = 0.0f;\n                uv_entry.u1 = 1.0f;\n                uv_entry.v1 = 1.0f;"
+        },
+        {
+          "name": "scoped-individual-references",
+          "text": "                { float& stored_u0 = entry->u0; stored_u0 = 0.0f; }\n                { float& stored_v0 = entry->v0; stored_v0 = 0.0f; }\n                { float& stored_u1 = entry->u1; stored_u1 = 1.0f; }\n                { float& stored_v1 = entry->v1; stored_v1 = 1.0f; }"
+        },
+        {
+          "name": "direct-members",
+          "text": "                entry->u0 = 0.0f;\n                entry->v0 = 0.0f;\n                entry->u1 = 1.0f;\n                entry->v1 = 1.0f;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queue-count-borrow",
+      "find": "        int index = g_font_queue_count;",
+      "replacements": [
+        {
+          "name": "source-reference",
+          "text": "        int& queue_count = g_font_queue_count;\n        int index = queue_count;"
+        },
+        {
+          "name": "const-source-reference",
+          "text": "        const int& queue_count = g_font_queue_count;\n        int index = queue_count;"
+        },
+        {
+          "name": "source-pointer",
+          "text": "        int* queue_count = &g_font_queue_count;\n        int index = *queue_count;"
+        },
+        {
+          "name": "value-snapshot",
+          "text": "        int queue_count = g_font_queue_count;\n        int index = queue_count;"
+        },
+        {
+          "name": "split-assignment",
+          "text": "        int index;\n        index = g_font_queue_count;"
+        }
+      ]
+    },
+    {
+      "name": "embedded-color-owner",
+      "find": "                entry->color = *color;",
+      "replacements": [
+        {
+          "name": "destination-reference",
+          "text": "                tColour& entry_color = entry->color;\n                entry_color = *color;"
+        },
+        {
+          "name": "destination-pointer",
+          "text": "                tColour* entry_color = &entry->color;\n                *entry_color = *color;"
+        },
+        {
+          "name": "const-source-reference",
+          "text": "                const tColour& source_color = *color;\n                entry->color = source_color;"
+        },
+        {
+          "name": "source-reference",
+          "text": "                tColour& source_color = *color;\n                entry->color = source_color;"
+        },
+        {
+          "name": "source-pointer",
+          "text": "                tColour* source_color = color;\n                entry->color = *source_color;"
+        },
+        {
+          "name": "paired-references",
+          "text": "                tColour& entry_color = entry->color;\n                const tColour& source_color = *color;\n                entry_color = source_color;"
+        },
+        {
+          "name": "paired-pointers",
+          "text": "                tColour* entry_color = &entry->color;\n                tColour* source_color = color;\n                *entry_color = *source_color;"
+        }
+      ]
+    },
+    {
+      "name": "queue-count-publication",
+      "find": "                g_font_queue_count = index + 1;",
+      "replacements": [
+        {
+          "name": "named-next-index",
+          "text": "                int next_index = index + 1;\n                g_font_queue_count = next_index;"
+        },
+        {
+          "name": "commuted-addition",
+          "text": "                g_font_queue_count = 1 + index;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "default-uv-lifetimes",
+      "find": "                entry->u0 = 0.0f;\n                entry->v0 = 0.0f;\n                entry->u1 = 1.0f;\n                entry->v1 = 1.0f;",
+      "replacements": [
+        {
+          "name": "named-zero-one",
+          "text": "                float zero = 0.0f;\n                float one = 1.0f;\n                entry->u0 = zero;\n                entry->v0 = zero;\n                entry->u1 = one;\n                entry->v1 = one;"
+        },
+        {
+          "name": "const-zero-one",
+          "text": "                const float zero = 0.0f;\n                const float one = 1.0f;\n                entry->u0 = zero;\n                entry->v0 = zero;\n                entry->u1 = one;\n                entry->v1 = one;"
+        },
+        {
+          "name": "individual-values",
+          "text": "                float stored_u0 = 0.0f;\n                float stored_v0 = 0.0f;\n                float stored_u1 = 1.0f;\n                float stored_v1 = 1.0f;\n                entry->u0 = stored_u0;\n                entry->v0 = stored_v0;\n                entry->u1 = stored_u1;\n                entry->v1 = stored_v1;"
+        },
+        {
+          "name": "interleave-u-pairs",
+          "text": "                entry->u0 = 0.0f;\n                entry->u1 = 1.0f;\n                entry->v0 = 0.0f;\n                entry->v1 = 1.0f;"
+        },
+        {
+          "name": "interleave-native-constants",
+          "text": "                entry->u0 = 0.0f;\n                entry->u1 = 1.0f;\n                entry->v1 = 1.0f;\n                entry->v0 = 0.0f;"
+        },
+        {
+          "name": "ones-before-zeros",
+          "text": "                entry->u1 = 1.0f;\n                entry->v1 = 1.0f;\n                entry->u0 = 0.0f;\n                entry->v0 = 0.0f;"
+        },
+        {
+          "name": "chained-zeros-and-ones",
+          "text": "                entry->u0 = entry->v0 = 0.0f;\n                entry->u1 = entry->v1 = 1.0f;"
+        },
+        {
+          "name": "destination-references",
+          "text": "                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;"
+        },
+        {
+          "name": "destination-pointers",
+          "text": "                float* stored_u0 = &entry->u0;\n                float* stored_v0 = &entry->v0;\n                float* stored_u1 = &entry->u1;\n                float* stored_v1 = &entry->v1;\n                *stored_u0 = 0.0f;\n                *stored_v0 = 0.0f;\n                *stored_u1 = 1.0f;\n                *stored_v1 = 1.0f;"
+        }
+      ]
+    }
+  ]
+}

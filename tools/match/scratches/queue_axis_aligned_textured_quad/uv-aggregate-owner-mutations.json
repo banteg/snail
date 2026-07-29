@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "default-uv-aggregate-owner",
+      "find": "                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;",
+      "replacements": [
+        {
+          "name": "named-field-struct-reference",
+          "text": "                struct DefaultUvBounds {\n                    float u0;\n                    float v0;\n                    float u1;\n                    float v1;\n                };\n                DefaultUvBounds& stored_uv =\n                    *(DefaultUvBounds*)&entry->u0;\n                stored_uv.u0 = 0.0f;\n                stored_uv.v0 = 0.0f;\n                stored_uv.u1 = 1.0f;\n                stored_uv.v1 = 1.0f;"
+        },
+        {
+          "name": "named-field-struct-pointer",
+          "text": "                struct DefaultUvBounds {\n                    float u0;\n                    float v0;\n                    float u1;\n                    float v1;\n                };\n                DefaultUvBounds* stored_uv =\n                    (DefaultUvBounds*)&entry->u0;\n                stored_uv->u0 = 0.0f;\n                stored_uv->v0 = 0.0f;\n                stored_uv->u1 = 1.0f;\n                stored_uv->v1 = 1.0f;"
+        },
+        {
+          "name": "array-struct-reference",
+          "text": "                struct DefaultUvBounds {\n                    float values[4];\n                };\n                DefaultUvBounds& stored_uv =\n                    *(DefaultUvBounds*)&entry->u0;\n                stored_uv.values[0] = 0.0f;\n                stored_uv.values[1] = 0.0f;\n                stored_uv.values[2] = 1.0f;\n                stored_uv.values[3] = 1.0f;"
+        },
+        {
+          "name": "two-corner-struct-pointer",
+          "text": "                struct UvCorner {\n                    float u;\n                    float v;\n                };\n                UvCorner* stored_uv = (UvCorner*)&entry->u0;\n                stored_uv[0].u = 0.0f;\n                stored_uv[0].v = 0.0f;\n                stored_uv[1].u = 1.0f;\n                stored_uv[1].v = 1.0f;"
+        },
+        {
+          "name": "array-reference",
+          "text": "                float (&stored_uv)[4] =\n                    *(float (*)[4])&entry->u0;\n                stored_uv[0] = 0.0f;\n                stored_uv[1] = 0.0f;\n                stored_uv[2] = 1.0f;\n                stored_uv[3] = 1.0f;"
+        }
+      ]
+    }
+  ]
+}

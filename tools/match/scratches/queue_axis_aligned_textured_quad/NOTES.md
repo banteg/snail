@@ -115,3 +115,27 @@ unaudited count operands; all 19 aligned references are clean. Both mobile
 ports confirm one ordinary `Font.o` record append, and the residual contains
 no missing inline call or file-local symbol. A TU cannot create the needed
 store dependency, so none is introduced.
+
+## 2026-07-29 default-UV destination lifetimes
+
+The prior three-site audit is now reproducible as all 143 one-, two-, and
+three-site combinations. A separate nine-variant default-UV sweep found the
+missing improvement: retaining independent references to the four destination
+fields raises focused matching from 95.38% to 98.46%, keeps exact 65/65
+instruction parity and the 43-instruction prefix, and converts the former
+19-clean/2-unaudited count alignment into 20 clean masks with no debt.
+
+The source change preserves the proved `u0/v0/u1/v1 = 0/0/1/1` semantics; it
+only keeps each embedded field borrow visible while VC6 schedules the stores.
+Four independent pointers and scoped references compile identically. A simpler
+aggregate/array owner loses the schedule, a single contiguous pointer
+regresses, and pointer arithmetic is not retained.
+
+Three follow-up sweeps bound the new frontier. Every alternative physical
+count position regresses, including the target-motivated post-color placement;
+all five aggregate UV owners regress; and none of the eight alias refinements
+beats the retained references. The sole residual is now the same one-store
+backend schedule as the explicit-UV overload: native publishes
+`g_font_queue_count` between the aggregate color RGB and alpha stores, while
+the candidate publishes it after the completed entry. No barrier or volatile
+carrier is introduced to force that final move.

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queue-count-position-after-uv-aliasing",
+      "find": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;\n                entry->blend_mode = blend_mode;\n                g_font_queue_count = index + 1;\n                entry->rotation = 0.0f;",
+      "replacements": [
+        {
+          "name": "before-color",
+          "text": "                g_font_queue_count = index + 1;\n                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;\n                entry->blend_mode = blend_mode;\n                entry->rotation = 0.0f;"
+        },
+        {
+          "name": "after-color",
+          "text": "                entry->color = *color;\n                g_font_queue_count = index + 1;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;\n                entry->blend_mode = blend_mode;\n                entry->rotation = 0.0f;"
+        },
+        {
+          "name": "after-y",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                g_font_queue_count = index + 1;\n                entry->width = width;\n                entry->height = height;\n                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;\n                entry->blend_mode = blend_mode;\n                entry->rotation = 0.0f;"
+        },
+        {
+          "name": "before-blend-mode",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;\n                g_font_queue_count = index + 1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = 0.0f;"
+        },
+        {
+          "name": "after-rotation",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                float& stored_u0 = entry->u0;\n                float& stored_v0 = entry->v0;\n                float& stored_u1 = entry->u1;\n                float& stored_v1 = entry->v1;\n                stored_u0 = 0.0f;\n                stored_v0 = 0.0f;\n                stored_u1 = 1.0f;\n                stored_v1 = 1.0f;\n                entry->blend_mode = blend_mode;\n                entry->rotation = 0.0f;\n                g_font_queue_count = index + 1;"
+        }
+      ]
+    }
+  ]
+}
