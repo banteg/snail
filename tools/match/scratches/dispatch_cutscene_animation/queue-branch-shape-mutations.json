@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queued-animation-branch-shape",
+      "find": "        anim_manager.target_model->list_flags = flags;\n        return;\n    }\n\n    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    ++anim_manager.queue_count;\n}",
+      "replacements": [
+        {
+          "name": "explicit-else",
+          "text": "        anim_manager.target_model->list_flags = flags;\n    } else {\n        anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n        ++anim_manager.queue_count;\n    }\n}"
+        },
+        {
+          "name": "explicit-else-return",
+          "text": "        anim_manager.target_model->list_flags = flags;\n        return;\n    } else {\n        anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n        ++anim_manager.queue_count;\n        return;\n    }\n}"
+        },
+        {
+          "name": "post-branch-negative-test",
+          "text": "        anim_manager.target_model->list_flags = flags;\n    }\n\n    if (immediate == 0) {\n        anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n        ++anim_manager.queue_count;\n    }\n}"
+        },
+        {
+          "name": "scoped-tail",
+          "text": "        anim_manager.target_model->list_flags = flags;\n        return;\n    }\n\n    {\n        anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n        ++anim_manager.queue_count;\n    }\n}"
+        },
+        {
+          "name": "explicit-final-return",
+          "text": "        anim_manager.target_model->list_flags = flags;\n        return;\n    }\n\n    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    ++anim_manager.queue_count;\n    return;\n}"
+        },
+        {
+          "name": "tail-negative-guard",
+          "text": "        anim_manager.target_model->list_flags = flags;\n        return;\n    }\n\n    if (immediate == 0) {\n        anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n        ++anim_manager.queue_count;\n        return;\n    }\n}"
+        }
+      ]
+    }
+  ]
+}

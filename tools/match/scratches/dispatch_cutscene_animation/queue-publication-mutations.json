@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queued-animation-publication",
+      "find": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    ++anim_manager.queue_count;",
+      "replacements": [
+        {
+          "name": "postincrement-subscript",
+          "text": "    anim_manager.queued_animations[anim_manager.queue_count++] = animation_id;"
+        },
+        {
+          "name": "postincrement-pointer-expression",
+          "text": "    *(anim_manager.queued_animations + anim_manager.queue_count++) =\n        animation_id;"
+        },
+        {
+          "name": "index-then-count-from-index",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    anim_manager.queue_count = queue_index + 1;"
+        },
+        {
+          "name": "index-then-member-increment",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "argument-then-index-locals",
+          "text": "    int queued_animation = animation_id;\n    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = queued_animation;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "index-then-argument-locals",
+          "text": "    int queue_index = anim_manager.queue_count;\n    int queued_animation = animation_id;\n    anim_manager.queued_animations[queue_index] = queued_animation;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "slot-pointer",
+          "text": "    int* queued_slot =\n        &anim_manager.queued_animations[anim_manager.queue_count];\n    *queued_slot = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "count-pointer",
+          "text": "    int* queue_count = &anim_manager.queue_count;\n    anim_manager.queued_animations[*queue_count] = animation_id;\n    ++*queue_count;"
+        },
+        {
+          "name": "count-reference",
+          "text": "    int& queue_count = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_count] = animation_id;\n    ++queue_count;"
+        },
+        {
+          "name": "array-pointer",
+          "text": "    int* queued_animations = anim_manager.queued_animations;\n    queued_animations[anim_manager.queue_count] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "manager-pointer",
+          "text": "    AnimManager* manager = &anim_manager;\n    manager->queued_animations[manager->queue_count] = animation_id;\n    ++manager->queue_count;"
+        },
+        {
+          "name": "postincrement-statement",
+          "text": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    anim_manager.queue_count++;"
+        },
+        {
+          "name": "addition-assignment",
+          "text": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    anim_manager.queue_count += 1;"
+        },
+        {
+          "name": "explicit-addition",
+          "text": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    anim_manager.queue_count = anim_manager.queue_count + 1;"
+        },
+        {
+          "name": "increment-before-indexed-store",
+          "text": "    int queue_index = anim_manager.queue_count++;\n    anim_manager.queued_animations[queue_index] = animation_id;"
+        },
+        {
+          "name": "argument-reference",
+          "text": "    const int& queued_animation = animation_id;\n    anim_manager.queued_animations[anim_manager.queue_count] = queued_animation;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "argument-pointer",
+          "text": "    const int* queued_animation = &animation_id;\n    anim_manager.queued_animations[anim_manager.queue_count] = *queued_animation;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "comma-expression",
+          "text": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id,\n        ++anim_manager.queue_count;"
+        }
+      ]
+    }
+  ]
+}

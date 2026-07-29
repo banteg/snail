@@ -101,3 +101,18 @@ The Windows `dispatch_cutscene_animation` transcription therefore now joins
 the already-void Weapon method as an authored `void` mutator. This removes the
 old conservative integer ABI without changing the honest 94.55%, 55/55
 instruction frontier, 48-instruction prefix, or three clean masked operands.
+
+## 2026-07-29 bounded queue-publication audit
+
+Four recorded sweeps evaluated 44 variants over postfix publication, explicit
+index/count locals, pointer and reference slots, branch joins, and parameter
+lifetimes. Forty-two variants are byte-neutral and one regresses. The sole
+fuzzy gain uses `queue_count = queue_index + 1`: it reaches 95.41% by recovering
+the queued-store register owners, but drops the native post-store count reload
+and produces only 54/55 instructions. That structural tradeoff is rejected.
+
+An inline `AnimManager` queue helper was also codegen-neutral. The retained
+94.55%, 55/55 source is still exact through instruction 48 and preserves the
+native reload; only the three-instruction EAX/EDX ownership swap remains.
+Three consecutive no-improvement sweeps mark this setter stalled. The paired
+Weapon setter independently reproduces every result.

@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queue-index-and-count-reload",
+      "find": "    anim_manager.queued_animations[anim_manager.queue_count] = animation_id;\n    ++anim_manager.queue_count;",
+      "replacements": [
+        {
+          "name": "scoped-index-member-increment",
+          "text": "    {\n        int queue_index = anim_manager.queue_count;\n        anim_manager.queued_animations[queue_index] = animation_id;\n    }\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "separately-assigned-index",
+          "text": "    int queue_index;\n    queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "const-index",
+          "text": "    const int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "register-index",
+          "text": "    register int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "unsigned-index",
+          "text": "    unsigned int queue_index =\n        (unsigned int)anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "long-index",
+          "text": "    long queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "indexed-slot-pointer",
+          "text": "    int queue_index = anim_manager.queue_count;\n    int* queued_slot = &anim_manager.queued_animations[queue_index];\n    *queued_slot = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "indexed-slot-reference",
+          "text": "    int queue_index = anim_manager.queue_count;\n    int& queued_slot = anim_manager.queued_animations[queue_index];\n    queued_slot = animation_id;\n    ++anim_manager.queue_count;"
+        },
+        {
+          "name": "index-with-explicit-member-addition",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    anim_manager.queue_count = anim_manager.queue_count + 1;"
+        },
+        {
+          "name": "index-with-commuted-member-addition",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    anim_manager.queue_count = 1 + anim_manager.queue_count;"
+        },
+        {
+          "name": "index-with-reloaded-next-count",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    int next_count = anim_manager.queue_count;\n    anim_manager.queue_count = next_count + 1;"
+        },
+        {
+          "name": "index-with-incremented-next-count",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    int next_count = anim_manager.queue_count;\n    ++next_count;\n    anim_manager.queue_count = next_count;"
+        },
+        {
+          "name": "index-with-next-count-expression",
+          "text": "    int queue_index = anim_manager.queue_count;\n    anim_manager.queued_animations[queue_index] = animation_id;\n    int next_count = anim_manager.queue_count + 1;\n    anim_manager.queue_count = next_count;"
+        },
+        {
+          "name": "raw-queue-base-and-index",
+          "text": "    int queue_index = anim_manager.queue_count;\n    int* queue_base = &anim_manager.queued_animations[0];\n    queue_base[queue_index] = animation_id;\n    ++anim_manager.queue_count;"
+        }
+      ]
+    }
+  ]
+}

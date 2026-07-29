@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "setter-parameter-lifetimes",
+      "find": "void Snail::dispatch_cutscene_animation(\n    int animation_id,\n    unsigned char immediate,\n    int mode_flags)",
+      "replacements": [
+        {
+          "name": "register-animation-id",
+          "text": "void Snail::dispatch_cutscene_animation(\n    register int animation_id,\n    unsigned char immediate,\n    int mode_flags)"
+        },
+        {
+          "name": "const-animation-id",
+          "text": "void Snail::dispatch_cutscene_animation(\n    const int animation_id,\n    unsigned char immediate,\n    int mode_flags)"
+        },
+        {
+          "name": "signed-animation-id",
+          "text": "void Snail::dispatch_cutscene_animation(\n    signed int animation_id,\n    unsigned char immediate,\n    int mode_flags)"
+        },
+        {
+          "name": "register-immediate",
+          "text": "void Snail::dispatch_cutscene_animation(\n    int animation_id,\n    register unsigned char immediate,\n    int mode_flags)"
+        },
+        {
+          "name": "register-mode-flags",
+          "text": "void Snail::dispatch_cutscene_animation(\n    int animation_id,\n    unsigned char immediate,\n    register int mode_flags)"
+        },
+        {
+          "name": "register-all-parameters",
+          "text": "void Snail::dispatch_cutscene_animation(\n    register int animation_id,\n    register unsigned char immediate,\n    register int mode_flags)"
+        }
+      ]
+    }
+  ]
+}

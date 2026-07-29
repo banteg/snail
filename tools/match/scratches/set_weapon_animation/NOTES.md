@@ -106,3 +106,18 @@ complete `Object` definition before the presentation header and verifying
 sizes. Binary Ninja and IDA both retain the authored void ABI and owned five-slot
 animation bank. Matching remains honestly at 94.55%; no register barrier or
 other fakematch was reintroduced.
+
+## 2026-07-29 bounded queue-publication audit
+
+The shared 44-variant audit was replayed against this setter rather than
+assuming the paired Snail result. Postfix publication, explicit index/count
+locals, pointer and reference slots, branch joins, and parameter lifetimes
+produce the same distribution: 42 byte-neutral variants, one regression, and
+one rejected metric tradeoff.
+
+The tradeoff reaches 95.41% but compiles to 54/55 instructions by replacing
+the native post-store `queue_count` reload with the already-live index. The
+retained 94.55%, 55/55 source keeps that structural reload and differs only in
+the three queued-store EAX/EDX owners. An inline `AnimManager` queue helper is
+codegen-neutral. Three consecutive no-improvement sweeps mark this setter
+stalled, independently matching the Snail audit.
