@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slot-local-order",
+      "find": "    int slot_base = 0;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;\n    int i;",
+      "replacements": [
+        {
+          "name": "inner-index-first",
+          "text": "    int i;\n    int slot_base = 0;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;"
+        },
+        {
+          "name": "inner-index-between-owners",
+          "text": "    int slot_base = 0;\n    int i;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;"
+        },
+        {
+          "name": "skirt-owner-first",
+          "text": "    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;\n    int slot_base = 0;\n    int i;"
+        },
+        {
+          "name": "deferred-slot-base",
+          "text": "    int slot_base;\n    slot_base = 0;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;\n    int i;"
+        },
+        {
+          "name": "declared-slot-base-and-index-first",
+          "text": "    int slot_base;\n    int i;\n    slot_base = 0;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;"
+        },
+        {
+          "name": "initialized-inner-index",
+          "text": "    int slot_base = 0;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;\n    int i = 0;"
+        },
+        {
+          "name": "signed-inner-index",
+          "text": "    int slot_base = 0;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;\n    signed int i;"
+        },
+        {
+          "name": "long-inner-index",
+          "text": "    int slot_base = 0;\n    Object** skirt_object_ref =\n        &slots[0][TRACK_RENDER_CACHE_FRINGE].object;\n    long i;"
+        }
+      ]
+    }
+  ]
+}

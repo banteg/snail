@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slot-cursor-owner",
+      "find": "            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)this\n                    + (slot_base + i) * sizeof(TrackRenderCacheSlot));",
+      "replacements": [
+        {
+          "name": "named-signed-index",
+          "text": "            int slot_index = slot_base + i;\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)this\n                    + slot_index * sizeof(TrackRenderCacheSlot));"
+        },
+        {
+          "name": "named-unsigned-index",
+          "text": "            unsigned int slot_index = (unsigned int)(slot_base + i);\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)this\n                    + slot_index * sizeof(TrackRenderCacheSlot));"
+        },
+        {
+          "name": "named-size-index",
+          "text": "            size_t slot_index = (size_t)(slot_base + i);\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)this\n                    + slot_index * sizeof(TrackRenderCacheSlot));"
+        },
+        {
+          "name": "accumulated-signed-index",
+          "text": "            int slot_index = slot_base;\n            slot_index += i;\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)this\n                    + slot_index * sizeof(TrackRenderCacheSlot));"
+        },
+        {
+          "name": "flat-owner-rebased",
+          "text": "            TrackRenderCacheSlot* owned_slot =\n                &((TrackRenderCacheSlot*)slots)[slot_base + i];\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)owned_slot\n                    - offsetof(SegmentCache, slots));"
+        },
+        {
+          "name": "named-flat-owner-rebased",
+          "text": "            TrackRenderCacheSlot* flat_slots =\n                (TrackRenderCacheSlot*)slots;\n            TrackRenderCacheSlot* owned_slot = &flat_slots[slot_base + i];\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)owned_slot\n                    - offsetof(SegmentCache, slots));"
+        },
+        {
+          "name": "byte-owner-rebased",
+          "text": "            char* owned_slot = (char*)slots\n                + (slot_base + i) * sizeof(TrackRenderCacheSlot);\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)(owned_slot\n                    - offsetof(SegmentCache, slots));"
+        },
+        {
+          "name": "separate-scaled-offsets",
+          "text": "            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)((char*)this\n                    + slot_base * sizeof(TrackRenderCacheSlot)\n                    + i * sizeof(TrackRenderCacheSlot));"
+        },
+        {
+          "name": "staged-row-byte-owner",
+          "text": "            char* row_owner = (char*)this\n                + slot_base * sizeof(TrackRenderCacheSlot);\n            TrackRenderCacheSlotCursor* slot =\n                (TrackRenderCacheSlotCursor*)(row_owner\n                    + i * sizeof(TrackRenderCacheSlot));"
+        }
+      ]
+    }
+  ]
+}

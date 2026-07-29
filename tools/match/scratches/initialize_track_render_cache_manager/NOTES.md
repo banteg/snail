@@ -167,3 +167,24 @@ array fields, so that user annotation was deleted and the clearer automatic
 `SegmentCache` field recovery remains. No matcher source changed: the result
 stays honestly at 99.18%, 122/122 instructions, prefix 29, with 18 clean
 operands and only the equivalent slot-index SIB ordering unresolved.
+
+## 2026-07-29 slot-index allocation boundary
+
+Three recorded sweeps cover the remaining commutative LEA from its independent
+source owners. The cursor family derives the manager-relative address through
+signed, unsigned, and `size_t` indices; separate scaled offsets; staged row
+bytes; and the real flat `SegmentCache::slots` owner rebased by its `+0x58`
+prefix. All nine forms are byte-identical to the 99.18% baseline.
+
+Eight local-lifetime variants reorder or defer `slot_base`, the inner index,
+and the fringe-object cursor. Seven are neutral; moving the fringe cursor
+ahead of both counters regresses to 97.54%. Seven equivalent loop-control
+forms then cover enum, literal, inclusive, inequality, signed-size, and
+pre/post-increment bounds. Four are neutral and three regress.
+
+The ledger therefore contains 24 unique variants: 0 improve, 20 are
+byte-identical, and 4 regress. With three consecutive non-improving sweeps,
+this lane is formally stalled at **99.18%** (`122/122`, prefix 29, 18 clean
+references). Native and candidate differ only in the scale-1 SIB base/index
+encoding of `slot_base + i`; further work would require compiler provenance,
+not another equivalent owner, declaration, or loop spelling.

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "inner-loop-control",
+      "find": "        for (i = 0;\n             i < (int)(sizeof(slots[0]) / sizeof(slots[0][0]));\n             ++i) {",
+      "replacements": [
+        {
+          "name": "family-count-bound",
+          "text": "        for (i = 0; i < TRACK_RENDER_CACHE_FAMILY_COUNT; ++i) {"
+        },
+        {
+          "name": "literal-bound",
+          "text": "        for (i = 0; i < 5; ++i) {"
+        },
+        {
+          "name": "postincrement",
+          "text": "        for (i = 0;\n             i < (int)(sizeof(slots[0]) / sizeof(slots[0][0]));\n             i++) {"
+        },
+        {
+          "name": "add-assign",
+          "text": "        for (i = 0;\n             i < (int)(sizeof(slots[0]) / sizeof(slots[0][0]));\n             i += 1) {"
+        },
+        {
+          "name": "fringe-inclusive-bound",
+          "text": "        for (i = TRACK_RENDER_CACHE_FLOOR;\n             i <= TRACK_RENDER_CACHE_FRINGE;\n             ++i) {"
+        },
+        {
+          "name": "family-count-inequality",
+          "text": "        for (i = 0; i != TRACK_RENDER_CACHE_FAMILY_COUNT; ++i) {"
+        },
+        {
+          "name": "sizeof-bound-without-cast",
+          "text": "        for (i = 0;\n             i < sizeof(slots[0]) / sizeof(slots[0][0]);\n             ++i) {"
+        }
+      ]
+    }
+  ]
+}
