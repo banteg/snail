@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cage2-induction-owner",
+      "find": "    int local_index = 0;\n    for (int i = 1; i < 51; ++i) {\n        float angle = (float)local_index * 0.25132743f;\n        float half_angle = angle * 0.5f;\n        if (!handedness)\n            angle += 3.1415927f;\n\n        float center_scale = cosine(angle) + 1.0f;\n        center_scale = center_scale * 0.5f;\n        center_scale = center_scale * 5.0f;\n        float center = 2.5f - center_scale;\n\n        PathTemplateSample* primary = &primary_samples[i];\n        primary->center_x = center;\n        primary->rotation_scalar_98 = 0.0f;\n        primary->rotation_scalar_94 = 0.0f;\n        primary->special_scalar = 0.0f;\n        primary->lateral_scale = 1.0f;\n        set_matrix_identity(&primary->transform);\n        primary->transform.position.x = primary->center_x;\n        float angle_sine = sine(angle);\n        ++local_index;\n        primary->transform.position.y = sine(half_angle) * angle_sine * height;\n        primary->transform.position.z = (float)local_index;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)local_index;\n        orient_previous_sample_pair(this, i);\n    }",
+      "replacements": [
+        {
+          "name": "zero-based-derived-index",
+          "text": "    for (int sample_index = 0; sample_index < 50; ++sample_index) {\n        int i = sample_index + 1;\n        float angle = (float)sample_index * 0.25132743f;\n        float half_angle = angle * 0.5f;\n        if (!handedness)\n            angle += 3.1415927f;\n\n        float center_scale = cosine(angle) + 1.0f;\n        center_scale = center_scale * 0.5f;\n        center_scale = center_scale * 5.0f;\n        float center = 2.5f - center_scale;\n\n        PathTemplateSample* primary = &primary_samples[i];\n        primary->center_x = center;\n        primary->rotation_scalar_98 = 0.0f;\n        primary->rotation_scalar_94 = 0.0f;\n        primary->special_scalar = 0.0f;\n        primary->lateral_scale = 1.0f;\n        set_matrix_identity(&primary->transform);\n        primary->transform.position.x = primary->center_x;\n        float angle_sine = sine(angle);\n        primary->transform.position.y = sine(half_angle) * angle_sine * height;\n        primary->transform.position.z = (float)i;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)i;\n        orient_previous_sample_pair(this, i);\n    }"
+        }
+      ]
+    }
+  ]
+}

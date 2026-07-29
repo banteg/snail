@@ -223,3 +223,32 @@ proof-preserving 57.97% frontier. The paired response rules out declaration,
 snapshot, and counter-loop spelling as the missing source shape. A next pass
 should recover a real owner whose lifetime affects VC6 allocation across the
 interior loop without forcing registers or accepting an earlier mismatch.
+
+## 2026-07-29 sibling induction audit
+
+Wibble, Invert, Cage2, and Twister all independently expose a zero-based
+logical interior index plus a separate `0xa8` sample cursor in native Windows
+MLIL. Cage2's accepted source is the useful compiler control: a zero-based
+`sample_index`, derived `i = sample_index + 1`, and separate casts of both
+values make VC6 emit `fild` at loop entry and again for published Z, exactly
+as native Twister2 does.
+
+The complete Cage2 induction spelling was replayed through the paired Twister2
+source with `sibling-induction-mutations.json`. It recovers those two local
+conversion sites, but global allocation changes first: focused agreement falls
+from 57.97% to **52.38%**, candidate size moves from `672` to `667/677`, and
+the exact prefix collapses from 94 to seven instructions. Twister reproduces
+the result byte-for-byte.
+
+An interaction sweep also exposed a superficial 60.42% branch when the
+`local_index` increment was removed and Z was sourced from `i`; that branch
+leaves the phase counter permanently zero and adds three unaudited references,
+so it is semantically invalid and explicitly rejected. The exact, dependency-
+closed replay is the durable experiment.
+
+No source change is retained. The native target keeps EBX as the common zero
+owner, EBP as `interior_index`, and EDI as `interior_sample_offset`; the
+candidate keeps EBP as its scratch-local `primary` pointer and the logical
+index on the stack. Direct-array owner forms already regress the prologue.
+The next honest route is provenance for the source owner that frees EBP while
+preserving the earlier zero lifetime, not another loop-header spelling.

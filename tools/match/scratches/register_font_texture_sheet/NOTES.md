@@ -179,3 +179,31 @@ the missing source-level owner that makes the native glyph slot genuinely
 memory-resident. A `register` keyword, `volatile`, dummy address escape, or
 other forced spill would only encode the desired register assignment and
 remains out of scope.
+
+## 2026-07-29 native and mobile provenance closure
+
+Native local storage closes the allocation relationship precisely:
+`split_x` is the EBX register owner, `run_width` is carried in EBP, and
+`glyph_slot` is a real stack owner at frame offset `-0x204`. The current
+candidate instead gives EBX to the glyph slot and spills `split_x`; this is an
+owner swap, not evidence for another glyph counter.
+
+The paired mobile `FontLoad(char*, int, float, float)` bodies do not contain
+the Windows marker scan. They rewrite the atlas path to a `.txt` metadata path,
+parse `SetNumber:` records, and populate a port-specific `0xa28` sheet. They
+therefore corroborate the public ABI but cannot supply the missing Windows scan
+owner. The Windows-only pixel sampler still has exactly the registrar's two
+expected callsites.
+
+Four lexical-lifetime probes hoisted `run_width`, `slot`, and then the complete
+`x`/`run_width`/`slot`/`last_x` group to function scope. VC6 emitted the
+baseline bytes for every form. Moving the capacity check ahead of `split_x`
+initialization moved the exact prefix from zero to one instruction but
+regressed focused agreement to 73.95%. A synthetic common glyph-lane cursor is
+also rejected: native computes the shared byte offset as an optimizer result,
+and no producer or consumer exposes such an authored object.
+
+No source change is retained. The proof-grade frontier remains **75.41%**
+(`275/274`, 54 accepted operands, one mismatch, and four unaudited operands).
+Further work requires new Windows provenance for a genuinely memory-resident
+glyph index; declaration reshuffling and invented cursor state are now closed.
