@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "kind-two-orientation-gate",
+      "find": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    if (kind == 2) {\n        tertiary_body.transform.SetZDir(direction);\n        tertiary_body.transform.RotLocalZ(spin);\n    }",
+      "replacements": [
+        {
+          "name": "scoped-named-kind",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    {\n        int rocket_kind = 2;\n        *new_direction = *new_output - previous_flight_transform.position;\n        if (kind == rocket_kind) {\n            tertiary_body.transform.SetZDir(direction);\n            tertiary_body.transform.RotLocalZ(spin);\n        }\n    }"
+        },
+        {
+          "name": "scoped-delayed-kind",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    {\n        int rocket_kind;\n        rocket_kind = 2;\n        *new_direction = *new_output - previous_flight_transform.position;\n        if (kind == rocket_kind) {\n            tertiary_body.transform.SetZDir(direction);\n            tertiary_body.transform.RotLocalZ(spin);\n        }\n    }"
+        },
+        {
+          "name": "named-current-kind",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    {\n        int shot_kind = kind;\n        if (shot_kind == 2) {\n            tertiary_body.transform.SetZDir(direction);\n            tertiary_body.transform.RotLocalZ(spin);\n        }\n    }"
+        },
+        {
+          "name": "delayed-current-kind",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    {\n        int shot_kind;\n        shot_kind = kind;\n        if (shot_kind == 2) {\n            tertiary_body.transform.SetZDir(direction);\n            tertiary_body.transform.RotLocalZ(spin);\n        }\n    }"
+        },
+        {
+          "name": "constant-first-condition",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    if (2 == kind) {\n        tertiary_body.transform.SetZDir(direction);\n        tertiary_body.transform.RotLocalZ(spin);\n    }"
+        },
+        {
+          "name": "single-case-switch",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    switch (kind) {\n    case 2:\n        tertiary_body.transform.SetZDir(direction);\n        tertiary_body.transform.RotLocalZ(spin);\n        break;\n    }"
+        }
+      ]
+    }
+  ]
+}

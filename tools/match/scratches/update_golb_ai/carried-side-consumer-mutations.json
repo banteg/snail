@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "pending-state-consumer",
+      "find": "                        garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;",
+      "replacements": [
+        {
+          "name": "reuse-collision-code",
+          "text": "                        garbage->state =\n                            (SubGarbageState)direct_collision_side;"
+        }
+      ]
+    },
+    {
+      "name": "normalize-side-after-publication",
+      "find": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else {\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = direct_collision_side;\n                        }",
+      "replacements": [
+        {
+          "name": "normalize-both-branches",
+          "text": "                        if (probe.x < 0.0f) {\n                            garbage->collision_side = direct_collision_side;\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        } else {\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = direct_collision_side;\n                        }"
+        }
+      ]
+    },
+    {
+      "name": "kind-one-consumer",
+      "find": "                        if (kind != 1)\n                            goto garbage_hit;",
+      "replacements": [
+        {
+          "name": "reuse-collision-code",
+          "text": "                        if (kind != (int)direct_collision_side)\n                            goto garbage_hit;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "raw-path-output-copy",
+      "find": "            {\n                Vec3* raw_position = &flight_transform.position;\n                Vec3* output_position = &source_matrix.position;\n                *output_position = *raw_position;\n            }",
+      "replacements": [
+        {
+          "name": "destination-first-pointers",
+          "text": "            {\n                Vec3* output_position = &source_matrix.position;\n                Vec3* raw_position = &flight_transform.position;\n                *output_position = *raw_position;\n            }"
+        },
+        {
+          "name": "direct-aggregate-copy",
+          "text": "            {\n                source_matrix.position = flight_transform.position;\n            }"
+        },
+        {
+          "name": "reference-copy",
+          "text": "            {\n                Vec3& raw_position = flight_transform.position;\n                Vec3& output_position = source_matrix.position;\n                output_position = raw_position;\n            }"
+        },
+        {
+          "name": "const-source-pointer",
+          "text": "            {\n                const Vec3* raw_position = &flight_transform.position;\n                Vec3* output_position = &source_matrix.position;\n                *output_position = *raw_position;\n            }"
+        },
+        {
+          "name": "value-snapshot",
+          "text": "            {\n                Vec3 raw_position = flight_transform.position;\n                source_matrix.position = raw_position;\n            }"
+        },
+        {
+          "name": "float-pointer-constructor",
+          "text": "            {\n                Vec3 raw_position(&flight_transform.position.x);\n                source_matrix.position = raw_position;\n            }"
+        }
+      ]
+    }
+  ]
+}

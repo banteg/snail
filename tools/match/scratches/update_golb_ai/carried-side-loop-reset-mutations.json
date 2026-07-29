@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "carried-side-start",
+      "find": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;",
+      "replacements": [
+        {
+          "name": "left-before-direction",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    SubGarbageCollisionSide direct_collision_side;\n    direct_collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;\n    *new_direction = *new_output - previous_flight_transform.position;"
+        },
+        {
+          "name": "left-after-direction",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    SubGarbageCollisionSide direct_collision_side;\n    direct_collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;"
+        }
+      ]
+    },
+    {
+      "name": "normalize-side-on-hit",
+      "find": "                        if (probe.x < 0.0f)\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;",
+      "replacements": [
+        {
+          "name": "normalize-both-branches",
+          "text": "                        if (probe.x < 0.0f) {\n                            garbage->collision_side = direct_collision_side;\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        } else {\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = direct_collision_side;\n                        }"
+        },
+        {
+          "name": "left-owner-right-constant",
+          "text": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;"
+        }
+      ]
+    },
+    {
+      "name": "reset-side-at-loop-latch",
+      "find": "                garbage = garbage->next_active;",
+      "replacements": [
+        {
+          "name": "reset-before-next",
+          "text": "                direct_collision_side =\n                    SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                garbage = garbage->next_active;"
+        },
+        {
+          "name": "next-before-reset",
+          "text": "                garbage = garbage->next_active;\n                direct_collision_side =\n                    SUB_GARBAGE_COLLISION_SIDE_LEFT;"
+        }
+      ]
+    }
+  ]
+}

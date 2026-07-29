@@ -64,9 +64,7 @@ void GolbShot::update_golb_ai()
         case 1:
         case 3:
             {
-                Vec3* raw_position = &flight_transform.position;
-                Vec3* output_position = &source_matrix.position;
-                *output_position = *raw_position;
+                source_matrix.position = flight_transform.position;
             }
             break;
         case 0:
@@ -185,8 +183,9 @@ void GolbShot::update_golb_ai()
                         garbage->transform.position.x - new_output->x;
                     collision_delta.y =
                         garbage->transform.position.y - new_output->y;
-                    float dz = collision_delta.z =
+                    float dz =
                         garbage->transform.position.z - new_output->z;
+                    collision_delta.z = dz;
                     probe = collision_delta;
                     if (dz < 0.0f)
                         dz = -dz;
@@ -214,16 +213,18 @@ void GolbShot::update_golb_ai()
                     int slug_state = *(int*)(slot + SLUG_STATE_FROM_SUBGAME);
                     if (slug_state == SUB_SLUG_STATE_ACTIVE
                         || slug_state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
-                        probe.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
+                        Vec3 slug_delta;
+                        slug_delta.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
                                            + offsetof(Vector3, x))
                                 - new_output->x;
-                        probe.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
+                        slug_delta.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
                                            + offsetof(Vector3, y))
                                 - new_output->y;
-                        probe.z = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
-                                           + offsetof(Vector3, z))
-                                - new_output->z;
-                        float dz = probe.z;
+                        float dz = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME
+                                            + offsetof(Vector3, z))
+                            - new_output->z;
+                        slug_delta.z = dz;
+                        probe = slug_delta;
                         if (dz < 0.0f)
                             dz = -dz;
                         if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {

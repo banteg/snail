@@ -1,4 +1,40 @@
-# WIP scratch — 90.84%, 693/694 insns (2026-07-27)
+# WIP scratch — 91.56%, 693/694 insns (2026-07-30)
+
+## 2026-07-30 collision-z lifetimes and path-copy closure
+
+The direct garbage and raw slug-bank probes now preserve the source collision
+vector separately from the scalar z-distance used by the absolute-distance
+gate. In both paths, x/y/z are completed in a branch-local `Vec3`, z remains a
+named scalar across the aggregate copy into the shared `probe`, and the scalar
+is then folded for the range test. This is the Windows schedule independently
+supported by the Android and iOS bodies, where one three-float collision owner
+is reused across garbage and slug contact and z remains live for the axial
+gate.
+
+Those two lifetime changes improve the focused match from 90.84% to 91.28%,
+keep the candidate at `693/694` instructions, and clear the four remaining
+zero-constant audit debts: `71 ok, 0 unresolved, 0 mismatch, 0 unaudited`.
+Re-testing the path-follow raw-position case on that recovered stack layout
+then makes the direct authored aggregate assignment the best spelling. It
+removes the last path-copy scheduling region and raises the retained result to
+91.56%, still `693/694`, prefix `9/694`, with the same clean audit.
+
+The tempting collision-side carrier was deliberately rejected. A
+function-wide value initialized to LEFT and normalized to RIGHT on either hit
+branch reaches 93.02%, but it can leak RIGHT into a later garbage iteration
+after a kind-1 shot continues scanning. Every semantics-correct form that
+reinitializes the value at the loop head, inside the active-state gate, or at
+the loop latch compiles back to the retained baseline. The apparent gain is
+therefore register-allocation evidence, not recoverable source.
+
+The recorded ledger now contains 16 bounded sweeps and 130 variants. Four
+consecutive post-win sweeps covering straight-flight expression order,
+per-iteration collision-side owners, slug-slot base formation, and reflected-z
+product order found no further improvement, so this source-shape frontier is
+marked stalled. Named side/state constants, loop-local owners, alternate
+probe-copy schedules, and pointer/reference path-copy forms were also neutral
+or worse; no volatile, padding, register pinning, or other fakematch was
+retained.
 
 ## 2026-07-27 destination-first flight integration
 

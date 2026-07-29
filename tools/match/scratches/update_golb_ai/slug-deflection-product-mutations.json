@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slug-deflection-vector",
+      "find": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            delta.z = -(deflect_speed * probe.z);\n                            velocity = delta;",
+      "replacements": [
+        {
+          "name": "commute-z-product",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            delta.z = -(probe.z * deflect_speed);\n                            velocity = delta;"
+        },
+        {
+          "name": "named-z-result",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            float deflected_z = -(deflect_speed * probe.z);\n                            delta.z = deflected_z;\n                            velocity = delta;"
+        },
+        {
+          "name": "named-z-product",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.y = 0.0f;\n                            float deflected_z_product =\n                                deflect_speed * probe.z;\n                            delta.z = -deflected_z_product;\n                            velocity = delta;"
+        },
+        {
+          "name": "x-z-y-order",
+          "text": "                            delta.x = -(deflect_speed * probe.x);\n                            delta.z = -(deflect_speed * probe.z);\n                            delta.y = 0.0f;\n                            velocity = delta;"
+        },
+        {
+          "name": "y-x-z-order",
+          "text": "                            delta.y = 0.0f;\n                            delta.x = -(deflect_speed * probe.x);\n                            delta.z = -(deflect_speed * probe.z);\n                            velocity = delta;"
+        }
+      ]
+    }
+  ]
+}

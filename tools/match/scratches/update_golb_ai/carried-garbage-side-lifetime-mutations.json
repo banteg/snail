@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "collision-side-lifetime-start",
+      "find": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;",
+      "replacements": [
+        {
+          "name": "left-before-direction",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    SubGarbageCollisionSide direct_collision_side;\n    direct_collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;\n    *new_direction = *new_output - previous_flight_transform.position;"
+        },
+        {
+          "name": "left-after-direction",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    SubGarbageCollisionSide direct_collision_side;\n    direct_collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;"
+        }
+      ]
+    },
+    {
+      "name": "collision-side-publication",
+      "find": "                        if (probe.x < 0.0f)\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;",
+      "replacements": [
+        {
+          "name": "overwrite-right-then-publish",
+          "text": "                        if (probe.x >= 0.0f)\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side = direct_collision_side;"
+        },
+        {
+          "name": "branch-then-publish",
+          "text": "                        if (probe.x < 0.0f)\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side = direct_collision_side;"
+        },
+        {
+          "name": "publish-in-branches",
+          "text": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else {\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = direct_collision_side;\n                        }"
+        }
+      ]
+    }
+  ]
+}

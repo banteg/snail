@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-local-side-owner",
+      "find": "            while (garbage) {\n                if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {",
+      "replacements": [
+        {
+          "name": "initialized-before-active-gate",
+          "text": "            while (garbage) {\n                SubGarbageCollisionSide direct_collision_side =\n                    SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {"
+        },
+        {
+          "name": "delayed-before-active-gate",
+          "text": "            while (garbage) {\n                SubGarbageCollisionSide direct_collision_side;\n                direct_collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {"
+        },
+        {
+          "name": "initialized-inside-active-gate",
+          "text": "            while (garbage) {\n                if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {\n                    SubGarbageCollisionSide direct_collision_side =\n                        SUB_GARBAGE_COLLISION_SIDE_LEFT;"
+        }
+      ]
+    },
+    {
+      "name": "loop-local-side-publication",
+      "find": "                        if (probe.x < 0.0f)\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;",
+      "replacements": [
+        {
+          "name": "left-owner-right-constant",
+          "text": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;"
+        },
+        {
+          "name": "overwrite-right-then-publish",
+          "text": "                        if (probe.x >= 0.0f)\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side = direct_collision_side;"
+        },
+        {
+          "name": "branch-then-publish",
+          "text": "                        if (probe.x < 0.0f)\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side = direct_collision_side;"
+        },
+        {
+          "name": "normalize-after-left-publication",
+          "text": "                        if (probe.x < 0.0f) {\n                            garbage->collision_side = direct_collision_side;\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        } else {\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = direct_collision_side;\n                        }"
+        }
+      ]
+    }
+  ]
+}

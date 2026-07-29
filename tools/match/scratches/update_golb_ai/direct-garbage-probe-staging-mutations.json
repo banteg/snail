@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-garbage-collision-probe",
+      "find": "                    Vec3 collision_delta;\n                    collision_delta.x =\n                        garbage->transform.position.x - new_output->x;\n                    collision_delta.y =\n                        garbage->transform.position.y - new_output->y;\n                    float dz = collision_delta.z =\n                        garbage->transform.position.z - new_output->z;\n                    probe = collision_delta;\n                    if (dz < 0.0f)\n                        dz = -dz;\n                    if (dz < 3.0f\n                        && normalize_vector(&probe) < garbage->radius + 0.49000001f) {",
+      "replacements": [
+        {
+          "name": "named-z-then-local-and-copy",
+          "text": "                    Vec3 collision_delta;\n                    collision_delta.x =\n                        garbage->transform.position.x - new_output->x;\n                    collision_delta.y =\n                        garbage->transform.position.y - new_output->y;\n                    float dz =\n                        garbage->transform.position.z - new_output->z;\n                    collision_delta.z = dz;\n                    probe = collision_delta;\n                    if (dz < 0.0f)\n                        dz = -dz;\n                    if (dz < 3.0f\n                        && normalize_vector(&probe) < garbage->radius + 0.49000001f) {"
+        },
+        {
+          "name": "complete-local-then-read-z",
+          "text": "                    Vec3 collision_delta;\n                    collision_delta.x =\n                        garbage->transform.position.x - new_output->x;\n                    collision_delta.y =\n                        garbage->transform.position.y - new_output->y;\n                    collision_delta.z =\n                        garbage->transform.position.z - new_output->z;\n                    probe = collision_delta;\n                    float dz = collision_delta.z;\n                    if (dz < 0.0f)\n                        dz = -dz;\n                    if (dz < 3.0f\n                        && normalize_vector(&probe) < garbage->radius + 0.49000001f) {"
+        },
+        {
+          "name": "named-z-copy-before-local-store",
+          "text": "                    Vec3 collision_delta;\n                    collision_delta.x =\n                        garbage->transform.position.x - new_output->x;\n                    collision_delta.y =\n                        garbage->transform.position.y - new_output->y;\n                    float dz =\n                        garbage->transform.position.z - new_output->z;\n                    probe.x = collision_delta.x;\n                    probe.y = collision_delta.y;\n                    collision_delta.z = dz;\n                    probe.z = collision_delta.z;\n                    if (dz < 0.0f)\n                        dz = -dz;\n                    if (dz < 3.0f\n                        && normalize_vector(&probe) < garbage->radius + 0.49000001f) {"
+        },
+        {
+          "name": "named-z-direct-probe-store",
+          "text": "                    Vec3 collision_delta;\n                    collision_delta.x =\n                        garbage->transform.position.x - new_output->x;\n                    collision_delta.y =\n                        garbage->transform.position.y - new_output->y;\n                    float dz =\n                        garbage->transform.position.z - new_output->z;\n                    probe.x = collision_delta.x;\n                    probe.y = collision_delta.y;\n                    probe.z = dz;\n                    if (dz < 0.0f)\n                        dz = -dz;\n                    if (dz < 3.0f\n                        && normalize_vector(&probe) < garbage->radius + 0.49000001f) {"
+        }
+      ]
+    }
+  ]
+}

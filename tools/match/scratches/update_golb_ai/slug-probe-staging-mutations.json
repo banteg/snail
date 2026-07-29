@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slug-collision-probe",
+      "find": "                        probe.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, x))\n                                - new_output->x;\n                        probe.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, y))\n                                - new_output->y;\n                        probe.z = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, z))\n                                - new_output->z;\n                        float dz = probe.z;\n                        if (dz < 0.0f)\n                            dz = -dz;\n                        if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {",
+      "replacements": [
+        {
+          "name": "chained-z-then-copy",
+          "text": "                        Vec3 slug_delta;\n                        slug_delta.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, x))\n                                - new_output->x;\n                        slug_delta.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, y))\n                                - new_output->y;\n                        float dz = slug_delta.z =\n                            *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                     + offsetof(Vector3, z))\n                            - new_output->z;\n                        probe = slug_delta;\n                        if (dz < 0.0f)\n                            dz = -dz;\n                        if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {"
+        },
+        {
+          "name": "complete-local-then-copy",
+          "text": "                        Vec3 slug_delta;\n                        slug_delta.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, x))\n                                - new_output->x;\n                        slug_delta.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, y))\n                                - new_output->y;\n                        slug_delta.z = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, z))\n                                - new_output->z;\n                        probe = slug_delta;\n                        float dz = slug_delta.z;\n                        if (dz < 0.0f)\n                            dz = -dz;\n                        if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {"
+        },
+        {
+          "name": "named-z-then-local-and-copy",
+          "text": "                        Vec3 slug_delta;\n                        slug_delta.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, x))\n                                - new_output->x;\n                        slug_delta.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, y))\n                                - new_output->y;\n                        float dz = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                            + offsetof(Vector3, z))\n                            - new_output->z;\n                        slug_delta.z = dz;\n                        probe = slug_delta;\n                        if (dz < 0.0f)\n                            dz = -dz;\n                        if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {"
+        },
+        {
+          "name": "local-then-scalar-copy",
+          "text": "                        Vec3 slug_delta;\n                        slug_delta.x = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, x))\n                                - new_output->x;\n                        slug_delta.y = *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                           + offsetof(Vector3, y))\n                                - new_output->y;\n                        float dz = slug_delta.z =\n                            *(float*)(slot + SLUG_POSITION_FROM_SUBGAME\n                                     + offsetof(Vector3, z))\n                            - new_output->z;\n                        probe.x = slug_delta.x;\n                        probe.y = slug_delta.y;\n                        probe.z = slug_delta.z;\n                        if (dz < 0.0f)\n                            dz = -dz;\n                        if (dz < 2.5f && normalize_vector(&probe) < 2.5f) {"
+        }
+      ]
+    }
+  ]
+}

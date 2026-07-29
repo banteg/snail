@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "carried-side-publication",
+      "find": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else {\n                            direct_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = direct_collision_side;\n                        }",
+      "replacements": [
+        {
+          "name": "left-owner-right-constant",
+          "text": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;"
+        },
+        {
+          "name": "ternary-left-owner",
+          "text": "                        garbage->collision_side = probe.x < 0.0f\n                            ? direct_collision_side\n                            : SUB_GARBAGE_COLLISION_SIDE_RIGHT;"
+        },
+        {
+          "name": "right-value-local",
+          "text": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else {\n                            SubGarbageCollisionSide right_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = right_collision_side;\n                        }"
+        },
+        {
+          "name": "delayed-right-value-local",
+          "text": "                        if (probe.x < 0.0f)\n                            garbage->collision_side = direct_collision_side;\n                        else {\n                            SubGarbageCollisionSide right_collision_side;\n                            right_collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                            garbage->collision_side = right_collision_side;\n                        }"
+        }
+      ]
+    }
+  ]
+}

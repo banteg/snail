@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "pending-state-lifetime-start",
+      "find": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    if (kind == 2) {",
+      "replacements": [
+        {
+          "name": "assign-before-direction",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    SubGarbageState pending_garbage_state;\n    pending_garbage_state = SUB_GARBAGE_STATE_BURST_PENDING;\n    *new_direction = *new_output - previous_flight_transform.position;\n    if (kind == 2) {"
+        },
+        {
+          "name": "assign-after-direction",
+          "text": "    new_output = &source_matrix.position;\n    new_direction = &direction;\n    *new_direction = *new_output - previous_flight_transform.position;\n    SubGarbageState pending_garbage_state;\n    pending_garbage_state = SUB_GARBAGE_STATE_BURST_PENDING;\n    if (kind == 2) {"
+        }
+      ]
+    },
+    {
+      "name": "direct-hit-pending-state",
+      "find": "                        garbage->state = SUB_GARBAGE_STATE_BURST_PENDING;",
+      "replacements": [
+        {
+          "name": "reuse-pending-state",
+          "text": "                        garbage->state = pending_garbage_state;"
+        }
+      ]
+    },
+    {
+      "name": "splash-hit-pending-state",
+      "find": "                            splash->state = SUB_GARBAGE_STATE_BURST_PENDING;",
+      "replacements": [
+        {
+          "name": "reuse-pending-state",
+          "text": "                            splash->state = pending_garbage_state;"
+        }
+      ]
+    }
+  ]
+}

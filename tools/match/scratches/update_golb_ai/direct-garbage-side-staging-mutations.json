@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-garbage-collision-side",
+      "find": "                        if (probe.x < 0.0f)\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            garbage->collision_side =\n                                SUB_GARBAGE_COLLISION_SIDE_RIGHT;",
+      "replacements": [
+        {
+          "name": "left-default-named-enum",
+          "text": "                        SubGarbageCollisionSide collision_side =\n                            SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        if (probe.x >= 0.0f)\n                            collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side = collision_side;"
+        },
+        {
+          "name": "right-default-named-enum",
+          "text": "                        SubGarbageCollisionSide collision_side =\n                            SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        if (probe.x < 0.0f)\n                            collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        garbage->collision_side = collision_side;"
+        },
+        {
+          "name": "branched-named-enum",
+          "text": "                        SubGarbageCollisionSide collision_side;\n                        if (probe.x < 0.0f)\n                            collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side = collision_side;"
+        },
+        {
+          "name": "left-default-named-int",
+          "text": "                        int collision_side =\n                            SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        if (probe.x >= 0.0f)\n                            collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side =\n                            (SubGarbageCollisionSide)collision_side;"
+        },
+        {
+          "name": "branched-named-int",
+          "text": "                        int collision_side;\n                        if (probe.x < 0.0f)\n                            collision_side = SUB_GARBAGE_COLLISION_SIDE_LEFT;\n                        else\n                            collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;\n                        garbage->collision_side =\n                            (SubGarbageCollisionSide)collision_side;"
+        },
+        {
+          "name": "ternary",
+          "text": "                        garbage->collision_side = probe.x < 0.0f\n                            ? SUB_GARBAGE_COLLISION_SIDE_LEFT\n                            : SUB_GARBAGE_COLLISION_SIDE_RIGHT;"
+        }
+      ]
+    }
+  ]
+}

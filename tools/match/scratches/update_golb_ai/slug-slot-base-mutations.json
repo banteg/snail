@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slug-slot-base-formation",
+      "find": "            {\n                int slug_index = 0;\n                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {\n                    char* slot = (char*)game + m;",
+      "replacements": [
+        {
+          "name": "commuted-offset-plus-base",
+          "text": "            {\n                int slug_index = 0;\n                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {\n                    char* slot = m + (char*)game;"
+        },
+        {
+          "name": "stage-slot-then-add",
+          "text": "            {\n                int slug_index = 0;\n                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {\n                    char* slot = (char*)game;\n                    slot += m;"
+        },
+        {
+          "name": "stage-slot-then-assign-sum",
+          "text": "            {\n                int slug_index = 0;\n                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {\n                    char* slot = (char*)game;\n                    slot = slot + m;"
+        },
+        {
+          "name": "outer-game-bytes",
+          "text": "            {\n                int slug_index = 0;\n                char* game_bytes = (char*)game;\n                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {\n                    char* slot = game_bytes + m;"
+        },
+        {
+          "name": "outer-game-bytes-staged-add",
+          "text": "            {\n                int slug_index = 0;\n                char* game_bytes = (char*)game;\n                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {\n                    char* slot = game_bytes;\n                    slot += m;"
+        },
+        {
+          "name": "inner-game-bytes",
+          "text": "            {\n                int slug_index = 0;\n                for (int m = 0; m < SLUG_POOL_EXTENT; m += SLUG_SLOT_STRIDE) {\n                    char* game_bytes = (char*)game;\n                    char* slot = game_bytes + m;"
+        }
+      ]
+    }
+  ]
+}
