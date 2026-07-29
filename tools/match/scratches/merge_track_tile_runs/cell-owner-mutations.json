@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "current-cell-formation",
+      "find": "                cRSubLoc* cell = CELL_FROM_LANE_FLAGS(cell_lane_flags);",
+      "replacements": [
+        {
+          "name": "indexed-row-lane",
+          "text": "                cRSubLoc* cell = &runtime_cells[row_index][lane];"
+        },
+        {
+          "name": "indexed-row-offset",
+          "text": "                cRSubLoc* cell = runtime_cells[row_index] + lane;"
+        },
+        {
+          "name": "flat-index",
+          "text": "                cRSubLoc* cell =\n                    &runtime_cells[0][0] + row_index * 8 + lane;"
+        },
+        {
+          "name": "typed-field-subtraction",
+          "text": "                cRSubLoc* cell = (cRSubLoc*)(cell_lane_flags\n                    - offsetof(cRSubLoc, lane_and_flags) / sizeof(unsigned int));"
+        },
+        {
+          "name": "byte-field-subtraction",
+          "text": "                cRSubLoc* cell = (cRSubLoc*)((char*)cell_lane_flags\n                    - offsetof(cRSubLoc, lane_and_flags));"
+        },
+        {
+          "name": "split-assignment",
+          "text": "                cRSubLoc* cell;\n                cell = CELL_FROM_LANE_FLAGS(cell_lane_flags);"
+        },
+        {
+          "name": "const-pointer",
+          "text": "                cRSubLoc* const cell =\n                    CELL_FROM_LANE_FLAGS(cell_lane_flags);"
+        }
+      ]
+    },
+    {
+      "name": "slide-lane-flags-owner",
+      "find": "                    int run_length = 0;\n                    cRSubLoc* cursor = cell;\n                    int lane_cursor = lane;\n                    while (lane_cursor\n                               < (int)(sizeof(runtime_cells[0])\n                                   / sizeof(runtime_cells[0][0]))\n                           && cursor->IsSlide() != 0\n                           && (cursor->lane_and_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0\n                           && (cursor->lane_and_flags & SUBLOC_FLAG_UNCACHED_BODY) != 0\n                           && (cursor->lane_and_flags\n                                   & (SUBLOC_FLAG_WARNING_CACHE_FAMILY\n                                       | SUBLOC_FLAG_CACHE_FAMILY_SWAPPED))\n                               == 0) {\n                        ++run_length;\n                        ++cursor;\n                        ++lane_cursor;\n                    }",
+      "replacements": [
+        {
+          "name": "lane-flags-cursor",
+          "text": "                    int run_length = 0;\n                    unsigned int* cursor_lane_flags = cell_lane_flags;\n                    int lane_cursor = lane;\n                    while (lane_cursor\n                               < (int)(sizeof(runtime_cells[0])\n                                   / sizeof(runtime_cells[0][0]))\n                           && CELL_FROM_LANE_FLAGS(cursor_lane_flags)->IsSlide() != 0\n                           && (*cursor_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0\n                           && (*cursor_lane_flags & SUBLOC_FLAG_UNCACHED_BODY) != 0\n                           && (*cursor_lane_flags\n                                   & (SUBLOC_FLAG_WARNING_CACHE_FAMILY\n                                       | SUBLOC_FLAG_CACHE_FAMILY_SWAPPED))\n                               == 0) {\n                        ++run_length;\n                        cursor_lane_flags +=\n                            sizeof(cRSubLoc) / sizeof(unsigned int);\n                        ++lane_cursor;\n                    }"
+        }
+      ]
+    }
+  ]
+}

@@ -180,3 +180,33 @@ typed `cRSubGame*`; exact normalization removes the false
 
 No matcher source changed. The focused result remains honestly at 67.50%,
 284/276 instructions, with all 12 masked operands clean.
+
+## 2026-07-29 current-cell induction boundary
+
+Three recorded mutation sweeps now bound the remaining current-cell and
+continuation-cleanup source shapes. They evaluate 31 variants (29 unique):
+zero improve the retained source, seven are byte-identical, and 24 regress.
+The ledger therefore marks this scratch stalled after three consecutive
+non-improving sweeps.
+
+The first sweep replays the native slide owner as a `lane_and_flags` cursor.
+That does recover the native `mov edi, ebx` induction base, but still preserves
+the extra current-cell stack slot, adds one instruction, and falls to 67.38%.
+Sharing the outer lane counter or spelling the scan as guarded `do`/`break`
+control flow destroys the native alignment and introduces unaudited calls.
+
+The second sweep combines that cursor with seven current-cell formations.
+Typed field subtraction, split assignment, and `const` ownership are
+byte-identical; direct row/lane and flat-array indexing regress to 23.99% and
+lose four aligned references. None prevents VC6 from strength-reducing the
+containing cell into the candidate's parallel `edi` induction variable.
+
+The final sweep tests five honest continuation-store spellings, including an
+explicit dword snapshot, direct assignment, a containing-cell local, and
+separate bit clears, both alone and with the slide cursor. The source-order
+variants are either byte-identical or worse; they cannot make the two
+candidate byte-high clears adopt native's full-dword form. The retained
+67.50%, `284/276` source remains the strongest shape with all 12 references
+clean. The `0x14`-versus-`0x10` frame and parallel current-cell induction are
+now a measured compiler-allocation boundary, not an untried alias or store
+syntax.

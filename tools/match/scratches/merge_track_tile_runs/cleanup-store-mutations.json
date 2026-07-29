@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "continuation-cleanup-store",
+      "find": "                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &=         \\\n                    ~BOD_FLAG_RENDER_ENABLED;                                 \\\n                *clear_lane_flags &=                                           \\\n                    ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);     \\\n                clear_lane_flags -=                                           \\\n                    sizeof(cRSubLoc) / sizeof(unsigned int);               \\\n                --(run_length);",
+      "replacements": [
+        {
+          "name": "explicit-lane-flags-local",
+          "text": "                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &=         \\\n                    ~BOD_FLAG_RENDER_ENABLED;                                 \\\n                unsigned int clear_flags = *clear_lane_flags;                 \\\n                clear_flags &=                                                \\\n                    ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);     \\\n                *clear_lane_flags = clear_flags;                              \\\n                clear_lane_flags -=                                           \\\n                    sizeof(cRSubLoc) / sizeof(unsigned int);                   \\\n                --(run_length);"
+        },
+        {
+          "name": "explicit-lane-flags-expression",
+          "text": "                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &=         \\\n                    ~BOD_FLAG_RENDER_ENABLED;                                 \\\n                *clear_lane_flags = *clear_lane_flags                         \\\n                    & ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);   \\\n                clear_lane_flags -=                                           \\\n                    sizeof(cRSubLoc) / sizeof(unsigned int);                   \\\n                --(run_length);"
+        },
+        {
+          "name": "lane-flags-snapshot-first",
+          "text": "                unsigned int clear_flags = *clear_lane_flags;                 \\\n                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &=         \\\n                    ~BOD_FLAG_RENDER_ENABLED;                                 \\\n                clear_flags &=                                                \\\n                    ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);     \\\n                *clear_lane_flags = clear_flags;                              \\\n                clear_lane_flags -=                                           \\\n                    sizeof(cRSubLoc) / sizeof(unsigned int);                   \\\n                --(run_length);"
+        },
+        {
+          "name": "containing-cell-local",
+          "text": "                cRSubLoc* clear_cell =                                        \\\n                    CELL_FROM_LANE_FLAGS(clear_lane_flags);                    \\\n                clear_cell->list_flags &= ~BOD_FLAG_RENDER_ENABLED;           \\\n                clear_cell->lane_and_flags &=                                 \\\n                    ~(SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY);     \\\n                clear_lane_flags -=                                           \\\n                    sizeof(cRSubLoc) / sizeof(unsigned int);                   \\\n                --(run_length);"
+        },
+        {
+          "name": "two-independent-bit-clears",
+          "text": "                CELL_FROM_LANE_FLAGS(clear_lane_flags)->list_flags &=         \\\n                    ~BOD_FLAG_RENDER_ENABLED;                                 \\\n                *clear_lane_flags &= ~SUBLOC_FLAG_AI_ENABLED;                 \\\n                *clear_lane_flags &= ~SUBLOC_FLAG_UNCACHED_BODY;              \\\n                clear_lane_flags -=                                           \\\n                    sizeof(cRSubLoc) / sizeof(unsigned int);                   \\\n                --(run_length);"
+        }
+      ]
+    },
+    {
+      "name": "slide-lane-flags-owner",
+      "find": "                    int run_length = 0;\n                    cRSubLoc* cursor = cell;\n                    int lane_cursor = lane;\n                    while (lane_cursor\n                               < (int)(sizeof(runtime_cells[0])\n                                   / sizeof(runtime_cells[0][0]))\n                           && cursor->IsSlide() != 0\n                           && (cursor->lane_and_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0\n                           && (cursor->lane_and_flags & SUBLOC_FLAG_UNCACHED_BODY) != 0\n                           && (cursor->lane_and_flags\n                                   & (SUBLOC_FLAG_WARNING_CACHE_FAMILY\n                                       | SUBLOC_FLAG_CACHE_FAMILY_SWAPPED))\n                               == 0) {\n                        ++run_length;\n                        ++cursor;\n                        ++lane_cursor;\n                    }",
+      "replacements": [
+        {
+          "name": "lane-flags-cursor",
+          "text": "                    int run_length = 0;\n                    unsigned int* cursor_lane_flags = cell_lane_flags;\n                    int lane_cursor = lane;\n                    while (lane_cursor\n                               < (int)(sizeof(runtime_cells[0])\n                                   / sizeof(runtime_cells[0][0]))\n                           && CELL_FROM_LANE_FLAGS(cursor_lane_flags)->IsSlide() != 0\n                           && (*cursor_lane_flags & SUBLOC_FLAG_CORNER_OBJECT) == 0\n                           && (*cursor_lane_flags & SUBLOC_FLAG_UNCACHED_BODY) != 0\n                           && (*cursor_lane_flags\n                                   & (SUBLOC_FLAG_WARNING_CACHE_FAMILY\n                                       | SUBLOC_FLAG_CACHE_FAMILY_SWAPPED))\n                               == 0) {\n                        ++run_length;\n                        cursor_lane_flags +=\n                            sizeof(cRSubLoc) / sizeof(unsigned int);\n                        ++lane_cursor;\n                    }"
+        }
+      ]
+    }
+  ]
+}
