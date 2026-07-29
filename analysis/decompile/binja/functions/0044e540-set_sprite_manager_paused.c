@@ -4,4 +4,4 @@
 /* function: set_sprite_manager_paused @ 0x44e540 */
 
 0044e544        manager->paused = paused
-0044e546        return paused
+0044e546        return

@@ -14,6 +14,7 @@ typedef struct Player Player;
 typedef struct cRSubGame cRSubGame;
 typedef cRSubGame SubgameRuntime;
 typedef struct TextureRef TextureRef;
+typedef TextureRef cRTexture;
 typedef struct cRSubLoc cRSubLoc;
 
 typedef struct Vec3 {
@@ -88,17 +89,18 @@ typedef enum SpriteFlag {
 } SpriteFlag;
 
 typedef struct Sprite Sprite;
+typedef Sprite cRSprite;
 struct Sprite {
     void* object_ref;
     SpriteFlag flags;
     int32_t owner;
-    Sprite* next;
-    Sprite* prev;
+    cRSprite* next;
+    cRSprite* prev;
     int32_t render_bucket_index;
     float render_depth_key;
-    TextureRef* texture_ref;
-    TextureRef* texture_ref_a;
-    TextureRef* texture_ref_b;
+    cRTexture* texture_ref;
+    cRTexture* texture_ref_a;
+    cRTexture* texture_ref_b;
     int32_t draw_mode;
     tColour color;
     Vec3 previous_position;
@@ -127,13 +129,15 @@ struct Sprite {
     float frame_progress_step;
 };
 
-typedef struct SpriteManager {
+typedef struct SpriteManager SpriteManager;
+typedef SpriteManager cRSpriteManager;
+struct SpriteManager {
     uint8_t paused;
     uint8_t _pad_01[0x3];
-    Sprite sprites[3000];
-    Sprite* active_heads[5];
-    Sprite* free_head;
-} SpriteManager;
+    cRSprite sprites[3000];
+    cRSprite* active_heads[5];
+    cRSprite* free_head;
+};
 
 typedef struct SubGarbage SubGarbage;
 typedef enum SubGarbageState {
@@ -165,7 +169,7 @@ struct SubGarbage {
     float burst_progress_step;
     float smoke_timer;
     float smoke_timer_step;
-    Sprite* sprite;
+    cRSprite* sprite;
     cRSubLoc* source_cell;
     uint8_t hidden;
     uint8_t unknown_bd[0x3];
@@ -191,20 +195,22 @@ typedef struct SubGarbageSlotCursor {
     SubGarbage garbage;
 } SubGarbageSlotCursor;
 
-void __thiscall initialize_sprite_manager(SpriteManager* manager);
-Sprite* __thiscall allocate_sprite(
-    SpriteManager* manager,
+void __thiscall initialize_sprite_manager(cRSpriteManager* manager);
+cRSprite* __thiscall allocate_sprite(
+    cRSpriteManager* manager,
     int32_t owner,
     int32_t texture_id,
     int32_t texture_a,
     int32_t texture_b);
-void __thiscall initialize_sprite(Sprite* sprite);
-void __thiscall update_sprite(Sprite* sprite);
-void __thiscall kill_sprite(Sprite* sprite);
-void __thiscall kill_game_sprites(SpriteManager* manager);
-void __thiscall build_sprite_tail(Sprite* sprite, const TransformMatrix* matrix);
-uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused);
-TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id);
+void __thiscall initialize_sprite(cRSprite* sprite);
+void __thiscall update_sprite(cRSprite* sprite);
+void __thiscall kill_sprite(cRSprite* sprite);
+void __thiscall kill_game_sprites(cRSpriteManager* manager);
+void __thiscall build_sprite_tail(cRSprite* sprite, const TransformMatrix* matrix);
+void __thiscall set_sprite_manager_paused(
+    cRSpriteManager* manager, bool paused);
+cRTexture* __thiscall get_sprite_texture(
+    cRSpriteManager* manager, int32_t texture_id);
 
 SubGarbage* __thiscall initialize_garbage_hazard(SubGarbage* sub_garbage);
 void __thiscall update_garbage_hazard(SubGarbage* sub_garbage);

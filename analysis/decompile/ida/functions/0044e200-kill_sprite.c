@@ -3,36 +3,36 @@
 /* selector: kill_sprite */
 
 // Unlinks and returns one live sprite to the manager free list; iOS RSprite.o names this `cRSprite::Kill()`.
-void __thiscall kill_sprite(Sprite *sprite)
+void __thiscall kill_sprite(cRSprite *sprite)
 {
-  Sprite *next; // eax
-  Sprite *prev; // eax
-  Sprite *v4; // eax
+  cRSprite *next; // eax
+  cRSprite *prev; // eax
+  cRSprite *v4; // eax
 
   if ( (sprite->flags & 1) == 0 )
     report_errorf("Sprite kill error, already dead (%s)", sprite->texture_ref->name);
-  if ( sprite != (Sprite *)&g_sprite_sentinel )
+  if ( sprite != (cRSprite *)&g_sprite_sentinel )
   {
     sprite->flags &= ~1u;
-    if ( sprite == g_sprite_active_heads[sprite->owner] )
+    if ( sprite == g_sprite_manager.active_heads[sprite->owner] )
     {
       next = sprite->next;
-      if ( next )
+      if ( next != nullptr )
         next->prev = nullptr;
-      g_sprite_active_heads[sprite->owner] = sprite->next;
-      sprite->next = (Sprite *)g_sprite_free_head;
-      g_sprite_free_head = sprite;
+      g_sprite_manager.active_heads[sprite->owner] = sprite->next;
+      sprite->next = g_sprite_manager.free_head;
+      g_sprite_manager.free_head = sprite;
     }
     else
     {
       prev = sprite->prev;
-      if ( prev )
+      if ( prev != nullptr )
         prev->next = sprite->next;
       v4 = sprite->next;
-      if ( v4 )
+      if ( v4 != nullptr )
         v4->prev = sprite->prev;
-      sprite->next = (Sprite *)g_sprite_free_head;
-      g_sprite_free_head = sprite;
+      sprite->next = g_sprite_manager.free_head;
+      g_sprite_manager.free_head = sprite;
     }
   }
 }

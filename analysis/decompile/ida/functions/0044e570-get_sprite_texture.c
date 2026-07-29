@@ -3,7 +3,7 @@
 /* selector: get_sprite_texture */
 
 // Returns the texture object for a manager texture id; iOS RSprite.o names this `cRSpriteManager::GetTexture(int)`.
-TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id)
+cRTexture *__thiscall get_sprite_texture(cRSpriteManager *manager, int32_t texture_id)
 {
   return *(&g_sprite_texture_table + texture_id);
 }

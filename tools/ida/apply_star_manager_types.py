@@ -41,59 +41,59 @@ TRUSTED_NAMES = [
 TRUSTED_DECLARATIONS = [
     (
         "initialize_texture_list",
-        "void __thiscall initialize_texture_list(TextureRefList *texture_list, int32_t capacity);",
+        "void __thiscall initialize_texture_list(cRTextures *texture_list, int32_t capacity);",
     ),
     (
         "get_or_create_texture_ref",
-        "TextureRef *__thiscall get_or_create_texture_ref(TextureRefList *texture_list, char *texture_path, void *payload, int32_t flags);",
+        "cRTexture *__thiscall get_or_create_texture_ref(cRTextures *texture_list, char *texture_path, void *payload, int32_t flags);",
     ),
     (
         "initialize_sprite",
-        "void __thiscall initialize_sprite(Sprite *sprite);",
+        "void __thiscall initialize_sprite(cRSprite *sprite);",
     ),
     (
         "update_sprite",
-        "void __thiscall update_sprite(Sprite *sprite);",
+        "void __thiscall update_sprite(cRSprite *sprite);",
     ),
     (
         "register_sprite_texture",
-        "TextureRef *__thiscall register_sprite_texture(SpriteManager *manager, char *texture_path, int32_t texture_id, int32_t flags);",
+        "void __thiscall register_sprite_texture(cRSpriteManager *manager, char *texture_path, int32_t texture_id, int32_t flags);",
     ),
     (
         "initialize_sprite_manager",
-        "void __thiscall initialize_sprite_manager(SpriteManager *manager);",
+        "void __thiscall initialize_sprite_manager(cRSpriteManager *manager);",
     ),
     (
         "kill_sprite",
-        "void __thiscall kill_sprite(Sprite *sprite);",
+        "void __thiscall kill_sprite(cRSprite *sprite);",
     ),
     (
         "allocate_sprite",
-        "Sprite *__thiscall allocate_sprite(SpriteManager *manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b);",
+        "cRSprite *__thiscall allocate_sprite(cRSpriteManager *manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b);",
     ),
     (
         "kill_game_sprites",
-        "void __thiscall kill_game_sprites(SpriteManager *manager);",
+        "void __thiscall kill_game_sprites(cRSpriteManager *manager);",
     ),
     (
         "build_sprite_tail",
-        "void __thiscall build_sprite_tail(Sprite *sprite, const struct TransformMatrix *matrix);",
+        "void __thiscall build_sprite_tail(cRSprite *sprite, const struct TransformMatrix *matrix);",
     ),
     (
         "set_sprite_manager_paused",
-        "uint8_t __thiscall set_sprite_manager_paused(SpriteManager *manager, uint8_t paused);",
+        "void __thiscall set_sprite_manager_paused(cRSpriteManager *manager, bool paused);",
     ),
     (
         "set_sprite_texture_ref",
-        "TextureRef *__thiscall set_sprite_texture_ref(Sprite *sprite, int32_t texture_id, int32_t frame);",
+        "void __thiscall set_sprite_texture_ref(cRSprite *sprite, int32_t texture_id, int32_t frame);",
     ),
     (
         "get_sprite_texture",
-        "TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id);",
+        "cRTexture *__thiscall get_sprite_texture(cRSpriteManager *manager, int32_t texture_id);",
     ),
     (
         "get_sprite_tga",
-        "TgaImageView *__thiscall get_sprite_tga(SpriteManager *manager, int32_t texture_id);",
+        "TgaImageView *__thiscall get_sprite_tga(cRSpriteManager *manager, int32_t texture_id);",
     ),
     (
         "destroy_star_field",
@@ -126,18 +126,25 @@ TRUSTED_DECLARATIONS = [
 ]
 
 TRUSTED_DATA_DECLARATIONS = [
-    (0x4B7790, "g_texture_refs", "TextureRefList g_texture_refs;"),
+    (0x4B7790, "g_texture_refs", "cRTextures g_texture_refs;"),
 ]
 
 REQUIRED_OWNER_MARKERS = (
     "#define TEXTURE_REF_LIST_CAPACITY 500",
     "typedef struct TextureRefList {",
-    "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];",
+    "cRTexture entries[TEXTURE_REF_LIST_CAPACITY];",
+    "typedef TextureRef cRTexture;",
+    "typedef TextureRefList cRTextures;",
     "typedef struct TgaImageView {",
+    "typedef Sprite cRSprite;",
+    "typedef SpriteManager cRSpriteManager;",
     "TgaImageView* __thiscall get_sprite_tga(",
     "void __thiscall initialize_texture_list(",
-    "TextureRef* __thiscall get_or_create_texture_ref(",
-    "extern TextureRefList g_texture_refs;",
+    "cRTexture* __thiscall get_or_create_texture_ref(",
+    "void __thiscall register_sprite_texture(",
+    "void __thiscall set_sprite_manager_paused(",
+    "void __thiscall set_sprite_texture_ref(",
+    "extern cRTextures g_texture_refs;",
     "struct Sprite {",
     "float facing_refresh_progress;",
     "typedef struct StarManagerEntry {",
@@ -156,8 +163,16 @@ EXPECTED_OWNER_SIZES = {
     "TextureRef": 0xA4,
     "TextureRefList": 0x14058,
     "Sprite": 0xB4,
+    "SpriteManager": 0x83D7C,
     "StarManagerEntry": 0x2C,
     "StarManager": 0x4C,
+}
+
+EXPECTED_AUTHORED_ALIAS_SIZES = {
+    "cRTexture": 0xA4,
+    "cRTextures": 0x14058,
+    "cRSprite": 0xB4,
+    "cRSpriteManager": 0x83D7C,
 }
 
 DEPENDENCY_HEADER_NAMES = (
@@ -206,6 +221,13 @@ def _data_declaration_to_observed_type(selector: str, declaration: str) -> str:
 def _named_struct_size(name: str) -> int | None:
     value = ida_typeinf.tinfo_t()
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
+        return None
+    return value.get_size()
+
+
+def _named_type_size(name: str) -> int | None:
+    value = ida_typeinf.tinfo_t()
+    if not value.get_named_type(None, name):
         return None
     return value.get_size()
 
@@ -317,6 +339,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     owner_sizes = {
         name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES
     }
+    authored_alias_sizes = {
+        name: _named_type_size(name) for name in EXPECTED_AUTHORED_ALIAS_SIZES
+    }
     size_failures = [
         {
             "selector": name,
@@ -327,6 +352,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in EXPECTED_OWNER_SIZES.items()
         if owner_sizes[name] != expected_size
     ]
+    alias_size_failures = [
+        {
+            "selector": name,
+            "reason": "authored_alias_size_mismatch",
+            "expected": expected_size,
+            "observed": authored_alias_sizes[name],
+        }
+        for name, expected_size in EXPECTED_AUTHORED_ALIAS_SIZES.items()
+        if authored_alias_sizes[name] != expected_size
+    ]
     dependency_failures = [
         {
             "selector": result["header"],
@@ -336,7 +371,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in dependency_parse_results
         if result["parse_errors"] != 0
     ]
-    if parse_errors or size_failures or dependency_failures:
+    if parse_errors or size_failures or alias_size_failures or dependency_failures:
         print(
             json.dumps(
                 {
@@ -346,7 +381,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "parse_errors": parse_errors,
                     "applied": 0,
                     "owner_sizes": owner_sizes,
-                    "failed": [*dependency_failures, *size_failures],
+                    "authored_alias_sizes": authored_alias_sizes,
+                    "failed": [
+                        *dependency_failures,
+                        *size_failures,
+                        *alias_size_failures,
+                    ],
                 },
                 indent=2,
             )
@@ -463,6 +503,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
                 "owner_sizes": owner_sizes,
+                "authored_alias_sizes": authored_alias_sizes,
                 "color_lvar": color_lvar,
                 "game_root_owner_graph": game_root_owner_graph,
                 "reanalysis_functions": reanalysis_functions,

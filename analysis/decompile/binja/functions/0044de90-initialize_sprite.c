@@ -19,9 +19,11 @@
 0044dedc        sprite->depth_offset = -500f
 0044dee6        sprite->texture_ref_a = nullptr
 0044dee9        sprite->texture_ref_b = nullptr
-0044deec        sprite->velocity.z = 0f
-0044deef        sprite->velocity.y = 0f
-0044def2        sprite->velocity.x = 0
+0044def2        sprite->velocity = struct Vec3 {
+    .z = 0f
+    .y = 0f
+    .x = 0
+}
 0044def5        sprite->depth_bias = 0f
 0044defb        sprite->object_ref = 0xffffffff
 0044df01        sprite->texture_id = 0

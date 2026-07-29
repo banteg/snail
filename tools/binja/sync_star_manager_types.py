@@ -13,6 +13,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_user_var_updates,
     current_struct_size,
+    current_type_alias_targets,
     current_type_widths,
     emit_summary,
     reanalyze_functions,
@@ -38,7 +39,7 @@ DATA_SYMBOL_UPDATES = (
 )
 
 DATA_VAR_UPDATES = (
-    ("0x4b7790", "TextureRefList"),
+    ("0x4b7790", "cRTextures"),
 )
 
 GAME_ROOT_FIELD_UPDATES = (
@@ -68,6 +69,13 @@ EXPECTED_FLAG_TYPE_WIDTHS = {
     "SpriteFlag": 0x4,
 }
 
+EXPECTED_AUTHORED_TYPE_ALIASES = {
+    "cRTexture": "TextureRef",
+    "cRTextures": "TextureRefList",
+    "cRSprite": "Sprite",
+    "cRSpriteManager": "SpriteManager",
+}
+
 TEXTURE_REF_FIELD_UPDATES = (
     ("0x00", "flags", "TextureRefFlags"),
     ("0x04", "loaded_width", "int32_t"),
@@ -83,20 +91,20 @@ TEXTURE_REF_FIELD_UPDATES = (
 TEXTURE_REF_LIST_FIELD_UPDATES = (
     ("0x00", "count", "int32_t"),
     ("0x04", "capacity", "int32_t"),
-    ("0x08", "entries", "TextureRef[0x1f4]"),
+    ("0x08", "entries", "cRTexture[0x1f4]"),
 )
 
 SPRITE_FIELD_UPDATES = (
     ("0x00", "object_ref", "void*"),
     ("0x04", "flags", "SpriteFlag"),
     ("0x08", "owner", "int32_t"),
-    ("0x0c", "next", "Sprite*"),
-    ("0x10", "prev", "Sprite*"),
+    ("0x0c", "next", "cRSprite*"),
+    ("0x10", "prev", "cRSprite*"),
     ("0x14", "render_bucket_index", "int32_t"),
     ("0x18", "render_depth_key", "float"),
-    ("0x1c", "texture_ref", "TextureRef*"),
-    ("0x20", "texture_ref_a", "TextureRef*"),
-    ("0x24", "texture_ref_b", "TextureRef*"),
+    ("0x1c", "texture_ref", "cRTexture*"),
+    ("0x20", "texture_ref_a", "cRTexture*"),
+    ("0x24", "texture_ref_b", "cRTexture*"),
     ("0x28", "draw_mode", "int32_t"),
     ("0x2c", "color", "tColour"),
     ("0x3c", "previous_position", "Vec3"),
@@ -127,16 +135,16 @@ SPRITE_FIELD_UPDATES = (
 
 SPRITE_MANAGER_FIELD_UPDATES = (
     ("0x00", "paused", "uint8_t"),
-    ("0x04", "sprites", "Sprite[0xbb8]"),
-    ("0x83d64", "active_heads", "Sprite*[0x5]"),
-    ("0x83d78", "free_head", "Sprite*"),
+    ("0x04", "sprites", "cRSprite[0xbb8]"),
+    ("0x83d64", "active_heads", "cRSprite*[0x5]"),
+    ("0x83d78", "free_head", "cRSprite*"),
 )
 
 STAR_MANAGER_ENTRY_FIELD_UPDATES = (
     ("0x00", "active", "int32_t"),
     ("0x04", "position", "Vec3"),
     ("0x10", "velocity", "Vec3"),
-    ("0x1c", "sprite", "Sprite*"),
+    ("0x1c", "sprite", "cRSprite*"),
     ("0x20", "speed", "float"),
     ("0x24", "travel_distance", "float"),
     ("0x28", "alpha_scale", "float"),
@@ -154,47 +162,50 @@ STAR_MANAGER_FIELD_UPDATES = (
 PROTO_UPDATES = (
     (
         "initialize_texture_list",
-        "void __thiscall initialize_texture_list(TextureRefList* texture_list, int32_t capacity)",
+        "void __thiscall initialize_texture_list(cRTextures* texture_list, int32_t capacity)",
     ),
     (
         "get_or_create_texture_ref",
-        "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, void* payload, int32_t flags)",
+        "cRTexture* __thiscall get_or_create_texture_ref(cRTextures* texture_list, char* texture_path, void* payload, int32_t flags)",
     ),
-    ("initialize_sprite", "void __thiscall initialize_sprite(Sprite* sprite)"),
-    ("update_sprite", "void __thiscall update_sprite(Sprite* sprite)"),
+    ("initialize_sprite", "void __thiscall initialize_sprite(cRSprite* sprite)"),
+    ("update_sprite", "void __thiscall update_sprite(cRSprite* sprite)"),
     (
         "register_sprite_texture",
-        "TextureRef* __thiscall register_sprite_texture(SpriteManager* manager, char* texture_path, int32_t texture_id, int32_t flags)",
+        "void __thiscall register_sprite_texture(cRSpriteManager* manager, char* texture_path, int32_t texture_id, int32_t flags)",
     ),
     (
         "initialize_sprite_manager",
-        "void __thiscall initialize_sprite_manager(SpriteManager* manager)",
+        "void __thiscall initialize_sprite_manager(cRSpriteManager* manager)",
     ),
-    ("kill_sprite", "void __thiscall kill_sprite(Sprite* sprite)"),
+    ("kill_sprite", "void __thiscall kill_sprite(cRSprite* sprite)"),
     (
         "allocate_sprite",
-        "Sprite* __thiscall allocate_sprite(SpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",
+        "cRSprite* __thiscall allocate_sprite(cRSpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",
     ),
-    ("kill_game_sprites", "void __thiscall kill_game_sprites(SpriteManager* manager)"),
+    (
+        "kill_game_sprites",
+        "void __thiscall kill_game_sprites(cRSpriteManager* manager)",
+    ),
     (
         "build_sprite_tail",
-        "void __thiscall build_sprite_tail(Sprite* sprite, const TransformMatrix* matrix)",
+        "void __thiscall build_sprite_tail(cRSprite* sprite, const TransformMatrix* matrix)",
     ),
     (
         "set_sprite_manager_paused",
-        "uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused)",
+        "void __thiscall set_sprite_manager_paused(cRSpriteManager* manager, bool paused)",
     ),
     (
         "set_sprite_texture_ref",
-        "TextureRef* __thiscall set_sprite_texture_ref(Sprite* sprite, int32_t texture_id, int32_t frame)",
+        "void __thiscall set_sprite_texture_ref(cRSprite* sprite, int32_t texture_id, int32_t frame)",
     ),
     (
         "get_sprite_texture",
-        "TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id)",
+        "cRTexture* __thiscall get_sprite_texture(cRSpriteManager* manager, int32_t texture_id)",
     ),
     (
         "get_sprite_tga",
-        "TgaImageView* __thiscall get_sprite_tga(SpriteManager* manager, int32_t texture_id)",
+        "TgaImageView* __thiscall get_sprite_tga(cRSpriteManager* manager, int32_t texture_id)",
     ),
     ("destroy_star_field", "void __thiscall destroy_star_field(StarManager* manager)"),
     (
@@ -323,6 +334,34 @@ def main() -> int:
             "expected_flag_type_widths": EXPECTED_FLAG_TYPE_WIDTHS,
         }
 
+    current_authored_aliases = current_type_alias_targets(
+        REPO_ROOT,
+        target=args.target,
+        type_names=EXPECTED_AUTHORED_TYPE_ALIASES,
+    )
+    stale_authored_aliases = tuple(
+        name
+        for name, expected_target in EXPECTED_AUTHORED_TYPE_ALIASES.items()
+        if current_authored_aliases.get(name) != expected_target
+    )
+    authored_alias_operation = (
+        types_declare_missing_only(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            replace_types=stale_authored_aliases,
+            include_types=stale_authored_aliases,
+        )
+        if stale_authored_aliases
+        else {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "authored mobile owner aliases already current",
+            "header": str(header_path),
+            "expected_aliases": EXPECTED_AUTHORED_TYPE_ALIASES,
+        }
+    )
+
     struct_updates = (
         ("BodBase", BOD_BASE_FIELD_UPDATES),
         ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
@@ -337,6 +376,7 @@ def main() -> int:
         object_type_operation,
         matrix_type_operation,
         type_operation,
+        authored_alias_operation,
         *apply_symbol_updates(
             REPO_ROOT,
             target=args.target,

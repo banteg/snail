@@ -3,26 +3,26 @@
 /* selector: allocate_sprite */
 
 // Allocates one sprite from the manager free list, assigns texture ids, and links it into the selected active bucket; iOS RSprite.o names this `cRSpriteManager::New(int, int, int, int)`.
-Sprite *__thiscall allocate_sprite(
-        SpriteManager *manager,
+cRSprite *__thiscall allocate_sprite(
+        cRSpriteManager *manager,
         int32_t owner,
         int32_t texture_id,
         int32_t texture_a,
         int32_t texture_b)
 {
-  Sprite *free_head; // esi
-  Sprite *v7; // eax
+  cRSprite *free_head; // esi
+  cRSprite *v7; // eax
   int v8; // ecx
   int v9; // edi
   SpriteFlag v10; // ecx
 
   free_head = manager->free_head;
-  if ( !free_head )
-    return (Sprite *)&g_sprite_sentinel;
+  if ( free_head == nullptr )
+    return (cRSprite *)&g_sprite_sentinel;
   manager->free_head = free_head->next;
   free_head->owner = owner;
   v7 = manager->active_heads[owner];
-  if ( v7 )
+  if ( v7 != nullptr )
     v7->prev = free_head;
   free_head->prev = nullptr;
   free_head->next = manager->active_heads[owner];

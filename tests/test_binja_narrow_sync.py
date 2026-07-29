@@ -3333,57 +3333,75 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert '("0x44e800", "initialize_texture_list")' in source
     assert '("0x44e810", "get_or_create_texture_ref")' in source
     assert '("0x4b7790", "g_texture_refs")' in source
-    assert '("0x4b7790", "TextureRefList")' in source
+    assert '("0x4b7790", "cRTextures")' in source
     assert "apply_data_var_updates" in source
     assert "apply_user_var_updates" in source
+    assert "current_type_alias_targets" in source
+    assert "EXPECTED_AUTHORED_TYPE_ALIASES" in source
     assert "types_declare(" not in source
     for declaration, ida_declaration in (
         (
-            "void __thiscall initialize_texture_list(TextureRefList* texture_list, int32_t capacity)",
-            "void __thiscall initialize_texture_list(TextureRefList *texture_list, int32_t capacity);",
+            "void __thiscall initialize_texture_list(cRTextures* texture_list, int32_t capacity)",
+            "void __thiscall initialize_texture_list(cRTextures *texture_list, int32_t capacity);",
         ),
         (
-            "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, void* payload, int32_t flags)",
-            "TextureRef *__thiscall get_or_create_texture_ref(TextureRefList *texture_list, char *texture_path, void *payload, int32_t flags);",
+            "cRTexture* __thiscall get_or_create_texture_ref(cRTextures* texture_list, char* texture_path, void* payload, int32_t flags)",
+            "cRTexture *__thiscall get_or_create_texture_ref(cRTextures *texture_list, char *texture_path, void *payload, int32_t flags);",
         ),
         (
-            "void __thiscall initialize_sprite(Sprite* sprite)",
-            "void __thiscall initialize_sprite(Sprite *sprite);",
+            "void __thiscall initialize_sprite(cRSprite* sprite)",
+            "void __thiscall initialize_sprite(cRSprite *sprite);",
         ),
         (
-            "void __thiscall update_sprite(Sprite* sprite)",
-            "void __thiscall update_sprite(Sprite *sprite);",
+            "void __thiscall update_sprite(cRSprite* sprite)",
+            "void __thiscall update_sprite(cRSprite *sprite);",
         ),
         (
-            "TextureRef* __thiscall register_sprite_texture(SpriteManager* manager, char* texture_path, int32_t texture_id, int32_t flags)",
-            "TextureRef *__thiscall register_sprite_texture(SpriteManager *manager, char *texture_path, int32_t texture_id, int32_t flags);",
+            "void __thiscall register_sprite_texture(cRSpriteManager* manager, char* texture_path, int32_t texture_id, int32_t flags)",
+            "void __thiscall register_sprite_texture(cRSpriteManager *manager, char *texture_path, int32_t texture_id, int32_t flags);",
         ),
         (
-            "void __thiscall initialize_sprite_manager(SpriteManager* manager)",
-            "void __thiscall initialize_sprite_manager(SpriteManager *manager);",
+            "void __thiscall initialize_sprite_manager(cRSpriteManager* manager)",
+            "void __thiscall initialize_sprite_manager(cRSpriteManager *manager);",
         ),
         (
-            "Sprite* __thiscall allocate_sprite(SpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",
-            "Sprite *__thiscall allocate_sprite(SpriteManager *manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b);",
+            "cRSprite* __thiscall allocate_sprite(cRSpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",
+            "cRSprite *__thiscall allocate_sprite(cRSpriteManager *manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b);",
         ),
         (
-            "TextureRef* __thiscall get_sprite_texture(SpriteManager* manager, int32_t texture_id)",
-            "TextureRef *__thiscall get_sprite_texture(SpriteManager *manager, int32_t texture_id);",
+            "void __thiscall set_sprite_manager_paused(cRSpriteManager* manager, bool paused)",
+            "void __thiscall set_sprite_manager_paused(cRSpriteManager *manager, bool paused);",
         ),
         (
-            "TgaImageView* __thiscall get_sprite_tga(SpriteManager* manager, int32_t texture_id)",
-            "TgaImageView *__thiscall get_sprite_tga(SpriteManager *manager, int32_t texture_id);",
+            "void __thiscall set_sprite_texture_ref(cRSprite* sprite, int32_t texture_id, int32_t frame)",
+            "void __thiscall set_sprite_texture_ref(cRSprite *sprite, int32_t texture_id, int32_t frame);",
         ),
         (
-            "void __thiscall build_sprite_tail(Sprite* sprite, const TransformMatrix* matrix)",
-            "void __thiscall build_sprite_tail("
-            "Sprite *sprite, const struct TransformMatrix *matrix);",
+            "cRTexture* __thiscall get_sprite_texture(cRSpriteManager* manager, int32_t texture_id)",
+            "cRTexture *__thiscall get_sprite_texture(cRSpriteManager *manager, int32_t texture_id);",
+        ),
+        (
+            "TgaImageView* __thiscall get_sprite_tga(cRSpriteManager* manager, int32_t texture_id)",
+            "TgaImageView *__thiscall get_sprite_tga(cRSpriteManager *manager, int32_t texture_id);",
+        ),
+        (
+            "void __thiscall build_sprite_tail(cRSprite* sprite, const TransformMatrix* matrix)",
+            (
+                "void __thiscall build_sprite_tail("
+                "cRSprite *sprite, const struct TransformMatrix *matrix);"
+            ),
         ),
     ):
         assert declaration in source
         assert ida_declaration in ida_source
-    assert "TextureRef* __stdcall register_sprite_texture" not in source
-    assert "TextureRef* __stdcall get_sprite_texture" not in source
+    for stale_declaration in (
+        "TextureRef* __stdcall register_sprite_texture",
+        "TextureRef* __thiscall register_sprite_texture",
+        "uint8_t __thiscall set_sprite_manager_paused",
+        "TextureRef* __thiscall set_sprite_texture_ref",
+        "TextureRef* __stdcall get_sprite_texture",
+    ):
+        assert stale_declaration not in source
     assert "TRUSTED_NAMES" in ida_source
     assert '(0x44DF30, "update_sprite")' in ida_source
     assert '(0x44E410, "build_sprite_tail")' in ida_source
@@ -3400,6 +3418,8 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert '"TgaImageView": 0x14' in ida_source
     assert '"TextureRefList": 0x14058' in source
     assert '"TextureRefList": 0x14058' in ida_source
+    assert '"SpriteManager": 0x83D7C' in source
+    assert '"SpriteManager": 0x83D7C' in ida_source
     assert 're.sub(r"\\b(?:struct|union|enum)\\s+", "", normalized)' in ida_source
     assert "0x40A490" in ida_source
     assert "0x40ACF0" in ida_source
@@ -3428,6 +3448,8 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "noncanonical_star_manager_header" in ida_source
     assert "EXPECTED_OWNER_SIZES" in ida_source
     assert "owner_size_mismatch" in ida_source
+    assert "EXPECTED_AUTHORED_ALIAS_SIZES" in ida_source
+    assert "authored_alias_size_mismatch" in ida_source
     assert "struct TransformMatrix;" in star_analysis_header
     assert "typedef struct Object Object;" in star_analysis_header
     assert "Object* object;" in star_analysis_header
@@ -3438,8 +3460,15 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "typedef struct TgaImageView {" in star_analysis_header
     assert "uint8_t pixels[1];" in star_analysis_header
     assert "TgaImageView* __thiscall get_sprite_tga(" in star_analysis_header
-    assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in star_analysis_header
-    assert "extern TextureRefList g_texture_refs;" in star_analysis_header
+    for alias in (
+        "typedef TextureRef cRTexture;",
+        "typedef TextureRefList cRTextures;",
+        "typedef Sprite cRSprite;",
+        "typedef SpriteManager cRSpriteManager;",
+    ):
+        assert alias in star_analysis_header
+    assert "cRTexture entries[TEXTURE_REF_LIST_CAPACITY];" in star_analysis_header
+    assert "extern cRTextures g_texture_refs;" in star_analysis_header
     assert "TEXTURE_REF_LIST_CAPACITY = 500" in sprite_matcher_header
     assert "void Init(int capacity);" in sprite_matcher_header
     assert "cRTexture* Add(" in sprite_matcher_header
@@ -13427,6 +13456,8 @@ def test_sprite_and_texture_ownership_stays_aligned() -> None:
     for header in (*sprite_analysis_headers, matcher_header):
         for constant in sprite_constants:
             assert constant in header
+        assert "cRSprite" in header
+        assert "cRSpriteManager" in header
     for header in (*texture_analysis_headers, matcher_header):
         for constant in texture_constants:
             assert constant in header
@@ -13434,6 +13465,20 @@ def test_sprite_and_texture_ownership_stays_aligned() -> None:
         assert "loaded_height;" in header
         assert "mip_levels;" in header
         assert "unknown_a0" not in header
+
+    star_sync = sync_sources["sync_star_manager_types.py"]
+    garbage_sync = sync_sources["sync_garbage_hazard_types.py"]
+    garbage_header = sprite_analysis_headers[0]
+    for source in (star_sync, garbage_sync, garbage_header):
+        assert "void __thiscall set_sprite_manager_paused" in source
+        assert "uint8_t __thiscall set_sprite_manager_paused" not in source
+    assert "void __thiscall register_sprite_texture" in star_sync
+    assert "void __thiscall set_sprite_texture_ref" in star_sync
+    assert "TextureRef* __thiscall register_sprite_texture" not in star_sync
+    assert "TextureRef* __thiscall set_sprite_texture_ref" not in star_sync
+    assert "SPRITE_HEADER_PATH" in garbage_sync
+    assert "REQUIRED_AUTHORED_SPRITE_ALIASES" in garbage_sync
+    assert '("0x78ff90", "cRTexture*[0x3e8]")' in garbage_sync
 
     consumers = {
         "initialize_sprite": "SPRITE_FLAG_RENDER_ENABLED",

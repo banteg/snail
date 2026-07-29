@@ -3,17 +3,17 @@
 /* selector: kill_game_sprites */
 
 // Kills all nonpersistent gameplay sprites while preserving manager state; iOS RSprite.o names this `cRSpriteManager::KillGame()`.
-void __thiscall kill_game_sprites(SpriteManager *manager)
+void __thiscall kill_game_sprites(cRSpriteManager *manager)
 {
-  Sprite **v1; // edi
-  Sprite *v2; // ecx
-  Sprite *next; // esi
+  cRSprite **active_heads; // edi
+  cRSprite *v2; // ecx
+  cRSprite *next; // esi
 
-  v1 = g_sprite_active_heads;
+  active_heads = g_sprite_manager.active_heads;
   do
   {
-    v2 = *v1;
-    if ( *v1 )
+    v2 = *active_heads;
+    if ( *active_heads != nullptr )
     {
       do
       {
@@ -22,9 +22,9 @@ void __thiscall kill_game_sprites(SpriteManager *manager)
           kill_sprite(v2);
         v2 = next;
       }
-      while ( next );
+      while ( next != nullptr );
     }
-    ++v1;
+    ++active_heads;
   }
-  while ( (int)v1 < (int)&g_sprite_free_head );
+  while ( (int)active_heads < (int)&g_sprite_manager.free_head );
 }

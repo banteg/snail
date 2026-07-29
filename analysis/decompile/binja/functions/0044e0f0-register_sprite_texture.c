@@ -11,9 +11,8 @@
 0044e107        do while (i != 0x2e)
 0044e113        if (texture_id s>= 0x3e8)
 0044e11f        report_errorf("Too many Sprite References - Increase RSPRITE_REFERENCE_MAX(%i) in RSprite.h", 0x3e8)
-0044e134        struct TextureRef* eax = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, flags)
+0044e134        cRTexture* eax = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, flags)
 0044e139        g_sprite_texture_table[texture_id] = eax
 0044e145        eax->flags |= flags
-0044e147        void* result = g_sprite_texture_table[texture_id]
-0044e150        *(result + 0x90) = 0
-0044e15a        return result
+0044e150        g_sprite_texture_table[texture_id]->frame_count = 0
+0044e15a        return

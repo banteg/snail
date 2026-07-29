@@ -30,9 +30,9 @@ typedef struct tColour {
 } tColour;
 
 /*
- * Borrowed TGA header plus its inline pixel payload. SpriteManager::GetTga
- * returns TextureRef::texture_ref with this view; the field itself stays
- * generic because texture registration also accepts arbitrary caller payloads.
+ * Borrowed TGA header plus its inline pixel payload. cRSpriteManager::GetTga
+ * returns cRTexture::texture_ref with this view; the field itself stays generic
+ * because texture registration also accepts arbitrary caller payloads.
  */
 typedef struct TgaImageView {
     uint8_t id_length;
@@ -105,29 +105,39 @@ typedef struct TextureRef {
     int32_t mip_levels;
 } TextureRef;
 
+/*
+ * Android and iOS RTexture.o preserve the authored cRTexture name. Keep the
+ * established Windows-analysis tag as a compatibility alias so older replay
+ * headers continue to compose with the same exact 0xa4-byte owner.
+ */
+typedef TextureRef cRTexture;
+
 #define TEXTURE_REF_LIST_CAPACITY 500
 
 typedef struct TextureRefList {
     int32_t count;
     int32_t capacity;
-    TextureRef entries[TEXTURE_REF_LIST_CAPACITY];
+    cRTexture entries[TEXTURE_REF_LIST_CAPACITY];
 } TextureRefList;
+
+typedef TextureRefList cRTextures;
 
 typedef char TextureRefList_must_be_0x14058[
     (sizeof(TextureRefList) == 0x14058) ? 1 : -1];
 
 typedef struct Sprite Sprite;
+typedef Sprite cRSprite;
 struct Sprite {
     void* object_ref;
     SpriteFlag flags;
     int32_t owner;
-    Sprite* next;
-    Sprite* prev;
+    cRSprite* next;
+    cRSprite* prev;
     int32_t render_bucket_index;
     float render_depth_key;
-    TextureRef* texture_ref;
-    TextureRef* texture_ref_a;
-    TextureRef* texture_ref_b;
+    cRTexture* texture_ref;
+    cRTexture* texture_ref_a;
+    cRTexture* texture_ref_b;
     int32_t draw_mode;
     tColour color;
     Vec3 previous_position;
@@ -156,19 +166,21 @@ struct Sprite {
     float frame_progress_step;
 };
 
-typedef struct SpriteManager {
+typedef struct SpriteManager SpriteManager;
+typedef SpriteManager cRSpriteManager;
+struct SpriteManager {
     uint8_t paused;
     uint8_t unknown_01[0x3];
-    Sprite sprites[3000];
-    Sprite* active_heads[5];
-    Sprite* free_head;
-} SpriteManager;
+    cRSprite sprites[3000];
+    cRSprite* active_heads[5];
+    cRSprite* free_head;
+};
 
 typedef struct StarManagerEntry {
     int32_t active;
     Vec3 position;
     Vec3 velocity;
-    Sprite* sprite;
+    cRSprite* sprite;
     float speed;
     float travel_distance;
     float alpha_scale;
@@ -183,18 +195,46 @@ typedef struct StarManager {
     float fade_step;
 } StarManager;
 
+/*
+ * Stable Windows analysis names remain the selectors, while the prototypes
+ * carry the authored mobile class owners. Windows code and layout remain
+ * authoritative: in particular, Load, Pause, and SetTextureRef are void even
+ * though their final stores incidentally leave values in EAX/AL.
+ */
+void __thiscall initialize_sprite(cRSprite* sprite);
+void __thiscall update_sprite(cRSprite* sprite);
+void __thiscall register_sprite_texture(
+    cRSpriteManager* manager,
+    char* texture_path,
+    int32_t texture_id,
+    int32_t flags);
+void __thiscall initialize_sprite_manager(cRSpriteManager* manager);
+void __thiscall kill_sprite(cRSprite* sprite);
+cRSprite* __thiscall allocate_sprite(
+    cRSpriteManager* manager,
+    int32_t owner,
+    int32_t texture_id,
+    int32_t texture_a,
+    int32_t texture_b);
+void __thiscall kill_game_sprites(cRSpriteManager* manager);
 void __thiscall build_sprite_tail(
-    Sprite* sprite,
+    cRSprite* sprite,
     const struct TransformMatrix* matrix
 );
+void __thiscall set_sprite_manager_paused(
+    cRSpriteManager* manager, bool paused);
+void __thiscall set_sprite_texture_ref(
+    cRSprite* sprite, int32_t texture_id, int32_t frame);
+cRTexture* __thiscall get_sprite_texture(
+    cRSpriteManager* manager, int32_t texture_id);
 void __thiscall initialize_texture_list(
-    TextureRefList* texture_list, int32_t capacity);
-TextureRef* __thiscall get_or_create_texture_ref(
-    TextureRefList* texture_list, char* texture_path, void* payload,
+    cRTextures* texture_list, int32_t capacity);
+cRTexture* __thiscall get_or_create_texture_ref(
+    cRTextures* texture_list, char* texture_path, void* payload,
     int32_t flags);
 TgaImageView* __thiscall get_sprite_tga(
-    SpriteManager* manager, int32_t texture_id);
+    cRSpriteManager* manager, int32_t texture_id);
 
-extern TextureRefList g_texture_refs;
+extern cRTextures g_texture_refs;
 
 #endif

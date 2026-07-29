@@ -9114,12 +9114,14 @@
       "name": "bn_sprite_texture_frame_owner",
       "artifact": "analysis/decompile/binja/functions/0044e550-set_sprite_texture_ref.c",
       "required_substrings": [
-        "struct TextureRef* result",
-        "g_sprite_texture_table[texture_id][frame]",
-        "sprite->texture_ref = result"
+        "sprite->texture_ref = &g_sprite_texture_table[texture_id][frame]",
+        "return"
       ],
       "forbidden_substrings": [
+        "struct TextureRef* result",
+        "cRTexture* result",
         "int32_t result",
+        "return result",
         "*(arg1 + 0x1c)",
         "__offset(",
         "__asm",
@@ -9181,7 +9183,7 @@
       "name": "ida_sprite_update_owner",
       "artifact": "analysis/decompile/ida/functions/0044df30-update_sprite.c",
       "required_substrings": [
-        "void __thiscall update_sprite(Sprite *sprite)",
+        "void __thiscall update_sprite(cRSprite *sprite)",
         "sprite->previous_position = sprite->position",
         "sprite->velocity.y = sprite->gravity_step + sprite->velocity.y",
         "sprite->frame_progress_step + sprite->frame_progress",
@@ -9219,7 +9221,7 @@
       "name": "ida_sprite_tail_owner_and_matrix_abi",
       "artifact": "analysis/decompile/ida/functions/0044e410-build_sprite_tail.c",
       "required_substrings": [
-        "void __thiscall build_sprite_tail(Sprite *sprite, const",
+        "void __thiscall build_sprite_tail(cRSprite *sprite, const",
         "TransformMatrix *matrix)",
         "Vec3 *v5",
         "Vec3 vector",
@@ -9242,7 +9244,7 @@
       "name": "bn_sprite_manager_allocator_owner",
       "artifact": "analysis/decompile/binja/functions/0044e2a0-allocate_sprite.c",
       "required_substrings": [
-        "struct Sprite* free_head = manager->free_head",
+        "cRSprite* free_head = manager->free_head",
         "manager->active_heads[owner]",
         "free_head->texture_ref",
         "free_head->frame_count",
@@ -9259,8 +9261,8 @@
       "name": "ida_sprite_manager_allocator_owner",
       "artifact": "analysis/decompile/ida/functions/0044e2a0-allocate_sprite.c",
       "required_substrings": [
-        "Sprite *__thiscall allocate_sprite(",
-        "SpriteManager *manager,",
+        "cRSprite *__thiscall allocate_sprite(",
+        "cRSpriteManager *manager,",
         "manager->free_head = free_head->next",
         "manager->active_heads[owner] = free_head",
         "free_head->frame_count"
@@ -9269,6 +9271,83 @@
         "int __thiscall allocate_sprite(",
         "*((_DWORD *)manager",
         "free_head->__offset(",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sprite_manager_load_authored_void_abi",
+      "artifact": "analysis/decompile/binja/functions/0044e0f0-register_sprite_texture.c",
+      "required_substrings": [
+        "cRTexture* eax = get_or_create_texture_ref(&g_texture_refs",
+        "g_sprite_texture_table[texture_id] = eax",
+        "eax->flags |= flags",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "struct TextureRef* eax",
+        "return eax",
+        "return result",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_sprite_manager_pause_authored_void_bool_abi",
+      "artifact": "analysis/decompile/binja/functions/0044e540-set_sprite_manager_paused.c",
+      "required_substrings": [
+        "manager->paused = paused",
+        "return"
+      ],
+      "forbidden_substrings": [
+        "return paused",
+        "return manager->paused",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sprite_manager_load_authored_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0044e0f0-register_sprite_texture.c",
+      "required_substrings": [
+        "void __thiscall register_sprite_texture(",
+        "cRSpriteManager *manager,",
+        "texture_ref = get_or_create_texture_ref(&g_texture_refs",
+        "texture_ref->flags |= flags"
+      ],
+      "forbidden_substrings": [
+        "TextureRef *__thiscall register_sprite_texture(",
+        "cRTexture *__thiscall register_sprite_texture(",
+        "return texture_ref",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sprite_manager_pause_authored_void_bool_abi",
+      "artifact": "analysis/decompile/ida/functions/0044e540-set_sprite_manager_paused.c",
+      "required_substrings": [
+        "void __thiscall set_sprite_manager_paused(cRSpriteManager *manager, bool paused)",
+        "manager->paused = paused"
+      ],
+      "forbidden_substrings": [
+        "uint8_t __thiscall set_sprite_manager_paused(",
+        "return manager->paused",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_sprite_set_texture_ref_authored_void_abi",
+      "artifact": "analysis/decompile/ida/functions/0044e550-set_sprite_texture_ref.c",
+      "required_substrings": [
+        "void __thiscall set_sprite_texture_ref(cRSprite *sprite, int32_t texture_id, int32_t frame)",
+        "sprite->texture_ref = &(*(&g_sprite_texture_table + texture_id))[frame]"
+      ],
+      "forbidden_substrings": [
+        "TextureRef *__thiscall set_sprite_texture_ref(",
+        "cRTexture *__thiscall set_sprite_texture_ref(",
+        "return sprite->texture_ref",
         "__asm",
         "_ET1"
       ]

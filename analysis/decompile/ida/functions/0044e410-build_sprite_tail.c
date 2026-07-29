@@ -3,7 +3,7 @@
 /* selector: build_sprite_tail */
 
 // Windows `cRSprite::BuildTail(tMatrix*)`: derives the sprite tail/facing angle at `+0x7c` from its camera-space motion delta, optionally throttled by the refresh timer at `+0x8c/+0x90`. Android and iOS independently preserve the exact authored owner, symbol, and corresponding body; the former `update_sprite_facing_angle` label remains a compatibility alias.
-void __thiscall build_sprite_tail(Sprite *sprite, const struct TransformMatrix *matrix)
+void __thiscall build_sprite_tail(cRSprite *sprite, const struct TransformMatrix *matrix)
 {
   double v3; // st7
   double v4; // st7

@@ -3,8 +3,8 @@
 /* selector: register_sprite_texture */
 
 // Registers or reuses one sprite texture reference; iOS RSprite.o names this manager family `cRSpriteManager::Load(char*, int, int)` and also exposes the adjacent `LoadSet` variant.
-TextureRef *__thiscall register_sprite_texture(
-        SpriteManager *manager,
+void __thiscall register_sprite_texture(
+        cRSpriteManager *manager,
         char *texture_path,
         int32_t texture_id,
         int32_t flags)
@@ -12,7 +12,6 @@ TextureRef *__thiscall register_sprite_texture(
   char *v4; // eax
   char v5; // cl
   TextureRef *texture_ref; // eax
-  TextureRef *result; // eax
 
   v4 = texture_path;
   if ( *texture_path != 46 )
@@ -26,7 +25,5 @@ TextureRef *__thiscall register_sprite_texture(
   texture_ref = get_or_create_texture_ref(&g_texture_refs, texture_path, nullptr, flags);
   *(&g_sprite_texture_table + texture_id) = texture_ref;
   texture_ref->flags |= flags;
-  result = *(&g_sprite_texture_table + texture_id);
-  result->frame_count = 0;
-  return result;
+  (*(&g_sprite_texture_table + texture_id))->frame_count = 0;
 }

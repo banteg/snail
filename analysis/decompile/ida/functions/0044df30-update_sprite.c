@@ -3,7 +3,7 @@
 /* selector: update_sprite */
 
 // Runs one live sprite's per-frame state update; iOS RSprite.o names this `cRSprite::AI()`.
-void __thiscall update_sprite(Sprite *sprite)
+void __thiscall update_sprite(cRSprite *sprite)
 {
   SpriteFlag flags; // edx
   double v2; // st7
@@ -20,7 +20,7 @@ void __thiscall update_sprite(Sprite *sprite)
   int32_t frame_count; // eax
 
   flags = sprite->flags;
-  if ( (BYTE1(flags) & 8) != 0 && g_sprite_manager[0] )
+  if ( (BYTE1(flags) & 8) != 0 && g_sprite_manager.paused != 0 )
     return;
   if ( (flags & 8) != 0 )
   {
@@ -46,7 +46,7 @@ LABEL_12:
     {
       v10 = sprite->frame_progress_step + sprite->frame_progress;
       sprite->frame_progress = v10;
-      if ( !(v12 | v13) )
+      if ( (v12 | v13) == 0 )
       {
         v14 = sprite->frame_step + sprite->frame;
         frame_count = sprite->frame_count;
@@ -76,7 +76,7 @@ LABEL_12:
   }
   v2 = sprite->progress_step + sprite->progress;
   sprite->progress = v2;
-  if ( v4 | v5 && v2 >= 0.0 )
+  if ( (v4 | v5) != 0 && v2 >= 0.0 )
   {
     if ( sprite->lifetime_step != 0.0 )
     {

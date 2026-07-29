@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: allocate_sprite @ 0x44e2a0 */
 
-0044e2a2        struct Sprite* free_head = manager->free_head
+0044e2a2        cRSprite* free_head = manager->free_head
 0044e2ac        if (free_head == 0)
 0044e2b5        return &g_sprite_sentinel
 0044e2c0        manager->free_head = free_head->next

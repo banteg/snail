@@ -1,16 +1,16 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 12,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 12,
+  "ida_exported": 12,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "binja_analysis_refreshed": false,
   "ida_refreshed": true,
@@ -18,31 +18,55 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_frontend_level_by_mode_and_index",
-      "address": "0x443650"
+      "name": "initialize_sprite",
+      "address": "0x44de90"
     },
     {
-      "name": "copy_segment_definition_to_level_slot",
-      "address": "0x447300"
+      "name": "update_sprite",
+      "address": "0x44df30"
     },
     {
-      "name": "load_level_definition_file",
-      "address": "0x447480"
+      "name": "register_sprite_texture",
+      "address": "0x44e0f0"
     },
     {
-      "name": "load_builtin_segment_definitions",
-      "address": "0x448060"
+      "name": "initialize_sprite_manager",
+      "address": "0x44e160"
     },
     {
-      "name": "load_segment_definitions",
-      "address": "0x448160"
+      "name": "kill_sprite",
+      "address": "0x44e200"
     },
     {
-      "name": "load_level_definitions",
-      "address": "0x448900"
+      "name": "allocate_sprite",
+      "address": "0x44e2a0"
+    },
+    {
+      "name": "kill_game_sprites",
+      "address": "0x44e3d0"
+    },
+    {
+      "name": "build_sprite_tail",
+      "address": "0x44e410"
+    },
+    {
+      "name": "set_sprite_manager_paused",
+      "address": "0x44e540"
+    },
+    {
+      "name": "set_sprite_texture_ref",
+      "address": "0x44e550"
+    },
+    {
+      "name": "get_sprite_texture",
+      "address": "0x44e570"
+    },
+    {
+      "name": "get_sprite_tga",
+      "address": "0x44e580"
     }
   ],
-  "health_check_count": 1144,
+  "health_check_count": 1149,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

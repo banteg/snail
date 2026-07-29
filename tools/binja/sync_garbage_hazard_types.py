@@ -22,6 +22,14 @@ from _narrow_sync import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_garbage_hazard_types.h"
+SPRITE_HEADER_PATH = REPO_ROOT / "analysis/headers/star_manager_types.h"
+
+REQUIRED_AUTHORED_SPRITE_ALIASES = (
+    "cRTexture",
+    "cRTextures",
+    "cRSprite",
+    "cRSpriteManager",
+)
 
 REQUIRED_HEADER_STRUCTS = (
     "BodList",
@@ -65,13 +73,13 @@ SPRITE_FIELD_UPDATES = (
     ("0x00", "object_ref", "void*"),
     ("0x04", "flags", "SpriteFlag"),
     ("0x08", "owner", "int32_t"),
-    ("0x0c", "next", "Sprite*"),
-    ("0x10", "prev", "Sprite*"),
+    ("0x0c", "next", "cRSprite*"),
+    ("0x10", "prev", "cRSprite*"),
     ("0x14", "render_bucket_index", "int32_t"),
     ("0x18", "render_depth_key", "float"),
-    ("0x1c", "texture_ref", "TextureRef*"),
-    ("0x20", "texture_ref_a", "TextureRef*"),
-    ("0x24", "texture_ref_b", "TextureRef*"),
+    ("0x1c", "texture_ref", "cRTexture*"),
+    ("0x20", "texture_ref_a", "cRTexture*"),
+    ("0x24", "texture_ref_b", "cRTexture*"),
     ("0x28", "draw_mode", "int32_t"),
     ("0x2c", "color", "tColour"),
     ("0x3c", "previous_position", "Vec3"),
@@ -102,9 +110,9 @@ SPRITE_FIELD_UPDATES = (
 
 SPRITE_MANAGER_FIELD_UPDATES = (
     ("0x00", "paused", "uint8_t"),
-    ("0x04", "sprites", "Sprite[0xbb8]"),
-    ("0x83d64", "active_heads", "Sprite*[0x5]"),
-    ("0x83d78", "free_head", "Sprite*"),
+    ("0x04", "sprites", "cRSprite[0xbb8]"),
+    ("0x83d64", "active_heads", "cRSprite*[0x5]"),
+    ("0x83d78", "free_head", "cRSprite*"),
 )
 
 SUB_GARBAGE_FIELD_UPDATES = (
@@ -120,7 +128,7 @@ SUB_GARBAGE_FIELD_UPDATES = (
     ("0xa8", "burst_progress_step", "float"),
     ("0xac", "smoke_timer", "float"),
     ("0xb0", "smoke_timer_step", "float"),
-    ("0xb4", "sprite", "Sprite*"),
+    ("0xb4", "sprite", "cRSprite*"),
     ("0xb8", "source_cell", "cRSubLoc*"),
     ("0xbc", "hidden", "uint8_t"),
     ("0xc0", "owner_player", "Player*"),
@@ -143,30 +151,36 @@ SPRITE_SYMBOL_UPDATES = (
 # Keep the manager base as its pause byte here; a full SpriteManager data var
 # makes BN fold the active/free tail aliases back into noisy parent expressions.
 SPRITE_DATA_VAR_UPDATES = (
-    ("0x78ff90", "TextureRef*[0x3e8]"),
+    ("0x78ff90", "cRTexture*[0x3e8]"),
     ("0x790f30", "uint8_t"),
-    ("0x814c94", "Sprite*[5]"),
-    ("0x814ca8", "Sprite*"),
-    ("0x814cb0", "Sprite"),
+    ("0x814c94", "cRSprite*[5]"),
+    ("0x814ca8", "cRSprite*"),
+    ("0x814cb0", "cRSprite"),
 )
 
 PROTO_UPDATES = (
-    ("initialize_sprite_manager", "void __thiscall initialize_sprite_manager(SpriteManager* manager)"),
+    (
+        "initialize_sprite_manager",
+        "void __thiscall initialize_sprite_manager(cRSpriteManager* manager)",
+    ),
     (
         "allocate_sprite",
-        "Sprite* __thiscall allocate_sprite(SpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",
+        "cRSprite* __thiscall allocate_sprite(cRSpriteManager* manager, int32_t owner, int32_t texture_id, int32_t texture_a, int32_t texture_b)",
     ),
-    ("initialize_sprite", "void __thiscall initialize_sprite(Sprite* sprite)"),
-    ("update_sprite", "void __thiscall update_sprite(Sprite* sprite)"),
-    ("kill_sprite", "void __thiscall kill_sprite(Sprite* sprite)"),
-    ("kill_game_sprites", "void __thiscall kill_game_sprites(SpriteManager* manager)"),
+    ("initialize_sprite", "void __thiscall initialize_sprite(cRSprite* sprite)"),
+    ("update_sprite", "void __thiscall update_sprite(cRSprite* sprite)"),
+    ("kill_sprite", "void __thiscall kill_sprite(cRSprite* sprite)"),
+    (
+        "kill_game_sprites",
+        "void __thiscall kill_game_sprites(cRSpriteManager* manager)",
+    ),
     (
         "build_sprite_tail",
-        "void __thiscall build_sprite_tail(Sprite* sprite, const TransformMatrix* matrix)",
+        "void __thiscall build_sprite_tail(cRSprite* sprite, const TransformMatrix* matrix)",
     ),
     (
         "set_sprite_manager_paused",
-        "uint8_t __thiscall set_sprite_manager_paused(SpriteManager* manager, uint8_t paused)",
+        "void __thiscall set_sprite_manager_paused(cRSpriteManager* manager, bool paused)",
     ),
     (
         "initialize_garbage_hazard",
@@ -238,6 +252,12 @@ def main() -> int:
     )
 
     operations: list[dict[str, object]] = [
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=SPRITE_HEADER_PATH,
+            required_structs=REQUIRED_AUTHORED_SPRITE_ALIASES,
+        ),
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,

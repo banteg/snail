@@ -2,8 +2,8 @@
 /* function: initialize_sprite @ 0x44de90 */
 /* selector: initialize_sprite */
 
-// Initializes one sprite slot in the `cRSprite` runtime family before manager allocation links it into active/free lists.
-void __thiscall initialize_sprite(Sprite *sprite)
+// Exact Windows cRSprite::Init() default initializer. Android preserves the direct authored method and cRSpriteManager::Init/New call it for each slot; iOS v1.5 inlines the homologous stores into cRSpriteManager::Init(). Mobile's 0xb0-byte Sprite stride, its differing +0x28 default, and Windows' 0xb4-byte layout remain port-local.
+void __thiscall initialize_sprite(cRSprite *sprite)
 {
   sprite->flags = SPRITE_FLAG_RENDER_ENABLED|SPRITE_FLAG_SKIP_INITIAL_PROGRESS|SPRITE_FLAG_ACTIVE;
   set_color_white(&sprite->color);

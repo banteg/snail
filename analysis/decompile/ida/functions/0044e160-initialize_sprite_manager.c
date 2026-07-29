@@ -3,7 +3,7 @@
 /* selector: initialize_sprite_manager */
 
 // Initializes the global sprite manager, its sprite pool, and free-list heads; iOS RSprite.o names this `cRSpriteManager::Init()`.
-void __thiscall initialize_sprite_manager(SpriteManager *manager)
+void __thiscall initialize_sprite_manager(cRSpriteManager *manager)
 {
   int v2; // edi
   char *v3; // ebp
@@ -19,8 +19,8 @@ void __thiscall initialize_sprite_manager(SpriteManager *manager)
   do
   {
     v3 = (char *)manager + 180 * v2;
-    initialize_sprite((Sprite *)(v3 + 4));
-    if ( v2 )
+    initialize_sprite((cRSprite *)(v3 + 4));
+    if ( v2 != 0 )
     {
       if ( v2 == 2999 )
       {
