@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-index-expression",
+      "find": "                } while (first_row[row_count] != 0);",
+      "replacements": [
+        {
+          "name": "multiply-by-one",
+          "text": "                } while (first_row[row_count * 1] != 0);"
+        },
+        {
+          "name": "one-times-index",
+          "text": "                } while (first_row[1 * row_count] != 0);"
+        },
+        {
+          "name": "shift-by-zero",
+          "text": "                } while (first_row[row_count << 0] != 0);"
+        },
+        {
+          "name": "divide-by-one",
+          "text": "                } while (first_row[row_count / 1] != 0);"
+        },
+        {
+          "name": "add-zero",
+          "text": "                } while (first_row[row_count + 0] != 0);"
+        },
+        {
+          "name": "zero-plus-index",
+          "text": "                } while (first_row[0 + row_count] != 0);"
+        },
+        {
+          "name": "subtract-zero",
+          "text": "                } while (first_row[row_count - 0] != 0);"
+        },
+        {
+          "name": "or-zero",
+          "text": "                } while (first_row[row_count | 0] != 0);"
+        },
+        {
+          "name": "xor-zero",
+          "text": "                } while (first_row[row_count ^ 0] != 0);"
+        },
+        {
+          "name": "and-all-bits",
+          "text": "                } while (first_row[row_count & -1] != 0);"
+        },
+        {
+          "name": "explicit-element-size",
+          "text": "                } while (*(first_row + row_count * sizeof(*first_row)) != 0);"
+        },
+        {
+          "name": "integer-pointer-addition",
+          "text": "                } while (*(char*)((unsigned int)first_row + row_count) != 0);"
+        },
+        {
+          "name": "commuted-integer-addition",
+          "text": "                } while (*(char*)(row_count + (unsigned int)first_row) != 0);"
+        },
+        {
+          "name": "signed-integer-pointer-addition",
+          "text": "                } while (*(char*)((int)first_row + row_count) != 0);"
+        },
+        {
+          "name": "address-of-scaled-subscript",
+          "text": "                } while (*(&first_row[row_count * sizeof(*first_row)]) != 0);"
+        }
+      ]
+    }
+  ]
+}

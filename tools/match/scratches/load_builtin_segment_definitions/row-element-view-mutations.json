@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-element-view",
+      "find": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (first_row[row_count] != 0);\n            }",
+      "replacements": [
+        {
+          "name": "array-one-cast",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (((char (*)[1])first_row)[row_count][0] != 0);\n            }"
+        },
+        {
+          "name": "array-one-pointer",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            char (*row_elements)[1] = (char (*)[1])first_row;\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (row_elements[row_count][0] != 0);\n            }"
+        },
+        {
+          "name": "array-one-typedef",
+          "text": "            typedef char RowElement[1];\n            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            RowElement* row_elements = (RowElement*)first_row;\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (row_elements[row_count][0] != 0);\n            }"
+        },
+        {
+          "name": "signed-array-one-cast",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (((signed char (*)[1])first_row)[row_count][0] != 0);\n            }"
+        },
+        {
+          "name": "unsigned-array-one-cast",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (((unsigned char (*)[1])first_row)[row_count][0] != 0);\n            }"
+        },
+        {
+          "name": "byte-record",
+          "text": "            struct RowElement { char value; };\n            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            RowElement* row_elements = (RowElement*)first_row;\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (row_elements[row_count].value != 0);\n            }"
+        },
+        {
+          "name": "byte-union",
+          "text": "            union RowElement { char value; };\n            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            RowElement* row_elements = (RowElement*)first_row;\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (row_elements[row_count].value != 0);\n            }"
+        },
+        {
+          "name": "array-256-inner-index",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (((char (*)[256])first_row)[0][row_count] != 0);\n            }"
+        },
+        {
+          "name": "array-256-member",
+          "text": "            struct RowView { char elements[256]; };\n            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            RowView* row_view = (RowView*)first_row;\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (row_view->elements[row_count] != 0);\n            }"
+        }
+      ]
+    }
+  ]
+}

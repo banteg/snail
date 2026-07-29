@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-length-scan",
+      "find": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (first_row[row_count] != 0);\n            }",
+      "replacements": [
+        {
+          "name": "pointer-addition",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (*(first_row + row_count) != 0);\n            }"
+        },
+        {
+          "name": "commuted-pointer-addition",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (*(row_count + first_row) != 0);\n            }"
+        },
+        {
+          "name": "commuted-subscript",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (row_count[first_row] != 0);\n            }"
+        },
+        {
+          "name": "address-dereference",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (*(&first_row[row_count]) != 0);\n            }"
+        },
+        {
+          "name": "preincrement-condition",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                } while (first_row[++row_count] != 0);\n            }"
+        },
+        {
+          "name": "preincrement-pointer-condition",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                } while (*(first_row + ++row_count) != 0);\n            }"
+        },
+        {
+          "name": "while-loop",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            while (first_row[row_count] != 0) {\n                ++row_count;\n            }"
+        },
+        {
+          "name": "for-loop",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count;\n            for (row_count = 0; first_row[row_count] != 0; ++row_count) {\n            }"
+        },
+        {
+          "name": "postincrement-condition",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            while (first_row[row_count++] != 0) {\n            }\n            --row_count;"
+        },
+        {
+          "name": "unsigned-count",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            unsigned int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (first_row[row_count] != 0);\n            }"
+        },
+        {
+          "name": "long-count",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            long row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (first_row[row_count] != 0);\n            }"
+        },
+        {
+          "name": "const-row",
+          "text": "            const char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (first_row[row_count] != 0);\n            }"
+        },
+        {
+          "name": "signed-row",
+          "text": "            signed char* first_row = (signed char*)raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (first_row[row_count] != 0);\n            }"
+        },
+        {
+          "name": "cursor-difference",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            char* row_end = first_row;\n            while (*row_end != 0) {\n                ++row_end;\n            }\n            int row_count = row_end - first_row;"
+        },
+        {
+          "name": "guarded-count-from-one",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                row_count = 1;\n                while (first_row[row_count] != 0) {\n                    ++row_count;\n                }\n            }"
+        },
+        {
+          "name": "decremented-negative-index",
+          "text": "            char* first_row = raw_segments[slot_index]->glyph_rows[0];\n            int row_count = 0;\n            if (*first_row != 0) {\n                do {\n                    ++row_count;\n                } while (*(first_row - -row_count) != 0);\n            }"
+        }
+      ]
+    }
+  ]
+}

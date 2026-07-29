@@ -115,3 +115,28 @@ back into the pointer parameter. The replay now splits the zero definition,
 loop phi, and `+0x100` definition, then merges those three proven identities as
 one `int32_t grid_offset`. The resulting BN decompile agrees with IDA without
 altering the honest 98.91% scratch or its sole commutative ModRM residual.
+
+## 2026-07-29 bounded row-length addressing sweep
+
+Three recorded mutation sweeps tested 40 unique source forms for the row-0
+length scan. Ordinary pointer/subscript spellings, `do`/`while`/`for` control,
+signed and unsigned owners, explicit `* 1`/`sizeof(char)` index provenance,
+integer pointer addition, and one-byte array/record views produced no
+improvement. Thirty-seven variants were byte-identical and three broader
+cursor/control forms regressed.
+
+Every retained-equivalent form preserves the 98.91%, 92/92-instruction result
+and the 18/92 exact prefix. The only differing bytes remain the scale-one SIB
+base/index encoding:
+
+```text
+native:    cmp byte [esi+eax*1], 0
+candidate: cmp byte [eax+esi*1], 0
+```
+
+ESI is the recovered `first_row` pointer and EAX is the recovered `row_count`;
+the two effective addresses are identical. Even expressions that explicitly
+model EAX as a one-byte element index are canonicalized by VC6 to the
+candidate encoding. The clear indexed source remains canonical rather than
+introducing inline assembly or a false dependency for one commutative ModRM
+choice.
