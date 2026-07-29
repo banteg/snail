@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-staging-scope",
+      "find": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    TransformMatrix completion_staging_matrix;\n    Vector3 target_delta;\n    Vector3 completion_delta;",
+      "replacements": [
+        {
+          "name": "remove-function-local",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    Vector3 target_delta;\n    Vector3 completion_delta;"
+        }
+      ]
+    },
+    {
+      "name": "block-local-position",
+      "find": "    case CUT_SCENE_STATE_COMPLETION_BLEND: {\n        camera_mode = -1;\n        set_matrix_identity(&camera_matrix_b);",
+      "replacements": [
+        {
+          "name": "case-entry",
+          "text": "    case CUT_SCENE_STATE_COMPLETION_BLEND: {\n        TransformMatrix completion_staging_matrix;\n        camera_mode = -1;\n        set_matrix_identity(&camera_matrix_b);"
+        },
+        {
+          "name": "after-identity",
+          "text": "    case CUT_SCENE_STATE_COMPLETION_BLEND: {\n        camera_mode = -1;\n        set_matrix_identity(&camera_matrix_b);\n        TransformMatrix completion_staging_matrix;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-init-join",
+      "find": "        GameRoot* game = g_game;\n        if (game->subgame.level_mode == 0) {\n            int delivered_count = player->parcels_collected;\n            unsigned char perfect_delivery =\n                delivered_count\n                == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);\n            game->subgame.completion.initialize_completion_screen(\n                delivered_count,\n                perfect_delivery);\n        } else if (game->subgame.level_mode == 1) {\n            int delivered_count = player->parcels_collected;\n            game->subgame.completion.initialize_completion_screen(delivered_count, 1);\n        }",
+      "replacements": [
+        {
+          "name": "shared-unsigned-char-if-goto",
+          "text": "        GameRoot* game = g_game;\n        int delivered_count;\n        unsigned char perfect_delivery;\n        if (game->subgame.level_mode == 0) {\n            delivered_count = player->parcels_collected;\n            perfect_delivery =\n                delivered_count\n                == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);\n        } else if (game->subgame.level_mode == 1) {\n            delivered_count = player->parcels_collected;\n            perfect_delivery = 1;\n        } else {\n            goto completion_screen_initialized;\n        }\n        game->subgame.completion.initialize_completion_screen(\n            delivered_count,\n            perfect_delivery);\ncompletion_screen_initialized:"
+        },
+        {
+          "name": "shared-bool-if-goto",
+          "text": "        GameRoot* game = g_game;\n        int delivered_count;\n        bool perfect_delivery;\n        if (game->subgame.level_mode == 0) {\n            delivered_count = player->parcels_collected;\n            perfect_delivery =\n                delivered_count\n                == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);\n        } else if (game->subgame.level_mode == 1) {\n            delivered_count = player->parcels_collected;\n            perfect_delivery = true;\n        } else {\n            goto completion_screen_initialized;\n        }\n        game->subgame.completion.initialize_completion_screen(\n            delivered_count,\n            perfect_delivery);\ncompletion_screen_initialized:"
+        },
+        {
+          "name": "shared-unsigned-char-switch-goto",
+          "text": "        GameRoot* game = g_game;\n        int delivered_count;\n        unsigned char perfect_delivery;\n        switch (game->subgame.level_mode) {\n        case 0:\n            delivered_count = player->parcels_collected;\n            perfect_delivery =\n                delivered_count\n                == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);\n            break;\n        case 1:\n            delivered_count = player->parcels_collected;\n            perfect_delivery = 1;\n            break;\n        default:\n            goto completion_screen_initialized;\n        }\n        game->subgame.completion.initialize_completion_screen(\n            delivered_count,\n            perfect_delivery);\ncompletion_screen_initialized:"
+        },
+        {
+          "name": "shared-unsigned-char-do-while",
+          "text": "        GameRoot* game = g_game;\n        do {\n            int delivered_count;\n            unsigned char perfect_delivery;\n            if (game->subgame.level_mode == 0) {\n                delivered_count = player->parcels_collected;\n                perfect_delivery =\n                    delivered_count\n                    == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);\n            } else if (game->subgame.level_mode == 1) {\n                delivered_count = player->parcels_collected;\n                perfect_delivery = 1;\n            } else {\n                break;\n            }\n            game->subgame.completion.initialize_completion_screen(\n                delivered_count,\n                perfect_delivery);\n        } while (0);"
+        },
+        {
+          "name": "shared-unsigned-char-range-guard",
+          "text": "        GameRoot* game = g_game;\n        int level_mode = game->subgame.level_mode;\n        if ((unsigned int)level_mode <= 1) {\n            int delivered_count = player->parcels_collected;\n            unsigned char perfect_delivery;\n            if (level_mode == 0) {\n                perfect_delivery =\n                    delivered_count\n                    == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);\n            } else {\n                perfect_delivery = 1;\n            }\n            game->subgame.completion.initialize_completion_screen(\n                delivered_count,\n                perfect_delivery);\n        }"
+        }
+      ]
+    }
+  ]
+}

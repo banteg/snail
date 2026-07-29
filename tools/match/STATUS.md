@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**542/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **99811/294937** bytes (**33.84%**) are proof-grade, and overall fuzzy is **79.56%**.
+**542/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **99811/294937** bytes (**33.84%**) are proof-grade, and overall fuzzy is **79.59%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -553,7 +553,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (25)
+## Near Match (95-99.99%) (26)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -577,13 +577,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  | core |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 218/218 | 99.08% | 86/218 | 24 ok |  | core |
+| 🚧 | update_cutscene | 0x4466d0 | 1888 | 503/505 | 97.62% | 10/505 | 58 ok |  | core |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  | core |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 65/65 | 98.46% | 43/65 | 20 ok |  | boundary |
 | 🚧 | queue_axis_aligned_textured_quad_uv | 0x44a9b0 | 260 | 66/66 | 98.48% | 42/66 | 20 ok |  | boundary |
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (43)
+## High Progress (80-94.99%) (42)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -624,7 +625,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | set_snail_jetpack | 0x445860 | 185 | 61/62 | 86.18% | 0/62 | 8 ok |  | core |
 | 🚧 | extract_snail_local_hotspots | 0x445d50 | 208 | 68/74 | 91.55% | 31/74 | 7 ok |  | core |
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.55% | 36/322 | 76 ok |  | core |
-| 🚧 | update_cutscene | 0x4466d0 | 1888 | 503/505 | 93.25% | 0/505 | 58 ok |  | core |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  | core |
 | 🚧 | load_level_definition_file | 0x447480 | 3039 | 941/926 | 84.63% | 20/926 | 2 unaudited, 183 ok |  | core |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 154/154 | 84.42% | 19/154 | 2 unaudited, 26 ok |  | core |

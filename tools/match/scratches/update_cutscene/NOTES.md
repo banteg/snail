@@ -201,3 +201,35 @@ The former root `unknown_12e6df0` is now the exact `Completion` child at
 `level_definition.parcel_count` through one nested owner graph. Focused output
 remains 93.25%, 503/505 instructions, prefix 0/505, with 57 clean operands and
 the same bounded jump-table mismatch.
+
+## 2026-07-29 completion staging lifetime recovery
+
+Replaying the pre-refactor three-matrix lifetime against the later vector
+algebra closes the apparent conflict between the native `0xe8` frame and the
+high-scoring two-matrix source. The completion leg keeps its two active blend
+matrices, but copies hotspot 18 through the position of a third
+`TransformMatrix` lifetime before subtracting the cached hotspot-12 position.
+VC6 consequently places that source vector at native
+`[esp+0xe8/+0xec/+0xf0]` while retaining the exact subtraction, scale,
+addition, look-at, cameraman-copy, and interpolation schedules.
+
+The retained `completion-matrix-lifetime-mutations.json` sweep improves the
+focused result from 93.25% (`503/505`, prefix `0/505`) to 97.62% (`503/505`,
+prefix `10/505`). The prologue and every frame-size epilogue now reserve the
+native `0xe8` bytes, and all 58 masked operands are clean. The only
+instruction-count gap is the mode-0 perfect-delivery argument publication:
+native spills the comparison byte to `[esp+0x1c]` and reloads the enclosing
+word before the push, while this candidate forwards `edx` directly. All later
+branch-label differences are the resulting two-instruction displacement,
+not independent control-flow gaps.
+
+Seven recorded sweeps cover 84 variants (83 unique): completion matrix
+ownership, byte type/publication forms, function/case/nested flag scopes,
+default-one lifetimes, shared-call joins, matrix/vector declaration order, and
+function-versus-block staging scope. Three matrix-owner variants improve the
+old baseline; 62 variants are neutral and 19 degrade. Six consecutive
+non-improving sweeps leave the scratch formally stalled at 97.62%. In
+particular, the mobile-named `cRCompletion::Init(int, bool)` spelling is
+ABI-compatible but codegen-neutral here, and genuinely shared call joins
+regress to at most 91.18%. No volatile qualifier, aliasing trick, dummy local,
+or manual frame padding is retained to manufacture the final spill.

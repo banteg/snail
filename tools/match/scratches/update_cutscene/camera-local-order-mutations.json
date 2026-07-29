@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "camera-local-order",
+      "find": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    TransformMatrix completion_staging_matrix;\n    Vector3 target_delta;\n    Vector3 completion_delta;",
+      "replacements": [
+        {
+          "name": "staging-first",
+          "text": "    TransformMatrix completion_staging_matrix;\n    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    Vector3 target_delta;\n    Vector3 completion_delta;"
+        },
+        {
+          "name": "staging-between-matrices",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix completion_staging_matrix;\n    TransformMatrix camera_matrix_b;\n    Vector3 target_delta;\n    Vector3 completion_delta;"
+        },
+        {
+          "name": "staging-after-vectors",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    Vector3 target_delta;\n    Vector3 completion_delta;\n    TransformMatrix completion_staging_matrix;"
+        },
+        {
+          "name": "staging-between-vectors",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    Vector3 target_delta;\n    TransformMatrix completion_staging_matrix;\n    Vector3 completion_delta;"
+        },
+        {
+          "name": "completion-delta-before-staging",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    Vector3 completion_delta;\n    TransformMatrix completion_staging_matrix;\n    Vector3 target_delta;"
+        },
+        {
+          "name": "swapped-vectors",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    TransformMatrix completion_staging_matrix;\n    Vector3 completion_delta;\n    Vector3 target_delta;"
+        },
+        {
+          "name": "vectors-before-staging-swapped",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    Vector3 completion_delta;\n    Vector3 target_delta;\n    TransformMatrix completion_staging_matrix;"
+        },
+        {
+          "name": "vectors-first",
+          "text": "    Vector3 target_delta;\n    Vector3 completion_delta;\n    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    TransformMatrix completion_staging_matrix;"
+        },
+        {
+          "name": "source-matrix-first",
+          "text": "    TransformMatrix camera_matrix_b;\n    TransformMatrix camera_matrix_a;\n    TransformMatrix completion_staging_matrix;\n    Vector3 target_delta;\n    Vector3 completion_delta;"
+        }
+      ]
+    }
+  ]
+}

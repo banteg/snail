@@ -24,6 +24,7 @@ void CutScene::update_cutscene()
 
     TransformMatrix camera_matrix_a;
     TransformMatrix camera_matrix_b;
+    TransformMatrix completion_staging_matrix;
     Vector3 target_delta;
     Vector3 completion_delta;
 
@@ -195,11 +196,10 @@ void CutScene::update_cutscene()
 
         camera_matrix_a.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_SKID_STOP];
-        completion_delta = presentation->snail_hotspots_world[
+        completion_staging_matrix.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
-        completion_delta.x -= camera_matrix_a.position.x;
-        completion_delta.y -= camera_matrix_a.position.y;
-        completion_delta.z -= camera_matrix_a.position.z;
+        completion_delta =
+            completion_staging_matrix.position - camera_matrix_a.position;
         camera_matrix_b.position =
             completion_delta * progress
             + camera_matrix_a.position;

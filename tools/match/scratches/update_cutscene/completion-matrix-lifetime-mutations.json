@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-matrix-lifetime",
+      "find": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    Vector3 target_delta;\n    Vector3 completion_delta;",
+      "replacements": [
+        {
+          "name": "third-matrix-before-vectors",
+          "text": "    TransformMatrix camera_matrix_a;\n    TransformMatrix camera_matrix_b;\n    TransformMatrix completion_staging_matrix;\n    Vector3 target_delta;\n    Vector3 completion_delta;"
+        }
+      ]
+    },
+    {
+      "name": "completion-vector-owner",
+      "find": "        camera_matrix_a.position = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_SKID_STOP];\n        completion_delta = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];\n        completion_delta.x -= camera_matrix_a.position.x;\n        completion_delta.y -= camera_matrix_a.position.y;\n        completion_delta.z -= camera_matrix_a.position.z;\n        camera_matrix_b.position =\n            completion_delta * progress\n            + camera_matrix_a.position;",
+      "replacements": [
+        {
+          "name": "matrix-position-delta",
+          "text": "        camera_matrix_a.position = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_SKID_STOP];\n        completion_staging_matrix.position = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];\n        completion_staging_matrix.position.x -= camera_matrix_a.position.x;\n        completion_staging_matrix.position.y -= camera_matrix_a.position.y;\n        completion_staging_matrix.position.z -= camera_matrix_a.position.z;\n        camera_matrix_b.position =\n            completion_staging_matrix.position * progress\n            + camera_matrix_a.position;"
+        },
+        {
+          "name": "matrix-position-source-expression",
+          "text": "        camera_matrix_a.position = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_SKID_STOP];\n        completion_staging_matrix.position = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];\n        completion_delta.x =\n            completion_staging_matrix.position.x - camera_matrix_a.position.x;\n        completion_delta.y =\n            completion_staging_matrix.position.y - camera_matrix_a.position.y;\n        completion_delta.z =\n            completion_staging_matrix.position.z - camera_matrix_a.position.z;\n        camera_matrix_b.position =\n            completion_delta * progress\n            + camera_matrix_a.position;"
+        },
+        {
+          "name": "matrix-position-vector-subtraction",
+          "text": "        camera_matrix_a.position = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_SKID_STOP];\n        completion_staging_matrix.position = presentation->snail_hotspots_world[\n            SNAIL_HOTSPOT_CAMERA_INTRO_TALK];\n        completion_delta =\n            completion_staging_matrix.position - camera_matrix_a.position;\n        camera_matrix_b.position =\n            completion_delta * progress\n            + camera_matrix_a.position;"
+        }
+      ]
+    }
+  ]
+}
