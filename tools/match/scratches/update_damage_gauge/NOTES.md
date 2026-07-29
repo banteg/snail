@@ -143,3 +143,22 @@ The evidence symbols remain intact for other consumers, and a second replay
 against the copied IDA database is unchanged. The gameplay manifest now records
 these typed owners instead of the obsolete raw `Game+offset` list and no longer
 claims their writers are unresolved.
+
+## 2026-07-29 bounded render-local allocation
+
+Three recorded mutation sweeps test the remaining `alpha` /
+`mask_height` stack-slot inversion without prescribing storage. The nine valid
+variants cover declaration order, moving either declaration across the mask
+and pulse blocks, placing `alpha` inside the flash branch, initializing it
+there, interleaving the real `tColour` local, and hoisting either scalar to
+method scope. Every valid form compiles byte-identically at 94.03%. Seven
+single-site or incompatible paired scope variants fail to compile, as expected;
+none produce an alternative candidate.
+
+The residual is therefore one consistent allocator choice: Windows native
+uses `alpha` at `[esp+4]` and `mask_height` at `[esp+8]`, while VC6 assigns the
+same two semantic values to the opposite slots in the recovered source. All
+downstream x87 operands move with those owners, and the complete 268-instruction
+control flow plus all 65 references remain aligned. Do not replace the two
+ordinary scalars with an artificial array/struct, `volatile`, or dummy
+lifetime solely to prescribe their stack addresses.

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "alpha-scope",
+      "find": "    float alpha;\n    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    tColour color;\n    if (display_fill > 0.89999998f || state) {",
+      "replacements": [
+        {
+          "name": "flash-branch-local",
+          "text": "    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    tColour color;\n    if (display_fill > 0.89999998f || state) {\n        float alpha;"
+        },
+        {
+          "name": "flash-branch-initialized",
+          "text": "    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    tColour color;\n    if (display_fill > 0.89999998f || state) {\n        float alpha = 1.0f;"
+        },
+        {
+          "name": "color-and-alpha-branch-local",
+          "text": "    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    if (display_fill > 0.89999998f || state) {\n        float alpha;\n        tColour color;"
+        }
+      ]
+    }
+  ]
+}

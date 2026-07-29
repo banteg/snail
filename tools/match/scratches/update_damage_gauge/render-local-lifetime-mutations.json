@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "render-local-lifetime",
+      "find": "    float alpha;\n    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    tColour color;",
+      "replacements": [
+        {
+          "name": "alpha-after-pulse",
+          "text": "    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    float alpha;\n    tColour color;"
+        },
+        {
+          "name": "color-before-alpha",
+          "text": "    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    tColour color;\n    float alpha;"
+        },
+        {
+          "name": "alpha-after-mask",
+          "text": "    float mask_height;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n    float alpha;\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    tColour color;"
+        },
+        {
+          "name": "mask-before-alpha",
+          "text": "    float mask_height;\n    float alpha;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;\n\n    tColour color;"
+        },
+        {
+          "name": "color-between-locals",
+          "text": "    float mask_height;\n    tColour color;\n    float alpha;\n    if (display_fill > 0.99900001f) {\n        mask_height = 0.0f;\n    } else if (display_fill < 0.0099999998f) {\n        mask_height = 396.0f;\n    } else {\n        mask_height = 351.0f - display_fill * 308.0f;\n    }\n\n    if (!game->subgame.subgame_pause_gate)\n        pulse_progress = pulse_step + pulse_progress;\n    if (pulse_progress > 1.0f)\n        pulse_progress = pulse_progress - 1.0f;"
+        }
+      ]
+    }
+  ]
+}
