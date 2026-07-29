@@ -238,7 +238,7 @@
       "name": "calc_object_facequad_normals",
       "kind": "function",
       "aliases": [
-        "?calc_object_facequad_normals@cRObject@@QAEXXZ"
+        "?CalcFaceQuadNormals@cRObject@@QAEXXZ"
       ],
       "description": "cRObject-owned facequad-normal builder retained by both mobile ports as cRObject::CalcFaceQuadNormals()."
     },
@@ -265,7 +265,7 @@
       "name": "add_object_edge",
       "kind": "function",
       "aliases": [
-        "?add_object_edge@cRObject@@QAEXHHH@Z"
+        "?AddEdge@cRObject@@QAEXHHH@Z"
       ],
       "description": "cRObject-owned edge append body retained by both mobile ports as cRObject::AddEdge(int, int, int)."
     },
@@ -274,7 +274,7 @@
       "name": "calc_object_edges",
       "kind": "function",
       "aliases": [
-        "?calc_object_edges@cRObject@@QAEXXZ"
+        "?CalcEdges@cRObject@@QAEXXZ"
       ],
       "description": "cRObject-owned silhouette-edge builder retained by both mobile ports as cRObject::CalcEdges()."
     },
@@ -1061,7 +1061,7 @@
       "name": "calc_object_texture_groups",
       "kind": "function",
       "aliases": [
-        "?calc_object_texture_groups@cRObject@@QAEXXZ",
+        "?CalcTextureGroups@cRObject@@QAEXXZ",
         "sub_4303f0"
       ],
       "description": "cRObject-owned facequad texture-group producer retained by both mobile ports as cRObject::CalcTextureGroups()."

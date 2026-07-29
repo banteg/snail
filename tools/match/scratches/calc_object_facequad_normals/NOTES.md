@@ -109,3 +109,11 @@ The matcher source is unchanged and still reports the honest 90.03%,
 436/437-instruction result with 22 clean masked operands. This slice improves
 recoverable ownership only; it does not disguise the established VC6
 stack-slot, register-allocation, or SIB-order residuals.
+
+## 2026-07-29 mobile-authored geometry surface
+
+Android and iOS retain this body as `cRObject::CalcFaceQuadNormals()`. Their
+shared `RObject.o` family also preserves `CalcTextureGroups`, `AddEdge`, and
+`CalcEdges`. Those authored member names now replace the descriptive matcher
+surface and all typed Windows callsites; the stable scratch IDs, addresses,
+calling conventions, and honest residuals remain unchanged.

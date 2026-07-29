@@ -1233,6 +1233,15 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     for declaration in authored_allocation_methods:
         assert declaration in object_header
 
+    authored_geometry_methods = (
+        "void CalcFaceQuadNormals();",
+        "void CalcTextureGroups();",
+        "void AddEdge(int vertex_a, int vertex_b, int normal_index);",
+        "void CalcEdges();",
+    )
+    for declaration in authored_geometry_methods:
+        assert declaration in object_header
+
     for descriptive_name in (
         "request_object_vertices",
         "request_object_vertices_copy",
@@ -1243,6 +1252,10 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         "request_object_texture_groups",
         "apply_object_toon",
         "request_object_edges",
+        "calc_object_facequad_normals",
+        "calc_object_texture_groups",
+        "add_object_edge",
+        "calc_object_edges",
     ):
         assert f" {descriptive_name}(" not in object_header
 
@@ -1305,7 +1318,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         (
             "calc_object_facequad_normals",
             "cRObject",
-            "?calc_object_facequad_normals@cRObject@@QAEXXZ",
+            "?CalcFaceQuadNormals@cRObject@@QAEXXZ",
         ),
         (
             "calc_object_facequad_normals_simple",
@@ -1315,7 +1328,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         (
             "calc_object_texture_groups",
             "cRObject",
-            "?calc_object_texture_groups@cRObject@@QAEXXZ",
+            "?CalcTextureGroups@cRObject@@QAEXXZ",
         ),
         (
             "request_object_edges",
@@ -1325,12 +1338,12 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         (
             "add_object_edge",
             "cRObject",
-            "?add_object_edge@cRObject@@QAEXHHH@Z",
+            "?AddEdge@cRObject@@QAEXHHH@Z",
         ),
         (
             "calc_object_edges",
             "cRObject",
-            "?calc_object_edges@cRObject@@QAEXXZ",
+            "?CalcEdges@cRObject@@QAEXXZ",
         ),
         (
             "request_object_animation",

@@ -1,9 +1,9 @@
-// calc_object_texture_groups @ 0x4303f0 (thiscall)
+// CalcTextureGroups @ 0x4303f0 (thiscall)
 
 #include "object_render_types.h"
 #include "sprite.h"
 
-void cRObject::calc_object_texture_groups()
+void cRObject::CalcTextureGroups()
 {
     int pass = 0;
     do {

@@ -1,4 +1,4 @@
-// calc_object_edges @ 0x4308b0 (thiscall)
+// CalcEdges @ 0x4308b0 (thiscall)
 
 #include "object_render_types.h"
 
@@ -6,7 +6,7 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 
 void* get_archive_data_base();
 
-void cRObject::calc_object_edges()
+void cRObject::CalcEdges()
 {
     if ((flags & OBJECT_FLAG_BUILD_TOON_EDGES) == 0) {
         return;
@@ -22,14 +22,14 @@ void cRObject::calc_object_edges()
     if (facequad_count > 0) {
         int normal_index = 0;
         do {
-            add_object_edge(face->vertex_0, face->vertex_1, normal_index);
-            add_object_edge(face->vertex_2, face->vertex_0, normal_index);
-            add_object_edge(face->vertex_1, face->vertex_2, normal_index);
+            AddEdge(face->vertex_0, face->vertex_1, normal_index);
+            AddEdge(face->vertex_2, face->vertex_0, normal_index);
+            AddEdge(face->vertex_1, face->vertex_2, normal_index);
 
             if ((face->flags & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
-                add_object_edge(face->vertex_0, face->vertex_2, normal_index + 1);
-                add_object_edge(face->vertex_3, face->vertex_0, normal_index + 1);
-                add_object_edge(face->vertex_2, face->vertex_3, normal_index + 1);
+                AddEdge(face->vertex_0, face->vertex_2, normal_index + 1);
+                AddEdge(face->vertex_3, face->vertex_0, normal_index + 1);
+                AddEdge(face->vertex_2, face->vertex_3, normal_index + 1);
             }
 
             ++face;

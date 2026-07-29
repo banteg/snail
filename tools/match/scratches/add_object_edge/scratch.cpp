@@ -1,10 +1,10 @@
-// add_object_edge @ 0x4305a0 (thiscall)
+// AddEdge @ 0x4305a0 (thiscall)
 
 #include "object_render_types.h"
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 
-void cRObject::add_object_edge(int vertex_a, int vertex_b, int normal_index)
+void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
 {
     Vector3 direction;
     if (facequad_normals[normal_index].Magnitude() < 0.89999998f) {

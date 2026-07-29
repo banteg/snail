@@ -16,12 +16,12 @@ void cRObjects::build_all_objects()
             if (((Object*)((char*)objects + object_offset))->vertex_count != 0) {
                 ((Object*)((char*)objects + object_offset))->calc_object_bounding_box();
                 sort_object_faces_by_texture_group((Object*)((char*)objects + object_offset));
-                ((Object*)((char*)objects + object_offset))->calc_object_texture_groups();
+                ((Object*)((char*)objects + object_offset))->CalcTextureGroups();
 
                 if ((((Object*)((char*)objects + object_offset))->flags
                         & OBJECT_FLAG_TOON_ENABLED) != 0) {
-                    ((Object*)((char*)objects + object_offset))->calc_object_facequad_normals();
-                    ((Object*)((char*)objects + object_offset))->calc_object_edges();
+                    ((Object*)((char*)objects + object_offset))->CalcFaceQuadNormals();
+                    ((Object*)((char*)objects + object_offset))->CalcEdges();
                 }
 
                 build_object_texture_group_buffers((Object*)((char*)objects + object_offset));

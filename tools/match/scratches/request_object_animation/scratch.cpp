@@ -93,7 +93,7 @@ void cRObject::request_object_animation(
 
             vertices = animation->frames[frame]->vertices;
             facequad_normals = animation->frames[frame]->facequad_normals;
-            calc_object_facequad_normals();
+            CalcFaceQuadNormals();
             ++frame;
         } while (frame < generated_frame_count);
     }

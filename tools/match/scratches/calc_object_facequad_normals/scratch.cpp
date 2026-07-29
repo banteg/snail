@@ -1,4 +1,4 @@
-// calc_object_facequad_normals @ 0x42fcb0 (thiscall)
+// CalcFaceQuadNormals @ 0x42fcb0 (thiscall)
 
 #include "object_render_types.h"
 #include "vector3.h"
@@ -23,7 +23,7 @@ int report_errorf(char* format, ...);
 #define CURRENT_FACE \
     ((ObjectFaceQuad*)((char*)facequads + face_offset))
 
-void cRObject::calc_object_facequad_normals()
+void cRObject::CalcFaceQuadNormals()
 {
     RequestFaceQuadNormals();
 
