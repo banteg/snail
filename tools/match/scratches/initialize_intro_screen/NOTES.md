@@ -178,3 +178,25 @@ with all 66 masked operands still clean. Separate image-dimension declarations
 and a wider image-position lifetime were byte-neutral and were rejected; the
 remaining two candidate instructions are still the honest parser-argument
 cleanup and final script-buffer reload residuals.
+
+## 2026-07-29 two-instruction residual audit
+
+The focused result remains **88.89%**, `523/521` instructions, prefix
+`88/521`, with all 66 masked operands clean. Three recorded mutation sweeps
+bound the two excess candidate instructions:
+
+- six declaration, assignment, comma-expression, and initializer forms for
+  the image width/height parser results were all byte-identical; none delayed
+  VC6's eight-byte argument cleanup into the following `sprintf` cleanup;
+- the four well-typed loaded-buffer owner/view combinations were
+  byte-identical, while the four deliberately unmatched matrix combinations
+  failed to compile as expected; none preserved the final free argument in a
+  register through the velocity loop;
+- indexed, pointer-`while`, countdown, end-pointer, and pointer-`for` velocity
+  loops were compiled. Indexed and pointer-`while` forms were byte-identical;
+  the other three regressed by roughly 8, 25, and 29 weighted bytes.
+
+The two residual instructions are therefore bounded to whole-function stack
+cleanup and register allocation. The retained source is the clearest authored
+form supported by the Windows and mobile bodies; no alias-only owner, volatile
+qualifier, dummy dependency, or raw cursor projection is kept.

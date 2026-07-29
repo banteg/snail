@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "final-velocity-loop",
+      "find": "LogoLetter* renderable = letters;\n    for (int i = 0; i < renderable_count; ++i, ++renderable) {\n        renderable->velocity = velocity;\n    }",
+      "replacements": [
+        {
+          "name": "indexed-letters",
+          "text": "for (int i = 0; i < renderable_count; ++i) {\n        letters[i].velocity = velocity;\n    }"
+        },
+        {
+          "name": "pointer-while",
+          "text": "int i = 0;\n    LogoLetter* renderable = letters;\n    while (i < renderable_count) {\n        renderable->velocity = velocity;\n        ++i;\n        ++renderable;\n    }"
+        },
+        {
+          "name": "countdown-while",
+          "text": "int remaining = renderable_count;\n    LogoLetter* renderable = letters;\n    while (remaining > 0) {\n        renderable->velocity = velocity;\n        ++renderable;\n        --remaining;\n    }"
+        },
+        {
+          "name": "pointer-end",
+          "text": "LogoLetter* renderable = letters;\n    LogoLetter* end = letters + renderable_count;\n    while (renderable < end) {\n        renderable->velocity = velocity;\n        ++renderable;\n    }"
+        },
+        {
+          "name": "pointer-for",
+          "text": "for (LogoLetter* renderable = letters;\n         renderable != letters + renderable_count;\n         ++renderable) {\n        renderable->velocity = velocity;\n    }"
+        }
+      ]
+    }
+  ]
+}

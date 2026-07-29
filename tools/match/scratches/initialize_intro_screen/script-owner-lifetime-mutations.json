@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "script-owner-declaration",
+      "find": "char* file_bytes = load_file_bytes(file_name, 0);",
+      "replacements": [
+        {
+          "name": "loaded-owner-and-file-view",
+          "text": "char* loaded_script_bytes = load_file_bytes(file_name, 0);\n    char* file_bytes = loaded_script_bytes;"
+        },
+        {
+          "name": "file-owner-and-script-view",
+          "text": "char* file_bytes = load_file_bytes(file_name, 0);\n    char* script_bytes = file_bytes;"
+        }
+      ]
+    },
+    {
+      "name": "final-free-owner",
+      "find": "free_tracked_memory(file_bytes);",
+      "replacements": [
+        {
+          "name": "free-loaded-owner",
+          "text": "free_tracked_memory(loaded_script_bytes);"
+        },
+        {
+          "name": "free-script-view",
+          "text": "free_tracked_memory(script_bytes);"
+        }
+      ]
+    }
+  ]
+}

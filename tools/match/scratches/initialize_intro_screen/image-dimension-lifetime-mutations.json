@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "image-dimension-lifetimes",
+      "find": "float image_width = parse_next_float32(&cursor);\n            float image_height = parse_next_float32(&cursor);\n            sprintf(path, \"Intro/%s\", image_name);",
+      "replacements": [
+        {
+          "name": "separate-declarations",
+          "text": "float image_width;\n            float image_height;\n            image_width = parse_next_float32(&cursor);\n            image_height = parse_next_float32(&cursor);\n            sprintf(path, \"Intro/%s\", image_name);"
+        },
+        {
+          "name": "height-declared-first",
+          "text": "float image_height;\n            float image_width = parse_next_float32(&cursor);\n            image_height = parse_next_float32(&cursor);\n            sprintf(path, \"Intro/%s\", image_name);"
+        },
+        {
+          "name": "single-declaration",
+          "text": "float image_width = parse_next_float32(&cursor),\n                image_height = parse_next_float32(&cursor);\n            sprintf(path, \"Intro/%s\", image_name);"
+        },
+        {
+          "name": "comma-assignments",
+          "text": "float image_width;\n            float image_height;\n            image_width = parse_next_float32(&cursor),\n            image_height = parse_next_float32(&cursor);\n            sprintf(path, \"Intro/%s\", image_name);"
+        },
+        {
+          "name": "height-assigned-after-declaration",
+          "text": "float image_width = parse_next_float32(&cursor);\n            float image_height;\n            image_height = parse_next_float32(&cursor);\n            sprintf(path, \"Intro/%s\", image_name);"
+        },
+        {
+          "name": "nested-height-initializer",
+          "text": "float image_width;\n            float image_height =\n                (image_width = parse_next_float32(&cursor),\n                 parse_next_float32(&cursor));\n            sprintf(path, \"Intro/%s\", image_name);"
+        }
+      ]
+    }
+  ]
+}
