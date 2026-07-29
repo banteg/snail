@@ -183,3 +183,18 @@ source evidence. Remaining differences are the initial input-flags load width,
 carry-register rotation, key-10 cursor register ownership, and the optimized
 completion publication; no synthetic reload or anti-optimization operation is
 introduced.
+
+## 2026-07-29 carry-scalar boundary
+
+The final carry-owner sweep crosses both duplicated insertion loops against
+split initialization, `register`, signed and unsigned character types, and an
+explicit character literal. All 35 one- and two-site variants are
+byte-identical to the retained source. The complete ledger now covers 154
+unique variants across eight sweeps: 26 better, 110 identical, and 18 worse,
+with four retained sweep wins and three consecutive non-improving sweeps.
+
+This lane is formally stalled at **74.80%** (`439/446`, prefix 6, all eight
+references clean). The remaining carry-byte register rotation is not
+controlled by any evidence-backed scalar spelling tested here. Revisiting it
+requires new native or paired-port provenance, not more source-shape
+permutations.

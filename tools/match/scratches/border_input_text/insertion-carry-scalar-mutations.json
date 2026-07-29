@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "newline-carry-scalar",
+      "find": "            char carry = ' ';",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "split-assignment",
+          "text": "            char carry;\n            carry = ' ';"
+        },
+        {
+          "name": "register-char",
+          "text": "            register char carry = ' ';"
+        },
+        {
+          "name": "signed-char",
+          "text": "            signed char carry = ' ';"
+        },
+        {
+          "name": "unsigned-char",
+          "text": "            unsigned char carry = ' ';"
+        },
+        {
+          "name": "explicit-char-literal",
+          "text": "            char carry = (char)0x20;"
+        }
+      ]
+    },
+    {
+      "name": "character-carry-scalar",
+      "find": "            char carry = ' ';",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "split-assignment",
+          "text": "            char carry;\n            carry = ' ';"
+        },
+        {
+          "name": "register-char",
+          "text": "            register char carry = ' ';"
+        },
+        {
+          "name": "signed-char",
+          "text": "            signed char carry = ' ';"
+        },
+        {
+          "name": "unsigned-char",
+          "text": "            unsigned char carry = ' ';"
+        },
+        {
+          "name": "explicit-char-literal",
+          "text": "            char carry = (char)0x20;"
+        }
+      ]
+    }
+  ]
+}
