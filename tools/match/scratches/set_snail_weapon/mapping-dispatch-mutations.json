@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "movement-selector",
+      "find": "    switch (shoot_flags) {",
+      "replacements": [
+        {
+          "name": "named-copy",
+          "text": "    int movement_flags = shoot_flags;\n    switch (movement_flags) {"
+        },
+        {
+          "name": "unary-plus",
+          "text": "    switch (+shoot_flags) {"
+        },
+        {
+          "name": "add-zero",
+          "text": "    switch (shoot_flags + 0) {"
+        },
+        {
+          "name": "static-int-cast",
+          "text": "    switch (static_cast<int>(shoot_flags)) {"
+        },
+        {
+          "name": "c-int-cast",
+          "text": "    switch ((int)shoot_flags) {"
+        }
+      ]
+    },
+    {
+      "name": "default-state-publication",
+      "find": "    default:\n        target_channel_0_state = shoot_flags;\n        target_channel_1_state = shoot_flags;\n        break;",
+      "replacements": [
+        {
+          "name": "reverse-order",
+          "text": "    default:\n        target_channel_1_state = shoot_flags;\n        target_channel_0_state = shoot_flags;\n        break;"
+        },
+        {
+          "name": "chained-assignment",
+          "text": "    default:\n        target_channel_0_state = target_channel_1_state = shoot_flags;\n        break;"
+        },
+        {
+          "name": "channel-0-copy",
+          "text": "    default:\n        target_channel_0_state = shoot_flags;\n        target_channel_1_state = target_channel_0_state;\n        break;"
+        },
+        {
+          "name": "channel-1-copy",
+          "text": "    default:\n        target_channel_1_state = shoot_flags;\n        target_channel_0_state = target_channel_1_state;\n        break;"
+        },
+        {
+          "name": "scoped-copy",
+          "text": "    default: {\n        int default_state = shoot_flags;\n        target_channel_0_state = default_state;\n        target_channel_1_state = default_state;\n        break;\n    }"
+        },
+        {
+          "name": "explicit-int-values",
+          "text": "    default:\n        target_channel_0_state = int(shoot_flags);\n        target_channel_1_state = int(shoot_flags);\n        break;"
+        }
+      ]
+    },
+    {
+      "name": "change-flag-initializer",
+      "find": "    any_channel_changed = 0;",
+      "replacements": [
+        {
+          "name": "false-literal",
+          "text": "    any_channel_changed = false;"
+        },
+        {
+          "name": "explicit-bool",
+          "text": "    any_channel_changed = bool(0);"
+        }
+      ]
+    }
+  ]
+}

@@ -101,3 +101,28 @@ and is not shared across the three channel blocks. Applying the same source
 shape to channel 1 regresses to 67.35% by displacing the long-lived `Snail*`
 receiver, so that probe is reverted. The remaining mask mismatch is still only
 VC6's compiler-local sparse-switch table symbol.
+
+## 2026-07-29 dispatch and owner residual boundary
+
+Three recorded mutation sweeps cover 26 source-shaped variants around the
+remaining Windows allocation gap. Parameter qualifiers, every target-state
+declaration order, grouped declarations, selector copies and casts, default-arm
+publication order, chained publication, and boolean initializer spelling all
+compile byte-identically to the retained 73.02% source. Those 25 neutral
+results show that the early `shoot_flags` ownership and state0/state1 register
+rotation are not controlled by declaration order or an equivalent spelling of
+the sparse movement switch.
+
+The final probe moved the proved channel-0 borrow below the outgoing-state
+switch, matching the point where native first keeps a receiver base live.
+VC6 instead chose a substantially different family and regressed to 67.89%.
+Together with the earlier 64.91% reusable-pointer and 67.35% channel-1 borrow
+probes, this closes the plausible receiver-lifetime variants without retaining
+synthetic aliasing.
+
+The Android and iOS bodies still independently confirm the state map, all three
+ordinary changed-state guards, channel order, and shared sound tail. Focused
+Windows remains 73.02% (`245/248`) with all 23 runtime references clean. The
+sole masked mismatch is still the candidate's compiler-local jump-table label;
+the three-sweep no-improvement streak is therefore treated as a bounded VC6
+register-allocation and private-label residual, not a semantic mismatch.

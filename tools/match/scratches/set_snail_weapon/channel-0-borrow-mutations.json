@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "channel-0-borrow-lifetime",
+      "find": "        Weapon& channel = weapon_channels[0];\n        switch (selected_state) {\n        case 1:\n            weapon_channels[0].set_weapon_animation(\n                1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);\n            transition_immediate = 0;\n            break;\n        case 2:\n            weapon_channels[0].set_weapon_animation(\n                4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);\n            transition_immediate = 0;\n            break;\n        }\n\n        switch (target_channel_0_state) {",
+      "replacements": [
+        {
+          "name": "after-outgoing-switch",
+          "text": "        switch (selected_state) {\n        case 1:\n            weapon_channels[0].set_weapon_animation(\n                1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);\n            transition_immediate = 0;\n            break;\n        case 2:\n            weapon_channels[0].set_weapon_animation(\n                4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);\n            transition_immediate = 0;\n            break;\n        }\n\n        Weapon& channel = weapon_channels[0];\n        switch (target_channel_0_state) {"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shoot-flags-parameter",
+      "find": "void Snail::set_snail_weapon(int shoot_flags)",
+      "replacements": [
+        {
+          "name": "const-int",
+          "text": "void Snail::set_snail_weapon(const int shoot_flags)"
+        },
+        {
+          "name": "register-int",
+          "text": "void Snail::set_snail_weapon(register int shoot_flags)"
+        },
+        {
+          "name": "signed-int",
+          "text": "void Snail::set_snail_weapon(signed int shoot_flags)"
+        }
+      ]
+    },
+    {
+      "name": "state-declaration-order",
+      "find": "    bool any_channel_changed;\n    int target_channel_0_state;\n    int target_channel_1_state;\n    int target_channel_2_state;\n    int selected_state;\n    bool transition_immediate;",
+      "replacements": [
+        {
+          "name": "channel-1-0-2",
+          "text": "    bool any_channel_changed;\n    int target_channel_1_state;\n    int target_channel_0_state;\n    int target_channel_2_state;\n    int selected_state;\n    bool transition_immediate;"
+        },
+        {
+          "name": "channel-1-2-0",
+          "text": "    bool any_channel_changed;\n    int target_channel_1_state;\n    int target_channel_2_state;\n    int target_channel_0_state;\n    int selected_state;\n    bool transition_immediate;"
+        },
+        {
+          "name": "channel-2-0-1",
+          "text": "    bool any_channel_changed;\n    int target_channel_2_state;\n    int target_channel_0_state;\n    int target_channel_1_state;\n    int selected_state;\n    bool transition_immediate;"
+        },
+        {
+          "name": "channel-2-1-0",
+          "text": "    bool any_channel_changed;\n    int target_channel_2_state;\n    int target_channel_1_state;\n    int target_channel_0_state;\n    int selected_state;\n    bool transition_immediate;"
+        },
+        {
+          "name": "channel-0-2-1",
+          "text": "    bool any_channel_changed;\n    int target_channel_0_state;\n    int target_channel_2_state;\n    int target_channel_1_state;\n    int selected_state;\n    bool transition_immediate;"
+        },
+        {
+          "name": "targets-before-change-flag",
+          "text": "    int target_channel_0_state;\n    int target_channel_1_state;\n    int target_channel_2_state;\n    bool any_channel_changed;\n    int selected_state;\n    bool transition_immediate;"
+        },
+        {
+          "name": "selected-before-targets",
+          "text": "    bool any_channel_changed;\n    int selected_state;\n    int target_channel_0_state;\n    int target_channel_1_state;\n    int target_channel_2_state;\n    bool transition_immediate;"
+        },
+        {
+          "name": "immediate-before-selected",
+          "text": "    bool any_channel_changed;\n    int target_channel_0_state;\n    int target_channel_1_state;\n    int target_channel_2_state;\n    bool transition_immediate;\n    int selected_state;"
+        },
+        {
+          "name": "grouped-targets",
+          "text": "    bool any_channel_changed;\n    int target_channel_0_state, target_channel_1_state, target_channel_2_state;\n    int selected_state;\n    bool transition_immediate;"
+        }
+      ]
+    }
+  ]
+}
