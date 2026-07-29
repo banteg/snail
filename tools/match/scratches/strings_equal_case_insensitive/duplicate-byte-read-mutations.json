@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "initial-byte-reads",
+      "find": "    char right_upper = *prefix;\n    char left_upper = *left;\n    char right_value = right_upper;\n    char left_value = left_upper;",
+      "replacements": [
+        {
+          "name": "raw-first-duplicate-reads",
+          "text": "    char right_value = *prefix;\n    char left_value = *left;\n    char right_upper = *prefix;\n    char left_upper = *left;"
+        },
+        {
+          "name": "fold-first-duplicate-reads",
+          "text": "    char right_upper = *prefix;\n    char left_upper = *left;\n    char right_value = *prefix;\n    char left_value = *left;"
+        },
+        {
+          "name": "right-pair-then-left-pair",
+          "text": "    char right_value = *prefix;\n    char right_upper = *prefix;\n    char left_value = *left;\n    char left_upper = *left;"
+        },
+        {
+          "name": "left-pair-then-right-pair",
+          "text": "    char left_value = *left;\n    char left_upper = *left;\n    char right_value = *prefix;\n    char right_upper = *prefix;"
+        }
+      ]
+    },
+    {
+      "name": "loop-byte-reads",
+      "find": "        ++left;\n        ++prefix;\n        right_upper = *prefix;\n        left_upper = *left;\n        right_value = right_upper;\n        left_value = left_upper;",
+      "replacements": [
+        {
+          "name": "raw-first-duplicate-reads",
+          "text": "        ++left;\n        ++prefix;\n        right_value = *prefix;\n        left_value = *left;\n        right_upper = *prefix;\n        left_upper = *left;"
+        },
+        {
+          "name": "fold-first-duplicate-reads",
+          "text": "        ++left;\n        ++prefix;\n        right_upper = *prefix;\n        left_upper = *left;\n        right_value = *prefix;\n        left_value = *left;"
+        },
+        {
+          "name": "raw-before-increment-duplicate-reads",
+          "text": "        right_value = prefix[1];\n        left_value = left[1];\n        right_upper = prefix[1];\n        left_upper = left[1];\n        ++left;\n        ++prefix;"
+        },
+        {
+          "name": "left-first-before-increment-duplicate-reads",
+          "text": "        left_value = left[1];\n        right_value = prefix[1];\n        left_upper = left[1];\n        right_upper = prefix[1];\n        ++left;\n        ++prefix;"
+        }
+      ]
+    }
+  ]
+}

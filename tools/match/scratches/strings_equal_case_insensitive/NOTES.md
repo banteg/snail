@@ -1,5 +1,27 @@
 # strings_equal_case_insensitive
 
+## 2026-07-30 proof-grade raw/fold lifetime recovery
+
+The Windows byte lanes come from two lexical reads of each cursor byte, not
+from copying one named local into another. The retained source first reads the
+raw prefix and left bytes used by the loop gates, then reads the same locations
+again for the independently folded prefix and left views. After advancing both
+cursors it repeats that raw-first sequence. VC6 coalesces the duplicate reads
+into native's `dl`/`bl` raw loads followed by `cl`/`al` copies, preserving the
+authored asymmetric prefix-termination rule.
+
+This raises the scratch from 84.00% to proof-grade 100.00%, exactly `50/50`
+instructions with a `50/50` prefix and no masked operands. Android and iOS
+independently preserve the same four logical byte lifetimes in
+`RTextCompStart(char*, char*)`; IDA also renders repeated source dereferences
+for the Windows body.
+
+Two recorded sweeps cover 72 unique variants. The first 48-way matrix confirms
+that explicitly aliasing raw bytes into folded locals makes VC6 switch to a
+different folding family and regresses. The duplicate-read matrix contains
+three exact source orders; the retained raw-first form is the clearest. No
+volatile qualifier, register hint, or synthetic dependency is used.
+
 Initial scratch for the shared ASCII case-insensitive equality helper at
 `0x431dc0`.
 
