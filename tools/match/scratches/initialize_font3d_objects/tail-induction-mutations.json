@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "object-flag-update",
+      "find": "            object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;",
+      "replacements": [
+        {
+          "name": "expanded-or-assignment",
+          "text": "            object->flags = object->flags | OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;"
+        },
+        {
+          "name": "commuted-or-assignment",
+          "text": "            object->flags = OBJECT_FLAG_REFRESH_TINT_EACH_DRAW | object->flags;"
+        },
+        {
+          "name": "named-old-flags",
+          "text": "            unsigned int old_flags = object->flags;\n            object->flags = old_flags | OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;"
+        },
+        {
+          "name": "flags-reference",
+          "text": "            unsigned int& object_flags = object->flags;\n            object_flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;"
+        },
+        {
+          "name": "final-object-local",
+          "text": "            Object* final_object = object;\n            final_object->flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;"
+        },
+        {
+          "name": "indexed-object-view",
+          "text": "            object[0].flags |= OBJECT_FLAG_REFRESH_TINT_EACH_DRAW;"
+        }
+      ]
+    },
+    {
+      "name": "scale-and-index-advance",
+      "find": "            *scale_out = scale;\n            ++index;\n            ++scale_out;",
+      "replacements": [
+        {
+          "name": "postincrement-scale-store",
+          "text": "            *scale_out++ = scale;\n            ++index;"
+        },
+        {
+          "name": "postincrement-both",
+          "text": "            *scale_out++ = scale;\n            index++;"
+        },
+        {
+          "name": "postincrement-index",
+          "text": "            *scale_out = scale;\n            index++;\n            ++scale_out;"
+        },
+        {
+          "name": "scale-before-index",
+          "text": "            *scale_out = scale;\n            ++scale_out;\n            ++index;"
+        },
+        {
+          "name": "postincrement-scale-before-index",
+          "text": "            *scale_out = scale;\n            scale_out++;\n            index++;"
+        },
+        {
+          "name": "add-assign-advances",
+          "text": "            *scale_out = scale;\n            index += 1;\n            scale_out += 1;"
+        },
+        {
+          "name": "expanded-advances",
+          "text": "            *scale_out = scale;\n            index = index + 1;\n            scale_out = scale_out + 1;"
+        },
+        {
+          "name": "indexed-scale-store",
+          "text": "            scale_out[0] = scale;\n            ++index;\n            ++scale_out;"
+        },
+        {
+          "name": "advance-index-then-store",
+          "text": "            ++index;\n            *scale_out = scale;\n            ++scale_out;"
+        },
+        {
+          "name": "advance-scale-then-store",
+          "text": "            ++scale_out;\n            ++index;\n            scale_out[-1] = scale;"
+        },
+        {
+          "name": "comma-advances",
+          "text": "            *scale_out = scale;\n            ++index, ++scale_out;"
+        },
+        {
+          "name": "comma-store-and-advances",
+          "text": "            (*scale_out = scale), ++index, ++scale_out;"
+        }
+      ]
+    }
+  ]
+}

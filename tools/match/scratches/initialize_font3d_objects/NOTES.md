@@ -177,3 +177,32 @@ Explicit BOD and paired BOD/glyph cursors do recover the update order, but
 disturb the prologue, texture-page schedule, and final flag register, scoring
 94.44% and 78.88% respectively. Those broader cursor views are not retained;
 the isolated three-byte scheduler residual remains visible.
+
+## 2026-07-29 bounded induction-order sweep
+
+Three recorded mutation sweeps now bound the isolated tail scheduler residual:
+
+- 90 flag-publication and index/scale-tail variants produced 0 improvements,
+  34 byte-identical results, and 56 regressions.
+- 62 BOD-owner discovery and loop-predicate variants produced 0 improvements,
+  13 byte-identical results, 35 regressions, and 14 rejected reference forms.
+- 105 one- and two-site glyph-width, texture-page, U1, and final-U0 expression
+  variants were all byte-identical.
+
+The 257 unique variants leave the same 99.21% result, 106/126 prefix, identical
+126-instruction lengths, and 20 clean masked operands. The only mismatch is
+still:
+
+```text
+native:    add esi, 0x38; add edi, 0x4; add ebp, 0x4
+candidate: add edi, 0x4;  add esi, 0x38; add ebp, 0x4
+```
+
+Here ESI advances the `BodBase::object` lane, EDI advances the synchronized
+glyph-atlas lane, and EBP advances the scale cache. All three updates are
+independent after the final current-iteration loads. The mobile functions
+corroborate those owners but use different BOD/font layouts and induction
+schedules, so they do not justify transferring a source-level dependency.
+The residual is therefore recorded as compiler scheduling rather than hidden
+behind volatile aliases, dummy reads, or a broader cursor rewrite that damages
+the otherwise exact stream.

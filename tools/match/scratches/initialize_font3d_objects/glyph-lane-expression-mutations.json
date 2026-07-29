@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "glyph-width-access",
+      "find": "            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;",
+      "replacements": [
+        {
+          "name": "pointer-addition",
+          "text": "            float scale = *(g_font_sheets[font].glyph_width + index)\n                / g_font_sheets[font].line_marker_y;"
+        },
+        {
+          "name": "commuted-subscript",
+          "text": "            float scale = index[g_font_sheets[font].glyph_width]\n                / g_font_sheets[font].line_marker_y;"
+        },
+        {
+          "name": "address-dereference",
+          "text": "            float scale = *(&g_font_sheets[font].glyph_width[index])\n                / g_font_sheets[font].line_marker_y;"
+        }
+      ]
+    },
+    {
+      "name": "texture-page-access",
+      "find": "            int texture_page = g_font_sheets[font].texture_page[index];",
+      "replacements": [
+        {
+          "name": "pointer-addition",
+          "text": "            int texture_page = *(g_font_sheets[font].texture_page + index);"
+        },
+        {
+          "name": "commuted-subscript",
+          "text": "            int texture_page = index[g_font_sheets[font].texture_page];"
+        },
+        {
+          "name": "address-dereference",
+          "text": "            int texture_page = *(&g_font_sheets[font].texture_page[index]);"
+        }
+      ]
+    },
+    {
+      "name": "first-glyph-u1-access",
+      "find": "                g_font_sheets[font].glyph_u1[index];",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "pointer-addition",
+          "text": "                *(g_font_sheets[font].glyph_u1 + index);"
+        },
+        {
+          "name": "commuted-subscript",
+          "text": "                index[g_font_sheets[font].glyph_u1];"
+        },
+        {
+          "name": "address-dereference",
+          "text": "                *(&g_font_sheets[font].glyph_u1[index]);"
+        }
+      ]
+    },
+    {
+      "name": "second-glyph-u1-access",
+      "find": "                g_font_sheets[font].glyph_u1[index];",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "pointer-addition",
+          "text": "                *(g_font_sheets[font].glyph_u1 + index);"
+        },
+        {
+          "name": "commuted-subscript",
+          "text": "                index[g_font_sheets[font].glyph_u1];"
+        },
+        {
+          "name": "address-dereference",
+          "text": "                *(&g_font_sheets[font].glyph_u1[index]);"
+        }
+      ]
+    },
+    {
+      "name": "final-glyph-u0-access",
+      "find": "                g_font_sheets[font].glyph_u0[index];",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "pointer-addition",
+          "text": "                *(g_font_sheets[font].glyph_u0 + index);"
+        },
+        {
+          "name": "commuted-subscript",
+          "text": "                index[g_font_sheets[font].glyph_u0];"
+        },
+        {
+          "name": "address-dereference",
+          "text": "                *(&g_font_sheets[font].glyph_u0[index]);"
+        }
+      ]
+    }
+  ]
+}

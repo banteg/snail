@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-owner-discovery-order",
+      "find": "            BodBase* bod = &g_font3d_bods[index];\n            Object*& object = bod->object;\n            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            bod->SetObject(g_object_list.Add());",
+      "replacements": [
+        {
+          "name": "scale-before-bod",
+          "text": "            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            BodBase* bod = &g_font3d_bods[index];\n            Object*& object = bod->object;\n            bod->SetObject(g_object_list.Add());"
+        },
+        {
+          "name": "set-object-before-reference",
+          "text": "            BodBase* bod = &g_font3d_bods[index];\n            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            bod->SetObject(g_object_list.Add());\n            Object*& object = bod->object;"
+        },
+        {
+          "name": "scale-set-object-reference",
+          "text": "            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            BodBase* bod = &g_font3d_bods[index];\n            bod->SetObject(g_object_list.Add());\n            Object*& object = bod->object;"
+        },
+        {
+          "name": "bod-reference",
+          "text": "            BodBase& bod = g_font3d_bods[index];\n            Object*& object = bod.object;\n            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            bod.SetObject(g_object_list.Add());"
+        },
+        {
+          "name": "scale-before-bod-reference",
+          "text": "            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            BodBase& bod = g_font3d_bods[index];\n            Object*& object = bod.object;\n            bod.SetObject(g_object_list.Add());"
+        },
+        {
+          "name": "pointer-addition-bod",
+          "text": "            BodBase* bod = g_font3d_bods + index;\n            Object*& object = bod->object;\n            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            bod->SetObject(g_object_list.Add());"
+        },
+        {
+          "name": "object-slot-borrow",
+          "text": "            BodBase* bod = &g_font3d_bods[index];\n            Object** object_slot = &bod->object;\n            Object*& object = *object_slot;\n            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            bod->SetObject(g_object_list.Add());"
+        },
+        {
+          "name": "scale-before-object-slot-borrow",
+          "text": "            float scale = g_font_sheets[font].glyph_width[index]\n                / g_font_sheets[font].line_marker_y;\n            BodBase* bod = &g_font3d_bods[index];\n            Object** object_slot = &bod->object;\n            Object*& object = *object_slot;\n            bod->SetObject(g_object_list.Add());"
+        }
+      ]
+    },
+    {
+      "name": "loop-continuation-predicate",
+      "find": "        } while (index < g_font_sheets[font].slot_count);",
+      "replacements": [
+        {
+          "name": "count-greater-than-index",
+          "text": "        } while (g_font_sheets[font].slot_count > index);"
+        },
+        {
+          "name": "not-greater-or-equal",
+          "text": "        } while (!(index >= g_font_sheets[font].slot_count));"
+        },
+        {
+          "name": "not-equal",
+          "text": "        } while (index != g_font_sheets[font].slot_count);"
+        },
+        {
+          "name": "last-index-bound",
+          "text": "        } while (index <= g_font_sheets[font].slot_count - 1);"
+        },
+        {
+          "name": "difference-negative",
+          "text": "        } while (index - g_font_sheets[font].slot_count < 0);"
+        },
+        {
+          "name": "unsigned-less-than",
+          "text": "        } while ((unsigned int)index < (unsigned int)g_font_sheets[font].slot_count);"
+        }
+      ]
+    }
+  ]
+}
