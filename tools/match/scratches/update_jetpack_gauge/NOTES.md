@@ -2,7 +2,7 @@
 
 Source-shaped partial scratch for the jetpack countdown/warning controller.
 
-Current match: 85.93% (`132` candidate instructions vs `131` target,
+Current match: 94.66% (`131/131` candidate/target instructions,
 `34` clean masked operands).
 
 Recovered behavior:
@@ -33,11 +33,8 @@ Important corrections made during matching:
 
 Known residuals:
 
-- VC6 still delays the `xor edi, edi` zero initialization instead of placing it
-  before the state switch like native;
-- the native state dispatch is `sub eax, edi; je return; dec eax; jne return`,
-  while the clean `switch(state)` source recovers the `dec/jne` part but not the
-  early zero register setup;
+- native spells the first inactive-state comparison as `sub eax, edi`, while
+  the candidate uses the equivalent `cmp eax, edi`;
 - `game`/`player` loads around the completion-row check use different registers,
   though the field offsets and behavior are aligned.
 
@@ -103,3 +100,35 @@ warning, and root-owned snail presentation paths through their real owners;
 the stale `cRDamageGuage` artifact description is gone. This is analysis-only
 ownership recovery: focused Wibo remains honestly 85.93%, 132/131, prefix
 6/131, with all 34 masks clean and no source or fakematch change.
+
+## 2026-07-29 active-state dispatch recovery
+
+The native opening `sub; je; dec; jne` is a two-stage state gate, not evidence
+for a third lifecycle state. Keeping the real zero lifetime for teardown,
+testing the inactive state first, and then dispatching the remaining value
+through an active-only switch removes the candidate's redundant
+`test eax, eax`. Focused matching rises from 85.93% (`132/131`) to 94.66%
+with exact `131/131` instruction parity and all 34 references still clean.
+
+Six recorded sweeps cover 47 source-shaped variants: predecrement and
+short-circuit ladders, direct and zero-adjusted switches, mixed inactive
+gates, completion-owner and finish-control forms, and the three-float wobble
+owner. Four mixed-gate variants improve, 25 variants are byte-identical to
+their baselines, and 18 regress. The retained
+`live_state -= zero; if (!live_state) return; switch (live_state)` form is the
+best at 94.66%.
+
+After that improvement the diff is confined to two regions. The opening has
+only native `sub eax, edi` versus candidate `cmp eax, edi`; both share the
+same following `je; dec; jne`. The completion-row gate has the same typed
+`cRSubGame` and `cRSubGoldy` loads rotated across EDX/ECX/EAX. Nine owner and
+threshold lifetimes plus eight short-circuit/control variants leave that
+region byte-identical or worse.
+
+Windows' downstream camera expression proves the contiguous `+0x14`, `+0x18`,
+and `+0x1c` lanes are local-space X/Y/Z wobble coefficients. Typed pointer and
+reference component views compile identically, while four aggregate-zero
+forms regress to 67–69% by introducing a different frame/copy family. The
+scalar component stores remain the honest source shape; neither aggregate
+assignment nor another state-syntax permutation is justified for the two
+remaining compiler-allocation differences.

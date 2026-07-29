@@ -19,11 +19,14 @@ void SubHover::update_jetpack_gauge()
 
     int live_state = state;
     live_state -= zero;
-    if (live_state == SUB_HOVER_STATE_INACTIVE)
+    if (!live_state)
         return;
-    --live_state;
-    if (live_state != SUB_HOVER_STATE_INACTIVE)
+    switch (live_state) {
+    case SUB_HOVER_STATE_ACTIVE:
+        break;
+    default:
         return;
+    }
 
     {
         float next_progress = progress + progress_step;

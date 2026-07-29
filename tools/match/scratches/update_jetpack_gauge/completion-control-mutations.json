@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-finish-control",
+      "find": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {\n            goto finish_hover;\n        }",
+      "replacements": [
+        {
+          "name": "split-finish-gates",
+          "text": "        if (next_progress > 1.0f)\n            goto finish_hover;\n        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        if ((float)(live_game->completion_row_start - 5)\n            < live_player->transform.position.z)\n            goto finish_hover;"
+        },
+        {
+          "name": "split-direct-members",
+          "text": "        if (next_progress > 1.0f)\n            goto finish_hover;\n        if ((float)(game->completion_row_start - 5)\n            < player->transform.position.z)\n            goto finish_hover;"
+        },
+        {
+          "name": "nested-second-gate",
+          "text": "        if (next_progress <= 1.0f) {\n            cRSubGame* live_game = game;\n            cRSubGoldy* live_player = player;\n            if ((float)(live_game->completion_row_start - 5)\n                >= live_player->transform.position.z)\n                goto continue_hover;\n        }\n        goto finish_hover;\n    continue_hover:"
+        },
+        {
+          "name": "completion-field-pointer",
+          "text": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        int* completion_row = &live_game->completion_row_start;\n        if (next_progress > 1.0f\n            || (float)(*completion_row - 5) < live_player->transform.position.z) {\n            goto finish_hover;\n        }"
+        },
+        {
+          "name": "player-z-pointer",
+          "text": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        float* player_z = &live_player->transform.position.z;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < *player_z) {\n            goto finish_hover;\n        }"
+        },
+        {
+          "name": "typed-transform-borrow",
+          "text": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        TransformMatrix* live_transform = &live_player->transform;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < live_transform->position.z) {\n            goto finish_hover;\n        }"
+        },
+        {
+          "name": "const-owner-borrows",
+          "text": "        cRSubGame* const live_game = game;\n        cRSubGoldy* const live_player = player;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {\n            goto finish_hover;\n        }"
+        },
+        {
+          "name": "reversed-short-circuit",
+          "text": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        if ((float)(live_game->completion_row_start - 5) < live_player->transform.position.z\n            || next_progress > 1.0f) {\n            goto finish_hover;\n        }"
+        }
+      ]
+    }
+  ]
+}

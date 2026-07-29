@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-limit-owners",
+      "find": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {",
+      "replacements": [
+        {
+          "name": "player-before-game",
+          "text": "        cRSubGoldy* live_player = player;\n        cRSubGame* live_game = game;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < live_player->transform.position.z) {"
+        },
+        {
+          "name": "game-limit-then-player",
+          "text": "        cRSubGame* live_game = game;\n        int completion_limit = live_game->completion_row_start - 5;\n        cRSubGoldy* live_player = player;\n        if (next_progress > 1.0f\n            || (float)completion_limit < live_player->transform.position.z) {"
+        },
+        {
+          "name": "player-game-limit",
+          "text": "        cRSubGoldy* live_player = player;\n        cRSubGame* live_game = game;\n        int completion_limit = live_game->completion_row_start - 5;\n        if (next_progress > 1.0f\n            || (float)completion_limit < live_player->transform.position.z) {"
+        },
+        {
+          "name": "game-player-limit",
+          "text": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        int completion_limit = live_game->completion_row_start - 5;\n        if (next_progress > 1.0f\n            || (float)completion_limit < live_player->transform.position.z) {"
+        },
+        {
+          "name": "mutable-completion-row",
+          "text": "        cRSubGame* live_game = game;\n        cRSubGoldy* live_player = player;\n        int completion_limit = live_game->completion_row_start;\n        completion_limit -= 5;\n        if (next_progress > 1.0f\n            || (float)completion_limit < live_player->transform.position.z) {"
+        },
+        {
+          "name": "direct-members",
+          "text": "        if (next_progress > 1.0f\n            || (float)(game->completion_row_start - 5) < player->transform.position.z) {"
+        },
+        {
+          "name": "game-owner-only",
+          "text": "        cRSubGame* live_game = game;\n        if (next_progress > 1.0f\n            || (float)(live_game->completion_row_start - 5) < player->transform.position.z) {"
+        },
+        {
+          "name": "player-owner-only",
+          "text": "        cRSubGoldy* live_player = player;\n        if (next_progress > 1.0f\n            || (float)(game->completion_row_start - 5) < live_player->transform.position.z) {"
+        },
+        {
+          "name": "owner-references",
+          "text": "        cRSubGame& live_game = *game;\n        cRSubGoldy& live_player = *player;\n        if (next_progress > 1.0f\n            || (float)(live_game.completion_row_start - 5) < live_player.transform.position.z) {"
+        }
+      ]
+    }
+  ]
+}

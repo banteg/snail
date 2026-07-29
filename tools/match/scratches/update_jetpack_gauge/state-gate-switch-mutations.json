@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "inactive-gate-active-switch",
+      "find": "    int live_state = state;\n    live_state -= zero;\n    if (live_state == SUB_HOVER_STATE_INACTIVE)\n        return;\n    --live_state;\n    if (live_state != SUB_HOVER_STATE_INACTIVE)\n        return;",
+      "replacements": [
+        {
+          "name": "zero-gate-active-switch",
+          "text": "    int live_state = state;\n    if (live_state == zero)\n        return;\n    switch (live_state) {\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "truth-gate-active-switch",
+          "text": "    int live_state = state;\n    if (!live_state)\n        return;\n    switch (live_state) {\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "sub-zero-gate-active-switch",
+          "text": "    int live_state = state;\n    live_state -= zero;\n    if (!live_state)\n        return;\n    switch (live_state) {\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "zero-gate-decrement-switch",
+          "text": "    int live_state = state;\n    if (live_state == zero)\n        return;\n    switch (--live_state) {\n    case SUB_HOVER_STATE_INACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "truth-gate-decrement-switch",
+          "text": "    int live_state = state;\n    if (!live_state)\n        return;\n    switch (--live_state) {\n    case SUB_HOVER_STATE_INACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "assignment-gate-decrement-switch",
+          "text": "    int live_state = state;\n    if (!(live_state -= zero))\n        return;\n    switch (--live_state) {\n    case SUB_HOVER_STATE_INACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "zero-gate-active-only-switch",
+          "text": "    int live_state = state;\n    if (live_state == zero)\n        return;\n    switch (live_state) {\n    default:\n        return;\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    }"
+        },
+        {
+          "name": "zero-gate-active-if",
+          "text": "    int live_state = state;\n    if (live_state == zero)\n        return;\n    if (live_state == SUB_HOVER_STATE_ACTIVE) {\n    } else {\n        return;\n    }"
+        }
+      ]
+    }
+  ]
+}

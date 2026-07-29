@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "wobble-zero-owner",
+      "find": "    state = SUB_HOVER_STATE_INACTIVE;\n    wobble_alpha = (float)zero;\n    wobble_y = (float)zero;\n    wobble_x = (float)zero;",
+      "replacements": [
+        {
+          "name": "typed-pointer-components",
+          "text": "    Vector3* wobble = (Vector3*)&wobble_x;\n    state = SUB_HOVER_STATE_INACTIVE;\n    wobble->z = (float)zero;\n    wobble->y = (float)zero;\n    wobble->x = (float)zero;"
+        },
+        {
+          "name": "typed-reference-components",
+          "text": "    Vector3& wobble = *(Vector3*)&wobble_x;\n    state = SUB_HOVER_STATE_INACTIVE;\n    wobble.z = (float)zero;\n    wobble.y = (float)zero;\n    wobble.x = (float)zero;"
+        },
+        {
+          "name": "direct-zero-vector",
+          "text": "    Vector3* wobble = (Vector3*)&wobble_x;\n    state = SUB_HOVER_STATE_INACTIVE;\n    *wobble = Vector3(0.0f, 0.0f, 0.0f);"
+        },
+        {
+          "name": "named-zero-vector",
+          "text": "    Vector3 zero_wobble(0.0f, 0.0f, 0.0f);\n    Vector3* wobble = (Vector3*)&wobble_x;\n    state = SUB_HOVER_STATE_INACTIVE;\n    *wobble = zero_wobble;"
+        },
+        {
+          "name": "integer-derived-zero-vector",
+          "text": "    Vector3 zero_wobble((float)zero, (float)zero, (float)zero);\n    Vector3* wobble = (Vector3*)&wobble_x;\n    state = SUB_HOVER_STATE_INACTIVE;\n    *wobble = zero_wobble;"
+        },
+        {
+          "name": "reference-zero-vector",
+          "text": "    Vector3& wobble = *(Vector3*)&wobble_x;\n    state = SUB_HOVER_STATE_INACTIVE;\n    wobble = Vector3(0.0f, 0.0f, 0.0f);"
+        }
+      ]
+    }
+  ]
+}

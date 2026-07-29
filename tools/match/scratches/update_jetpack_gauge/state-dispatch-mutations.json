@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "active-state-dispatch",
+      "find": "    int live_state = state;\n    live_state -= zero;\n    if (live_state == SUB_HOVER_STATE_INACTIVE)\n        return;\n    --live_state;\n    if (live_state != SUB_HOVER_STATE_INACTIVE)\n        return;",
+      "replacements": [
+        {
+          "name": "truthy-predecrement",
+          "text": "    int live_state = state;\n    live_state -= zero;\n    if (!live_state)\n        return;\n    if (--live_state)\n        return;"
+        },
+        {
+          "name": "literal-predecrement",
+          "text": "    int live_state = state;\n    live_state -= zero;\n    if (live_state == 0)\n        return;\n    if (--live_state != 0)\n        return;"
+        },
+        {
+          "name": "truthy-split-decrement",
+          "text": "    int live_state = state;\n    live_state -= zero;\n    if (!live_state)\n        return;\n    --live_state;\n    if (live_state)\n        return;"
+        },
+        {
+          "name": "assignment-test-predecrement",
+          "text": "    int live_state = state;\n    if ((live_state -= zero) == 0)\n        return;\n    if (--live_state)\n        return;"
+        },
+        {
+          "name": "assignment-truth-predecrement",
+          "text": "    int live_state = state;\n    if (!(live_state -= zero))\n        return;\n    if (--live_state)\n        return;"
+        },
+        {
+          "name": "short-circuit-predecrement",
+          "text": "    int live_state = state;\n    live_state -= zero;\n    if (!live_state || --live_state)\n        return;"
+        },
+        {
+          "name": "postdecrement-ladder",
+          "text": "    int live_state = state;\n    live_state -= zero;\n    if (!live_state)\n        return;\n    if (live_state-- != SUB_HOVER_STATE_ACTIVE)\n        return;"
+        },
+        {
+          "name": "direct-zero-one-tests",
+          "text": "    int live_state = state;\n    if (live_state == zero)\n        return;\n    if (live_state != SUB_HOVER_STATE_ACTIVE)\n        return;"
+        }
+      ]
+    }
+  ]
+}

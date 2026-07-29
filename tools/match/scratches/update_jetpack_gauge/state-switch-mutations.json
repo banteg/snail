@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "active-state-switch",
+      "find": "    int live_state = state;\n    live_state -= zero;\n    if (live_state == SUB_HOVER_STATE_INACTIVE)\n        return;\n    --live_state;\n    if (live_state != SUB_HOVER_STATE_INACTIVE)\n        return;",
+      "replacements": [
+        {
+          "name": "direct-switch",
+          "text": "    switch (state) {\n    case SUB_HOVER_STATE_INACTIVE:\n        return;\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "active-first-switch",
+          "text": "    switch (state) {\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    case SUB_HOVER_STATE_INACTIVE:\n        return;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "default-first-switch",
+          "text": "    switch (state) {\n    default:\n        return;\n    case SUB_HOVER_STATE_INACTIVE:\n        return;\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    }"
+        },
+        {
+          "name": "state-minus-zero-switch",
+          "text": "    switch (state - zero) {\n    case SUB_HOVER_STATE_INACTIVE:\n        return;\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "local-switch",
+          "text": "    int live_state = state;\n    switch (live_state) {\n    case SUB_HOVER_STATE_INACTIVE:\n        return;\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "local-minus-zero-switch",
+          "text": "    int live_state = state - zero;\n    switch (live_state) {\n    case SUB_HOVER_STATE_INACTIVE:\n        return;\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "mutated-local-switch",
+          "text": "    int live_state = state;\n    live_state -= zero;\n    switch (live_state) {\n    case SUB_HOVER_STATE_INACTIVE:\n        return;\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        },
+        {
+          "name": "active-only-switch",
+          "text": "    switch (state) {\n    case SUB_HOVER_STATE_ACTIVE:\n        break;\n    default:\n        return;\n    }"
+        }
+      ]
+    }
+  ]
+}
