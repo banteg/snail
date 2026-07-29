@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-owner-types",
+      "find": "        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;",
+      "replacements": [
+        {
+          "name": "y-pointer-zx-references",
+          "text": "        float* position_y = &live_position->y;\n        float& position_z = live_position->z;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        *position_y = velocity.y + *position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "z-pointer-yx-references",
+          "text": "        float& position_y = live_position->y;\n        float* position_z = &live_position->z;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        *position_z = velocity.z + *position_z;"
+        },
+        {
+          "name": "yz-pointers-x-reference",
+          "text": "        float* position_y = &live_position->y;\n        float* position_z = &live_position->z;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        *position_y = velocity.y + *position_y;\n        *position_z = velocity.z + *position_z;"
+        },
+        {
+          "name": "x-pointer-yz-references",
+          "text": "        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        float* position_x = &live_position->x;\n        *position_x = velocity.x + *position_x;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "yx-pointers-z-reference",
+          "text": "        float* position_y = &live_position->y;\n        float& position_z = live_position->z;\n        float* position_x = &live_position->x;\n        *position_x = velocity.x + *position_x;\n        *position_y = velocity.y + *position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "all-pointers-yzx",
+          "text": "        float* position_y = &live_position->y;\n        float* position_z = &live_position->z;\n        float* position_x = &live_position->x;\n        *position_x = velocity.x + *position_x;\n        *position_y = velocity.y + *position_y;\n        *position_z = velocity.z + *position_z;"
+        },
+        {
+          "name": "aggregate-reference",
+          "text": "        Vector3& integrated_position = *live_position;\n        integrated_position.x = velocity.x + integrated_position.x;\n        integrated_position.y = velocity.y + integrated_position.y;\n        integrated_position.z = velocity.z + integrated_position.z;"
+        },
+        {
+          "name": "aggregate-pointer",
+          "text": "        Vector3* integrated_position = live_position;\n        integrated_position->x = velocity.x + integrated_position->x;\n        integrated_position->y = velocity.y + integrated_position->y;\n        integrated_position->z = velocity.z + integrated_position->z;"
+        }
+      ]
+    }
+  ]
+}

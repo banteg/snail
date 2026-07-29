@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-integration",
+      "find": "        *live_position += velocity;",
+      "replacements": [
+        {
+          "name": "velocity-first-scalars",
+          "text": "        live_position->x = velocity.x + live_position->x;\n        live_position->y = velocity.y + live_position->y;\n        live_position->z = velocity.z + live_position->z;"
+        },
+        {
+          "name": "position-first-scalars",
+          "text": "        live_position->x = live_position->x + velocity.x;\n        live_position->y = live_position->y + velocity.y;\n        live_position->z = live_position->z + velocity.z;"
+        },
+        {
+          "name": "velocity-first-compound-scalars",
+          "text": "        float integrated_x = velocity.x;\n        integrated_x += live_position->x;\n        live_position->x = integrated_x;\n        float integrated_y = velocity.y;\n        integrated_y += live_position->y;\n        live_position->y = integrated_y;\n        float integrated_z = velocity.z;\n        integrated_z += live_position->z;\n        live_position->z = integrated_z;"
+        },
+        {
+          "name": "named-velocity-copy",
+          "text": "        Vector3 integrated_velocity = velocity;\n        live_position->x = integrated_velocity.x + live_position->x;\n        live_position->y = integrated_velocity.y + live_position->y;\n        live_position->z = integrated_velocity.z + live_position->z;"
+        },
+        {
+          "name": "named-position-copy",
+          "text": "        Vector3 integrated_position = *live_position;\n        live_position->x = velocity.x + integrated_position.x;\n        live_position->y = velocity.y + integrated_position.y;\n        live_position->z = velocity.z + integrated_position.z;"
+        },
+        {
+          "name": "named-complete-result",
+          "text": "        Vector3 integrated_position;\n        integrated_position.x = velocity.x + live_position->x;\n        integrated_position.y = velocity.y + live_position->y;\n        integrated_position.z = velocity.z + live_position->z;\n        *live_position = integrated_position;"
+        },
+        {
+          "name": "direct-member-scalars",
+          "text": "        transform.position.x = velocity.x + transform.position.x;\n        transform.position.y = velocity.y + transform.position.y;\n        transform.position.z = velocity.z + transform.position.z;"
+        },
+        {
+          "name": "velocity-references",
+          "text": "        const float& velocity_x = velocity.x;\n        const float& velocity_y = velocity.y;\n        const float& velocity_z = velocity.z;\n        live_position->x = velocity_x + live_position->x;\n        live_position->y = velocity_y + live_position->y;\n        live_position->z = velocity_z + live_position->z;"
+        },
+        {
+          "name": "position-references",
+          "text": "        float& position_x = live_position->x;\n        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "memberwise-compound",
+          "text": "        live_position->x += velocity.x;\n        live_position->y += velocity.y;\n        live_position->z += velocity.z;"
+        }
+      ]
+    }
+  ]
+}

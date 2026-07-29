@@ -32,7 +32,12 @@ void SubLazer::update_sub_lazer_projectile()
             return;
         }
         Vector3* live_position = &transform.position;
-        *live_position += velocity;
+        float& position_y = live_position->y;
+        float& position_z = live_position->z;
+        float& position_x = live_position->x;
+        position_x = velocity.x + position_x;
+        position_y = velocity.y + position_y;
+        position_z = velocity.z + position_z;
         if (transform.position.y >= 0.0f
             && transform.position.z >= owner_game->player.interaction_max_z) {
             cRSubLoc* grid =

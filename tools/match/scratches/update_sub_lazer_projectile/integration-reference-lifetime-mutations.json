@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-reference-lifetimes",
+      "find": "        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;",
+      "replacements": [
+        {
+          "name": "interleaved-xyz",
+          "text": "        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        float& position_y = live_position->y;\n        position_y = velocity.y + position_y;\n        float& position_z = live_position->z;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "x-write-then-yz-declarations",
+          "text": "        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "x-write-then-zy-declarations",
+          "text": "        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        float& position_z = live_position->z;\n        float& position_y = live_position->y;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "y-borrow-x-write-y-write-z-borrow",
+          "text": "        float& position_y = live_position->y;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        float& position_z = live_position->z;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "z-borrow-x-write-y-borrow",
+          "text": "        float& position_z = live_position->z;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        float& position_y = live_position->y;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "y-borrow-z-borrow-after-x-write",
+          "text": "        float& position_y = live_position->y;\n        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        float& position_z = live_position->z;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "interleaved-pointers-xyz",
+          "text": "        float* position_x = &live_position->x;\n        *position_x = velocity.x + *position_x;\n        float* position_y = &live_position->y;\n        *position_y = velocity.y + *position_y;\n        float* position_z = &live_position->z;\n        *position_z = velocity.z + *position_z;"
+        }
+      ]
+    }
+  ]
+}

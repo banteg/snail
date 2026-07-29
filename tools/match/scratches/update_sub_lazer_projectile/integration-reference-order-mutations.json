@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-reference-declaration-order",
+      "find": "        float& position_x = live_position->x;\n        float& position_y = live_position->y;\n        float& position_z = live_position->z;",
+      "replacements": [
+        {
+          "name": "xzy",
+          "text": "        float& position_x = live_position->x;\n        float& position_z = live_position->z;\n        float& position_y = live_position->y;"
+        },
+        {
+          "name": "yxz",
+          "text": "        float& position_y = live_position->y;\n        float& position_x = live_position->x;\n        float& position_z = live_position->z;"
+        },
+        {
+          "name": "yzx",
+          "text": "        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        float& position_x = live_position->x;"
+        },
+        {
+          "name": "zxy",
+          "text": "        float& position_z = live_position->z;\n        float& position_x = live_position->x;\n        float& position_y = live_position->y;"
+        },
+        {
+          "name": "zyx",
+          "text": "        float& position_z = live_position->z;\n        float& position_y = live_position->y;\n        float& position_x = live_position->x;"
+        }
+      ]
+    },
+    {
+      "name": "position-integration-statement-order",
+      "find": "        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;",
+      "replacements": [
+        {
+          "name": "xzy",
+          "text": "        position_x = velocity.x + position_x;\n        position_z = velocity.z + position_z;\n        position_y = velocity.y + position_y;"
+        },
+        {
+          "name": "yxz",
+          "text": "        position_y = velocity.y + position_y;\n        position_x = velocity.x + position_x;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "yzx",
+          "text": "        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;\n        position_x = velocity.x + position_x;"
+        },
+        {
+          "name": "zxy",
+          "text": "        position_z = velocity.z + position_z;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;"
+        },
+        {
+          "name": "zyx",
+          "text": "        position_z = velocity.z + position_z;\n        position_y = velocity.y + position_y;\n        position_x = velocity.x + position_x;"
+        }
+      ]
+    }
+  ]
+}

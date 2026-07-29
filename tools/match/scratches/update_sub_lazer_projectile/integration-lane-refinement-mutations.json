@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "integration-lane-owners",
+      "find": "        float& position_x = live_position->x;\n        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        position_z = velocity.z + position_z;",
+      "replacements": [
+        {
+          "name": "x-reference-member-compound-yz",
+          "text": "        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        live_position->y += velocity.y;\n        live_position->z += velocity.z;"
+        },
+        {
+          "name": "x-reference-reference-compound-yz",
+          "text": "        float& position_x = live_position->x;\n        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        position_x = velocity.x + position_x;\n        position_y += velocity.y;\n        position_z += velocity.z;"
+        },
+        {
+          "name": "x-reference-velocity-first-members-yz",
+          "text": "        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        live_position->y = velocity.y + live_position->y;\n        live_position->z = velocity.z + live_position->z;"
+        },
+        {
+          "name": "x-reference-position-first-members-yz",
+          "text": "        float& position_x = live_position->x;\n        position_x = velocity.x + position_x;\n        live_position->y = live_position->y + velocity.y;\n        live_position->z = live_position->z + velocity.z;"
+        },
+        {
+          "name": "xy-references-z-compound",
+          "text": "        float& position_x = live_position->x;\n        float& position_y = live_position->y;\n        position_x = velocity.x + position_x;\n        position_y = velocity.y + position_y;\n        live_position->z += velocity.z;"
+        },
+        {
+          "name": "xz-references-y-compound",
+          "text": "        float& position_x = live_position->x;\n        float& position_z = live_position->z;\n        position_x = velocity.x + position_x;\n        live_position->y += velocity.y;\n        position_z = velocity.z + position_z;"
+        },
+        {
+          "name": "x-reference-member-pointers-yz",
+          "text": "        float& position_x = live_position->x;\n        float* position_y = &live_position->y;\n        float* position_z = &live_position->z;\n        position_x = velocity.x + position_x;\n        *position_y = velocity.y + *position_y;\n        *position_z = velocity.z + *position_z;"
+        },
+        {
+          "name": "x-reference-velocity-accumulators-yz",
+          "text": "        float& position_x = live_position->x;\n        float integrated_y = velocity.y;\n        float integrated_z = velocity.z;\n        position_x = velocity.x + position_x;\n        integrated_y += live_position->y;\n        live_position->y = integrated_y;\n        integrated_z += live_position->z;\n        live_position->z = integrated_z;"
+        },
+        {
+          "name": "all-references-position-first-yz",
+          "text": "        float& position_x = live_position->x;\n        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        position_x = velocity.x + position_x;\n        position_y = position_y + velocity.y;\n        position_z = position_z + velocity.z;"
+        },
+        {
+          "name": "all-references-mixed-yz",
+          "text": "        float& position_x = live_position->x;\n        float& position_y = live_position->y;\n        float& position_z = live_position->z;\n        position_x = velocity.x + position_x;\n        position_y += velocity.y;\n        position_z = velocity.z + position_z;"
+        }
+      ]
+    }
+  ]
+}

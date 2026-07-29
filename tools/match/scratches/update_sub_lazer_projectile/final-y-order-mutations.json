@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-y-integration",
+      "find": "        position_y = velocity.y + position_y;",
+      "replacements": [
+        {
+          "name": "compound-reference",
+          "text": "        position_y += velocity.y;"
+        },
+        {
+          "name": "position-first-reference",
+          "text": "        position_y = position_y + velocity.y;"
+        },
+        {
+          "name": "velocity-pointer",
+          "text": "        const float* velocity_y = &velocity.y;\n        position_y = *velocity_y + position_y;"
+        },
+        {
+          "name": "velocity-reference",
+          "text": "        const float& velocity_y = velocity.y;\n        position_y = velocity_y + position_y;"
+        },
+        {
+          "name": "named-complete-value",
+          "text": "        float integrated_y = velocity.y + position_y;\n        position_y = integrated_y;"
+        },
+        {
+          "name": "named-velocity-accumulator",
+          "text": "        float integrated_y = velocity.y;\n        integrated_y += position_y;\n        position_y = integrated_y;"
+        },
+        {
+          "name": "direct-member-destination",
+          "text": "        live_position->y = velocity.y + position_y;"
+        },
+        {
+          "name": "direct-member-source",
+          "text": "        position_y = velocity.y + live_position->y;"
+        },
+        {
+          "name": "both-direct-members",
+          "text": "        live_position->y = velocity.y + live_position->y;"
+        },
+        {
+          "name": "position-pointer-source",
+          "text": "        float* integrated_position_y = &position_y;\n        position_y = velocity.y + *integrated_position_y;"
+        },
+        {
+          "name": "double-promotion",
+          "text": "        position_y = (float)((double)velocity.y + (double)position_y);"
+        },
+        {
+          "name": "subtract-negated-position",
+          "text": "        position_y = velocity.y - -position_y;"
+        }
+      ]
+    }
+  ]
+}

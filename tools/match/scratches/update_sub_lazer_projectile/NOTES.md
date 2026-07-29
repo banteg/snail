@@ -237,3 +237,28 @@ Natural `Vector3::operator+` and direct scalar-integration probes changed VC6
 register and x87 scheduling without improving the match, so both were removed.
 The honest Windows baseline remains 97.25%, 218/218 instructions, prefix
 82/218, and all 24 masked operands clean.
+
+## 2026-07-29 borrowed integration lanes
+
+Six recorded mutation sweeps evaluated 82 unique source-shaped variants around
+the three remaining commutative x87 pairs. Two ownership refinements improve
+the canonical function from 97.25% to **99.08%** while preserving the exact
+`218/218` instruction count and all 24 clean references:
+
+- replacing the aggregate `*live_position += velocity` expression with three
+  borrowed component references raises the match to 98.17%; this recovers
+  native's velocity-first x integration and, through the resulting allocator
+  schedule, both later attachment-probe x additions;
+- declaring those real borrows in `y`, `z`, `x` order while retaining the
+  authored `x`, `y`, `z` integration order raises the match again to 99.08%.
+
+The remaining difference is one instruction pair only:
+native loads `velocity.y` then adds `position.y`, while the candidate emits the
+commutative reverse. Follow-up grids covered per-lane compound/scalar forms,
+all reference declaration and statement permutations, named values,
+pointer/reference owner combinations, aggregate owners, promotions, and
+interleaved lifetimes. The final three sweeps produced no improvement.
+
+No volatile value, dummy write, or control-flow nudge is used. Keep the
+source-valid borrowed-lane improvement and treat the final y add as a bounded
+VC6 scheduling residual until new authored evidence supplies a stronger idiom.
