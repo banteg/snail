@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "selected-mirror-tail-publication",
+      "find": "    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    track_mirror_repeat_count = 0;\n    mirror_enabled = !mirror_enabled;\n    track_mirror_enabled = mirror_enabled;",
+      "replacements": [
+        {
+          "name": "cold-branch-then-common-store",
+          "text": "    if (track_mirror_repeat_count >= 4) {\n        track_mirror_repeat_count = 0;\n        mirror_enabled = !mirror_enabled;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "cold-branch-explicit-return",
+          "text": "    if (track_mirror_repeat_count >= 4) {\n        track_mirror_repeat_count = 0;\n        mirror_enabled = !mirror_enabled;\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "hot-cold-explicit-stores",
+          "text": "    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n    } else {\n        track_mirror_repeat_count = 0;\n        mirror_enabled = !mirror_enabled;\n        track_mirror_enabled = mirror_enabled;\n    }"
+        },
+        {
+          "name": "cold-hot-explicit-stores",
+          "text": "    if (track_mirror_repeat_count >= 4) {\n        track_mirror_repeat_count = 0;\n        mirror_enabled = !mirror_enabled;\n        track_mirror_enabled = mirror_enabled;\n    } else {\n        track_mirror_enabled = mirror_enabled;\n    }"
+        },
+        {
+          "name": "hot-store-cold-direct-invert",
+          "text": "    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    track_mirror_repeat_count = 0;\n    track_mirror_enabled = !mirror_enabled;"
+        },
+        {
+          "name": "cold-store-hot-direct",
+          "text": "    if (track_mirror_repeat_count >= 4) {\n        track_mirror_repeat_count = 0;\n        track_mirror_enabled = !mirror_enabled;\n        return;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "selected-local-common-store",
+          "text": "    bool selected_mirror = mirror_enabled;\n    if (track_mirror_repeat_count >= 4) {\n        track_mirror_repeat_count = 0;\n        selected_mirror = !mirror_enabled;\n    }\n    track_mirror_enabled = selected_mirror;"
+        },
+        {
+          "name": "selected-local-explicit-stores",
+          "text": "    bool selected_mirror = mirror_enabled;\n    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = selected_mirror;\n        return;\n    }\n    track_mirror_repeat_count = 0;\n    selected_mirror = !mirror_enabled;\n    track_mirror_enabled = selected_mirror;"
+        }
+      ]
+    }
+  ]
+}

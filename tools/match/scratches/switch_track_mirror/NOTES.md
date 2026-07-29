@@ -76,3 +76,27 @@ and void ownership, but its ARM-oriented nesting is not the source of
 Windows' duplicated ordinary-store return tail. The remaining three target
 instructions are therefore bounded to VC6 tail duplication; no volatile store
 or artificial dependency is introduced to defeat cross-jump merging.
+
+## 2026-07-29 tail-publication closure
+
+Two further bounded sweeps close the ordinary source-shape alternatives around
+the residual. Eight tail-publication variants cover hot-first and cold-first
+branches, explicit stores on both arms, a common store, direct inversion, and
+separate selected-state locals. All eight compile to the same 91.23%,
+27/30-instruction object with the same mismatch at target offset `0x3b`; VC6
+cross-jump-merges the identical store/epilogue independently of those lexical
+choices.
+
+Seven random-state owner variants then test the shapes supported by the Android
+byte-state body: a separate float result, separate or const bool owners, signed
+and unsigned byte owners, an integer owner, and reversed comparison spelling.
+Three ordinary bool/float lifetime forms are neutral. The narrower or wider
+scalar owners and reversed comparison regress to 87.10% or below, with the
+reversed comparison also introducing two unaudited references.
+
+The ledger is now formally stalled after three complete sweeps and 21 unique
+variants: zero improvements, 11 neutral results, and ten regressions, with no
+errors, repeats, or tradeoffs. The retained void source remains the
+mobile-authored semantic form. Recovering the native duplicated hot return
+would require defeating VC6's tail merge rather than expressing a missing
+program property, so no source change is retained.

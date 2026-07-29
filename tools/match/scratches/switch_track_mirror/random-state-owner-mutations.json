@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "random-mirror-state-owner",
+      "find": "    bool mirror_enabled = random_float_below(1.0f, \"Mirror\") > 0.5f;",
+      "replacements": [
+        {
+          "name": "reversed-comparison",
+          "text": "    bool mirror_enabled = 0.5f < random_float_below(1.0f, \"Mirror\");"
+        },
+        {
+          "name": "separate-float-result",
+          "text": "    float mirror_random = random_float_below(1.0f, \"Mirror\");\n    bool mirror_enabled = mirror_random > 0.5f;"
+        },
+        {
+          "name": "separate-bool-assignment",
+          "text": "    bool mirror_enabled;\n    mirror_enabled = random_float_below(1.0f, \"Mirror\") > 0.5f;"
+        },
+        {
+          "name": "const-bool-then-selected",
+          "text": "    const bool random_mirror = random_float_below(1.0f, \"Mirror\") > 0.5f;\n    bool mirror_enabled = random_mirror;"
+        },
+        {
+          "name": "unsigned-byte-owner",
+          "text": "    unsigned char mirror_enabled = random_float_below(1.0f, \"Mirror\") > 0.5f;"
+        },
+        {
+          "name": "signed-byte-owner",
+          "text": "    signed char mirror_enabled = random_float_below(1.0f, \"Mirror\") > 0.5f;"
+        },
+        {
+          "name": "integer-owner",
+          "text": "    int mirror_enabled = random_float_below(1.0f, \"Mirror\") > 0.5f;"
+        }
+      ]
+    }
+  ]
+}
