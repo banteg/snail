@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "flag4-selector3-velocity",
+      "find": "                velocity.x = 0.1f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;",
+      "replacements": [
+        {
+          "name": "by-value-vector",
+          "text": "                velocity = Vec3(\n                    0.1f, 0.0f, player->velocity.z + 1.0f);"
+        }
+      ]
+    },
+    {
+      "name": "flag4-selector2-velocity",
+      "find": "                velocity.x = -0.1f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;",
+      "replacements": [
+        {
+          "name": "by-value-vector",
+          "text": "                velocity = Vec3(\n                    -0.1f, 0.0f, player->velocity.z + 1.0f);"
+        }
+      ]
+    },
+    {
+      "name": "flag4-default-velocity",
+      "find": "                velocity.x = 0.0f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "by-value-vector",
+          "text": "                velocity = Vec3(\n                    0.0f, 0.0f, player->velocity.z + 1.0f);"
+        }
+      ]
+    },
+    {
+      "name": "nonflag4-default-velocity",
+      "find": "            velocity.x = 0.0f;\n            velocity.y = 0.0f;\n            velocity.z = player->velocity.z + 1.0f;",
+      "replacements": [
+        {
+          "name": "by-value-vector",
+          "text": "            velocity = Vec3(\n                0.0f, 0.0f, player->velocity.z + 1.0f);"
+        }
+      ]
+    }
+  ]
+}

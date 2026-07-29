@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "flag4-selector3-velocity",
+      "find": "            if (spawn_selector == 3) {\n                velocity.x = 0.1f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;\n                position->x += 0.5f;",
+      "replacements": [
+        {
+          "name": "staged-vector",
+          "text": "            if (spawn_selector == 3) {\n                Vec3 staged_velocity;\n                staged_velocity.x = 0.1f;\n                staged_velocity.y = 0.0f;\n                staged_velocity.z = player->velocity.z + 1.0f;\n                velocity = staged_velocity;\n                position->x += 0.5f;"
+        }
+      ]
+    },
+    {
+      "name": "flag4-selector2-velocity",
+      "find": "            } else if (spawn_selector == 2) {\n                velocity.x = -0.1f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;\n                position->x -= 0.5f;",
+      "replacements": [
+        {
+          "name": "staged-vector",
+          "text": "            } else if (spawn_selector == 2) {\n                Vec3 staged_velocity;\n                staged_velocity.x = -0.1f;\n                staged_velocity.y = 0.0f;\n                staged_velocity.z = player->velocity.z + 1.0f;\n                velocity = staged_velocity;\n                position->x -= 0.5f;"
+        }
+      ]
+    },
+    {
+      "name": "flag4-default-velocity",
+      "find": "            } else {\n                velocity.x = 0.0f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;\n            }",
+      "replacements": [
+        {
+          "name": "staged-vector",
+          "text": "            } else {\n                Vec3 staged_velocity;\n                staged_velocity.x = 0.0f;\n                staged_velocity.y = 0.0f;\n                staged_velocity.z = player->velocity.z + 1.0f;\n                velocity = staged_velocity;\n            }"
+        }
+      ]
+    },
+    {
+      "name": "nonflag4-default-velocity",
+      "find": "        } else {\n            velocity.x = 0.0f;\n            velocity.y = 0.0f;\n            velocity.z = player->velocity.z + 1.0f;\n        }\n    }\n\n    if (kind == 1)",
+      "replacements": [
+        {
+          "name": "staged-vector",
+          "text": "        } else {\n            Vec3 staged_velocity;\n            staged_velocity.x = 0.0f;\n            staged_velocity.y = 0.0f;\n            staged_velocity.z = player->velocity.z + 1.0f;\n            velocity = staged_velocity;\n        }\n    }\n\n    if (kind == 1)"
+        }
+      ]
+    }
+  ]
+}

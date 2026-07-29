@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "true-family-owner",
+      "find": "    } else {\n        Vec3* source;",
+      "replacements": [
+        {
+          "name": "branch-scoped-vector",
+          "text": "    } else {\n        Vec3 staged_velocity;\n        Vec3* source;"
+        }
+      ]
+    },
+    {
+      "name": "flag4-selector3-velocity",
+      "find": "                velocity.x = 0.1f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;",
+      "replacements": [
+        {
+          "name": "use-owner",
+          "text": "                staged_velocity.x = 0.1f;\n                staged_velocity.y = 0.0f;\n                staged_velocity.z = player->velocity.z + 1.0f;\n                velocity = staged_velocity;"
+        }
+      ]
+    },
+    {
+      "name": "flag4-selector2-velocity",
+      "find": "                velocity.x = -0.1f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;",
+      "replacements": [
+        {
+          "name": "use-owner",
+          "text": "                staged_velocity.x = -0.1f;\n                staged_velocity.y = 0.0f;\n                staged_velocity.z = player->velocity.z + 1.0f;\n                velocity = staged_velocity;"
+        }
+      ]
+    },
+    {
+      "name": "flag4-default-velocity",
+      "find": "                velocity.x = 0.0f;\n                velocity.y = 0.0f;\n                velocity.z = player->velocity.z + 1.0f;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "use-owner",
+          "text": "                staged_velocity.x = 0.0f;\n                staged_velocity.y = 0.0f;\n                staged_velocity.z = player->velocity.z + 1.0f;\n                velocity = staged_velocity;"
+        }
+      ]
+    },
+    {
+      "name": "nonflag4-default-velocity",
+      "find": "            velocity.x = 0.0f;\n            velocity.y = 0.0f;\n            velocity.z = player->velocity.z + 1.0f;",
+      "replacements": [
+        {
+          "name": "use-owner",
+          "text": "            staged_velocity.x = 0.0f;\n            staged_velocity.y = 0.0f;\n            staged_velocity.z = player->velocity.z + 1.0f;\n            velocity = staged_velocity;"
+        }
+      ]
+    }
+  ]
+}

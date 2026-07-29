@@ -394,3 +394,25 @@ honest 77.98%, 549/582-instruction frontier, prefix 81/582, with 47 clean masks
 and the one documented unaudited target operand. Both tracked decompilers now
 show the inherited `shot->bod.bod` path and reject the synthetic
 `primary_body` alias during replay.
+
+## 2026-07-29 shoot-velocity lifetime closure
+
+Windows stages the `(shoot_flags & 5)` true-family velocity values through the
+same 12-byte stack area used by the false-family launch constructors, while
+the current candidate writes those four true-family values directly. Android
+and iOS also expose one three-float local around this tree, so three bounded
+sweeps tested real aggregate ownership rather than padding or volatile stores.
+
+Fifteen combinations of separately scoped `Vec3` temporaries top out at
+`54.96%`; by-value `Vec3(x, y, z)` expressions top out at `58.86%`. A vector
+owned by the whole true-family branch is byte-neutral while unused, but its
+first actual use again drops to `54.96%`, and routing all four exits through it
+lands at `53.86%`. A full-tree owner likewise produces 584 instructions,
+prefix `3`, and `53.86%`. Every material aggregate lifetime makes VC6 save EBP
+and perturbs the function-wide register schedule.
+
+The retained mobile-authored control tree therefore remains the strongest
+source evidence at `77.98%`, 549/582 instructions, prefix `81`, with 47 clean
+references and one native-only constant left unaudited. The 33-instruction
+deficit is bounded to native whole-tree stack/register allocation; no
+synthetic temporary is retained merely to reproduce one launch constructor.
