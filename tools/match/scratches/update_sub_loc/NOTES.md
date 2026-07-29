@@ -163,3 +163,22 @@ residual is independent x87 scheduling: native adds Goldy's z before storing
 the already-loaded x/y lanes, while VC6 schedules that same add immediately
 after the two stores. No dependency or register constraint is introduced to
 force the ordering.
+
+## 2026-07-29 exact Wall2 target-vector lifetime
+
+A recorded ten-variant sweep isolates the final scheduling difference to the
+single-use `jitter` local. Three ordinary forms are exact: inline the
+`random_signed_float_below` call in the z lane, materialize `jitter + 8.0f` as
+the value passed to that lane, or consume `jitter` with `+= 8.0f` before the
+vector expression. The other seven vector additions are byte-identical to the
+99.47% baseline.
+
+The retained source inlines the random call in
+`player.position + Vector3(0, 0, SRAND(...) + 8)`. This keeps the vector
+addition independently preserved by Android and iOS, matches the surrounding
+single-use RNG expression idiom, and removes the decompiler-introduced scalar
+lifetime without adding a dependency. VC6 now schedules the z-lane x87 add
+before publishing the already-loaded x/y lanes exactly as native does.
+
+Focused output is proof-grade: **100.00%**, exact `187/187` instructions,
+prefix `187/187`, and all 39 masked operands audited clean.

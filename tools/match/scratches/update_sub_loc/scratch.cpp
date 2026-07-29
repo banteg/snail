@@ -26,10 +26,12 @@ void cRSubLoc::AI()
                 (lane_and_flags >> SUBLOC_MERGED_RUN_WIDTH_SHIFT)
                 & SUBLOC_MERGED_RUN_WIDTH_VALUE_MASK;
             spawn.x += (float)merged_run_width * 0.5f;
-            float jitter = random_signed_float_below(3.0f, "Wall2");
             Vector3 target =
                 g_game->subgame.embedded_player()->transform.position
-                + Vector3(0.0f, 0.0f, jitter + 8.0f);
+                + Vector3(
+                    0.0f,
+                    0.0f,
+                    random_signed_float_below(3.0f, "Wall2") + 8.0f);
             Vector3 direction;
             direction = target - spawn;
             if (direction.z >= -4.0f)

@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "wall2-target-vector",
+      "find": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f, jitter + 8.0f);",
+      "replacements": [
+        {
+          "name": "commuted-z-sum",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f, 8.0f + jitter);"
+        },
+        {
+          "name": "inline-random-call",
+          "text": "            Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f,\n                    random_signed_float_below(3.0f, \"Wall2\") + 8.0f);"
+        },
+        {
+          "name": "named-z-offset",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            float target_z_offset = jitter + 8.0f;\n            Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f, target_z_offset);"
+        },
+        {
+          "name": "mutated-jitter-offset",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            jitter += 8.0f;\n            Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f, jitter);"
+        },
+        {
+          "name": "named-vector-offset",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            Vector3 target_offset(0.0f, 0.0f, jitter + 8.0f);\n            Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + target_offset;"
+        },
+        {
+          "name": "copy-initialized-vector-offset",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            Vector3 target_offset = Vector3(0.0f, 0.0f, jitter + 8.0f);\n            Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + target_offset;"
+        },
+        {
+          "name": "assignment-form",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            Vector3 target;\n            target = g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f, jitter + 8.0f);"
+        },
+        {
+          "name": "direct-initialization-form",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            Vector3 target(\n                g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f, jitter + 8.0f));"
+        },
+        {
+          "name": "commuted-vector-addition",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            Vector3 target = Vector3(0.0f, 0.0f, jitter + 8.0f)\n                + g_game->subgame.embedded_player()->transform.position;"
+        },
+        {
+          "name": "const-target",
+          "text": "            float jitter = random_signed_float_below(3.0f, \"Wall2\");\n            const Vector3 target =\n                g_game->subgame.embedded_player()->transform.position\n                + Vector3(0.0f, 0.0f, jitter + 8.0f);"
+        }
+      ]
+    }
+  ]
+}
