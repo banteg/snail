@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "next-link-cursor",
+      "find": "    BodNode** next_ref =\n        &slots[0][TRACK_RENDER_CACHE_FLOOR].list_next;",
+      "replacements": [
+        {
+          "name": "register-cursor",
+          "text": "    register BodNode** next_ref =\n        &slots[0][TRACK_RENDER_CACHE_FLOOR].list_next;"
+        },
+        {
+          "name": "split-assignment",
+          "text": "    BodNode** next_ref;\n    next_ref = &slots[0][TRACK_RENDER_CACHE_FLOOR].list_next;"
+        },
+        {
+          "name": "literal-first-family",
+          "text": "    BodNode** next_ref = &slots[0][0].list_next;"
+        },
+        {
+          "name": "first-element-address",
+          "text": "    BodNode** next_ref =\n        &slots[0][TRACK_RENDER_CACHE_FLOOR].list_next + 0;"
+        }
+      ]
+    },
+    {
+      "name": "loop-counter-lifetimes",
+      "find": "    int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {",
+      "replacements": [
+        {
+          "name": "hoisted-inner-count",
+          "text": "    int rows = sizeof(slots) / sizeof(slots[0]);\n    int count;\n    do {\n        count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {"
+        },
+        {
+          "name": "register-row-count",
+          "text": "    register int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {"
+        },
+        {
+          "name": "register-both-counts",
+          "text": "    register int rows = sizeof(slots) / sizeof(slots[0]);\n    register int count;\n    do {\n        count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {"
+        },
+        {
+          "name": "unsigned-counts",
+          "text": "    unsigned int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        unsigned int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {"
+        },
+        {
+          "name": "literal-counts",
+          "text": "    int rows = 143;\n\n    do {\n        int count = 5;\n        do {"
+        }
+      ]
+    },
+    {
+      "name": "loop-counter-update",
+      "find": "            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n            count--;\n        } while (count);\n        rows--;\n    } while (rows);",
+      "replacements": [
+        {
+          "name": "predecrement-conditions",
+          "text": "            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n        } while (--count);\n    } while (--rows);"
+        },
+        {
+          "name": "explicit-prefix-decrement",
+          "text": "            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n            --count;\n        } while (count != 0);\n        --rows;\n    } while (rows != 0);"
+        },
+        {
+          "name": "explicit-cursor-addition",
+          "text": "            next_ref = next_ref\n                + sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n            count--;\n        } while (count);\n        rows--;\n    } while (rows);"
+        },
+        {
+          "name": "indexed-cursor-advance",
+          "text": "            next_ref = &next_ref[\n                sizeof(TrackRenderCacheSlot) / sizeof(*next_ref)];\n            count--;\n        } while (count);\n        rows--;\n    } while (rows);"
+        }
+      ]
+    }
+  ]
+}

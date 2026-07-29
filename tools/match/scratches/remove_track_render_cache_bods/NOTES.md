@@ -155,3 +155,29 @@ typed cleanup and compiles identically. It does not resolve the honest VC6
 register-lifetime residual: focused matching remains 70.59%, 61/58 candidate
 and target instructions, prefix 5, with five clean operands. No artificial
 mask locals or forced register tricks were retained.
+
+## 2026-07-29 loop-allocation boundary
+
+Three recorded mutation sweeps cover 163 variants around the remaining
+three-instruction loop surplus. The first exhausts all 149 one-, two-, and
+three-site interactions between next-link declaration forms, signed/unsigned
+and hoisted counters, `register` hints, literal owner bounds, cursor additions,
+and pre/post-decrement conditions. Every combination is byte-identical to the
+retained 70.59% source. Five whole-loop `do`, `while`, and descending `for`
+nestings are also byte-identical.
+
+The final owner sweep confirms why the typed `list_flags` cursor must remain.
+Seven direct-expression, snapshot, reference, and inverted-guard forms are
+neutral. Naming the containing `BodNode` produces two nominal 71.79%
+variants at 59/58 instructions, but VC6 then folds both linked-bit checks to
+`test ah, 2` and sequence alignment can no longer audit the target
+`g_game_base` load against the candidate `g_game` load. Both variants lose one
+clean reference and introduce two unaudited operands, so neither is retained.
+
+The exact 36/36 `recycle_bod_to_free_list` scratch independently pins the
+shared `BodList::remove_bod` source and rules out changing its mask logic.
+Focused cache teardown therefore remains 70.59% (`61/58`), prefix 5, with all
+five references clean. Native's single ESI cursor plus full-width EBX/EBP
+linked/clear masks versus the candidate's parallel EBX row cursor is a bounded
+inlining/allocation residual; the clean reference audit takes precedence over
+the two metric-tradeoff variants.

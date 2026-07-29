@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "nested-loop-control",
+      "find": "    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }\n            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n            count--;\n        } while (count);\n        rows--;\n    } while (rows);",
+      "replacements": [
+        {
+          "name": "outer-while-inner-do",
+          "text": "    while (rows != 0) {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }\n            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n        } while (--count != 0);\n        --rows;\n    }"
+        },
+        {
+          "name": "outer-do-inner-while",
+          "text": "    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        while (count != 0) {\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }\n            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n            --count;\n        }\n        --rows;\n    } while (rows != 0);"
+        },
+        {
+          "name": "descending-for-loops",
+          "text": "    for (; rows != 0; --rows) {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        for (; count != 0; --count) {\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }\n            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n        }\n    }"
+        },
+        {
+          "name": "outer-for-inner-do",
+          "text": "    for (; rows != 0; --rows) {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }\n            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n        } while (--count != 0);\n    }"
+        },
+        {
+          "name": "outer-do-inner-for",
+          "text": "    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        for (; count != 0; --count) {\n            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);\n            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {\n                BodList* list = &g_game->active_bod_list;\n                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));\n            }\n            next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);\n        }\n        --rows;\n    } while (rows != 0);"
+        }
+      ]
+    }
+  ]
+}
