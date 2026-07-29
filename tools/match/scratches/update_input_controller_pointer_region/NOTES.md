@@ -120,10 +120,13 @@ adapter differences, not a byte-identical-body claim.
 
 ## 2026-07-29 bounded final-clamp audit
 
-Twelve Y-clamp spellings and four X/Y declaration-lifetime variants were
-tested. Field pointers, references, direct sidecar access, ternaries, and all
-four declaration orders are byte-identical to the 98.51%, 134/134 baseline;
-named-value and early-return forms regress.
+Three recorded sweeps now cover 24 variants: twelve complete Y-clamp
+spellings, four X/Y declaration orders, and eight final-publication owner/value
+forms. Sixteen are byte-identical to the 98.51%, 134/134 baseline, including
+field pointers/references, direct sidecar access, localized slot ownership,
+unary and double-cast copies, and every declaration order. Named-value,
+initialized, ternary, direct-branch-store, and `double`-temporary forms
+regress; none improves any metric.
 
 The only differing instructions are the final in-range Y self-store. Native
 emits `fld [ecx+g_input_slot0_authored_y]` followed by `fstp` to the same

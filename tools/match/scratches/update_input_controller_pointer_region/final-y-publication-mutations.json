@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "final-y-publication",
+      "find": "    input_controller_slot(slot).authored_y = clamped_y;",
+      "replacements": [
+        {
+          "name": "named-final-value",
+          "text": "    float final_y = clamped_y;\n    input_controller_slot(slot).authored_y = final_y;"
+        },
+        {
+          "name": "const-final-value",
+          "text": "    const float final_y = clamped_y;\n    input_controller_slot(slot).authored_y = final_y;"
+        },
+        {
+          "name": "field-pointer",
+          "text": "    float* authored_y = &input_controller_slot(slot).authored_y;\n    *authored_y = clamped_y;"
+        },
+        {
+          "name": "field-reference",
+          "text": "    float& authored_y = input_controller_slot(slot).authored_y;\n    authored_y = clamped_y;"
+        },
+        {
+          "name": "direct-lane-pointer",
+          "text": "    float* authored_y = (float*)((char*)g_input_slot0_authored_y\n        + ((slot * 7) << 3));\n    *authored_y = clamped_y;"
+        },
+        {
+          "name": "localized-slot-owner",
+          "text": "    InputControllerSlot& output_slot = input_controller_slot(slot);\n    output_slot.authored_y = clamped_y;"
+        },
+        {
+          "name": "unary-plus-value",
+          "text": "    input_controller_slot(slot).authored_y = +clamped_y;"
+        },
+        {
+          "name": "double-cast-value",
+          "text": "    input_controller_slot(slot).authored_y = (float)(double)clamped_y;"
+        }
+      ]
+    }
+  ]
+}

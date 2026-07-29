@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "clamp-declaration-lifetime",
+      "find": "    float clamped_x;\n    if (input_controller_slot(slot).authored_x < 1.0f) {\n        clamped_x = 1.0f;\n    } else if (input_controller_slot(slot).authored_x > 632.0f) {\n        clamped_x = 632.0f;\n    } else {\n        clamped_x = input_controller_slot(slot).authored_x;\n    }\n    input_controller_slot(slot).authored_x = clamped_x;\n\n    float clamped_y;",
+      "replacements": [
+        {
+          "name": "both-x-then-y",
+          "text": "    float clamped_x;\n    float clamped_y;\n    if (input_controller_slot(slot).authored_x < 1.0f) {\n        clamped_x = 1.0f;\n    } else if (input_controller_slot(slot).authored_x > 632.0f) {\n        clamped_x = 632.0f;\n    } else {\n        clamped_x = input_controller_slot(slot).authored_x;\n    }\n    input_controller_slot(slot).authored_x = clamped_x;"
+        },
+        {
+          "name": "both-y-then-x",
+          "text": "    float clamped_y;\n    float clamped_x;\n    if (input_controller_slot(slot).authored_x < 1.0f) {\n        clamped_x = 1.0f;\n    } else if (input_controller_slot(slot).authored_x > 632.0f) {\n        clamped_x = 632.0f;\n    } else {\n        clamped_x = input_controller_slot(slot).authored_x;\n    }\n    input_controller_slot(slot).authored_x = clamped_x;"
+        },
+        {
+          "name": "combined-x-then-y",
+          "text": "    float clamped_x, clamped_y;\n    if (input_controller_slot(slot).authored_x < 1.0f) {\n        clamped_x = 1.0f;\n    } else if (input_controller_slot(slot).authored_x > 632.0f) {\n        clamped_x = 632.0f;\n    } else {\n        clamped_x = input_controller_slot(slot).authored_x;\n    }\n    input_controller_slot(slot).authored_x = clamped_x;"
+        },
+        {
+          "name": "combined-y-then-x",
+          "text": "    float clamped_y, clamped_x;\n    if (input_controller_slot(slot).authored_x < 1.0f) {\n        clamped_x = 1.0f;\n    } else if (input_controller_slot(slot).authored_x > 632.0f) {\n        clamped_x = 632.0f;\n    } else {\n        clamped_x = input_controller_slot(slot).authored_x;\n    }\n    input_controller_slot(slot).authored_x = clamped_x;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "final-y-clamp",
+      "find": "    float clamped_y;\n    if (input_controller_slot(slot).authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (input_controller_slot(slot).authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = input_controller_slot(slot).authored_y;\n    }\n    input_controller_slot(slot).authored_y = clamped_y;",
+      "replacements": [
+        {
+          "name": "initialize-from-field",
+          "text": "    float clamped_y = input_controller_slot(slot).authored_y;\n    if (clamped_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (clamped_y > 472.0f) {\n        clamped_y = 472.0f;\n    }\n    input_controller_slot(slot).authored_y = clamped_y;"
+        },
+        {
+          "name": "named-current-value",
+          "text": "    float current_y = input_controller_slot(slot).authored_y;\n    float clamped_y;\n    if (current_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (current_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = current_y;\n    }\n    input_controller_slot(slot).authored_y = clamped_y;"
+        },
+        {
+          "name": "nested-ternary",
+          "text": "    float current_y = input_controller_slot(slot).authored_y;\n    float clamped_y = current_y < 1.0f\n        ? 1.0f\n        : (current_y > 472.0f ? 472.0f : current_y);\n    input_controller_slot(slot).authored_y = clamped_y;"
+        },
+        {
+          "name": "direct-branch-stores",
+          "text": "    if (input_controller_slot(slot).authored_y < 1.0f) {\n        input_controller_slot(slot).authored_y = 1.0f;\n    } else if (input_controller_slot(slot).authored_y > 472.0f) {\n        input_controller_slot(slot).authored_y = 472.0f;\n    } else {\n        input_controller_slot(slot).authored_y =\n            input_controller_slot(slot).authored_y;\n    }"
+        },
+        {
+          "name": "field-pointer",
+          "text": "    float* authored_y = &input_controller_slot(slot).authored_y;\n    float clamped_y;\n    if (*authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (*authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = *authored_y;\n    }\n    *authored_y = clamped_y;"
+        },
+        {
+          "name": "field-reference",
+          "text": "    float& authored_y = input_controller_slot(slot).authored_y;\n    float clamped_y;\n    if (authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = authored_y;\n    }\n    authored_y = clamped_y;"
+        },
+        {
+          "name": "direct-lane-pointer",
+          "text": "    float* authored_y = (float*)((char*)g_input_slot0_authored_y\n        + ((slot * 7) << 3));\n    float clamped_y;\n    if (*authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (*authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = *authored_y;\n    }\n    *authored_y = clamped_y;"
+        },
+        {
+          "name": "register-value",
+          "text": "    register float clamped_y;\n    if (input_controller_slot(slot).authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (input_controller_slot(slot).authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = input_controller_slot(slot).authored_y;\n    }\n    input_controller_slot(slot).authored_y = clamped_y;"
+        },
+        {
+          "name": "unary-plus-copy",
+          "text": "    float clamped_y;\n    if (input_controller_slot(slot).authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (input_controller_slot(slot).authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = +input_controller_slot(slot).authored_y;\n    }\n    input_controller_slot(slot).authored_y = clamped_y;"
+        },
+        {
+          "name": "double-cast-copy",
+          "text": "    float clamped_y;\n    if (input_controller_slot(slot).authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (input_controller_slot(slot).authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = (float)(double)input_controller_slot(slot).authored_y;\n    }\n    input_controller_slot(slot).authored_y = clamped_y;"
+        },
+        {
+          "name": "double-clamped-value",
+          "text": "    double clamped_y;\n    if (input_controller_slot(slot).authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (input_controller_slot(slot).authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    } else {\n        clamped_y = input_controller_slot(slot).authored_y;\n    }\n    input_controller_slot(slot).authored_y = (float)clamped_y;"
+        },
+        {
+          "name": "initialized-default",
+          "text": "    float clamped_y = input_controller_slot(slot).authored_y;\n    if (input_controller_slot(slot).authored_y < 1.0f) {\n        clamped_y = 1.0f;\n    } else if (input_controller_slot(slot).authored_y > 472.0f) {\n        clamped_y = 472.0f;\n    }\n    input_controller_slot(slot).authored_y = clamped_y;"
+        }
+      ]
+    }
+  ]
+}
