@@ -221,3 +221,21 @@ interaction matrix produced no further improvement. Native eagerly keeps tile
 14 in `cl`, while VC6 materializes the constant separately for the two
 candidate compares. No volatile access, fake external, or dummy operation was
 introduced to force that register schedule.
+
+## 2026-07-29 wall-constant owner closure
+
+A fourth recorded sweep tests the remaining plausible scalar owners for tile
+14: `SubLocTileId`, signed and unsigned byte/int locals, `const`, and
+`register`, declared on both sides of the lane extraction. All six variants are
+byte-identical at 87.29%, 147/144 instructions, prefix 44, and nine clean
+references. VC6 eliminates every source local and retains the same two
+load-byte/materialize-constant compare pairs; none induces native's single
+eager `mov cl, 0xe`.
+
+The ledger now contains 36 evaluations (31 unique), with 3 better, 17 neutral,
+and 16 worse variants, one earlier sweep win, three trailing non-improving
+sweeps, and no compile errors. Five repeated variants are the intentional
+overlap between the earlier lane-only sweep and the scan/lane interaction
+matrix. The scratch is therefore formally stalled on this backend register
+schedule. No volatile local, fake global, or dummy use is justified, and the
+stronger bounded-singleton source remains unchanged.
