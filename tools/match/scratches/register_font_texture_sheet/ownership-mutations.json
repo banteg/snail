@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "scan-local-declaration-order",
+      "find": "    int x = 0;\n    int run_width = -1;\n    int slot = 0;\n    int last_x = 0;",
+      "replacements": [
+        {
+          "name": "slot-first",
+          "text": "    int slot = 0;\n    int x = 0;\n    int run_width = -1;\n    int last_x = 0;"
+        },
+        {
+          "name": "slot-last",
+          "text": "    int x = 0;\n    int run_width = -1;\n    int last_x = 0;\n    int slot = 0;"
+        },
+        {
+          "name": "run-width-last",
+          "text": "    int x = 0;\n    int slot = 0;\n    int last_x = 0;\n    int run_width = -1;"
+        },
+        {
+          "name": "last-x-first",
+          "text": "    int last_x = 0;\n    int x = 0;\n    int run_width = -1;\n    int slot = 0;"
+        },
+        {
+          "name": "grouped-declaration",
+          "text": "    int x = 0, run_width = -1, slot = 0, last_x = 0;"
+        },
+        {
+          "name": "split-slot-initialization",
+          "text": "    int x = 0;\n    int run_width = -1;\n    int slot;\n    int last_x = 0;\n    slot = 0;"
+        }
+      ]
+    },
+    {
+      "name": "glyph-slot-increment",
+      "find": "            ++slot;\n            if (slot == FONT_GLYPH_CAPACITY)",
+      "replacements": [
+        {
+          "name": "preincrement-condition",
+          "text": "            if (++slot == FONT_GLYPH_CAPACITY)"
+        },
+        {
+          "name": "add-assign",
+          "text": "            slot += 1;\n            if (slot == FONT_GLYPH_CAPACITY)"
+        },
+        {
+          "name": "expanded-add",
+          "text": "            slot = slot + 1;\n            if (slot == FONT_GLYPH_CAPACITY)"
+        }
+      ]
+    },
+    {
+      "name": "glyph-run-publication-order",
+      "find": "            float glyph_run_width = (float)run_width;\n            int glyph_left = x - run_width;\n            run_width = 0;\n            g_font_sheets[g_registered_font_count].glyph_width[slot] =\n                glyph_run_width;",
+      "replacements": [
+        {
+          "name": "left-before-width-snapshot",
+          "text": "            int glyph_left = x - run_width;\n            float glyph_run_width = (float)run_width;\n            run_width = 0;\n            g_font_sheets[g_registered_font_count].glyph_width[slot] =\n                glyph_run_width;"
+        },
+        {
+          "name": "publish-before-reset",
+          "text": "            float glyph_run_width = (float)run_width;\n            int glyph_left = x - run_width;\n            g_font_sheets[g_registered_font_count].glyph_width[slot] =\n                glyph_run_width;\n            run_width = 0;"
+        },
+        {
+          "name": "direct-width-publication",
+          "text": "            int glyph_left = x - run_width;\n            g_font_sheets[g_registered_font_count].glyph_width[slot] =\n                (float)run_width;\n            run_width = 0;"
+        }
+      ]
+    }
+  ]
+}

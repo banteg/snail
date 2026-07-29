@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-loop-control",
+      "find": "    int local_index = 0;\n    for (int i = 1; i < 51; ++i) {",
+      "replacements": [
+        {
+          "name": "derived-index-for",
+          "text": "    int local_index = 0;\n    for (int i = local_index + 1; i < 51; i = local_index + 1) {"
+        },
+        {
+          "name": "counter-condition-for",
+          "text": "    int local_index = 0;\n    for (int i = local_index + 1; local_index < 50;\n         i = local_index + 1) {"
+        },
+        {
+          "name": "counter-driven-while",
+          "text": "    int local_index = 0;\n    while (local_index < 50) {\n        int i = local_index + 1;"
+        },
+        {
+          "name": "per-iteration-index",
+          "text": "    for (int i = 1; i < 51; ++i) {\n        int local_index = i - 1;"
+        }
+      ]
+    }
+  ]
+}

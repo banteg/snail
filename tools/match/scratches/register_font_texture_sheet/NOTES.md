@@ -157,3 +157,25 @@ Windows therefore keeps its locally proved integer ABI. Mobile still supplies
 the authored owner name and parameter roles, but its `0xa28` metadata-driven
 font sheet is also layout-incompatible with the Windows `0x828` atlas owner;
 neither the mobile return nor its offsets are transplanted.
+
+## 2026-07-29 bounded glyph-slot ownership sweeps
+
+Two recorded mutation sweeps tested 60 unique source shapes around the sole
+remaining register-allocation split. The first exhaustively combined scan-local
+declaration orders, three equivalent glyph-slot increments, and three
+glyph-run publication orders. The second separated the currently published
+glyph index from the next-slot counter, including explicit snapshot,
+snapshot-plus-next, and post-increment forms.
+
+No variant improved the 75.41% baseline: 14 compiled byte-for-byte equivalently
+and 46 regressed, with no reference-debt tradeoff. In particular, all three
+semantic glyph-slot snapshots canonicalized to the existing 275-instruction
+candidate. Declaration order and increment spelling therefore do not explain
+why native retains `split_x` in EBX while this source lets VC6 cache the glyph
+slot there.
+
+The remaining route is evidence recovery, not a wider syntax search: identify
+the missing source-level owner that makes the native glyph slot genuinely
+memory-resident. A `register` keyword, `volatile`, dummy address escape, or
+other forced spill would only encode the desired register assignment and
+remains out of scope.

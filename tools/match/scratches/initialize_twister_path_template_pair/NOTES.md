@@ -202,3 +202,28 @@ strict exports pass with zero mismatches, and all 1,142 health checks pass.
 
 This is analysis-only: focused matching remains honestly unchanged at 57.97%
 (672/677), with a 94-instruction prefix and 49 clean masked operands.
+
+## 2026-07-29 paired interior-owner sweeps
+
+Three recorded mutation sweeps tested ten semantically equivalent interior-loop
+source shapes, with the same result independently reproduced by Twister2.
+Removing the retained primary-sample alias, delaying it until transform setup,
+and mixing direct/aliased owners tested the repeated native array ownership.
+The delayed alias produced a superficial 16-byte fuzzy gain to 58.61%, but
+collapsed the exact prefix from 94 instructions to five, moved the first
+candidate mismatch from `0x183` to `0x0a`, and moved the instruction count
+farther from native. It is recorded as a metric tradeoff, not retained.
+The two more direct owner shapes regressed by 91 and 100 fuzzy bytes.
+
+An explicit integer snapshot of the incremented logical index compiled
+byte-for-byte identically. Explicit float and integer-plus-float `sample_z`
+owners each regressed by 40 fuzzy bytes. Four counter-driven `for`/`while`
+spellings then tested whether the logical index should own the loop condition
+or derive the sample-array index. All regressed by 25 to 144 fuzzy bytes; the
+three structural forms also collapsed the exact prefix to seven instructions.
+
+The indexed loop and existing local primary owner therefore remain at the
+proof-preserving 57.97% frontier. The paired response rules out declaration,
+snapshot, and counter-loop spelling as the missing source shape. A next pass
+should recover a real owner whose lifetime affects VC6 allocation across the
+interior loop without forcing registers or accepting an earlier mismatch.

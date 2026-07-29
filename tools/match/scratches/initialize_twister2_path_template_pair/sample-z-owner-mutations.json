@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-sample-z-owner",
+      "find": "        ++local_index;\n        primary->transform.position.y = sine(half_angle) * angle_sine * height;\n        primary->transform.position.z = (float)local_index;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)local_index;",
+      "replacements": [
+        {
+          "name": "float-snapshot",
+          "text": "        float sample_z = (float)++local_index;\n        primary->transform.position.y = sine(half_angle) * angle_sine * height;\n        primary->transform.position.z = sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = sample_z;"
+        },
+        {
+          "name": "integer-snapshot",
+          "text": "        int sample_index = ++local_index;\n        primary->transform.position.y = sine(half_angle) * angle_sine * height;\n        primary->transform.position.z = (float)sample_index;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)sample_index;"
+        },
+        {
+          "name": "integer-and-float-snapshots",
+          "text": "        int sample_index = ++local_index;\n        float sample_z = (float)sample_index;\n        primary->transform.position.y = sine(half_angle) * angle_sine * height;\n        primary->transform.position.z = sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = sample_z;"
+        }
+      ]
+    }
+  ]
+}
