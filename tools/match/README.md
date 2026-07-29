@@ -87,6 +87,32 @@ Useful analysis helpers:
 - `uv run snail match diff <obj> <function> --regions` prints localized
   mismatch regions before the normal diff, so large functions can be worked by
   block instead of by the whole SequenceMatcher score.
+- `uv run snail match mutate <scratch> --spec <plan.json>` evaluates bounded
+  source-shape alternatives without editing the tracked scratch. A schema-1
+  plan names exact, non-overlapping source spans and their plausible
+  replacements:
+
+  ```json
+  {
+    "schema": 1,
+    "sites": [{
+      "name": "sum-order",
+      "find": "entry.x + offset.x",
+      "replacements": [
+        {"name": "commuted", "text": "offset.x + entry.x"}
+      ]
+    }]
+  }
+  ```
+
+  Sites must match exactly once unless they specify a one-based
+  `"occurrence"`. The default sweep changes one site at a time; use
+  `--max-changes` for interactions and `--max-variants` or `--time-budget` to
+  bound the search. Every variant compiles in an isolated temporary directory
+  and is ranked by proof state, canonical score, reference debt, exact prefix,
+  and instruction-count shape. `--record` appends the full sweep to the
+  scratch's `experiments.jsonl`; `--write-best` writes only an improving
+  winner and refuses to overwrite the tracked `scratch.cpp`.
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image

@@ -11,7 +11,7 @@ the exact common instruction prefix before the first normalized mismatch.
 from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import difflib
 import hashlib
 import json
@@ -23,7 +23,13 @@ from threading import Lock
 
 import capstone
 
-from .symbols import FunctionSymbol, FunctionSymbolManifest, REPO_ROOT
+from .symbols import (
+    DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    FunctionSymbol,
+    FunctionSymbolManifest,
+    REPO_ROOT,
+    load_function_symbol_manifest,
+)
 
 IMAGE_FILE_MACHINE_I386 = 0x14C
 IMAGE_SYM_CLASS_EXTERNAL = 2
@@ -2227,6 +2233,8 @@ class ScratchStatus:
     masked_unresolved: int = 0
     masked_mismatches: int = 0
     masked_unaudited: int = 0
+    first_target_mismatch_offset: int | None = None
+    first_candidate_mismatch_offset: int | None = None
     error: str | None = None
 
     @property
@@ -2243,6 +2251,14 @@ class ScratchStatus:
         if self.ratio == 1.0:
             return "audit"
         return "wip"
+
+    @property
+    def fuzzy_weighted_bytes(self) -> float:
+        return self.target_size * self.ratio if self.ratio is not None else 0.0
+
+    @property
+    def fuzzy_gap_bytes(self) -> float:
+        return max(0.0, self.target_size - self.fuzzy_weighted_bytes)
 
 
 @dataclass(frozen=True, slots=True)
@@ -2576,6 +2592,183 @@ def run_scratch_match(
         symbol_name=config.symbol,
         end_va=config.end_va,
     )
+
+
+def evaluate_scratch(
+    config: ScratchConfig,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    *,
+    image_path: Path | None = None,
+    manifest: FunctionSymbolManifest | None = None,
+) -> ScratchStatus:
+    """Compile and score one explicit scratch configuration."""
+
+    manifest = manifest or load_function_symbol_manifest(
+        DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH
+    )
+    image_path = image_path or REPO_ROOT / manifest.primary_target
+    address = 0
+    target_size = 0
+    try:
+        start, end = resolve_function_extent(
+            manifest,
+            config.function,
+            config.end_va,
+        )
+        address = start
+        image = load_image(image_path, manifest.image_base)
+        target_size = len(image.function_bytes(start, end))
+        obj_path = compile_scratch(config, match_root)
+        result = run_match(
+            obj_path=obj_path,
+            function_name=config.function,
+            image_path=image_path,
+            manifest=manifest,
+            symbol_name=config.symbol,
+            end_va=config.end_va,
+        )
+        return ScratchStatus(
+            config=config,
+            address=address,
+            target_size=target_size,
+            ratio=result.ratio,
+            prefix_instructions=result.prefix_instructions,
+            target_instructions=len(result.target_lines),
+            candidate_instructions=len(result.candidate_lines),
+            masked_ok=result.masked_operand_audit.ok_count,
+            masked_unresolved=result.masked_operand_audit.unresolved_count,
+            masked_mismatches=result.masked_operand_audit.mismatch_count,
+            masked_unaudited=result.masked_operand_audit.unaudited_count,
+            first_target_mismatch_offset=(
+                result.target_disassembly[result.prefix_instructions].offset
+                if result.prefix_instructions < len(result.target_disassembly)
+                else None
+            ),
+            first_candidate_mismatch_offset=(
+                result.candidate_disassembly[result.prefix_instructions].offset
+                if result.prefix_instructions < len(result.candidate_disassembly)
+                else None
+            ),
+            error=None,
+        )
+    except Exception as error:
+        return ScratchStatus(
+            config=config,
+            address=address,
+            target_size=target_size,
+            ratio=None,
+            prefix_instructions=0,
+            target_instructions=0,
+            candidate_instructions=0,
+            error=_summarize_error(error),
+        )
+
+
+def evaluate_source_overlay(
+    config: ScratchConfig,
+    source_text: str,
+    *,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    image_path: Path | None = None,
+    manifest: FunctionSymbolManifest | None = None,
+) -> ScratchStatus:
+    """Score a temporary source overlay without touching the tracked scratch."""
+
+    import tempfile
+
+    with tempfile.TemporaryDirectory(
+        prefix=f"snail-match-probe-{config.directory.name}-"
+    ) as temp_name:
+        shadow_directory = Path(temp_name)
+        (shadow_directory / "scratch.conf").write_text(
+            (config.directory / "scratch.conf").read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+        (shadow_directory / "scratch.cpp").write_text(
+            source_text,
+            encoding="utf-8",
+        )
+        return evaluate_scratch(
+            replace(config, directory=shadow_directory),
+            match_root,
+            image_path=image_path,
+            manifest=manifest,
+        )
+
+
+def scratch_status_payload(status: ScratchStatus) -> dict:
+    """Return the stable score fields used by probes and mutation reports."""
+
+    return {
+        "state": status.state,
+        "function": status.config.function,
+        "address": status.address,
+        "target_bytes": status.target_size,
+        "fuzzy_weighted_bytes": status.fuzzy_weighted_bytes,
+        "fuzzy_gap_bytes": status.fuzzy_gap_bytes,
+        "target_instructions": status.target_instructions,
+        "candidate_instructions": status.candidate_instructions,
+        "match_ratio": status.ratio,
+        "prefix_instructions": status.prefix_instructions,
+        "first_mismatch": {
+            "target_offset": status.first_target_mismatch_offset,
+            "candidate_offset": status.first_candidate_mismatch_offset,
+        },
+        "references": {
+            "ok": status.masked_ok,
+            "unresolved": status.masked_unresolved,
+            "mismatch": status.masked_mismatches,
+            "unaudited": status.masked_unaudited,
+        },
+        "compiler": status.config.compiler,
+        "cflags": status.config.cflags,
+        "scratch": str(status.config.directory),
+        "error": status.error,
+    }
+
+
+def fuzzy_score_tradeoffs(
+    baseline: ScratchStatus,
+    candidate: ScratchStatus,
+) -> tuple[str, ...]:
+    """Flag metric regressions hidden by a higher fuzzy byte score."""
+
+    if candidate.fuzzy_weighted_bytes <= baseline.fuzzy_weighted_bytes:
+        return ()
+
+    warnings: list[str] = []
+    baseline_debt = (
+        baseline.masked_unresolved
+        + baseline.masked_mismatches
+        + baseline.masked_unaudited
+    )
+    candidate_debt = (
+        candidate.masked_unresolved
+        + candidate.masked_mismatches
+        + candidate.masked_unaudited
+    )
+    if candidate_debt > baseline_debt:
+        warnings.append("reference-debt-increased")
+    if candidate.masked_ok < baseline.masked_ok:
+        warnings.append("resolved-references-decreased")
+    if candidate.prefix_instructions < baseline.prefix_instructions:
+        warnings.append("prefix-regressed")
+    if (
+        baseline.first_target_mismatch_offset is not None
+        and candidate.first_target_mismatch_offset is not None
+        and candidate.first_target_mismatch_offset
+        < baseline.first_target_mismatch_offset
+    ):
+        warnings.append("first-mismatch-earlier")
+    baseline_instruction_gap = abs(
+        baseline.candidate_instructions - baseline.target_instructions
+    )
+    candidate_instruction_gap = abs(
+        candidate.candidate_instructions - candidate.target_instructions
+    )
+    if candidate_instruction_gap > baseline_instruction_gap:
+        warnings.append("instruction-count-further-from-target")
+    return tuple(warnings)
 
 
 @dataclass(frozen=True, slots=True)
@@ -2919,7 +3112,7 @@ def compile_idiom_case(
 
 
 # bump when the cache schema changes; matcher source mtime handles scoring edits
-CACHE_VERSION = 10
+CACHE_VERSION = 11
 
 
 def _masked_reference_cache_payload(reference: MaskedReference) -> dict:
@@ -3212,6 +3405,16 @@ def _scratch_status_fields(target_size: int, result: MatchResult) -> dict:
         "masked_unresolved": result.masked_operand_audit.unresolved_count,
         "masked_mismatches": result.masked_operand_audit.mismatch_count,
         "masked_unaudited": result.masked_operand_audit.unaudited_count,
+        "first_target_mismatch_offset": (
+            result.target_disassembly[result.prefix_instructions].offset
+            if result.prefix_instructions < len(result.target_disassembly)
+            else None
+        ),
+        "first_candidate_mismatch_offset": (
+            result.candidate_disassembly[result.prefix_instructions].offset
+            if result.prefix_instructions < len(result.candidate_disassembly)
+            else None
+        ),
         "error": None,
     }
 
@@ -3429,6 +3632,8 @@ def collect_scratch_statuses(
                 "masked_unresolved": 0,
                 "masked_mismatches": 0,
                 "masked_unaudited": 0,
+                "first_target_mismatch_offset": None,
+                "first_candidate_mismatch_offset": None,
                 "error": outcome.error or "unknown error",
             }
         else:

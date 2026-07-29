@@ -6,10 +6,12 @@ import json
 import sys
 from collections import defaultdict
 from collections.abc import Sequence
+from datetime import UTC, datetime
 from pathlib import Path
 
 import msgspec
 
+from . import match_mutation
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .match import (
@@ -21,6 +23,7 @@ from .match import (
     compile_idiom_case,
     diff_regions,
     lint_extern_declarations,
+    load_scratch_config,
     manifest_cluster_totals,
     render_status_markdown,
     render_status_table,
@@ -678,6 +681,96 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum number of mismatch regions to print.",
     )
 
+    match_mutate_parser = match_subparsers.add_parser(
+        "mutate",
+        help="Compile and rank bounded source mutations without editing the scratch.",
+    )
+    match_mutate_parser.add_argument(
+        "directory",
+        type=Path,
+        help="Scratch directory containing scratch.cpp and scratch.conf.",
+    )
+    match_mutate_parser.add_argument(
+        "--spec",
+        type=Path,
+        required=True,
+        help="JSON mutation plan.",
+    )
+    match_mutate_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_mutate_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_mutate_parser.add_argument(
+        "--compiler",
+        help="Compiler profile used for the baseline and variants.",
+    )
+    match_mutate_parser.add_argument(
+        "--cflags",
+        help="Compiler flags used for the baseline and variants.",
+    )
+    match_mutate_parser.add_argument(
+        "--max-changes",
+        type=_positive_int,
+        default=1,
+        help="Maximum mutation sites changed per variant (default: 1).",
+    )
+    match_mutate_parser.add_argument(
+        "--max-variants",
+        type=_positive_int,
+        default=256,
+        help="Bounded variant budget (default: 256).",
+    )
+    match_mutate_parser.add_argument(
+        "-j",
+        "--jobs",
+        type=_positive_int,
+        default=DEFAULT_MATCH_JOBS,
+        help=f"Maximum concurrent variant jobs (default: {DEFAULT_MATCH_JOBS}).",
+    )
+    match_mutate_parser.add_argument(
+        "--stop-on-improvement",
+        action="store_true",
+        help="Stop scheduling batches after the first improving batch.",
+    )
+    match_mutate_parser.add_argument(
+        "--time-budget",
+        type=float,
+        help="Soft wall-clock budget in seconds; running batches finish.",
+    )
+    match_mutate_parser.add_argument(
+        "--top",
+        type=_positive_int,
+        default=20,
+        help="Maximum ranked variants to print (default: 20).",
+    )
+    match_mutate_parser.add_argument(
+        "--write-best",
+        type=Path,
+        help="Write the best source only when it improves the baseline.",
+    )
+    match_mutate_parser.add_argument(
+        "--require-improvement",
+        action="store_true",
+        help="Exit non-zero when no variant improves the baseline.",
+    )
+    match_mutate_parser.add_argument(
+        "--record",
+        action="store_true",
+        help="Append the complete sweep to experiments.jsonl.",
+    )
+    match_mutate_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the ranked result as JSON.",
+    )
+
     match_diff_parser = match_subparsers.add_parser(
         "diff",
         help="Diff a compiled scratch object's function against the original image.",
@@ -1194,6 +1287,109 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
 
         return 1 if missing_verified_body else 0
+
+    if args.command == "match" and args.match_command == "mutate":
+        if args.time_budget is not None and args.time_budget <= 0:
+            parser.error("--time-budget must be positive")
+        try:
+            config = load_scratch_config(args.directory.resolve())
+            mutation_spec = match_mutation.load_mutation_spec(
+                args.spec.resolve()
+            )
+            manifest = load_function_symbol_manifest(args.manifest)
+            image_path = args.image or REPO_ROOT / manifest.primary_target
+            source_path = config.directory / "scratch.cpp"
+            if (
+                args.write_best is not None
+                and args.write_best.resolve() == source_path.resolve()
+            ):
+                raise ValueError(
+                    "--write-best cannot overwrite the tracked scratch source"
+                )
+            source_text = source_path.read_text(encoding="utf-8")
+            sweep = match_mutation.evaluate_mutation_sweep(
+                config,
+                mutation_spec,
+                source_text=source_text,
+                image_path=image_path,
+                manifest=manifest,
+                compiler=args.compiler,
+                cflags=args.cflags,
+                max_changes=args.max_changes,
+                max_variants=args.max_variants,
+                jobs=args.jobs,
+                stop_on_improvement=args.stop_on_improvement,
+                time_budget=args.time_budget,
+            )
+        except Exception as error:
+            print(
+                f"mutation sweep failed: {str(error).splitlines()[0]}",
+                file=sys.stderr,
+            )
+            return 2
+
+        written_to = None
+        if args.write_best is not None and sweep.best_improves:
+            assert sweep.best is not None
+            args.write_best.parent.mkdir(parents=True, exist_ok=True)
+            args.write_best.write_text(
+                sweep.best.variant.source_text,
+                encoding="utf-8",
+            )
+            written_to = str(args.write_best)
+
+        recorded_to = None
+        if args.record:
+            record_path = config.directory / "experiments.jsonl"
+            record_payload = {
+                "kind": "mutation-sweep",
+                "recorded_at": datetime.now(UTC).isoformat(),
+                "best_source_written_to": written_to,
+                **match_mutation.mutation_sweep_payload(sweep),
+            }
+            with record_path.open("a", encoding="utf-8") as handle:
+                handle.write(
+                    json.dumps(
+                        record_payload,
+                        separators=(",", ":"),
+                        sort_keys=True,
+                    )
+                    + "\n"
+                )
+            recorded_to = str(record_path)
+
+        if args.json:
+            payload = match_mutation.mutation_sweep_payload(
+                sweep,
+                limit=args.top,
+            )
+            payload["best_source_written_to"] = written_to
+            payload["recorded_to"] = recorded_to
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        else:
+            print(
+                match_mutation.render_mutation_sweep(
+                    sweep,
+                    limit=args.top,
+                )
+            )
+            if written_to is not None:
+                print(f"best_source={written_to}")
+            elif args.write_best is not None:
+                print("best_source=not-written (no improving variant)")
+            if recorded_to is not None:
+                print(f"recorded={recorded_to}")
+
+        if sweep.baseline.state == "error" or all(
+            evaluation.status.state == "error"
+            for evaluation in sweep.evaluations
+        ):
+            return 2
+        if (
+            args.write_best is not None or args.require_improvement
+        ) and not sweep.best_improves:
+            return 1
+        return 0
 
     if args.command == "match" and args.match_command == "status":
         manifest = load_function_symbol_manifest(args.manifest)
