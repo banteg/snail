@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-direct-owner-retest",
+      "find": "        {\n            PathTemplateSample* primary = &primary_samples[i];\n            primary->center_x = center;\n            primary->rotation_scalar_98 = 0.0f;\n            primary->rotation_scalar_94 = 0.0f;\n            primary->special_scalar = 0.0f;\n            primary->lateral_scale = 1.0f;\n            set_matrix_identity(&primary->transform);\n            primary->transform.position.x = primary->center_x;\n        }\n        float angle_sine = sine(angle);\n        ++local_index;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)local_index;",
+      "replacements": [
+        {
+          "name": "direct-arrays-after-delta-cleanup",
+          "text": "        primary_samples[i].center_x = center;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        float angle_sine = sine(angle);\n        ++local_index;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)local_index;"
+        }
+      ]
+    }
+  ]
+}

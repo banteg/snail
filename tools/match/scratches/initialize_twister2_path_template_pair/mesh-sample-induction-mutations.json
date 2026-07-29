@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-sample-offset-loop",
+      "find": "    int row;\n    int column;\n    for (row = 0; row <= path->segment_count; ++row) {",
+      "replacements": [
+        {
+          "name": "explicit-byte-offset",
+          "text": "    int row;\n    int column;\n    int sample_offset = 0;\n    for (row = 0; row <= path->segment_count;\n         ++row, sample_offset += sizeof(PathTemplateSample)) {"
+        }
+      ]
+    },
+    {
+      "name": "mesh-sample-offset-owner",
+      "find": "            PathTemplateSample* sample = &path->primary_samples[row];",
+      "replacements": [
+        {
+          "name": "byte-offset-borrow",
+          "text": "            PathTemplateSample* sample = (PathTemplateSample*)(\n                (char*)path->primary_samples + sample_offset);"
+        }
+      ]
+    }
+  ]
+}

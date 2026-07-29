@@ -67,21 +67,25 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
 static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
-        PathTemplateSample* primary = &path->primary_samples[i];
-        PathTemplateSample* primary_next = &path->primary_samples[i + 1];
-        primary->delta_dir_to_next = Vector3(
-            primary_next->transform.position.x - primary->transform.position.x,
-            primary_next->transform.position.y - primary->transform.position.y,
-            primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.Normalize();
+        path->primary_samples[i].delta_dir_to_next = Vector3(
+            path->primary_samples[i + 1].transform.position.x -
+                path->primary_samples[i].transform.position.x,
+            path->primary_samples[i + 1].transform.position.y -
+                path->primary_samples[i].transform.position.y,
+            path->primary_samples[i + 1].transform.position.z -
+                path->primary_samples[i].transform.position.z);
+        path->primary_samples[i].delta_length =
+            path->primary_samples[i].delta_dir_to_next.Normalize();
 
-        PathTemplateSample* secondary = &path->secondary_samples[i];
-        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
-        secondary->delta_dir_to_next = Vector3(
-            secondary_next->transform.position.x - secondary->transform.position.x,
-            secondary_next->transform.position.y - secondary->transform.position.y,
-            secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.Normalize();
+        path->secondary_samples[i].delta_dir_to_next = Vector3(
+            path->secondary_samples[i + 1].transform.position.x -
+                path->secondary_samples[i].transform.position.x,
+            path->secondary_samples[i + 1].transform.position.y -
+                path->secondary_samples[i].transform.position.y,
+            path->secondary_samples[i + 1].transform.position.z -
+                path->secondary_samples[i].transform.position.z);
+        path->secondary_samples[i].delta_length =
+            path->secondary_samples[i].delta_dir_to_next.Normalize();
     }
 
     path->primary_samples[path->segment_count - 1].delta_dir_to_next =
@@ -262,18 +266,21 @@ void cRPath::initialize_twister_path_template_pair(
         center_scale = center_scale * 5.0f;
         float center = 2.5f - center_scale;
 
-        PathTemplateSample* primary = &primary_samples[i];
-        primary->center_x = center;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
-        primary->transform.position.x = primary->center_x;
+        {
+            PathTemplateSample* primary = &primary_samples[i];
+            primary->center_x = center;
+            primary->rotation_scalar_98 = 0.0f;
+            primary->rotation_scalar_94 = 0.0f;
+            primary->special_scalar = 0.0f;
+            primary->lateral_scale = 1.0f;
+            set_matrix_identity(&primary->transform);
+            primary->transform.position.x = primary->center_x;
+        }
         float angle_sine = sine(angle);
         ++local_index;
-        primary->transform.position.y = sine(half_angle) * angle_sine * height;
-        primary->transform.position.z = (float)local_index;
+        primary_samples[i].transform.position.y =
+            sine(half_angle) * angle_sine * height;
+        primary_samples[i].transform.position.z = (float)local_index;
         set_matrix_identity(&secondary_samples[i].transform);
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y =

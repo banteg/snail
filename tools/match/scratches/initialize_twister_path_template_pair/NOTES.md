@@ -256,3 +256,35 @@ candidate keeps EBP as its scratch-local `primary` pointer and the logical
 index on the stack. Direct-array owner forms already regress the prologue.
 The next honest route is provenance for the source owner that frees EBP while
 preserving the earlier zero lifetime, not another loop-header spelling.
+
+## 2026-07-29 scoped sample and delta owners
+
+Narrowing the interior `primary` borrow to the setup before the sine calls,
+then publishing Y and Z through their complete array owner, raises focused
+matching from 57.97% to 62.03%. The result preserves the 94-instruction exact
+prefix and all 49 clean references, while moving the candidate from 672 to
+674 instructions against 677 native. The paired Twister2 target reproduces the
+same 103-byte weighted gain. A C++ reference is byte-identical; transform-only
+and position-only borrows improve the scalar score only by collapsing the
+proved prefix and are rejected.
+
+The delta loop exposes the same native ownership rule more directly: EBP is
+the logical sample index, EDI is the `0xa8` byte cursor, and each primary or
+secondary array base is reloaded. Removing the four scratch-local current/next
+pointer aliases and writing through the complete arrays raises both targets
+again to **67.60%** (`678/677`, prefix 94, 49 clean references). Scoped pointer
+and reference pairs are byte-identical to the 62.03% intermediate result,
+confirming that the direct array owner is the material recovery.
+
+Three follow-up families are bounded. An explicit mesh sample offset regresses
+to 66.86% alone and 66.13% when used as the borrow owner. Direct mesh sample
+arrays regress to 66.67%, while branch-local borrows fall to 54.10%. Retesting
+the fully direct interior owner after the delta cleanup still regresses to
+62.30%. The ledger now contains 42 variants across ten sweeps: 6 better, 4
+identical, and 32 worse, with four sweep wins and three consecutive
+non-improving sweeps.
+
+This paired lane is formally stalled at the retained 67.60% frontier. Further
+work needs new provenance for the remaining interior allocation and mesh
+row/vertex scheduling, not another spelling of the sample cursors already
+tested here.
