@@ -153,3 +153,25 @@ The matcher source remains unchanged at the honest 83.14%, 128/127
 candidate/target instructions, prefix 25, and 18 clean operands. The remaining
 loop-exit block placement is a VC6 control-flow choice, so no mobile-shaped ABI
 or goto is introduced to force it.
+
+## 2026-07-29 one-instruction CFG audit
+
+The focused frontier remains **83.14%**, `128/127` instructions, prefix
+`25/127`, with all 18 operands clean. Three recorded sweeps cover 19 bounded
+variants around the sole extra loop-exit jump:
+
+- five signed, reversed, equality, last-index, and difference spellings of the
+  `do`/`while` condition were neutral or regressed to 82.35%/82.03%;
+- IDA's natural `return g_object_grouped_vertex_cursor++` spelling and two
+  explicit result lifetimes regressed to 80.00% or 81.10%, confirming the
+  retained increment/store/decrement epilogue;
+- all count/index declaration orders and ordinary nonempty guards were
+  byte-neutral except `count >= 1`, which regressed to 82.35% and shortened the
+  prefix.
+
+Both native decompilers independently retain the direct-return `do`/`while`
+search and fallthrough append semantics already in the scratch. The remaining
+native `jl` versus candidate `jge` plus `jmp` is therefore bounded to VC6 cold
+return-block placement. Previously rejected found-label, break, `for`, `while`,
+raw-offset, and shared-flipped-V forms were not repeated, and no control-flow
+or lifetime nudge is retained.

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "append-cursor-return",
+      "find": "++g_object_grouped_vertex_cursor;\n    return g_object_grouped_vertex_cursor - 1;",
+      "replacements": [
+        {
+          "name": "post-increment-return",
+          "text": "return g_object_grouped_vertex_cursor++;"
+        },
+        {
+          "name": "saved-result-then-increment",
+          "text": "int result = g_object_grouped_vertex_cursor;\n    ++g_object_grouped_vertex_cursor;\n    return result;"
+        },
+        {
+          "name": "saved-result-plus-one",
+          "text": "int result = g_object_grouped_vertex_cursor;\n    g_object_grouped_vertex_cursor = result + 1;\n    return result;"
+        }
+      ]
+    }
+  ]
+}

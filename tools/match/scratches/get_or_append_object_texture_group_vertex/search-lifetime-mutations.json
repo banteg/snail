@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "search-local-order",
+      "find": "int i = 0;\n    int count = g_object_grouped_vertex_cursor;",
+      "replacements": [
+        {
+          "name": "count-before-index",
+          "text": "int count = g_object_grouped_vertex_cursor;\n    int i = 0;"
+        },
+        {
+          "name": "single-declaration",
+          "text": "int i = 0, count = g_object_grouped_vertex_cursor;"
+        }
+      ]
+    },
+    {
+      "name": "nonempty-search-guard",
+      "find": "if (count > 0) {",
+      "replacements": [
+        {
+          "name": "zero-before-count",
+          "text": "if (0 < count) {"
+        },
+        {
+          "name": "count-nonzero",
+          "text": "if (count != 0) {"
+        },
+        {
+          "name": "count-at-least-one",
+          "text": "if (count >= 1) {"
+        }
+      ]
+    }
+  ]
+}

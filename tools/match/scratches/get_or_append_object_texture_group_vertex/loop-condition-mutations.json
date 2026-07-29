@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "dedup-loop-condition",
+      "find": "} while (i < count);",
+      "replacements": [
+        {
+          "name": "count-greater-than-index",
+          "text": "} while (count > i);"
+        },
+        {
+          "name": "index-not-count",
+          "text": "} while (i != count);"
+        },
+        {
+          "name": "count-not-index",
+          "text": "} while (count != i);"
+        },
+        {
+          "name": "index-through-last",
+          "text": "} while (i <= count - 1);"
+        },
+        {
+          "name": "negative-difference",
+          "text": "} while (i - count < 0);"
+        }
+      ]
+    }
+  ]
+}
