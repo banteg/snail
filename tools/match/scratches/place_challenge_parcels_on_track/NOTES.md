@@ -251,3 +251,36 @@ The existing single borrowed `cell` remains the stronger whole-function source
 shape. Both mobile bodies corroborate the semantic cell/path relationship, but
 not a Windows lifetime worth accepting at a 31-byte fuzzy regression. No dummy
 spill, container-of view, or platform offset is retained.
+
+## 2026-07-29 bounded row and projection follow-up
+
+Five additional mutation sweeps extend the ledger to 22 unique variants. No
+variant improves the 502/617 fuzzy-byte baseline: six are byte-neutral and 16
+regress. Three consecutive non-improving sweeps now mark this scratch stalled,
+with no compile failures or repeated source/compiler variants. Focused Wibo
+therefore remains 81.40%, 173 candidate instructions versus 171 target
+instructions, with 33 clean operands and the same two unaudited row-base
+references.
+
+The native projection keeps the selected cell in ECX while loading its Path in
+EAX, but simply reusing the first `cell` for the Path owner drops to 69.94%.
+Directly reloading the second `Yi()` receiver does recover the native `0x48`
+frame and 26-instruction prefix, yet still regresses the whole-function score
+to 76.38%. Reassignment, branch-local owners, and the normal parcel placer's
+explicit `SubRow*` plus source/live-cell structure score between 71.06% and
+74.85%. The current single-cell indexed form remains the strongest complete
+schedule.
+
+The candidate-row sweep also bounds the tempting `parcel_set_id` cursor.
+Logical-not and nested zero tests are byte-identical. Honest parallel or
+indexed field-lane cursors reproduce pieces of native's field-based addressing
+but regress to 72.25-75.14%; no negative-displacement container-of spelling was
+tested or retained. An explicit survival-bank cursor is byte-identical but
+turns the two unaudited row-base references into one confirmed masked mismatch.
+The experiment ranker calls that lower total reference debt a sweep win, but it
+is not a proof improvement and the source correctly remains unchanged.
+
+Finally, moving the later EDI-owned `placed` declaration before the row scan,
+including a `register` spelling, is byte-neutral in three orderings and
+regresses in the fourth. This rules out a simple old-C declaration-order cause
+for the scan's extra parcel-set load.

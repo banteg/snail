@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "projection-cell-reload",
+      "find": "                } else {\n                    runtime_rows[scan]\n                        .primary_attachment_cell->attachment_template_record\n                        ->get_path_position_at_node(\n                            runtime_rows[scan].parcel_spawn_position,\n                            node,\n                            cell->Yi(),\n                            runtime_rows[scan].parcel_spawn_position);\n                }",
+      "replacements": [
+        {
+          "name": "direct-second-yi",
+          "text": "                } else {\n                    runtime_rows[scan]\n                        .primary_attachment_cell->attachment_template_record\n                        ->get_path_position_at_node(\n                            runtime_rows[scan].parcel_spawn_position,\n                            node,\n                            runtime_rows[scan].primary_attachment_cell->Yi(),\n                            runtime_rows[scan].parcel_spawn_position);\n                }"
+        },
+        {
+          "name": "reassign-cell-for-projection",
+          "text": "                } else {\n                    cell = runtime_rows[scan].primary_attachment_cell;\n                    cell->attachment_template_record->get_path_position_at_node(\n                        runtime_rows[scan].parcel_spawn_position,\n                        node,\n                        cell->Yi(),\n                        runtime_rows[scan].parcel_spawn_position);\n                }"
+        },
+        {
+          "name": "fresh-projection-cell",
+          "text": "                } else {\n                    cRSubLoc* projection_cell =\n                        runtime_rows[scan].primary_attachment_cell;\n                    projection_cell->attachment_template_record\n                        ->get_path_position_at_node(\n                            runtime_rows[scan].parcel_spawn_position,\n                            node,\n                            projection_cell->Yi(),\n                            runtime_rows[scan].parcel_spawn_position);\n                }"
+        },
+        {
+          "name": "template-owner-direct-second-yi",
+          "text": "                } else {\n                    template_record->get_path_position_at_node(\n                        runtime_rows[scan].parcel_spawn_position,\n                        node,\n                        runtime_rows[scan].primary_attachment_cell->Yi(),\n                        runtime_rows[scan].parcel_spawn_position);\n                }"
+        },
+        {
+          "name": "template-owner-existing-cell",
+          "text": "                } else {\n                    template_record->get_path_position_at_node(\n                        runtime_rows[scan].parcel_spawn_position,\n                        node,\n                        cell->Yi(),\n                        runtime_rows[scan].parcel_spawn_position);\n                }"
+        }
+      ]
+    }
+  ]
+}

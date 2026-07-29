@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "candidate-row-scan",
+      "find": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && row->parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }",
+      "replacements": [
+        {
+          "name": "logical-not-set-id",
+          "text": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && !row->parcel_set_id) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }"
+        },
+        {
+          "name": "nested-set-id-test",
+          "text": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0) {\n                if (row->parcel_set_id == 0) {\n                    g_parcel_group_survival_0[candidate_count] = row_index;\n                    ++candidate_count;\n                }\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }"
+        },
+        {
+          "name": "explicit-candidate-bank-cursor",
+          "text": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        int* candidate_row = g_parcel_group_survival_0;\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && row->parcel_set_id == 0) {\n                *candidate_row = row_index;\n                ++candidate_row;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }"
+        },
+        {
+          "name": "parallel-field-cursor",
+          "text": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        int* parcel_set_id = &runtime_rows[0].parcel_set_id;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && *parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n            parcel_set_id =\n                (int*)((char*)parcel_set_id + sizeof(SubRow));\n        } while (row_index < runtime_row_count);\n    }"
+        },
+        {
+          "name": "field-cursor-indexed-flags",
+          "text": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        int* parcel_set_id = &runtime_rows[0].parcel_set_id;\n        do {\n            if ((runtime_rows[row_index].flags\n                    & SUBROW_FLAG_PARCEL_CANDIDATE)\n                    != 0\n                && *parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            parcel_set_id =\n                (int*)((char*)parcel_set_id + sizeof(SubRow));\n        } while (row_index < runtime_row_count);\n    }"
+        },
+        {
+          "name": "candidate-bank-and-field-cursors",
+          "text": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        int* candidate_row = g_parcel_group_survival_0;\n        int* parcel_set_id = &runtime_rows[0].parcel_set_id;\n        do {\n            if ((runtime_rows[row_index].flags\n                    & SUBROW_FLAG_PARCEL_CANDIDATE)\n                    != 0\n                && *parcel_set_id == 0) {\n                *candidate_row = row_index;\n                ++candidate_row;\n                ++candidate_count;\n            }\n            ++row_index;\n            parcel_set_id =\n                (int*)((char*)parcel_set_id + sizeof(SubRow));\n        } while (row_index < runtime_row_count);\n    }"
+        }
+      ]
+    }
+  ]
+}

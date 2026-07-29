@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "template-cell-owner",
+      "find": "                Path* template_record =\n                    runtime_rows[scan]\n                        .primary_attachment_cell->attachment_template_record;",
+      "replacements": [
+        {
+          "name": "reuse-source-cell",
+          "text": "                Path* template_record =\n                    cell->attachment_template_record;"
+        }
+      ]
+    }
+  ]
+}

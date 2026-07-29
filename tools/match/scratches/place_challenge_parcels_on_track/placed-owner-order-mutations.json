@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "placed-owner-order",
+      "find": "    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && row->parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }\n\n    int placed = 0;",
+      "replacements": [
+        {
+          "name": "placed-before-candidate-count",
+          "text": "    int placed;\n    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && row->parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }\n\n    placed = 0;"
+        },
+        {
+          "name": "placed-after-row-index",
+          "text": "    int candidate_count = 0;\n    int row_index = 0;\n    int placed;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && row->parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }\n\n    placed = 0;"
+        },
+        {
+          "name": "row-index-before-placed-and-count",
+          "text": "    int row_index = 0;\n    int placed;\n    int candidate_count = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && row->parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }\n\n    placed = 0;"
+        },
+        {
+          "name": "register-placed-before-scan",
+          "text": "    register int placed;\n    int candidate_count = 0;\n    int row_index = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row = runtime_rows;\n        do {\n            if ((row->flags & SUBROW_FLAG_PARCEL_CANDIDATE) != 0\n                && row->parcel_set_id == 0) {\n                g_parcel_group_survival_0[candidate_count] = row_index;\n                ++candidate_count;\n            }\n            ++row_index;\n            ++row;\n        } while (row_index < runtime_row_count);\n    }\n\n    placed = 0;"
+        }
+      ]
+    }
+  ]
+}
