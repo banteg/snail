@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "rgb-normalization-shape",
+      "find": "            float red = (float)pixel[2];\n            float green = (float)pixel[1];\n            float blue = (float)pixel[0];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;",
+      "replacements": [
+        {
+          "name": "direct-casted-sum",
+          "text": "            float value =\n                (float)pixel[2] + (float)pixel[1] + (float)pixel[0];\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        },
+        {
+          "name": "direct-casted-product",
+          "text": "            float value =\n                ((float)pixel[2] + (float)pixel[1] + (float)pixel[0])\n                * 0.00392156886f * 0.333333343f;"
+        },
+        {
+          "name": "green-red-blue-declarations",
+          "text": "            float green = (float)pixel[1];\n            float red = (float)pixel[2];\n            float blue = (float)pixel[0];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        },
+        {
+          "name": "green-blue-red-declarations",
+          "text": "            float green = (float)pixel[1];\n            float blue = (float)pixel[0];\n            float red = (float)pixel[2];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        },
+        {
+          "name": "blue-green-red-declarations",
+          "text": "            float blue = (float)pixel[0];\n            float green = (float)pixel[1];\n            float red = (float)pixel[2];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        },
+        {
+          "name": "blue-red-green-declarations",
+          "text": "            float blue = (float)pixel[0];\n            float red = (float)pixel[2];\n            float green = (float)pixel[1];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        },
+        {
+          "name": "red-blue-green-declarations",
+          "text": "            float red = (float)pixel[2];\n            float blue = (float)pixel[0];\n            float green = (float)pixel[1];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        },
+        {
+          "name": "green-first-direct-sum",
+          "text": "            float green = (float)pixel[1];\n            float value = (float)pixel[2];\n            value += green;\n            value += (float)pixel[0];\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        },
+        {
+          "name": "red-plus-green-blue-group",
+          "text": "            float value =\n                (float)pixel[2] + ((float)pixel[1] + (float)pixel[0]);\n            value *= 0.00392156886f;\n            value *= 0.333333343f;"
+        }
+      ]
+    }
+  ]
+}

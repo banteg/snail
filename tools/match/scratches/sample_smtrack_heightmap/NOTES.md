@@ -112,3 +112,31 @@ Both changes are codegen-neutral at 60.36%, 113/109 instructions, with all 13
 references clean. Moving the cursor declaration earlier to try to reserve EBP
 regressed register ownership and was removed; the remaining frame/register
 delta is not forced.
+
+## 2026-07-29 texel-scheduling boundary
+
+Three recorded mutation sweeps cover 58 source-shaped variants around the
+remaining frame and register split. Eight bottom-up texel-index forms inline
+either or both float-to-int coordinates, publish the pixel pointer directly,
+split the row base, reverse coordinate declaration order, or name the
+bytes-per-pixel stride. All eight compile byte-identically, proving that VC6
+canonicalizes those equivalent equations before scheduling the two conversion
+calls.
+
+Nine RGB variants then test the mobile-backed casted sum directly and every
+channel declaration order. Five declaration orders are neutral; direct sums
+regress to 58–59% and one also loses reference alignment. The retained three
+float locals remain the only honest form that recovers native's independent
+byte conversions and `faddp` chain.
+
+Finally, 41 single and paired cursor variants cover `register`, split
+assignment, first-element and zero-offset borrows, pre/post-increment,
+addition, store-then-increment, and a named output record. Thirty-five are
+byte-identical and six regress. Across all three sweeps the total is 0 better,
+48 neutral, and 10 worse, with no repeats or compile errors.
+
+Focused Windows therefore remains 60.36% (`113/109`) with all 13 references
+clean. Native's 8-byte frame and prologue-resident EBP vertex cursor versus the
+candidate's 12-byte frame, spilled cursor, and inner-loop EBP texel offset are
+now a bounded VC6 allocation/scheduling residual. An invented index induction,
+volatile cursor, or false y-only pointer owner is not justified.

@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "sample-cursor-declaration",
+      "find": "    Vector3* sample = source->vertices;",
+      "replacements": [
+        {
+          "name": "register-pointer",
+          "text": "    register Vector3* sample = source->vertices;"
+        },
+        {
+          "name": "split-assignment",
+          "text": "    Vector3* sample;\n    sample = source->vertices;"
+        },
+        {
+          "name": "register-split-assignment",
+          "text": "    register Vector3* sample;\n    sample = source->vertices;"
+        },
+        {
+          "name": "first-element-address",
+          "text": "    Vector3* sample = &source->vertices[0];"
+        },
+        {
+          "name": "zero-offset",
+          "text": "    Vector3* sample = source->vertices + 0;"
+        }
+      ]
+    },
+    {
+      "name": "sample-cursor-advance",
+      "find": "            ++sample;\n            sample[-1].y = value * scale + base;",
+      "replacements": [
+        {
+          "name": "preincrement-expression",
+          "text": "            (++sample)[-1].y = value * scale + base;"
+        },
+        {
+          "name": "addition-assignment",
+          "text": "            sample += 1;\n            sample[-1].y = value * scale + base;"
+        },
+        {
+          "name": "explicit-addition",
+          "text": "            sample = sample + 1;\n            sample[-1].y = value * scale + base;"
+        },
+        {
+          "name": "postincrement-member",
+          "text": "            sample++->y = value * scale + base;"
+        },
+        {
+          "name": "store-then-increment",
+          "text": "            sample[0].y = value * scale + base;\n            ++sample;"
+        },
+        {
+          "name": "named-output-record",
+          "text": "            Vector3* output = sample;\n            ++sample;\n            output->y = value * scale + base;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "texel-index-shape",
+      "find": "            int y = (int)(row * y_step);\n            int x = (int)(column * x_step);\n            int pixel_index =\n                ((image->height - y - 1) * image->width + x)\n                * (image->bits_per_pixel >> 3);\n            unsigned char* pixel = image->pixels + pixel_index;",
+      "replacements": [
+        {
+          "name": "inline-column",
+          "text": "            int y = (int)(row * y_step);\n            int pixel_index =\n                ((image->height - y - 1) * image->width +\n                    (int)(column * x_step))\n                * (image->bits_per_pixel >> 3);\n            unsigned char* pixel = image->pixels + pixel_index;"
+        },
+        {
+          "name": "inline-both-coordinates",
+          "text": "            int pixel_index =\n                ((image->height - (int)(row * y_step) - 1) * image->width +\n                    (int)(column * x_step))\n                * (image->bits_per_pixel >> 3);\n            unsigned char* pixel = image->pixels + pixel_index;"
+        },
+        {
+          "name": "direct-pixel-inline-column",
+          "text": "            int y = (int)(row * y_step);\n            unsigned char* pixel = image->pixels +\n                ((image->height - y - 1) * image->width +\n                    (int)(column * x_step))\n                * (image->bits_per_pixel >> 3);"
+        },
+        {
+          "name": "direct-pixel-inline-both",
+          "text": "            unsigned char* pixel = image->pixels +\n                ((image->height - (int)(row * y_step) - 1) * image->width +\n                    (int)(column * x_step))\n                * (image->bits_per_pixel >> 3);"
+        },
+        {
+          "name": "row-base-then-inline-column",
+          "text": "            int y = (int)(row * y_step);\n            int row_base = (image->height - y - 1) * image->width;\n            int pixel_index =\n                (row_base + (int)(column * x_step))\n                * (image->bits_per_pixel >> 3);\n            unsigned char* pixel = image->pixels + pixel_index;"
+        },
+        {
+          "name": "column-first",
+          "text": "            int x = (int)(column * x_step);\n            int y = (int)(row * y_step);\n            int pixel_index =\n                ((image->height - y - 1) * image->width + x)\n                * (image->bits_per_pixel >> 3);\n            unsigned char* pixel = image->pixels + pixel_index;"
+        },
+        {
+          "name": "bytes-per-pixel-local",
+          "text": "            int y = (int)(row * y_step);\n            int x = (int)(column * x_step);\n            int bytes_per_pixel = image->bits_per_pixel >> 3;\n            int pixel_index =\n                ((image->height - y - 1) * image->width + x)\n                * bytes_per_pixel;\n            unsigned char* pixel = image->pixels + pixel_index;"
+        },
+        {
+          "name": "direct-header-base",
+          "text": "            int y = (int)(row * y_step);\n            int x = (int)(column * x_step);\n            unsigned char* pixel = (unsigned char*)image +\n                ((image->height - y - 1) * image->width + x)\n                * (image->bits_per_pixel >> 3) + 0x12;"
+        }
+      ]
+    }
+  ]
+}
