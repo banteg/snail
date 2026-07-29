@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "corner-neighbor-lifetime",
+      "find": "            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            entries[index].sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;",
+      "replacements": [
+        {
+          "name": "nested-corner-block",
+          "text": "            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            {\n                entries[index].sprite->corner_scale =\n                    (entries[index].speed + 1.0f) * 4.0f;\n            }"
+        },
+        {
+          "name": "early-speed-value",
+          "text": "            float corner_speed = entries[index].speed;\n            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            entries[index].sprite->corner_scale =\n                (corner_speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "early-const-speed-value",
+          "text": "            const float corner_speed = entries[index].speed;\n            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            entries[index].sprite->corner_scale =\n                (corner_speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "early-speed-reference",
+          "text": "            const float& corner_speed = entries[index].speed;\n            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            entries[index].sprite->corner_scale =\n                (corner_speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "early-corner-sprite",
+          "text": "            cRSprite* corner_sprite = entries[index].sprite;\n            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            corner_sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "early-corner-destination",
+          "text": "            float* corner_destination =\n                &entries[index].sprite->corner_scale;\n            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            *corner_destination = (entries[index].speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "early-corner-entry",
+          "text": "            StarManagerEntry* corner_entry = &entries[index];\n            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            corner_entry->sprite->corner_scale =\n                (corner_entry->speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "named-corner-constants",
+          "text": "            float corner_one = 1.0f;\n            float corner_multiplier = 4.0f;\n            entries[index].sprite->size_start = 0.800000012f;\n            entries[index].sprite->size_end = entries[index].sprite->size_start;\n            entries[index].sprite->corner_scale =\n                (entries[index].speed + corner_one) * corner_multiplier;"
+        },
+        {
+          "name": "retained-sprite-size-lanes",
+          "text": "            sprite->size_start = 0.800000012f;\n            sprite->size_end = sprite->size_start;\n            entries[index].sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;"
+        },
+        {
+          "name": "named-size-value",
+          "text": "            float star_size = 0.800000012f;\n            entries[index].sprite->size_start = star_size;\n            entries[index].sprite->size_end = star_size;\n            entries[index].sprite->corner_scale =\n                (entries[index].speed + 1.0f) * 4.0f;"
+        }
+      ]
+    }
+  ]
+}

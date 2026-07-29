@@ -147,3 +147,21 @@ explicit-result `operator+`, and a per-caller constructor implementation would
 reintroduce the operator fakematch rejected during shared arithmetic
 ownership. The canonical scratch therefore remains source-unchanged at
 97.57%, 247/247 instructions, prefix 126, with all 26 masks clean.
+
+## 2026-07-29 final corner-neighborhood boundary
+
+A ninth recorded sweep closes the only untested honest neighborhood around the
+second residual. Ten variants move or rename the speed, Sprite, entry,
+destination, size, and constant lifetimes across the preceding size stores.
+Nested scope and named corner constants are byte-identical; the other eight
+forms regress, often by extending ownership far enough to alter allocation
+from the first vector-expression region. None recovers either remaining
+scheduler window.
+
+The ledger now contains 93 unique variants: 49 neutral, 41 degrading, and
+three fuzzy improvements that retain documented metric tradeoffs. After three
+consecutive non-improving sweeps the canonical lane is formally stalled at
+**97.57%** (`247/247`, prefix 126, 26 clean references). The retained source
+keeps the shared, independently proven vector operator and exact instruction
+and reference counts; the remaining travel/color and corner-scale reorderings
+are bounded VC6 scheduling debt.
