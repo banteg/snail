@@ -87,6 +87,13 @@ Useful analysis helpers:
 - `uv run snail match diff <obj> <function> --regions` prints localized
   mismatch regions before the normal diff, so large functions can be worked by
   block instead of by the whole SequenceMatcher score.
+- `uv run snail match probe <scratch> --source <probe.cpp>` compiles a complete
+  source overlay without changing the tracked `scratch.cpp`, then reports its
+  metric deltas against one baseline compile. This is useful for larger
+  controlled hypotheses such as same-TU neighbors or alternate recovered type
+  definitions that do not fit one bounded replacement. Add `--record` to
+  preserve the source hash and complete result in `experiments.jsonl`;
+  `--stdin` accepts a generated overlay.
 - `uv run snail match mutate <scratch> --spec <plan.json>` evaluates bounded
   source-shape alternatives without editing the tracked scratch. A schema-1
   plan names exact, non-overlapping source spans and their plausible

@@ -23,9 +23,12 @@ from .match import (
     collect_scratch_statuses,
     compile_idiom_case,
     diff_regions,
+    evaluate_source_probe,
     lint_extern_declarations,
     load_scratch_config,
     manifest_cluster_totals,
+    probe_result_payload,
+    render_probe_result,
     render_status_markdown,
     render_status_table,
     run_match,
@@ -682,6 +685,68 @@ def build_parser() -> argparse.ArgumentParser:
         help="Maximum number of mismatch regions to print.",
     )
 
+    match_probe_parser = match_subparsers.add_parser(
+        "probe",
+        help="Compare a source overlay without editing the scratch.",
+    )
+    match_probe_parser.add_argument(
+        "directory",
+        type=Path,
+        help="Scratch directory containing scratch.cpp and scratch.conf.",
+    )
+    match_probe_source = match_probe_parser.add_mutually_exclusive_group(
+        required=True
+    )
+    match_probe_source.add_argument(
+        "--source",
+        type=Path,
+        help="Temporary replacement source.",
+    )
+    match_probe_source.add_argument(
+        "--stdin",
+        action="store_true",
+        help="Read temporary replacement source from stdin.",
+    )
+    match_probe_parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    match_probe_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_probe_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_probe_parser.add_argument(
+        "--compiler",
+        help="Compiler profile used for the baseline and probe.",
+    )
+    match_probe_parser.add_argument(
+        "--cflags",
+        help="Compiler flags used for the baseline and probe.",
+    )
+    match_probe_parser.add_argument(
+        "--label",
+        help="Short experiment label.",
+    )
+    match_probe_parser.add_argument(
+        "--record",
+        action="store_true",
+        help="Append the probe to experiments.jsonl.",
+    )
+    match_probe_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the result as JSON.",
+    )
+
     match_mutate_parser = match_subparsers.add_parser(
         "mutate",
         help="Compile and rank bounded source mutations without editing the scratch.",
@@ -1329,6 +1394,65 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
 
         return 1 if missing_verified_body else 0
+
+    if args.command == "match" and args.match_command == "probe":
+        try:
+            config = load_scratch_config(args.directory.resolve())
+            source_text = (
+                sys.stdin.read()
+                if args.stdin
+                else args.source.resolve().read_text(encoding="utf-8")
+            )
+            manifest = load_function_symbol_manifest(args.manifest)
+            image_path = args.image or REPO_ROOT / manifest.primary_target
+            result = evaluate_source_probe(
+                config,
+                source_text,
+                match_root=args.match_root,
+                image_path=image_path,
+                manifest=manifest,
+                compiler=args.compiler,
+                cflags=args.cflags,
+                label=args.label,
+            )
+        except Exception as error:  # noqa: BLE001
+            print(
+                f"probe failed: {str(error).splitlines()[0]}",
+                file=sys.stderr,
+            )
+            return 2
+
+        payload = probe_result_payload(result)
+        recorded_to = None
+        if args.record:
+            record_path = config.directory / "experiments.jsonl"
+            record_payload = {
+                "schema": match_experiments.EXPERIMENT_SCHEMA,
+                "kind": "probe",
+                "recorded_at": datetime.now(UTC).isoformat(),
+                **payload,
+            }
+            with record_path.open("a", encoding="utf-8") as handle:
+                handle.write(
+                    json.dumps(
+                        record_payload,
+                        separators=(",", ":"),
+                        sort_keys=True,
+                    )
+                    + "\n"
+                )
+            recorded_to = str(record_path)
+            payload["recorded_to"] = recorded_to
+
+        if args.json:
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        else:
+            print(render_probe_result(result))
+            if recorded_to is not None:
+                print(f"recorded={recorded_to}")
+        if result.baseline.state == "error" or result.probe.state == "error":
+            return 2
+        return 0
 
     if args.command == "match" and args.match_command == "mutate":
         if args.time_budget is not None and args.time_budget <= 0:

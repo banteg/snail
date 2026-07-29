@@ -2262,6 +2262,27 @@ class ScratchStatus:
 
 
 @dataclass(frozen=True, slots=True)
+class ProbeResult:
+    baseline: ScratchStatus
+    probe: ScratchStatus
+    source_sha256: str
+    label: str | None = None
+
+    @property
+    def fuzzy_delta_bytes(self) -> float:
+        return (
+            self.probe.fuzzy_weighted_bytes
+            - self.baseline.fuzzy_weighted_bytes
+        )
+
+    @property
+    def ratio_delta(self) -> float | None:
+        if self.baseline.ratio is None or self.probe.ratio is None:
+            return None
+        return self.probe.ratio - self.baseline.ratio
+
+
+@dataclass(frozen=True, slots=True)
 class ScratchMaskedOperandIssue:
     config: ScratchConfig
     address: int
@@ -2696,6 +2717,45 @@ def evaluate_source_overlay(
         )
 
 
+def evaluate_source_probe(
+    config: ScratchConfig,
+    source_text: str,
+    *,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+    image_path: Path | None = None,
+    manifest: FunctionSymbolManifest | None = None,
+    compiler: str | None = None,
+    cflags: str | None = None,
+    label: str | None = None,
+) -> ProbeResult:
+    """Compare a temporary source overlay without modifying the scratch."""
+
+    baseline_config = replace(
+        config,
+        compiler=compiler or config.compiler,
+        cflags=cflags or config.cflags,
+    )
+    baseline = evaluate_scratch(
+        baseline_config,
+        match_root,
+        image_path=image_path,
+        manifest=manifest,
+    )
+    probe = evaluate_source_overlay(
+        baseline_config,
+        source_text,
+        match_root=match_root,
+        image_path=image_path,
+        manifest=manifest,
+    )
+    return ProbeResult(
+        baseline=baseline,
+        probe=probe,
+        source_sha256=hashlib.sha256(source_text.encode()).hexdigest(),
+        label=label,
+    )
+
+
 def scratch_status_payload(status: ScratchStatus) -> dict:
     """Return the stable score fields used by probes and mutation reports."""
 
@@ -2769,6 +2829,89 @@ def fuzzy_score_tradeoffs(
     if candidate_instruction_gap > baseline_instruction_gap:
         warnings.append("instruction-count-further-from-target")
     return tuple(warnings)
+
+
+def probe_result_payload(result: ProbeResult) -> dict:
+    baseline = scratch_status_payload(result.baseline)
+    probe = scratch_status_payload(result.probe)
+    probe["scratch"] = "<shadow>"
+    return {
+        "label": result.label,
+        "source_sha256": result.source_sha256,
+        "tradeoffs": list(
+            fuzzy_score_tradeoffs(result.baseline, result.probe)
+        ),
+        "baseline": baseline,
+        "probe": probe,
+        "delta": {
+            "match_ratio": result.ratio_delta,
+            "fuzzy_weighted_bytes": result.fuzzy_delta_bytes,
+            "candidate_instructions": (
+                result.probe.candidate_instructions
+                - result.baseline.candidate_instructions
+            ),
+            "prefix_instructions": (
+                result.probe.prefix_instructions
+                - result.baseline.prefix_instructions
+            ),
+            "references": {
+                "ok": result.probe.masked_ok - result.baseline.masked_ok,
+                "unresolved": (
+                    result.probe.masked_unresolved
+                    - result.baseline.masked_unresolved
+                ),
+                "mismatch": (
+                    result.probe.masked_mismatches
+                    - result.baseline.masked_mismatches
+                ),
+                "unaudited": (
+                    result.probe.masked_unaudited
+                    - result.baseline.masked_unaudited
+                ),
+            },
+        },
+    }
+
+
+def render_probe_result(result: ProbeResult) -> str:
+    def status_line(label: str, status: ScratchStatus) -> str:
+        if status.ratio is None:
+            return f"{label}: state=error error={status.error}"
+        return (
+            f"{label}: state={status.state} match={status.ratio:.2%} "
+            f"fuzzy={status.fuzzy_weighted_bytes:.0f}/{status.target_size} "
+            f"insns={status.candidate_instructions}/"
+            f"{status.target_instructions} "
+            f"prefix={status.prefix_instructions}/"
+            f"{status.target_instructions} "
+            f"refs={status.masked_ok}/{status.masked_unresolved}/"
+            f"{status.masked_mismatches}/{status.masked_unaudited}"
+        )
+
+    ratio_delta = (
+        f"{result.ratio_delta:+.2%}"
+        if result.ratio_delta is not None
+        else "-"
+    )
+    tradeoffs = fuzzy_score_tradeoffs(result.baseline, result.probe)
+    lines = [
+        status_line("baseline", result.baseline),
+        status_line("probe", result.probe),
+        (
+            f"delta: match={ratio_delta} "
+            f"fuzzy={result.fuzzy_delta_bytes:+.0f} "
+            f"insns={result.probe.candidate_instructions - result.baseline.candidate_instructions:+d} "
+            f"prefix={result.probe.prefix_instructions - result.baseline.prefix_instructions:+d} "
+            f"refs={result.probe.masked_ok - result.baseline.masked_ok:+d}/"
+            f"{result.probe.masked_unresolved - result.baseline.masked_unresolved:+d}/"
+            f"{result.probe.masked_mismatches - result.baseline.masked_mismatches:+d}/"
+            f"{result.probe.masked_unaudited - result.baseline.masked_unaudited:+d}"
+        ),
+        f"source_sha256={result.source_sha256}",
+    ]
+    if tradeoffs:
+        lines.append(f"warnings={','.join(tradeoffs)}")
+    return "\n".join(lines)
 
 
 @dataclass(frozen=True, slots=True)
