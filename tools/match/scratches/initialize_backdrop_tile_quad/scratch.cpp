@@ -34,7 +34,7 @@ void initialize_backdrop_tile_quad(
     object->RequestFaceQuads(1);
 
     Vector3* vertices = object->vertices;
-    ObjectFaceQuad* quad = object->facequads;
+    cRFaceQuad* quad = object->facequads;
 
     vertices[0].y = 0.0f;
     vertices[1].y = 0.0f;
@@ -69,7 +69,7 @@ void initialize_backdrop_tile_quad(
         vertices[3].z = 0.5f;
         break;
     case 1:
-        quad->rotate_object_facequad_uv_pairs();
+        quad->RotateUVCCW();
         vertices[0].x = 0.89999998f;
         vertices[0].z = column_offset + 0.5f;
         vertices[1].x = 0.5f;
@@ -80,9 +80,9 @@ void initialize_backdrop_tile_quad(
         vertices[3].z = -0.5f;
         break;
     case 2:
-        quad->rotate_object_facequad_uv_pairs();
-        quad->rotate_object_facequad_uv_pairs();
-        quad->rotate_object_facequad_uv_pairs();
+        quad->RotateUVCCW();
+        quad->RotateUVCCW();
+        quad->RotateUVCCW();
         vertices[0].x = -0.5f;
         vertices[0].z = 0.5f;
         vertices[1].x = -0.89999998f;
@@ -93,8 +93,8 @@ void initialize_backdrop_tile_quad(
         vertices[3].z = -0.5f - column_offset;
         break;
     case 3:
-        quad->rotate_object_facequad_uv_pairs();
-        quad->rotate_object_facequad_uv_pairs();
+        quad->RotateUVCCW();
+        quad->RotateUVCCW();
         vertices[0].x = 0.5f;
         vertices[0].z = -0.5f;
         vertices[1].x = -0.5f;

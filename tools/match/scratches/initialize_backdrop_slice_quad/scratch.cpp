@@ -13,7 +13,7 @@ void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_
     Vector3* vertices = object->vertices;
     flags |= OBJECT_FLAG_TEXTURE_TRANSFORM;
     object->flags = flags;
-    ObjectFaceQuad* quad = object->facequads;
+    cRFaceQuad* quad = object->facequads;
 
     vertices[0].x = left_x;
     vertices[2].x = left_x;

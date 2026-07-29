@@ -21,7 +21,7 @@ int report_errorf(char* format, ...);
     normal_tally[(index_value)] += (weight_value)
 
 #define CURRENT_FACE \
-    ((ObjectFaceQuad*)((char*)facequads + face_offset))
+    ((cRFaceQuad*)((char*)facequads + face_offset))
 
 void cRObject::CalcFaceQuadNormals()
 {
@@ -112,7 +112,7 @@ void cRObject::CalcFaceQuadNormals()
 
             ++index;
             normal_offset += sizeof(Vector3) * 2;
-            face_offset += sizeof(ObjectFaceQuad);
+            face_offset += sizeof(cRFaceQuad);
         } while (index < facequad_count);
     }
 

@@ -230,7 +230,7 @@ void cRPath::initialize_loopbow_path_template_pair(
     strip_mesh->RequestFaceQuads(
         2 * segment_count * width_cells);
 
-    ObjectFaceQuad* facequads = strip_mesh->facequads;
+    cRFaceQuad* facequads = strip_mesh->facequads;
     Vector3* vertices = strip_mesh->vertices;
 
     int row = 0;
@@ -296,7 +296,7 @@ void cRPath::initialize_loopbow_path_template_pair(
                     float u1 = (float)(cell_index + 1) * 0.125f;
                     do {
                         if (side != 0) {
-                            ObjectFaceQuad* face =
+                            cRFaceQuad* face =
                                 &facequads[side + 2 *
                                     (cell_index + segment * width_cells)];
                             face->header_word = 0;
@@ -329,7 +329,7 @@ void cRPath::initialize_loopbow_path_template_pair(
                             face->u3 = u1;
                             face->v3 = v1;
                         } else {
-                            ObjectFaceQuad* face =
+                            cRFaceQuad* face =
                                 &facequads[side + 2 *
                                     (cell_index + segment * width_cells)];
                             face->header_word = 0;

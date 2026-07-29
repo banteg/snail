@@ -8,4 +8,7 @@ typedef cRObject Object;
 struct cRObjects;
 typedef cRObjects ObjectList;
 
+struct cRFaceQuad;
+typedef cRFaceQuad ObjectFaceQuad;
+
 #endif

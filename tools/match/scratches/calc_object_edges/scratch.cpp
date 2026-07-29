@@ -12,7 +12,7 @@ void cRObject::CalcEdges()
         return;
     }
 
-    ObjectFaceQuad* face = facequads;
+    cRFaceQuad* face = facequads;
     ObjectToonEdge* build_edges = (ObjectToonEdge*)get_archive_data_base();
     g_object_edge_build_edges = build_edges;
     int edge_count = 0;

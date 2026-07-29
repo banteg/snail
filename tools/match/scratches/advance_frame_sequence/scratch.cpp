@@ -7,7 +7,7 @@
 void Movie::advance_frame_sequence()
 {
     int frame_index = current_frame_index;
-    ObjectFaceQuad* frame_records = facequads;
+    cRFaceQuad* frame_records = facequads;
     current_texture_ref = frame_records[frame_index].texture_ref;
 
     int flags_value = sequence_flags;

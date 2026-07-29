@@ -90,7 +90,7 @@ static __forceinline void build_strip_mesh(
         2 * path->width_cells * path->segment_count);
 
     Vector3* vertices = path->strip_mesh->vertices;
-    ObjectFaceQuad* facequads = path->strip_mesh->facequads;
+    cRFaceQuad* facequads = path->strip_mesh->facequads;
 
     int row;
     int column;
@@ -139,7 +139,7 @@ static __forceinline void build_strip_mesh(
             int face_index = 0;
             do {
                 if (face_index == 0) {
-                    ObjectFaceQuad* face = &facequads[
+                    cRFaceQuad* face = &facequads[
                         2 * column + 2 * row * path->width_cells + face_index];
                     face->header_word = 0;
                     face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
@@ -163,7 +163,7 @@ static __forceinline void build_strip_mesh(
                     face->uv[3].u = u0;
                     face->uv[3].v = v1;
                 } else {
-                    ObjectFaceQuad* face = &facequads[
+                    cRFaceQuad* face = &facequads[
                         2 * column + 2 * row * path->width_cells + face_index];
                     face->header_word = 0;
                     face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;

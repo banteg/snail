@@ -24,7 +24,7 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
     mesh->RequestFaceQuads(segment_count << 1);
 
     Vector3* destination = mesh->vertices;
-    ObjectFaceQuad* facequads = mesh->facequads;
+    cRFaceQuad* facequads = mesh->facequads;
 
     int row = 0;
     if (segment_count >= 0) {
@@ -86,7 +86,7 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
     row = 0;
     if (segment_count > 0) {
         do {
-            ObjectFaceQuad* face = &facequads[row * 2];
+            cRFaceQuad* face = &facequads[row * 2];
 
             face[0].texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
             face[0].vertex_0 = row * 4 + 5;

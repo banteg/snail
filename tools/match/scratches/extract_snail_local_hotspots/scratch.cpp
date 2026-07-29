@@ -24,7 +24,7 @@ void Snail::extract_snail_local_hotspots()
         TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_name, 0, 0);
         int facequad_count = model->facequad_count;
         int face_index = 0;
-        ObjectFaceQuad* facequad;
+        cRFaceQuad* facequad;
         int vertex_index;
         Vector3* vertex;
 

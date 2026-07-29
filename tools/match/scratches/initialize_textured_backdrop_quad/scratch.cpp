@@ -10,7 +10,7 @@ void initialize_textured_backdrop_quad(Object* object, char* texture_path, float
 
     float left_x = x_offset + 0.5f;
     Vector3* vertices = object->vertices;
-    ObjectFaceQuad* quad = object->facequads;
+    cRFaceQuad* quad = object->facequads;
 
     vertices[0].y = 0.0f;
     vertices[0].x = left_x;

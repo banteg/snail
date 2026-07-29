@@ -129,7 +129,7 @@ clean operands.
 
 Both mobile ports identify the six orientation calls as
 `cRFaceQuad::RotateUVCCW()`. Rewriting them as calls on the borrowed
-`ObjectFaceQuad* quad` preserves the complete Windows instruction stream:
+`cRFaceQuad* quad` preserves the complete Windows instruction stream:
 100.00%, 367/367 instructions, a 367/367 prefix, and all 63 relocations clean.
 This is a source-level ownership gain with no matching concession.
 

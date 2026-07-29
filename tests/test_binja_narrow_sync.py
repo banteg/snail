@@ -7668,6 +7668,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
 
 
 def test_backdrop_quad_helper_replay_keeps_object_owners_and_void_abis() -> None:
+    repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_object_render_types.py").read_text(
         encoding="utf-8"
     )
@@ -7678,6 +7679,12 @@ def test_backdrop_quad_helper_replay_keeps_object_owners_and_void_abis() -> None
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_object_render_types.h", "object_render_types.h")
     ]
+    matcher_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+    matcher_fwd = (
+        repo_root / "tools/match/include/object_fwd.h"
+    ).read_text(encoding="utf-8")
 
     for function_name in (
         "initialize_textured_backdrop_quad",
@@ -7705,6 +7712,11 @@ def test_backdrop_quad_helper_replay_keeps_object_owners_and_void_abis() -> None
             "void __thiscall rotate_object_facequad_uv_pairs("
             "ObjectFaceQuad* quad);"
         ) in header
+
+    assert "struct cRFaceQuad {" in matcher_header
+    assert "void RotateUVCCW();" in matcher_header
+    assert "cRFaceQuad* facequads;" in matcher_header
+    assert "typedef cRFaceQuad ObjectFaceQuad;" in matcher_fwd
 
     for address, name, data_type in (
         ("0x4a3c40", "g_backdrop_raise_first_vertex_index", "int32_t"),

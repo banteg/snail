@@ -2,7 +2,7 @@
 
 #include "object_render_types.h"
 
-void ObjectFaceQuad::rotate_object_facequad_uv_pairs()
+void cRFaceQuad::RotateUVCCW()
 {
     float first_u = uv[0].u;
     uv[0].u = uv[1].u;

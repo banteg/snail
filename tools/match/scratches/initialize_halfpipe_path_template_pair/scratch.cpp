@@ -160,7 +160,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
     strip_mesh->RequestFaceQuads(2 * segment_count * width_cells);
 
     Vector3* vertices = strip_mesh->vertices;
-    ObjectFaceQuad* facequads = strip_mesh->facequads;
+    cRFaceQuad* facequads = strip_mesh->facequads;
     TransformMatrix kind42_transform;
     set_matrix_identity(&kind42_transform);
 
@@ -229,7 +229,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
                 float u1 = (float)(mesh_column + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index) {
                     if (face_index == 0) {
-                        ObjectFaceQuad* face = &facequads[
+                        cRFaceQuad* face = &facequads[
                             face_index
                             + 2 * (mesh_row * width_cells + mesh_column)];
                         face->header_word = 0;
@@ -256,7 +256,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
                         face->uv[3].u = u0;
                         face->uv[3].v = v1;
                     } else {
-                        ObjectFaceQuad* face = &facequads[
+                        cRFaceQuad* face = &facequads[
                             face_index
                             + 2 * (mesh_row * width_cells + mesh_column)];
                         face->header_word = 0;

@@ -48,7 +48,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
         2 * path->width_cells * path->segment_count);
 
     Vector3* vertices = path->strip_mesh->vertices;
-    ObjectFaceQuad* facequads = path->strip_mesh->facequads;
+    cRFaceQuad* facequads = path->strip_mesh->facequads;
 
     int row;
     int column;
@@ -96,7 +96,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
             float u1 = (float)(column + 1) * 0.125f;
 
             for (face_index = 0; face_index < 2; ++face_index) {
-                ObjectFaceQuad* face =
+                cRFaceQuad* face =
                     &facequads[2 * column + 2 * row * path->width_cells + face_index];
                 face->header_word = 0;
                 if (face_index == 0) {

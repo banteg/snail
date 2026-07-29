@@ -150,7 +150,7 @@ void cRPath::initialize_cage2_path_template_pair(
     strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
 
     Vector3* vertices = strip_mesh->vertices;
-    ObjectFaceQuad* facequads = strip_mesh->facequads;
+    cRFaceQuad* facequads = strip_mesh->facequads;
 
     for (int row = 0; row <= segment_count; ++row) {
         int column = 0;
@@ -206,7 +206,7 @@ void cRPath::initialize_cage2_path_template_pair(
                 float u1 = (float)(mesh_column + 1) * 0.125f;
                 for (int face_index = 0; face_index < 2; ++face_index) {
                     if (face_index == 0) {
-                        ObjectFaceQuad* face =
+                        cRFaceQuad* face =
                             &facequads[2 * mesh_column
                                 + 2 * mesh_cursor * width_cells + face_index];
                         face->header_word = 0;
@@ -233,7 +233,7 @@ void cRPath::initialize_cage2_path_template_pair(
                         face->uv[3].u = u0;
                         face->uv[3].v = v1;
                     } else {
-                        ObjectFaceQuad* face =
+                        cRFaceQuad* face =
                             &facequads[2 * mesh_column
                                 + 2 * mesh_cursor * width_cells + face_index];
                         face->header_word = 0;

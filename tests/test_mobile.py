@@ -1214,10 +1214,18 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     assert "struct cRObjects {" in object_header
     assert "struct ObjectList {" not in object_header
     assert "cRObjects_must_be_0x0c" in object_header
+    assert "struct cRFaceQuad {" in object_header
+    assert "struct ObjectFaceQuad {" not in object_header
+    assert "cRFaceQuad_must_be_0x30" in object_header
+    assert "ObjectFaceQuad_must_be_0x30" in object_header
+    assert "cRFaceQuad* facequads;" in object_header
+    assert "void RotateUVCCW();" in object_header
     assert "struct cRObject;" in object_fwd
     assert "typedef cRObject Object;" in object_fwd
     assert "struct cRObjects;" in object_fwd
     assert "typedef cRObjects ObjectList;" in object_fwd
+    assert "struct cRFaceQuad;" in object_fwd
+    assert "typedef cRFaceQuad ObjectFaceQuad;" in object_fwd
 
     authored_allocation_methods = (
         "void RequestVertices(int vertex_count);",
@@ -1354,6 +1362,11 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
             ),
         ),
         (
+            "rotate_object_facequad_uv_pairs",
+            "cRFaceQuad",
+            "?RotateUVCCW@cRFaceQuad@@QAEXXZ",
+        ),
+        (
             "initialize_object_list",
             "cRObjects",
             "?Init@cRObjects@@QAEXH@Z",
@@ -1412,6 +1425,9 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         "add_object_edge": "cRObject::AddEdge(int, int, int)",
         "calc_object_edges": "cRObject::CalcEdges()",
         (
+            "rotate_object_facequad_uv_pairs"
+        ): "cRFaceQuad::RotateUVCCW()",
+        (
             "request_object_animation"
         ): "cRObject::RequestAnim(int, cRBodPos*, float, int)",
         "initialize_object_list": "cRObjects::Init(int)",
@@ -1442,6 +1458,19 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     assert "object->RequestAnim(" in animation_loader_source
     assert "cRObject::request_object_animation" not in request_anim_source
     assert "object->request_object_animation" not in animation_loader_source
+
+    rotate_facequad_source = (
+        repo_root
+        / "tools/match/scratches/rotate_object_facequad_uv_pairs/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    backdrop_tile_source = (
+        repo_root
+        / "tools/match/scratches/initialize_backdrop_tile_quad/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "void cRFaceQuad::RotateUVCCW()" in rotate_facequad_source
+    assert "rotate_object_facequad_uv_pairs(" not in rotate_facequad_source
+    assert backdrop_tile_source.count("quad->RotateUVCCW();") == 6
+    assert "quad->rotate_object_facequad_uv_pairs();" not in backdrop_tile_source
 
     object_manager_sources = {
         windows_name: (

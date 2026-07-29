@@ -20,13 +20,13 @@ void cRObjects::ReTextureObjects(TextureRef* new_texture,
             if (object->facequad_count > 0) {
                 int face_offset = 0;
                 do {
-                    ObjectFaceQuad* quad =
-                        (ObjectFaceQuad*)((char*)object->facequads + face_offset);
+                    cRFaceQuad* quad =
+                        (cRFaceQuad*)((char*)object->facequads + face_offset);
                     if (quad->texture_ref == old_texture) {
                         quad->texture_ref = new_texture;
                     }
                     ++face_index;
-                    face_offset += sizeof(ObjectFaceQuad);
+                    face_offset += sizeof(cRFaceQuad);
                 } while (face_index < object->facequad_count);
             }
 

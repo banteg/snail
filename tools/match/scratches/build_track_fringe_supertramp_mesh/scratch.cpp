@@ -15,7 +15,7 @@ void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
     mesh->RequestFaceQuads((segment_count << 1) + 1);
 
     Vector3* vertices = mesh->vertices;
-    ObjectFaceQuad* facequads = mesh->facequads;
+    cRFaceQuad* facequads = mesh->facequads;
 
     Vector3* row_vertices = vertices;
     int row = 0;
@@ -46,7 +46,7 @@ void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
     row = 0;
     if (segment_count > 0) {
         do {
-            ObjectFaceQuad* face = &facequads[row * 2];
+            cRFaceQuad* face = &facequads[row * 2];
 
             face[0].texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
             face[0].vertex_0 = row * 4 + 4;

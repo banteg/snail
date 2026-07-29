@@ -75,7 +75,7 @@ void build_object_texture_group_buffers(Object* object)
         object->group_index_starts[group] = index_count;
 
         if (face_index < object->texture_group_ends[group]) {
-            int face_offset = face_index * sizeof(ObjectFaceQuad);
+            int face_offset = face_index * sizeof(cRFaceQuad);
             unsigned short* index_5 = index_scratch + index_count + 5;
             unsigned short* index_0 = index_scratch + index_count;
             unsigned short* index_4 = index_scratch + index_count + 4;
@@ -86,29 +86,29 @@ void build_object_texture_group_buffers(Object* object)
             do {
                 *index_0 = (unsigned short)get_or_append_object_texture_group_vertex(
                     object,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_0,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[0].u,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[0].v);
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->vertex_0,
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[0].u,
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[0].v);
                 *index_1 = (unsigned short)get_or_append_object_texture_group_vertex(
                     object,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_1,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[1].u,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[1].v);
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->vertex_1,
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[1].u,
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[1].v);
                 *index_2 = (unsigned short)get_or_append_object_texture_group_vertex(
                     object,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_2,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[2].u,
-                    ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[2].v);
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->vertex_2,
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[2].u,
+                    ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[2].v);
 
-                if ((((ObjectFaceQuad*)((char*)object->facequads + face_offset))->flags
+                if ((((cRFaceQuad*)((char*)object->facequads + face_offset))->flags
                         & OBJECT_FACEQUAD_FLAG_TRIANGLE) == 0) {
                     *index_3 = *index_0;
                     *index_4 = *index_2;
                     *index_5 = (unsigned short)get_or_append_object_texture_group_vertex(
                         object,
-                        ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->vertex_3,
-                        ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[3].u,
-                        ((ObjectFaceQuad*)((char*)object->facequads + face_offset))->uv[3].v);
+                        ((cRFaceQuad*)((char*)object->facequads + face_offset))->vertex_3,
+                        ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[3].u,
+                        ((cRFaceQuad*)((char*)object->facequads + face_offset))->uv[3].v);
                     index_count += 6;
                     index_0 += 6;
                     index_1 += 6;
@@ -129,7 +129,7 @@ void build_object_texture_group_buffers(Object* object)
                 }
 
                 ++face_index;
-                face_offset += sizeof(ObjectFaceQuad);
+                face_offset += sizeof(cRFaceQuad);
             } while (face_index < object->texture_group_ends[group]);
         }
 

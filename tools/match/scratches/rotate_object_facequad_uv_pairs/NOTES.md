@@ -49,3 +49,13 @@ The repeatable Binary Ninja and IDA contracts now use the ABI-equivalent
 `void __thiscall(ObjectFaceQuad*)` signature. The existing Windows function
 name is retained as the matching identifier while the mobile symbols preserve
 the original `RotateUVCCW` provenance.
+
+## 2026-07-29 primary cRFaceQuad ownership
+
+The matcher now promotes the shared authored owner itself: `struct cRFaceQuad`
+is the primary 0x30-byte Windows face record, `ObjectFaceQuad` is retained only
+as an analyzer-facing compatibility typedef, and the exact body is emitted as
+`cRFaceQuad::RotateUVCCW()`. Binary Ninja confirms six ECX-receiver callsites,
+all in `initialize_backdrop_tile_quad`; replaying those calls through the
+authored member preserves the callee at 17/17 instructions and the caller at
+367/367 with all 63 operands clean.

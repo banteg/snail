@@ -182,7 +182,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
     strip_mesh->flags |= OBJECT_FLAG_USE_VERTEX_COLOURS;
 
     Vector3* vertices = strip_mesh->vertices;
-    ObjectFaceQuad* facequads = strip_mesh->facequads;
+    cRFaceQuad* facequads = strip_mesh->facequads;
     tColour* vertex_colours = strip_mesh->vertex_colours;
 
     if (segment_count >= 0) {
@@ -248,7 +248,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                     float next_column_f = (float)next_column;
                     int side = 0;
                     do {
-                        ObjectFaceQuad* face =
+                        cRFaceQuad* face =
                             &facequads[side + 2 * (face_row * width_cells + column)];
                         face->header_word = 0;
                         if (side == 0) {

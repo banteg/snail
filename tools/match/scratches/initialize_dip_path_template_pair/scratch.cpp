@@ -656,7 +656,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
 
-    ObjectFaceQuad* facequads = strip_mesh->facequads;
+    cRFaceQuad* facequads = strip_mesh->facequads;
     Vector3* vertices = strip_mesh->vertices;
 
     int mesh_row = 0;
@@ -722,7 +722,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         face_index
                         + 2 * (face_row * width_cells + face_column);
                     if (face_index == 0) {
-                        ObjectFaceQuad* face = &facequads[face_record_index];
+                        cRFaceQuad* face = &facequads[face_record_index];
                         face->header_word = 0;
                         face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
@@ -745,7 +745,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[3].u = u0;
                         face->uv[3].v = v1;
                     } else {
-                        ObjectFaceQuad* face = &facequads[face_record_index];
+                        cRFaceQuad* face = &facequads[face_record_index];
                         face->header_word = 0;
                         face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);

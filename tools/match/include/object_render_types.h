@@ -70,14 +70,14 @@ struct ObjectUv {
     float v;
 };
 
-// Byte-sized ObjectFaceQuad flags. Keep the struct member unsigned char so
+// Byte-sized cRFaceQuad flags. Keep the struct member unsigned char so
 // the recovered 0x30-byte record layout does not inherit enum width.
 enum ObjectFaceQuadFlag {
     OBJECT_FACEQUAD_FLAG_TRIANGLE = 0x80,
 };
 
-struct ObjectFaceQuad {
-    void rotate_object_facequad_uv_pairs(); // @ 0x430a30; mobile cRFaceQuad::RotateUVCCW()
+struct cRFaceQuad {
+    void RotateUVCCW(); // @ 0x430a30
 
     union {
         unsigned short header_word; // +0x00, constructor word store
@@ -107,6 +107,8 @@ struct ObjectFaceQuad {
     };
 };
 
+typedef char cRFaceQuad_must_be_0x30[
+    (sizeof(cRFaceQuad) == 0x30) ? 1 : -1];
 typedef char ObjectFaceQuad_must_be_0x30[
     (sizeof(ObjectFaceQuad) == 0x30) ? 1 : -1];
 
@@ -210,7 +212,7 @@ struct cRObject {
     char unknown_4c[0x54 - 0x4c];
     int facequad_count; // +0x54
     int facequad_capacity; // +0x58
-    ObjectFaceQuad* facequads; // +0x5c
+    cRFaceQuad* facequads; // +0x5c
     Vector3* facequad_normals; // +0x60, active base/generated-frame view
     int texture_group_count; // +0x64
     int texture_group_capacity; // +0x68

@@ -333,6 +333,15 @@
       "description": "cRObject-owned silhouette-edge builder retained by both mobile ports as cRObject::CalcEdges()."
     },
     {
+      "address": "0x430a30",
+      "name": "rotate_object_facequad_uv_pairs",
+      "kind": "function",
+      "aliases": [
+        "?RotateUVCCW@cRFaceQuad@@QAEXXZ"
+      ],
+      "description": "Exact cRFaceQuad::RotateUVCCW() UV-pair rotation retained under the same authored owner and name by Android and iOS."
+    },
+    {
       "address": "0x430d90",
       "name": "replace_object_list_texture_refs",
       "kind": "function",

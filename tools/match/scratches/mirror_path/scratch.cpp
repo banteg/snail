@@ -84,7 +84,7 @@ void cRPath::mirror_path(cRPath* source)
     }
 
     Vector3* destination_vertices = destination_mesh->vertices;
-    ObjectFaceQuad* destination_facequads = destination_mesh->facequads;
+    cRFaceQuad* destination_facequads = destination_mesh->facequads;
 
     int row = 0;
     if (segment_count >= 0) {
@@ -121,8 +121,8 @@ void cRPath::mirror_path(cRPath* source)
                     int quad_pair = 0;
                     do {
                         int face_index = quad_pair + 2 * (cell + segment * width_cells);
-                        ObjectFaceQuad* destination_face = &destination_facequads[face_index];
-                        ObjectFaceQuad* source_face =
+                        cRFaceQuad* destination_face = &destination_facequads[face_index];
+                        cRFaceQuad* source_face =
                             &source->strip_mesh->facequads[face_index];
 
                         *destination_face = *source_face;

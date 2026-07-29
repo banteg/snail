@@ -2032,7 +2032,7 @@
     {
       "address": "0x430a30",
       "name": "rotate_object_facequad_uv_pairs",
-      "description": "Authored `cRFaceQuad::RotateUVCCW()` member in both mobile ports: rotates one ObjectFaceQuad's four UV pairs counter-clockwise by one slot; used by backdrop tile orientation cases before writing the matching quad vertices."
+      "description": "Authored `cRFaceQuad::RotateUVCCW()` member in both mobile ports: rotates one cRFaceQuad's four UV pairs counter-clockwise by one slot; used by backdrop tile orientation cases before writing the matching quad vertices."
     },
     {
       "address": "0x430a70",

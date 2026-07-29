@@ -3221,7 +3221,7 @@
       "ios_symbol": "cRFaceQuad::RotateUVCCW()",
       "source_object": "RObject.o",
       "confidence": "high",
-      "notes": "Android, iOS, and Windows all rotate the four cRFaceQuad UV pairs counter-clockwise by one slot. Rewriting the Windows fastcall-equivalent helper and its exact backdrop caller as an authored ObjectFaceQuad member is byte-identical.",
+      "notes": "Android, iOS, and Windows all rotate the four cRFaceQuad UV pairs counter-clockwise by one slot. Rewriting the Windows fastcall-equivalent helper and its exact backdrop caller as the authored cRFaceQuad member is byte-identical.",
       "android_symbol": "cRFaceQuad::RotateUVCCW()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
