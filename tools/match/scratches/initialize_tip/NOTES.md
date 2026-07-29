@@ -105,3 +105,26 @@ more explicitly changes the final shift but does not recover native's
 `not cl` / `movsx eax, cl` register split. The retained member reference states
 real ownership; no volatile qualifier, raw offset, or register-shaped cast is
 introduced.
+
+## 2026-07-29 alignment and main-call owner closure
+
+Two follow-up sweeps add twelve source-shaped variants. Explicit `register`
+ownership on the full flags value, signed-byte carrier, alignment result, and
+split initialization is completely byte-neutral in all six combinations.
+VC6 continues to keep the flags/result in EAX, producing `not al` and eliding
+native's `movsx eax, cl`; a source hint cannot recover the ECX-to-EAX split.
+
+The earlier definition-borrow and field-staging tests did not include the
+retained `FrontendWidget*&` publication owner, so the second sweep covers that
+interaction directly. Single and split `TipData*` borrows are the closest at
+80.78%. Staging only `layout_y` or the final anchor reaches 79.35-80.00%;
+borrowing the anchor or staging only text perturbs the prologue and falls to
+61.29-68.81%. None improves the initial call's register rotation or the later
+root/border-manager load alignment.
+
+The complete ledger now covers 66 unique variants: two improve an earlier
+baseline, seven are neutral, and 57 regress, with one retained sweep win and
+three trailing non-improving sweeps. `initialize_tip` is formally stalled at
+84.42%, 154/154 instructions, prefix 19, 26 clean references, and the same two
+unaudited global loads. The member reference remains the strongest honest
+source; no volatile reload, dummy use, or raw owner view is reintroduced.

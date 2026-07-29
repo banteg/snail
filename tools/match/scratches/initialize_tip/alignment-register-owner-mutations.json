@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "alignment-register-owner",
+      "find": "    int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;",
+      "replacements": [
+        {
+          "name": "register-definition-flags",
+          "text": "    register int definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;"
+        },
+        {
+          "name": "register-alignment",
+          "text": "    int definition_flags = definition->flags;\n    register unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;"
+        },
+        {
+          "name": "register-flags-and-alignment",
+          "text": "    register int definition_flags = definition->flags;\n    register unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;"
+        },
+        {
+          "name": "register-signed-byte-carrier",
+          "text": "    int definition_flags = definition->flags;\n    register signed char inverted_flags =\n        (signed char)~definition_flags;\n    unsigned int alignment = (int)inverted_flags;\n    alignment &= 4;"
+        },
+        {
+          "name": "register-flags-and-byte-carrier",
+          "text": "    register int definition_flags = definition->flags;\n    register signed char inverted_flags =\n        (signed char)~definition_flags;\n    unsigned int alignment = (int)inverted_flags;\n    alignment &= 4;"
+        },
+        {
+          "name": "split-register-flags-initialization",
+          "text": "    register int definition_flags;\n    definition_flags = definition->flags;\n    unsigned int alignment = (int)(char)~definition_flags;\n    alignment &= 4;"
+        }
+      ]
+    }
+  ]
+}
