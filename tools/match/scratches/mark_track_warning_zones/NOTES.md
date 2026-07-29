@@ -123,3 +123,25 @@ codegen-neutral. These results pin the remaining debt to scheduling two
 independent hazard-path reloads; no semantic source shape, barrier, or
 translation-unit dependency has been found, so the clear source above remains
 canonical.
+
+## 2026-07-29 formal reload-order boundary
+
+Three recorded sweeps cover the independent owners around that reload pair.
+Five row/saved-row declaration, initialization, and chained-zero forms are all
+byte-identical to the 98.99% baseline. Six cell-loop updates cover pre/post
+increment, reversed comma order, compound increments, and an inequality bound;
+three are neutral and three regress to 97.98% by adding a pointer/column update
+ordering mismatch without swapping the reloads.
+
+Five outer row recurrences then cover combined preincrement, explicit add,
+cursor-last order, saved-row-derived advancement, and a staged next-row local.
+Three are neutral. The two saved-row-dependent forms disturb the opening
+register/frame ownership and regress to 88.44% and 67.01%.
+
+The ledger contains 16 unique variants: 0 improve, 11 are byte-identical, and
+5 regress. Three consecutive non-improving sweeps formally stall this lane at
+**98.99%** (`99/99`, prefix 79, no masked operands). The only difference is
+still native's cell-cursor reload before the saved-row reload versus VC6's
+opposite scheduling of those independent hazard-path loads. Further work needs
+compiler provenance, not another declaration, comma expression, recurrence,
+or synthetic dependency.

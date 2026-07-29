@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-row-recurrence",
+      "find": "            row_cells = cell;\n            ++row;\n            saved_row = row;",
+      "replacements": [
+        {
+          "name": "combined-preincrement",
+          "text": "            row_cells = cell;\n            saved_row = ++row;"
+        },
+        {
+          "name": "row-add-one",
+          "text": "            row_cells = cell;\n            row += 1;\n            saved_row = row;"
+        },
+        {
+          "name": "advance-before-cursor",
+          "text": "            ++row;\n            saved_row = row;\n            row_cells = cell;"
+        },
+        {
+          "name": "saved-derived-next-row",
+          "text": "            row_cells = cell;\n            row = saved_row + 1;\n            saved_row = row;"
+        },
+        {
+          "name": "stage-next-row",
+          "text": "            int next_row = row + 1;\n            row_cells = cell;\n            row = next_row;\n            saved_row = next_row;"
+        }
+      ]
+    }
+  ]
+}

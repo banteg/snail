@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cell-loop-update",
+      "find": "            for (int col = 0; col < 8; ++col, ++cell) {",
+      "replacements": [
+        {
+          "name": "cell-before-column",
+          "text": "            for (int col = 0; col < 8; ++cell, ++col) {"
+        },
+        {
+          "name": "postincrement",
+          "text": "            for (int col = 0; col < 8; col++, cell++) {"
+        },
+        {
+          "name": "reversed-postincrement",
+          "text": "            for (int col = 0; col < 8; cell++, col++) {"
+        },
+        {
+          "name": "compound-column",
+          "text": "            for (int col = 0; col < 8; col += 1, ++cell) {"
+        },
+        {
+          "name": "compound-cell",
+          "text": "            for (int col = 0; col < 8; ++col, cell += 1) {"
+        },
+        {
+          "name": "not-equal-bound",
+          "text": "            for (int col = 0; col != 8; ++col, ++cell) {"
+        }
+      ]
+    }
+  ]
+}

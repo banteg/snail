@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-owner",
+      "find": "    int row = 0;\n    int saved_row = row;",
+      "replacements": [
+        {
+          "name": "both-zero-initialized",
+          "text": "    int row = 0;\n    int saved_row = 0;"
+        },
+        {
+          "name": "saved-before-row",
+          "text": "    int saved_row = 0;\n    int row = saved_row;"
+        },
+        {
+          "name": "declared-then-forward-chain",
+          "text": "    int row;\n    int saved_row;\n    saved_row = row = 0;"
+        },
+        {
+          "name": "declared-then-reverse-chain",
+          "text": "    int row;\n    int saved_row;\n    row = saved_row = 0;"
+        },
+        {
+          "name": "row-then-deferred-save",
+          "text": "    int row = 0;\n    int saved_row;\n    saved_row = row;"
+        }
+      ]
+    }
+  ]
+}
