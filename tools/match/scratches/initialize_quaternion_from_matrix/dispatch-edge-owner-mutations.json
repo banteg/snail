@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "not-less-dispatch-exit",
+      "find": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }",
+      "replacements": [
+        {
+          "name": "explicit-z-tail",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }\n    goto z_dominant;"
+        },
+        {
+          "name": "complemented-y-z-tail",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] <= matrix_rows[10]) {\n        goto z_dominant;\n    }\n    goto y_dominant;"
+        },
+        {
+          "name": "nested-x-complement",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] <= matrix_rows[10]) {\n        if (matrix_rows[5] > matrix_rows[10]) {\n            goto y_dominant;\n        }\n        goto z_dominant;\n    }\n    goto x_dominant;"
+        },
+        {
+          "name": "explicit-not-less-else-chain",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    } else if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    } else if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    } else {\n        goto z_dominant;\n    }"
+        }
+      ]
+    },
+    {
+      "name": "less-dispatch-exit",
+      "find": "right_less_than_up:\n    if (matrix_rows[5] >= matrix_rows[10]) {\n        goto y_dominant;\n    }\n    if (matrix_rows[0] <= matrix_rows[10]) {\n        goto z_dominant;\n    }",
+      "replacements": [
+        {
+          "name": "explicit-x-tail",
+          "text": "right_less_than_up:\n    if (matrix_rows[5] >= matrix_rows[10]) {\n        goto y_dominant;\n    }\n    if (matrix_rows[0] <= matrix_rows[10]) {\n        goto z_dominant;\n    }\n    goto x_dominant;"
+        },
+        {
+          "name": "nested-less-complement",
+          "text": "right_less_than_up:\n    if (matrix_rows[5] < matrix_rows[10]) {\n        if (matrix_rows[0] <= matrix_rows[10]) {\n            goto z_dominant;\n        }\n        goto x_dominant;\n    }\n    goto y_dominant;"
+        },
+        {
+          "name": "complemented-x-z-tail",
+          "text": "right_less_than_up:\n    if (matrix_rows[5] >= matrix_rows[10]) {\n        goto y_dominant;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    goto z_dominant;"
+        },
+        {
+          "name": "explicit-less-else-chain",
+          "text": "right_less_than_up:\n    if (matrix_rows[5] >= matrix_rows[10]) {\n        goto y_dominant;\n    } else if (matrix_rows[0] <= matrix_rows[10]) {\n        goto z_dominant;\n    } else {\n        goto x_dominant;\n    }"
+        }
+      ]
+    }
+  ]
+}

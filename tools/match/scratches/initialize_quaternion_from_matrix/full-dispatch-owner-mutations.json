@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "full-dominant-diagonal-dispatch",
+      "find": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }",
+      "replacements": [
+        {
+          "name": "flattened-less-first",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        if (matrix_rows[5] >= matrix_rows[10]) {\n            goto y_dominant;\n        }\n        if (matrix_rows[0] <= matrix_rows[10]) {\n            goto z_dominant;\n        }\n        goto x_dominant;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }\n    goto z_dominant;"
+        },
+        {
+          "name": "nested-less-first",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        if (matrix_rows[5] < matrix_rows[10]) {\n            if (matrix_rows[0] <= matrix_rows[10]) {\n                goto z_dominant;\n            }\n            goto x_dominant;\n        }\n        goto y_dominant;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }\n    goto z_dominant;"
+        },
+        {
+          "name": "explicit-less-else",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        if (matrix_rows[5] >= matrix_rows[10]) {\n            goto y_dominant;\n        } else if (matrix_rows[0] <= matrix_rows[10]) {\n            goto z_dominant;\n        } else {\n            goto x_dominant;\n        }\n    } else {\n        if (matrix_rows[0] > matrix_rows[10]) {\n            goto x_dominant;\n        } else if (matrix_rows[5] > matrix_rows[10]) {\n            goto y_dominant;\n        } else {\n            goto z_dominant;\n        }\n    }"
+        },
+        {
+          "name": "complemented-not-less-first",
+          "text": "    if (!(matrix_rows[0] < matrix_rows[5])) {\n        if (matrix_rows[0] > matrix_rows[10]) {\n            goto x_dominant;\n        }\n        if (matrix_rows[5] > matrix_rows[10]) {\n            goto y_dominant;\n        }\n        goto z_dominant;\n    }\n    if (matrix_rows[5] >= matrix_rows[10]) {\n        goto y_dominant;\n    }\n    if (matrix_rows[0] <= matrix_rows[10]) {\n        goto z_dominant;\n    }\n    goto x_dominant;"
+        },
+        {
+          "name": "named-dispatch-labels",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto less_dispatch;\n    }\nnot_less_dispatch:\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }\n    goto z_dominant;\nless_dispatch:\n    if (matrix_rows[5] >= matrix_rows[10]) {\n        goto y_dominant;\n    }\n    if (matrix_rows[0] <= matrix_rows[10]) {\n        goto z_dominant;\n    }\n    goto x_dominant;"
+        },
+        {
+          "name": "named-complemented-dispatch-labels",
+          "text": "    if (!(matrix_rows[0] < matrix_rows[5])) {\n        goto not_less_dispatch;\n    }\nless_dispatch:\n    if (matrix_rows[5] >= matrix_rows[10]) {\n        goto y_dominant;\n    }\n    if (matrix_rows[0] <= matrix_rows[10]) {\n        goto z_dominant;\n    }\n    goto x_dominant;\nnot_less_dispatch:\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }\n    goto z_dominant;"
+        }
+      ]
+    }
+  ]
+}

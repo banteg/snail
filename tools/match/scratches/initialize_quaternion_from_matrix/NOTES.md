@@ -100,3 +100,26 @@ The experiment ledger therefore bounds ordinary source-level dispatch
 restructuring: the retained direct-label form remains the strongest honest
 Windows spelling, and the first `jne`/`je` difference is compiler block-layout
 residue rather than an unresolved dominant-diagonal rule.
+
+## 2026-07-29 complete dispatch-owner closure
+
+Two further sweeps turn that bounded audit into a formal stall. Six complete
+five-comparison trees cover the exact mobile nesting, flattened and explicit
+`else` forms, complemented outer tests, and named less/not-less dispatch
+labels. Every complete tree makes VC6 reorder the fallback bodies and regresses
+to 68.63% or 66.49%; none changes an arithmetic or reference operand for the
+better.
+
+A final two-site sweep independently varies the not-less and less dispatch
+exits, including explicit Z/X tails, complemented terminal comparisons,
+nested complements, and explicit `else if` chains. All 24 one- and two-edge
+combinations were compiled. Five are byte-identical to the 92.47% baseline;
+the other 19 regress to 69.89% or below, and several also introduce audit debt.
+
+The complete ledger now covers three sweeps and 37 unique variants: zero
+improvements, eight neutral results, and 29 regressions, with no errors,
+repeats, or tradeoffs. The target and candidate still contain the same 186
+instructions, the same three exact radicand/output bodies, and 23 clean
+references. Only the physical placement of the two dominant-diagonal dispatch
+continuations differs, so the direct-label source is retained without
+compiler-layout shaping.
