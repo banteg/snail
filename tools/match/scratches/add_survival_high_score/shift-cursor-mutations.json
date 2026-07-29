@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shift-cursor",
+      "find": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        --shift_cursor;\n        shift_cursor[1] = shift_cursor[0];\n        shift_cursor[1].route_or_rank_index = shift_rank;\n        --shift_rank;\n    } while (shift_rank > rank);",
+      "replacements": [
+        {
+          "name": "destination-then-decrement",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        shift_cursor[0] = shift_cursor[-1];\n        shift_cursor[0].route_or_rank_index = shift_rank;\n        --shift_cursor;\n        --shift_rank;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "destination-rank-then-counters",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        shift_cursor[0] = shift_cursor[-1];\n        shift_cursor[0].route_or_rank_index = shift_rank;\n        --shift_rank;\n        --shift_cursor;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "dereferenced-destination",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        *shift_cursor = *(shift_cursor - 1);\n        shift_cursor->route_or_rank_index = shift_rank;\n        --shift_cursor;\n        --shift_rank;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "postdecremented-destination",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        shift_cursor[0] = shift_cursor[-1];\n        shift_cursor[0].route_or_rank_index = shift_rank;\n        --shift_rank;\n        shift_cursor--;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "named-source",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        SubSolution* source = shift_cursor - 1;\n        shift_cursor[0] = source[0];\n        shift_cursor[0].route_or_rank_index = shift_rank;\n        shift_cursor = source;\n        --shift_rank;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "saved-destination",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        SubSolution* destination = shift_cursor;\n        --shift_cursor;\n        *destination = *shift_cursor;\n        destination->route_or_rank_index = shift_rank;\n        --shift_rank;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "postdecrement-saved-destination",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        SubSolution* destination = shift_cursor--;\n        *destination = *shift_cursor;\n        destination->route_or_rank_index = shift_rank;\n        --shift_rank;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "outer-destination",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    SubSolution* destination;\n    do {\n        destination = shift_cursor;\n        --shift_cursor;\n        *destination = *shift_cursor;\n        destination->route_or_rank_index = shift_rank;\n        --shift_rank;\n    } while (shift_rank > rank);"
+        },
+        {
+          "name": "destination-index-copy",
+          "text": "    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        SubSolution* destination = shift_cursor;\n        --shift_cursor;\n        destination[0] = shift_cursor[0];\n        destination[0].route_or_rank_index = shift_rank;\n        --shift_rank;\n    } while (shift_rank > rank);"
+        }
+      ]
+    }
+  ]
+}

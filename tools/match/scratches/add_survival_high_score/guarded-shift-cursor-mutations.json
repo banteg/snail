@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "guarded-shift-cursor",
+      "find": "        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            --shift_cursor;\n            shift_cursor[1] = shift_cursor[0];\n            shift_cursor[1].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);",
+      "replacements": [
+        {
+          "name": "copy-decrement-rank-next",
+          "text": "        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            shift_cursor[0] = shift_cursor[-1];\n            --shift_cursor;\n            shift_cursor[1].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);"
+        },
+        {
+          "name": "dereference-copy-decrement-rank-next",
+          "text": "        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            *shift_cursor = *(shift_cursor - 1);\n            --shift_cursor;\n            shift_cursor[1].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);"
+        },
+        {
+          "name": "copy-decrement-rank-next-counters-reversed",
+          "text": "        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            shift_cursor[0] = shift_cursor[-1];\n            --shift_cursor;\n            --shift_rank;\n            shift_cursor[1].route_or_rank_index = shift_rank + 1;\n        } while (shift_rank > rank);"
+        },
+        {
+          "name": "saved-destination-then-next-rank",
+          "text": "        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            SubSolution* destination = shift_cursor;\n            destination[0] = shift_cursor[-1];\n            --shift_cursor;\n            shift_cursor[1].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);"
+        },
+        {
+          "name": "source-copy-decrement-rank-next",
+          "text": "        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            SubSolution* source = shift_cursor - 1;\n            shift_cursor[0] = source[0];\n            shift_cursor = source;\n            shift_cursor[1].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);"
+        },
+        {
+          "name": "direct-index-do",
+          "text": "        do {\n            bank->survival_records[shift_rank] =\n                bank->survival_records[shift_rank - 1];\n            bank->survival_records[shift_rank].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);"
+        },
+        {
+          "name": "direct-index-while",
+          "text": "        while (shift_rank > rank) {\n            bank->survival_records[shift_rank] =\n                bank->survival_records[shift_rank - 1];\n            bank->survival_records[shift_rank].route_or_rank_index = shift_rank;\n            --shift_rank;\n        }"
+        },
+        {
+          "name": "direct-index-predecrement",
+          "text": "        do {\n            --shift_rank;\n            bank->survival_records[shift_rank + 1] =\n                bank->survival_records[shift_rank];\n            bank->survival_records[shift_rank + 1].route_or_rank_index =\n                shift_rank + 1;\n        } while (shift_rank > rank);"
+        }
+      ]
+    }
+  ]
+}

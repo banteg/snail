@@ -72,3 +72,22 @@ contract, and Binary Ninja/IDA health checks preserve the five exact
 
 Focused matching remains honestly unchanged at 52.94%, 15/19 instructions,
 with the same extra native EDI lifetime and no masked operands.
+
+## 2026-07-29 bounded edge-lifetime audit
+
+Three recorded sweeps evaluated 192 source-shaped variants grounded in the
+verified Windows/Android edge semantics:
+
+- twelve named pressed/inverse/released, member-read, read-modify-write,
+  signedness, and direct-edge formulations;
+- all 60 valid orderings of the five field updates while keeping a distinct
+  inverse local before its release use; and
+- all 120 orderings of the equivalent old/current edge formulas preserved by
+  Android `cRInput::Update()`.
+
+No variant improves the clear 52.94%, 15/19 baseline. Seventeen are
+byte-identical and the other 175 regress, so the experiment ledger now marks
+this target stalled. The native-only `push edi` and released-mask lifetime are
+not explained by ordinary update order, signedness, named temporaries, or the
+cross-port algebra. Keep the semantic source pinned; a future retry needs a
+new type/owner/source relationship rather than another statement permutation.

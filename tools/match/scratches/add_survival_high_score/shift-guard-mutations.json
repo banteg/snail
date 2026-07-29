@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shift-guard",
+      "find": "    shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;\n    if (rank >= shift_rank)\n        return;\n\n    SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n    do {\n        --shift_cursor;\n        shift_cursor[1] = shift_cursor[0];\n        shift_cursor[1].route_or_rank_index = shift_rank;\n        --shift_rank;\n    } while (shift_rank > rank);",
+      "replacements": [
+        {
+          "name": "guarded-shift",
+          "text": "    shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;\n    if (rank < shift_rank) {\n        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            --shift_cursor;\n            shift_cursor[1] = shift_cursor[0];\n            shift_cursor[1].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);\n    }"
+        },
+        {
+          "name": "reversed-guarded-shift",
+          "text": "    shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;\n    if (shift_rank > rank) {\n        SubSolution* shift_cursor = &bank->survival_records[shift_rank];\n        do {\n            --shift_cursor;\n            shift_cursor[1] = shift_cursor[0];\n            shift_cursor[1].route_or_rank_index = shift_rank;\n            --shift_rank;\n        } while (shift_rank > rank);\n    }"
+        }
+      ]
+    }
+  ]
+}

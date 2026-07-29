@@ -28,16 +28,14 @@ void SubHighScore::add_survival_high_score(SubSolution* record)
 
 insert_record:
     shift_rank = SUB_HIGH_SCORE_TOP_TEN_COUNT;
-    if (rank >= shift_rank)
-        return;
-
-    SubSolution* shift_cursor = &bank->survival_records[shift_rank];
-    do {
-        --shift_cursor;
-        shift_cursor[1] = shift_cursor[0];
-        shift_cursor[1].route_or_rank_index = shift_rank;
-        --shift_rank;
-    } while (shift_rank > rank);
+    if (rank < shift_rank) {
+        while (shift_rank > rank) {
+            bank->survival_records[shift_rank] =
+                bank->survival_records[shift_rank - 1];
+            bank->survival_records[shift_rank].route_or_rank_index = shift_rank;
+            --shift_rank;
+        }
+    }
 
     bank->survival_records[rank] = *record;
     bank->survival_records[rank].high_score_mode_tag = 1;

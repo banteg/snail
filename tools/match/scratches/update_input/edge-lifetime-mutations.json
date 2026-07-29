@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "edge-lifetimes",
+      "find": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    previous_buttons = result;\n    pressed_buttons = changed & result;\n    result = ~result;\n    inverse_current_buttons = result;\n    current_buttons = 0;\n    released_buttons = changed & result;",
+      "replacements": [
+        {
+          "name": "named-pressed-inverse-released",
+          "text": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    int pressed = changed & result;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    int inverse = ~result;\n    int released = inverse;\n    inverse_current_buttons = inverse;\n    released &= changed;\n    current_buttons = 0;\n    released_buttons = released;"
+        },
+        {
+          "name": "named-released-expression",
+          "text": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    int pressed = changed & result;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    int inverse = ~result;\n    int released = inverse & changed;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    released_buttons = released;"
+        },
+        {
+          "name": "member-inverse-released-local",
+          "text": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    int pressed = changed & result;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    inverse_current_buttons = ~result;\n    int released = inverse_current_buttons;\n    released &= changed;\n    current_buttons = 0;\n    released_buttons = released;"
+        },
+        {
+          "name": "member-inverse-direct-release",
+          "text": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    int pressed = changed & result;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    inverse_current_buttons = ~result;\n    released_buttons = inverse_current_buttons & changed;\n    current_buttons = 0;"
+        },
+        {
+          "name": "released-rmw",
+          "text": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    int pressed = changed & result;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    int inverse = ~result;\n    inverse_current_buttons = inverse;\n    released_buttons = inverse;\n    released_buttons &= changed;\n    current_buttons = 0;"
+        },
+        {
+          "name": "changed-old-release",
+          "text": "    int result = current_buttons;\n    int previous = previous_buttons;\n    int changed = previous ^ result;\n    int pressed = changed & result;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    int inverse = ~result;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    released_buttons = changed & previous;"
+        },
+        {
+          "name": "direct-edge-formulas",
+          "text": "    int result = current_buttons;\n    int previous = previous_buttons;\n    pressed_buttons = result & ~previous;\n    released_buttons = previous & ~result;\n    previous_buttons = result;\n    inverse_current_buttons = ~result;\n    current_buttons = 0;"
+        },
+        {
+          "name": "changed-two-edges",
+          "text": "    int result = current_buttons;\n    int previous = previous_buttons;\n    int changed = previous ^ result;\n    pressed_buttons = changed & result;\n    released_buttons = changed & previous;\n    previous_buttons = result;\n    inverse_current_buttons = ~result;\n    current_buttons = 0;"
+        },
+        {
+          "name": "changed-two-edges-store-order",
+          "text": "    int result = current_buttons;\n    int previous = previous_buttons;\n    int changed = previous ^ result;\n    int pressed = changed & result;\n    int released = changed & previous;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    inverse_current_buttons = ~result;\n    current_buttons = 0;\n    released_buttons = released;"
+        },
+        {
+          "name": "inverse-before-previous-store",
+          "text": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    int pressed = changed & result;\n    int inverse = ~result;\n    int released = inverse & changed;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    inverse_current_buttons = inverse;\n    current_buttons = 0;\n    released_buttons = released;"
+        },
+        {
+          "name": "release-before-clear",
+          "text": "    int result = current_buttons;\n    int changed = previous_buttons ^ result;\n    previous_buttons = result;\n    pressed_buttons = changed & result;\n    result = ~result;\n    inverse_current_buttons = result;\n    released_buttons = changed & result;\n    current_buttons = 0;"
+        },
+        {
+          "name": "unsigned-locals",
+          "text": "    unsigned int result = current_buttons;\n    unsigned int changed = previous_buttons ^ result;\n    unsigned int pressed = changed & result;\n    previous_buttons = result;\n    pressed_buttons = pressed;\n    unsigned int inverse = ~result;\n    unsigned int released = inverse;\n    inverse_current_buttons = inverse;\n    released &= changed;\n    current_buttons = 0;\n    released_buttons = released;"
+        }
+      ]
+    }
+  ]
+}

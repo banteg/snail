@@ -165,3 +165,30 @@ Residual:
   masks. More literal-looking two-pointer and destination-before-decrement
   spellings regress to 65.03% because VC6 loses the native cursor ownership;
   they are not retained.
+
+## 2026-07-29 guarded direct-index closure
+
+The native impossible-path guard does not return when `rank >= 10`: it skips
+the down-shift loop and joins the inserted-record block. The preceding bounded
+score scan can only branch to that block with `rank < 10`, so changing the
+scratch from an early return to a guarded shift preserves every reachable
+behavior while recovering the real control-flow edge. That correction raises
+the focused result from 90.48% to 96.43%.
+
+With the native guard restored, the plain direct-index loop used by the exact
+arcade sibling becomes the missing source shape:
+
+```cpp
+while (shift_rank > rank) {
+    survival_records[shift_rank] = survival_records[shift_rank - 1];
+    survival_records[shift_rank].route_or_rank_index = shift_rank;
+    --shift_rank;
+}
+```
+
+VC6 strength-reduces those indices into the native EBP source/destination
+cursor without the artificial pointer spill introduced by the previous
+hand-carried cursor. Both `while` and equivalent `do` spellings compile
+identically. The clearer guarded `while` form is retained, promoting
+`add_survival_high_score` to proof grade at **100.00%**, `84/84`
+instructions, full prefix, and all six masked operands clean.
