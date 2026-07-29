@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "hoist-next-column-declaration",
+      "find": "        float column = 0.0f;\n        do {",
+      "replacements": [
+        {
+          "name": "before-inner-loop",
+          "text": "        float column = 0.0f;\n        float next_column;\n        do {"
+        }
+      ]
+    },
+    {
+      "name": "remove-inner-next-column-declaration",
+      "find": "            float next_column;\n            float right_y;",
+      "replacements": [
+        {
+          "name": "use-hoisted",
+          "text": "            float right_y;"
+        }
+      ]
+    },
+    {
+      "name": "combine-assignment-and-condition",
+      "find": "            column = next_column;\n        } while (column < GRID_QUAD_COUNT);",
+      "replacements": [
+        {
+          "name": "assignment-expression",
+          "text": "        } while ((column = next_column) < GRID_QUAD_COUNT);"
+        },
+        {
+          "name": "comma-expression",
+          "text": "        } while ((column = next_column), column < GRID_QUAD_COUNT);"
+        }
+      ]
+    }
+  ]
+}

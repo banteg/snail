@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shared-coordinate-declarations",
+      "find": "            float next_column;\n\n            if (flip == 0) {",
+      "replacements": [
+        {
+          "name": "target-slot-order",
+          "text": "            float next_column;\n            float right_y;\n            float right_x;\n            float left_y;\n            float left_x;\n\n            if (flip == 0) {"
+        },
+        {
+          "name": "reverse-target-slot-order",
+          "text": "            float next_column;\n            float left_x;\n            float left_y;\n            float right_x;\n            float right_y;\n\n            if (flip == 0) {"
+        },
+        {
+          "name": "current-source-order",
+          "text": "            float next_column;\n            float right_y;\n            float left_x;\n            float right_x;\n            float left_y;\n\n            if (flip == 0) {"
+        },
+        {
+          "name": "x-pair-first",
+          "text": "            float next_column;\n            float left_x;\n            float right_x;\n            float left_y;\n            float right_y;\n\n            if (flip == 0) {"
+        },
+        {
+          "name": "y-pair-first",
+          "text": "            float next_column;\n            float right_y;\n            float left_y;\n            float right_x;\n            float left_x;\n\n            if (flip == 0) {"
+        },
+        {
+          "name": "right-pair-first",
+          "text": "            float next_column;\n            float right_x;\n            float right_y;\n            float left_x;\n            float left_y;\n\n            if (flip == 0) {"
+        },
+        {
+          "name": "left-pair-first",
+          "text": "            float next_column;\n            float left_y;\n            float left_x;\n            float right_y;\n            float right_x;\n\n            if (flip == 0) {"
+        },
+        {
+          "name": "axis-alternating",
+          "text": "            float next_column;\n            float right_x;\n            float left_x;\n            float right_y;\n            float left_y;\n\n            if (flip == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "normal-shared-coordinate-assignments",
+      "occurrence": 1,
+      "find": "                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;",
+      "replacements": [
+        {
+          "name": "assign-shared",
+          "text": "                right_y = next_column * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;"
+        }
+      ]
+    },
+    {
+      "name": "flipped-shared-coordinate-assignments",
+      "occurrence": 2,
+      "find": "                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;",
+      "replacements": [
+        {
+          "name": "assign-shared",
+          "text": "                right_y = next_column * 68.5714264f;\n                left_x = row * 91.4285736f;\n                right_x = next_row * 91.4285736f;\n                left_y = column * 68.5714264f;"
+        }
+      ]
+    }
+  ]
+}

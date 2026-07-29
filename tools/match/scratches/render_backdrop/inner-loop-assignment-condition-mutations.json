@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "inner-loop-assignment-condition",
+      "find": "            column = next_column;\n        } while (column < GRID_QUAD_COUNT);",
+      "replacements": [
+        {
+          "name": "combined-next-column-assignment",
+          "text": "        } while ((column = next_column) < GRID_QUAD_COUNT);"
+        },
+        {
+          "name": "comma-next-column-assignment",
+          "text": "        } while ((column = next_column), column < GRID_QUAD_COUNT);"
+        },
+        {
+          "name": "combined-column-add-assign",
+          "text": "        } while ((column += 1.0f) < GRID_QUAD_COUNT);"
+        },
+        {
+          "name": "combined-column-addition",
+          "text": "        } while ((column = column + 1.0f) < GRID_QUAD_COUNT);"
+        }
+      ]
+    }
+  ]
+}

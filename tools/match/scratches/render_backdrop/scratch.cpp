@@ -23,16 +23,20 @@ void Backdrop::render_backdrop()
             int column_index = (int)column;
             unsigned char flip = active_flip;
             int cell_index = row_index + column_index * GRID_COLUMN_COUNT;
-            float* cell = (float*)this + cell_index * 6;
             float next_column;
+            float right_y;
+            float left_x;
+            float right_x;
+            float left_y;
 
             if (flip == 0) {
                 next_column = column + 1.0f;
                 float next_row = row + 1.0f;
-                float left_x = row * 91.4285736f;
-                float right_y = next_column * 68.5714264f;
-                float right_x = next_row * 91.4285736f;
-                float left_y = column * 68.5714264f;
+                float* cell = (float*)this + cell_index * 6;
+                right_y = next_column * 68.5714264f;
+                left_x = row * 91.4285736f;
+                right_x = next_row * 91.4285736f;
+                left_y = column * 68.5714264f;
                 queue_textured_quad_corners(
                     active_primary_texture_id,
                     left_x + cell[26],
@@ -56,10 +60,11 @@ void Backdrop::render_backdrop()
             } else {
                 next_column = column + 1.0f;
                 float next_row = row + 1.0f;
-                float left_x = row * 91.4285736f;
-                float right_y = next_column * 68.5714264f;
-                float right_x = next_row * 91.4285736f;
-                float left_y = column * 68.5714264f;
+                float* cell = (float*)this + cell_index * 6;
+                right_y = next_column * 68.5714264f;
+                left_x = row * 91.4285736f;
+                right_x = next_row * 91.4285736f;
+                left_y = column * 68.5714264f;
                 queue_textured_quad_corners(
                     active_primary_texture_id,
                     left_x + cell[26],

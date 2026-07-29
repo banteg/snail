@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "normal-branch-cell",
+      "occurrence": 1,
+      "find": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;",
+      "replacements": [
+        {
+          "name": "cell-before-coordinates",
+          "text": "                float* cell = (float*)this + cell_index * 6;\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "cell-after-next-row",
+          "text": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "cell-after-coordinates",
+          "text": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float* cell = (float*)this + cell_index * 6;"
+        }
+      ]
+    },
+    {
+      "name": "flipped-branch-cell",
+      "occurrence": 2,
+      "find": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;",
+      "replacements": [
+        {
+          "name": "cell-before-coordinates",
+          "text": "                float* cell = (float*)this + cell_index * 6;\n                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "cell-after-next-row",
+          "text": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float* cell = (float*)this + cell_index * 6;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "cell-after-coordinates",
+          "text": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float* cell = (float*)this + cell_index * 6;"
+        }
+      ]
+    }
+  ]
+}

@@ -88,3 +88,33 @@ therefore do not transfer to Windows. No matcher source or mask changed: the
 focused Windows receipt remains 86.61%, 189/192 candidate instructions,
 prefix 12/192, with 27 clean operands, no unresolved or mismatched operands,
 and three explicitly unaudited constant loads.
+
+## 2026-07-29 branch-local lifetime recovery
+
+The native branch schedule is recovered through source ownership rather than
+volatile or address-forcing fakematches:
+
+- Moving the distortion-cell pointer into each render branch, immediately
+  after `next_row`, raises the focused result from 86.61% to 90.91% and moves
+  the exact prefix from 12 to 21 instructions.
+- Declaring the coordinate calculations as `right_y`, `left_x`, `right_x`,
+  then `left_y` in both branches raises the result to 92.99% and makes the
+  entire normal branch exact through instruction 102. All 24 declaration
+  orders for the flipped branch were exhausted; none improved that residual.
+- Giving the four coordinate objects one lifetime across both branches makes
+  the flipped branch use the same native stack slots as the normal branch.
+  This raises the result to 99.22%, extends the exact prefix to 174/192, and
+  leaves all 28 aligned references clean. Eight plausible shared declaration
+  orders compile to the same binary, so the retained order follows the
+  calculation order.
+
+The only residual is the inner-loop comparison. Native reloads `next_column`
+once and uses non-popping `fcom 7.0`; VC6 reloads the same slot twice and uses
+`fcomp`, leaving a 193-instruction candidate against 192 native instructions
+and two corresponding unaudited constant operands. Five trailing bounded
+sweeps cover direct `column`/`next_column` condition owners, declaration scope,
+assignment expressions, coordinated condition hoisting, and explicit
+pre-branch `next_column` ownership. Across 36 variants, 12 are byte-neutral,
+10 regress, and 14 are unavailable lexical-scope combinations. With no
+improvement, the experiment ledger marks this one-instruction tail stalled;
+the evidence-backed 99.22% source remains.

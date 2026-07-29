@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**542/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **99811/294937** bytes (**33.84%**) are proof-grade, and overall fuzzy is **79.52%**.
+**542/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **99811/294937** bytes (**33.84%**) are proof-grade, and overall fuzzy is **79.55%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -553,13 +553,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (24)
+## Near Match (95-99.99%) (25)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 429/429 | 99.53% | 74/429 | 50 ok |  | core |
 | 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 99.44% | 66/177 | 20 ok |  | core |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  | core |
+| 🚧 | render_backdrop | 0x411040 | 680 | 193/192 | 99.22% | 174/192 | 2 unaudited, 28 ok |  | core |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 600/600 | 98.00% | 80/600 | 137 ok |  | core |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 197/197 | 95.43% | 58/197 | 26 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 199/204 | 95.78% | 16/204 | 47 ok |  | core |
@@ -582,7 +583,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (44)
+## High Progress (80-94.99%) (43)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -591,7 +592,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 3 unaudited, 120 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 2 unaudited, 41 ok |  | core |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 23 mismatch, 97 unaudited, 1808 ok |  | core |
-| 🚧 | render_backdrop | 0x411040 | 680 | 189/192 | 86.61% | 12/192 | 3 unaudited, 27 ok |  | core |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 89.71% | 17/67 | 7 ok |  | core |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 137/139 | 90.58% | 7/139 | 4 ok |  | boundary |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 128/127 | 83.14% | 25/127 | 18 ok |  | boundary |

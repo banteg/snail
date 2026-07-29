@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "common-next-column-assignment",
+      "find": "            float left_y;\n\n            if (flip == 0) {",
+      "replacements": [
+        {
+          "name": "before-flip-branch",
+          "text": "            float left_y;\n\n            next_column = column + 1.0f;\n            if (flip == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "remove-normal-next-column-assignment",
+      "occurrence": 1,
+      "find": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;",
+      "replacements": [
+        {
+          "name": "use-common",
+          "text": "                float next_row = row + 1.0f;"
+        }
+      ]
+    },
+    {
+      "name": "remove-flipped-next-column-assignment",
+      "occurrence": 2,
+      "find": "                next_column = column + 1.0f;\n                float next_row = row + 1.0f;",
+      "replacements": [
+        {
+          "name": "use-common",
+          "text": "                float next_row = row + 1.0f;"
+        }
+      ]
+    }
+  ]
+}

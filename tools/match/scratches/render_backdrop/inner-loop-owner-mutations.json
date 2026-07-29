@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "inner-loop-bound-owner",
+      "find": "        } while (column < GRID_QUAD_COUNT);",
+      "replacements": [
+        {
+          "name": "next-column",
+          "text": "        } while (next_column < GRID_QUAD_COUNT);"
+        },
+        {
+          "name": "next-column-float-bound",
+          "text": "        } while (next_column < 7.0f);"
+        },
+        {
+          "name": "column-float-bound",
+          "text": "        } while (column < 7.0f);"
+        }
+      ]
+    }
+  ]
+}

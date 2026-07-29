@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "normal-coordinate-order",
+      "occurrence": 1,
+      "find": "                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;",
+      "replacements": [
+        {
+          "name": "right-x-left-y-left-x-right-y",
+          "text": "                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "right-x-left-x-right-y-left-y",
+          "text": "                float right_x = next_row * 91.4285736f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "left-x-right-x-left-y-right-y",
+          "text": "                float left_x = row * 91.4285736f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "left-x-left-y-right-x-right-y",
+          "text": "                float left_x = row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "right-y-left-x-right-x-left-y",
+          "text": "                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "right-x-right-y-left-x-left-y",
+          "text": "                float right_x = next_row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "left-y-right-x-left-x-right-y",
+          "text": "                float left_y = column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "left-y-right-x-right-y-left-x",
+          "text": "                float left_y = column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;"
+        }
+      ]
+    },
+    {
+      "name": "flipped-coordinate-order",
+      "occurrence": 2,
+      "find": "                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;",
+      "replacements": [
+        {
+          "name": "right-x-left-y-left-x-right-y",
+          "text": "                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "right-x-left-x-right-y-left-y",
+          "text": "                float right_x = next_row * 91.4285736f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "left-x-right-x-left-y-right-y",
+          "text": "                float left_x = row * 91.4285736f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "left-x-left-y-right-x-right-y",
+          "text": "                float left_x = row * 91.4285736f;\n                float left_y = column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "right-y-left-x-right-x-left-y",
+          "text": "                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float right_x = next_row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "right-x-right-y-left-x-left-y",
+          "text": "                float right_x = next_row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;\n                float left_y = column * 68.5714264f;"
+        },
+        {
+          "name": "left-y-right-x-left-x-right-y",
+          "text": "                float left_y = column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float left_x = row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;"
+        },
+        {
+          "name": "left-y-right-x-right-y-left-x",
+          "text": "                float left_y = column * 68.5714264f;\n                float right_x = next_row * 91.4285736f;\n                float right_y = next_column * 68.5714264f;\n                float left_x = row * 91.4285736f;"
+        }
+      ]
+    }
+  ]
+}
