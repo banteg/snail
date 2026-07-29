@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "early-top-snapshot",
+      "find": "        int layout_left_bits = *(int*)layout_left_ptr;",
+      "replacements": [
+        {
+          "name": "snapshot-both-inputs",
+          "text": "        int layout_left_bits = *(int*)layout_left_ptr;\n        int layout_top_bits = *(int*)layout_top_ptr;"
+        }
+      ]
+    },
+    {
+      "name": "late-top-snapshot",
+      "find": "        int layout_top_bits = *(int*)layout_top_ptr;",
+      "replacements": [
+        {
+          "name": "already-snapshotted",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "name": "flag-reload-carrier",
+      "find": "        unsigned int flags = widget->widget_flags;",
+      "replacements": [
+        {
+          "name": "reuse-result",
+          "text": "        result = widget->widget_flags;"
+        }
+      ]
+    },
+    {
+      "name": "offscreen-flag-consumer",
+      "find": "        if ((flags & FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN) == 0) {",
+      "replacements": [
+        {
+          "name": "consume-result",
+          "text": "        if ((result & FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN) == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "slider-result-consumer",
+      "find": "            result = flags & FRONTEND_WIDGET_FLAG_SLIDER;",
+      "replacements": [
+        {
+          "name": "mask-result-in-place",
+          "text": "            result &= FRONTEND_WIDGET_FLAG_SLIDER;"
+        }
+      ]
+    },
+    {
+      "name": "slider-branch-consumer",
+      "find": "            if ((flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {",
+      "replacements": [
+        {
+          "name": "consume-result",
+          "text": "            if ((result & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {"
+        }
+      ]
+    }
+  ]
+}

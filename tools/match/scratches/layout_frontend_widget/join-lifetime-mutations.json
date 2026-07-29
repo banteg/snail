@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "prebranch-hit-locals",
+      "find": "        float* layout_left_ptr;\n        float* layout_top_ptr;",
+      "replacements": [
+        {
+          "name": "declare-top",
+          "text": "        float* layout_left_ptr;\n        float* layout_top_ptr;\n        int layout_top_bits;"
+        },
+        {
+          "name": "declare-left-then-top",
+          "text": "        float* layout_left_ptr;\n        float* layout_top_ptr;\n        int layout_left_bits;\n        int layout_top_bits;"
+        },
+        {
+          "name": "declare-top-then-left",
+          "text": "        float* layout_left_ptr;\n        float* layout_top_ptr;\n        int layout_top_bits;\n        int layout_left_bits;"
+        },
+        {
+          "name": "declare-flags-then-top",
+          "text": "        float* layout_left_ptr;\n        float* layout_top_ptr;\n        unsigned int flags;\n        int layout_top_bits;"
+        },
+        {
+          "name": "declare-flags-left-top",
+          "text": "        float* layout_left_ptr;\n        float* layout_top_ptr;\n        unsigned int flags;\n        int layout_left_bits;\n        int layout_top_bits;"
+        },
+        {
+          "name": "declare-top-left-flags",
+          "text": "        float* layout_left_ptr;\n        float* layout_top_ptr;\n        int layout_top_bits;\n        int layout_left_bits;\n        unsigned int flags;"
+        }
+      ]
+    },
+    {
+      "name": "join-hit-publication",
+      "find": "        int layout_left_bits = *(int*)layout_left_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_y = layout_top_bits;",
+      "replacements": [
+        {
+          "name": "assign-early-top",
+          "text": "        int layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "assign-early-left-top",
+          "text": "        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "assign-early-flags-top",
+          "text": "        int layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "assign-all-early-locals",
+          "text": "        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        }
+      ]
+    }
+  ]
+}

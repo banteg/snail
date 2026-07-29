@@ -134,3 +134,31 @@ X store and flag reload before that same `[edi]` top load; all 20 references
 remain clean. The values are ordinary fields surrounding one already-matched
 out-of-line layout call, so co-compiling neighboring functions supplies no
 missing definition or lifetime. No TU or artificial dependency is retained.
+
+## 2026-07-29 bounded hit-join lifetime search
+
+Three recorded mutation sweeps now bound the remaining join schedule with 121
+source variants. Forty-seven complete source combinations compile: three
+pointer/reference or direct typed-copy spellings are byte-identical to the
+99.44% baseline and the other 44 regress. The remaining 74 variants are
+deliberately incomplete cross-site declaration/carrier combinations and fail
+to compile; no improving, tradeoff, or exact result was found.
+
+`hit-carrier-mutations.json` exhausts all 63 combinations of hoisting the top
+snapshot and reusing the pre-existing `result` flag carrier suggested by the
+mobile ports. The fully consistent carrier form falls to 89.27%.
+`hit-publication-mutations.json` tests 24 complete declaration, integer/float,
+reference, direct-copy, signedness, and load-order forms. Every form that
+actually moves the top load early collapses to the same 93.22% EAX-owner
+schedule or worse. `join-lifetime-mutations.json` moves the snapshot
+declarations before the layout branch in all six complete pairings; each still
+produces that same 93.22% schedule.
+
+The hoisted disassembly explains the whole regression. It loads the top bits
+into EAX rather than native EDX, then swaps the two clamp temporaries and all
+three recursive-child publication temporaries later in the function. Delaying
+the load gives VC6 the native EDX owner and leaves only the single adjacent
+load/store transposition. The retained source therefore remains the honest
+99.44%, 177/177, 20-reference transcription, and the scratch is now stalled
+pending new ownership or control-flow evidence rather than another spelling
+permutation.

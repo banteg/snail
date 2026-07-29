@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "hit-field-publication",
+      "find": "        int layout_left_bits = *(int*)layout_left_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_y = layout_top_bits;",
+      "replacements": [
+        {
+          "name": "hoisted-int-snapshots",
+          "text": "        int layout_left_bits = *(int*)layout_left_ptr;\n        int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "hoisted-unsigned-snapshots",
+          "text": "        unsigned int layout_left_bits = *(unsigned int*)layout_left_ptr;\n        unsigned int layout_top_bits = *(unsigned int*)layout_top_ptr;\n        *(unsigned int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(unsigned int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "hoisted-float-snapshots",
+          "text": "        float layout_left = *layout_left_ptr;\n        float layout_top = *layout_top_ptr;\n        widget->texture_hit_x = layout_left;\n        unsigned int flags = widget->widget_flags;\n        widget->texture_hit_y = layout_top;"
+        },
+        {
+          "name": "hoisted-const-int-snapshots",
+          "text": "        const int layout_left_bits = *(int*)layout_left_ptr;\n        const int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "hoisted-register-int-snapshots",
+          "text": "        register int layout_left_bits = *(int*)layout_left_ptr;\n        register int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "split-left-then-top-declarations",
+          "text": "        int layout_left_bits;\n        int layout_top_bits;\n        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "split-top-then-left-declarations",
+          "text": "        int layout_top_bits;\n        int layout_left_bits;\n        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "top-declared-left-initialized",
+          "text": "        int layout_top_bits;\n        int layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "left-declared-top-initialized",
+          "text": "        int layout_left_bits;\n        int layout_top_bits = *(int*)layout_top_ptr;\n        layout_left_bits = *(int*)layout_left_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "flags-declared-before-snapshots",
+          "text": "        unsigned int flags;\n        int layout_left_bits = *(int*)layout_left_ptr;\n        int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "top-flags-left-declaration-order",
+          "text": "        int layout_top_bits;\n        unsigned int flags;\n        int layout_left_bits;\n        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "flags-top-left-declaration-order",
+          "text": "        unsigned int flags;\n        int layout_top_bits;\n        int layout_left_bits;\n        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "left-flags-top-declaration-order",
+          "text": "        int layout_left_bits;\n        unsigned int flags;\n        int layout_top_bits;\n        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "top-left-flags-declaration-order",
+          "text": "        int layout_top_bits;\n        int layout_left_bits;\n        unsigned int flags;\n        layout_left_bits = *(int*)layout_left_ptr;\n        layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "signed-flags-with-hoisted-snapshots",
+          "text": "        int layout_left_bits = *(int*)layout_left_ptr;\n        int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "top-first-load",
+          "text": "        int layout_top_bits = *(int*)layout_top_ptr;\n        int layout_left_bits = *(int*)layout_left_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "left-direct-top-snapshot",
+          "text": "        int layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = *(int*)layout_left_ptr;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "top-reference-borrow",
+          "text": "        int layout_left_bits = *(int*)layout_left_ptr;\n        int& layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "both-reference-borrows",
+          "text": "        int& layout_left_bits = *(int*)layout_left_ptr;\n        int& layout_top_bits = *(int*)layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "float-top-int-left",
+          "text": "        int layout_left_bits = *(int*)layout_left_ptr;\n        float layout_top = *layout_top_ptr;\n        *(int*)&widget->texture_hit_x = layout_left_bits;\n        unsigned int flags = widget->widget_flags;\n        widget->texture_hit_y = layout_top;"
+        },
+        {
+          "name": "int-top-float-left",
+          "text": "        float layout_left = *layout_left_ptr;\n        int layout_top_bits = *(int*)layout_top_ptr;\n        widget->texture_hit_x = layout_left;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        },
+        {
+          "name": "typed-direct-copies",
+          "text": "        widget->texture_hit_x = *layout_left_ptr;\n        unsigned int flags = widget->widget_flags;\n        widget->texture_hit_y = *layout_top_ptr;"
+        },
+        {
+          "name": "top-snapshot-typed-left-direct",
+          "text": "        float layout_top = *layout_top_ptr;\n        widget->texture_hit_x = *layout_left_ptr;\n        unsigned int flags = widget->widget_flags;\n        widget->texture_hit_y = layout_top;"
+        },
+        {
+          "name": "top-snapshot-bit-left-direct",
+          "text": "        int layout_top_bits = *(int*)layout_top_ptr;\n        widget->texture_hit_x = *layout_left_ptr;\n        unsigned int flags = widget->widget_flags;\n        *(int*)&widget->texture_hit_y = layout_top_bits;"
+        }
+      ]
+    }
+  ]
+}
