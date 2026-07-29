@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "fringe-loop",
+      "find": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        Fringe* object = fringe[i];\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(object);\n    }",
+      "replacements": [
+        {
+          "name": "pointer-countdown",
+          "text": "    Fringe** fringe = fringes;\n    int count = sizeof(fringes) / sizeof(fringes[0]);\n    do {\n        Fringe* object = *fringe;\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(object);\n        fringe++;\n        count--;\n    } while (count != 0);"
+        },
+        {
+          "name": "repeated-array-expression",
+          "text": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        Fringe* object = fringe[i];\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(fringe[i]);\n    }"
+        },
+        {
+          "name": "second-object-borrow",
+          "text": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        Fringe* object = fringe[i];\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0) {\n            Fringe* remove_object = object;\n            g_game->active_bod_list.remove_bod(remove_object);\n        }\n    }"
+        },
+        {
+          "name": "slot-borrow",
+          "text": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        Fringe** slot = &fringe[i];\n        Fringe* object = *slot;\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(*slot);\n    }"
+        },
+        {
+          "name": "bod-node-borrow",
+          "text": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        BodNode* node = fringe[i];\n        if (node != 0 && (node->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(node);\n    }"
+        },
+        {
+          "name": "named-active-list",
+          "text": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        Fringe* object = fringe[i];\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0) {\n            BodList* active_list = &g_game->active_bod_list;\n            active_list->remove_bod(object);\n        }\n    }"
+        },
+        {
+          "name": "named-game-root",
+          "text": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        Fringe* object = fringe[i];\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0) {\n            GameRoot* game = g_game;\n            game->active_bod_list.remove_bod(object);\n        }\n    }"
+        },
+        {
+          "name": "named-precheck-flags",
+          "text": "    Fringe** fringe = fringes;\n    for (int i = 0; i < (int)(sizeof(fringes) / sizeof(fringes[0])); ++i) {\n        Fringe* object = fringe[i];\n        if (object != 0) {\n            DWORD flags = object->list_flags;\n            if ((flags & BOD_FLAG_LINKED) != 0)\n                g_game->active_bod_list.remove_bod(object);\n        }\n    }"
+        },
+        {
+          "name": "pointer-end",
+          "text": "    Fringe** fringe = fringes;\n    Fringe** fringe_end = fringe + sizeof(fringes) / sizeof(fringes[0]);\n    while (fringe != fringe_end) {\n        Fringe* object = *fringe;\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(object);\n        fringe++;\n    }"
+        }
+      ]
+    }
+  ]
+}

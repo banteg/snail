@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "fringe-guard",
+      "find": "        Fringe* object = fringe[i];\n        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(object);",
+      "replacements": [
+        {
+          "name": "nested-positive-guards",
+          "text": "        Fringe* object = fringe[i];\n        if (object != 0) {\n            if ((object->list_flags & BOD_FLAG_LINKED) != 0)\n                g_game->active_bod_list.remove_bod(object);\n        }"
+        },
+        {
+          "name": "continue-guards",
+          "text": "        Fringe* object = fringe[i];\n        if (object == 0)\n            continue;\n        if ((object->list_flags & BOD_FLAG_LINKED) == 0)\n            continue;\n        g_game->active_bod_list.remove_bod(object);"
+        },
+        {
+          "name": "scoped-flags-continue",
+          "text": "        Fringe* object = fringe[i];\n        if (object == 0)\n            continue;\n        {\n            DWORD flags = object->list_flags;\n            if ((flags & BOD_FLAG_LINKED) == 0)\n                continue;\n        }\n        g_game->active_bod_list.remove_bod(object);"
+        },
+        {
+          "name": "named-active-bool",
+          "text": "        Fringe* object = fringe[i];\n        if (object != 0) {\n            bool active = (object->list_flags & BOD_FLAG_LINKED) != 0;\n            if (active)\n                g_game->active_bod_list.remove_bod(object);\n        }"
+        },
+        {
+          "name": "high-byte-precheck",
+          "text": "        Fringe* object = fringe[i];\n        if (object != 0\n            && (((unsigned char*)&object->list_flags)[1] & 0x02) != 0)\n            g_game->active_bod_list.remove_bod(object);"
+        },
+        {
+          "name": "word-precheck",
+          "text": "        Fringe* object = fringe[i];\n        if (object != 0\n            && ((*(unsigned short*)&object->list_flags & BOD_FLAG_LINKED) != 0))\n            g_game->active_bod_list.remove_bod(object);"
+        },
+        {
+          "name": "explicit-false-else",
+          "text": "        Fringe* object = fringe[i];\n        if (object == 0) {\n        } else if ((object->list_flags & BOD_FLAG_LINKED) == 0) {\n        } else {\n            g_game->active_bod_list.remove_bod(object);\n        }"
+        }
+      ]
+    }
+  ]
+}

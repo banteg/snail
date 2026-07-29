@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "fringe-remove-body",
+      "find": "        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0)\n            g_game->active_bod_list.remove_bod(object);",
+      "replacements": [
+        {
+          "name": "list-before-flags",
+          "text": "        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0) {\n            BodList* list = &g_game->active_bod_list;\n            DWORD flags = object->list_flags;\n            if ((flags & BOD_FLAG_LINKED) == 0) {\n                report_errorf(\"List remove\");\n            } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {\n                report_errorf(\"List remove NEXTBOD\");\n            } else {\n                BodNode* next = object->list_next;\n                if (next != 0)\n                    next->list_prev = object->list_prev;\n                BodNode* prev = object->list_prev;\n                if (prev != 0)\n                    prev->list_next = object->list_next;\n                else\n                    list->first = object->list_next;\n                object->list_next = list->free_top;\n                list->free_top = object;\n                object->list_flags &= ~BOD_FLAG_LINKED;\n            }\n        }"
+        },
+        {
+          "name": "flags-before-list",
+          "text": "        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0) {\n            DWORD flags = object->list_flags;\n            BodList* list = &g_game->active_bod_list;\n            if ((flags & BOD_FLAG_LINKED) == 0) {\n                report_errorf(\"List remove\");\n            } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {\n                report_errorf(\"List remove NEXTBOD\");\n            } else {\n                BodNode* next = object->list_next;\n                if (next != 0)\n                    next->list_prev = object->list_prev;\n                BodNode* prev = object->list_prev;\n                if (prev != 0)\n                    prev->list_next = object->list_next;\n                else\n                    list->first = object->list_next;\n                object->list_next = list->free_top;\n                list->free_top = object;\n                object->list_flags &= ~BOD_FLAG_LINKED;\n            }\n        }"
+        },
+        {
+          "name": "root-before-flags",
+          "text": "        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0) {\n            GameRoot* game = g_game;\n            DWORD flags = object->list_flags;\n            BodList* list = &game->active_bod_list;\n            if ((flags & BOD_FLAG_LINKED) == 0) {\n                report_errorf(\"List remove\");\n            } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {\n                report_errorf(\"List remove NEXTBOD\");\n            } else {\n                BodNode* next = object->list_next;\n                if (next != 0)\n                    next->list_prev = object->list_prev;\n                BodNode* prev = object->list_prev;\n                if (prev != 0)\n                    prev->list_next = object->list_next;\n                else\n                    list->first = object->list_next;\n                object->list_next = list->free_top;\n                list->free_top = object;\n                object->list_flags &= ~BOD_FLAG_LINKED;\n            }\n        }"
+        },
+        {
+          "name": "reborrow-before-flags",
+          "text": "        if (object != 0 && (object->list_flags & BOD_FLAG_LINKED) != 0) {\n            BodList* list = &g_game->active_bod_list;\n            Fringe* remove_object = fringe[i];\n            DWORD flags = remove_object->list_flags;\n            if ((flags & BOD_FLAG_LINKED) == 0) {\n                report_errorf(\"List remove\");\n            } else if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {\n                report_errorf(\"List remove NEXTBOD\");\n            } else {\n                BodNode* next = remove_object->list_next;\n                if (next != 0)\n                    next->list_prev = remove_object->list_prev;\n                BodNode* prev = remove_object->list_prev;\n                if (prev != 0)\n                    prev->list_next = remove_object->list_next;\n                else\n                    list->first = remove_object->list_next;\n                remove_object->list_next = list->free_top;\n                list->free_top = remove_object;\n                remove_object->list_flags &= ~BOD_FLAG_LINKED;\n            }\n        }"
+        }
+      ]
+    }
+  ]
+}

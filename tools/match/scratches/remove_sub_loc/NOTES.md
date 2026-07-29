@@ -227,3 +227,27 @@ its outer test. Replacing that block with the general helper adds a second
 the fringe array expression does recover the native flag reload but changes
 saved-register ownership and regresses to 71.76%; the honest local-object loop
 remains pinned.
+
+## 2026-07-29 bounded fringe reload audit
+
+Three recorded sweeps cover 20 unique source-level variants of the final
+four-fringe walk: indexed and pointer cursors, object/slot/node borrows,
+root/list owners, an explicitly restaged copy of the proved inline remover,
+and positive, nested, empty-arm, and `continue` guard forms. None improve the
+91.19% baseline; 13 compile byte-identically and seven regress.
+
+The native Windows loop evaluates `&g_game->active_bod_list` at `0x439cdc`,
+then deliberately reloads `object->list_flags` at `0x439ce8` before entering
+the shared remover. Ordinary object, node, root, list, flag-scope, and
+inline-body spellings all let VC6 reuse the outer precheck instead. The only
+credible forms that force a fresh object/flag load—repeating the array
+expression or reborrowing its slot—also change saved-register ownership,
+destroy the 87-instruction exact prefix, and regress to 71.76%. Byte/word and
+boolean prechecks regress independently to 84.09% or lower.
+
+Android confirms the `cRSubLoc::Remove()` owner and attachment/body lifecycle
+but does not retain the Windows four-fringe tail, so it supplies no stronger
+source shape for this local schedule. The honest result remains 91.19%,
+130/131 instructions, prefix 87/131, with 17 clean references and the two
+unpaired `g_game` operands inside this divergent region. Do not force the
+reload with `volatile`, a fake alias, or a dummy clobber.
