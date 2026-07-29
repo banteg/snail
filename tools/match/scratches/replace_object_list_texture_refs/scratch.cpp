@@ -3,8 +3,8 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-void cRObjects::ReTextureObjects(TextureRef* new_texture,
-    TextureRef* old_texture)
+void cRObjects::ReTextureObjects(cRTexture* new_texture,
+    cRTexture* old_texture)
 {
     int object_cursor = 0;
     int object_index = 0;

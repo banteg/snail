@@ -26,11 +26,11 @@ extern "C" int __stdcall D3DXCreateTextureFromFileA(
     Direct3DDevice8* device, char* path, Direct3DTexture8** texture);
 
 #define TEXTURE_ENTRY \
-    ((TextureRef*)((char*)&g_texture_refs.entries[0] + texture_offset))
+    ((cRTexture*)((char*)&g_texture_refs.entries[0] + texture_offset))
 
 void load_registered_texture_ref(int texture_index, int unused_legacy_mode)
 {
-    int texture_offset = texture_index * sizeof(TextureRef);
+    int texture_offset = texture_index * sizeof(cRTexture);
     if ((TEXTURE_ENTRY->flags & TEXTURE_REF_SKIP_RUNTIME_LOAD) != 0) {
         return;
     }

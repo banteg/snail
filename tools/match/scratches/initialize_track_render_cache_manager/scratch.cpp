@@ -56,7 +56,7 @@ void SegmentCache::initialize_track_render_cache_manager()
                 (int*)allocate_tracked_memory(4, "DX TextureGroups");
             slot->slot.object->group_index_starts[0] = 0;
             slot->slot.object->group_texture_refs =
-                (TextureRef**)allocate_tracked_memory(4, "DX TextureGroupsTexture Ref");
+                (cRTexture**)allocate_tracked_memory(4, "DX TextureGroupsTexture Ref");
             slot->slot.object->group_primitive_counts =
                 (int*)allocate_tracked_memory(4, "DX TextureGroupsTexture Primcount");
 

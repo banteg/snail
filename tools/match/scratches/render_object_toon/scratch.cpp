@@ -8,7 +8,7 @@
 
 TransformMatrix* __stdcall build_perspective_projection_matrix(
     TransformMatrix* matrix, float arg2, float arg3, float near_z, float far_z); // @ 0x450314
-void bind_texture_ref(TextureRef* texture); // @ 0x414500
+void bind_texture_ref(cRTexture* texture); // @ 0x414500
 
 void render_object_toon(Object* object, TransformMatrix* matrix)
 {

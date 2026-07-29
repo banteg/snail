@@ -10,7 +10,7 @@ void Direct3DRenderer::restore_texture_ref_stage_states()
         return;
     }
 
-    TextureRef* texture = &g_texture_refs.entries[0];
+    cRTexture* texture = &g_texture_refs.entries[0];
     do {
 
         device->vtbl->SetTexture(device, 0, g_d3d_texture_slots[index]);

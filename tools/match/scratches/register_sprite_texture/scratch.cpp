@@ -4,7 +4,7 @@
 
 void report_errorf(const char* format, ...);
 
-TextureRef* SpriteManager::register_sprite_texture(char* texture_path, int texture_id, int flags)
+cRTexture* SpriteManager::register_sprite_texture(char* texture_path, int texture_id, int flags)
 {
     char* dot = texture_path;
     if (*texture_path != '.') {
@@ -17,11 +17,11 @@ TextureRef* SpriteManager::register_sprite_texture(char* texture_path, int textu
         report_errorf("Too many Sprite References - Increase RSPRITE_REFERENCE_MAX(%i) in RSprite.h", SPRITE_TEXTURE_CAPACITY);
     }
 
-    TextureRef* texture = g_texture_refs.Add(texture_path, 0, flags);
+    cRTexture* texture = g_texture_refs.Add(texture_path, 0, flags);
     g_sprite_texture_table[texture_id] = texture;
     texture->flags |= flags;
 
-    TextureRef* result = g_sprite_texture_table[texture_id];
+    cRTexture* result = g_sprite_texture_table[texture_id];
     result->frame_count = 0;
     return result;
 }

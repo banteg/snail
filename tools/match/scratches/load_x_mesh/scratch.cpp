@@ -158,12 +158,12 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
         return;
     }
 
-    TextureRef** materials = (TextureRef**)allocate_tracked_memory(
+    cRTexture** materials = (cRTexture**)allocate_tracked_memory(
         material_count << 2, "Direct X Materiallist");
     char* material_text = material_cursor;
     int material_index = 0;
     if (material_count > 0) {
-        TextureRef** material_slot = materials;
+        cRTexture** material_slot = materials;
         do {
             char* texture_name =
                 find_case_insensitive_substring("TextureFilename ", material_text);

@@ -37,3 +37,12 @@ corresponding `TextureRef*` and resolves its Direct3D slot internally. The
 stable Windows pointer prototype is therefore retained while the authored
 function and global names are recorded as aliases. Focused matching remains
 exact at 62/62 instructions with all 11 operands clean.
+
+## 2026-07-29 primary cRTexture binding record
+
+The Windows pointer ABI is now expressed as `cRTexture*`. Mobile proves the
+record name through multiple exact symbols, while this exact desktop consumer
+independently proves `slot_index +0x8c`, `flags +0x00`, and the borrowed
+current-texture lifetime. The platform-specific pointer-versus-index calling
+boundary remains unchanged, as do the exact 62/62 instructions and 11 clean
+operands.

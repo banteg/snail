@@ -8,6 +8,7 @@
 #define SPRITE_H
 
 #include "render_scene.h"
+#include "texture_fwd.h"
 #include "vector3.h"
 
 struct TgaImageView;
@@ -89,7 +90,7 @@ enum SpriteFlag {
     SPRITE_FLAG_ANIMATION_PING_PONG = 0x4000, // reverse frame step at bounds
 };
 
-struct TextureRef {
+struct cRTexture {
     unsigned int flags; // +0x00
     int loaded_width; // +0x04, filled by load_registered_texture_ref
     int loaded_height; // +0x08, filled by load_registered_texture_ref
@@ -102,6 +103,8 @@ struct TextureRef {
     int mip_levels;         // +0xa0, initialized to 1 by get_or_create_texture_ref
 };
 
+typedef char cRTexture_must_be_0xa4[
+    (sizeof(cRTexture) == 0xa4) ? 1 : -1];
 typedef char TextureRef_must_be_0xa4[
     (sizeof(TextureRef) == 0xa4) ? 1 : -1];
 
@@ -114,12 +117,12 @@ enum {
 class cRTextures {
 public:
     void Init(int capacity); // @ 0x44e800
-    TextureRef* Add(
+    cRTexture* Add(
         char* texture_path, void* payload, int flags); // @ 0x44e810
 
     int count;             // +0x00
     int capacity;          // +0x04
-    TextureRef entries[TEXTURE_REF_LIST_CAPACITY]; // +0x08, concrete startup capacity
+    cRTexture entries[TEXTURE_REF_LIST_CAPACITY]; // +0x08, concrete startup capacity
 };
 
 typedef cRTextures TextureRefList;
@@ -129,15 +132,13 @@ typedef char cRTextures_must_be_0x14058[
 typedef char TextureRefList_must_be_0x14058[
     (sizeof(TextureRefList) == 0x14058) ? 1 : -1];
 
-typedef TextureRef cRTexture;
-
 class Sprite {
 public:
     void initialize_sprite(); // @ 0x44de90, Android cRSprite::Init()
     void update_sprite();     // @ 0x44df30
     void kill_sprite();       // @ 0x44e200
     void build_sprite_tail(const TransformMatrix* matrix); // @ 0x44e410
-    TextureRef* set_sprite_texture_ref(int texture_id, int frame); // @ 0x44e550
+    cRTexture* set_sprite_texture_ref(int texture_id, int frame); // @ 0x44e550
 
     void* object_ref; // +0x00, initialized to sentinel -1
     unsigned int flags; // +0x04
@@ -146,9 +147,9 @@ public:
     Sprite* prev; // +0x10
     int render_bucket_index; // +0x14, cached by render_game_frame depth sort
     float render_depth_key; // +0x18, cached by render_game_frame depth sort
-    TextureRef* texture_ref; // +0x1c
-    TextureRef* texture_ref_a; // +0x20
-    TextureRef* texture_ref_b; // +0x24
+    cRTexture* texture_ref; // +0x1c
+    cRTexture* texture_ref_a; // +0x20
+    cRTexture* texture_ref_b; // +0x24
     int draw_mode; // +0x28
     tColour color; // +0x2c
     Vector3 previous_position; // +0x3c
@@ -202,11 +203,11 @@ typedef char SpriteDepthNode_must_be_0x18[
 class SpriteManager {
 public:
     void initialize_sprite_manager(); // @ 0x44e160
-    TextureRef* register_sprite_texture(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
+    cRTexture* register_sprite_texture(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
     Sprite* allocate_sprite(int owner, int texture_id, int texture_a, int texture_b); // @ 0x44e2a0
     void kill_game_sprites(); // @ 0x44e3d0
     char set_sprite_manager_paused(char paused_); // @ 0x44e540
-    TextureRef* get_sprite_texture(int texture_id); // @ 0x44e570
+    cRTexture* get_sprite_texture(int texture_id); // @ 0x44e570
     TgaImageView* get_sprite_tga(int texture_id); // @ 0x44e580, iOS/Android GetTga
 
     unsigned char paused; // +0x00000
@@ -219,7 +220,7 @@ public:
 typedef char SpriteManager_must_be_0x83d7c[
     (sizeof(SpriteManager) == 0x83d7c) ? 1 : -1];
 
-extern TextureRef* g_sprite_texture_table[SPRITE_TEXTURE_CAPACITY]; // data_78ff90
+extern cRTexture* g_sprite_texture_table[SPRITE_TEXTURE_CAPACITY]; // data_78ff90
 extern cRTextures g_texture_refs;            // data_4b7790
 extern SpriteManager g_sprite_manager;       // data_790f30
 extern Sprite* g_sprite_active_heads[SPRITE_ACTIVE_LIST_COUNT]; // data_814c94

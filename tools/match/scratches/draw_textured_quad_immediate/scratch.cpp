@@ -7,7 +7,7 @@
 #include "sprite.h"
 #include "vertex_buffer_view.h"
 
-void bind_texture_ref(TextureRef* texture);
+void bind_texture_ref(cRTexture* texture);
 void set_immediate_blend_mode(int blend_mode);
 float square_root(float value);
 float sine(float angle);
@@ -15,7 +15,7 @@ float cosine(float angle);
 int report_errorf(const char* format, ...);
 
 void draw_textured_quad_immediate(
-    TextureRef* texture,
+    cRTexture* texture,
     float x0,
     float y0,
     float x1,

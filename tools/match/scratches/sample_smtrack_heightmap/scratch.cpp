@@ -7,7 +7,7 @@ void __cdecl sample_smtrack_heightmap(
     Object* source,
     float base,
     float scale,
-    TextureRef* replacement,
+    cRTexture* replacement,
     bool cubic)
 {
     TgaImageView* image = (TgaImageView*)replacement->texture_ref;

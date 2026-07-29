@@ -2894,7 +2894,7 @@ char GameRoot::initialize_game_assets_and_world()
         ++golb_shot;
     } while (--golb_shot_count != 0);
 
-    TextureRef* texture_ref = g_texture_refs.Add(
+    cRTexture* texture_ref = g_texture_refs.Add(
         (char*)"Objects/VapourLazer/Lazer.tga", 0, 0);
     texture_ref->flags |= TEXTURE_REF_REGISTERED;
     texture_ref = g_texture_refs.Add(

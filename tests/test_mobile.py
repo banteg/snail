@@ -1386,7 +1386,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
             "cRObjects",
             (
                 "?ReTextureObjects@cRObjects"
-                "@@QAEXPAUTextureRef@@0@Z"
+                "@@QAEXPAUcRTexture@@0@Z"
             ),
         ),
     )

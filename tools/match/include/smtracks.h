@@ -11,7 +11,7 @@ void __cdecl sample_smtrack_heightmap(
     Object* source,
     float base,
     float scale,
-    TextureRef* replacement,
+    cRTexture* replacement,
     bool cubic); // @ 0x41a360; mobile ObjectProcLandScapeUpdate
 
 // Windows layout of the authored cross-port cRFace owner. This is the animated

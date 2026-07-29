@@ -34,7 +34,7 @@ void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_
     quad->vertex_2 = 3;
     quad->vertex_3 = 2;
 
-    TextureRef* texture = g_texture_refs.Add(texture_path, 0, 0);
+    cRTexture* texture = g_texture_refs.Add(texture_path, 0, 0);
     quad->texture_ref = texture;
     float left_u = (x_offset + 1.0f) * -0.125f;
     texture->flags |= 2;

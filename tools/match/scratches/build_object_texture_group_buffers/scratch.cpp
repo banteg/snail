@@ -28,7 +28,7 @@ void build_object_texture_group_buffers(Object* object)
             object->texture_group_count * sizeof(*object->group_index_starts),
             "DX TextureGroups");
     object->group_texture_refs =
-        (TextureRef**)allocate_tracked_memory(
+        (cRTexture**)allocate_tracked_memory(
             object->texture_group_count * sizeof(*object->group_texture_refs),
             "DX TextureGroupsTexture Ref");
     object->group_primitive_counts =

@@ -13,8 +13,8 @@ enum {
 
 struct FontSheet {
     int slot_count;             // +0x000
-    TextureRef* texture_ref_a;  // +0x004
-    TextureRef* texture_ref_b;  // +0x008
+    cRTexture* texture_ref_a;  // +0x004
+    cRTexture* texture_ref_b;  // +0x008
     float glyph_u0[FONT_GLYPH_CAPACITY];    // +0x00c
     float glyph_u1[FONT_GLYPH_CAPACITY];    // +0x20c
     float glyph_width[FONT_GLYPH_CAPACITY]; // +0x40c
@@ -107,7 +107,7 @@ void initialize_font3d_objects(short font_id); // @ 0x44ae10
 float sine(float angle); // @ 0x44c9d0
 float cosine(float angle); // @ 0x44c980
 void draw_textured_quad_immediate(
-    TextureRef* texture,
+    cRTexture* texture,
     float x0, float y0,
     float x1, float y1,
     float x2, float y2,

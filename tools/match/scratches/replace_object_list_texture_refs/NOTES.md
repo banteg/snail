@@ -113,3 +113,12 @@ its two typed callsites now use `ReTextureObjects`, while keeping the Windows
 `TextureRef*` spelling and existing honest byte-cursor residual. The semantic
 rename does not improve or disguise the match: it remains 74.77%, 54/53
 instructions, prefix 14/53, with one clean operand.
+
+## 2026-07-29 primary cRTexture parameters
+
+The matcher now spells both borrowed parameters as `cRTexture*`, matching the
+exact Android signature and the record ownership independently recovered from
+both mobile `RTexture.o` objects. `TextureRef` remains only a compatibility
+alias; the Windows pointer ABI and the known byte-cursor codegen residual do
+not change. Focused matching therefore remains honestly 74.77%, 54/53
+instructions, prefix 14/53, with one clean operand.

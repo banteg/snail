@@ -10,8 +10,8 @@ class cRTrack {
 public:
     void Change(int texture_set); // @ 0x410730, cRTrack::Change(int)
 
-    TextureRef* track_textures[4]; // +0x00
-    TextureRef* slide_textures[4]; // +0x10
+    cRTexture* track_textures[4]; // +0x00
+    cRTexture* slide_textures[4]; // +0x10
     int current_texture_set; // +0x20
 };
 

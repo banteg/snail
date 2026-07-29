@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-TextureRef* SpriteManager::get_sprite_texture(int texture_id)
+cRTexture* SpriteManager::get_sprite_texture(int texture_id)
 {
     return g_sprite_texture_table[texture_id];
 }

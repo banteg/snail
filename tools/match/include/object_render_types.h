@@ -8,9 +8,9 @@
 #include "vector3.h"
 #include "vertex_buffer_view.h"
 #include "direct3d_device8_view.h"
+#include "texture_fwd.h"
 #include "transform_matrix_fwd.h"
 
-struct TextureRef;
 struct tColour;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;
@@ -91,7 +91,7 @@ struct cRFaceQuad {
     unsigned short vertex_2; // +0x06
     unsigned short vertex_3; // +0x08
     char unknown_0a[0x0c - 0x0a];
-    TextureRef* texture_ref; // +0x0c
+    cRTexture* texture_ref; // +0x0c
     union {
         ObjectUv uv[4]; // +0x10
         struct {
@@ -200,7 +200,7 @@ struct cRObject {
     ObjectToonFaceQuadNormal* toon_facequad_normals; // +0x0c, 24 bytes per facequad
     unsigned int flags; // +0x10
     int blend_mode; // +0x14
-    TextureRef* override_texture_ref; // +0x18
+    cRTexture* override_texture_ref; // +0x18
     int heightmap_sample_count; // +0x1c, SMTrack grid columns minus one
     char unknown_20[0x24 - 0x20];
     float heightmap_sample_divisor; // +0x24, SMTrack row-aspect divisor
@@ -233,7 +233,7 @@ struct cRObject {
     int grouped_vertex_count; // +0xc4
     ObjectIndexBuffer* index_buffer; // +0xc8
     int* group_index_starts; // +0xcc
-    TextureRef** group_texture_refs; // +0xd0
+    cRTexture** group_texture_refs; // +0xd0
     int* group_primitive_counts; // +0xd4
     ObjectIndexBuffer* toon_index_buffer; // +0xd8
 };
@@ -244,7 +244,7 @@ struct cRObjects {
     void Init(int capacity); // @ 0x42f990
     void BuildObjects(); // @ 0x42f9e0
     cRObject* Add(); // @ 0x42fad0
-    void ReTextureObjects(TextureRef* new_texture, TextureRef* old_texture);
+    void ReTextureObjects(cRTexture* new_texture, cRTexture* old_texture);
 
     int count; // +0x00
     int capacity; // +0x04
@@ -253,8 +253,8 @@ struct cRObjects {
 
 typedef char cRObjects_must_be_0x0c[(sizeof(cRObjects) == 0x0c) ? 1 : -1];
 
-void replace_object_group_texture_refs(cRObject* object, TextureRef* new_texture,
-    TextureRef* old_texture); // @ 0x4145c0
+void replace_object_group_texture_refs(cRObject* object, cRTexture* new_texture,
+    cRTexture* old_texture); // @ 0x4145c0
 void load_object_definition(char* path, cRObject* object); // @ 0x44c420
 int get_or_append_object_texture_group_vertex(
     cRObject* object, int vertex_index, float u, float v); // @ 0x413bb0

@@ -70,3 +70,11 @@ textures, derives alpha/color-key state, and falls back to Debug.tga; mobile
 uploads OpenGL textures and reports a missing texture as an error. Those
 differences do not split the authored G0 loader or its `cRTextures` record
 ownership. The exact Windows body remains 216/216 with 47 clean operands.
+
+## 2026-07-29 primary cRTexture field owner
+
+The matcher now makes `cRTexture` primary for the complete 0xa4-byte record.
+This exact Windows loader independently consumes every cross-port field used
+to justify the name: flags `+0x00`, dimensions `+0x04/+0x08`, path `+0x0c`,
+payload `+0x98`, and mip count `+0xa0`. The type-only promotion preserves the
+exact 216/216 body and all 47 clean operands.

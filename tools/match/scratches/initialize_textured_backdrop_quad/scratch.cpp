@@ -31,7 +31,7 @@ void initialize_textured_backdrop_quad(Object* object, char* texture_path, float
     quad->vertex_2 = 3;
     quad->vertex_3 = 2;
 
-    TextureRef* texture = g_texture_refs.Add(texture_path, 0, 0);
+    cRTexture* texture = g_texture_refs.Add(texture_path, 0, 0);
     float right_u = x_offset + 1.0f;
     quad->texture_ref = texture;
     texture->flags |= 2;

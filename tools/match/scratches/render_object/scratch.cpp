@@ -8,7 +8,7 @@
 int set_cull_mode(char cull_front); // @ 0x4129f0
 void set_blend_mode(int blend_mode); // @ 0x412d00
 void set_object_color(Object* object, tColour color); // @ 0x4141d0
-void bind_texture_ref(TextureRef* texture); // @ 0x414500
+void bind_texture_ref(cRTexture* texture); // @ 0x414500
 void render_object_toon(Object* object, TransformMatrix* matrix); // @ 0x4123e0
 
 void render_object(

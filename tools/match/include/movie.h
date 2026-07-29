@@ -1,6 +1,6 @@
 // Windows layout of the authored cross-port cRMovie animated-object owner.
 // Its Object base owns the 0x30-byte face records; the tail advances across
-// their TextureRef payloads.
+// their cRTexture payloads.
 #ifndef MOVIE_H
 #define MOVIE_H
 
@@ -22,7 +22,7 @@ public:
     int current_frame_index; // +0xe0
     float phase; // +0xe4
     float phase_step; // +0xe8
-    TextureRef* current_texture_ref; // +0xec
+    cRTexture* current_texture_ref; // +0xec
 };
 
 typedef char Movie_must_be_0xf0[

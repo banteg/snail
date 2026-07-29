@@ -5,12 +5,12 @@
 
 void report_errorf(char* format, ...);
 
-TextureRef* cRTextures::Add(
+cRTexture* cRTextures::Add(
     char* texture_path, void* payload, int flags)
 {
     int i = 0;
     int current;
-    TextureRef* result;
+    cRTexture* result;
 
     if (count == capacity) {
         report_errorf("Too many Texture References - Increase TextureList.Init(MAX) in g0.cpp");
@@ -22,7 +22,7 @@ TextureRef* cRTextures::Add(
             if (strings_equal_case_insensitive(cursor, texture_path) != 0)
                 goto found_existing;
             ++i;
-            cursor += sizeof(TextureRef);
+            cursor += sizeof(cRTexture);
         }
     }
 

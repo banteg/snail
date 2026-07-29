@@ -12,7 +12,7 @@ void sort_object_faces_by_texture_group(Object* object)
 
     if (face_count > 0) {
         do {
-            TextureRef* texture_ref = facequads[base_index].texture_ref;
+            cRTexture* texture_ref = facequads[base_index].texture_ref;
             int scan_index = base_index + 1;
 
             if (scan_index < face_count) {

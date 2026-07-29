@@ -21,7 +21,7 @@ void Snail::extract_snail_local_hotspots()
         hotspot_z[-2] = 0.0f;
 
         char* texture_name = *name_cursor;
-        TextureRef* texture = g_texture_refs.Add(texture_name, 0, 0);
+        cRTexture* texture = g_texture_refs.Add(texture_name, 0, 0);
         int facequad_count = model->facequad_count;
         int face_index = 0;
         cRFaceQuad* facequad;

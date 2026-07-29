@@ -107,3 +107,16 @@ ABI rather than importing the mobile `cTgaHeader*` spelling. Binary Ninja
 confirms 112 callsites into the same registry owner. `TextureRefList` remains
 only a compatibility alias, and the authored method name preserves the exact
 79/79 instruction body with all four operands clean.
+
+## 2026-07-29 primary cRTexture record
+
+The contained 0xa4-byte record now uses the authored `cRTexture` name
+throughout the matcher. Android and iOS independently preserve that parameter
+and result type across `cRTextures::Add`, `cRObjects::ReTextureObjects`,
+`G0RenderFont`, and `ObjectProcLandScapeUpdate`; Windows independently proves
+the same flags, dimensions, path, slot, animation, payload, and mip lanes.
+
+`TextureRef` remains a compatibility typedef for repeatable analyzer replays
+and historical notes. The rename changes only C++ ownership vocabulary and
+decorated-symbol selection: the Windows `void*` payload ABI and exact 79/79
+instruction body with four clean operands are unchanged.

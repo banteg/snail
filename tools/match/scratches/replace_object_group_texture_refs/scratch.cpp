@@ -3,8 +3,8 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
-    TextureRef* old_texture)
+void replace_object_group_texture_refs(Object* object, cRTexture* new_texture,
+    cRTexture* old_texture)
 {
     if ((object->flags & OBJECT_FLAG_RENDER_BUFFERS_READY) == 0) {
         return;
@@ -16,8 +16,8 @@ void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
     }
 
     do {
-        TextureRef** slot = object->group_texture_refs + group;
-        TextureRef* texture = *slot;
+        cRTexture** slot = object->group_texture_refs + group;
+        cRTexture* texture = *slot;
         if (texture == old_texture) {
             *slot = new_texture;
         }

@@ -165,9 +165,9 @@
       "name": "get_or_create_texture_ref",
       "kind": "function",
       "aliases": [
-        "?Add@cRTextures@@QAEPAUTextureRef@@PADPAXH@Z"
+        "?Add@cRTextures@@QAEPAUcRTexture@@PADPAXH@Z"
       ],
-      "description": "Exact Windows cRTextures::Add(char*, void*, int) registry body; mobile proves the owner and record layout while Windows retains its payload-pointer ABI."
+      "description": "Exact Windows cRTexture* cRTextures::Add(char*, void*, int) registry body; mobile proves the owner and record layout while Windows retains its payload-pointer ABI."
     },
     {
       "address": "0x42f5c0",
@@ -400,9 +400,9 @@
       "name": "replace_object_list_texture_refs",
       "kind": "function",
       "aliases": [
-        "?ReTextureObjects@cRObjects@@QAEXPAUTextureRef@@0@Z"
+        "?ReTextureObjects@cRObjects@@QAEXPAUcRTexture@@0@Z"
       ],
-      "description": "cRObjects::ReTextureObjects texture-replacement loop retained under the same authored owner and name by Android; the Windows TextureRef pointer ABI remains authoritative."
+      "description": "cRObjects::ReTextureObjects(cRTexture*, cRTexture*) replacement loop retained under the same authored owner, record type, and method name by Android."
     },
     {
       "address": "0x44c870",
@@ -4091,7 +4091,7 @@
         "data_4b7790"
       ],
       "size": "0x14058",
-      "description": "Shared cRTextures registry backing cRTextures::Add and sprite texture registration; startup initializes capacity 500, giving count/capacity plus 500 inline 0xa4-byte TextureRef records."
+      "description": "Shared cRTextures registry backing cRTextures::Add and sprite texture registration; startup initializes capacity 500, giving count/capacity plus 500 inline 0xa4-byte cRTexture records."
     },
     {
       "address": "0x4c4b40",
@@ -4896,7 +4896,7 @@
         "data_5031c8"
       ],
       "size": "0x4",
-      "description": "Pointer table indexed by TextureRef::slot_index before bind_texture_ref calls Direct3D SetTexture."
+      "description": "Pointer table indexed by cRTexture::slot_index before bind_texture_ref calls Direct3D SetTexture."
     },
     {
       "address": "0x503220",

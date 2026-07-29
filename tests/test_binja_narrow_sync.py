@@ -516,15 +516,24 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
     for field_offset in ("+0x0c", "+0x8c", "+0x98", "+0xa0"):
         assert field_offset in add_notes
     assert "hash table" in add_notes
+    assert "Windows matcher conservatively retains its observed void* ABI" in add_notes
 
     sprite_header = (repo_root / "tools/match/include/sprite.h").read_text(
         encoding="utf-8"
     )
-    assert "typedef TextureRef cRTexture;" in sprite_header
+    texture_fwd = (repo_root / "tools/match/include/texture_fwd.h").read_text(
+        encoding="utf-8"
+    )
+    assert "struct cRTexture {" in sprite_header
+    assert "struct TextureRef {" not in sprite_header
+    assert "typedef cRTexture TextureRef;" in texture_fwd
+    assert "cRTexture_must_be_0xa4" in sprite_header
+    assert "TextureRef_must_be_0xa4" in sprite_header
     assert "class cRTextures {" in sprite_header
     assert "class TextureRefList {" not in sprite_header
     assert "void Init(int capacity);" in sprite_header
-    assert "TextureRef* Add(" in sprite_header
+    assert "cRTexture* Add(" in sprite_header
+    assert "cRTexture entries[TEXTURE_REF_LIST_CAPACITY];" in sprite_header
     assert "typedef cRTextures TextureRefList;" in sprite_header
     assert "cRTextures_must_be_0x14058" in sprite_header
     assert "TextureRefList_must_be_0x14058" in sprite_header
@@ -538,8 +547,8 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
         ),
         (
             "get_or_create_texture_ref",
-            "TextureRef* cRTextures::Add(",
-            "?Add@cRTextures@@QAEPAUTextureRef@@PADPAXH@Z",
+            "cRTexture* cRTextures::Add(",
+            "?Add@cRTextures@@QAEPAUcRTexture@@PADPAXH@Z",
         ),
     )
     for windows_name, definition, symbol in expected_methods:
@@ -566,6 +575,18 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
     assert "g_texture_refs.Add(texture_path, 0, 0)" in backdrop_source
     assert "g_texture_refs.initialize_texture_list(" not in game_init_source
     assert "g_texture_refs.get_or_create_texture_ref(" not in backdrop_source
+
+    object_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+    texture_registry_header = (
+        repo_root / "tools/match/include/texture_registry.h"
+    ).read_text(encoding="utf-8")
+    assert '#include "texture_fwd.h"' in object_header
+    assert "cRTexture* texture_ref;" in object_header
+    assert "cRTexture** group_texture_refs;" in object_header
+    assert "ReTextureObjects(cRTexture* new_texture," in object_header
+    assert "extern cRTexture* g_current_texture_ref;" in texture_registry_header
 
 
 def test_dual_mobile_texture_loaders_preserve_renderer_boundaries() -> None:
@@ -3421,7 +3442,7 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "extern TextureRefList g_texture_refs;" in star_analysis_header
     assert "TEXTURE_REF_LIST_CAPACITY = 500" in sprite_matcher_header
     assert "void Init(int capacity);" in sprite_matcher_header
-    assert "TextureRef* Add(" in sprite_matcher_header
+    assert "cRTexture* Add(" in sprite_matcher_header
     assert "char* texture_path, void* payload, int flags" in sprite_matcher_header
     assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in path_analysis_header
     assert "char* texture_path, void* payload," in path_analysis_header
@@ -7502,8 +7523,8 @@ def test_object_list_replay_owns_global_lifecycle_and_allocation_consumers() -> 
     assert "void BuildObjects();" in matcher_header
     assert "cRObject* Add();" in matcher_header
     assert (
-        "void ReTextureObjects(TextureRef* new_texture, "
-        "TextureRef* old_texture);"
+        "void ReTextureObjects(cRTexture* new_texture, "
+        "cRTexture* old_texture);"
     ) in matcher_header
 
     for address in (

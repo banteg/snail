@@ -2,8 +2,9 @@
 #ifndef SNAIL_SKIN_H
 #define SNAIL_SKIN_H
 
+#include "texture_fwd.h"
+
 class Snail;
-struct TextureRef;
 
 enum {
     SNAIL_SKIN_SLOT_DEFAULT = 0,
@@ -19,7 +20,7 @@ public:
     void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0, Change
 
     int selected_slot;             // +0x00
-    TextureRef* material_overrides[SNAIL_SKIN_SLOT_COUNT]; // +0x04
+    cRTexture* material_overrides[SNAIL_SKIN_SLOT_COUNT]; // +0x04
     Snail* owner_snail;            // +0x10, non-owning parent backlink
     int active;                    // +0x14
     float progress;                // +0x18

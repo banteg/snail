@@ -7,7 +7,7 @@
 
 int report_errorf(char* format, ...);
 
-void bind_texture_ref(TextureRef* texture)
+void bind_texture_ref(cRTexture* texture)
 {
     if (texture == g_current_texture_ref) {
         return;
