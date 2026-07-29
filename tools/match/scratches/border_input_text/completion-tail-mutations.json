@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-state-publication",
+      "find": "    unsigned int cleared_flags =\n        widget_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    unsigned int closing_flags =\n        cleared_flags | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    int remaining_length = input_length - 1;\n    widget_flags = cleared_flags;\n    input_length = remaining_length;\n    widget_flags = closing_flags;",
+      "replacements": [
+        {
+          "name": "remaining-before-closing",
+          "text": "    unsigned int cleared_flags =\n        widget_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    int remaining_length = input_length - 1;\n    unsigned int closing_flags =\n        cleared_flags | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    widget_flags = cleared_flags;\n    input_length = remaining_length;\n    widget_flags = closing_flags;"
+        },
+        {
+          "name": "remaining-before-flags",
+          "text": "    int remaining_length = input_length - 1;\n    unsigned int cleared_flags =\n        widget_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    unsigned int closing_flags =\n        cleared_flags | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    widget_flags = cleared_flags;\n    input_length = remaining_length;\n    widget_flags = closing_flags;"
+        },
+        {
+          "name": "snapshot-then-remaining",
+          "text": "    unsigned int original_flags = widget_flags;\n    int remaining_length = input_length - 1;\n    unsigned int cleared_flags =\n        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    unsigned int closing_flags =\n        cleared_flags | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    widget_flags = cleared_flags;\n    input_length = remaining_length;\n    widget_flags = closing_flags;"
+        },
+        {
+          "name": "mutable-flags-and-length",
+          "text": "    unsigned int cleared_flags = widget_flags;\n    int remaining_length = input_length;\n    cleared_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    unsigned int closing_flags = cleared_flags;\n    --remaining_length;\n    closing_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    widget_flags = cleared_flags;\n    input_length = remaining_length;\n    widget_flags = closing_flags;"
+        },
+        {
+          "name": "copy-before-length-decrement",
+          "text": "    unsigned int cleared_flags = widget_flags;\n    int remaining_length = input_length;\n    cleared_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    unsigned int closing_flags = cleared_flags;\n    closing_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    --remaining_length;\n    widget_flags = cleared_flags;\n    input_length = remaining_length;\n    widget_flags = closing_flags;"
+        },
+        {
+          "name": "direct-compound-updates",
+          "text": "    widget_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    --input_length;\n    widget_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;"
+        },
+        {
+          "name": "clear-then-closing-snapshot",
+          "text": "    widget_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    unsigned int closing_flags =\n        widget_flags | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    int remaining_length = input_length - 1;\n    input_length = remaining_length;\n    widget_flags = closing_flags;"
+        },
+        {
+          "name": "explicit-original-mask",
+          "text": "    unsigned int original_flags = widget_flags;\n    unsigned int cleared_flags =\n        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    int remaining_length = input_length - 1;\n    unsigned int closing_flags =\n        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;\n    closing_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;\n    widget_flags = cleared_flags;\n    input_length = remaining_length;\n    widget_flags = closing_flags;"
+        }
+      ]
+    }
+  ]
+}

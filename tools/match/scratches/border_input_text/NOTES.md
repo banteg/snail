@@ -128,3 +128,34 @@ and disturbed the proven root operand, and an integer-index cleanup shift fell
 to 68.99%. The remaining mismatch is dominated by compiler register lifetime
 and shift-loop scheduling; no volatile state, dead loads, barriers, or dummy
 operations were retained.
+
+## 2026-07-29 completion-state lifetime recovery
+
+Android and iOS both preserve the finish sequence as two masks of the same
+original `widget_flags` snapshot: clear `TEXT_INPUT_ACTIVE`, decrement the
+length, then publish the original snapshot with `TEXT_INPUT_COMPLETE` set.
+Spelling both derived values from that original owner, rather than deriving the
+closing value from the already-cleared local, changes VC6's long-lived
+completion allocation. Focused Windows improves from 69.44% (`444/446`,
+prefix 2) to **71.30%** with exact `446/446` instruction parity, prefix 6, and
+all eight references clean.
+
+Three recorded sweeps cover 80 unique variants: completion publication order,
+both duplicated insertion shifts, the initial input-flags gate, and the
+leading-space cleanup induction. The total is 20 numerically better, 42
+byte-identical, and 18 worse, with no repeats or compile errors. Nineteen of
+the apparent improvements are explicit metric tradeoffs and are not retained.
+
+In particular, loading the ordinary insertion character at the loop head
+reaches 72.58% with clean references, but lets VC6 tail-merge the two insertion
+finalizers and drops to `444/446`; native keeps both finalizers distinct.
+Reversing the cleanup predicate reaches 71.46% only while moving away from
+instruction parity and contradicts the paired-mobile
+`text[index] != ' ' && index != cursor` order. Six branch-scoped snapshots and
+casts also leave the opening dword-versus-byte input-flags load byte-identical.
+
+The retained 71.30% source is the only improvement with no proof or shape
+tradeoff. Remaining differences are the initial load width, carry-register
+rotation across the duplicated shifts, and the compiler's pointer-strength
+reduction of the cleanup index; no synthetic flag reload or anti-tail-merge
+operation is justified.

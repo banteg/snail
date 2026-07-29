@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "initial-input-flags-gate",
+      "find": "    if ((input_flags & 0x0c) != 0) {",
+      "replacements": [
+        {
+          "name": "unsigned-snapshot",
+          "text": "    unsigned int initial_input_flags = input_flags;\n    if ((initial_input_flags & 0x0c) != 0) {"
+        },
+        {
+          "name": "const-unsigned-snapshot",
+          "text": "    const unsigned int initial_input_flags = input_flags;\n    if ((initial_input_flags & 0x0c) != 0) {"
+        },
+        {
+          "name": "signed-snapshot",
+          "text": "    int initial_input_flags = input_flags;\n    if ((initial_input_flags & 0x0c) != 0) {"
+        },
+        {
+          "name": "register-snapshot",
+          "text": "    register unsigned int initial_input_flags = input_flags;\n    if ((initial_input_flags & 0x0c) != 0) {"
+        },
+        {
+          "name": "truthy-mask",
+          "text": "    if (input_flags & 0x0c) {"
+        },
+        {
+          "name": "unsigned-mask",
+          "text": "    if ((input_flags & (unsigned int)0x0c) != 0) {"
+        }
+      ]
+    },
+    {
+      "name": "leading-space-cleanup",
+      "find": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ++index;\n            ch = text_buffer[index];\n        }\n    }",
+      "replacements": [
+        {
+          "name": "direct-index-condition",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        while (text_buffer[index] != 0) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ++index;\n        }\n    }"
+        },
+        {
+          "name": "indexed-for-loop",
+          "text": "    if ((input_flags & 2) != 0) {\n        for (int index = 0; text_buffer[index] != 0; ++index) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n        }\n    }"
+        },
+        {
+          "name": "preincrement-character-load",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ch = text_buffer[++index];\n        }\n    }"
+        },
+        {
+          "name": "load-at-loop-head",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        while (true) {\n            char ch = text_buffer[index];\n            if (ch == 0)\n                break;\n            if (ch != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ++index;\n        }\n    }"
+        },
+        {
+          "name": "cursor-test-first",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (index != input_cursor && text_buffer[index] != ' ')\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ++index;\n            ch = text_buffer[index];\n        }\n    }"
+        },
+        {
+          "name": "guarded-do-loop",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        if (text_buffer[index] != 0) {\n            do {\n                if (text_buffer[index] != ' ' && index != input_cursor)\n                    break;\n                if (index != input_cursor) {\n                    char* remove = &text_buffer[index];\n                    while (*remove != 0) {\n                        *remove = remove[1];\n                        ++remove;\n                    }\n                    if (index <= input_cursor)\n                        --input_cursor;\n                    --input_length;\n                }\n                ++index;\n            } while (text_buffer[index] != 0);\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}

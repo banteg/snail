@@ -274,11 +274,13 @@ finish_input:
         *remove = remove[1];
         ++remove;
     }
+    unsigned int original_flags = widget_flags;
     unsigned int cleared_flags =
-        widget_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
-    unsigned int closing_flags =
-        cleared_flags | FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
+        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
     int remaining_length = input_length - 1;
+    unsigned int closing_flags =
+        original_flags & ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
+    closing_flags |= FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
     widget_flags = cleared_flags;
     input_length = remaining_length;
     widget_flags = closing_flags;

@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "newline-insertion-shift",
+      "find": "            char carry = ' ';\n            char next = text_buffer[input_cursor];\n            char* slot = &text_buffer[input_cursor];\n            while (next != 0) {\n                *slot = carry;\n                ++slot;\n                carry = next;\n                next = *slot;\n            }\n            *slot = carry;\n            slot[1] = 0;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "load-inside-loop",
+          "text": "            char carry = ' ';\n            char* slot = &text_buffer[input_cursor];\n            while (*slot != 0) {\n                char next = *slot;\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        },
+        {
+          "name": "assignment-condition",
+          "text": "            char carry = ' ';\n            char* slot = &text_buffer[input_cursor];\n            char next;\n            while ((next = *slot) != 0) {\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        },
+        {
+          "name": "mobile-break-loop",
+          "text": "            char* slot = &text_buffer[input_cursor];\n            char carry = ' ';\n            while (true) {\n                char next = *slot;\n                if (next == 0)\n                    break;\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        },
+        {
+          "name": "for-carry-loop",
+          "text": "            char carry = ' ';\n            char* slot = &text_buffer[input_cursor];\n            for (char next = *slot; next != 0; next = *slot) {\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        }
+      ]
+    },
+    {
+      "name": "character-insertion-shift",
+      "find": "            char carry = ' ';\n            char next = text_buffer[input_cursor];\n            char* slot = &text_buffer[input_cursor];\n            while (next != 0) {\n                *slot = carry;\n                ++slot;\n                carry = next;\n                next = *slot;\n            }\n            *slot = carry;\n            slot[1] = 0;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "load-inside-loop",
+          "text": "            char carry = ' ';\n            char* slot = &text_buffer[input_cursor];\n            while (*slot != 0) {\n                char next = *slot;\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        },
+        {
+          "name": "assignment-condition",
+          "text": "            char carry = ' ';\n            char* slot = &text_buffer[input_cursor];\n            char next;\n            while ((next = *slot) != 0) {\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        },
+        {
+          "name": "mobile-break-loop",
+          "text": "            char* slot = &text_buffer[input_cursor];\n            char carry = ' ';\n            while (true) {\n                char next = *slot;\n                if (next == 0)\n                    break;\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        },
+        {
+          "name": "for-carry-loop",
+          "text": "            char carry = ' ';\n            char* slot = &text_buffer[input_cursor];\n            for (char next = *slot; next != 0; next = *slot) {\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;"
+        }
+      ]
+    }
+  ]
+}
