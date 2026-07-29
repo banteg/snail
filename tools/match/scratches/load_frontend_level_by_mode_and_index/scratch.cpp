@@ -2,7 +2,7 @@
 
 #include "sub_tracks.h"
 
-int sprintf(char* buffer, char* format, ...);
+int sprintf(char* buffer, const char* format, ...);
 
 extern char g_arcade_level_format[]; // 0x4a5014
 extern char g_arcade_extra_level_path[]; // 0x4a5000

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "postal-indexed-branch",
+      "find": "    case 0:\n        if (level_index <= 50) {\n            sprintf(path, g_arcade_level_format, level_index);\n        } else {\n            if (level_index == 51)\n                sprintf(path, g_arcade_extra_level_path);\n        }\n        break;",
+      "replacements": [
+        {
+          "name": "greater-first",
+          "text": "    case 0:\n        if (level_index > 50) {\n            if (level_index == 51)\n                sprintf(path, g_arcade_extra_level_path);\n        } else {\n            sprintf(path, g_arcade_level_format, level_index);\n        }\n        break;"
+        },
+        {
+          "name": "else-if",
+          "text": "    case 0:\n        if (level_index <= 50)\n            sprintf(path, g_arcade_level_format, level_index);\n        else if (level_index == 51)\n            sprintf(path, g_arcade_extra_level_path);\n        break;"
+        },
+        {
+          "name": "greater-first-else-if",
+          "text": "    case 0:\n        if (level_index > 50) {\n            if (level_index == 51)\n                sprintf(path, g_arcade_extra_level_path);\n        } else\n            sprintf(path, g_arcade_level_format, level_index);\n        break;"
+        }
+      ]
+    },
+    {
+      "name": "time-trial-indexed-branch",
+      "find": "    case 4:\n        if (level_index <= 50)\n            sprintf(path, g_arcade_level_format, level_index);\n        else\n            sprintf(path, g_time_trial_extra_level_format, level_index - 50);\n        break;",
+      "replacements": [
+        {
+          "name": "greater-first",
+          "text": "    case 4:\n        if (level_index > 50)\n            sprintf(path, g_time_trial_extra_level_format, level_index - 50);\n        else\n            sprintf(path, g_arcade_level_format, level_index);\n        break;"
+        },
+        {
+          "name": "mutate-index",
+          "text": "    case 4:\n        if (level_index <= 50)\n            sprintf(path, g_arcade_level_format, level_index);\n        else {\n            level_index -= 50;\n            sprintf(path, g_time_trial_extra_level_format, level_index);\n        }\n        break;"
+        },
+        {
+          "name": "greater-first-mutate-index",
+          "text": "    case 4:\n        if (level_index > 50) {\n            level_index -= 50;\n            sprintf(path, g_time_trial_extra_level_format, level_index);\n        } else {\n            sprintf(path, g_arcade_level_format, level_index);\n        }\n        break;"
+        },
+        {
+          "name": "extra-index-local",
+          "text": "    case 4:\n        if (level_index <= 50)\n            sprintf(path, g_arcade_level_format, level_index);\n        else {\n            int extra_index = level_index - 50;\n            sprintf(path, g_time_trial_extra_level_format, extra_index);\n        }\n        break;"
+        }
+      ]
+    }
+  ]
+}

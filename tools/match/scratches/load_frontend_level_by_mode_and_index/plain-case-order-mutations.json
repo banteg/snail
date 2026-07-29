@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "plain-case-order",
+      "find": "    case 1:\n        sprintf(path, g_challenge_level_path);\n        break;\n\n    case 7:\n        sprintf(path, g_tutorial_level_path);\n        break;\n\n    case 2:\n    case 3:\n        sprintf(path, g_arcade000_level_path);\n        break;",
+      "replacements": [
+        {
+          "name": "challenge-arcade-tutorial",
+          "text": "    case 1:\n        sprintf(path, g_challenge_level_path);\n        break;\n\n    case 2:\n    case 3:\n        sprintf(path, g_arcade000_level_path);\n        break;\n\n    case 7:\n        sprintf(path, g_tutorial_level_path);\n        break;"
+        },
+        {
+          "name": "tutorial-challenge-arcade",
+          "text": "    case 7:\n        sprintf(path, g_tutorial_level_path);\n        break;\n\n    case 1:\n        sprintf(path, g_challenge_level_path);\n        break;\n\n    case 2:\n    case 3:\n        sprintf(path, g_arcade000_level_path);\n        break;"
+        },
+        {
+          "name": "tutorial-arcade-challenge",
+          "text": "    case 7:\n        sprintf(path, g_tutorial_level_path);\n        break;\n\n    case 2:\n    case 3:\n        sprintf(path, g_arcade000_level_path);\n        break;\n\n    case 1:\n        sprintf(path, g_challenge_level_path);\n        break;"
+        },
+        {
+          "name": "arcade-challenge-tutorial",
+          "text": "    case 2:\n    case 3:\n        sprintf(path, g_arcade000_level_path);\n        break;\n\n    case 1:\n        sprintf(path, g_challenge_level_path);\n        break;\n\n    case 7:\n        sprintf(path, g_tutorial_level_path);\n        break;"
+        },
+        {
+          "name": "arcade-tutorial-challenge",
+          "text": "    case 2:\n    case 3:\n        sprintf(path, g_arcade000_level_path);\n        break;\n\n    case 7:\n        sprintf(path, g_tutorial_level_path);\n        break;\n\n    case 1:\n        sprintf(path, g_challenge_level_path);\n        break;"
+        }
+      ]
+    }
+  ]
+}

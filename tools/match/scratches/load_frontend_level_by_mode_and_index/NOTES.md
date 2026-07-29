@@ -81,3 +81,25 @@ masked operand also correctly remains a mismatch: jump-table references are
 content-audited, and the candidate's residual unshared formatting tail gives
 its case labels different function-relative offsets. Treating the alias alone
 as proof would hide that real layout difference.
+
+## 2026-07-29 indexed formatting closure
+
+Three recorded mutation sweeps bound the remaining formatting tail. The
+standard `sprintf(char*, const char*, ...)` declaration and its explicit
+`__cdecl`/C-linkage forms are byte-neutral; the correct const-qualified
+prototype is retained. The installed MSVC 6.5 processor-pack and 6.6 profiles
+emit the same bytes, and MSVC 6.0 reaches the same result once given that
+standard prototype, so the residual is not explained by the adjacent compiler
+profiles.
+
+All five alternate orders of the three plain-path cases retain the same fuzzy
+score but worsen reference alignment. Across 19 predicate and index-lifetime
+variants, an `else if`, mutating `level_index`, and a scoped `extra_index` are
+neutral. Reversing the time-trial predicate drops to `77.48%`; reversing the
+postal predicate drops to `68.97%`, and reversing both reaches `65.52%`.
+
+Focused Wibo therefore remains `81.36%`, 57 target versus 61 candidate
+instructions, prefix `5`, with twelve clean references and the duplicated call
+left unaudited. The four-instruction excess is bounded to VC6's native
+cross-format `sprintf` tail sharing. No label, synthetic dispatcher, or other
+control-flow scaffolding is retained to force that optimizer layout.

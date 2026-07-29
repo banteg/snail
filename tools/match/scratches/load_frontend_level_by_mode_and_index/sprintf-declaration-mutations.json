@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "sprintf-declaration",
+      "find": "int sprintf(char* buffer, char* format, ...);",
+      "replacements": [
+        {
+          "name": "const-format",
+          "text": "int sprintf(char* buffer, const char* format, ...);"
+        },
+        {
+          "name": "cdecl-const-format",
+          "text": "int __cdecl sprintf(char* buffer, const char* format, ...);"
+        },
+        {
+          "name": "c-linkage-const-format",
+          "text": "extern \"C\" int sprintf(char* buffer, const char* format, ...);"
+        },
+        {
+          "name": "c-linkage-cdecl-const-format",
+          "text": "extern \"C\" int __cdecl sprintf(char* buffer, const char* format, ...);"
+        }
+      ]
+    }
+  ]
+}
