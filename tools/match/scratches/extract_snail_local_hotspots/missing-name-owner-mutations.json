@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "missing-hotspot-name-argument",
+      "find": "    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);",
+      "replacements": [
+        {
+          "name": "reuse-lookup-name",
+          "text": "    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", texture_name);"
+        },
+        {
+          "name": "named-missing-name",
+          "text": "    missing_hotspot:\n        char* missing_name = *name_cursor;\n        report_errorf(\"Cannot find HotPoint Texture %s\", missing_name);"
+        },
+        {
+          "name": "delayed-missing-name",
+          "text": "    missing_hotspot:\n        char* missing_name;\n        missing_name = *name_cursor;\n        report_errorf(\"Cannot find HotPoint Texture %s\", missing_name);"
+        },
+        {
+          "name": "named-cursor-owner",
+          "text": "    missing_hotspot:\n        char** missing_name_cursor = name_cursor;\n        report_errorf(\"Cannot find HotPoint Texture %s\", *missing_name_cursor);"
+        },
+        {
+          "name": "delayed-cursor-owner",
+          "text": "    missing_hotspot:\n        char** missing_name_cursor;\n        missing_name_cursor = name_cursor;\n        report_errorf(\"Cannot find HotPoint Texture %s\", *missing_name_cursor);"
+        },
+        {
+          "name": "indexed-cursor",
+          "text": "    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", name_cursor[0]);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "hotspot-vector-publication",
+      "find": "        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;",
+      "replacements": [
+        {
+          "name": "direct-chained-assignment",
+          "text": "        *(Vector3*)(hotspot_z - 2) =\n            (*(Vector3*)(hotspot_z - 2) += *vertex);"
+        },
+        {
+          "name": "named-pointer-chained-assignment",
+          "text": "        {\n            Vector3* hotspot = (Vector3*)(hotspot_z - 2);\n            *hotspot = (*hotspot += *vertex);\n        }"
+        },
+        {
+          "name": "named-reference-chained-assignment",
+          "text": "        {\n            Vector3& hotspot = *(Vector3*)(hotspot_z - 2);\n            hotspot = (hotspot += *vertex);\n        }"
+        },
+        {
+          "name": "explicit-member-chained-assignment",
+          "text": "        {\n            Vector3* hotspot = (Vector3*)(hotspot_z - 2);\n            *hotspot = hotspot->operator+=(*vertex);\n        }"
+        },
+        {
+          "name": "named-pointer-add-only",
+          "text": "        {\n            Vector3* hotspot = (Vector3*)(hotspot_z - 2);\n            *hotspot += *vertex;\n        }"
+        },
+        {
+          "name": "scalar-add-then-named-self-assignment",
+          "text": "        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;\n        {\n            Vector3* hotspot = (Vector3*)(hotspot_z - 2);\n            *hotspot = *hotspot;\n        }"
+        },
+        {
+          "name": "scalar-add-then-direct-self-assignment",
+          "text": "        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;\n        *(Vector3*)(hotspot_z - 2) = *(Vector3*)(hotspot_z - 2);"
+        }
+      ]
+    }
+  ]
+}

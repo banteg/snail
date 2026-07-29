@@ -150,3 +150,29 @@ otherwise redundant writeback. The restored source remains at 91.55%,
 68/74 instructions, with all seven references clean; a future retry needs new
 original-source evidence rather than a return-type change or explicit
 self-assignment.
+
+## 2026-07-29 bounded self-copy and error-owner replay
+
+Binary Ninja renders the native six-instruction tail as an aggregate
+`destination = destination` after the scalar x/y/z additions. That made one
+remaining evidence-backed source family worth testing: chained
+`destination = (destination += vertex)` expressions, both directly and
+through locally scoped pointer/reference owners. The verified Android and iOS
+bodies optimize the same operation down to the scalar additions, so the
+chained forms preserve behavior even though neither mobile binary retains the
+Windows self-copy.
+
+None reproduce the Windows schedule. Direct and scoped chained assignments
+move register allocation from the beginning of the function and regress to
+53.25%-73.83%; explicit self-assignment remains optimized away at the 91.55%
+baseline. Separately staging the missing texture name through a value, cursor,
+or indexed spelling is neutral, while reusing the lookup name regresses and
+creates reference-alignment debt. Combining the neutral error-name spellings
+with every viable vector-publication spelling also produces no improvement.
+
+Four recorded sweeps cover 39 variants (30 unique): 0 improve, 17 are neutral,
+and 22 degrade. The trailing no-improvement streak is four, so the scratch is
+formally stalled at 91.55%, 68/74 instructions, prefix 31, with all seven
+references clean. The residual remains one register-only error argument and a
+literal six-instruction self-copy; further work needs a new original-source
+idiom rather than another explicit redundant store.

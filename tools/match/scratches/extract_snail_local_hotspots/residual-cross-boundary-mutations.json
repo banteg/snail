@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "missing-name-staging",
+      "find": "    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", *name_cursor);",
+      "replacements": [
+        {
+          "name": "indexed-cursor",
+          "text": "    missing_hotspot:\n        report_errorf(\"Cannot find HotPoint Texture %s\", name_cursor[0]);"
+        },
+        {
+          "name": "delayed-missing-name",
+          "text": "    missing_hotspot:\n        char* missing_name;\n        missing_name = *name_cursor;\n        report_errorf(\"Cannot find HotPoint Texture %s\", missing_name);"
+        },
+        {
+          "name": "delayed-cursor-owner",
+          "text": "    missing_hotspot:\n        char** missing_name_cursor;\n        missing_name_cursor = name_cursor;\n        report_errorf(\"Cannot find HotPoint Texture %s\", *missing_name_cursor);"
+        }
+      ]
+    },
+    {
+      "name": "finished-vector-publication",
+      "find": "        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;",
+      "replacements": [
+        {
+          "name": "direct-chained-assignment",
+          "text": "        *(Vector3*)(hotspot_z - 2) =\n            (*(Vector3*)(hotspot_z - 2) += *vertex);"
+        },
+        {
+          "name": "scoped-pointer-chained-assignment",
+          "text": "        {\n            Vector3* hotspot = (Vector3*)(hotspot_z - 2);\n            *hotspot = (*hotspot += *vertex);\n        }"
+        },
+        {
+          "name": "named-self-assignment",
+          "text": "        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;\n        {\n            Vector3* hotspot = (Vector3*)(hotspot_z - 2);\n            *hotspot = *hotspot;\n        }"
+        },
+        {
+          "name": "direct-self-assignment",
+          "text": "        hotspot_z[-2] += vertex->x;\n        hotspot_z[-1] += vertex->y;\n        *hotspot_z += vertex->z;\n        *(Vector3*)(hotspot_z - 2) = *(Vector3*)(hotspot_z - 2);"
+        }
+      ]
+    }
+  ]
+}
