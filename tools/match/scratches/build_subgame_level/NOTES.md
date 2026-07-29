@@ -88,24 +88,22 @@ mismatch).
   the shared `RuntimeConfig`, preserving the saved-config scalar split.
 - `GenerateLevel(level_index)` stays as a member call and
   is not reimplemented inline.
-- The landscape default branch reloads the incoming `level_index` through a
-  volatile parameter view. This recovers the native stack reload in the random
-  space-landscape switch and removes the old two-byte label drift after the
-  track-rebuild call.
+- The landscape default branch uses the incoming `level_index` directly. An
+  older volatile view recovered the native stack reload, but it was removed by
+  the no-fakematch audit because volatility is not part of the recovered
+  contract.
 - Start/completion row node pointers are scoped to their individual
   `ADDafter` operations. Shortening their lifetimes delayed the EBP save and
   substantially improved the row-controller region.
-- The start and completion row zero lanes use volatile stores so VC6 keeps the
-  native redundant zero writes before the later position overwrite. The start
-  row commits flags before alpha, and the completion row clears the low flags
-  byte explicitly; together these keep the row setup closer to the target while
-  preserving the later alpha local lifetime.
-- The repeated active-list operations are written as explicit intrusive-list
-  insertions. Extracting them into a helper changed both code size and register
-  allocation.
-- The visible-body `0x80` flag update is expressed through the low byte of a
-  local flag value. A direct full-word OR was cleaner but shortened the
-  candidate to 552 instructions and scored lower.
+- The start and completion row zero lanes remain ordinary integer stores. The
+  start row commits flags before alpha, while both row flag updates use the
+  recovered full-width `BodNode::list_flags` field.
+- The seven active-list operations use the shared inline
+  `BodList::add_bod`. A complete 127-combination call-site sweep proved these
+  calls byte-identical to the former manual expansions.
+- The visible-body `0x80` update uses a full-width local flag value. Its
+  interaction with the completion-row mask improves the current baseline even
+  though an older isolated direct-word trial had regressed.
 - 2026-06-20 shared voice-manager header pass: the local one-method
   `VoiceManager` view was replaced with `voice_manager.h`. The focused matcher
   is unchanged at `79.82%`, `555/555`, `177/555` prefix, with the same
@@ -140,17 +138,19 @@ mismatch).
 
 ## Remaining differences
 
-The exact prefix now reaches target instruction 244. The first remaining
-source-shape difference is in the first row-controller setup: VC6 saves `ebp`
-before the volatile zero stores, while native delays `push ebp` until after the
-start-row flag load and player pointer materialization.
+The exact prefix reaches target instruction 177. The first diff is a branch
+label whose destination moved with later code size; the first dataflow
+difference is the random-landscape default, where native reloads `level_index`
+from the stack and the honest candidate keeps it in a register. The row setup
+also retains store-scheduling differences without volatile qualifiers.
 
 The largest later mismatch is register allocation in the repeated active-list
 tail. The target keeps the player object in EDI and the `0x200` membership flag
-in EBP. The candidate instead keeps `0x200` in EDI for the first repeated
-insertions. Attempts to force that allocation with typed overlays, earlier
-player-pointer declarations, `register`, and named flag locals did not improve
-code generation.
+in EBP. Reusing the already-live `player_owner` for weapon channel 2 and the
+Snail node recovers most of that lifetime and restores the exact 555-instruction
+shape, but some actor-address and splice temporaries still use different
+registers. Direct-member, typed-overlay, `register`, and named-flag alternatives
+did not improve the remaining region.
 
 The two compiler-generated jump tables are now content-audited. The current
 masked-operand pass is clean; the ordinary instruction diff starts with label
@@ -166,9 +166,9 @@ are now resolved to `RuntimeConfig::default_challenge_speed_slider`.
 | Remove the landscape index alias before the volatile stack reload | Produced 556 candidate instructions and a lower score in the older 79.82% baseline. |
 | Use a typed row-controller overlay | Shortened the exact prefix to 62 instructions and dropped the score to 58.99%. |
 | Chain the row zero assignments | Changed scheduling and scored below the explicit stores. |
-| Extract active-list insertion into a member or free inline helper | Produced 545 or 556 instructions and scored 61.45% or 75.79%. |
+| Older ad-hoc member or free insertion helpers | Produced 545 or 556 instructions and scored 61.45% or 75.79%; superseded by the byte-neutral shared `BodList::add_bod` sweep. |
 | Make `Player` inherit the list-node view, or keep a persistent typed player pointer | Did not recover the target's EDI/EBP assignment. |
-| Replace the low-byte visible flag update with a direct word OR | Produced 552 instructions and a lower full-function score. |
+| Older isolated direct-word visible flag update | Produced 552 instructions and a lower score; superseded by the two-site flag-lane interaction sweep. |
 | Earlier completion-row store permutations or alpha integer types | No improvement in the older 79.82% baseline; the retained low-byte clear supersedes those probes. |
 
 ## 2026-06-20 landscape and row-lifetime pass
@@ -565,3 +565,45 @@ complete setup, runtime, and saved-solution path; offsets and Windows codegen
 are unchanged. Focused `StartLevel` remains 77.67%, 560/555 instructions,
 prefix 177/555, with 106 clean operands and four alignment-only unaudited
 references.
+
+## 2026-07-29 flag lanes and active-player lifetime
+
+The focused baseline was 77.67%, `560/555` instructions, prefix 177, with
+`106` clean and four unaudited aligned operands. Two complete bounded sweeps
+found the retained source changes:
+
+- A 48-variant completion/visibility flag-lane sweep replaced byte-pointer
+  expressions with full-width updates to the typed `BodNode::list_flags`
+  values. This raised the result to 78.95%, `552/555`, with `107` clean and
+  two unaudited operands.
+- All 63 subsets of the six presentation-owner accesses were compiled. Reusing
+  the already-live `player_owner` for weapon channel 2 and the Snail body was
+  the unique best subset, adding about 122 weighted matched bytes and restoring
+  the exact `555/555` instruction count. The focused result is now 84.68%,
+  prefix 177, with `107` clean, zero unresolved or mismatched, and two
+  alignment-only unaudited operands.
+
+The owner reuse does not invent storage: Android, iOS, IDA, and the shared
+layout all identify one embedded `cRSubGoldy`, and both selected expressions
+address subobjects of that same retained owner. The exact original spelling is
+not proved, so the complete subset sweep is kept in `experiments.jsonl`.
+Direct `player`/`this->player` spellings were exhaustively tested in 26
+additional combinations and scored no better.
+
+The cleanup probes bounded the surrounding source shape:
+
+- all 127 combinations of the seven shared inline `BodList::add_bod` calls
+  were byte-neutral against the manual expansions, so the authored calls are
+  retained;
+- calling `cRSubGoldy::Init` through `player_owner`, as both mobile bodies do,
+  is byte-neutral, while routing the movement or steering stores through that
+  pointer regresses;
+- all 31 combinations of direct inline-call arguments are byte-neutral, and a
+  final one-variant scope probe proves the temporary `node` is needed only for
+  the invincibility actor whose flags are updated after insertion.
+
+The remaining active-list delta is therefore bounded to VC6 register
+allocation and address materialization, not list semantics or ownership. The
+row-controller scheduling and honest landscape fallback reload remain the
+earlier substantive differences; no volatile, register qualifier, raw offset,
+or other fakematch was added.

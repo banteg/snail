@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "weapon-two-member",
+      "find": "&player_owner->presentation.weapon_channels[2]",
+      "replacements": [
+        {
+          "name": "direct-player",
+          "text": "&player.presentation.weapon_channels[2]"
+        },
+        {
+          "name": "direct-this-player",
+          "text": "&this->player.presentation.weapon_channels[2]"
+        }
+      ]
+    },
+    {
+      "name": "snail-member",
+      "find": "(BodNode*)&player_owner->presentation",
+      "replacements": [
+        {
+          "name": "direct-player",
+          "text": "(BodNode*)&player.presentation"
+        },
+        {
+          "name": "direct-this-player",
+          "text": "(BodNode*)&this->player.presentation"
+        }
+      ]
+    },
+    {
+      "name": "player-node-member",
+      "find": "(BodNode*)player_owner",
+      "replacements": [
+        {
+          "name": "direct-player",
+          "text": "(BodNode*)&player"
+        },
+        {
+          "name": "direct-this-player",
+          "text": "(BodNode*)&this->player"
+        }
+      ]
+    }
+  ]
+}

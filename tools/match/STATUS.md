@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**541/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **98655/294937** bytes (**33.45%**) are proof-grade, and overall fuzzy is **79.22%**.
+**541/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **98655/294937** bytes (**33.45%**) are proof-grade, and overall fuzzy is **79.27%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -582,7 +582,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (42)
+## High Progress (80-94.99%) (43)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -606,6 +606,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | strings_equal_case_insensitive | 0x431dc0 | 104 | 50/50 | 84.00% | 5/50 | - |  | core |
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  | core |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  | core |
+| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 84.68% | 177/555 | 2 unaudited, 107 ok |  | core |
 | 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 2 unaudited, 17 ok |  | core |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 131/131 | 94.66% | 6/131 | 34 ok |  | core |
 | 🚧 | play_subgoldy_shoot_sfx | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 2 unaudited, 19 ok |  | core |
@@ -629,7 +630,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 6 unaudited, 21 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 
-## Mid Progress (50-79.99%) (43)
+## Mid Progress (50-79.99%) (42)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -669,7 +670,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 6 unaudited, 48 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
-| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 560/555 | 77.67% | 177/555 | 4 unaudited, 106 ok |  | core |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 12 unaudited, 123 ok |  | core |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 70.58% | 6/501 | 8 unaudited, 66 ok |  | core |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 670/673 | 75.06% | 8/673 | 89 ok |  | core |

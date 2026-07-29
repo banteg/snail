@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "weapon-zero-direct-argument",
+      "find": "node = &embedded_player()->presentation.weapon_channels[0];\n    g_game->active_bod_list.add_bod(node);",
+      "replacements": [
+        {
+          "name": "direct-argument",
+          "text": "g_game->active_bod_list.add_bod(\n        &embedded_player()->presentation.weapon_channels[0]);"
+        }
+      ]
+    },
+    {
+      "name": "weapon-one-direct-argument",
+      "find": "node = &embedded_player()->presentation.weapon_channels[1];\n    g_game->active_bod_list.add_bod(node);",
+      "replacements": [
+        {
+          "name": "direct-argument",
+          "text": "g_game->active_bod_list.add_bod(\n        &embedded_player()->presentation.weapon_channels[1]);"
+        }
+      ]
+    },
+    {
+      "name": "weapon-two-direct-argument",
+      "find": "node = &player_owner->presentation.weapon_channels[2];\n    g_game->active_bod_list.add_bod(node);",
+      "replacements": [
+        {
+          "name": "direct-argument",
+          "text": "g_game->active_bod_list.add_bod(\n        &player_owner->presentation.weapon_channels[2]);"
+        }
+      ]
+    },
+    {
+      "name": "snail-direct-argument",
+      "find": "node = (BodNode*)&player_owner->presentation;\n    g_game->active_bod_list.add_bod(node);",
+      "replacements": [
+        {
+          "name": "direct-argument",
+          "text": "g_game->active_bod_list.add_bod(\n        (BodNode*)&player_owner->presentation);"
+        }
+      ]
+    },
+    {
+      "name": "player-direct-argument",
+      "find": "BodNode* player_node = (BodNode*)player_owner;\n    g_game->active_bod_list.add_bod(player_node);",
+      "replacements": [
+        {
+          "name": "direct-argument",
+          "text": "g_game->active_bod_list.add_bod((BodNode*)player_owner);"
+        }
+      ]
+    }
+  ]
+}

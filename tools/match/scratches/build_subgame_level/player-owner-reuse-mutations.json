@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "jetpack-owner",
+      "find": "&embedded_player()->presentation.jetpack_channel",
+      "replacements": [
+        {
+          "name": "reuse-player-owner",
+          "text": "&player_owner->presentation.jetpack_channel"
+        }
+      ]
+    },
+    {
+      "name": "weapon-zero-owner",
+      "find": "&embedded_player()->presentation.weapon_channels[0]",
+      "replacements": [
+        {
+          "name": "reuse-player-owner",
+          "text": "&player_owner->presentation.weapon_channels[0]"
+        }
+      ]
+    },
+    {
+      "name": "weapon-one-owner",
+      "find": "&embedded_player()->presentation.weapon_channels[1]",
+      "replacements": [
+        {
+          "name": "reuse-player-owner",
+          "text": "&player_owner->presentation.weapon_channels[1]"
+        }
+      ]
+    },
+    {
+      "name": "weapon-two-owner",
+      "find": "&embedded_player()->presentation.weapon_channels[2]",
+      "replacements": [
+        {
+          "name": "reuse-player-owner",
+          "text": "&player_owner->presentation.weapon_channels[2]"
+        }
+      ]
+    },
+    {
+      "name": "invincible-owner",
+      "find": "(BodNode*)&embedded_player()->presentation.invincible_shell",
+      "replacements": [
+        {
+          "name": "reuse-player-owner",
+          "text": "(BodNode*)&player_owner->presentation.invincible_shell"
+        }
+      ]
+    },
+    {
+      "name": "snail-owner",
+      "find": "(BodNode*)&embedded_player()->presentation",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "reuse-player-owner",
+          "text": "(BodNode*)&player_owner->presentation"
+        }
+      ]
+    }
+  ]
+}

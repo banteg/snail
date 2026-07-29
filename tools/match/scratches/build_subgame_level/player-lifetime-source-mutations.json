@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "movement-owner",
+      "find": "player.movement_mode_selector = one;",
+      "replacements": [
+        {
+          "name": "retained-player-owner",
+          "text": "player_owner->movement_mode_selector = one;"
+        }
+      ]
+    },
+    {
+      "name": "steering-owner",
+      "find": "player.steering_mode_selector = zero;",
+      "replacements": [
+        {
+          "name": "retained-player-owner",
+          "text": "player_owner->steering_mode_selector = zero;"
+        }
+      ]
+    },
+    {
+      "name": "init-owner",
+      "find": "player.Init(one);",
+      "replacements": [
+        {
+          "name": "retained-player-owner",
+          "text": "player_owner->Init(one);"
+        }
+      ]
+    },
+    {
+      "name": "weapon-two-direct-member",
+      "find": "&player_owner->presentation.weapon_channels[2]",
+      "replacements": [
+        {
+          "name": "direct-player-member",
+          "text": "&player.presentation.weapon_channels[2]"
+        }
+      ]
+    },
+    {
+      "name": "snail-direct-member",
+      "find": "(BodNode*)&player_owner->presentation",
+      "replacements": [
+        {
+          "name": "direct-player-member",
+          "text": "(BodNode*)&player.presentation"
+        }
+      ]
+    }
+  ]
+}

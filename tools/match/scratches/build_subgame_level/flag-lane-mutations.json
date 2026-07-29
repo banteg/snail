@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-flag-lane",
+      "find": "    ((unsigned char*)&completion_flags)[0] &= 0xdf;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;",
+      "replacements": [
+        {
+          "name": "local-symbolic-dword-mask",
+          "text": "    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;"
+        },
+        {
+          "name": "local-literal-dword-mask",
+          "text": "    completion_flags &= 0xffffffdf;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;"
+        },
+        {
+          "name": "local-dword-expression",
+          "text": "    completion_flags = completion_flags & 0xffffffdf;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;"
+        },
+        {
+          "name": "mask-at-member-store",
+          "text": "    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags =\n        completion_flags & ~BOD_FLAG_RENDER_ENABLED;"
+        },
+        {
+          "name": "owner-before-local-mask",
+          "text": "    banners.slots[1].owner_player = player_owner;\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].list_flags = completion_flags;"
+        },
+        {
+          "name": "direct-member-dword-mask",
+          "text": "    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags &= ~BOD_FLAG_RENDER_ENABLED;"
+        }
+      ]
+    },
+    {
+      "name": "visible-flag-lane",
+      "find": "    unsigned int visible_flags = node->list_flags;\n    ((unsigned char*)&visible_flags)[0] |= 0x80;\n    node->list_flags = visible_flags;",
+      "replacements": [
+        {
+          "name": "local-dword-update",
+          "text": "    unsigned int visible_flags = node->list_flags;\n    visible_flags |= 0x80;\n    node->list_flags = visible_flags;"
+        },
+        {
+          "name": "local-dword-expression",
+          "text": "    unsigned int visible_flags = node->list_flags;\n    visible_flags = visible_flags | 0x80;\n    node->list_flags = visible_flags;"
+        },
+        {
+          "name": "initialized-dword-expression",
+          "text": "    unsigned int visible_flags = node->list_flags | 0x80;\n    node->list_flags = visible_flags;"
+        },
+        {
+          "name": "direct-member-dword-update",
+          "text": "    node->list_flags |= 0x80;"
+        },
+        {
+          "name": "direct-member-byte-update",
+          "text": "    ((unsigned char*)&node->list_flags)[0] |= 0x80;"
+        },
+        {
+          "name": "named-member-pointer",
+          "text": "    unsigned int* visible_flags = &node->list_flags;\n    *visible_flags |= 0x80;"
+        }
+      ]
+    }
+  ]
+}

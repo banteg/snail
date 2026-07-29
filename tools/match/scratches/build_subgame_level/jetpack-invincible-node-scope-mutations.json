@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "scope-node-to-invincible",
+      "find": "BodNode* node =\n        &embedded_player()->presentation.jetpack_channel;\n    g_game->active_bod_list.add_bod(node);\n\n    g_game->active_bod_list.add_bod(\n        &embedded_player()->presentation.weapon_channels[0]);\n\n    g_game->active_bod_list.add_bod(\n        &embedded_player()->presentation.weapon_channels[1]);\n\n    g_game->active_bod_list.add_bod(\n        &player_owner->presentation.weapon_channels[2]);\n\n    node = (BodNode*)&embedded_player()->presentation.invincible_shell;\n    g_game->active_bod_list.add_bod(node);",
+      "replacements": [
+        {
+          "name": "direct-jetpack-local-invincible",
+          "text": "g_game->active_bod_list.add_bod(\n        &embedded_player()->presentation.jetpack_channel);\n\n    g_game->active_bod_list.add_bod(\n        &embedded_player()->presentation.weapon_channels[0]);\n\n    g_game->active_bod_list.add_bod(\n        &embedded_player()->presentation.weapon_channels[1]);\n\n    g_game->active_bod_list.add_bod(\n        &player_owner->presentation.weapon_channels[2]);\n\n    BodNode* node =\n        (BodNode*)&embedded_player()->presentation.invincible_shell;\n    g_game->active_bod_list.add_bod(node);"
+        }
+      ]
+    }
+  ]
+}

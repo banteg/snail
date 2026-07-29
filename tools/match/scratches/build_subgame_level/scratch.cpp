@@ -214,7 +214,7 @@ void cRSubGame::StartLevel(int level_index)
     unsigned int completion_flags = banners.slots[1].list_flags;
     float completion_z = (float)completion_row_start;
     cRSubGoldy* player_owner = embedded_player();
-    ((unsigned char*)&completion_flags)[0] &= 0xdf;
+    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;
     banners.slots[1].owner_player = player_owner;
     banners.slots[1].list_flags = completion_flags;
     banners.slots[1].position.z = completion_z;
@@ -230,151 +230,31 @@ void cRSubGame::StartLevel(int level_index)
     g_game->players[0].mouse_cursor.release_mouse_cursor();
     player.movement_mode_selector = one;
     player.steering_mode_selector = zero;
-    player.Init(one);
+    player_owner->Init(one);
+
+    g_game->active_bod_list.add_bod(
+        &embedded_player()->presentation.jetpack_channel);
+
+    g_game->active_bod_list.add_bod(
+        &embedded_player()->presentation.weapon_channels[0]);
+
+    g_game->active_bod_list.add_bod(
+        &embedded_player()->presentation.weapon_channels[1]);
+
+    g_game->active_bod_list.add_bod(
+        &player_owner->presentation.weapon_channels[2]);
 
     BodNode* node =
-        &embedded_player()->presentation.jetpack_channel;
-    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= BOD_FLAG_LINKED;
-    }
-
-    node = &embedded_player()->presentation.weapon_channels[0];
-    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= BOD_FLAG_LINKED;
-    }
-
-    node = &embedded_player()->presentation.weapon_channels[1];
-    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= BOD_FLAG_LINKED;
-    }
-
-    node = &embedded_player()->presentation.weapon_channels[2];
-    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= BOD_FLAG_LINKED;
-    }
-
-    node = (BodNode*)&embedded_player()->presentation.invincible_shell;
-    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= BOD_FLAG_LINKED;
-    }
+        (BodNode*)&embedded_player()->presentation.invincible_shell;
+    g_game->active_bod_list.add_bod(node);
     unsigned int visible_flags = node->list_flags;
-    ((unsigned char*)&visible_flags)[0] |= 0x80;
+    visible_flags |= 0x80;
     node->list_flags = visible_flags;
 
-    node = (BodNode*)&embedded_player()->presentation;
-    if ((node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = node;
-            node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        node->list_flags |= BOD_FLAG_LINKED;
-    }
+    g_game->active_bod_list.add_bod(
+        (BodNode*)&player_owner->presentation);
 
-    BodNode* player_node = (BodNode*)player_owner;
-    if ((player_node->list_flags & BOD_FLAG_LINKED) != zero) {
-        report_errorf("List ADD");
-    } else {
-        BodNode** first_ref = &g_game->active_bod_list.first;
-        BodNode* first = *first_ref;
-        if (first == 0) {
-            *first_ref = player_node;
-            player_node->list_prev = 0;
-            (*first_ref)->list_next = 0;
-        } else {
-            first->list_prev = player_node;
-            (*first_ref)->list_prev->list_next = *first_ref;
-            BodNode* new_first = (*first_ref)->list_prev;
-            *first_ref = new_first;
-            new_first->list_prev = 0;
-        }
-        player_node->list_flags |= BOD_FLAG_LINKED;
-    }
+    g_game->active_bod_list.add_bod((BodNode*)player_owner);
 
     slug_voice_manager.initialize_slug_voice_manager();
 

@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "jetpack-add-call",
+      "find": "if ((node->list_flags & BOD_FLAG_LINKED) != zero) {\n        report_errorf(\"List ADD\");\n    } else {\n        BodNode** first_ref = &g_game->active_bod_list.first;\n        BodNode* first = *first_ref;\n        if (first == 0) {\n            *first_ref = node;\n            node->list_prev = 0;\n            (*first_ref)->list_next = 0;\n        } else {\n            first->list_prev = node;\n            (*first_ref)->list_prev->list_next = *first_ref;\n            BodNode* new_first = (*first_ref)->list_prev;\n            *first_ref = new_first;\n            new_first->list_prev = 0;\n        }\n        node->list_flags |= BOD_FLAG_LINKED;\n    }",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "shared-inline-call",
+          "text": "g_game->active_bod_list.add_bod(node);"
+        }
+      ]
+    },
+    {
+      "name": "weapon-zero-add-call",
+      "find": "if ((node->list_flags & BOD_FLAG_LINKED) != zero) {\n        report_errorf(\"List ADD\");\n    } else {\n        BodNode** first_ref = &g_game->active_bod_list.first;\n        BodNode* first = *first_ref;\n        if (first == 0) {\n            *first_ref = node;\n            node->list_prev = 0;\n            (*first_ref)->list_next = 0;\n        } else {\n            first->list_prev = node;\n            (*first_ref)->list_prev->list_next = *first_ref;\n            BodNode* new_first = (*first_ref)->list_prev;\n            *first_ref = new_first;\n            new_first->list_prev = 0;\n        }\n        node->list_flags |= BOD_FLAG_LINKED;\n    }",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "shared-inline-call",
+          "text": "g_game->active_bod_list.add_bod(node);"
+        }
+      ]
+    },
+    {
+      "name": "weapon-one-add-call",
+      "find": "if ((node->list_flags & BOD_FLAG_LINKED) != zero) {\n        report_errorf(\"List ADD\");\n    } else {\n        BodNode** first_ref = &g_game->active_bod_list.first;\n        BodNode* first = *first_ref;\n        if (first == 0) {\n            *first_ref = node;\n            node->list_prev = 0;\n            (*first_ref)->list_next = 0;\n        } else {\n            first->list_prev = node;\n            (*first_ref)->list_prev->list_next = *first_ref;\n            BodNode* new_first = (*first_ref)->list_prev;\n            *first_ref = new_first;\n            new_first->list_prev = 0;\n        }\n        node->list_flags |= BOD_FLAG_LINKED;\n    }",
+      "occurrence": 3,
+      "replacements": [
+        {
+          "name": "shared-inline-call",
+          "text": "g_game->active_bod_list.add_bod(node);"
+        }
+      ]
+    },
+    {
+      "name": "weapon-two-add-call",
+      "find": "if ((node->list_flags & BOD_FLAG_LINKED) != zero) {\n        report_errorf(\"List ADD\");\n    } else {\n        BodNode** first_ref = &g_game->active_bod_list.first;\n        BodNode* first = *first_ref;\n        if (first == 0) {\n            *first_ref = node;\n            node->list_prev = 0;\n            (*first_ref)->list_next = 0;\n        } else {\n            first->list_prev = node;\n            (*first_ref)->list_prev->list_next = *first_ref;\n            BodNode* new_first = (*first_ref)->list_prev;\n            *first_ref = new_first;\n            new_first->list_prev = 0;\n        }\n        node->list_flags |= BOD_FLAG_LINKED;\n    }",
+      "occurrence": 4,
+      "replacements": [
+        {
+          "name": "shared-inline-call",
+          "text": "g_game->active_bod_list.add_bod(node);"
+        }
+      ]
+    },
+    {
+      "name": "invincible-add-call",
+      "find": "if ((node->list_flags & BOD_FLAG_LINKED) != zero) {\n        report_errorf(\"List ADD\");\n    } else {\n        BodNode** first_ref = &g_game->active_bod_list.first;\n        BodNode* first = *first_ref;\n        if (first == 0) {\n            *first_ref = node;\n            node->list_prev = 0;\n            (*first_ref)->list_next = 0;\n        } else {\n            first->list_prev = node;\n            (*first_ref)->list_prev->list_next = *first_ref;\n            BodNode* new_first = (*first_ref)->list_prev;\n            *first_ref = new_first;\n            new_first->list_prev = 0;\n        }\n        node->list_flags |= BOD_FLAG_LINKED;\n    }",
+      "occurrence": 5,
+      "replacements": [
+        {
+          "name": "shared-inline-call",
+          "text": "g_game->active_bod_list.add_bod(node);"
+        }
+      ]
+    },
+    {
+      "name": "snail-add-call",
+      "find": "if ((node->list_flags & BOD_FLAG_LINKED) != zero) {\n        report_errorf(\"List ADD\");\n    } else {\n        BodNode** first_ref = &g_game->active_bod_list.first;\n        BodNode* first = *first_ref;\n        if (first == 0) {\n            *first_ref = node;\n            node->list_prev = 0;\n            (*first_ref)->list_next = 0;\n        } else {\n            first->list_prev = node;\n            (*first_ref)->list_prev->list_next = *first_ref;\n            BodNode* new_first = (*first_ref)->list_prev;\n            *first_ref = new_first;\n            new_first->list_prev = 0;\n        }\n        node->list_flags |= BOD_FLAG_LINKED;\n    }",
+      "occurrence": 6,
+      "replacements": [
+        {
+          "name": "shared-inline-call",
+          "text": "g_game->active_bod_list.add_bod(node);"
+        }
+      ]
+    },
+    {
+      "name": "player-add-call",
+      "find": "if ((player_node->list_flags & BOD_FLAG_LINKED) != zero) {\n        report_errorf(\"List ADD\");\n    } else {\n        BodNode** first_ref = &g_game->active_bod_list.first;\n        BodNode* first = *first_ref;\n        if (first == 0) {\n            *first_ref = player_node;\n            player_node->list_prev = 0;\n            (*first_ref)->list_next = 0;\n        } else {\n            first->list_prev = player_node;\n            (*first_ref)->list_prev->list_next = *first_ref;\n            BodNode* new_first = (*first_ref)->list_prev;\n            *first_ref = new_first;\n            new_first->list_prev = 0;\n        }\n        player_node->list_flags |= BOD_FLAG_LINKED;\n    }",
+      "replacements": [
+        {
+          "name": "shared-inline-call",
+          "text": "g_game->active_bod_list.add_bod(player_node);"
+        }
+      ]
+    }
+  ]
+}
