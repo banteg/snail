@@ -109,3 +109,18 @@ address schedule and drops focused matching from 98.48% to 68.18%.
 
 Windows therefore keeps the evidence-backed integer result and mobile keeps
 its void API. No dummy dependency or forced return was introduced.
+
+## 2026-07-29 bounded queue-publication audit
+
+The same 143-combination count/color/publication sweep is exhaustive for this
+overload as well. Every semantics-preserving count carrier is neutral at
+98.48%, 66/66, prefix 42, or worse; embedded-color pointer/reference variants
+do not move the global store without disturbing the aggregate copy.
+
+There is one exact residual: native publishes `g_font_queue_count` immediately
+before the aggregate alpha store, while the candidate emits that same store
+after the final rotation field at the function tail. All 20 masked operands
+remain clean. The source already has the cross-port-proved `Font.o` owner and
+no missing file-local callee or data definition, so same-TU placement cannot
+explain the independent global-store scheduling. No barrier or TU cluster is
+introduced.

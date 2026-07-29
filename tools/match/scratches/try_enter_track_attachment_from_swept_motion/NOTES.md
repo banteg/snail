@@ -126,3 +126,29 @@ IDA 9.4 reanalysis now keeps the two swept-search cursors as
 sample bank, transform basis, and inverse-matrix ownership independently of
 that presentation choice. The function bytes, ABI, and matcher score did not
 change.
+
+## 2026-07-29 recorded control-flow and TU audit
+
+`loop-exit-mutations.json` exhausts all 24 one- and two-site combinations of
+four natural swept-vector additions and four exhaustion spellings. Every
+variant is byte-identical to the 95.78% baseline. The separate
+`break-control-mutations.json` records four structured `break`/post-loop
+guards; the best three add two instructions and regress to 95.31%, while the
+`idx == -1` form moves the first mismatch into the prologue and falls to
+92.57%. The complete results and source hashes are retained in
+`experiments.jsonl`.
+
+The remaining regions are therefore exact and bounded. Native loads
+`sweep_x` then adds `px`, while VC6 emits the commuted x87 pair; all four
+vector spellings preserve that pair. At loop exhaustion native emits a second
+five-instruction `pop/pop/pop/add/ret 0x1c` epilogue before the accepted seed
+block, while every semantics-preserving `goto` form folds it into the final
+epilogue. Structured `break` forms instead require an extra post-loop test.
+
+`probe_neighbor_translation_unit.cpp` then compiles the exact native address
+island in order: exact `cRPath::CalcLengthZ`, this search split, and exact
+`cRPath::SearchPos`. The target remains byte-for-byte at 95.78%, 199/204,
+prefix 16, and 47 clean operands; the two control functions remain exact at
+113/113 and 111/111. This falsifies same-TU neighbor presence as the cause of
+the x87 or duplicated-epilogue residual, so no production TU cluster is
+introduced.

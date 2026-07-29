@@ -133,3 +133,18 @@ shared `cRObjects::BuildObjects()` lifecycle, not a missing one-to-one mobile
 mapping. Mobile layout offsets and scheduling provide no further matching
 claim; focused Wibo honestly remains `99.16%` with the single independent
 zero-store scheduling residual.
+
+## 2026-07-29 bounded zero-chain audit
+
+Nine plausible chained-initialization orders were tested around the recovered
+shared zero owner. Four compile byte-identically to 99.16%, 119/119, prefix
+28; the other five regress as far as 84.52%. None moves only the desired
+store.
+
+Native writes `bounding_radius` at `[esi+0x94]` before spilling the zero
+counter to `[esp+0x10]`, finishing `bounds_min.z`, and testing
+`vertex_count`. The candidate performs the same radius store immediately
+after that independent compare. All subsequent loop semantics and the one
+masked operand are exact. This is a single-function scheduler choice with no
+call or shared definition at the boundary, so a TU would add no source
+constraint and is not introduced.

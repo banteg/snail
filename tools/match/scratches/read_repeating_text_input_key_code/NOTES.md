@@ -119,3 +119,21 @@ Remaining residuals:
   `RShellInkeyInput()`. The function remains at the honest 99.32% baseline,
   440/440 instructions, 408/440 prefix, and 73 clean operands; no rejected
   fold-order coercion was reintroduced.
+
+## 2026-07-29 bounded repeat-fold audit
+
+Twenty additional comparison and sequencing forms were swept. Equality,
+negated inequality, subtraction, XOR, casts, and operand swaps do not improve
+the 99.32%, 440/440 baseline. Named `char` folds recover native's first call
+argument and extend the local aligned region, but spill the first folded byte
+and reduce the whole-function score to 98.98%; `int` and in-place
+normalization forms disturb the frame more broadly.
+
+The remaining byte-level blocker begins at instruction 408. Native loads the
+stack `repeat_code`, calls `ascii_upper_if_lowercase`, then loads the global
+last-repeat byte; the candidate loads the global first, calls, then loads the
+stack byte. Both call the same exact out-of-line helper twice and compare the
+same folded bytes. The two unaudited operands are those displaced global/stack
+loads, not unresolved ownership. Because retaining an out-of-line call is
+already part of the native body, same-TU placement cannot legitimately
+provide a hidden inline relationship; no TU grouping is introduced.

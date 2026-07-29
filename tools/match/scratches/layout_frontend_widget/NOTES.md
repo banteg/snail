@@ -120,3 +120,17 @@ The only residual is one post-layout top-coordinate load moving across the
 adjacent texture-hit X store. Hoisting that read in the source disturbed later
 register ownership and regressed the whole function to 93.22%, so the clear
 member-copy transcription is retained without a scheduling barrier.
+
+## 2026-07-29 bounded hit-field borrow audit
+
+Eight input/output pointer and reference variants were tested for the two
+texture-hit stores. Seven are byte-identical to the 99.44%, 177/177 baseline;
+snapshotting the top value before the X store does recover the local order but
+regresses the full function to 93.22%.
+
+The isolated native sequence loads `[edi]` into `edx`, stores the already
+loaded X bits to `[esi+0x240]`, then reloads flags. The candidate performs the
+X store and flag reload before that same `[edi]` top load; all 20 references
+remain clean. The values are ordinary fields surrounding one already-matched
+out-of-line layout call, so co-compiling neighboring functions supplies no
+missing definition or lifetime. No TU or artificial dependency is retained.

@@ -107,3 +107,19 @@ lanes `{column-1, column}`, performs the same bounds checks, and ORs the same
 `0x18` suppression flags. It also follows `CondenseTrack()` immediately in
 `GenerateLevel()`, matching this Windows call site exactly. `WarnTrack()` is
 the preceding floor/slide-to-warning object promotion pass at `0x4355f0`.
+
+## 2026-07-29 bounded reload-order audit
+
+A five-variant mutation sweep over the `row`/`saved_row` declaration and
+initialization order was codegen-neutral: every form retained 98.99%, 99/99
+instructions, prefix 79/99, and the same saved-row-first reload.
+
+Moving `row = saved_row` into the `for` update comma-expression does recover
+the native hazard-path load order (`cell` cursor, then saved row). It also
+makes the non-hazard path branch to the saved-row reload instead of skipping
+both reloads as native does, leaving a different single branch-target
+mismatch at the same 98.99%. An equivalent early-`continue` spelling is
+codegen-neutral. These results pin the remaining debt to scheduling two
+independent hazard-path reloads; no semantic source shape, barrier, or
+translation-unit dependency has been found, so the clear source above remains
+canonical.

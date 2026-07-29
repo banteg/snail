@@ -81,3 +81,18 @@ the same `max_indices` and `*index_count` values but choose `edx` versus `ecx`
 for the limit. Direct return, a retained result, a retained limit, reversed
 comparison spelling, and a conditional expression all compile to the same or
 worse schedule. None is retained as a register-directed workaround.
+
+## 2026-07-29 bounded capacity-tail audit
+
+A nine-variant sweep retested reversed comparison, retained result/limit
+locals in both declaration orders, a borrowed count pointer, two
+success-first branches, and a conditional result. Eight are byte-identical to
+the 98.80% baseline; the reversed comparison is worse.
+
+The exact residual is two instructions at the 155-instruction prefix. Native
+emits `mov edx,[esp+0x44]`, then `mov eax,[edi]`, then `cmp eax,edx`;
+the candidate loads `[edi]` first and carries the same stack limit in `ecx`.
+Both paths compare the same recovered `*index_count` and `max_indices`, and all
+six references remain clean. This local post-loop register allocation has no
+source-level callee or neighboring definition whose TU placement can alter
+the relationship, so no TU probe or register-directed source is retained.

@@ -107,3 +107,18 @@ at 97.57%, 247/247 instructions, prefix 126, with all 26 masks clean.
 The mobile sine/cosine direction construction is deliberately not transferred:
 Windows proves independent x and y random draws, so that platform-specific
 source shape remains authoritative.
+
+## 2026-07-29 bounded field-borrow audit
+
+Five additional value, pointer, and reference shapes for the entry's
+`travel_distance` and `speed` fields were tested. Every form regresses the
+97.57%, 247/247 baseline; a temporary `Sprite` field reference also changes
+register ownership across the function and was fully reverted.
+
+The six differing instructions remain confined to two documented schedules:
+travel initialization versus the color-call argument loads, and the borrowed
+Sprite corner-scale dereference versus the final multiply. Android and iOS
+prove the same authored manager/entry/Sprite relationships but use different
+platform layouts, so there is no missing Windows inline helper to recover by
+co-location. The current function-local source remains canonical and no TU
+cluster is introduced.

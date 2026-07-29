@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "accepted-loop-exit",
+      "find": "                    if (probe.y <= 0.001f)\n                        goto seed;\n                }\n            }\n        }\n    } while (--idx >= 0);\n    return;\n\nseed:\n",
+      "replacements": [
+        {
+          "name": "break-negative-return",
+          "text": "                    if (probe.y <= 0.001f)\n                        break;\n                }\n            }\n        }\n    } while (--idx >= 0);\n    if (idx < 0)\n        return;\n\n"
+        },
+        {
+          "name": "break-minus-one-return",
+          "text": "                    if (probe.y <= 0.001f)\n                        break;\n                }\n            }\n        }\n    } while (--idx >= 0);\n    if (idx == -1)\n        return;\n\n"
+        },
+        {
+          "name": "break-success-jump",
+          "text": "                    if (probe.y <= 0.001f)\n                        break;\n                }\n            }\n        }\n    } while (--idx >= 0);\n    if (idx >= 0)\n        goto seed;\n    return;\n\nseed:\n"
+        },
+        {
+          "name": "inverted-break-negative-return",
+          "text": "                    if (probe.y > 0.001f) {\n                    } else {\n                        break;\n                    }\n                }\n            }\n        }\n    } while (--idx >= 0);\n    if (idx < 0)\n        return;\n\n"
+        }
+      ]
+    }
+  ]
+}

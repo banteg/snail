@@ -98,3 +98,20 @@ the address/register schedule. Focused matching drops from 95.38% to 66.15%.
 The Windows helper therefore remains `int`, with its already documented
 partial result contract. This records the mobile evidence while explicitly
 rejecting a cross-port fakematch.
+
+## 2026-07-29 bounded queue-publication audit
+
+The shared three-site sweep exhausts all 143 one-, two-, and three-site
+combinations of queue-count borrows, embedded-color borrows/copies, and count
+publication spellings. None improves this overload's 95.38%, exact 65/65
+instruction baseline; color references and pointers are neutral or worse, and
+no count carrier changes the publication point.
+
+Native publishes `g_font_queue_count` after loading the aggregate color alpha,
+then stores alpha and the remaining queue fields while interleaving the two
+default-UV zero stores. The candidate completes the aggregate copy/default
+fields and publishes the same `index + 1` at the tail. This produces only two
+unaudited count operands; all 19 aligned references are clean. Both mobile
+ports confirm one ordinary `Font.o` record append, and the residual contains
+no missing inline call or file-local symbol. A TU cannot create the needed
+store dependency, so none is introduced.

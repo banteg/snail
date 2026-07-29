@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "swept-position-add",
+      "find": "swept_position =\n                        Vector3(px, py, pz) + Vector3(sweep_x, sweep_y, sweep_z);",
+      "replacements": [
+        {
+          "name": "reverse-vectors",
+          "text": "swept_position =\n                        Vector3(sweep_x, sweep_y, sweep_z) + Vector3(px, py, pz);"
+        },
+        {
+          "name": "direct-position-first",
+          "text": "swept_position = Vector3(\n                        px + sweep_x, py + sweep_y, pz + sweep_z);"
+        },
+        {
+          "name": "direct-sweep-first",
+          "text": "swept_position = Vector3(\n                        sweep_x + px, sweep_y + py, sweep_z + pz);"
+        },
+        {
+          "name": "direct-native-x-order",
+          "text": "swept_position = Vector3(\n                        sweep_x + px, py + sweep_y, pz + sweep_z);"
+        }
+      ]
+    },
+    {
+      "name": "exhausted-loop-exit",
+      "find": "    } while (--idx >= 0);\n    return;\n\nseed:\n",
+      "replacements": [
+        {
+          "name": "explicit-negative-return",
+          "text": "        --idx;\n        if (idx < 0)\n            return;\n    } while (true);\n\nseed:\n"
+        },
+        {
+          "name": "continue-else-return",
+          "text": "        --idx;\n        if (idx >= 0)\n            continue;\n        return;\n    } while (true);\n\nseed:\n"
+        },
+        {
+          "name": "negative-break-then-return",
+          "text": "        --idx;\n        if (idx < 0)\n            break;\n    } while (true);\n    return;\n\nseed:\n"
+        },
+        {
+          "name": "split-decrement-condition",
+          "text": "        --idx;\n    } while (idx >= 0);\n    return;\n\nseed:\n"
+        }
+      ]
+    }
+  ]
+}
