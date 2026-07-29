@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**537/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **96896/294937** bytes (**32.85%**) are proof-grade, and overall fuzzy is **79.14%**.
+**537/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **96896/294937** bytes (**32.85%**) are proof-grade, and overall fuzzy is **79.15%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -584,7 +584,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 707/712 | 85.13% | 16/712 | 68 ok |  | core |
-| 🚧 | initialize_completion_screen | 0x404920 | 972 | 276/278 | 89.89% | 23/278 | 4 unaudited, 44 ok |  | core |
+| 🚧 | initialize_completion_screen | 0x404920 | 972 | 278/278 | 92.81% | 23/278 | 4 unaudited, 44 ok |  | core |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 88.89% | 2/268 | 3 unaudited, 120 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 2 unaudited, 41 ok |  | core |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 23 mismatch, 97 unaudited, 1808 ok |  | core |

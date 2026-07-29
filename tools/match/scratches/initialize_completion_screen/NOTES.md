@@ -16,12 +16,13 @@ Recovered relationships:
 - The `SubSolution` tail fields at `+0x48/+0x4c/+0x50` now line up with the
   `complete_subgame` result-record copy and the completion replay bonus read.
 
-Current match: 89.89%, 278 target instructions / 276 candidate instructions,
-with a 23-instruction exact prefix and 44 masked operands all resolved. The
-remaining bonus-table block is a register-allocation residual: native carries
-the difficulty/y index in `esi` and the speed/x source through `ecx`, while the
-straightforward C++ selects the opposite pair before converging on the same
-clamps, perfect-bonus test, and table lookups. No fakematching.
+Current match: 92.81%, 278 target instructions / 278 candidate instructions,
+with a 23-instruction exact prefix, 44 clean masked operands, and four
+register-paired operands left unaudited. The remaining bonus-table block is a
+register-allocation residual: native carries the difficulty/y index in `esi`
+and the speed/x source through `ecx`, while the straightforward C++ selects the
+opposite pair before converging on the same clamps, perfect-bonus test, and
+table lookups. No fakematching.
 
 2026-07-10 owner closure: replay-active and replay-record reads now use the
 embedded `GameRoot::subgame` aliases at relative `+0xff25d0/+0xff25d4`. The
@@ -164,3 +165,31 @@ aliases. Windows also proves `+0x18` is `fast_forward_enabled`: Init sets it,
 AI clears it as the summary begins, and `update_subgoldy` consumes it with
 primary input to advance the completion handoff. No mobile field offset was
 copied into Windows, and the honest 89.89% matcher result is unchanged.
+
+## 2026-07-29 per-call colour lifetime
+
+The native delivered-count and continue branches each form the `tColour`
+address inside both arms before tail-merging the widget call. A single
+function-wide `tColour` let VC6 hoist one `lea` across each branch, leaving the
+candidate two instructions short. Expressing the actual full-expression
+lifetime with `tColour().Set(...)` at every widget call lets VC6 reuse the same
+16-byte stack slot while preserving the branch-specific address formation.
+The prologue and frame remain exact, both missing `lea` instructions return,
+and the focused result rises from 89.89% (`276/278`) to 92.81% (`278/278`).
+
+`color-branch-lifetime-mutations.json` records all 35 one- and two-site
+combinations of references, pointers, named `Set` results, branch-local
+objects, and branch-local temporaries. References and pointers are
+codegen-neutral; named results and extra objects recover instruction count
+only by worsening scheduling or enlarging the frame. The retained per-call
+temporary shape is the only probe that restores the two native branches
+without introducing overlapping colour storage.
+
+The remaining challenge block was also bounded with six declaration/register
+variants and 20 mobile-backed source-shape variants. Declaration order,
+`register`, references, `const`, direct replay-member expressions, and pointer
+references are neutral. Moving raw difficulty values across the branch join or
+reordering the mobile fields regresses the prefix and score. The residual is
+therefore limited to VC6's `esi`/`ecx` allocation choice; the semantic field
+order, divisions, clamps, perfect-bonus test, and table ownership remain
+closed.

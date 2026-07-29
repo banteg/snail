@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "bonus-register-lifetimes",
+      "find": "        int speed_source;\n        int difficulty_index;",
+      "replacements": [
+        {
+          "name": "difficulty-before-speed",
+          "text": "        int difficulty_index;\n        int speed_source;"
+        },
+        {
+          "name": "register-difficulty-before-speed",
+          "text": "        register int difficulty_index;\n        int speed_source;"
+        },
+        {
+          "name": "difficulty-before-register-speed",
+          "text": "        int difficulty_index;\n        register int speed_source;"
+        },
+        {
+          "name": "register-speed-before-difficulty",
+          "text": "        register int speed_source;\n        int difficulty_index;"
+        },
+        {
+          "name": "register-difficulty-and-speed",
+          "text": "        register int difficulty_index;\n        register int speed_source;"
+        },
+        {
+          "name": "register-speed-and-difficulty",
+          "text": "        register int speed_source;\n        register int difficulty_index;"
+        }
+      ]
+    }
+  ]
+}

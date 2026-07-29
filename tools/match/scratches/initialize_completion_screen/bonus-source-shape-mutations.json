@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "challenge-bonus-source-shape",
+      "find": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution* record = g_game->subgame.replay_launch_record;\n            difficulty_index = record->challenge_difficulty_value / 20;\n            speed_source = record->challenge_speed_value;\n        } else {\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent / 20;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        speed_source /= 20;",
+      "replacements": [
+        {
+          "name": "branch-raw-difficulty-index",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution* record = g_game->subgame.replay_launch_record;\n            difficulty_index = record->challenge_difficulty_value;\n            speed_source = record->challenge_speed_value;\n            difficulty_index /= 20;\n        } else {\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent;\n            speed_source = g_runtime_config.challenge_speed_percent;\n            difficulty_index /= 20;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "branch-local-difficulty-source",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution* record = g_game->subgame.replay_launch_record;\n            int difficulty_source = record->challenge_difficulty_value;\n            speed_source = record->challenge_speed_value;\n            difficulty_index = difficulty_source / 20;\n        } else {\n            int difficulty_source =\n                g_runtime_config.challenge_difficulty_percent;\n            speed_source = g_runtime_config.challenge_speed_percent;\n            difficulty_index = difficulty_source / 20;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "branch-local-speed-before-difficulty",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution* record = g_game->subgame.replay_launch_record;\n            speed_source = record->challenge_speed_value;\n            int difficulty_source = record->challenge_difficulty_value;\n            difficulty_index = difficulty_source / 20;\n        } else {\n            speed_source = g_runtime_config.challenge_speed_percent;\n            int difficulty_source =\n                g_runtime_config.challenge_difficulty_percent;\n            difficulty_index = difficulty_source / 20;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "replay-record-reference",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution& record = *g_game->subgame.replay_launch_record;\n            difficulty_index = record.challenge_difficulty_value / 20;\n            speed_source = record.challenge_speed_value;\n        } else {\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent / 20;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "const-replay-record",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            const SubSolution* record = g_game->subgame.replay_launch_record;\n            difficulty_index = record->challenge_difficulty_value / 20;\n            speed_source = record->challenge_speed_value;\n        } else {\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent / 20;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "direct-replay-members",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            difficulty_index =\n                g_game->subgame.replay_launch_record\n                    ->challenge_difficulty_value\n                / 20;\n            speed_source =\n                g_game->subgame.replay_launch_record->challenge_speed_value;\n        } else {\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent / 20;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "direct-replay-members-speed-first",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            speed_source =\n                g_game->subgame.replay_launch_record->challenge_speed_value;\n            difficulty_index =\n                g_game->subgame.replay_launch_record\n                    ->challenge_difficulty_value\n                / 20;\n        } else {\n            speed_source = g_runtime_config.challenge_speed_percent;\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent / 20;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "dereferenced-replay-members",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            difficulty_index =\n                (*g_game->subgame.replay_launch_record)\n                    .challenge_difficulty_value\n                / 20;\n            speed_source =\n                (*g_game->subgame.replay_launch_record).challenge_speed_value;\n        } else {\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent / 20;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "replay-member-pointer-reference",
+          "text": "        int speed_source;\n        int difficulty_index;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution*& record = g_game->subgame.replay_launch_record;\n            difficulty_index = record->challenge_difficulty_value / 20;\n            speed_source = record->challenge_speed_value;\n        } else {\n            difficulty_index =\n                g_runtime_config.challenge_difficulty_percent / 20;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        speed_source /= 20;"
+        },
+        {
+          "name": "shared-raw-difficulty-source",
+          "text": "        int speed_source;\n        int difficulty_source;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution* record = g_game->subgame.replay_launch_record;\n            difficulty_source = record->challenge_difficulty_value;\n            speed_source = record->challenge_speed_value;\n        } else {\n            difficulty_source =\n                g_runtime_config.challenge_difficulty_percent;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        int difficulty_index = difficulty_source / 20;\n        speed_source /= 20;"
+        },
+        {
+          "name": "shared-raw-speed-first",
+          "text": "        int speed_source;\n        int difficulty_source;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution* record = g_game->subgame.replay_launch_record;\n            speed_source = record->challenge_speed_value;\n            difficulty_source = record->challenge_difficulty_value;\n        } else {\n            speed_source = g_runtime_config.challenge_speed_percent;\n            difficulty_source =\n                g_runtime_config.challenge_difficulty_percent;\n        }\n\n        int difficulty_index = difficulty_source / 20;\n        speed_source /= 20;"
+        },
+        {
+          "name": "shared-two-index-locals",
+          "text": "        int speed_source;\n        int difficulty_source;\n        if (g_game->subgame.replay_launch_active != 0) {\n            SubSolution* record = g_game->subgame.replay_launch_record;\n            difficulty_source = record->challenge_difficulty_value;\n            speed_source = record->challenge_speed_value;\n        } else {\n            difficulty_source =\n                g_runtime_config.challenge_difficulty_percent;\n            speed_source = g_runtime_config.challenge_speed_percent;\n        }\n\n        int difficulty_index = difficulty_source / 20;\n        int speed_index = speed_source / 20;\n        speed_source = speed_index;"
+        }
+      ]
+    }
+  ]
+}
