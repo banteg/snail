@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-tail-control",
+      "find": "    } while (--remaining != 0);",
+      "replacements": [
+        {
+          "name": "implicit-nonzero",
+          "text": "    } while (--remaining);"
+        },
+        {
+          "name": "positive-test",
+          "text": "    } while (--remaining > 0);"
+        },
+        {
+          "name": "separate-predecrement",
+          "text": "        --remaining;\n    } while (remaining != 0);"
+        },
+        {
+          "name": "separate-subtract",
+          "text": "        remaining -= 1;\n    } while (remaining != 0);"
+        },
+        {
+          "name": "subtract-expression",
+          "text": "    } while ((remaining -= 1) != 0);"
+        },
+        {
+          "name": "postdecrement-threshold",
+          "text": "    } while (remaining-- > 1);"
+        }
+      ]
+    }
+  ]
+}

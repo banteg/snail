@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "position-copy-owner",
+      "find": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;",
+      "replacements": [
+        {
+          "name": "direct-aggregate-copy",
+          "text": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        sprite->position = *position;"
+        },
+        {
+          "name": "scoped-output-pointer",
+          "text": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        {\n            Vector3* out_position = &sprite->position;\n            *out_position = *position;\n        }"
+        },
+        {
+          "name": "sprite-alias",
+          "text": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        cRSprite* position_sprite = sprite;\n        position_sprite->position = *position;"
+        },
+        {
+          "name": "source-pointer",
+          "text": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        Vector3* source_position = position;\n        Vector3* out_position = &sprite->position;\n        *out_position = *source_position;"
+        },
+        {
+          "name": "source-value",
+          "text": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        Vector3 source_position = *position;\n        Vector3* out_position = &sprite->position;\n        *out_position = source_position;"
+        },
+        {
+          "name": "output-reference",
+          "text": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        Vector3& out_position = sprite->position;\n        out_position = *position;"
+        },
+        {
+          "name": "velocity-output-pointer",
+          "text": "        sprite->depth_offset = 0.0f;\n        Vector3* out_velocity = &sprite->velocity;\n        *out_velocity = velocity;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;"
+        }
+      ]
+    }
+  ]
+}

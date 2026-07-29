@@ -141,3 +141,28 @@ folded products. Restoring the factorization is byte-identical at the honest
 
 Mobile ABI and by-value position differences are not transferred to the
 Windows body; only the corroborated expression hierarchy is retained.
+
+## 2026-07-29 aggregate-tail scheduling boundary
+
+Three recorded sweeps isolate the remaining 25-instruction tail window.
+Direct, copy-initialized, default-then-assigned, const, and nested
+`Vector3` construction forms are byte-identical. Seven position-copy owners
+then cover direct aggregate assignment, a narrower output-pointer scope, a
+`cRSprite*` alias, source pointer/value snapshots, an output reference, and a
+separate velocity destination pointer. Six preserve the baseline; only the
+velocity pointer regresses to 92.23%.
+
+Six loop-tail forms cover implicit and explicit nonzero tests, separate
+predecrement/subtract statements, a subtract expression, a positive test, and
+a postdecrement threshold. Four are neutral. The two ordered comparisons
+change the entry guard and collapse the match to roughly 55%, contradicting
+the native positive-count gate.
+
+The ledger contains 17 unique variants: 0 improve, 14 are byte-identical, and
+3 regress. Three consecutive non-improving sweeps formally stall this lane at
+**94.17%** (`103/103`, prefix 78, all 21 references clean). Native and
+candidate differ only in scheduling the final x multiply, aggregate velocity
+stores, sprite-to-position base advance, position copy, and loop decrement.
+Both mobile bodies prove the authored aggregate velocity and position owners,
+so further work needs compiler or original Windows source provenance rather
+than scalar lane stores, pointer aliases, or another loop spelling.

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "velocity-construction",
+      "find": "        Vector3 velocity(\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)next_math_random_value() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f);",
+      "replacements": [
+        {
+          "name": "copy-initialized-temporary",
+          "text": "        Vector3 velocity = Vector3(\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)next_math_random_value() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f);"
+        },
+        {
+          "name": "default-then-aggregate-assignment",
+          "text": "        Vector3 velocity;\n        velocity = Vector3(\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)next_math_random_value() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f);"
+        },
+        {
+          "name": "const-aggregate",
+          "text": "        const Vector3 velocity(\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)next_math_random_value() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f);"
+        },
+        {
+          "name": "nested-copy-construction",
+          "text": "        Vector3 velocity(Vector3(\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f,\n            ((float)next_math_random_value() - 16384.0f)\n                    * 0.0000610351562f * 0.3f\n                + 0.100000001f,\n            ((float)next_math_random_value() - 16384.0f)\n                * 0.0000610351562f * 0.2f));"
+        }
+      ]
+    }
+  ]
+}
