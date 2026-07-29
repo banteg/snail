@@ -37,7 +37,7 @@ int Logo::open_logo()
         do {
             char texture_path[0x80];
             sprintf(texture_path, "Intro/%s", name);
-            TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+            TextureRef* texture = g_texture_refs.Add(texture_path, 0, 0);
             texture->flags |= TEXTURE_REF_REGISTERED;
             result = texture_count;
             ++index;

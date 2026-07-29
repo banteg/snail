@@ -98,3 +98,12 @@ hash lookup and adds hash state beyond the common entry bank; it retains the
 same 0x800 no-reuse gate, new-record stores, count increment, and returned
 record pointer. This is ownership evidence, not a reason to reshape the
 already exact Windows matcher body. The authored alias is `cRTextures_Add`.
+
+## 2026-07-29 primary cRTextures ownership
+
+The matcher now emits the Windows body as
+`cRTextures::Add(char*, void*, int)`, retaining the desktop `void*` payload
+ABI rather than importing the mobile `cTgaHeader*` spelling. Binary Ninja
+confirms 112 callsites into the same registry owner. `TextureRefList` remains
+only a compatibility alias, and the authored method name preserves the exact
+79/79 instruction body with all four operands clean.

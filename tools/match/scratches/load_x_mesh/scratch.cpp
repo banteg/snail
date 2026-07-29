@@ -130,7 +130,7 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
         object->facequads[i].uv[3].u = texture_coords[vertex_3].u;
         object->facequads[i].uv[3].v = texture_coords[vertex_3].v;
         object->facequads[i].texture_ref =
-            g_texture_refs.get_or_create_texture_ref("X/snail-turbo.tga", 0, 0);
+            g_texture_refs.Add("X/snail-turbo.tga", 0, 0);
         object->facequads[i].texture_ref->flags |= TEXTURE_REF_WRAP_ADDRESSING;
         object->facequads[i].vertex_2 = (unsigned short)vertex_2;
         object->facequads[i].vertex_1 = (unsigned short)vertex_1;
@@ -174,7 +174,7 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
                         material_index,
                         mesh_file_path);
                 *material_slot =
-                    g_texture_refs.get_or_create_texture_ref("Sprites/debug.tga", 0, 0);
+                    g_texture_refs.Add("Sprites/debug.tga", 0, 0);
                 material_text = material_cursor;
             } else {
                 material_text = find_case_insensitive_substring("\"", texture_name) + 1;
@@ -191,7 +191,7 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
                 *out = 0;
 
                 *material_slot =
-                    g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+                    g_texture_refs.Add(texture_path, 0, 0);
                 (*material_slot)->flags |= TEXTURE_REF_WRAP_ADDRESSING;
                 if ((options_flags & 2) != 0)
                     (*material_slot)->flags |= TEXTURE_REF_SKIP_RUNTIME_LOAD;

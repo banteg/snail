@@ -5,7 +5,7 @@
 
 void report_errorf(char* format, ...);
 
-TextureRef* TextureRefList::get_or_create_texture_ref(
+TextureRef* cRTextures::Add(
     char* texture_path, void* payload, int flags)
 {
     int i = 0;

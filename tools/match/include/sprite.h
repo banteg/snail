@@ -109,25 +109,27 @@ enum {
     TEXTURE_REF_LIST_CAPACITY = 500,
 };
 
-// Android and iOS RTexture.o name this owner cRTextures and each record
-// cRTexture. Keep the Windows matcher names primary while exposing the
-// authored aliases below.
-class TextureRefList {
+// Android and iOS RTexture.o retain the authored cRTextures owner and the
+// shared 0xa4-byte cRTexture record layout.
+class cRTextures {
 public:
-    void initialize_texture_list(int capacity); // @ 0x44e800; cRTextures::Init
-    TextureRef* get_or_create_texture_ref(
-        char* texture_path, void* payload, int flags); // @ 0x44e810; cRTextures::Add
+    void Init(int capacity); // @ 0x44e800
+    TextureRef* Add(
+        char* texture_path, void* payload, int flags); // @ 0x44e810
 
     int count;             // +0x00
     int capacity;          // +0x04
     TextureRef entries[TEXTURE_REF_LIST_CAPACITY]; // +0x08, concrete startup capacity
 };
 
+typedef cRTextures TextureRefList;
+
+typedef char cRTextures_must_be_0x14058[
+    (sizeof(cRTextures) == 0x14058) ? 1 : -1];
 typedef char TextureRefList_must_be_0x14058[
     (sizeof(TextureRefList) == 0x14058) ? 1 : -1];
 
 typedef TextureRef cRTexture;
-typedef TextureRefList cRTextures;
 
 class Sprite {
 public:
@@ -218,7 +220,7 @@ typedef char SpriteManager_must_be_0x83d7c[
     (sizeof(SpriteManager) == 0x83d7c) ? 1 : -1];
 
 extern TextureRef* g_sprite_texture_table[SPRITE_TEXTURE_CAPACITY]; // data_78ff90
-extern TextureRefList g_texture_refs;        // data_4b7790
+extern cRTextures g_texture_refs;            // data_4b7790
 extern SpriteManager g_sprite_manager;       // data_790f30
 extern Sprite* g_sprite_active_heads[SPRITE_ACTIVE_LIST_COUNT]; // data_814c94
 extern Sprite* g_sprite_free_head;           // data_814ca8

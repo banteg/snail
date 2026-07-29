@@ -17,7 +17,7 @@ TextureRef* SpriteManager::register_sprite_texture(char* texture_path, int textu
         report_errorf("Too many Sprite References - Increase RSPRITE_REFERENCE_MAX(%i) in RSprite.h", SPRITE_TEXTURE_CAPACITY);
     }
 
-    TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_path, 0, flags);
+    TextureRef* texture = g_texture_refs.Add(texture_path, 0, flags);
     g_sprite_texture_table[texture_id] = texture;
     texture->flags |= flags;
 

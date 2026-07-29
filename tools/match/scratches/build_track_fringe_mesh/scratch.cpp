@@ -88,7 +88,7 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
         do {
             cRFaceQuad* face = &facequads[row * 2];
 
-            face[0].texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
             face[0].vertex_0 = row * 4 + 5;
             face[0].vertex_1 = row * 4 + 4;
             face[0].vertex_2 = row * 4;
@@ -102,7 +102,7 @@ void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
             face[0].uv[2].u = 0.5f;
             face[0].uv[2].v = 1.0f;
 
-            face[1].texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+            face[1].texture_ref = g_texture_refs.Add(texture_path, 0, 0);
             face[1].vertex_0 = row * 4 + 6;
             face[1].vertex_1 = row * 4 + 7;
             face[1].vertex_2 = row * 4 + 3;

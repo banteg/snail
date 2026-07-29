@@ -27,3 +27,11 @@ body is the exact same two stores as Windows. Android follows those stores by
 initializing a hash index in a port-only tail, so that extra state must not be
 projected onto the fixed 500-entry Windows owner. The matcher keeps its
 descriptive name while `cRTextures_Init` records the recovered authored alias.
+
+## 2026-07-29 primary cRTextures ownership
+
+The matcher now uses the authored `cRTextures` owner directly and emits the
+exact body as `cRTextures::Init(int)`. `TextureRefList` remains a compatibility
+typedef for analyzer replays. Binary Ninja confirms the sole Windows caller
+passes the `g_texture_refs` owner at `0x4b7790` and capacity 500; the primary
+name remains exact at 4/4 instructions with no masked operands.

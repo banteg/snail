@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void TextureRefList::initialize_texture_list(int capacity_)
+void cRTextures::Init(int capacity_)
 {
     count = 0;
     capacity = capacity_;

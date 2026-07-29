@@ -96,7 +96,7 @@ void load_object_definition(char* path, Object* object)
                         append_c_string(texture_path, texture_name);
 
                         object->facequads[face_index].texture_ref =
-                            g_texture_refs.get_or_create_texture_ref(
+                            g_texture_refs.Add(
                                 texture_path, 0, 0);
 
                         skip_to_next_line(&cursor);

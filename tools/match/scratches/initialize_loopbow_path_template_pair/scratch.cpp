@@ -312,11 +312,11 @@ void cRPath::initialize_loopbow_path_template_pair(
 
                             if (((cell_index ^ segment) & 1) == 0) {
                                 face->texture_ref =
-                                    g_texture_refs.get_or_create_texture_ref(
+                                    g_texture_refs.Add(
                                         texture_b, 0, 0);
                             } else {
                                 face->texture_ref =
-                                    g_texture_refs.get_or_create_texture_ref(
+                                    g_texture_refs.Add(
                                         texture_b, 0, 0);
                             }
 
@@ -345,11 +345,11 @@ void cRPath::initialize_loopbow_path_template_pair(
 
                             if (((cell_index ^ segment) & 1) == 0) {
                                 face->texture_ref =
-                                    g_texture_refs.get_or_create_texture_ref(
+                                    g_texture_refs.Add(
                                         texture_a, 0, 0);
                             } else {
                                 face->texture_ref =
-                                    g_texture_refs.get_or_create_texture_ref(
+                                    g_texture_refs.Add(
                                         texture_a, 0, 0);
                             }
 

@@ -484,6 +484,14 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
     crosswalk_by_address = {
         entry["address"]: entry for entry in crosswalk["entries"]
     }
+    references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
 
     for address, alias, symbol in (
         ("0x44e800", "cRTextures_Init", "cRTextures::Init(int)"),
@@ -513,9 +521,51 @@ def test_dual_mobile_texture_registry_recovers_authored_owner_and_record() -> No
         encoding="utf-8"
     )
     assert "typedef TextureRef cRTexture;" in sprite_header
-    assert "typedef TextureRefList cRTextures;" in sprite_header
-    assert "cRTextures::Init" in sprite_header
-    assert "cRTextures::Add" in sprite_header
+    assert "class cRTextures {" in sprite_header
+    assert "class TextureRefList {" not in sprite_header
+    assert "void Init(int capacity);" in sprite_header
+    assert "TextureRef* Add(" in sprite_header
+    assert "typedef cRTextures TextureRefList;" in sprite_header
+    assert "cRTextures_must_be_0x14058" in sprite_header
+    assert "TextureRefList_must_be_0x14058" in sprite_header
+    assert "extern cRTextures g_texture_refs;" in sprite_header
+
+    expected_methods = (
+        (
+            "initialize_texture_list",
+            "void cRTextures::Init(int capacity_)",
+            "?Init@cRTextures@@QAEXH@Z",
+        ),
+        (
+            "get_or_create_texture_ref",
+            "TextureRef* cRTextures::Add(",
+            "?Add@cRTextures@@QAEPAUTextureRef@@PADPAXH@Z",
+        ),
+    )
+    for windows_name, definition, symbol in expected_methods:
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"SYMBOL={symbol}\n" in config
+        assert symbol in references_by_name[windows_name]["aliases"]
+
+    game_init_source = (
+        repo_root
+        / "tools/match/scratches/initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    backdrop_source = (
+        repo_root
+        / "tools/match/scratches/initialize_backdrop_tile_quad/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "g_texture_refs.Init(500);" in game_init_source
+    assert "g_texture_refs.Add(texture_path, 0, 0)" in backdrop_source
+    assert "g_texture_refs.initialize_texture_list(" not in game_init_source
+    assert "g_texture_refs.get_or_create_texture_ref(" not in backdrop_source
 
 
 def test_dual_mobile_texture_loaders_preserve_renderer_boundaries() -> None:
@@ -3370,7 +3420,8 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in star_analysis_header
     assert "extern TextureRefList g_texture_refs;" in star_analysis_header
     assert "TEXTURE_REF_LIST_CAPACITY = 500" in sprite_matcher_header
-    assert "void initialize_texture_list(int capacity);" in sprite_matcher_header
+    assert "void Init(int capacity);" in sprite_matcher_header
+    assert "TextureRef* Add(" in sprite_matcher_header
     assert "char* texture_path, void* payload, int flags" in sprite_matcher_header
     assert "TextureRef entries[TEXTURE_REF_LIST_CAPACITY];" in path_analysis_header
     assert "char* texture_path, void* payload," in path_analysis_header

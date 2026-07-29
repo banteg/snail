@@ -4839,7 +4839,7 @@
     {
       "address": "0x44e810",
       "name": "get_or_create_texture_ref",
-      "description": "Authored `cRTextures::Add(char*, cTgaHeader*, int)` in both mobile ports. The returned `cRTexture` is the Windows 0xa4-byte TextureRef record: inline path, flags, slot index, retained TGA payload, and mip count all occupy the same offsets. Windows and iOS scan the inline registry; Android substitutes a port-only hash lookup without changing record ownership.",
+      "description": "Authored `cRTextures::Add(char*, cTgaHeader*, int)` in both mobile ports. The returned `cRTexture` is the Windows 0xa4-byte TextureRef record: inline path, flags, slot index, retained payload, and mip count all occupy the same offsets. Windows conservatively keeps its observed `void*` payload ABI; Windows and iOS scan the inline registry, while Android substitutes a port-only hash lookup without changing record ownership.",
       "aliases": [
         "cRTextures_Add"
       ]

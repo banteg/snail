@@ -124,17 +124,17 @@ int register_font_texture_sheet(
         shadow_offset_pixels;
 
     if (image->width == 0x800) {
-        TextureRef* texture_0 = g_texture_refs.get_or_create_texture_ref(texture_path_0, 0, 0);
+        TextureRef* texture_0 = g_texture_refs.Add(texture_path_0, 0, 0);
         g_font_sheets[g_registered_font_count].texture_ref_a = texture_0;
         texture_0->flags |=
             TEXTURE_REF_REGISTERED | TEXTURE_REF_RETAIN_SOURCE_BYTES;
 
-        TextureRef* texture_1 = g_texture_refs.get_or_create_texture_ref(texture_path_1, 0, 0);
+        TextureRef* texture_1 = g_texture_refs.Add(texture_path_1, 0, 0);
         g_font_sheets[g_registered_font_count].texture_ref_b = texture_1;
         texture_1->flags |=
             TEXTURE_REF_REGISTERED | TEXTURE_REF_RETAIN_SOURCE_BYTES;
     } else {
-        TextureRef* texture = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+        TextureRef* texture = g_texture_refs.Add(texture_path, 0, 0);
         g_font_sheets[g_registered_font_count].texture_ref_a = texture;
         texture->flags |= TEXTURE_REF_REGISTERED;
     }

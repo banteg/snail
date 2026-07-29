@@ -105,7 +105,7 @@ char GameRoot::initialize_game_assets_and_world()
     render_skip_count = 2;
     fixed_update_count = 1;
 
-    g_texture_refs.initialize_texture_list(500);
+    g_texture_refs.Init(500);
     g_object_list.Init(3000);
     unknown_000514 = 0;
     fixed_update_accumulator = 0.0f;
@@ -2854,15 +2854,15 @@ char GameRoot::initialize_game_assets_and_world()
 
     subgame.player.presentation.snail_skin
         .material_overrides[SNAIL_SKIN_SLOT_DEFAULT] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"x/snail-turbo.tga", 0, 0);
     subgame.player.presentation.snail_skin
         .material_overrides[SNAIL_SKIN_SLOT_DAMAGE] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"x/snail-turbo-damage.tga", 0, 0);
     subgame.player.presentation.snail_skin
         .material_overrides[SNAIL_SKIN_SLOT_INVINCIBLE] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"x/snail-turbo-invincible.tga", 0, 0);
 
     subgame.player.presentation.invincible_shell.SetObject(
@@ -2894,93 +2894,93 @@ char GameRoot::initialize_game_assets_and_world()
         ++golb_shot;
     } while (--golb_shot_count != 0);
 
-    TextureRef* texture_ref = g_texture_refs.get_or_create_texture_ref(
+    TextureRef* texture_ref = g_texture_refs.Add(
         (char*)"Objects/VapourLazer/Lazer.tga", 0, 0);
     texture_ref->flags |= TEXTURE_REF_REGISTERED;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Worm.tga", 0, 0);
     texture_ref->flags |= 0x1403;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Back.tga", 0, 0);
     texture_ref->flags |= 0x1402;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/TrackWarn.tga", 0, 0);
     texture_ref->flags = TEXTURE_REF_WRAP_ADDRESSING;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/Universe/Ramp.tga", 0, 0);
     texture_ref->flags |= TEXTURE_REF_WRAP_ADDRESSING;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Track0.tga", 0, 0);
     texture_ref->flags |= 0x1002;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Slide0.tga", 0, 0);
     texture_ref->flags |= 0x1002;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Track1.tga", 0, 0);
     texture_ref->flags |= 0x1002;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Slide1.tga", 0, 0);
     texture_ref->flags |= 0x1002;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Track2.tga", 0, 0);
     texture_ref->flags |= 0x1002;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Slide2.tga", 0, 0);
     texture_ref->flags |= 0x1002;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Track3.tga", 0, 0);
     texture_ref->flags |= 0x1002;
-    texture_ref = g_texture_refs.get_or_create_texture_ref(
+    texture_ref = g_texture_refs.Add(
         (char*)"Objects/World00/Slide3.tga", 0, 0);
     texture_ref->flags |= 0x1002;
 
     track.track_textures[0] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Track0.tga", 0, 0);
     track.slide_textures[0] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Slide0.tga", 0, 0);
     track.track_textures[1] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Track1.tga", 0, 0);
     track.slide_textures[1] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Slide1.tga", 0, 0);
     track.track_textures[2] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Track2.tga", 0, 0);
     track.slide_textures[2] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Slide2.tga", 0, 0);
     track.track_textures[3] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Track3.tga", 0, 0);
     track.slide_textures[3] =
-        g_texture_refs.get_or_create_texture_ref(
+        g_texture_refs.Add(
             (char*)"Objects/World00/Slide3.tga", 0, 0);
     track.current_texture_set = 0;
 
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Back.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/TrackWarn.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/Universe/Ramp.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Track0.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Slide0.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Track1.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Slide1.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Track2.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Slide2.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Track3.tga", 0, 0)->mip_levels = 2;
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/World00/Slide3.tga", 0, 0)->mip_levels = 2;
 
     subgame.barrier.SetObject(g_object_list.Add());
@@ -3020,7 +3020,7 @@ char GameRoot::initialize_game_assets_and_world()
         ++fringe_family;
     } while (fringe_family < TRACK_FRINGE_FAMILY_COUNT);
 
-    g_texture_refs.get_or_create_texture_ref(
+    g_texture_refs.Add(
         (char*)"Objects/Universe/Fringe.tga", 0, 0)->flags |=
         TEXTURE_REF_REGISTERED;
 

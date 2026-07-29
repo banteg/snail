@@ -85,15 +85,15 @@ static __forceinline void build_direct_strip_mesh(
                             (row + 1) * ((unsigned short)path->width_cells + 1);
                         if (row == path->segment_count - 1) {
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(
+                                g_texture_refs.Add(
                                     cap_texture, 0, 0);
                         } else if ((column ^ row) & 1) {
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(
+                                g_texture_refs.Add(
                                     top_texture, 0, 0);
                         } else {
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(
+                                g_texture_refs.Add(
                                     top_texture, 0, 0);
                         }
                         face->uv[0].u = u0;
@@ -120,11 +120,11 @@ static __forceinline void build_direct_strip_mesh(
                             column + 1;
                         if ((column ^ row) & 1) {
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(
+                                g_texture_refs.Add(
                                     bottom_texture, 0, 0);
                         } else {
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(
+                                g_texture_refs.Add(
                                     bottom_texture, 0, 0);
                         }
                         face->uv[0].u = u1;

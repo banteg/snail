@@ -17,7 +17,7 @@
 #include "star_manager.h"
 #include "transform_matrix.h"
 
-extern TextureRefList g_texture_refs; // data_4b7790
+extern cRTextures g_texture_refs; // data_4b7790
 extern char g_blank_text[]; // data_4dfb08
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
@@ -91,7 +91,7 @@ void Logo::initialize_intro_screen(char* file_name)
             Object* logo_object = image_donor->object;
             letters[renderable_count].SetObject(logo_object);
             letters[renderable_count].object->facequads[0].texture_ref =
-                g_texture_refs.get_or_create_texture_ref(path, 0, 0);
+                g_texture_refs.Add(path, 0, 0);
             set_matrix_identity(&letters[renderable_count].transform);
             letters[renderable_count].transform.position =
                 Vector3(0.0f, -4.0f, 0.0f);

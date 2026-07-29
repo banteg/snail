@@ -4239,7 +4239,7 @@
       "ios_symbol": "cRTextures::Add(char*, cTgaHeader*, int)",
       "source_object": "RTexture.o",
       "confidence": "high",
-      "notes": "All three bodies own a cRTextures count/capacity prefix followed by 0xa4-byte cRTexture records at +0x08. They preserve the same path at record +0x0c, flags +0x00, slot index +0x8c, cTgaHeader payload +0x98, mip count +0xa0, 0x800 no-reuse gate, and returned record pointer. Windows and iOS linearly scan existing names; Android replaces only that lookup with a hash table.",
+      "notes": "All three bodies own a cRTextures count/capacity prefix followed by 0xa4-byte cRTexture records at +0x08. They preserve the same path at record +0x0c, flags +0x00, slot index +0x8c, payload pointer +0x98, mip count +0xa0, 0x800 no-reuse gate, and returned record pointer. Android and iOS identify that payload as cTgaHeader*; the Windows matcher conservatively retains its observed void* ABI. Windows and iOS linearly scan existing names; Android replaces only that lookup with a hash table.",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {

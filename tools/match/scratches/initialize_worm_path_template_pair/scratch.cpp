@@ -272,7 +272,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                         }
 
                         face->texture_ref =
-                            g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+                            g_texture_refs.Add(texture_path, 0, 0);
 
                         float width_f = (float)width_cells;
                         float u0 = column_f / width_f;

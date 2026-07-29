@@ -220,10 +220,10 @@ void cRPath::initialize_cage2_path_template_pair(
                             * ((unsigned short)width_cells + 1);
                         if ((mesh_column ^ mesh_cursor) & 1)
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                                g_texture_refs.Add(texture_a, 0, 0);
                         else
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(texture_a, 0, 0);
+                                g_texture_refs.Add(texture_a, 0, 0);
                         face->uv[0].u = u0;
                         face->uv[0].v = v0;
                         face->uv[1].u = u1;
@@ -247,10 +247,10 @@ void cRPath::initialize_cage2_path_template_pair(
                             * ((unsigned short)width_cells + 1) + mesh_column + 1;
                         if ((mesh_column ^ mesh_cursor) & 1)
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                                g_texture_refs.Add(texture_b, 0, 0);
                         else
                             face->texture_ref =
-                                g_texture_refs.get_or_create_texture_ref(texture_b, 0, 0);
+                                g_texture_refs.Add(texture_b, 0, 0);
                         face->uv[0].u = u1;
                         face->uv[0].v = v0;
                         face->uv[1].u = u0;

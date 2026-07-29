@@ -46,7 +46,7 @@ void initialize_backdrop_tile_quad(
     quad->vertex_1 = 1;
     quad->vertex_2 = 3;
     quad->vertex_3 = 2;
-    quad->texture_ref = g_texture_refs.get_or_create_texture_ref(texture_path, 0, 0);
+    quad->texture_ref = g_texture_refs.Add(texture_path, 0, 0);
 
     quad->uv[0].u = 0.80000001f;
     quad->uv[0].v = 1.0f;
