@@ -4,7 +4,7 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-void ObjectList::initialize_object_list(int object_capacity)
+void cRObjects::initialize_object_list(int object_capacity)
 {
     count = 0;
     capacity = object_capacity;

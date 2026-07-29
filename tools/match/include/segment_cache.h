@@ -5,11 +5,11 @@
 #define SEGMENT_CACHE_H
 
 #include "bod_types.h"
+#include "object_fwd.h"
 #include "sprite.h"
 
 class cRSubGame;
 struct ObjectRenderVertex;
-struct Object;
 
 // Native debug names and all five dispatch arms agree on this family order.
 enum TrackRenderCacheFamily {

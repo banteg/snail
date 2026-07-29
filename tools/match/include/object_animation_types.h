@@ -2,9 +2,8 @@
 #define OBJECT_ANIMATION_TYPES_H
 
 #include "bod_types.h"
+#include "object_fwd.h"
 #include "vector3.h"
-
-struct Object;
 
 // Stored 16-bit ObjectAnimation mode bits. Keep ObjectAnimationFlags as the
 // unsigned-short storage alias below so this enum does not widen the recovered

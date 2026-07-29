@@ -7433,9 +7433,12 @@ def test_object_list_replay_owns_global_lifecycle_and_allocation_consumers() -> 
     assert '(0x4B7648, "g_object_list", "ObjectList g_object_list;")' in ida_sync
     assert '"ObjectList": 0xC' in ida_sync
 
-    for header in (*analysis_headers, matcher_header):
+    for header in analysis_headers:
         assert "ObjectList_must_be_0x0c" in header
         assert "extern ObjectList g_object_list;" in header
+    assert "struct cRObjects {" in matcher_header
+    assert "cRObjects_must_be_0x0c" in matcher_header
+    assert "extern cRObjects g_object_list;" in matcher_header
 
     for address in (
         "0x419110",  # open_logo
@@ -7908,7 +7911,10 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     assert "no consumers for the two tail floats" in ios_crosswalk["0x41aa50"]["notes"]
 
     assert "int get_or_append_object_texture_group_vertex(" in matcher_header
-    assert "void sort_object_faces_by_texture_group(Object* object);" in matcher_header
+    assert (
+        "void sort_object_faces_by_texture_group(cRObject* object);"
+        in matcher_header
+    )
     assert "extern int g_object_grouped_vertex_cursor;" in matcher_header
     assert "extern ObjectGroupedVertex* g_object_grouped_vertex_scratch;" in matcher_header
 

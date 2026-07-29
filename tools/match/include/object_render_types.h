@@ -1,8 +1,9 @@
 #ifndef OBJECT_RENDER_TYPES_H
 #define OBJECT_RENDER_TYPES_H
 
-// iOS RObject.o names Object as cRObject and ObjectList as cRObjects.
+// Android and iOS RObject.o retain the cRObject and cRObjects owners.
 
+#include "object_fwd.h"
 #include "vector3.h"
 #include "vertex_buffer_view.h"
 #include "direct3d_device8_view.h"
@@ -128,10 +129,9 @@ typedef char ObjectToonEdge_must_be_0x24[
     (sizeof(ObjectToonEdge) == 0x24) ? 1 : -1];
 
 struct ObjectIndexBufferResource;
-struct Object;
 
 // Authored ObjectProcNull(cRObject*) free function in Android and iOS.
-void disable_object_rendering(Object* object); // @ 0x41a0a0
+void disable_object_rendering(cRObject* object); // @ 0x41a0a0
 
 // Android and iOS preserve this exact owner as cRDistort. Windows embeds the
 // same five-float record at Object +0x80; only the first three controls have
@@ -144,7 +144,7 @@ struct Distort {
     float unknown_0c;
     float unknown_10;
 
-    void apply_distort_to_object(Object* object); // @ 0x41aa50; Android cRDistort::Build(cRObject*)
+    void apply_distort_to_object(cRObject* object); // @ 0x41aa50; Android cRDistort::Build(cRObject*)
 };
 
 typedef char Distort_must_be_0x14[
@@ -168,8 +168,8 @@ struct ObjectIndexBuffer {
     ObjectIndexBufferResource* buffer; // +0x00
 };
 
-struct Object {
-    Object* initialize_object_constructor_thunk(); // @ 0x42f6e0
+struct cRObject {
+    cRObject* initialize_object_constructor_thunk(); // @ 0x42f6e0
     void initialize_object(); // @ 0x42f6f0
     void request_object_vertices(int vertex_count); // @ 0x42f710
     void request_object_vertices_copy(); // @ 0x42f7d0
@@ -233,34 +233,34 @@ struct Object {
     ObjectIndexBuffer* toon_index_buffer; // +0xd8
 };
 
-typedef char Object_must_be_0xdc[(sizeof(Object) == 0xdc) ? 1 : -1];
+typedef char cRObject_must_be_0xdc[(sizeof(cRObject) == 0xdc) ? 1 : -1];
 
-struct ObjectList {
+struct cRObjects {
     void initialize_object_list(int capacity); // @ 0x42f990
     void build_all_objects(); // @ 0x42f9e0
-    Object* add_object_to_list(); // @ 0x42fad0
+    cRObject* add_object_to_list(); // @ 0x42fad0
     void replace_object_list_texture_refs(TextureRef* new_texture, TextureRef* old_texture);
 
     int count; // +0x00
     int capacity; // +0x04
-    Object* objects; // +0x08, owned contiguous capacity * 0xdc allocation
+    cRObject* objects; // +0x08, owned contiguous capacity * 0xdc allocation
 };
 
-typedef char ObjectList_must_be_0x0c[(sizeof(ObjectList) == 0x0c) ? 1 : -1];
+typedef char cRObjects_must_be_0x0c[(sizeof(cRObjects) == 0x0c) ? 1 : -1];
 
-void replace_object_group_texture_refs(Object* object, TextureRef* new_texture,
+void replace_object_group_texture_refs(cRObject* object, TextureRef* new_texture,
     TextureRef* old_texture); // @ 0x4145c0
-void load_object_definition(char* path, Object* object); // @ 0x44c420
+void load_object_definition(char* path, cRObject* object); // @ 0x44c420
 int get_or_append_object_texture_group_vertex(
-    Object* object, int vertex_index, float u, float v); // @ 0x413bb0
-void build_object_texture_group_buffers(Object* object); // @ 0x413d50
+    cRObject* object, int vertex_index, float u, float v); // @ 0x413bb0
+void build_object_texture_group_buffers(cRObject* object); // @ 0x413d50
 // Authored ObjectProcJoinTextures(cRObject*) free function.
-void sort_object_faces_by_texture_group(Object* object); // @ 0x419fd0
-void refresh_object_vertex_buffer(Object* object); // @ 0x412250
-void render_object(Object* object, TransformMatrix* matrix, float texture_u,
+void sort_object_faces_by_texture_group(cRObject* object); // @ 0x419fd0
+void refresh_object_vertex_buffer(cRObject* object); // @ 0x412250
+void render_object(cRObject* object, TransformMatrix* matrix, float texture_u,
     float texture_v, tColour* color, char after_sprites); // @ 0x4126c0, G0RenderObject
 
-extern ObjectList g_object_list; // data_4b7648
+extern cRObjects g_object_list; // data_4b7648
 extern int g_object_grouped_vertex_cursor; // data_5031bc
 extern ObjectGroupedVertex* g_object_grouped_vertex_scratch; // data_5031c4
 extern ObjectToonEdge* g_object_edge_build_edges; // data_503300

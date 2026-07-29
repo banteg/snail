@@ -3,8 +3,7 @@
 #define VAPOUR_H
 
 #include "bod_types.h"
-
-struct Object;
+#include "object_fwd.h"
 
 class Vapour : public RenderableBod {
 public:

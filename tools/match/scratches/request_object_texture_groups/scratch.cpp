@@ -5,7 +5,7 @@
 void* allocate_tracked_memory(int size, char* name);
 int report_errorf(char* format, ...);
 
-void Object::request_object_texture_groups(int requested_count)
+void cRObject::request_object_texture_groups(int requested_count)
 {
     if (texture_group_count == 0) {
         void* result = allocate_tracked_memory(

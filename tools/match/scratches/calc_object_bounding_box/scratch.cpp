@@ -3,7 +3,7 @@
 #include "object_render_types.h"
 #include "vector3.h"
 
-void Object::calc_object_bounding_box()
+void cRObject::calc_object_bounding_box()
 {
     Vector3* max = &bounds_max;
     *max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);

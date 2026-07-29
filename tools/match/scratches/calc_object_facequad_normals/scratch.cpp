@@ -23,7 +23,7 @@ int report_errorf(char* format, ...);
 #define CURRENT_FACE \
     ((ObjectFaceQuad*)((char*)facequads + face_offset))
 
-void Object::calc_object_facequad_normals()
+void cRObject::calc_object_facequad_normals()
 {
     request_object_facequad_normals();
 

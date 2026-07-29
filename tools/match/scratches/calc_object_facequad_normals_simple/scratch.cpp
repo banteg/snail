@@ -3,7 +3,7 @@
 #include "object_render_types.h"
 #include "vector3.h"
 
-int Object::calc_object_facequad_normals_simple()
+int cRObject::calc_object_facequad_normals_simple()
 {
     request_object_facequad_normals();
 

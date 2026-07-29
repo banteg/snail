@@ -5,10 +5,10 @@
 #define BOD_TYPES_H
 
 #include "bod_list.h"
+#include "object_fwd.h"
 #include "sprite.h"
 #include "transform_matrix.h"
 
-struct Object;
 class AnimManager;
 
 // Shared lifecycle state for the cRBod/cRBodPos family. The callback table is

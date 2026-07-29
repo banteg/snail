@@ -18,6 +18,7 @@
 #include "invincible.h"
 #include "sub_hover.h"
 #include "nuke.h"
+#include "object_fwd.h"
 #include "weapon.h"
 #include "player_fwd.h"
 #include "progress_bar.h"
@@ -31,8 +32,6 @@
 #include "transform_matrix.h"
 #include "vector3.h"
 #include "warning.h"
-
-struct Object;
 
 class Sprite;
 class cRSubGame;

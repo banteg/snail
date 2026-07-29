@@ -5,7 +5,7 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-void Object::request_object_vertex_colours()
+void cRObject::request_object_vertex_colours()
 {
     vertex_colours =
         (tColour*)allocate_tracked_memory(

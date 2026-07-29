@@ -34,3 +34,10 @@ annotation. A second replay is fully idempotent.
 
 The exact matcher source remains unchanged at 100.00%, 30/30 instructions,
 prefix 30/30, with three clean masked operands.
+
+## 2026-07-29 authored owner closure
+
+Android and iOS retain the manager as `cRObjects` and its slots as
+`cRObject`. Those names are now primary in the matcher; `ObjectList` and
+`Object` remain compatibility typedefs for the analyzer replay and partial
+callers. The exact Windows void initializer shape is unchanged.

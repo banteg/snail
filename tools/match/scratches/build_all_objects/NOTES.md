@@ -1,10 +1,10 @@
 # build_all_objects
 
-ObjectList build pass at `0x42f9e0`.
+cRObjects build pass at `0x42f9e0`.
 
 - Confirms `build_all_objects` is an `ObjectList` method, not a free helper
   taking IDA's synthetic `edi`/`st0` parameters.
-- Walks `ObjectList::objects` with the established `0xdc` stride and skips
+- Walks `cRObjects::objects` with the established `0xdc` stride and skips
   objects with zero `vertex_count`.
 - Proves the build order: bounding box, texture-ref sort, texture-group
   calculation, optional toon normals/edges for `OBJECT_FLAG_TOON_ENABLED`,
@@ -31,3 +31,8 @@ The guarded replay verifies the 0x0c `ObjectList`, 0xdc `Object`, list fields,
 and the `Object::flags`/`vertex_count` consumers, and is fully idempotent. The
 matcher remains unchanged at 100.00%, 54/54 instructions, prefix 54/54, with
 eight clean masked operands.
+
+2026-07-29 owner closure: the matcher now carries the mobile-preserved
+`cRObjects` manager and `cRObject` slot names directly. Analyzer-side
+`ObjectList`/`Object` views remain compatibility vocabulary for their existing
+replays; no second allocation or layout is implied.

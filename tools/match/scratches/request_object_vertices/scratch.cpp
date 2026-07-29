@@ -6,7 +6,7 @@ void* allocate_tracked_memory(int size, char* name);
 void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
 
-void Object::request_object_vertices(int requested_count)
+void cRObject::request_object_vertices(int requested_count)
 {
     if (requested_count > 0x10000)
         report_errorf("Too many Vertices");

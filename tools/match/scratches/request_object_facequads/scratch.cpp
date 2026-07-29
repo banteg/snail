@@ -6,7 +6,7 @@ void* allocate_tracked_memory(int size, char* name);
 void free_tracked_memory(void* ptr);
 int report_errorf(char* format, ...);
 
-void Object::request_object_facequads(int requested_count)
+void cRObject::request_object_facequads(int requested_count)
 {
     if (requested_count == 0) {
         facequad_count = 0;

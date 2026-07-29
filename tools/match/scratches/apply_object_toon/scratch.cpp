@@ -4,7 +4,7 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-void Object::apply_object_toon(int toon_flags)
+void cRObject::apply_object_toon(int toon_flags)
 {
     toon_flags |= OBJECT_FLAG_TOON_ENABLED | OBJECT_FLAG_BUILD_TOON_EDGES;
     flags |= toon_flags;

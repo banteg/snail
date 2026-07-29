@@ -1187,6 +1187,238 @@ def test_mobile_tcolour_methods_recover_authored_surface() -> None:
     assert "tColour::tColour(" not in store_source
 
 
+def test_mobile_crobject_owners_recover_primary_structs() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    object_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+    object_fwd = (
+        repo_root / "tools/match/include/object_fwd.h"
+    ).read_text(encoding="utf-8")
+
+    assert "struct cRObject {" in object_header
+    assert "struct Object {" not in object_header
+    assert "cRObject_must_be_0xdc" in object_header
+    assert "struct cRObjects {" in object_header
+    assert "struct ObjectList {" not in object_header
+    assert "cRObjects_must_be_0x0c" in object_header
+    assert "struct cRObject;" in object_fwd
+    assert "typedef cRObject Object;" in object_fwd
+    assert "struct cRObjects;" in object_fwd
+    assert "typedef cRObjects ObjectList;" in object_fwd
+
+    expected_owners = (
+        (
+            "initialize_object_constructor_thunk",
+            "cRObject",
+            "?initialize_object_constructor_thunk@cRObject@@QAEPAU1@XZ",
+        ),
+        (
+            "initialize_object",
+            "cRObject",
+            "?initialize_object@cRObject@@QAEXXZ",
+        ),
+        (
+            "request_object_vertices",
+            "cRObject",
+            "?request_object_vertices@cRObject@@QAEXH@Z",
+        ),
+        (
+            "copy_object_vertices",
+            "cRObject",
+            "?copy_object_vertices@cRObject@@QAEXXZ",
+        ),
+        (
+            "request_object_vertices_copy",
+            "cRObject",
+            "?request_object_vertices_copy@cRObject@@QAEXXZ",
+        ),
+        (
+            "request_object_facequad_normals",
+            "cRObject",
+            "?request_object_facequad_normals@cRObject@@QAEPAUtVector@@XZ",
+        ),
+        (
+            "request_object_vertex_colours",
+            "cRObject",
+            "?request_object_vertex_colours@cRObject@@QAEXXZ",
+        ),
+        (
+            "request_object_facequads",
+            "cRObject",
+            "?request_object_facequads@cRObject@@QAEXH@Z",
+        ),
+        (
+            "request_object_texture_groups",
+            "cRObject",
+            "?request_object_texture_groups@cRObject@@QAEXH@Z",
+        ),
+        (
+            "apply_object_toon",
+            "cRObject",
+            "?apply_object_toon@cRObject@@QAEXH@Z",
+        ),
+        (
+            "calc_object_bounding_box",
+            "cRObject",
+            "?calc_object_bounding_box@cRObject@@QAEXXZ",
+        ),
+        (
+            "calc_object_facequad_normals",
+            "cRObject",
+            "?calc_object_facequad_normals@cRObject@@QAEXXZ",
+        ),
+        (
+            "calc_object_facequad_normals_simple",
+            "cRObject",
+            "?calc_object_facequad_normals_simple@cRObject@@QAEHXZ",
+        ),
+        (
+            "calc_object_texture_groups",
+            "cRObject",
+            "?calc_object_texture_groups@cRObject@@QAEXXZ",
+        ),
+        (
+            "request_object_edges",
+            "cRObject",
+            "?request_object_edges@cRObject@@QAEXH@Z",
+        ),
+        (
+            "add_object_edge",
+            "cRObject",
+            "?add_object_edge@cRObject@@QAEXHHH@Z",
+        ),
+        (
+            "calc_object_edges",
+            "cRObject",
+            "?calc_object_edges@cRObject@@QAEXXZ",
+        ),
+        (
+            "request_object_animation",
+            "cRObject",
+            (
+                "?request_object_animation@cRObject"
+                "@@QAEXHPAVRenderableBod@@MH@Z"
+            ),
+        ),
+        (
+            "initialize_object_list",
+            "cRObjects",
+            "?initialize_object_list@cRObjects@@QAEXH@Z",
+        ),
+        (
+            "build_all_objects",
+            "cRObjects",
+            "?build_all_objects@cRObjects@@QAEXXZ",
+        ),
+        (
+            "add_object_to_list",
+            "cRObjects",
+            "?add_object_to_list@cRObjects@@QAEPAUcRObject@@XZ",
+        ),
+        (
+            "replace_object_list_texture_refs",
+            "cRObjects",
+            (
+                "?replace_object_list_texture_refs@cRObjects"
+                "@@QAEXPAUTextureRef@@0@Z"
+            ),
+        ),
+    )
+
+    for windows_name, owner, object_symbol in expected_owners:
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"{owner}::" in scratch_source
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in scratch_config
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+
+    verified_mobile_methods = {
+        "initialize_object": "cRObject::cRObject()",
+        "request_object_vertices": "cRObject::RequestVertices(int)",
+        "copy_object_vertices": "cRObject::CopyVertices()",
+        "request_object_vertices_copy": "cRObject::RequestVerticesCopy()",
+        (
+            "request_object_facequad_normals"
+        ): "cRObject::RequestFaceQuadNormals()",
+        "request_object_vertex_colours": "cRObject::RequestColours()",
+        "request_object_facequads": "cRObject::RequestFaceQuads(int)",
+        (
+            "request_object_texture_groups"
+        ): "cRObject::RequestFaceQuadTextureGroups(int)",
+        "apply_object_toon": "cRObject::ApplyToon(int)",
+        (
+            "calc_object_facequad_normals"
+        ): "cRObject::CalcFaceQuadNormals()",
+        "calc_object_texture_groups": "cRObject::CalcTextureGroups()",
+        "request_object_edges": "cRObject::RequestEdges(int)",
+        "add_object_edge": "cRObject::AddEdge(int, int, int)",
+        "calc_object_edges": "cRObject::CalcEdges()",
+        (
+            "request_object_animation"
+        ): "cRObject::RequestAnim(int, cRBodPos*, float, int)",
+        "initialize_object_list": "cRObjects::Init(int)",
+        "build_all_objects": "cRObjects::BuildObjects()",
+        "add_object_to_list": "cRObjects::Add()",
+        (
+            "replace_object_list_texture_refs"
+        ): "cRObjects::ReTextureObjects",
+    }
+    for windows_name, mobile_symbol in verified_mobile_methods.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert mobile_symbol in {
+            entry.get("android_symbol"),
+            entry.get("ios_symbol"),
+        }
+
+    constructor_source = (
+        repo_root / "tools/match/scratches/initialize_object/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "void cRObject::initialize_object()" in constructor_source
+    assert "cRObject::cRObject()" not in constructor_source
+
+    gl_builder_source = (
+        repo_root
+        / "tools/match/scratches/build_object_texture_group_buffers/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "void build_object_texture_group_buffers(Object* object)" in (
+        gl_builder_source
+    )
+    assert "cRObject::BuildGLVertexArray" not in gl_builder_source
+
+    for header_name in (
+        "bod_types.h",
+        "object_animation_types.h",
+        "player.h",
+        "segment_cache.h",
+        "vapour.h",
+    ):
+        header = (
+            repo_root / "tools/match/include" / header_name
+        ).read_text(encoding="utf-8")
+        assert '#include "object_fwd.h"' in header
+        assert "struct Object;" not in header
+
+
 def test_mobile_tvector_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

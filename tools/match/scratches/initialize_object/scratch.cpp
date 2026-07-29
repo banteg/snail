@@ -2,7 +2,7 @@
 
 #include "object_render_types.h"
 
-void Object::initialize_object()
+void cRObject::initialize_object()
 {
     flags = 0;
     blend_mode = 0;

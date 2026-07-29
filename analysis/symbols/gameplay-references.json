@@ -111,9 +111,181 @@
       "name": "initialize_object_constructor_thunk",
       "kind": "function",
       "aliases": [
+        "?initialize_object_constructor_thunk@cRObject@@QAEPAU1@XZ",
         "sub_42F6E0"
       ],
-      "description": "Thiscall object-constructor thunk that calls initialize_object at 0x42f6f0, preserves the original this pointer, and returns it."
+      "description": "Exact cRObject-owned constructor adapter: calls the void slot initializer at 0x42f6f0, preserves the original receiver, and returns it."
+    },
+    {
+      "address": "0x42f6f0",
+      "name": "initialize_object",
+      "kind": "function",
+      "aliases": [
+        "?initialize_object@cRObject@@QAEXXZ"
+      ],
+      "description": "Exact void cRObject slot initializer. Mobile constructor bodies independently preserve the owner and initialized fields, while Windows requires this non-constructor return shape."
+    },
+    {
+      "address": "0x42f710",
+      "name": "request_object_vertices",
+      "kind": "function",
+      "aliases": [
+        "?request_object_vertices@cRObject@@QAEXH@Z"
+      ],
+      "description": "Exact cRObject-owned vertex allocation body, retained by both mobile ports as cRObject::RequestVertices(int)."
+    },
+    {
+      "address": "0x42f790",
+      "name": "copy_object_vertices",
+      "kind": "function",
+      "aliases": [
+        "?copy_object_vertices@cRObject@@QAEXXZ"
+      ],
+      "description": "Exact cRObject-owned vertex-copy body, retained by Android as cRObject::CopyVertices()."
+    },
+    {
+      "address": "0x42f7d0",
+      "name": "request_object_vertices_copy",
+      "kind": "function",
+      "aliases": [
+        "?request_object_vertices_copy@cRObject@@QAEXXZ"
+      ],
+      "description": "Exact cRObject-owned copied-vertex allocation body, retained by both mobile ports."
+    },
+    {
+      "address": "0x42f800",
+      "name": "request_object_facequad_normals",
+      "kind": "function",
+      "aliases": [
+        "?request_object_facequad_normals@cRObject@@QAEPAUtVector@@XZ"
+      ],
+      "description": "Exact cRObject-owned facequad-normal allocation body, retained by Android."
+    },
+    {
+      "address": "0x42f850",
+      "name": "request_object_vertex_colours",
+      "kind": "function",
+      "aliases": [
+        "?request_object_vertex_colours@cRObject@@QAEXXZ"
+      ],
+      "description": "Exact cRObject-owned vertex-colour allocation body, retained by Android as cRObject::RequestColours()."
+    },
+    {
+      "address": "0x42f8c0",
+      "name": "request_object_facequads",
+      "kind": "function",
+      "aliases": [
+        "?request_object_facequads@cRObject@@QAEXH@Z"
+      ],
+      "description": "Exact cRObject-owned facequad allocation body, retained by both mobile ports."
+    },
+    {
+      "address": "0x42f930",
+      "name": "request_object_texture_groups",
+      "kind": "function",
+      "aliases": [
+        "?request_object_texture_groups@cRObject@@QAEXH@Z"
+      ],
+      "description": "Exact cRObject-owned texture-group allocation body, retained by Android as cRObject::RequestFaceQuadTextureGroups(int)."
+    },
+    {
+      "address": "0x42f990",
+      "name": "initialize_object_list",
+      "kind": "function",
+      "aliases": [
+        "?initialize_object_list@cRObjects@@QAEXH@Z"
+      ],
+      "description": "Exact cRObjects-owned contiguous object-bank initializer, retained by both mobile ports as cRObjects::Init(int)."
+    },
+    {
+      "address": "0x42f9e0",
+      "name": "build_all_objects",
+      "kind": "function",
+      "aliases": [
+        "?build_all_objects@cRObjects@@QAEXXZ"
+      ],
+      "description": "Exact cRObjects-owned batch builder, retained by both mobile ports as cRObjects::BuildObjects()."
+    },
+    {
+      "address": "0x42fa80",
+      "name": "apply_object_toon",
+      "kind": "function",
+      "aliases": [
+        "?apply_object_toon@cRObject@@QAEXH@Z"
+      ],
+      "description": "Exact cRObject-owned toon setup body, retained by both mobile ports as cRObject::ApplyToon(int)."
+    },
+    {
+      "address": "0x42fad0",
+      "name": "add_object_to_list",
+      "kind": "function",
+      "aliases": [
+        "?add_object_to_list@cRObjects@@QAEPAUcRObject@@XZ"
+      ],
+      "description": "Exact cRObjects-owned slot allocator returning a cRObject receiver, retained by both mobile ports as cRObjects::Add()."
+    },
+    {
+      "address": "0x42fb10",
+      "name": "calc_object_bounding_box",
+      "kind": "function",
+      "aliases": [
+        "?calc_object_bounding_box@cRObject@@QAEXXZ"
+      ],
+      "description": "Exact cRObject-owned Windows bounds scan; no mobile method is claimed for this port-specific body."
+    },
+    {
+      "address": "0x42fcb0",
+      "name": "calc_object_facequad_normals",
+      "kind": "function",
+      "aliases": [
+        "?calc_object_facequad_normals@cRObject@@QAEXXZ"
+      ],
+      "description": "cRObject-owned facequad-normal builder retained by both mobile ports as cRObject::CalcFaceQuadNormals()."
+    },
+    {
+      "address": "0x430230",
+      "name": "calc_object_facequad_normals_simple",
+      "kind": "function",
+      "aliases": [
+        "?calc_object_facequad_normals_simple@cRObject@@QAEHXZ"
+      ],
+      "description": "Exact cRObject-owned alternate Windows facequad-normal builder; mobile candidates remain unverified."
+    },
+    {
+      "address": "0x430570",
+      "name": "request_object_edges",
+      "kind": "function",
+      "aliases": [
+        "?request_object_edges@cRObject@@QAEXH@Z"
+      ],
+      "description": "Exact cRObject-owned edge allocation body, retained by Android as cRObject::RequestEdges(int)."
+    },
+    {
+      "address": "0x4305a0",
+      "name": "add_object_edge",
+      "kind": "function",
+      "aliases": [
+        "?add_object_edge@cRObject@@QAEXHHH@Z"
+      ],
+      "description": "cRObject-owned edge append body retained by both mobile ports as cRObject::AddEdge(int, int, int)."
+    },
+    {
+      "address": "0x4308b0",
+      "name": "calc_object_edges",
+      "kind": "function",
+      "aliases": [
+        "?calc_object_edges@cRObject@@QAEXXZ"
+      ],
+      "description": "cRObject-owned silhouette-edge builder retained by both mobile ports as cRObject::CalcEdges()."
+    },
+    {
+      "address": "0x430d90",
+      "name": "replace_object_list_texture_refs",
+      "kind": "function",
+      "aliases": [
+        "?replace_object_list_texture_refs@cRObjects@@QAEXPAUTextureRef@@0@Z"
+      ],
+      "description": "cRObjects-owned texture replacement loop retained by Android as cRObjects::ReTextureObjects."
     },
     {
       "address": "0x44c870",
@@ -889,18 +1061,20 @@
       "name": "calc_object_texture_groups",
       "kind": "function",
       "aliases": [
+        "?calc_object_texture_groups@cRObject@@QAEXXZ",
         "sub_4303f0"
       ],
-      "description": "Object facequad texture-group producer that marks split/texture side effects, requests the +0x6c group-end array, and writes cumulative facequad end indices consumed by build_object_texture_group_buffers."
+      "description": "cRObject-owned facequad texture-group producer retained by both mobile ports as cRObject::CalcTextureGroups()."
     },
     {
       "address": "0x430a70",
       "name": "request_object_animation",
       "kind": "function",
       "aliases": [
+        "?request_object_animation@cRObject@@QAEXHPAVRenderableBod@@MH@Z",
         "sub_430a70"
       ],
-      "description": "Object X-animation builder that validates 0x80-byte keyframe objects, stores ObjectAnimation at Object+0xbc, generates per-frame vertex and facequad-normal arrays, and refreshes normals through calc_object_facequad_normals."
+      "description": "cRObject-owned animation builder retained by both mobile ports as cRObject::RequestAnim(int, cRBodPos*, float, int); Windows uses the recovered RenderableBod compatibility owner for the same 0x80-byte keyframe records."
     },
     {
       "address": "0x432d40",

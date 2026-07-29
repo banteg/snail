@@ -3,7 +3,7 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-void Object::calc_object_texture_groups()
+void cRObject::calc_object_texture_groups()
 {
     int pass = 0;
     do {

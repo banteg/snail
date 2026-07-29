@@ -6,7 +6,7 @@ extern "C" void* memcpy(void* destination, const void* source, unsigned int coun
 
 void* get_archive_data_base();
 
-void Object::calc_object_edges()
+void cRObject::calc_object_edges()
 {
     if ((flags & OBJECT_FLAG_BUILD_TOON_EDGES) == 0) {
         return;

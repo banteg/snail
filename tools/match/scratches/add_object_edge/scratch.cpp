@@ -4,7 +4,7 @@
 
 extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
 
-void Object::add_object_edge(int vertex_a, int vertex_b, int normal_index)
+void cRObject::add_object_edge(int vertex_a, int vertex_b, int normal_index)
 {
     Vector3 direction;
     if (facequad_normals[normal_index].Magnitude() < 0.89999998f) {

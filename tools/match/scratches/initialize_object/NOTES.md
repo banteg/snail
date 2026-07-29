@@ -1,8 +1,8 @@
 # initialize_object @ 0x42f6f0
 
-Exact default initializer for one `Object`/`cRObject` slot. It clears the
+Exact default initializer for one `cRObject` slot. It clears the
 render flags and blend mode, live vertex and facequad counts, accumulated
-vertex-normal pointer/count lane, and live texture-group count. `ObjectList`
+vertex-normal pointer/count lane, and live texture-group count. `cRObjects`
 owns the surrounding contiguous `0xdc`-byte slot array.
 
 2026-07-14 void constructor ABI: the preserved iOS symbol is
@@ -12,3 +12,9 @@ original receiver. The zero left in EAX by this body is the shared assignment
 value, not a result contract. Declaring the initializer `void` preserves its
 exact 9/9 instructions; the adapter, list initializer, and slot allocator also
 remain exact.
+
+2026-07-29 owner closure: Android and iOS preserve `cRObject` across the
+constructor, allocation, geometry, edge, animation, and render-buffer
+surfaces. The matcher now uses `cRObject` as the primary 0xdc-byte owner and
+retains `Object` only as a compatibility typedef. The Windows void initializer
+remains deliberately distinct from the mobile constructor spelling.
