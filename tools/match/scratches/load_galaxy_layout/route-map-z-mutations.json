@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "generated-route-map-z",
+      "find": "route_slots[record_count].record.map_z_bits = 0;",
+      "replacements": [
+        {
+          "name": "live-star-index",
+          "text": "route_slots[record_count].record.map_z_bits = star_index;"
+        }
+      ]
+    }
+  ]
+}

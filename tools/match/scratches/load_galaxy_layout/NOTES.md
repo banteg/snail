@@ -211,3 +211,25 @@ is analyzer presentation debt. The RString replay now reasserts the five
 validated galaxy point/text/name cursor lifetimes after caller analysis
 settles. Matching remains unchanged at 88.27%, 236/233 instructions, prefix
 62, with all 39 masked operands clean.
+
+## 2026-07-29 route-loop residual audit
+
+The current focused result remains **88.27%**, `236/233` instructions, prefix
+`62/233`, with 41 clean operands and two alignment-only unaudited sentinel
+references. Three recorded source-shape sweeps bound the remaining route-loop
+delta:
+
+- writing the generated route's zero Z lane from the live zero-valued
+  `star_index` regressed to 87.85%;
+- combining that spelling with natural `while` loops whose placement step
+  starts from literal zero or `star_index` produced the same 87.85% result;
+- breaking out of the outer parser loop and placing route-zero finalization
+  after the loop regressed to 86.14%, the same terminal-control family already
+  rejected by earlier direct-return probes.
+
+Native's `ebx` Z store and delayed `ebp` step initialization are therefore an
+allocator outcome, not evidence for a different route field or loop contract.
+The larger tail block-order delta is likewise bounded by the worse fallthrough
+form. Existing marker-cursor assignment, temporary, null-comparison, and
+terminal-error alternatives were already measured in the earlier passes, so
+they were not repeated. No live-index alias or control-flow reshaping is kept.

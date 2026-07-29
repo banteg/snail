@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "route-star-loop",
+      "find": "for (int step = 0;\n             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];\n             step += 10) {\n            route_slots[record_count].record.route_name_index = galaxy_index;\n            route_slots[record_count].record.map_x_bits =\n                g_galaxy_route_points[\n                    star_group_offset\n                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]\n                    + 1].x_bits;\n            route_slots[record_count].record.map_y_bits =\n                g_galaxy_route_points[\n                    star_group_offset\n                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]\n                    + 1].y_bits;\n            route_slots[record_count].record.map_z_bits = 0;\n\n            char missing_label[128];\n            sprintf(missing_label, \"LEVEL %i MISSING\", record_count);\n            rstrcpy_checked_ascii(\n                route_slots[record_count].record.detail_text, missing_label);\n            rstrcpy_checked_ascii(\n                route_slots[record_count].record.description_text,\n                missing_label);\n            ++record_count;\n            ++star_index;\n        }",
+      "replacements": [
+        {
+          "name": "while-zero-step-live-z",
+          "text": "int step = 0;\n        while (star_index\n               < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]) {\n            route_slots[record_count].record.route_name_index = galaxy_index;\n            route_slots[record_count].record.map_x_bits =\n                g_galaxy_route_points[\n                    star_group_offset\n                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]\n                    + 1].x_bits;\n            route_slots[record_count].record.map_y_bits =\n                g_galaxy_route_points[\n                    star_group_offset\n                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]\n                    + 1].y_bits;\n            route_slots[record_count].record.map_z_bits = star_index;\n\n            char missing_label[128];\n            sprintf(missing_label, \"LEVEL %i MISSING\", record_count);\n            rstrcpy_checked_ascii(\n                route_slots[record_count].record.detail_text, missing_label);\n            rstrcpy_checked_ascii(\n                route_slots[record_count].record.description_text,\n                missing_label);\n            ++record_count;\n            ++star_index;\n            step += 10;\n        }"
+        },
+        {
+          "name": "while-index-step-live-z",
+          "text": "int step = star_index;\n        while (star_index\n               < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]) {\n            route_slots[record_count].record.route_name_index = galaxy_index;\n            route_slots[record_count].record.map_x_bits =\n                g_galaxy_route_points[\n                    star_group_offset\n                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]\n                    + 1].x_bits;\n            route_slots[record_count].record.map_y_bits =\n                g_galaxy_route_points[\n                    star_group_offset\n                    + step / route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT]\n                    + 1].y_bits;\n            route_slots[record_count].record.map_z_bits = star_index;\n\n            char missing_label[128];\n            sprintf(missing_label, \"LEVEL %i MISSING\", record_count);\n            rstrcpy_checked_ascii(\n                route_slots[record_count].record.detail_text, missing_label);\n            rstrcpy_checked_ascii(\n                route_slots[record_count].record.description_text,\n                missing_label);\n            ++record_count;\n            ++star_index;\n            step += 10;\n        }"
+        }
+      ]
+    }
+  ]
+}

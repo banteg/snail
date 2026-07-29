@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-route-finalization",
+      "find": "star_index = 0;\n\n        current_galaxy_point += 2;\n        ++galaxy_index;\n        star_group_offset += 10;\n        route_name_cursor += ROUTE_NAME_COLOR_STRIDE;\n        if ((int)current_galaxy_point < 0x4a1ca0)\n            continue;\n\n        route_slots[0].record.route_name_index = 0;\n        route_slots[0].record.map_x_bits = g_galaxy_route_points[0].x_bits;\n        route_slots[0].record.map_y_bits = g_galaxy_route_points[0].y_bits;\n        route_slots[0].record.map_z_bits = 0;\n        route_slots[0].record.detail_text[0] = 0;\n        route_slots[0].record.description_text[0] = 0;\n        return;\n    }",
+      "replacements": [
+        {
+          "name": "break-then-finalize",
+          "text": "star_index = 0;\n\n        current_galaxy_point += 2;\n        ++galaxy_index;\n        star_group_offset += 10;\n        route_name_cursor += ROUTE_NAME_COLOR_STRIDE;\n        if ((int)current_galaxy_point >= 0x4a1ca0)\n            break;\n    }\n\n    route_slots[0].record.route_name_index = 0;\n    route_slots[0].record.map_x_bits = g_galaxy_route_points[0].x_bits;\n    route_slots[0].record.map_y_bits = g_galaxy_route_points[0].y_bits;\n    route_slots[0].record.map_z_bits = 0;\n    route_slots[0].record.detail_text[0] = 0;\n    route_slots[0].record.description_text[0] = 0;\n    return;"
+        }
+      ]
+    }
+  ]
+}
