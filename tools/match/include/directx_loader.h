@@ -30,7 +30,7 @@ public:
     char* animation_bytes; // +0x00
     int cached_x_mesh_count; // +0x04
     CachedXMeshSlot cached_x_mesh_slots[DIRECTX_LOADER_CACHED_X_MESH_SLOT_COUNT]; // +0x08
-    DuplicateVertices duplicate_vertices; // +0x5e08, authored cRDuplicateVertices owner
+    cRDuplicateVertices duplicate_vertices; // +0x5e08
 };
 
 typedef char CachedXMeshSlot_must_be_0xbc[

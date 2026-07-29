@@ -1607,6 +1607,91 @@ def test_mobile_crdistort_recovers_primary_owner_and_methods() -> None:
     assert ".apply_distort_to_object(object);" not in refresh_source
 
 
+def test_mobile_crduplicatevertices_recovers_primary_owner_and_methods() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    duplicate_header = (
+        repo_root / "tools/match/include/duplicate_vertices.h"
+    ).read_text(encoding="utf-8")
+    directx_header = (
+        repo_root / "tools/match/include/directx_loader.h"
+    ).read_text(encoding="utf-8")
+
+    assert "class cRDuplicateVertices {" in duplicate_header
+    assert "class DuplicateVertices {" not in duplicate_header
+    assert "void* Init(int count);" in duplicate_header
+    assert "void Clean(int unused);" in duplicate_header
+    assert "typedef cRDuplicateVertices DuplicateVertices;" in (
+        duplicate_header
+    )
+    assert "cRDuplicateVertices_must_be_0x8" in duplicate_header
+    assert "DuplicateVertices_must_be_0x8" in duplicate_header
+    assert "cRDuplicateVertices duplicate_vertices; // +0x5e08" in (
+        directx_header
+    )
+
+    expected_methods = (
+        (
+            "initialize_duplicate_vertices",
+            "Init",
+            "?Init@cRDuplicateVertices@@QAEPAXH@Z",
+            "cRDuplicateVertices::Init(int)",
+        ),
+        (
+            "clean_duplicate_vertices",
+            "Clean",
+            "?Clean@cRDuplicateVertices@@QAEXH@Z",
+            "cRDuplicateVertices::Clean(int)",
+        ),
+    )
+    for windows_name, method_name, windows_symbol, mobile_symbol in (
+        expected_methods
+    ):
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        entry = entries[windows_name]
+
+        assert f"cRDuplicateVertices::{method_name}(" in scratch_source
+        assert f"SYMBOL={windows_symbol}\n" in scratch_config
+        assert windows_symbol in references_by_name[windows_name]["aliases"]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+
+    assert entries["initialize_duplicate_vertices"]["ios_symbol"] == (
+        "cRDuplicateVertices::Init(int)"
+    )
+
+    directx_init_source = (
+        repo_root
+        / "tools/match/scratches/initialize_directx_loader/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    animation_source = (
+        repo_root
+        / "tools/match/scratches/load_x_animation_clip/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "duplicate_vertices.Init(2000);" in directx_init_source
+    assert "duplicate_vertices.Clean(keyframe_count);" in animation_source
+    assert ".initialize_duplicate_vertices(" not in directx_init_source
+    assert ".clean_duplicate_vertices(" not in animation_source
+
+
 def test_mobile_tvector_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

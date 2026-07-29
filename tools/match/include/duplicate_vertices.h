@@ -8,17 +8,21 @@ struct DuplicateVertexRecord {
     unsigned short live_flag; // +0x08
 };
 
-class DuplicateVertices {
+class cRDuplicateVertices {
 public:
-    void* initialize_duplicate_vertices(int count); // @ 0x419f50
-    void clean_duplicate_vertices(int unused); // @ 0x419f80; mobile cRDuplicateVertices::Clean(int)
+    void* Init(int count); // @ 0x419f50; Windows pointer result retained
+    void Clean(int unused); // @ 0x419f80
 
     int active_count; // +0x00
     DuplicateVertexRecord* records; // +0x04
 };
 
+typedef cRDuplicateVertices DuplicateVertices;
+
 typedef char DuplicateVertexRecord_must_be_0xa[
     (sizeof(DuplicateVertexRecord) == 0xa) ? 1 : -1];
+typedef char cRDuplicateVertices_must_be_0x8[
+    (sizeof(cRDuplicateVertices) == 0x8) ? 1 : -1];
 typedef char DuplicateVertices_must_be_0x8[
     (sizeof(DuplicateVertices) == 0x8) ? 1 : -1];
 

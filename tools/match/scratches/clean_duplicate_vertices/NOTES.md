@@ -28,3 +28,12 @@ with `r0` still holding `this`, while the populated path returns with `r0`
 holding the last compared signed short. Those incompatible residues cannot be
 one authored result. The sole Windows caller also ignores EAX, and the natural
 void scratch remains exactly 33/33 instructions with no masked operands.
+
+## 2026-07-29 primary cRDuplicateVertices ownership
+
+The matcher now emits the exact Windows body as
+`cRDuplicateVertices::Clean(int)`, while the analyzer-facing
+`DuplicateVertices` name remains a compatibility alias. Binary Ninja confirms
+the only Windows caller borrows the same `DirectXLoader +0x5e08` subobject and
+passes the animation keyframe count. The ownership change preserves all 33/33
+instructions with no masked operands.

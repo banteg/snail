@@ -107,6 +107,24 @@
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member."
     },
     {
+      "address": "0x419f50",
+      "name": "initialize_duplicate_vertices",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRDuplicateVertices@@QAEPAXH@Z"
+      ],
+      "description": "Exact cRDuplicateVertices::Init(int) owner and name retained by Android and iOS; the observed Windows allocation-pointer result is preserved."
+    },
+    {
+      "address": "0x419f80",
+      "name": "clean_duplicate_vertices",
+      "kind": "function",
+      "aliases": [
+        "?Clean@cRDuplicateVertices@@QAEXH@Z"
+      ],
+      "description": "Exact void cRDuplicateVertices::Clean(int) body and 10-byte record walk retained by Android."
+    },
+    {
       "address": "0x41aa30",
       "name": "initialize_object_distort",
       "kind": "function",

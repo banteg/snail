@@ -68,7 +68,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
         } while (i < keyframe_count);
     }
 
-    duplicate_vertices.clean_duplicate_vertices(keyframe_count);
+    duplicate_vertices.Clean(keyframe_count);
     load_x_mesh(g_animation_directory[0], object, 0);
     object->RequestVerticesCopy();
     object->flags |= OBJECT_FLAG_DISTORT_ENABLED;

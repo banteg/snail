@@ -24245,7 +24245,11 @@ def test_mobile_utility_abis_and_overlay_owners_are_persisted() -> None:
             "DuplicateVertices* duplicate_vertices, int32_t unused);"
             in header
         )
-    assert "void clean_duplicate_vertices(int unused);" in (
+    assert "class cRDuplicateVertices {" in matcher_duplicate_header
+    assert "void Clean(int unused);" in (
+        matcher_duplicate_header
+    )
+    assert "typedef cRDuplicateVertices DuplicateVertices;" in (
         matcher_duplicate_header
     )
 

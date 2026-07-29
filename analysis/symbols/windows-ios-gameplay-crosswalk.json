@@ -4362,7 +4362,7 @@
       "ios_symbol": "cRDuplicateVertices::Init(int)",
       "source_object": "ObjectProc.o",
       "confidence": "high",
-      "notes": "The exact Windows initializer operates on the 8-byte DuplicateVertices owner embedded at DirectXLoader +0x5e08 and allocates count times 10 bytes for its records.",
+      "notes": "The exact Windows initializer operates on the 8-byte cRDuplicateVertices owner embedded at DirectXLoader +0x5e08 and allocates count times 10 bytes for its records. Windows' observed allocation-pointer result is retained because the shared C++ symbol does not encode a return type.",
       "android_symbol": "cRDuplicateVertices::Init(int)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

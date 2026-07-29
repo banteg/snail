@@ -1496,7 +1496,7 @@
     {
       "address": "0x419f50",
       "name": "initialize_duplicate_vertices",
-      "description": "Exact Windows initializer for the embedded 8-byte duplicate-vertex workspace retained at DirectXLoader +0x5e08; iOS preserves the authored owner and method as `cRDuplicateVertices::Init(int)` in ObjectProc.o."
+      "description": "Exact Windows `cRDuplicateVertices::Init(int)` for the embedded 8-byte duplicate-vertex workspace retained at DirectXLoader +0x5e08. Android and iOS preserve the authored owner and method; Windows' observed allocation-pointer result remains authoritative because C++ symbols do not encode return types."
     },
     {
       "address": "0x419f80",

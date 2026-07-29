@@ -11,3 +11,13 @@ Windows body leaves the allocation pointer in `eax`, stores it in `records`,
 and returns it. The cross-port C++ symbol does not encode a return type, and
 the sole caller ignoring `eax` is insufficient to prove `void`, so the exact
 Windows pointer result is retained rather than normalized speculatively.
+
+## 2026-07-29 primary cRDuplicateVertices ownership
+
+The matcher now uses the shared authored `cRDuplicateVertices` owner directly
+and emits this body as pointer-returning Windows
+`cRDuplicateVertices::Init(int)`. `DuplicateVertices` remains a compatibility
+typedef for repeatable analyzer replays. Binary Ninja confirms the sole caller
+forms the receiver as `DirectXLoader +0x5e08`, passes 2000, and ignores the
+pointer result; the primary-name change stays exact at 13/13 instructions with
+both relocations clean.
