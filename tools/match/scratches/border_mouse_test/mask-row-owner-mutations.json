@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mask-row-owner",
+      "find": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int row = width;\n            row *= y;\n            int pixel_index = row + x + 6;",
+      "replacements": [
+        {
+          "name": "mobile-row-arms",
+          "text": "            int row;\n            if (y < 0) {\n                row = 0;\n            } else if (y < height) {\n                row = width * y;\n            } else {\n                row = width * (height - 1);\n            }\n\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "mobile-width-arms",
+          "text": "            if (y < 0) {\n                width = 0;\n            } else if (y < height) {\n                width *= y;\n            } else {\n                width *= height - 1;\n            }\n\n            int pixel_index = width + x + 6;"
+        },
+        {
+          "name": "clamp-then-mutate-width",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            width *= y;\n            int pixel_index = width + x + 6;"
+        },
+        {
+          "name": "clamp-then-assign-width",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            width = width * y;\n            int pixel_index = width + x + 6;"
+        },
+        {
+          "name": "direct-row-product",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int row = width * y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "commuted-row-product",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int row = y * width;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "row-owned-by-y",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int row = y;\n            row *= width;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "expanded-row-assignment",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int row = width;\n            row = row * y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "direct-pixel-index",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int pixel_index = width * y + x + 6;"
+        },
+        {
+          "name": "commuted-pixel-index",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int pixel_index = y * width + x + 6;"
+        },
+        {
+          "name": "factored-column",
+          "text": "            if (y < 0) {\n                y = 0;\n            } else if (y > height - 1) {\n                y = height - 1;\n            }\n\n            int row = width * y;\n            int pixel_index = row + (x + 6);"
+        },
+        {
+          "name": "clamped-y-owner",
+          "text": "            int clamped_y;\n            if (y < 0) {\n                clamped_y = 0;\n            } else if (y > height - 1) {\n                clamped_y = height - 1;\n            } else {\n                clamped_y = y;\n            }\n\n            int row = width * clamped_y;\n            int pixel_index = row + x + 6;"
+        }
+      ]
+    }
+  ]
+}

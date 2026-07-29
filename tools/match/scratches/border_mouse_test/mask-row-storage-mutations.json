@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mask-row-storage",
+      "find": "            int row = width;\n            row *= y;\n            int pixel_index = row + x + 6;",
+      "replacements": [
+        {
+          "name": "const-direct-product",
+          "text": "            const int row = width * y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "register-direct-product",
+          "text": "            register int row = width * y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "long-direct-product",
+          "text": "            long row = width * y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "signed-direct-product",
+          "text": "            signed int row = width * y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "unsigned-direct-product",
+          "text": "            unsigned int row = width * y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "direct-initialization",
+          "text": "            int row(width);\n            row *= y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "reference-to-width",
+          "text": "            int& row = width;\n            row *= y;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "pointer-to-width",
+          "text": "            int* row = &width;\n            *row *= y;\n            int pixel_index = *row + x + 6;"
+        },
+        {
+          "name": "named-product",
+          "text": "            int product = width * y;\n            int row = product;\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "nested-row-scope",
+          "text": "            int pixel_index;\n            {\n                int row = width * y;\n                pixel_index = row + x + 6;\n            }"
+        },
+        {
+          "name": "cast-product",
+          "text": "            int row = (int)(width * y);\n            int pixel_index = row + x + 6;"
+        },
+        {
+          "name": "compound-cast-multiplier",
+          "text": "            int row = width;\n            row *= (int)y;\n            int pixel_index = row + x + 6;"
+        }
+      ]
+    }
+  ]
+}

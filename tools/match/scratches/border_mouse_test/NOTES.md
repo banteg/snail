@@ -96,3 +96,32 @@ borrowing the cross-port-proved `TgaImageView` from `g_sprite_manager`.
 Fail-closed replay checks reject the old root-float and raw TGA-header
 renderings. This is an analysis-only ownership clarification; the honest
 98.29%, 117/117 scratch is unchanged.
+
+## 2026-07-29 bounded mask-row product sweep
+
+Three recorded sweeps tested 43 unique row-product forms. Thirty-two compile
+byte-identically, four valid variants regress, and seven deliberately partial
+two-site lifetime probes are rejected by the compiler; no variant improves the
+98.29% baseline.
+
+The first sweep included the Android `cRBorder::MouseTest()` control shape,
+where the row product is assigned inside the negative/in-range/overflow Y
+arms. VC6 does not fold that mobile-authored form into the Windows branch
+layout and it regresses substantially. Direct and commuted products, mutating
+the live width, named row/clamped-Y owners, and factored pixel indices all
+retain the candidate multiply destination.
+
+The second and third sweeps moved the row owner before the Y clamp and tested
+const, register, signed/unsigned, direct-initialization, reference, pointer,
+and nested-scope storage. Every non-regressing ordinary owner still emits:
+
+```text
+candidate: imul eax, esi; lea eax, [eax+edi+6]
+native:    imul esi, eax; lea eax, [esi+edi+6]
+```
+
+ESI is the recovered mask width, EAX is the clamped Y coordinate, and EDI is
+the clamped X coordinate. Both streams compute the identical pixel address;
+only the dead multiplicand chosen to retain the product differs. The clear
+`row = width; row *= y` source remains canonical without a fabricated later
+use or register-directed construct.

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "early-row-owner",
+      "find": "            int height = mask->height;\n            int y = (int)((float)height * v);",
+      "replacements": [
+        {
+          "name": "after-y",
+          "text": "            int height = mask->height;\n            int y = (int)((float)height * v);\n            int row = width;"
+        },
+        {
+          "name": "before-height",
+          "text": "            int row = width;\n            int height = mask->height;\n            int y = (int)((float)height * v);"
+        },
+        {
+          "name": "split-after-y",
+          "text": "            int height = mask->height;\n            int y = (int)((float)height * v);\n            int row;\n            row = width;"
+        },
+        {
+          "name": "split-before-height",
+          "text": "            int row;\n            row = width;\n            int height = mask->height;\n            int y = (int)((float)height * v);"
+        }
+      ]
+    },
+    {
+      "name": "late-row-publication",
+      "find": "            int row = width;\n            row *= y;",
+      "replacements": [
+        {
+          "name": "compound-existing-row",
+          "text": "            row *= y;"
+        },
+        {
+          "name": "expanded-existing-row",
+          "text": "            row = row * y;"
+        },
+        {
+          "name": "assign-product-to-existing-row",
+          "text": "            row = width * y;"
+        }
+      ]
+    }
+  ]
+}
