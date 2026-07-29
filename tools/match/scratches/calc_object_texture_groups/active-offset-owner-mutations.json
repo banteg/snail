@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "active-offset-owner",
+      "find": "                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;",
+      "replacements": [
+        {
+          "name": "signed-offset-snapshot",
+          "text": "                    int active_offset = offset;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + active_offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "const-offset-snapshot",
+          "text": "                    const int active_offset = offset;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + active_offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "unsigned-offset-snapshot",
+          "text": "                    unsigned int active_offset = (unsigned int)offset;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + active_offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "long-offset-snapshot",
+          "text": "                    long active_offset = offset;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + active_offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "unsigned-long-offset-snapshot",
+          "text": "                    unsigned long active_offset =\n                        (unsigned long)offset;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + active_offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "offset-reference",
+          "text": "                    int& active_offset = offset;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + active_offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "offset-pointer",
+          "text": "                    int* active_offset = &offset;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + *active_offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "complete-texture-offset",
+          "text": "                    int texture_offset = offset + 0x0c;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + texture_offset);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        }
+      ]
+    }
+  ]
+}

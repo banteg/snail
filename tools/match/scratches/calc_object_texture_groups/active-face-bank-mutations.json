@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "active-face-bank",
+      "find": "                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;",
+      "replacements": [
+        {
+          "name": "named-face-bank",
+          "text": "                    cRFaceQuad* active_facequads = facequads;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)active_facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "deferred-face-bank",
+          "text": "                    cRFaceQuad* active_facequads;\n                    active_facequads = facequads;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)active_facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "byte-face-bank",
+          "text": "                    char* active_facequads = (char*)facequads;\n                    cRTexture* active_texture =\n                        *(cRTexture**)(active_facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "unsigned-byte-face-bank",
+          "text": "                    unsigned char* active_facequads =\n                        (unsigned char*)facequads;\n                    cRTexture* active_texture =\n                        *(cRTexture**)(active_facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "face-bank-member-reference",
+          "text": "                    cRFaceQuad*& active_facequads = facequads;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)active_facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "face-bank-member-pointer",
+          "text": "                    cRFaceQuad** active_facequads = &facequads;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)*active_facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "object-borrow",
+          "text": "                    cRObject* object = this;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)object->facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "const-object-borrow",
+          "text": "                    cRObject* const object = this;\n                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)object->facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "active-texture-owner",
+      "find": "                    cRTexture* active_texture =\n                        *(cRTexture**)((char*)facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;",
+      "replacements": [
+        {
+          "name": "direct-member-byte-subscript",
+          "text": "                    cRTexture* active_texture =\n                        *(cRTexture**)&((char*)facequads)[offset + 0x0c];\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "offset-subscript-then-field",
+          "text": "                    cRTexture* active_texture =\n                        *(cRTexture**)(\n                            &((char*)facequads)[offset] + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "inline-typed-face-field",
+          "text": "                    cRTexture* active_texture =\n                        ((cRFaceQuad*)((char*)facequads + offset))->texture_ref;\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "subscripted-typed-face-field",
+          "text": "                    cRTexture* active_texture =\n                        ((cRFaceQuad*)&((char*)facequads)[offset])->texture_ref;\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "texture-slot-subscript",
+          "text": "                    cRTexture* active_texture =\n                        ((cRTexture**)((char*)facequads + offset))[3];\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "named-texture-slot",
+          "text": "                    cRTexture** active_texture_slot =\n                        (cRTexture**)&((char*)facequads)[offset + 0x0c];\n                    cRTexture* active_texture = *active_texture_slot;\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "texture-reference-owner",
+          "text": "                    cRTexture*& active_texture =\n                        *(cRTexture**)((char*)facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        },
+        {
+          "name": "const-texture-owner",
+          "text": "                    cRTexture* const active_texture =\n                        *(cRTexture**)((char*)facequads + offset + 0x0c);\n                    active_texture->flags |= TEXTURE_REF_RETAIN_SOURCE_BYTES;"
+        }
+      ]
+    }
+  ]
+}
