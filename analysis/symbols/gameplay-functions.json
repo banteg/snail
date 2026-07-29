@@ -1570,12 +1570,12 @@
     {
       "address": "0x41aa30",
       "name": "initialize_object_distort",
-      "description": "Initializes the five-float cRDistort subobject embedded at Object +0x80. Android independently exports cRDistort::Init and calls it from cRSubGoldy::Init on the same presentation object."
+      "description": "Exact `cRDistort::Init()` member: initializes the five-float cRDistort subobject embedded at cRObject +0x80. Android and iOS independently preserve the owner and name, and Android calls it from cRSubGoldy::Init on the same presentation object."
     },
     {
       "address": "0x41aa50",
       "name": "apply_distort_to_object",
-      "description": "Authored `cRDistort::Build(cRObject*)` member: applies the embedded Distort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to an Object's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior; Android and iOS leave the final two floats without recovered consumers, so they remain unnamed."
+      "description": "Authored `cRDistort::Build(cRObject*)` member: applies the embedded cRDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to a cRObject's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior; Android and iOS leave the final two floats without recovered consumers, so they remain unnamed."
     },
     {
       "address": "0x41ace0",

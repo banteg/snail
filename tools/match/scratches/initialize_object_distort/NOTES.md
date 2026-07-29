@@ -33,7 +33,14 @@ all five words, and `initialize_subgoldy` calls it through
 with no masked operands.
 
 2026-07-28 class identity closure: Android and iOS independently preserve the
-exact `cRDistort` class name. The normalized primary type is therefore
-`Distort`, with `ObjectDistort` retained only as a compatibility typedef. Cross-
-port reads stop after the three leading controls, so `+0x0c` and `+0x10`
-remain unnamed.
+exact `cRDistort` class name. Cross-port reads stop after the three leading
+controls, so `+0x0c` and `+0x10` remain unnamed.
+
+## 2026-07-29 primary cRDistort ownership
+
+The matcher now uses `cRDistort` as the primary 0x14-byte type and emits this
+exact body as `cRDistort::Init()`. `Distort` and `ObjectDistort` remain
+compatibility typedefs for the repeatable Binary Ninja and IDA vocabularies.
+Binary Ninja confirms the sole Windows call constructs the receiver as
+`presentation.object + 0x80`; the authored name remains 7/7 instructions with
+no masked operands.

@@ -15,7 +15,7 @@ void refresh_object_vertex_buffer(Object* object)
         object->facequad_normals = animation->frames[frame_index]->facequad_normals;
 
         if ((flags & OBJECT_FLAG_DISTORT_ENABLED) != 0) {
-            object->distort.apply_distort_to_object(object);
+            object->distort.Build(object);
         }
 
         ObjectRenderVertex* vertices;

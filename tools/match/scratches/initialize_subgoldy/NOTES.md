@@ -267,7 +267,7 @@ Wibo remains exact at 279/279 instructions and 27 clean operands.
 2026-07-14 cRDistort owner correction: Android's named `cRDistort::Init` clears
 the same five-word owner and is called from `cRSubGoldy::Init` on the
 presentation object, while iOS retains the same authored class. Windows now
-calls `presentation.object->distort.initialize_object_distort()` directly;
+calls `presentation.object->distort.Init()` directly;
 the stale standalone `SpringFloat` view is gone. Focused Wibo remains exact at
 279/279 instructions with all 27 operands clean.
 

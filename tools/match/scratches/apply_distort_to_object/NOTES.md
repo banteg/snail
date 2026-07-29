@@ -104,11 +104,19 @@ SIB base/index encodings outstanding.
 Android's exact `cRDistort::Init` and `cRDistort::Build(cRObject*)` symbols,
 plus iOS's exact `cRDistort::Init` and `cRDistort::BuildMatrix` symbols, recover
 the authored class identity independently of the Windows machine-code work.
-The canonical normalized owner is now `Distort`; `ObjectDistort` remains only
-as a compatibility typedef for older analysis consumers.
 
 The three ports agree on the five-float extent, but recovered consumers touch
 only `z_wave`, `y_squash`, and `xyz_scale`. The `+0x0c` and `+0x10` words are
 initialized and otherwise unread, so they remain explicitly unknown rather
 than being named from constants or neighboring mobile code. Windows remains
 authoritative for its embedded `Object +0x80` layout and Build behavior.
+
+## 2026-07-29 primary cRDistort ownership
+
+The matcher now emits `cRDistort::Build(cRObject*)` directly and embeds the
+primary `cRDistort` type at `cRObject +0x80`. The analyzer-facing `Distort` and
+`ObjectDistort` spellings remain compatibility aliases, so replay scripts do
+not churn. Binary Ninja confirms the sole Windows caller forms ECX as
+`object + 0x80` and passes the same object on the stack. The ownership change
+leaves the honest frontier at 95.43%, 197/197 instructions and 26 clean
+relocations; no mismatch is hidden.

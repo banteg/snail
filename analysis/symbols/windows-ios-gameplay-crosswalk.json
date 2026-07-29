@@ -4762,7 +4762,7 @@
       "ios_symbol": "cRDistort::Init()",
       "source_object": "ObjectProc.o",
       "confidence": "high",
-      "notes": "All ports initialize the same five-float cRDistort subobject. Windows embeds the canonical Distort owner at Object +0x80; mobile preserves the authored owner while using its platform Object layout. Only the first three floats have recovered consumers, so the final two remain unnamed."
+      "notes": "All ports initialize the same five-float cRDistort subobject. Windows embeds the canonical cRDistort owner at cRObject +0x80; mobile preserves the authored owner while using its platform object layout. Only the first three floats have recovered consumers, so the final two remain unnamed."
     },
     {
       "address": "0x41aa50",

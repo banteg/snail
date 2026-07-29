@@ -107,6 +107,24 @@
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member."
     },
     {
+      "address": "0x41aa30",
+      "name": "initialize_object_distort",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRDistort@@QAEXXZ"
+      ],
+      "description": "Exact five-float cRDistort::Init() body retained under the same authored owner and name by Android and iOS."
+    },
+    {
+      "address": "0x41aa50",
+      "name": "apply_distort_to_object",
+      "kind": "function",
+      "aliases": [
+        "?Build@cRDistort@@QAEXPAUcRObject@@@Z"
+      ],
+      "description": "Windows cRDistort::Build(cRObject*) body under the authored Android owner and signature; Windows remains authoritative for bounds and render-tail behavior."
+    },
+    {
       "address": "0x42f0a0",
       "name": "load_png_image",
       "kind": "function",

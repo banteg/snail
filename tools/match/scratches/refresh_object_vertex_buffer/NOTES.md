@@ -84,7 +84,7 @@ instructions remain the documented address-formation scheduling differences.
 
 ## 2026-07-15 retained-buffer replay
 
-Binary Ninja now sees `apply_distort_to_object(&object->distort, object)` and
+Binary Ninja now sees `cRDistort::Build(&object->distort, object)` and
 the full Object-owned animation/copy/render-buffer chain. A local retained
 `source_vertices` pointer regressed focused matching to 82.48%; per-iteration
 typed source/destination pointer locals were codegen-neutral at 90.58%. The

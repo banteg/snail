@@ -7922,8 +7922,10 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     assert "apply_type_renames" in sync_source
     assert 'renames=(("ObjectDistort", "Distort"),)' in sync_source
     assert '("0x80", "distort", "Distort")' in sync_source
-    assert "struct Distort" in matcher_header
-    assert "Distort distort; // +0x80" in matcher_header
+    assert "struct cRDistort" in matcher_header
+    assert "typedef cRDistort Distort;" in matcher_header
+    assert "typedef cRDistort ObjectDistort;" in matcher_header
+    assert "cRDistort distort; // +0x80" in matcher_header
     assert (
         mobile_crosswalk["0x41aa30"]["android_symbol"]
         == "cRDistort::Init()"
@@ -7935,7 +7937,7 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
     )
     assert "final two remain unnamed" in ios_crosswalk["0x41aa30"]["notes"]
     assert "cRDistort::BuildMatrix" in ios_crosswalk["0x41aa50"]["notes"]
-    assert "canonical Distort owner" in ios_crosswalk["0x41aa30"]["notes"]
+    assert "canonical cRDistort owner" in ios_crosswalk["0x41aa30"]["notes"]
     assert "no consumers for the two tail floats" in ios_crosswalk["0x41aa50"]["notes"]
 
     assert "int get_or_append_object_texture_group_vertex(" in matcher_header

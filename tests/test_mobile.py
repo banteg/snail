@@ -1528,6 +1528,85 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         assert "struct Object;" not in header
 
 
+def test_mobile_crdistort_recovers_primary_owner_and_methods() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+    object_header = (
+        repo_root / "tools/match/include/object_render_types.h"
+    ).read_text(encoding="utf-8")
+
+    assert "struct cRDistort {" in object_header
+    assert "struct Distort {" not in object_header
+    assert "void Init();" in object_header
+    assert "void Build(cRObject* object);" in object_header
+    assert "cRDistort_must_be_0x14" in object_header
+    assert "typedef cRDistort Distort;" in object_header
+    assert "typedef cRDistort ObjectDistort;" in object_header
+    assert "Distort_must_be_0x14" in object_header
+    assert "cRDistort distort; // +0x80" in object_header
+
+    expected_methods = (
+        (
+            "initialize_object_distort",
+            "Init",
+            "?Init@cRDistort@@QAEXXZ",
+            "cRDistort::Init()",
+        ),
+        (
+            "apply_distort_to_object",
+            "Build",
+            "?Build@cRDistort@@QAEXPAUcRObject@@@Z",
+            "cRDistort::Build(cRObject*)",
+        ),
+    )
+    for windows_name, method_name, windows_symbol, mobile_symbol in (
+        expected_methods
+    ):
+        scratch_root = repo_root / "tools/match/scratches" / windows_name
+        scratch_source = (scratch_root / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        scratch_config = (scratch_root / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        entry = entries[windows_name]
+
+        assert f"cRDistort::{method_name}(" in scratch_source
+        assert f"SYMBOL={windows_symbol}\n" in scratch_config
+        assert windows_symbol in references_by_name[windows_name]["aliases"]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+
+    assert entries["initialize_object_distort"]["ios_symbol"] == (
+        "cRDistort::Init()"
+    )
+
+    subgoldy_source = (
+        repo_root
+        / "tools/match/scratches/initialize_subgoldy/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    refresh_source = (
+        repo_root
+        / "tools/match/scratches/refresh_object_vertex_buffer/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "presentation.object->distort.Init();" in subgoldy_source
+    assert "object->distort.Build(object);" in refresh_source
+    assert ".initialize_object_distort();" not in subgoldy_source
+    assert ".apply_distort_to_object(object);" not in refresh_source
+
+
 def test_mobile_tvector_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
