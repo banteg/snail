@@ -3,7 +3,7 @@
 #include "object_render_types.h"
 #include "sprite.h"
 
-void cRObjects::replace_object_list_texture_refs(TextureRef* new_texture,
+void cRObjects::ReTextureObjects(TextureRef* new_texture,
     TextureRef* old_texture)
 {
     int object_cursor = 0;

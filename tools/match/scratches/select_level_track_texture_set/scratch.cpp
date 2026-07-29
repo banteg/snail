@@ -31,9 +31,9 @@ void cRTrack::Change(int texture_set)
 
     int previous = current_texture_set;
     if (selected != previous) {
-        g_object_list.replace_object_list_texture_refs(
+        g_object_list.ReTextureObjects(
             track_textures[selected], track_textures[previous]);
-        g_object_list.replace_object_list_texture_refs(
+        g_object_list.ReTextureObjects(
             slide_textures[selected], slide_textures[current_texture_set]);
         current_texture_set = selected;
     }

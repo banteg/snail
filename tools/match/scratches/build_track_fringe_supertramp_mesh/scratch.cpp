@@ -6,7 +6,7 @@
 
 void cRPath::build_track_fringe_supertramp_mesh(char* texture_path)
 {
-    fringe_mesh_bod.SetObject(g_object_list.add_object_to_list());
+    fringe_mesh_bod.SetObject(g_object_list.Add());
 
     Object* mesh = fringe_mesh_bod.object;
     mesh->blend_mode = 5;

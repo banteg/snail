@@ -106,7 +106,7 @@ char GameRoot::initialize_game_assets_and_world()
     fixed_update_count = 1;
 
     g_texture_refs.initialize_texture_list(500);
-    g_object_list.initialize_object_list(3000);
+    g_object_list.Init(3000);
     unknown_000514 = 0;
     fixed_update_accumulator = 0.0f;
     frame_counter = 0;
@@ -255,17 +255,17 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         int storage_index = (int)slice_index;
         BodBase* floor_slice = &root_bod_catalog.floor_slices.storage[storage_index];
-        floor_slice->SetObject(g_object_list.add_object_to_list());
+        floor_slice->SetObject(g_object_list.Add());
         initialize_backdrop_slice_quad(
             floor_slice->object, (char*)"Objects/World00/Track0.tga", slice_index);
 
         BodBase* warning_slice = &root_bod_catalog.warning_slices.storage[storage_index];
-        warning_slice->SetObject(g_object_list.add_object_to_list());
+        warning_slice->SetObject(g_object_list.Add());
         initialize_backdrop_slice_quad(
             warning_slice->object, (char*)"Objects/World00/TrackWarn.tga", slice_index);
 
         BodBase* slide_slice = &root_bod_catalog.slide_slices.storage[storage_index];
-        slide_slice->SetObject(g_object_list.add_object_to_list());
+        slide_slice->SetObject(g_object_list.Add());
         initialize_backdrop_slice_quad(
             slide_slice->object, (char*)"Objects/World00/Slide0.tga", slice_index);
         slice_index += 1.0f;
@@ -275,137 +275,137 @@ char GameRoot::initialize_game_assets_and_world()
     set_matrix_identity(&transform);
 
     BodBase* pillar = &root_bod_catalog.pillars[0];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar1.x", pillar->object, 1);
     transform.position.x = 0.0f;
     pillar->ApplyPos(&transform);
 
     pillar = &root_bod_catalog.pillars[1];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar2.x", pillar->object, 1);
     transform.position.x = 0.5f;
     pillar->ApplyPos(&transform);
 
     pillar = &root_bod_catalog.pillars[2];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar3.x", pillar->object, 1);
     transform.position.x = 1.0f;
     pillar->ApplyPos(&transform);
 
     pillar = &root_bod_catalog.pillars[3];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar4.x", pillar->object, 1);
     transform.position.x = 1.5f;
     pillar->ApplyPos(&transform);
 
     pillar = &root_bod_catalog.pillars[4];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar5.x", pillar->object, 1);
     transform.position.x = 2.0f;
     pillar->ApplyPos(&transform);
 
     pillar = &root_bod_catalog.pillars[5];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar6.x", pillar->object, 1);
     transform.position.x = 2.5f;
     pillar->ApplyPos(&transform);
 
     pillar = &root_bod_catalog.pillars[6];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar7.x", pillar->object, 1);
     transform.position.x = 3.0f;
     pillar->ApplyPos(&transform);
 
     pillar = &root_bod_catalog.pillars[7];
-    pillar->SetObject(g_object_list.add_object_to_list());
+    pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar8.x", pillar->object, 1);
     transform.position.x = 3.5f;
     pillar->ApplyPos(&transform);
 
     BodBase* ramp_edge = &root_bod_catalog.ramp_edges[0];
-    ramp_edge->SetObject(g_object_list.add_object_to_list());
+    ramp_edge->SetObject(g_object_list.Add());
     initialize_textured_backdrop_quad(
         ramp_edge->object, (char*)"Objects/Universe/Ramp.tga", 0.0f);
     raise_backdrop_quad_edge_pair(-1, ramp_edge->object);
 
     ramp_edge = &root_bod_catalog.ramp_edges[1];
-    ramp_edge->SetObject(g_object_list.add_object_to_list());
+    ramp_edge->SetObject(g_object_list.Add());
     initialize_textured_backdrop_quad(
         ramp_edge->object, (char*)"Objects/Universe/Ramp.tga", 0.0f);
     raise_backdrop_quad_edge_pair(0, ramp_edge->object);
 
     ramp_edge = &root_bod_catalog.ramp_edges[2];
-    ramp_edge->SetObject(g_object_list.add_object_to_list());
+    ramp_edge->SetObject(g_object_list.Add());
     initialize_textured_backdrop_quad(
         ramp_edge->object, (char*)"Objects/Universe/Ramp.tga", 0.0f);
     raise_backdrop_quad_edge_pair(1, ramp_edge->object);
 
     BodBase* corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_0_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         0, corner->object, (char*)"Objects/World00/Track0.tga");
     corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_1_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         1, corner->object, (char*)"Objects/World00/Track0.tga");
     corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_2_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         2, corner->object, (char*)"Objects/World00/Track0.tga");
     corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_3_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         3, corner->object, (char*)"Objects/World00/Track0.tga");
 
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_0_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         0, corner->object, (char*)"Objects/World00/TrackWarn.tga");
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_1_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         1, corner->object, (char*)"Objects/World00/TrackWarn.tga");
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_2_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         2, corner->object, (char*)"Objects/World00/TrackWarn.tga");
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_3_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         3, corner->object, (char*)"Objects/World00/TrackWarn.tga");
 
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_0_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         0, corner->object, (char*)"Objects/World00/Slide0.tga");
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_1_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         1, corner->object, (char*)"Objects/World00/Slide0.tga");
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_2_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         2, corner->object, (char*)"Objects/World00/Slide0.tga");
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_3_STORAGE_INDEX];
-    corner->SetObject(g_object_list.add_object_to_list());
+    corner->SetObject(g_object_list.Add());
     initialize_backdrop_corner_quad(
         3, corner->object, (char*)"Objects/World00/Slide0.tga");
 
     BodBase* trampoline = &root_bod_catalog.trampoline;
-    trampoline->SetObject(g_object_list.add_object_to_list());
+    trampoline->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"Tramp.x", trampoline->object, 1);
     trampoline->object->blend_mode = 6;
     trampoline->object->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;
 
     BodBase* universe_hole = &root_bod_catalog.universe_hole;
-    universe_hole->SetObject(g_object_list.add_object_to_list());
+    universe_hole->SetObject(g_object_list.Add());
     initialize_textured_backdrop_quad(
         universe_hole->object, (char*)"Objects/Universe/Hole.tga", 0.0f);
     universe_hole->object->blend_mode = 5;
     universe_hole->object->facequads[0].texture_ref->flags |= 4;
 
     BodBase* lazer = &root_bod_catalog.lazer_model;
-    lazer->SetObject(g_object_list.add_object_to_list());
+    lazer->SetObject(g_object_list.Add());
     load_object_definition((char*)"Objects/Lazer", lazer->object);
 
     enum {
@@ -436,7 +436,7 @@ char GameRoot::initialize_game_assets_and_world()
     } while (sub_lazer_count != 0);
 
     BodBase* salt_model = &root_bod_catalog.salt_model;
-    salt_model->SetObject(g_object_list.add_object_to_list());
+    salt_model->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"salt.x", salt_model->object, 1);
 
     cRSubGame** salt_owner = &subgame.salt_hazards.slots[0].owner_game;
@@ -456,7 +456,7 @@ char GameRoot::initialize_game_assets_and_world()
     do {
         char* banner_cursor = game + banner_index * sizeof(Banner);
         ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))
-            ->SetObject(g_object_list.add_object_to_list());
+            ->SetObject(g_object_list.Add());
         if (banner_index == 0) {
             loader->load_x_mesh(
                 (char*)"postofficestop.x",
@@ -493,7 +493,7 @@ char GameRoot::initialize_game_assets_and_world()
     debug_report_stub((char*)"path generation start\n");
 
     Path* path = &subgame.path_pairs[0].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         6.0f,
         3,
@@ -506,7 +506,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[0].primary.position.x = 0.0f;
 
     subgame.path_pairs[0].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[0].secondary.mirror_path(path);
     subgame.path_pairs[0].secondary.position.z = 0.0f;
     subgame.path_pairs[0].secondary.position.y = 0.0f;
@@ -524,7 +524,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[0].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[1].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         6.0f,
         2,
@@ -537,7 +537,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[1].primary.position.x = 0.0f;
 
     subgame.path_pairs[1].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[1].secondary.mirror_path(path);
     subgame.path_pairs[1].secondary.position.z = 0.0f;
     subgame.path_pairs[1].secondary.position.y = 0.0f;
@@ -555,7 +555,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[1].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[2].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         8.0f,
         4,
@@ -568,7 +568,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[2].primary.position.x = 0.0f;
 
     subgame.path_pairs[2].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[2].secondary.mirror_path(path);
     subgame.path_pairs[2].secondary.position.z = 0.0f;
     subgame.path_pairs[2].secondary.position.y = 0.0f;
@@ -586,7 +586,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[2].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[6].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloopw_path_template_pair(
         8.0f,
         4,
@@ -599,7 +599,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[6].primary.position.x = 0.0f;
 
     subgame.path_pairs[6].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[6].secondary.mirror_path(path);
     subgame.path_pairs[6].secondary.position.z = 0.0f;
     subgame.path_pairs[6].secondary.position.y = 0.0f;
@@ -617,7 +617,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[6].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[3].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         3.0f,
         2,
@@ -630,7 +630,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[3].primary.position.x = 0.0f;
 
     subgame.path_pairs[3].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[3].secondary.mirror_path(path);
     subgame.path_pairs[3].secondary.position.z = 0.0f;
     subgame.path_pairs[3].secondary.position.y = 0.0f;
@@ -648,7 +648,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[3].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[4].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         3.0f,
         3,
@@ -661,7 +661,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[4].primary.position.x = 0.0f;
 
     subgame.path_pairs[4].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[4].secondary.mirror_path(path);
     subgame.path_pairs[4].secondary.position.z = 0.0f;
     subgame.path_pairs[4].secondary.position.y = 0.0f;
@@ -679,7 +679,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[4].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[5].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         3.0f,
         4,
@@ -692,7 +692,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[5].primary.position.x = 0.0f;
 
     subgame.path_pairs[5].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[5].secondary.mirror_path(path);
     subgame.path_pairs[5].secondary.position.z = 0.0f;
     subgame.path_pairs[5].secondary.position.y = 0.0f;
@@ -710,7 +710,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[5].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[7].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopbow_path_template_pair(
         6.0f,
         4,
@@ -723,7 +723,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[7].primary.position.x = 0.0f;
 
     subgame.path_pairs[7].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[7].secondary.mirror_path(path);
     subgame.path_pairs[7].secondary.position.z = 0.0f;
     subgame.path_pairs[7].secondary.position.y = 0.0f;
@@ -741,7 +741,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[7].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[37].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_turnover_path_template_pair(
         6.0f,
         4,
@@ -754,7 +754,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[37].primary.position.x = 0.0f;
 
     subgame.path_pairs[37].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[37].secondary.mirror_path(path);
     subgame.path_pairs[37].secondary.position.z = 0.0f;
     subgame.path_pairs[37].secondary.position.y = 0.0f;
@@ -772,7 +772,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[37].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[38].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_turnoverdouble_path_template_pair(
         6.0f,
         4,
@@ -785,7 +785,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[38].primary.position.x = 0.0f;
 
     subgame.path_pairs[38].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[38].secondary.mirror_path(path);
     subgame.path_pairs[38].secondary.position.z = 0.0f;
     subgame.path_pairs[38].secondary.position.y = 0.0f;
@@ -803,7 +803,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[38].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[43].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_twister_path_template_pair(
         2.5f,
         3,
@@ -816,7 +816,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[43].primary.position.x = 0.0f;
 
     subgame.path_pairs[43].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[43].secondary.mirror_path(path);
     subgame.path_pairs[43].secondary.position.z = 0.0f;
     subgame.path_pairs[43].secondary.position.y = 0.0f;
@@ -834,7 +834,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[43].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[44].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_twister_path_template_pair(
         2.5f,
         3,
@@ -847,7 +847,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[44].primary.position.x = 0.0f;
 
     subgame.path_pairs[44].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[44].secondary.mirror_path(path);
     subgame.path_pairs[44].secondary.position.z = 0.0f;
     subgame.path_pairs[44].secondary.position.y = 0.0f;
@@ -865,7 +865,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[44].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[45].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_twister2_path_template_pair(
         2.5f,
         3,
@@ -878,7 +878,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[45].primary.position.x = 0.0f;
 
     subgame.path_pairs[45].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[45].secondary.mirror_path(path);
     subgame.path_pairs[45].secondary.position.z = 0.0f;
     subgame.path_pairs[45].secondary.position.y = 0.0f;
@@ -896,7 +896,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[45].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[46].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_twister2_path_template_pair(
         2.5f,
         3,
@@ -909,7 +909,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[46].primary.position.x = 0.0f;
 
     subgame.path_pairs[46].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[46].secondary.mirror_path(path);
     subgame.path_pairs[46].secondary.position.z = 0.0f;
     subgame.path_pairs[46].secondary.position.y = 0.0f;
@@ -927,7 +927,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[46].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[39].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_turnunder_path_template_pair(
         6.0f,
         4,
@@ -940,7 +940,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[39].primary.position.x = 0.0f;
 
     subgame.path_pairs[39].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[39].secondary.mirror_path(path);
     subgame.path_pairs[39].secondary.position.z = 0.0f;
     subgame.path_pairs[39].secondary.position.y = 0.0f;
@@ -958,7 +958,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[39].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[41].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_invert_path_template_pair(
         6.0f,
         8,
@@ -971,7 +971,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[41].primary.position.x = 0.0f;
 
     subgame.path_pairs[41].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[41].secondary.mirror_path(path);
     subgame.path_pairs[41].secondary.position.z = 0.0f;
     subgame.path_pairs[41].secondary.position.y = 0.0f;
@@ -989,7 +989,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[41].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[42].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_halfpipe_path_template_pair(
         6.0f,
         8,
@@ -1002,7 +1002,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[42].primary.position.x = 0.0f;
 
     subgame.path_pairs[42].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[42].secondary.mirror_path(path);
     subgame.path_pairs[42].secondary.position.z = 0.0f;
     subgame.path_pairs[42].secondary.position.y = 0.0f;
@@ -1020,7 +1020,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[42].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[40].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_wibble_path_template_pair(
         6.0f,
         8,
@@ -1033,7 +1033,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[40].primary.position.x = 0.0f;
 
     subgame.path_pairs[40].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[40].secondary.mirror_path(path);
     subgame.path_pairs[40].secondary.position.z = 0.0f;
     subgame.path_pairs[40].secondary.position.y = 0.0f;
@@ -1051,7 +1051,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[40].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[31].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_supertramp_path_template_pair(
         6.0f,
         2,
@@ -1070,7 +1070,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[31].primary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[31].secondary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_supertramp_path_template_pair(
         6.0f,
         2,
@@ -1089,7 +1089,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[31].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[36].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_start_path_template_pair(
         4.0f,
         8,
@@ -1107,7 +1107,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[36].primary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[36].secondary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_start_path_template_pair(
         4.0f,
         8,
@@ -1125,7 +1125,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[36].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[25].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopout_path_template_pair(
         3.0f,
         4,
@@ -1138,7 +1138,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[25].primary.position.x = 0.0f;
 
     subgame.path_pairs[25].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[25].secondary.mirror_path(path);
     subgame.path_pairs[25].secondary.position.z = 0.0f;
     subgame.path_pairs[25].secondary.position.y = 0.0f;
@@ -1156,7 +1156,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[25].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[27].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopout_path_template_pair(
         5.0f,
         4,
@@ -1169,7 +1169,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[27].primary.position.x = 0.0f;
 
     subgame.path_pairs[27].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[27].secondary.mirror_path(path);
     subgame.path_pairs[27].secondary.position.z = 0.0f;
     subgame.path_pairs[27].secondary.position.y = 0.0f;
@@ -1187,7 +1187,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[27].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[26].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopout_path_template_pair(
         3.0f,
         3,
@@ -1200,7 +1200,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[26].primary.position.x = 0.0f;
 
     subgame.path_pairs[26].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[26].secondary.mirror_path(path);
     subgame.path_pairs[26].secondary.position.z = 0.0f;
     subgame.path_pairs[26].secondary.position.y = 0.0f;
@@ -1218,7 +1218,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[26].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[16].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hump_path_template_pair(
         4.0f,
         1.0f,
@@ -1232,7 +1232,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[16].primary.position.x = 0.0f;
 
     subgame.path_pairs[16].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[16].secondary.mirror_path(path);
     subgame.path_pairs[16].secondary.position.z = 0.0f;
     subgame.path_pairs[16].secondary.position.y = 0.0f;
@@ -1250,7 +1250,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[16].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[17].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_dump_path_template_pair(
         4.0f,
         1.0f,
@@ -1264,7 +1264,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[17].primary.position.x = 0.0f;
 
     subgame.path_pairs[17].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[17].secondary.mirror_path(path);
     subgame.path_pairs[17].secondary.position.z = 0.0f;
     subgame.path_pairs[17].secondary.position.y = 0.0f;
@@ -1282,7 +1282,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[17].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[18].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hump_path_template_pair(
         4.0f,
         0.300000012f,
@@ -1296,7 +1296,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[18].primary.position.x = 0.0f;
 
     subgame.path_pairs[18].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[18].secondary.mirror_path(path);
     subgame.path_pairs[18].secondary.position.z = 0.0f;
     subgame.path_pairs[18].secondary.position.y = 0.0f;
@@ -1314,7 +1314,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[18].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[19].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_dump_path_template_pair(
         4.0f,
         0.300000012f,
@@ -1328,7 +1328,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[19].primary.position.x = 0.0f;
 
     subgame.path_pairs[19].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[19].secondary.mirror_path(path);
     subgame.path_pairs[19].secondary.position.z = 0.0f;
     subgame.path_pairs[19].secondary.position.y = 0.0f;
@@ -1346,7 +1346,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[19].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[8].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hill_valley_path_template_pair(
         8,
         4.0f,
@@ -1360,7 +1360,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[8].primary.position.x = 0.0f;
 
     subgame.path_pairs[8].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[8].secondary.mirror_path(path);
     subgame.path_pairs[8].secondary.position.z = 0.0f;
     subgame.path_pairs[8].secondary.position.y = 0.0f;
@@ -1378,7 +1378,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[8].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[10].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hill_valley_path_template_pair(
         4,
         4.0f,
@@ -1392,7 +1392,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[10].primary.position.x = 0.0f;
 
     subgame.path_pairs[10].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[10].secondary.mirror_path(path);
     subgame.path_pairs[10].secondary.position.z = 0.0f;
     subgame.path_pairs[10].secondary.position.y = 0.0f;
@@ -1410,7 +1410,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[10].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[9].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hill_valley_path_template_pair(
         4,
         4.0f,
@@ -1424,7 +1424,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[9].primary.position.x = 0.0f;
 
     subgame.path_pairs[9].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[9].secondary.mirror_path(path);
     subgame.path_pairs[9].secondary.position.z = 0.0f;
     subgame.path_pairs[9].secondary.position.y = 0.0f;
@@ -1442,7 +1442,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[9].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[14].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_sbend_path_template_pair(
         8,
         8.0f,
@@ -1456,7 +1456,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[14].primary.position.x = 0.0f;
 
     subgame.path_pairs[14].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[14].secondary.mirror_path(path);
     subgame.path_pairs[14].secondary.position.z = 0.0f;
     subgame.path_pairs[14].secondary.position.y = 0.0f;
@@ -1474,7 +1474,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[14].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[11].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hill_valley_path_template_pair(
         8,
         -4.0f,
@@ -1488,7 +1488,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[11].primary.position.x = 0.0f;
 
     subgame.path_pairs[11].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[11].secondary.mirror_path(path);
     subgame.path_pairs[11].secondary.position.z = 0.0f;
     subgame.path_pairs[11].secondary.position.y = 0.0f;
@@ -1506,7 +1506,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[11].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[13].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hill_valley_path_template_pair(
         4,
         -4.0f,
@@ -1520,7 +1520,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[13].primary.position.x = 0.0f;
 
     subgame.path_pairs[13].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[13].secondary.mirror_path(path);
     subgame.path_pairs[13].secondary.position.z = 0.0f;
     subgame.path_pairs[13].secondary.position.y = 0.0f;
@@ -1538,7 +1538,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[13].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[12].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_hill_valley_path_template_pair(
         4,
         -4.0f,
@@ -1552,7 +1552,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[12].primary.position.x = 0.0f;
 
     subgame.path_pairs[12].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[12].secondary.mirror_path(path);
     subgame.path_pairs[12].secondary.position.z = 0.0f;
     subgame.path_pairs[12].secondary.position.y = 0.0f;
@@ -1570,7 +1570,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[12].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[20].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_dip_path_template_pair(
         4.0f,
         2,
@@ -1583,7 +1583,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[20].primary.position.x = 0.0f;
 
     subgame.path_pairs[20].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[20].secondary.mirror_path(path);
     subgame.path_pairs[20].secondary.position.z = 0.0f;
     subgame.path_pairs[20].secondary.position.y = 0.0f;
@@ -1601,7 +1601,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[20].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[21].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_screw_path_template_pair(
         0x18,
         3,
@@ -1614,7 +1614,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[21].primary.position.x = 0.0f;
 
     subgame.path_pairs[21].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[21].secondary.mirror_path(path);
     subgame.path_pairs[21].secondary.position.z = 0.0f;
     subgame.path_pairs[21].secondary.position.y = 0.0f;
@@ -1632,7 +1632,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[21].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[22].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_slalom_path_template_pair(
         0x20,
         4,
@@ -1645,7 +1645,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[22].primary.position.x = 0.0f;
 
     subgame.path_pairs[22].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[22].secondary.mirror_path(path);
     subgame.path_pairs[22].secondary.position.z = 0.0f;
     subgame.path_pairs[22].secondary.position.y = 0.0f;
@@ -1663,7 +1663,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[22].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[23].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_slalombig_path_template_pair(
         0x20,
         4,
@@ -1676,7 +1676,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[23].primary.position.x = 0.0f;
 
     subgame.path_pairs[23].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[23].secondary.mirror_path(path);
     subgame.path_pairs[23].secondary.position.z = 0.0f;
     subgame.path_pairs[23].secondary.position.y = 0.0f;
@@ -1694,7 +1694,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[23].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[32].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_slalomdouble_path_template_pair(
         0x20,
         4,
@@ -1707,7 +1707,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[32].primary.position.x = 0.0f;
 
     subgame.path_pairs[32].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[32].secondary.mirror_path(path);
     subgame.path_pairs[32].secondary.position.z = 0.0f;
     subgame.path_pairs[32].secondary.position.y = 0.0f;
@@ -1725,7 +1725,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[32].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[24].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_worm_path_template_pair(
         (char*)"Objects/World00/Worm.tga");
     subgame.path_pairs[24].primary.position.z = 0.0f;
@@ -1733,25 +1733,25 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[24].primary.position.x = 0.0f;
 
     subgame.path_pairs[24].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[24].secondary.mirror_path(path);
     subgame.path_pairs[24].secondary.position.z = 0.0f;
     subgame.path_pairs[24].secondary.position.y = 0.0f;
     subgame.path_pairs[24].secondary.position.x = 0.0f;
 
     subgame.path_pairs[24].primary.fringe_mesh_bod.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     disable_object_rendering(
         subgame.path_pairs[24].primary.fringe_mesh_bod.object);
     subgame.path_pairs[24].secondary.fringe_mesh_bod.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     disable_object_rendering(
         subgame.path_pairs[24].secondary.fringe_mesh_bod.object);
     subgame.path_pairs[24].primary.object->blend_mode = 8;
     subgame.path_pairs[24].secondary.object->blend_mode = 8;
 
     path = &subgame.path_pairs[28].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_sweep_path_template_pair(
         4.0f,
         4,
@@ -1764,7 +1764,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[28].primary.position.x = 0.0f;
 
     subgame.path_pairs[28].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[28].secondary.mirror_path(path);
     subgame.path_pairs[28].secondary.position.z = 0.0f;
     subgame.path_pairs[28].secondary.position.y = 0.0f;
@@ -1782,7 +1782,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[28].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[15].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_cage2_path_template_pair(
         3,
         (char*)"Objects/World00/Slide0.tga",
@@ -1793,7 +1793,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[15].primary.position.x = 0.0f;
 
     subgame.path_pairs[15].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[15].secondary.mirror_path(path);
     subgame.path_pairs[15].secondary.position.z = 0.0f;
     subgame.path_pairs[15].secondary.position.y = 0.0f;
@@ -1811,7 +1811,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[15].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[33].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_p_path_template_pair(
         0,
         4.0f,
@@ -1827,7 +1827,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[33].primary.position.x = 0.0f;
 
     subgame.path_pairs[33].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[33].secondary.mirror_path(path);
     subgame.path_pairs[33].secondary.position.z = 0.0f;
     subgame.path_pairs[33].secondary.position.y = 0.0f;
@@ -1845,7 +1845,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[33].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[34].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_p_path_template_pair(
         1,
         4.0f,
@@ -1861,7 +1861,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[34].primary.position.x = 0.0f;
 
     subgame.path_pairs[34].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[34].secondary.mirror_path(path);
     subgame.path_pairs[34].secondary.position.z = 0.0f;
     subgame.path_pairs[34].secondary.position.y = 0.0f;
@@ -1879,7 +1879,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[34].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[35].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_p_path_template_pair(
         2,
         4.0f,
@@ -1895,7 +1895,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[35].primary.position.x = 0.0f;
 
     subgame.path_pairs[35].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[35].secondary.mirror_path(path);
     subgame.path_pairs[35].secondary.position.z = 0.0f;
     subgame.path_pairs[35].secondary.position.y = 0.0f;
@@ -1913,7 +1913,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[35].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[29].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_snake_path_template_pair(
         2.0f,
         4,
@@ -1926,7 +1926,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[29].primary.position.x = 0.0f;
 
     subgame.path_pairs[29].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[29].secondary.mirror_path(path);
     subgame.path_pairs[29].secondary.position.z = 0.0f;
     subgame.path_pairs[29].secondary.position.y = 0.0f;
@@ -1944,7 +1944,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[29].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[47].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_toad_path_template_pair(
         1,
         (char*)"Objects/World00/Slide0.tga",
@@ -1955,7 +1955,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[47].primary.position.x = 0.0f;
 
     subgame.path_pairs[47].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[47].secondary.mirror_path(path);
     subgame.path_pairs[47].secondary.position.z = 0.0f;
     subgame.path_pairs[47].secondary.position.y = 0.0f;
@@ -1973,7 +1973,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[47].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[48].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_toad_path_template_pair(
         0,
         (char*)"Objects/World00/Slide0.tga",
@@ -1984,7 +1984,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[48].primary.position.x = 0.0f;
 
     subgame.path_pairs[48].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[48].secondary.mirror_path(path);
     subgame.path_pairs[48].secondary.position.z = 0.0f;
     subgame.path_pairs[48].secondary.position.y = 0.0f;
@@ -2002,7 +2002,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[48].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[49].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_toad_path_template_pair(
         1,
         (char*)"Objects/World00/Slide0.tga",
@@ -2013,7 +2013,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[49].primary.position.x = 0.0f;
 
     subgame.path_pairs[49].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[49].secondary.mirror_path(path);
     subgame.path_pairs[49].secondary.position.z = 0.0f;
     subgame.path_pairs[49].secondary.position.y = 0.0f;
@@ -2031,7 +2031,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[49].secondary.fringe_mesh_bod.position.x = 0.0f;
 
     path = &subgame.path_pairs[50].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_toad_path_template_pair(
         0,
         (char*)"Objects/World00/Slide0.tga",
@@ -2042,7 +2042,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[50].primary.position.x = 0.0f;
 
     subgame.path_pairs[50].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[50].secondary.mirror_path(path);
     subgame.path_pairs[50].secondary.position.z = 0.0f;
     subgame.path_pairs[50].secondary.position.y = 0.0f;
@@ -2064,7 +2064,7 @@ char GameRoot::initialize_game_assets_and_world()
     path_transition_color.store_color4f(1.0f, 1.0f, 1.0f, 0.60000002f);
 
     path = &subgame.path_pairs[51].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         6.0f,
         3,
@@ -2077,7 +2077,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[51].primary.position.x = 0.0f;
 
     subgame.path_pairs[51].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[51].secondary.mirror_path(path);
     subgame.path_pairs[51].secondary.position.z = 0.0f;
     subgame.path_pairs[51].secondary.position.y = 0.0f;
@@ -2104,7 +2104,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[0].secondary.object;
 
     path = &subgame.path_pairs[52].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         6.0f,
         2,
@@ -2117,7 +2117,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[52].primary.position.x = 0.0f;
 
     subgame.path_pairs[52].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[52].secondary.mirror_path(path);
     subgame.path_pairs[52].secondary.position.z = 0.0f;
     subgame.path_pairs[52].secondary.position.y = 0.0f;
@@ -2144,7 +2144,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[52].secondary.object;
 
     path = &subgame.path_pairs[53].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         8.0f,
         4,
@@ -2157,7 +2157,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[53].primary.position.x = 0.0f;
 
     subgame.path_pairs[53].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[53].secondary.mirror_path(path);
     subgame.path_pairs[53].secondary.position.z = 0.0f;
     subgame.path_pairs[53].secondary.position.y = 0.0f;
@@ -2184,7 +2184,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[2].secondary.object;
 
     path = &subgame.path_pairs[57].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloopw_path_template_pair(
         8.0f,
         4,
@@ -2197,7 +2197,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[57].primary.position.x = 0.0f;
 
     subgame.path_pairs[57].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[57].secondary.mirror_path(path);
     subgame.path_pairs[57].secondary.position.z = 0.0f;
     subgame.path_pairs[57].secondary.position.y = 0.0f;
@@ -2224,7 +2224,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[6].secondary.object;
 
     path = &subgame.path_pairs[54].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         3.0f,
         2,
@@ -2237,7 +2237,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[54].primary.position.x = 0.0f;
 
     subgame.path_pairs[54].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[54].secondary.mirror_path(path);
     subgame.path_pairs[54].secondary.position.z = 0.0f;
     subgame.path_pairs[54].secondary.position.y = 0.0f;
@@ -2264,7 +2264,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[3].secondary.object;
 
     path = &subgame.path_pairs[55].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         3.0f,
         3,
@@ -2277,7 +2277,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[55].primary.position.x = 0.0f;
 
     subgame.path_pairs[55].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[55].secondary.mirror_path(path);
     subgame.path_pairs[55].secondary.position.z = 0.0f;
     subgame.path_pairs[55].secondary.position.y = 0.0f;
@@ -2304,7 +2304,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[4].secondary.object;
 
     path = &subgame.path_pairs[56].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_looptheloop_path_template_pair(
         3.0f,
         4,
@@ -2317,7 +2317,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[56].primary.position.x = 0.0f;
 
     subgame.path_pairs[56].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[56].secondary.mirror_path(path);
     subgame.path_pairs[56].secondary.position.z = 0.0f;
     subgame.path_pairs[56].secondary.position.y = 0.0f;
@@ -2344,7 +2344,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[5].secondary.object;
 
     path = &subgame.path_pairs[58].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopbow_path_template_pair(
         6.0f,
         4,
@@ -2357,7 +2357,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[58].primary.position.x = 0.0f;
 
     subgame.path_pairs[58].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[58].secondary.mirror_path(path);
     subgame.path_pairs[58].secondary.position.z = 0.0f;
     subgame.path_pairs[58].secondary.position.y = 0.0f;
@@ -2384,7 +2384,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[7].secondary.object;
 
     path = &subgame.path_pairs[62].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_invert_path_template_pair(
         6.0f,
         8,
@@ -2397,7 +2397,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[62].primary.position.x = 0.0f;
 
     subgame.path_pairs[62].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[62].secondary.mirror_path(path);
     subgame.path_pairs[62].secondary.position.z = 0.0f;
     subgame.path_pairs[62].secondary.position.y = 0.0f;
@@ -2424,7 +2424,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[41].secondary.object;
 
     path = &subgame.path_pairs[59].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopout_path_template_pair(
         3.0f,
         4,
@@ -2437,7 +2437,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[59].primary.position.x = 0.0f;
 
     subgame.path_pairs[59].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[59].secondary.mirror_path(path);
     subgame.path_pairs[59].secondary.position.z = 0.0f;
     subgame.path_pairs[59].secondary.position.y = 0.0f;
@@ -2464,7 +2464,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[25].secondary.object;
 
     path = &subgame.path_pairs[61].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopout_path_template_pair(
         5.0f,
         4,
@@ -2477,7 +2477,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[61].primary.position.x = 0.0f;
 
     subgame.path_pairs[61].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[61].secondary.mirror_path(path);
     subgame.path_pairs[61].secondary.position.z = 0.0f;
     subgame.path_pairs[61].secondary.position.y = 0.0f;
@@ -2504,7 +2504,7 @@ char GameRoot::initialize_game_assets_and_world()
         subgame.path_pairs[27].secondary.object;
 
     path = &subgame.path_pairs[60].primary;
-    path->SetObject(g_object_list.add_object_to_list());
+    path->SetObject(g_object_list.Add());
     path->initialize_loopout_path_template_pair(
         3.0f,
         3,
@@ -2515,7 +2515,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.path_pairs[60].primary.position.zero_vector3();
 
     subgame.path_pairs[60].secondary.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     subgame.path_pairs[60].secondary.mirror_path(path);
     subgame.path_pairs[60].secondary.position.zero_vector3();
 
@@ -2538,7 +2538,7 @@ char GameRoot::initialize_game_assets_and_world()
     debug_report_stub((char*)"path generation end\n");
 
     subgame.player.presentation.cutscene_animation_slots[0].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
 
     char base_animation_name[0x80];
     char* test_line = find_case_insensitive_substring(
@@ -2559,58 +2559,58 @@ char GameRoot::initialize_game_assets_and_world()
     loader->load_x_animation_clip(
         base_animation_name,
         subgame.player.presentation.cutscene_animation_slots[0].body.object);
-    subgame.player.presentation.SetObject(g_object_list.add_object_to_list());
+    subgame.player.presentation.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         base_animation_name, subgame.player.presentation.object);
 
     subgame.player.presentation.cutscene_animation_slots[1].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-move-000.x",
         subgame.player.presentation.cutscene_animation_slots[1].body.object);
     subgame.player.presentation.cutscene_animation_slots[2].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-bobalong-000.x",
         subgame.player.presentation.cutscene_animation_slots[2].body.object);
     subgame.player.presentation.cutscene_animation_slots[3].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-lookbackleft-000.x",
         subgame.player.presentation.cutscene_animation_slots[3].body.object);
     subgame.player.presentation.cutscene_animation_slots[4].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-lookbackright-000.x",
         subgame.player.presentation.cutscene_animation_slots[4].body.object);
     subgame.player.presentation.cutscene_animation_slots[5].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-fall-000.x",
         subgame.player.presentation.cutscene_animation_slots[5].body.object);
     subgame.player.presentation.cutscene_animation_slots[6].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-damaged-000.x",
         subgame.player.presentation.cutscene_animation_slots[6].body.object);
     subgame.player.presentation.cutscene_animation_slots[7].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-intoshell-000.x",
         subgame.player.presentation.cutscene_animation_slots[7].body.object);
     subgame.player.presentation.cutscene_animation_slots[8].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-skidstop-000.x",
         subgame.player.presentation.cutscene_animation_slots[8].body.object);
     subgame.player.presentation.cutscene_animation_slots[9].body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"turbo-talk-000.x",
         subgame.player.presentation.cutscene_animation_slots[9].body.object);
 
     subgame.player.presentation.snail_hotspot_body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_mesh(
         (char*)"TurboHotSpots.x",
         subgame.player.presentation.snail_hotspot_body.object,
@@ -2639,20 +2639,20 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.object->distort.xyz_scale = 0.0f;
 
     subgame.player.presentation.jetpack_channel.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"jetpack-base-000.x",
         subgame.player.presentation.jetpack_channel.object);
     subgame.player.presentation.jetpack_channel.animation_slots[0]
         .body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"jetpack-base-000.x",
         subgame.player.presentation.jetpack_channel.animation_slots[0]
             .body.object);
     subgame.player.presentation.jetpack_channel.animation_slots[1]
         .body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"jetpack-draw-000.x",
         subgame.player.presentation.jetpack_channel.animation_slots[1]
@@ -2679,36 +2679,36 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.jetpack_channel.object->distort.xyz_scale = 0.0f;
 
     subgame.player.presentation.weapon_channels[0].SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterleft-base-000.x",
         subgame.player.presentation.weapon_channels[0].object);
     subgame.player.presentation.weapon_channels[0].animation_slots[0]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterleft-base-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[0]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[1]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterleft-draw-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[1]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[2]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterleft-fire-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[2]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[3]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"Laserleft-base-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[3]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[4]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"Laserleft-draw-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[4]
@@ -2737,36 +2737,36 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.weapon_channels[0].object->distort.xyz_scale = 0.0f;
 
     subgame.player.presentation.weapon_channels[1].SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterRight-base-000.x",
         subgame.player.presentation.weapon_channels[1].object);
     subgame.player.presentation.weapon_channels[1].animation_slots[0]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterRight-base-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[0]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[1]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterRight-draw-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[1]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[2]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterRight-fire-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[2]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[3]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"Laserright-base-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[3]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[4]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"Laserright-draw-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[4]
@@ -2795,36 +2795,36 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.presentation.weapon_channels[1].object->distort.xyz_scale = 0.0f;
 
     subgame.player.presentation.weapon_channels[2].SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterTop-base-000.x",
         subgame.player.presentation.weapon_channels[2].object);
     subgame.player.presentation.weapon_channels[2].animation_slots[0]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterTop-base-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[0]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[1]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterTop-draw-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[1]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[2]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"blasterTop-fire-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[2]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[3]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"rocketlauncher-base-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[3]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[4]
-        .body.SetObject(g_object_list.add_object_to_list());
+        .body.SetObject(g_object_list.Add());
     loader->load_x_animation_clip(
         (char*)"rocketlauncher-draw-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[4]
@@ -2866,7 +2866,7 @@ char GameRoot::initialize_game_assets_and_world()
             (char*)"x/snail-turbo-invincible.tga", 0, 0);
 
     subgame.player.presentation.invincible_shell.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_mesh(
         (char*)"invincible-base-000.x",
         subgame.player.presentation.invincible_shell.object,
@@ -2876,14 +2876,14 @@ char GameRoot::initialize_game_assets_and_world()
 
     GolbShot* golb_shot = &subgame.player.golb_shots[0];
     golb_shot->tertiary_body.SetObject(
-        g_object_list.add_object_to_list());
+        g_object_list.Add());
     loader->load_x_mesh(
         (char*)"rocket-base-000.x", golb_shot->tertiary_body.object, 1);
     Object* rocket_object = golb_shot->tertiary_body.object;
     int golb_shot_count = 12;
     do {
         golb_shot->vapour.SetObject(
-            g_object_list.add_object_to_list());
+            g_object_list.Add());
         Object* vapour_object = golb_shot->vapour.object;
         vapour_object->flags |=
             OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;
@@ -2983,7 +2983,7 @@ char GameRoot::initialize_game_assets_and_world()
     g_texture_refs.get_or_create_texture_ref(
         (char*)"Objects/World00/Slide3.tga", 0, 0)->mip_levels = 2;
 
-    subgame.barrier.SetObject(g_object_list.add_object_to_list());
+    subgame.barrier.SetObject(g_object_list.Add());
     load_object_definition((char*)"Objects/Barrier", subgame.barrier.object);
     subgame.barrier.position.zero_vector3();
     subgame.barrier.color.store_color4f(1.0f, 1.0f, 1.0f, 0.800000012f);
@@ -3001,7 +3001,7 @@ char GameRoot::initialize_game_assets_and_world()
                 int fringe_column = 0;
                 do {
                     fringe_bod->SetObject(
-                        g_object_list.add_object_to_list());
+                        g_object_list.Add());
                     initialize_backdrop_tile_quad(
                         fringe_bod->object,
                         fringe_family,
@@ -3093,7 +3093,7 @@ char GameRoot::initialize_game_assets_and_world()
         --border_count;
     } while (border_count != 0);
 
-    g_object_list.build_all_objects();
+    g_object_list.BuildObjects();
 
     set_object_color(
         subgame.path_pairs[51].primary.object, path_transition_color);

@@ -4,7 +4,7 @@
 
 int report_errorf(char* format, ...);
 
-cRObject* cRObjects::add_object_to_list()
+cRObject* cRObjects::Add()
 {
     if (count == capacity) {
         report_errorf("Too many Objects - Increase ObjectList.Init(MAX) in G0.cpp");

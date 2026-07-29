@@ -40,7 +40,7 @@ void SegmentCache::initialize_track_render_cache_manager()
             TrackRenderCacheSlotCursor* slot =
                 (TrackRenderCacheSlotCursor*)((char*)this
                     + (slot_base + i) * sizeof(TrackRenderCacheSlot));
-            slot->slot.SetObject(g_object_list.add_object_to_list());
+            slot->slot.SetObject(g_object_list.Add());
 
             slot->slot.object->flags = OBJECT_FLAG_RENDER_BUFFERS_READY;
             slot->slot.object->vertex_count = 0;

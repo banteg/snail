@@ -247,18 +247,18 @@
       "name": "initialize_object_list",
       "kind": "function",
       "aliases": [
-        "?initialize_object_list@cRObjects@@QAEXH@Z"
+        "?Init@cRObjects@@QAEXH@Z"
       ],
-      "description": "Exact cRObjects-owned contiguous object-bank initializer, retained by both mobile ports as cRObjects::Init(int)."
+      "description": "Exact cRObjects::Init(int) contiguous object-bank initializer retained under the same authored owner and name by both mobile ports."
     },
     {
       "address": "0x42f9e0",
       "name": "build_all_objects",
       "kind": "function",
       "aliases": [
-        "?build_all_objects@cRObjects@@QAEXXZ"
+        "?BuildObjects@cRObjects@@QAEXXZ"
       ],
-      "description": "Exact cRObjects-owned batch builder, retained by both mobile ports as cRObjects::BuildObjects()."
+      "description": "Exact cRObjects::BuildObjects() batch builder retained under the same authored owner and name by both mobile ports."
     },
     {
       "address": "0x42fa80",
@@ -274,9 +274,9 @@
       "name": "add_object_to_list",
       "kind": "function",
       "aliases": [
-        "?add_object_to_list@cRObjects@@QAEPAUcRObject@@XZ"
+        "?Add@cRObjects@@QAEPAUcRObject@@XZ"
       ],
-      "description": "Exact cRObjects-owned slot allocator returning a cRObject receiver, retained by both mobile ports as cRObjects::Add()."
+      "description": "Exact cRObjects::Add() slot allocator returning a cRObject receiver, retained under the same authored owner and name by both mobile ports."
     },
     {
       "address": "0x42fb10",
@@ -337,9 +337,9 @@
       "name": "replace_object_list_texture_refs",
       "kind": "function",
       "aliases": [
-        "?replace_object_list_texture_refs@cRObjects@@QAEXPAUTextureRef@@0@Z"
+        "?ReTextureObjects@cRObjects@@QAEXPAUTextureRef@@0@Z"
       ],
-      "description": "cRObjects-owned texture replacement loop retained by Android as cRObjects::ReTextureObjects."
+      "description": "cRObjects::ReTextureObjects texture-replacement loop retained under the same authored owner and name by Android; the Windows TextureRef pointer ABI remains authoritative."
     },
     {
       "address": "0x44c870",

@@ -1356,23 +1356,23 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         (
             "initialize_object_list",
             "cRObjects",
-            "?initialize_object_list@cRObjects@@QAEXH@Z",
+            "?Init@cRObjects@@QAEXH@Z",
         ),
         (
             "build_all_objects",
             "cRObjects",
-            "?build_all_objects@cRObjects@@QAEXXZ",
+            "?BuildObjects@cRObjects@@QAEXXZ",
         ),
         (
             "add_object_to_list",
             "cRObjects",
-            "?add_object_to_list@cRObjects@@QAEPAUcRObject@@XZ",
+            "?Add@cRObjects@@QAEPAUcRObject@@XZ",
         ),
         (
             "replace_object_list_texture_refs",
             "cRObjects",
             (
-                "?replace_object_list_texture_refs@cRObjects"
+                "?ReTextureObjects@cRObjects"
                 "@@QAEXPAUTextureRef@@0@Z"
             ),
         ),
@@ -1442,6 +1442,33 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     assert "object->RequestAnim(" in animation_loader_source
     assert "cRObject::request_object_animation" not in request_anim_source
     assert "object->request_object_animation" not in animation_loader_source
+
+    object_manager_sources = {
+        windows_name: (
+            repo_root
+            / "tools/match/scratches"
+            / windows_name
+            / "scratch.cpp"
+        ).read_text(encoding="utf-8")
+        for windows_name in (
+            "initialize_object_list",
+            "build_all_objects",
+            "add_object_to_list",
+            "replace_object_list_texture_refs",
+        )
+    }
+    assert "void cRObjects::Init(int object_capacity)" in (
+        object_manager_sources["initialize_object_list"]
+    )
+    assert "void cRObjects::BuildObjects()" in (
+        object_manager_sources["build_all_objects"]
+    )
+    assert "cRObject* cRObjects::Add()" in (
+        object_manager_sources["add_object_to_list"]
+    )
+    assert "void cRObjects::ReTextureObjects(" in (
+        object_manager_sources["replace_object_list_texture_refs"]
+    )
 
     constructor_source = (
         repo_root / "tools/match/scratches/initialize_object/scratch.cpp"

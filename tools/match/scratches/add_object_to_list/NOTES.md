@@ -42,3 +42,10 @@ saves and reads back the annotations, and is fully idempotent.
 
 The exact matcher source remains unchanged at 100.00%, 24/24 instructions,
 prefix 24/24, with three clean masked operands.
+
+## 2026-07-29 mobile-authored method
+
+Android and iOS independently retain this allocator as `cRObjects::Add()`.
+The Windows matcher and all typed allocation callers now use that authored
+name while preserving the Windows `cRObject*` result and 0xdc slot stride.
+The renamed body remains 24/24 exact with three clean operands.

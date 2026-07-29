@@ -104,3 +104,12 @@ Focused matching remains 74.77%, 54/53 candidate/target instructions, prefix
 14/53, with one clean masked operand. No matcher source changed: the remaining
 register-allocation delta around `objects + object_byte_offset` stays visible
 instead of being fakematched.
+
+## 2026-07-29 mobile-authored method
+
+Android retains the owner and name as
+`cRObjects::ReTextureObjects(cRTexture*, cRTexture*)`. The Windows matcher and
+its two typed callsites now use `ReTextureObjects`, while keeping the Windows
+`TextureRef*` spelling and existing honest byte-cursor residual. The semantic
+rename does not improve or disguise the match: it remains 74.77%, 54/53
+instructions, prefix 14/53, with one clean operand.

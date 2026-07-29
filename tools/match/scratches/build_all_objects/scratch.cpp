@@ -3,7 +3,7 @@
 #include "loading_bar.h"
 #include "object_render_types.h"
 
-void cRObjects::build_all_objects()
+void cRObjects::BuildObjects()
 {
     int index = 0;
     if (count > 0) {

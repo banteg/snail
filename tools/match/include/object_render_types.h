@@ -236,10 +236,10 @@ struct cRObject {
 typedef char cRObject_must_be_0xdc[(sizeof(cRObject) == 0xdc) ? 1 : -1];
 
 struct cRObjects {
-    void initialize_object_list(int capacity); // @ 0x42f990
-    void build_all_objects(); // @ 0x42f9e0
-    cRObject* add_object_to_list(); // @ 0x42fad0
-    void replace_object_list_texture_refs(TextureRef* new_texture, TextureRef* old_texture);
+    void Init(int capacity); // @ 0x42f990
+    void BuildObjects(); // @ 0x42f9e0
+    cRObject* Add(); // @ 0x42fad0
+    void ReTextureObjects(TextureRef* new_texture, TextureRef* old_texture);
 
     int count; // +0x00
     int capacity; // +0x04

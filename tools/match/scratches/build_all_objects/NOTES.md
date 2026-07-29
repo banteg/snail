@@ -36,3 +36,11 @@ eight clean masked operands.
 `cRObjects` manager and `cRObject` slot names directly. Analyzer-side
 `ObjectList`/`Object` views remain compatibility vocabulary for their existing
 replays; no second allocation or layout is implied.
+
+## 2026-07-29 mobile-authored method
+
+Android and iOS both retain this pass as `cRObjects::BuildObjects()`. The
+Windows matcher and its startup caller now use that authored name without
+importing the ports' reduced rendering pipeline. The Windows-only bounds and
+Direct3D build stages remain intact, and the body remains 54/54 exact with
+eight clean operands.

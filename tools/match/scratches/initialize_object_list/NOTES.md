@@ -41,3 +41,10 @@ Android and iOS retain the manager as `cRObjects` and its slots as
 `cRObject`. Those names are now primary in the matcher; `ObjectList` and
 `Object` remain compatibility typedefs for the analyzer replay and partial
 callers. The exact Windows void initializer shape is unchanged.
+
+## 2026-07-29 mobile-authored method
+
+Both mobile ports preserve this exact owner operation as
+`cRObjects::Init(int)`. The Windows matcher and all typed callers now use that
+authored method name while retaining the Windows capacity, allocation, and
+void-return ABI. The body remains 30/30 exact with three clean operands.

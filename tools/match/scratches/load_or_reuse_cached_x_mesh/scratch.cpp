@@ -19,7 +19,7 @@ int DirectXLoader::load_or_reuse_cached_x_mesh(char* mesh_name)
     }
 
     rstrcpy_checked_ascii(cached_x_mesh_slots[cached_x_mesh_count].name, mesh_name);
-    cached_x_mesh_slots[cached_x_mesh_count].SetObject(g_object_list.add_object_to_list());
+    cached_x_mesh_slots[cached_x_mesh_count].SetObject(g_object_list.Add());
     load_x_mesh(mesh_name, cached_x_mesh_slots[i].object, 1);
 
     ++cached_x_mesh_count;

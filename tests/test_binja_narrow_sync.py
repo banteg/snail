@@ -7447,6 +7447,13 @@ def test_object_list_replay_owns_global_lifecycle_and_allocation_consumers() -> 
     assert "struct cRObjects {" in matcher_header
     assert "cRObjects_must_be_0x0c" in matcher_header
     assert "extern cRObjects g_object_list;" in matcher_header
+    assert "void Init(int capacity);" in matcher_header
+    assert "void BuildObjects();" in matcher_header
+    assert "cRObject* Add();" in matcher_header
+    assert (
+        "void ReTextureObjects(TextureRef* new_texture, "
+        "TextureRef* old_texture);"
+    ) in matcher_header
 
     for address in (
         "0x419110",  # open_logo
