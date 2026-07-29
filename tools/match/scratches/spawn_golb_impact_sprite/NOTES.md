@@ -151,3 +151,22 @@ allocation choice, not missing Sprite behavior. Android independently proves
 the same velocity, progress, lifetime, size, gravity, flag, and position
 values, while Windows proves its pointer argument ABI. No raw-bit zero alias,
 volatile carrier, or by-value ABI transplant is retained.
+
+## 2026-07-29 register-pressure boundary
+
+The normalized Windows diff confirms that the effect gate and final three-lane
+position copy already have the correct source shape. The remaining mismatch is
+confined to allocator argument scheduling and the saved-`esi` local-velocity
+publication between them.
+
+A final independent eight-variant sweep applies `register` storage class to
+the owner slot, owner-player borrow, flags, local vector, destination pointer,
+Y constant, and zero carrier. Deferred owner initialization is covered as
+well. Every variant is byte-identical to the retained 63.64% baseline: VC6
+ignores these storage hints rather than reproducing the native allocation.
+
+The ledger now contains 710 recorded results across three sweeps, representing
+527 unique source variants: 0 improve, 314 are byte-identical, and 396 regress.
+With three consecutive non-improving sweeps, this lane is formally stalled.
+Further progress needs new Windows source provenance for the local-vector copy
+idiom, not more allocator, field-order, storage-class, or ABI spellings.

@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "allocator-register-owner",
+      "find": "        int owner = owner_player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);",
+      "replacements": [
+        {
+          "name": "register-owner",
+          "text": "        register int owner = owner_player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);"
+        },
+        {
+          "name": "deferred-register-owner",
+          "text": "        register int owner;\n        owner = owner_player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);"
+        },
+        {
+          "name": "register-player-borrow",
+          "text": "        register cRSubGoldy* player = owner_player;\n        int owner = player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);"
+        }
+      ]
+    },
+    {
+      "name": "post-allocation-register-pressure",
+      "find": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;",
+      "replacements": [
+        {
+          "name": "register-flags",
+          "text": "        register int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "register-destination",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        register Vector3* out_velocity = &sprite->velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "register-vector",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        register Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "register-y-value",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        register float velocity_y = 0.05f;\n        velocity.x = 0.0f;\n        velocity.y = velocity_y;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "register-zero-value",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        register float zero = 0.0f;\n        velocity.x = zero;\n        velocity.y = 0.05f;\n        velocity.z = zero;"
+        }
+      ]
+    }
+  ]
+}
