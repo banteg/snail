@@ -184,3 +184,29 @@ honest residuals: `initialize_challenge_setup_screen` at 96.41% (167/167),
 `initialize_high_score_screen` at 98.00% (600/600), and `initialize_tip` at
 83.12% (154/154). All masked operands remain resolved; only the constructor's
 documented jump-table relocation differs.
+
+## 2026-07-29 color temporary slot refinement
+
+The first recorded sweep isolates the three stack receivers behind the old
+three-cycle and tests all 26 assignments among them. Swapping only the first
+two case-20 temporary owners is a semantic no-op—the objects are anonymous
+color construction storage—but improves focused matching from 99.30% to
+99.53%, raises the exact prefix from 55 to 74 of 429 instructions, and keeps
+all 50 masked operands clean. Four normalized bytes are recovered.
+
+The residual is now a two-cycle only: native uses stack `+0x114` for the
+case-20 hot-text color and `+0x24` for the case-21 hot-fill color, while the
+candidate uses those two slots in the opposite order. The latter `+0x24`
+storage also supplies the three later slider-child white colors. Rotating
+those final two uses is locally attractive, but VC6 then shifts every
+intervening color receiver by one slot and regresses the full function to
+96.74%.
+
+Four recorded sweeps cover 63 variants (56 unique), of which 59 compile.
+Five declaration-order permutations are byte-identical and cannot pin the
+two physical slots. Replacing the early receiver with either an anonymous
+compiler temporary or a one-statement scoped object produces the same 96.74%
+global shift. No exact or metric-tradeoff result exists, and the three
+post-improvement sweeps are non-improving, so this scratch is stalled at the
+retained 99.53%, 429/429, 50-reference result. No array overlay, volatile
+barrier, or other explicit stack-slot shaping is introduced.

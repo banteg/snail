@@ -73,8 +73,8 @@ void FrontendWidget::initialize_frontend_widget(
         idle_padding = 9.0f;
         hot_padding = 13.0f;
         stack_gap = 26.0f;
-        idle_text_color = *tmp0.Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
-        hot_text_color = *tmp1.Set(1.0f, 1.0f, 1.0f, 1.0f);
+        idle_text_color = *tmp1.Set(1.0f, 0.52156866f, 0.0f, 0.69999999f);
+        hot_text_color = *tmp0.Set(1.0f, 1.0f, 1.0f, 1.0f);
         idle_fill_color = *tmp2.Set(0.32941177f, 0.22352941f, 0.50196081f, 0.69999999f);
         hot_fill_color = *tmp3.Set(0.60784316f, 0.30980393f, 0.69411767f, 1.0f);
         break;
