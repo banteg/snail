@@ -152,3 +152,27 @@ prefix 16, and 47 clean operands; the two control functions remain exact at
 113/113 and 111/111. This falsifies same-TU neighbor presence as the cause of
 the x87 or duplicated-epilogue residual, so no production TU cluster is
 introduced.
+
+## 2026-07-29 mobile control-flow and vector-lifetime closure
+
+The verified Android and iOS `cRPath::Search` bodies retain the authored
+high-level shape: guard the reverse scan with `idx >= 0`, perform the
+`cRPathFollowGoldy` handoff inside the accepted-hit branch, return there, and
+otherwise fall through after exhausting the loop. The complete
+`probe_mobile_control_flow.cpp` overlay transfers only that structure while
+keeping the Windows split ABI, layouts, and arithmetic. VC6 compiles it
+byte-for-byte identically to the tracked 95.78% candidate, so block nesting
+does not explain the duplicated native miss epilogue.
+
+The final recorded sweep tests eight previously uncovered lifetimes for the
+swept-position sum. Direct field updates and staged scalar sums remain
+byte-identical, including the commuted x87 x-lane pair. Both `operator+=`
+orders and both staged-vector forms instead select a different temporary-copy
+family and regress to 69.88%. Together with the earlier expression and loop
+exit sweeps, the ledger now contains 36 unique variants across three
+non-improving sweeps and two evidence probes, with no repeats or errors.
+
+This target is therefore formally stalled at 95.78%, 199/204 instructions,
+prefix 16, and 47 clean operands. The remaining five-instruction delta is
+bounded to compiler scheduling and tail duplication; forcing it would not
+recover additional behavior, ownership, ABI, or data layout.

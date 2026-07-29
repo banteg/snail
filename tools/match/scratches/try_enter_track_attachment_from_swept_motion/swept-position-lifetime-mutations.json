@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "swept-position-lifetime",
+      "find": "                    swept_position =\n                        Vector3(px, py, pz) + Vector3(sweep_x, sweep_y, sweep_z);",
+      "replacements": [
+        {
+          "name": "position-then-compound",
+          "text": "                    swept_position = Vector3(px, py, pz);\n                    swept_position += Vector3(sweep_x, sweep_y, sweep_z);"
+        },
+        {
+          "name": "sweep-then-compound",
+          "text": "                    swept_position = Vector3(sweep_x, sweep_y, sweep_z);\n                    swept_position += Vector3(px, py, pz);"
+        },
+        {
+          "name": "position-fields-then-add",
+          "text": "                    swept_position.x = px;\n                    swept_position.y = py;\n                    swept_position.z = pz;\n                    swept_position.x += sweep_x;\n                    swept_position.y += sweep_y;\n                    swept_position.z += sweep_z;"
+        },
+        {
+          "name": "sweep-fields-then-add",
+          "text": "                    swept_position.x = sweep_x;\n                    swept_position.y = sweep_y;\n                    swept_position.z = sweep_z;\n                    swept_position.x += px;\n                    swept_position.y += py;\n                    swept_position.z += pz;"
+        },
+        {
+          "name": "staged-sweep-vector",
+          "text": "                    Vector3 sweep_delta(sweep_x, sweep_y, sweep_z);\n                    swept_position = Vector3(px, py, pz);\n                    swept_position += sweep_delta;"
+        },
+        {
+          "name": "staged-position-vector",
+          "text": "                    Vector3 world_position(px, py, pz);\n                    swept_position = Vector3(sweep_x, sweep_y, sweep_z);\n                    swept_position += world_position;"
+        },
+        {
+          "name": "staged-scalar-sums",
+          "text": "                    float swept_x_value = sweep_x + px;\n                    float swept_y_value = sweep_y + py;\n                    float swept_z_value = sweep_z + pz;\n                    swept_position = Vector3(\n                        swept_x_value, swept_y_value, swept_z_value);"
+        },
+        {
+          "name": "direct-field-sums",
+          "text": "                    swept_position.x = sweep_x + px;\n                    swept_position.y = sweep_y + py;\n                    swept_position.z = sweep_z + pz;"
+        }
+      ]
+    }
+  ]
+}
