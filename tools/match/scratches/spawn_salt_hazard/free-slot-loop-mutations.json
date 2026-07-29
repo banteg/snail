@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "free-slot-loop",
+      "find": "    int index = 0;\n    Salt* scan = slots;\n    while (1) {\n        if (scan->state == SALT_STATE_INACTIVE)\n            break;\n        ++index;\n        ++scan;\n        if (index >= 40)\n            return;\n    }",
+      "replacements": [
+        {
+          "name": "bounded-inner-exit",
+          "text": "    int index = 0;\n    Salt* scan = slots;\n    while (index < 40\n        && scan->state != SALT_STATE_INACTIVE) {\n        ++index;\n        ++scan;\n        if (index >= 40)\n            return;\n    }"
+        },
+        {
+          "name": "bounded-post-exit",
+          "text": "    int index = 0;\n    Salt* scan = slots;\n    while (index < 40\n        && scan->state != SALT_STATE_INACTIVE) {\n        ++index;\n        ++scan;\n    }\n    if (index >= 40)\n        return;"
+        },
+        {
+          "name": "condition-while",
+          "text": "    int index = 0;\n    Salt* scan = slots;\n    while (scan->state != SALT_STATE_INACTIVE) {\n        ++index;\n        ++scan;\n        if (index >= 40)\n            return;\n    }"
+        },
+        {
+          "name": "condition-while-equality-exit",
+          "text": "    int index = 0;\n    Salt* scan = slots;\n    while (scan->state != SALT_STATE_INACTIVE) {\n        ++index;\n        ++scan;\n        if (index == 40)\n            return;\n    }"
+        },
+        {
+          "name": "bounded-condition-for",
+          "text": "    int index = 0;\n    Salt* scan = slots;\n    for (; index < 40 && scan->state != SALT_STATE_INACTIVE;\n         ++index, ++scan) {\n    }\n    if (index >= 40)\n        return;"
+        },
+        {
+          "name": "guarded-do-while",
+          "text": "    int index = 0;\n    Salt* scan = slots;\n    if (scan->state != SALT_STATE_INACTIVE) {\n        do {\n            ++index;\n            ++scan;\n            if (index >= 40)\n                return;\n        } while (scan->state != SALT_STATE_INACTIVE);\n    }"
+        }
+      ]
+    }
+  ]
+}

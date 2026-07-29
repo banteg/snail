@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**540/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **98419/294937** bytes (**33.37%**) are proof-grade, and overall fuzzy is **79.21%**.
+**541/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **98655/294937** bytes (**33.45%**) are proof-grade, and overall fuzzy is **79.22%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (540)
+## Proof Grade (541)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -356,6 +356,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | initialize_damage_gauge | 0x440fa0 | 40 | 12/12 | 100.00% | 12/12 | - |  | core |
 | ✅ | apply_damage_gauge_delta | 0x4413f0 | 322 | 94/94 | 100.00% | 94/94 | 24 ok |  | core |
 | ✅ | initialize_salt_hazard_pool | 0x441540 | 26 | 7/7 | 100.00% | 7/7 | - |  | core |
+| ✅ | spawn_salt_hazard | 0x441560 | 236 | 67/67 | 100.00% | 67/67 | 10 ok |  | core |
 | ✅ | initialize_sub_lazer_pool | 0x441650 | 26 | 7/7 | 100.00% | 7/7 | - |  | core |
 | ✅ | spawn_sub_lazer_projectile | 0x441670 | 195 | 63/63 | 100.00% | 63/63 | 6 ok |  | core |
 | ✅ | deactivate_sub_lazer_projectile | 0x441740 | 140 | 43/43 | 100.00% | 43/43 | 5 ok |  | core |
@@ -581,7 +582,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (43)
+## High Progress (80-94.99%) (42)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -611,7 +612,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2087/2087 | 82.75% | 12/2087 | 3 unaudited, 314 ok |  | core |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 87.29% | 44/144 | 9 ok |  | core |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  | core |
-| 🚧 | spawn_salt_hazard | 0x441560 | 236 | 64/67 | 88.55% | 4/67 | 10 ok |  | core |
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 13/125 | 33 ok |  | core |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 unaudited, 12 ok |  | core |

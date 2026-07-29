@@ -10,9 +10,8 @@ void SaltManager::spawn_salt_hazard(const Vector3* position)
 {
     int index = 0;
     Salt* scan = slots;
-    while (1) {
-        if (scan->state == SALT_STATE_INACTIVE)
-            break;
+    while (index < 40
+        && scan->state != SALT_STATE_INACTIVE) {
         ++index;
         ++scan;
         if (index >= 40)

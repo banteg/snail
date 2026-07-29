@@ -1,11 +1,10 @@
-# Recovered — 88.55%, 67/64 insns
+# Recovered — 100.00%, 67/67 insns
 
-The former scalar-result projection reached an exact Windows listing, but
-independent Android and iOS exit residues now prove the authored method is
-`void`. The honest void source drops three result-sensitive instructions and
-changes the free-scan/error joins; the historical score progression below is
-retained as evidence rather than presented as the current match. All semantics
-remain verified in the diff body:
+Independent Android and iOS exit residues prove the authored method is
+`void`. The exact Windows source now preserves that ABI: a bounded allocator
+scan with its exhaustion return inside the loop makes VC6 retain the native
+full-pool and success/error exit shapes. The historical score progression
+below is retained as evidence. All semantics remain verified in the diff body:
 
 - free scan over `slots[i].state` (+0x80, stride 0x98), bails when all 40 slots
   are occupied
@@ -143,3 +142,31 @@ Restoring that hierarchy compiles byte-identically. The honest mobile-proven
 void Windows source remains at 88.55%, 64/67 instructions, prefix 4, with all
 10 masks clean; the residual is still solely the authored-void versus native
 residue-sensitive exit shape, not the angle expression.
+
+## 2026-07-29 exact bounded allocator scan
+
+The sibling slug and pickup allocators expose the missing source-level control
+flow. The salt manager scans its 40 inline slots with an explicit upper bound,
+advances the typed `Salt*` cursor in the body, and performs the exhaustion
+return immediately after that advance:
+
+```cpp
+while (index < 40 && scan->state != SALT_STATE_INACTIVE) {
+    ++index;
+    ++scan;
+    if (index >= 40)
+        return;
+}
+```
+
+This ordinary bounded loop retains the independently proven `void` ABI while
+making VC6 reproduce all three previously missing native instructions.
+Focused matching improves from `88.55%` (`64/67`, prefix `4/67`) to
+**100.00%** (`67/67`, full prefix), with all ten audited references clean.
+
+The complete six-variant sweep covered condition-only, equality-exit,
+post-loop bound, bounded `for`, and guarded `do/while` forms. Only the bounded
+inner exit was exact; the two post-loop bounded forms reached `92.54%`, and
+the other forms were neutral or worse. No scalar result, dummy operation,
+volatile access, or artificial return value is needed to preserve the native
+exit layout.
