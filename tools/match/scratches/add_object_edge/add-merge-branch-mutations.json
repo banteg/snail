@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "add-merge-branch",
+      "find": "        ++g_object_edge_build_count;\n        return;\n    }\n\n    if ((g_object_edge_build_edges[index].flags\n            & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {",
+      "replacements": [
+        {
+          "name": "else-if-merge",
+          "text": "        ++g_object_edge_build_count;\n    } else if ((g_object_edge_build_edges[index].flags\n            & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {"
+        },
+        {
+          "name": "guarded-merge-fallthrough",
+          "text": "        ++g_object_edge_build_count;\n    }\n\n    if (found_edge\n        && (g_object_edge_build_edges[index].flags\n            & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {"
+        }
+      ]
+    }
+  ]
+}

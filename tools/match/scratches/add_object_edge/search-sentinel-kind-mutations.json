@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "search-sentinel-declaration",
+      "find": "    ObjectToonEdge* found_edge = 0;",
+      "replacements": [
+        {
+          "name": "bool-sentinel",
+          "text": "    bool found_edge = false;"
+        },
+        {
+          "name": "int-sentinel",
+          "text": "    int found_edge = 0;"
+        }
+      ]
+    },
+    {
+      "name": "search-sentinel-publication",
+      "find": "                    found_edge = (ObjectToonEdge*)(edge_vertex_b - 2);",
+      "replacements": [
+        {
+          "name": "publish-true",
+          "text": "                    found_edge = true;"
+        },
+        {
+          "name": "publish-one",
+          "text": "                    found_edge = 1;"
+        }
+      ]
+    }
+  ]
+}

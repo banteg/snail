@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "merge-vector-lifetimes",
+      "find": "            Vector3 lhs = facequad_normals[g_object_edge_build_edges[index].normal_a];\n            Vector3 rhs = facequad_normals[g_object_edge_build_edges[index].normal_b];\n            Vector3 cross;",
+      "replacements": [
+        {
+          "name": "split-lhs-rhs-assignment",
+          "text": "            Vector3 lhs;\n            lhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_a];\n            Vector3 rhs;\n            rhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_b];\n            Vector3 cross;"
+        },
+        {
+          "name": "declare-all-then-assign",
+          "text": "            Vector3 lhs;\n            Vector3 rhs;\n            Vector3 cross;\n            lhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_a];\n            rhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_b];"
+        },
+        {
+          "name": "cross-declared-first",
+          "text": "            Vector3 cross;\n            Vector3 lhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_a];\n            Vector3 rhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_b];"
+        },
+        {
+          "name": "rhs-storage-declared-first",
+          "text": "            Vector3 rhs;\n            Vector3 lhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_a];\n            rhs = facequad_normals[\n                g_object_edge_build_edges[index].normal_b];\n            Vector3 cross;"
+        },
+        {
+          "name": "pointer-constructors",
+          "text": "            Vector3 lhs(&facequad_normals[\n                g_object_edge_build_edges[index].normal_a].x);\n            Vector3 rhs(&facequad_normals[\n                g_object_edge_build_edges[index].normal_b].x);\n            Vector3 cross;"
+        },
+        {
+          "name": "normal-bank-owner",
+          "text": "            Vector3* normal_bank = facequad_normals;\n            Vector3 lhs = normal_bank[\n                g_object_edge_build_edges[index].normal_a];\n            Vector3 rhs = normal_bank[\n                g_object_edge_build_edges[index].normal_b];\n            Vector3 cross;"
+        },
+        {
+          "name": "normal-index-owners",
+          "text": "            int normal_a =\n                g_object_edge_build_edges[index].normal_a;\n            int normal_b =\n                g_object_edge_build_edges[index].normal_b;\n            Vector3 lhs = facequad_normals[normal_a];\n            Vector3 rhs = facequad_normals[normal_b];\n            Vector3 cross;"
+        },
+        {
+          "name": "borrow-then-copy",
+          "text": "            Vector3* normal_a = &facequad_normals[\n                g_object_edge_build_edges[index].normal_a];\n            Vector3* normal_b = &facequad_normals[\n                g_object_edge_build_edges[index].normal_b];\n            Vector3 lhs = *normal_a;\n            Vector3 rhs = *normal_b;\n            Vector3 cross;"
+        }
+      ]
+    }
+  ]
+}

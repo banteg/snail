@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "search-owner-order",
+      "find": "    int build_count = g_object_edge_build_count;\n    int index = 0;\n    ObjectToonEdge* found_edge = 0;",
+      "replacements": [
+        {
+          "name": "count-found-index",
+          "text": "    int build_count = g_object_edge_build_count;\n    ObjectToonEdge* found_edge = 0;\n    int index = 0;"
+        },
+        {
+          "name": "index-count-found",
+          "text": "    int index = 0;\n    int build_count = g_object_edge_build_count;\n    ObjectToonEdge* found_edge = 0;"
+        },
+        {
+          "name": "index-found-count",
+          "text": "    int index = 0;\n    ObjectToonEdge* found_edge = 0;\n    int build_count = g_object_edge_build_count;"
+        },
+        {
+          "name": "found-count-index",
+          "text": "    ObjectToonEdge* found_edge = 0;\n    int build_count = g_object_edge_build_count;\n    int index = 0;"
+        },
+        {
+          "name": "found-index-count",
+          "text": "    ObjectToonEdge* found_edge = 0;\n    int index = 0;\n    int build_count = g_object_edge_build_count;"
+        },
+        {
+          "name": "split-count",
+          "text": "    int build_count;\n    build_count = g_object_edge_build_count;\n    int index = 0;\n    ObjectToonEdge* found_edge = 0;"
+        },
+        {
+          "name": "split-index",
+          "text": "    int build_count = g_object_edge_build_count;\n    int index;\n    index = 0;\n    ObjectToonEdge* found_edge = 0;"
+        },
+        {
+          "name": "split-found",
+          "text": "    int build_count = g_object_edge_build_count;\n    int index = 0;\n    ObjectToonEdge* found_edge;\n    found_edge = 0;"
+        },
+        {
+          "name": "declare-then-assign",
+          "text": "    int build_count;\n    int index;\n    ObjectToonEdge* found_edge;\n    build_count = g_object_edge_build_count;\n    index = 0;\n    found_edge = 0;"
+        }
+      ]
+    }
+  ]
+}

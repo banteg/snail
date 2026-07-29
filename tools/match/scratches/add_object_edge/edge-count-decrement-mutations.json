@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "edge-count-decrement",
+      "find": "                --g_object_edge_build_count;",
+      "replacements": [
+        {
+          "name": "subtract-assignment",
+          "text": "                g_object_edge_build_count -= 1;"
+        },
+        {
+          "name": "read-subtract-publish",
+          "text": "                g_object_edge_build_count =\n                    g_object_edge_build_count - 1;"
+        },
+        {
+          "name": "named-predecrement",
+          "text": "                int reduced_count = g_object_edge_build_count;\n                --reduced_count;\n                g_object_edge_build_count = reduced_count;"
+        },
+        {
+          "name": "named-subtract",
+          "text": "                int reduced_count =\n                    g_object_edge_build_count - 1;\n                g_object_edge_build_count = reduced_count;"
+        },
+        {
+          "name": "split-named-subtract",
+          "text": "                int reduced_count = g_object_edge_build_count;\n                reduced_count = reduced_count - 1;\n                g_object_edge_build_count = reduced_count;"
+        },
+        {
+          "name": "postdecrement-value",
+          "text": "                int old_count = g_object_edge_build_count--;\n                (void)old_count;"
+        }
+      ]
+    }
+  ]
+}

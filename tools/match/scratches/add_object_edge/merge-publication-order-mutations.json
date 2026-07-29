@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "merge-publication-order",
+      "find": "        g_object_edge_build_edges[index].normal_b = normal_index;\n\n        if ((flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {",
+      "replacements": [
+        {
+          "name": "narrow-object-owner",
+          "text": "        cRObject* merge_object = this;\n        g_object_edge_build_edges[index].normal_b = normal_index;\n\n        if ((merge_object->flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {"
+        },
+        {
+          "name": "narrow-object-owner-after-store",
+          "text": "        g_object_edge_build_edges[index].normal_b = normal_index;\n        cRObject* merge_object = this;\n\n        if ((merge_object->flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {"
+        },
+        {
+          "name": "edge-bank-owner",
+          "text": "        ObjectToonEdge* edge_bank = g_object_edge_build_edges;\n        edge_bank[index].normal_b = normal_index;\n\n        if ((flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {"
+        },
+        {
+          "name": "merge-edge-owner",
+          "text": "        ObjectToonEdge* merge_edge =\n            &g_object_edge_build_edges[index];\n        merge_edge->normal_b = normal_index;\n\n        if ((flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {"
+        },
+        {
+          "name": "flags-before-publication",
+          "text": "        unsigned int object_flags = flags;\n        g_object_edge_build_edges[index].normal_b = normal_index;\n\n        if ((object_flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {"
+        },
+        {
+          "name": "static-gate-before-publication",
+          "text": "        bool static_vertices =\n            (flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0;\n        g_object_edge_build_edges[index].normal_b = normal_index;\n\n        if (static_vertices) {"
+        }
+      ]
+    }
+  ]
+}

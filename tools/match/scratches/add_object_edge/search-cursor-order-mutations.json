@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "search-cursor-order",
+      "find": "        int* edge_vertex_b = &g_object_edge_build_edges[0].vertex_b;\n        Vector3* vertex_b_position = &vertices[vertex_b];",
+      "replacements": [
+        {
+          "name": "position-before-edge-cursor",
+          "text": "        Vector3* vertex_b_position = &vertices[vertex_b];\n        int* edge_vertex_b = &g_object_edge_build_edges[0].vertex_b;"
+        },
+        {
+          "name": "cached-vertices-position-first",
+          "text": "        Vector3* object_vertices = vertices;\n        Vector3* vertex_b_position = &object_vertices[vertex_b];\n        int* edge_vertex_b = &g_object_edge_build_edges[0].vertex_b;"
+        },
+        {
+          "name": "cached-vertices-cursor-first",
+          "text": "        Vector3* object_vertices = vertices;\n        int* edge_vertex_b = &g_object_edge_build_edges[0].vertex_b;\n        Vector3* vertex_b_position = &object_vertices[vertex_b];"
+        },
+        {
+          "name": "split-edge-cursor-after-position",
+          "text": "        Vector3* vertex_b_position = &vertices[vertex_b];\n        int* edge_vertex_b;\n        edge_vertex_b = &g_object_edge_build_edges[0].vertex_b;"
+        }
+      ]
+    }
+  ]
+}

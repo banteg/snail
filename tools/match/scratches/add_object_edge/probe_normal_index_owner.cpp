@@ -1,11 +1,13 @@
-// AddEdge @ 0x4305a0 (thiscall)
-
+// Parameter-lifetime probe for add_object_edge @ 0x4305a0.
 #include "object_render_types.h"
 
-extern "C" void* memcpy(void* destination, const void* source, unsigned int count);
+extern "C" void* memcpy(
+    void* destination, const void* source, unsigned int count);
 
-void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
+void cRObject::AddEdge(
+    int vertex_a, int vertex_b, int normal_index_argument)
 {
+    int normal_index = normal_index_argument;
     Vector3 direction;
     if (facequad_normals[normal_index].Magnitude() < 0.89999998f) {
         return;
@@ -13,10 +15,10 @@ void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
 
     int build_count = g_object_edge_build_count;
     int index = 0;
-    bool found_edge = false;
+    ObjectToonEdge* found_edge = 0;
     if (build_count > 0) {
-        Vector3* vertex_b_position = &vertices[vertex_b];
         int* edge_vertex_b = &g_object_edge_build_edges[0].vertex_b;
+        Vector3* vertex_b_position = &vertices[vertex_b];
         do {
             Vector3* edge_a_position = &vertices[edge_vertex_b[-1]];
             if (edge_a_position->x == vertex_b_position->x
@@ -27,7 +29,7 @@ void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
                 if (edge_b_position->x == vertex_a_position->x
                     && edge_b_position->y == vertex_a_position->y
                     && edge_b_position->z == vertex_a_position->z) {
-                    found_edge = true;
+                    found_edge = (ObjectToonEdge*)(edge_vertex_b - 2);
                     break;
                 }
             }
@@ -42,7 +44,8 @@ void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
             OBJECT_TOON_EDGE_FLAG_BOUNDARY;
         g_object_edge_build_edges[g_object_edge_build_count].vertex_a = vertex_a;
         g_object_edge_build_edges[g_object_edge_build_count].vertex_b = vertex_b;
-        g_object_edge_build_edges[g_object_edge_build_count].normal_a = normal_index;
+        g_object_edge_build_edges[g_object_edge_build_count].normal_a =
+            normal_index;
         g_object_edge_build_edges[g_object_edge_build_count].normal_b = 0;
 
         Vector3* start = &vertices[vertex_a];
@@ -54,7 +57,8 @@ void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
         direction = edge_delta;
         g_object_edge_build_edges[g_object_edge_build_count].length =
             direction.Normalize();
-        g_object_edge_build_edges[g_object_edge_build_count].direction = direction;
+        g_object_edge_build_edges[g_object_edge_build_count].direction =
+            direction;
         ++g_object_edge_build_count;
         return;
     }
@@ -67,8 +71,10 @@ void cRObject::AddEdge(int vertex_a, int vertex_b, int normal_index)
         g_object_edge_build_edges[index].normal_b = normal_index;
 
         if ((flags & OBJECT_FLAG_DYNAMIC_VERTICES) == 0) {
-            Vector3 lhs = facequad_normals[g_object_edge_build_edges[index].normal_a];
-            Vector3 rhs = facequad_normals[g_object_edge_build_edges[index].normal_b];
+            Vector3 lhs =
+                facequad_normals[g_object_edge_build_edges[index].normal_a];
+            Vector3 rhs =
+                facequad_normals[g_object_edge_build_edges[index].normal_b];
             Vector3 cross;
             cross.cross_vectors(&lhs, &rhs);
             float cross_length = cross.Magnitude();

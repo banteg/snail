@@ -61,11 +61,10 @@ dot helper and toon renderer exact and raises this scratch to 73.36%, 231/227
 instructions, prefix 1/227, with 29 clean operands and no unresolved or
 mismatched operands.
 
-The found-edge pointer remains only a search sentinel; indexed-only search
-state regressed to 72.05%, and a direct native-shaped merge `goto` moved the
-merge block ahead of the add path and regressed to 57.02%. The honest residual
-is register/block allocation plus candidate's four extra instructions, not an
-unresolved edge-record owner or field.
+The found-edge state is only a search sentinel; indexed-only search state
+regressed to 72.05%, and a direct native-shaped merge `goto` moved the merge
+block ahead of the add path and regressed to 57.02%. The honest residual is
+register/block allocation, not an unresolved edge-record owner or field.
 
 The iOS ARMv6 symbol `cRObject::AddEdge(int, int, int)` and all six Windows
 calls from `calc_object_edges` prove the receiver and three integer formals.
@@ -151,3 +150,41 @@ direction, original length, and the static-object cross/dot tests which remove
 flat or inward joins. Mobile proves the owner and common algorithmic prefix;
 it does not justify shrinking the Windows record or deleting its desktop-only
 filtering.
+
+## 2026-07-29 boolean search state and cursor order
+
+Seven recorded sweeps and two complete-source probes cover 43 unique variants
+around the remaining parameter, search, add/merge, vector, and removal-tail
+lifetimes. Two source recoveries materially improve the Windows candidate.
+
+First, the former `ObjectToonEdge* found_edge` never supplied an edge owner:
+the merge path indexes the global bank with the loop counter and consumes only
+whether the reverse edge was found. Replacing that unused record pointer with
+a `bool` raises focused matching from 73.36% to 81.68%, advances the exact
+prefix from 1 to 15 instructions, and reduces candidate-only reference debt.
+Integer and boolean sentinels compile identically; the boolean is retained
+because Android and iOS both express the match as a control-flow fact and
+return directly from it.
+
+Second, all three binaries materialize `vertices[vertex_b]` before borrowing
+the global edge cursor. Reversing those two typed declarations raises the
+candidate again to **86.53%**, target/candidate `227/226`, prefix `15/227`,
+with 33 clean operands and five explicitly unaudited block-layout operands.
+Split assignment and a cached `vertices` owner compile identically, so the
+shortest position-before-cursor spelling is retained.
+
+The surrounding owner hypotheses are now bounded. Named normal-index and
+receiver owners are byte-neutral, as are all nine search-local declaration
+orders. Add/merge `else if` and guarded fallthrough forms do not alter
+epilogue placement. Narrow object/edge-bank owners remain neutral, while
+preloading flags regresses. Five ordinary whole-vector declaration forms are
+neutral and pointer/index owners regress to 74.61%–80.35%. Six read/modify/
+publish spellings for the final global count all canonicalize to the same
+in-memory decrement.
+
+Four consecutive non-improving sweeps formally stall the residual. The
+remaining Windows-only filter differs in saved-register allocation, early
+epilogue restoration on the new-edge path, and the final count-decrement
+schedule. No mobile layout or compact-record behavior is imported, and no
+register hint, volatile barrier, dummy dependency, or synthetic owner is used
+to force those choices.
