@@ -267,3 +267,20 @@ for another storage owner: one derives the embedded child-radius cursor before
 staging the camera target, and one materializes the already-proved
 `GameRoot::active_bod_list` receiver through a different register. The source
 retains the clearer aggregate target and indexed embedded-child walk.
+
+## 2026-07-29 expanded-removal owner audit
+
+`expand-removal-owner-mutations.json` records eight source-plausible spellings
+for the third duplicated teardown branch: named `GameRoot` pointers and
+references, named `BodList` pointers and references, split assignment, and
+their natural combinations. Every variant is byte-identical to the 98.21%,
+336/336 baseline with prefix 193 and the same 37 clean plus two unaudited
+masked operands.
+
+Those two unaudited entries are the already-curated `g_game_base`/`g_game`
+root load at the expansion-removal tail. Native chooses `edx` followed by
+`lea ecx,[edx+0x5a8]`; VC6 chooses `ecx` followed by
+`add ecx,0x5a8`. Because the differing general-purpose-register instructions
+do not align, the operand auditor cannot pair the otherwise proved aliases.
+The focused sweep shows that no ordinary owner lifetime or pointer/reference
+spelling recovers that schedule, so the source and manifest remain unchanged.

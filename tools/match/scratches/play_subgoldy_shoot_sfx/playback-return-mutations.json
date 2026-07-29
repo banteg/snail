@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "scaled-playback-return",
+      "find": "            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);",
+      "replacements": [
+        {
+          "name": "explicit-return-after-call",
+          "text": "            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);\n            return;"
+        },
+        {
+          "name": "return-void-expression",
+          "text": "            return g_sound_effect_manager.play_sound_effect_scaled(\n                sound_id, volume);"
+        }
+      ]
+    },
+    {
+      "name": "direct-playback-return",
+      "find": "            g_sound_effect_manager.play_sound_effect(sound_id);",
+      "replacements": [
+        {
+          "name": "explicit-return-after-call",
+          "text": "            g_sound_effect_manager.play_sound_effect(sound_id);\n            return;"
+        },
+        {
+          "name": "return-void-expression",
+          "text": "            return g_sound_effect_manager.play_sound_effect(sound_id);"
+        }
+      ]
+    }
+  ]
+}

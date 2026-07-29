@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "volume-clamp-tail",
+      "find": "            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else if (volume > 1.0f) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);",
+      "replacements": [
+        {
+          "name": "independent-clamps",
+          "text": "            if (volume < 0.0f)\n                volume = 0.0f;\n            if (volume > 1.0f)\n                volume = 1.0f;\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);"
+        },
+        {
+          "name": "nested-upper-clamp",
+          "text": "            if (volume < 0.0f) {\n                volume = 0.0f;\n            } else {\n                if (volume > 1.0f)\n                    volume = 1.0f;\n            }\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);"
+        },
+        {
+          "name": "inverted-lower-guard",
+          "text": "            if (volume >= 0.0f) {\n                if (volume > 1.0f)\n                    volume = 1.0f;\n            } else {\n                volume = 0.0f;\n            }\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);"
+        },
+        {
+          "name": "conditional-expression",
+          "text": "            volume = volume < 0.0f\n                ? 0.0f\n                : (volume > 1.0f ? 1.0f : volume);\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);"
+        },
+        {
+          "name": "explicit-shared-label",
+          "text": "            if (volume < 0.0f) {\n                volume = 0.0f;\n                goto play_scaled;\n            }\n            if (volume > 1.0f)\n                volume = 1.0f;\n        play_scaled:\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);"
+        },
+        {
+          "name": "single-pass-break",
+          "text": "            do {\n                if (volume < 0.0f) {\n                    volume = 0.0f;\n                    break;\n                }\n                if (volume > 1.0f)\n                    volume = 1.0f;\n            } while (0);\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);"
+        },
+        {
+          "name": "commuted-comparisons",
+          "text": "            if (0.0f > volume) {\n                volume = 0.0f;\n            } else if (1.0f < volume) {\n                volume = 1.0f;\n            }\n            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);"
+        },
+        {
+          "name": "named-clamped-value",
+          "text": "            float clamped_volume = volume;\n            if (clamped_volume < 0.0f) {\n                clamped_volume = 0.0f;\n            } else if (clamped_volume > 1.0f) {\n                clamped_volume = 1.0f;\n            }\n            g_sound_effect_manager.play_sound_effect_scaled(\n                sound_id, clamped_volume);"
+        },
+        {
+          "name": "literal-zero-playback-branch",
+          "text": "            if (volume < 0.0f) {\n                g_sound_effect_manager.play_sound_effect_scaled(sound_id, 0.0f);\n            } else {\n                if (volume > 1.0f)\n                    volume = 1.0f;\n                g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);\n            }"
+        }
+      ]
+    }
+  ]
+}

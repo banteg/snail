@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "expand-removal-owner",
+      "find": "            state = SUB_RING_STATE_INACTIVE;\n            g_game->active_bod_list.remove_bod(this);\n\n            SubRingStar* particle =",
+      "occurrence": 3,
+      "replacements": [
+        {
+          "name": "named-game-pointer",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            GameRoot* game = g_game;\n            game->active_bod_list.remove_bod(this);\n\n            SubRingStar* particle ="
+        },
+        {
+          "name": "named-list-pointer",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            BodList* list = &g_game->active_bod_list;\n            list->remove_bod(this);\n\n            SubRingStar* particle ="
+        },
+        {
+          "name": "named-list-reference",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            BodList& list = g_game->active_bod_list;\n            list.remove_bod(this);\n\n            SubRingStar* particle ="
+        },
+        {
+          "name": "named-game-and-list-pointers",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            GameRoot* game = g_game;\n            BodList* list = &game->active_bod_list;\n            list->remove_bod(this);\n\n            SubRingStar* particle ="
+        },
+        {
+          "name": "split-list-pointer-assignment",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            BodList* list;\n            list = &g_game->active_bod_list;\n            list->remove_bod(this);\n\n            SubRingStar* particle ="
+        },
+        {
+          "name": "named-game-and-list-reference",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            GameRoot* game = g_game;\n            BodList& list = game->active_bod_list;\n            list.remove_bod(this);\n\n            SubRingStar* particle ="
+        },
+        {
+          "name": "parenthesized-list-address",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            BodList* list = &(g_game->active_bod_list);\n            list->remove_bod(this);\n\n            SubRingStar* particle ="
+        },
+        {
+          "name": "named-root-reference",
+          "text": "            state = SUB_RING_STATE_INACTIVE;\n            GameRoot& game = *g_game;\n            game.active_bod_list.remove_bod(this);\n\n            SubRingStar* particle ="
+        }
+      ]
+    }
+  ]
+}

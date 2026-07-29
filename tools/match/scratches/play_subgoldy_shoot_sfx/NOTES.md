@@ -119,3 +119,25 @@ scratch now names the equivalent range factors rather than their folded
 decimals. VC6 emits the same 96-instruction candidate, preserving the honest
 89.13% result, prefix 26/88, 19 clean references, and two candidate-only
 unaudited duplicated-tail references.
+
+## 2026-07-29 bounded playback-tail audit
+
+Two recorded sweeps make the previously manual tail-merge boundary
+reproducible. `playback-return-mutations.json` evaluates all eight one- and
+two-site combinations of explicit returns after the scaled and direct playback
+calls. Ordinary `return;` statements are byte-neutral; VC6 rejects returning a
+void expression, so no hidden return contract changes the tail.
+
+`volume-clamp-tail-mutations.json` evaluates nine clamp-and-call control
+shapes. Nested and independent clamps, a named clamped value, a conditional
+expression, and an explicit shared label are all byte-identical to the 89.13%,
+96/88 baseline. The direct literal-zero playback branch reaches 89.01%;
+inverting or breaking out of the clamp reaches 88.04%; commuting the x87
+comparisons falls to 81.08% and increases reference debt.
+
+The remaining eight candidate-only instructions are therefore a VC6 terminal
+call-duplication choice, not a missing clamp, playback, or ABI relationship.
+Native stores lower-bound zero and jumps to one shared scaled-playback tail;
+every ordinary source form under the recovered build profile duplicates that
+tail. The clear clamp remains canonical, with 19 clean references and the two
+candidate-only duplicated call references explicitly unaudited.
