@@ -16,7 +16,7 @@ Semantics:
 This scratch also promotes the shared `ObjectToonEdge` layout used by
 `render_object_toon`, `request_object_edges`, and this builder.
 
-Focused Wibo result: 75.62%, 142 candidate instructions versus 141 target
+Focused Wibo result: 77.74%, 142 candidate instructions versus 141 target
 instructions, with 14 clean masked operands and no unresolved or mismatched
 operands. The remaining gap is the cleanup-loop allocation: native reuses one
 stack dword across the face and edge phases, while VC6 currently spills both
@@ -133,3 +133,34 @@ edges (plus a mobile edge-index bank); Windows walks 0x30-byte
 `ObjectFaceQuad` records, emits three edges for a triangle and six for a quad,
 and retains 0x24-byte `ObjectToonEdge` records for the DirectX toon renderer.
 Only the method owner and lifecycle transfer.
+
+## 2026-07-29 cleanup schedule sweep
+
+The retained compaction loop now copies `build_edges[shift_index + 1]` into
+`build_edges[shift_index]` before incrementing `shift_index`. This is the
+source-shaped authored loop: native forms both record addresses first, advances
+the scalar shift index, and then executes the nine-dword copy. Publishing the
+reduced shared edge count before decrementing the local outer index also gives
+VC6 the native store schedule without changing the removal semantics. Together
+these two changes improve the focused result from 75.62% to 77.74%, or 297 of
+382 fuzzy bytes, while retaining 142 candidate instructions against 141 target
+instructions and all 14 audited references clean. The exact prefix remains
+zero because the frame-allocation difference begins at the prologue.
+
+Six recorded sweeps cover 106 unique variants: nine improve an earlier
+baseline, 52 are byte-identical, and 45 regress, with no compile failures or
+repeated source/compiler variants. The tested space includes explicit
+working/saved offsets, separate outer/shift offsets, typed and raw flag views,
+setup declaration orders, `register` hints, live-zero comparisons, copy and
+publication schedules, and structured `do`, `while`, and `for` controls. The
+single winning schedule is retained. Three subsequent non-improving sweeps
+leave this scratch formally stalled.
+
+The remaining allocator residual is now narrower rather than hidden. Native
+keeps `build_edges` in EDI and the outer edge index in EAX, spilling only the
+strength-reduced byte offset into the one reused local dword. The candidate
+keeps `build_edges` in EAX and spills both its EBX edge index and EDX byte
+offset into an eight-byte frame. Replaying the declaration/register sweep
+against the improved source was intentional interaction coverage; all 106
+compiled variants are source-unique even though the experiment summary notes
+the reused mutation specification.

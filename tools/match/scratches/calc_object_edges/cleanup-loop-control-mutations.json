@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cleanup-loop-control",
+      "find": "    if ((flags & 0x8000) != 0) {\n        int index = 0;\n        if (edge_count > 0) {\n            do {\n                if ((build_edges[index].flags & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {\n                    int shift_index = index;\n                    if (index < edge_count - 1) {\n                        do {\n                            memcpy(&build_edges[shift_index],\n                                &build_edges[shift_index + 1],\n                                sizeof(ObjectToonEdge));\n                            ++shift_index;\n                            edge_count = g_object_edge_build_count;\n                            build_edges = g_object_edge_build_edges;\n                        } while (shift_index < g_object_edge_build_count - 1);\n                    }\n                    --edge_count;\n                    g_object_edge_build_count = edge_count;\n                    --index;\n                }\n                ++index;\n            } while (index < edge_count);\n        }\n    }",
+      "replacements": [
+        {
+          "name": "for-loop",
+          "text": "    if ((flags & 0x8000) != 0) {\n        for (int index = 0; index < edge_count; ++index) {\n            if ((build_edges[index].flags & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {\n                int shift_index = index;\n                if (index < edge_count - 1) {\n                    do {\n                        memcpy(&build_edges[shift_index],\n                            &build_edges[shift_index + 1],\n                            sizeof(ObjectToonEdge));\n                        ++shift_index;\n                        edge_count = g_object_edge_build_count;\n                        build_edges = g_object_edge_build_edges;\n                    } while (shift_index < g_object_edge_build_count - 1);\n                }\n                --edge_count;\n                g_object_edge_build_count = edge_count;\n                --index;\n            }\n        }\n    }"
+        },
+        {
+          "name": "while-loop",
+          "text": "    if ((flags & 0x8000) != 0) {\n        int index = 0;\n        while (index < edge_count) {\n            if ((build_edges[index].flags & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {\n                int shift_index = index;\n                if (index < edge_count - 1) {\n                    do {\n                        memcpy(&build_edges[shift_index],\n                            &build_edges[shift_index + 1],\n                            sizeof(ObjectToonEdge));\n                        ++shift_index;\n                        edge_count = g_object_edge_build_count;\n                        build_edges = g_object_edge_build_edges;\n                    } while (shift_index < g_object_edge_build_count - 1);\n                }\n                --edge_count;\n                g_object_edge_build_count = edge_count;\n                --index;\n            }\n            ++index;\n        }\n    }"
+        },
+        {
+          "name": "guarded-for-loop",
+          "text": "    if ((flags & 0x8000) != 0) {\n        int index = 0;\n        if (edge_count > 0) {\n            for (; index < edge_count; ++index) {\n                if ((build_edges[index].flags & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {\n                    int shift_index = index;\n                    if (index < edge_count - 1) {\n                        do {\n                            memcpy(&build_edges[shift_index],\n                                &build_edges[shift_index + 1],\n                                sizeof(ObjectToonEdge));\n                            ++shift_index;\n                            edge_count = g_object_edge_build_count;\n                            build_edges = g_object_edge_build_edges;\n                        } while (shift_index < g_object_edge_build_count - 1);\n                    }\n                    --edge_count;\n                    g_object_edge_build_count = edge_count;\n                    --index;\n                }\n            }\n        }\n    }"
+        },
+        {
+          "name": "count-first-for-loop",
+          "text": "    if ((flags & 0x8000) != 0) {\n        for (int index = 0; edge_count > index; ++index) {\n            if ((build_edges[index].flags & OBJECT_TOON_EDGE_FLAG_BOUNDARY) != 0) {\n                int shift_index = index;\n                if (edge_count - 1 > index) {\n                    do {\n                        memcpy(&build_edges[shift_index],\n                            &build_edges[shift_index + 1],\n                            sizeof(ObjectToonEdge));\n                        ++shift_index;\n                        edge_count = g_object_edge_build_count;\n                        build_edges = g_object_edge_build_edges;\n                    } while (g_object_edge_build_count - 1 > shift_index);\n                }\n                --edge_count;\n                g_object_edge_build_count = edge_count;\n                --index;\n            }\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}

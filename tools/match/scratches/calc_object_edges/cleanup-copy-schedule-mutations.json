@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shift-copy-schedule",
+      "find": "                        do {\n                            ++shift_index;\n                            memcpy(&build_edges[shift_index - 1],\n                                &build_edges[shift_index],\n                                sizeof(ObjectToonEdge));\n                            edge_count = g_object_edge_build_count;\n                            build_edges = g_object_edge_build_edges;\n                        } while (shift_index < g_object_edge_build_count - 1);",
+      "replacements": [
+        {
+          "name": "copy-then-increment",
+          "text": "                        do {\n                            memcpy(&build_edges[shift_index],\n                                &build_edges[shift_index + 1],\n                                sizeof(ObjectToonEdge));\n                            ++shift_index;\n                            edge_count = g_object_edge_build_count;\n                            build_edges = g_object_edge_build_edges;\n                        } while (shift_index < g_object_edge_build_count - 1);"
+        },
+        {
+          "name": "form-addresses-then-increment",
+          "text": "                        do {\n                            ObjectToonEdge* destination = &build_edges[shift_index];\n                            ObjectToonEdge* source = &build_edges[shift_index + 1];\n                            ++shift_index;\n                            memcpy(destination, source, sizeof(ObjectToonEdge));\n                            edge_count = g_object_edge_build_count;\n                            build_edges = g_object_edge_build_edges;\n                        } while (shift_index < g_object_edge_build_count - 1);"
+        },
+        {
+          "name": "copy-reload-then-increment",
+          "text": "                        do {\n                            memcpy(&build_edges[shift_index],\n                                &build_edges[shift_index + 1],\n                                sizeof(ObjectToonEdge));\n                            edge_count = g_object_edge_build_count;\n                            build_edges = g_object_edge_build_edges;\n                            ++shift_index;\n                        } while (shift_index < g_object_edge_build_count - 1);"
+        }
+      ]
+    },
+    {
+      "name": "removal-publication-order",
+      "find": "                    --edge_count;\n                    --index;\n                    g_object_edge_build_count = edge_count;",
+      "replacements": [
+        {
+          "name": "decrement-index-after-publication",
+          "text": "                    --edge_count;\n                    g_object_edge_build_count = edge_count;\n                    --index;"
+        },
+        {
+          "name": "publish-predecrement-count",
+          "text": "                    --index;\n                    g_object_edge_build_count = --edge_count;"
+        }
+      ]
+    }
+  ]
+}

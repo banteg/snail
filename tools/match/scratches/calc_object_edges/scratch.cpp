@@ -49,17 +49,17 @@ void cRObject::CalcEdges()
                     int shift_index = index;
                     if (index < edge_count - 1) {
                         do {
-                            ++shift_index;
-                            memcpy(&build_edges[shift_index - 1],
-                                &build_edges[shift_index],
+                            memcpy(&build_edges[shift_index],
+                                &build_edges[shift_index + 1],
                                 sizeof(ObjectToonEdge));
+                            ++shift_index;
                             edge_count = g_object_edge_build_count;
                             build_edges = g_object_edge_build_edges;
                         } while (shift_index < g_object_edge_build_count - 1);
                     }
                     --edge_count;
-                    --index;
                     g_object_edge_build_count = edge_count;
+                    --index;
                 }
                 ++index;
             } while (index < edge_count);

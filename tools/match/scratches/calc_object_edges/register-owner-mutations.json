@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "setup-declaration-order",
+      "find": "    cRFaceQuad* face = facequads;\n    ObjectToonEdge* build_edges = (ObjectToonEdge*)get_archive_data_base();\n    g_object_edge_build_edges = build_edges;\n    int edge_count = 0;\n    g_object_edge_build_count = edge_count;\n\n    int face_index = 0;",
+      "replacements": [
+        {
+          "name": "edge-count-before-build-owner",
+          "text": "    cRFaceQuad* face = facequads;\n    int edge_count = 0;\n    ObjectToonEdge* build_edges = (ObjectToonEdge*)get_archive_data_base();\n    g_object_edge_build_edges = build_edges;\n    g_object_edge_build_count = edge_count;\n\n    int face_index = 0;"
+        },
+        {
+          "name": "face-index-before-build-owner",
+          "text": "    cRFaceQuad* face = facequads;\n    int face_index = 0;\n    ObjectToonEdge* build_edges = (ObjectToonEdge*)get_archive_data_base();\n    g_object_edge_build_edges = build_edges;\n    int edge_count = 0;\n    g_object_edge_build_count = edge_count;"
+        },
+        {
+          "name": "scalar-owners-before-build-owner",
+          "text": "    cRFaceQuad* face = facequads;\n    int edge_count = 0;\n    int face_index = 0;\n    ObjectToonEdge* build_edges = (ObjectToonEdge*)get_archive_data_base();\n    g_object_edge_build_edges = build_edges;\n    g_object_edge_build_count = edge_count;"
+        },
+        {
+          "name": "declarations-then-assignments",
+          "text": "    cRFaceQuad* face;\n    ObjectToonEdge* build_edges;\n    int edge_count;\n    int face_index;\n    face = facequads;\n    build_edges = (ObjectToonEdge*)get_archive_data_base();\n    g_object_edge_build_edges = build_edges;\n    edge_count = 0;\n    g_object_edge_build_count = edge_count;\n\n    face_index = 0;"
+        },
+        {
+          "name": "build-owner-before-face-owner",
+          "text": "    ObjectToonEdge* build_edges;\n    cRFaceQuad* face = facequads;\n    build_edges = (ObjectToonEdge*)get_archive_data_base();\n    g_object_edge_build_edges = build_edges;\n    int edge_count = 0;\n    g_object_edge_build_count = edge_count;\n\n    int face_index = 0;"
+        },
+        {
+          "name": "register-build-owner",
+          "text": "    cRFaceQuad* face = facequads;\n    register ObjectToonEdge* build_edges = (ObjectToonEdge*)get_archive_data_base();\n    g_object_edge_build_edges = build_edges;\n    int edge_count = 0;\n    g_object_edge_build_count = edge_count;\n\n    int face_index = 0;"
+        }
+      ]
+    },
+    {
+      "name": "initial-face-gate",
+      "find": "    if (facequad_count > 0) {",
+      "replacements": [
+        {
+          "name": "compare-live-zero-owner",
+          "text": "    if (facequad_count > edge_count) {"
+        }
+      ]
+    },
+    {
+      "name": "cleanup-index-owner",
+      "find": "        int index = 0;\n        if (edge_count > 0) {",
+      "replacements": [
+        {
+          "name": "register-index",
+          "text": "        register int index = 0;\n        if (edge_count > 0) {"
+        },
+        {
+          "name": "split-index-initialization",
+          "text": "        int index;\n        index = 0;\n        if (edge_count > 0) {"
+        }
+      ]
+    }
+  ]
+}
