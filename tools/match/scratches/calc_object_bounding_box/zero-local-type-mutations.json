@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "offset-type",
+      "find": "    int offset;",
+      "replacements": [
+        {
+          "name": "long",
+          "text": "    long offset;"
+        },
+        {
+          "name": "unsigned-int",
+          "text": "    unsigned int offset;"
+        },
+        {
+          "name": "unsigned-long",
+          "text": "    unsigned long offset;"
+        }
+      ]
+    },
+    {
+      "name": "counter-type",
+      "find": "    int result = 0;",
+      "replacements": [
+        {
+          "name": "long",
+          "text": "    long result = 0;"
+        },
+        {
+          "name": "unsigned-int",
+          "text": "    unsigned int result = 0;"
+        },
+        {
+          "name": "unsigned-long",
+          "text": "    unsigned long result = 0;"
+        }
+      ]
+    }
+  ]
+}

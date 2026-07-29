@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "bounds-owner",
+      "find": "    Vector3* max = &bounds_max;\n    *max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);\n    Vector3* min = &bounds_min;\n    *min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);",
+      "replacements": [
+        {
+          "name": "direct-aggregate-then-pointers",
+          "text": "    bounds_max = Vector3(\n        -10000000000.0f, -10000000000.0f, -10000000000.0f);\n    bounds_min = Vector3(\n        10000000000.0f, 10000000000.0f, 10000000000.0f);\n    Vector3* max = &bounds_max;\n    Vector3* min = &bounds_min;"
+        },
+        {
+          "name": "aggregate-references",
+          "text": "    Vector3& max_ref = bounds_max;\n    max_ref = Vector3(\n        -10000000000.0f, -10000000000.0f, -10000000000.0f);\n    Vector3& min_ref = bounds_min;\n    min_ref = Vector3(\n        10000000000.0f, 10000000000.0f, 10000000000.0f);\n    Vector3* max = &max_ref;\n    Vector3* min = &min_ref;"
+        },
+        {
+          "name": "named-bound-values",
+          "text": "    Vector3 max_value(\n        -10000000000.0f, -10000000000.0f, -10000000000.0f);\n    Vector3* max = &bounds_max;\n    *max = max_value;\n    Vector3 min_value(\n        10000000000.0f, 10000000000.0f, 10000000000.0f);\n    Vector3* min = &bounds_min;\n    *min = min_value;"
+        },
+        {
+          "name": "copy-initialized-bound-values",
+          "text": "    Vector3 max_value = Vector3(\n        -10000000000.0f, -10000000000.0f, -10000000000.0f);\n    Vector3* max = &bounds_max;\n    *max = max_value;\n    Vector3 min_value = Vector3(\n        10000000000.0f, 10000000000.0f, 10000000000.0f);\n    Vector3* min = &bounds_min;\n    *min = min_value;"
+        },
+        {
+          "name": "min-owner-before-max-owner",
+          "text": "    Vector3* min = &bounds_min;\n    Vector3* max = &bounds_max;\n    *max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);\n    *min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);"
+        },
+        {
+          "name": "const-owner-pointers",
+          "text": "    Vector3* const max = &bounds_max;\n    *max = Vector3(-10000000000.0f, -10000000000.0f, -10000000000.0f);\n    Vector3* const min = &bounds_min;\n    *min = Vector3(10000000000.0f, 10000000000.0f, 10000000000.0f);"
+        }
+      ]
+    }
+  ]
+}

@@ -148,3 +148,27 @@ after that independent compare. All subsequent loop semantics and the one
 masked operand are exact. This is a single-function scheduler choice with no
 call or shared definition at the boundary, so a TU would add no source
 constraint and is not introduced.
+
+## 2026-07-29 formal zero-store boundary
+
+Three recorded sweeps extend that audit across every independent owner in the
+opening schedule. Nine zero-order variants cover combined result/radius/offset
+chains, separated declarations, and all ordinary store orders. Six are
+byte-identical; the three forms that prevent the shared zero register regress
+to 84.52%.
+
+Fifteen signed/unsigned `int`/`long` combinations for the byte offset and
+processed-vertex counter produce seven neutral and eight worse builds.
+Unsigned counter ownership adds a second signedness mismatch without moving
+the radius store. Six aggregate-bounds forms then cover direct member
+assignment, references, named values, pointer declaration order, and const
+pointer ownership. Three are neutral and two regress; the const-pointer form
+is invalid because the recovered max/min pointers intentionally rebind during
+the component updates.
+
+Across 29 compilable unique variants, none improve: 16 are byte-identical and
+13 regress. The three-sweep non-improvement streak formally stalls this lane
+at **99.16%** (`119/119`, prefix 28, one clean reference). The only difference
+remains the independent `bounding_radius = 0` store on opposite sides of the
+counter spill/min-z completion/count test. Further work needs original compiler
+provenance, not another zero chain, integer width, or aggregate owner spelling.

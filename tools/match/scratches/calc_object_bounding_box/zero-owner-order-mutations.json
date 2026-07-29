@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "zero-owner-order",
+      "find": "    int offset;\n    bounding_radius = offset = 0;\n    int result = 0;",
+      "replacements": [
+        {
+          "name": "result-from-radius-chain",
+          "text": "    int offset;\n    int result = bounding_radius = offset = 0;"
+        },
+        {
+          "name": "declared-result-from-radius-chain",
+          "text": "    int offset;\n    int result;\n    result = bounding_radius = offset = 0;"
+        },
+        {
+          "name": "radius-from-result-chain",
+          "text": "    int offset;\n    int result;\n    bounding_radius = result = offset = 0;"
+        },
+        {
+          "name": "offset-from-radius-chain",
+          "text": "    int offset;\n    int result;\n    offset = bounding_radius = result = 0;"
+        },
+        {
+          "name": "result-first-separate",
+          "text": "    int offset;\n    int result = 0;\n    bounding_radius = offset = 0;"
+        },
+        {
+          "name": "radius-then-int-chain",
+          "text": "    int offset;\n    bounding_radius = 0.0f;\n    int result = offset = 0;"
+        },
+        {
+          "name": "offset-then-radius-then-result",
+          "text": "    int offset = 0;\n    bounding_radius = 0.0f;\n    int result = 0;"
+        },
+        {
+          "name": "radius-then-offset-then-result",
+          "text": "    bounding_radius = 0.0f;\n    int offset = 0;\n    int result = 0;"
+        },
+        {
+          "name": "all-declared-then-chain",
+          "text": "    int offset;\n    int result;\n    result = 0;\n    bounding_radius = offset = 0;"
+        }
+      ]
+    }
+  ]
+}
