@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-index-owner",
+      "find": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            face[0].vertex_0 = row * 4 + 5;\n            face[0].vertex_1 = row * 4 + 4;\n            face[0].vertex_2 = row * 4;\n            face[0].vertex_3 = row * 4 + 1;",
+      "replacements": [
+        {
+          "name": "first-face-pointer",
+          "text": "            cRFaceQuad* first_face = face;\n            first_face->texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            first_face->vertex_0 = row * 4 + 5;\n            first_face->vertex_1 = row * 4 + 4;\n            first_face->vertex_2 = row * 4;\n            first_face->vertex_3 = row * 4 + 1;"
+        },
+        {
+          "name": "first-face-reference",
+          "text": "            cRFaceQuad& first_face = face[0];\n            first_face.texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            first_face.vertex_0 = row * 4 + 5;\n            first_face.vertex_1 = row * 4 + 4;\n            first_face.vertex_2 = row * 4;\n            first_face.vertex_3 = row * 4 + 1;"
+        },
+        {
+          "name": "named-indices",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            int vertex_0 = row * 4 + 5;\n            int vertex_1 = row * 4 + 4;\n            int vertex_2 = row * 4;\n            int vertex_3 = row * 4 + 1;\n            face[0].vertex_0 = vertex_0;\n            face[0].vertex_1 = vertex_1;\n            face[0].vertex_2 = vertex_2;\n            face[0].vertex_3 = vertex_3;"
+        },
+        {
+          "name": "named-short-indices",
+          "text": "            face[0].texture_ref = g_texture_refs.Add(texture_path, 0, 0);\n            unsigned short vertex_0 = (unsigned short)(row * 4 + 5);\n            unsigned short vertex_1 = (unsigned short)(row * 4 + 4);\n            unsigned short vertex_2 = (unsigned short)(row * 4);\n            unsigned short vertex_3 = (unsigned short)(row * 4 + 1);\n            face[0].vertex_0 = vertex_0;\n            face[0].vertex_1 = vertex_1;\n            face[0].vertex_2 = vertex_2;\n            face[0].vertex_3 = vertex_3;"
+        }
+      ]
+    },
+    {
+      "name": "first-face-uv-owner",
+      "find": "            face[0].uv[3].u = 0.5f;\n            face[0].uv[3].v = 0.0f;\n            face[0].uv[0].u = 0.5f;\n            face[0].uv[0].v = 0.0f;\n            face[0].uv[1].u = 0.5f;\n            face[0].uv[1].v = 1.0f;\n            face[0].uv[2].u = 0.5f;\n            face[0].uv[2].v = 1.0f;",
+      "replacements": [
+        {
+          "name": "face-pointer",
+          "text": "            cRFaceQuad* first_uv_face = face;\n            first_uv_face->uv[3].u = 0.5f;\n            first_uv_face->uv[3].v = 0.0f;\n            first_uv_face->uv[0].u = 0.5f;\n            first_uv_face->uv[0].v = 0.0f;\n            first_uv_face->uv[1].u = 0.5f;\n            first_uv_face->uv[1].v = 1.0f;\n            first_uv_face->uv[2].u = 0.5f;\n            first_uv_face->uv[2].v = 1.0f;"
+        },
+        {
+          "name": "face-reference",
+          "text": "            cRFaceQuad& first_uv_face = face[0];\n            first_uv_face.uv[3].u = 0.5f;\n            first_uv_face.uv[3].v = 0.0f;\n            first_uv_face.uv[0].u = 0.5f;\n            first_uv_face.uv[0].v = 0.0f;\n            first_uv_face.uv[1].u = 0.5f;\n            first_uv_face.uv[1].v = 1.0f;\n            first_uv_face.uv[2].u = 0.5f;\n            first_uv_face.uv[2].v = 1.0f;"
+        },
+        {
+          "name": "direct-union-fields",
+          "text": "            face[0].u3 = 0.5f;\n            face[0].v3 = 0.0f;\n            face[0].u0 = 0.5f;\n            face[0].v0 = 0.0f;\n            face[0].u1 = 0.5f;\n            face[0].v1 = 1.0f;\n            face[0].u2 = 0.5f;\n            face[0].v2 = 1.0f;"
+        },
+        {
+          "name": "named-values",
+          "text": "            float first_uv_half = 0.5f;\n            float first_uv_zero = 0.0f;\n            float first_uv_one = 1.0f;\n            face[0].uv[3].u = first_uv_half;\n            face[0].uv[3].v = first_uv_zero;\n            face[0].uv[0].u = first_uv_half;\n            face[0].uv[0].v = first_uv_zero;\n            face[0].uv[1].u = first_uv_half;\n            face[0].uv[1].v = first_uv_one;\n            face[0].uv[2].u = first_uv_half;\n            face[0].uv[2].v = first_uv_one;"
+        },
+        {
+          "name": "const-named-values",
+          "text": "            const float first_uv_half = 0.5f;\n            const float first_uv_zero = 0.0f;\n            const float first_uv_one = 1.0f;\n            face[0].uv[3].u = first_uv_half;\n            face[0].uv[3].v = first_uv_zero;\n            face[0].uv[0].u = first_uv_half;\n            face[0].uv[0].v = first_uv_zero;\n            face[0].uv[1].u = first_uv_half;\n            face[0].uv[1].v = first_uv_one;\n            face[0].uv[2].u = first_uv_half;\n            face[0].uv[2].v = first_uv_one;"
+        }
+      ]
+    },
+    {
+      "name": "second-face-uv-owner",
+      "find": "            face[1].uv[3].u = 0.5f;\n            face[1].uv[3].v = 1.0f;\n            face[1].uv[0].u = 0.5f;\n            face[1].uv[0].v = 1.0f;\n            face[1].uv[1].u = 0.5f;\n            face[1].uv[1].v = 0.0f;\n            face[1].uv[2].u = 0.5f;\n            face[1].uv[2].v = 0.0f;",
+      "replacements": [
+        {
+          "name": "direct-union-fields",
+          "text": "            face[1].u3 = 0.5f;\n            face[1].v3 = 1.0f;\n            face[1].u0 = 0.5f;\n            face[1].v0 = 1.0f;\n            face[1].u1 = 0.5f;\n            face[1].v1 = 0.0f;\n            face[1].u2 = 0.5f;\n            face[1].v2 = 0.0f;"
+        },
+        {
+          "name": "named-values",
+          "text": "            float second_uv_half = 0.5f;\n            float second_uv_one = 1.0f;\n            float second_uv_zero = 0.0f;\n            face[1].uv[3].u = second_uv_half;\n            face[1].uv[3].v = second_uv_one;\n            face[1].uv[0].u = second_uv_half;\n            face[1].uv[0].v = second_uv_one;\n            face[1].uv[1].u = second_uv_half;\n            face[1].uv[1].v = second_uv_zero;\n            face[1].uv[2].u = second_uv_half;\n            face[1].uv[2].v = second_uv_zero;"
+        },
+        {
+          "name": "const-named-values",
+          "text": "            const float second_uv_half = 0.5f;\n            const float second_uv_one = 1.0f;\n            const float second_uv_zero = 0.0f;\n            face[1].uv[3].u = second_uv_half;\n            face[1].uv[3].v = second_uv_one;\n            face[1].uv[0].u = second_uv_half;\n            face[1].uv[0].v = second_uv_one;\n            face[1].uv[1].u = second_uv_half;\n            face[1].uv[1].v = second_uv_zero;\n            face[1].uv[2].u = second_uv_half;\n            face[1].uv[2].v = second_uv_zero;"
+        }
+      ]
+    }
+  ]
+}

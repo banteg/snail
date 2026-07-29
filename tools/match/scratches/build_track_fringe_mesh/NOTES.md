@@ -146,3 +146,34 @@ closed on their sizes. The tracked decompiles expose the surrounding row and
 both faces rather than anonymous scalar offsets. Matching source and the
 focused result remain byte-identical at 92.77%, 318/318 instructions, prefix
 100/318, with all 23 masked operands clean.
+
+## 2026-07-29 recorded store-scheduling frontier
+
+Six recorded mutation sweeps evaluate 251 variants (213 unique) around every
+remaining mismatch region. None improves the 92.77%, exact
+`318/318`-instruction, prefix-100 baseline: 176 variants are byte-identical and
+75 degrade. All 23 masked operands remain clean.
+
+- The 15 one-site and 56 paired edge-direction combinations cover
+  initialization versus assignment, explicit operator and assignment calls,
+  named/const differences, wrapped temporaries, and borrowed row pointers or
+  references. Every form is byte-identical. Native still delays publication
+  of the x lane across the y-lane x87 store in both vector-return copies.
+- Ten first-face index forms cover signed, unsigned, and 16-bit reusable
+  bases; shifted and staged bases; named scalar indices; and face
+  pointers/references. The four no-base aliases are neutral. Reusable bases
+  remove native instructions or perturb the allocation schedule and regress
+  as low as 83.41%.
+- Sixteen one-site and 64 paired UV-owner forms cover face and UV borrows,
+  direct union aliases, named constants, corner pointers, and whole
+  `ObjectUv` values. Scalar aliases are neutral; materialized pointer or
+  aggregate owners regress. A final 59-variant cross-site sweep combines the
+  four neutral index forms with neutral first- and second-face UV forms; all
+  index/UV interactions are also neutral.
+
+The ledger is formally stalled after six consecutive non-improving sweeps.
+The retained direct indices and scalar UV assignments agree with the verified
+mobile `cRPath::BuildFringe` geometry and remain the strongest source-backed
+form. The residual is bounded to VC6 store scheduling, not missing geometry,
+ownership, reference identity, or control flow; no synthetic aggregate,
+volatile qualifier, or manual store barrier is retained.

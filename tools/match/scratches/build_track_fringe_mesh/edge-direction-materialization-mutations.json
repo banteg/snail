@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "left-edge-direction",
+      "find": "            Vector3 direction;\n            direction = row_vertices[1] - row_vertices[0];\n            direction.Normalize();",
+      "replacements": [
+        {
+          "name": "copy-initialization",
+          "text": "            Vector3 direction =\n                row_vertices[1] - row_vertices[0];\n            direction.Normalize();"
+        },
+        {
+          "name": "direct-initialization",
+          "text": "            Vector3 direction(\n                row_vertices[1] - row_vertices[0]);\n            direction.Normalize();"
+        },
+        {
+          "name": "explicit-operator-call",
+          "text": "            Vector3 direction;\n            direction = operator-(row_vertices[1], row_vertices[0]);\n            direction.Normalize();"
+        },
+        {
+          "name": "explicit-assignment-call",
+          "text": "            Vector3 direction;\n            direction.operator=(row_vertices[1] - row_vertices[0]);\n            direction.Normalize();"
+        },
+        {
+          "name": "named-difference",
+          "text": "            Vector3 left_difference =\n                row_vertices[1] - row_vertices[0];\n            Vector3 direction;\n            direction = left_difference;\n            direction.Normalize();"
+        },
+        {
+          "name": "const-named-difference",
+          "text": "            const Vector3 left_difference =\n                row_vertices[1] - row_vertices[0];\n            Vector3 direction;\n            direction = left_difference;\n            direction.Normalize();"
+        },
+        {
+          "name": "row-references",
+          "text": "            const Vector3& left_inner = row_vertices[1];\n            const Vector3& left_outer = row_vertices[0];\n            Vector3 direction;\n            direction = left_inner - left_outer;\n            direction.Normalize();"
+        },
+        {
+          "name": "row-pointers",
+          "text": "            const Vector3* left_inner = &row_vertices[1];\n            const Vector3* left_outer = &row_vertices[0];\n            Vector3 direction;\n            direction = *left_inner - *left_outer;\n            direction.Normalize();"
+        }
+      ]
+    },
+    {
+      "name": "right-edge-direction",
+      "find": "            direction = row_vertices[3] - row_vertices[2];\n            direction.Normalize();",
+      "replacements": [
+        {
+          "name": "explicit-operator-call",
+          "text": "            direction = operator-(row_vertices[3], row_vertices[2]);\n            direction.Normalize();"
+        },
+        {
+          "name": "explicit-assignment-call",
+          "text": "            direction.operator=(row_vertices[3] - row_vertices[2]);\n            direction.Normalize();"
+        },
+        {
+          "name": "wrapped-temporary",
+          "text": "            direction = Vector3(row_vertices[3] - row_vertices[2]);\n            direction.Normalize();"
+        },
+        {
+          "name": "named-difference",
+          "text": "            Vector3 right_difference =\n                row_vertices[3] - row_vertices[2];\n            direction = right_difference;\n            direction.Normalize();"
+        },
+        {
+          "name": "const-named-difference",
+          "text": "            const Vector3 right_difference =\n                row_vertices[3] - row_vertices[2];\n            direction = right_difference;\n            direction.Normalize();"
+        },
+        {
+          "name": "row-references",
+          "text": "            const Vector3& right_inner = row_vertices[3];\n            const Vector3& right_outer = row_vertices[2];\n            direction = right_inner - right_outer;\n            direction.Normalize();"
+        },
+        {
+          "name": "row-pointers",
+          "text": "            const Vector3* right_inner = &row_vertices[3];\n            const Vector3* right_outer = &row_vertices[2];\n            direction = *right_inner - *right_outer;\n            direction.Normalize();"
+        }
+      ]
+    }
+  ]
+}
