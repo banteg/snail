@@ -71,3 +71,18 @@ Changing the shared matcher and analyzer declarations to void preserves the
 honest focused result at 94.19%, exactly 155/155 instructions with 12 clean
 operands. The two callers also remain at their established results, so this is
 an ABI correction rather than source shaping.
+
+## 2026-07-29 exact loop-bottom closure
+
+Two recorded sweeps evaluated 138 local, cursor, copy, and reset-order
+variants. Declaration ordering and register hints are neutral: VC6 canonicalizes
+them back to the 94.19% body. The decisive source relationship is instead the
+independent loop-bottom order retained by iOS `FontType`: advance `cursor_y`
+for the completed line, then reset the line-buffer output cursor.
+
+Moving only `out = line` after the line-height update recovers every remaining
+Windows register and scheduling choice. Focused matching is now **100.00%**,
+155/155 instructions with a full prefix and all 12 references clean. A direct
+single-expression height variant also matched bytes but introduced two
+reference mismatches by changing the named font-sheet lanes, so it is rejected
+in favor of the minimal clean winner.

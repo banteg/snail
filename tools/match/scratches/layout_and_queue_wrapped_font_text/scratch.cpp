@@ -61,11 +61,11 @@ void layout_and_queue_wrapped_font_text(
                 }
             }
 
-            out = line;
             float line_height = g_font_sheets[font_id].height_scale;
             line_height *= g_font_sheets[font_id].spacing_scale;
             line_height *= g_font_sheets[font_id].line_marker_y;
             cursor_y = line_height * text_scale + cursor_y;
+            out = line;
         } else {
             *out = ch;
             ++out;

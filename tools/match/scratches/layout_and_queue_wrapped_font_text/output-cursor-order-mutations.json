@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "line-copy-cursor-idiom",
+      "find": "        } else {\n            *out = ch;\n            ++out;\n        }",
+      "replacements": [
+        {
+          "name": "postincrement-dereference",
+          "text": "        } else {\n            *out++ = ch;\n        }"
+        },
+        {
+          "name": "indexed-preincrement",
+          "text": "        } else {\n            out[0] = ch;\n            ++out;\n        }"
+        },
+        {
+          "name": "indexed-postincrement",
+          "text": "        } else {\n            out[0] = ch;\n            out++;\n        }"
+        },
+        {
+          "name": "explicit-pointer-addition",
+          "text": "        } else {\n            *out = ch;\n            out = out + 1;\n        }"
+        },
+        {
+          "name": "indexed-pointer-addition",
+          "text": "        } else {\n            out[0] = ch;\n            out += 1;\n        }"
+        },
+        {
+          "name": "next-element-address",
+          "text": "        } else {\n            *out = ch;\n            out = &out[1];\n        }"
+        },
+        {
+          "name": "named-next-cursor",
+          "text": "        } else {\n            char* next_out = out + 1;\n            *out = ch;\n            out = next_out;\n        }"
+        },
+        {
+          "name": "saved-destination-postincrement",
+          "text": "        } else {\n            char* destination = out++;\n            *destination = ch;\n        }"
+        }
+      ]
+    },
+    {
+      "name": "line-reset-order",
+      "find": "            out = line;\n            float line_height = g_font_sheets[font_id].height_scale;\n            line_height *= g_font_sheets[font_id].spacing_scale;\n            line_height *= g_font_sheets[font_id].line_marker_y;\n            cursor_y = line_height * text_scale + cursor_y;",
+      "replacements": [
+        {
+          "name": "reset-after-sheet-products",
+          "text": "            float line_height = g_font_sheets[font_id].height_scale;\n            line_height *= g_font_sheets[font_id].spacing_scale;\n            line_height *= g_font_sheets[font_id].line_marker_y;\n            out = line;\n            cursor_y = line_height * text_scale + cursor_y;"
+        },
+        {
+          "name": "reset-after-cursor-advance",
+          "text": "            float line_height = g_font_sheets[font_id].height_scale;\n            line_height *= g_font_sheets[font_id].spacing_scale;\n            line_height *= g_font_sheets[font_id].line_marker_y;\n            cursor_y = line_height * text_scale + cursor_y;\n            out = line;"
+        },
+        {
+          "name": "reset-after-height-spacing",
+          "text": "            float line_height = g_font_sheets[font_id].height_scale;\n            line_height *= g_font_sheets[font_id].spacing_scale;\n            out = line;\n            line_height *= g_font_sheets[font_id].line_marker_y;\n            cursor_y = line_height * text_scale + cursor_y;"
+        },
+        {
+          "name": "single-sheet-product-expression",
+          "text": "            float line_height = g_font_sheets[font_id].height_scale\n                * g_font_sheets[font_id].spacing_scale\n                * g_font_sheets[font_id].line_marker_y;\n            out = line;\n            cursor_y = line_height * text_scale + cursor_y;"
+        },
+        {
+          "name": "reset-through-first-element",
+          "text": "            float line_height = g_font_sheets[font_id].height_scale;\n            line_height *= g_font_sheets[font_id].spacing_scale;\n            line_height *= g_font_sheets[font_id].line_marker_y;\n            out = &line[0];\n            cursor_y = line_height * text_scale + cursor_y;"
+        },
+        {
+          "name": "reset-after-direct-cursor-expression",
+          "text": "            cursor_y = g_font_sheets[font_id].height_scale\n                * g_font_sheets[font_id].spacing_scale\n                * g_font_sheets[font_id].line_marker_y\n                * text_scale + cursor_y;\n            out = line;"
+        }
+      ]
+    }
+  ]
+}

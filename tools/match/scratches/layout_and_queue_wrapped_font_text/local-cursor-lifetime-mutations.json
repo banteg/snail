@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "extent-local-lifetimes",
+      "find": "    float max_right = x;\n    float cursor_y = y;",
+      "replacements": [
+        {
+          "name": "cursor-before-maximum",
+          "text": "    float cursor_y = y;\n    float max_right = x;"
+        },
+        {
+          "name": "predeclare-maximum-then-cursor",
+          "text": "    float max_right;\n    float cursor_y;\n    max_right = x;\n    cursor_y = y;"
+        },
+        {
+          "name": "predeclare-cursor-then-maximum",
+          "text": "    float cursor_y;\n    float max_right;\n    cursor_y = y;\n    max_right = x;"
+        },
+        {
+          "name": "predeclare-both-assign-maximum-first",
+          "text": "    float cursor_y;\n    float max_right;\n    max_right = x;\n    cursor_y = y;"
+        },
+        {
+          "name": "late-cursor-assignment",
+          "text": "    float cursor_y;\n    float max_right = x;\n    cursor_y = y;"
+        },
+        {
+          "name": "late-maximum-assignment",
+          "text": "    float max_right;\n    float cursor_y = y;\n    max_right = x;"
+        }
+      ]
+    },
+    {
+      "name": "text-cursor-lifetimes",
+      "find": "    char* source = text;\n    char line[0x400];\n\n    char ch;\n    char* out = line;",
+      "replacements": [
+        {
+          "name": "line-out-source-character",
+          "text": "    char line[0x400];\n    char* out = line;\n    char* source = text;\n    char ch;"
+        },
+        {
+          "name": "line-character-out-source",
+          "text": "    char line[0x400];\n    char ch;\n    char* out = line;\n    char* source = text;"
+        },
+        {
+          "name": "source-line-out-character",
+          "text": "    char* source = text;\n    char line[0x400];\n    char* out = line;\n    char ch;"
+        },
+        {
+          "name": "predeclare-assign-source-first",
+          "text": "    char* source;\n    char line[0x400];\n    char ch;\n    char* out;\n    source = text;\n    out = line;"
+        },
+        {
+          "name": "predeclare-assign-out-first",
+          "text": "    char* source;\n    char line[0x400];\n    char ch;\n    char* out;\n    out = line;\n    source = text;"
+        },
+        {
+          "name": "register-source",
+          "text": "    register char* source = text;\n    char line[0x400];\n\n    char ch;\n    char* out = line;"
+        },
+        {
+          "name": "register-output",
+          "text": "    char* source = text;\n    char line[0x400];\n\n    char ch;\n    register char* out = line;"
+        },
+        {
+          "name": "register-source-and-output",
+          "text": "    register char* source = text;\n    char line[0x400];\n\n    char ch;\n    register char* out = line;"
+        },
+        {
+          "name": "register-output-before-source",
+          "text": "    char line[0x400];\n    register char* out = line;\n    register char* source = text;\n    char ch;"
+        },
+        {
+          "name": "all-cursors-before-line",
+          "text": "    char* source = text;\n    char* out;\n    char ch;\n    char line[0x400];\n    out = line;"
+        }
+      ]
+    }
+  ]
+}
