@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "dominant-diagonal-dispatch",
+      "find": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }",
+      "replacements": [
+        {
+          "name": "not-less-structured",
+          "text": "    if (matrix_rows[0] >= matrix_rows[5]) {\n        if (matrix_rows[0] > matrix_rows[10]) {\n            goto x_dominant;\n        }\n        if (matrix_rows[5] > matrix_rows[10]) {\n            goto y_dominant;\n        }\n    } else {\n        goto right_less_than_up;\n    }"
+        },
+        {
+          "name": "less-structured",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    } else {\n        if (matrix_rows[0] > matrix_rows[10]) {\n            goto x_dominant;\n        }\n        if (matrix_rows[5] > matrix_rows[10]) {\n            goto y_dominant;\n        }\n    }"
+        },
+        {
+          "name": "not-less-guard",
+          "text": "    if (matrix_rows[0] >= matrix_rows[5]) {\n        if (matrix_rows[0] > matrix_rows[10]) {\n            goto x_dominant;\n        }\n        if (matrix_rows[5] > matrix_rows[10]) {\n            goto y_dominant;\n        }\n    } else\n        goto right_less_than_up;"
+        },
+        {
+          "name": "less-else-if-chain",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    } else if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    } else if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }"
+        },
+        {
+          "name": "nested-not-greater",
+          "text": "    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] <= matrix_rows[10]) {\n        if (matrix_rows[5] > matrix_rows[10]) {\n            goto y_dominant;\n        }\n    } else {\n        goto x_dominant;\n    }"
+        },
+        {
+          "name": "compound-x-y-guards",
+          "text": "    if (matrix_rows[0] >= matrix_rows[5]\n        && matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[0] >= matrix_rows[5]\n        && matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }\n    if (matrix_rows[0] < matrix_rows[5]) {\n        goto right_less_than_up;\n    }"
+        },
+        {
+          "name": "complemented-less-test",
+          "text": "    if (!(matrix_rows[0] >= matrix_rows[5])) {\n        goto right_less_than_up;\n    }\n    if (matrix_rows[0] > matrix_rows[10]) {\n        goto x_dominant;\n    }\n    if (matrix_rows[5] > matrix_rows[10]) {\n        goto y_dominant;\n    }"
+        }
+      ]
+    }
+  ]
+}

@@ -81,3 +81,22 @@ differently and regressed focused Wibo from 92.47% to 68.63%, with 187
 candidate instructions and four unaudited references. That probe was removed;
 the 186/186 Windows source and its honest compiler-specific branch-layout
 residual remain.
+
+## 2026-07-29 bounded diagonal-dispatch audit
+
+The addressed Windows CFG fixes the remaining decision tree precisely. When
+`m00 >= m11`, native tests X against Z, then Y against Z, before falling into
+the Z body. The `m00 < m11` arm separately tests Y against Z and then X against
+Z before joining the same Z/X/Y bodies. This agrees with the two mobile
+constructors, including their tie behavior; only VC6's physical block choice
+differs.
+
+A recorded seven-variant sweep covered structured greater/equal and less-than
+arms, `else if` and nested complement forms, compound X/Y guards, and the
+equivalent complemented first test. None improves the 92.47%, 186/186
+baseline. Three variants are byte-identical, while the four forms that
+materially change block placement regress to 69.89%, 66.49%, or 46.60%.
+The experiment ledger therefore bounds ordinary source-level dispatch
+restructuring: the retained direct-label form remains the strongest honest
+Windows spelling, and the first `jne`/`je` difference is compiler block-layout
+residue rather than an unresolved dominant-diagonal rule.

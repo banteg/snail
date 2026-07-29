@@ -130,3 +130,23 @@ and the stronger Windows register lifetimes. Remaining drift is one error-call
 argument register and the native six-instruction redundant self-copy of the
 finished vector. Those are compiler scheduling residue, not justification for
 explicit self-assignments.
+
+## 2026-07-29 aggregate-result signature audit
+
+The six native self-copy instructions prompted one final type-level check
+instead of another explicit self-store campaign. Changing the shared
+`Vector3::operator+=` result from reference to value was neutral in the exact
+intro-logo, star-position, and jet-particle callers. Using that signature with
+the natural aggregate hotspot statement did not recover the native copy: it
+introduced an extra stack owner, produced 75 candidate instructions, and
+regressed to 73.83%. The shared signature and scalar hotspot source were
+restored.
+
+The independently plausible `destination = destination + vertex` expression
+was also retested against the current shared by-value `operator+`. It
+materialized a 0x14-byte temporary frame, grew to 79 instructions, and
+regressed to 52.29%. Neither aggregate operator shape explains the target's
+otherwise redundant writeback. The restored source remains at 91.55%,
+68/74 instructions, with all seven references clean; a future retry needs new
+original-source evidence rather than a return-type change or explicit
+self-assignment.
