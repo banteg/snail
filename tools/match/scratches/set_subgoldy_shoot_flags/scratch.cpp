@@ -51,11 +51,9 @@ slow_fire:
     }
 
     unsigned int current_flags = shoot_flags;
-    unsigned int selected_flags = previous_shoot_flags;
-    if (current_flags != selected_flags) {
+    if (current_flags != previous_shoot_flags) {
         presentation.set_snail_weapon(current_flags);
-        selected_flags = shoot_flags;
     }
 
-    previous_shoot_flags = selected_flags;
+    previous_shoot_flags = shoot_flags;
 }

@@ -1,7 +1,7 @@
 # set_subgoldy_shoot_flags / cRSubGoldy::SetShootFlags @ 0x43a1a0
 
-Source-shaped match: 98.99%, 46/50 instruction prefix, 49/50 candidate/target
-insns.
+Proof-grade match: 100.00%, 50/50 instruction prefix, 50/50
+candidate/target instructions, and two clean masked operands.
 
 This helper maps the player's shooting tier at `+0x308` onto the
 `shoot_flags` mask at `+0x338` and the fire cadence step at `+0x2734`.
@@ -18,14 +18,16 @@ Recovered tier table:
 - selector 5 produces mask `32` with step `0.06666667f`; and
 - out-of-range selectors produce mask `129` with step `0.06666667f`.
 
-Residual:
+Historical residual:
 
-- Native keeps a separate equal-mask block after the changed-mask return,
+- Before the 2026-07-29 member-refresh recovery, native kept a separate
+  equal-mask block after the changed-mask return,
   reloading `shoot_flags` into `ecx` before storing
   `previous_shoot_flags`. VC6 tail-merges the equal branch into the changed
-  branch's final return sequence for the clean C++ spelling. The old
+  branch's final return sequence for several otherwise clean C++ spellings.
+  The old
   38/64-instruction reading was stale; the current curated extent is 50 target
-  instructions with the first 38 matching exactly.
+  instructions.
 - 2026-06-16 shared-`Player` probe: the offsets existed in `player.h`, but the
   then-current reference audit changed from `2 ok` to `1 ok, 1 mismatch`
   (`$L441` instead of `update_player_movement_flags_jump_table`), so the compact
@@ -133,3 +135,30 @@ and a final assignment through `current_flags` both let VC6 tail-merge the
 paths again and regress to 93.75%; neither is retained. The clean cross-port
 lifetime remains honest at one missing instruction rather than forcing a
 reload.
+
+## 2026-07-29 proof-grade member refresh
+
+The Android body ultimately writes the selected value back to
+`previous_shoot_flags` after the conditional `cRSnail::SetWeapon` call. In the
+Windows owner, the simplest faithful spelling is to retain only the
+`current_flags` call argument and then refresh `previous_shoot_flags` directly
+from the `shoot_flags` member:
+
+```cpp
+unsigned int current_flags = shoot_flags;
+if (current_flags != previous_shoot_flags) {
+    presentation.set_snail_weapon(current_flags);
+}
+previous_shoot_flags = shoot_flags;
+```
+
+VC6 duplicates that real member reload across the changed and unchanged exits,
+recovering the native `eax` and `ecx` epilogues respectively. The focused
+matcher is proof-grade at 100.00%, 50/50 instructions, 50/50 prefix, and two
+clean masked operands.
+
+A bounded five-variant sweep also covered explicit changed/equal returns,
+duplicated branch assignments, and the older two-value lifetime. Those shapes
+all regressed to 93.75%; the unconditional member refresh was the sole
+improving variant. No volatile access, dummy state, source label, or
+translation-unit coupling is involved.
