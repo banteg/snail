@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "parent-position-owner",
+      "find": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;",
+      "replacements": [
+        {
+          "name": "vector-reference",
+          "text": "    Vector3& parent_position = live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position.x;\n    staged_position.y = orbit_y + parent_position.y;\n    staged_position.z = parent_position.z;"
+        },
+        {
+          "name": "const-vector-pointer",
+          "text": "    const Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "const-vector-reference",
+          "text": "    const Vector3& parent_position = live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position.x;\n    staged_position.y = orbit_y + parent_position.y;\n    staged_position.z = parent_position.z;"
+        },
+        {
+          "name": "float-lane-pointer",
+          "text": "    float* parent_position = &live_parent->transform.position.x;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position[0];\n    staged_position.y = orbit_y + parent_position[1];\n    staged_position.z = parent_position[2];"
+        },
+        {
+          "name": "component-references",
+          "text": "    float& parent_x = live_parent->transform.position.x;\n    float& parent_y = live_parent->transform.position.y;\n    float& parent_z = live_parent->transform.position.z;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_x;\n    staged_position.y = orbit_y + parent_y;\n    staged_position.z = parent_z;"
+        },
+        {
+          "name": "transform-pointer",
+          "text": "    tMatrix* parent_transform = &live_parent->transform;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_transform->position.x;\n    staged_position.y = orbit_y + parent_transform->position.y;\n    staged_position.z = parent_transform->position.z;"
+        },
+        {
+          "name": "transform-reference",
+          "text": "    tMatrix& parent_transform = live_parent->transform;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_transform.position.x;\n    staged_position.y = orbit_y + parent_transform.position.y;\n    staged_position.z = parent_transform.position.z;"
+        },
+        {
+          "name": "direct-parent-members",
+          "text": "    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + live_parent->transform.position.x;\n    staged_position.y = orbit_y + live_parent->transform.position.y;\n    staged_position.z = live_parent->transform.position.z;"
+        },
+        {
+          "name": "sprite-before-parent-pointer",
+          "text": "    Vector3* sprite_position = &live_sprite->position;\n    Vector3* parent_position = &live_parent->transform.position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        }
+      ]
+    }
+  ]
+}

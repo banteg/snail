@@ -186,3 +186,31 @@ child position, and stationary slow-effect exception. It supports the current
 `SubRingStar -> SubRing` ownership graph but not Windows' final address
 materialization order. Direct-write source probes regressed the focused match,
 so the honest 96.36%, 55/55-instruction source remains unchanged.
+
+## 2026-07-29 formal position-materialization boundary
+
+Three recorded mutation sweeps evaluated 27 variants (26 unique) around the
+remaining X-lane address schedule. None improved the 96.36%, 55/55-instruction,
+prefix-28 baseline: 13 variants were codegen-neutral and 14 degraded.
+
+- Five of nine position-owner spellings were neutral. Vector references,
+  const-qualified vector borrows, a float-lane pointer, and reversing the
+  parent/sprite pointer declarations all preserve the same
+  `add eax, 0x68; fadd [eax]` residual. Transform owners, direct members, and
+  component references regress.
+- All nine direct-X/radius-owner variants degraded. Reading the inherited X
+  lane directly can recover `fadd [eax+0x68]`, but VC6 then hoists the radius
+  multiply and loses the native parent/sprite reload and Y/Z pointer schedule.
+  Radius references, pointers, named values, delayed position pointers, and
+  alternate particle/parent owners do not prevent that tradeoff.
+- Eight of nine staged-X publication variants were neutral, including reversed
+  operand order, named scaling, references/pointers to the staged X lane,
+  split pointer initialization, and indexed parent lanes. Publishing orbit X
+  before adding parent X regresses to 94.55%.
+
+The canonical typed `Vector3* parent_position` source remains the strongest
+honest shape. The sole residual is bounded to native's use of `[parent+0x68]`
+for X immediately before advancing that same register to the inherited
+position base used by Y/Z; tested C++ source spellings cannot express that
+single-register materialization lifetime without disrupting otherwise exact
+code generation.

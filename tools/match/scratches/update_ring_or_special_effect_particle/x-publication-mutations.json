@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "staged-x-publication",
+      "find": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;",
+      "replacements": [
+        {
+          "name": "reversed-x-expression",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = parent_position->x + orbit_x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "split-orbit-then-parent",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x;\n    staged_position.x += parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "split-parent-then-orbit",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = parent_position->x;\n    staged_position.x += orbit_x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "named-scaled-x",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    float scaled_x = orbit_x * radius;\n    staged_position.x = scaled_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "staged-x-reference",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    float& staged_x = staged_position.x;\n    orbit_x *= radius;\n    staged_x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "staged-x-pointer",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    float* staged_x = &staged_position.x;\n    orbit_x *= radius;\n    *staged_x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "split-position-pointer-initialization",
+          "text": "    Vector3* parent_position;\n    Vector3* sprite_position = &live_sprite->position;\n    parent_position = &live_parent->transform.position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "position-reference-from-pointer",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    Vector3& parent_position_ref = *parent_position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position_ref.x;\n    staged_position.y = orbit_y + parent_position_ref.y;\n    staged_position.z = parent_position_ref.z;"
+        },
+        {
+          "name": "indexed-parent-lanes",
+          "text": "    float* parent_position = &live_parent->transform.position.x;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position[0];\n    staged_position.y = orbit_y + parent_position[1];\n    staged_position.z = parent_position[2];"
+        }
+      ]
+    }
+  ]
+}

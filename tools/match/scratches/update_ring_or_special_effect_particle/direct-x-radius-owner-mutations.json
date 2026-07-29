@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-x-radius-owner",
+      "find": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + parent_position->x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;",
+      "replacements": [
+        {
+          "name": "radius-reference",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    float& live_radius = radius;\n    orbit_x *= live_radius;\n    staged_position.x =\n        orbit_x + live_parent->transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "radius-pointer",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    float* live_radius = &radius;\n    orbit_x *= *live_radius;\n    staged_position.x =\n        orbit_x + live_parent->transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "particle-owner",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    SubRingStar* live_particle = this;\n    orbit_x *= live_particle->radius;\n    staged_position.x =\n        orbit_x + live_parent->transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "named-radius-value",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    float live_radius = radius;\n    orbit_x *= live_radius;\n    staged_position.x =\n        orbit_x + live_parent->transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "named-scaled-x",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    float scaled_x = orbit_x * radius;\n    staged_position.x =\n        scaled_x + live_parent->transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "separate-x-parent",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    SubRing* x_parent = live_parent;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + x_parent->transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "x-parent-reference",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    SubRing& x_parent = *live_parent;\n    orbit_x *= radius;\n    staged_position.x = orbit_x + x_parent.transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "source-parent-x",
+          "text": "    Vector3* parent_position = &live_parent->transform.position;\n    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x =\n        orbit_x + source_parent->transform.position.x;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        },
+        {
+          "name": "delayed-position-pointer",
+          "text": "    Vector3* sprite_position = &live_sprite->position;\n    orbit_x *= radius;\n    staged_position.x =\n        orbit_x + live_parent->transform.position.x;\n    Vector3* parent_position = &live_parent->transform.position;\n    staged_position.y = orbit_y + parent_position->y;\n    staged_position.z = parent_position->z;"
+        }
+      ]
+    }
+  ]
+}
