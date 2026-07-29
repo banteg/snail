@@ -1,9 +1,9 @@
-// Shared BodBase/RenderableBod initializer-family views.
-// iOS RObject.o names these owners cRBod and cRBodPos.
+// Shared cRBod/cRBodPos initializer-family owners.
 // More runtime-specific AI fields stay scratch-local.
 #ifndef BOD_TYPES_H
 #define BOD_TYPES_H
 
+#include "bod_fwd.h"
 #include "bod_list.h"
 #include "object_fwd.h"
 #include "sprite.h"
@@ -18,9 +18,9 @@ extern void* g_bod_base_vtable;              // data_4974fc
 extern void* g_renderable_bod_vtable;        // data_497500
 extern int g_bod_base_init_count;            // data_50331c
 
-class BodBase : public BodNode {
+class cRBod : public BodNode {
 public:
-    BodBase* initialize_bod_base();       // @ 0x42f5f0
+    cRBod* initialize_bod_base();         // @ 0x42f5f0
     void noop_runtime_ai();               // folded @ 0x407b50; cRBod::AI()
     bool is_bod_after_sprites();          // @ 0x42f5c0
     int set_bod_object(Object* object);   // @ 0x42f5d0
@@ -36,13 +36,13 @@ public:
     tColour color;      // +0x28
 };
 
+typedef char cRBod_must_be_0x38[(sizeof(cRBod) == 0x38) ? 1 : -1];
 typedef char BodBase_must_be_0x38[(sizeof(BodBase) == 0x38) ? 1 : -1];
-typedef BodBase cRBod;
 
-class RenderableBod : public BodBase {
+class cRBodPos : public cRBod {
 public:
-    RenderableBod* initialize_renderable_bod(); // @ 0x42f650
-    RenderableBod* initialize_noop_renderable_bod(); // @ 0x408040
+    cRBodPos* initialize_renderable_bod(); // @ 0x42f650
+    cRBodPos* initialize_noop_renderable_bod(); // @ 0x408040
 
     TransformMatrix transform; // +0x38
     // Only valid with BOD_FLAG_SYNC_ANIMATION: cRGame::Render borrows this
@@ -53,7 +53,8 @@ public:
     int frame_number; // +0x7c
 };
 
-typedef char RenderableBod_must_be_0x80[(sizeof(RenderableBod) == 0x80) ? 1 : -1];
-typedef RenderableBod cRBodPos;
+typedef char cRBodPos_must_be_0x80[(sizeof(cRBodPos) == 0x80) ? 1 : -1];
+typedef char RenderableBod_must_be_0x80[
+    (sizeof(RenderableBod) == 0x80) ? 1 : -1];
 
 #endif

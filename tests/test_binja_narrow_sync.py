@@ -5946,6 +5946,9 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
     bod_header = (repo_root / "tools/match/include/bod_types.h").read_text(
         encoding="utf-8"
     )
+    bod_forward_header = (
+        repo_root / "tools/match/include/bod_fwd.h"
+    ).read_text(encoding="utf-8")
     viewport_header = (repo_root / "tools/match/include/viewport.h").read_text(
         encoding="utf-8"
     )
@@ -5959,8 +5962,12 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
         repo_root / "analysis/headers/path_template_types.h"
     ).read_text(encoding="utf-8")
 
-    assert "typedef BodBase cRBod;" in bod_header
-    assert "typedef RenderableBod cRBodPos;" in bod_header
+    assert "class cRBod : public BodNode" in bod_header
+    assert "class cRBodPos : public cRBod" in bod_header
+    assert "class BodBase" not in bod_header
+    assert "class RenderableBod" not in bod_header
+    assert "typedef cRBod BodBase;" in bod_forward_header
+    assert "typedef cRBodPos RenderableBod;" in bod_forward_header
     assert "typedef RenderCamera cRCamera;" in viewport_header
     assert "typedef GolbRocket cRGolbRocket;" in golb_header
     assert "GolbRocket tertiary_body;" in golb_header
@@ -7082,12 +7089,13 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     assert renderable_constructor in path_sync
     assert renderable_constructor + ";" in path_header
     assert renderable_constructor + ";" in ida_path_sync
-    assert "RenderableBod* initialize_renderable_bod();" in matcher_header
+    assert "cRBodPos* initialize_renderable_bod();" in matcher_header
     assert "0x42F650" in ida_path_sync
     bod_constructor = "BodBase* __thiscall initialize_bod_base(BodBase* bod)"
     assert bod_constructor in path_sync
     assert bod_constructor + ";" in path_header
     assert bod_constructor + ";" in ida_path_sync
+    assert "cRBod* initialize_bod_base();" in matcher_header
     for owner_name in (
         "g_bod_base_vtable",
         "g_renderable_bod_vtable",

@@ -1350,7 +1350,7 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
             "cRObject",
             (
                 "?request_object_animation@cRObject"
-                "@@QAEXHPAVRenderableBod@@MH@Z"
+                "@@QAEXHPAVcRBodPos@@MH@Z"
             ),
         ),
         (
@@ -2245,6 +2245,97 @@ def test_mobile_animation_keyframes_recover_crbodpos_tail_lane() -> None:
     assert "struct XAnimationKeyframe : public BodBase" not in animation_header
     assert "int32_t frame_number;" in analysis_header
     assert "unknown_7c" not in analysis_header
+
+
+def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+
+    expected_mobile_symbols = {
+        "is_bod_after_sprites": "cRBod::IsAfterSprites()",
+        "set_bod_object": "cRBod::SetObject(cRObject*)",
+        "initialize_bod_base": "cRBod::cRBod()",
+        "initialize_renderable_bod": "cRBodPos::cRBodPos()",
+        "apply_bod_position": "cRBod::ApplyPos(tMatrix&)",
+    }
+    for windows_name, mobile_symbol in expected_mobile_symbols.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["source_object"] == "RObject.o"
+
+    bod_header = (
+        repo_root / "tools/match/include/bod_types.h"
+    ).read_text(encoding="utf-8")
+    bod_forward_header = (
+        repo_root / "tools/match/include/bod_fwd.h"
+    ).read_text(encoding="utf-8")
+    assert "class cRBod : public BodNode" in bod_header
+    assert "class cRBodPos : public cRBod" in bod_header
+    assert "class BodBase" not in bod_header
+    assert "class RenderableBod" not in bod_header
+    assert "typedef cRBod BodBase;" in bod_forward_header
+    assert "typedef cRBodPos RenderableBod;" in bod_forward_header
+    assert "cRBod_must_be_0x38" in bod_header
+    assert "cRBodPos_must_be_0x80" in bod_header
+
+    exact_symbols = {
+        "is_bod_after_sprites": "?is_bod_after_sprites@cRBod@@QAE_NXZ",
+        "set_bod_object": "?set_bod_object@cRBod@@QAEHPAUcRObject@@@Z",
+        "initialize_bod_base": "?initialize_bod_base@cRBod@@QAEPAV1@XZ",
+        "initialize_renderable_bod": (
+            "?initialize_renderable_bod@cRBodPos@@QAEPAV1@XZ"
+        ),
+        "apply_bod_position": (
+            "?apply_bod_position@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
+        ),
+        "initialize_noop_renderable_bod": (
+            "?initialize_noop_renderable_bod@cRBodPos@@QAEPAV1@XZ"
+        ),
+    }
+    for windows_name, symbol in exact_symbols.items():
+        scratch_root = (
+            repo_root / "tools/match/scratches" / windows_name
+        )
+        source = (scratch_root / "scratch.cpp").read_text(encoding="utf-8")
+        config = (scratch_root / "scratch.conf").read_text(encoding="utf-8")
+        assert f"SYMBOL={symbol}" in config
+        assert symbol in references_by_name[windows_name]["aliases"]
+        if windows_name in (
+            "initialize_renderable_bod",
+            "initialize_noop_renderable_bod",
+        ):
+            assert "cRBodPos::" in source
+        else:
+            assert "cRBod::" in source
+
+    base_initializer = (
+        repo_root
+        / "tools/match/scratches/initialize_bod_base/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    positioned_initializer = (
+        repo_root
+        / "tools/match/scratches/initialize_renderable_bod/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRBod* cRBod::initialize_bod_base()" in base_initializer
+    assert "cRBodPos* cRBodPos::initialize_renderable_bod()" in (
+        positioned_initializer
+    )
+    assert "cRBod::cRBod()" not in base_initializer
+    assert "cRBodPos::cRBodPos()" not in positioned_initializer
 
 
 def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:

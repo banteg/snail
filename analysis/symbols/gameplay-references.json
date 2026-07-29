@@ -30,6 +30,15 @@
       "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
     },
     {
+      "address": "0x408040",
+      "name": "initialize_noop_renderable_bod",
+      "kind": "function",
+      "aliases": [
+        "?initialize_noop_renderable_bod@cRBodPos@@QAEPAV1@XZ"
+      ],
+      "description": "Exact cRBodPos-owned Windows initializer adapter for passive positioned bodies. It preserves the receiver-returning Windows contract and then installs the shared no-op callback table; no direct mobile equivalent is claimed."
+    },
+    {
       "address": "0x408600",
       "name": "noop_runtime_slot_constructor",
       "kind": "function",
@@ -105,6 +114,51 @@
         "sub_42f0a0"
       ],
       "description": "Seven-argument cdecl PNG loader used only by rebuild_game_archive_if_needed. It returns an allocated pixel buffer plus width, height, channel count, and an optional three-byte bKGD background color; the live ESI and EDI values at the callsite belong to the caller and are not hidden parameters."
+    },
+    {
+      "address": "0x42f5c0",
+      "name": "is_bod_after_sprites",
+      "kind": "function",
+      "aliases": [
+        "?is_bod_after_sprites@cRBod@@QAE_NXZ"
+      ],
+      "description": "Exact cRBod-owned Windows render-order query, retained by Android and iOS as cRBod::IsAfterSprites()."
+    },
+    {
+      "address": "0x42f5d0",
+      "name": "set_bod_object",
+      "kind": "function",
+      "aliases": [
+        "?set_bod_object@cRBod@@QAEHPAUcRObject@@@Z"
+      ],
+      "description": "Exact cRBod-owned Windows object attachment method, retained by Android and iOS as cRBod::SetObject(cRObject*)."
+    },
+    {
+      "address": "0x42f5f0",
+      "name": "initialize_bod_base",
+      "kind": "function",
+      "aliases": [
+        "?initialize_bod_base@cRBod@@QAEPAV1@XZ"
+      ],
+      "description": "Exact receiver-returning Windows cRBod initializer. The Android and iOS cRBod constructors independently prove the owner and initialized layout, but the Windows scratch deliberately retains its observed return contract."
+    },
+    {
+      "address": "0x42f650",
+      "name": "initialize_renderable_bod",
+      "kind": "function",
+      "aliases": [
+        "?initialize_renderable_bod@cRBodPos@@QAEPAV1@XZ"
+      ],
+      "description": "Exact receiver-returning Windows cRBodPos initializer. Android and iOS constructors prove the positioned-body owner and layout without overriding the Windows ABI."
+    },
+    {
+      "address": "0x42f680",
+      "name": "apply_bod_position",
+      "kind": "function",
+      "aliases": [
+        "?apply_bod_position@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
+      ],
+      "description": "Exact cRBod-owned Windows geometry transform, retained by Android and iOS as cRBod::ApplyPos(tMatrix&); the Windows pointer parameter and Object* result remain authoritative for this build."
     },
     {
       "address": "0x42f6e0",
@@ -1071,10 +1125,10 @@
       "name": "request_object_animation",
       "kind": "function",
       "aliases": [
-        "?request_object_animation@cRObject@@QAEXHPAVRenderableBod@@MH@Z",
+        "?request_object_animation@cRObject@@QAEXHPAVcRBodPos@@MH@Z",
         "sub_430a70"
       ],
-      "description": "cRObject-owned animation builder retained by both mobile ports as cRObject::RequestAnim(int, cRBodPos*, float, int); Windows uses the recovered RenderableBod compatibility owner for the same 0x80-byte keyframe records."
+      "description": "Exact cRObject-owned Windows animation builder with the primary cRBodPos keyframe owner, retained by both mobile ports as cRObject::RequestAnim(int, cRBodPos*, float, int)."
     },
     {
       "address": "0x432d40",

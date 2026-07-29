@@ -19,3 +19,9 @@ The unrelated `Concurrency::details::SingleWaitBlock` symbol at this address
 was a false imported-library attribution and is retired from both replays.
 The callback slot at `0x4972b0` is likewise replayed as a pointer-sized table
 owner rather than IDA's former four-byte character literal (`"P@{"`).
+
+2026-07-29: the exact wrapper now compiles under the primary `cRBodPos` tag and
+exports the corresponding MSVC member symbol. It remains a Windows-only
+receiver-returning adapter; the mobile constructors support the positioned-body
+owner but provide no evidence for pretending this extra no-op-table policy is
+itself a constructor.

@@ -3,9 +3,9 @@
 #ifndef ANIM_MANAGER_H
 #define ANIM_MANAGER_H
 
+#include "bod_fwd.h"
 #include "object_animation_types.h"
 
-class RenderableBod;
 struct PresentationAnimationSlot;
 
 enum {

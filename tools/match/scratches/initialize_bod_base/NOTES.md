@@ -58,3 +58,18 @@ iOS `cRBodPos` vtable inherits that same entry. The shared headers now expose
 `cRBod` and `cRBodPos` as authored aliases of the already-proven Windows
 `BodBase` and `RenderableBod` layouts. This recovers vocabulary and virtual
 ownership without widening either exact Windows object.
+
+## 2026-07-29 primary cRBod ownership
+
+The new Android and iOS `RObject.o` evidence closes more than vocabulary:
+both ports independently retain `cRBod::IsAfterSprites()`,
+`cRBod::SetObject(cRObject*)`, `cRBod::ApplyPos(tMatrix&)`,
+`cRBod::cRBod()`, and `cRBodPos::cRBodPos()`. The matcher therefore now uses
+`cRBod` and `cRBodPos` as the primary C++ tags, with `BodBase` and
+`RenderableBod` retained only as compatibility names for the analyzer replay.
+
+All six focused Windows bodies remain exact after the owner promotion,
+including their audited operands. The two Windows initializer scratches remain
+explicit receiver-returning methods: mobile constructor names prove the owner
+and initialized layout, but they do not authorize replacing the observed
+Windows return contracts with constructor syntax.

@@ -2,7 +2,7 @@
 
 #include "bod_types.h"
 
-BodBase* BodBase::initialize_bod_base()
+cRBod* cRBod::initialize_bod_base()
 {
     color.noop_this_constructor();
     vtable = &g_bod_base_vtable;

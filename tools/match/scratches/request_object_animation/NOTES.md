@@ -187,3 +187,11 @@ Windows preserves the same owner relationship with its platform-specific
 matcher role alias for the existing `cRBodPos`/`RenderableBod` owner, eliminating
 the artificial `BodBase + 0x44-byte padding` subclass. The exact method remains
 231/231 instructions with all 17 masked operands clean.
+
+2026-07-29 primary-owner propagation: after `cRBodPos` became the primary C++
+tag, this method's Windows symbol naturally changed its second parameter from
+the `RenderableBod` compatibility spelling to `cRBodPos*`. The shared
+declaration and reference manifest now expose that real owner directly. The
+stable descriptive method name is retained in this ownership commit so the
+separate authored `RequestAnim` rename can be validated as its own no-codegen
+change.

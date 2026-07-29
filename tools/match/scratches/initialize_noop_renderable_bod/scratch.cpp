@@ -2,7 +2,7 @@
 
 #include "bod_types.h"
 
-RenderableBod* RenderableBod::initialize_noop_renderable_bod()
+cRBodPos* cRBodPos::initialize_noop_renderable_bod()
 {
     initialize_renderable_bod();
     vtable = &g_noop_runtime_callback_table;

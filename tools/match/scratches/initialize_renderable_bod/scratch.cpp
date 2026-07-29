@@ -2,7 +2,7 @@
 
 #include "bod_types.h"
 
-RenderableBod* RenderableBod::initialize_renderable_bod()
+cRBodPos* cRBodPos::initialize_renderable_bod()
 {
     initialize_bod_base();
     vtable = &g_renderable_bod_vtable;

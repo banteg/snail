@@ -3,6 +3,7 @@
 
 // Android and iOS RObject.o retain the cRObject and cRObjects owners.
 
+#include "bod_fwd.h"
 #include "object_fwd.h"
 #include "vector3.h"
 #include "vertex_buffer_view.h"
@@ -14,7 +15,6 @@ struct tColour;
 struct ObjectToonFaceQuadNormal;
 struct ObjectToonEdge;
 struct ObjectAnimation;
-class RenderableBod;
 
 // Shared cRObject state word. Only bits with independent producer/consumer
 // evidence are named.
@@ -187,7 +187,7 @@ struct cRObject {
     void RequestEdges(int edge_count); // @ 0x430570; Android cRObject::RequestEdges(int)
     void CalcEdges(); // @ 0x4308b0; cRObject::CalcEdges
     void request_object_animation(
-        int keyframe_count, RenderableBod* keyframes,
+        int keyframe_count, cRBodPos* keyframes,
         float progress_step, int flags); // @ 0x430a70
 
     char unknown_00[0x08];
