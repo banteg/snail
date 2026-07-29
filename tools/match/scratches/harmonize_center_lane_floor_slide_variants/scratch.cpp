@@ -29,7 +29,7 @@ void cRSubGame::SlideSmoothTrack()
                             if (((BodBase*)&game_runtime->runtime_cells[row][lane])->object ==
                                 game->root_bod_catalog.floor_slices.storage[0].object) {
                                 ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         game->root_bod_catalog.slide_slices.storage[0].object);
                                 game_runtime->runtime_cells[row][lane].lane_and_flags |=
                                     transition_flag;
@@ -42,7 +42,7 @@ void cRSubGame::SlideSmoothTrack()
                                                 offset))
                                         ->object) {
                                     ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                        ->set_bod_object(((BodBase*)((char*)&game->root_bod_catalog
+                                        ->SetObject(((BodBase*)((char*)&game->root_bod_catalog
                                                                          .slide_corners +
                                                                      offset))
                                                              ->object);
@@ -65,7 +65,7 @@ void cRSubGame::SlideSmoothTrack()
                             if (((BodBase*)&game_runtime->runtime_cells[row][lane])->object ==
                                 game->root_bod_catalog.slide_slices.storage[0].object) {
                                 ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         game->root_bod_catalog.floor_slices.storage[0].object);
                                 game_runtime->runtime_cells[row][lane].lane_and_flags |=
                                     transition_flag;
@@ -78,7 +78,7 @@ void cRSubGame::SlideSmoothTrack()
                                                 offset))
                                         ->object) {
                                     ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                        ->set_bod_object(((BodBase*)((char*)&game->root_bod_catalog
+                                        ->SetObject(((BodBase*)((char*)&game->root_bod_catalog
                                                                          .floor_corners +
                                                                      offset))
                                                              ->object);
@@ -105,7 +105,7 @@ void cRSubGame::SlideSmoothTrack()
                             if (((BodBase*)&game_runtime->runtime_cells[row][lane])->object ==
                                 game->root_bod_catalog.floor_slices.storage[0].object) {
                                 ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         game->root_bod_catalog.slide_slices.storage[0].object);
                                 game_runtime->runtime_cells[row][lane].lane_and_flags |=
                                     transition_flag;
@@ -118,7 +118,7 @@ void cRSubGame::SlideSmoothTrack()
                                                 offset))
                                         ->object) {
                                     ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                        ->set_bod_object(((BodBase*)((char*)&game->root_bod_catalog
+                                        ->SetObject(((BodBase*)((char*)&game->root_bod_catalog
                                                                          .slide_corners +
                                                                      offset))
                                                              ->object);
@@ -141,7 +141,7 @@ void cRSubGame::SlideSmoothTrack()
                             if (((BodBase*)&game_runtime->runtime_cells[row][lane])->object ==
                                 game->root_bod_catalog.slide_slices.storage[0].object) {
                                 ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         game->root_bod_catalog.floor_slices.storage[0].object);
                                 game_runtime->runtime_cells[row][lane].lane_and_flags |=
                                     transition_flag;
@@ -154,7 +154,7 @@ void cRSubGame::SlideSmoothTrack()
                                                 offset))
                                         ->object) {
                                     ((BodBase*)&game_runtime->runtime_cells[row][lane])
-                                        ->set_bod_object(((BodBase*)((char*)&game->root_bod_catalog
+                                        ->SetObject(((BodBase*)((char*)&game->root_bod_catalog
                                                                          .floor_corners +
                                                                      offset))
                                                              ->object);

@@ -8,7 +8,7 @@
 
 void cRPath::build_track_fringe_mesh(char* texture_path, float clamp_side)
 {
-    fringe_mesh_bod.set_bod_object(g_object_list.add_object_to_list());
+    fringe_mesh_bod.SetObject(g_object_list.add_object_to_list());
 
     Object* mesh;
     {

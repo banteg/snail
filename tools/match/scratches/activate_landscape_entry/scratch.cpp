@@ -32,7 +32,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
     do {
         if (scripts[script_index].object_index == -1) {
             entry->list_flags &= ~BOD_FLAG_RENDER_ENABLED;
-            entry->set_bod_object(0);
+            entry->SetObject(0);
         } else {
             BodNode* head = &g_game->subgame.landscape_slice_list_head;
             if ((entry->list_flags & BOD_FLAG_LINKED) != 0) {
@@ -53,7 +53,7 @@ void LandscapeManager::activate_landscape_entry(int script_index)
 
             CachedXMeshSlot* objects =
                 &g_game->directx_loader.cached_x_mesh_slots[0];
-            entry->set_bod_object(objects[scripts[script_index].object_index].object);
+            entry->SetObject(objects[scripts[script_index].object_index].object);
             Object* landscape_object = entry->object;
             entry->repeat_z_span =
                 landscape_object->bounds_max.z - landscape_object->bounds_min.z;

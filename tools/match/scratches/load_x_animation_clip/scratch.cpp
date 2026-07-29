@@ -54,7 +54,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
         char* mesh_path = g_animation_directory[0];
         XAnimationKeyframe* keyframe = keyframes;
         do {
-            keyframe->set_bod_object(g_object_list.add_object_to_list());
+            keyframe->SetObject(g_object_list.add_object_to_list());
             load_x_mesh(mesh_path, keyframe->object, 0);
 
             cursor = mesh_path;

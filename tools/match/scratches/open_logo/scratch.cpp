@@ -18,7 +18,7 @@ int Logo::open_logo()
     for (int logo_index = 0;
          logo_index < LOGO_IMAGE_DONOR_CAPACITY;
          ++logo_index) {
-        image_donors[logo_index].set_bod_object(
+        image_donors[logo_index].SetObject(
             g_object_list.add_object_to_list());
         Object* object = image_donors[logo_index].object;
         load_object_definition("Objects/Font3D", object);

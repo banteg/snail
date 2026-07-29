@@ -32,7 +32,7 @@ void cRSubGame::WarnTrack()
                                 == ((BodBase*)((char*)&game->root_bod_catalog.slide_slices
                                     + offset))
                                        ->object) {
-                            ((BodBase*)cell)->set_bod_object(
+                            ((BodBase*)cell)->SetObject(
                                 ((BodBase*)((char*)&game->root_bod_catalog.warning_slices
                                     + offset))
                                     ->object);
@@ -54,7 +54,7 @@ void cRSubGame::WarnTrack()
                                 == ((BodBase*)((char*)&game->root_bod_catalog.slide_corners
                                     + offset))
                                        ->object) {
-                            ((BodBase*)cell)->set_bod_object(
+                            ((BodBase*)cell)->SetObject(
                                 ((BodBase*)((char*)&game->root_bod_catalog.warning_corners
                                     + offset))
                                     ->object);

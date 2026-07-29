@@ -22,8 +22,8 @@ class cRBod : public BodNode {
 public:
     cRBod* initialize_bod_base();         // @ 0x42f5f0
     void noop_runtime_ai();               // folded @ 0x407b50; cRBod::AI()
-    bool is_bod_after_sprites();          // @ 0x42f5c0
-    int set_bod_object(Object* object);   // @ 0x42f5d0
+    bool IsAfterSprites();                // @ 0x42f5c0
+    int SetObject(Object* object);        // @ 0x42f5d0
     Object* apply_bod_position(TransformMatrix* matrix); // @ 0x42f680
 
     Vector3 position;   // +0x10, copied into temporary render matrices

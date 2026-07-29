@@ -22,3 +22,11 @@ pins the shared flag word as signed.
 The analyzer method now keeps its native `bool` result and a `BodBase*`
 receiver, exposing the inherited `BodNode::list_flags` owner to the two-pass
 renderer instead of retaining the raw `this + 4` expression.
+
+## 2026-07-29 authored method identity
+
+Android and iOS independently retain `cRBod::IsAfterSprites()` in `RObject.o`.
+The exact Windows definition and all four typed render-loop calls now use that
+authored name directly. The stable descriptive scratch/function identity is
+kept for address-based history; focused Windows matching remains 3/3 exact
+with no masked operands.

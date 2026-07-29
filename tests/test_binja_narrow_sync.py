@@ -7081,7 +7081,7 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     assert '("Fringe", FRINGE_FIELD_UPDATES)' in path_sync
     assert '("FringeManager", FRINGE_MANAGER_FIELD_UPDATES)' in path_sync
     assert "Object* object;" in path_header
-    assert "int set_bod_object(Object* object);" in matcher_header
+    assert "int SetObject(Object* object);" in matcher_header
     renderable_constructor = (
         "RenderableBod* __thiscall initialize_renderable_bod("
         "RenderableBod* body)"
@@ -7192,8 +7192,8 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
     assert "void add_bod_to_front(BodNode* node);" in bod_list_header
     assert "void append_bod_to_end(BodNode* node);" in bod_list_header
     assert "void recycle_bod_to_free_list(BodNode* node);" in bod_list_header
-    assert "bool is_bod_after_sprites();" in bod_types_header
-    assert "int set_bod_object(Object* object);" in bod_types_header
+    assert "bool IsAfterSprites();" in bod_types_header
+    assert "int SetObject(Object* object);" in bod_types_header
     assert "Object* apply_bod_position(TransformMatrix* matrix);" in bod_types_header
 
 

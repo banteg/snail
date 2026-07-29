@@ -120,18 +120,18 @@
       "name": "is_bod_after_sprites",
       "kind": "function",
       "aliases": [
-        "?is_bod_after_sprites@cRBod@@QAE_NXZ"
+        "?IsAfterSprites@cRBod@@QAE_NXZ"
       ],
-      "description": "Exact cRBod-owned Windows render-order query, retained by Android and iOS as cRBod::IsAfterSprites()."
+      "description": "Exact cRBod::IsAfterSprites() render-order query retained under the same authored owner and name by Android and iOS."
     },
     {
       "address": "0x42f5d0",
       "name": "set_bod_object",
       "kind": "function",
       "aliases": [
-        "?set_bod_object@cRBod@@QAEHPAUcRObject@@@Z"
+        "?SetObject@cRBod@@QAEHPAUcRObject@@@Z"
       ],
-      "description": "Exact cRBod-owned Windows object attachment method, retained by Android and iOS as cRBod::SetObject(cRObject*)."
+      "description": "Exact cRBod::SetObject(cRObject*) attachment method retained under the same authored owner, name, and parameter type by Android and iOS."
     },
     {
       "address": "0x42f5f0",

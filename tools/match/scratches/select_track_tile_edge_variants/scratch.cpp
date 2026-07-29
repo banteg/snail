@@ -80,7 +80,7 @@ void cRSubGame::SmoothTrack()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_0_STORAGE_INDEX]
                                             .object);
@@ -90,7 +90,7 @@ void cRSubGame::SmoothTrack()
                                         ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_0_STORAGE_INDEX]
                                             .object);
@@ -104,7 +104,7 @@ void cRSubGame::SmoothTrack()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_1_STORAGE_INDEX]
                                             .object);
@@ -114,7 +114,7 @@ void cRSubGame::SmoothTrack()
                                         ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_1_STORAGE_INDEX]
                                             .object);
@@ -128,7 +128,7 @@ void cRSubGame::SmoothTrack()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_3_STORAGE_INDEX]
                                             .object);
@@ -138,7 +138,7 @@ void cRSubGame::SmoothTrack()
                                         ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_3_STORAGE_INDEX]
                                             .object);
@@ -152,7 +152,7 @@ void cRSubGame::SmoothTrack()
                             unsigned char tile = cell->tile_id;
                             if (IS_STRAIGHT_TRACK_FAMILY(tile)) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.floor_corners.storage[
                                                 TRACK_CORNER_2_STORAGE_INDEX]
                                             .object);
@@ -162,7 +162,7 @@ void cRSubGame::SmoothTrack()
                                         ->IsRamp()
                                     == 0) {
                                 ((BodBase*)((char*)cell - TILE_VIEW_TO_CELL_BASE))
-                                    ->set_bod_object(
+                                    ->SetObject(
                                         g_game->root_bod_catalog.slide_corners.storage[
                                                 TRACK_CORNER_2_STORAGE_INDEX]
                                             .object);

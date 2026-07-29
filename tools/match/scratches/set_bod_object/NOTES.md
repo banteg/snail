@@ -17,3 +17,11 @@ their render-object ownership across the attachment call.
 The same `int32_t __thiscall(BodBase*, Object*)` contract is now durable in IDA
 as well as Binary Ninja. The return remains the updated flag word; it is not
 coerced to `void` merely because most attachment callers ignore it.
+
+## 2026-07-29 authored method identity
+
+Android and iOS independently retain `cRBod::SetObject(cRObject*)` in
+`RObject.o`. The exact Windows definition and every typed matcher call now use
+that authored name directly while preserving the Windows `int` result. Stable
+analysis and scratch IDs remain descriptive so address-based replay does not
+churn.

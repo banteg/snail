@@ -150,7 +150,7 @@ void GameRoot::render_game_frame()
                                 bod->render_arg_1c,
                                 bod->render_arg_20,
                                 &bod->color,
-                                (char)bod->is_bod_after_sprites());
+                                (char)bod->IsAfterSprites());
                         } else {
                             transform.position = bod->position;
                             render_object(
@@ -159,7 +159,7 @@ void GameRoot::render_game_frame()
                                 bod->render_arg_1c,
                                 bod->render_arg_20,
                                 &bod->color,
-                                (char)bod->is_bod_after_sprites());
+                                (char)bod->IsAfterSprites());
                         }
                     }
 
@@ -278,7 +278,7 @@ void GameRoot::render_game_frame()
                             bod->render_arg_1c,
                             bod->render_arg_20,
                             &bod->color,
-                            (char)bod->is_bod_after_sprites());
+                            (char)bod->IsAfterSprites());
                     } else {
                         transform.position.x = bod->position.x;
                         transform.position.y = bod->position.y;
@@ -289,7 +289,7 @@ void GameRoot::render_game_frame()
                             bod->render_arg_1c,
                             bod->render_arg_20,
                             &bod->color,
-                            (char)bod->is_bod_after_sprites());
+                            (char)bod->IsAfterSprites());
                     }
                     --replay_count;
                 } while (replay_count != 0);

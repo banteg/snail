@@ -89,7 +89,7 @@ void Logo::initialize_intro_screen(char* file_name)
 
             add_intro_renderable_to_active_list(&letters[renderable_count]);
             Object* logo_object = image_donor->object;
-            letters[renderable_count].set_bod_object(logo_object);
+            letters[renderable_count].SetObject(logo_object);
             letters[renderable_count].object->facequads[0].texture_ref =
                 g_texture_refs.get_or_create_texture_ref(path, 0, 0);
             set_matrix_identity(&letters[renderable_count].transform);
@@ -147,7 +147,7 @@ void Logo::initialize_intro_screen(char* file_name)
                 do {
                     add_intro_renderable_to_active_list(
                         &letters[renderable_count]);
-                    letters[renderable_count].set_bod_object(
+                    letters[renderable_count].SetObject(
                         g_font3d_bods[font_slot_index_for_char(*glyph)].object);
                     set_matrix_identity(
                         &letters[renderable_count].transform);

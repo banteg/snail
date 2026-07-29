@@ -2,7 +2,7 @@
 
 #include "bod_types.h"
 
-int cRBod::set_bod_object(Object* object_)
+int cRBod::SetObject(Object* object_)
 {
     object = object_;
     list_flags |= BOD_FLAG_HAS_OBJECT;

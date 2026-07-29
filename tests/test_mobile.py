@@ -2306,8 +2306,8 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
     assert "cRBodPos_must_be_0x80" in bod_header
 
     exact_symbols = {
-        "is_bod_after_sprites": "?is_bod_after_sprites@cRBod@@QAE_NXZ",
-        "set_bod_object": "?set_bod_object@cRBod@@QAEHPAUcRObject@@@Z",
+        "is_bod_after_sprites": "?IsAfterSprites@cRBod@@QAE_NXZ",
+        "set_bod_object": "?SetObject@cRBod@@QAEHPAUcRObject@@@Z",
         "initialize_bod_base": "?initialize_bod_base@cRBod@@QAEPAV1@XZ",
         "initialize_renderable_bod": (
             "?initialize_renderable_bod@cRBodPos@@QAEPAV1@XZ"
@@ -2347,6 +2347,14 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
     assert "cRBodPos* cRBodPos::initialize_renderable_bod()" in (
         positioned_initializer
     )
+    assert "bool cRBod::IsAfterSprites()" in (
+        repo_root
+        / "tools/match/scratches/is_bod_after_sprites/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "int cRBod::SetObject(Object* object_)" in (
+        repo_root
+        / "tools/match/scratches/set_bod_object/scratch.cpp"
+    ).read_text(encoding="utf-8")
     assert "cRBod::cRBod()" not in base_initializer
     assert "cRBodPos::cRBodPos()" not in positioned_initializer
 

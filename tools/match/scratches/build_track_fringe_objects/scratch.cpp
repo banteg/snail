@@ -85,7 +85,7 @@ void cRSubGame::FringeEdgeTrack()
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_front = object;
-                        object->set_bod_object(
+                        object->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
                         cell->fringe_front->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_front->position = cell->position;
@@ -109,7 +109,7 @@ void cRSubGame::FringeEdgeTrack()
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_right = object;
-                        object->set_bod_object(
+                        object->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
                         cell->fringe_right->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_right->position = cell->position;
@@ -133,7 +133,7 @@ void cRSubGame::FringeEdgeTrack()
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_left = object;
-                        object->set_bod_object(
+                        object->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
                         cell->fringe_left->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_left->position = cell->position;
@@ -157,7 +157,7 @@ void cRSubGame::FringeEdgeTrack()
                         Fringe* object =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
                         cell->fringe_back = object;
-                        object->set_bod_object(
+                        object->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));
                         cell->fringe_back->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_back->position = cell->position;

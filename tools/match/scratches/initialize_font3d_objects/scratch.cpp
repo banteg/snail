@@ -15,7 +15,7 @@ void initialize_font3d_objects(short font_id)
             BodBase* bod = &g_font3d_bods[index];
             float scale = g_font_sheets[font].glyph_width[index]
                 / g_font_sheets[font].line_marker_y;
-            bod->set_bod_object(g_object_list.add_object_to_list());
+            bod->SetObject(g_object_list.add_object_to_list());
 
             load_object_definition("Objects/Font3D", bod->object);
             bod->render_arg_1c = 0;

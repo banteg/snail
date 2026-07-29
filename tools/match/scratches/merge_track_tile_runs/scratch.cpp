@@ -89,7 +89,7 @@ void cRSubGame::CondenseTrack()
 
                     if (run_length > 1) {
                         ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
-                            ->set_bod_object(
+                            ->SetObject(
                                 g_game->root_bod_catalog.floor_slices
                                     .storage[run_length - 1]
                                     .object);
@@ -118,7 +118,7 @@ void cRSubGame::CondenseTrack()
 
                     if (run_length > 1) {
                         ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
-                            ->set_bod_object(
+                            ->SetObject(
                                 g_game->root_bod_catalog.slide_slices
                                     .storage[run_length - 1]
                                     .object);
@@ -152,7 +152,7 @@ void cRSubGame::CondenseTrack()
 
                         if (run_length > 1) {
                             ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
-                                ->set_bod_object(
+                                ->SetObject(
                                     g_game->root_bod_catalog.pillars[run_length - 1]
                                         .object);
                             *cell_lane_flags =
@@ -166,7 +166,7 @@ void cRSubGame::CondenseTrack()
                         *cell_lane_flags &= ~SUBLOC_FLAG_AI_ENABLED;
                         if (level_mode == 2) {
                             ((BodBase*)CELL_FROM_LANE_FLAGS(cell_lane_flags))
-                                ->set_bod_object(
+                                ->SetObject(
                                     g_game->root_bod_catalog.universe_hole.object);
                         } else {
                             *cell_lane_flags &= ~SUBLOC_FLAG_UNCACHED_BODY;
