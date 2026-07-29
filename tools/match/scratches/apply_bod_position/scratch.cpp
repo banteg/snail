@@ -3,7 +3,7 @@
 #include "bod_types.h"
 #include "object_render_types.h"
 
-Object* cRBod::apply_bod_position(TransformMatrix* matrix)
+Object* cRBod::ApplyPos(TransformMatrix* matrix)
 {
     int index = 0;
     Object* result = object;

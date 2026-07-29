@@ -156,9 +156,9 @@
       "name": "apply_bod_position",
       "kind": "function",
       "aliases": [
-        "?apply_bod_position@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
+        "?ApplyPos@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
       ],
-      "description": "Exact cRBod-owned Windows geometry transform, retained by Android and iOS as cRBod::ApplyPos(tMatrix&); the Windows pointer parameter and Object* result remain authoritative for this build."
+      "description": "Exact cRBod::ApplyPos geometry transform, retaining the authored owner and name found on Android and iOS while preserving the Windows pointer parameter and cRObject* result."
     },
     {
       "address": "0x42f6e0",

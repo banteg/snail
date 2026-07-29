@@ -35,3 +35,13 @@ this loop to 76.92%, so they are rejected rather than normalized away.
 Both analyzers now retain the exact `Object*` result with a `BodBase*` receiver
 and `TransformMatrix*` argument. This exposes the borrowed `object` and its
 geometry owner without changing the source shape that produces the exact loop.
+
+## 2026-07-29 mobile-authored naming
+
+Android and iOS independently retain this method as
+`cRBod::ApplyPos(tMatrix&)`, proving the authored owner and method name.
+The Windows matcher now uses `cRBod::ApplyPos` too, but deliberately keeps the
+exact Windows `TransformMatrix*` parameter and `Object*` result. Converting
+those ABI observations to the mobile reference/void spelling would discard
+Windows evidence rather than recover it. The renamed Windows body remains
+39/39 exact.

@@ -2313,7 +2313,7 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
             "?initialize_renderable_bod@cRBodPos@@QAEPAV1@XZ"
         ),
         "apply_bod_position": (
-            "?apply_bod_position@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
+            "?ApplyPos@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
         ),
         "initialize_noop_renderable_bod": (
             "?initialize_noop_renderable_bod@cRBodPos@@QAEPAV1@XZ"
@@ -2354,6 +2354,10 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
     assert "int cRBod::SetObject(Object* object_)" in (
         repo_root
         / "tools/match/scratches/set_bod_object/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "Object* cRBod::ApplyPos(TransformMatrix* matrix)" in (
+        repo_root
+        / "tools/match/scratches/apply_bod_position/scratch.cpp"
     ).read_text(encoding="utf-8")
     assert "cRBod::cRBod()" not in base_initializer
     assert "cRBodPos::cRBodPos()" not in positioned_initializer

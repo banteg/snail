@@ -7194,7 +7194,7 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
     assert "void recycle_bod_to_free_list(BodNode* node);" in bod_list_header
     assert "bool IsAfterSprites();" in bod_types_header
     assert "int SetObject(Object* object);" in bod_types_header
-    assert "Object* apply_bod_position(TransformMatrix* matrix);" in bod_types_header
+    assert "Object* ApplyPos(TransformMatrix* matrix);" in bod_types_header
 
 
 def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:
