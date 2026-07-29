@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "follow-active-gate",
+      "find": "    if (player->follow_state.active == 1) {",
+      "replacements": [
+        {
+          "name": "named-owner",
+          "text": "    cRSubGoldy* orientation_gate_player = player;\n    if (orientation_gate_player->follow_state.active == 1) {"
+        },
+        {
+          "name": "named-byte",
+          "text": "    unsigned char orientation_active = player->follow_state.active;\n    if (orientation_active == 1) {"
+        }
+      ]
+    },
+    {
+      "name": "orientation-a-argument",
+      "find": "        transform.RotLocalZ(player->follow_state.orientation_a);",
+      "replacements": [
+        {
+          "name": "named-value",
+          "text": "        float orientation_a = player->follow_state.orientation_a;\n        transform.RotLocalZ(orientation_a);"
+        },
+        {
+          "name": "named-owner-and-value",
+          "text": "        cRSubGoldy* orientation_a_player = player;\n        float orientation_a = orientation_a_player->follow_state.orientation_a;\n        transform.RotLocalZ(orientation_a);"
+        },
+        {
+          "name": "named-owner",
+          "text": "        cRSubGoldy* orientation_a_player = player;\n        transform.RotLocalZ(orientation_a_player->follow_state.orientation_a);"
+        }
+      ]
+    },
+    {
+      "name": "orientation-multiply-call",
+      "find": "        desired_matrix *= transform;",
+      "replacements": [
+        {
+          "name": "explicit-member-call",
+          "text": "        desired_matrix.operator*=(transform);"
+        },
+        {
+          "name": "named-transform-reference",
+          "text": "        TransformMatrix& orientation_transform = transform;\n        desired_matrix *= orientation_transform;"
+        },
+        {
+          "name": "named-desired-reference",
+          "text": "        TransformMatrix& orientation_desired = desired_matrix;\n        orientation_desired *= transform;"
+        }
+      ]
+    },
+    {
+      "name": "orientation-b-argument",
+      "find": "        desired_matrix.RotLocalZ(player->follow_state.orientation_b);",
+      "replacements": [
+        {
+          "name": "named-value",
+          "text": "        float orientation_b = player->follow_state.orientation_b;\n        desired_matrix.RotLocalZ(orientation_b);"
+        },
+        {
+          "name": "named-owner-and-value",
+          "text": "        cRSubGoldy* orientation_b_player = player;\n        float orientation_b = orientation_b_player->follow_state.orientation_b;\n        desired_matrix.RotLocalZ(orientation_b);"
+        },
+        {
+          "name": "named-owner",
+          "text": "        cRSubGoldy* orientation_b_player = player;\n        desired_matrix.RotLocalZ(orientation_b_player->follow_state.orientation_b);"
+        }
+      ]
+    },
+    {
+      "name": "exit-roll-argument",
+      "find": "    if (exit_player->attachment_exit_pending)\n        desired_matrix.RotLocalZ(exit_player->post_follow_exit_roll);",
+      "replacements": [
+        {
+          "name": "named-value",
+          "text": "    if (exit_player->attachment_exit_pending) {\n        float exit_roll = exit_player->post_follow_exit_roll;\n        desired_matrix.RotLocalZ(exit_roll);\n    }"
+        },
+        {
+          "name": "fresh-owner-and-value",
+          "text": "    if (exit_player->attachment_exit_pending) {\n        cRSubGoldy* exit_roll_player = player;\n        float exit_roll = exit_roll_player->post_follow_exit_roll;\n        desired_matrix.RotLocalZ(exit_roll);\n    }"
+        },
+        {
+          "name": "fresh-owner",
+          "text": "    if (exit_player->attachment_exit_pending) {\n        cRSubGoldy* exit_roll_player = player;\n        desired_matrix.RotLocalZ(exit_roll_player->post_follow_exit_roll);\n    }"
+        }
+      ]
+    },
+    {
+      "name": "heading-roll-argument",
+      "find": "    desired_matrix.RotLocalZ(player->heading_roll);",
+      "replacements": [
+        {
+          "name": "named-value",
+          "text": "    float final_heading_roll = player->heading_roll;\n    desired_matrix.RotLocalZ(final_heading_roll);"
+        },
+        {
+          "name": "named-owner-and-value",
+          "text": "    cRSubGoldy* heading_player = player;\n    float final_heading_roll = heading_player->heading_roll;\n    desired_matrix.RotLocalZ(final_heading_roll);"
+        },
+        {
+          "name": "named-owner",
+          "text": "    cRSubGoldy* heading_player = player;\n    desired_matrix.RotLocalZ(heading_player->heading_roll);"
+        }
+      ]
+    }
+  ]
+}

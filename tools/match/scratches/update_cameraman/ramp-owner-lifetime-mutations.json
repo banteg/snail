@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ramp-game-owner",
+      "find": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;",
+      "replacements": [
+        {
+          "name": "row-count-first",
+          "text": "    float first_rows = (float)game->first_block_row_count;\n    cRSubGoldy* ramp_player = player;"
+        },
+        {
+          "name": "named-game-before-player",
+          "text": "    cRSubGame* ramp_game = game;\n    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)ramp_game->first_block_row_count;"
+        },
+        {
+          "name": "named-game-after-player",
+          "text": "    cRSubGoldy* ramp_player = player;\n    cRSubGame* ramp_game = game;\n    float first_rows = (float)ramp_game->first_block_row_count;"
+        },
+        {
+          "name": "named-integer-row-count",
+          "text": "    cRSubGoldy* ramp_player = player;\n    int first_block_rows = game->first_block_row_count;\n    float first_rows = (float)first_block_rows;"
+        },
+        {
+          "name": "named-game-and-integer-row-count",
+          "text": "    cRSubGame* ramp_game = game;\n    cRSubGoldy* ramp_player = player;\n    int first_block_rows = ramp_game->first_block_row_count;\n    float first_rows = (float)first_block_rows;"
+        },
+        {
+          "name": "delayed-first-rows-assignment",
+          "text": "    cRSubGoldy* ramp_player = player;\n    float first_rows;\n    first_rows = (float)game->first_block_row_count;"
+        },
+        {
+          "name": "delayed-game-owner",
+          "text": "    cRSubGame* ramp_game;\n    cRSubGoldy* ramp_player = player;\n    ramp_game = game;\n    float first_rows = (float)ramp_game->first_block_row_count;"
+        }
+      ]
+    }
+  ]
+}

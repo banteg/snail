@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ramp-owner-lifetime",
+      "find": "    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)game->first_block_row_count;",
+      "replacements": [
+        {
+          "name": "row-count-first",
+          "text": "    float first_rows = (float)game->first_block_row_count;\n    cRSubGoldy* ramp_player = player;"
+        },
+        {
+          "name": "named-game-before-player",
+          "text": "    cRSubGame* ramp_game = game;\n    cRSubGoldy* ramp_player = player;\n    float first_rows = (float)ramp_game->first_block_row_count;"
+        },
+        {
+          "name": "named-game-after-player",
+          "text": "    cRSubGoldy* ramp_player = player;\n    cRSubGame* ramp_game = game;\n    float first_rows = (float)ramp_game->first_block_row_count;"
+        },
+        {
+          "name": "named-integer-row-count",
+          "text": "    cRSubGoldy* ramp_player = player;\n    int first_block_rows = game->first_block_row_count;\n    float first_rows = (float)first_block_rows;"
+        },
+        {
+          "name": "delayed-first-rows-assignment",
+          "text": "    cRSubGoldy* ramp_player = player;\n    float first_rows;\n    first_rows = (float)game->first_block_row_count;"
+        }
+      ]
+    },
+    {
+      "name": "second-ramp-lift-product",
+      "find": "        desired_matrix.position.y = ramp * 0.34999999f * ramp_player->cached_camera_target_world.y + lifted;",
+      "replacements": [
+        {
+          "name": "explicit-left-grouping",
+          "text": "        desired_matrix.position.y =\n            (ramp * 0.34999999f)\n                * ramp_player->cached_camera_target_world.y\n            + lifted;"
+        },
+        {
+          "name": "player-before-scale",
+          "text": "        desired_matrix.position.y =\n            ramp * ramp_player->cached_camera_target_world.y\n                * 0.34999999f\n            + lifted;"
+        },
+        {
+          "name": "nested-player-scale",
+          "text": "        desired_matrix.position.y =\n            ramp\n                * (ramp_player->cached_camera_target_world.y * 0.34999999f)\n            + lifted;"
+        },
+        {
+          "name": "scale-first",
+          "text": "        desired_matrix.position.y =\n            0.34999999f * ramp\n                * ramp_player->cached_camera_target_world.y\n            + lifted;"
+        },
+        {
+          "name": "player-first",
+          "text": "        desired_matrix.position.y =\n            ramp_player->cached_camera_target_world.y * ramp\n                * 0.34999999f\n            + lifted;"
+        },
+        {
+          "name": "named-scaled-ramp",
+          "text": "        float scaled_ramp = ramp * 0.34999999f;\n        desired_matrix.position.y =\n            scaled_ramp * ramp_player->cached_camera_target_world.y + lifted;"
+        },
+        {
+          "name": "named-scaled-player-height",
+          "text": "        float scaled_player_height =\n            ramp_player->cached_camera_target_world.y * 0.34999999f;\n        desired_matrix.position.y = ramp * scaled_player_height + lifted;"
+        }
+      ]
+    }
+  ]
+}

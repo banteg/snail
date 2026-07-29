@@ -1,9 +1,10 @@
-# PINNED — 92.55%, 322/322 insns exact (2026-06-12)
+# PINNED — 92.86%, 322/322 insns exact (2026-07-29)
 
-Structure-exact; every remaining diff line is register allocation
-(eax/edx/ecx swaps), one faddp vs fadd+fstp pair from upstream register
-pressure, and the lea/push ordering in the orientation block. Semantics
-fully proven. Source-shape notes: ramp branch is the fall-through
+Structure-exact; the second ramp lift product now follows the native
+left-associated multiplication order. Every remaining diff line is register
+allocation (eax/edx/ecx swaps), one faddp vs fadd+fstp pair from upstream
+register pressure, and the lea/push ordering in the orientation block.
+Semantics fully proven. Source-shape notes: ramp branch is the fall-through
 (`if (first > z)`), all three [0,1] clamps are `if (v<0) v=0; else if
 (v>1) v=1;`, the pitch clamp clamps-then-calls once, and the steer roll
 needs sequential assignments to stop VC6 folding -8*0.01745*0.17.
@@ -197,3 +198,37 @@ explicit without imposing a scheduler dependency.
 
 Focused output is unchanged at 92.55%, 322/322 instructions, prefix 36, with
 all 76 currently audited operands clean.
+
+## 2026-07-29 ramp product order and bounded residual
+
+Android and iOS retain the authored second ramp lift as the clamped ramp
+multiplied by `0.35` before multiplying the player target height. Preserving
+that left grouping in the Windows source makes the native product schedule
+exact and raises the focused result from 92.55% to 92.86%. The candidate
+remains shape-exact at 322/322 instructions, prefix 36, with all 76 audited
+operands clean.
+
+Five recorded source-shape sweeps cover 296 variants (285 unique): the ramp
+owner/product algebra, lean owner and publication lifetimes, orientation
+owners, individual orientation argument staging, and the initial game-owner
+load. The ledger contains 17 improving, 118 neutral, and 161 degrading
+variants. The only post-ramp fuzzy gain reaches 93.02% by adding a 323rd
+instruction in the orientation block; it is rejected as an
+instruction-count tradeoff against the exact native shape. Three consecutive
+non-improving sweeps now mark this scratch stalled.
+
+The remaining four localized regions are bounded:
+
+- the first two differing instructions choose eax instead of edx for the
+  `game->first_block_row_count` owner;
+- the lean block omits a register copy and expresses the native
+  `faddp`/single-store publication as `fadd` plus an x87 pop;
+- the follow-orientation calls preserve the exact Identity, orientation-a
+  rotate, matrix multiply-assignment, orientation-b rotate order but differ
+  in argument/`this` register scheduling;
+- the exit and final heading rolls are semantically exact with register-only
+  call staging differences.
+
+The verified mobile bodies independently preserve the same orientation, exit,
+and heading sequence. Further local spelling changes are therefore
+proof-polish without an evidence-backed semantic hypothesis.

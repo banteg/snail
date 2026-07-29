@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lean-player-owner",
+      "find": "    cRSubGoldy* lean_player = player;\n    float lean_roll = (0.5f - cosine(lean_player->lane_lean_progress * 3.1415927f) * 0.5f)\n        * lean_player->lane_lean_amplitude * 6.2831855f;",
+      "replacements": [
+        {
+          "name": "progress-alias",
+          "text": "    cRSubGoldy* lean_player = player;\n    cRSubGoldy* lean_progress_player = lean_player;\n    float lean_roll = (0.5f - cosine(lean_progress_player->lane_lean_progress * 3.1415927f) * 0.5f)\n        * lean_player->lane_lean_amplitude * 6.2831855f;"
+        },
+        {
+          "name": "separate-player-loads",
+          "text": "    cRSubGoldy* lean_progress_player = player;\n    cRSubGoldy* lean_player = player;\n    float lean_roll = (0.5f - cosine(lean_progress_player->lane_lean_progress * 3.1415927f) * 0.5f)\n        * lean_player->lane_lean_amplitude * 6.2831855f;"
+        },
+        {
+          "name": "named-progress",
+          "text": "    cRSubGoldy* lean_player = player;\n    float lean_progress = lean_player->lane_lean_progress;\n    float lean_roll = (0.5f - cosine(lean_progress * 3.1415927f) * 0.5f)\n        * lean_player->lane_lean_amplitude * 6.2831855f;"
+        }
+      ]
+    },
+    {
+      "name": "lean-roll-publication",
+      "find": "    desired_matrix.RotLocalZ(lean_roll + steer_roll * 0.17f);",
+      "replacements": [
+        {
+          "name": "commuted-addition",
+          "text": "    desired_matrix.RotLocalZ(steer_roll * 0.17f + lean_roll);"
+        },
+        {
+          "name": "named-combined-roll",
+          "text": "    float combined_roll = lean_roll + steer_roll * 0.17f;\n    desired_matrix.RotLocalZ(combined_roll);"
+        },
+        {
+          "name": "accumulate-into-lean-roll",
+          "text": "    lean_roll += steer_roll * 0.17f;\n    desired_matrix.RotLocalZ(lean_roll);"
+        },
+        {
+          "name": "named-steer-component",
+          "text": "    float steer_component = steer_roll * 0.17f;\n    desired_matrix.RotLocalZ(lean_roll + steer_component);"
+        },
+        {
+          "name": "named-steer-component-accumulate",
+          "text": "    float steer_component = steer_roll * 0.17f;\n    lean_roll += steer_component;\n    desired_matrix.RotLocalZ(lean_roll);"
+        }
+      ]
+    },
+    {
+      "name": "steer-roll-lifetime",
+      "find": "    float steer_roll = lean_player->cached_camera_target_world.x * -8.0f;\n    steer_roll = steer_roll * 0.017449999f;",
+      "replacements": [
+        {
+          "name": "single-expression",
+          "text": "    float steer_roll =\n        lean_player->cached_camera_target_world.x * -8.0f * 0.017449999f;"
+        },
+        {
+          "name": "scale-first",
+          "text": "    float steer_roll =\n        lean_player->cached_camera_target_world.x * 0.017449999f * -8.0f;"
+        },
+        {
+          "name": "delayed-assignment",
+          "text": "    float steer_roll;\n    steer_roll = lean_player->cached_camera_target_world.x * -8.0f;\n    steer_roll *= 0.017449999f;"
+        }
+      ]
+    }
+  ]
+}

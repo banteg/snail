@@ -36,7 +36,10 @@ void Cameraman::update_cameraman()
             * ramp_player->cached_camera_target_world.y
             + desired_matrix.position.y;
         desired_matrix.position.y = lifted;
-        desired_matrix.position.y = ramp * 0.34999999f * ramp_player->cached_camera_target_world.y + lifted;
+        desired_matrix.position.y =
+            (ramp * 0.34999999f)
+                * ramp_player->cached_camera_target_world.y
+            + lifted;
         desired_matrix.RotLocalX(inverse_ramp * 0.87249994f);
     } else {
         desired_matrix.position.y =

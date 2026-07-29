@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "follow-orientation-composition",
+      "find": "    if (player->follow_state.active == 1) {\n        set_matrix_identity(&transform);\n        transform.RotLocalZ(player->follow_state.orientation_a);\n        desired_matrix *= transform;\n        desired_matrix.RotLocalZ(player->follow_state.orientation_b);\n    }",
+      "replacements": [
+        {
+          "name": "named-player-owner",
+          "text": "    cRSubGoldy* orientation_player = player;\n    if (orientation_player->follow_state.active == 1) {\n        set_matrix_identity(&transform);\n        transform.RotLocalZ(orientation_player->follow_state.orientation_a);\n        desired_matrix *= transform;\n        desired_matrix.RotLocalZ(orientation_player->follow_state.orientation_b);\n    }"
+        },
+        {
+          "name": "named-follow-state-owner",
+          "text": "    FollowState* orientation_state = &player->follow_state;\n    if (orientation_state->active == 1) {\n        set_matrix_identity(&transform);\n        transform.RotLocalZ(orientation_state->orientation_a);\n        desired_matrix *= transform;\n        desired_matrix.RotLocalZ(orientation_state->orientation_b);\n    }"
+        },
+        {
+          "name": "identity-then-named-player",
+          "text": "    if (player->follow_state.active == 1) {\n        set_matrix_identity(&transform);\n        cRSubGoldy* orientation_player = player;\n        transform.RotLocalZ(orientation_player->follow_state.orientation_a);\n        desired_matrix *= transform;\n        desired_matrix.RotLocalZ(orientation_player->follow_state.orientation_b);\n    }"
+        },
+        {
+          "name": "split-field-owners",
+          "text": "    if (player->follow_state.active == 1) {\n        set_matrix_identity(&transform);\n        cRSubGoldy* orientation_a_player = player;\n        transform.RotLocalZ(orientation_a_player->follow_state.orientation_a);\n        desired_matrix *= transform;\n        cRSubGoldy* orientation_b_player = player;\n        desired_matrix.RotLocalZ(orientation_b_player->follow_state.orientation_b);\n    }"
+        },
+        {
+          "name": "active-and-field-owners",
+          "text": "    cRSubGoldy* orientation_active_player = player;\n    if (orientation_active_player->follow_state.active == 1) {\n        set_matrix_identity(&transform);\n        cRSubGoldy* orientation_a_player = player;\n        transform.RotLocalZ(orientation_a_player->follow_state.orientation_a);\n        desired_matrix *= transform;\n        cRSubGoldy* orientation_b_player = player;\n        desired_matrix.RotLocalZ(orientation_b_player->follow_state.orientation_b);\n    }"
+        },
+        {
+          "name": "reference-owner",
+          "text": "    cRSubGoldy& orientation_player = *player;\n    if (orientation_player.follow_state.active == 1) {\n        set_matrix_identity(&transform);\n        transform.RotLocalZ(orientation_player.follow_state.orientation_a);\n        desired_matrix *= transform;\n        desired_matrix.RotLocalZ(orientation_player.follow_state.orientation_b);\n    }"
+        },
+        {
+          "name": "explicit-multiply-assignment-call",
+          "text": "    if (player->follow_state.active == 1) {\n        set_matrix_identity(&transform);\n        transform.RotLocalZ(player->follow_state.orientation_a);\n        desired_matrix.operator*=(transform);\n        desired_matrix.RotLocalZ(player->follow_state.orientation_b);\n    }"
+        }
+      ]
+    },
+    {
+      "name": "exit-and-heading-owners",
+      "find": "    cRSubGoldy* exit_player = player;\n    if (exit_player->attachment_exit_pending)\n        desired_matrix.RotLocalZ(exit_player->post_follow_exit_roll);\n    desired_matrix.RotLocalZ(player->heading_roll);",
+      "replacements": [
+        {
+          "name": "reuse-exit-player",
+          "text": "    cRSubGoldy* exit_player = player;\n    if (exit_player->attachment_exit_pending)\n        desired_matrix.RotLocalZ(exit_player->post_follow_exit_roll);\n    desired_matrix.RotLocalZ(exit_player->heading_roll);"
+        },
+        {
+          "name": "separate-heading-player",
+          "text": "    cRSubGoldy* exit_player = player;\n    if (exit_player->attachment_exit_pending)\n        desired_matrix.RotLocalZ(exit_player->post_follow_exit_roll);\n    cRSubGoldy* heading_player = player;\n    desired_matrix.RotLocalZ(heading_player->heading_roll);"
+        },
+        {
+          "name": "direct-player-fields",
+          "text": "    if (player->attachment_exit_pending)\n        desired_matrix.RotLocalZ(player->post_follow_exit_roll);\n    desired_matrix.RotLocalZ(player->heading_roll);"
+        },
+        {
+          "name": "split-exit-field-owner",
+          "text": "    cRSubGoldy* exit_player = player;\n    if (exit_player->attachment_exit_pending) {\n        cRSubGoldy* exit_roll_player = player;\n        desired_matrix.RotLocalZ(exit_roll_player->post_follow_exit_roll);\n    }\n    desired_matrix.RotLocalZ(player->heading_roll);"
+        },
+        {
+          "name": "named-roll-values",
+          "text": "    cRSubGoldy* exit_player = player;\n    if (exit_player->attachment_exit_pending) {\n        float exit_roll = exit_player->post_follow_exit_roll;\n        desired_matrix.RotLocalZ(exit_roll);\n    }\n    float heading_roll = player->heading_roll;\n    desired_matrix.RotLocalZ(heading_roll);"
+        },
+        {
+          "name": "reference-owner",
+          "text": "    cRSubGoldy& exit_player = *player;\n    if (exit_player.attachment_exit_pending)\n        desired_matrix.RotLocalZ(exit_player.post_follow_exit_roll);\n    desired_matrix.RotLocalZ(exit_player.heading_roll);"
+        }
+      ]
+    }
+  ]
+}
