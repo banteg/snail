@@ -112,10 +112,12 @@ its void API. No dummy dependency or forced return was introduced.
 
 ## 2026-07-29 bounded queue-publication audit
 
-The same 143-combination count/color/publication sweep is exhaustive for this
-overload as well. Every semantics-preserving count carrier is neutral at
-98.48%, 66/66, prefix 42, or worse; embedded-color pointer/reference variants
-do not move the global store without disturbing the aggregate copy.
+The earlier 143-combination count/color/publication audit is now backed by
+three compact recorded sweeps that isolate each axis: 24 unique variants,
+twelve byte-identical and twelve regressive. All eleven alternate publication
+positions are worse, every semantics-preserving count carrier is neutral at
+98.48%, 66/66, prefix 42, and embedded-color pointer/reference variants do not
+move the global store without disturbing the aggregate copy.
 
 There is one exact residual: native publishes `g_font_queue_count` immediately
 before the aggregate alpha store, while the candidate emits that same store

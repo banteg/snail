@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queue-count-publication",
+      "find": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;\n                g_font_queue_count = index + 1;",
+      "replacements": [
+        {
+          "name": "before-color",
+          "text": "                g_font_queue_count = index + 1;\n                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-color",
+          "text": "                entry->color = *color;\n                g_font_queue_count = index + 1;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-x",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                g_font_queue_count = index + 1;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-y",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                g_font_queue_count = index + 1;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-width",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                g_font_queue_count = index + 1;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-height",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                g_font_queue_count = index + 1;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-u0",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                g_font_queue_count = index + 1;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-v0",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                g_font_queue_count = index + 1;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-u1",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                g_font_queue_count = index + 1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-v1",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                g_font_queue_count = index + 1;\n                entry->blend_mode = blend_mode;\n                entry->rotation = rotation;"
+        },
+        {
+          "name": "after-blend-mode",
+          "text": "                entry->color = *color;\n                entry->x0 = x;\n                entry->y0 = y;\n                entry->width = width;\n                entry->height = height;\n                entry->u0 = u0;\n                entry->v0 = v0;\n                entry->u1 = u1;\n                entry->v1 = v1;\n                entry->blend_mode = blend_mode;\n                g_font_queue_count = index + 1;\n                entry->rotation = rotation;"
+        }
+      ]
+    }
+  ]
+}

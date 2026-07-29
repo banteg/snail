@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "embedded-color-owner",
+      "find": "                entry->color = *color;",
+      "replacements": [
+        {
+          "name": "destination-reference",
+          "text": "                tColour& entry_color = entry->color;\n                entry_color = *color;"
+        },
+        {
+          "name": "destination-pointer",
+          "text": "                tColour* entry_color = &entry->color;\n                *entry_color = *color;"
+        },
+        {
+          "name": "const-source-reference",
+          "text": "                const tColour& source_color = *color;\n                entry->color = source_color;"
+        },
+        {
+          "name": "source-reference",
+          "text": "                tColour& source_color = *color;\n                entry->color = source_color;"
+        },
+        {
+          "name": "source-pointer",
+          "text": "                tColour* source_color = color;\n                entry->color = *source_color;"
+        },
+        {
+          "name": "value-snapshot",
+          "text": "                tColour source_color = *color;\n                entry->color = source_color;"
+        },
+        {
+          "name": "paired-references",
+          "text": "                tColour& entry_color = entry->color;\n                const tColour& source_color = *color;\n                entry_color = source_color;"
+        },
+        {
+          "name": "paired-pointers",
+          "text": "                tColour* entry_color = &entry->color;\n                tColour* source_color = color;\n                *entry_color = *source_color;"
+        }
+      ]
+    }
+  ]
+}

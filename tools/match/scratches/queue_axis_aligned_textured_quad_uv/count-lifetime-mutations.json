@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queue-count-lifetime",
+      "find": "                g_font_queue_count = index + 1;",
+      "replacements": [
+        {
+          "name": "preincrement-index",
+          "text": "                g_font_queue_count = ++index;"
+        },
+        {
+          "name": "increment-then-publish",
+          "text": "                ++index;\n                g_font_queue_count = index;"
+        },
+        {
+          "name": "add-then-publish",
+          "text": "                index += 1;\n                g_font_queue_count = index;"
+        },
+        {
+          "name": "snapshot-next-index",
+          "text": "                int next_index = index + 1;\n                g_font_queue_count = next_index;"
+        },
+        {
+          "name": "postincrement-expression",
+          "text": "                g_font_queue_count = index++ + 1;"
+        }
+      ]
+    }
+  ]
+}
