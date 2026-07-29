@@ -17,14 +17,12 @@ void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
     SubHealth* scan = health_pickups;
-    while (1) {
-        if (scan->state == TRACK_PICKUP_STATE_INACTIVE)
-            break;
+    while (slot_index < 8
+        && scan->state != TRACK_PICKUP_STATE_INACTIVE) {
         ++slot_index;
         ++scan;
-        if (slot_index < 8)
-            continue;
-        return;
+        if (slot_index >= 8)
+            return;
     }
 
     DWORD* slot_base =

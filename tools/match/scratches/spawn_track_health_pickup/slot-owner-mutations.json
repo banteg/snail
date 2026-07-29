@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slot-owner",
+      "find": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;",
+      "replacements": [
+        {
+          "name": "split-slot-assignment",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot;\n    slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = player;"
+        },
+        {
+          "name": "owner-after-state",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    cRSubGoldy* pickup_owner = player;\n    slot->health_pickups[0].owner = pickup_owner;"
+        },
+        {
+          "name": "owner-after-slot",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    cRSubGoldy* pickup_owner = player;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = pickup_owner;"
+        },
+        {
+          "name": "owner-before-slot",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGoldy* pickup_owner = player;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    slot->health_pickups[0].owner = pickup_owner;"
+        },
+        {
+          "name": "scoped-owner",
+          "text": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    {\n        cRSubGoldy* pickup_owner = player;\n        slot->health_pickups[0].owner = pickup_owner;\n    }"
+        },
+        {
+          "name": "combined-slot-owner",
+          "text": "    cRSubGame* slot = (cRSubGame*)(\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index);\n    slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;\n    cRSubGoldy* pickup_owner = player;\n    slot->health_pickups[0].owner = pickup_owner;"
+        }
+      ]
+    }
+  ]
+}

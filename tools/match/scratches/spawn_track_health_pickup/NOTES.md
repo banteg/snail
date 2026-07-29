@@ -4,12 +4,12 @@ Live source map for `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `90.08%`, `120/122` candidate/target instructions, with `7` masked operands
+- `99.18%`, `122/122` candidate/target instructions, with `7` masked operands
   clean and no unresolved or mismatched references.
 - The scratch now uses the primary `SubHealth` field names for slot
-  initialization and sprite ownership. The key source-shape fix is staging the
-  cell position through a normal `Vector3` local, not the older raw-bit
-`PositionBits` view.
+  initialization and sprite ownership. The key source-shape fixes are the
+  bounded inactive-slot scan and staging the cell position through a normal
+  `Vector3` local, not the older raw-bit `PositionBits` view.
 - The sprite output copy is now the normal `Vector3` assignment from the live
   pickup position into `sprite->position`; VC6 emits the same scalar stores
   with the native destination-register ownership.
@@ -42,7 +42,7 @@ This scratch now uses the shared `cRSubGame::health_pickups` layout, but
 keeps the shifted slot-base source shape because rebasing to a direct pickup
 pointer still does not match native register ownership.
 
-Remaining mismatch:
+Earlier source-shape constraints:
 
 - A plain `TrackHealthPickup* pickup = (TrackHealthPickup*)(slot_base + 874496)`
   local is source-plausible but wrong for this scratch: it rebases `esi` at the
@@ -248,3 +248,27 @@ zero-valued x and z lanes. The Windows scratch now owns that as one
 `SubHealth` position. This removes scalar reconstruction from the source while
 remaining byte-identical at the honest 90.08%, 120/122-instruction baseline
 with all seven references clean.
+
+## 2026-07-29 bounded free-slot scan recovery
+
+The mobile-backed fixed eight-slot owner makes the allocator scan a bounded
+condition-controlled walk: continue while the index is in range and the
+current `SubHealth` is active, advance the cursor, and return immediately when
+the increment exhausts the pool. Expressing both the entry bound and the
+post-increment exhaustion check recovers the native fallthrough epilogue
+without restoring the rejected artificial return value.
+
+This raises focused matching from 90.08% (`120/122`, prefix 6) through 92.68%
+to **99.18%** (`122/122`, prefix 16), with all seven references clean. The
+register-allocation improvement also aligns the formerly divergent list
+splice, bob-phase tail, final store, and void epilogue. Four recorded sweeps
+cover 25 unique loop, exit, slot-offset, and owner-publication variants:
+three improve, 13 are byte-identical to their sweep baselines, and nine
+regress.
+
+The sole residual is now one independent scheduling swap after the scan:
+native completes `sub eax, ebx` for the 29-word slot offset before loading the
+`player` argument into `ebp`; the candidate performs those two operations in
+the opposite order. Seven natural offset factorizations and six slot/owner
+declaration forms compile byte-identically at 99.18%. Do not force the last
+swap with a dummy dependency or raw register-shaped alias.

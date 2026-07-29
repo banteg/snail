@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "free-slot-exit",
+      "find": "    while (slot_index < 8\n        && scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n    }\n    if (slot_index >= 8)\n        return;",
+      "replacements": [
+        {
+          "name": "state-loop-continue-return",
+          "text": "    while (scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index < 8)\n            continue;\n        return;\n    }"
+        },
+        {
+          "name": "state-loop-else-return",
+          "text": "    while (scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index < 8) {\n        } else {\n            return;\n        }\n    }"
+        },
+        {
+          "name": "bounded-loop-inner-exit",
+          "text": "    while (slot_index < 8\n        && scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index >= 8)\n            return;\n    }"
+        },
+        {
+          "name": "bounded-loop-inner-equality-exit",
+          "text": "    while (slot_index < 8\n        && scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index == 8)\n            return;\n    }"
+        },
+        {
+          "name": "state-loop-break-exhaustion",
+          "text": "    while (scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index >= 8)\n            break;\n    }\n    if (slot_index >= 8)\n        return;"
+        },
+        {
+          "name": "state-for-continue-return",
+          "text": "    for (; scan->state != TRACK_PICKUP_STATE_INACTIVE;) {\n        ++slot_index;\n        ++scan;\n        if (slot_index < 8)\n            continue;\n        return;\n    }"
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**539/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **97777/294937** bytes (**33.15%**) are proof-grade, and overall fuzzy is **79.18%**.
+**539/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **97777/294937** bytes (**33.15%**) are proof-grade, and overall fuzzy is **79.19%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -550,7 +550,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (24)
+## Near Match (95-99.99%) (25)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -569,6 +569,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | append_track_cache_object | 0x433960 | 454 | 167/167 | 98.80% | 155/167 | 6 ok |  | core |
 | 🚧 | initialize_star_field | 0x434310 | 861 | 247/247 | 97.57% | 126/247 | 26 ok |  | core |
 | 🚧 | mark_track_warning_zones | 0x4354f0 | 251 | 99/99 | 98.99% | 79/99 | - |  | core |
+| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 122/122 | 99.18% | 16/122 | 7 ok |  | core |
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  | core |
 | 🚧 | update_ring_or_special_effect_parent | 0x43e830 | 1156 | 336/336 | 98.21% | 193/336 | 2 unaudited, 37 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  | core |
@@ -579,7 +580,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (45)
+## High Progress (80-94.99%) (44)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -607,7 +608,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 131/131 | 94.66% | 6/131 | 34 ok |  | core |
 | 🚧 | play_subgoldy_shoot_sfx | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 2 unaudited, 19 ok |  | core |
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2087/2087 | 82.75% | 12/2087 | 3 unaudited, 314 ok |  | core |
-| 🚧 | spawn_track_health_pickup | 0x43d6c0 | 441 | 120/122 | 90.08% | 6/122 | 7 ok |  | core |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 144/144 | 84.72% | 7/144 | 9 ok |  | core |
 | 🚧 | spawn_slug_hazard | 0x43dc80 | 642 | 158/160 | 94.34% | 6/160 | 18 ok |  | core |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  | core |
