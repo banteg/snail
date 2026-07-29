@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "repeat-fold-comparison",
+      "find": "    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        == ascii_upper_if_lowercase(repeat_code)) {",
+      "replacements": [
+        {
+          "name": "repeat-first",
+          "text": "    if (ascii_upper_if_lowercase(repeat_code)\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "repeat-first-explicit-char-casts",
+          "text": "    if (ascii_upper_if_lowercase((char)repeat_code)\n        == ascii_upper_if_lowercase((char)g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "repeat-first-unsigned-result-casts",
+          "text": "    if ((unsigned char)ascii_upper_if_lowercase(repeat_code)\n        == (unsigned char)ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "repeat-first-int-result-casts",
+          "text": "    if ((int)ascii_upper_if_lowercase(repeat_code)\n        == (int)ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "repeat-first-zero-subtraction",
+          "text": "    if (ascii_upper_if_lowercase(repeat_code)\n        - ascii_upper_if_lowercase(g_text_input_last_repeat_code) == 0) {"
+        },
+        {
+          "name": "last-first-zero-subtraction",
+          "text": "    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        - ascii_upper_if_lowercase(repeat_code) == 0) {"
+        },
+        {
+          "name": "repeat-first-zero-xor",
+          "text": "    if ((ascii_upper_if_lowercase(repeat_code)\n        ^ ascii_upper_if_lowercase(g_text_input_last_repeat_code)) == 0) {"
+        },
+        {
+          "name": "last-first-zero-xor",
+          "text": "    if ((ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        ^ ascii_upper_if_lowercase(repeat_code)) == 0) {"
+        },
+        {
+          "name": "repeat-first-negated-inequality",
+          "text": "    if (!(ascii_upper_if_lowercase(repeat_code)\n        != ascii_upper_if_lowercase(g_text_input_last_repeat_code))) {"
+        },
+        {
+          "name": "last-first-negated-inequality",
+          "text": "    if (!(ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        != ascii_upper_if_lowercase(repeat_code))) {"
+        },
+        {
+          "name": "repeat-first-zero-on-left",
+          "text": "    if (0 == ascii_upper_if_lowercase(repeat_code)\n        - ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "in-place-repeat-left",
+          "text": "    if ((repeat_code = ascii_upper_if_lowercase(repeat_code))\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "in-place-repeat-right",
+          "text": "    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        == (repeat_code = ascii_upper_if_lowercase(repeat_code))) {"
+        },
+        {
+          "name": "comma-in-place-repeat",
+          "text": "    if ((repeat_code = ascii_upper_if_lowercase(repeat_code),\n        repeat_code == ascii_upper_if_lowercase(g_text_input_last_repeat_code))) {"
+        },
+        {
+          "name": "booleanized-repeat-first",
+          "text": "    if ((ascii_upper_if_lowercase(repeat_code)\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) != 0) {"
+        },
+        {
+          "name": "conditional-repeat-first",
+          "text": "    if (ascii_upper_if_lowercase(repeat_code)\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code) ? true : false) {"
+        }
+      ]
+    }
+  ]
+}

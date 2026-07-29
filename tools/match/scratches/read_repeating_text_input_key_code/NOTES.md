@@ -137,3 +137,27 @@ same folded bytes. The two unaudited operands are those displaced global/stack
 loads, not unresolved ownership. Because retaining an out-of-line call is
 already part of the native body, same-TU placement cannot legitimately
 provide a hidden inline relationship; no TU grouping is introduced.
+
+## 2026-07-29 recorded repeat-fold lifetime bound
+
+Three recorded sweeps now cover 44 unique, compiling source forms around the
+last fold comparison: 16 direct expression shapes, 16 explicit-local
+lifetimes, and 12 assignment-inside-condition forms. None improves the
+99.32%, 440/440 baseline; one negated-inequality spelling is byte-identical
+and the other 43 regress, so the scratch is stalled.
+
+The result cleanly separates the two available schedules. Direct equality,
+casts, XOR/subtraction comparisons, and operand commutation retain native
+instruction-count parity but VC6 still folds the global byte first, leaving
+the same two displaced operands unaudited. Every viable `char`, `signed
+char`, `unsigned char`, `register`, two-local, one-byte-array, and
+assignment-expression lifetime folds the stack byte first and audits all 74
+references, but stores AL before pushing the second argument. That removes
+native's `mov dl, al` plus delayed spill, yields 439 instructions, and
+regresses to 98.98%.
+
+Both mobile implementations independently preserve the intended stack-code
+then global-code fold order, but neither source family reproduces the Windows
+DL lifetime. The retained byte-shaped comparison therefore remains the best
+whole-function transcription; no volatile barrier, fake dependency, helper
+inline, or global-state mutation is introduced to force the last schedule.

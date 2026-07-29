@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "repeat-fold-expression-local",
+      "find": "    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        == ascii_upper_if_lowercase(repeat_code)) {",
+      "replacements": [
+        {
+          "name": "char-assignment-left",
+          "text": "    char folded_repeat;\n    if ((folded_repeat = ascii_upper_if_lowercase(repeat_code))\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "char-assignment-right",
+          "text": "    char folded_repeat;\n    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        == (folded_repeat = ascii_upper_if_lowercase(repeat_code))) {"
+        },
+        {
+          "name": "register-char-assignment-left",
+          "text": "    register char folded_repeat;\n    if ((folded_repeat = ascii_upper_if_lowercase(repeat_code))\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "unsigned-char-assignment-left",
+          "text": "    unsigned char folded_repeat;\n    if ((folded_repeat = ascii_upper_if_lowercase(repeat_code))\n        == (unsigned char)ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "comma-char-assignment-left",
+          "text": "    char folded_repeat;\n    if ((folded_repeat = ascii_upper_if_lowercase(repeat_code), folded_repeat)\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "comma-char-assignment-right",
+          "text": "    char folded_repeat;\n    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        == (folded_repeat = ascii_upper_if_lowercase(repeat_code), folded_repeat)) {"
+        },
+        {
+          "name": "two-char-assignments",
+          "text": "    char folded_repeat;\n    char folded_last;\n    if ((folded_repeat = ascii_upper_if_lowercase(repeat_code))\n        == (folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code))) {"
+        },
+        {
+          "name": "two-register-char-assignments",
+          "text": "    register char folded_repeat;\n    register char folded_last;\n    if ((folded_repeat = ascii_upper_if_lowercase(repeat_code))\n        == (folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code))) {"
+        },
+        {
+          "name": "two-char-comma-sequence",
+          "text": "    char folded_repeat;\n    char folded_last;\n    if ((folded_repeat = ascii_upper_if_lowercase(repeat_code),\n        folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code),\n        folded_repeat == folded_last)) {"
+        },
+        {
+          "name": "one-byte-array-assignment-left",
+          "text": "    char folded_repeat[1];\n    if ((folded_repeat[0] = ascii_upper_if_lowercase(repeat_code))\n        == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "char-assignment-negated-inequality",
+          "text": "    char folded_repeat;\n    if (!((folded_repeat = ascii_upper_if_lowercase(repeat_code))\n        != ascii_upper_if_lowercase(g_text_input_last_repeat_code))) {"
+        },
+        {
+          "name": "char-assignment-zero-xor",
+          "text": "    char folded_repeat;\n    if (((folded_repeat = ascii_upper_if_lowercase(repeat_code))\n        ^ ascii_upper_if_lowercase(g_text_input_last_repeat_code)) == 0) {"
+        }
+      ]
+    }
+  ]
+}

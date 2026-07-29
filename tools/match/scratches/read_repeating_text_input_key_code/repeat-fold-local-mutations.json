@@ -1,0 +1,75 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "repeat-fold-local-lifetime",
+      "find": "    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)\n        == ascii_upper_if_lowercase(repeat_code)) {",
+      "replacements": [
+        {
+          "name": "named-char-repeat-left",
+          "text": "    char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "named-char-repeat-right",
+          "text": "    char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code) == folded_repeat) {"
+        },
+        {
+          "name": "split-char-repeat-left",
+          "text": "    char folded_repeat;\n    folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "register-char-repeat-left",
+          "text": "    register char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "unsigned-char-repeat-left",
+          "text": "    unsigned char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == (unsigned char)ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "signed-char-repeat-left",
+          "text": "    signed char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == (signed char)ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "named-int-repeat-left",
+          "text": "    int folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "register-int-repeat-left",
+          "text": "    register int folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "two-char-repeat-first",
+          "text": "    char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    char folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code);\n    if (folded_repeat == folded_last) {"
+        },
+        {
+          "name": "two-char-last-declared-first",
+          "text": "    char folded_last;\n    char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code);\n    if (folded_repeat == folded_last) {"
+        },
+        {
+          "name": "two-register-char-repeat-first",
+          "text": "    register char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    register char folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code);\n    if (folded_repeat == folded_last) {"
+        },
+        {
+          "name": "two-unsigned-char-repeat-first",
+          "text": "    unsigned char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    unsigned char folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code);\n    if (folded_repeat == folded_last) {"
+        },
+        {
+          "name": "two-int-repeat-first",
+          "text": "    int folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    int folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code);\n    if (folded_repeat == folded_last) {"
+        },
+        {
+          "name": "two-register-int-repeat-first",
+          "text": "    register int folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    register int folded_last = ascii_upper_if_lowercase(g_text_input_last_repeat_code);\n    if (folded_repeat == folded_last) {"
+        },
+        {
+          "name": "const-char-repeat-left",
+          "text": "    const char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if (folded_repeat == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        },
+        {
+          "name": "scoped-char-repeat-left",
+          "text": "    char folded_repeat = ascii_upper_if_lowercase(repeat_code);\n    if ((char)folded_repeat == ascii_upper_if_lowercase(g_text_input_last_repeat_code)) {"
+        }
+      ]
+    }
+  ]
+}
