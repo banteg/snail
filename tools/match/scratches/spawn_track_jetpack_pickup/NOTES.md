@@ -4,13 +4,14 @@ Live source map for `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`.
 
 Current match:
 
-- `84.72%`, `144/144` candidate/target instructions, with `9` clean masked
-  operands and no unresolved or mismatched references.
-- The scratch now uses the primary `JetPack` field names and the shared
-  `BodList`/`BodNode` active-list shape. The void correction moves the first
-  mismatch to the occupied-singleton epilogue at 7/144; the next independent
-  residual remains the lane-wall tile compare spelling (`mov cl, 0xe` in
-  native versus the current byte-load/constant compare).
+- `87.29%`, `147/144` candidate/target instructions, with a `44/144` exact
+  prefix, `9` clean masked operands, and no unresolved or mismatched
+  references.
+- The scratch uses the primary `JetPack` field names, the shared
+  `BodList`/`BodNode` active-list shape, and the native bounded singleton
+  traversal. The three-instruction candidate surplus is confined to the
+  lane-wall tile compare schedule (`mov cl, 0xe` once in native versus two
+  local byte-load/constant pairs in the candidate).
 - The sprite output copy is now the same typed `Vector3` assignment accepted in
   the health spawner, reducing the tail residual to the bob-phase store versus
   `world_z` conversion scheduling.
@@ -195,3 +196,28 @@ lane correction. The scratch now represents that placement as one owned
 `Vector3` result rather than separate x/y/z assignments. VC6 emits the same
 144-instruction candidate, so the honest 84.72% score and all nine clean
 references are unchanged.
+
+## 2026-07-29 bounded singleton scan and lane schedule
+
+The Windows allocator retains the same bounded scan shape recovered for the
+health pickup pool: test the current slot state, advance the typed cursor by
+the exact `0x19c` runtime size, then return from the inner bound check. Its
+bound is one because `jetpack_pickup` is a singleton. Android and iOS
+independently retain that singleton owner and occupied-state guard even though
+their compilers collapse the traversal.
+
+Restoring this authored bound improves focused matching from `84.72%` to
+`87.29%` and extends the exact prefix from `7/144` to `44/144`. The candidate
+grows from the target-aligned `144` instructions to `147`; that is an explicit
+metric tradeoff rather than an exact match claim. The stronger source recovers
+the complete native scan, while the three-instruction surplus is isolated to
+the later lane-wall compares.
+
+Three mutation sweeps covered 30 variants (25 unique): 3 improved, 11 were
+byte-identical, and 16 regressed. Eight natural lane spellings—including
+byte/int wall locals, nested branches, constant-left comparisons, and explicit
+`else` blocks—were neutral; the `switch` form regressed. A full scan-by-lane
+interaction matrix produced no further improvement. Native eagerly keeps tile
+14 in `cl`, while VC6 materializes the constant separately for the two
+candidate compares. No volatile access, fake external, or dummy operation was
+introduced to force that register schedule.

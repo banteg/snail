@@ -17,9 +17,8 @@ void cRSubGame::AddJetPack(cRSubLoc* cell, cRSubGoldy* player)
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
     JetPack* scan = &jetpack_pickup;
-    while (1) {
-        if (scan->state == TRACK_PICKUP_STATE_INACTIVE)
-            break;
+    while (slot_index < 1
+        && scan->state != TRACK_PICKUP_STATE_INACTIVE) {
         ++slot_index;
         ++scan;
         if (slot_index >= 1)

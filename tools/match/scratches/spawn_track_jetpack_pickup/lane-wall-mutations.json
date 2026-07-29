@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lane-wall",
+      "find": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == SUBLOC_TILE_WALL2\n        && cell[2].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n        && cell[1].tile_id == SUBLOC_TILE_WALL2) {\n        live_position->x = live_position->x - 0.5f;\n    }",
+      "replacements": [
+        {
+          "name": "mobile-nested-lanes",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3) {\n        if (cell[-1].tile_id == SUBLOC_TILE_WALL2\n            && cell[2].tile_id == SUBLOC_TILE_WALL2)\n            live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4) {\n        if (cell[-2].tile_id == SUBLOC_TILE_WALL2\n            && cell[1].tile_id == SUBLOC_TILE_WALL2)\n            live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "byte-wall-before-lane",
+          "text": "    unsigned char wall_tile = SUBLOC_TILE_WALL2;\n    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && cell[-1].tile_id == wall_tile\n        && cell[2].tile_id == wall_tile) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == wall_tile\n        && cell[1].tile_id == wall_tile) {\n        live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "byte-wall-after-lane",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    unsigned char wall_tile = SUBLOC_TILE_WALL2;\n    if (lane == 3 && cell[-1].tile_id == wall_tile\n        && cell[2].tile_id == wall_tile) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == wall_tile\n        && cell[1].tile_id == wall_tile) {\n        live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "split-byte-wall",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    unsigned char wall_tile;\n    wall_tile = SUBLOC_TILE_WALL2;\n    if (lane == 3 && cell[-1].tile_id == wall_tile\n        && cell[2].tile_id == wall_tile) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == wall_tile\n        && cell[1].tile_id == wall_tile) {\n        live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "int-wall",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    int wall_tile = SUBLOC_TILE_WALL2;\n    if (lane == 3 && cell[-1].tile_id == wall_tile\n        && cell[2].tile_id == wall_tile) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && cell[-2].tile_id == wall_tile\n        && cell[1].tile_id == wall_tile) {\n        live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "constant-left",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3 && SUBLOC_TILE_WALL2 == cell[-1].tile_id\n        && SUBLOC_TILE_WALL2 == cell[2].tile_id) {\n        live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4 && SUBLOC_TILE_WALL2 == cell[-2].tile_id\n        && SUBLOC_TILE_WALL2 == cell[1].tile_id) {\n        live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "nested-byte-wall",
+          "text": "    unsigned char wall_tile = SUBLOC_TILE_WALL2;\n    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3) {\n        if (cell[-1].tile_id == wall_tile\n            && cell[2].tile_id == wall_tile)\n            live_position->x = live_position->x + 0.5f;\n    } else if (lane == 4) {\n        if (cell[-2].tile_id == wall_tile\n            && cell[1].tile_id == wall_tile)\n            live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "explicit-lane-else",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    if (lane == 3) {\n        if (cell[-1].tile_id == SUBLOC_TILE_WALL2\n            && cell[2].tile_id == SUBLOC_TILE_WALL2)\n            live_position->x = live_position->x + 0.5f;\n    } else {\n        if (lane == 4 && cell[-2].tile_id == SUBLOC_TILE_WALL2\n            && cell[1].tile_id == SUBLOC_TILE_WALL2)\n            live_position->x = live_position->x - 0.5f;\n    }"
+        },
+        {
+          "name": "lane-switch",
+          "text": "    int lane = cell->lane_and_flags & SUBLOC_LANE_INDEX_MASK;\n    switch (lane) {\n    case 3:\n        if (cell[-1].tile_id == SUBLOC_TILE_WALL2\n            && cell[2].tile_id == SUBLOC_TILE_WALL2)\n            live_position->x = live_position->x + 0.5f;\n        break;\n    case 4:\n        if (cell[-2].tile_id == SUBLOC_TILE_WALL2\n            && cell[1].tile_id == SUBLOC_TILE_WALL2)\n            live_position->x = live_position->x - 0.5f;\n        break;\n    }\n"
+        }
+      ]
+    }
+  ]
+}

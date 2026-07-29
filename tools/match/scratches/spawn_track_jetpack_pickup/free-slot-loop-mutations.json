@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "free-slot-loop",
+      "find": "    int slot_index = 0;\n    DWORD* game_words = (DWORD*)this;\n    JetPack* scan = &jetpack_pickup;\n    while (1) {\n        if (scan->state == TRACK_PICKUP_STATE_INACTIVE)\n            break;\n        ++slot_index;\n        ++scan;\n        if (slot_index >= 1)\n            return;\n    }",
+      "replacements": [
+        {
+          "name": "bounded-inner-exit",
+          "text": "    int slot_index = 0;\n    DWORD* game_words = (DWORD*)this;\n    JetPack* scan = &jetpack_pickup;\n    while (slot_index < 1\n        && scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index >= 1)\n            return;\n    }"
+        },
+        {
+          "name": "bounded-post-exit",
+          "text": "    int slot_index = 0;\n    DWORD* game_words = (DWORD*)this;\n    JetPack* scan = &jetpack_pickup;\n    while (slot_index < 1\n        && scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n    }\n    if (slot_index >= 1)\n        return;"
+        },
+        {
+          "name": "condition-while",
+          "text": "    int slot_index = 0;\n    DWORD* game_words = (DWORD*)this;\n    JetPack* scan = &jetpack_pickup;\n    while (scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index >= 1)\n            return;\n    }"
+        },
+        {
+          "name": "condition-continue-return",
+          "text": "    int slot_index = 0;\n    DWORD* game_words = (DWORD*)this;\n    JetPack* scan = &jetpack_pickup;\n    while (scan->state != TRACK_PICKUP_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index < 1)\n            continue;\n        return;\n    }"
+        },
+        {
+          "name": "bounded-condition-for",
+          "text": "    int slot_index = 0;\n    DWORD* game_words = (DWORD*)this;\n    JetPack* scan = &jetpack_pickup;\n    for (; slot_index < 1\n        && scan->state != TRACK_PICKUP_STATE_INACTIVE;\n         ++slot_index, ++scan) {\n    }\n    if (slot_index >= 1)\n        return;"
+        },
+        {
+          "name": "direct-singleton-guard",
+          "text": "    int slot_index = 0;\n    DWORD* game_words = (DWORD*)this;\n    JetPack* scan = &jetpack_pickup;\n    if (scan->state != TRACK_PICKUP_STATE_INACTIVE)\n        return;"
+        }
+      ]
+    }
+  ]
+}
