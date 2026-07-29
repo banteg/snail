@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-chain-alias",
+      "find": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }",
+      "replacements": [
+        {
+          "name": "reference-chain",
+          "text": "            float& phase_ref = phase;\n            cell->phase = phase_ref = cell->phase_step + cell->phase;\n            if (phase_ref > 6.28318548f) {\n                cell->phase = phase_ref - 6.28318548f;\n            }"
+        },
+        {
+          "name": "pointer-chain",
+          "text": "            float* phase_ptr = &phase;\n            cell->phase = *phase_ptr = cell->phase_step + cell->phase;\n            if (*phase_ptr > 6.28318548f) {\n                cell->phase = *phase_ptr - 6.28318548f;\n            }"
+        },
+        {
+          "name": "reference-after-local-store",
+          "text": "            phase = cell->phase_step + cell->phase;\n            float& phase_ref = phase;\n            cell->phase = phase_ref;\n            if (phase_ref > 6.28318548f) {\n                cell->phase = phase_ref - 6.28318548f;\n            }"
+        },
+        {
+          "name": "pointer-after-local-store",
+          "text": "            phase = cell->phase_step + cell->phase;\n            float* phase_ptr = &phase;\n            cell->phase = *phase_ptr;\n            if (*phase_ptr > 6.28318548f) {\n                cell->phase = *phase_ptr - 6.28318548f;\n            }"
+        },
+        {
+          "name": "addressed-assignment-result",
+          "text": "            cell->phase = *(float*)&(phase =\n                cell->phase_step + cell->phase);\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "addressed-local-publication",
+          "text": "            phase = cell->phase_step + cell->phase;\n            cell->phase = *(float*)&phase;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        }
+      ]
+    }
+  ]
+}

@@ -118,3 +118,28 @@ with `fst`/`fstp`, while the best source-shaped bit-preserving form materializes
 the same bits through four integer instructions. Plain float, pointer,
 reference, union, chained-assignment, and alternate bit-shadow forms are
 neutral or worse; no volatile dependency is retained.
+
+## 2026-07-29 chained phase-publication closure
+
+Two follow-up sweeps isolate the remaining x87 allocator choice. Combining the
+right-to-left float chain `cell->phase = phase = sum` with the bit shadow
+recovers native's first `fst [phase]` and extends the exact prefix from 17 to 18
+instructions. The shadow then necessarily adds `mov eax, [phase]` before
+`fstp [cell->phase]` and writes those bits back afterward, reducing the full
+score to 86.76%. One-element array holders fare worse at 73.68-80.88%.
+
+Removing the integer roundtrip while retaining the float chain through
+ordinary references, pointers, and addressed assignment results makes VC6
+scalar-replace the local in all six cases. Those variants are byte-identical
+to one another at 73.68%, lose the native frame/register schedule at the
+prologue, and introduce two unaudited references. The two desired properties
+therefore do not coexist in the tested source language: the bit alias preserves
+the stack lifetime but materializes integer copies; honest float aliases keep
+the x87 value but eliminate the stack owner.
+
+The complete ledger contains 48 unique variants: three improve an earlier
+baseline, 13 are neutral, and 32 regress, with one retained sweep win and three
+trailing non-improving sweeps. `update_backdrop` is formally stalled at 89.71%,
+69/67 instructions, prefix 17, and seven clean references. No volatile access,
+opaque helper, or dummy address escape is justified to force the final
+`fst`/`fstp` pair.

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-chained-shadow",
+      "find": "            phase = cell->phase_step;\n            phase += cell->phase;\n            phase_bits = *(int*)&phase;\n            *(int*)&cell->phase = phase_bits;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }",
+      "replacements": [
+        {
+          "name": "float-chain-then-bit-roundtrip",
+          "text": "            cell->phase = phase = cell->phase_step + cell->phase;\n            phase_bits = *(int*)&phase;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "float-chain-bit-compare",
+          "text": "            cell->phase = phase = cell->phase_step + cell->phase;\n            phase_bits = *(int*)&phase;\n            if (*(float*)&phase_bits > 6.28318548f) {\n                cell->phase = *(float*)&phase_bits - 6.28318548f;\n            }"
+        },
+        {
+          "name": "float-chain-through-reference",
+          "text": "            float& local_phase = phase;\n            cell->phase = local_phase = cell->phase_step + cell->phase;\n            phase_bits = *(int*)&local_phase;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "float-chain-through-pointer",
+          "text": "            float* local_phase = &phase;\n            cell->phase = *local_phase = cell->phase_step + cell->phase;\n            phase_bits = *(int*)local_phase;\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        },
+        {
+          "name": "one-element-float-chain",
+          "text": "            float phase_value[1];\n            cell->phase = phase_value[0] = cell->phase_step + cell->phase;\n            if (phase_value[0] > 6.28318548f) {\n                cell->phase = phase_value[0] - 6.28318548f;\n            }"
+        },
+        {
+          "name": "one-element-chain-bit-shadow",
+          "text": "            float phase_value[1];\n            cell->phase = phase_value[0] = cell->phase_step + cell->phase;\n            phase_bits = *(int*)&phase_value[0];\n            phase = *(float*)&phase_bits;\n            if (phase > 6.28318548f) {\n                cell->phase = phase - 6.28318548f;\n            }"
+        }
+      ]
+    }
+  ]
+}
