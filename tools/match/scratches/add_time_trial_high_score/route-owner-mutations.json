@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "route-owner",
+      "find": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        if (record->total_seconds\n                < *(float*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records)\n                    + offsetof(SubSolution, total_seconds))\n            || *(float*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records)\n                    + offsetof(SubSolution, total_seconds))\n                == 0.0f) {\n            SubSolution* route_record =\n                (SubSolution*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }",
+      "replacements": [
+        {
+          "name": "typed-indexed-record",
+          "text": "    if (route_active) {\n        SubSolution* route_record = &time_trial_route_records[route_index];\n        if (record->total_seconds < route_record->total_seconds\n            || route_record->total_seconds == 0.0f) {\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "typed-incremented-record",
+          "text": "    if (route_active) {\n        SubSolution* route_record = time_trial_route_records;\n        route_record += route_index;\n        if (record->total_seconds < route_record->total_seconds\n            || route_record->total_seconds == 0.0f) {\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "mutable-char-base",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        char* route_base = (char*)this;\n        route_base += route_offset;\n        float* stored_seconds = (float*)(route_base\n            + offsetof(SubHighScore, time_trial_route_records)\n            + offsetof(SubSolution, total_seconds));\n        if (record->total_seconds < *stored_seconds\n            || *stored_seconds == 0.0f) {\n            SubSolution* route_record = (SubSolution*)(route_base\n                + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "shifted-bank",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        SubHighScore* route_bank =\n            (SubHighScore*)((char*)this + route_offset);\n        SubSolution* route_record = route_bank->time_trial_route_records;\n        if (record->total_seconds < route_record->total_seconds\n            || route_record->total_seconds == 0.0f) {\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "shifted-bank-after-declaration",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        SubHighScore* route_bank = this;\n        route_bank = (SubHighScore*)((char*)route_bank + route_offset);\n        if (record->total_seconds\n                < route_bank->time_trial_route_records[0].total_seconds\n            || route_bank->time_trial_route_records[0].total_seconds\n                == 0.0f) {\n            route_bank->time_trial_route_records[0] = *record;\n            route_bank->time_trial_route_records[0].route_or_rank_index =\n                route_index;\n        }\n    }"
+        },
+        {
+          "name": "integer-route-base",
+          "text": "    if (route_active) {\n        unsigned int route_base = (unsigned int)this;\n        route_base += route_index * SUB_SOLUTION_STRIDE;\n        SubSolution* route_record = (SubSolution*)(route_base\n            + offsetof(SubHighScore, time_trial_route_records));\n        if (record->total_seconds < route_record->total_seconds\n            || route_record->total_seconds == 0.0f) {\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "route-cursor-view",
+          "text": "    if (route_active) {\n        struct TimeTrialRouteCursor {\n            char bank_prefix[offsetof(SubHighScore, time_trial_route_records)];\n            SubSolution record;\n        };\n        TimeTrialRouteCursor* route_cursor =\n            (TimeTrialRouteCursor*)((char*)this\n                + route_index * SUB_SOLUTION_STRIDE);\n        if (record->total_seconds < route_cursor->record.total_seconds\n            || route_cursor->record.total_seconds == 0.0f) {\n            route_cursor->record = *record;\n            route_cursor->record.route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "split-replacement-gate",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        float* stored_seconds = (float*)((char*)this + route_offset\n            + offsetof(SubHighScore, time_trial_route_records)\n            + offsetof(SubSolution, total_seconds));\n        if (record->total_seconds < *stored_seconds)\n            goto replace_route_record;\n        if (*stored_seconds != 0.0f)\n            return;\nreplace_route_record:\n        SubSolution* route_record = (SubSolution*)((char*)this + route_offset\n            + offsetof(SubHighScore, time_trial_route_records));\n        *route_record = *record;\n        route_record->route_or_rank_index = route_index;\n    }"
+        }
+      ]
+    }
+  ]
+}

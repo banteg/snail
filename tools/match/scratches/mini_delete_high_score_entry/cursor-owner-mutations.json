@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cursor-owner",
+      "find": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            source_cursor += SUB_SOLUTION_STRIDE;\n            SubSolution* source =\n                (SubSolution*)(source_cursor - SUB_SOLUTION_STRIDE);\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))\n                ->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);",
+      "replacements": [
+        {
+          "name": "direct-mini-source-index",
+          "text": "        int row = rank;\n        do {\n            active_record_bank[row] = mini_delete_source_records[row];\n            active_record_bank[row].route_or_rank_index = row;\n            ++row;\n        } while (row < SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "direct-survival-index",
+          "text": "        int row = rank;\n        do {\n            active_record_bank[row] = survival_records[row + 1];\n            active_record_bank[row].route_or_rank_index = row;\n            ++row;\n        } while (row < SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "typed-survival-source-cursor",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        SubSolution* source_cursor = &survival_records[row + 1];\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            SubSolution* source = source_cursor;\n            offset += SUB_SOLUTION_STRIDE;\n            ++source_cursor;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))\n                ->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "typed-mini-source-cursor",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        SubSolution* source_cursor = &mini_delete_source_records[row];\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            SubSolution* source = source_cursor;\n            offset += SUB_SOLUTION_STRIDE;\n            ++source_cursor;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))\n                ->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "byte-source-old-then-next",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            SubSolution* source = (SubSolution*)source_cursor;\n            offset += SUB_SOLUTION_STRIDE;\n            source_cursor += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))\n                ->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "paired-record-cursors",
+          "text": "        int row = rank;\n        SubSolution* destination = active_record_bank + row;\n        SubSolution* source = &survival_records[row + 1];\n        do {\n            *destination = *source;\n            destination->route_or_rank_index = row;\n            ++destination;\n            ++source;\n            ++row;\n        } while (row < SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "typed-source-offset-destination",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        SubSolution* source_cursor = &survival_records[row + 1];\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            SubSolution* source = source_cursor;\n            ++source_cursor;\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            destination->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "decompiler-index-and-cursor",
+          "text": "        int row = rank;\n        int record_index = rank;\n        SubSolution* source_cursor = &survival_records[rank + 1];\n        do {\n            SubSolution* destination = &active_record_bank[record_index];\n            SubSolution* source = source_cursor;\n            ++record_index;\n            ++source_cursor;\n            *destination = *source;\n            active_record_bank[record_index - 1].route_or_rank_index = row;\n            ++row;\n        } while (record_index < SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "postincremented-source-expression",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        SubSolution* source_cursor = &survival_records[row + 1];\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            SubSolution* source = source_cursor++;\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))\n                ->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        }
+      ]
+    }
+  ]
+}

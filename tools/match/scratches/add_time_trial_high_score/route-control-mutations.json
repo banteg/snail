@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "route-control",
+      "find": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        if (record->total_seconds\n                < *(float*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records)\n                    + offsetof(SubSolution, total_seconds))\n            || *(float*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records)\n                    + offsetof(SubSolution, total_seconds))\n                == 0.0f) {\n            SubSolution* route_record =\n                (SubSolution*)((char*)this + route_offset\n                    + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }",
+      "replacements": [
+        {
+          "name": "early-return",
+          "text": "    if (!route_active)\n        return;\n\n    int route_offset = route_index * SUB_SOLUTION_STRIDE;\n    float* stored_seconds = (float*)((char*)this + route_offset\n        + offsetof(SubHighScore, time_trial_route_records)\n        + offsetof(SubSolution, total_seconds));\n    if (record->total_seconds < *stored_seconds\n        || *stored_seconds == 0.0f) {\n        SubSolution* route_record = (SubSolution*)((char*)this + route_offset\n            + offsetof(SubHighScore, time_trial_route_records));\n        *route_record = *record;\n        route_record->route_or_rank_index = route_index;\n    }"
+        },
+        {
+          "name": "zero-first-condition",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        float* stored_seconds = (float*)((char*)this + route_offset\n            + offsetof(SubHighScore, time_trial_route_records)\n            + offsetof(SubSolution, total_seconds));\n        if (*stored_seconds == 0.0f\n            || record->total_seconds < *stored_seconds) {\n            SubSolution* route_record = (SubSolution*)((char*)this + route_offset\n                + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "nested-replacement-gate",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        float* stored_seconds = (float*)((char*)this + route_offset\n            + offsetof(SubHighScore, time_trial_route_records)\n            + offsetof(SubSolution, total_seconds));\n        bool replace_record = record->total_seconds < *stored_seconds;\n        if (!replace_record)\n            replace_record = *stored_seconds == 0.0f;\n        if (replace_record) {\n            SubSolution* route_record = (SubSolution*)((char*)this + route_offset\n                + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "new-time-local",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        float new_time = record->total_seconds;\n        float* stored_seconds = (float*)((char*)this + route_offset\n            + offsetof(SubHighScore, time_trial_route_records)\n            + offsetof(SubSolution, total_seconds));\n        if (new_time < *stored_seconds || *stored_seconds == 0.0f) {\n            SubSolution* route_record = (SubSolution*)((char*)this + route_offset\n                + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        },
+        {
+          "name": "stored-time-local",
+          "text": "    if (route_active) {\n        int route_offset = route_index * SUB_SOLUTION_STRIDE;\n        float stored_time = *(float*)((char*)this + route_offset\n            + offsetof(SubHighScore, time_trial_route_records)\n            + offsetof(SubSolution, total_seconds));\n        if (record->total_seconds < stored_time || stored_time == 0.0f) {\n            SubSolution* route_record = (SubSolution*)((char*)this + route_offset\n                + offsetof(SubHighScore, time_trial_route_records));\n            *route_record = *record;\n            route_record->route_or_rank_index = route_index;\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}

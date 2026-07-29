@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-control",
+      "find": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            source_cursor += SUB_SOLUTION_STRIDE;\n            SubSolution* source =\n                (SubSolution*)(source_cursor - SUB_SOLUTION_STRIDE);\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))\n                ->route_or_rank_index = row;\n            ++row;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);",
+      "replacements": [
+        {
+          "name": "row-condition",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            source_cursor += SUB_SOLUTION_STRIDE;\n            SubSolution* source =\n                (SubSolution*)(source_cursor - SUB_SOLUTION_STRIDE);\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))->route_or_rank_index = row;\n            ++row;\n        } while (row < SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "while-offset-condition",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT) {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            source_cursor += SUB_SOLUTION_STRIDE;\n            SubSolution* source =\n                (SubSolution*)(source_cursor - SUB_SOLUTION_STRIDE);\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))->route_or_rank_index = row;\n            ++row;\n        }"
+        },
+        {
+          "name": "preincrement-row",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        do {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            source_cursor += SUB_SOLUTION_STRIDE;\n            SubSolution* source =\n                (SubSolution*)(source_cursor - SUB_SOLUTION_STRIDE);\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ++row;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))->route_or_rank_index = row - 1;\n        } while (offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT);"
+        },
+        {
+          "name": "for-offset-condition",
+          "text": "        int row = rank;\n        int offset = row * SUB_SOLUTION_STRIDE;\n        char* source_cursor = (char*)mini_delete_source_records + offset;\n        for (; offset < SUB_SOLUTION_STRIDE * SUB_HIGH_SCORE_TOP_TEN_COUNT;\n             ++row) {\n            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);\n            source_cursor += SUB_SOLUTION_STRIDE;\n            SubSolution* source =\n                (SubSolution*)(source_cursor - SUB_SOLUTION_STRIDE);\n            offset += SUB_SOLUTION_STRIDE;\n            *destination = *source;\n            ((SubSolution*)((char*)active_record_bank + offset\n                - SUB_SOLUTION_STRIDE))->route_or_rank_index = row;\n        }"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "destination-owner",
+      "find": "            SubSolution* destination =\n                (SubSolution*)((char*)active_record_bank + offset);",
+      "replacements": [
+        {
+          "name": "offset-first-expression",
+          "text": "            SubSolution* destination =\n                (SubSolution*)(offset + (char*)active_record_bank);"
+        },
+        {
+          "name": "typed-row-index",
+          "text": "            SubSolution* destination = &active_record_bank[row];"
+        },
+        {
+          "name": "typed-pointer-add",
+          "text": "            SubSolution* destination = active_record_bank + row;"
+        },
+        {
+          "name": "mutable-byte-base",
+          "text": "            char* destination_base = (char*)active_record_bank;\n            destination_base += offset;\n            SubSolution* destination = (SubSolution*)destination_base;"
+        },
+        {
+          "name": "mutable-typed-base",
+          "text": "            SubSolution* destination = active_record_bank;\n            destination =\n                (SubSolution*)((char*)destination + offset);"
+        },
+        {
+          "name": "integer-base",
+          "text": "            unsigned int destination_base =\n                (unsigned int)active_record_bank + offset;\n            SubSolution* destination = (SubSolution*)destination_base;"
+        }
+      ]
+    }
+  ]
+}

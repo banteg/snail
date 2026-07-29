@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "route-offset",
+      "find": "        int route_offset = route_index * SUB_SOLUTION_STRIDE;",
+      "replacements": [
+        {
+          "name": "multiply-assignment",
+          "text": "        int route_offset = route_index;\n        route_offset *= SUB_SOLUTION_STRIDE;"
+        },
+        {
+          "name": "sizeof-stride",
+          "text": "        int route_offset = route_index * sizeof(SubSolution);"
+        },
+        {
+          "name": "unsigned-offset",
+          "text": "        unsigned int route_offset =\n            (unsigned int)route_index * SUB_SOLUTION_STRIDE;"
+        },
+        {
+          "name": "const-offset",
+          "text": "        const int route_offset = route_index * SUB_SOLUTION_STRIDE;"
+        },
+        {
+          "name": "shift-add-offset",
+          "text": "        int route_offset = route_index * 0x1fac0;"
+        }
+      ]
+    }
+  ]
+}

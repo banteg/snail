@@ -115,3 +115,23 @@ No matching-source change is justified. Focused matching remains honestly at
 89.80%, 49/49 instructions, prefix 29/49, with one clean masked operand and the
 same register-scheduler residual (`add ebp, ecx` versus a folded indexed
 address).
+
+## 2026-07-29 bounded owner/control audit
+
+Three recorded sweeps tested 18 source-shaped variants around the only
+remaining region:
+
+- typed indexed and incremented route records, mutable byte bases, shifted
+  `SubHighScore` owners, integer bases, and an explicit route-cursor view;
+- early-return, nested replacement, reordered comparison, and named
+  new/stored-time control flow; and
+- signed, unsigned, `sizeof`, compound-multiply, and literal-stride route
+  offsets.
+
+None improves the 89.80%, 49/49 baseline: nine compile identically and nine
+regress. In particular, the ordinary early-return and named-new-time forms are
+neutral, while every persistent pointer owner falls back to the older
+84.85%/83.67% schedules or worse. The experiment ledger therefore marks this
+target stalled. A future retry needs new source provenance or a compiler/TU
+relationship that explains destructive owner-base mutation; more equivalent
+pointer or offset spellings are not useful.

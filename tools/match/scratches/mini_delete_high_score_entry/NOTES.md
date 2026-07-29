@@ -93,3 +93,22 @@ through the borrowed active bank.
 The crosswalk now records this as a verified owner identity with
 version-specific storage semantics. No mobile size, offset, file-deletion
 sequence, or record-clearing algorithm is claimed for the Windows source.
+
+## 2026-07-29 bounded cursor/control audit
+
+Three recorded sweeps tested 19 variants covering the recovered native
+lifetimes:
+
+- direct indexed copies, typed survival/mini-delete source cursors, saved and
+  post-incremented sources, and paired record cursors;
+- destination formation through row indexing, typed or byte base mutation,
+  integer bases, and both commutative address orders; and
+- offset- versus row-bounded `do`, `while`, and `for` loop tails.
+
+No variant improves the retained 84.85%, 33/33 result: four destination-base
+spellings are byte-identical and the other fifteen regress. The most literal
+decompiler-shaped typed cursor does recover the native `+0x17c108` source
+displacement, but repeats the known 81.82% register schedule; typed destination
+indexing and alternate loop control fall much farther. The ledger now marks
+this target stalled. Keep the byte post-increment scratch until new Windows
+source/type evidence explains the native independent EAX/EBX cursor schedule.
