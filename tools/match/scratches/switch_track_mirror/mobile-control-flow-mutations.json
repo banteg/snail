@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mobile-authored-repeat-control-flow",
+      "find": "    if (mirror_enabled == track_mirror_enabled)\n        ++track_mirror_repeat_count;\n    else\n        track_mirror_repeat_count = 0;\n    if (track_mirror_repeat_count < 4) {\n        track_mirror_enabled = mirror_enabled;\n        return;\n    }\n    track_mirror_repeat_count = 0;\n    mirror_enabled = !mirror_enabled;\n    track_mirror_enabled = mirror_enabled;",
+      "replacements": [
+        {
+          "name": "nested-direct-field-toggle-ge",
+          "text": "    if (mirror_enabled == track_mirror_enabled) {\n        ++track_mirror_repeat_count;\n        if (track_mirror_repeat_count >= 4) {\n            track_mirror_enabled = !track_mirror_enabled;\n            track_mirror_repeat_count = 0;\n            return;\n        }\n    } else {\n        track_mirror_repeat_count = 0;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "nested-direct-field-toggle-gt",
+          "text": "    if (mirror_enabled == track_mirror_enabled) {\n        ++track_mirror_repeat_count;\n        if (track_mirror_repeat_count > 3) {\n            track_mirror_enabled = !track_mirror_enabled;\n            track_mirror_repeat_count = 0;\n            return;\n        }\n    } else {\n        track_mirror_repeat_count = 0;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "nested-local-toggle-ge",
+          "text": "    if (mirror_enabled == track_mirror_enabled) {\n        ++track_mirror_repeat_count;\n        if (track_mirror_repeat_count >= 4) {\n            mirror_enabled = !mirror_enabled;\n            track_mirror_enabled = mirror_enabled;\n            track_mirror_repeat_count = 0;\n            return;\n        }\n    } else {\n        track_mirror_repeat_count = 0;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "nested-local-toggle-gt",
+          "text": "    if (mirror_enabled == track_mirror_enabled) {\n        ++track_mirror_repeat_count;\n        if (track_mirror_repeat_count > 3) {\n            mirror_enabled = !mirror_enabled;\n            track_mirror_enabled = mirror_enabled;\n            track_mirror_repeat_count = 0;\n            return;\n        }\n    } else {\n        track_mirror_repeat_count = 0;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "nested-direct-field-xor",
+          "text": "    if (mirror_enabled == track_mirror_enabled) {\n        ++track_mirror_repeat_count;\n        if (track_mirror_repeat_count >= 4) {\n            track_mirror_enabled ^= 1;\n            track_mirror_repeat_count = 0;\n            return;\n        }\n    } else {\n        track_mirror_repeat_count = 0;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        },
+        {
+          "name": "nested-reset-before-direct-toggle",
+          "text": "    if (mirror_enabled == track_mirror_enabled) {\n        ++track_mirror_repeat_count;\n        if (track_mirror_repeat_count >= 4) {\n            track_mirror_repeat_count = 0;\n            track_mirror_enabled = !track_mirror_enabled;\n            return;\n        }\n    } else {\n        track_mirror_repeat_count = 0;\n    }\n    track_mirror_enabled = mirror_enabled;"
+        }
+      ]
+    }
+  ]
+}

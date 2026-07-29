@@ -237,3 +237,17 @@ builder and two placement helpers; IDA independently renders the same writes
 and the final spawn handoff. The field therefore belongs to parcel spawning,
 not a generic row-projection subsystem. This semantic rename is codegen-neutral:
 focused Wibo remains 81.40%, 173/171 instructions, with all 33 operands clean.
+
+## 2026-07-29 source-cell lifetime audit
+
+Four mobile-backed variants split the first `primary_attachment_cell` borrow
+from the fresh borrow used by the final path dispatch. Direct first-call,
+explicit reassignment, nested-scope, and two-owner spellings all compile to
+the same result. They do recover the native `0x48` frame and move the exact
+prefix from 0 to 26 instructions, but disturb the later row/path register
+schedule and regress the full score from 81.40% to 76.38%.
+
+The existing single borrowed `cell` remains the stronger whole-function source
+shape. Both mobile bodies corroborate the semantic cell/path relationship, but
+not a Windows lifetime worth accepting at a 31-byte fuzzy regression. No dummy
+spill, container-of view, or platform offset is retained.

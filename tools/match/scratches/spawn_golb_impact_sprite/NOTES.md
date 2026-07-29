@@ -133,3 +133,21 @@ from 63.64% to 55.17%, and reduced `update_golb_ai` from 90.41% to 52.66%.
 That probe was fully rejected. The mobile body remains valuable evidence for
 the effect's Sprite ownership and field stores, but it is not authority to
 overwrite the observed Windows ABI.
+
+## 2026-07-29 bounded impact-lifetime grid
+
+An incremental two-site sweep followed by the exhaustive three-site run covers
+all 519 unique combinations of allocator-owner lifetime, local velocity
+construction/publication, and zero-field store shape. The grid includes
+ordinary pointer/value borrows, constructor and assignment forms, all
+plausible zero-lane chains, reordered destination publication, and the
+Android field order. None improves the 63.64%, 43/45-instruction baseline;
+306 evaluated results are byte-identical and 396 recorded results regress
+(the second sweep deliberately repeats the first 183 while adding every
+three-site combination).
+
+The saved-ESI zero carrier and split local-vector copy remain a Windows VC6
+allocation choice, not missing Sprite behavior. Android independently proves
+the same velocity, progress, lifetime, size, gravity, flag, and position
+values, while Windows proves its pointer argument ABI. No raw-bit zero alias,
+volatile carrier, or by-value ABI transplant is retained.

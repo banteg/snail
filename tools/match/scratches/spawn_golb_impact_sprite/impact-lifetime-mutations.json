@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "allocator-owner-lifetime",
+      "find": "        int owner = owner_player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);",
+      "replacements": [
+        {
+          "name": "inline-owner-slot",
+          "text": "        cRSprite* sprite =\n            g_sprite_manager.New(owner_player->player_slot, 0x21, -1, -1);"
+        },
+        {
+          "name": "const-owner-slot",
+          "text": "        const int owner = owner_player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);"
+        },
+        {
+          "name": "player-borrow",
+          "text": "        cRSubGoldy* player = owner_player;\n        int owner = player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);"
+        },
+        {
+          "name": "named-texture",
+          "text": "        int owner = owner_player->player_slot;\n        int texture_id = 0x21;\n        cRSprite* sprite = g_sprite_manager.New(owner, texture_id, -1, -1);"
+        }
+      ]
+    },
+    {
+      "name": "velocity-owner-and-initialization",
+      "find": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;",
+      "replacements": [
+        {
+          "name": "destination-between-flags-load-and-or",
+          "text": "        int flags = sprite->flags;\n        Vector3* out_velocity = &sprite->velocity;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "destination-and-vector-before-flags-or",
+          "text": "        int flags = sprite->flags;\n        Vector3* out_velocity = &sprite->velocity;\n        Vector3 velocity;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "destination-before-flags-load",
+          "text": "        Vector3* out_velocity = &sprite->velocity;\n        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "y-before-zero-lanes",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.y = 0.05f;\n        velocity.x = 0.0f;\n        velocity.z = 0.0f;"
+        },
+        {
+          "name": "chained-x-z-after-y",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.y = 0.05f;\n        velocity.x = velocity.z = 0.0f;"
+        },
+        {
+          "name": "chained-z-x-after-y",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.y = 0.05f;\n        velocity.z = velocity.x = 0.0f;"
+        },
+        {
+          "name": "chained-zero-lanes-before-y",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.x = velocity.z = 0.0f;\n        velocity.y = 0.05f;"
+        },
+        {
+          "name": "named-zero-value",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        float zero = 0.0f;\n        velocity.x = zero;\n        velocity.y = 0.05f;\n        velocity.z = zero;"
+        },
+        {
+          "name": "constructed-vector",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity(0.0f, 0.05f, 0.0f);\n        Vector3* out_velocity = &sprite->velocity;"
+        },
+        {
+          "name": "copy-initialized-vector",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity = Vector3(0.0f, 0.05f, 0.0f);\n        Vector3* out_velocity = &sprite->velocity;"
+        },
+        {
+          "name": "assigned-constructed-vector",
+          "text": "        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        velocity = Vector3(0.0f, 0.05f, 0.0f);\n        Vector3* out_velocity = &sprite->velocity;"
+        },
+        {
+          "name": "constructed-vector-before-flags",
+          "text": "        Vector3 velocity(0.0f, 0.05f, 0.0f);\n        int flags = sprite->flags;\n        Vector3* out_velocity = &sprite->velocity;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;"
+        }
+      ]
+    },
+    {
+      "name": "zero-field-publication",
+      "find": "        sprite->flags = flags;\n        sprite->progress = 0.0f;\n        sprite->lifetime = 0.0f;\n        sprite->gravity_step = 0.0f;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;",
+      "replacements": [
+        {
+          "name": "chained-progress-lifetime-gravity",
+          "text": "        sprite->flags = flags;\n        sprite->progress = sprite->lifetime = sprite->gravity_step = 0.0f;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;"
+        },
+        {
+          "name": "chained-gravity-lifetime-progress",
+          "text": "        sprite->flags = flags;\n        sprite->gravity_step = sprite->lifetime = sprite->progress = 0.0f;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;"
+        },
+        {
+          "name": "named-zero-fields",
+          "text": "        sprite->flags = flags;\n        float field_zero = 0.0f;\n        sprite->progress = field_zero;\n        sprite->lifetime = field_zero;\n        sprite->gravity_step = field_zero;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;"
+        },
+        {
+          "name": "flags-after-zero-fields",
+          "text": "        sprite->progress = 0.0f;\n        sprite->lifetime = 0.0f;\n        sprite->gravity_step = 0.0f;\n        sprite->flags = flags;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;"
+        },
+        {
+          "name": "steps-before-zero-fields",
+          "text": "        sprite->flags = flags;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->progress = 0.0f;\n        sprite->lifetime = 0.0f;\n        sprite->gravity_step = 0.0f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;"
+        },
+        {
+          "name": "sizes-before-steps",
+          "text": "        sprite->flags = flags;\n        sprite->progress = 0.0f;\n        sprite->lifetime = 0.0f;\n        sprite->gravity_step = 0.0f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;"
+        },
+        {
+          "name": "android-field-order",
+          "text": "        sprite->gravity_step = 0.0f;\n        sprite->progress = 0.0f;\n        sprite->lifetime = 0.0f;\n        sprite->size_end = 1.0f;\n        sprite->size_start = 0.5f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->progress_step = 0.055555552f;\n        sprite->flags = flags;"
+        }
+      ]
+    }
+  ]
+}

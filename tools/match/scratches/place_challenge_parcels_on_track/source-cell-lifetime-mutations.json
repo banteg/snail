@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "projection-source-cell-lifetime",
+      "find": "                cRSubLoc* cell = runtime_rows[scan].primary_attachment_cell;\n                int source_row = cell->Yi();\n                int node =\n                    (int)runtime_rows[scan].parcel_spawn_position.z\n                    - source_row;\n                if (node < 0) {\n                    node = 0;\n                }\n\n                Path* template_record =\n                    runtime_rows[scan]\n                        .primary_attachment_cell->attachment_template_record;",
+      "replacements": [
+        {
+          "name": "direct-first-yi-fresh-cell",
+          "text": "                int source_row =\n                    runtime_rows[scan].primary_attachment_cell->Yi();\n                int node =\n                    (int)runtime_rows[scan].parcel_spawn_position.z\n                    - source_row;\n                if (node < 0) {\n                    node = 0;\n                }\n\n                cRSubLoc* cell =\n                    runtime_rows[scan].primary_attachment_cell;\n                Path* template_record = cell->attachment_template_record;"
+        },
+        {
+          "name": "reassign-cell-before-path",
+          "text": "                cRSubLoc* cell = runtime_rows[scan].primary_attachment_cell;\n                int source_row = cell->Yi();\n                int node =\n                    (int)runtime_rows[scan].parcel_spawn_position.z\n                    - source_row;\n                if (node < 0) {\n                    node = 0;\n                }\n\n                cell = runtime_rows[scan].primary_attachment_cell;\n                Path* template_record = cell->attachment_template_record;"
+        },
+        {
+          "name": "scoped-first-cell-fresh-cell",
+          "text": "                int source_row;\n                {\n                    cRSubLoc* source_cell =\n                        runtime_rows[scan].primary_attachment_cell;\n                    source_row = source_cell->Yi();\n                }\n                int node =\n                    (int)runtime_rows[scan].parcel_spawn_position.z\n                    - source_row;\n                if (node < 0) {\n                    node = 0;\n                }\n\n                cRSubLoc* cell =\n                    runtime_rows[scan].primary_attachment_cell;\n                Path* template_record = cell->attachment_template_record;"
+        },
+        {
+          "name": "fresh-cell-after-node-declaration",
+          "text": "                cRSubLoc* source_cell =\n                    runtime_rows[scan].primary_attachment_cell;\n                int source_row = source_cell->Yi();\n                int node =\n                    (int)runtime_rows[scan].parcel_spawn_position.z\n                    - source_row;\n                if (node < 0) {\n                    node = 0;\n                }\n\n                cRSubLoc* cell =\n                    runtime_rows[scan].primary_attachment_cell;\n                Path* template_record = cell->attachment_template_record;"
+        }
+      ]
+    }
+  ]
+}

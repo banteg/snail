@@ -62,3 +62,17 @@ callee. Its first HLIL call nevertheless assigns the caller-clobbered EAX
 residue into a temporary phi seed; raw x86 immediately overwrites EAX with
 `selected_segment->row_count`, while IDA 9.4 renders the call as a plain
 statement. That decompiler artifact is not evidence for a return contract.
+
+## 2026-07-29 mobile control-flow audit
+
+Six variants transcribed Android's repeated-state nesting around the forced
+inversion, using direct field, local boolean, XOR, `>= 4`, and `> 3` forms.
+None improves the 91.23%, 27/30-instruction Windows baseline. The local-toggle
+forms retain only 68.85%; direct field forms fall below 51% because VC6
+collapses the repeated-state body much more aggressively.
+
+The cross-port body still proves the strict threshold, repeat count, inversion,
+and void ownership, but its ARM-oriented nesting is not the source of
+Windows' duplicated ordinary-store return tail. The remaining three target
+instructions are therefore bounded to VC6 tail duplication; no volatile store
+or artificial dependency is introduced to defeat cross-jump merging.
