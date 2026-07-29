@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "free-slot-loop",
+      "find": "    int slot_index = 0;\n    Slug* scan = slug_hazards.slots;\n    while (1) {\n        if (scan->state == SUB_SLUG_STATE_INACTIVE)\n            break;\n        ++slot_index;\n        ++scan;\n        if (slot_index < SUB_SLUG_SLOT_CAPACITY)\n            continue;\n        return;\n    }",
+      "replacements": [
+        {
+          "name": "bounded-inner-exit",
+          "text": "    int slot_index = 0;\n    Slug* scan = slug_hazards.slots;\n    while (slot_index < SUB_SLUG_SLOT_CAPACITY\n        && scan->state != SUB_SLUG_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index >= SUB_SLUG_SLOT_CAPACITY)\n            return;\n    }"
+        },
+        {
+          "name": "bounded-post-exit",
+          "text": "    int slot_index = 0;\n    Slug* scan = slug_hazards.slots;\n    while (slot_index < SUB_SLUG_SLOT_CAPACITY\n        && scan->state != SUB_SLUG_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n    }\n    if (slot_index >= SUB_SLUG_SLOT_CAPACITY)\n        return;"
+        },
+        {
+          "name": "condition-while",
+          "text": "    int slot_index = 0;\n    Slug* scan = slug_hazards.slots;\n    while (scan->state != SUB_SLUG_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index >= SUB_SLUG_SLOT_CAPACITY)\n            return;\n    }"
+        },
+        {
+          "name": "condition-while-equality-exit",
+          "text": "    int slot_index = 0;\n    Slug* scan = slug_hazards.slots;\n    while (scan->state != SUB_SLUG_STATE_INACTIVE) {\n        ++slot_index;\n        ++scan;\n        if (slot_index == SUB_SLUG_SLOT_CAPACITY)\n            return;\n    }"
+        },
+        {
+          "name": "bounded-condition-for",
+          "text": "    int slot_index = 0;\n    Slug* scan = slug_hazards.slots;\n    for (; slot_index < SUB_SLUG_SLOT_CAPACITY\n        && scan->state != SUB_SLUG_STATE_INACTIVE;\n         ++slot_index, ++scan) {\n    }\n    if (slot_index >= SUB_SLUG_SLOT_CAPACITY)\n        return;"
+        },
+        {
+          "name": "guarded-do-while",
+          "text": "    int slot_index = 0;\n    Slug* scan = slug_hazards.slots;\n    if (scan->state != SUB_SLUG_STATE_INACTIVE) {\n        do {\n            ++slot_index;\n            ++scan;\n            if (slot_index >= SUB_SLUG_SLOT_CAPACITY)\n                return;\n        } while (scan->state != SUB_SLUG_STATE_INACTIVE);\n    }"
+        }
+      ]
+    }
+  ]
+}

@@ -3,6 +3,14 @@
 First scratch for `spawn_slug_hazard` @ `0x43dc80`
 (`cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`).
 
+Current match:
+
+- **100.00%**, `160/160` instructions, full `160/160` prefix, and
+  `18 ok / 0 unresolved / 0 mismatch / 0 unaudited` references.
+- The exact source retains the independently proven `void` ABI and expresses
+  the eight-slot allocator as a bounded scan with its exhaustion return inside
+  the loop body.
+
 Recovered relationships:
 
 - scans the eight-slot slug pool at `game+0x3563a0`, stride `0xec`, using
@@ -228,3 +236,35 @@ mobile-proved `(0, 0, -0.2) * subgame_rate` velocity expression. Codegen is
 unchanged at the honest void 94.34%, 158/160-instruction baseline with all 18
 references clean; the two missing epilogue instructions remain deliberately
 unfaked.
+
+## 2026-07-29 exact bounded allocator scan
+
+The exact pickup-family loop shape resolves the final void-ABI residual. The
+Windows allocator is a bounded eight-slot scan whose body advances both the
+index and typed `Slug*` cursor, then returns immediately when that advance
+exhausts the pool:
+
+```cpp
+while (slot_index < SUB_SLUG_SLOT_CAPACITY
+    && scan->state != SUB_SLUG_STATE_INACTIVE) {
+    ++slot_index;
+    ++scan;
+    if (slot_index >= SUB_SLUG_SLOT_CAPACITY)
+        return;
+}
+```
+
+VC6 lowers that source to the native `cmp eax, 8; jl loop` followed by the
+inline exhaustion epilogue, while retaining the independent success epilogue
+after the spawn body. Focused matching improves from the honest void baseline
+of `94.34%` (`158/160`, prefix `6/160`) to **100.00%** (`160/160`, full
+prefix), with all 18 audited references still clean.
+
+The complete six-variant sweep also covered a post-loop bound check, a
+condition-only loop, equality exit, a bounded `for`, and guarded `do/while`.
+Only the bounded inner exit was exact; post-loop bounded forms reached
+`96.27%`, and the remaining shapes regressed. This is ordinary control flow
+consistent with the Windows eight-record allocation and the retained
+Android/iOS bounded pool scans. It restores the two native instructions
+without exporting an incidental result or introducing any fakematching
+operation.

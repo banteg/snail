@@ -20,14 +20,12 @@ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
 {
     int slot_index = 0;
     Slug* scan = slug_hazards.slots;
-    while (1) {
-        if (scan->state == SUB_SLUG_STATE_INACTIVE)
-            break;
+    while (slot_index < SUB_SLUG_SLOT_CAPACITY
+        && scan->state != SUB_SLUG_STATE_INACTIVE) {
         ++slot_index;
         ++scan;
-        if (slot_index < SUB_SLUG_SLOT_CAPACITY)
-            continue;
-        return;
+        if (slot_index >= SUB_SLUG_SLOT_CAPACITY)
+            return;
     }
 
     SubSlugState* state_ref = &slug_hazards.slots[slot_index].state;
