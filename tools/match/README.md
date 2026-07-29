@@ -113,6 +113,15 @@ Useful analysis helpers:
   and instruction-count shape. `--record` appends the full sweep to the
   scratch's `experiments.jsonl`; `--write-best` writes only an improving
   winner and refuses to overwrite the tracked `scratch.cpp`.
+- `uv run snail match experiments` summarizes the append-only
+  `experiments.jsonl` ledgers created by recorded probes and mutation sweeps.
+  It reports improving/neutral/degrading variants, repeated source/compiler
+  combinations and specs, metric tradeoffs, exact winners, and each scratch's
+  trailing no-improvement streak. Three consecutive non-improving mutation
+  sweeps flag a scratch as `stalled`, making it easier to stop repeating an
+  exhausted source-shape hypothesis. Use `--sort no-improvement`,
+  repeat `--scratch <name>` to restrict the report, or add `--check` to reject
+  malformed ledgers in automation.
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image

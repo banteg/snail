@@ -405,6 +405,7 @@ def test_mutate_cli_writes_only_an_improving_winner(
     recorded = json.loads(
         (scratch / "experiments.jsonl").read_text(encoding="utf-8")
     )
+    assert recorded["schema"] == 1
     assert recorded["kind"] == "mutation-sweep"
     assert recorded["spec_sha256"] == sweep.spec.sha256
     assert recorded["winner"]["label"] == variant.label

@@ -11,11 +11,12 @@ from pathlib import Path
 
 import msgspec
 
-from . import match_mutation
+from . import match_experiments, match_mutation
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .match import (
     DEFAULT_MATCH_JOBS,
+    DEFAULT_MATCH_ROOT,
     IDIOM_CASES,
     IDIOM_CASES_BY_NAME,
     collect_masked_operand_issues,
@@ -771,6 +772,47 @@ def build_parser() -> argparse.ArgumentParser:
         help="Print the ranked result as JSON.",
     )
 
+    match_experiments_parser = match_subparsers.add_parser(
+        "experiments",
+        help="Summarize recorded probes and mutation sweeps.",
+    )
+    match_experiments_parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    match_experiments_parser.add_argument(
+        "--scratch",
+        action="append",
+        default=[],
+        help=(
+            "Scratch name, directory, or experiments.jsonl; "
+            "repeat to restrict."
+        ),
+    )
+    match_experiments_parser.add_argument(
+        "--sort",
+        choices=sorted(match_experiments.EXPERIMENT_SORTS),
+        default="variants",
+        help="Row ranking (default: variants).",
+    )
+    match_experiments_parser.add_argument(
+        "--limit",
+        type=_positive_int,
+        help="Maximum rows to display.",
+    )
+    match_experiments_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print the summary as JSON.",
+    )
+    match_experiments_parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit non-zero when any log record is malformed.",
+    )
+
     match_diff_parser = match_subparsers.add_parser(
         "diff",
         help="Diff a compiled scratch object's function against the original image.",
@@ -1321,7 +1363,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 stop_on_improvement=args.stop_on_improvement,
                 time_budget=args.time_budget,
             )
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             print(
                 f"mutation sweep failed: {str(error).splitlines()[0]}",
                 file=sys.stderr,
@@ -1342,6 +1384,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.record:
             record_path = config.directory / "experiments.jsonl"
             record_payload = {
+                "schema": match_experiments.EXPERIMENT_SCHEMA,
                 "kind": "mutation-sweep",
                 "recorded_at": datetime.now(UTC).isoformat(),
                 "best_source_written_to": written_to,
@@ -1388,6 +1431,34 @@ def main(argv: Sequence[str] | None = None) -> int:
         if (
             args.write_best is not None or args.require_improvement
         ) and not sweep.best_improves:
+            return 1
+        return 0
+
+    if args.command == "match" and args.match_command == "experiments":
+        try:
+            payload = match_experiments.summarize_experiments(
+                args.match_root,
+                scratches=args.scratch,
+                sort_by=args.sort,
+            )
+        except (OSError, ValueError) as error:
+            print(
+                f"experiment summary failed: "
+                f"{str(error).splitlines()[0]}",
+                file=sys.stderr,
+            )
+            return 2
+
+        if args.limit is not None:
+            payload["rows"] = payload["rows"][: args.limit]
+        payload["selected_rows"] = len(payload["rows"])
+        if args.json:
+            print(json.dumps(payload, indent=2, sort_keys=True))
+        else:
+            print(match_experiments.render_experiment_summary(payload))
+            for error in payload["errors"]:
+                print(str(error), file=sys.stderr)
+        if args.check and payload["errors"]:
             return 1
         return 0
 
