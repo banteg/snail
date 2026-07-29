@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slot-and-count-owner",
+      "find": "        cRSprite** slots = sprite_slots;\n        int count = NUKE_SPRITE_SLOT_COUNT;",
+      "replacements": [
+        {
+          "name": "count-before-slots",
+          "text": "        int count = NUKE_SPRITE_SLOT_COUNT;\n        cRSprite** slots = sprite_slots;"
+        },
+        {
+          "name": "unsigned-count",
+          "text": "        cRSprite** slots = sprite_slots;\n        unsigned int count = NUKE_SPRITE_SLOT_COUNT;"
+        },
+        {
+          "name": "explicit-first-slot",
+          "text": "        cRSprite** slots = &sprite_slots[0];\n        int count = NUKE_SPRITE_SLOT_COUNT;"
+        },
+        {
+          "name": "register-slots",
+          "text": "        register cRSprite** slots = sprite_slots;\n        int count = NUKE_SPRITE_SLOT_COUNT;"
+        },
+        {
+          "name": "register-count",
+          "text": "        cRSprite** slots = sprite_slots;\n        register int count = NUKE_SPRITE_SLOT_COUNT;"
+        }
+      ]
+    },
+    {
+      "name": "allocated-sprite-owner",
+      "find": "            cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;",
+      "replacements": [
+        {
+          "name": "split-local-assignment",
+          "text": "            cRSprite* sprite;\n            sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        },
+        {
+          "name": "const-local-owner",
+          "text": "            cRSprite* const sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        },
+        {
+          "name": "assignment-expression-owner",
+          "text": "            cRSprite* sprite;\n            *slots = sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        },
+        {
+          "name": "slot-then-local-reload",
+          "text": "            *slots = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            cRSprite* sprite = *slots;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        },
+        {
+          "name": "slot-reference-owner",
+          "text": "            cRSprite*& sprite = *slots;\n            sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        },
+        {
+          "name": "register-local-owner",
+          "text": "            register cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;"
+        }
+      ]
+    }
+  ]
+}

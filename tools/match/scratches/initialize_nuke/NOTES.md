@@ -112,3 +112,26 @@ changing the scratch. Focused Wibo remains 93.75%, 64/64 instructions, prefix
 30/64, with all five masked operands clean. Native's `edx` flag temporary and
 later `ecx` slot reload remain a bounded register/scheduling residue; further
 progress needs new owner/source evidence rather than another local spelling.
+
+## 2026-07-29 allocator and slot-owner closure
+
+Two further sweeps test the owners outside that first local audit. A complete
+41-variant cross product varies slot/count declaration order and signedness,
+explicit first-slot spelling, `register` hints, split/const/register allocation
+locals, assignment expressions, slot reloads, and slot references. All 11
+one-site variants and all 30 combinations compile byte-identically to the
+93.75% baseline, so neither saved-register ownership nor the allocator result's
+lexical lifetime controls the residual.
+
+The final six variants follow the exact sibling-initializer idiom by storing
+`New()` directly into the slot and reading a named flag word through the slot.
+Writing that word back before advancing is neutral. Advancing before writeback
+regresses to 86.82%, while reference and pointer owners fall below 64%; none
+selects native's four-instruction schedule.
+
+The ledger is now formally stalled after three complete sweeps and 82 unique
+variants: zero improvements, 77 neutral results, and five regressions, with no
+errors, repeats, or tradeoffs. The retained source remains the shortest typed
+form. Native's EDX flag word and delayed EAX `3.0f` materialization are bounded
+VC6 register/scheduler choices rather than evidence for a different sprite,
+slot, flag, or loop owner.

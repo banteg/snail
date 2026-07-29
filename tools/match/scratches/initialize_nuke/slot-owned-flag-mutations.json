@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slot-owned-allocation-and-flags",
+      "find": "            cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            *slots = sprite;\n            sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;",
+      "replacements": [
+        {
+          "name": "named-flags-advance-before-store",
+          "text": "            *slots = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            unsigned int flags = (*slots)->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            (*(slots - 1))->flags = flags;"
+        },
+        {
+          "name": "named-flags-store-before-advance",
+          "text": "            *slots = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            unsigned int flags = (*slots)->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            (*slots)->flags = flags;\n            slots++;"
+        },
+        {
+          "name": "combined-flags-advance-before-store",
+          "text": "            *slots = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            unsigned int flags = (*slots)->flags | SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            (*(slots - 1))->flags = flags;"
+        },
+        {
+          "name": "assigned-local-slot-flags",
+          "text": "            cRSprite* sprite;\n            *slots = sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            unsigned int flags = (*slots)->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            (*(slots - 1))->flags = flags;"
+        },
+        {
+          "name": "slot-reference-named-flags",
+          "text": "            cRSprite*& sprite = *slots;\n            sprite = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            unsigned int flags = sprite->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            (*(slots - 1))->flags = flags;"
+        },
+        {
+          "name": "slot-pointer-named-flags",
+          "text": "            cRSprite** current_slot = slots;\n            *current_slot = g_sprite_manager.New(owner_player->player_slot, 0x83, -1, -1);\n            unsigned int flags = (*current_slot)->flags;\n            flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n            slots++;\n            (*current_slot)->flags = flags;"
+        }
+      ]
+    }
+  ]
+}
