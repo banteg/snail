@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "throttled-rotate-result",
+      "find": "            rotated = delta.Rotate(*matrix);\n            float angle = atan2_positive(rotated.x, rotated.y) + 7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;",
+      "replacements": [
+        {
+          "name": "self-assigned-receiver",
+          "text": "            delta = delta.Rotate(*matrix);\n            float angle = atan2_positive(delta.x, delta.y) + 7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;"
+        },
+        {
+          "name": "in-place-receiver",
+          "text": "            delta.Rotate(*matrix);\n            float angle = atan2_positive(delta.x, delta.y) + 7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;"
+        },
+        {
+          "name": "returned-reference",
+          "text": "            Vector3& rotated_result = delta.Rotate(*matrix);\n            float angle =\n                atan2_positive(rotated_result.x, rotated_result.y) +\n                7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;"
+        },
+        {
+          "name": "returned-const-reference",
+          "text": "            const Vector3& rotated_result = delta.Rotate(*matrix);\n            float angle =\n                atan2_positive(rotated_result.x, rotated_result.y) +\n                7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;"
+        },
+        {
+          "name": "returned-pointer",
+          "text": "            Vector3* rotated_result = &delta.Rotate(*matrix);\n            float angle =\n                atan2_positive(rotated_result->x, rotated_result->y) +\n                7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;"
+        },
+        {
+          "name": "branch-local-value",
+          "text": "            Vector3 rotated_result = delta.Rotate(*matrix);\n            float angle =\n                atan2_positive(rotated_result.x, rotated_result.y) +\n                7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;"
+        },
+        {
+          "name": "split-branch-local-value",
+          "text": "            Vector3 rotated_result;\n            rotated_result = delta.Rotate(*matrix);\n            float angle =\n                atan2_positive(rotated_result.x, rotated_result.y) +\n                7.0685835f;\n            facing_refresh_progress = 0.001f;\n            facing_angle = angle;"
+        }
+      ]
+    },
+    {
+      "name": "immediate-rotate-result",
+      "find": "        rotated = delta.Rotate(*matrix);\n        facing_angle = atan2_positive(rotated.x, rotated.y) + 7.0685835f;",
+      "replacements": [
+        {
+          "name": "self-assigned-receiver",
+          "text": "        delta = delta.Rotate(*matrix);\n        facing_angle = atan2_positive(delta.x, delta.y) + 7.0685835f;"
+        },
+        {
+          "name": "in-place-receiver",
+          "text": "        delta.Rotate(*matrix);\n        facing_angle = atan2_positive(delta.x, delta.y) + 7.0685835f;"
+        },
+        {
+          "name": "returned-reference",
+          "text": "        Vector3& rotated_result = delta.Rotate(*matrix);\n        facing_angle =\n            atan2_positive(rotated_result.x, rotated_result.y) +\n            7.0685835f;"
+        },
+        {
+          "name": "returned-const-reference",
+          "text": "        const Vector3& rotated_result = delta.Rotate(*matrix);\n        facing_angle =\n            atan2_positive(rotated_result.x, rotated_result.y) +\n            7.0685835f;"
+        },
+        {
+          "name": "returned-pointer",
+          "text": "        Vector3* rotated_result = &delta.Rotate(*matrix);\n        facing_angle =\n            atan2_positive(rotated_result->x, rotated_result->y) +\n            7.0685835f;"
+        },
+        {
+          "name": "branch-local-value",
+          "text": "        Vector3 rotated_result = delta.Rotate(*matrix);\n        facing_angle =\n            atan2_positive(rotated_result.x, rotated_result.y) +\n            7.0685835f;"
+        },
+        {
+          "name": "split-branch-local-value",
+          "text": "        Vector3 rotated_result;\n        rotated_result = delta.Rotate(*matrix);\n        facing_angle =\n            atan2_positive(rotated_result.x, rotated_result.y) +\n            7.0685835f;"
+        }
+      ]
+    }
+  ]
+}

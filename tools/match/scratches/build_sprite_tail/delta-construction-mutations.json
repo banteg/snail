@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "throttled-delta-construction",
+      "find": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta_source;\n            Vector3 delta;\n            delta_source.x = position.x - previous_position.x;\n            delta_source.y = position.y - previous_position.y;\n            delta_source.z = position.z - previous_position.z;\n            delta = delta_source;",
+      "replacements": [
+        {
+          "name": "operator-subtraction",
+          "text": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta = position - previous_position;"
+        },
+        {
+          "name": "direct-receiver-components",
+          "text": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta;\n            delta.x = position.x - previous_position.x;\n            delta.y = position.y - previous_position.y;\n            delta.z = position.z - previous_position.z;"
+        },
+        {
+          "name": "initialized-copy",
+          "text": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta_source;\n            delta_source.x = position.x - previous_position.x;\n            delta_source.y = position.y - previous_position.y;\n            delta_source.z = position.z - previous_position.z;\n            Vector3 delta = delta_source;"
+        },
+        {
+          "name": "copy-constructor",
+          "text": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta_source;\n            delta_source.x = position.x - previous_position.x;\n            delta_source.y = position.y - previous_position.y;\n            delta_source.z = position.z - previous_position.z;\n            Vector3 delta(delta_source);"
+        },
+        {
+          "name": "split-operator-subtraction",
+          "text": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta_source = position - previous_position;\n            Vector3 delta = delta_source;"
+        },
+        {
+          "name": "assigned-operator-subtraction",
+          "text": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta_source;\n            delta_source = position - previous_position;\n            Vector3 delta = delta_source;"
+        },
+        {
+          "name": "memberwise-copy",
+          "text": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta_source;\n            Vector3 delta;\n            delta_source.x = position.x - previous_position.x;\n            delta_source.y = position.y - previous_position.y;\n            delta_source.z = position.z - previous_position.z;\n            delta.x = delta_source.x;\n            delta.y = delta_source.y;\n            delta.z = delta_source.z;"
+        }
+      ]
+    },
+    {
+      "name": "immediate-delta-construction",
+      "find": "    } else {\n        Vector3 delta_source;\n        Vector3 delta;\n        delta_source.x = position.x - previous_position.x;\n        delta_source.y = position.y - previous_position.y;\n        delta_source.z = position.z - previous_position.z;\n        delta = delta_source;",
+      "replacements": [
+        {
+          "name": "operator-subtraction",
+          "text": "    } else {\n        Vector3 delta = position - previous_position;"
+        },
+        {
+          "name": "direct-receiver-components",
+          "text": "    } else {\n        Vector3 delta;\n        delta.x = position.x - previous_position.x;\n        delta.y = position.y - previous_position.y;\n        delta.z = position.z - previous_position.z;"
+        },
+        {
+          "name": "initialized-copy",
+          "text": "    } else {\n        Vector3 delta_source;\n        delta_source.x = position.x - previous_position.x;\n        delta_source.y = position.y - previous_position.y;\n        delta_source.z = position.z - previous_position.z;\n        Vector3 delta = delta_source;"
+        },
+        {
+          "name": "copy-constructor",
+          "text": "    } else {\n        Vector3 delta_source;\n        delta_source.x = position.x - previous_position.x;\n        delta_source.y = position.y - previous_position.y;\n        delta_source.z = position.z - previous_position.z;\n        Vector3 delta(delta_source);"
+        },
+        {
+          "name": "split-operator-subtraction",
+          "text": "    } else {\n        Vector3 delta_source = position - previous_position;\n        Vector3 delta = delta_source;"
+        },
+        {
+          "name": "assigned-operator-subtraction",
+          "text": "    } else {\n        Vector3 delta_source;\n        delta_source = position - previous_position;\n        Vector3 delta = delta_source;"
+        },
+        {
+          "name": "memberwise-copy",
+          "text": "    } else {\n        Vector3 delta_source;\n        Vector3 delta;\n        delta_source.x = position.x - previous_position.x;\n        delta_source.y = position.y - previous_position.y;\n        delta_source.z = position.z - previous_position.z;\n        delta.x = delta_source.x;\n        delta.y = delta_source.y;\n        delta.z = delta_source.z;"
+        }
+      ]
+    }
+  ]
+}

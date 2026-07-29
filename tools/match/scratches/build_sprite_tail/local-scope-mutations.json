@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "function-scope-vector-order",
+      "find": "    Vector3 rotated;",
+      "replacements": [
+        {
+          "name": "source-receiver-result",
+          "text": "    Vector3 delta_source;\n    Vector3 delta;\n    Vector3 rotated;"
+        },
+        {
+          "name": "source-result-receiver",
+          "text": "    Vector3 delta_source;\n    Vector3 rotated;\n    Vector3 delta;"
+        },
+        {
+          "name": "receiver-source-result",
+          "text": "    Vector3 delta;\n    Vector3 delta_source;\n    Vector3 rotated;"
+        },
+        {
+          "name": "receiver-result-source",
+          "text": "    Vector3 delta;\n    Vector3 rotated;\n    Vector3 delta_source;"
+        },
+        {
+          "name": "result-source-receiver",
+          "text": "    Vector3 rotated;\n    Vector3 delta_source;\n    Vector3 delta;"
+        },
+        {
+          "name": "result-receiver-source",
+          "text": "    Vector3 rotated;\n    Vector3 delta;\n    Vector3 delta_source;"
+        }
+      ]
+    },
+    {
+      "name": "use-function-scope-vectors-in-throttled-branch",
+      "find": "        if (facing_refresh_progress == 0.0f) {\n            Vector3 delta_source;\n            Vector3 delta;",
+      "replacements": [
+        {
+          "name": "remove-branch-declarations",
+          "text": "        if (facing_refresh_progress == 0.0f) {"
+        }
+      ]
+    },
+    {
+      "name": "use-function-scope-vectors-in-immediate-branch",
+      "find": "    } else {\n        Vector3 delta_source;\n        Vector3 delta;",
+      "replacements": [
+        {
+          "name": "remove-branch-declarations",
+          "text": "    } else {"
+        }
+      ]
+    }
+  ]
+}

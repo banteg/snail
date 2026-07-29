@@ -107,3 +107,27 @@ The former `const TransformMatrix*` matcher spelling described the observed
 read-only use but not the cross-port source signature. Replacing it with the
 primary authored `tMatrix*` type changes neither the 86-instruction candidate
 nor the two honest dead-Z spill mismatches.
+
+## 2026-07-29 returned-Z allocation boundary
+
+Three recorded mutation sweeps evaluated 153 unique variants around the only
+remaining mismatch: 55 were byte-identical and 98 regressed. None improved the
+97.67%, `86/86`, eight-clean-reference baseline.
+
+- 63 result-consumption variants covered receiver self-assignment, in-place
+  rotation, returned references and pointers, and branch-local value results.
+  Only the ordinary by-value result spellings were neutral.
+- 63 delta-construction variants covered the authored vector subtraction,
+  direct component construction, assignment versus initialization, copy
+  construction, and memberwise copies. Several source-faithful subtraction and
+  copy spellings were byte-identical, but none changed the returned-Z slot.
+- 27 scope variants covered every declaration order and both branch-local and
+  function-scope vector ownership. Fully shared scopes were neutral; partially
+  shared scopes regressed.
+
+The residual remains exactly the same dead store in both branches: native
+copies returned `z` to the rotate receiver's stack slot while VC6 assigns the
+scratch's otherwise equivalent dead copy to the expired source slot. An
+explicit one-field self-copy can force the address, but has no source-level
+semantic purpose and remains rejected as fakematching. Keep the current
+canonical source until new authored evidence identifies a real lifetime idiom.
