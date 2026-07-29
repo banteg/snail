@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "archive-buffer-declaration",
+      "find": "    int texture_result;\n    int byte_count;",
+      "replacements": [
+        {
+          "name": "shared-after-results",
+          "text": "    int texture_result;\n    int byte_count;\n    char* archive_base;"
+        },
+        {
+          "name": "shared-before-results",
+          "text": "    char* archive_base;\n    int texture_result;\n    int byte_count;"
+        },
+        {
+          "name": "shared-between-results",
+          "text": "    int texture_result;\n    char* archive_base;\n    int byte_count;"
+        }
+      ]
+    },
+    {
+      "name": "first-archive-buffer-assignment",
+      "find": "        char* archive_base = get_archive_data_base();",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "reuse-shared-buffer",
+          "text": "        archive_base = get_archive_data_base();"
+        }
+      ]
+    },
+    {
+      "name": "second-archive-buffer-assignment",
+      "find": "        char* archive_base = get_archive_data_base();",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "reuse-shared-buffer",
+          "text": "        archive_base = get_archive_data_base();"
+        }
+      ]
+    }
+  ]
+}

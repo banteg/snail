@@ -85,3 +85,19 @@ so both updater views deliberately keep that physical slot untyped. The replay
 does not recreate the rejected IDA split override. This view does not own
 either Direct3D resource, and the matcher source remains the more plausible
 authored `LoadingVertex*` array form at the honest 83.00% baseline.
+
+## 2026-07-29 bounded archive and device owner audit
+
+The two archive branches were swept against one shared `archive_base` lifetime
+in each of three declaration positions. All 12 compilable combinations emit
+the exact baseline bytes; the three partial assignment-only combinations are
+expected compile failures because they omit the shared declaration. Replacing
+each direct device access with the enclosing renderer's `device` field is also
+byte-identical.
+
+An explicit fastcall receiver diagnostic moves `this` into the desired native
+register but regresses focused matching to 80.24%, 253/253, and increases the
+reference debt. The retained 83.00%, 253/253, prefix-5 source therefore keeps
+the verified void member ABI and direct device owner. Its inverse
+`this`/archive saved-register assignment is backend allocation, not evidence
+for a missing dependency or a forced calling convention.

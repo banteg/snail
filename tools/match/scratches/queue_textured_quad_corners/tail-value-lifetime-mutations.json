@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "uv-blend-rotation-lifetimes",
+      "find": "        entry->width = 0.0f;\n        entry->height = 0.0f;\n        entry->u0 = u0;\n        entry->v0 = v0;\n        entry->u1 = u1;\n        entry->v1 = v1;\n        entry->blend_mode = blend_mode;\n        entry->rotation = rotation;",
+      "replacements": [
+        {
+          "name": "reused-float-value",
+          "text": "        entry->width = 0.0f;\n        entry->height = 0.0f;\n        float tail_value = u0;\n        entry->u0 = tail_value;\n        tail_value = v0;\n        entry->v0 = tail_value;\n        tail_value = u1;\n        entry->u1 = tail_value;\n        tail_value = v1;\n        entry->v1 = tail_value;\n        int tail_mode = blend_mode;\n        entry->blend_mode = tail_mode;\n        tail_value = rotation;\n        entry->rotation = tail_value;"
+        },
+        {
+          "name": "individual-value-snapshots",
+          "text": "        entry->width = 0.0f;\n        entry->height = 0.0f;\n        float stored_u0 = u0;\n        float stored_v0 = v0;\n        float stored_u1 = u1;\n        float stored_v1 = v1;\n        int stored_blend_mode = blend_mode;\n        float stored_rotation = rotation;\n        entry->u0 = stored_u0;\n        entry->v0 = stored_v0;\n        entry->u1 = stored_u1;\n        entry->v1 = stored_v1;\n        entry->blend_mode = stored_blend_mode;\n        entry->rotation = stored_rotation;"
+        },
+        {
+          "name": "scoped-value-snapshots",
+          "text": "        entry->width = 0.0f;\n        entry->height = 0.0f;\n        { float value = u0; entry->u0 = value; }\n        { float value = v0; entry->v0 = value; }\n        { float value = u1; entry->u1 = value; }\n        { float value = v1; entry->v1 = value; }\n        { int value = blend_mode; entry->blend_mode = value; }\n        { float value = rotation; entry->rotation = value; }"
+        },
+        {
+          "name": "source-references",
+          "text": "        entry->width = 0.0f;\n        entry->height = 0.0f;\n        const float& source_u0 = u0;\n        const float& source_v0 = v0;\n        const float& source_u1 = u1;\n        const float& source_v1 = v1;\n        const int& source_blend_mode = blend_mode;\n        const float& source_rotation = rotation;\n        entry->u0 = source_u0;\n        entry->v0 = source_v0;\n        entry->u1 = source_u1;\n        entry->v1 = source_v1;\n        entry->blend_mode = source_blend_mode;\n        entry->rotation = source_rotation;"
+        },
+        {
+          "name": "destination-references",
+          "text": "        entry->width = 0.0f;\n        entry->height = 0.0f;\n        float& stored_u0 = entry->u0;\n        float& stored_v0 = entry->v0;\n        float& stored_u1 = entry->u1;\n        float& stored_v1 = entry->v1;\n        int& stored_blend_mode = entry->blend_mode;\n        float& stored_rotation = entry->rotation;\n        stored_u0 = u0;\n        stored_v0 = v0;\n        stored_u1 = u1;\n        stored_v1 = v1;\n        stored_blend_mode = blend_mode;\n        stored_rotation = rotation;"
+        },
+        {
+          "name": "named-zero-value",
+          "text": "        float zero = 0.0f;\n        entry->width = zero;\n        entry->height = zero;\n        entry->u0 = u0;\n        entry->v0 = v0;\n        entry->u1 = u1;\n        entry->v1 = v1;\n        entry->blend_mode = blend_mode;\n        entry->rotation = rotation;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "queue-count-publication",
+      "find": "        entry->color = *color;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        g_font_queue_count = index + 1;\n        entry->width = 0.0f;\n        entry->height = 0.0f;",
+      "replacements": [
+        {
+          "name": "before-color",
+          "text": "        g_font_queue_count = index + 1;\n        entry->color = *color;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        entry->width = 0.0f;\n        entry->height = 0.0f;"
+        },
+        {
+          "name": "after-color",
+          "text": "        entry->color = *color;\n        g_font_queue_count = index + 1;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        entry->width = 0.0f;\n        entry->height = 0.0f;"
+        },
+        {
+          "name": "after-first-corner",
+          "text": "        entry->color = *color;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        g_font_queue_count = index + 1;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        entry->width = 0.0f;\n        entry->height = 0.0f;"
+        },
+        {
+          "name": "after-second-corner",
+          "text": "        entry->color = *color;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        g_font_queue_count = index + 1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        entry->width = 0.0f;\n        entry->height = 0.0f;"
+        },
+        {
+          "name": "after-third-corner",
+          "text": "        entry->color = *color;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        g_font_queue_count = index + 1;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        entry->width = 0.0f;\n        entry->height = 0.0f;"
+        },
+        {
+          "name": "after-width",
+          "text": "        entry->color = *color;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        entry->width = 0.0f;\n        g_font_queue_count = index + 1;\n        entry->height = 0.0f;"
+        },
+        {
+          "name": "after-height",
+          "text": "        entry->color = *color;\n        entry->x0 = x0;\n        entry->y0 = y0;\n        entry->x1 = x1;\n        entry->y1 = y1;\n        entry->x2 = x2;\n        entry->y2 = y2;\n        entry->x3 = x3;\n        entry->y3 = y3;\n        entry->width = 0.0f;\n        entry->height = 0.0f;\n        g_font_queue_count = index + 1;"
+        }
+      ]
+    }
+  ]
+}

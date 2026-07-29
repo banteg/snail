@@ -113,3 +113,27 @@ The mobile declaration does, however, resolve its caller: Android
 and changing only that enclosing member preserves its exact 67/67 body. The
 queue helper stays integer on Windows while the recovered galaxy owner becomes
 void; neither boundary is fakematched.
+
+## 2026-07-29 bounded publication and tail-lifetime audit
+
+Four recorded sweeps cover 26 source variants across the embedded color owner,
+queue-count expression, seven publication positions, and the
+UV/blend/rotation tail. Fifteen pointer, reference, count-carrier, and named
+zero forms are byte-identical to the 89.86%, 69/69, prefix-33 baseline. A full
+color value snapshot and three tail value-snapshot families regress; every
+publication move is worse, including the target-motivated placement directly
+after the aggregate color assignment.
+
+That early placement does publish the count near native, but frees `ecx` and
+causes all eight corner loads plus alternating tail lanes to move out of their
+native registers. Recomputing the returned byte offset from `index` does not
+preserve the lost lifetime. Conversely, the retained post-`y3` placement keeps
+the native corner schedule while leaving two independent backend residuals:
+native interleaves count publication before the aggregate alpha store and uses
+one sequential `edx` chain for the UV/blend/rotation arguments; VC6 emits the
+count after `y3` and pipelines those arguments through `ecx`/`edx`.
+
+The short verified `OSDPrintUV` sibling emits the sequential tail naturally
+from the same direct field assignments, so no missing queue field or invented
+setter is justified here. The long overload remains at its honest frontier
+without a barrier, volatile carrier, fake helper, or ABI distortion.
