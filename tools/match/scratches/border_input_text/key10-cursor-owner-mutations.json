@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "key10-scan-position-owner",
+      "find": "        int pos = input_cursor;\n        while (pos > 0 && text_buffer[pos] != '>')",
+      "replacements": [
+        {
+          "name": "split-position-assignment",
+          "text": "        int pos;\n        pos = input_cursor;\n        while (pos > 0 && text_buffer[pos] != '>')"
+        },
+        {
+          "name": "register-position",
+          "text": "        register int pos = input_cursor;\n        while (pos > 0 && text_buffer[pos] != '>')"
+        },
+        {
+          "name": "explicit-int-cast",
+          "text": "        int pos = (int)input_cursor;\n        while (pos > 0 && text_buffer[pos] != '>')"
+        },
+        {
+          "name": "snapshot-then-position",
+          "text": "        int original_cursor = input_cursor;\n        int pos = original_cursor;\n        while (pos > 0 && text_buffer[pos] != '>')"
+        }
+      ]
+    },
+    {
+      "name": "key10-removal-position-owner",
+      "find": "        char* remove = &text_buffer[input_cursor];",
+      "occurrence": 4,
+      "replacements": [
+        {
+          "name": "named-remove-index",
+          "text": "        int remove_index = input_cursor;\n        char* remove = &text_buffer[remove_index];"
+        },
+        {
+          "name": "const-remove-index",
+          "text": "        const int remove_index = input_cursor;\n        char* remove = &text_buffer[remove_index];"
+        },
+        {
+          "name": "pointer-addition",
+          "text": "        char* remove = text_buffer + input_cursor;"
+        },
+        {
+          "name": "base-plus-index",
+          "text": "        char* text_base = &text_buffer[0];\n        char* remove = text_base + input_cursor;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mobile-leading-space-cleanup-owner",
+      "find": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ++index;\n            ch = text_buffer[index];\n        }\n    }",
+      "replacements": [
+        {
+          "name": "next-load-before-index-increment",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ch = text_buffer[index + 1];\n            ++index;\n        }\n    }"
+        },
+        {
+          "name": "nested-mobile-branches",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (ch == ' ') {\n                if (index != input_cursor) {\n                    char* remove = &text_buffer[index];\n                    while (*remove != 0) {\n                        *remove = remove[1];\n                        ++remove;\n                    }\n                    if (index <= input_cursor)\n                        --input_cursor;\n                    --input_length;\n                }\n            } else if (index != input_cursor) {\n                break;\n            }\n            ch = text_buffer[index + 1];\n            ++index;\n        }\n    }"
+        },
+        {
+          "name": "nested-mobile-cursor-snapshot",
+          "text": "    if ((input_flags & 2) != 0) {\n        int cursor = input_cursor;\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (ch == ' ') {\n                if (index != cursor) {\n                    char* remove = &text_buffer[index];\n                    while (*remove != 0) {\n                        *remove = remove[1];\n                        ++remove;\n                    }\n                    cursor = input_cursor;\n                    if (index <= cursor) {\n                        --cursor;\n                        input_cursor = cursor;\n                    }\n                    --input_length;\n                }\n            } else if (index != cursor) {\n                break;\n            }\n            ch = text_buffer[index + 1];\n            ++index;\n        }\n    }"
+        },
+        {
+          "name": "guarded-do-mobile-order",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        if (ch != 0) {\n            do {\n                if (ch == ' ') {\n                    if (index != input_cursor) {\n                        char* remove = &text_buffer[index];\n                        while (*remove != 0) {\n                            *remove = remove[1];\n                            ++remove;\n                        }\n                        if (index <= input_cursor)\n                            --input_cursor;\n                        --input_length;\n                    }\n                } else if (index != input_cursor) {\n                    break;\n                }\n                ch = text_buffer[index + 1];\n                ++index;\n            } while (ch != 0);\n        }\n    }"
+        },
+        {
+          "name": "next-index-local",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            int next_index = index + 1;\n            ch = text_buffer[next_index];\n            index = next_index;\n        }\n    }"
+        },
+        {
+          "name": "postincrement-indexed-load",
+          "text": "    if ((input_flags & 2) != 0) {\n        int index = 0;\n        char ch = text_buffer[0];\n        while (ch != 0) {\n            if (text_buffer[index] != ' ' && index != input_cursor)\n                break;\n            if (index != input_cursor) {\n                char* remove = &text_buffer[index];\n                while (*remove != 0) {\n                    *remove = remove[1];\n                    ++remove;\n                }\n                if (index <= input_cursor)\n                    --input_cursor;\n                --input_length;\n            }\n            ch = text_buffer[index++ + 1];\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}

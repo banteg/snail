@@ -220,13 +220,12 @@ void FrontendWidget::border_input_text()
             ++input_cursor;
 
             char carry = ' ';
-            char next = text_buffer[input_cursor];
             char* slot = &text_buffer[input_cursor];
-            while (next != 0) {
+            while (*slot != 0) {
+                char next = *slot;
                 *slot = carry;
                 ++slot;
                 carry = next;
-                next = *slot;
             }
             *slot = carry;
             slot[1] = 0;
@@ -250,8 +249,8 @@ void FrontendWidget::border_input_text()
                     --input_cursor;
                 --input_length;
             }
+            ch = text_buffer[index + 1];
             ++index;
-            ch = text_buffer[index];
         }
     }
 

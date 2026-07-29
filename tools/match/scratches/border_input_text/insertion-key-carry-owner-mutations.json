@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "newline-key-carry-owner",
+      "find": "            char carry = ' ';\n            char next = text_buffer[input_cursor];\n            char* slot = &text_buffer[input_cursor];\n            while (next != 0) {\n                *slot = carry;\n                ++slot;\n                carry = next;\n                next = *slot;\n            }\n            *slot = carry;\n            slot[1] = 0;",
+      "replacements": [
+        {
+          "name": "reuse-dead-key-byte",
+          "text": "            key = ' ';\n            char next = text_buffer[input_cursor];\n            char* slot = &text_buffer[input_cursor];\n            while (next != 0) {\n                *slot = key;\n                ++slot;\n                key = next;\n                next = *slot;\n            }\n            *slot = key;\n            slot[1] = 0;"
+        }
+      ]
+    },
+    {
+      "name": "character-key-carry-owner",
+      "find": "            char carry = ' ';\n            char* slot = &text_buffer[input_cursor];\n            while (*slot != 0) {\n                char next = *slot;\n                *slot = carry;\n                ++slot;\n                carry = next;\n            }\n            *slot = carry;\n            slot[1] = 0;",
+      "replacements": [
+        {
+          "name": "reuse-dead-key-byte",
+          "text": "            key = ' ';\n            char* slot = &text_buffer[input_cursor];\n            while (*slot != 0) {\n                char next = *slot;\n                *slot = key;\n                ++slot;\n                key = next;\n            }\n            *slot = key;\n            slot[1] = 0;"
+        }
+      ]
+    }
+  ]
+}

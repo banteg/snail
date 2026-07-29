@@ -147,15 +147,39 @@ byte-identical, and 18 worse, with no repeats or compile errors. Nineteen of
 the apparent improvements are explicit metric tradeoffs and are not retained.
 
 In particular, loading the ordinary insertion character at the loop head
-reaches 72.58% with clean references, but lets VC6 tail-merge the two insertion
-finalizers and drops to `444/446`; native keeps both finalizers distinct.
-Reversing the cleanup predicate reaches 71.46% only while moving away from
-instruction parity and contradicts the paired-mobile
-`text[index] != ' ' && index != cursor` order. Six branch-scoped snapshots and
-casts also leave the opening dword-versus-byte input-flags load byte-identical.
+reaches 72.58% with clean references and lets VC6 tail-merge the two insertion
+finalizers. A later addressed-listing audit proves that native does the same:
+the newline and ordinary-character paths both join the single finalizer at
+`0x403a68`. The earlier parity-based rejection was therefore too conservative;
+the candidate's two removed instructions were duplicated candidate-only stores,
+not missing native work.
 
-The retained 71.30% source is the only improvement with no proof or shape
-tradeoff. Remaining differences are the initial load width, carry-register
-rotation across the duplicated shifts, and the compiler's pointer-strength
-reduction of the cleanup index; no synthetic flag reload or anti-tail-merge
-operation is justified.
+Reversing the cleanup predicate reaches 71.46% only while contradicting the
+paired-mobile `text[index] != ' ' && index != cursor` order. Six branch-scoped
+snapshots and casts also leave the opening dword-versus-byte input-flags load
+byte-identical.
+
+## 2026-07-29 mobile cleanup induction recovery
+
+The retained ordinary insertion loop now uses the mobile load-at-loop-head
+form and shares native's finalizer, raising focused matching from 71.30% to
+72.58% (`444/446`) with all eight references clean.
+
+Both mobile bodies also load the next cleanup character from
+`text[index + 1]` before incrementing `index`. Reordering those two source
+statements prevents VC6 from replacing the integer induction variable with a
+scan pointer plus an EBP base correction. The focused result rises again to
+**74.80%**, with 439/446 instructions, prefix 6, and all eight references
+clean. The addressed cleanup tail now uses the same integer ECX index,
+`[index + 1]` load, and following increment as native; no pointer cast or
+synthetic numeric use is required.
+
+The follow-up sweeps are bounded. Six mobile completion-publication timings
+and all three key/carry-owner combinations are byte-identical. All 24 one- and
+two-site key-10 cursor/removal owners are also neutral. The mobile cleanup
+sweep contains six improvements; the direct two-statement load/increment form
+is retained because it is the strongest score and the clearest paired-port
+source evidence. Remaining differences are the initial input-flags load width,
+carry-register rotation, key-10 cursor register ownership, and the optimized
+completion publication; no synthetic reload or anti-optimization operation is
+introduced.
