@@ -10,7 +10,7 @@ void Nuke::initialize_nuke()
 {
     int zero = NUKE_STATE_INACTIVE;
     if (state == zero) {
-        Sprite** slots = sprite_slots;
+        cRSprite** slots = sprite_slots;
         int count = NUKE_SPRITE_SLOT_COUNT;
 
         orbit_center_z = owner_player->transform.position.z - 5.0f;
@@ -21,7 +21,7 @@ void Nuke::initialize_nuke()
         orbit_center_z_step = rate + rate;
 
         do {
-            Sprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x83, -1, -1);
+            cRSprite* sprite = g_sprite_manager.allocate_sprite(owner_player->player_slot, 0x83, -1, -1);
             *slots = sprite;
             sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
             slots++;

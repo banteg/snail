@@ -14,7 +14,7 @@ void Slug::explode_slug_hazard()
             (float)next_math_random_value() * 0.0000305175781f * 0.2f + 0.2f;
         float size = (float)next_math_random_value() * 0.000030517578f;
         size = size * 0.75f + 0.25f;
-        Sprite* sprite = g_sprite_manager.allocate_sprite(1, 129, -1, -1);
+        cRSprite* sprite = g_sprite_manager.allocate_sprite(1, 129, -1, -1);
         sprite->progress = 0.0f;
         sprite->flags |=
             SPRITE_FLAG_GAMEPLAY_OWNED | SPRITE_FLAG_ORIENT_TO_MOTION;

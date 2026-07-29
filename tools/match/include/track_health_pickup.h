@@ -9,10 +9,10 @@
 
 #include "bod_types.h"
 #include "player_fwd.h"
+#include "sprite_fwd.h"
 #include "sub_loc_fwd.h"
 #include "track_pickup_state.h"
 
-class Sprite;
 class cRSubGame;
 
 class SubHealth : public BodBase {
@@ -27,7 +27,7 @@ public:
     // distinct from source_cell at +0x68, which spawn_track_health_pickup stores.
     cRSubGame* owner_game; // +0x44, borrowed containing subgame
     char unknown_48[0x64 - 0x48];
-    Sprite* sprite; // +0x64
+    cRSprite* sprite; // +0x64
     cRSubLoc* source_cell; // +0x68
     float bob_phase; // +0x6c
     float bob_phase_step; // +0x70

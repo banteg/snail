@@ -6,6 +6,7 @@
 
 #include "bod_types.h"
 #include "player_fwd.h"
+#include "sprite_fwd.h"
 
 class cRSubGame;
 
@@ -29,7 +30,7 @@ public:
     ParcelState state; // +0x38
     cRSubGame* owner_subgame; // +0x3c, borrowed backlink
     char unknown_40[0x54 - 0x40];
-    Sprite* sprite; // +0x54, borrowed SpriteManager handle
+    cRSprite* sprite; // +0x54, borrowed cRSpriteManager handle
     char unknown_58[0x5c - 0x58];
     float bob_phase; // +0x5c
     float bob_phase_step; // +0x60

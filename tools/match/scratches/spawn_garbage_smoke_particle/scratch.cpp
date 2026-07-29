@@ -13,7 +13,7 @@ void SubGarbage::spawn_garbage_smoke_particle(
 {
     char result = (char)g_runtime_config.render_flags;
     if ((result & 0x10) != 0) {
-        Sprite* sprite = g_sprite_manager.allocate_sprite(
+        cRSprite* sprite = g_sprite_manager.allocate_sprite(
             owner_player->player_slot,
             33,
             -1,

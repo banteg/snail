@@ -56,3 +56,16 @@ normalized hash
 `7d8c4db75e12f7f7020bc5c17555af78839c8fa7e331976238cd7b2eeee14877`;
 the exact kill path likewise retains hash
 `269f37866e3da86d8223cc44738e613d0a5728ce00cc87734bc69df6ca2e1929`.
+
+## 2026-07-29 authored owner promotion
+
+The shared matcher now makes `cRSpriteManager` and `cRSprite` the primary
+Windows types rather than aliases layered over analytical `SpriteManager` and
+`Sprite` owners. Android and iOS independently preserve both authored class
+names and the manager `Init`/`New` relationship. Windows remains authoritative
+for the concrete layout: one pause byte, 3000 inline `0xb4`-byte sprites, five
+active heads, and the free head, for a total manager size of `0x83d7c`.
+
+Pointer-only dependents use `sprite_fwd.h`; the compatibility aliases remain
+available there for older analysis code without reversing ownership or
+transferring the mobile `0xb0` stride.

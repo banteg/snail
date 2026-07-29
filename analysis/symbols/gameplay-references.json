@@ -6230,7 +6230,7 @@
         "data_790f30"
       ],
       "size": "0x83d7c",
-      "description": "Shared sprite manager used by gameplay particle, projectile, parcel, and presentation helpers."
+      "description": "Shared authored cRSpriteManager used by gameplay particle, projectile, parcel, and presentation helpers; Windows owns 3000 inline 0xb4-byte cRSprite records."
     },
     {
       "address": "0x814c94",
@@ -6240,7 +6240,7 @@
         "data_814c94",
         "unk_814C94"
       ],
-      "description": "Five active sprite bucket heads at the tail of g_sprite_manager; allocate_sprite and kill_sprite index this table by sprite owner."
+      "description": "Five cRSprite active-bucket heads at the tail of the global cRSpriteManager; allocate_sprite and kill_sprite index this table by sprite owner."
     },
     {
       "address": "0x814ca8",
@@ -6250,7 +6250,7 @@
         "data_814ca8",
         "unk_814CA8"
       ],
-      "description": "Head of the sprite free list maintained by initialize_sprite_manager, allocate_sprite, and kill_sprite."
+      "description": "Head of the cRSprite free list maintained by cRSpriteManager initialization/allocation and cRSprite::Kill."
     },
     {
       "address": "0x814cb0",
@@ -6261,7 +6261,7 @@
         "unk_814CB0"
       ],
       "size": "0xb4",
-      "description": "Sentinel sprite returned when allocation fails; kill_sprite treats this address as a no-op."
+      "description": "Standalone 0xb4-byte cRSprite sentinel returned when cRSpriteManager allocation fails; cRSprite::Kill treats this address as a no-op."
     }
   ]
 }

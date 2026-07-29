@@ -85,11 +85,11 @@ int GameRoot::run_frame_update()
                 ((BodAiDispatch*)&players[1])->update_bod_ai();
             }
 
-            Sprite** bucket = g_sprite_active_heads;
+            cRSprite** bucket = g_sprite_active_heads;
             do {
-                Sprite* sprite = *bucket;
+                cRSprite* sprite = *bucket;
                 if (sprite != 0) {
-                    Sprite* next_sprite;
+                    cRSprite* next_sprite;
                     do {
                         next_sprite = sprite->next;
                         sprite->update_sprite();

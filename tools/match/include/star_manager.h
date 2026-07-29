@@ -10,7 +10,7 @@ public:
     int active; // +0x00
     Vector3 position; // +0x04
     Vector3 velocity; // +0x10
-    Sprite* sprite; // +0x1c
+    cRSprite* sprite; // +0x1c
     float speed; // +0x20
     float travel_distance; // +0x24, advances by speed and wraps after 35
     float alpha_scale; // +0x28, per-entry multiplier for sprite alpha

@@ -1,10 +1,10 @@
-// register_sprite_texture @ 0x44e0f0 (SpriteManager thiscall, ret 0xc)
+// register_sprite_texture @ 0x44e0f0 (cRSpriteManager thiscall, ret 0xc)
 
 #include "sprite.h"
 
 void report_errorf(const char* format, ...);
 
-cRTexture* SpriteManager::register_sprite_texture(char* texture_path, int texture_id, int flags)
+cRTexture* cRSpriteManager::register_sprite_texture(char* texture_path, int texture_id, int flags)
 {
     char* dot = texture_path;
     if (*texture_path != '.') {

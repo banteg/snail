@@ -20,7 +20,7 @@ void SubRingStar::update_ring_or_special_effect_particle()
     float orbit_y = cosine(phase) * radius;
     float orbit_x = sine(phase);
     SubRing* live_parent = parent;
-    Sprite* live_sprite = sprite;
+    cRSprite* live_sprite = sprite;
     Vector3* parent_position = &live_parent->transform.position;
     Vector3* sprite_position = &live_sprite->position;
     orbit_x *= radius;

@@ -45,3 +45,11 @@ Both analysis databases now carry the exact
 position pair, velocity and gravity integration, lifetime flags, and animated
 frame state through named fields in both tools. Cross-tool health checks reject
 raw Sprite offsets while the matcher remains the 125/125, ten-operand oracle.
+
+## 2026-07-29 authored owner promotion
+
+The matcher receiver is now the primary `cRSprite` owner recovered from mobile
+symbols; `Sprite` remains a compatibility alias for analysis consumers.
+Windows still defines the `0xb4` record, field offsets, `char` pause gate, and
+code generation. The iOS `cRSprite::AI()` symbol supplies semantics only and
+does not justify importing the mobile `0xb0` layout.

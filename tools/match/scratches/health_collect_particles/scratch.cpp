@@ -15,7 +15,7 @@ void cRSubGoldy::HealthCollect(SubHealth* pickup)
     if ((render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) != 0) {
         int index = 0;
         do {
-            Sprite* sprite =
+            cRSprite* sprite =
                 g_sprite_manager.allocate_sprite(player_slot, 0x80, -1, -1);
 
             sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;

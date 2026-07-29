@@ -51,3 +51,12 @@ is `0xb0` while Windows is `0xb4`, and Android initializes its `+0x28` lane to
 inside an inlined `cRSpriteManager::Init()` loop but exposes no standalone
 `cRSprite::Init()` body, so the crosswalk records Android only rather than a
 synthetic iOS symbol.
+
+## 2026-07-29 authored owner promotion
+
+`cRSprite` is now the primary matcher class, with `Sprite` retained only as a
+forward-header compatibility alias. This reflects the direct Android
+`cRSprite::Init()` symbol and both ports' `cRSpriteManager` methods while
+preserving every Windows field, the exact `0xb4` size contract, and the native
+initializer body. No mobile-only field offset or default crossed the port
+boundary.

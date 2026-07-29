@@ -2,11 +2,11 @@
 
 #include "sprite.h"
 
-Sprite* SpriteManager::allocate_sprite(int owner, int texture_id, int texture_a, int texture_b)
+cRSprite* cRSpriteManager::allocate_sprite(int owner, int texture_id, int texture_a, int texture_b)
 {
     int zero = 0;
     int primary_texture_id = texture_id;
-    Sprite* sprite = free_head;
+    cRSprite* sprite = free_head;
     if (sprite == 0) {
         return &g_sprite_sentinel;
     }
@@ -14,7 +14,7 @@ Sprite* SpriteManager::allocate_sprite(int owner, int texture_id, int texture_a,
     free_head = sprite->next;
     sprite->owner = owner;
 
-    Sprite* head = active_heads[owner];
+    cRSprite* head = active_heads[owner];
     if (head != 0) {
         head->prev = sprite;
     }

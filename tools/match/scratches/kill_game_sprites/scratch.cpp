@@ -2,17 +2,17 @@
 
 #include "sprite.h"
 
-void SpriteManager::kill_game_sprites()
+void cRSpriteManager::kill_game_sprites()
 {
-    Sprite** bucket = g_sprite_active_heads;
+    cRSprite** bucket = g_sprite_active_heads;
     unsigned int game_sprite_flag = SPRITE_FLAG_GAMEPLAY_OWNED;
 
     do {
-        Sprite* sprite = *bucket;
+        cRSprite* sprite = *bucket;
         if (sprite != 0) {
             do {
                 unsigned int flags = sprite->flags;
-                Sprite* next = sprite->next;
+                cRSprite* next = sprite->next;
                 if ((flags & game_sprite_flag) != 0) {
                     sprite->kill_sprite();
                 }

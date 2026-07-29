@@ -4,8 +4,8 @@
 
 #include "bod_types.h"
 #include "player_fwd.h"
+#include "sprite_fwd.h"
 
-class Sprite;
 class cRSubGame;
 class SubRing;
 typedef SubRing RingOrSpecialEffectParent;
@@ -42,8 +42,8 @@ public:
     void update_ring_or_special_effect_particle(); // @ 0x43e780
     void emit_ring_star_shower(cRSubGoldy* owner); // @ 0x43e690
 
-    // SpriteManager allocation handle; removal returns it through kill_sprite().
-    Sprite* sprite; // +0x00, not inline storage owned by the particle
+    // cRSpriteManager allocation handle; removal returns it through kill_sprite().
+    cRSprite* sprite; // +0x00, not inline storage owned by the particle
     SubRing* parent; // +0x04, non-owning backlink to embedded parent
     Vector3 base_position; // +0x08
     float phase; // +0x14
@@ -66,7 +66,7 @@ public:
     SubRingKind kind; // +0x88
     int owner_lives_snapshot; // +0x8c
     // Fixed child storage owned by this parent. Each child's sprite is a
-    // separate SpriteManager allocation released on every parent-removal path.
+    // separate cRSpriteManager allocation released on every parent-removal path.
     SubRingStar particles[SUB_RING_PARTICLE_COUNT]; // +0x90
     cRSubGame* rate_source; // +0x1d0, borrowed enclosing cRSubGame
     float transition_progress; // +0x1d4

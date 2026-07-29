@@ -4687,17 +4687,17 @@
     {
       "address": "0x44de40",
       "name": "initialize_global_sprite_pool_colors_thunk",
-      "description": "CRT constructor-table thunk that tail-forwards to the SpriteManager pool color-subobject initializer."
+      "description": "CRT constructor-table thunk that tail-forwards to the cRSpriteManager pool color-subobject initializer."
     },
     {
       "address": "0x44de50",
       "name": "initialize_global_sprite_pool_colors",
-      "description": "Runs the folded trivial tColour constructor over the +0x2c color member of all 3000 sprites embedded in the global SpriteManager at a 0xb4-byte stride."
+      "description": "Runs the folded trivial tColour constructor over the +0x2c color member of all 3000 cRSprite records embedded in the global cRSpriteManager at a 0xb4-byte Windows stride."
     },
     {
       "address": "0x44de70",
       "name": "initialize_global_sprite_sentinel_color_thunk",
-      "description": "CRT constructor-table thunk that tail-forwards to initialization of the global sentinel Sprite's color subobject."
+      "description": "CRT constructor-table thunk that tail-forwards to initialization of the global sentinel cRSprite's color subobject."
     },
     {
       "address": "0x44de80",
@@ -4715,7 +4715,7 @@
     {
       "address": "0x44df30",
       "name": "update_sprite",
-      "description": "Runs one live sprite's per-frame state update; iOS RSprite.o names this `cRSprite::AI()`."
+      "description": "Exact Windows cRSprite per-frame state update; iOS RSprite.o names this `cRSprite::AI()`."
     },
     {
       "address": "0x44e0f0",
@@ -4725,17 +4725,17 @@
     {
       "address": "0x44e160",
       "name": "initialize_sprite_manager",
-      "description": "Initializes the global sprite manager, its sprite pool, and free-list heads; iOS RSprite.o names this `cRSpriteManager::Init()`."
+      "description": "Initializes the global cRSpriteManager, its 3000 inline cRSprite records, active heads, and free-list head; iOS RSprite.o names this `cRSpriteManager::Init()`."
     },
     {
       "address": "0x44e200",
       "name": "kill_sprite",
-      "description": "Unlinks and returns one live sprite to the manager free list; iOS RSprite.o names this `cRSprite::Kill()`."
+      "description": "Unlinks and returns one live cRSprite to the cRSpriteManager free list; iOS RSprite.o names this `cRSprite::Kill()`."
     },
     {
       "address": "0x44e2a0",
       "name": "allocate_sprite",
-      "description": "Allocates one sprite from the manager free list, assigns texture ids, and links it into the selected active bucket; iOS RSprite.o names this `cRSpriteManager::New(int, int, int, int)`."
+      "description": "Allocates one cRSprite from the cRSpriteManager free list, assigns texture ids, and links it into the selected active bucket; iOS RSprite.o names this `cRSpriteManager::New(int, int, int, int)`."
     },
     {
       "address": "0x44e3d0",

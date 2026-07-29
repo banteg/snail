@@ -4,7 +4,7 @@
 #include "game_root.h"
 #include "tga_image_view.h"
 
-extern SpriteManager g_sprite_manager; // data_790f30
+extern cRSpriteManager g_sprite_manager; // data_790f30
 
 unsigned char FrontendWidget::border_mouse_test()
 {

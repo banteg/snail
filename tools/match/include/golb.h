@@ -75,7 +75,7 @@ public:
     void kill_golb(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
     void update_golb_ai(); // @ 0x414820, iOS/Android cRSubGolb::AI()
     void create_golb(cRSubGoldy* player, int spawn_selector, int emitter_index); // @ 0x415280
-    Sprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
+    cRSprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60,
         // Android cRSubGolb::Smoke(tVector)
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80,
@@ -101,7 +101,7 @@ public:
     TransformMatrix flight_transform;          // +0x1c4
     TransformMatrix previous_flight_transform; // +0x204
     int state;                   // +0x244
-    Sprite* render_sprite;       // +0x248, kind-0 sprite owner
+    cRSprite* render_sprite;       // +0x248, kind-0 sprite owner
     Vector3 velocity;            // +0x24c
     Vector3 direction;           // +0x258
     float path_factor;           // +0x264

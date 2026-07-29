@@ -25,14 +25,13 @@
 #include "progress_bar.h"
 #include "weapon.h"
 #include "runtime_config.h"
+#include "sprite_fwd.h"
 #include "sub_hover.h"
 #include "tip_manager.h"
 #include "times_up.h"
 #include "track_attachment_types.h"
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
-
-class Sprite;
 
 float convert_math_type16_to_32(unsigned short value, float scale);
 short convert_math_type32_to_16(float value, float scale);

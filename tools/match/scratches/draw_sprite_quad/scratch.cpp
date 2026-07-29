@@ -19,7 +19,7 @@ float cosine(float angle);
 float sine(float angle);
 int report_errorf(const char* format, ...);
 
-int draw_sprite_quad(Vec3* position, Sprite* sprite)
+int draw_sprite_quad(Vec3* position, cRSprite* sprite)
 {
     TransformMatrix transform;
     transform.position.z = 0.0f;

@@ -32,9 +32,9 @@ void cRSubGoldy::GhostInit(int owner)
     ghost_sprite_b->position.z = 0.0f;
 
     int clear_visible_mask = ~SPRITE_FLAG_RENDER_ENABLED;
-    Sprite* first_ghost = ghost_sprite_a;
+    cRSprite* first_ghost = ghost_sprite_a;
     first_ghost->flags &= clear_visible_mask;
 
-    Sprite* second_ghost = ghost_sprite_b;
+    cRSprite* second_ghost = ghost_sprite_b;
     second_ghost->flags &= clear_visible_mask;
 }

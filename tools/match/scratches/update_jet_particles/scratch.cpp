@@ -64,7 +64,7 @@ void SubHover::update_jet_particles()
             if (row == JET_PARTICLE_LAST_ROW_INDEX
                 && (float)next_math_random_value() * 0.0000305175781f
                        > 0.899999976f) {
-                Sprite* sprite =
+                cRSprite* sprite =
                     g_sprite_manager.allocate_sprite(
                         game->embedded_player()->player_slot, 0x21, -1, -1);
                 sprite->flags |= SPRITE_FLAG_GAMEPLAY_OWNED;

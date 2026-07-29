@@ -8,9 +8,9 @@
 
 #include "bod_types.h"
 #include "player_fwd.h"
+#include "sprite_fwd.h"
 #include "track_pickup_state.h"
 
-class Sprite;
 class cRSubGame;
 
 class SubSpeedUp : public RenderableBod {
@@ -23,7 +23,7 @@ public:
     char unknown_88[0x8c - 0x88];
     cRSubGame* owner_game; // +0x8c, borrowed containing subgame
     char unknown_90[0xac - 0x90];
-    Sprite* sprite; // +0xac
+    cRSprite* sprite; // +0xac
     char unknown_b0[0xb4 - 0xb0];
 };
 

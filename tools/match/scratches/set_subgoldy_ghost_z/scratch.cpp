@@ -8,6 +8,6 @@ void cRSubGoldy::GhostDraw(float ghost_z)
     ghost_sprite_a->flags |= SPRITE_FLAG_RENDER_ENABLED;
     ghost_sprite_b->flags |= SPRITE_FLAG_RENDER_ENABLED;
     ghost_sprite_a->position.z = ghost_z;
-    Sprite* second = ghost_sprite_b;
+    cRSprite* second = ghost_sprite_b;
     second->position.z = ghost_z;
 }

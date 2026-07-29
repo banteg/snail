@@ -29,7 +29,7 @@ active:
         self->orbit_phase = advanced_phase - 6.2831855f;
 
     int i = 0;
-    Sprite** slots = self->sprite_slots;
+    cRSprite** slots = self->sprite_slots;
     do {
         float angle_base = (float)i * 0.039999999f;
         float angle = angle_base * 6.2831855f + self->orbit_phase;
@@ -40,6 +40,6 @@ active:
         result = (int)*slots;
         i++;
         slots++;
-        ((Sprite*)result)->position.y = y;
+        ((cRSprite*)result)->position.y = y;
     } while (i < NUKE_SPRITE_SLOT_COUNT);
 }

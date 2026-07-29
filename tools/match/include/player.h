@@ -24,6 +24,7 @@
 #include "progress_bar.h"
 #include "score_buckets.h"
 #include "snail_skin.h"
+#include "sprite_fwd.h"
 #include "squidge.h"
 #include "sub_loc_fwd.h"
 #include "game_time.h"
@@ -33,7 +34,6 @@
 #include "vector3.h"
 #include "warning.h"
 
-class Sprite;
 class cRSubGame;
 class SubHealth;
 
@@ -170,8 +170,8 @@ public:
     char unknown_94[0x98 - 0x94];
     // The ghost pair initialized by initialize_subgoldy_ghost. The same two
     // sprite slots are updated each tick by set_subgoldy_ghost_z.
-    Sprite* ghost_sprite_a;                // +0x98
-    Sprite* ghost_sprite_b;                // +0x9c
+    cRSprite* ghost_sprite_a;                // +0x98
+    cRSprite* ghost_sprite_b;                // +0x9c
     ClickStart click_start;                // +0xa0, exact authored cRClickStart
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[0x150 - 0x14d];

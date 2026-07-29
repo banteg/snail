@@ -4,7 +4,7 @@
 
 int report_errorf(char* format, ...);
 
-void Sprite::kill_sprite()
+void cRSprite::kill_sprite()
 {
     if ((flags & SPRITE_FLAG_ACTIVE) == 0) {
         report_errorf("Sprite kill error, already dead (%s)", texture_ref->name);
@@ -12,7 +12,7 @@ void Sprite::kill_sprite()
     if (this != &g_sprite_sentinel) {
         flags &= ~SPRITE_FLAG_ACTIVE;
         if (this == g_sprite_manager.active_heads[owner]) {
-            Sprite* next_sprite = next;
+            cRSprite* next_sprite = next;
             if (next_sprite != 0) {
                 next_sprite->prev = 0;
             }
@@ -20,11 +20,11 @@ void Sprite::kill_sprite()
             next = g_sprite_manager.free_head;
             g_sprite_manager.free_head = this;
         } else {
-            Sprite* previous_sprite = prev;
+            cRSprite* previous_sprite = prev;
             if (previous_sprite != 0) {
                 previous_sprite->next = next;
             }
-            Sprite* next_sprite = next;
+            cRSprite* next_sprite = next;
             if (next_sprite != 0) {
                 next_sprite->prev = prev;
             }

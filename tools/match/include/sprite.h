@@ -1,4 +1,4 @@
-// Sprite runtime structures, partial.
+// cRSprite runtime structures, partial.
 // Android retains cRSprite::Init directly; iOS RSprite.o names these owners
 // cRSprite and cRSpriteManager but folds that initializer into manager Init.
 // Layout is cross-checked by initialize_sprite, update_sprite, texture helpers,
@@ -8,6 +8,7 @@
 #define SPRITE_H
 
 #include "render_scene.h"
+#include "sprite_fwd.h"
 #include "texture_fwd.h"
 #include "vector3.h"
 
@@ -132,7 +133,7 @@ typedef char cRTextures_must_be_0x14058[
 typedef char TextureRefList_must_be_0x14058[
     (sizeof(TextureRefList) == 0x14058) ? 1 : -1];
 
-class Sprite {
+class cRSprite {
 public:
     void initialize_sprite(); // @ 0x44de90, Android cRSprite::Init()
     void update_sprite();     // @ 0x44df30
@@ -143,8 +144,8 @@ public:
     void* object_ref; // +0x00, initialized to sentinel -1
     unsigned int flags; // +0x04
     int owner; // +0x08
-    Sprite* next; // +0x0c
-    Sprite* prev; // +0x10
+    cRSprite* next; // +0x0c
+    cRSprite* prev; // +0x10
     int render_bucket_index; // +0x14, cached by render_game_frame depth sort
     float render_depth_key; // +0x18, cached by render_game_frame depth sort
     cRTexture* texture_ref; // +0x1c
@@ -178,14 +179,12 @@ public:
     float frame_progress_step; // +0xb0
 };
 
+typedef char cRSprite_must_be_0xb4[
+    (sizeof(cRSprite) == 0xb4) ? 1 : -1];
 typedef char Sprite_must_be_0xb4[
     (sizeof(Sprite) == 0xb4) ? 1 : -1];
 
-// Authored cross-port owner. Mobile uses a distinct 0xb0-byte layout, so this
-// alias names the Windows owner without importing mobile field offsets.
-typedef Sprite cRSprite;
-
-int configure_sprite_render_state(Sprite* sprite); // @ 0x413670
+int configure_sprite_render_state(cRSprite* sprite); // @ 0x413670
 
 // Per-frame depth-sort workspace owned by the sprite renderer. The node pool
 // mirrors the manager's fixed sprite capacity; the bucket table covers every
@@ -194,17 +193,17 @@ struct SpriteDepthNode {
     SpriteDepthNode* next; // +0x00
     Vector3 position;      // +0x04, projected camera-space position
     float depth_key;       // +0x10
-    Sprite* sprite;        // +0x14, borrowed live sprite
+    cRSprite* sprite;      // +0x14, borrowed live sprite
 };
 
 typedef char SpriteDepthNode_must_be_0x18[
     (sizeof(SpriteDepthNode) == 0x18) ? 1 : -1];
 
-class SpriteManager {
+class cRSpriteManager {
 public:
     void initialize_sprite_manager(); // @ 0x44e160
     cRTexture* register_sprite_texture(char* texture_path, int texture_id, int flags); // @ 0x44e0f0
-    Sprite* allocate_sprite(int owner, int texture_id, int texture_a, int texture_b); // @ 0x44e2a0
+    cRSprite* allocate_sprite(int owner, int texture_id, int texture_a, int texture_b); // @ 0x44e2a0
     void kill_game_sprites(); // @ 0x44e3d0
     char set_sprite_manager_paused(char paused_); // @ 0x44e540
     cRTexture* get_sprite_texture(int texture_id); // @ 0x44e570
@@ -212,20 +211,22 @@ public:
 
     unsigned char paused; // +0x00000
     char unknown_00001[0x04 - 0x01];
-    Sprite sprites[SPRITE_POOL_CAPACITY]; // +0x00004
-    Sprite* active_heads[SPRITE_ACTIVE_LIST_COUNT]; // +0x83d64
-    Sprite* free_head; // +0x83d78
+    cRSprite sprites[SPRITE_POOL_CAPACITY]; // +0x00004
+    cRSprite* active_heads[SPRITE_ACTIVE_LIST_COUNT]; // +0x83d64
+    cRSprite* free_head; // +0x83d78
 };
 
+typedef char cRSpriteManager_must_be_0x83d7c[
+    (sizeof(cRSpriteManager) == 0x83d7c) ? 1 : -1];
 typedef char SpriteManager_must_be_0x83d7c[
     (sizeof(SpriteManager) == 0x83d7c) ? 1 : -1];
 
 extern cRTexture* g_sprite_texture_table[SPRITE_TEXTURE_CAPACITY]; // data_78ff90
 extern cRTextures g_texture_refs;            // data_4b7790
-extern SpriteManager g_sprite_manager;       // data_790f30
-extern Sprite* g_sprite_active_heads[SPRITE_ACTIVE_LIST_COUNT]; // data_814c94
-extern Sprite* g_sprite_free_head;           // data_814ca8
-extern Sprite g_sprite_sentinel;             // data_814cb0
+extern cRSpriteManager g_sprite_manager;       // data_790f30
+extern cRSprite* g_sprite_active_heads[SPRITE_ACTIVE_LIST_COUNT]; // data_814c94
+extern cRSprite* g_sprite_free_head;           // data_814ca8
+extern cRSprite g_sprite_sentinel;             // data_814cb0
 extern SpriteDepthNode g_sprite_depth_nodes[SPRITE_POOL_CAPACITY]; // data_4e5510
 extern SpriteDepthNode* g_sprite_depth_buckets[SPRITE_DEPTH_BUCKET_COUNT]; // data_4f7050
 

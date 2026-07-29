@@ -17,7 +17,7 @@ void end_overlay_render_state();             // @ 0x411de0
 void noop_runtime_ai();                      // @ 0x407b50
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...); // @ 0x449c00, stripped in release
-int draw_sprite_quad(Vector3* position, Sprite* sprite); // @ 0x4137f0
+int draw_sprite_quad(Vector3* position, cRSprite* sprite); // @ 0x4137f0
 
 extern RenderableBod* g_post_sprite_bods[]; // data_4dfb10
 
@@ -167,7 +167,7 @@ void GameRoot::render_game_frame()
                 }
             }
 
-            Sprite* sprite = g_sprite_active_heads[camera_index];
+            cRSprite* sprite = g_sprite_active_heads[camera_index];
             SpriteDepthNode* next_depth_node = g_sprite_depth_nodes;
             begin_sprite_depth_render_state();
 

@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-char SpriteManager::set_sprite_manager_paused(char paused_)
+char cRSpriteManager::set_sprite_manager_paused(char paused_)
 {
     paused = paused_;
     return paused_;

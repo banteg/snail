@@ -2,7 +2,7 @@
 
 #include "sprite.h"
 
-void Sprite::update_sprite()
+void cRSprite::update_sprite()
 {
     unsigned int current_flags = flags;
     if ((current_flags & SPRITE_FLAG_GAMEPLAY_OWNED) != 0

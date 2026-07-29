@@ -49,7 +49,7 @@ void cRSubGame::AddJetPack(cRSubLoc* cell, cRSubGoldy* player)
     BodNode* node = &slot->jetpack_pickup;
     g_game->active_bod_list.add_bod(node);
 
-    Sprite* sprite =
+    cRSprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 124, -1, -1);
     slot->jetpack_pickup.sprite = sprite;
     unsigned int flags = sprite->flags;

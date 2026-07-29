@@ -6,10 +6,10 @@
 
 #include "bod_types.h"
 #include "player_fwd.h"
+#include "sprite_fwd.h"
 #include "sub_loc_fwd.h"
 #include "vector3.h"
 
-class Sprite;
 class cRSubGame;
 
 enum SubGarbageState {
@@ -47,7 +47,7 @@ public:
     float burst_progress_step;      // +0xa8, write-only in the retained AI
     float smoke_timer;              // +0xac
     float smoke_timer_step;         // +0xb0
-    Sprite* sprite; // +0xb4, borrowed SpriteManager handle
+    cRSprite* sprite; // +0xb4, borrowed cRSpriteManager handle
     cRSubLoc* source_cell; // +0xb8, borrowed runtime-grid cell
     unsigned char hidden; // +0xbc
     char unknown_bd[0xc0 - 0xbd];

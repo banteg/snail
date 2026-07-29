@@ -2403,23 +2403,42 @@ def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -
     sprite_header = (
         repo_root / "tools/match/include/sprite.h"
     ).read_text(encoding="utf-8")
+    sprite_forward_header = (
+        repo_root / "tools/match/include/sprite_fwd.h"
+    ).read_text(encoding="utf-8")
     player_header = (
         repo_root / "tools/match/include/player.h"
     ).read_text(encoding="utf-8")
     player_forward_header = (
         repo_root / "tools/match/include/player_fwd.h"
     ).read_text(encoding="utf-8")
-    assert "typedef Sprite cRSprite;" in sprite_header
+    assert '#include "sprite_fwd.h"' in sprite_header
+    assert "class cRSprite {" in sprite_header
+    assert "class cRSpriteManager {" in sprite_header
+    assert "class Sprite {" not in sprite_header
+    assert "class SpriteManager {" not in sprite_header
+    assert "class cRSprite;" in sprite_forward_header
+    assert "typedef cRSprite Sprite;" in sprite_forward_header
+    assert "class cRSpriteManager;" in sprite_forward_header
+    assert "typedef cRSpriteManager SpriteManager;" in sprite_forward_header
+    assert "typedef char cRSprite_must_be_0xb4[" in sprite_header
+    assert "typedef char cRSpriteManager_must_be_0x83d7c[" in sprite_header
+    assert "extern cRSpriteManager g_sprite_manager;" in sprite_header
+    assert "extern cRSprite g_sprite_sentinel;" in sprite_header
     assert "class cRSubGoldy : public RenderableBod" in player_header
     assert "typedef cRSubGoldy Player;" in player_forward_header
     assert "class Player;" not in player_header
     matcher_include_root = repo_root / "tools/match/include"
     for header_path in matcher_include_root.glob("*.h"):
+        header_text = header_path.read_text(encoding="utf-8")
         if header_path.name != "player_fwd.h":
             assert re.search(
                 r"\bPlayer\b",
-                header_path.read_text(encoding="utf-8"),
+                header_text,
             ) is None
+        if header_path.name != "sprite_fwd.h":
+            assert "class Sprite;" not in header_text
+            assert "class SpriteManager;" not in header_text
 
 
 def test_mobile_animation_keyframes_recover_crbodpos_tail_lane() -> None:

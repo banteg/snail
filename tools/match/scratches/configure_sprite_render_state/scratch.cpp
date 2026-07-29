@@ -3,7 +3,7 @@
 #include "direct3d_device8_view.h"
 #include "sprite.h"
 
-int configure_sprite_render_state(Sprite* sprite)
+int configure_sprite_render_state(cRSprite* sprite)
 {
     switch (sprite->draw_mode) {
     case 2:

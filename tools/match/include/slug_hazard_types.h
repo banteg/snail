@@ -7,9 +7,9 @@
 
 #include "bod_types.h"
 #include "player_fwd.h"
+#include "sprite_fwd.h"
 #include "sub_loc_fwd.h"
 
-class Sprite;
 class cRSubGame;
 
 enum SubSlugState {
@@ -48,7 +48,7 @@ public:
     float death_toss_progress_step;           // +0xa0, write-only before teardown
     float death_toss_secondary_progress;      // +0xa4, write-only before teardown
     float death_toss_secondary_progress_step; // +0xa8, write-only before teardown
-    Sprite* sprite;                    // +0xac, borrowed SpriteManager handle
+    cRSprite* sprite;                    // +0xac, borrowed cRSpriteManager handle
     cRSubLoc* source_cell;         // +0xb0, borrowed runtime-grid cell
     unsigned char passed_player;       // +0xb4
     char unknown_b5[0xb8 - 0xb5];

@@ -3,14 +3,14 @@
 #define SUB_HOVER_H
 
 #include "player_fwd.h"
+#include "sprite_fwd.h"
 
-class Sprite;
 class cRSubGame;
 struct tVector;
 typedef tVector Vector3;
 
 struct JetParticleSlot {
-    Sprite* sprite; // +0x00
+    cRSprite* sprite; // +0x00
     float wobble_x; // +0x04
     float wobble_y; // +0x08
     float wobble_alpha; // +0x0c

@@ -35,3 +35,12 @@ register/get helpers also retain their otherwise-unused manager receiver,
 which is independently proved by the Windows `ecx` callsites, callee cleanup,
 and the iOS `cRSpriteManager` names; the global texture table remains a separate
 borrowed store.
+
+## 2026-07-29 authored owner promotion
+
+The exact allocator is now declared on the primary `cRSpriteManager` owner and
+returns the primary Windows `cRSprite*` type. Mobile provides the authored
+`cRSpriteManager::New(int, int, int, int)` vocabulary and confirms that each
+allocation invokes the sprite initializer; the Windows body and its `0xb4`
+pool stride continue to define ABI and layout. The type promotion changes no
+source operations or matching bytes.

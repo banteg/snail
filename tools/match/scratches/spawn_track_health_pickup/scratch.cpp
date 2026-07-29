@@ -41,7 +41,7 @@ void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
     BodNode* node = &slot->health_pickups[0];
     g_game->active_bod_list.add_bod(node);
 
-    Sprite* sprite =
+    cRSprite* sprite =
         g_sprite_manager.allocate_sprite(player->player_slot, 57, -1, -1);
     slot->health_pickups[0].sprite = sprite;
     unsigned int flags = sprite->flags;

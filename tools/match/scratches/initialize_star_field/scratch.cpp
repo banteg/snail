@@ -16,7 +16,7 @@ void StarManager::initialize_star_field()
     if (count > 0) {
         int offset = 0;
         do {
-            *(Sprite**)((char*)entries + offset + 0x1c) =
+            *(cRSprite**)((char*)entries + offset + 0x1c) =
                 g_sprite_manager.allocate_sprite(2, 0x20, -1, -1);
             ++i;
             offset += sizeof(StarManagerEntry);
@@ -65,7 +65,7 @@ void StarManager::initialize_star_field()
                     entries[index].speed +
                 entries[index].position;
 
-            Sprite* sprite = entries[index].sprite;
+            cRSprite* sprite = entries[index].sprite;
             sprite->flags |= SPRITE_FLAG_THROTTLE_FACING_REFRESH
                 | SPRITE_FLAG_ORIENT_TO_MOTION;
             entries[index].sprite->progress = 0.0f;
