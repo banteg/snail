@@ -59,35 +59,33 @@ void cRPath::initialize_halfpipe_path_template_pair(
     int i;
 
     int exit_index = 0;
-    int exit_sample_offset = 50 * sizeof(AttachmentSample);
     do {
-        int sample_index = exit_index + 50;
         float angle_base = 1.0f - (float)exit_index * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
         float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
-        primary_samples[sample_index].center_x =
+        primary_samples[exit_index + 50].center_x =
             4.0f - (float)width_cells * 0.5f;
-        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-        primary_samples[sample_index].special_scalar =
+        primary_samples[exit_index + 50].rotation_scalar_98 = 0.0f;
+        primary_samples[exit_index + 50].rotation_scalar_94 = 0.0f;
+        primary_samples[exit_index + 50].special_scalar =
             (depth * depth + 16.0f) / (depth + depth);
-        primary_samples[sample_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[sample_index].transform);
-        primary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        primary_samples[sample_index].transform.position.y = 0.0f;
-        primary_samples[sample_index].transform.position.z = (float)sample_index;
-        primary_samples[sample_index].delta_length = 1.0f;
+        primary_samples[exit_index + 50].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[exit_index + 50].transform);
+        primary_samples[exit_index + 50].transform.position.x =
+            primary_samples[exit_index + 50].center_x;
+        int sample_index = exit_index + 50;
+        primary_samples[exit_index + 50].transform.position.y = 0.0f;
+        primary_samples[exit_index + 50].transform.position.z = (float)sample_index;
+        primary_samples[exit_index + 50].delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[sample_index].transform);
-        secondary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        secondary_samples[sample_index].transform.position.y = 0.49000001f;
-        secondary_samples[sample_index].transform.position.z = (float)sample_index;
-        secondary_samples[sample_index].delta_length = 1.0f;
+        set_matrix_identity(&secondary_samples[exit_index + 50].transform);
+        secondary_samples[exit_index + 50].transform.position.x =
+            primary_samples[exit_index + 50].center_x;
+        secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;
+        secondary_samples[exit_index + 50].transform.position.z = (float)sample_index;
+        secondary_samples[exit_index + 50].delta_length = 1.0f;
         ++exit_index;
-        exit_sample_offset += sizeof(AttachmentSample);
-    } while (exit_sample_offset < 66 * (int)sizeof(AttachmentSample));
+    } while (exit_index < 16);
 
     float out_angle;
     int middle = 0;

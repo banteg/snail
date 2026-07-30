@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-cursor-definition",
+      "find": "    int exit_index = 0;\n    do {",
+      "replacements": [
+        {
+          "name": "sample-50-byte-cursor",
+          "text": "    int exit_index = 0;\n    int exit_sample_offset = 50 * sizeof(AttachmentSample);\n    do {"
+        }
+      ]
+    },
+    {
+      "name": "tail-address-owner",
+      "find": "        float angle_base = 1.0f - (float)exit_index * 0.0625f;\n        float angle = angle_base * 3.1415927f + 1.5707964f;\n        float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;\n        primary_samples[exit_index + 50].center_x =\n            4.0f - (float)width_cells * 0.5f;\n        primary_samples[exit_index + 50].rotation_scalar_98 = 0.0f;\n        primary_samples[exit_index + 50].rotation_scalar_94 = 0.0f;\n        primary_samples[exit_index + 50].special_scalar =\n            (depth * depth + 16.0f) / (depth + depth);\n        primary_samples[exit_index + 50].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[exit_index + 50].transform);\n        primary_samples[exit_index + 50].transform.position.x =\n            primary_samples[exit_index + 50].center_x;\n        int sample_index = exit_index + 50;\n        primary_samples[exit_index + 50].transform.position.y = 0.0f;\n        primary_samples[exit_index + 50].transform.position.z = (float)sample_index;\n        primary_samples[exit_index + 50].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[exit_index + 50].transform);\n        secondary_samples[exit_index + 50].transform.position.x =\n            primary_samples[exit_index + 50].center_x;\n        secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;\n        secondary_samples[exit_index + 50].transform.position.z = (float)sample_index;\n        secondary_samples[exit_index + 50].delta_length = 1.0f;",
+      "replacements": [
+        {
+          "name": "direct-byte-cursor",
+          "text": "        float angle_base = 1.0f - (float)exit_index * 0.0625f;\n        float angle = angle_base * 3.1415927f + 1.5707964f;\n        float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->center_x =\n            4.0f - (float)width_cells * 0.5f;\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->rotation_scalar_98 = 0.0f;\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->rotation_scalar_94 = 0.0f;\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->special_scalar =\n            (depth * depth + 16.0f) / (depth + depth);\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->lateral_scale = 1.0f;\n        set_matrix_identity(\n            &((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->transform);\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->transform.position.x =\n            ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->center_x;\n        int sample_index = exit_index + 50;\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->transform.position.y = 0.0f;\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->transform.position.z =\n            (float)sample_index;\n        ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->delta_length = 1.0f;\n\n        set_matrix_identity(\n            &((AttachmentSample*)((char*)secondary_samples + exit_sample_offset))->transform);\n        ((AttachmentSample*)((char*)secondary_samples + exit_sample_offset))->transform.position.x =\n            ((AttachmentSample*)((char*)primary_samples + exit_sample_offset))->center_x;\n        ((AttachmentSample*)((char*)secondary_samples + exit_sample_offset))->transform.position.y =\n            0.49000001f;\n        ((AttachmentSample*)((char*)secondary_samples + exit_sample_offset))->transform.position.z =\n            (float)sample_index;\n        ((AttachmentSample*)((char*)secondary_samples + exit_sample_offset))->delta_length = 1.0f;",
+          "requires": [
+            "tail-cursor-definition/sample-50-byte-cursor"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tail-cursor-control",
+      "find": "        ++exit_index;\n    } while (exit_index < 16);",
+      "replacements": [
+        {
+          "name": "logical-bound",
+          "text": "        ++exit_index;\n        exit_sample_offset += sizeof(AttachmentSample);\n    } while (exit_index < 16);",
+          "requires": [
+            "tail-cursor-definition/sample-50-byte-cursor"
+          ]
+        },
+        {
+          "name": "byte-offset-bound",
+          "text": "        ++exit_index;\n        exit_sample_offset += sizeof(AttachmentSample);\n    } while (exit_sample_offset < 66 * (int)sizeof(AttachmentSample));",
+          "requires": [
+            "tail-cursor-definition/sample-50-byte-cursor"
+          ]
+        }
+      ]
+    }
+  ]
+}

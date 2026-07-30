@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-logical-control",
+      "find": "        ++exit_index;\n    } while (exit_index < 16);",
+      "replacements": [
+        {
+          "name": "separate-increment-not-equal",
+          "text": "        ++exit_index;\n    } while (exit_index != 16);"
+        },
+        {
+          "name": "condition-preincrement",
+          "text": "    } while (++exit_index < 16);"
+        },
+        {
+          "name": "condition-preincrement-not-equal",
+          "text": "    } while (++exit_index != 16);"
+        },
+        {
+          "name": "condition-postincrement",
+          "text": "    } while (exit_index++ < 15);"
+        },
+        {
+          "name": "condition-postincrement-not-equal",
+          "text": "    } while (exit_index++ != 15);"
+        }
+      ]
+    }
+  ]
+}

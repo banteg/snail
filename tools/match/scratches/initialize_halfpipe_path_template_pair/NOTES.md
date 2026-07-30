@@ -419,3 +419,35 @@ target: 707 insns, candidate: 694 insns (was 686)
 prefix: 18/707 target insns
 masked operands: 55 ok, 0 unresolved, 0 mismatch, 0 unaudited
 ```
+
+## 2026-07-30 mobile-backed tail logical ownership
+
+The exact Android and iOS bodies close the source control behind the physical
+tail cursors. Both retain a zero-based tail index, address sample
+`index + 50`, derive the published sample index only after primary identity
+setup, and terminate after 16 iterations. Their compilers independently emit
+the `0x20d0` sample-50 cursor seen in Windows, so that cursor is derived
+address induction rather than a second authored loop endpoint.
+
+Recovering that portable logical owner removes the redundant explicit offset
+endpoint and delays the named `sample_index` until its first Z use. Focused
+matching rises from **57.53%** to **64.19%**, adding **172.58 weighted
+bytes**. The candidate moves from 694 to 692 instructions against 707 native;
+the exact prefix remains 18/707 and all 55 masked references remain clean.
+The two-instruction size tradeoff is retained because the dependency is
+independently present in both mobile builds and the score gain is material.
+
+Three complete follow-up sweeps bound the spelling:
+
+- `< 16`, `!= 16`, and the equivalent preincrement forms are byte-identical;
+  postincrement forms lose 97 fuzzy points.
+- Keeping the derived integer inline is byte-identical. Materializing a float
+  Z scalar, alone or beside the integer, loses 15 fuzzy points.
+- The full 11-variant cursor interaction confirms that merely declaring the
+  sample-50 byte cursor is neutral. Addressing through it with the logical
+  bound reaches 63.95%; using the cursor as the endpoint falls to 57.63%, and
+  coupling both byte-address and byte-endpoint owners falls to 54.32%.
+
+The retained loop therefore records the portable logical dependency and lets
+VC6 derive its physical address induction. No explicit cursor or alternate
+comparison spelling is kept.

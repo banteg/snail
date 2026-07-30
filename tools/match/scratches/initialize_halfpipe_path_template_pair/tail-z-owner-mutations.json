@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-z-owner",
+      "find": "        int sample_index = exit_index + 50;\n        primary_samples[exit_index + 50].transform.position.y = 0.0f;\n        primary_samples[exit_index + 50].transform.position.z = (float)sample_index;\n        primary_samples[exit_index + 50].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[exit_index + 50].transform);\n        secondary_samples[exit_index + 50].transform.position.x =\n            primary_samples[exit_index + 50].center_x;\n        secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;\n        secondary_samples[exit_index + 50].transform.position.z = (float)sample_index;",
+      "replacements": [
+        {
+          "name": "converted-z-scalar",
+          "text": "        float sample_z = (float)(exit_index + 50);\n        primary_samples[exit_index + 50].transform.position.y = 0.0f;\n        primary_samples[exit_index + 50].transform.position.z = sample_z;\n        primary_samples[exit_index + 50].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[exit_index + 50].transform);\n        secondary_samples[exit_index + 50].transform.position.x =\n            primary_samples[exit_index + 50].center_x;\n        secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;\n        secondary_samples[exit_index + 50].transform.position.z = sample_z;"
+        },
+        {
+          "name": "inline-conversion",
+          "text": "        primary_samples[exit_index + 50].transform.position.y = 0.0f;\n        primary_samples[exit_index + 50].transform.position.z =\n            (float)(exit_index + 50);\n        primary_samples[exit_index + 50].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[exit_index + 50].transform);\n        secondary_samples[exit_index + 50].transform.position.x =\n            primary_samples[exit_index + 50].center_x;\n        secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;\n        secondary_samples[exit_index + 50].transform.position.z =\n            (float)(exit_index + 50);"
+        },
+        {
+          "name": "integer-plus-z-scalar",
+          "text": "        int sample_index = exit_index + 50;\n        float sample_z = (float)sample_index;\n        primary_samples[exit_index + 50].transform.position.y = 0.0f;\n        primary_samples[exit_index + 50].transform.position.z = sample_z;\n        primary_samples[exit_index + 50].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[exit_index + 50].transform);\n        secondary_samples[exit_index + 50].transform.position.x =\n            primary_samples[exit_index + 50].center_x;\n        secondary_samples[exit_index + 50].transform.position.y = 0.49000001f;\n        secondary_samples[exit_index + 50].transform.position.z = sample_z;"
+        }
+      ]
+    }
+  ]
+}
