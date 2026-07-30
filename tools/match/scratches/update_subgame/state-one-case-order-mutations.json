@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "state-one-case-order",
+      "find": "        case 4:\n            result = galaxy.update_galaxy();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                goto build_selected_level;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 1:\n            result = gui.update_challenge_setup_screen();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                StartLevel(0);\n                return;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 7:\n            subgame_rebuild_selector = 2;\n            StartLevel(0);\n            return;",
+      "replacements": [
+        {
+          "name": "numeric-case-order",
+          "text": "        case 1:\n            result = gui.update_challenge_setup_screen();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                StartLevel(0);\n                return;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 4:\n            result = galaxy.update_galaxy();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                goto build_selected_level;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 7:\n            subgame_rebuild_selector = 2;\n            StartLevel(0);\n            return;"
+        },
+        {
+          "name": "numeric-order-shared-zero-build",
+          "text": "        case 1:\n            result = gui.update_challenge_setup_screen();\n            if (result == one)\n                goto build_zero_level;\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 4:\n            result = galaxy.update_galaxy();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                goto build_selected_level;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 7:\nbuild_zero_level:\n            subgame_rebuild_selector = 2;\n            StartLevel(0);\n            return;"
+        },
+        {
+          "name": "current-order-shared-zero-build",
+          "text": "        case 4:\n            result = galaxy.update_galaxy();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                goto build_selected_level;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 1:\n            result = gui.update_challenge_setup_screen();\n            if (result == one)\n                goto build_zero_level;\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n\n        case 7:\nbuild_zero_level:\n            subgame_rebuild_selector = 2;\n            StartLevel(0);\n            return;"
+        }
+      ]
+    }
+  ]
+}

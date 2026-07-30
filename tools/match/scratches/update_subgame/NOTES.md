@@ -318,6 +318,29 @@ initializer closes the complete 0x0c-byte object. Focused output remains
 78.22%, 1033/1033, with 116 clean operands and the same two honest jump-table
 mismatches.
 
+## 2026-07-30 state-one cross-port boundary
+
+Android `cRSubGame::AI()` independently preserves four potentially
+compiler-relevant state-one choices: it snapshots `level_mode` before the two
+challenge configuration copies, keeps separate results for the two galaxy
+calls and the challenge call, orders the nested cases numerically, and shares
+the galaxy destroy and challenge/case-7 build-zero exits at source level. The
+Windows decompile confirms the same semantic case destinations even though VC6
+duplicates and schedules some of those tails.
+
+Four recorded sweeps exercise all 18 bounded variants of those choices.
+Mode-snapshot placement and every one-, two-, and three-branch result lifetime
+combination are byte-identical to the retained source. Numeric case order,
+shared build-zero, and three shared galaxy-destroy spellings regress to
+`77.24%`-`78.98%` and lose one or more clean reference pairings. No variant
+improves the score or creates a proof-quality tradeoff.
+
+The current matcher audits all 129 reference operands cleanly at the retained
+`79.94%` (`1036/1033`) result. The experiment ledger has four consecutive
+non-winning sweeps, so the state-one residual is now bounded: it needs a new
+Windows-specific lifetime or surrounding-block insight rather than more
+cross-port case order, result ownership, or shared-label shaping.
+
 2026-07-11 cRTutorial owner: the mode-7 tick now calls the embedded
 `tutorial.update_tutorial()` directly. The exact Init/AI/UnInit siblings,
 mobile symbols, and the native 0x1c size ledger prove the owner at `+0xa858`;

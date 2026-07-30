@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-zero-result",
+      "find": "        case 0:\n            result = galaxy.update_galaxy();\n            if (result == one) {\n                subgame_rebuild_selector = 3;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                StartLevel(level_mode_arg);\n                return;\n            }\n            if (result == 2) {\n                subgame_rebuild_selector = one;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                StartLevel(level_mode_arg);\n                return;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "        case 0: {\n            int galaxy_result = galaxy.update_galaxy();\n            if (galaxy_result == one) {\n                subgame_rebuild_selector = 3;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                StartLevel(level_mode_arg);\n                return;\n            }\n            if (galaxy_result == 2) {\n                subgame_rebuild_selector = one;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                StartLevel(level_mode_arg);\n                return;\n            }\n            if (galaxy_result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n        }"
+        }
+      ]
+    },
+    {
+      "name": "mode-four-result",
+      "find": "        case 4:\n            result = galaxy.update_galaxy();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                goto build_selected_level;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "        case 4: {\n            int galaxy_result = galaxy.update_galaxy();\n            if (galaxy_result == one) {\n                subgame_rebuild_selector = 2;\n                g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;\n                goto build_selected_level;\n            }\n            if (galaxy_result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n        }"
+        }
+      ]
+    },
+    {
+      "name": "mode-one-result",
+      "find": "        case 1:\n            result = gui.update_challenge_setup_screen();\n            if (result == one) {\n                subgame_rebuild_selector = 2;\n                StartLevel(0);\n                return;\n            }\n            if (result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "        case 1: {\n            int challenge_result = gui.update_challenge_setup_screen();\n            if (challenge_result == one) {\n                subgame_rebuild_selector = 2;\n                StartLevel(0);\n                return;\n            }\n            if (challenge_result != 3)\n                break;\n            UnInit();\n            g_game->players[0].frontend_state = 2;\n            return;\n        }"
+        }
+      ]
+    }
+  ]
+}

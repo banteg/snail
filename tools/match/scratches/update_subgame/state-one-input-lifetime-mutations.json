@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "state-one-input-lifetimes",
+      "find": "        random_float_below(1.0f, 0);\n        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (level_mode) {",
+      "replacements": [
+        {
+          "name": "mobile-mode-before-config-locals",
+          "text": "        random_float_below(1.0f, 0);\n        int mode = level_mode;\n        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (mode) {"
+        },
+        {
+          "name": "mode-after-config-locals",
+          "text": "        random_float_below(1.0f, 0);\n        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        int mode = level_mode;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (mode) {"
+        },
+        {
+          "name": "mobile-mode-direct-config",
+          "text": "        random_float_below(1.0f, 0);\n        int mode = level_mode;\n        challenge_speed_value =\n            g_runtime_config.challenge_speed_percent;\n        challenge_difficulty_value =\n            g_runtime_config.challenge_difficulty_percent;\n\n        int result;\n        switch (mode) {"
+        },
+        {
+          "name": "mobile-mode-staggered-config-locals",
+          "text": "        random_float_below(1.0f, 0);\n        int mode = level_mode;\n        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        challenge_speed_value = challenge_speed;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (mode) {"
+        },
+        {
+          "name": "mode-first-config-local-order-swapped",
+          "text": "        random_float_below(1.0f, 0);\n        int mode = level_mode;\n        int challenge_difficulty =\n            g_runtime_config.challenge_difficulty_percent;\n        int challenge_speed = g_runtime_config.challenge_speed_percent;\n        challenge_speed_value = challenge_speed;\n        challenge_difficulty_value = challenge_difficulty;\n\n        int result;\n        switch (mode) {"
+        }
+      ]
+    }
+  ]
+}
