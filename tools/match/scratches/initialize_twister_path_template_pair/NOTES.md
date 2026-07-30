@@ -288,3 +288,28 @@ This paired lane is formally stalled at the retained 67.60% frontier. Further
 work needs new provenance for the remaining interior allocation and mesh
 row/vertex scheduling, not another spelling of the sample cursors already
 tested here.
+
+## 2026-07-30 mesh row and vector ownership
+
+Invert supplied the missing dependency-closed mesh provenance: the row owner is
+guarded for a non-negative segment count, advances through a `0xa8` byte
+cursor, and uses nested `do` loops. Each ordinary/terminal branch borrows its
+sample and materializes its vertex destination locally, with the ordinary row
+first and the terminal row reading `sample[-1]`. Replaying that complete unit
+raises focused matching from 67.60% to 69.76% (+55 weighted bytes). Twister2
+reproduces the exact result. The candidate grows from 678 to 682 instructions
+against 677 native, but the 94-instruction exact prefix and all 49 clean
+references are preserved; the source-backed ownership gain is retained.
+
+A second exhaustive 15-variant sweep tested authored `Vector3::operator-` at
+the primary and secondary orientation and delta sites. Every site improves
+independently, every combination preserves the prefix and reference audit, and
+the complete four-site combination is best. It raises both siblings by another
+41 weighted bytes to **71.38%** (`682/677`, prefix 94, 49 clean references)
+without a tradeoff warning.
+
+The ledger now contains 58 variants across twelve sweeps. The paired,
+independently reproduced result replaces the prior stalled frontier; remaining
+work is concentrated in the interior sample allocation and face-record
+scheduling rather than mesh row induction, destination ownership, or vector
+subtraction spelling.

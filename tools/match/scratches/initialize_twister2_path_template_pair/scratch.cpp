@@ -17,13 +17,9 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
     if (current_index > 1) {
         path->primary_samples[current_index - 1].transform.basis_up =
             Vector3(0.0f, 1.0f, 0.0f);
-        path->primary_samples[current_index - 1].transform.basis_forward = Vector3(
-            path->primary_samples[current_index].transform.position.x -
-                path->primary_samples[current_index - 1].transform.position.x,
-            path->primary_samples[current_index].transform.position.y -
-                path->primary_samples[current_index - 1].transform.position.y,
-            path->primary_samples[current_index].transform.position.z -
-                path->primary_samples[current_index - 1].transform.position.z);
+        path->primary_samples[current_index - 1].transform.basis_forward =
+            path->primary_samples[current_index].transform.position -
+            path->primary_samples[current_index - 1].transform.position;
         path->primary_samples[current_index - 1]
             .transform.basis_forward.Normalize();
         path->primary_samples[current_index - 1].transform.basis_right.cross_vectors(
@@ -36,13 +32,9 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
 
         path->secondary_samples[current_index - 1].transform.basis_up =
             Vector3(0.0f, 1.0f, 0.0f);
-        path->secondary_samples[current_index - 1].transform.basis_forward = Vector3(
-            path->secondary_samples[current_index].transform.position.x -
-                path->secondary_samples[current_index - 1].transform.position.x,
-            path->secondary_samples[current_index].transform.position.y -
-                path->secondary_samples[current_index - 1].transform.position.y,
-            path->secondary_samples[current_index].transform.position.z -
-                path->secondary_samples[current_index - 1].transform.position.z);
+        path->secondary_samples[current_index - 1].transform.basis_forward =
+            path->secondary_samples[current_index].transform.position -
+            path->secondary_samples[current_index - 1].transform.position;
         path->secondary_samples[current_index - 1]
             .transform.basis_forward.Normalize();
         path->secondary_samples[current_index - 1]
@@ -67,23 +59,15 @@ static __forceinline void orient_previous_sample_pair(Path* path, int current_in
 static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
-        path->primary_samples[i].delta_dir_to_next = Vector3(
-            path->primary_samples[i + 1].transform.position.x -
-                path->primary_samples[i].transform.position.x,
-            path->primary_samples[i + 1].transform.position.y -
-                path->primary_samples[i].transform.position.y,
-            path->primary_samples[i + 1].transform.position.z -
-                path->primary_samples[i].transform.position.z);
+        path->primary_samples[i].delta_dir_to_next =
+            path->primary_samples[i + 1].transform.position -
+            path->primary_samples[i].transform.position;
         path->primary_samples[i].delta_length =
             path->primary_samples[i].delta_dir_to_next.Normalize();
 
-        path->secondary_samples[i].delta_dir_to_next = Vector3(
-            path->secondary_samples[i + 1].transform.position.x -
-                path->secondary_samples[i].transform.position.x,
-            path->secondary_samples[i + 1].transform.position.y -
-                path->secondary_samples[i].transform.position.y,
-            path->secondary_samples[i + 1].transform.position.z -
-                path->secondary_samples[i].transform.position.z);
+        path->secondary_samples[i].delta_dir_to_next =
+            path->secondary_samples[i + 1].transform.position -
+            path->secondary_samples[i].transform.position;
         path->secondary_samples[i].delta_length =
             path->secondary_samples[i].delta_dir_to_next.Normalize();
     }
@@ -106,40 +90,55 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     Vector3* vertices = path->strip_mesh->vertices;
     cRFaceQuad* facequads = path->strip_mesh->facequads;
 
-    int row;
+    int row = 0;
     int column;
-    for (row = 0; row <= path->segment_count; ++row) {
-        for (column = 0; column <= path->width_cells; ++column) {
-            float lateral = (float)column - (float)path->width_cells * 0.5f;
-            PathTemplateSample* sample = &path->primary_samples[row];
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row != path->segment_count) {
-                Vector3 lateral_offset(
-                    lateral * sample->transform.basis_right.x,
-                    lateral * sample->transform.basis_right.y,
-                    lateral * sample->transform.basis_right.z);
-                Vector3 generated_position(
-                    sample->transform.position.x + lateral_offset.x,
-                    sample->transform.position.y + lateral_offset.y,
-                    sample->transform.position.z + lateral_offset.z);
-                *vertex = generated_position;
-            } else {
-                PathTemplateSample* previous = sample - 1;
-                Vector3 lateral_offset(
-                    lateral * previous->transform.basis_right.x,
-                    lateral * previous->transform.basis_right.y,
-                    lateral * previous->transform.basis_right.z);
-                Vector3 endpoint(
-                    previous->transform.position.x,
-                    previous->transform.position.y,
-                    previous->transform.position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
-                *vertex = generated_position;
+    if (path->segment_count >= 0) {
+        int sample_offset = 0;
+        do {
+            column = 0;
+            if (path->width_cells >= 0) {
+                do {
+                    float lateral =
+                        (float)column - (float)path->width_cells * 0.5f;
+                    if (row != path->segment_count) {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
+                        Vector3 lateral_offset(
+                            lateral * sample->transform.basis_right.x,
+                            lateral * sample->transform.basis_right.y,
+                            lateral * sample->transform.basis_right.z);
+                        Vector3 generated_position(
+                            sample->transform.position.x + lateral_offset.x,
+                            sample->transform.position.y + lateral_offset.y,
+                            sample->transform.position.z + lateral_offset.z);
+                        int vertex_index =
+                            column + row * (path->width_cells + 1);
+                        vertices[vertex_index] = generated_position;
+                    } else {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
+                        Vector3 lateral_offset(
+                            lateral * sample[-1].transform.basis_right.x,
+                            lateral * sample[-1].transform.basis_right.y,
+                            lateral * sample[-1].transform.basis_right.z);
+                        Vector3 endpoint(
+                            sample[-1].transform.position.x,
+                            sample[-1].transform.position.y,
+                            sample[-1].transform.position.z + 1.0f);
+                        Vector3 generated_position(
+                            endpoint.x + lateral_offset.x,
+                            endpoint.y + lateral_offset.y,
+                            endpoint.z + lateral_offset.z);
+                        int vertex_index =
+                            column + row * (path->width_cells + 1);
+                        vertices[vertex_index] = generated_position;
+                    }
+                    ++column;
+                } while (column <= path->width_cells);
             }
-        }
+            ++row;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (row <= path->segment_count);
     }
 
     for (row = 0; row < path->segment_count; ++row) {
