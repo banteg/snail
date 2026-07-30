@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-one-row-projection-x",
+      "find": "                        *(float*)(row_record + ROW_PROJECTION_X) =\n                            (float)lane - 4.0f + 0.5f;",
+      "replacements": [
+        {
+          "name": "fold-half-lane-offset",
+          "text": "                        *(float*)(row_record + ROW_PROJECTION_X) =\n                            (float)lane - 3.5f;"
+        }
+      ]
+    }
+  ]
+}

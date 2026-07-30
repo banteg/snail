@@ -7,8 +7,9 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-glyph-dispatch, authored-row, attachment, and clear-loop ownership slices:
-45.47%, 1240/1245 candidate instructions, with a 9-instruction exact prefix
+glyph-dispatch, authored-row, attachment, clear-loop, and segment-scoped row
+builder slices: 52.25%, 1239/1245 candidate instructions, with a 2-instruction
+exact prefix
 (`uv run snail match scratch
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
@@ -249,16 +250,17 @@ arithmetic here is source-shape preservation, not an unresolved owner.
    field-by-field; cells (84-byte stride, 672/row — the golb scratch's
    cell-672 = previous row) get flags &= 0x5F / &= 0xFFFFAFA7 masks,
    color white, vec4 zero at +0x40.
-6. Authored copy per row: segment cursor walk with the mode-1 random
-   segment pick. Crossing a segment boundary clears the first/last-row latch,
+6. Authored copy per selected segment: segment cursor walk with the mode-1
+   random segment pick. Crossing a segment boundary clears the first/last-row latch,
    resets `base_subgame_rate` to `1.0f`, then picks
    `random_float_below(mode==1 ? rate*c3+c4 scaled count :
    (float)segment_count)` -> 16928-stride segment, marks +8 visited;
    start rows use the Start block, completion rows the Last block (and
    mode 3 the special block at +1786896). `track_mirror_enabled` (game+2)
-   ORs row flag 0x20, flips authored lanes and mirrored attachment-template
-   banks, and `switch_track_mirror` runs PER ROW (`track_mirror_repeat_count`
-   at game+4 guards long runs; mirror state toggles on '@').
+   ORs row flag 0x20 and flips authored lanes and mirrored attachment-template
+   banks. `switch_track_mirror` runs once on the common selected-segment tail;
+   the `'@'` glyph invokes it again from dispatch
+   (`track_mirror_repeat_count` at game+4 guards long runs).
 7. Authored row flags map: bit2 -> bod row (object id from authored
    +522, matrix identity, position vec from +523..525 with z += row;
    bit8 nested -> aux vec at +526..528), bit1 -> parcel row (flags |=
@@ -277,7 +279,7 @@ arithmetic here is source-shape preservation, not an unresolved owner.
   '.' 1 (floor)         '0'-'9' -> attachment rows: 0 hidden; else
                         tile 15 + bod (parcel digits become slide
                         family!); mode-1 '0' also writes the row parcel
-                        payload directly (x = lane-3.5, mirrored *-1)
+                        payload directly (x = lane-4.0+0.5, mirrored *-1)
   '<' 6                 '='/'|' 14 (wall2)   '>' 3, after prior-row 3:
                         9 + prior cell retagged 12
   '@' 0 + `cRSubGame::SwitchMirror()` (the mirror toggle glyph)
@@ -1052,3 +1054,38 @@ the retained `for` loop. Earlier whole-clear countdown spelling was likewise
 neutral, while cursor-first payload advancement regressed. Those variants are
 recorded in `experiments.jsonl`; no loop-shape coercion, volatile dependency,
 register forcing, or jump-table fakematch was retained.
+
+## 2026-07-30 segment-scoped row builder
+
+Windows, Android, and iOS all select one first, last, random, or sequential
+segment and then consume its authored rows in an inner loop. The Windows
+control flow at `0x4361ca..0x437183` resets `segment_row`, advances both
+`segment_row` and `build_row` at the row tail, and returns to segment selection
+only when the selected segment is exhausted. The mobile `BuildLevel` bodies
+preserve the same two-loop ownership.
+
+Replacing the flattened per-runtime-row selection test with that
+segment-scoped builder raises focused matching from 45.47% to 52.19%
+(`1240/1245 -> 1238/1245`). `SwitchMirror()`, `row_base`, and the
+negative-length check now execute on the common selected-segment tail, while
+the inner loop owns authored-row consumption and runtime-row advancement.
+
+The native mode-1 `'0'` glyph path keeps the x87 expression
+`lane - 4.0f + 0.5f`; folding it to `lane - 3.5f` removes one instruction and
+loses two clean constant references. Retaining the authored expression moves
+the final frontier to 52.25% (`0.5225442834`), 1239/1245 instructions,
+2 prefix instructions, and 111 clean / 0 unresolved / 1 mismatch /
+55 unaudited operands.
+
+An explicit second `selected_segment` local regressed to 50.78% and enlarged
+the frame from `0x44` to `0x48`; the decompiler's selected/active distinction
+does not require a second source variable at this optimization frontier. An
+outer `do` loop reached 51.89%, and a separately prechecked inner `do` loop
+reached 51.91%. Split inner guards, declaration order, and loop-local
+`build_row` scope were byte-neutral. None of those variants was retained as a
+score-shaped dependency.
+
+The sole audited mismatch remains the real
+`populate_runtime_track_cells_glyph_jump_table@0x437194` layout versus the
+compiler-generated local switch table. It is not masked or replaced with a
+hand-authored table.
