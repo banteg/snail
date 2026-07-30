@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-offset-current-retest",
+      "find": "        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        ++local_index;\n        Vector3 secondary_offset =\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        ++sample_index;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;",
+      "replacements": [
+        {
+          "name": "direct-components-increment-after",
+          "text": "        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        ++local_index;\n        secondary_samples[sample_index].transform.position.x +=\n            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;\n        secondary_samples[sample_index].transform.position.y +=\n            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;\n        secondary_samples[sample_index].transform.position.z +=\n            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;\n        ++sample_index;"
+        },
+        {
+          "name": "pointer-components-increment-after",
+          "text": "        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        ++local_index;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        secondary_position->x +=\n            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;\n        secondary_position->y +=\n            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;\n        secondary_position->z +=\n            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;\n        ++sample_index;"
+        },
+        {
+          "name": "borrowed-components-increment-before",
+          "text": "        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        ++local_index;\n        Vector3* primary_up =\n            &primary_samples[sample_index].transform.basis_up;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        ++sample_index;\n        secondary_position->x += primary_up->x * 0.49000001f;\n        secondary_position->y += primary_up->y * 0.49000001f;\n        secondary_position->z += primary_up->z * 0.49000001f;"
+        },
+        {
+          "name": "operator-plus-equals-increment-after",
+          "text": "        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        ++local_index;\n        secondary_samples[sample_index].transform.position +=\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        ++sample_index;"
+        },
+        {
+          "name": "borrowed-operator-plus-equals-increment-before",
+          "text": "        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        ++local_index;\n        Vector3 secondary_offset =\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        ++sample_index;\n        *secondary_position += secondary_offset;"
+        }
+      ]
+    }
+  ]
+}

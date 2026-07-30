@@ -265,3 +265,18 @@ the complete ledger now contains 42 variants across twelve sweeps
 (`10 better / 19 identical / 13 worse`). Remaining early drift is concentrated
 in the interior sample allocation rather than row induction, vector
 subtraction, or delta ownership.
+
+## 2026-07-30 current secondary-offset boundary
+
+The secondary basis-up offset was retested after the ordinary-first mesh and
+asymmetric delta-owner changes materially altered allocation. The retained
+named vector and two `operator+=` spellings compile byte-identically at
+**68.30%** (`616/608`, prefix 85, 39 clean references). Borrowed component
+stores fall to 67.21%, a destination pointer followed by direct components
+falls to 66.83%, and direct array components fall to 58.61%.
+
+This closes the earlier direct-component lead: it does not survive the current
+dependency state, while the cross-port-backed vector owner remains the best
+Windows spelling. The ledger now contains 47 unique variants across thirteen
+sweeps, with two consecutive non-improving sweeps. No source change is
+retained.

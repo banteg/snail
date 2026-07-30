@@ -313,3 +313,19 @@ independently reproduced result replaces the prior stalled frontier; remaining
 work is concentrated in the interior sample allocation and face-record
 scheduling rather than mesh row induction, destination ownership, or vector
 subtraction spelling.
+
+## 2026-07-30 current interior-owner boundary
+
+The remaining interior allocation was retested after both the mesh-row and
+four-site vector-expression recoveries. A fully direct primary-array owner now
+preserves the 94-instruction prefix, but grows the candidate to 690
+instructions and falls from 71.38% to 65.98%. Six partial splits then varied
+the scalar, sample, transform, and position owners independently. Every
+prefix-preserving split falls to 65.79-66.57%; the nominally closest 70.32%
+form collapses the proved prefix from 94 instructions to five.
+
+The current ledger contains 65 evaluated variants (64 unique) across fourteen
+sweeps and has two consecutive non-improving sweeps. Full and partial
+direct-owner forms are therefore bounded on the present dependency state. No
+source change is retained; further interior work needs new provenance rather
+than another sample/transform alias split.
