@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "segment-index-lifetime",
+      "find": "    int min_set_sizes[100];\n    int zero_entry_count = 0;\n    int zero_candidate_total = 0;\n    int set_entry_count = 0;\n    int set_or_target;\n    int last_segment_max_set_size;\n\n    for (int segment = 0; segment < level_definition.segment_count; ++segment) {",
+      "replacements": [
+        {
+          "name": "declared-after-maximum",
+          "text": "    int min_set_sizes[100];\n    int zero_entry_count = 0;\n    int zero_candidate_total = 0;\n    int set_entry_count = 0;\n    int set_or_target;\n    int last_segment_max_set_size;\n    int segment;\n\n    for (segment = 0; segment < level_definition.segment_count; ++segment) {"
+        },
+        {
+          "name": "declared-before-maximum",
+          "text": "    int min_set_sizes[100];\n    int zero_entry_count = 0;\n    int zero_candidate_total = 0;\n    int set_entry_count = 0;\n    int set_or_target;\n    int segment;\n    int last_segment_max_set_size;\n\n    for (segment = 0; segment < level_definition.segment_count; ++segment) {"
+        },
+        {
+          "name": "declared-before-shared-target",
+          "text": "    int min_set_sizes[100];\n    int zero_entry_count = 0;\n    int zero_candidate_total = 0;\n    int set_entry_count = 0;\n    int segment;\n    int set_or_target;\n    int last_segment_max_set_size;\n\n    for (segment = 0; segment < level_definition.segment_count; ++segment) {"
+        },
+        {
+          "name": "declared-before-counts",
+          "text": "    int min_set_sizes[100];\n    int segment;\n    int zero_entry_count = 0;\n    int zero_candidate_total = 0;\n    int set_entry_count = 0;\n    int set_or_target;\n    int last_segment_max_set_size;\n\n    for (segment = 0; segment < level_definition.segment_count; ++segment) {"
+        },
+        {
+          "name": "initialized-after-maximum",
+          "text": "    int min_set_sizes[100];\n    int zero_entry_count = 0;\n    int zero_candidate_total = 0;\n    int set_entry_count = 0;\n    int set_or_target;\n    int last_segment_max_set_size;\n    int segment = 0;\n\n    for (; segment < level_definition.segment_count; ++segment) {"
+        },
+        {
+          "name": "initialized-before-counts",
+          "text": "    int min_set_sizes[100];\n    int segment = 0;\n    int zero_entry_count = 0;\n    int zero_candidate_total = 0;\n    int set_entry_count = 0;\n    int set_or_target;\n    int last_segment_max_set_size;\n\n    for (; segment < level_definition.segment_count; ++segment) {"
+        }
+      ]
+    }
+  ]
+}

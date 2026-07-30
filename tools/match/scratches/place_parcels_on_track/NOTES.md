@@ -564,3 +564,29 @@ The accepted candidate is 637/639 instructions with the exact `0x214` frame,
 mismatched, and zero unaudited. The residual is stack-slot coloring plus the
 already-documented final projection evaluation order. No volatile barrier,
 synthetic dependency, stack padding, or register forcing is present.
+
+## Bounded receiver/segment stack coloring (2026-07-30)
+
+The dominant remaining catalog-and-claim diff swaps two long-lived stack
+colors: native stores the `cRSubGame*` receiver at `esp+0x28` and the outer
+segment index at `esp+0x2c`; the candidate assigns those same values to
+`esp+0x2c` and `esp+0x28`. The complete frame size, values, control flow, and
+98 reference operands already agree.
+
+Three recorded sweeps tested the source-faithful ways to alter that
+interference order:
+
+- six placements and initialization forms for a function-scoped segment
+  index around the existing catalog locals;
+- entry-scoped declared and initialized segment indices paired with the outer
+  loop;
+- a typed `cRSubGame* game = this` alias spanning the mode dispatch and final
+  projection loop.
+
+Across 14 unique variants, ten compiled byte-identically and four incomplete
+interactions failed to compile; none improved or regressed a valid build. The
+ledger therefore has three consecutive non-improving sweeps and marks this
+scratch stalled at 87.77%, 637/639 instructions, with all 98 references clean.
+Retain the natural scoped source. Recovering the slot permutation would now
+require artificial lifetime or stack forcing rather than additional ownership
+evidence.

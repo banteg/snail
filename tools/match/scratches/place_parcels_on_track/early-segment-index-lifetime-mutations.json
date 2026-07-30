@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "early-segment-index-declaration",
+      "find": "void cRSubGame::PlaceParcels()\n{\n    if (level_mode == 1) {",
+      "replacements": [
+        {
+          "name": "declared-at-entry",
+          "text": "void cRSubGame::PlaceParcels()\n{\n    int segment;\n    if (level_mode == 1) {"
+        },
+        {
+          "name": "initialized-at-entry",
+          "text": "void cRSubGame::PlaceParcels()\n{\n    int segment = 0;\n    if (level_mode == 1) {"
+        }
+      ]
+    },
+    {
+      "name": "outer-segment-loop-owner",
+      "find": "    for (int segment = 0; segment < level_definition.segment_count; ++segment) {",
+      "replacements": [
+        {
+          "name": "entry-scoped-index",
+          "text": "    for (segment = 0; segment < level_definition.segment_count; ++segment) {"
+        }
+      ]
+    }
+  ]
+}

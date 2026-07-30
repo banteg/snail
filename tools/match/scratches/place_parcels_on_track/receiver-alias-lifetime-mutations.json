@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "receiver-alias-at-entry",
+      "find": "void cRSubGame::PlaceParcels()\n{\n    if (level_mode == 1) {\n        PlaceParcelsSurvival();\n        return;\n    }\n    if (level_mode != 0 && level_mode != 7)",
+      "replacements": [
+        {
+          "name": "typed-game-alias",
+          "text": "void cRSubGame::PlaceParcels()\n{\n    cRSubGame* game = this;\n    if (game->level_mode == 1) {\n        game->PlaceParcelsSurvival();\n        return;\n    }\n    if (game->level_mode != 0 && game->level_mode != 7)"
+        }
+      ]
+    },
+    {
+      "name": "receiver-alias-at-projection-tail",
+      "find": "    SubRow* row_record = runtime_rows;\n    for (int row = 0; row < runtime_row_count; ++row, ++row_record) {",
+      "replacements": [
+        {
+          "name": "typed-game-alias",
+          "text": "    SubRow* row_record = game->runtime_rows;\n    for (int row = 0; row < game->runtime_row_count; ++row, ++row_record) {"
+        }
+      ]
+    }
+  ]
+}
