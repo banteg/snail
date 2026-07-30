@@ -9,10 +9,11 @@ uses the final allocated sample directly in the mesh. The scratch models the
 flat approach, circular supertramp arc, separate secondary radius, direct mesh
 rows, deltas, and finalization.
 
-The retained scratch now matches 51.62% (529/552 candidate/target
-instructions), with a 15-instruction exact prefix, an exact 0x2c stack frame,
-and masked operands at 32 ok, 0 unresolved, 0 mismatch. Residuals are primarily
-register allocation and store scheduling; this is not an exact match.
+The retained scratch now matches 68.00% (545/552 candidate/target
+instructions), with a 16-instruction exact prefix, an exact 0x2c stack frame,
+and masked operands at 36 ok, 0 unresolved, 0 mismatch, 0 unaudited. Residuals
+are primarily register allocation, stack-home selection, and store scheduling;
+this is not an exact match.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 8.62% (144/552
@@ -289,3 +290,43 @@ byte-identically. The reverse probe is recorded and the 55.08% source is
 restored. Supertramp therefore keeps direct array ownership: the native arc
 byte cursor remains compiler-derived, and it is not used to trade away a
 separate authored operator boundary.
+
+## 2026-07-30 lead, count, and mesh-grid ownership
+
+Three native-backed owner boundaries materially improve the post-cascade
+scratch:
+
+- The Windows lead loop advances a physical `0xa8`-byte sample cursor and tests
+  that cursor against the seven-sample `0x498` span. Recovering the explicit
+  offset raises focused matching from 55.08% to **56.91%**, adding 35.41
+  weighted bytes with candidate/target counts unchanged at 541/552, prefix
+  unchanged at 17/552, and all 36 references clean. Testing the logical index
+  instead reaches only 55.41% and falls three instructions farther from the
+  target.
+- Deriving the allocated count directly as `curve_segments + 8`, then deriving
+  `segment_count_f` from the stored member predecessor, raises focused matching
+  from 56.91% to **62.72%** and adds 112.40 weighted bytes. Candidate size
+  closes from 541 to 545 instructions; the exact prefix trades from 17 to 16
+  because the first count spelling moves three bytes earlier. A named
+  predecessor local is byte-identical, while storing the float before the
+  member returns exactly to 56.91%.
+- Windows MLIL keeps the vertex grid and face grid in separate row/column
+  owners. Giving the face phase fresh `face_row` and `face_column` lifetimes
+  raises focused matching from 62.72% to **68.00%**, adding 102.31 weighted
+  bytes with counts fixed at 545/552, prefix fixed at 16/552, and all 36
+  references clean. The recorded reverse sweep aliases those owners back to
+  the vertex grid and reproduces the complete 62.72% regression.
+
+The native vertex sample offset begins only after the empty-grid guard, the
+face column advances as one owner, and the flat and curved sample indices are
+logically distinct. Recovering those source boundaries is byte-neutral in the
+retained context but removes false cross-phase ownership. Declaring the curve
+radius before its floating count is also byte-neutral and is rejected in favor
+of the simpler initialized declaration.
+
+The remaining broad mesh residual is an allocator frontier: Windows spills the
+vertex row and keeps the physical sample offset in a register, while the
+candidate keeps the row in a register and spills the offset. Ordinary
+declaration-order and lifetime changes do not reproduce that swap, so no
+padding, volatility, artificial register binding, or other allocator forcing
+is retained.

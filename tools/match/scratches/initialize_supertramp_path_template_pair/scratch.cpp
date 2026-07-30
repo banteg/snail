@@ -28,8 +28,8 @@ static __forceinline void build_direct_strip_mesh(
     int column;
 
     row = 0;
-    int sample_offset = 0;
     if (path->segment_count >= 0) {
+        int sample_offset = 0;
         do {
             column = 0;
             if (path->width_cells >= 0) {
@@ -55,37 +55,37 @@ static __forceinline void build_direct_strip_mesh(
         } while (row <= path->segment_count);
     }
 
-    for (row = 0; row < path->segment_count; ++row) {
-        column = 0;
+    for (int face_row = 0; face_row < path->segment_count; ++face_row) {
+        int face_column = 0;
         if (path->width_cells > 0) {
-            float v0 = (float)(row % 8) * 0.125f;
-            float v1 = (float)(row % 8 + 1) * 0.125f;
-            int next_column;
+            float v0 = (float)(face_row % 8) * 0.125f;
+            float v1 = (float)(face_row % 8 + 1) * 0.125f;
             do {
-                next_column = column + 1;
-                float u0 = (float)column * 0.125f;
-                float u1 = (float)next_column * 0.125f;
+                float u0 = (float)face_column * 0.125f;
+                float u1 = (float)(face_column + 1) * 0.125f;
                 int side = 0;
                 do {
                     if (side == 0) {
                         cRFaceQuad* face = &facequads[
-                            side + 2 * (column + row * path->width_cells)];
+                            side + 2 * (face_column + face_row * path->width_cells)];
                         face->header_word = 0;
                         face->vertex_0 =
-                            column + row * ((unsigned short)path->width_cells + 1);
-                        face->vertex_1 = row *
+                            face_column +
+                            face_row * ((unsigned short)path->width_cells + 1);
+                        face->vertex_1 = face_row *
                                 ((unsigned short)path->width_cells + 1) +
-                            column + 1;
-                        face->vertex_2 = (row + 1) *
+                            face_column + 1;
+                        face->vertex_2 = (face_row + 1) *
                                 ((unsigned short)path->width_cells + 1) +
-                            column + 1;
-                        face->vertex_3 = column +
-                            (row + 1) * ((unsigned short)path->width_cells + 1);
-                        if (row == path->segment_count - 1) {
+                            face_column + 1;
+                        face->vertex_3 = face_column +
+                            (face_row + 1) *
+                                ((unsigned short)path->width_cells + 1);
+                        if (face_row == path->segment_count - 1) {
                             face->texture_ref =
                                 g_texture_refs.Add(
                                     cap_texture, 0, 0);
-                        } else if ((column ^ row) & 1) {
+                        } else if ((face_column ^ face_row) & 1) {
                             face->texture_ref =
                                 g_texture_refs.Add(
                                     top_texture, 0, 0);
@@ -104,19 +104,21 @@ static __forceinline void build_direct_strip_mesh(
                         face->uv[3].v = v1;
                     } else {
                         cRFaceQuad* face = &facequads[
-                            side + 2 * (column + row * path->width_cells)];
+                            side + 2 * (face_column + face_row * path->width_cells)];
                         face->header_word = 0;
-                        face->vertex_0 = row *
+                        face->vertex_0 = face_row *
                                 ((unsigned short)path->width_cells + 1) +
-                            column + 1;
+                            face_column + 1;
                         face->vertex_1 =
-                            column + row * ((unsigned short)path->width_cells + 1);
-                        face->vertex_2 = column +
-                            (row + 1) * ((unsigned short)path->width_cells + 1);
-                        face->vertex_3 = (row + 1) *
+                            face_column +
+                            face_row * ((unsigned short)path->width_cells + 1);
+                        face->vertex_2 = face_column +
+                            (face_row + 1) *
+                                ((unsigned short)path->width_cells + 1);
+                        face->vertex_3 = (face_row + 1) *
                                 ((unsigned short)path->width_cells + 1) +
-                            column + 1;
-                        if ((column ^ row) & 1) {
+                            face_column + 1;
+                        if ((face_column ^ face_row) & 1) {
                             face->texture_ref =
                                 g_texture_refs.Add(
                                     bottom_texture, 0, 0);
@@ -136,8 +138,8 @@ static __forceinline void build_direct_strip_mesh(
                     }
                     ++side;
                 } while (side < 2);
-                column = next_column;
-            } while (next_column < path->width_cells);
+                ++face_column;
+            } while (face_column < path->width_cells);
         }
     }
 }
@@ -157,43 +159,48 @@ void cRPath::initialize_supertramp_path_template_pair(
     width_cells = width_cells_;
 
     int curve_segments = (int)(length * 1.0461504f);
-    int last_segment_index = curve_segments + 7;
     width_or_scale = 1.0f;
-    segment_count = last_segment_index + 1;
-    segment_count_f = (float)last_segment_index;
+    segment_count = curve_segments + 8;
+    segment_count_f = (float)(segment_count - 1);
     float curve_segments_f = (float)curve_segments;
     float radius = curve_segments_f * 0.95588547f;
     get_path_nodes();
     has_entry_mesh_transition = 0;
     segment_count = segment_count - 1;
 
-    int i;
-    for (i = 0; i < 7; ++i) {
-        primary_samples[i].center_x = 0.0f;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        float z = (float)i;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = z;
-        primary_samples[i].delta_length = 1.0f;
+    int lead_sample_index;
+    int lead_offset;
+    for (lead_sample_index = 0, lead_offset = 0;
+         lead_offset < 7 * (int)sizeof(PathTemplateSample);
+         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->center_x = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->special_scalar = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->lateral_scale = 1.0f;
+        set_matrix_identity(&((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform);
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + lead_offset))->center_x;
+        float z = (float)lead_sample_index;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.y = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.z = z;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = z;
-        secondary_samples[i].delta_length = 1.0f;
+        set_matrix_identity(&((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + lead_offset))->center_x;
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.y = 0.49000001f;
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.z = z;
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->delta_length = 1.0f;
     }
 
     if (curve_segments >= 0) {
         float secondary_radius = radius - 0.49000001f;
-        i = 0;
+        int curve_index = 0;
         do {
-            int sample_index = i + 7;
-            float angle = (float)i * 1.0461504f / curve_segments_f;
+            int sample_index = curve_index + 7;
+            float angle =
+                (float)curve_index * 1.0461504f / curve_segments_f;
 
             primary_samples[sample_index].center_x = 0.0f;
             primary_samples[sample_index].rotation_scalar_98 = 0.0f;
@@ -239,8 +246,8 @@ void cRPath::initialize_supertramp_path_template_pair(
             secondary_samples[sample_index].transform.basis_forward.cross_vectors(
                 &secondary_samples[sample_index].transform.basis_right,
                 &secondary_samples[sample_index].transform.basis_up);
-            ++i;
-        } while (i <= curve_segments);
+            ++curve_index;
+        } while (curve_index <= curve_segments);
     }
 
     int delta_index = 0;

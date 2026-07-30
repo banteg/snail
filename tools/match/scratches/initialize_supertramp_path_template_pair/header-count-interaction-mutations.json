@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "header-count-interaction",
+      "find": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;",
+      "replacements": [
+        {
+          "name": "predecessor-local-member-derived",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;"
+        },
+        {
+          "name": "predecessor-float-before-segment",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count_f = (float)last_segment_index;\n    segment_count = last_segment_index + 1;\n    float curve_segments_f = (float)curve_segments;"
+        }
+      ]
+    }
+  ]
+}

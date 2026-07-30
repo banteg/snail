@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-grid-owner",
+      "find": "    for (int face_row = 0; face_row < path->segment_count; ++face_row) {\n        int face_column = 0;",
+      "replacements": [
+        {
+          "name": "reuse-vertex-grid",
+          "text": "#define face_row row\n#define face_column column\n    for (face_row = 0; face_row < path->segment_count; ++face_row) {\n        face_column = 0;"
+        }
+      ]
+    }
+  ]
+}

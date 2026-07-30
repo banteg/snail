@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "header-count-owner",
+      "find": "    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)last_segment_index;\n    float curve_segments_f = (float)curve_segments;",
+      "replacements": [
+        {
+          "name": "direct-curve-counts",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(curve_segments + 7);\n    float curve_segments_f = (float)curve_segments;"
+        },
+        {
+          "name": "segment-derived-float-count",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;"
+        },
+        {
+          "name": "segment-derived-last-index",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    int last_segment_index = segment_count - 1;\n    segment_count_f = (float)last_segment_index;\n    float curve_segments_f = (float)curve_segments;"
+        },
+        {
+          "name": "total-count-local",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    int total_segment_count = curve_segments + 8;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)(total_segment_count - 1);\n    float curve_segments_f = (float)curve_segments;"
+        }
+      ]
+    }
+  ]
+}
