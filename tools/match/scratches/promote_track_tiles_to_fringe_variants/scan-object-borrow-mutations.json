@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "slice-scan-object-borrow",
+      "find": "                        void* object = ((BodBase*)cell)->object;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "typed-object",
+          "text": "                        Object* object = cell->object;"
+        },
+        {
+          "name": "object-reference",
+          "text": "                        Object*& object = cell->object;"
+        },
+        {
+          "name": "borrowed-slot",
+          "text": "                        Object** object_slot = &cell->object;\n                        Object* object = *object_slot;"
+        },
+        {
+          "name": "base-subobject",
+          "text": "                        BodBase* bod = cell;\n                        Object* object = bod->object;"
+        }
+      ]
+    },
+    {
+      "name": "corner-scan-object-borrow",
+      "find": "                        void* object = ((BodBase*)cell)->object;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "typed-object",
+          "text": "                        Object* object = cell->object;"
+        },
+        {
+          "name": "object-reference",
+          "text": "                        Object*& object = cell->object;"
+        },
+        {
+          "name": "borrowed-slot",
+          "text": "                        Object** object_slot = &cell->object;\n                        Object* object = *object_slot;"
+        },
+        {
+          "name": "base-subobject",
+          "text": "                        BodBase* bod = cell;\n                        Object* object = bod->object;"
+        }
+      ]
+    }
+  ]
+}

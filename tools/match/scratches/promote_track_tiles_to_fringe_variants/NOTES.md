@@ -117,3 +117,26 @@ variants, and restore `0x20`. In both `GenerateLevel()` dispatchers the call
 sits between `SmoothTrack()` and `SlideSmoothTrack()`. The Android layout and
 compiler scheduling remain platform-specific; this transfers authored
 ownership and source intent, not offsets or a score-shaped rewrite.
+
+## 2026-07-30 bounded object-cursor lifetime audit
+
+The current canonical types reproduce the historical cursor boundary. Three
+recorded mutation sweeps covered 81 unique source variants with no truncation:
+
+- per-scan typed pointers, object references, object-slot borrows, and
+  `BodBase` subobject borrows at both catalog scans;
+- lane-lifetime `Object**` and `Object*&` borrows, independently and across
+  both scans;
+- every interaction between a lane-lifetime `BodBase*`, the two object reads,
+  and the two `SetObject` receivers.
+
+None improved the retained 81.33%, 75/75-instruction result. Forty-six
+variants were byte-identical and 35 were worse. Short-lived typed borrows and
+all `BodBase*` interactions optimize back to the retained cell-base cursor.
+Keeping the object slot live across both scans forces a different schedule and
+falls to 39.22%; it does not preserve the native `ebx = 0x20` flag owner.
+
+The append-only ledger therefore has three consecutive non-improving sweeps
+and marks this scratch stalled. Retain the typed `cRSubLoc*` induction: the
+remaining uniform `+0x24` displacement is bounded compiler scheduling, not
+missing ownership or an unresolved reference.

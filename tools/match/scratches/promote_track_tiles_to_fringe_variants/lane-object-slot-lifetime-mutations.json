@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lane-object-slot-lifetime",
+      "find": "            do {\n                cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;",
+      "replacements": [
+        {
+          "name": "slot-pointer",
+          "text": "            do {\n                Object** object_slot = &cell->object;\n                cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;"
+        },
+        {
+          "name": "slot-reference",
+          "text": "            do {\n                Object*& object_slot = cell->object;\n                cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;"
+        }
+      ]
+    },
+    {
+      "name": "slice-scan-shared-slot",
+      "find": "                        void* object = ((BodBase*)cell)->object;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "dereference-pointer",
+          "text": "                        Object* object = *object_slot;"
+        },
+        {
+          "name": "copy-reference",
+          "text": "                        Object* object = object_slot;"
+        }
+      ]
+    },
+    {
+      "name": "corner-scan-shared-slot",
+      "find": "                        void* object = ((BodBase*)cell)->object;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "dereference-pointer",
+          "text": "                        Object* object = *object_slot;"
+        },
+        {
+          "name": "copy-reference",
+          "text": "                        Object* object = object_slot;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lane-base-subobject-lifetime",
+      "find": "            do {\n                cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;",
+      "replacements": [
+        {
+          "name": "borrowed-base-pointer",
+          "text": "            do {\n                BodBase* bod = cell;\n                cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;"
+        }
+      ]
+    },
+    {
+      "name": "slice-scan-base-object",
+      "find": "                        void* object = ((BodBase*)cell)->object;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "borrowed-base-pointer",
+          "text": "                        Object* object = bod->object;"
+        }
+      ]
+    },
+    {
+      "name": "corner-scan-base-object",
+      "find": "                        void* object = ((BodBase*)cell)->object;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "borrowed-base-pointer",
+          "text": "                        Object* object = bod->object;"
+        }
+      ]
+    },
+    {
+      "name": "slice-scan-base-receiver",
+      "find": "                            ((BodBase*)cell)->SetObject(\n                                ((BodBase*)((char*)&game->root_bod_catalog.warning_slices",
+      "replacements": [
+        {
+          "name": "borrowed-base-pointer",
+          "text": "                            bod->SetObject(\n                                ((BodBase*)((char*)&game->root_bod_catalog.warning_slices"
+        }
+      ]
+    },
+    {
+      "name": "corner-scan-base-receiver",
+      "find": "                            ((BodBase*)cell)->SetObject(\n                                ((BodBase*)((char*)&game->root_bod_catalog.warning_corners",
+      "replacements": [
+        {
+          "name": "borrowed-base-pointer",
+          "text": "                            bod->SetObject(\n                                ((BodBase*)((char*)&game->root_bod_catalog.warning_corners"
+        }
+      ]
+    }
+  ]
+}
