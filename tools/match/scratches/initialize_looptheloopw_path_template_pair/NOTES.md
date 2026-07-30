@@ -181,3 +181,14 @@ the recovery is isolated to `PATH_VARIANT == 1`.
 The corrected region still differs in address-register selection and stack
 homes, but its semantic basis/call sequence now matches the target. Those
 remaining allocation residuals are not evidence for another source rewrite.
+
+## 2026-07-30 paired delta expression ownership
+
+The shared primary and secondary `Vector3` subtraction operators raise focused
+matching from **67.29%** to **69.40%**. Candidate size moves from `744` to
+`745` instructions, exactly matching the target, while the `10/745` prefix and
+clean `55/0/0/0` reference audit remain unchanged.
+
+Either operator in isolation reaches only **67.43%** at `744/745`
+instructions. The exact-parity improvement depends on retaining both lanes as
+one coupled expression-owner recovery.

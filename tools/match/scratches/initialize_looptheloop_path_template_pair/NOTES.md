@@ -182,3 +182,16 @@ and raises focused matching from 69.71% (`725/721`) to **70.64%** (`723/721`).
 The `22/721` prefix and fully clean `49/0/0/0` reference audit are preserved.
 A full dashboard rebuild shows the same improvement in the W sibling and
 byte-identical output for every other skeleton consumer.
+
+## 2026-07-30 paired delta expression ownership
+
+Spelling both primary and secondary delta assignments through the shared
+`Vector3` subtraction operator raises focused matching from **70.64%** to
+**70.91%** while preserving the `723/721` instruction counts, `22/721` exact
+prefix, and clean `49/0/0/0` reference audit.
+
+The two assignments are dependency-closed. Keeping only the primary operator
+or only the secondary operator produces the same **68.88%** result with
+`722/721` instructions, below the explicit-component baseline. The retained
+paired form is therefore one coupled expression-owner recovery, not two
+independent score-selected rewrites.

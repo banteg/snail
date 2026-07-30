@@ -585,23 +585,15 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     if (segment_count - 1 > 0) {
         i = 0;
         do {
-            primary_samples[i].delta_dir_to_next = Vector3(
-                primary_samples[i + 1].transform.position.x
-                    - primary_samples[i].transform.position.x,
-                primary_samples[i + 1].transform.position.y
-                    - primary_samples[i].transform.position.y,
-                primary_samples[i + 1].transform.position.z
-                    - primary_samples[i].transform.position.z);
+            primary_samples[i].delta_dir_to_next =
+                primary_samples[i + 1].transform.position -
+                primary_samples[i].transform.position;
             primary_samples[i].delta_length =
                 primary_samples[i].delta_dir_to_next.Normalize();
 
-            secondary_samples[i].delta_dir_to_next = Vector3(
-                secondary_samples[i + 1].transform.position.x
-                    - secondary_samples[i].transform.position.x,
-                secondary_samples[i + 1].transform.position.y
-                    - secondary_samples[i].transform.position.y,
-                secondary_samples[i + 1].transform.position.z
-                    - secondary_samples[i].transform.position.z);
+            secondary_samples[i].delta_dir_to_next =
+                secondary_samples[i + 1].transform.position -
+                secondary_samples[i].transform.position;
             secondary_samples[i].delta_length =
                 secondary_samples[i].delta_dir_to_next.Normalize();
             ++i;
