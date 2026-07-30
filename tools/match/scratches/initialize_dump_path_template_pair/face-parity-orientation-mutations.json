@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-parity",
+      "find": "                        if ((face_column ^ face_row) & 1)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);",
+      "replacements": [
+        {
+          "name": "even-first",
+          "text": "                        if (((face_column ^ face_row) & 1) == 0)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);"
+        }
+      ]
+    },
+    {
+      "name": "second-face-parity",
+      "find": "                        if ((face_column ^ face_row) & 1)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);",
+      "replacements": [
+        {
+          "name": "even-first",
+          "text": "                        if (((face_column ^ face_row) & 1) == 0)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);"
+        }
+      ]
+    }
+  ]
+}

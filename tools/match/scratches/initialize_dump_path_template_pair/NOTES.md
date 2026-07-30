@@ -287,3 +287,42 @@ secondary alone is neutral, but replacing both component constructors adds
 7.36 weighted bytes. The dependency-closed pair is retained, raising focused
 matching from 57.14% to **57.43%** with 703/690 instructions, prefix 8/690,
 and all 43 references clean.
+
+## 2026-07-30 curved-arm and mesh expression ownership
+
+Raw Windows control flow in the curved section jumps on the first sample to the
+short pair of `RotIdentity` calls and otherwise falls through into the complete
+primary/secondary orientation body. Reordering the equivalent source arms to
+that native later-sample-first layout adds 107.18 weighted bytes without
+changing the candidate instruction count, prefix, or relocation health.
+
+The generated mesh independently preserves a double-width x87 lateral
+lifetime. Changing the local from `float` to `double` removes four excess
+instructions and adds 7.93 weighted bytes. The terminal generated-position
+expression is an authored `endpoint + lateral_offset` boundary; it removes two
+more instructions and adds 9.53 weighted bytes. Once the curved branch owner is
+correct, the ordinary mesh arm also benefits from spelling the observed
+`basis_right * lateral` vector boundary, adding another 14.78 weighted bytes at
+unchanged instruction count.
+
+Together these changes raise focused matching from **57.43%** to **62.87%**:
+
+```text
+match: 62.87%
+target: 690 insns, candidate: 697 insns
+prefix: 8/690 target insns
+masked operands: 43 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The retained gain is 139.41 weighted bytes and six fewer candidate
+instructions, with no reference debt. The terminal scale boundary regresses
+after the ordinary arm is retained, the ordinary position-add boundary is
+byte-neutral, and every face-parity orientation is byte-neutral. Those three
+consecutive non-improving sweeps bound this source-shape frontier.
+
+The experiment ledger contains 11 sweeps and 27 unique evaluated variants:
+12 improve, nine are neutral, seven degrade, and three are metric tradeoffs.
+The scale spec was intentionally rerun after the branch-order change because
+that register-allocation result is baseline-dependent. Its terminal-only
+closure reaches the same final source as the earlier coupled probe, accounting
+for the single repeated variant; it is not treated as independent evidence.

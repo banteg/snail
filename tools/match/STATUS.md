@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **80.67%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **80.72%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -651,7 +651,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 745/745 | 69.40% | 10/745 | 55 ok |  | core |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 726/718 | 60.11% | 0/718 | 52 ok |  | core |
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 691/685 | 67.59% | 20/685 | 43 ok |  | core |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 703/690 | 57.43% | 8/690 | 43 ok |  | core |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 697/690 | 62.87% | 8/690 | 43 ok |  | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 712/726 | 75.66% | 122/726 | 65 ok |  | core |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 54.89% | 17/552 | 36 ok |  | core |
