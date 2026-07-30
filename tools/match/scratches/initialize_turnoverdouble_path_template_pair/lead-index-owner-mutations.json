@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-index-init",
+      "find": "    int lead_z_index = 0;\n    int i = 0;",
+      "replacements": [
+        {
+          "name": "single-index",
+          "text": "    int i = 0;"
+        }
+      ]
+    },
+    {
+      "name": "lead-z-owner",
+      "find": "        float z = (float)lead_z_index;",
+      "replacements": [
+        {
+          "name": "sample-index",
+          "text": "        float z = (float)i;"
+        }
+      ]
+    },
+    {
+      "name": "lead-control",
+      "find": "        ++i;\n        secondary_samples[i - 1].delta_length = 1.0f;\n        ++lead_z_index;\n    } while (i < 6);",
+      "replacements": [
+        {
+          "name": "single-index",
+          "text": "        ++i;\n        secondary_samples[i - 1].delta_length = 1.0f;\n    } while (i < 6);"
+        }
+      ]
+    }
+  ]
+}

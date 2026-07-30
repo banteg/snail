@@ -216,3 +216,25 @@ Together these owners raise focused matching from 50.55% (670/687) to
 prefix and all 45 masked references remain clean. Moving the vertex pointer
 into the two native-looking branch-local positions loses 121.49 weighted
 bytes and the exact prefix, so the shared source owner remains retained.
+
+## 2026-07-30 fixed-tail index ownership
+
+Windows SSA and both verified mobile bodies expose one logical tail sample
+index plus its compiler-derived `0xa8` byte offset. Replacing the scratch's
+redundant tail Z counter with that sample index adds 33.09 weighted bytes and
+raises focused matching to **53.81%**. A seven-variant equivalent-bound sweep
+then identifies the mobile-backed `segment_count` endpoint, which adds another
+8.35 weighted bytes.
+
+The retained source reaches **54.14%**, 665/687 instructions, prefix 6/687,
+with all 45 masked references clean. The full gain from the previous frontier
+is 41.43 weighted bytes. The shorter candidate remains 22 instructions below
+the target, but both retained changes follow independent source ownership
+evidence rather than an operand-order spelling.
+
+The corresponding seven-variant lead-index sweep is bounded. Its complete
+single-index form is byte-identical, while changing only the lead control owner
+loses 33.67 weighted bytes. Moving the inlined delta loop index to function
+scope is also byte-identical. Neither neutral spelling is retained. The
+remaining six-instruction prefix is caused by the function-wide EBX/ESI
+zero-versus-one lifetime; no register-forcing source was introduced.

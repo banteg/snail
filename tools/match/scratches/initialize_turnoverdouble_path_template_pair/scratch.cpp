@@ -220,7 +220,6 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         ++lead_z_index;
     } while (i < 6);
 
-    int tail_z_index = curve_segments + 6;
     i = curve_segments + 6;
     do {
         primary_samples[i].center_x = (float)width_cells * 0.5f - 4.0f;
@@ -229,7 +228,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         primary_samples[i].special_scalar = 0.0f;
         primary_samples[i].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[i].transform);
-        float z = (float)tail_z_index;
+        float z = (float)i;
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
@@ -241,8 +240,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         secondary_samples[i].transform.position.z = z;
         secondary_samples[i].delta_length = 1.0f;
         ++i;
-        ++tail_z_index;
-    } while (tail_z_index - 6 - curve_segments < 2);
+    } while (i < segment_count);
 
     int curve_index = 0;
     if (curve_segments > 0) {

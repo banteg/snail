@@ -183,3 +183,24 @@ matching from 51.54% (655/680) to **53.34%** (651/680), a gain of 44.43
 weighted bytes. The 15-instruction prefix and all 46 masked references remain
 clean. Moving the shared vertex owner into the two native-looking branch-local
 positions loses 14.98 weighted bytes, so that source lifetime remains rejected.
+
+## 2026-07-30 fixed-tail index ownership
+
+Windows SSA and both verified mobile bodies expose one logical tail sample
+index plus its compiler-derived `0xa8` byte offset. The scratch instead carried
+a redundant Z counter alongside the sample index. An exhaustive 11-variant
+owner/control sweep recovers the common owner and identifies the
+mobile-backed `segment_count` endpoint as the contributing control form.
+
+The retained single-index source gains 27.87 weighted bytes, raises focused
+matching from **53.34%** (651/680) to **54.48%** (649/680), and extends the
+exact prefix from 15 to **54/680** instructions. All 46 masked references
+remain clean. The candidate becomes two instructions shorter, but the logical
+owner, endpoint, and much longer exact prefix all agree with the independent
+native and mobile evidence.
+
+Using the sample index for Z alone gains 15.48 weighted bytes without extending
+the prefix; the relative two-sample predicate loses 3.69. The corresponding
+seven-variant lead-index sweep is also bounded: the complete single-index form
+is byte-identical, while changing only its control owner loses 74.72 weighted
+bytes. The neutral lead spelling is not retained.

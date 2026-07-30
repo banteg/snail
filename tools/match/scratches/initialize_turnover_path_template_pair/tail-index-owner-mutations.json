@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-index-init",
+      "find": "    int tail_z_index = curve_segments + 6;\n    i = curve_segments + 6;",
+      "replacements": [
+        {
+          "name": "single-index",
+          "text": "    i = curve_segments + 6;"
+        }
+      ]
+    },
+    {
+      "name": "tail-z-owner",
+      "find": "        float z = (float)tail_z_index;",
+      "replacements": [
+        {
+          "name": "sample-index",
+          "text": "        float z = (float)i;"
+        }
+      ]
+    },
+    {
+      "name": "tail-control",
+      "find": "        ++i;\n        ++tail_z_index;\n    } while (tail_z_index - 6 - curve_segments < 2);",
+      "replacements": [
+        {
+          "name": "relative-single-index",
+          "text": "        ++i;\n    } while (i - 6 - curve_segments < 2);"
+        },
+        {
+          "name": "segment-count",
+          "text": "        ++i;\n    } while (i < segment_count);"
+        }
+      ]
+    }
+  ]
+}

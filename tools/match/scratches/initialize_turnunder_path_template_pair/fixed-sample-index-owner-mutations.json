@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-index-owner",
+      "find": "    int lead_z_index = 0;\n    int i = 0;\n    do {\n        primary_samples[i].center_x =\n            -((float)width_cells * 0.5f - 4.0f);\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        float z = (float)lead_z_index;\n        primary_samples[i].transform.position.y = 0.0f;\n        primary_samples[i].transform.position.z = z;\n        primary_samples[i].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y = 0.49000001f;\n        secondary_samples[i].transform.position.z = z;\n        ++i;\n        secondary_samples[i - 1].delta_length = 1.0f;\n        ++lead_z_index;\n    } while (i < 6);",
+      "replacements": [
+        {
+          "name": "single-logical-index",
+          "text": "    int i = 0;\n    do {\n        primary_samples[i].center_x =\n            -((float)width_cells * 0.5f - 4.0f);\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        float z = (float)i;\n        primary_samples[i].transform.position.y = 0.0f;\n        primary_samples[i].transform.position.z = z;\n        primary_samples[i].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y = 0.49000001f;\n        secondary_samples[i].transform.position.z = z;\n        ++i;\n        secondary_samples[i - 1].delta_length = 1.0f;\n    } while (i < 6);"
+        }
+      ]
+    },
+    {
+      "name": "tail-index-owner",
+      "find": "    int tail_z_index = interior_count + 6;\n    i = interior_count + 6;\n    do {\n        primary_samples[i].center_x =\n            -(4.0f - (float)width_cells * 0.5f);\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        float z = (float)tail_z_index;\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        primary_samples[i].transform.position.y = 0.0f;\n        primary_samples[i].transform.position.z = z;\n        primary_samples[i].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y = 0.49000001f;\n        secondary_samples[i].transform.position.z = z;\n        secondary_samples[i].delta_length = 1.0f;\n        ++i;\n        ++tail_z_index;\n    } while (tail_z_index - 6 - interior_count < 2);",
+      "replacements": [
+        {
+          "name": "single-logical-index",
+          "text": "    i = interior_count + 6;\n    do {\n        primary_samples[i].center_x =\n            -(4.0f - (float)width_cells * 0.5f);\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        float z = (float)i;\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        primary_samples[i].transform.position.y = 0.0f;\n        primary_samples[i].transform.position.z = z;\n        primary_samples[i].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y = 0.49000001f;\n        secondary_samples[i].transform.position.z = z;\n        secondary_samples[i].delta_length = 1.0f;\n        ++i;\n    } while (i - 6 - interior_count < 2);"
+        }
+      ]
+    }
+  ]
+}

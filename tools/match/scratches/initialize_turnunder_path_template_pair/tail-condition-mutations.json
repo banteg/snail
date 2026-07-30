@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-condition",
+      "find": "    } while (i - 6 - interior_count < 2);",
+      "replacements": [
+        {
+          "name": "count-before-six",
+          "text": "    } while (i - interior_count - 6 < 2);"
+        },
+        {
+          "name": "prebiased-add",
+          "text": "    } while (i + (-6 - interior_count) < 2);"
+        },
+        {
+          "name": "grouped-start",
+          "text": "    } while (i - (interior_count + 6) < 2);"
+        },
+        {
+          "name": "less-than-derived-end",
+          "text": "    } while (i < interior_count + 8);"
+        },
+        {
+          "name": "not-equal-derived-end",
+          "text": "    } while (i != interior_count + 8);"
+        },
+        {
+          "name": "less-than-segment-count",
+          "text": "    } while (i < segment_count);"
+        },
+        {
+          "name": "not-equal-segment-count",
+          "text": "    } while (i != segment_count);"
+        }
+      ]
+    }
+  ]
+}

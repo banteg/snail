@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "delta-index-scope",
+      "find": "static __forceinline void compute_path_deltas(Path* path)\n{\n    for (int i = 0; i < path->segment_count - 1; ++i) {",
+      "replacements": [
+        {
+          "name": "function-scope-index",
+          "text": "static __forceinline void compute_path_deltas(Path* path)\n{\n    int i;\n    for (i = 0; i < path->segment_count - 1; ++i) {"
+        }
+      ]
+    }
+  ]
+}

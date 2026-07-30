@@ -217,3 +217,23 @@ writes, and parity branches at `0x42747a..0x42762c`. Replaying the split records
 without parity loses 355.74 weighted bytes and the exact prefix; including the
 native parity shape loses 456.83. Those face owners remain deferred until the
 earlier loop/cursor lifetimes no longer destabilize the whole function.
+
+## 2026-07-30 fixed-tail index ownership
+
+Windows SSA and both verified mobile bodies expose one logical tail sample
+index plus its compiler-derived `0xa8` byte offset. The scratch instead carried
+a redundant Z counter alongside the sample index. An exhaustive 11-variant
+owner/control sweep shows that sourcing Z from the sample index and testing its
+relative two-sample bound together add 35.90 weighted bytes. Removing the now
+dead redundant counter is byte-identical to that winner.
+
+The retained source raises focused matching from **53.87%** (647/671) to
+**55.34%** (648/671) and, more importantly, extends the exact prefix from
+15 to **54/671** instructions. All 41 masked references remain clean. A direct
+`segment_count` endpoint reaches the same prefix but gains only 24.18 weighted
+bytes in this compilation context.
+
+The corresponding seven-variant lead-index sweep is bounded. A complete
+single-index lead is byte-identical, while changing only its control owner
+loses 190.08 weighted bytes and collapses the prefix to six instructions. The
+neutral lead spelling is not retained.
