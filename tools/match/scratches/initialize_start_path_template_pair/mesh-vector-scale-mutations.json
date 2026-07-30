@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-lateral-scale",
+      "find": "                    Vector3 lateral_offset(\n                        lateral * sample->transform.basis_right.x,\n                        lateral * sample->transform.basis_right.y,\n                        lateral * sample->transform.basis_right.z);",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "                    Vector3 lateral_offset =\n                        sample->transform.basis_right * lateral;"
+        }
+      ]
+    }
+  ]
+}

@@ -271,3 +271,16 @@ constructors compiles byte-identically here. Both isolated replacements and
 their combination leave 63.70%, 605/610 instructions, prefix 0/610, and all 35
 clean references unchanged. Start retains its expanded component spelling and
 records the exhaustive neutral bound.
+
+## 2026-07-30 mesh arithmetic bound
+
+The native unbranched mesh block at `0x4269e2..0x426a50` keeps the lateral
+value live in x87 form. Recasting the source local as `double` loses 56.01
+weighted bytes; spelling the whole expression in double loses 59.66 weighted
+bytes and adds reference debt, while a volatile float loses 11.17. Splitting
+the existing float expression is byte-identical.
+
+The `Vector3` add and scale operators were then tested alone and together.
+Every form is byte-identical, so Start retains its component arithmetic at
+**63.70%**, **605/610** instructions, prefix 0/610, and 35 clean references.
+This exhausts the bounded arithmetic family without a source edit.

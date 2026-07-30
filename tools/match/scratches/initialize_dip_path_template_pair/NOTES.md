@@ -200,3 +200,18 @@ Both shared orientation helpers were tested independently and together with
 the authored `Vector3::operator-` form. All three variants are byte-identical,
 leaving **49.19%**, 646/655 instructions, prefix 20/655, and all 37 references
 unchanged. Dip retains the expanded component spelling.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The native five-vector mesh block at `0x41ea51..0x41eb28` distinguishes the
+ordinary sample position/right-vector pair from the terminal endpoint and
+previous-sample pair. Retaining a `double` lateral local, both authored
+`Vector3::operator*` scales, and the terminal `Vector3::operator+` reproduces
+that ownership and adds 69.96 weighted bytes.
+
+The ordinary position add remains byte-identical both alone and after the
+scale rewrites. Split-float and volatile lateral locals regress or stay
+neutral, and the full double-expression spelling adds reference debt, so none
+is retained. Focused matching rises from **49.19%** to **52.12%**, candidate
+instructions move from 646 to 642 against 655 target instructions, the exact
+prefix remains 20/655, and all 37 references remain clean.
