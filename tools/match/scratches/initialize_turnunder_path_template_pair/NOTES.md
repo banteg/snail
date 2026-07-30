@@ -304,3 +304,21 @@ tail byte cursor and Turnunder-specific component-wise forward-vector
 construction remain the honest source boundary; the curved native cursor is
 left as compiler-derived allocation debt until a dependency-closed owner
 recovery explains the divergent schedule.
+
+## 2026-07-30 checkerboard texture-control bound
+
+Native instructions at `0x428849..0x428862` and `0x4288fb..0x42891b`
+independently preserve odd-parity branches around the first and second face
+texture lookups. Both branch arms request the same texture, matching the
+authored control graph recovered in the neighboring strip-mesh constructors.
+
+The exhaustive two-site sweep does not transfer cleanly into Turnunder's
+current compilation context. The first branch alone loses 5.19 weighted bytes
+at 667/687 instructions. The second alone gains 7.42 bytes at 669/687, but is
+an unsupported asymmetric half-transfer. Restoring the exact native pair loses
+42.62 bytes and falls from **56.49%** to **54.77%** at 675/687 instructions.
+Prefix remains 6/687 and all 45 references stay clean.
+
+No parity branch is retained. The result bounds this isolated transfer and
+leaves the duplicated native control as dependency-closure debt in the face
+construction schedule rather than accepting the metric-only second branch.
