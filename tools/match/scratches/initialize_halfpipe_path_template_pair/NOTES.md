@@ -353,3 +353,37 @@ and falls to 39.94%.
 Halfpipe therefore remains **44.62%**, 687/707 instructions, prefix 18/707,
 with all 55 references clean. The target's tail reload schedule does not emerge
 from a local alias removal in the current compilation context.
+
+## 2026-07-30 secondary offset ownership
+
+Native instructions at `0x429f14..0x429f6b` compute all three scaled
+`basis_up` components before applying them to the copied secondary transform.
+The X product remains on x87, Y is spilled at `esp+0x48`, Z is computed, and a
+separate secondary-position owner remains live across the intervening curve
+cursor/index advance. The Android and iOS `BuildHalfPipe` bodies independently
+preserve the same three-component secondary offset after copying the primary
+transform.
+
+Retaining that boundary as one `Vector3 secondary_offset` plus one
+`Vector3* secondary_position` raises the focused result by 265.05 weighted
+bytes:
+
+```text
+match: 54.85% (was 44.62%)
+target: 707 insns, candidate: 686 insns (was 687)
+prefix: 18/707 target insns
+masked operands: 55 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The retained-baseline mutation sweep closes the local alternatives:
+scalar-direct falls back to 44.62%, scalar temporaries without the pointer to
+45.02%, aggregate-only to 47.10%, pointer-only to 52.23%, and scalar
+temporaries plus the pointer to 52.48%. An explicit reloaded primary-up pointer
+is byte-identical and is not retained. Advancing the logical curve index before
+the three destination adds is also byte-identical.
+
+The previously rejected middle byte-cursor rewrite was retested with this
+dependency in place, including explicit current, previous, and secondary
+sample owners. It still regresses to 41.25% (670/707), so that control-owner
+transfer remains bounded rather than being hidden by the old scalar offset
+spelling.
