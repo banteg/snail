@@ -317,3 +317,45 @@ byte-identical. Deriving it from `segment_count - 1` extends the prefix from
 21 to 58 instructions, but adds two instructions and loses 13.50 weighted
 bytes; Android and iOS independently retain the authored `steps + 1` terminal
 index. That metric tradeoff is recorded and rejected.
+
+## 2026-07-31 face and terminal mesh ownership
+
+The Windows face tail keeps one logical face offset across the two-face loop
+and reuses the original argument homes for the face index, column, and
+facequad base. The old branch-local pointers recomputed the complete logical
+index and hid that allocation. Naming the common integer offset while writing
+the indexed records directly raises focused matching from **70.15% to
+78.95%**, a 215.45 weighted-byte gain, and moves the candidate from 672 to 667
+instructions against 668. The candidate now uses the same `esp+0x10`,
+`esp+0x68`, and `esp+0x14` homes as the target.
+
+Raw `0x42dcc2..0x42ded8` also proves a positive-width guard and a do-loop for
+the face columns. Recovering that control owner adds another 25.69 weighted
+bytes without changing instruction count, reaching **80.00%**. Four
+algebraically equivalent face-offset spellings are byte-neutral, as are
+independent and paired parity inversions. Reintroducing branch-local pointers
+on the common offset regresses to 60.43%, so the direct indexed owner is
+retained.
+
+The terminal mesh branch at `0x42dc1e` addresses the current sample and reads
+the previous sample through negative offsets. Replacing the scratch-only
+`row - 1` pointer with `sample[-1]` adds 22.03 weighted bytes. A default
+endpoint with separate X, Y, and extended-Z assignments then recovers the
+native integer Y copy and adds 15.43 weighted bytes. Finally, an explicit
+component constructor for the generated position adds 3.65 weighted bytes.
+
+The retained result is:
+
+```text
+match: 81.68%
+target: 668 insns, candidate: 669 insns
+prefix: 21/668 target insns
+frame: exact 0x48 bytes
+masked operands: 41 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+A default generated-position owner regresses by 3.65 weighted bytes, while all
+seven component operand-order combinations are byte-neutral. The checked
+ledger now contains 34 records and 118 unique variants. Together with the
+earlier endpoint, mesh-cursor, height-order, and curve-index sweeps, these
+results close the current evidence-backed Hill Valley neighborhood.

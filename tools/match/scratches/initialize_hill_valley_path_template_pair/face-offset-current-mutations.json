@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-offset-owner",
+      "find": "                    int face_offset =\n                        face_index\n                        + 2 * (row * path->width_cells + column);",
+      "replacements": [
+        {
+          "name": "distributed",
+          "text": "                    int face_offset =\n                        2 * column + 2 * row * path->width_cells + face_index;"
+        },
+        {
+          "name": "named-cell",
+          "text": "                    int face_cell =\n                        row * path->width_cells + column;\n                    int face_offset = face_index + 2 * face_cell;"
+        },
+        {
+          "name": "doubled-cell-then-add",
+          "text": "                    int face_offset =\n                        2 * (row * path->width_cells + column);\n                    face_offset += face_index;"
+        },
+        {
+          "name": "split-assignment",
+          "text": "                    int face_offset;\n                    face_offset =\n                        face_index\n                        + 2 * (row * path->width_cells + column);"
+        }
+      ]
+    }
+  ]
+}
