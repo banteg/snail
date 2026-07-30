@@ -162,3 +162,24 @@ inline primary expression adds 18.41 weighted bytes. The retained narrow edit
 raises focused matching from 50.79% to **51.54%** with 655/680 instructions,
 prefix 15/680, and all 46 references unchanged. The helper-plus-inline form
 emits the same bytes, so the neutral helper edit is not retained.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Native instructions at `0x427c8e..0x427d76` preserve the same x87 lateral
+value and branch-local vector aggregates as Turnover. Recovering `double
+lateral` raises focused matching by 13.93 weighted bytes. On that baseline,
+the two scale operators initially lose 4.65 together, while the terminal
+position addition gains 5.62 and the ordinary addition is byte-neutral.
+
+The terminal addition changes the scale interaction materially: both
+`Vector3::operator*` expressions together then gain another 24.89 weighted
+bytes, compared with +10.88 for the terminal scale alone and -5.62 for the
+ordinary scale alone. The native evidence supports symmetric lateral-offset
+ownership, so the paired form is retained. Rechecking the ordinary position
+addition in that final state remains byte-neutral and it is not retained.
+
+Together the scalar owner, paired scales, and terminal addition raise focused
+matching from 51.54% (655/680) to **53.34%** (651/680), a gain of 44.43
+weighted bytes. The 15-instruction prefix and all 46 masked references remain
+clean. Moving the shared vertex owner into the two native-looking branch-local
+positions loses 14.98 weighted bytes, so that source lifetime remains rejected.
