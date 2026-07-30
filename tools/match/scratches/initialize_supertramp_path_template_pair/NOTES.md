@@ -245,3 +245,26 @@ The exact shared terminal-delta block supports the paired authored
 bytes and raises focused matching from 54.53% to **54.89%**. Candidate and
 target counts remain 541/552, prefix remains 17/552, and all 36 references stay
 clean; either isolated operator gains half as much.
+
+## 2026-07-30 generated-position operator boundary
+
+Raw native `0x4243a2..0x424418` keeps the lateral value live on x87 while it
+materializes a lateral-offset vector and then one complete generated position.
+Spelling the final sum through the authored `Vector3::operator+` adds 3.54
+weighted bytes and raises focused matching to **55.08%**. Candidate and target
+counts remain 541/552, prefix remains 17/552, and all 36 references stay clean.
+The scale operator alone is byte-neutral.
+
+Three following bounded sweeps close the adjacent ownership choices:
+
+- changing the lateral local to `double` loses 14.16 weighted bytes; pairing
+  it with `Vector3::operator*` is byte-neutral but does not beat the retained
+  float/component form;
+- moving the shared loop-index declaration across five setup boundaries is
+  byte-neutral;
+- initializing that index early enough to overlap the count/radius setup loses
+  3.54 to 14.16 weighted bytes and can shorten the exact prefix.
+
+The first residual remains the native `0x40` versus candidate `0x44`
+count/radius stack-home swap. The semantic lifetime probes do not reproduce
+it, so no allocator forcing is retained.

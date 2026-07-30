@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-index-declaration",
+      "find": "    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)last_segment_index;\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    int i;",
+      "replacements": [
+        {
+          "name": "before-curve-segments",
+          "text": "    int i;\n    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)last_segment_index;\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;"
+        },
+        {
+          "name": "after-curve-segments",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    int i;\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)last_segment_index;\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;"
+        },
+        {
+          "name": "after-last-segment-index",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    int i;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)last_segment_index;\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;"
+        },
+        {
+          "name": "before-curve-segments-float",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)last_segment_index;\n    int i;\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;"
+        },
+        {
+          "name": "before-radius",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    int last_segment_index = curve_segments + 7;\n    width_or_scale = 1.0f;\n    segment_count = last_segment_index + 1;\n    segment_count_f = (float)last_segment_index;\n    float curve_segments_f = (float)curve_segments;\n    int i;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-lateral-owner",
+      "find": "                    float lateral =\n                        (float)column - (float)path->width_cells * 0.5f;",
+      "replacements": [
+        {
+          "name": "double-local",
+          "text": "                    double lateral =\n                        (float)column - (float)path->width_cells * 0.5f;"
+        }
+      ]
+    },
+    {
+      "name": "mesh-lateral-scale",
+      "find": "                    Vector3 lateral_offset(\n                        lateral * sample->transform.basis_right.x,\n                        lateral * sample->transform.basis_right.y,\n                        lateral * sample->transform.basis_right.z);",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "                    Vector3 lateral_offset =\n                        sample->transform.basis_right * lateral;"
+        }
+      ]
+    }
+  ]
+}
