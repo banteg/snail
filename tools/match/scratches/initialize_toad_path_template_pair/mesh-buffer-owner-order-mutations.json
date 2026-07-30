@@ -8,6 +8,14 @@
         {
           "name": "facequads-before-vertices",
           "text": "    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* vertices = path->strip_mesh->vertices;"
+        },
+        {
+          "name": "object-owner-vertices-first",
+          "text": "    cRObject* strip_mesh = path->strip_mesh;\n    Vector3* vertices = strip_mesh->vertices;\n    cRFaceQuad* facequads = strip_mesh->facequads;"
+        },
+        {
+          "name": "object-owner-facequads-first",
+          "text": "    cRObject* strip_mesh = path->strip_mesh;\n    cRFaceQuad* facequads = strip_mesh->facequads;\n    Vector3* vertices = strip_mesh->vertices;"
         }
       ]
     }

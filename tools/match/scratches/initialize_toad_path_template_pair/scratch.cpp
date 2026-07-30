@@ -48,36 +48,52 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     Vector3* vertices = path->strip_mesh->vertices;
     cRFaceQuad* facequads = path->strip_mesh->facequads;
 
-    int row;
+    int row = 0;
     int column;
     int face_index;
-    for (row = 0; row <= path->segment_count; ++row) {
-        PathTemplateSample* sample = &path->primary_samples[row];
-
-        for (column = 0; column <= path->width_cells; ++column) {
-            double lateral = (float)column - (float)path->width_cells * 0.5f;
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row != path->segment_count) {
-                Vector3 lateral_offset =
-                    sample->transform.basis_right * lateral;
-                Vector3 generated_position(
-                    sample->transform.position.x + lateral_offset.x,
-                    sample->transform.position.y + lateral_offset.y,
-                    sample->transform.position.z + lateral_offset.z);
-                *vertex = generated_position;
-            } else {
-                PathTemplateSample* previous = sample - 1;
-                Vector3 lateral_offset =
-                    previous->transform.basis_right * lateral;
-                Vector3 endpoint(
-                    previous->transform.position.x,
-                    previous->transform.position.y,
-                    previous->transform.position.z + 1.0f);
-                Vector3 generated_position =
-                    endpoint + lateral_offset;
-                *vertex = generated_position;
+    if (path->segment_count >= 0) {
+        int sample_offset = 0;
+        do {
+            column = 0;
+            if (path->width_cells >= 0) {
+                do {
+                    double lateral =
+                        (float)column - (float)path->width_cells * 0.5f;
+                    if (row != path->segment_count) {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset);
+                        Vector3 lateral_offset =
+                            sample->transform.basis_right * lateral;
+                        Vector3 generated_position(
+                            sample->transform.position.x + lateral_offset.x,
+                            sample->transform.position.y + lateral_offset.y,
+                            sample->transform.position.z + lateral_offset.z);
+                        Vector3* vertex =
+                            &vertices[column + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    } else {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset);
+                        Vector3 lateral_offset =
+                            sample[-1].transform.basis_right * lateral;
+                        Vector3 endpoint(
+                            sample[-1].transform.position.x,
+                            sample[-1].transform.position.y,
+                            sample[-1].transform.position.z + 1.0f);
+                        Vector3 generated_position =
+                            endpoint + lateral_offset;
+                        Vector3* vertex =
+                            &vertices[column + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    }
+                    ++column;
+                } while (column <= path->width_cells);
             }
-        }
+            ++row;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (row <= path->segment_count);
     }
 
     for (row = 0; row < path->segment_count; ++row) {
@@ -139,15 +155,15 @@ void cRPath::initialize_toad_path_template_pair(
     width_cells = 4;
 
     if (turn_left) {
-        lead_count = 1;
-        tail_count = 3;
         start_x = -2.0f;
         turn_sign = -1.0f;
+        lead_count = 1;
+        tail_count = 3;
     } else {
-        lead_count = 2;
-        tail_count = 1;
         start_x = 2.0f;
         turn_sign = 1.0f;
+        lead_count = 2;
+        tail_count = 1;
     }
 
     width_or_scale = 1.0f;

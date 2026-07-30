@@ -330,3 +330,45 @@ clean references. The retained direct-index delta loop therefore remains at
 **58.18%**, 633/663 instructions. Native dual induction is sufficient evidence
 to test the source owner, but this negative transfer shows that Snake's cursor
 win depends on its surrounding allocation rather than a family-wide spelling.
+
+## 2026-07-31 native mesh-row and branch-scalar ownership
+
+Native `0x42d1f2..0x42d322` carries a logical mesh row beside an independent
+`0xa8` sample cursor. It enters through a nonnegative segment guard, enters
+each column range through its own nonnegative guard, and advances both owners
+after the post-tested column loop. Replaying that complete control unit while
+preserving Toad's proven double lateral value and vector operators adds
+**45.17 weighted bytes** and grows the candidate from 633 to 636 instructions.
+Reverting only the row owner loses the same 45.17 bytes, with no prefix or
+reference tradeoff.
+
+That global-allocation change makes the previously neutral branch-assignment
+order material. Native's true arm at `0x42cc1d..0x42cc31` writes `start_x`,
+`turn_sign`, `lead_count`, then `tail_count`; the current Binary Ninja replay
+independently renders that same order. Retaining it adds another **14.90
+weighted bytes** and extends the exact prefix from 15 to 16 instructions.
+Six declaration orders remain byte-identical, so only the instruction-backed
+assignment schedule is retained.
+
+Together the two owners move Toad from **58.18% to 60.66%**:
+
+```text
+target: 663 insns, candidate: 636 insns
+prefix: 16/663 target insns
+masked operands: 33 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The adjacent mesh frontier is bounded on the resulting allocation. Swapping
+facequad and vertex acquisition or adding an explicit mesh-object owner is
+byte-identical. Eight terminal-endpoint materializations all regress; the
+closest default-construction form loses 2.23 weighted bytes. Replaying the
+complete positive-guarded, post-tested face-loop control shortens the
+candidate by one instruction but loses 2.61 weighted bytes. These owners are
+not retained.
+
+Three dependency-closed tail replays were also rejected before this
+milestone: a shared absolute index with the native positive guard reached
+52.40%, a guarded local counter plus explicit `0xa8` cursor reached 57.72%,
+and a guarded absolute index plus cursor reached 52.60%. The remaining
+turn-sign stack-home difference therefore is not evidence for transferring
+any of those incomplete tail spellings.

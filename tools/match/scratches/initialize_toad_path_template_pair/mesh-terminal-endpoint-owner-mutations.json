@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-terminal-endpoint-owner",
+      "find": "                        Vector3 endpoint(\n                            sample[-1].transform.position.x,\n                            sample[-1].transform.position.y,\n                            sample[-1].transform.position.z + 1.0f);",
+      "replacements": [
+        {
+          "name": "default-xyz",
+          "text": "                        Vector3 endpoint;\n                        endpoint.x = sample[-1].transform.position.x;\n                        endpoint.y = sample[-1].transform.position.y;\n                        endpoint.z =\n                            sample[-1].transform.position.z + 1.0f;"
+        },
+        {
+          "name": "default-xzy",
+          "text": "                        Vector3 endpoint;\n                        endpoint.x = sample[-1].transform.position.x;\n                        endpoint.z =\n                            sample[-1].transform.position.z + 1.0f;\n                        endpoint.y = sample[-1].transform.position.y;"
+        },
+        {
+          "name": "default-yxz",
+          "text": "                        Vector3 endpoint;\n                        endpoint.y = sample[-1].transform.position.y;\n                        endpoint.x = sample[-1].transform.position.x;\n                        endpoint.z =\n                            sample[-1].transform.position.z + 1.0f;"
+        },
+        {
+          "name": "default-yzx",
+          "text": "                        Vector3 endpoint;\n                        endpoint.y = sample[-1].transform.position.y;\n                        endpoint.z =\n                            sample[-1].transform.position.z + 1.0f;\n                        endpoint.x = sample[-1].transform.position.x;"
+        },
+        {
+          "name": "default-zxy",
+          "text": "                        Vector3 endpoint;\n                        endpoint.z =\n                            sample[-1].transform.position.z + 1.0f;\n                        endpoint.x = sample[-1].transform.position.x;\n                        endpoint.y = sample[-1].transform.position.y;"
+        },
+        {
+          "name": "default-zyx",
+          "text": "                        Vector3 endpoint;\n                        endpoint.z =\n                            sample[-1].transform.position.z + 1.0f;\n                        endpoint.y = sample[-1].transform.position.y;\n                        endpoint.x = sample[-1].transform.position.x;"
+        },
+        {
+          "name": "copy-then-add",
+          "text": "                        Vector3 endpoint =\n                            sample[-1].transform.position;\n                        endpoint.z += 1.0f;"
+        },
+        {
+          "name": "copy-then-assign-add",
+          "text": "                        Vector3 endpoint =\n                            sample[-1].transform.position;\n                        endpoint.z = endpoint.z + 1.0f;"
+        }
+      ]
+    }
+  ]
+}
