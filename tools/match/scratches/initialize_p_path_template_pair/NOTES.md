@@ -249,3 +249,18 @@ This is analysis-only. Focused matching remains **54.05%** with exact **679/679*
 instruction-count parity, a six-instruction exact prefix, and **41 accepted,
 0 unresolved, 0 mismatched, and 0 unaudited** masked operands. No source edit,
 synthetic branch, or mobile address transfer was introduced.
+
+## 2026-07-30 sibling mesh-row replay boundary
+
+The dependency-closed ordinary-first mesh-row shape that improves Invert,
+Wibble, and both Twister targets was replayed as P's first recorded mutation
+sweep. It raises the scalar score from 54.05% to 54.43% by nine weighted bytes
+and preserves the six-instruction prefix and all 41 clean references, but grows
+the candidate from exact 679/679 instruction parity to 688/679.
+
+P's native evidence proves branch-local vector values and distinct face-record
+owners, but it does not yet prove that the row control shares the siblings'
+guarded byte-cursor source shape. The result is therefore recorded as an
+instruction-count tradeoff and not retained. Further P mesh work should first
+recover its native row-control owner rather than importing the family schedule
+on score alone.

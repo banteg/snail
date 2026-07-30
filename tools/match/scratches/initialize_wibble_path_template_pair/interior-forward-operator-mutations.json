@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-forward-subtraction",
+      "find": "        primary_samples[sample_index].transform.basis_forward = Vector3(\n            primary_samples[sample_index].transform.position.x -\n                primary_samples[sample_index - 1].transform.position.x,\n            primary_samples[sample_index].transform.position.y -\n                primary_samples[sample_index - 1].transform.position.y,\n            primary_samples[sample_index].transform.position.z -\n                primary_samples[sample_index - 1].transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "        primary_samples[sample_index].transform.basis_forward =\n            primary_samples[sample_index].transform.position -\n            primary_samples[sample_index - 1].transform.position;"
+        }
+      ]
+    }
+  ]
+}

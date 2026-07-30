@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-delta-owner",
+      "find": "        PathTemplateSample* primary = &path->primary_samples[i];\n        PathTemplateSample* primary_next = &path->primary_samples[i + 1];\n        primary->delta_dir_to_next =\n            primary_next->transform.position - primary->transform.position;\n        primary->delta_length = primary->delta_dir_to_next.Normalize();",
+      "replacements": [
+        {
+          "name": "scoped-pointer-pair",
+          "text": "        {\n            PathTemplateSample* primary = &path->primary_samples[i];\n            PathTemplateSample* primary_next = &path->primary_samples[i + 1];\n            primary->delta_dir_to_next =\n                primary_next->transform.position - primary->transform.position;\n            primary->delta_length = primary->delta_dir_to_next.Normalize();\n        }"
+        },
+        {
+          "name": "reference-pair",
+          "text": "        PathTemplateSample& primary = path->primary_samples[i];\n        PathTemplateSample& primary_next = path->primary_samples[i + 1];\n        primary.delta_dir_to_next =\n            primary_next.transform.position - primary.transform.position;\n        primary.delta_length = primary.delta_dir_to_next.Normalize();"
+        },
+        {
+          "name": "current-pointer-next-array",
+          "text": "        PathTemplateSample* primary = &path->primary_samples[i];\n        primary->delta_dir_to_next =\n            path->primary_samples[i + 1].transform.position -\n            primary->transform.position;\n        primary->delta_length = primary->delta_dir_to_next.Normalize();"
+        },
+        {
+          "name": "next-pointer-current-array",
+          "text": "        PathTemplateSample* primary_next = &path->primary_samples[i + 1];\n        path->primary_samples[i].delta_dir_to_next =\n            primary_next->transform.position -\n            path->primary_samples[i].transform.position;\n        path->primary_samples[i].delta_length =\n            path->primary_samples[i].delta_dir_to_next.Normalize();"
+        },
+        {
+          "name": "position-reference-pair",
+          "text": "        Vector3& primary_position =\n            path->primary_samples[i].transform.position;\n        Vector3& primary_next_position =\n            path->primary_samples[i + 1].transform.position;\n        path->primary_samples[i].delta_dir_to_next =\n            primary_next_position - primary_position;\n        path->primary_samples[i].delta_length =\n            path->primary_samples[i].delta_dir_to_next.Normalize();"
+        }
+      ]
+    }
+  ]
+}

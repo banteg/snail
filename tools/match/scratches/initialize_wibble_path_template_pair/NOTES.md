@@ -232,3 +232,36 @@ SSA face selector/completion values falls to 62.21% (604/608). These results
 show that Wibble's best VC6 shape keeps the compact shared vertex destination
 and single authored face counter even though later analysis views split their
 SSA values.
+
+## 2026-07-30 ordinary-first mesh and asymmetric delta owners
+
+Invert and both Twister targets exposed one dependency that the earlier Wibble
+mesh tests did not cover: guarded row/column `do` loops, a separate `0xa8`
+sample cursor, ordinary-row-first control, and branch-local sample and vertex
+destinations must move as one unit. Replaying that complete shape raises
+focused agreement from 62.82% to 66.12% (+73 weighted bytes), preserves the
+85-instruction exact prefix and all 39 clean references, and grows the
+candidate from 605 to 614 instructions against 608 native. The much weaker
+terminal-first result is therefore a branch-order interaction, not evidence
+against branch-local ownership.
+
+The interior primary forward direction has the same authored `Vector3`
+subtraction owner recovered independently in Invert and both Twisters.
+Replacing its component constructor with `operator-` adds four weighted bytes
+without changing instruction count, prefix, or references, reaching 66.28%.
+
+The delta helper then proves a Wibble-specific asymmetric allocation. Direct
+secondary-array ownership raises agreement by another 45 weighted bytes to
+**68.30%** (`616/608`, prefix 85, 39 clean references). Primary-only direct
+ownership loses six bytes, while moving both lanes directly loses 106. Five
+additional primary lifetime forms close the boundary: scoped pointers,
+references, and a current-pointer/next-array mix are byte-identical; direct
+current-array and position-reference forms lose 150 weighted bytes.
+
+The native face schedule was retested after the row allocation changed. It now
+extends the prefix to 103 instructions but still loses 28 weighted bytes,
+scoring 65.02%, so it remains rejected. Five new sweeps add eleven variants;
+the complete ledger now contains 42 variants across twelve sweeps
+(`10 better / 19 identical / 13 worse`). Remaining early drift is concentrated
+in the interior sample allocation rather than row induction, vector
+subtraction, or delta ownership.
