@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "hoist-current-row-sample",
+      "find": "            double lateral = (float)mesh_column - (float)width_cells * 0.5f;\n            if (mesh_row != segment_count) {\n                PathAttachmentSample* sample = &primary_samples[mesh_row];",
+      "replacements": [
+        {
+          "name": "shared-byte-cursor-sample",
+          "text": "            double lateral = (float)mesh_column - (float)width_cells * 0.5f;\n            PathAttachmentSample* sample =\n                (PathAttachmentSample*)((char*)primary_samples\n                    + mesh_sample_offset);\n            if (mesh_row != segment_count) {"
+        }
+      ]
+    },
+    {
+      "name": "terminal-from-shared-sample",
+      "find": "                PathAttachmentSample* previous =\n                    (PathAttachmentSample*)((char*)primary_samples\n                        + mesh_sample_offset)\n                    - 1;",
+      "replacements": [
+        {
+          "name": "shared-sample-minus-one",
+          "text": "                PathAttachmentSample* previous = sample - 1;"
+        }
+      ]
+    }
+  ]
+}

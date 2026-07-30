@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-byte-cursor-stride",
+      "find": "    int mesh_sample_offset = 0;\n    for (mesh_row = 0; mesh_row <= segment_count;\n        ++mesh_row, mesh_sample_offset += (int)sizeof(PathAttachmentSample)) {",
+      "replacements": [
+        {
+          "name": "literal-stride",
+          "text": "    int mesh_sample_offset = 0;\n    for (mesh_row = 0; mesh_row <= segment_count;\n        ++mesh_row, mesh_sample_offset += 0xa8) {"
+        },
+        {
+          "name": "uncast-sizeof-stride",
+          "text": "    int mesh_sample_offset = 0;\n    for (mesh_row = 0; mesh_row <= segment_count;\n        ++mesh_row, mesh_sample_offset += sizeof(PathAttachmentSample)) {"
+        },
+        {
+          "name": "explicit-add-assignment",
+          "text": "    int mesh_sample_offset = 0;\n    for (mesh_row = 0; mesh_row <= segment_count;\n        ++mesh_row, mesh_sample_offset = mesh_sample_offset\n            + (int)sizeof(PathAttachmentSample)) {"
+        },
+        {
+          "name": "unsigned-cursor",
+          "text": "    unsigned int mesh_sample_offset = 0;\n    for (mesh_row = 0; mesh_row <= segment_count;\n        ++mesh_row, mesh_sample_offset += sizeof(PathAttachmentSample)) {"
+        },
+        {
+          "name": "long-cursor",
+          "text": "    long mesh_sample_offset = 0;\n    for (mesh_row = 0; mesh_row <= segment_count;\n        ++mesh_row, mesh_sample_offset += (long)sizeof(PathAttachmentSample)) {"
+        }
+      ]
+    }
+  ]
+}

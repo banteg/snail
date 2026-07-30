@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "early-center-y-declaration",
+      "find": "    float center_y;\n    for (i = 0; i < 4; ++i) {",
+      "replacements": [
+        {
+          "name": "remove-early-declaration",
+          "text": "    for (i = 0; i < 4; ++i) {"
+        }
+      ]
+    },
+    {
+      "name": "late-center-y-initialization",
+      "find": "    center_y = -loop_radius;",
+      "replacements": [
+        {
+          "name": "declare-at-initialization",
+          "text": "    float center_y = -loop_radius;"
+        }
+      ]
+    }
+  ]
+}

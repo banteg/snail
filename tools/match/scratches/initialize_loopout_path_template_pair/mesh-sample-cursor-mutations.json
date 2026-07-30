@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-row-byte-cursor",
+      "find": "    for (mesh_row = 0; mesh_row <= segment_count; ++mesh_row) {",
+      "replacements": [
+        {
+          "name": "explicit-byte-offset",
+          "text": "    int mesh_sample_offset = 0;\n    for (mesh_row = 0; mesh_row <= segment_count;\n        ++mesh_row, mesh_sample_offset += (int)sizeof(PathAttachmentSample)) {"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-mesh-sample-owner",
+      "find": "                PathAttachmentSample* sample = &primary_samples[mesh_row];",
+      "replacements": [
+        {
+          "name": "byte-cursor-sample",
+          "text": "                PathAttachmentSample* sample =\n                    (PathAttachmentSample*)((char*)primary_samples\n                        + mesh_sample_offset);"
+        }
+      ]
+    },
+    {
+      "name": "terminal-mesh-sample-owner",
+      "find": "                PathAttachmentSample* previous = &primary_samples[mesh_row - 1];",
+      "replacements": [
+        {
+          "name": "byte-cursor-previous",
+          "text": "                PathAttachmentSample* previous =\n                    (PathAttachmentSample*)((char*)primary_samples\n                        + mesh_sample_offset) - 1;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "delta-loop-guard",
+      "find": "    if (segment_count - 1 > 0) {\n        for (i = 0; i < segment_count - 1; ++i) {\n            primary_samples[i].delta_dir_to_next = Vector3(\n                primary_samples[i + 1].transform.position.x\n                    - primary_samples[i].transform.position.x,\n                primary_samples[i + 1].transform.position.y\n                    - primary_samples[i].transform.position.y,\n                primary_samples[i + 1].transform.position.z\n                    - primary_samples[i].transform.position.z);\n            primary_samples[i].delta_length =\n                primary_samples[i].delta_dir_to_next.Normalize();\n\n            secondary_samples[i].delta_dir_to_next = Vector3(\n                secondary_samples[i + 1].transform.position.x\n                    - secondary_samples[i].transform.position.x,\n                secondary_samples[i + 1].transform.position.y\n                    - secondary_samples[i].transform.position.y,\n                secondary_samples[i + 1].transform.position.z\n                    - secondary_samples[i].transform.position.z);\n            secondary_samples[i].delta_length =\n                secondary_samples[i].delta_dir_to_next.Normalize();\n        }\n    }",
+      "replacements": [
+        {
+          "name": "single-for-guard",
+          "text": "    for (i = 0; i < segment_count - 1; ++i) {\n        primary_samples[i].delta_dir_to_next = Vector3(\n            primary_samples[i + 1].transform.position.x\n                - primary_samples[i].transform.position.x,\n            primary_samples[i + 1].transform.position.y\n                - primary_samples[i].transform.position.y,\n            primary_samples[i + 1].transform.position.z\n                - primary_samples[i].transform.position.z);\n        primary_samples[i].delta_length =\n            primary_samples[i].delta_dir_to_next.Normalize();\n\n        secondary_samples[i].delta_dir_to_next = Vector3(\n            secondary_samples[i + 1].transform.position.x\n                - secondary_samples[i].transform.position.x,\n            secondary_samples[i + 1].transform.position.y\n                - secondary_samples[i].transform.position.y,\n            secondary_samples[i + 1].transform.position.z\n                - secondary_samples[i].transform.position.z);\n        secondary_samples[i].delta_length =\n            secondary_samples[i].delta_dir_to_next.Normalize();\n    }"
+        },
+        {
+          "name": "guarded-do-while",
+          "text": "    i = 0;\n    if (segment_count - 1 > 0) {\n        do {\n            primary_samples[i].delta_dir_to_next = Vector3(\n                primary_samples[i + 1].transform.position.x\n                    - primary_samples[i].transform.position.x,\n                primary_samples[i + 1].transform.position.y\n                    - primary_samples[i].transform.position.y,\n                primary_samples[i + 1].transform.position.z\n                    - primary_samples[i].transform.position.z);\n            primary_samples[i].delta_length =\n                primary_samples[i].delta_dir_to_next.Normalize();\n\n            secondary_samples[i].delta_dir_to_next = Vector3(\n                secondary_samples[i + 1].transform.position.x\n                    - secondary_samples[i].transform.position.x,\n                secondary_samples[i + 1].transform.position.y\n                    - secondary_samples[i].transform.position.y,\n                secondary_samples[i + 1].transform.position.z\n                    - secondary_samples[i].transform.position.z);\n            secondary_samples[i].delta_length =\n                secondary_samples[i].delta_dir_to_next.Normalize();\n            ++i;\n        } while (i < segment_count - 1);\n    }"
+        }
+      ]
+    }
+  ]
+}

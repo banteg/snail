@@ -171,3 +171,47 @@ The two shared orientation helpers are also exhaustively neutral: either
 authored operator and their combination compile byte-identically. Focused
 matching remains **60.11%**, 726/718 instructions, prefix 0/718, with all 52
 references clean.
+
+## 2026-07-30 delta and mesh ownership
+
+Live Windows code at `0x41cae9..0x41cbab` has one delta-loop entry check and a
+single `0xa8` sample stride. Retesting that native control boundary after the
+current ownership closures reverses the much older low-match result: removing
+the redundant outer source guard adds 42.24 weighted bytes and removes two
+candidate instructions. The direct `for` and a guarded `do`/`while` compile
+identically, so the simpler direct loop is retained.
+
+The mesh at `0x41cca4..0x41cddc` keeps the column lateral value in x87 across
+both row arms and owns a separate zero-based row-byte cursor. Changing the
+lateral local from `float` to `double` removes four excess instructions and
+adds 11.63 weighted bytes. Both `basis_right * lateral` boundaries then add
+14.53, and the terminal `endpoint + lateral_offset` boundary adds another
+7.26. The ordinary position add remains byte-neutral.
+
+Recovering the row-byte cursor plus the terminal previous-sample alias is the
+largest mesh gain: 89.74 weighted bytes. Either the ordinary or terminal alias
+alone produces the same candidate, while spelling both through the cursor
+loses 7.27 weighted bytes from the pre-cursor baseline. The retained terminal
+form is the minimal semantic owner and preserves the native distinct row index
+and `0xa8` cursor. This is a metric tradeoff: it adds seven instructions at
+that step, leaving the final candidate one instruction larger than the
+original candidate even though the whole-function alignment improves sharply.
+
+Together the five retained boundaries raise focused matching from **60.11%**
+to **66.44%**, adding **165.40 weighted bytes**. The candidate moves from
+726/718 to 727/718 instructions, prefix remains 0/718, and all 52 references
+remain clean. The candidate frame is still `0x54` versus native `0x50`; neither
+the native late `loop_center_y` declaration nor complete reuse of the radius
+input slot changes emitted code.
+
+One isolated probe replaced `-loop_radius` with `-curve_source` and scored
+another 36.37 weighted bytes, but it is rejected as a false win: `curve_source`
+still contains the original input, while native code explicitly negates the
+derived loop radius. Moving `loop_center_y` to its native late lifetime is
+byte-neutral. A shared pre-branch mesh-sample alias regresses 105.89 weighted
+bytes, the guarded outer mesh `do`/`while` is byte-neutral, and five cursor
+type/stride spellings are byte-identical.
+
+The ledger now contains 12 sweeps and 74 unique variants: 12 improve, 21 are
+neutral, 41 degrade, and three carry metric tradeoffs. Three consecutive
+non-improving sweeps close this source-shape frontier.

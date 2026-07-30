@@ -595,28 +595,26 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     }
 #endif
 
-    if (segment_count - 1 > 0) {
-        for (i = 0; i < segment_count - 1; ++i) {
-            primary_samples[i].delta_dir_to_next = Vector3(
-                primary_samples[i + 1].transform.position.x
-                    - primary_samples[i].transform.position.x,
-                primary_samples[i + 1].transform.position.y
-                    - primary_samples[i].transform.position.y,
-                primary_samples[i + 1].transform.position.z
-                    - primary_samples[i].transform.position.z);
-            primary_samples[i].delta_length =
-                primary_samples[i].delta_dir_to_next.Normalize();
+    for (i = 0; i < segment_count - 1; ++i) {
+        primary_samples[i].delta_dir_to_next = Vector3(
+            primary_samples[i + 1].transform.position.x
+                - primary_samples[i].transform.position.x,
+            primary_samples[i + 1].transform.position.y
+                - primary_samples[i].transform.position.y,
+            primary_samples[i + 1].transform.position.z
+                - primary_samples[i].transform.position.z);
+        primary_samples[i].delta_length =
+            primary_samples[i].delta_dir_to_next.Normalize();
 
-            secondary_samples[i].delta_dir_to_next = Vector3(
-                secondary_samples[i + 1].transform.position.x
-                    - secondary_samples[i].transform.position.x,
-                secondary_samples[i + 1].transform.position.y
-                    - secondary_samples[i].transform.position.y,
-                secondary_samples[i + 1].transform.position.z
-                    - secondary_samples[i].transform.position.z);
-            secondary_samples[i].delta_length =
-                secondary_samples[i].delta_dir_to_next.Normalize();
-        }
+        secondary_samples[i].delta_dir_to_next = Vector3(
+            secondary_samples[i + 1].transform.position.x
+                - secondary_samples[i].transform.position.x,
+            secondary_samples[i + 1].transform.position.y
+                - secondary_samples[i].transform.position.y,
+            secondary_samples[i + 1].transform.position.z
+                - secondary_samples[i].transform.position.z);
+        secondary_samples[i].delta_length =
+            secondary_samples[i].delta_dir_to_next.Normalize();
     }
 
     primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
@@ -636,15 +634,15 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     int face_column;
     int face_index;
 
-    for (mesh_row = 0; mesh_row <= segment_count; ++mesh_row) {
+    int mesh_sample_offset = 0;
+    for (mesh_row = 0; mesh_row <= segment_count;
+        ++mesh_row, mesh_sample_offset += (int)sizeof(PathAttachmentSample)) {
         for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
-            float lateral = (float)mesh_column - (float)width_cells * 0.5f;
+            double lateral = (float)mesh_column - (float)width_cells * 0.5f;
             if (mesh_row != segment_count) {
                 PathAttachmentSample* sample = &primary_samples[mesh_row];
-                Vector3 lateral_offset(
-                    lateral * sample->transform.basis_right.x,
-                    lateral * sample->transform.basis_right.y,
-                    lateral * sample->transform.basis_right.z);
+                Vector3 lateral_offset =
+                    sample->transform.basis_right * lateral;
                 Vector3 generated_position(
                     sample->transform.position.x + lateral_offset.x,
                     sample->transform.position.y + lateral_offset.y,
@@ -653,19 +651,18 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
             } else {
-                PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
-                Vector3 lateral_offset(
-                    lateral * previous->transform.basis_right.x,
-                    lateral * previous->transform.basis_right.y,
-                    lateral * previous->transform.basis_right.z);
+                PathAttachmentSample* previous =
+                    (PathAttachmentSample*)((char*)primary_samples
+                        + mesh_sample_offset)
+                    - 1;
+                Vector3 lateral_offset =
+                    previous->transform.basis_right * lateral;
                 Vector3 endpoint(
                     previous->transform.position.x,
                     previous->transform.position.y,
                     previous->transform.position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
+                Vector3 generated_position =
+                    endpoint + lateral_offset;
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;

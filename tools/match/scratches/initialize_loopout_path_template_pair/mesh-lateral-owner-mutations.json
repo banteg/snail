@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-lateral-owner",
+      "find": "            float lateral = (float)mesh_column - (float)width_cells * 0.5f;",
+      "replacements": [
+        {
+          "name": "double-local",
+          "text": "            double lateral = (float)mesh_column - (float)width_cells * 0.5f;"
+        },
+        {
+          "name": "split-float-local",
+          "text": "            float lateral = (float)mesh_column;\n            lateral -= (float)width_cells * 0.5f;"
+        },
+        {
+          "name": "double-expression",
+          "text": "            double lateral = (double)mesh_column - (double)width_cells * 0.5;"
+        },
+        {
+          "name": "volatile-float-local",
+          "text": "            volatile float lateral =\n                (float)mesh_column - (float)width_cells * 0.5f;"
+        }
+      ]
+    }
+  ]
+}

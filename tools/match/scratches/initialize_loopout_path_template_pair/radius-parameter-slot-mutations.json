@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "radius-slot-owner",
+      "find": "    curve_count = (int)(curve_source * 6.2831855f);\n    width_or_scale = 1.0f;\n    segment_count = curve_count + 14;\n    segment_count_f = (float)(curve_count + 14);\n    float curve_count_f = (float)curve_count;\n    float loop_radius = curve_count_f * 0.15915494f;",
+      "replacements": [
+        {
+          "name": "reuse-curve-source",
+          "text": "    curve_count = (int)(curve_source * 6.2831855f);\n    width_or_scale = 1.0f;\n    segment_count = curve_count + 14;\n    segment_count_f = (float)(curve_count + 14);\n    float curve_count_f = (float)curve_count;\n    curve_source = curve_count_f * 0.15915494f;"
+        }
+      ]
+    },
+    {
+      "name": "center-y-radius-use",
+      "find": "    center_y = -loop_radius;",
+      "replacements": [
+        {
+          "name": "curve-source-radius",
+          "text": "    center_y = -curve_source;"
+        }
+      ]
+    },
+    {
+      "name": "secondary-radius-use",
+      "find": "        float secondary_radius = loop_radius + 0.49000001f;",
+      "replacements": [
+        {
+          "name": "curve-source-radius",
+          "text": "        float secondary_radius = curve_source + 0.49000001f;"
+        }
+      ]
+    },
+    {
+      "name": "primary-z-radius-use",
+      "find": "                sine(angle) * loop_radius + 10.0f;",
+      "replacements": [
+        {
+          "name": "curve-source-radius",
+          "text": "                sine(angle) * curve_source + 10.0f;"
+        }
+      ]
+    },
+    {
+      "name": "primary-y-radius-use",
+      "find": "                cosine(angle) * loop_radius + center_y;",
+      "replacements": [
+        {
+          "name": "curve-source-radius",
+          "text": "                cosine(angle) * curve_source + center_y;"
+        }
+      ]
+    }
+  ]
+}
