@@ -263,3 +263,25 @@ departure plus curve, loses 4 weighted bytes; the other forms lose 12–44.
 Matching remains **41.33%**, 638/683 instructions, prefix 5/683, with 44 clean
 plus 2 unaudited references. The target's array reloads therefore need a
 broader register-lifetime recovery, not another local pointer-to-index rewrite.
+
+## 2026-07-30 shared-orientation closure bound
+
+The later Slalom and SlalomBig recoveries showed that sample-array rewrites can
+depend on replacing both lane-local orientation guards and pointer owners with
+one shared first-curve branch. SlalomDouble was therefore re-evaluated on that
+broader native-backed boundary rather than inheriting the sibling win.
+
+Shared direct orientation alone resolves the final two unaudited calls and
+moves the candidate from 638 to 653/683 instructions, but loses 65 weighted
+bytes and falls to **38.77%**. From that new baseline, the existing three-phase
+sample-owner sweep exhaustively retests all seven lead/departure/curve
+combinations. The best, direct departure plus direct curve initialization,
+recovers 24 weighted bytes to **39.70%**; the complete three-phase transfer
+reaches only **38.14%** at 675/683 instructions.
+
+No closure variant exceeds the retained **41.33%** frontier, and none extends
+the five-instruction prefix. The original lane-local pointer owners therefore
+remain in source with 44 clean plus 2 explicitly unaudited references. This
+bounds the family transfer: SlalomDouble's fixed-count prologue and curved
+height calculation create a different VC6 register schedule even though the
+native semantic array graph is homologous.
