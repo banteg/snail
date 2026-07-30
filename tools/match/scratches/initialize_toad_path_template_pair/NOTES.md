@@ -296,3 +296,21 @@ tail counter; switching to the native-looking absolute relative-bound index
 loses 121.73 bytes and one prefix instruction. Both lead/tail interactions
 remain negative, so those cursors are treated as compiler-derived and only the
 contributing curve owner is retained.
+
+## 2026-07-30 post-cursor texture-parity bound
+
+The native duplicated texture branches at `0x42d41b..0x42d434` and
+`0x42d4cd..0x42d4ea` were replayed after the sample-index, secondary-offset,
+and curved byte-cursor recoveries materially changed the enclosing allocation.
+The exhaustive two-site sweep still rejects the dependency-closed pair.
+
+The front branch alone loses 5.41 weighted bytes at 638/663 instructions. The
+back branch alone gains 7.29 bytes at 640/663, but remains an unsupported
+asymmetric half-transfer. Restoring both native branches loses 43.54 weighted
+bytes and falls from **58.18%** to **56.38%** at 646/663 instructions. Prefix
+remains 15/663 and all 33 references stay clean.
+
+No parity branch is retained. This supersedes the earlier pre-cursor
+measurement while reaching the same source conclusion: the current face
+record schedule lacks a wider dependency needed to reproduce the authored
+pair, and the metric-only back branch is not accepted on its own.
