@@ -287,3 +287,33 @@ The surrounding bounded searches are now closed:
 The remaining early mismatch is therefore a register/schedule difference in
 the endpoint setup, not evidence for another source owner in the tested
 neighborhood.
+
+## 2026-07-30 header ordering and terminal-Z ownership
+
+Native `0x42d594..0x42d5bb` converts `length`, derives the terminal index,
+writes `width_or_scale`, then stores and converts the total sample count.
+Keeping the conversion first while moving the source width write before the
+terminal-index declaration recovers the next two exact header instructions:
+
+```text
+match: 70.15% (was 70.00%)
+target: 668 insns, candidate: 672 insns
+prefix: 21/668 target insns (was 19/668)
+masked operands: 41 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The retained change adds 3.65 weighted bytes without changing candidate size
+or reference health. Four count-schedule interactions on that corrected
+baseline are neutral or worse. A named total count is byte-identical; direct
+`steps + 2` owners, delayed terminal-index declaration, and declaring the
+total before the terminal index lose 20.65..27.96 weighted bytes and seven
+prefix instructions.
+
+The following native lifetime remains bounded rather than source-recovered.
+Windows keeps the terminal index in `edi` through the final `centered` test,
+then spills it into that dead argument home for the terminal Z conversion.
+Spelling the Z owner as `steps + 1` or through a named terminal index is
+byte-identical. Deriving it from `segment_count - 1` extends the prefix from
+21 to 58 instructions, but adds two instructions and loses 13.50 weighted
+bytes; Android and iOS independently retain the authored `steps + 1` terminal
+index. That metric tradeoff is recorded and rejected.

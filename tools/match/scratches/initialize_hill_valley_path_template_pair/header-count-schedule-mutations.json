@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "header-count-schedule",
+      "find": "    int steps = (int)length;\n    width_or_scale = 1.0f;\n    int last = steps + 1;\n    segment_count = last + 1;\n    segment_count_f = (float)(last + 1);\n    get_path_nodes();",
+      "replacements": [
+        {
+          "name": "direct-steps",
+          "text": "    int steps = (int)length;\n    width_or_scale = 1.0f;\n    int last = steps + 1;\n    segment_count = steps + 2;\n    segment_count_f = (float)(steps + 2);\n    get_path_nodes();"
+        },
+        {
+          "name": "late-last-direct-steps",
+          "text": "    int steps = (int)length;\n    width_or_scale = 1.0f;\n    segment_count = steps + 2;\n    segment_count_f = (float)(steps + 2);\n    get_path_nodes();\n    int last = steps + 1;"
+        },
+        {
+          "name": "named-count",
+          "text": "    int steps = (int)length;\n    width_or_scale = 1.0f;\n    int last = steps + 1;\n    int count = last + 1;\n    segment_count = count;\n    segment_count_f = (float)count;\n    get_path_nodes();"
+        },
+        {
+          "name": "named-count-before-last",
+          "text": "    int steps = (int)length;\n    width_or_scale = 1.0f;\n    int count = steps + 2;\n    int last = steps + 1;\n    segment_count = count;\n    segment_count_f = (float)count;\n    get_path_nodes();"
+        }
+      ]
+    }
+  ]
+}

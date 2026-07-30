@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "endpoint-z-owner",
+      "find": "    float last_z = (float)last;",
+      "replacements": [
+        {
+          "name": "steps-plus-one",
+          "text": "    float last_z = (float)(steps + 1);"
+        },
+        {
+          "name": "segment-count-minus-one",
+          "text": "    float last_z = (float)(segment_count - 1);"
+        },
+        {
+          "name": "named-terminal-index",
+          "text": "    int terminal_index = last;\n    float last_z = (float)terminal_index;"
+        }
+      ]
+    }
+  ]
+}

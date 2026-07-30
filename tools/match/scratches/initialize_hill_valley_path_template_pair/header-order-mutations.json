@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "header-order",
+      "find": "    int steps = (int)length;\n    int last = steps + 1;\n    width_or_scale = 1.0f;\n    segment_count = last + 1;\n    segment_count_f = (float)(last + 1);\n    get_path_nodes();",
+      "replacements": [
+        {
+          "name": "width-before-last",
+          "text": "    int steps = (int)length;\n    width_or_scale = 1.0f;\n    int last = steps + 1;\n    segment_count = last + 1;\n    segment_count_f = (float)(last + 1);\n    get_path_nodes();"
+        }
+      ]
+    }
+  ]
+}

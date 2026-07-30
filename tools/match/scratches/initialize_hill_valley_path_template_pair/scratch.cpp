@@ -201,8 +201,8 @@ void cRPath::initialize_hill_valley_path_template_pair(
     side_exit_mode = 0;
     width_cells = width_cells_;
     int steps = (int)length;
-    int last = steps + 1;
     width_or_scale = 1.0f;
+    int last = steps + 1;
     segment_count = last + 1;
     segment_count_f = (float)(last + 1);
     get_path_nodes();
