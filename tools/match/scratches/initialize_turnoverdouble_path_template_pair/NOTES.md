@@ -277,3 +277,29 @@ instructions. The 54-instruction prefix and all 46 references remain clean.
 Unlike the dependency-complete Sweep and Snake results, TurnoverDouble's
 shared face owner does not support the paired control transfer; the retained
 source therefore remains unchanged.
+
+## 2026-07-30 native tail relative-base ownership
+
+Windows `0x427784..0x427870` keeps the logical tail index and `0xa8` byte
+cursor separate, but its two-sample predicate also materializes
+`-6 - curve_count` before the loop and combines that base with the incremented
+logical index. Reintroducing the relative expression inline had previously
+lost on the typed-address baseline; after the independent tail cursor recovery,
+the precomputed semantic owner becomes productive.
+
+Retaining `tail_control_base = -6 - curve_segments` with
+`i + tail_control_base < 2` gains **21.54 weighted bytes**, raising focused
+matching from **57.94%** (649/680) to **58.81%** (653/680). The exact prefix
+remains 54/680 and all 46 masked references remain clean. All 19 commuted,
+inclusive, split-definition, and equivalent subtraction spellings are
+byte-identical to the winner or worse; the direct inline predicate loses
+28.10 bytes and collapses the prefix to 15.
+
+The remaining native-looking explicit condition temporary was bounded rather
+than retained. It recovers the stack-held base and end-of-loop add locally but
+falls to 56.86%; combining it with all seven primary/secondary field-owner
+clusters reaches at most 57.63%. An inline temporary reaches 57.51%. A shared
+lead/tail Z owner is byte-neutral and only moves the mismatching float slot
+from `esp+0x1c` to `esp+0x10`, not native `esp+0x20`. These results isolate
+the residual as a wider allocation dependency rather than another safe tail
+semantic change.

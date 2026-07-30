@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-control-base-definition",
+      "find": "    int tail_control_base = -6 - curve_segments;",
+      "replacements": [
+        {
+          "name": "split-definition",
+          "text": "    int tail_control_base;\n    tail_control_base = -6 - curve_segments;"
+        },
+        {
+          "name": "curve-first-subtraction",
+          "text": "    int tail_control_base = -curve_segments - 6;"
+        },
+        {
+          "name": "negated-sum",
+          "text": "    int tail_control_base = -(curve_segments + 6);"
+        }
+      ]
+    },
+    {
+      "name": "tail-control-expression",
+      "find": "    } while (i + tail_control_base < 2);",
+      "replacements": [
+        {
+          "name": "base-first",
+          "text": "    } while (tail_control_base + i < 2);"
+        },
+        {
+          "name": "index-first-inclusive",
+          "text": "    } while (i + tail_control_base <= 1);"
+        },
+        {
+          "name": "base-first-inclusive",
+          "text": "    } while (tail_control_base + i <= 1);"
+        },
+        {
+          "name": "reversed-comparison",
+          "text": "    } while (2 > tail_control_base + i);"
+        }
+      ]
+    }
+  ]
+}

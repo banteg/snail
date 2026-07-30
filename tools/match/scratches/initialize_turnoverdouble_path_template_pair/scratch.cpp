@@ -221,6 +221,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
     } while (i < 6);
 
     i = curve_segments + 6;
+    int tail_control_base = -6 - curve_segments;
     int tail_sample_offset = i * sizeof(AttachmentSample);
     do {
         ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x =
@@ -247,7 +248,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
         ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->delta_length = 1.0f;
         tail_sample_offset += sizeof(AttachmentSample);
         ++i;
-    } while (i < segment_count);
+    } while (i + tail_control_base < 2);
 
     int curve_index = 0;
     if (curve_segments > 0) {

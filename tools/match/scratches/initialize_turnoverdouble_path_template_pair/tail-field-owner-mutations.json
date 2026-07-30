@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-primary-setup-owner",
+      "find": "        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x =\n            (float)width_cells * 0.5f - 4.0f;\n        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->rotation_scalar_98 = 0.0f;\n        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->rotation_scalar_94 = 0.0f;\n        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->special_scalar = 0.0f;\n        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->lateral_scale = 1.0f;\n        set_matrix_identity(\n            &((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform);",
+      "replacements": [
+        {
+          "name": "logical-index",
+          "text": "        primary_samples[tail_sample_index].center_x =\n            (float)width_cells * 0.5f - 4.0f;\n        primary_samples[tail_sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[tail_sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[tail_sample_index].special_scalar = 0.0f;\n        primary_samples[tail_sample_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[tail_sample_index].transform);"
+        }
+      ]
+    },
+    {
+      "name": "tail-primary-position-owner",
+      "find": "        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.x =\n            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;\n        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.y = 0.0f;\n        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.z = z;\n        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->delta_length = 1.0f;",
+      "replacements": [
+        {
+          "name": "logical-index",
+          "text": "        primary_samples[tail_sample_index].transform.position.x =\n            primary_samples[tail_sample_index].center_x;\n        primary_samples[tail_sample_index].transform.position.y = 0.0f;\n        primary_samples[tail_sample_index].transform.position.z = z;\n        primary_samples[tail_sample_index].delta_length = 1.0f;"
+        }
+      ]
+    },
+    {
+      "name": "tail-secondary-owner",
+      "find": "        set_matrix_identity(\n            &((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform);\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.x =\n            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.y = 0.49000001f;\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.z = z;\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->delta_length = 1.0f;",
+      "replacements": [
+        {
+          "name": "logical-index",
+          "text": "        set_matrix_identity(&secondary_samples[tail_sample_index].transform);\n        secondary_samples[tail_sample_index].transform.position.x =\n            primary_samples[tail_sample_index].center_x;\n        secondary_samples[tail_sample_index].transform.position.y = 0.49000001f;\n        secondary_samples[tail_sample_index].transform.position.z = z;\n        secondary_samples[tail_sample_index].delta_length = 1.0f;"
+        }
+      ]
+    }
+  ]
+}
