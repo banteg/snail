@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **80.84%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **80.86%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -659,7 +659,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 605/610 | 63.70% | 0/610 | 35 ok |  | core |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 647/671 | 53.87% | 15/671 | 41 ok |  | core |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 651/680 | 53.34% | 15/680 | 46 ok |  | core |
-| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 670/687 | 50.55% | 6/687 | 45 ok |  | core |
+| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 666/687 | 52.48% | 6/687 | 45 ok |  | core |
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 616/608 | 68.30% | 85/608 | 39 ok |  | core |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 611/600 | 70.69% | 109/600 | 35 ok |  | core |
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 682/677 | 71.38% | 94/677 | 49 ok |  | core |

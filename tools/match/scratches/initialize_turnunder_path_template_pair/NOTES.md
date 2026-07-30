@@ -196,3 +196,23 @@ both operators with direct arrays loses at least 110.52 bytes. The retained
 The inline primary orientation expression was tested with the authored
 operator form and is byte-identical. Turnunder remains **50.55%**, 670/687
 instructions, prefix 6/687, with all 45 references clean.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Native instructions at `0x428645..0x42872d` preserve the lateral value on the
+x87 stack across both vertex branches and materialize the same branch-local
+offset/position aggregates as the turnover siblings. Recovering `double
+lateral` gains 13.81 weighted bytes, and the terminal
+`Vector3::operator+` gains another 5.56; the ordinary addition is
+byte-neutral.
+
+On that baseline, both `Vector3::operator*` expressions together gain 28.47
+weighted bytes, compared with +23.83 for the terminal scale alone and +7.36
+for the ordinary scale alone. The paired form is both the strongest result and
+the one supported by the symmetric native offset construction.
+
+Together these owners raise focused matching from 50.55% (670/687) to
+**52.48%** (666/687), a gain of 47.83 weighted bytes. The six-instruction
+prefix and all 45 masked references remain clean. Moving the vertex pointer
+into the two native-looking branch-local positions loses 121.49 weighted
+bytes and the exact prefix, so the shared source owner remains retained.
