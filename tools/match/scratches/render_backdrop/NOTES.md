@@ -118,3 +118,16 @@ pre-branch `next_column` ownership. Across 36 variants, 12 are byte-neutral,
 10 regress, and 14 are unavailable lexical-scope combinations. With no
 improvement, the experiment ledger marks this one-instruction tail stalled;
 the evidence-backed 99.22% source remains.
+
+## 2026-07-30 compare-reference proof
+
+The masked-reference audit now aligns x87 `fcom`/`fcomp` variants only within
+their own compare family, requiring the same memory width, canonical reference,
+and sequence order. A regression test keeps compare instructions distinct from
+ordinary `fld`/`mov` loads.
+
+That closes the two one-sided `7.0f` entries without normalizing away the real
+stack-scheduling difference. The retained source remains 99.22%, 193/192
+candidate/target instructions, and prefix 174/192; all 29 aligned references
+are now clean. The extra reload plus popping compare remain the intentionally
+visible, formally stalled byte residual.

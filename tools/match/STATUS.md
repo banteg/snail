@@ -561,7 +561,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_frontend_widget | 0x401d30 | 1892 | 429/429 | 99.53% | 74/429 | 50 ok |  | core |
 | 🚧 | layout_frontend_widget | 0x4024a0 | 741 | 177/177 | 99.44% | 66/177 | 20 ok |  | core |
 | 🚧 | border_mouse_test | 0x404580 | 421 | 117/117 | 98.29% | 73/117 | 5 ok |  | core |
-| 🚧 | render_backdrop | 0x411040 | 680 | 193/192 | 99.22% | 174/192 | 2 unaudited, 28 ok |  | core |
+| 🚧 | render_backdrop | 0x411040 | 680 | 193/192 | 99.22% | 174/192 | 29 ok |  | core |
 | 🚧 | initialize_high_score_screen | 0x416910 | 2311 | 600/600 | 98.00% | 80/600 | 137 ok |  | core |
 | 🚧 | apply_distort_to_object | 0x41aa50 | 648 | 197/197 | 95.43% | 58/197 | 26 ok |  | core |
 | 🚧 | try_enter_track_attachment_from_swept_motion | 0x42c770 | 800 | 199/204 | 95.78% | 16/204 | 47 ok |  | core |
@@ -683,11 +683,11 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 646/655 | 48.89% | 20/655 | 37 ok |  | core |
 | 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.53% | 6/685 | 2 unaudited, 38 ok |  | core |
-| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 654/696 | 32.15% | 1/696 | 8 unaudited, 36 ok |  | core |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 653/696 | 33.80% | 2/696 | 6 unaudited, 37 ok |  | core |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 654/696 | 32.15% | 1/696 | 4 unaudited, 38 ok |  | core |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 653/696 | 33.80% | 2/696 | 2 unaudited, 39 ok |  | core |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 614/652 | 35.86% | 5/652 | 37 ok |  | core |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 618/652 | 33.70% | 5/652 | 40 ok |  | core |
-| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 642/683 | 39.55% | 5/683 | 6 unaudited, 42 ok |  | core |
+| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 642/683 | 39.55% | 5/683 | 2 unaudited, 44 ok |  | core |
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 691/707 | 43.20% | 18/707 | 55 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 33 ok |  | core |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 39 ok |  | core |
@@ -704,7 +704,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🖥 | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  | replaceable-platform |
 | 🖥 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | log_startup_timestamp | 0x406d30 | 58 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
-| 🖥 | game_startup_and_main_loop | 0x406dc0 | 1316 | 327/325 | 70.86% | 1/325 | 25 unaudited, 150 ok |  | replaceable-platform |
+| 🖥 | game_startup_and_main_loop | 0x406dc0 | 1316 | 327/325 | 70.86% | 1/325 | 23 unaudited, 151 ok |  | replaceable-platform |
 | 🖥 | handle_game_window_activate | 0x4072f0 | 187 | 44/44 | 100.00% | 44/44 | 26 ok |  | replaceable-platform |
 | 🖥 | show_and_focus_game_window | 0x4073b0 | 141 | 33/33 | 100.00% | 33/33 | 19 ok |  | replaceable-platform |
 | 🖥 | handle_game_window_deactivate | 0x407440 | 69 | 18/18 | 100.00% | 18/18 | 9 ok |  | replaceable-platform |

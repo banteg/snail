@@ -2060,6 +2060,71 @@ def audit_masked_operands(
         candidate_index for _, candidate_index in transfer_reference_pairs
     )
 
+    # x87 can compare the same memory operand with or without popping the
+    # register stack, depending on a nearby reload. Keep this separate from
+    # ordinary memory transfers: FCOM/FCOMP may align with each other when the
+    # width, canonical identity, and order agree, but never with FLD or MOV.
+    def x87_compare_token(
+        line: DisassemblyLine,
+    ) -> tuple[str, tuple[str, ...]] | None:
+        if len(line.masked_references) != 1:
+            return None
+        reference = line.masked_references[0]
+        opcode = line.text.partition(" ")[0]
+        if opcode not in {"fcom", "fcomp"} or reference.operand_index != 0:
+            return None
+        width_match = re.search(
+            r"\b(tbyte|qword|dword|word|byte) \[[^\]]*\bADDR\b[^\]]*\]",
+            line.text,
+        )
+        if width_match is None:
+            return None
+        return width_match.group(1), alignment_keys(reference)
+
+    compare_target_indices = [
+        index
+        for index, line in enumerate(target_disassembly)
+        if (
+            line.masked_references
+            and index not in used_target_indices
+            and x87_compare_token(line) is not None
+        )
+    ]
+    compare_candidate_indices = [
+        index
+        for index, line in enumerate(candidate_disassembly)
+        if (
+            line.masked_references
+            and index not in used_candidate_indices
+            and x87_compare_token(line) is not None
+        )
+    ]
+    compare_matcher = difflib.SequenceMatcher(
+        a=tuple(
+            x87_compare_token(target_disassembly[index])
+            for index in compare_target_indices
+        ),
+        b=tuple(
+            x87_compare_token(candidate_disassembly[index])
+            for index in compare_candidate_indices
+        ),
+        autojunk=False,
+    )
+    compare_reference_pairs = {
+        (
+            compare_target_indices[target_index],
+            compare_candidate_indices[candidate_index],
+        )
+        for target_index, candidate_index in equal_pairs(compare_matcher)
+    }
+    reference_masked_pairs.update(compare_reference_pairs)
+    used_target_indices.update(
+        target_index for target_index, _ in compare_reference_pairs
+    )
+    used_candidate_indices.update(
+        candidate_index for _, candidate_index in compare_reference_pairs
+    )
+
     text_matcher = difflib.SequenceMatcher(
         a=tuple(line.text for line in target_disassembly),
         b=tuple(line.text for line in candidate_disassembly),

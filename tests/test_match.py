@@ -893,6 +893,62 @@ def test_masked_operand_audit_rejects_reversed_memory_transfer_sequence() -> Non
     assert audit.unaudited_count == 2
 
 
+def test_masked_operand_audit_aligns_x87_compare_pop_variants() -> None:
+    def compare_line(text: str, source: str) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=0,
+            address=0x401000,
+            text=text,
+            masked_references=(
+                MaskedReference(
+                    operand_index=0,
+                    kind="disp",
+                    source=source,
+                    value=None,
+                    text=f"{source}:const:f32:7",
+                    key="const:f32:40e00000",
+                    explained=True,
+                ),
+            ),
+        )
+
+    target = (compare_line("fcom dword [ADDR]", "image"),)
+    candidate = (compare_line("fcomp dword [ADDR]", "reloc"),)
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.ok_count == 1
+    assert audit.problem_count == 0
+
+
+def test_masked_operand_audit_does_not_align_x87_compare_with_load() -> None:
+    def reference_line(text: str, source: str) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=0,
+            address=0x401000,
+            text=text,
+            masked_references=(
+                MaskedReference(
+                    operand_index=0,
+                    kind="disp",
+                    source=source,
+                    value=None,
+                    text=f"{source}:const:f32:7",
+                    key="const:f32:40e00000",
+                    explained=True,
+                ),
+            ),
+        )
+
+    target = (reference_line("fcom dword [ADDR]", "image"),)
+    candidate = (reference_line("fld dword [ADDR]", "reloc"),)
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.ok_count == 0
+    assert audit.unaudited_count == 2
+
+
 def test_masked_operand_audit_flags_unresolved_target_reference() -> None:
     # target: push 0x402000; ret. The image address has no function/string name,
     # so a matching ADDR shape against a candidate symbol is not proof-grade.

@@ -194,3 +194,11 @@ face-pass-to-width dependencies. This is analysis-only: focused matching stays
 at **33.80%**, **653/696** candidate instructions, a two-instruction exact
 prefix, and 35 accepted plus 10 unaudited operands with no unresolved or
 mismatched operands.
+
+## 2026-07-30 x87 compare-reference alignment
+
+The compare-family audit proves two ordered `fcom`/`fcomp` pairs against the
+same zero constant without equating either instruction with an ordinary load.
+Source and bytes remain unchanged at 33.80%, 653/696 instructions, and prefix
+2/696. The current receipt has 39 clean plus 2 unaudited entries, down from
+37 clean plus 6 unaudited, with no unresolved or mismatched references.

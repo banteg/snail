@@ -184,3 +184,12 @@ This is analysis-only. Focused matching remains **39.55%** at **642/683**
 instructions with a five-instruction exact prefix, 40 accepted operands, 10
 unaudited operands, and no unresolved or mismatched operands. No matcher source
 was changed.
+
+## 2026-07-30 x87 compare-reference alignment
+
+The compare-family audit now pairs the two ordered same-width
+`fcom`/`fcomp` zero-constant reads while refusing to pair compare operations
+with ordinary loads. This is proof-only: focused matching remains 39.55%,
+642/683 instructions, and prefix 5/683. The current receipt has 44 clean plus
+2 unaudited entries, down from 42 clean plus 6 unaudited, with no unresolved
+or mismatched references.

@@ -304,3 +304,12 @@ displacement into the unrelated `g_parcel_set_buckets` range. Exact operand
 normalization now preserves `&g_game_base->subgame.sub_high_score` for all five
 save masks without renaming or reshaping the real parcel bank. Focused matching
 remains at the honest 70.86% frontier.
+
+## 2026-07-30 x87 compare-reference alignment
+
+The reference audit now pairs the ordered same-width `fcomp`/`fcom` zero
+comparison while keeping x87 compares separate from ordinary loads. This
+changes no source or instruction similarity: the excluded platform frontier
+remains 70.86%, 327/325 instructions, and prefix 1/325. Its current audit has
+151 clean plus 23 unaudited entries, with no unresolved or mismatched
+references.
