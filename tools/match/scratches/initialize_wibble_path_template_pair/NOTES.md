@@ -280,3 +280,17 @@ dependency state, while the cross-port-backed vector owner remains the best
 Windows spelling. The ledger now contains 47 unique variants across thirteen
 sweeps, with two consecutive non-improving sweeps. No source change is
 retained.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The exhaustive Twister arithmetic plan was replayed against Wibble's recovered
+ordinary-first row schedule. Unlike the paired Twisters, Wibble benefits from
+a `double` lateral local, both `Vector3::operator*` scales, and the terminal
+`Vector3::operator+` add. Together they add 44.86 weighted bytes.
+
+Both terminal add operand orders compile identically; the position-first form
+is retained to match the independently recovered constructor family. Either
+ordinary add order is neutral in every winning combination. Focused matching
+rises from **68.30%** to **70.33%**, candidate instructions move from 616 to
+612 against 608 target instructions, prefix stays 85/608, and all 39
+references remain clean.
