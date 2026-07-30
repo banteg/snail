@@ -6,11 +6,12 @@ Captures the fixed 32-sample wibble template: endpoint samples, sinusoidal
 interior up-vector wobble, secondary sample offset, delta recomputation,
 generated strip mesh, and finalization.
 
-Current focused result: 55.68% (545/608 candidate/target instructions), with
-35 masked operands ok, 0 unresolved, and 0 mismatched. The remaining mismatch
-is source-shape/codegen debt, especially the native stack frame, pointer-shaped
-loop counters, delta recomputation, and shared mesh tail. No dummy symbols,
-inline assembly, flag changes, or volatile/register games were introduced.
+Current focused result: 62.82% (605/608 candidate/target instructions), with
+39 masked operands ok, 0 unresolved, and 0 mismatched. The native `0x54` stack
+frame is exact. The remaining mismatch is source-shape/codegen debt in the
+interior value schedule, delta owner allocation, and shared mesh tail. No dummy
+symbols, inline assembly, flag changes, or volatile/register games were
+introduced.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 9.41% (115/608
@@ -187,3 +188,47 @@ idempotent replay all pass; the constructor retains its existing 16 fixed-index
 This is analysis-only. Focused matching remains **60.73%** (604/608), with an
 85-instruction prefix and 39 clean masked operands. Strict paired Binary Ninja
 and IDA 9.4 export reports zero selector mismatches.
+
+## 2026-07-30 value ownership and bounded mesh schedules
+
+The retained Windows baseline began at **60.73%** (604/608 candidate/target
+instructions), with an 85-instruction exact prefix, the exact native `0x54`
+frame, and 39 clean masked references. The exact Android and iOS bodies, the
+Windows MLIL replay, and the independently improved LoopBow sibling all support
+an authored vector value for the secondary basis-up offset. Replacing the three
+direct component products with
+`primary_samples[sample_index].transform.basis_up * 0.49000001f`, borrowing the
+secondary position, and advancing `sample_index` before the three additions
+moves focused agreement to **62.59%** (603/608). The early index advance is
+byte-neutral but matches the native ownership schedule.
+
+The paired delta-subtraction sweep then proves a non-local compiler interaction:
+authoring `operator-` for either lane alone is worse, while authoring it for
+both primary and secondary deltas raises the retained result to **62.82%**
+(605/608). The exact prefix remains 85 instructions, the frame remains `0x54`,
+and all 39 masked references remain clean.
+
+Seven recorded mutation sweeps cover 31 unique variants with no repeats or
+errors: 7 better, 16 byte-identical, and 8 worse. The bounded negative and
+neutral results are:
+
+- six interior-counter declaration/initializer forms are byte-identical;
+- moving `roll_phase` later scores 59.74% or 59.24%;
+- named aggregate basis-up forms are byte-identical, while direct component
+  stores extend the prefix to 96 instructions but fall to 55.84%;
+- a persistent named basis-up value scores 57.52% and is rejected;
+- all three guarded/do-while delta schedules are byte-identical;
+- facequad/vertex/object acquisition order is byte-identical.
+
+The Windows mesh dumps also bound the tempting sibling-shaped rewrites. A
+branch-local vertex destination alone scores 60.25% (607/608). A guarded
+row/column `do/while` with the native `0xa8` sample induction and the retained
+shared destination is byte-identical at 62.82%. Replaying the complete
+LoopBow-shaped terminal-first, branch-local vertex loop falls to 59.64%
+(616/608). The native-shaped face schedule grows the prefix from 85 to 103 but
+falls to 61.54% (601/608); isolated row initialization and loop-scoped face
+counter forms are byte-identical, while explicitly splitting the decompiler's
+SSA face selector/completion values falls to 62.21% (604/608). These results
+show that Wibble's best VC6 shape keeps the compact shared vertex destination
+and single authored face counter even though later analysis views split their
+SSA values.

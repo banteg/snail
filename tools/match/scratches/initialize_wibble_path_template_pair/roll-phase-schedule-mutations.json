@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "roll-phase-schedule",
+      "find": "        float t = (float)local_index;\n        float turn_phase = t * 0.20943952f;\n        float roll_phase = turn_phase * 3.0f;\n\n        primary_samples[sample_index].center_x =\n            (primary_samples[31].center_x - primary_samples[0].center_x) *\n                t * 0.033333335f +\n            primary_samples[0].center_x;\n        primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[sample_index].special_scalar = 0.0f;\n        primary_samples[sample_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[sample_index].transform);\n\n        int z_index = local_index + 1;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)z_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;",
+      "replacements": [
+        {
+          "name": "after-identity",
+          "text": "        float t = (float)local_index;\n        float turn_phase = t * 0.20943952f;\n\n        primary_samples[sample_index].center_x =\n            (primary_samples[31].center_x - primary_samples[0].center_x) *\n                t * 0.033333335f +\n            primary_samples[0].center_x;\n        primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[sample_index].special_scalar = 0.0f;\n        primary_samples[sample_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[sample_index].transform);\n\n        float roll_phase = turn_phase * 3.0f;\n        int z_index = local_index + 1;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)z_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;"
+        },
+        {
+          "name": "after-position",
+          "text": "        float t = (float)local_index;\n        float turn_phase = t * 0.20943952f;\n\n        primary_samples[sample_index].center_x =\n            (primary_samples[31].center_x - primary_samples[0].center_x) *\n                t * 0.033333335f +\n            primary_samples[0].center_x;\n        primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[sample_index].special_scalar = 0.0f;\n        primary_samples[sample_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[sample_index].transform);\n\n        int z_index = local_index + 1;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)z_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;\n        float roll_phase = turn_phase * 3.0f;"
+        },
+        {
+          "name": "declared-before-assigned-after-position",
+          "text": "        float t = (float)local_index;\n        float turn_phase = t * 0.20943952f;\n        float roll_phase;\n\n        primary_samples[sample_index].center_x =\n            (primary_samples[31].center_x - primary_samples[0].center_x) *\n                t * 0.033333335f +\n            primary_samples[0].center_x;\n        primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[sample_index].special_scalar = 0.0f;\n        primary_samples[sample_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[sample_index].transform);\n\n        int z_index = local_index + 1;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)z_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;\n        roll_phase = turn_phase * 3.0f;"
+        },
+        {
+          "name": "after-z-index",
+          "text": "        float t = (float)local_index;\n        float turn_phase = t * 0.20943952f;\n\n        primary_samples[sample_index].center_x =\n            (primary_samples[31].center_x - primary_samples[0].center_x) *\n                t * 0.033333335f +\n            primary_samples[0].center_x;\n        primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[sample_index].special_scalar = 0.0f;\n        primary_samples[sample_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[sample_index].transform);\n\n        int z_index = local_index + 1;\n        float roll_phase = turn_phase * 3.0f;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)z_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;"
+        }
+      ]
+    }
+  ]
+}

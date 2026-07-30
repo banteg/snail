@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-owner-order",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;",
+      "replacements": [
+        {
+          "name": "facequads-before-vertices",
+          "text": "    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* vertices = path->strip_mesh->vertices;"
+        },
+        {
+          "name": "object-facequads-vertices",
+          "text": "    Object* strip_mesh = path->strip_mesh;\n    cRFaceQuad* facequads = strip_mesh->facequads;\n    Vector3* vertices = strip_mesh->vertices;"
+        },
+        {
+          "name": "object-vertices-facequads",
+          "text": "    Object* strip_mesh = path->strip_mesh;\n    Vector3* vertices = strip_mesh->vertices;\n    cRFaceQuad* facequads = strip_mesh->facequads;"
+        }
+      ]
+    }
+  ]
+}

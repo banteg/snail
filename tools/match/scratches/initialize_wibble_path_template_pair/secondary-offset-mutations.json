@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-offset-owner",
+      "find": "        ++local_index;\n        secondary_samples[sample_index].transform.position.x +=\n            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;\n        secondary_samples[sample_index].transform.position.y +=\n            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;\n        secondary_samples[sample_index].transform.position.z +=\n            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;\n        ++sample_index;",
+      "replacements": [
+        {
+          "name": "scalar-offsets-then-pointer",
+          "text": "        ++local_index;\n        float offset_x =\n            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;\n        float offset_y =\n            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;\n        float offset_z =\n            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        secondary_position->x += offset_x;\n        secondary_position->y += offset_y;\n        secondary_position->z += offset_z;\n        ++sample_index;"
+        },
+        {
+          "name": "pointer-then-scalar-offsets",
+          "text": "        ++local_index;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        float offset_x =\n            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;\n        float offset_y =\n            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;\n        float offset_z =\n            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;\n        secondary_position->x += offset_x;\n        secondary_position->y += offset_y;\n        secondary_position->z += offset_z;\n        ++sample_index;"
+        },
+        {
+          "name": "explicit-vector-offset",
+          "text": "        ++local_index;\n        Vector3 secondary_offset(\n            primary_samples[sample_index].transform.basis_up.x * 0.49000001f,\n            primary_samples[sample_index].transform.basis_up.y * 0.49000001f,\n            primary_samples[sample_index].transform.basis_up.z * 0.49000001f);\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;\n        ++sample_index;"
+        },
+        {
+          "name": "operator-vector-offset",
+          "text": "        ++local_index;\n        Vector3 secondary_offset =\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;\n        ++sample_index;"
+        },
+        {
+          "name": "primary-up-pointer-scalars",
+          "text": "        ++local_index;\n        Vector3* primary_up =\n            &primary_samples[sample_index].transform.basis_up;\n        float offset_x = primary_up->x * 0.49000001f;\n        float offset_y = primary_up->y * 0.49000001f;\n        float offset_z = primary_up->z * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        secondary_position->x += offset_x;\n        secondary_position->y += offset_y;\n        secondary_position->z += offset_z;\n        ++sample_index;"
+        },
+        {
+          "name": "primary-up-reference-scalars",
+          "text": "        ++local_index;\n        Vector3& primary_up =\n            primary_samples[sample_index].transform.basis_up;\n        float offset_x = primary_up.x * 0.49000001f;\n        float offset_y = primary_up.y * 0.49000001f;\n        float offset_z = primary_up.z * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        secondary_position->x += offset_x;\n        secondary_position->y += offset_y;\n        secondary_position->z += offset_z;\n        ++sample_index;"
+        }
+      ]
+    }
+  ]
+}

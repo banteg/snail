@@ -42,18 +42,14 @@ static __forceinline void compute_path_deltas(Path* path)
     for (int i = 0; i < path->segment_count - 1; ++i) {
         PathTemplateSample* primary = &path->primary_samples[i];
         PathTemplateSample* primary_next = &path->primary_samples[i + 1];
-        primary->delta_dir_to_next = Vector3(
-            primary_next->transform.position.x - primary->transform.position.x,
-            primary_next->transform.position.y - primary->transform.position.y,
-            primary_next->transform.position.z - primary->transform.position.z);
+        primary->delta_dir_to_next =
+            primary_next->transform.position - primary->transform.position;
         primary->delta_length = primary->delta_dir_to_next.Normalize();
 
         PathTemplateSample* secondary = &path->secondary_samples[i];
         PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
-        secondary->delta_dir_to_next = Vector3(
-            secondary_next->transform.position.x - secondary->transform.position.x,
-            secondary_next->transform.position.y - secondary->transform.position.y,
-            secondary_next->transform.position.z - secondary->transform.position.z);
+        secondary->delta_dir_to_next =
+            secondary_next->transform.position - secondary->transform.position;
         secondary->delta_length = secondary->delta_dir_to_next.Normalize();
     }
 
@@ -81,7 +77,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
         for (column = 0; column <= path->width_cells; ++column) {
             float lateral = (float)column - (float)path->width_cells * 0.5f;
             PathTemplateSample* sample = &path->primary_samples[row];
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
+            Vector3* vertex =
+                &vertices[column + row * (path->width_cells + 1)];
             if (row != path->segment_count) {
                 Vector3 lateral_offset(
                     lateral * sample->transform.basis_right.x,
@@ -269,13 +266,14 @@ void cRPath::initialize_wibble_path_template_pair(
         secondary_samples[sample_index].transform =
             primary_samples[sample_index].transform;
         ++local_index;
-        secondary_samples[sample_index].transform.position.x +=
-            primary_samples[sample_index].transform.basis_up.x * 0.49000001f;
-        secondary_samples[sample_index].transform.position.y +=
-            primary_samples[sample_index].transform.basis_up.y * 0.49000001f;
-        secondary_samples[sample_index].transform.position.z +=
-            primary_samples[sample_index].transform.basis_up.z * 0.49000001f;
+        Vector3 secondary_offset =
+            primary_samples[sample_index].transform.basis_up * 0.49000001f;
+        Vector3* secondary_position =
+            &secondary_samples[sample_index].transform.position;
         ++sample_index;
+        secondary_position->x += secondary_offset.x;
+        secondary_position->y += secondary_offset.y;
+        secondary_position->z += secondary_offset.z;
     } while (sample_index < 31);
 
     compute_path_deltas(this);

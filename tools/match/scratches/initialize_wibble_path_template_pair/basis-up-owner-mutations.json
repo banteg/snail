@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "basis-up-owner",
+      "find": "        float basis_y = cosine(sine(roll_phase) * 0.30000001f);\n        float basis_x = sine(sine(roll_phase) * 0.30000001f);\n        primary_samples[sample_index].transform.basis_up =\n            Vector3(basis_x, basis_y, 0.0f);",
+      "replacements": [
+        {
+          "name": "named-value",
+          "text": "        float basis_y = cosine(sine(roll_phase) * 0.30000001f);\n        float basis_x = sine(sine(roll_phase) * 0.30000001f);\n        Vector3 basis_up(basis_x, basis_y, 0.0f);\n        primary_samples[sample_index].transform.basis_up = basis_up;"
+        },
+        {
+          "name": "copy-initialized-value",
+          "text": "        float basis_y = cosine(sine(roll_phase) * 0.30000001f);\n        float basis_x = sine(sine(roll_phase) * 0.30000001f);\n        Vector3 basis_up = Vector3(basis_x, basis_y, 0.0f);\n        primary_samples[sample_index].transform.basis_up = basis_up;"
+        },
+        {
+          "name": "default-then-components",
+          "text": "        float basis_y = cosine(sine(roll_phase) * 0.30000001f);\n        float basis_x = sine(sine(roll_phase) * 0.30000001f);\n        Vector3 basis_up;\n        basis_up.x = basis_x;\n        basis_up.y = basis_y;\n        basis_up.z = 0.0f;\n        primary_samples[sample_index].transform.basis_up = basis_up;"
+        },
+        {
+          "name": "direct-components",
+          "text": "        float basis_y = cosine(sine(roll_phase) * 0.30000001f);\n        float basis_x = sine(sine(roll_phase) * 0.30000001f);\n        primary_samples[sample_index].transform.basis_up.x = basis_x;\n        primary_samples[sample_index].transform.basis_up.y = basis_y;\n        primary_samples[sample_index].transform.basis_up.z = 0.0f;"
+        },
+        {
+          "name": "pointer-components",
+          "text": "        float basis_y = cosine(sine(roll_phase) * 0.30000001f);\n        float basis_x = sine(sine(roll_phase) * 0.30000001f);\n        Vector3* basis_up =\n            &primary_samples[sample_index].transform.basis_up;\n        basis_up->x = basis_x;\n        basis_up->y = basis_y;\n        basis_up->z = 0.0f;"
+        },
+        {
+          "name": "named-value-before-scalars",
+          "text": "        Vector3 basis_up;\n        float basis_y = cosine(sine(roll_phase) * 0.30000001f);\n        float basis_x = sine(sine(roll_phase) * 0.30000001f);\n        basis_up = Vector3(basis_x, basis_y, 0.0f);\n        primary_samples[sample_index].transform.basis_up = basis_up;"
+        }
+      ]
+    }
+  ]
+}

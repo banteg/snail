@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-counter-setup",
+      "find": "    int sample_index = 1;\n    int local_index = 0;",
+      "replacements": [
+        {
+          "name": "local-first",
+          "text": "    int local_index = 0;\n    int sample_index = 1;"
+        },
+        {
+          "name": "split-initializers",
+          "text": "    int sample_index;\n    int local_index;\n    sample_index = 1;\n    local_index = 0;"
+        },
+        {
+          "name": "split-local-initializer",
+          "text": "    int sample_index = 1;\n    int local_index;\n    local_index = 0;"
+        },
+        {
+          "name": "combined-declaration",
+          "text": "    int sample_index = 1, local_index = 0;"
+        },
+        {
+          "name": "derive-local",
+          "text": "    int sample_index = 1;\n    int local_index = sample_index - 1;"
+        },
+        {
+          "name": "derive-sample",
+          "text": "    int local_index = 0;\n    int sample_index = local_index + 1;"
+        }
+      ]
+    }
+  ]
+}
