@@ -174,3 +174,10 @@ despite the stalled trig schedule. Replacing both component constructors with
 `Vector3::operator-` adds 7.50 weighted bytes and raises focused matching from
 48.53% to **48.84%**. Candidate and target counts remain 646/685, prefix stays
 6/685, and the receipt remains 38 clean plus 2 unaudited references.
+
+## 2026-07-30 orientation subtraction bound
+
+Both shared orientation helpers were tested independently and together with
+the authored operator form. Every variant is byte-identical, preserving
+**48.84%**, 646/685 instructions, prefix 6/685, and the same 38 clean plus 2
+unaudited references.

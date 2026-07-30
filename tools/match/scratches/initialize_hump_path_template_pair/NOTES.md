@@ -332,3 +332,12 @@ The exact Slalom-family terminal-delta block proves the paired
 7.40 weighted bytes and raises focused matching from 60.00% to **60.29%**.
 Candidate and target counts remain 695/685, prefix remains 20/685, and all 43
 currently audited references stay clean.
+
+## 2026-07-30 authored orientation subtraction
+
+The two shared helper sites are byte-neutral. The later primary and secondary
+byte-cursor sites are coupled: primary alone loses 3.70 weighted bytes and
+secondary alone is neutral, but replacing both component constructors adds
+7.40 weighted bytes. The dependency-closed pair is retained, raising focused
+matching from 60.29% to **60.58%** with 695/685 instructions, prefix 20/685,
+and all 43 references clean.

@@ -171,3 +171,10 @@ weighted bytes. The retained result is **56.09%**, 562/579 candidate/target
 instructions, prefix 67/579, and 39 clean references. The exhaustive two-site
 sweep also covers either operator in isolation; the paired form is the unique
 best result and introduces no proof-state or instruction-count tradeoff.
+
+## 2026-07-30 authored orientation subtraction
+
+The primary orientation expression carries the same independently recovered
+`Vector3::operator-` ownership. It adds 14.50 weighted bytes and raises
+focused matching from 56.09% to **56.79%**, while preserving 562/579
+instructions, prefix 67/579, and all 39 clean references.

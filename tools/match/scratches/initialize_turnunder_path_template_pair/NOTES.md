@@ -190,3 +190,9 @@ viable here. Secondary-only `Vector3::operator-` loses 4.59 weighted bytes,
 primary-only loses 19.24, and the paired form loses 30.18. Combining either or
 both operators with direct arrays loses at least 110.52 bytes. The retained
 50.55%, 670/687-instruction source therefore keeps both component constructors.
+
+## 2026-07-30 orientation subtraction bound
+
+The inline primary orientation expression was tested with the authored
+operator form and is byte-identical. Turnunder remains **50.55%**, 670/687
+instructions, prefix 6/687, with all 45 references clean.

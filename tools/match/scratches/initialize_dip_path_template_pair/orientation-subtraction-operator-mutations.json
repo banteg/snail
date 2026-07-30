@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "flat-orientation-subtraction",
+      "find": "    previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);\n    previous->transform.basis_forward = Vector3(\n        next->transform.position.x - previous->transform.position.x,\n        next->transform.position.y - previous->transform.position.y,\n        next->transform.position.z - previous->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "    previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);\n    previous->transform.basis_forward =\n        next->transform.position - previous->transform.position;"
+        }
+      ]
+    },
+    {
+      "name": "rolled-orientation-subtraction",
+      "find": "    previous->transform.basis_up = Vector3(up_x, up_y, up_z);\n    previous->transform.basis_forward = Vector3(\n        next->transform.position.x - previous->transform.position.x,\n        next->transform.position.y - previous->transform.position.y,\n        next->transform.position.z - previous->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "    previous->transform.basis_up = Vector3(up_x, up_y, up_z);\n    previous->transform.basis_forward =\n        next->transform.position - previous->transform.position;"
+        }
+      ]
+    }
+  ]
+}

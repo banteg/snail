@@ -80,13 +80,9 @@ void cRPath::initialize_cage2_path_template_pair(
             secondary_samples[i - 1].transform.RotIdentity();
         } else {
             primary_samples[i - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-            primary_samples[i - 1].transform.basis_forward = Vector3(
-                primary_samples[i].transform.position.x
-                    - primary_samples[i - 1].transform.position.x,
-                primary_samples[i].transform.position.y
-                    - primary_samples[i - 1].transform.position.y,
-                primary_samples[i].transform.position.z
-                    - primary_samples[i - 1].transform.position.z);
+            primary_samples[i - 1].transform.basis_forward =
+                primary_samples[i].transform.position -
+                primary_samples[i - 1].transform.position;
             primary_samples[i - 1].transform.basis_forward.Normalize();
             primary_samples[i - 1].transform.basis_right.cross_vectors(
                 &primary_samples[i - 1].transform.basis_up,
@@ -96,13 +92,9 @@ void cRPath::initialize_cage2_path_template_pair(
                     * primary_samples[i - 1].center_x * 0.39269909f);
 
             secondary_samples[i - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-            secondary_samples[i - 1].transform.basis_forward = Vector3(
-                secondary_samples[i].transform.position.x
-                    - secondary_samples[i - 1].transform.position.x,
-                secondary_samples[i].transform.position.y
-                    - secondary_samples[i - 1].transform.position.y,
-                secondary_samples[i].transform.position.z
-                    - secondary_samples[i - 1].transform.position.z);
+            secondary_samples[i - 1].transform.basis_forward =
+                secondary_samples[i].transform.position -
+                secondary_samples[i - 1].transform.position;
             secondary_samples[i - 1].transform.basis_forward.Normalize();
             secondary_samples[i - 1].transform.basis_right.cross_vectors(
                 &secondary_samples[i - 1].transform.basis_up,

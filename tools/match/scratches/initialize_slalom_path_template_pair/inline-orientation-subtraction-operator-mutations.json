@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-inline-orientation-subtraction",
+      "find": "                primary_previous->transform.basis_forward = Vector3(\n                    primary_current->transform.position.x\n                        - primary_previous->transform.position.x,\n                    primary_current->transform.position.y\n                        - primary_previous->transform.position.y,\n                    primary_current->transform.position.z\n                        - primary_previous->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "                primary_previous->transform.basis_forward =\n                    primary_current->transform.position -\n                    primary_previous->transform.position;"
+        }
+      ]
+    },
+    {
+      "name": "secondary-inline-orientation-subtraction",
+      "find": "                secondary_previous->transform.basis_forward = Vector3(\n                    secondary_current->transform.position.x\n                        - secondary_previous->transform.position.x,\n                    secondary_current->transform.position.y\n                        - secondary_previous->transform.position.y,\n                    secondary_current->transform.position.z\n                        - secondary_previous->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "                secondary_previous->transform.basis_forward =\n                    secondary_current->transform.position -\n                    secondary_previous->transform.position;"
+        }
+      ]
+    }
+  ]
+}

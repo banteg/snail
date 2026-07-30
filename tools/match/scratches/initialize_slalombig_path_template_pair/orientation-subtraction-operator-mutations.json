@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "previous-orientation-subtraction",
+      "find": "    previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n    previous->transform.basis_forward = Vector3(\n        current->transform.position.x - previous->transform.position.x,\n        current->transform.position.y - previous->transform.position.y,\n        current->transform.position.z - previous->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "    previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n    previous->transform.basis_forward =\n        current->transform.position - previous->transform.position;"
+        }
+      ]
+    }
+  ]
+}

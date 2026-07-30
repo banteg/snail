@@ -397,19 +397,11 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
                     - 1)->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                    - 1)->transform.basis_forward = Vector3(
+                    - 1)->transform.basis_forward =
                     ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
-                            ->transform.position.x
-                        - ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                            - 1)->transform.position.x,
-                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
-                            ->transform.position.y
-                        - ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                            - 1)->transform.position.y,
-                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
-                            ->transform.position.z
-                        - ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                            - 1)->transform.position.z);
+                        ->transform.position -
+                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
+                        - 1)->transform.position;
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
                     - 1)->transform.basis_forward.Normalize();
                 ((PathAttachmentSample*)((char*)primary_samples + sample_offset)
@@ -421,19 +413,11 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
                     - 1)->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
                 ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                    - 1)->transform.basis_forward = Vector3(
+                    - 1)->transform.basis_forward =
                     ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
-                            ->transform.position.x
-                        - ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                            - 1)->transform.position.x,
-                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
-                            ->transform.position.y
-                        - ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                            - 1)->transform.position.y,
-                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
-                            ->transform.position.z
-                        - ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                            - 1)->transform.position.z);
+                        ->transform.position -
+                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
+                        - 1)->transform.position;
                 ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)
                     - 1)->transform.basis_forward.Normalize();
                 ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)

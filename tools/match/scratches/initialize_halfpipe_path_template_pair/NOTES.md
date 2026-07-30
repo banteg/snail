@@ -317,3 +317,9 @@ applying it to the secondary delta, alone or paired, loses 14.83 weighted bytes
 and falls to 42.63%. The candidate remains 691/707 instructions with prefix
 18/707 and all 55 references clean. Halfpipe retains both component
 constructors.
+
+## 2026-07-30 orientation subtraction bound
+
+The primary current/previous orientation expression was tested with the
+authored operator form and is byte-identical. Halfpipe remains **43.20%**,
+691/707 instructions, prefix 18/707, with all 55 references clean.

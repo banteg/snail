@@ -238,3 +238,11 @@ An exhaustive two-site sweep raises focused matching from 32.42% to **32.72%**
 by 7.59 weighted bytes. The candidate remains 655/696 instructions with prefix
 1/696 and the same 38 clean plus 4 unaudited references. Either site alone
 gains half as much; the paired form is the unique best result.
+
+## 2026-07-30 orientation subtraction bound
+
+Two exhaustive sweeps cover the paired shared helpers and the paired inline
+primary/secondary orientation expressions. All six isolated and paired
+variants compile byte-identically. Slalom therefore retains the component
+constructors at **32.72%**, 655/696 instructions, prefix 1/696, with 38 clean
+and 4 unaudited references.

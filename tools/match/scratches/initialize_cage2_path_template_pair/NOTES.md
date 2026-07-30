@@ -311,3 +311,11 @@ boundary. Replacing both component constructors with `Vector3::operator-`
 adds 7.46 weighted bytes and raises focused matching from 59.43% to **59.74%**.
 Candidate and target counts remain 651/648, prefix remains 7/648, and all 46
 references stay clean; either isolated operator gains half as much.
+
+## 2026-07-30 authored orientation subtraction
+
+The same source boundary extends to Cage2's paired orientation expressions.
+An exhaustive three-variant sweep improves both lanes independently and finds
+their combination uniquely best: +37.29 weighted bytes, raising focused
+matching from 59.74% to **61.28%**. The candidate remains 651/648
+instructions, prefix 7/648, with all 46 references clean.

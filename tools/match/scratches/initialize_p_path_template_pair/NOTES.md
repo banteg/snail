@@ -273,3 +273,9 @@ with `Vector3::operator-` adds 7.31 weighted bytes and raises focused matching
 from 54.05% to **54.34%**. The exact 679/679 instruction count, prefix 6/679,
 and all 41 clean references are unchanged; the exhaustive two-site sweep has
 no tradeoff.
+
+## 2026-07-30 orientation subtraction bound
+
+Both inline orientation expressions were tested independently and together.
+Every authored-operator variant is byte-identical, preserving **54.34%**,
+exact 679/679 instruction parity, prefix 6/679, and all 41 clean references.

@@ -154,3 +154,11 @@ viable here. Secondary-only `Vector3::operator-` loses 4.61 weighted bytes,
 primary-only loses 19.33, and the paired form loses 23.93. Combining either or
 both operators with direct arrays loses at least 214.54 bytes. The retained
 50.79%, 655/680-instruction source therefore keeps both component constructors.
+
+## 2026-07-30 authored orientation subtraction
+
+The shared orientation helper's operator form is byte-identical, while the
+inline primary expression adds 18.41 weighted bytes. The retained narrow edit
+raises focused matching from 50.79% to **51.54%** with 655/680 instructions,
+prefix 15/680, and all 46 references unchanged. The helper-plus-inline form
+emits the same bytes, so the neutral helper edit is not retained.

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "helper-orientation-subtraction",
+      "find": "    sample->transform.basis_forward = Vector3(\n        sample->transform.position.x - previous->transform.position.x,\n        sample->transform.position.y - previous->transform.position.y,\n        sample->transform.position.z - previous->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "    sample->transform.basis_forward =\n        sample->transform.position - previous->transform.position;"
+        }
+      ]
+    },
+    {
+      "name": "inline-orientation-subtraction",
+      "find": "            primary_samples[i].transform.basis_forward = Vector3(\n                primary_samples[i].transform.position.x -\n                    primary_samples[i - 1].transform.position.x,\n                primary_samples[i].transform.position.y -\n                    primary_samples[i - 1].transform.position.y,\n                primary_samples[i].transform.position.z -\n                    primary_samples[i - 1].transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "            primary_samples[i].transform.basis_forward =\n                primary_samples[i].transform.position -\n                primary_samples[i - 1].transform.position;"
+        }
+      ]
+    }
+  ]
+}

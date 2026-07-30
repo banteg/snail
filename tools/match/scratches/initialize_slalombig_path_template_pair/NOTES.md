@@ -237,3 +237,10 @@ weighted bytes. The retained result is **36.90%**, 659/696 instructions,
 prefix 2/696, with the same 39 clean and 2 unaudited references. The exhaustive
 two-site sweep proves that either operator alone gains 3.78 bytes and that the
 paired form is the unique best result.
+
+## 2026-07-30 orientation subtraction bound
+
+The remaining previous/current orientation helper was tested with the authored
+operator form and compiles byte-identically. The retained frontier stays
+**36.90%**, 659/696 instructions, prefix 2/696, with 39 clean and 2 unaudited
+references.

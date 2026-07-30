@@ -164,3 +164,10 @@ constructors compiles byte-identically here. Both isolated replacements and
 their combination leave 60.11%, 726/718 instructions, prefix 0/718, and all 52
 clean references unchanged. Loopout retains its expanded component spelling
 and records the exhaustive neutral bound.
+
+## 2026-07-30 orientation subtraction bound
+
+The two shared orientation helpers are also exhaustively neutral: either
+authored operator and their combination compile byte-identically. Focused
+matching remains **60.11%**, 726/718 instructions, prefix 0/718, with all 52
+references clean.

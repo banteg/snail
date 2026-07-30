@@ -193,3 +193,10 @@ The exact Slalom-family terminal-delta block proves the paired
 7.35 weighted bytes and raises focused matching from 48.89% to **49.19%**.
 Candidate and target counts remain 646/655, prefix remains 20/655, and all 37
 references stay clean.
+
+## 2026-07-30 orientation subtraction bound
+
+Both shared orientation helpers were tested independently and together with
+the authored `Vector3::operator-` form. All three variants are byte-identical,
+leaving **49.19%**, 646/655 instructions, prefix 20/655, and all 37 references
+unchanged. Dip retains the expanded component spelling.

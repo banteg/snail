@@ -186,3 +186,9 @@ Replacing both component constructors with the authored `Vector3::operator-`
 form adds 7.67 weighted bytes and raises focused matching from 35.86% to
 **36.18%**. The candidate remains 614/652 instructions, prefix 5/652, with all
 37 references clean; either isolated operator gains half as much.
+
+## 2026-07-30 orientation subtraction bound
+
+The previous/current orientation helper was tested with the authored operator
+form and is byte-identical. Sweep remains **36.18%**, 614/652 instructions,
+prefix 5/652, with all 37 references clean.

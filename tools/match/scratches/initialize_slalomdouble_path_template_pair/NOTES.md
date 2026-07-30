@@ -226,3 +226,10 @@ in this constructor. The exhaustive two-site sweep adds 7.66 weighted bytes
 and raises focused matching from 39.55% to **39.85%**. Candidate and target
 counts remain 642/683, prefix stays 5/683, and the receipt remains 44 clean
 plus 2 unaudited references. Both single-site forms improve by half as much.
+
+## 2026-07-30 orientation subtraction bound
+
+The paired inline primary and secondary orientation expressions were tested
+alone and together. All three authored-operator variants are byte-identical,
+so the retained frontier remains **39.85%**, 642/683 instructions, prefix
+5/683, with 44 clean and 2 unaudited references.

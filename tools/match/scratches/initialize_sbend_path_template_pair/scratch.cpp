@@ -178,13 +178,9 @@ void cRPath::initialize_sbend_path_template_pair(
         primary_samples[i].transform.position.z = z;
 
         primary_samples[i].transform.basis_up = Vector3(1.0f, 0.0f, 0.0f);
-        primary_samples[i].transform.basis_forward = Vector3(
-            primary_samples[i].transform.position.x -
-                primary_samples[i - 1].transform.position.x,
-            primary_samples[i].transform.position.y -
-                primary_samples[i - 1].transform.position.y,
-            primary_samples[i].transform.position.z -
-                primary_samples[i - 1].transform.position.z);
+        primary_samples[i].transform.basis_forward =
+            primary_samples[i].transform.position -
+            primary_samples[i - 1].transform.position;
         primary_samples[i].transform.basis_forward.Normalize();
         primary_samples[i].transform.basis_right.cross_vectors(
             &primary_samples[i].transform.basis_up,

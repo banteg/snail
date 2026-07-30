@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-byte-cursor-orientation-subtraction",
+      "find": "                ((PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                    - 1)->transform.basis_forward = Vector3(\n                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset))\n                            ->transform.position.x\n                        - ((PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                            - 1)->transform.position.x,\n                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset))\n                            ->transform.position.y\n                        - ((PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                            - 1)->transform.position.y,\n                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset))\n                            ->transform.position.z\n                        - ((PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                            - 1)->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "                ((PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                    - 1)->transform.basis_forward =\n                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset))\n                        ->transform.position -\n                    ((PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                        - 1)->transform.position;"
+        }
+      ]
+    },
+    {
+      "name": "secondary-byte-cursor-orientation-subtraction",
+      "find": "                ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                    - 1)->transform.basis_forward = Vector3(\n                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))\n                            ->transform.position.x\n                        - ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                            - 1)->transform.position.x,\n                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))\n                            ->transform.position.y\n                        - ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                            - 1)->transform.position.y,\n                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))\n                            ->transform.position.z\n                        - ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                            - 1)->transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "                ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                    - 1)->transform.basis_forward =\n                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))\n                        ->transform.position -\n                    ((PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                        - 1)->transform.position;"
+        }
+      ]
+    }
+  ]
+}

@@ -190,3 +190,10 @@ operator improves the delta-loop region itself: the former 37-instruction
 mismatch splits into a better 32-instruction region and a 50%-matching tail.
 Scoped and unscoped pointer forms emit the same bytes, while all three
 direct-array/operator interactions repeat the prior 68.41-byte regression.
+
+## 2026-07-30 orientation subtraction bound
+
+The primary current/previous orientation operator loses 59.46 weighted bytes
+and falls to 48.20%, while preserving the 15-instruction prefix and all 33
+clean references. Toad keeps the expanded component constructor and the
+independently retained secondary terminal-delta operator.
