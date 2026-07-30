@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-latch-owner",
+      "find": "        float angle_sine = sine(angle);\n        ++local_index;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)local_index;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)local_index;\n        orient_previous_sample_pair(this, i);",
+      "replacements": [
+        {
+          "name": "delayed-increment-direct-z",
+          "text": "        float angle_sine = sine(angle);\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)(local_index + 1);\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)(local_index + 1);\n        orient_previous_sample_pair(this, i);\n        ++local_index;"
+        },
+        {
+          "name": "delayed-increment-integer-z",
+          "text": "        float angle_sine = sine(angle);\n        int sample_z = local_index + 1;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)sample_z;\n        orient_previous_sample_pair(this, i);\n        local_index = sample_z;"
+        },
+        {
+          "name": "delayed-increment-float-z",
+          "text": "        float angle_sine = sine(angle);\n        float sample_z = (float)(local_index + 1);\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = sample_z;\n        orient_previous_sample_pair(this, i);\n        ++local_index;"
+        },
+        {
+          "name": "delayed-increment-loop-index-z",
+          "text": "        float angle_sine = sine(angle);\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)i;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)i;\n        orient_previous_sample_pair(this, i);\n        ++local_index;"
+        }
+      ]
+    }
+  ]
+}

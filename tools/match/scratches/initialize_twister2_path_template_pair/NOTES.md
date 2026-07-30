@@ -322,3 +322,39 @@ order are neutral alone and in all non-terminal-add combinations. A terminal
 position add loses 6.28 weighted bytes in position-first order or 17.08 in
 offset-first order, including their scale interactions. Twister2 remains
 **71.38%**, 682/677 instructions, prefix 94/677, and 49 clean references.
+
+## 2026-07-31 direct interior owner and late latch recovery
+
+Native first computes one integer face-record index before selecting either
+branch. Replaying that owner is not the missing face schedule: using it only
+for the first face is byte-neutral, while feeding both branch-local records
+through it loses 138.39 weighted bytes and falls to **65.93%**. The complete
+form preserves the 94-instruction prefix and all 49 references but is rejected.
+
+The earlier interior-owner and sample-Z sweeps had tested each lifetime in
+isolation. Windows instead combines three owners: direct current-sample array
+reloads, an integer `sample_z = interior_index + 1`, and assignment of that
+value back to the logical index only after the orientation body. Moving only
+the latch is uniformly negative, losing at least 117.13 weighted bytes. The
+dependency-complete form reverses that result:
+
+```text
+match: 73.01% (was 71.38%)
+target: 677 insns, candidate: 690 insns (was 682)
+prefix: 123/677 (was 94/677)
+masked operands: 49 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+It adds 41.42 weighted bytes, moves the first mismatch 127 bytes deeper, and
+is reproduced byte-for-byte by Twister. Although the candidate grows eight
+instructions farther from exact count, the full unit is independently backed
+by the paired Windows targets and mobile control roles. The source-backed
+agreement and 29-instruction prefix extension outweigh that explicit metric
+tradeoff, so the complete owner is retained.
+
+The new first mismatch is only the commutative SIB encoding of the first
+current-sample store: target uses `[base + cursor]`, while VC6 renders the
+candidate as `[cursor + base]`. Adding a parallel `0xa8` cursor is byte-neutral,
+but addressing the current samples through it drops to **56.87%** and restores
+the old 94-instruction prefix. The explicit cursor is therefore rejected as a
+source owner; no register or operand-order forcing is introduced.

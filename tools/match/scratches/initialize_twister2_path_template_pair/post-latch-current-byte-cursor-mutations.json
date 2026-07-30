@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "current-sample-byte-cursor-control",
+      "find": "    int local_index = 0;\n    for (int i = 1; i < 51; ++i) {",
+      "replacements": [
+        {
+          "name": "parallel-byte-offset",
+          "text": "    int local_index = 0;\n    int current_sample_offset = sizeof(PathTemplateSample);\n    for (int i = 1; i < 51;\n         ++i, current_sample_offset += sizeof(PathTemplateSample)) {\n#define PRIMARY_CURRENT_SAMPLE \\\n    (*(PathTemplateSample*)((char*)primary_samples + current_sample_offset))\n#define SECONDARY_CURRENT_SAMPLE \\\n    (*(PathTemplateSample*)((char*)secondary_samples + current_sample_offset))"
+        }
+      ]
+    },
+    {
+      "name": "current-sample-byte-cursor-addresses",
+      "find": "        primary_samples[i].center_x = center;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        float angle_sine = sine(angle);\n        int sample_z = local_index + 1;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)sample_z;\n        orient_previous_sample_pair(this, i);\n        local_index = sample_z;",
+      "replacements": [
+        {
+          "name": "use-parallel-byte-offset",
+          "text": "        PRIMARY_CURRENT_SAMPLE.center_x = center;\n        PRIMARY_CURRENT_SAMPLE.rotation_scalar_98 = 0.0f;\n        PRIMARY_CURRENT_SAMPLE.rotation_scalar_94 = 0.0f;\n        PRIMARY_CURRENT_SAMPLE.special_scalar = 0.0f;\n        PRIMARY_CURRENT_SAMPLE.lateral_scale = 1.0f;\n        set_matrix_identity(&PRIMARY_CURRENT_SAMPLE.transform);\n        PRIMARY_CURRENT_SAMPLE.transform.position.x =\n            PRIMARY_CURRENT_SAMPLE.center_x;\n        float angle_sine = sine(angle);\n        int sample_z = local_index + 1;\n        PRIMARY_CURRENT_SAMPLE.transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        PRIMARY_CURRENT_SAMPLE.transform.position.z = (float)sample_z;\n        set_matrix_identity(&SECONDARY_CURRENT_SAMPLE.transform);\n        SECONDARY_CURRENT_SAMPLE.transform.position.x =\n            PRIMARY_CURRENT_SAMPLE.center_x;\n        SECONDARY_CURRENT_SAMPLE.transform.position.y =\n            PRIMARY_CURRENT_SAMPLE.transform.position.y + 0.49000001f;\n        SECONDARY_CURRENT_SAMPLE.transform.position.z = (float)sample_z;\n        orient_previous_sample_pair(this, i);\n        local_index = sample_z;\n#undef SECONDARY_CURRENT_SAMPLE\n#undef PRIMARY_CURRENT_SAMPLE",
+          "requires": [
+            "current-sample-byte-cursor-control/parallel-byte-offset"
+          ]
+        }
+      ]
+    }
+  ]
+}

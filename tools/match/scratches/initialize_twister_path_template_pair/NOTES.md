@@ -342,3 +342,19 @@ order are neutral alone and in all non-terminal-add combinations. A terminal
 position add loses 6.28 weighted bytes in position-first order or 17.08 in
 offset-first order, including their scale interactions. Twister remains
 **71.38%**, 682/677 instructions, prefix 94/677, and 49 clean references.
+
+## 2026-07-31 paired direct interior and latch ownership
+
+Twister reproduces Twister2's dependency-complete interior recovery exactly.
+Direct current-sample arrays, an integer `sample_z = local_index + 1`, and the
+late logical-index assignment raise focused matching from **71.38% to
+73.01%**, add 41.42 weighted bytes, and extend the exact prefix from 94 to
+**123/677** instructions. The candidate grows from 682 to 690 instructions;
+all 49 references remain clean.
+
+The retained unit is supported independently by both Windows constructors and
+their paired mobile control roles. A recorded reverse probe restores the old
+71.38%, 682-instruction result and loses the 29-instruction prefix extension.
+The paired source therefore keeps the owner despite the explicit
+instruction-count tradeoff. Twister2's recorded detail sweeps bound the nearby
+common face index, isolated latch spellings, and explicit sample-byte cursor.

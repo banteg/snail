@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "common-and-first-face-record-index",
+      "find": "                int face_index;\n                for (face_index = 0; face_index < 2; ++face_index) {\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[\n                            face_index + 2 * (row * path->width_cells + column)];\n                        face->header_word = 0;\n                        face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);",
+      "replacements": [
+        {
+          "name": "declare-and-use-common-index",
+          "text": "                int face_index;\n                for (face_index = 0; face_index < 2; ++face_index) {\n                    int face_record_index =\n                        face_index + 2 * (row * path->width_cells + column);\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;\n                        face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);"
+        }
+      ]
+    },
+    {
+      "name": "second-face-record-index",
+      "find": "                    } else {\n                        cRFaceQuad* face = &facequads[\n                            face_index + 2 * (row * path->width_cells + column)];\n                        face->header_word = 0;\n                        face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;",
+      "replacements": [
+        {
+          "name": "use-common-index",
+          "text": "                    } else {\n                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;\n                        face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;",
+          "requires": [
+            "common-and-first-face-record-index/declare-and-use-common-index"
+          ]
+        }
+      ]
+    }
+  ]
+}

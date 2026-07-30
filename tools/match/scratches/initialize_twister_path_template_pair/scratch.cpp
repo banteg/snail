@@ -265,27 +265,25 @@ void cRPath::initialize_twister_path_template_pair(
         center_scale = center_scale * 5.0f;
         float center = 2.5f - center_scale;
 
-        {
-            PathTemplateSample* primary = &primary_samples[i];
-            primary->center_x = center;
-            primary->rotation_scalar_98 = 0.0f;
-            primary->rotation_scalar_94 = 0.0f;
-            primary->special_scalar = 0.0f;
-            primary->lateral_scale = 1.0f;
-            set_matrix_identity(&primary->transform);
-            primary->transform.position.x = primary->center_x;
-        }
+        primary_samples[i].center_x = center;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.position.x = primary_samples[i].center_x;
         float angle_sine = sine(angle);
-        ++local_index;
+        int sample_z = local_index + 1;
         primary_samples[i].transform.position.y =
             sine(half_angle) * angle_sine * height;
-        primary_samples[i].transform.position.z = (float)local_index;
+        primary_samples[i].transform.position.z = (float)sample_z;
         set_matrix_identity(&secondary_samples[i].transform);
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;
         secondary_samples[i].transform.position.y =
             primary_samples[i].transform.position.y + 0.49000001f;
-        secondary_samples[i].transform.position.z = (float)local_index;
+        secondary_samples[i].transform.position.z = (float)sample_z;
         orient_previous_sample_pair(this, i);
+        local_index = sample_z;
     }
 
     compute_path_deltas(this);
