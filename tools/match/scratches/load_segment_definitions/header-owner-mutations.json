@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "catalog-header-owner",
+      "find": "        entries[segment_index].id = id;\n        sprintf(entries[segment_index].filename, \"%s\", segment_file_name);\n\n        char* name_cursor = find_case_insensitive_substring(\"Name:'\", file_buffer);\n        if (name_cursor == 0) {\n            report_errorf(\"Cannot find Name: in Segment %s\\n\", segment_files[segment_index]);\n            return;\n        }\n\n        name_cursor = find_case_insensitive_substring(\"'\", name_cursor) + 1;\n        char* display_out = entries[segment_index].display_name;",
+      "replacements": [
+        {
+          "name": "late-indexed-entry",
+          "text": "        SegmentCatalogEntry* entry = &entries[segment_index];\n        entry->id = id;\n        sprintf(entry->filename, \"%s\", segment_file_name);\n\n        char* name_cursor = find_case_insensitive_substring(\"Name:'\", file_buffer);\n        if (name_cursor == 0) {\n            report_errorf(\"Cannot find Name: in Segment %s\\n\", segment_files[segment_index]);\n            return;\n        }\n\n        name_cursor = find_case_insensitive_substring(\"'\", name_cursor) + 1;\n        char* display_out = entry->display_name;"
+        },
+        {
+          "name": "row-count-container",
+          "text": "        SegmentCatalogEntry* entry = (SegmentCatalogEntry*)(\n            (char*)row_count - offsetof(SegmentCatalogEntry, row_count));\n        entry->id = id;\n        sprintf(entry->filename, \"%s\", segment_file_name);\n\n        char* name_cursor = find_case_insensitive_substring(\"Name:'\", file_buffer);\n        if (name_cursor == 0) {\n            report_errorf(\"Cannot find Name: in Segment %s\\n\", segment_files[segment_index]);\n            return;\n        }\n\n        name_cursor = find_case_insensitive_substring(\"'\", name_cursor) + 1;\n        char* display_out = entry->display_name;"
+        }
+      ]
+    }
+  ]
+}

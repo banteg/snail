@@ -33,12 +33,9 @@ void cRSMTracks::Import()
     }
 
     int segment_index = 0;
-    if (count <= 0)
-        return;
-
     char* segment_file_name = segment_files[0];
     int* row_count = &entries[0].row_count;
-    do {
+    while (segment_index < count) {
         // The authored call passes the text buffer as an unused fourth vararg;
         // the same source bug survives in the symbol-rich iOS build.
         sprintf(file_path, "Segments/%s", segment_file_name, file_buffer);
@@ -252,5 +249,5 @@ void cRSMTracks::Import()
         ++segment_index;
         row_count = &entries[segment_index].row_count;
         segment_file_name += 0x80;
-    } while (segment_index < count);
+    }
 }

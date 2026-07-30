@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ring-speed-owner",
+      "find": "            option_match = find_case_insensitive_substring(\"RingSpeed=\", option_text);\n            if (option_match != 0) {\n                option_match = find_case_insensitive_substring(\"=\", option_match) + 1;\n                row->ring_speed.value = parse_next_float32(&option_match);\n            } else {\n                row->ring_speed.bits = 0;\n            }",
+      "replacements": [
+        {
+          "name": "containing-entry",
+          "text": "            option_match = find_case_insensitive_substring(\"RingSpeed=\", option_text);\n            if (option_match != 0) {\n                option_match = find_case_insensitive_substring(\"=\", option_match) + 1;\n                entries[segment_index].rows[row_index].ring_speed.value =\n                    parse_next_float32(&option_match);\n            } else {\n                entries[segment_index].rows[row_index].ring_speed.bits = 0;\n            }"
+        },
+        {
+          "name": "explicit-this-entry",
+          "text": "            option_match = find_case_insensitive_substring(\"RingSpeed=\", option_text);\n            if (option_match != 0) {\n                option_match = find_case_insensitive_substring(\"=\", option_match) + 1;\n                this->entries[segment_index].rows[row_index].ring_speed.value =\n                    parse_next_float32(&option_match);\n            } else {\n                this->entries[segment_index].rows[row_index].ring_speed.bits = 0;\n            }"
+        },
+        {
+          "name": "containing-entry-row-borrow",
+          "text": "            AuthoredFloatBits* ring_speed =\n                &entries[segment_index].rows[row_index].ring_speed;\n            option_match = find_case_insensitive_substring(\"RingSpeed=\", option_text);\n            if (option_match != 0) {\n                option_match = find_case_insensitive_substring(\"=\", option_match) + 1;\n                ring_speed->value = parse_next_float32(&option_match);\n            } else {\n                ring_speed->bits = 0;\n            }"
+        }
+      ]
+    }
+  ]
+}

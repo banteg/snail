@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-loop-header",
+      "find": "    int segment_index = 0;\n    if (count <= 0)\n        return;\n\n    char* segment_file_name = segment_files[0];\n    int* row_count = &entries[0].row_count;\n    do {",
+      "replacements": [
+        {
+          "name": "natural-while",
+          "text": "    int segment_index = 0;\n    char* segment_file_name = segment_files[0];\n    int* row_count = &entries[0].row_count;\n    while (segment_index < count) {"
+        },
+        {
+          "name": "guarded-while",
+          "text": "    int segment_index = 0;\n    if (count <= 0)\n        return;\n\n    char* segment_file_name = segment_files[0];\n    int* row_count = &entries[0].row_count;\n    while (segment_index < count) {"
+        },
+        {
+          "name": "natural-for",
+          "text": "    char* segment_file_name = segment_files[0];\n    int* row_count = &entries[0].row_count;\n    for (int segment_index = 0; segment_index < count;) {"
+        }
+      ]
+    },
+    {
+      "name": "outer-loop-footer",
+      "find": "    } while (segment_index < count);",
+      "replacements": [
+        {
+          "name": "plain-close",
+          "text": "    }"
+        }
+      ]
+    }
+  ]
+}

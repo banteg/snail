@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-cursor-advance",
+      "find": "        ++segment_index;\n        row_count = &entries[segment_index].row_count;\n        segment_file_name += 0x80;",
+      "replacements": [
+        {
+          "name": "index-file-row",
+          "text": "        ++segment_index;\n        segment_file_name += 0x80;\n        row_count = &entries[segment_index].row_count;"
+        },
+        {
+          "name": "row-file-index",
+          "text": "        row_count = &entries[segment_index + 1].row_count;\n        segment_file_name += 0x80;\n        ++segment_index;"
+        },
+        {
+          "name": "file-row-index",
+          "text": "        segment_file_name += 0x80;\n        row_count = &entries[segment_index + 1].row_count;\n        ++segment_index;"
+        },
+        {
+          "name": "index-stride-file",
+          "text": "        ++segment_index;\n        row_count = (int*)((char*)row_count + sizeof(SegmentCatalogEntry));\n        segment_file_name += 0x80;"
+        },
+        {
+          "name": "index-file-stride",
+          "text": "        ++segment_index;\n        segment_file_name += 0x80;\n        row_count = (int*)((char*)row_count + sizeof(SegmentCatalogEntry));"
+        },
+        {
+          "name": "stride-index-file",
+          "text": "        row_count = (int*)((char*)row_count + sizeof(SegmentCatalogEntry));\n        ++segment_index;\n        segment_file_name += 0x80;"
+        },
+        {
+          "name": "stride-file-index",
+          "text": "        row_count = (int*)((char*)row_count + sizeof(SegmentCatalogEntry));\n        segment_file_name += 0x80;\n        ++segment_index;"
+        },
+        {
+          "name": "file-index-stride",
+          "text": "        segment_file_name += 0x80;\n        ++segment_index;\n        row_count = (int*)((char*)row_count + sizeof(SegmentCatalogEntry));"
+        },
+        {
+          "name": "file-stride-index",
+          "text": "        segment_file_name += 0x80;\n        row_count = (int*)((char*)row_count + sizeof(SegmentCatalogEntry));\n        ++segment_index;"
+        }
+      ]
+    }
+  ]
+}
