@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "profile-y-owner",
+      "find": "        float y = (1.0f - cosine(phase * 0.5f)) * 0.5f * height;",
+      "replacements": [
+        {
+          "name": "split-compound-height",
+          "text": "        float y = (1.0f - cosine(phase * 0.5f)) * 0.5f;\n        y *= height;"
+        },
+        {
+          "name": "split-assigned-height",
+          "text": "        float y = (1.0f - cosine(phase * 0.5f)) * 0.5f;\n        y = y * height;"
+        },
+        {
+          "name": "nested-height-last",
+          "text": "        float y = height *\n            ((1.0f - cosine(phase * 0.5f)) * 0.5f);"
+        },
+        {
+          "name": "grouped-height-last",
+          "text": "        float y =\n            ((1.0f - cosine(phase * 0.5f)) * 0.5f) * height;"
+        },
+        {
+          "name": "named-half-wave",
+          "text": "        float half_wave =\n            (1.0f - cosine(phase * 0.5f)) * 0.5f;\n        float y = half_wave * height;"
+        }
+      ]
+    }
+  ]
+}

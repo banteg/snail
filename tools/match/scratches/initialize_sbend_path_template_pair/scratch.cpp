@@ -184,7 +184,8 @@ void cRPath::initialize_sbend_path_template_pair(
         primary_samples[i].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[i].transform);
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        float y = (1.0f - cosine(phase * 0.5f)) * 0.5f * height;
+        float y = (1.0f - cosine(phase * 0.5f)) * 0.5f;
+        y *= height;
         primary_samples[i].transform.position.y = y;
         float z = (1.0f - cosine(phase * 1.5f)) * 0.5f;
         z = z * z_amplitude * 0.33333334f + 1.0f;

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-denominator-owner",
+      "find": "    for (int sample_index = 0; sample_index < steps; ++sample_index) {\n        int i = sample_index + 1;\n        float phase = (float)sample_index * 6.2831855f / (float)steps;",
+      "replacements": [
+        {
+          "name": "named-steps-float",
+          "text": "    float steps_f = (float)steps;\n    for (int sample_index = 0; sample_index < steps; ++sample_index) {\n        int i = sample_index + 1;\n        float phase = (float)sample_index * 6.2831855f / steps_f;"
+        },
+        {
+          "name": "named-const-steps-float",
+          "text": "    const float steps_f = (float)steps;\n    for (int sample_index = 0; sample_index < steps; ++sample_index) {\n        int i = sample_index + 1;\n        float phase = (float)sample_index * 6.2831855f / steps_f;"
+        },
+        {
+          "name": "split-steps-float-assignment",
+          "text": "    float steps_f;\n    steps_f = (float)steps;\n    for (int sample_index = 0; sample_index < steps; ++sample_index) {\n        int i = sample_index + 1;\n        float phase = (float)sample_index * 6.2831855f / steps_f;"
+        },
+        {
+          "name": "named-phase-denominator",
+          "text": "    float phase_denominator = (float)steps;\n    for (int sample_index = 0; sample_index < steps; ++sample_index) {\n        int i = sample_index + 1;\n        float phase =\n            (float)sample_index * 6.2831855f / phase_denominator;"
+        },
+        {
+          "name": "loop-local-steps-float",
+          "text": "    for (int sample_index = 0; sample_index < steps; ++sample_index) {\n        int i = sample_index + 1;\n        float steps_f = (float)steps;\n        float phase = (float)sample_index * 6.2831855f / steps_f;"
+        }
+      ]
+    }
+  ]
+}

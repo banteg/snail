@@ -223,3 +223,23 @@ Together the five changes add 44.20 weighted bytes and raise focused matching
 from 66.03% to **68.17%**. The candidate is 574/579 instructions, the exact
 prefix remains 67/579, and all 39 masked references remain clean. The two
 bounded sweeps cover all 39 planned variants without truncation.
+
+## 2026-07-30 Y-profile ownership
+
+Native `0x42e09d..0x42e0b0` applies the half-wave scale before multiplying by
+`height`. Splitting that ownership in the source, parallel to the already
+authored Z-profile sequence, prevents VC6 from reversing the two factors and
+adds 3.59 weighted bytes. All five grouped, nested, named, and split spellings
+emit the same winning code.
+
+The retained compound form raises focused matching from **68.17%** to
+**68.34%**, with 574/579 candidate/target instructions, a 67-instruction exact
+prefix, the exact `0x48` frame, and all 39 references clean.
+
+Two adjacent allocation hypotheses remain rejected. Naming the hoisted
+floating-point step denominator is neutral only when loop-local; persistent
+names lose 10.74 weighted bytes and shorten the prefix to 59 instructions.
+Retesting the native-looking three-scalar secondary offset after the mesh
+arithmetic change still loses at least 19.04 weighted bytes, while pointer and
+aggregate forms lose more than 239. The compact direct secondary additions
+therefore remain independently measured.
