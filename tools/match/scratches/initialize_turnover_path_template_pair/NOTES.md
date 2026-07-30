@@ -189,3 +189,31 @@ raises focused matching from 51.89% to **52.04%** without changing 651/671
 instructions, prefix 15/671, or the 41 clean references. Combining the neutral
 helper edit with it emits the same bytes, so only the contributing inline
 owner is retained.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Native instructions at `0x4272df..0x4273c7` keep the lateral value on the x87
+stack across both terminal and nonterminal branches, construct one lateral
+offset per branch, and then add that aggregate to the branch position.
+Recovering `double lateral`, both `Vector3::operator*` expressions, and both
+`Vector3::operator+` expressions raises focused matching from 52.04%
+(651/671) to **53.87%** (647/671), a gain of 44.45 weighted bytes. The
+15-instruction prefix and all 41 masked references remain clean.
+
+The scalar owner contributes 0.96 weighted bytes. Either scale operator alone
+contributes 7.37, but that unsupported branch asymmetry is rejected; the
+evidence-consistent pair still contributes 0.96. The paired position additions
+then contribute 42.54. Although the final candidate is four instructions
+shorter, every retained change agrees with the native aggregate lifetimes and
+improves the weighted match.
+
+Moving the shared vertex owner into either branch loses 15.01 weighted bytes
+in all pointer, reference, and direct-index spellings, so the late native
+address calculation is treated as compiler scheduling rather than a distinct
+source lifetime.
+
+The native face tail still proves separate branch-local records, complete UV
+writes, and parity branches at `0x42747a..0x42762c`. Replaying the split records
+without parity loses 355.74 weighted bytes and the exact prefix; including the
+native parity shape loses 456.83. Those face owners remain deferred until the
+earlier loop/cursor lifetimes no longer destabilize the whole function.
