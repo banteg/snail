@@ -24,8 +24,8 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
     int column;
 
     row = 0;
-    int sample_offset = 0;
     if (path->segment_count >= 0) {
+        int sample_offset = 0;
         do {
             column = 0;
             if (path->width_cells >= 0) {
@@ -53,22 +53,32 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
         } while (row <= path->segment_count);
     }
 
-    for (row = 0; row < path->segment_count; ++row) {
-        for (column = 0; column < path->width_cells; ++column) {
-            float v0 = (float)(row % 8) * 0.125f;
-            float v1 = (float)(row % 8 + 1) * 0.125f;
-            float u0 = (float)column * 0.125f;
-            float u1 = (float)(column + 1) * 0.125f;
+    for (int face_row = 0; face_row < path->segment_count; ++face_row) {
+        for (int face_column = 0;
+             face_column < path->width_cells;
+             ++face_column) {
+            float v0 = (float)(face_row % 8) * 0.125f;
+            float v1 = (float)(face_row % 8 + 1) * 0.125f;
+            float u0 = (float)face_column * 0.125f;
+            float u1 = (float)(face_column + 1) * 0.125f;
 
             for (int face_index = 0; face_index < 2; ++face_index) {
                 cRFaceQuad* face =
-                    &facequads[2 * column + 2 * row * path->width_cells + face_index];
+                    &facequads[2 * face_column
+                        + 2 * face_row * path->width_cells + face_index];
                 if (face_index == 0) {
-                    face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
-                    face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                    if (!((column ^ row) & 1)) {
+                    face->vertex_0 = face_column
+                        + face_row * ((unsigned short)path->width_cells + 1);
+                    face->vertex_1 = face_row
+                        * ((unsigned short)path->width_cells + 1)
+                        + face_column + 1;
+                    face->vertex_2 = (face_row + 1)
+                        * ((unsigned short)path->width_cells + 1)
+                        + face_column + 1;
+                    face->vertex_3 = face_column
+                        + (face_row + 1)
+                            * ((unsigned short)path->width_cells + 1);
+                    if (!((face_column ^ face_row) & 1)) {
                         face->texture_ref =
                             g_texture_refs.Add(texture, 0, 0);
                     } else {
@@ -85,11 +95,18 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
                     face->uv[3].v = v1;
                 } else {
                     face->header_word = 4;
-                    face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
-                    face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                    face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                    if (!((column ^ row) & 1)) {
+                    face->vertex_0 = face_row
+                        * ((unsigned short)path->width_cells + 1)
+                        + face_column + 1;
+                    face->vertex_1 = face_column
+                        + face_row * ((unsigned short)path->width_cells + 1);
+                    face->vertex_2 = face_column
+                        + (face_row + 1)
+                            * ((unsigned short)path->width_cells + 1);
+                    face->vertex_3 = (face_row + 1)
+                        * ((unsigned short)path->width_cells + 1)
+                        + face_column + 1;
+                    if (!((face_column ^ face_row) & 1)) {
                         face->texture_ref =
                             g_texture_refs.Add(texture, 0, 0);
                     } else {

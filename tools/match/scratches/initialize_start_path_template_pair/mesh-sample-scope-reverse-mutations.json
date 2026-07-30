@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-sample-offset-scope",
+      "find": "    row = 0;\n    if (path->segment_count >= 0) {\n        int sample_offset = 0;",
+      "replacements": [
+        {
+          "name": "declare-before-segment-guard",
+          "text": "    row = 0;\n    int sample_offset = 0;\n    if (path->segment_count >= 0) {"
+        }
+      ]
+    }
+  ]
+}

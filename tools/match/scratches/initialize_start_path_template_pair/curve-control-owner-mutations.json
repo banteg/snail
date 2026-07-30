@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-index-lifetime",
+      "find": "    int curve_index = 0;\n    if (curve_index < curve_segments) {\n        i = 5;",
+      "replacements": [
+        {
+          "name": "initialized-after-guard",
+          "text": "    if (curve_segments > 0) {\n        int curve_index = 0;\n        i = 5;"
+        }
+      ]
+    },
+    {
+      "name": "identity-pointer-lifetime",
+      "find": "            PathTemplateSample* primary_previous =\n                &primary_samples[i - 1];\n            PathTemplateSample* secondary_previous =\n                &secondary_samples[i - 1];\n\n            if (i <= 5) {\n                primary_previous->transform.RotIdentity();\n                secondary_previous->transform.RotIdentity();",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "            if (i <= 5) {\n                PathTemplateSample* primary_previous =\n                    &primary_samples[i - 1];\n                PathTemplateSample* secondary_previous =\n                    &secondary_samples[i - 1];\n                primary_previous->transform.RotIdentity();\n                secondary_previous->transform.RotIdentity();"
+        }
+      ]
+    }
+  ]
+}

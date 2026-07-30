@@ -8,10 +8,10 @@ sample, decrements `segment_count`, and uses the final allocated sample directly
 for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
-The retained scratch now matches 60.84% (603/610 candidate/target
-instructions), with masked operands at 31 ok, 0 unresolved, 0 mismatch. The
+The retained scratch now matches 63.87% (605/610 candidate/target
+instructions), with masked operands at 35 ok, 0 unresolved, 0 mismatch. The
 candidate still has a 0x48 frame versus the target's 0x44 frame, so the
-remaining mesh-row register ownership and prologue spill are still open.
+remaining cross-branch register ownership and prologue spill are still open.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 10.90% (124/610
@@ -316,3 +316,33 @@ The probe is recorded and reverted. As with Turnunder, the native byte
 induction remains compiler-derived in the retained source context; Start's
 mixed identity-pointer/direct-orientation boundary is not replaced by a
 locally plausible cursor that reduces whole-function agreement.
+
+## 2026-07-30 isolated grid and curve-control ownership
+
+Live Windows MLIL separates the strip-mesh phases exactly as the retained
+source now does: the vertex phase owns `row` and `column`, while the face phase
+starts fresh row and column counters. Isolating only that source boundary moves
+focused matching from 63.70% to 63.87%, adding 3.66 weighted bytes with the
+candidate unchanged at 605/610 instructions and all 35 masked references
+clean. Reusing the vertex counters in the face phase reverses the gain exactly.
+The earlier coupled grid/face-record rejection therefore does not reject the
+grid boundary; its regression came from moving the whole face record into the
+branches.
+
+The native vertex phase also initializes its physical sample offset only after
+the non-negative segment guard. Moving the declaration to that proven scope is
+byte-neutral, as is moving the zeroed curve index inside its positive-count
+guard. The retained pre-guard curve-index spelling follows Windows MLIL and
+keeps the logical owner explicit. Moving both previous-sample pointers into
+the identity branch is not a frame fix: from the final baseline it regresses
+to 44.74% (606/610) despite keeping all references clean. Swapping the
+identity/orientation source arms likewise regressed the earlier 63.70%
+baseline to 59.52% (603/610), so the current control spelling remains.
+
+Windows implements the five-sample lead phase with separate logical and
+`0xa8` byte cursors, but forcing that physical cursor into the C++ source
+regresses 63.87% to 62.06% at the same 605 candidate instructions. This is a
+compiler-derived loop owner rather than an authored source boundary; direct
+indexed arrays remain retained. The remaining 0x48-versus-0x44 frame
+difference is bounded to the cross-branch orientation allocation schedule and
+is not being forced through source-shape regressions.
