@@ -301,3 +301,18 @@ it reaches the native `0x44` frame, but none of the dependency-complete
 variants restores whole-function agreement. Start therefore keeps its shared
 face owner and `0x48` frame; frame parity alone is not sufficient evidence for
 a lower-agreement rewrite.
+
+## 2026-07-30 curved byte-cursor transfer rejected
+
+Windows begins Start's curved body with byte offset `0x348` at `0x42664a`,
+uses the offset independently from the logical sample and curve indices, and
+advances it by `0xa8` at `0x4268a2`. Replaying that direct current/previous
+sample cursor across both lanes after the coordinated sample-owner cascade is
+still negative: it loses 68.42 weighted bytes, falls from **63.70%** to
+**60.63%**, and shortens the candidate from 605 to 604 instructions. The
+zero-length exact prefix and all 35 references are unchanged.
+
+The probe is recorded and reverted. As with Turnunder, the native byte
+induction remains compiler-derived in the retained source context; Start's
+mixed identity-pointer/direct-orientation boundary is not replaced by a
+locally plausible cursor that reduces whole-function agreement.

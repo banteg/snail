@@ -330,3 +330,23 @@ entries**. Prefix remains 6/696. Pointer-owner and curve-index variants were
 rechecked on the new fixed-owner frontier and all regress; the direct
 initializer/orientation pair is retained only as the complete native-backed
 dependency.
+
+## 2026-07-30 post-ownership curved byte cursor
+
+The earlier cursor rejection was measured before the complete direct
+initializer/orientation dependency was retained. On that new frontier, Windows
+proves two independent loop owners: `ebx` is the logical curve counter, while
+`edi` starts at `0x2a0` (`4 * 0xa8`) at `0x41f94e`. The latch increments the
+counter at `0x41fc2a`, advances the sample byte offset by `0xa8` at `0x41fc2b`,
+and tests the logical counter separately at `0x41fc31`.
+
+Addressing both current sample arrays and their preceding orientation samples
+through that byte cursor raises focused matching from **58.59%** to **58.87%**,
+adding 7.40 weighted bytes. The candidate remains 690/696 instructions with
+prefix 6/696 and all 40 references clean. Reverting only the cursor loses the
+same 7.40 bytes.
+
+An exhaustive 49-variant sweep covers cursor initialization, stride spelling,
+advance order, and the now-codegen-neutral logical `sample_index` declaration.
+Every variant is byte-identical. The material recovery is the address owner
+itself, and the earlier pre-dependency negative result remains in the ledger.

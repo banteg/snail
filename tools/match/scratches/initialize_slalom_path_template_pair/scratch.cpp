@@ -530,7 +530,13 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 
     if (curve_count > 0) {
         float curve_count_f = (float)curve_count;
-        for (i = 0; i < curve_count; ++i) {
+        int curve_sample_offset = 4 * sizeof(PathAttachmentSample);
+#define PRIMARY_CURVE_SAMPLE \
+    ((PathAttachmentSample*)((char*)primary_samples + curve_sample_offset))
+#define SECONDARY_CURVE_SAMPLE \
+    ((PathAttachmentSample*)((char*)secondary_samples + curve_sample_offset))
+        for (i = 0; i < curve_count;
+             ++i, curve_sample_offset += sizeof(PathAttachmentSample)) {
             int sample_index = i + 4;
             float t = (float)i / curve_count_f;
             float angle = t * 6.2831855f;
@@ -543,70 +549,72 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             if (falloff < 0.0f)
                 falloff = -falloff;
             float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;
-            primary_samples[sample_index].center_x = center;
-            primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-            primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-            primary_samples[sample_index].special_scalar = 0.0f;
-            primary_samples[sample_index].lateral_scale = 1.0f;
-            set_matrix_identity(&primary_samples[sample_index].transform);
-            primary_samples[sample_index].transform.position.x =
-                primary_samples[sample_index].center_x;
+            PRIMARY_CURVE_SAMPLE->center_x = center;
+            PRIMARY_CURVE_SAMPLE->rotation_scalar_98 = 0.0f;
+            PRIMARY_CURVE_SAMPLE->rotation_scalar_94 = 0.0f;
+            PRIMARY_CURVE_SAMPLE->special_scalar = 0.0f;
+            PRIMARY_CURVE_SAMPLE->lateral_scale = 1.0f;
+            set_matrix_identity(&PRIMARY_CURVE_SAMPLE->transform);
+            PRIMARY_CURVE_SAMPLE->transform.position.x =
+                PRIMARY_CURVE_SAMPLE->center_x;
             float z = (float)(i + 4);
-            primary_samples[sample_index].transform.position.y = 0.0f;
-            primary_samples[sample_index].transform.position.z = z;
-            set_matrix_identity(&secondary_samples[sample_index].transform);
-            secondary_samples[sample_index].transform.position.x =
-                primary_samples[sample_index].center_x;
-            secondary_samples[sample_index].transform.position.y = 0.49000001f;
-            secondary_samples[sample_index].transform.position.z = z;
+            PRIMARY_CURVE_SAMPLE->transform.position.y = 0.0f;
+            PRIMARY_CURVE_SAMPLE->transform.position.z = z;
+            set_matrix_identity(&SECONDARY_CURVE_SAMPLE->transform);
+            SECONDARY_CURVE_SAMPLE->transform.position.x =
+                PRIMARY_CURVE_SAMPLE->center_x;
+            SECONDARY_CURVE_SAMPLE->transform.position.y = 0.49000001f;
+            SECONDARY_CURVE_SAMPLE->transform.position.z = z;
             if (i <= 0) {
-                primary_samples[sample_index - 1].transform.RotIdentity();
-                secondary_samples[sample_index - 1].transform.RotIdentity();
+                (PRIMARY_CURVE_SAMPLE - 1)->transform.RotIdentity();
+                (SECONDARY_CURVE_SAMPLE - 1)->transform.RotIdentity();
             } else {
-                primary_samples[sample_index - 1].transform.basis_up =
+                (PRIMARY_CURVE_SAMPLE - 1)->transform.basis_up =
                     Vector3(0.0f, 1.0f, 0.0f);
-                primary_samples[sample_index - 1].transform.basis_forward =
+                (PRIMARY_CURVE_SAMPLE - 1)->transform.basis_forward =
                     Vector3(
-                        primary_samples[sample_index].transform.position.x
-                            - primary_samples[sample_index - 1].transform.position.x,
-                        primary_samples[sample_index].transform.position.y
-                            - primary_samples[sample_index - 1].transform.position.y,
-                        primary_samples[sample_index].transform.position.z
-                            - primary_samples[sample_index - 1].transform.position.z);
-                primary_samples[sample_index - 1]
-                    .transform.basis_forward.Normalize();
-                primary_samples[sample_index - 1]
-                    .transform.basis_right.cross_vectors(
-                        &primary_samples[sample_index - 1].transform.basis_up,
-                        &primary_samples[sample_index - 1].transform.basis_forward);
+                        PRIMARY_CURVE_SAMPLE->transform.position.x
+                            - (PRIMARY_CURVE_SAMPLE - 1)->transform.position.x,
+                        PRIMARY_CURVE_SAMPLE->transform.position.y
+                            - (PRIMARY_CURVE_SAMPLE - 1)->transform.position.y,
+                        PRIMARY_CURVE_SAMPLE->transform.position.z
+                            - (PRIMARY_CURVE_SAMPLE - 1)->transform.position.z);
+                (PRIMARY_CURVE_SAMPLE - 1)
+                    ->transform.basis_forward.Normalize();
+                (PRIMARY_CURVE_SAMPLE - 1)
+                    ->transform.basis_right.cross_vectors(
+                        &(PRIMARY_CURVE_SAMPLE - 1)->transform.basis_up,
+                        &(PRIMARY_CURVE_SAMPLE - 1)->transform.basis_forward);
                 float primary_roll =
-                    primary_samples[sample_index - 1].center_x * 0.2617994f;
-                primary_samples[sample_index - 1]
-                    .transform.RotLocalZ(primary_roll);
+                    (PRIMARY_CURVE_SAMPLE - 1)->center_x * 0.2617994f;
+                (PRIMARY_CURVE_SAMPLE - 1)
+                    ->transform.RotLocalZ(primary_roll);
 
-                secondary_samples[sample_index - 1].transform.basis_up =
+                (SECONDARY_CURVE_SAMPLE - 1)->transform.basis_up =
                     Vector3(0.0f, 1.0f, 0.0f);
-                secondary_samples[sample_index - 1].transform.basis_forward =
+                (SECONDARY_CURVE_SAMPLE - 1)->transform.basis_forward =
                     Vector3(
-                        secondary_samples[sample_index].transform.position.x
-                            - secondary_samples[sample_index - 1].transform.position.x,
-                        secondary_samples[sample_index].transform.position.y
-                            - secondary_samples[sample_index - 1].transform.position.y,
-                        secondary_samples[sample_index].transform.position.z
-                            - secondary_samples[sample_index - 1].transform.position.z);
-                secondary_samples[sample_index - 1]
-                    .transform.basis_forward.Normalize();
-                secondary_samples[sample_index - 1]
-                    .transform.basis_right.cross_vectors(
-                        &secondary_samples[sample_index - 1].transform.basis_up,
-                        &secondary_samples[sample_index - 1].transform.basis_forward);
+                        SECONDARY_CURVE_SAMPLE->transform.position.x
+                            - (SECONDARY_CURVE_SAMPLE - 1)->transform.position.x,
+                        SECONDARY_CURVE_SAMPLE->transform.position.y
+                            - (SECONDARY_CURVE_SAMPLE - 1)->transform.position.y,
+                        SECONDARY_CURVE_SAMPLE->transform.position.z
+                            - (SECONDARY_CURVE_SAMPLE - 1)->transform.position.z);
+                (SECONDARY_CURVE_SAMPLE - 1)
+                    ->transform.basis_forward.Normalize();
+                (SECONDARY_CURVE_SAMPLE - 1)
+                    ->transform.basis_right.cross_vectors(
+                        &(SECONDARY_CURVE_SAMPLE - 1)->transform.basis_up,
+                        &(SECONDARY_CURVE_SAMPLE - 1)->transform.basis_forward);
 
                 float secondary_roll =
-                    primary_samples[sample_index - 1].center_x * 0.2617994f;
-                secondary_samples[sample_index - 1]
-                    .transform.RotLocalZ(secondary_roll);
+                    (PRIMARY_CURVE_SAMPLE - 1)->center_x * 0.2617994f;
+                (SECONDARY_CURVE_SAMPLE - 1)
+                    ->transform.RotLocalZ(secondary_roll);
             }
         }
+#undef SECONDARY_CURVE_SAMPLE
+#undef PRIMARY_CURVE_SAMPLE
     }
 #endif
 

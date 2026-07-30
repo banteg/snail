@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-cursor-init",
+      "find": "        int curve_sample_offset = 4 * sizeof(PathAttachmentSample);",
+      "replacements": [
+        {
+          "name": "reversed-product",
+          "text": "        int curve_sample_offset = sizeof(PathAttachmentSample) * 4;"
+        },
+        {
+          "name": "literal-offset",
+          "text": "        int curve_sample_offset = 0x2a0;"
+        },
+        {
+          "name": "explicit-int-size",
+          "text": "        int curve_sample_offset = 4 * (int)sizeof(PathAttachmentSample);"
+        },
+        {
+          "name": "sum-of-strides",
+          "text": "        int curve_sample_offset =\n+            2 * sizeof(PathAttachmentSample) + 2 * sizeof(PathAttachmentSample);"
+        }
+      ]
+    },
+    {
+      "name": "curve-logical-sample-index",
+      "find": "            int sample_index = i + 4;\n            float t = (float)i / curve_count_f;",
+      "replacements": [
+        {
+          "name": "remove-dead-index",
+          "text": "            float t = (float)i / curve_count_f;"
+        }
+      ]
+    },
+    {
+      "name": "curve-cursor-advance",
+      "find": "        for (i = 0; i < curve_count;\n             ++i, curve_sample_offset += sizeof(PathAttachmentSample)) {",
+      "replacements": [
+        {
+          "name": "cursor-first",
+          "text": "        for (i = 0; i < curve_count;\n+             curve_sample_offset += sizeof(PathAttachmentSample), ++i) {"
+        },
+        {
+          "name": "literal-stride",
+          "text": "        for (i = 0; i < curve_count;\n+             ++i, curve_sample_offset += 0xa8) {"
+        },
+        {
+          "name": "explicit-int-size",
+          "text": "        for (i = 0; i < curve_count;\n+             ++i, curve_sample_offset += (int)sizeof(PathAttachmentSample)) {"
+        },
+        {
+          "name": "assignment-form",
+          "text": "        for (i = 0; i < curve_count;\n+             ++i, curve_sample_offset = curve_sample_offset + sizeof(PathAttachmentSample)) {"
+        }
+      ]
+    }
+  ]
+}
