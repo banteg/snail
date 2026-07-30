@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-lane-control",
+      "find": "        int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);",
+      "replacements": [
+        {
+          "name": "for-index",
+          "text": "        for (int lane_index = 0;\n             lane_index < (int)(sizeof(runtime_cells[0])\n                                / sizeof(runtime_cells[0][0]));\n             ++lane_index) {\n            cell->Remove();\n            ++cell;\n        }"
+        },
+        {
+          "name": "mobile-next-index",
+          "text": "        int lane_index = 0;\n        do {\n            int next_lane_index = lane_index + 1;\n            cell->Remove();\n            ++cell;\n            lane_index = next_lane_index;\n        } while (lane_index\n                 != (int)(sizeof(runtime_cells[0])\n                          / sizeof(runtime_cells[0][0])));"
+        },
+        {
+          "name": "postincrement-index",
+          "text": "        int lane_index = 0;\n        do {\n            cell->Remove();\n            ++cell;\n            ++lane_index;\n        } while (lane_index\n                 != (int)(sizeof(runtime_cells[0])\n                          / sizeof(runtime_cells[0][0])));"
+        },
+        {
+          "name": "pointer-end",
+          "text": "        cRSubLoc* row_end =\n            cell + sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n        } while (cell != row_end);"
+        }
+      ]
+    }
+  ]
+}

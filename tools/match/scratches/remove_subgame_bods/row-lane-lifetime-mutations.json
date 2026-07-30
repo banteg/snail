@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "enclosing-lane-counter",
+      "find": "    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);",
+      "replacements": [
+        {
+          "name": "declare-before-row-loop",
+          "text": "    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    int lane_count;"
+        }
+      ]
+    },
+    {
+      "name": "inner-lane-countdown",
+      "find": "        cRSubLoc* row_end =\n            cell + sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n        } while (cell != row_end);",
+      "replacements": [
+        {
+          "name": "assign-enclosing-counter",
+          "text": "        lane_count =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);"
+        }
+      ]
+    }
+  ]
+}

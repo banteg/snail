@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-row-loop-shape",
+      "find": "    cRSubLoc* cell = &runtime_cells[0][0];\n    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        cRSubLoc* row_end =\n            cell + sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n        } while (cell != row_end);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);",
+      "replacements": [
+        {
+          "name": "local-countdown-cursors-first",
+          "text": "    cRSubLoc* cell = &runtime_cells[0][0];\n    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        int lane_count =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "local-countdown-cell-last",
+          "text": "    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    cRSubLoc* cell = &runtime_cells[0][0];\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        int lane_count =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "local-countdown-count-first",
+          "text": "    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    cRSubLoc* cell = &runtime_cells[0][0];\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        int lane_count =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "local-countdown-split-cell-last",
+          "text": "    cRSubLoc* cell;\n    BodNode** row_next;\n    int row_count;\n    row_next = &runtime_rows[0].row_model.list_next;\n    row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    cell = &runtime_cells[0][0];\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        int lane_count =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "enclosing-countdown-cell-last",
+          "text": "    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    cRSubLoc* cell = &runtime_cells[0][0];\n    int lane_count;\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "enclosing-countdown-count-first",
+          "text": "    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int lane_count;\n    cRSubLoc* cell = &runtime_cells[0][0];\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "literal-countdown-cell-last",
+          "text": "    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    cRSubLoc* cell = &runtime_cells[0][0];\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        int lane_count = 8;\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "for-countdown-cell-last",
+          "text": "    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    cRSubLoc* cell = &runtime_cells[0][0];\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        for (int lane_count =\n                 sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n             lane_count != 0;\n             --lane_count) {\n            cell->Remove();\n            ++cell;\n        }\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        },
+        {
+          "name": "array-decay-countdown",
+          "text": "    BodNode** row_next = &runtime_rows[0].row_model.list_next;\n    int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);\n    cRSubLoc* cell = runtime_cells[0];\n    do {\n        if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)\n            REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);\n\n        int lane_count =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            cell->Remove();\n            ++cell;\n            --lane_count;\n        } while (lane_count != 0);\n\n        row_next = (BodNode**)((char*)row_next + sizeof(SubRow));\n        --row_count;\n    } while (row_count != 0);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "receiver-at-cache-boundary",
+      "find": "    segment_cache.remove_track_render_cache_bods();",
+      "replacements": [
+        {
+          "name": "named-game-pointer",
+          "text": "    cRSubGame* game = this;\n    game->segment_cache.remove_track_render_cache_bods();"
+        }
+      ]
+    },
+    {
+      "name": "receiver-at-player-tail",
+      "find": "    GolbShot* shot = player.golb_shots;\n    for (int m = 0;\n         m < (int)(sizeof(player.golb_shots) / sizeof(player.golb_shots[0]));\n         ++m) {\n        if (shot->state == 1)\n            shot->kill_golb();\n        ++shot;\n    }\n\n    if ((player.click_start.list_flags & BOD_FLAG_LINKED) != 0) {\n        g_game->active_bod_list.recycle_bod_to_free_list(\n            (BodNode*)&player.click_start);\n        player.click_start.state = CLICK_START_STATE_INACTIVE;\n    }",
+      "replacements": [
+        {
+          "name": "named-game-pointer",
+          "text": "    GolbShot* shot = game->player.golb_shots;\n    for (int m = 0;\n         m < (int)(sizeof(game->player.golb_shots)\n                   / sizeof(game->player.golb_shots[0]));\n         ++m) {\n        if (shot->state == 1)\n            shot->kill_golb();\n        ++shot;\n    }\n\n    if ((game->player.click_start.list_flags & BOD_FLAG_LINKED) != 0) {\n        g_game->active_bod_list.recycle_bod_to_free_list(\n            (BodNode*)&game->player.click_start);\n        game->player.click_start.state = CLICK_START_STATE_INACTIVE;\n    }"
+        }
+      ]
+    }
+  ]
+}

@@ -342,3 +342,25 @@ masked operands, no unresolved or mismatched references, and eight
 alignment-only unaudited references. The remaining first mismatch is still the
 opening EDI/EBX row-cell cursor allocation; it is left visible rather than
 forced.
+
+## 2026-07-30 bounded row-lifetime pass
+
+The eight-cell inner traversal now uses a branch-local end pointer over the
+contiguous `runtime_cells` row. That ordinary source spelling improves focused
+Wibo from 70.58% to **71.77%** while preserving the `505/501` instruction
+extent, `6/501` prefix, and fully clean `70/0/0/0` reference audit.
+
+The retained result is the only improvement among 19 unique recorded
+variants. Four mobile-derived index/count forms were neutral or worse; a
+named receiver spanning the cache and Player tail was neutral; and nine
+countdown declaration/initialization forms all reproduced the prior 70.58%
+allocation. The ledger records one better, six neutral, and twelve worse
+variants with no repeats or tradeoffs. Three consecutive non-improving sweeps
+mark the region stalled.
+
+Native still assigns the cell cursor to EDI and the eight-cell countdown to
+EBX, then reloads `this` into EBX after the cache call. The candidate assigns
+the cell cursor to EBX and the row-end pointer to EDI, then uses EBX for a
+hoisted `0x200` linked flag. Further work requires new evidence about that
+opening lifetime; byte casts, register forcing, padding, and dummy locals are
+not acceptable substitutes.

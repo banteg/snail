@@ -36,12 +36,12 @@ void cRSubGame::RemoveBods()
         if ((BOD_NEXT_LINK_FLAGS(row_next) & BOD_FLAG_LINKED) != 0)
             REMOVE_BOD_NODE_FROM_NEXT_LINK(row_next);
 
-        int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
+        cRSubLoc* row_end =
+            cell + sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
         do {
             cell->Remove();
             ++cell;
-            --lane_count;
-        } while (lane_count != 0);
+        } while (cell != row_end);
 
         row_next = (BodNode**)((char*)row_next + sizeof(SubRow));
         --row_count;
