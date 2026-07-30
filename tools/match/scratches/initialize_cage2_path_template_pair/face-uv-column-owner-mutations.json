@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-uv-column-owner",
+      "find": "                next_column = mesh_column + 1;\n                float u0 = (float)mesh_column * 0.125f;\n                float u1 = (float)(mesh_column + 1) * 0.125f;",
+      "replacements": [
+        {
+          "name": "next-column-u1",
+          "text": "                next_column = mesh_column + 1;\n                float u0 = (float)mesh_column * 0.125f;\n                float u1 = (float)next_column * 0.125f;"
+        },
+        {
+          "name": "separate-column-u0",
+          "text": "                next_column = mesh_column + 1;\n                int face_column_for_uv = mesh_column;\n                float u0 = (float)face_column_for_uv * 0.125f;\n                float u1 = (float)(mesh_column + 1) * 0.125f;"
+        },
+        {
+          "name": "separate-column-next-u1",
+          "text": "                next_column = mesh_column + 1;\n                int face_column_for_uv = mesh_column;\n                float u0 = (float)face_column_for_uv * 0.125f;\n                float u1 = (float)next_column * 0.125f;"
+        },
+        {
+          "name": "u1-before-u0",
+          "text": "                next_column = mesh_column + 1;\n                float u1 = (float)(mesh_column + 1) * 0.125f;\n                float u0 = (float)mesh_column * 0.125f;"
+        },
+        {
+          "name": "split-u0-assignment",
+          "text": "                next_column = mesh_column + 1;\n                float u0;\n                u0 = (float)mesh_column * 0.125f;\n                float u1 = (float)(mesh_column + 1) * 0.125f;"
+        }
+      ]
+    }
+  ]
+}

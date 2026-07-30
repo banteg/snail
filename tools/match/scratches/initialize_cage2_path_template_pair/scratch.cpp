@@ -140,9 +140,9 @@ void cRPath::initialize_cage2_path_template_pair(
         int column = 0;
         for (; column <= width_cells; ++column) {
             float lateral = (float)column - (float)width_cells * 0.5f;
-            TransformMatrix* transform =
-                (TransformMatrix*)((char*)&primary_samples[0].transform + mesh_cursor);
+            TransformMatrix* transform = &primary_samples[0].transform;
             if (row != segment_count) {
+                transform = (TransformMatrix*)((char*)transform + mesh_cursor);
                 Vector3 lateral_offset(
                     lateral * transform->basis_right.x,
                     lateral * transform->basis_right.y,
@@ -155,6 +155,7 @@ void cRPath::initialize_cage2_path_template_pair(
                     &vertices[column + row * (width_cells + 1)];
                 *vertex = generated_position;
             } else {
+                transform = (TransformMatrix*)((char*)transform + mesh_cursor);
                 TransformMatrix* previous =
                     (TransformMatrix*)((char*)transform - sizeof(AttachmentSample));
                 Vector3 lateral_offset(

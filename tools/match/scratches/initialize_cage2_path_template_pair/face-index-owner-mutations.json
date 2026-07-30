@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-index-owner",
+      "find": "                for (int face_index = 0; face_index < 2; ++face_index) {\n                    if (face_index == 0) {",
+      "replacements": [
+        {
+          "name": "common-index-before-side",
+          "text": "                for (int face_index = 0; face_index < 2; ++face_index) {\n                    int face_offset = face_index\n                        + 2 * (mesh_column + mesh_cursor * width_cells);\n                    if (face_index == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "front-face-index-use",
+      "find": "                        cRFaceQuad* face =\n                            &facequads[2 * mesh_column\n                                + 2 * mesh_cursor * width_cells + face_index];\n                        face->header_word = 0;\n                        face->vertex_0 = mesh_column\n                            + mesh_cursor * ((unsigned short)width_cells + 1);",
+      "replacements": [
+        {
+          "name": "common-index",
+          "text": "                        cRFaceQuad* face = &facequads[face_offset];\n                        face->header_word = 0;\n                        face->vertex_0 = mesh_column\n                            + mesh_cursor * ((unsigned short)width_cells + 1);"
+        }
+      ]
+    },
+    {
+      "name": "back-face-index-use",
+      "find": "                        cRFaceQuad* face =\n                            &facequads[2 * mesh_column\n                                + 2 * mesh_cursor * width_cells + face_index];\n                        face->header_word = 0;\n                        face->vertex_0 = mesh_cursor\n                            * ((unsigned short)width_cells + 1) + mesh_column + 1;",
+      "replacements": [
+        {
+          "name": "common-index",
+          "text": "                        cRFaceQuad* face = &facequads[face_offset];\n                        face->header_word = 0;\n                        face->vertex_0 = mesh_cursor\n                            * ((unsigned short)width_cells + 1) + mesh_column + 1;"
+        }
+      ]
+    }
+  ]
+}

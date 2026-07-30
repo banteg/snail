@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-sample-base-owner",
+      "find": "        primary_samples[i].center_x = cosine(angle) * primary_samples[0].center_x;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        primary_samples[i].transform.position.y = 0.0f;\n        primary_samples[i].transform.position.z = (float)i;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z =\n            primary_samples[i].transform.position.z;",
+      "replacements": [
+        {
+          "name": "primary-array-base",
+          "text": "        AttachmentSample* primary = primary_samples;\n        primary[i].center_x = cosine(angle) * primary[0].center_x;\n        primary[i].rotation_scalar_98 = 0.0f;\n        primary[i].rotation_scalar_94 = 0.0f;\n        primary[i].special_scalar = 0.0f;\n        primary[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary[i].transform);\n        primary[i].transform.position.x = primary[i].center_x;\n        primary[i].transform.position.y = 0.0f;\n        primary[i].transform.position.z = (float)i;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z =\n            primary[i].transform.position.z;"
+        },
+        {
+          "name": "primary-and-secondary-array-bases",
+          "text": "        AttachmentSample* primary = primary_samples;\n        AttachmentSample* secondary = secondary_samples;\n        primary[i].center_x = cosine(angle) * primary[0].center_x;\n        primary[i].rotation_scalar_98 = 0.0f;\n        primary[i].rotation_scalar_94 = 0.0f;\n        primary[i].special_scalar = 0.0f;\n        primary[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary[i].transform);\n        primary[i].transform.position.x = primary[i].center_x;\n        primary[i].transform.position.y = 0.0f;\n        primary[i].transform.position.z = (float)i;\n\n        set_matrix_identity(&secondary[i].transform);\n        secondary[i].transform.position.x = primary[i].center_x;\n        secondary[i].transform.position.y =\n            primary[i].transform.position.y + 0.49000001f;\n        secondary[i].transform.position.z = primary[i].transform.position.z;"
+        },
+        {
+          "name": "current-primary-sample",
+          "text": "        AttachmentSample* primary = &primary_samples[i];\n        primary->center_x = cosine(angle) * primary_samples[0].center_x;\n        primary->rotation_scalar_98 = 0.0f;\n        primary->rotation_scalar_94 = 0.0f;\n        primary->special_scalar = 0.0f;\n        primary->lateral_scale = 1.0f;\n        set_matrix_identity(&primary->transform);\n        primary->transform.position.x = primary->center_x;\n        primary->transform.position.y = 0.0f;\n        primary->transform.position.z = (float)i;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary->center_x;\n        secondary_samples[i].transform.position.y =\n            primary->transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = primary->transform.position.z;"
+        }
+      ]
+    }
+  ]
+}

@@ -319,3 +319,37 @@ An exhaustive three-variant sweep improves both lanes independently and finds
 their combination uniquely best: +37.29 weighted bytes, raising focused
 matching from 59.74% to **61.28%**. The candidate remains 651/648
 instructions, prefix 7/648, with all 46 references clean.
+
+## 2026-07-30 mesh sample-base ownership
+
+Raw Windows code computes the lateral value before the terminal-row branch,
+loads the primary sample-array base once, and applies the `0xa8` byte cursor in
+each branch. The prior source applied the cursor before branching. Expressing
+the native ownership as a shared transform base reassigned inside the ordinary
+and terminal arms adds 167.72 weighted bytes and raises focused matching from
+61.28% to **68.20%**. The exact prefix extends from 7 to **10/648**, the
+candidate is 654 instructions against 648 native, and all 46 references remain
+clean.
+
+Factor sweeps make the gain specific. Guarded do-loop syntax alone loses 3.91
+weighted bytes, while branch-local cursor bias supplies the improvement.
+Duplicating the complete base expression in both branches reaches only 66.26%
+and grows to 662 instructions; sharing the unbiased base recovers the stronger
+654-instruction result.
+
+An inline `Vector3::operator*` spelling reached 69.43%, but only by evaluating
+the same lateral `0.5f` constant separately in both branches. Native evaluates
+it once before the branch, and the extra candidate relocation becomes
+unaudited. That alignment artifact and the double-valued variants are rejected;
+the retained form preserves the native single evaluation and a clean audit.
+
+The remaining obvious interpretations are bounded. A common face index is an
+SSA join rather than a useful source owner and loses 271 weighted bytes when
+both branches consume it. Five UV-column spellings and all 24 front/back parity
+orientations are neutral. Named texture-result owners lose at least 226
+weighted bytes, and explicit interior sample-base aliases lose at least 387.
+
+The checked ledger now contains twelve mutation sweeps and 72 unique variants:
+14 improving, 30 neutral, and 28 degrading, including eight metric tradeoffs.
+Five consecutive non-improving sweeps mark the current Cage2 frontier stalled
+at the clean **68.20%** result.

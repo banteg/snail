@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-texture-owner",
+      "find": "                        if ((mesh_column ^ mesh_cursor) & 1)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);",
+      "replacements": [
+        {
+          "name": "named-branch-result",
+          "text": "                        char* texture_path;\n                        if ((mesh_column ^ mesh_cursor) & 1)\n                            texture_path = texture_a;\n                        else\n                            texture_path = texture_a;\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "initialized-named-branch-result",
+          "text": "                        char* texture_path = texture_a;\n                        if ((mesh_column ^ mesh_cursor) & 1)\n                            texture_path = texture_a;\n                        else\n                            texture_path = texture_a;\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "ternary-result",
+          "text": "                        char* texture_path =\n                            ((mesh_column ^ mesh_cursor) & 1)\n                                ? texture_a : texture_a;\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);"
+        }
+      ]
+    },
+    {
+      "name": "back-texture-owner",
+      "find": "                        if ((mesh_column ^ mesh_cursor) & 1)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);",
+      "replacements": [
+        {
+          "name": "named-branch-result",
+          "text": "                        char* texture_path;\n                        if ((mesh_column ^ mesh_cursor) & 1)\n                            texture_path = texture_b;\n                        else\n                            texture_path = texture_b;\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "initialized-named-branch-result",
+          "text": "                        char* texture_path = texture_b;\n                        if ((mesh_column ^ mesh_cursor) & 1)\n                            texture_path = texture_b;\n                        else\n                            texture_path = texture_b;\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "ternary-result",
+          "text": "                        char* texture_path =\n                            ((mesh_column ^ mesh_cursor) & 1)\n                                ? texture_b : texture_b;\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);"
+        }
+      ]
+    }
+  ]
+}
