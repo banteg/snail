@@ -344,3 +344,33 @@ regression is code ownership rather than a masking artifact. The recorded
 reverse probe restores the full **68.00%**, **545/552** retained receipt.
 Direct indexed arc ownership is therefore closed on the stronger post-grid
 baseline as well.
+
+## 2026-07-30 post-count lifetime bounds
+
+The count and face-grid recoveries leave two explicit stack-owner swaps in the
+68.00% candidate. Native assigns the count/radius predecessor to stack home
+`0x40` and the lead logical index to `0x44`; the candidate assigns those
+owners in reverse. In the mesh vertex phase, native spills the row owner and
+keeps a distinct physical sample-offset lifetime, while the candidate keeps
+the row in EBX and spills the offset.
+
+Both hypotheses were replayed only after the count and grid cascade, so the
+earlier pre-cascade declaration results were not treated as permanent. Moving
+the lead index and offset declarations across the curve count, radius, and
+`get_path_nodes` boundaries, reversing their declaration order, and separating
+their initialization produces five byte-identical candidates. Initializing
+the offset first loses 3.54 weighted bytes.
+
+The vertex grid is equally bounded. Declaring the sample offset before the row
+or after the column, initializing it before the row, and initializing the row
+at declaration all compile byte-identically. Narrowing the row into the
+non-empty guard, in either declaration order, loses 3.54 weighted bytes.
+Every variant preserves 545/552 instructions, prefix 16/552, and all 36 clean
+references except the scoped-row forms, which retain the same instruction
+count and audit while losing the four weighted bytes.
+
+No source edit is retained. These results raise the experiment ledger's
+trailing non-improvement streak to four and formally stall the local lifetime
+frontier at **68.00%**. Resolving either stack-home swap now requires a new
+semantic owner or source provenance, not declaration shuffling, volatility,
+padding, or forced allocation.

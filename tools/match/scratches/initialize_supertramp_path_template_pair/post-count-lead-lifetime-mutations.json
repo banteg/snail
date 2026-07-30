@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-count-lead-lifetime",
+      "find": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    int lead_sample_index;\n    int lead_offset;\n    for (lead_sample_index = 0, lead_offset = 0;\n         lead_offset < 7 * (int)sizeof(PathTemplateSample);\n         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {",
+      "replacements": [
+        {
+          "name": "declare-before-curve-count",
+          "text": "    int lead_sample_index;\n    int lead_offset;\n    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    for (lead_sample_index = 0, lead_offset = 0;\n         lead_offset < 7 * (int)sizeof(PathTemplateSample);\n         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "declare-before-radius",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;\n    int lead_sample_index;\n    int lead_offset;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    for (lead_sample_index = 0, lead_offset = 0;\n         lead_offset < 7 * (int)sizeof(PathTemplateSample);\n         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "declare-before-get-nodes",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    int lead_sample_index;\n    int lead_offset;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    for (lead_sample_index = 0, lead_offset = 0;\n         lead_offset < 7 * (int)sizeof(PathTemplateSample);\n         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "reverse-declaration-order",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    int lead_offset;\n    int lead_sample_index;\n    for (lead_sample_index = 0, lead_offset = 0;\n         lead_offset < 7 * (int)sizeof(PathTemplateSample);\n         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "separate-index-first-initialization",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    int lead_sample_index = 0;\n    int lead_offset = 0;\n    for (;\n         lead_offset < 7 * (int)sizeof(PathTemplateSample);\n         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "separate-offset-first-initialization",
+          "text": "    int curve_segments = (int)(length * 1.0461504f);\n    width_or_scale = 1.0f;\n    segment_count = curve_segments + 8;\n    segment_count_f = (float)(segment_count - 1);\n    float curve_segments_f = (float)curve_segments;\n    float radius = curve_segments_f * 0.95588547f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n    segment_count = segment_count - 1;\n\n    int lead_offset = 0;\n    int lead_sample_index = 0;\n    for (;\n         lead_offset < 7 * (int)sizeof(PathTemplateSample);\n         ++lead_sample_index, lead_offset += (int)sizeof(PathTemplateSample)) {"
+        }
+      ]
+    }
+  ]
+}

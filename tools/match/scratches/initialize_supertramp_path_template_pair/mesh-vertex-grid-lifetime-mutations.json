@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-vertex-grid-lifetime",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int row;\n    int column;\n\n    row = 0;\n    if (path->segment_count >= 0) {\n        int sample_offset = 0;\n        do {",
+      "replacements": [
+        {
+          "name": "declare-offset-before-row",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int sample_offset;\n    int row;\n    int column;\n\n    row = 0;\n    if (path->segment_count >= 0) {\n        sample_offset = 0;\n        do {"
+        },
+        {
+          "name": "declare-offset-after-column",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int row;\n    int column;\n    int sample_offset;\n\n    row = 0;\n    if (path->segment_count >= 0) {\n        sample_offset = 0;\n        do {"
+        },
+        {
+          "name": "initialize-offset-before-row",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int sample_offset = 0;\n    int row;\n    int column;\n\n    row = 0;\n    if (path->segment_count >= 0) {\n        do {"
+        },
+        {
+          "name": "initialize-row-declaration",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int row = 0;\n    int column;\n\n    if (path->segment_count >= 0) {\n        int sample_offset = 0;\n        do {"
+        },
+        {
+          "name": "declare-row-inside-guard",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int column;\n\n    if (path->segment_count >= 0) {\n        int row = 0;\n        int sample_offset = 0;\n        do {"
+        },
+        {
+          "name": "declare-offset-before-scoped-row",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int column;\n\n    if (path->segment_count >= 0) {\n        int sample_offset = 0;\n        int row = 0;\n        do {"
+        }
+      ]
+    }
+  ]
+}

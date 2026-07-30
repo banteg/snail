@@ -328,3 +328,25 @@ instructions, and an explicit shared floating zero owner is byte-identical.
 The sample-index guard alternatives also fall to 46.71% and 45.37%. These
 bounds leave the compact direct-indexed source as the honest frontier rather
 than forcing target register names through artificial cursor lifetimes.
+
+## 2026-07-30 terminal-delta cursor bound
+
+The terminal-delta block at `0x425516..0x4255e9` independently confirms the
+same logical-plus-physical ownership recovered in the related constructors.
+Native zeroes the logical counter in EBP before its positive guard, zeroes the
+byte cursor in EDI only on entry, advances them by one and `0xa8`, and tests
+the logical counter against a reloaded `segment_count - 1`.
+
+The current direct-indexed guarded `do/while` already compiles to that exact
+two-induction shape. Making the byte owner explicit inside the guard, moving
+its initialization before the guard, and reversing pointer-addition order are
+all byte-identical at **56.60%**, 681/683 instructions, prefix 5/683, with 44
+clean plus 2 explicitly unaudited references. Materializing scoped current and
+next sample pointers loses 86.24 weighted bytes and falls to **53.20%**.
+
+This closes the remaining local delta spelling without retaining redundant
+source machinery. The persistent EBX-zero/EDI-cursor role used by native is a
+whole-constructor allocation difference: the candidate uses the opposite two
+registers from its prologue through all sample phases. Local cursor spelling
+cannot resolve that swap, so no register-forcing or synthetic dependency is
+introduced.
