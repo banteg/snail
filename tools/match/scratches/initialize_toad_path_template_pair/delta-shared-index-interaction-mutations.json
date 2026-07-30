@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "delta-helper-shared-index",
+      "find": "static __forceinline void compute_path_deltas(Path* path)\n{\n    for (int i = 0; i < path->segment_count - 1; ++i) {\n        PathTemplateSample* primary = &path->primary_samples[i];\n        PathTemplateSample* primary_next = &path->primary_samples[i + 1];\n        primary->delta_dir_to_next = Vector3(\n            primary_next->transform.position.x - primary->transform.position.x,\n            primary_next->transform.position.y - primary->transform.position.y,\n            primary_next->transform.position.z - primary->transform.position.z);\n        primary->delta_length = primary->delta_dir_to_next.Normalize();\n\n        PathTemplateSample* secondary = &path->secondary_samples[i];\n        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];\n        secondary->delta_dir_to_next =\n            secondary_next->transform.position - secondary->transform.position;\n        secondary->delta_length = secondary->delta_dir_to_next.Normalize();\n    }",
+      "replacements": [
+        {
+          "name": "shared-index-current-loop",
+          "text": "static __forceinline void compute_path_deltas(Path* path, int& i)\n{\n    for (i = 0; i < path->segment_count - 1; ++i) {\n        PathTemplateSample* primary = &path->primary_samples[i];\n        PathTemplateSample* primary_next = &path->primary_samples[i + 1];\n        primary->delta_dir_to_next = Vector3(\n            primary_next->transform.position.x - primary->transform.position.x,\n            primary_next->transform.position.y - primary->transform.position.y,\n            primary_next->transform.position.z - primary->transform.position.z);\n        primary->delta_length = primary->delta_dir_to_next.Normalize();\n\n        PathTemplateSample* secondary = &path->secondary_samples[i];\n        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];\n        secondary->delta_dir_to_next =\n            secondary_next->transform.position - secondary->transform.position;\n        secondary->delta_length = secondary->delta_dir_to_next.Normalize();\n    }"
+        },
+        {
+          "name": "shared-index-direct-cursor",
+          "text": "static __forceinline void compute_path_deltas(Path* path, int& i)\n{\n    int delta_offset = 0;\n    i = 0;\n    if (path->segment_count - 1 > 0) {\n        do {\n            ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                ->delta_dir_to_next = Vector3(\n                ((PathTemplateSample*)((char*)path->primary_samples + delta_offset) + 1)\n                        ->transform.position.x\n                    - ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                        ->transform.position.x,\n                ((PathTemplateSample*)((char*)path->primary_samples + delta_offset) + 1)\n                        ->transform.position.y\n                    - ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                        ->transform.position.y,\n                ((PathTemplateSample*)((char*)path->primary_samples + delta_offset) + 1)\n                        ->transform.position.z\n                    - ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                        ->transform.position.z);\n            ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                ->delta_length =\n                ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                    ->delta_dir_to_next.Normalize();\n\n            ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n                ->delta_dir_to_next =\n                ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset) + 1)\n                        ->transform.position\n                    - ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n                        ->transform.position;\n            ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n                ->delta_length =\n                ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n                    ->delta_dir_to_next.Normalize();\n\n            ++i;\n            delta_offset += (int)sizeof(PathTemplateSample);\n        } while (i < path->segment_count - 1);\n    }"
+        }
+      ]
+    },
+    {
+      "name": "delta-call-shared-index",
+      "find": "    compute_path_deltas(this);",
+      "replacements": [
+        {
+          "name": "pass-index",
+          "text": "    compute_path_deltas(this, i);"
+        }
+      ]
+    }
+  ]
+}

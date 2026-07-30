@@ -372,3 +372,86 @@ milestone: a shared absolute index with the native positive guard reached
 and a guarded absolute index plus cursor reached 52.60%. The remaining
 turn-sign stack-home difference therefore is not evidence for transferring
 any of those incomplete tail spellings.
+
+## 2026-07-31 post-row texture-parity recovery
+
+The native duplicated texture branches at `0x42d41b..0x42d434` and
+`0x42d4cd..0x42d4ea` were replayed again after the mesh-row owner and
+branch-assignment schedule changed the enclosing allocation. Unlike the
+post-cursor result, all three variants now improve: the front branch adds
+12.10 weighted bytes, the back branch adds 5.82, and the complete symmetric
+pair adds **18.94**.
+
+The retained pair raises Toad from 60.66% to **61.44%**:
+
+```text
+target: 663 insns, candidate: 652 insns
+prefix: 16/663 target insns
+masked operands: 33 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The candidate grows by 16 instructions, closing most of the previous
+27-instruction count deficit without a prefix or reference tradeoff. The
+tracked source hash exactly matches the recorded winning overlay. This
+supersedes the earlier negative parity bound: the native pair depends on the
+recovered mesh-row lifetime and is now retained as a complete authored
+control unit.
+
+## 2026-07-31 face-record and curve-position ownership
+
+With the parity pair present, the target's two branch-local face records and
+complete branch-local UV writes become a major contributing dependency.
+Keeping the old index expression adds 35.31 weighted bytes and reaches 62.90%,
+but recovering the target's
+`face_index + 2 * (row * width_cells + column)` association adds **95.93
+weighted bytes** and extends the exact prefix from 16 to 89 instructions.
+
+The retained face unit raises Toad from 61.44% to **65.41%** at 664/663
+instructions, prefix 89/663, and 33 clean references. The tracked source hash
+exactly matches the recorded winner. A fresh UV-only sweep confirms why the
+whole dependency matters: moving both final V writes into their branches
+without the face owners loses 16.28 bytes, while deleting the required joined
+write gains 5.96 bytes only by omitting state and is rejected.
+
+The target also carries one secondary-position pointer across the curve's
+three offset additions. Recovering that scoped owner adds another **8.44
+weighted bytes**, reaching the retained **65.76%** result:
+
+```text
+target: 663 insns, candidate: 660 insns
+prefix: 89/663 target insns
+masked operands: 33 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The pointer shortens the candidate by four instructions and moves its count
+three below the target, but the removed repeated address formation agrees
+with native `secondary_position` ownership. The source hash again exactly
+matches the recorded overlay, so the evidence-backed owner is retained
+despite the instruction-count warning.
+
+## 2026-07-31 post-face frontier bounds
+
+The 89-instruction prefix ends at the positive tail guard. That made the
+native-looking absolute-index control worth replaying on the new allocation,
+but the complete family remains negative:
+
+- local absolute bounds lose 175 to 292 weighted bytes and collapse the
+  prefix to 13 or 14 instructions;
+- sharing the recovered function-scope `i` loses 175 to 254 bytes with the
+  same prefix collapse;
+- the guarded post-tested absolute-index unit loses 267 bytes;
+- explicit tail cursors lose 33 to 125 bytes, and the lead cursor loses 131.
+
+The current local tail counter therefore remains. Swapping to the native
+facequad-before-vertex declaration order loses 95 bytes, while adding an
+object owner in the existing order is byte-neutral. Both parity predicate
+orientations are byte-neutral at both face sites.
+
+Finally, the explicit delta cursor now raises aggregate matching by 78.93
+bytes to 69.02%, but moves the first mismatch from target offset `0x173` back
+to `0xa1`, cuts the exact prefix from 89 to 38 instructions, grows the
+candidate from 660 to 667 instructions, and therefore carries three canonical
+tradeoffs. Passing the recovered caller index into the inlined delta helper is
+byte-neutral and leaves that cursor result unchanged; the scoped-pointer
+cursor loses 4.86 bytes. The direct-cursor score is recorded but rejected
+until a source-backed dependency can preserve the proven prefix.

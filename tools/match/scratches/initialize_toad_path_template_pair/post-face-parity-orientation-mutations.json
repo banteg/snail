@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-parity-orientation",
+      "find": "                    if ((column ^ row) & 1)",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "zero-equality",
+          "text": "                    if (((column ^ row) & 1) == 0)"
+        },
+        {
+          "name": "logical-not",
+          "text": "                    if (!((column ^ row) & 1))"
+        }
+      ]
+    },
+    {
+      "name": "back-parity-orientation",
+      "find": "                    if ((column ^ row) & 1)",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "zero-equality",
+          "text": "                    if (((column ^ row) & 1) == 0)"
+        },
+        {
+          "name": "logical-not",
+          "text": "                    if (!((column ^ row) & 1))"
+        }
+      ]
+    }
+  ]
+}

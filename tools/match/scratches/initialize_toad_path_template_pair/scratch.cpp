@@ -104,15 +104,21 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
             float u1 = (float)(column + 1) * 0.125f;
 
             for (face_index = 0; face_index < 2; ++face_index) {
-                cRFaceQuad* face =
-                    &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                face->header_word = 0;
                 if (face_index == 0) {
+                    cRFaceQuad* face = &facequads[
+                        face_index
+                        + 2 * (row * path->width_cells + column)];
+                    face->header_word = 0;
                     face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
                     face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                    face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                    if ((column ^ row) & 1)
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_a, 0, 0);
+                    else
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_a, 0, 0);
                     face->uv[0].u = u0;
                     face->uv[0].v = v0;
                     face->uv[1].u = u1;
@@ -120,12 +126,22 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     face->uv[2].u = u1;
                     face->uv[2].v = v1;
                     face->uv[3].u = u0;
+                    face->uv[3].v = v1;
                 } else {
+                    cRFaceQuad* face = &facequads[
+                        face_index
+                        + 2 * (row * path->width_cells + column)];
+                    face->header_word = 0;
                     face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
                     face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
                     face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                    if ((column ^ row) & 1)
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_b, 0, 0);
+                    else
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_b, 0, 0);
                     face->uv[0].u = u1;
                     face->uv[0].v = v0;
                     face->uv[1].u = u0;
@@ -133,8 +149,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     face->uv[2].u = u0;
                     face->uv[2].v = v1;
                     face->uv[3].u = u1;
+                    face->uv[3].v = v1;
                 }
-                face->uv[3].v = v1;
             }
         }
     }
@@ -277,12 +293,12 @@ void cRPath::initialize_toad_path_template_pair(
         float offset_z =
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.basis_up.z * 0.49000001f;
-        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))
-            ->transform.position.x += offset_x;
-        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))
-            ->transform.position.y += offset_y;
-        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))
-            ->transform.position.z += offset_z;
+        Vector3* secondary_position =
+            &((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))
+                ->transform.position;
+        secondary_position->x += offset_x;
+        secondary_position->y += offset_y;
+        secondary_position->z += offset_z;
         curve_sample_offset += sizeof(AttachmentSample);
     }
 

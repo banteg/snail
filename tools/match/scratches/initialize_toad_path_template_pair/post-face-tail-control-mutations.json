@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-face-tail-control",
+      "find": "    for (int tail = 0; tail < tail_count; ++tail) {\n        int index = lead_count + 26 + tail;\n        primary_samples[index].center_x = start_x;\n        primary_samples[index].rotation_scalar_98 = 0.0f;\n        primary_samples[index].rotation_scalar_94 = 0.0f;\n        primary_samples[index].special_scalar = 0.0f;\n        primary_samples[index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[index].transform);\n        float z = (float)index;\n        primary_samples[index].transform.position.x = primary_samples[index].center_x;\n        primary_samples[index].transform.position.y = 0.0f;\n        primary_samples[index].transform.position.z = z;\n        primary_samples[index].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[index].transform);\n        secondary_samples[index].transform.position.x = primary_samples[index].center_x;\n        secondary_samples[index].transform.position.y = 0.49000001f;\n        secondary_samples[index].transform.position.z = z;\n        secondary_samples[index].delta_length = 1.0f;\n    }",
+      "replacements": [
+        {
+          "name": "guarded-absolute-index",
+          "text": "    if (tail_count > 0) {\n        int index = lead_count + 26;\n        do {\n            primary_samples[index].center_x = start_x;\n            primary_samples[index].rotation_scalar_98 = 0.0f;\n            primary_samples[index].rotation_scalar_94 = 0.0f;\n            primary_samples[index].special_scalar = 0.0f;\n            primary_samples[index].lateral_scale = 1.0f;\n            set_matrix_identity(&primary_samples[index].transform);\n            float z = (float)index;\n            primary_samples[index].transform.position.x =\n                primary_samples[index].center_x;\n            primary_samples[index].transform.position.y = 0.0f;\n            primary_samples[index].transform.position.z = z;\n            primary_samples[index].delta_length = 1.0f;\n\n            set_matrix_identity(&secondary_samples[index].transform);\n            secondary_samples[index].transform.position.x =\n                primary_samples[index].center_x;\n            secondary_samples[index].transform.position.y = 0.49000001f;\n            secondary_samples[index].transform.position.z = z;\n            secondary_samples[index].delta_length = 1.0f;\n            ++index;\n        } while (index - lead_count - 26 < tail_count);\n    }"
+        }
+      ]
+    }
+  ]
+}

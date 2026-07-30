@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-face-secondary-position-owner",
+      "find": "        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))\n            ->transform.position.x += offset_x;\n        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))\n            ->transform.position.y += offset_y;\n        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))\n            ->transform.position.z += offset_z;",
+      "replacements": [
+        {
+          "name": "scoped-position-pointer",
+          "text": "        Vector3* secondary_position =\n            &((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))\n                ->transform.position;\n        secondary_position->x += offset_x;\n        secondary_position->y += offset_y;\n        secondary_position->z += offset_z;"
+        }
+      ]
+    }
+  ]
+}
