@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-endpoint-owner",
+      "find": "#define PATH_LOOP_SEGMENT_OWNER_MODE 1\n#define PATH_LOOP_ENDPOINT_MODE 2",
+      "replacements": [
+        {
+          "name": "local-segment-direct-final",
+          "text": "#define PATH_LOOP_SEGMENT_OWNER_MODE 1\n#define PATH_LOOP_ENDPOINT_MODE 1"
+        },
+        {
+          "name": "direct-corrected-final",
+          "text": "#define PATH_LOOP_SEGMENT_OWNER_MODE 0\n#define PATH_LOOP_ENDPOINT_MODE 1"
+        },
+        {
+          "name": "direct-old-first-exit",
+          "text": "#define PATH_LOOP_SEGMENT_OWNER_MODE 0\n#define PATH_LOOP_ENDPOINT_MODE 0"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-curve-control",
+      "find": "#define PATH_LOOP_CURVE_CONTROL_MODE 1",
+      "replacements": [
+        {
+          "name": "guarded-for",
+          "text": "#define PATH_LOOP_CURVE_CONTROL_MODE 0"
+        },
+        {
+          "name": "separate-increment-not-equal",
+          "text": "#define PATH_LOOP_CURVE_CONTROL_MODE 2"
+        },
+        {
+          "name": "condition-preincrement",
+          "text": "#define PATH_LOOP_CURVE_CONTROL_MODE 3"
+        },
+        {
+          "name": "condition-preincrement-not-equal",
+          "text": "#define PATH_LOOP_CURVE_CONTROL_MODE 4"
+        }
+      ]
+    }
+  ]
+}

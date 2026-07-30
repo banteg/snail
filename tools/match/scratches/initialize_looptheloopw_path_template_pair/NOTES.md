@@ -230,3 +230,26 @@ loses 58-62 weighted bytes, while reversing the redundant checkerboard texture
 condition is byte-neutral. These bounded results isolate the common integer
 owner as the only retained face-control recovery, with the seven-instruction
 count deficit recorded as an explicit tradeoff rather than hidden.
+
+## 2026-07-30 final-exit endpoint and curve control
+
+The W sibling confirms the same endpoint dependency as the plain loop.
+Windows forms `(curve_count + 14) * 0xa8 - 0x18`; Android addresses the final
+exit sample at `curve_count + 13`, and iOS retains the derived segment-count
+owner before the same minus-`0x18` access. The shared skeleton had used the
+first exit sample at `curve_count + 7`.
+
+Keeping `loop_segment_count = curve_count + 14` through the final-sample
+address raises focused matching from **70.94%** to **71.70%**, adds **21
+weighted bytes**, and moves the candidate from 738 to 739 instructions against
+745 native. Prefix 10/745 and all 55 references remain clean. As in the plain
+sibling, all three incomplete alternatives—corrected direct endpoint, old
+direct endpoint, and a local owner not consumed by the endpoint—compile
+identically at 70.94%.
+
+Initializing the curve index before the guard and retaining the post-test
+loop adds a further **22 weighted bytes**, producing **72.51%** at 739/745
+instructions with the prefix and 55/0/0/0 reference audit unchanged. The
+preincrement `<` form is byte-identical, `!=` loses four weighted bytes, and
+the old guarded `for` loses 22. The mirrored result across both Windows
+builders and both mobile families closes this as shared authored control.

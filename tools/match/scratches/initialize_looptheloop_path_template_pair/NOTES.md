@@ -235,3 +235,33 @@ lead-pass `z * (1/7) * wiggle` expression loses 46-53 weighted bytes, and
 negating the deliberately redundant checkerboard texture condition is
 byte-identical. The retained change is therefore the narrow common integer
 owner, despite moving the candidate instruction count five below target.
+
+## 2026-07-30 final-exit endpoint and curve control
+
+Windows computes the interpolation endpoint as
+`(curve_count + 14) * sizeof(AttachmentSample) - 0x18`, which is the
+`center_x` field of the final exit sample at `curve_count + 13`. The exact
+Android body independently addresses `(curve_count + 13) * 0xa8 + 0x90`,
+while iOS keeps the derived `curve_count + 14` owner and uses the same
+minus-`0x18` address. The shared skeleton instead interpolated toward
+`curve_count + 7`, the first exit sample.
+
+Recovering the derived segment-count owner and using it to address
+`loop_segment_count - 1` raises focused matching from **72.09%** to
+**73.85%**, adds **46 weighted bytes**, moves the candidate from 716 to 717
+instructions against 721 native, and doubles the exact prefix from 22 to 44
+instructions. All 49 references remain clean. A complete endpoint-owner sweep
+shows that the corrected direct `curve_count + 13` expression, the old
+`curve_count + 7` expression, and a local segment owner not consumed by the
+endpoint all compile identically at 72.09%. The gain therefore belongs to the
+dependency-closed local owner plus final-sample address, not either spelling
+alone.
+
+The native curve index is initialized before the positive-count guard and
+then advanced by a post-test loop. Matching that guarded do/while adds another
+**22 weighted bytes** and raises the retained result to **74.69%** at 717/721
+instructions, with the 44/721 prefix and 49/0/0/0 reference audit unchanged.
+The equivalent preincrement form is byte-identical; the two `!=` forms lose
+four weighted bytes and the old guarded `for` loses 22. Windows and both
+mobile bodies agree on the guarded post-test control, so the retained `<`
+spelling records the portable owner without introducing a native-only cursor.

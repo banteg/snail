@@ -17,6 +17,18 @@ typedef AttachmentSample PathAttachmentSample;
 #define PATH_FACE_OWNER_MODE 0
 #endif
 
+#ifndef PATH_LOOP_SEGMENT_OWNER_MODE
+#define PATH_LOOP_SEGMENT_OWNER_MODE 0
+#endif
+
+#ifndef PATH_LOOP_ENDPOINT_MODE
+#define PATH_LOOP_ENDPOINT_MODE 0
+#endif
+
+#ifndef PATH_LOOP_CURVE_CONTROL_MODE
+#define PATH_LOOP_CURVE_CONTROL_MODE 0
+#endif
+
 static inline void initialize_sample_pair(
     PathAttachmentSample* primary,
     PathAttachmentSample* secondary,
@@ -122,8 +134,14 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     width_cells = width_cells_;
     curve_count = PATH_CURVE_COUNT;
     width_or_scale = 1.0f;
+#if PATH_LOOP_SEGMENT_OWNER_MODE == 1
+    int loop_segment_count = curve_count + 14;
+    segment_count = loop_segment_count;
+    segment_count_f = (float)loop_segment_count;
+#else
     segment_count = curve_count + 14;
     segment_count_f = (float)(curve_count + 14);
+#endif
     float curve_count_f = (float)curve_count;
     float loop_radius = curve_count_f * 0.15915494f;
     get_path_nodes();
@@ -174,9 +192,16 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         secondary_samples[sample_index].delta_length = 1.0f;
     }
 
+#if PATH_LOOP_CURVE_CONTROL_MODE != 0
+    i = 0;
+#endif
     if (curve_count > 0) {
         float secondary_radius = loop_radius - 0.49000001f;
+#if PATH_LOOP_CURVE_CONTROL_MODE != 0
+        do {
+#else
         for (i = 0; i < curve_count; ++i) {
+#endif
             int sample_index = i + 7;
             float sample_f = (float)i;
             float angle = sample_f * 6.2831855f / curve_count_f;
@@ -184,7 +209,13 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             float roll = sine(angle * 0.5f) * sine(angle * 8.0f) * 0.39269909f;
 #endif
             primary_samples[sample_index].center_x =
+#if PATH_LOOP_ENDPOINT_MODE == 2
+                (primary_samples[loop_segment_count - 1].center_x
+#elif PATH_LOOP_ENDPOINT_MODE == 1
+                (primary_samples[curve_count + 13].center_x
+#else
                 (primary_samples[curve_count + 7].center_x
+#endif
                     - primary_samples[0].center_x)
                 * sample_f / curve_count_f + primary_samples[0].center_x;
             primary_samples[sample_index].center_x +=
@@ -239,7 +270,19 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 #if PATH_VARIANT == 1
             secondary_samples[sample_index].transform.RotLocalZ(roll);
 #endif
+#if PATH_LOOP_CURVE_CONTROL_MODE == 1
+            ++i;
+        } while (i < curve_count);
+#elif PATH_LOOP_CURVE_CONTROL_MODE == 2
+            ++i;
+        } while (i != curve_count);
+#elif PATH_LOOP_CURVE_CONTROL_MODE == 3
+        } while (++i < curve_count);
+#elif PATH_LOOP_CURVE_CONTROL_MODE == 4
+        } while (++i != curve_count);
+#else
         }
+#endif
     }
 #elif PATH_VARIANT == 2
     kind = PATH_TEMPLATE_KIND_LOOPOUT;
