@@ -323,3 +323,20 @@ constructors.
 The primary current/previous orientation expression was tested with the
 authored operator form and is byte-identical. Halfpipe remains **43.20%**,
 691/707 instructions, prefix 18/707, with all 55 references clean.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The proved native block at `0x42a17a..0x42a244` keeps separate ordinary and
+terminal scale/position vectors while one early vertex remains live through
+the kind-42 transform adjustment. A `double` lateral local, both
+`Vector3::operator*` scales, and the terminal `Vector3::operator+` add recover
+that arithmetic boundary and add 36.68 weighted bytes without changing the
+vertex lifetime.
+
+The terminal scale regresses in isolation but participates in the complete
+two-scale winner; the ordinary position add is byte-identical before and after
+those scales. Split-float, full-double-expression, and volatile lateral forms
+all regress, with the latter collapsing the exact prefix. Focused matching
+rises from **43.20%** to **44.62%**, candidate instructions move from 691 to
+687 against 707 target instructions, prefix stays 18/707, and all 55
+references remain clean.

@@ -168,15 +168,13 @@ void cRPath::initialize_halfpipe_path_template_pair(
     for (int row = 0; row <= segment_count; ++row) {
         int column = 0;
         for (; column <= width_cells; ++column) {
-            float lateral = (float)column - (float)width_cells * 0.5f;
+            double lateral = (float)column - (float)width_cells * 0.5f;
             TransformMatrix* transform =
                 (TransformMatrix*)((char*)&primary_samples[0].transform + sample_offset);
             Vector3* vertex = &vertices[column + row * (width_cells + 1)];
             if (row != segment_count) {
-                Vector3 lateral_offset(
-                    lateral * transform->basis_right.x,
-                    lateral * transform->basis_right.y,
-                    lateral * transform->basis_right.z);
+                Vector3 lateral_offset =
+                    transform->basis_right * lateral;
                 Vector3 generated_position(
                     transform->position.x + lateral_offset.x,
                     transform->position.y + lateral_offset.y,
@@ -185,18 +183,14 @@ void cRPath::initialize_halfpipe_path_template_pair(
             } else {
                 TransformMatrix* previous =
                     (TransformMatrix*)((char*)transform - sizeof(AttachmentSample));
-                Vector3 lateral_offset(
-                    lateral * previous->basis_right.x,
-                    lateral * previous->basis_right.y,
-                    lateral * previous->basis_right.z);
+                Vector3 lateral_offset =
+                    previous->basis_right * lateral;
                 Vector3 endpoint(
                     previous->position.x,
                     previous->position.y,
                     previous->position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
+                Vector3 generated_position =
+                    endpoint + lateral_offset;
                 *vertex = generated_position;
             }
 

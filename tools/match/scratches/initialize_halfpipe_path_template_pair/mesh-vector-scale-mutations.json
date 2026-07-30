@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-lateral-scale",
+      "find": "                Vector3 lateral_offset(\n                    lateral * transform->basis_right.x,\n                    lateral * transform->basis_right.y,\n                    lateral * transform->basis_right.z);",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "                Vector3 lateral_offset =\n                    transform->basis_right * lateral;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-lateral-scale",
+      "find": "                Vector3 lateral_offset(\n                    lateral * previous->basis_right.x,\n                    lateral * previous->basis_right.y,\n                    lateral * previous->basis_right.z);",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "                Vector3 lateral_offset =\n                    previous->basis_right * lateral;"
+        }
+      ]
+    }
+  ]
+}
