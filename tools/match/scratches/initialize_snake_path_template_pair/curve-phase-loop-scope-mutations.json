@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-phase-loop-scope",
+      "find": "    int curve_index = 0;\n    for (i = 6 * (int)sizeof(PathTemplateSample);\n         i < 24 * (int)sizeof(PathTemplateSample);\n         i += (int)sizeof(PathTemplateSample)) {\n        float angle = (float)curve_index * 0.34906587f;",
+      "replacements": [
+        {
+          "name": "phase-declared-before-loop",
+          "text": "    int curve_index = 0;\n    float angle;\n    for (i = 6 * (int)sizeof(PathTemplateSample);\n         i < 24 * (int)sizeof(PathTemplateSample);\n         i += (int)sizeof(PathTemplateSample)) {\n        angle = (float)curve_index * 0.34906587f;"
+        },
+        {
+          "name": "phase-declared-before-index",
+          "text": "    float angle;\n    int curve_index = 0;\n    for (i = 6 * (int)sizeof(PathTemplateSample);\n         i < 24 * (int)sizeof(PathTemplateSample);\n         i += (int)sizeof(PathTemplateSample)) {\n        angle = (float)curve_index * 0.34906587f;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-pointer-scope",
+      "find": "        PathTemplateSample* primary_previous =\n            (PathTemplateSample*)((char*)primary_samples + i) - 1;\n        PathTemplateSample* primary_current =\n            (PathTemplateSample*)((char*)primary_samples + i);\n        PathTemplateSample* secondary_previous =\n            (PathTemplateSample*)((char*)secondary_samples + i) - 1;\n        PathTemplateSample* secondary_current =\n            (PathTemplateSample*)((char*)secondary_samples + i);\n        if (curve_index == 0) {\n            primary_previous->transform.RotIdentity();\n            secondary_previous->transform.RotIdentity();\n        } else {",
+      "replacements": [
+        {
+          "name": "branch-scoped-previous-first",
+          "text": "        if (curve_index == 0) {\n            ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                ->transform.RotIdentity();\n            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                ->transform.RotIdentity();\n        } else {\n            PathTemplateSample* primary_previous =\n                (PathTemplateSample*)((char*)primary_samples + i) - 1;\n            PathTemplateSample* primary_current =\n                (PathTemplateSample*)((char*)primary_samples + i);\n            PathTemplateSample* secondary_previous =\n                (PathTemplateSample*)((char*)secondary_samples + i) - 1;\n            PathTemplateSample* secondary_current =\n                (PathTemplateSample*)((char*)secondary_samples + i);"
+        },
+        {
+          "name": "branch-scoped-current-first",
+          "text": "        if (curve_index == 0) {\n            ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                ->transform.RotIdentity();\n            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                ->transform.RotIdentity();\n        } else {\n            PathTemplateSample* primary_current =\n                (PathTemplateSample*)((char*)primary_samples + i);\n            PathTemplateSample* primary_previous = primary_current - 1;\n            PathTemplateSample* secondary_current =\n                (PathTemplateSample*)((char*)secondary_samples + i);\n            PathTemplateSample* secondary_previous = secondary_current - 1;"
+        },
+        {
+          "name": "branch-scoped-previous-derived",
+          "text": "        if (curve_index == 0) {\n            ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                ->transform.RotIdentity();\n            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                ->transform.RotIdentity();\n        } else {\n            PathTemplateSample* primary_previous =\n                (PathTemplateSample*)((char*)primary_samples + i) - 1;\n            PathTemplateSample* primary_current = primary_previous + 1;\n            PathTemplateSample* secondary_previous =\n                (PathTemplateSample*)((char*)secondary_samples + i) - 1;\n            PathTemplateSample* secondary_current = secondary_previous + 1;"
+        }
+      ]
+    }
+  ]
+}

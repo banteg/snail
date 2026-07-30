@@ -405,3 +405,51 @@ Two nearby controls are now bounded:
   surrounding allocation to **52.66%**, 647/652, prefix 5/652. Its recorded
   reverse probe restores 215.52 weighted bytes and the complete retained
   receipt.
+
+## 2026-07-30 departure, scoped orientation, and delta cursors
+
+The three-sample departure phase has the same two independent owners visible
+in the native body: a logical sample index beginning at 24 and a physical
+byte cursor beginning at `24 * sizeof(PathTemplateSample)`. Replaying both
+owners makes the first 106 target instructions exact and raises focused
+matching from **61.50%** to **64.62%**, a gain of 75.93 weighted bytes. The
+candidate briefly becomes 651/652 instructions, but the cursor is retained
+because it recovers 42 exact-prefix instructions and the complete native
+address/reload schedule while preserving all 40 references.
+
+The curve's previous/current sample owners are now scoped only to the
+non-first orientation branch. The first branch addresses the two preceding
+records directly, matching the native identity calls without constructing
+four unused pointers. The exact-count current-first form reaches **65.64%**,
+**652/652** instructions, and prefix **110/652**. A previous-first form is
+negative, while deriving both current records from previous-record pointers
+reaches 66.15% but shortens the candidate to 648 instructions; that measured
+tradeoff is recorded rather than retained.
+
+After the scope correction, the native physical-cursor first-sample guard is
+again positive. The monotonic `i <= 6 * sizeof(PathTemplateSample)` spelling
+adds four weighted bytes without changing size or references. The delta loop
+then recovers its own logical index plus independent `0xa8` byte cursor,
+adding another 11.21 weighted bytes. The retained frontier is:
+
+```text
+match: 66.26%
+target: 652 insns, candidate: 652 insns
+prefix: 110/652 target insns
+masked operands: 40 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The next residual is bounded. Native stores the curve phase in
+`[esp+0x20]`, preserves it in `ebp`, and reuses that slot for the sample Z;
+the candidate assigns the equivalent phase/Z owners to the opposite two
+stack slots. Declaration reordering, loop- and function-scope hoisting, and
+explicit phase handoffs are byte-identical, while a secondary-only copy
+regresses. Direct physical-cursor orientation expressions lose 110 weighted
+bytes, so the scoped pointers remain.
+
+Mesh follow-ups also close without a retained edit: the sibling
+`column + 1` U owner is byte-identical; explicit row cursors lose 14 weighted
+bytes; the complete guarded row-cursor form is byte-identical; and five
+vertex/face/row declaration schedules are neutral or slightly regressive.
+No fake local, volatile dependency, forced register, or flat-index
+instruction-count chase is introduced.

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-u1-owner",
+      "find": "                float u1 = (float)next_column * 0.125f;",
+      "replacements": [
+        {
+          "name": "column-plus-one",
+          "text": "                float u1 = (float)(column + 1) * 0.125f;"
+        },
+        {
+          "name": "next-column-copy",
+          "text": "                int u1_column = next_column;\n                float u1 = (float)u1_column * 0.125f;"
+        }
+      ]
+    }
+  ]
+}

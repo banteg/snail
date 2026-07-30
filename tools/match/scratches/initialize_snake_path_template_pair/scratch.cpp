@@ -167,25 +167,43 @@ void cRPath::initialize_snake_path_template_pair(
     }
 
     int departure_index = 24;
+    int departure_offset = 24 * (int)sizeof(PathTemplateSample);
     do {
-        primary_samples[departure_index].center_x =
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))->center_x =
             4.0f - (float)width_cells * 0.5f;
-        primary_samples[departure_index].rotation_scalar_98 = 0.0f;
-        primary_samples[departure_index].rotation_scalar_94 = 0.0f;
-        primary_samples[departure_index].special_scalar = 0.0f;
-        primary_samples[departure_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[departure_index].transform);
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+            ->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+            ->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+            ->special_scalar = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+            ->lateral_scale = 1.0f;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)primary_samples + departure_offset))
+                ->transform);
         float z = (float)departure_index;
-        primary_samples[departure_index].transform.position.x =
-            primary_samples[departure_index].center_x;
-        primary_samples[departure_index].transform.position.y = 0.0f;
-        primary_samples[departure_index].transform.position.z = z;
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+                ->center_x;
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+            ->transform.position.y = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+            ->transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[departure_index].transform);
-        secondary_samples[departure_index].transform.position.x =
-            primary_samples[departure_index].center_x;
-        secondary_samples[departure_index].transform.position.y = 0.49000001f;
-        secondary_samples[departure_index].transform.position.z = z;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)secondary_samples + departure_offset))
+                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + departure_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + departure_offset))
+                ->center_x;
+        ((PathTemplateSample*)((char*)secondary_samples + departure_offset))
+            ->transform.position.y = 0.49000001f;
+        ((PathTemplateSample*)((char*)secondary_samples + departure_offset))
+            ->transform.position.z = z;
+        departure_offset += (int)sizeof(PathTemplateSample);
         ++departure_index;
     } while (departure_index - 24 < 3);
 
@@ -218,18 +236,18 @@ void cRPath::initialize_snake_path_template_pair(
             0.49000001f - (1.0f - cosine(angle));
         ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.z = z;
 
-        PathTemplateSample* primary_previous =
-            (PathTemplateSample*)((char*)primary_samples + i) - 1;
-        PathTemplateSample* primary_current =
-            (PathTemplateSample*)((char*)primary_samples + i);
-        PathTemplateSample* secondary_previous =
-            (PathTemplateSample*)((char*)secondary_samples + i) - 1;
-        PathTemplateSample* secondary_current =
-            (PathTemplateSample*)((char*)secondary_samples + i);
-        if (curve_index == 0) {
-            primary_previous->transform.RotIdentity();
-            secondary_previous->transform.RotIdentity();
+        if (i <= 6 * (int)sizeof(PathTemplateSample)) {
+            ((PathTemplateSample*)((char*)primary_samples + i) - 1)
+                ->transform.RotIdentity();
+            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
+                ->transform.RotIdentity();
         } else {
+            PathTemplateSample* primary_current =
+                (PathTemplateSample*)((char*)primary_samples + i);
+            PathTemplateSample* primary_previous = primary_current - 1;
+            PathTemplateSample* secondary_current =
+                (PathTemplateSample*)((char*)secondary_samples + i);
+            PathTemplateSample* secondary_previous = secondary_current - 1;
             primary_previous->transform.basis_right =
                 Vector3(1.0f, 0.0f, 0.0f);
             primary_previous->transform.basis_forward = Vector3(
@@ -262,21 +280,33 @@ void cRPath::initialize_snake_path_template_pair(
     }
 
     int delta_index = 0;
+    int delta_offset = 0;
     if (segment_count - 1 > 0) {
         do {
-            primary_samples[delta_index].delta_dir_to_next =
-                primary_samples[delta_index + 1].transform.position -
-                primary_samples[delta_index].transform.position;
-            primary_samples[delta_index].delta_length =
-                primary_samples[delta_index].delta_dir_to_next.Normalize();
+            ((PathTemplateSample*)((char*)primary_samples + delta_offset))
+                ->delta_dir_to_next =
+                ((PathTemplateSample*)((char*)primary_samples + delta_offset) + 1)
+                    ->transform.position -
+                ((PathTemplateSample*)((char*)primary_samples + delta_offset))
+                    ->transform.position;
+            ((PathTemplateSample*)((char*)primary_samples + delta_offset))
+                ->delta_length =
+                ((PathTemplateSample*)((char*)primary_samples + delta_offset))
+                    ->delta_dir_to_next.Normalize();
 
-            secondary_samples[delta_index].delta_dir_to_next =
-                secondary_samples[delta_index + 1].transform.position -
-                secondary_samples[delta_index].transform.position;
-            secondary_samples[delta_index].delta_length =
-                secondary_samples[delta_index].delta_dir_to_next.Normalize();
+            ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
+                ->delta_dir_to_next =
+                ((PathTemplateSample*)((char*)secondary_samples + delta_offset) + 1)
+                    ->transform.position -
+                ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
+                    ->transform.position;
+            ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
+                ->delta_length =
+                ((PathTemplateSample*)((char*)secondary_samples + delta_offset))
+                    ->delta_dir_to_next.Normalize();
 
             ++delta_index;
+            delta_offset += (int)sizeof(PathTemplateSample);
         } while (delta_index < segment_count - 1);
     }
 

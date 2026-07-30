@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-first-orientation-guard",
+      "find": "        if (curve_index == 0) {",
+      "replacements": [
+        {
+          "name": "cursor-less-equal-sizeof",
+          "text": "        if (i <= 6 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "cursor-equal-sizeof",
+          "text": "        if (i == 6 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "cursor-less-next-sample",
+          "text": "        if (i < 7 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "cursor-less-equal-constant",
+          "text": "        if (i <= 0x3f0) {"
+        },
+        {
+          "name": "cursor-equal-constant",
+          "text": "        if (i == 0x3f0) {"
+        }
+      ]
+    }
+  ]
+}

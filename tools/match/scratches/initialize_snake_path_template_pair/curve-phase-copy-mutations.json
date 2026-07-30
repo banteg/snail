@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-phase-copy",
+      "find": "        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =\n            -(1.0f - cosine(angle));\n        float z = (float)(curve_index + 6);\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;\n\n        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + i))->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =\n            0.49000001f - (1.0f - cosine(angle));",
+      "replacements": [
+        {
+          "name": "shared-remaining-phase",
+          "text": "        float remaining_angle = angle;\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =\n            -(1.0f - cosine(remaining_angle));\n        float z = (float)(curve_index + 6);\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;\n\n        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + i))->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =\n            0.49000001f - (1.0f - cosine(remaining_angle));"
+        },
+        {
+          "name": "const-shared-remaining-phase",
+          "text": "        const float remaining_angle = angle;\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =\n            -(1.0f - cosine(remaining_angle));\n        float z = (float)(curve_index + 6);\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;\n\n        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + i))->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =\n            0.49000001f - (1.0f - cosine(remaining_angle));"
+        },
+        {
+          "name": "secondary-only-phase-copy",
+          "text": "        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =\n            -(1.0f - cosine(angle));\n        float remaining_angle = angle;\n        float z = (float)(curve_index + 6);\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;\n\n        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + i))->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =\n            0.49000001f - (1.0f - cosine(remaining_angle));"
+        }
+      ]
+    }
+  ]
+}

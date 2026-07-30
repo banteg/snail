@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-entry-owner-order",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int row;\n    int column;\n\n    for (row = 0; row <= path->segment_count; ++row) {",
+      "replacements": [
+        {
+          "name": "row-before-pointers",
+          "text": "    int row = 0;\n    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int column;\n\n    for (; row <= path->segment_count; ++row) {"
+        },
+        {
+          "name": "row-between-pointers",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    int row = 0;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int column;\n\n    for (; row <= path->segment_count; ++row) {"
+        },
+        {
+          "name": "row-after-pointers",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int row = 0;\n    int column;\n\n    for (; row <= path->segment_count; ++row) {"
+        },
+        {
+          "name": "face-row-vertices",
+          "text": "    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int row = 0;\n    Vector3* vertices = path->strip_mesh->vertices;\n    int column;\n\n    for (; row <= path->segment_count; ++row) {"
+        },
+        {
+          "name": "row-face-vertices",
+          "text": "    int row = 0;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* vertices = path->strip_mesh->vertices;\n    int column;\n\n    for (; row <= path->segment_count; ++row) {"
+        }
+      ]
+    }
+  ]
+}

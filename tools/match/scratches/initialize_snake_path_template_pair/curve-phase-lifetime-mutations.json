@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-phase-declaration",
+      "find": "    int i;\n    int lead_offset;",
+      "replacements": [
+        {
+          "name": "before-lead-phase",
+          "text": "    float angle;\n    int i;\n    int lead_offset;"
+        }
+      ]
+    },
+    {
+      "name": "curve-phase-assignment",
+      "find": "        float angle = (float)curve_index * 0.34906587f;",
+      "replacements": [
+        {
+          "name": "assign-hoisted-phase",
+          "text": "        angle = (float)curve_index * 0.34906587f;"
+        }
+      ]
+    }
+  ]
+}
