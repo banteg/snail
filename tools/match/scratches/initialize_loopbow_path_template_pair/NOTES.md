@@ -258,6 +258,27 @@ The accepted changes are ordinary authored constructs:
   back face as the alternate arm. This semantically equivalent winding order
   is the largest mesh-tail gain, raising the complete candidate from 70.26% to
   71.88%.
+
+## 2026-07-30 mesh and face boundary
+
+Raw Windows code and Binary Ninja IL were used to replay the remaining mesh
+row schedule as one dependency-closed mutation: guarded row entry, the
+`0xa8`-byte sample cursor, ordinary-row fallthrough, and branch-local sample
+and vertex owners. That complete native-looking source shape regresses the
+accepted 71.88% result to 69.92%, so no fragment of that schedule is retained
+without new allocation evidence.
+
+The apparent common face-index value in SSA was also tested as a source owner.
+Its declaration and front-face use are byte-neutral, while moving the back
+face or both faces through it regresses the focused result as far as 67.04%.
+Together with the earlier parity sweep, this bounds the obvious remaining
+mesh/face ownership spellings.
+
+The ledger now contains six checked mutation sweeps covering 45 unique
+variants: three improving, 31 neutral, and 11 degrading. Three consecutive
+non-improving sweeps mark this scratch stalled at **71.88%** (801/796
+candidate/target instructions), with the exact `0x9c` frame, a ten-instruction
+prefix, and all 63 references clean.
 - The synthetic endpoint value is scoped to the terminal-row branch. This is
   byte-neutral but records its actual lifetime.
 

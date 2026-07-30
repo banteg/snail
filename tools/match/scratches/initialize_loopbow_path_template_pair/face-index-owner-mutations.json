@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-index-owner",
+      "find": "                    do {\n                        if (side == 0) {",
+      "replacements": [
+        {
+          "name": "common-index-before-side",
+          "text": "                    do {\n                        int face_index = side + 2 *\n                            (cell_index + segment * width_cells);\n                        if (side == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "front-face-index-use",
+      "find": "                            cRFaceQuad* face =\n                                &facequads[side + 2 *\n                                    (cell_index + segment * width_cells)];\n                            face->header_word = 0;\n                            face->vertex_0 =\n                                cell_index + segment * (width_cells + 1);",
+      "replacements": [
+        {
+          "name": "common-index",
+          "text": "                            cRFaceQuad* face =\n                                &facequads[face_index];\n                            face->header_word = 0;\n                            face->vertex_0 =\n                                cell_index + segment * (width_cells + 1);"
+        }
+      ]
+    },
+    {
+      "name": "back-face-index-use",
+      "find": "                            cRFaceQuad* face =\n                                &facequads[side + 2 *\n                                    (cell_index + segment * width_cells)];\n                            face->header_word = 0;\n                            face->vertex_0 =\n                                segment * (width_cells + 1) + cell_index + 1;",
+      "replacements": [
+        {
+          "name": "common-index",
+          "text": "                            cRFaceQuad* face =\n                                &facequads[face_index];\n                            face->header_word = 0;\n                            face->vertex_0 =\n                                segment * (width_cells + 1) + cell_index + 1;"
+        }
+      ]
+    }
+  ]
+}
