@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordered-count-lifetime",
+      "find": "    int rendered_sprite_count = 0;\n    TransformMatrix transform;\n    set_matrix_identity(&transform);\n\n    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = -1;\n    camera_order[1] = -1;\n    camera_order[2] = -1;\n    camera_order[3] = -1;\n    camera_order[CAMERA_LAST_INDEX] = -1;\n\n    Viewport* slots = viewports;\n    {\n        for (int active_index = 0;\n             active_index < CAMERA_SLOT_COUNT;\n             ++active_index) {\n            if ((slots[active_index].flags & 1) != 0) {\n                ++active_camera_count;\n            }\n        }\n    }\n\n    slots[1].flags =\n        (slots[1].flags & ~RENDER_SCENE_MASK) | RENDER_SCENE_PLAYER_0;\n\n    int ordered_count = 0;",
+      "replacements": [
+        {
+          "name": "before-sprite-ledger",
+          "text": "    int ordered_count = 0;\n    int rendered_sprite_count = 0;\n    TransformMatrix transform;\n    set_matrix_identity(&transform);\n\n    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = -1;\n    camera_order[1] = -1;\n    camera_order[2] = -1;\n    camera_order[3] = -1;\n    camera_order[CAMERA_LAST_INDEX] = -1;\n\n    Viewport* slots = viewports;\n    {\n        for (int active_index = 0;\n             active_index < CAMERA_SLOT_COUNT;\n             ++active_index) {\n            if ((slots[active_index].flags & 1) != 0) {\n                ++active_camera_count;\n            }\n        }\n    }\n\n    slots[1].flags =\n        (slots[1].flags & ~RENDER_SCENE_MASK) | RENDER_SCENE_PLAYER_0;"
+        },
+        {
+          "name": "after-sprite-ledger",
+          "text": "    int rendered_sprite_count = 0;\n    int ordered_count = 0;\n    TransformMatrix transform;\n    set_matrix_identity(&transform);\n\n    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = -1;\n    camera_order[1] = -1;\n    camera_order[2] = -1;\n    camera_order[3] = -1;\n    camera_order[CAMERA_LAST_INDEX] = -1;\n\n    Viewport* slots = viewports;\n    {\n        for (int active_index = 0;\n             active_index < CAMERA_SLOT_COUNT;\n             ++active_index) {\n            if ((slots[active_index].flags & 1) != 0) {\n                ++active_camera_count;\n            }\n        }\n    }\n\n    slots[1].flags =\n        (slots[1].flags & ~RENDER_SCENE_MASK) | RENDER_SCENE_PLAYER_0;"
+        },
+        {
+          "name": "after-transform",
+          "text": "    int rendered_sprite_count = 0;\n    TransformMatrix transform;\n    int ordered_count = 0;\n    set_matrix_identity(&transform);\n\n    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = -1;\n    camera_order[1] = -1;\n    camera_order[2] = -1;\n    camera_order[3] = -1;\n    camera_order[CAMERA_LAST_INDEX] = -1;\n\n    Viewport* slots = viewports;\n    {\n        for (int active_index = 0;\n             active_index < CAMERA_SLOT_COUNT;\n             ++active_index) {\n            if ((slots[active_index].flags & 1) != 0) {\n                ++active_camera_count;\n            }\n        }\n    }\n\n    slots[1].flags =\n        (slots[1].flags & ~RENDER_SCENE_MASK) | RENDER_SCENE_PLAYER_0;"
+        }
+      ]
+    }
+  ]
+}

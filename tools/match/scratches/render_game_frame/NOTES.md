@@ -4,7 +4,7 @@ Relationship-first scratch for the frame renderer at `0x40a490`.
 
 Current Wibo result after the original viewport-owner replay:
 56.16%, 430 candidate instructions versus 439 target instructions, with
-a 6-instruction exact prefix, 26 masked operands ok, 0 unresolved, and 0
+a 6-instruction exact prefix, 34 masked operands ok, 0 unresolved, and 0
 mismatch. The helper calls at `0x414650`, `0x413540`, `0x413650`, `0x411e10`,
 and `0x411de0` resolve to standalone exact scratches.
 
@@ -70,8 +70,9 @@ Expected residuals:
 
 - The compact native `0x80`-byte frame and its distinct staged, total-rendered,
   and replay ledgers are now reproduced without explicit stack aliasing. The
-  remaining mismatch is concentrated in camera-order setup induction and
-  compiler register scheduling across the sprite and replay lanes.
+  remaining mismatch is compiler register scheduling across the camera,
+  sprite, and replay lanes; the evidence-backed camera-order source shapes
+  are formally bounded below.
 - The complete BOD prefix through `RenderableBod +0x7f` is now shared through
   `bod_types.h` and the existing `BodNode`/`ContactTargetObject` prefix: signed
   flags, list links, position, render-object pass-through arguments, object,
@@ -295,3 +296,31 @@ at the honest 56.16% result (`430/439`, prefix `6/439`, 28 clean masked
 operands, 12 unaudited). The remaining renderer gap is still register
 allocation and platform-specific viewport scheduling, not an excuse to add
 aliases or synthetic locals.
+
+## 2026-07-30 camera-order source-shape boundary
+
+The target keeps zero in `ESI` from the skip check through the initial sprite
+ledger store and later reuses that register for the ordered-camera count.
+Android and iOS independently retain the same active-slot scan and insertion
+exit: after insertion they assign the scan index from the incremented ordered
+count, then execute the common loop increment. These observations motivated
+three recorded mutation sweeps rather than speculative aliases.
+
+The complete 32-variant boundary covers:
+
+- three earlier ordered-count declaration lifetimes around the matrix and
+  rendered-sprite ledger;
+- five sentinel/array initialization spellings, three active-slot traversal
+  forms, and all 15 two-site interactions between them;
+- indexed and explicit-cursor outer scans, `for` and `do` inner scans, the
+  retained `break`, the mobile common-increment exit, and the mobile comparison
+  spelling.
+
+None improves the clean 56.16% baseline. All five sentinel spellings are
+byte-identical; the best explicit cursor form loses eight weighted bytes, the
+earlier count lifetimes lose thirteen, and the mobile insertion exits lose
+between 28 and 146. The append-only `experiments.jsonl` therefore reports
+`0/5/27` better/same/worse variants and a three-sweep stalled streak. The
+mobile control flow remains valuable provenance, but forcing it into the
+Windows scratch destabilizes the broader VC6 allocation and is not an honest
+match improvement.

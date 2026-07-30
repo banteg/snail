@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "camera-order-initialization",
+      "find": "    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = -1;\n    camera_order[1] = -1;\n    camera_order[2] = -1;\n    camera_order[3] = -1;\n    camera_order[CAMERA_LAST_INDEX] = -1;",
+      "replacements": [
+        {
+          "name": "sentinel-after-count",
+          "text": "    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    int inactive_camera_index = -1;\n    camera_order[0] = inactive_camera_index;\n    camera_order[1] = inactive_camera_index;\n    camera_order[2] = inactive_camera_index;\n    camera_order[3] = inactive_camera_index;\n    camera_order[CAMERA_LAST_INDEX] = inactive_camera_index;"
+        },
+        {
+          "name": "sentinel-before-count",
+          "text": "    int inactive_camera_index = -1;\n    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = inactive_camera_index;\n    camera_order[1] = inactive_camera_index;\n    camera_order[2] = inactive_camera_index;\n    camera_order[3] = inactive_camera_index;\n    camera_order[CAMERA_LAST_INDEX] = inactive_camera_index;"
+        },
+        {
+          "name": "count-after-stores",
+          "text": "    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = -1;\n    camera_order[1] = -1;\n    camera_order[2] = -1;\n    camera_order[3] = -1;\n    camera_order[CAMERA_LAST_INDEX] = -1;\n    int active_camera_count = 0;"
+        },
+        {
+          "name": "chained-stores",
+          "text": "    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT];\n    camera_order[0] = camera_order[1] = camera_order[2] =\n        camera_order[3] = camera_order[CAMERA_LAST_INDEX] = -1;"
+        },
+        {
+          "name": "aggregate-initializer",
+          "text": "    int active_camera_count = 0;\n    int camera_order[CAMERA_SLOT_COUNT] = {-1, -1, -1, -1, -1};"
+        }
+      ]
+    },
+    {
+      "name": "active-camera-scan",
+      "find": "    Viewport* slots = viewports;\n    {\n        for (int active_index = 0;\n             active_index < CAMERA_SLOT_COUNT;\n             ++active_index) {\n            if ((slots[active_index].flags & 1) != 0) {\n                ++active_camera_count;\n            }\n        }\n    }",
+      "replacements": [
+        {
+          "name": "pointer-countdown-do",
+          "text": "    Viewport* slots = viewports;\n    {\n        Viewport* active_slot = slots;\n        int remaining_slots = CAMERA_SLOT_COUNT;\n        do {\n            if ((active_slot->flags & 1) != 0) {\n                ++active_camera_count;\n            }\n            ++active_slot;\n            --remaining_slots;\n        } while (remaining_slots != 0);\n    }"
+        },
+        {
+          "name": "pointer-countdown-for",
+          "text": "    Viewport* slots = viewports;\n    {\n        Viewport* active_slot = slots;\n        for (int remaining_slots = CAMERA_SLOT_COUNT;\n             remaining_slots != 0;\n             --remaining_slots) {\n            if ((active_slot->flags & 1) != 0) {\n                ++active_camera_count;\n            }\n            ++active_slot;\n        }\n    }"
+        },
+        {
+          "name": "pointer-sentinel",
+          "text": "    Viewport* slots = viewports;\n    {\n        Viewport* active_slot = slots;\n        Viewport* slots_end = slots + CAMERA_SLOT_COUNT;\n        do {\n            if ((active_slot->flags & 1) != 0) {\n                ++active_camera_count;\n            }\n            ++active_slot;\n        } while (active_slot != slots_end);\n    }"
+        }
+      ]
+    }
+  ]
+}
