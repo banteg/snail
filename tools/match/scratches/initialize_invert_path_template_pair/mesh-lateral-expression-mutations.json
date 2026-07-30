@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-lateral-expression",
+      "find": "                    float lateral =\n                        (float)column - (float)path->width_cells * 0.5f;",
+      "replacements": [
+        {
+          "name": "split-assignment",
+          "text": "                    float lateral;\n                    lateral =\n                        (float)column - (float)path->width_cells * 0.5f;"
+        },
+        {
+          "name": "two-step-subtraction",
+          "text": "                    float lateral = (float)column;\n                    lateral -= (float)path->width_cells * 0.5f;"
+        },
+        {
+          "name": "two-step-assignment",
+          "text": "                    float lateral = (float)column;\n                    lateral = lateral -\n                        (float)path->width_cells * 0.5f;"
+        },
+        {
+          "name": "const-owner",
+          "text": "                    const float lateral =\n                        (float)column - (float)path->width_cells * 0.5f;"
+        }
+      ]
+    }
+  ]
+}

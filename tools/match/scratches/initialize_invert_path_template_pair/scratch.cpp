@@ -56,21 +56,17 @@ static __forceinline void copy_secondary_transform_from_primary(Path* path, int 
 static __forceinline void compute_path_deltas(Path* path)
 {
     for (int i = 0; i < path->segment_count - 1; ++i) {
-        PathTemplateSample* primary = &path->primary_samples[i];
-        PathTemplateSample* primary_next = &path->primary_samples[i + 1];
-        primary->delta_dir_to_next = Vector3(
-            primary_next->transform.position.x - primary->transform.position.x,
-            primary_next->transform.position.y - primary->transform.position.y,
-            primary_next->transform.position.z - primary->transform.position.z);
-        primary->delta_length = primary->delta_dir_to_next.Normalize();
+        path->primary_samples[i].delta_dir_to_next =
+            path->primary_samples[i + 1].transform.position -
+            path->primary_samples[i].transform.position;
+        path->primary_samples[i].delta_length =
+            path->primary_samples[i].delta_dir_to_next.Normalize();
 
-        PathTemplateSample* secondary = &path->secondary_samples[i];
-        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
-        secondary->delta_dir_to_next = Vector3(
-            secondary_next->transform.position.x - secondary->transform.position.x,
-            secondary_next->transform.position.y - secondary->transform.position.y,
-            secondary_next->transform.position.z - secondary->transform.position.z);
-        secondary->delta_length = secondary->delta_dir_to_next.Normalize();
+        path->secondary_samples[i].delta_dir_to_next =
+            path->secondary_samples[i + 1].transform.position -
+            path->secondary_samples[i].transform.position;
+        path->secondary_samples[i].delta_length =
+            path->secondary_samples[i].delta_dir_to_next.Normalize();
     }
 
     path->primary_samples[path->segment_count - 1].delta_dir_to_next =
@@ -92,41 +88,55 @@ static __forceinline void build_strip_mesh(
     Vector3* vertices = path->strip_mesh->vertices;
     cRFaceQuad* facequads = path->strip_mesh->facequads;
 
-    int row;
+    int row = 0;
     int column;
-    for (row = 0; row <= path->segment_count; ++row) {
-        PathTemplateSample* sample = &path->primary_samples[row];
-
-        for (column = 0; column <= path->width_cells; ++column) {
-            float lateral = (float)column - (float)path->width_cells * 0.5f;
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row != path->segment_count) {
-                Vector3 lateral_offset(
-                    lateral * sample->transform.basis_right.x,
-                    lateral * sample->transform.basis_right.y,
-                    lateral * sample->transform.basis_right.z);
-                Vector3 generated_position(
-                    sample->transform.position.x + lateral_offset.x,
-                    sample->transform.position.y + lateral_offset.y,
-                    sample->transform.position.z + lateral_offset.z);
-                *vertex = generated_position;
-            } else {
-                PathTemplateSample* previous = sample - 1;
-                Vector3 lateral_offset(
-                    lateral * previous->transform.basis_right.x,
-                    lateral * previous->transform.basis_right.y,
-                    lateral * previous->transform.basis_right.z);
-                Vector3 endpoint(
-                    previous->transform.position.x,
-                    previous->transform.position.y,
-                    previous->transform.position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
-                *vertex = generated_position;
+    if (path->segment_count >= 0) {
+        int sample_offset = 0;
+        do {
+            column = 0;
+            if (path->width_cells >= 0) {
+                do {
+                    float lateral =
+                        (float)column - (float)path->width_cells * 0.5f;
+                    if (row != path->segment_count) {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
+                        Vector3 lateral_offset(
+                            lateral * sample->transform.basis_right.x,
+                            lateral * sample->transform.basis_right.y,
+                            lateral * sample->transform.basis_right.z);
+                        Vector3 generated_position(
+                            sample->transform.position.x + lateral_offset.x,
+                            sample->transform.position.y + lateral_offset.y,
+                            sample->transform.position.z + lateral_offset.z);
+                        int vertex_index =
+                            column + row * (path->width_cells + 1);
+                        vertices[vertex_index] = generated_position;
+                    } else {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
+                        Vector3 lateral_offset(
+                            lateral * sample[-1].transform.basis_right.x,
+                            lateral * sample[-1].transform.basis_right.y,
+                            lateral * sample[-1].transform.basis_right.z);
+                        Vector3 endpoint(
+                            sample[-1].transform.position.x,
+                            sample[-1].transform.position.y,
+                            sample[-1].transform.position.z + 1.0f);
+                        Vector3 generated_position(
+                            endpoint.x + lateral_offset.x,
+                            endpoint.y + lateral_offset.y,
+                            endpoint.z + lateral_offset.z);
+                        int vertex_index =
+                            column + row * (path->width_cells + 1);
+                        vertices[vertex_index] = generated_position;
+                    }
+                    ++column;
+                } while (column <= path->width_cells);
             }
-        }
+            ++row;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (row <= path->segment_count);
     }
 
     for (row = 0; row < path->segment_count; ++row) {
@@ -255,22 +265,18 @@ void cRPath::initialize_invert_path_template_pair(
         primary_samples[sample_index].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[sample_index].transform);
 
-        int z_index = local_index + 1;
+        float z_position = (float)(local_index + 1);
         primary_samples[sample_index].transform.position.x = 0.0f;
-        primary_samples[sample_index].transform.position.z = (float)z_index;
+        primary_samples[sample_index].transform.position.z = z_position;
         primary_samples[sample_index].transform.position.y = 0.0f;
 
         float basis_y = cosine(angle);
         float basis_x = sine(angle);
         primary_samples[sample_index].transform.basis_up =
             Vector3(basis_x, basis_y, 0.0f);
-        primary_samples[sample_index].transform.basis_forward = Vector3(
-            primary_samples[sample_index].transform.position.x -
-                primary_samples[sample_index - 1].transform.position.x,
-            primary_samples[sample_index].transform.position.y -
-                primary_samples[sample_index - 1].transform.position.y,
-            primary_samples[sample_index].transform.position.z -
-                primary_samples[sample_index - 1].transform.position.z);
+        primary_samples[sample_index].transform.basis_forward =
+            primary_samples[sample_index].transform.position -
+            primary_samples[sample_index - 1].transform.position;
         primary_samples[sample_index].transform.basis_forward.Normalize();
         primary_samples[sample_index].transform.basis_right.cross_vectors(
             &primary_samples[sample_index].transform.basis_up,
@@ -278,13 +284,11 @@ void cRPath::initialize_invert_path_template_pair(
 
         secondary_samples[sample_index].transform =
             primary_samples[sample_index].transform;
-        Vector3 secondary_offset(
-            primary_samples[sample_index].transform.basis_up.x * 0.49000001f,
-            primary_samples[sample_index].transform.basis_up.y * 0.49000001f,
-            primary_samples[sample_index].transform.basis_up.z * 0.49000001f);
+        ++local_index;
+        Vector3 secondary_offset =
+            primary_samples[sample_index].transform.basis_up * 0.49000001f;
         Vector3* secondary_position =
             &secondary_samples[sample_index].transform.position;
-        ++local_index;
         secondary_position->x += secondary_offset.x;
         secondary_position->y += secondary_offset.y;
         secondary_position->z += secondary_offset.z;

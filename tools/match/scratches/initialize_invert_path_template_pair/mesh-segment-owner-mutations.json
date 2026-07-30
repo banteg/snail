@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-segment-owner",
+      "find": "    for (row = 0; row < path->segment_count; ++row) {",
+      "replacements": [
+        {
+          "name": "separate-counter-probe",
+          "text": "    for (int segment = 0; segment < path->segment_count; ++segment) {\n        int row = segment;"
+        }
+      ]
+    }
+  ]
+}

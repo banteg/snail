@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-address",
+      "find": "                if (face_index == 0) {\n                    cRFaceQuad* face = &facequads[\n                        2 * column + 2 * row * path->width_cells + face_index];",
+      "replacements": [
+        {
+          "name": "native-grouping",
+          "text": "                if (face_index == 0) {\n                    cRFaceQuad* face = &facequads[\n                        face_index + 2 *\n                            (column + row * path->width_cells)];"
+        }
+      ]
+    },
+    {
+      "name": "second-face-address",
+      "find": "                } else {\n                    cRFaceQuad* face = &facequads[\n                        2 * column + 2 * row * path->width_cells + face_index];",
+      "replacements": [
+        {
+          "name": "native-grouping",
+          "text": "                } else {\n                    cRFaceQuad* face = &facequads[\n                        face_index + 2 *\n                            (column + row * path->width_cells)];"
+        }
+      ]
+    }
+  ]
+}

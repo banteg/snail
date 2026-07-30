@@ -6,10 +6,12 @@ Models the fixed 34-sample invert template with `0x29` kind, runtime flag `+0x9c
 set, terminal `pi` rotation scalar, half-angle interior rotation scalar,
 secondary offsets, deltas, strip mesh generation, and finalization.
 
-Current focused result: 49.66% (564/600 candidate/target instructions), with
-30 masked operands ok, 0 unresolved, and 0 mismatched. Residuals are primarily
-the native stack frame, delta/vertex loop source shape, and register allocation;
-this reconstruction deliberately avoids normalizer gaming.
+Current focused result: 70.69% (611/600 candidate/target instructions), with
+35 masked operands ok, 0 unresolved, and 0 mismatched. The exact prefix covers
+109 target instructions and the candidate retains the native `0x54` frame.
+Residuals are primarily commutative address encodings, interior stack coloring,
+and face-loop value schedules; this reconstruction deliberately avoids
+normalizer gaming.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 8.66% (116/600
@@ -186,3 +188,57 @@ fixed-index `__offset` occurrences.
 This is analysis-only. Focused matching remains **52.92%** (598/600), with a
 seven-instruction prefix and 35 clean masked operands. Strict paired Binary
 Ninja and IDA 9.4 export reports zero selector mismatches.
+
+## 2026-07-30 value, delta, and mesh lifetime closure
+
+The retained batch began at **52.92%** (598/600 candidate/target instructions),
+with a seven-instruction prefix, the exact native `0x54` frame, and 35 clean
+masked operands. Paired Windows and mobile evidence supports authored vector
+values for the interior secondary offset, both path-delta subtractions, and the
+interior forward direction. Recovering the first three together reaches
+54.00% with an exact 600/600 instruction count. Advancing the logical interior
+index before constructing the secondary offset then resolves the global
+ESI/EDI owner swap, raising agreement to 58.55% and extending the exact prefix
+from 7 to 109 instructions. The interior forward `operator-` extends it again
+to 114 instructions, and a named integer-to-float Z-position owner gives the
+small retained move to 59.05%.
+
+The Windows delta loop keeps EDI as its logical counter and ESI as its
+`0xa8`-stride cursor. Named current/next sample pointers consumed ESI and
+produced the mirror allocation. Direct primary or secondary array ownership is
+worse alone, but recovering both lanes together restores the native owners and
+raises agreement to **63.51%**. Reverting either authored subtraction operator
+under that owner shape is also worse. The paired form grows the candidate to
+603 instructions and shortens the exact prefix to 109, but improves the delta
+region by 97 weighted bytes and preserves all 35 audited references.
+
+The native vertex loop uses a guarded logical row, a separate `0xa8` sample
+cursor, ordinary-row and terminal-row vector values, and branch-local vertex
+destinations. A guarded byte cursor alone is byte-identical. Recovering the
+complete branch-local shape raises agreement to 67.71%; isolating the control
+order proves that ordinary rows must remain the first branch and the terminal
+row the fallback, producing the retained **70.69%** result. The final candidate
+is 611/600 instructions, retains the 109-instruction exact prefix and `0x54`
+frame, and keeps 35 references clean with no unresolved, mismatched, or
+unaudited operands.
+
+Twenty recorded sweeps cover 79 evaluated variants. The bounded neutral and
+negative results are:
+
+- advancing the sample cursor before the three offset additions is
+  byte-identical, while advancing the logical counter before the position
+  stores falls to 56.50% and creates one unaudited reference;
+- inlining the derived Z integer expression is byte-identical; a named
+  converted float is the only small improvement;
+- six extra `basis_up` destination/value forms fall to 48.58%..54.50%;
+- three guarded delta schedules are byte-identical, and component delta
+  constructors lose 4..7 weighted bytes under direct array ownership;
+- mesh acquisition order, native face-address grouping, four lateral scalar
+  spellings, and supported member scale operators are byte-identical;
+- the complete guarded native face schedule falls to 66.39%, a loop-scoped
+  vertex column falls to 64.74%, and a separate face-segment counter falls to
+  67.38%;
+- sharing the vertex destination retains only 67.89%, while terminal vector
+  addition via `operator+` falls to 69.92%;
+- the unsupported `scalar * Vector3` spelling was rejected by the recovered
+  class ABI and rerun as the valid, byte-identical `Vector3 * scalar` form.

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-delta-expression",
+      "find": "        path->primary_samples[i].delta_dir_to_next =\n            path->primary_samples[i + 1].transform.position -\n            path->primary_samples[i].transform.position;",
+      "replacements": [
+        {
+          "name": "component-constructor",
+          "text": "        path->primary_samples[i].delta_dir_to_next = Vector3(\n            path->primary_samples[i + 1].transform.position.x -\n                path->primary_samples[i].transform.position.x,\n            path->primary_samples[i + 1].transform.position.y -\n                path->primary_samples[i].transform.position.y,\n            path->primary_samples[i + 1].transform.position.z -\n                path->primary_samples[i].transform.position.z);"
+        }
+      ]
+    },
+    {
+      "name": "secondary-delta-expression",
+      "find": "        path->secondary_samples[i].delta_dir_to_next =\n            path->secondary_samples[i + 1].transform.position -\n            path->secondary_samples[i].transform.position;",
+      "replacements": [
+        {
+          "name": "component-constructor",
+          "text": "        path->secondary_samples[i].delta_dir_to_next = Vector3(\n            path->secondary_samples[i + 1].transform.position.x -\n                path->secondary_samples[i].transform.position.x,\n            path->secondary_samples[i + 1].transform.position.y -\n                path->secondary_samples[i].transform.position.y,\n            path->secondary_samples[i + 1].transform.position.z -\n                path->secondary_samples[i].transform.position.z);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "offset-increment-schedule",
+      "find": "        Vector3 secondary_offset =\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        ++local_index;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;\n        ++sample_index;",
+      "replacements": [
+        {
+          "name": "logical-index-before-offset",
+          "text": "        ++local_index;\n        Vector3 secondary_offset =\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;\n        ++sample_index;"
+        },
+        {
+          "name": "sample-cursor-before-adds",
+          "text": "        Vector3 secondary_offset =\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        ++local_index;\n        ++sample_index;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;"
+        },
+        {
+          "name": "both-before-offset-adds",
+          "text": "        ++local_index;\n        Vector3 secondary_offset =\n            primary_samples[sample_index].transform.basis_up * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[sample_index].transform.position;\n        ++sample_index;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "vertex-column-owner",
+      "find": "        do {\n            column = 0;\n            if (path->width_cells >= 0) {",
+      "replacements": [
+        {
+          "name": "loop-scoped-counter",
+          "text": "        do {\n            int column = 0;\n            if (path->width_cells >= 0) {"
+        }
+      ]
+    }
+  ]
+}

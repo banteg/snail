@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "z-index-expression",
+      "find": "        int z_index = local_index + 1;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)z_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;",
+      "replacements": [
+        {
+          "name": "inline-integer-expression",
+          "text": "        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z =\n            (float)(local_index + 1);\n        primary_samples[sample_index].transform.position.y = 0.0f;"
+        },
+        {
+          "name": "named-float-expression",
+          "text": "        float z_position = (float)(local_index + 1);\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = z_position;\n        primary_samples[sample_index].transform.position.y = 0.0f;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "logical-index-owner",
+      "find": "        int z_index = local_index + 1;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)z_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;\n\n        float basis_y = cosine(angle);\n        float basis_x = sine(angle);\n        primary_samples[sample_index].transform.basis_up =\n            Vector3(basis_x, basis_y, 0.0f);\n        primary_samples[sample_index].transform.basis_forward =\n            primary_samples[sample_index].transform.position -\n            primary_samples[sample_index - 1].transform.position;\n        primary_samples[sample_index].transform.basis_forward.Normalize();\n        primary_samples[sample_index].transform.basis_right.cross_vectors(\n            &primary_samples[sample_index].transform.basis_up,\n            &primary_samples[sample_index].transform.basis_forward);\n\n        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        ++local_index;\n        Vector3 secondary_offset =",
+      "replacements": [
+        {
+          "name": "advance-before-position",
+          "text": "        ++local_index;\n        primary_samples[sample_index].transform.position.x = 0.0f;\n        primary_samples[sample_index].transform.position.z = (float)local_index;\n        primary_samples[sample_index].transform.position.y = 0.0f;\n\n        float basis_y = cosine(angle);\n        float basis_x = sine(angle);\n        primary_samples[sample_index].transform.basis_up =\n            Vector3(basis_x, basis_y, 0.0f);\n        primary_samples[sample_index].transform.basis_forward =\n            primary_samples[sample_index].transform.position -\n            primary_samples[sample_index - 1].transform.position;\n        primary_samples[sample_index].transform.basis_forward.Normalize();\n        primary_samples[sample_index].transform.basis_right.cross_vectors(\n            &primary_samples[sample_index].transform.basis_up,\n            &primary_samples[sample_index].transform.basis_forward);\n\n        secondary_samples[sample_index].transform =\n            primary_samples[sample_index].transform;\n        Vector3 secondary_offset ="
+        }
+      ]
+    }
+  ]
+}
