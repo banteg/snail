@@ -395,3 +395,38 @@ orders are neutral or lose four bytes, authored orientation subtraction stays
 byte-identical, and moving the sine phase ahead of the two falloff comparisons
 loses 285 weighted bytes. The retained source therefore stops at the measured
 owner boundary rather than coercing the remaining register-order differences.
+
+## 2026-07-30 terminal-delta cursor and guard ownership
+
+The terminal-delta loop at `0x4226cd..0x4227a0` has a second independent
+physical induction that was not covered by the earlier curve and fixed-sample
+cursor work. Native zeroes the logical counter in EBX before its positive
+guard, zeroes the byte cursor in EDI only after the guard succeeds, advances
+the counters by one sample and `0xa8` bytes respectively, and tests the
+logical counter against `segment_count - 1`. Both verified mobile bodies
+preserve this logical-plus-physical traversal; the iOS rendering also preserves
+the guarded `do/while` control shape.
+
+Making that byte owner explicit adds 18.47 weighted bytes to the 63.40%
+frontier and reaches **64.12%**. The direct and offset-first spellings compile
+identically. A scoped sample-pointer spelling loses 31.45 weighted bytes,
+shortens the candidate by eight instructions, and collapses the prefix from 48
+to 6, so the owner is the offset itself rather than a persistent record
+pointer.
+
+Placing the logical zero before the guard and expressing the body as a
+`do/while` adds another 3.69 weighted bytes. The retained result is
+**64.27%**, 692/696 instructions, prefix 48/696, with all 40 references clean.
+Its emitted control unit has the native shape exactly: logical zero, one
+positive guard, physical zero, body, logical increment, final secondary
+length store, byte stride, reloaded bound, and back edge.
+
+One source spelling scored **72.09%** and 694/696 instructions, but it is
+rejected. Wrapping a `for` loop in the positive guard emits a second
+`cmp`/`jle` immediately after the native guard. That duplicate test is absent
+from the Windows target and from the verified mobile ownership evidence; the
+large fuzzy gain is downstream alignment purchased by two known-wrong
+instructions. Initializing both counters before the guard is neutral, while
+moving both inside the guarded `do/while` is byte-identical to the retained
+logical-before-guard spelling. The committed form therefore follows the
+instruction evidence rather than the largest aggregate score.

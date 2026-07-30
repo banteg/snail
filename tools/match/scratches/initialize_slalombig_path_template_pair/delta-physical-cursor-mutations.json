@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "delta-physical-cursor",
+      "find": "    for (int i = 0; i < path->segment_count - 1; ++i) {\n        path->primary_samples[i].delta_dir_to_next =\n            path->primary_samples[i + 1].transform.position -\n            path->primary_samples[i].transform.position;\n        path->primary_samples[i].delta_length =\n            path->primary_samples[i].delta_dir_to_next.Normalize();\n\n        path->secondary_samples[i].delta_dir_to_next =\n            path->secondary_samples[i + 1].transform.position -\n            path->secondary_samples[i].transform.position;\n        path->secondary_samples[i].delta_length =\n            path->secondary_samples[i].delta_dir_to_next.Normalize();\n    }",
+      "replacements": [
+        {
+          "name": "direct-byte-owner",
+          "text": "    int delta_offset = 0;\n    for (int i = 0; i < path->segment_count - 1;\n         ++i, delta_offset += (int)sizeof(PathTemplateSample)) {\n        ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n            ->delta_dir_to_next =\n            ((PathTemplateSample*)((char*)path->primary_samples + delta_offset) + 1)\n                ->transform.position -\n            ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                ->transform.position;\n        ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n            ->delta_length =\n            ((PathTemplateSample*)((char*)path->primary_samples + delta_offset))\n                ->delta_dir_to_next.Normalize();\n\n        ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n            ->delta_dir_to_next =\n            ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset) + 1)\n                ->transform.position -\n            ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n                ->transform.position;\n        ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n            ->delta_length =\n            ((PathTemplateSample*)((char*)path->secondary_samples + delta_offset))\n                ->delta_dir_to_next.Normalize();\n    }"
+        },
+        {
+          "name": "offset-first-byte-owner",
+          "text": "    int delta_offset = 0;\n    for (int i = 0; i < path->segment_count - 1;\n         ++i, delta_offset += (int)sizeof(PathTemplateSample)) {\n        ((PathTemplateSample*)(delta_offset + (char*)path->primary_samples))\n            ->delta_dir_to_next =\n            ((PathTemplateSample*)(delta_offset + (char*)path->primary_samples) + 1)\n                ->transform.position -\n            ((PathTemplateSample*)(delta_offset + (char*)path->primary_samples))\n                ->transform.position;\n        ((PathTemplateSample*)(delta_offset + (char*)path->primary_samples))\n            ->delta_length =\n            ((PathTemplateSample*)(delta_offset + (char*)path->primary_samples))\n                ->delta_dir_to_next.Normalize();\n\n        ((PathTemplateSample*)(delta_offset + (char*)path->secondary_samples))\n            ->delta_dir_to_next =\n            ((PathTemplateSample*)(delta_offset + (char*)path->secondary_samples) + 1)\n                ->transform.position -\n            ((PathTemplateSample*)(delta_offset + (char*)path->secondary_samples))\n                ->transform.position;\n        ((PathTemplateSample*)(delta_offset + (char*)path->secondary_samples))\n            ->delta_length =\n            ((PathTemplateSample*)(delta_offset + (char*)path->secondary_samples))\n                ->delta_dir_to_next.Normalize();\n    }"
+        },
+        {
+          "name": "scoped-byte-owner",
+          "text": "    int delta_offset = 0;\n    for (int i = 0; i < path->segment_count - 1;\n         ++i, delta_offset += (int)sizeof(PathTemplateSample)) {\n        PathTemplateSample* primary =\n            (PathTemplateSample*)((char*)path->primary_samples + delta_offset);\n        PathTemplateSample* primary_next = primary + 1;\n        primary->delta_dir_to_next =\n            primary_next->transform.position - primary->transform.position;\n        primary->delta_length = primary->delta_dir_to_next.Normalize();\n\n        PathTemplateSample* secondary =\n            (PathTemplateSample*)((char*)path->secondary_samples + delta_offset);\n        PathTemplateSample* secondary_next = secondary + 1;\n        secondary->delta_dir_to_next =\n            secondary_next->transform.position - secondary->transform.position;\n        secondary->delta_length = secondary->delta_dir_to_next.Normalize();\n    }"
+        }
+      ]
+    }
+  ]
+}
