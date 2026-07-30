@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "delta-control",
+      "find": "    if (segment_count - 1 > 0) {\n        for (i = 0; i < segment_count - 1; ++i) {\n            primary_samples[i].delta_dir_to_next =\n                primary_samples[i + 1].transform.position -\n                primary_samples[i].transform.position;\n            primary_samples[i].delta_length =\n                primary_samples[i].delta_dir_to_next.Normalize();\n\n            secondary_samples[i].delta_dir_to_next =\n                secondary_samples[i + 1].transform.position -\n                secondary_samples[i].transform.position;\n            secondary_samples[i].delta_length =\n                secondary_samples[i].delta_dir_to_next.Normalize();\n        }\n    }",
+      "replacements": [
+        {
+          "name": "shared-index-do-while",
+          "text": "    i = 0;\n    if (segment_count - 1 > 0) {\n        do {\n            primary_samples[i].delta_dir_to_next =\n                primary_samples[i + 1].transform.position -\n                primary_samples[i].transform.position;\n            primary_samples[i].delta_length =\n                primary_samples[i].delta_dir_to_next.Normalize();\n\n            secondary_samples[i].delta_dir_to_next =\n                secondary_samples[i + 1].transform.position -\n                secondary_samples[i].transform.position;\n            secondary_samples[i].delta_length =\n                secondary_samples[i].delta_dir_to_next.Normalize();\n            ++i;\n        } while (i < segment_count - 1);\n    }"
+        },
+        {
+          "name": "dedicated-index-do-while",
+          "text": "    int delta_index = 0;\n    if (segment_count - 1 > 0) {\n        do {\n            primary_samples[delta_index].delta_dir_to_next =\n                primary_samples[delta_index + 1].transform.position -\n                primary_samples[delta_index].transform.position;\n            primary_samples[delta_index].delta_length =\n                primary_samples[delta_index].delta_dir_to_next.Normalize();\n\n            secondary_samples[delta_index].delta_dir_to_next =\n                secondary_samples[delta_index + 1].transform.position -\n                secondary_samples[delta_index].transform.position;\n            secondary_samples[delta_index].delta_length =\n                secondary_samples[delta_index].delta_dir_to_next.Normalize();\n            ++delta_index;\n        } while (delta_index < segment_count - 1);\n    }"
+        }
+      ]
+    }
+  ]
+}

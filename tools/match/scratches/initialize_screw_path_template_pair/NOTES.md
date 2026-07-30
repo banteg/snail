@@ -198,3 +198,40 @@ the prefix, so those lateral variants are rejected. Focused matching rises
 from **48.84%** to **50.34%**, candidate instructions move from 646 to 642
 against 685 target instructions, prefix stays 6/685, and the existing trig
 receipt remains 38 clean plus 2 explicitly unaudited references.
+
+## 2026-07-30 interacting sample ownership and control
+
+The native entrance, departure, and curve blocks keep `this` in ESI and a
+sample byte offset in EDI while reloading both arrays. An exhaustive
+seven-variant ownership sweep shows why the older isolated probes failed:
+direct entrance and departure ownership each regress alone, but together they
+add 48.83 weighted bytes and raise focused matching from **50.34%** to
+**52.30%**. The curve owner still regresses in that intermediate state.
+
+The native departure then exposes its mutating count-relative source boundary:
+it starts at `curve_count + 3` and tests
+`departure_index - 3 - curve_count < 5`. Retesting that exact post-tested
+control on the paired-owner baseline adds another 56.45 weighted bytes and
+reaches **54.56%**. It removes one candidate instruction, but the resulting
+664/685 count remains close and the large byte gain follows the recovered
+native control rather than a metric-only spelling.
+
+That control change unlocks the previously losing curve owner. Replacing only
+the curve's primary/secondary aliases with direct array ownership now adds
+183.45 weighted bytes, grows the candidate to 675/685 instructions, raises
+matching to **61.91%**, and extends the exact prefix from 6 to 14 instructions.
+The order is essential: applying all three owners before recovering the
+departure control had fallen to 48.16%.
+
+Finally, moving Screw's original-function header schedule into its active
+variant—width, kind, mirror/side/scale, then counts—adds 7.34 weighted bytes
+and extends the exact prefix to **26/685**. The retained frontier is
+**62.21%**, 675/685 instructions, with 38 clean plus 2 unaudited references.
+The shared macro header remains guarded for inactive variants.
+
+All three earlier per-lane trig families were exhaustively rerun after this
+register-ownership recovery. Across 21 variants, the forms that reproduce both
+native trig calls audit all 40 references but lose at least 103.79 weighted
+bytes. Five equivalent departure predicates are neutral or regress, and two
+post-tested delta controls each lose 12.41 bytes. Those local schedules remain
+bounded; the material result comes from the interacting sample/control graph.

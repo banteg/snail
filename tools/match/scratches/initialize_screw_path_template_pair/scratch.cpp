@@ -101,10 +101,12 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     float height_scale_value = PATH_HEIGHT_SCALE;
     int i;
 
+#if PATH_VARIANT != 6
     is_mirrored_x = 0;
     side_exit_mode = 0;
     width_cells = width_cells_;
     width_or_scale = 1.0f;
+#endif
 
 #if PATH_VARIANT == 0 || PATH_VARIANT == 1
     float loop_wiggle = 0.0f;
@@ -405,72 +407,80 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 #elif PATH_VARIANT == 6
+    width_cells = width_cells_;
     kind = PATH_TEMPLATE_KIND_SCREW;
+    is_mirrored_x = 0;
+    side_exit_mode = 0;
+    width_or_scale = 1.0f;
     segment_count = curve_count + 8;
     segment_count_f = (float)(curve_count + 8);
     get_path_nodes();
     has_entry_mesh_transition = 0;
 
     for (i = 0; i < 3; ++i) {
-        PathAttachmentSample* primary = &primary_samples[i];
-        PathAttachmentSample* secondary = &secondary_samples[i];
-        primary->center_x = 0.5f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
+        primary_samples[i].center_x = 0.5f;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
         float z = (float)i;
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = z;
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = z;
+        primary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
     }
 
-    for (i = 0; i < 5; ++i) {
-        int sample_index = curve_count + 3 + i;
-        PathAttachmentSample* primary = &primary_samples[sample_index];
-        PathAttachmentSample* secondary = &secondary_samples[sample_index];
-        primary->center_x = -0.5f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
-        float z = (float)sample_index;
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = z;
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = z;
-    }
+    int departure_index = curve_count + 3;
+    do {
+        primary_samples[departure_index].center_x = -0.5f;
+        primary_samples[departure_index].rotation_scalar_98 = 0.0f;
+        primary_samples[departure_index].rotation_scalar_94 = 0.0f;
+        primary_samples[departure_index].special_scalar = 0.0f;
+        primary_samples[departure_index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[departure_index].transform);
+        float z = (float)departure_index;
+        primary_samples[departure_index].transform.position.x =
+            primary_samples[departure_index].center_x;
+        primary_samples[departure_index].transform.position.y = 0.0f;
+        primary_samples[departure_index].transform.position.z = z;
+        set_matrix_identity(&secondary_samples[departure_index].transform);
+        secondary_samples[departure_index].transform.position.x =
+            primary_samples[departure_index].center_x;
+        secondary_samples[departure_index].transform.position.y = 0.49000001f;
+        secondary_samples[departure_index].transform.position.z = z;
+        ++departure_index;
+    } while (departure_index - 3 - curve_count < 5);
 
     if (curve_count > 0) {
         float curve_count_f = (float)curve_count;
         for (i = 0; i < curve_count; ++i) {
             int sample_index = i + 3;
             float angle = (float)i * 6.2831855f / curve_count_f;
-            PathAttachmentSample* primary = &primary_samples[sample_index];
-            PathAttachmentSample* secondary = &secondary_samples[sample_index];
-            primary->center_x = cosine(angle * 0.5f) * 0.5f;
-            primary->rotation_scalar_98 = 0.0f;
-            primary->rotation_scalar_94 = angle;
-            primary->special_scalar = 0.0f;
-            primary->lateral_scale = 1.0f;
-            set_matrix_identity(&primary->transform);
+            primary_samples[sample_index].center_x =
+                cosine(angle * 0.5f) * 0.5f;
+            primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+            primary_samples[sample_index].rotation_scalar_94 = angle;
+            primary_samples[sample_index].special_scalar = 0.0f;
+            primary_samples[sample_index].lateral_scale = 1.0f;
+            set_matrix_identity(&primary_samples[sample_index].transform);
             float z = (float)sample_index;
-            primary->transform.position.x = primary->center_x;
-            primary->transform.position.y = 0.0f;
-            primary->transform.position.z = z;
-            set_matrix_identity(&secondary->transform);
-            secondary->transform.position.x = primary->center_x - sine(angle) * 0.49000001f;
-            secondary->transform.position.y = cosine(angle) * 0.49000001f;
-            secondary->transform.position.z = z;
+            primary_samples[sample_index].transform.position.x =
+                primary_samples[sample_index].center_x;
+            primary_samples[sample_index].transform.position.y = 0.0f;
+            primary_samples[sample_index].transform.position.z = z;
+            set_matrix_identity(&secondary_samples[sample_index].transform);
+            secondary_samples[sample_index].transform.position.x =
+                primary_samples[sample_index].center_x
+                - sine(angle) * 0.49000001f;
+            secondary_samples[sample_index].transform.position.y =
+                cosine(angle) * 0.49000001f;
+            secondary_samples[sample_index].transform.position.z = z;
             if (sample_index <= 3) {
                 primary_samples[sample_index - 1].transform.RotIdentity();
                 secondary_samples[sample_index - 1].transform.RotIdentity();

@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shared-header",
+      "find": "    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n",
+      "replacements": [
+        {
+          "name": "move-into-screw",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "name": "screw-header-order",
+      "find": "#elif PATH_VARIANT == 6\n    kind = PATH_TEMPLATE_KIND_SCREW;\n    segment_count = curve_count + 8;\n    segment_count_f = (float)(curve_count + 8);",
+      "replacements": [
+        {
+          "name": "kind-flags-count",
+          "text": "#elif PATH_VARIANT == 6\n    width_cells = width_cells_;\n    kind = PATH_TEMPLATE_KIND_SCREW;\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_or_scale = 1.0f;\n    segment_count = curve_count + 8;\n    segment_count_f = (float)(curve_count + 8);"
+        },
+        {
+          "name": "kind-count-flags",
+          "text": "#elif PATH_VARIANT == 6\n    width_cells = width_cells_;\n    kind = PATH_TEMPLATE_KIND_SCREW;\n    segment_count = curve_count + 8;\n    segment_count_f = (float)(curve_count + 8);\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_or_scale = 1.0f;"
+        },
+        {
+          "name": "count-kind-flags",
+          "text": "#elif PATH_VARIANT == 6\n    width_cells = width_cells_;\n    segment_count = curve_count + 8;\n    kind = PATH_TEMPLATE_KIND_SCREW;\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_or_scale = 1.0f;\n    segment_count_f = (float)(curve_count + 8);"
+        }
+      ]
+    }
+  ]
+}

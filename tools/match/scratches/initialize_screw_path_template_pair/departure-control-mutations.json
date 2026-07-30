@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "departure-control",
+      "find": "    for (i = 0; i < 5; ++i) {\n        int sample_index = curve_count + 3 + i;\n        primary_samples[sample_index].center_x = -0.5f;\n        primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[sample_index].special_scalar = 0.0f;\n        primary_samples[sample_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[sample_index].transform);\n        float z = (float)sample_index;\n        primary_samples[sample_index].transform.position.x =\n            primary_samples[sample_index].center_x;\n        primary_samples[sample_index].transform.position.y = 0.0f;\n        primary_samples[sample_index].transform.position.z = z;\n        set_matrix_identity(&secondary_samples[sample_index].transform);\n        secondary_samples[sample_index].transform.position.x =\n            primary_samples[sample_index].center_x;\n        secondary_samples[sample_index].transform.position.y = 0.49000001f;\n        secondary_samples[sample_index].transform.position.z = z;\n    }",
+      "replacements": [
+        {
+          "name": "mutating-subtract-bound",
+          "text": "    int departure_index = curve_count + 3;\n    do {\n        primary_samples[departure_index].center_x = -0.5f;\n        primary_samples[departure_index].rotation_scalar_98 = 0.0f;\n        primary_samples[departure_index].rotation_scalar_94 = 0.0f;\n        primary_samples[departure_index].special_scalar = 0.0f;\n        primary_samples[departure_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[departure_index].transform);\n        float z = (float)departure_index;\n        primary_samples[departure_index].transform.position.x =\n            primary_samples[departure_index].center_x;\n        primary_samples[departure_index].transform.position.y = 0.0f;\n        primary_samples[departure_index].transform.position.z = z;\n        set_matrix_identity(&secondary_samples[departure_index].transform);\n        secondary_samples[departure_index].transform.position.x =\n            primary_samples[departure_index].center_x;\n        secondary_samples[departure_index].transform.position.y = 0.49000001f;\n        secondary_samples[departure_index].transform.position.z = z;\n        ++departure_index;\n    } while (departure_index - 3 - curve_count < 5);"
+        },
+        {
+          "name": "mutating-direct-bound",
+          "text": "    int departure_index = curve_count + 3;\n    do {\n        primary_samples[departure_index].center_x = -0.5f;\n        primary_samples[departure_index].rotation_scalar_98 = 0.0f;\n        primary_samples[departure_index].rotation_scalar_94 = 0.0f;\n        primary_samples[departure_index].special_scalar = 0.0f;\n        primary_samples[departure_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[departure_index].transform);\n        float z = (float)departure_index;\n        primary_samples[departure_index].transform.position.x =\n            primary_samples[departure_index].center_x;\n        primary_samples[departure_index].transform.position.y = 0.0f;\n        primary_samples[departure_index].transform.position.z = z;\n        set_matrix_identity(&secondary_samples[departure_index].transform);\n        secondary_samples[departure_index].transform.position.x =\n            primary_samples[departure_index].center_x;\n        secondary_samples[departure_index].transform.position.y = 0.49000001f;\n        secondary_samples[departure_index].transform.position.z = z;\n        ++departure_index;\n    } while (departure_index < curve_count + 8);"
+        }
+      ]
+    }
+  ]
+}
