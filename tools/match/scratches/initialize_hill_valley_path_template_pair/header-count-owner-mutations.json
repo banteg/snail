@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "header-count-owner",
+      "find": "    int steps = (int)length;\n    int last = steps + 1;\n    width_or_scale = 1.0f;\n    segment_count = last + 1;\n    segment_count_f = (float)(last + 1);\n    get_path_nodes();",
+      "replacements": [
+        {
+          "name": "direct-steps",
+          "text": "    int steps = (int)length;\n    int last = steps + 1;\n    width_or_scale = 1.0f;\n    segment_count = steps + 2;\n    segment_count_f = (float)(steps + 2);\n    get_path_nodes();"
+        },
+        {
+          "name": "named-count",
+          "text": "    int steps = (int)length;\n    int last = steps + 1;\n    int count = last + 1;\n    width_or_scale = 1.0f;\n    segment_count = count;\n    segment_count_f = (float)count;\n    get_path_nodes();"
+        },
+        {
+          "name": "named-count-before-last",
+          "text": "    int steps = (int)length;\n    int count = steps + 2;\n    int last = steps + 1;\n    width_or_scale = 1.0f;\n    segment_count = count;\n    segment_count_f = (float)count;\n    get_path_nodes();"
+        },
+        {
+          "name": "member-count-float",
+          "text": "    int steps = (int)length;\n    int last = steps + 1;\n    width_or_scale = 1.0f;\n    segment_count = last + 1;\n    segment_count_f = (float)segment_count;\n    get_path_nodes();"
+        },
+        {
+          "name": "late-last-direct-steps",
+          "text": "    int steps = (int)length;\n    width_or_scale = 1.0f;\n    segment_count = steps + 2;\n    segment_count_f = (float)(steps + 2);\n    get_path_nodes();\n    int last = steps + 1;"
+        },
+        {
+          "name": "late-last-named-count",
+          "text": "    int steps = (int)length;\n    int count = steps + 2;\n    width_or_scale = 1.0f;\n    segment_count = count;\n    segment_count_f = (float)count;\n    get_path_nodes();\n    int last = steps + 1;"
+        },
+        {
+          "name": "assignment-expression",
+          "text": "    int steps = (int)length;\n    int last = steps + 1;\n    width_or_scale = 1.0f;\n    segment_count_f = (float)(segment_count = last + 1);\n    get_path_nodes();"
+        }
+      ]
+    }
+  ]
+}

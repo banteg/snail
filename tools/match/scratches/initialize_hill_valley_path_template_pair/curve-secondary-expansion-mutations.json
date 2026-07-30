@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-initialization-owner",
+      "find": "        initialize_secondary_hill(this, sample_index, phase, height, z);",
+      "replacements": [
+        {
+          "name": "expanded-direct-arrays",
+          "text": "        set_matrix_identity(&secondary_samples[sample_index].transform);\n        secondary_samples[sample_index].transform.position.x =\n            primary_samples[sample_index].center_x;\n        float secondary_y = (1.0f - cosine(phase)) * 0.5f;\n        secondary_y *= height;\n        secondary_samples[sample_index].transform.position.y =\n            secondary_y + 0.49000001f;\n        secondary_samples[sample_index].transform.position.z = z;"
+        },
+        {
+          "name": "expanded-sample-reference",
+          "text": "        PathTemplateSample& secondary = secondary_samples[sample_index];\n        set_matrix_identity(&secondary.transform);\n        secondary.transform.position.x =\n            primary_samples[sample_index].center_x;\n        float secondary_y = (1.0f - cosine(phase)) * 0.5f;\n        secondary_y *= height;\n        secondary.transform.position.y = secondary_y + 0.49000001f;\n        secondary.transform.position.z = z;"
+        }
+      ]
+    }
+  ]
+}

@@ -668,7 +668,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 682/677 | 71.38% | 94/677 | 49 ok |  | core |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 796/796 | 72.49% | 10/796 | 63 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 633/663 | 58.02% | 15/663 | 33 ok |  | core |
-| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 674/668 | 56.48% | 19/668 | 41 ok |  | core |
+| 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 672/668 | 70.00% | 19/668 | 41 ok |  | core |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 574/579 | 68.17% | 67/579 | 39 ok |  | core |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 654/648 | 68.20% | 10/648 | 46 ok |  | core |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 77.74% | 0/141 | 17 ok |  | core |

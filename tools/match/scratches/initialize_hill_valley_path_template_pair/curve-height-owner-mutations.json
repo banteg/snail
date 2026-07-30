@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-height-owner",
+      "find": "    float y = (1.0f - cosine(phase)) * 0.5f * height;\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;",
+      "replacements": [
+        {
+          "name": "half-wave-then-height",
+          "text": "    float y = (1.0f - cosine(phase)) * 0.5f;\n    y *= height;\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;"
+        },
+        {
+          "name": "wave-then-half-then-height",
+          "text": "    float y = 1.0f - cosine(phase);\n    y *= 0.5f;\n    y *= height;\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;"
+        },
+        {
+          "name": "named-half-wave",
+          "text": "    float half_wave = (1.0f - cosine(phase)) * 0.5f;\n    float y = half_wave * height;\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;"
+        }
+      ]
+    },
+    {
+      "name": "primary-height-owner",
+      "find": "        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        primary_samples[sample_index].transform.position.y = y;",
+      "replacements": [
+        {
+          "name": "half-wave-then-height",
+          "text": "        float y = (1.0f - cosine(phase)) * 0.5f;\n        y *= height;\n        primary_samples[sample_index].transform.position.y = y;"
+        },
+        {
+          "name": "wave-then-half-then-height",
+          "text": "        float y = 1.0f - cosine(phase);\n        y *= 0.5f;\n        y *= height;\n        primary_samples[sample_index].transform.position.y = y;"
+        },
+        {
+          "name": "named-half-wave",
+          "text": "        float half_wave = (1.0f - cosine(phase)) * 0.5f;\n        float y = half_wave * height;\n        primary_samples[sample_index].transform.position.y = y;"
+        }
+      ]
+    }
+  ]
+}

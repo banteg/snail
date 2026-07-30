@@ -242,3 +242,48 @@ Three subsequent bounded sweeps found no honest retained improvement:
   regressed by 12.00 or 110.00 weighted bytes.
 
 Those results close the current evidence-backed mesh and endpoint neighborhood.
+
+## 2026-07-30 curve index, scalar, and orientation ownership
+
+The exact Android and iOS `BuildHill` bodies and the Windows loop agree on one
+zero-based logical curve index. The authored sample index is that value plus
+one, and the same converted sample index supplies the primary and secondary Z
+coordinates. Recovering that dependency removes the scratch's independent
+phase and sample counters. A one-based loop scored 65.12%, but moved the first
+mismatch from instruction 19 to 14 and assigned the physical Windows counter
+to `steps`; it was rejected as a compiler-allocation artifact.
+
+The retained zero-based form, followed by one shared Z scalar and the native
+two-stage half-wave/height calculation for both lanes, raises the focused match
+from 56.48% to 69.70%. The shared Z and height owners alone account for 124.18
+weighted bytes on the corrected-index baseline. Both lane-orientation
+subtractions then use the authored `Vector3::operator-` form also preserved by
+the exact Twister-family helper:
+
+```text
+match: 70.00%
+target: 668 insns, candidate: 672 insns
+prefix: 19/668 target insns
+masked operands: 41 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The symmetric orientation change improves by 7.30 weighted bytes without an
+instruction-count tradeoff. Either lane alone reaches 70.54% but adds an
+instruction and invents asymmetric source ownership, so neither one-sided
+variant is retained. On top of the paired result, either terminal-delta
+operator regresses by 7.30 weighted bytes and the paired delta form regresses
+by 3.65; those deltas remain explicitly component-wise.
+
+The surrounding bounded searches are now closed:
+
+- seven count/terminal-index header owners produced no improvement;
+- declaration placement inside and around the curve loop was byte-neutral;
+- direct secondary-lane expansion was byte-neutral, while a sample reference
+  regressed by 70.61 weighted bytes;
+- explicit mesh cursors improved only when applied to one branch and added
+  eight instructions; the dependency-complete two-branch form regressed;
+- shared mesh sample ownership regressed and lost twelve prefix instructions.
+
+The remaining early mismatch is therefore a register/schedule difference in
+the endpoint setup, not evidence for another source owner in the tested
+neighborhood.

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-logical-index",
+      "find": "    int phase_index = 0;\n    for (int i = 1; phase_index < steps; ++i) {\n        primary_samples[i].center_x = primary_samples[0].center_x;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        float phase = (float)phase_index * 6.2831855f / (float)steps;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        ++phase_index;\n        primary_samples[i].transform.position.y = y;\n        primary_samples[i].transform.position.z = (float)phase_index;\n        initialize_secondary_hill(this, i, phase, height);\n        orient_previous_hill_pair(this, i);\n    }",
+      "replacements": [
+        {
+          "name": "zero-based-index-plus-sample",
+          "text": "    for (int i = 0; i < steps; ++i) {\n        int sample_index = i + 1;\n        primary_samples[sample_index].center_x = primary_samples[0].center_x;\n        primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n        primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n        primary_samples[sample_index].special_scalar = 0.0f;\n        primary_samples[sample_index].lateral_scale = 1.0f;\n        float phase = (float)i * 6.2831855f / (float)steps;\n        set_matrix_identity(&primary_samples[sample_index].transform);\n        primary_samples[sample_index].transform.position.x =\n            primary_samples[sample_index].center_x;\n        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        primary_samples[sample_index].transform.position.y = y;\n        primary_samples[sample_index].transform.position.z = (float)sample_index;\n        initialize_secondary_hill(this, sample_index, phase, height);\n        orient_previous_hill_pair(this, sample_index);\n    }"
+        },
+        {
+          "name": "one-based-index-minus-one",
+          "text": "    for (int i = 1; i <= steps; ++i) {\n        float phase = (float)(i - 1) * 6.2831855f / (float)steps;\n        primary_samples[i].center_x = primary_samples[0].center_x;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        primary_samples[i].transform.position.y = y;\n        primary_samples[i].transform.position.z = (float)i;\n        initialize_secondary_hill(this, i, phase, height);\n        orient_previous_hill_pair(this, i);\n    }"
+        }
+      ]
+    }
+  ]
+}

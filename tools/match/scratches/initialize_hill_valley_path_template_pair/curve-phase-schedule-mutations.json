@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "phase-calculation-position",
+      "find": "        primary_samples[i].center_x = primary_samples[0].center_x;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        float phase = (float)phase_index * 6.2831855f / (float)steps;",
+      "replacements": [
+        {
+          "name": "before-scalar-setup",
+          "text": "        float phase = (float)phase_index * 6.2831855f / (float)steps;\n        primary_samples[i].center_x = primary_samples[0].center_x;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;"
+        },
+        {
+          "name": "after-center-x",
+          "text": "        primary_samples[i].center_x = primary_samples[0].center_x;\n        float phase = (float)phase_index * 6.2831855f / (float)steps;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;"
+        }
+      ]
+    },
+    {
+      "name": "phase-increment-position",
+      "find": "        ++phase_index;\n        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        primary_samples[i].transform.position.y = y;",
+      "replacements": [
+        {
+          "name": "after-y-calculation",
+          "text": "        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        ++phase_index;\n        primary_samples[i].transform.position.y = y;"
+        },
+        {
+          "name": "after-y-store",
+          "text": "        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        primary_samples[i].transform.position.y = y;\n        ++phase_index;"
+        }
+      ]
+    }
+  ]
+}

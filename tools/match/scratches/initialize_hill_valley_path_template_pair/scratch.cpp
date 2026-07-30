@@ -12,15 +12,15 @@ typedef AttachmentSample PathTemplateSample;
 
 
 static __forceinline void initialize_secondary_hill(
-    Path* path, int index, float phase, float height)
+    Path* path, int index, float phase, float height, float z)
 {
     set_matrix_identity(&path->secondary_samples[index].transform);
     path->secondary_samples[index].transform.position.x =
         path->primary_samples[index].center_x;
-    float y = (1.0f - cosine(phase)) * 0.5f * height;
+    float y = (1.0f - cosine(phase)) * 0.5f;
+    y *= height;
     path->secondary_samples[index].transform.position.y = y + 0.49000001f;
-    path->secondary_samples[index].transform.position.z =
-        path->primary_samples[index].transform.position.z;
+    path->secondary_samples[index].transform.position.z = z;
 }
 
 static __forceinline void orient_previous_hill_pair(Path* path, int current_index)
@@ -28,13 +28,9 @@ static __forceinline void orient_previous_hill_pair(Path* path, int current_inde
     if (current_index > 1) {
         path->primary_samples[current_index - 1].transform.basis_right =
             Vector3(1.0f, 0.0f, 0.0f);
-        path->primary_samples[current_index - 1].transform.basis_forward = Vector3(
-            path->primary_samples[current_index].transform.position.x -
-                path->primary_samples[current_index - 1].transform.position.x,
-            path->primary_samples[current_index].transform.position.y -
-                path->primary_samples[current_index - 1].transform.position.y,
-            path->primary_samples[current_index].transform.position.z -
-                path->primary_samples[current_index - 1].transform.position.z);
+        path->primary_samples[current_index - 1].transform.basis_forward =
+            path->primary_samples[current_index].transform.position -
+            path->primary_samples[current_index - 1].transform.position;
         path->primary_samples[current_index - 1]
             .transform.basis_forward.Normalize();
         path->primary_samples[current_index - 1].transform.basis_up.cross_vectors(
@@ -44,16 +40,8 @@ static __forceinline void orient_previous_hill_pair(Path* path, int current_inde
         path->secondary_samples[current_index - 1].transform.basis_right =
             Vector3(1.0f, 0.0f, 0.0f);
         path->secondary_samples[current_index - 1].transform.basis_forward =
-            Vector3(
-                path->secondary_samples[current_index].transform.position.x -
-                    path->secondary_samples[current_index - 1]
-                        .transform.position.x,
-                path->secondary_samples[current_index].transform.position.y -
-                    path->secondary_samples[current_index - 1]
-                        .transform.position.y,
-                path->secondary_samples[current_index].transform.position.z -
-                    path->secondary_samples[current_index - 1]
-                        .transform.position.z);
+            path->secondary_samples[current_index].transform.position -
+            path->secondary_samples[current_index - 1].transform.position;
         path->secondary_samples[current_index - 1]
             .transform.basis_forward.Normalize();
         path->secondary_samples[current_index - 1].transform.basis_up.cross_vectors(
@@ -256,22 +244,24 @@ void cRPath::initialize_hill_valley_path_template_pair(
     secondary_samples[last].transform.position.y = 0.49000001f;
     secondary_samples[last].transform.position.z = last_z;
 
-    int phase_index = 0;
-    for (int i = 1; phase_index < steps; ++i) {
-        primary_samples[i].center_x = primary_samples[0].center_x;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        float phase = (float)phase_index * 6.2831855f / (float)steps;
-        set_matrix_identity(&primary_samples[i].transform);
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        ++phase_index;
-        float y = (1.0f - cosine(phase)) * 0.5f * height;
-        primary_samples[i].transform.position.y = y;
-        primary_samples[i].transform.position.z = (float)phase_index;
-        initialize_secondary_hill(this, i, phase, height);
-        orient_previous_hill_pair(this, i);
+    for (int i = 0; i < steps; ++i) {
+        int sample_index = i + 1;
+        primary_samples[sample_index].center_x = primary_samples[0].center_x;
+        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[sample_index].special_scalar = 0.0f;
+        primary_samples[sample_index].lateral_scale = 1.0f;
+        float phase = (float)i * 6.2831855f / (float)steps;
+        set_matrix_identity(&primary_samples[sample_index].transform);
+        primary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        float y = (1.0f - cosine(phase)) * 0.5f;
+        y *= height;
+        primary_samples[sample_index].transform.position.y = y;
+        float z = (float)sample_index;
+        primary_samples[sample_index].transform.position.z = z;
+        initialize_secondary_hill(this, sample_index, phase, height, z);
+        orient_previous_hill_pair(this, sample_index);
     }
 
     compute_path_deltas(this);

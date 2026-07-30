@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-index-owner",
+      "find": "    int phase_index = 0;\n    for (int i = 1; phase_index < steps; ++i) {",
+      "replacements": [
+        {
+          "name": "declared-i-after-phase",
+          "text": "    int phase_index = 0;\n    int i;\n    for (i = 1; phase_index < steps; ++i) {"
+        },
+        {
+          "name": "declared-i-before-phase",
+          "text": "    int i;\n    int phase_index = 0;\n    for (i = 1; phase_index < steps; ++i) {"
+        },
+        {
+          "name": "separate-phase-assignment",
+          "text": "    int phase_index;\n    int i;\n    phase_index = 0;\n    for (i = 1; phase_index < steps; ++i) {"
+        },
+        {
+          "name": "separate-phase-assignment-i-first",
+          "text": "    int i;\n    int phase_index;\n    phase_index = 0;\n    for (i = 1; phase_index < steps; ++i) {"
+        },
+        {
+          "name": "preinitialized-i",
+          "text": "    int phase_index = 0;\n    int i = 1;\n    for (; phase_index < steps; ++i) {"
+        },
+        {
+          "name": "preinitialized-i-first",
+          "text": "    int i = 1;\n    int phase_index = 0;\n    for (; phase_index < steps; ++i) {"
+        }
+      ]
+    }
+  ]
+}
