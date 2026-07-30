@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "more-direct-field",
+      "find": "            float current_slider_value = slider_value + 0.2f;\n            if (current_slider_value >= 0.89999998f)\n                current_slider_value = 1.0f;\n            slider_value = current_slider_value;",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "            slider_value += 0.2f;\n            if (slider_value >= 0.89999998f)\n                slider_value = 1.0f;"
+        }
+      ]
+    },
+    {
+      "name": "less-direct-field",
+      "find": "            float current_slider_value = slider_value - 0.2f;\n            if (current_slider_value <= 0.1f)\n                current_slider_value = 0.0f;\n            slider_value = current_slider_value;",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "            slider_value -= 0.2f;\n            if (slider_value <= 0.1f)\n                slider_value = 0.0f;"
+        }
+      ]
+    },
+    {
+      "name": "fill-cold-lifetime",
+      "find": "        current_fill_color.store_color4f(\n            hover_blend_current * hot_fill_color.r\n                + (1.0f - hover_blend_current) * idle_fill_color.r,\n            hover_blend_current * hot_fill_color.g\n                + (1.0f - hover_blend_current) * idle_fill_color.g,\n            hover_blend_current * hot_fill_color.b\n                + (1.0f - hover_blend_current) * idle_fill_color.b,\n            hover_blend_current * hot_fill_color.a\n                + (1.0f - hover_blend_current) * idle_fill_color.a);",
+      "replacements": [
+        {
+          "name": "separate-local",
+          "text": "        float cold_fill = 1.0f - hover_blend_current;\n        current_fill_color.store_color4f(\n            hover_blend_current * hot_fill_color.r\n                + cold_fill * idle_fill_color.r,\n            hover_blend_current * hot_fill_color.g\n                + cold_fill * idle_fill_color.g,\n            hover_blend_current * hot_fill_color.b\n                + cold_fill * idle_fill_color.b,\n            hover_blend_current * hot_fill_color.a\n                + cold_fill * idle_fill_color.a);"
+        }
+      ]
+    },
+    {
+      "name": "text-cold-lifetime",
+      "find": "        current_text_color.store_color4f(\n            hover_blend_current * hot_text_color.r\n                + (1.0f - hover_blend_current) * idle_text_color.r,\n            hover_blend_current * hot_text_color.g\n                + (1.0f - hover_blend_current) * idle_text_color.g,\n            hover_blend_current * hot_text_color.b\n                + (1.0f - hover_blend_current) * idle_text_color.b,\n            hover_blend_current * hot_text_color.a\n                + (1.0f - hover_blend_current) * idle_text_color.a);",
+      "replacements": [
+        {
+          "name": "separate-local",
+          "text": "        float cold_text = 1.0f - hover_blend_current;\n        current_text_color.store_color4f(\n            hover_blend_current * hot_text_color.r\n                + cold_text * idle_text_color.r,\n            hover_blend_current * hot_text_color.g\n                + cold_text * idle_text_color.g,\n            hover_blend_current * hot_text_color.b\n                + cold_text * idle_text_color.b,\n            hover_blend_current * hot_text_color.a\n                + cold_text * idle_text_color.a);"
+        }
+      ]
+    }
+  ]
+}

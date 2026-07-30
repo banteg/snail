@@ -320,3 +320,45 @@ combinations regress. The clean 77.07%, 648/647, 96-reference baseline remains
 the retained source; recovering the native prologue now needs new ownership or
 control-flow evidence rather than more constant spelling or artificial
 register coercion.
+
+## 2026-07-30 slider child and branch-value ownership
+
+The Windows tail reloads `slider_less_widget +0x718`,
+`slider_more_widget +0x71c`, and `slider_value_widget +0x720` at their
+endpoint, color, blend, and text consumers. The prior scratch instead kept
+three invented pointer locals live across those consumers, producing the
+candidate's cached `edx`/`edi` tail. Direct member ownership at both endpoint
+tests and all value-child writes raises the focused result from `77.07%` to
+`80.62%`. All 96 masked references remain clean; the apparent `653/647`
+instruction-count gap at that stage consists of the extra `ebx` save/restore
+on the function's exits rather than a larger semantic tail.
+
+The Android `cRBorder::AI()` body independently retains branch-local results
+for both `slider_value + 0.2f` and `slider_value - 0.2f`. Reintroducing those
+two float lifetimes on top of the corrected child ownership removes the false
+long-lived `ebx`, advances the exact prefix from 1 to 127 instructions, and
+raises the focused result to `95.83%`. The retained candidate has 649
+instructions against the 647-instruction target, with `96 ok / 0 unresolved /
+0 mismatch / 2 unaudited` references. The two unaudited references are the
+local clamp assignments' `1.0f` and `0.0f` loads.
+
+The remaining differences are now three bounded scheduling families:
+
+- target initializes the long-lived `0x2000` flag in `edi` immediately before
+  initializing `1.0f` in `ebp`; the candidate emits those two moves in the
+  opposite order;
+- the fill and text calls have identical topology and operands, but VC6
+  commutes the eight `hover_blend_current * hot_channel` x87 multiplies;
+- each branch-local clamp needs one extra `fld`/`fstp` pair, while the target
+  stores the computed field before comparing and overwrites the endpoint
+  directly.
+
+Five follow-up sweeps bound the natural alternatives. Eight fill/text product
+order variants and all compile-valid explicit `0x2000` owner variants are
+byte-neutral. Fifteen branch-store variants do not improve the retained
+source. Fifteen separate mobile-style cold-lifetime/direct-clamp combinations
+are either neutral or regress to `95.29%`/`80.62%`. The experiment ledger now
+covers 152 variants (141 unique), with five consecutive non-winning sweeps;
+the current residual needs new source or ownership evidence rather than
+constant spelling, shared cold lifetimes, direct field clamps, or register
+coercion.

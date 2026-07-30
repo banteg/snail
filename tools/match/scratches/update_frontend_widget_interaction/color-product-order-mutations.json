@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "fill-hot-product-order",
+      "find": "            hover_blend_current * hot_fill_color.r\n                + (1.0f - hover_blend_current) * idle_fill_color.r,\n            hover_blend_current * hot_fill_color.g\n                + (1.0f - hover_blend_current) * idle_fill_color.g,\n            hover_blend_current * hot_fill_color.b\n                + (1.0f - hover_blend_current) * idle_fill_color.b,\n            hover_blend_current * hot_fill_color.a\n                + (1.0f - hover_blend_current) * idle_fill_color.a);",
+      "replacements": [
+        {
+          "name": "channel-first",
+          "text": "            hot_fill_color.r * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_fill_color.r,\n            hot_fill_color.g * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_fill_color.g,\n            hot_fill_color.b * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_fill_color.b,\n            hot_fill_color.a * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_fill_color.a);"
+        },
+        {
+          "name": "cold-first",
+          "text": "            (1.0f - hover_blend_current) * idle_fill_color.r\n                + hover_blend_current * hot_fill_color.r,\n            (1.0f - hover_blend_current) * idle_fill_color.g\n                + hover_blend_current * hot_fill_color.g,\n            (1.0f - hover_blend_current) * idle_fill_color.b\n                + hover_blend_current * hot_fill_color.b,\n            (1.0f - hover_blend_current) * idle_fill_color.a\n                + hover_blend_current * hot_fill_color.a);"
+        }
+      ]
+    },
+    {
+      "name": "text-hot-product-order",
+      "find": "            hover_blend_current * hot_text_color.r\n                + (1.0f - hover_blend_current) * idle_text_color.r,\n            hover_blend_current * hot_text_color.g\n                + (1.0f - hover_blend_current) * idle_text_color.g,\n            hover_blend_current * hot_text_color.b\n                + (1.0f - hover_blend_current) * idle_text_color.b,\n            hover_blend_current * hot_text_color.a\n                + (1.0f - hover_blend_current) * idle_text_color.a);",
+      "replacements": [
+        {
+          "name": "channel-first",
+          "text": "            hot_text_color.r * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_text_color.r,\n            hot_text_color.g * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_text_color.g,\n            hot_text_color.b * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_text_color.b,\n            hot_text_color.a * hover_blend_current\n                + (1.0f - hover_blend_current) * idle_text_color.a);"
+        },
+        {
+          "name": "cold-first",
+          "text": "            (1.0f - hover_blend_current) * idle_text_color.r\n                + hover_blend_current * hot_text_color.r,\n            (1.0f - hover_blend_current) * idle_text_color.g\n                + hover_blend_current * hot_text_color.g,\n            (1.0f - hover_blend_current) * idle_text_color.b\n                + hover_blend_current * hot_text_color.b,\n            (1.0f - hover_blend_current) * idle_text_color.a\n                + hover_blend_current * hot_text_color.a);"
+        }
+      ]
+    }
+  ]
+}

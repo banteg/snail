@@ -254,33 +254,37 @@ update_after_input:
         FrontendWidget* more = slider_more_widget;
         if ((more->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             more->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            slider_value += 0.2f;
-            if (slider_value >= 0.89999998f)
-                slider_value = 1.0f;
+            float current_slider_value = slider_value + 0.2f;
+            if (current_slider_value >= 0.89999998f)
+                current_slider_value = 1.0f;
+            slider_value = current_slider_value;
         }
 
         FrontendWidget* less = slider_less_widget;
         if ((less->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             less->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            slider_value -= 0.2f;
-            if (slider_value <= 0.1f)
-                slider_value = 0.0f;
+            float current_slider_value = slider_value - 0.2f;
+            if (current_slider_value <= 0.1f)
+                current_slider_value = 0.0f;
+            slider_value = current_slider_value;
         }
 
         if (slider_value == 0.0f)
-            less->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
+            slider_less_widget->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         else
-            less->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
+            slider_less_widget->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
 
         if (slider_value == 1.0f)
-            more->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
+            slider_more_widget->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;
         else
-            more->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
+            slider_more_widget->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;
 
-        FrontendWidget* value = slider_value_widget;
-        value->current_text_color = current_text_color;
-        value->hover_blend_target = hover_blend_target;
-        value->hover_blend_current = hover_blend_current;
-        sprintf(value->text_buffer, "%02i%%", (int)(slider_value * 100.0f + 0.1f));
+        slider_value_widget->current_text_color = current_text_color;
+        slider_value_widget->hover_blend_target = hover_blend_target;
+        slider_value_widget->hover_blend_current = hover_blend_current;
+        sprintf(
+            slider_value_widget->text_buffer,
+            "%02i%%",
+            (int)(slider_value * 100.0f + 0.1f));
     }
 }

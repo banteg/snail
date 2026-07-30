@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "text-input-flag-local",
+      "find": "    unsigned int flags = widget_flags;",
+      "replacements": [
+        {
+          "name": "declare",
+          "text": "    unsigned int flags = widget_flags;\n    const unsigned int text_input_active_flag =\n        FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;"
+        }
+      ]
+    },
+    {
+      "name": "text-input-flag-first-use",
+      "find": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "local",
+          "text": "text_input_active_flag"
+        }
+      ]
+    },
+    {
+      "name": "text-input-flag-second-use",
+      "find": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "local",
+          "text": "text_input_active_flag"
+        }
+      ]
+    },
+    {
+      "name": "text-input-flag-third-use",
+      "find": "FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE",
+      "occurrence": 3,
+      "replacements": [
+        {
+          "name": "local",
+          "text": "text_input_active_flag"
+        }
+      ]
+    }
+  ]
+}

@@ -33,11 +33,11 @@
     },
     {
       "name": "slider-clamp-one",
-      "find": "            if (slider_value >= 0.89999998f)\n                slider_value = 1.0f;",
+      "find": "            if (current_slider_value >= 0.89999998f)\n                current_slider_value = 1.0f;",
       "replacements": [
         {
           "name": "unsuffixed-one",
-          "text": "            if (slider_value >= 0.89999998f)\n                slider_value = 1.0;"
+          "text": "            if (current_slider_value >= 0.89999998f)\n                current_slider_value = 1.0;"
         }
       ]
     },

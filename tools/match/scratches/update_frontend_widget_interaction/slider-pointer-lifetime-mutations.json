@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "more-branch-pointer",
+      "find": "        FrontendWidget* more = slider_more_widget;\n        if ((more->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {\n            more->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;\n            float current_slider_value = slider_value + 0.2f;\n            if (current_slider_value >= 0.89999998f)\n                current_slider_value = 1.0f;\n            slider_value = current_slider_value;\n        }",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "        if ((slider_more_widget->widget_flags\n                & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {\n            slider_more_widget->widget_flags &=\n                ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;\n            float current_slider_value = slider_value + 0.2f;\n            if (current_slider_value >= 0.89999998f)\n                current_slider_value = 1.0f;\n            slider_value = current_slider_value;\n        }"
+        }
+      ]
+    },
+    {
+      "name": "less-branch-pointer",
+      "find": "        FrontendWidget* less = slider_less_widget;\n        if ((less->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {\n            less->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;\n            float current_slider_value = slider_value - 0.2f;\n            if (current_slider_value <= 0.1f)\n                current_slider_value = 0.0f;\n            slider_value = current_slider_value;\n        }",
+      "replacements": [
+        {
+          "name": "direct",
+          "text": "        if ((slider_less_widget->widget_flags\n                & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {\n            slider_less_widget->widget_flags &=\n                ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;\n            float current_slider_value = slider_value - 0.2f;\n            if (current_slider_value <= 0.1f)\n                current_slider_value = 0.0f;\n            slider_value = current_slider_value;\n        }"
+        }
+      ]
+    },
+    {
+      "name": "less-endpoint-pointer",
+      "find": "        if (slider_value == 0.0f)\n            slider_less_widget->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            slider_less_widget->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "        if (slider_value == 0.0f)\n            less->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            less->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;"
+        }
+      ]
+    },
+    {
+      "name": "more-endpoint-pointer",
+      "find": "        if (slider_value == 1.0f)\n            slider_more_widget->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            slider_more_widget->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "        if (slider_value == 1.0f)\n            more->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            more->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;"
+        }
+      ]
+    },
+    {
+      "name": "value-tail-pointer",
+      "find": "        slider_value_widget->current_text_color = current_text_color;\n        slider_value_widget->hover_blend_target = hover_blend_target;\n        slider_value_widget->hover_blend_current = hover_blend_current;\n        sprintf(\n            slider_value_widget->text_buffer,\n            \"%02i%%\",\n            (int)(slider_value * 100.0f + 0.1f));",
+      "replacements": [
+        {
+          "name": "tail-local",
+          "text": "        FrontendWidget* value = slider_value_widget;\n        value->current_text_color = current_text_color;\n        value->hover_blend_target = hover_blend_target;\n        value->hover_blend_current = hover_blend_current;\n        sprintf(\n            value->text_buffer,\n            \"%02i%%\",\n            (int)(slider_value * 100.0f + 0.1f));"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "more-branch-store-order",
+      "find": "            float current_slider_value = slider_value + 0.2f;\n            if (current_slider_value >= 0.89999998f)\n                current_slider_value = 1.0f;\n            slider_value = current_slider_value;",
+      "replacements": [
+        {
+          "name": "store-before-and-in-clamp",
+          "text": "            float current_slider_value = slider_value + 0.2f;\n            slider_value = current_slider_value;\n            if (current_slider_value >= 0.89999998f) {\n                current_slider_value = 1.0f;\n                slider_value = current_slider_value;\n            }"
+        },
+        {
+          "name": "branch-stores",
+          "text": "            float current_slider_value = slider_value + 0.2f;\n            if (current_slider_value >= 0.89999998f) {\n                current_slider_value = 1.0f;\n                slider_value = current_slider_value;\n            } else {\n                slider_value = current_slider_value;\n            }"
+        },
+        {
+          "name": "store-before-field-clamp",
+          "text": "            float current_slider_value = slider_value + 0.2f;\n            slider_value = current_slider_value;\n            if (current_slider_value >= 0.89999998f)\n                slider_value = 1.0f;"
+        }
+      ]
+    },
+    {
+      "name": "less-branch-store-order",
+      "find": "            float current_slider_value = slider_value - 0.2f;\n            if (current_slider_value <= 0.1f)\n                current_slider_value = 0.0f;\n            slider_value = current_slider_value;",
+      "replacements": [
+        {
+          "name": "store-before-and-in-clamp",
+          "text": "            float current_slider_value = slider_value - 0.2f;\n            slider_value = current_slider_value;\n            if (current_slider_value <= 0.1f) {\n                current_slider_value = 0.0f;\n                slider_value = current_slider_value;\n            }"
+        },
+        {
+          "name": "branch-stores",
+          "text": "            float current_slider_value = slider_value - 0.2f;\n            if (current_slider_value <= 0.1f) {\n                current_slider_value = 0.0f;\n                slider_value = current_slider_value;\n            } else {\n                slider_value = current_slider_value;\n            }"
+        },
+        {
+          "name": "store-before-field-clamp",
+          "text": "            float current_slider_value = slider_value - 0.2f;\n            slider_value = current_slider_value;\n            if (current_slider_value <= 0.1f)\n                slider_value = 0.0f;"
+        }
+      ]
+    }
+  ]
+}
