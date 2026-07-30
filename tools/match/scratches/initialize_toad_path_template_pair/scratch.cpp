@@ -131,6 +131,7 @@ void cRPath::initialize_toad_path_template_pair(
     int tail_count;
     float start_x;
     float turn_sign;
+    int i;
 
     kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY;
     is_mirrored_x = 0;
@@ -155,7 +156,7 @@ void cRPath::initialize_toad_path_template_pair(
     get_path_nodes();
 
     has_entry_mesh_transition = 0;
-    for (int i = 0; i < lead_count; ++i) {
+    for (i = 0; i < lead_count; ++i) {
         primary_samples[i].center_x = start_x;
         primary_samples[i].rotation_scalar_98 = 0.0f;
         primary_samples[i].rotation_scalar_94 = 0.0f;
@@ -196,9 +197,9 @@ void cRPath::initialize_toad_path_template_pair(
         secondary_samples[index].delta_length = 1.0f;
     }
 
-    for (int k = 0; k < 26; ++k) {
-        int index = lead_count + k;
-        float phase = (float)k * 6.2831855f / 26.0f;
+    for (i = 0; i < 26; ++i) {
+        int index = lead_count + i;
+        float phase = (float)i * 6.2831855f / 26.0f;
         float angle = (1.0f - cosine(phase)) * 0.5f;
         angle = angle * turn_sign * 3.1415927f * 0.5f;
 
@@ -210,7 +211,7 @@ void cRPath::initialize_toad_path_template_pair(
         set_matrix_identity(&primary_samples[index].transform);
         float turn_x = sine(angle);
         primary_samples[index].transform.position.x = turn_x + turn_x + start_x;
-        primary_samples[index].transform.position.z = (float)(lead_count + k);
+        primary_samples[index].transform.position.z = (float)(lead_count + i);
         primary_samples[index].transform.position.y = 0.0f;
 
         primary_samples[index].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
@@ -228,12 +229,18 @@ void cRPath::initialize_toad_path_template_pair(
         primary_samples[index].transform.RotLocalZ(angle);
 
         secondary_samples[index].transform = primary_samples[index].transform;
-        secondary_samples[index].transform.position.x +=
+        float offset_x =
             primary_samples[index].transform.basis_up.x * 0.49000001f;
-        secondary_samples[index].transform.position.y +=
+        float offset_y =
             primary_samples[index].transform.basis_up.y * 0.49000001f;
-        secondary_samples[index].transform.position.z +=
+        float offset_z =
             primary_samples[index].transform.basis_up.z * 0.49000001f;
+        secondary_samples[index].transform.position.x +=
+            offset_x;
+        secondary_samples[index].transform.position.y +=
+            offset_y;
+        secondary_samples[index].transform.position.z +=
+            offset_z;
     }
 
     compute_path_deltas(this);

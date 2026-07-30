@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-offset-order",
+      "find": "        float offset_x =\n            primary_samples[index].transform.basis_up.x * 0.49000001f;\n        float offset_y =\n            primary_samples[index].transform.basis_up.y * 0.49000001f;\n        float offset_z =\n            primary_samples[index].transform.basis_up.z * 0.49000001f;",
+      "replacements": [
+        {
+          "name": "x-z-y",
+          "text": "        float offset_x =\n            primary_samples[index].transform.basis_up.x * 0.49000001f;\n        float offset_z =\n            primary_samples[index].transform.basis_up.z * 0.49000001f;\n        float offset_y =\n            primary_samples[index].transform.basis_up.y * 0.49000001f;"
+        },
+        {
+          "name": "y-x-z",
+          "text": "        float offset_y =\n            primary_samples[index].transform.basis_up.y * 0.49000001f;\n        float offset_x =\n            primary_samples[index].transform.basis_up.x * 0.49000001f;\n        float offset_z =\n            primary_samples[index].transform.basis_up.z * 0.49000001f;"
+        },
+        {
+          "name": "y-z-x",
+          "text": "        float offset_y =\n            primary_samples[index].transform.basis_up.y * 0.49000001f;\n        float offset_z =\n            primary_samples[index].transform.basis_up.z * 0.49000001f;\n        float offset_x =\n            primary_samples[index].transform.basis_up.x * 0.49000001f;"
+        },
+        {
+          "name": "z-x-y",
+          "text": "        float offset_z =\n            primary_samples[index].transform.basis_up.z * 0.49000001f;\n        float offset_x =\n            primary_samples[index].transform.basis_up.x * 0.49000001f;\n        float offset_y =\n            primary_samples[index].transform.basis_up.y * 0.49000001f;"
+        },
+        {
+          "name": "z-y-x",
+          "text": "        float offset_z =\n            primary_samples[index].transform.basis_up.z * 0.49000001f;\n        float offset_y =\n            primary_samples[index].transform.basis_up.y * 0.49000001f;\n        float offset_x =\n            primary_samples[index].transform.basis_up.x * 0.49000001f;"
+        }
+      ]
+    }
+  ]
+}

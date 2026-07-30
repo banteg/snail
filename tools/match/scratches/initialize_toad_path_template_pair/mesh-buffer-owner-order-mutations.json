@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-buffer-owner-order",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;",
+      "replacements": [
+        {
+          "name": "facequads-before-vertices",
+          "text": "    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* vertices = path->strip_mesh->vertices;"
+        }
+      ]
+    }
+  ]
+}

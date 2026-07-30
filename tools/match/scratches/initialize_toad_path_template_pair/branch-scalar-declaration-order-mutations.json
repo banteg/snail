@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "branch-scalar-declaration-order",
+      "find": "    int lead_count;\n    int tail_count;\n    float start_x;\n    float turn_sign;",
+      "replacements": [
+        {
+          "name": "lead-start-tail-sign",
+          "text": "    int lead_count;\n    float start_x;\n    int tail_count;\n    float turn_sign;"
+        },
+        {
+          "name": "lead-start-sign-tail",
+          "text": "    int lead_count;\n    float start_x;\n    float turn_sign;\n    int tail_count;"
+        },
+        {
+          "name": "start-lead-tail-sign",
+          "text": "    float start_x;\n    int lead_count;\n    int tail_count;\n    float turn_sign;"
+        },
+        {
+          "name": "start-sign-lead-tail",
+          "text": "    float start_x;\n    float turn_sign;\n    int lead_count;\n    int tail_count;"
+        },
+        {
+          "name": "tail-lead-start-sign",
+          "text": "    int tail_count;\n    int lead_count;\n    float start_x;\n    float turn_sign;"
+        },
+        {
+          "name": "sign-start-lead-tail",
+          "text": "    float turn_sign;\n    float start_x;\n    int lead_count;\n    int tail_count;"
+        }
+      ]
+    }
+  ]
+}

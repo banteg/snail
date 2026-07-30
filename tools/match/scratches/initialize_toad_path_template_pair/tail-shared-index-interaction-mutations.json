@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "function-sample-index",
+      "find": "    float turn_sign;\n\n    kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY;",
+      "replacements": [
+        {
+          "name": "declare",
+          "text": "    float turn_sign;\n    int i;\n\n    kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY;"
+        }
+      ]
+    },
+    {
+      "name": "lead-sample-index",
+      "find": "    for (int i = 0; i < lead_count; ++i) {",
+      "replacements": [
+        {
+          "name": "reuse",
+          "text": "    for (i = 0; i < lead_count; ++i) {"
+        }
+      ]
+    },
+    {
+      "name": "tail-sample-index",
+      "find": "    for (int tail = 0; tail < tail_count; ++tail) {\n        int index = lead_count + 26 + tail;\n        primary_samples[index].center_x = start_x;\n        primary_samples[index].rotation_scalar_98 = 0.0f;\n        primary_samples[index].rotation_scalar_94 = 0.0f;\n        primary_samples[index].special_scalar = 0.0f;\n        primary_samples[index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[index].transform);\n        float z = (float)index;\n        primary_samples[index].transform.position.x = primary_samples[index].center_x;\n        primary_samples[index].transform.position.y = 0.0f;\n        primary_samples[index].transform.position.z = z;\n        primary_samples[index].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[index].transform);\n        secondary_samples[index].transform.position.x = primary_samples[index].center_x;\n        secondary_samples[index].transform.position.y = 0.49000001f;\n        secondary_samples[index].transform.position.z = z;\n        secondary_samples[index].delta_length = 1.0f;\n    }",
+      "replacements": [
+        {
+          "name": "reuse-relative-bound",
+          "text": "    for (i = lead_count + 26; i - lead_count - 26 < tail_count; ++i) {\n        primary_samples[i].center_x = start_x;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        float z = (float)i;\n        primary_samples[i].transform.position.x = primary_samples[i].center_x;\n        primary_samples[i].transform.position.y = 0.0f;\n        primary_samples[i].transform.position.z = z;\n        primary_samples[i].delta_length = 1.0f;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y = 0.49000001f;\n        secondary_samples[i].transform.position.z = z;\n        secondary_samples[i].delta_length = 1.0f;\n    }"
+        }
+      ]
+    },
+    {
+      "name": "curve-sample-index",
+      "find": "    for (int k = 0; k < 26; ++k) {",
+      "replacements": [
+        {
+          "name": "reuse",
+          "text": "    for (i = 0; i < 26; ++i) {\n#define k i"
+        }
+      ]
+    }
+  ]
+}

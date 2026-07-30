@@ -236,3 +236,35 @@ The surrounding native mesh and face schedule was then bounded explicitly:
 
 The current frontier therefore preserves complete face semantics and closes
 the evidence-backed mesh, face, and initial stack-home neighborhoods.
+
+## 2026-07-30 sample-index and secondary-offset ownership
+
+Windows SSA shows that one logical index slot drives the lead samples and is
+then reset for the 26-sample curve. Reusing that source owner, with an ordinary
+function-scope `int i`, adds **127.02 weighted bytes** and raises focused
+matching from 52.66% to **57.92%** without changing the 632/663 instruction
+count, 15-instruction prefix, or 33 clean references.
+
+The tail is a distinct boundary. Native arithmetic renders an equivalent
+`index - lead_count - 26 < tail_count` condition, but spelling that expression
+directly loses 137 weighted bytes and one prefix instruction. Closing the
+lead/tail lifetime dependency reduces the loss to 46 bytes but remains
+negative; including the curve owner does not change that result. The retained
+tail counter and compiler-derived logical index therefore remain. Six scalar
+declaration orders and the earlier six assignment orders are byte-neutral or
+worse, so the remaining early stack-home rotation is not forced in source.
+
+Native `0x42cfcf..0x42d01f` computes all three basis-up offsets before mutating
+the copied secondary position. Materializing those three X/Y/Z scalar owners
+adds another **2.65 weighted bytes**, yielding the retained **58.02%** result
+at 633/663 instructions, prefix 15/663, and 33 clean references. Aggregate
+vector and pointer-owner forms lose 59 to 79 bytes. Three reordered scalar
+schedules gain 5.91 bytes only by emitting Z/Y/X instead of the native X/Y/Z
+order and shortening the candidate to 631 instructions; that metric artifact
+is recorded but rejected.
+
+On the new baseline, scoped delta references are byte-identical, per-loop bank
+pointers lose 62 bytes, and direct arrays lose 136. Swapping facequad/vertex
+source declarations is byte-identical. Retesting the native-looking
+per-column sample plus late vertex destination loses 11 bytes, while either
+half alone loses 12 to 17. No delta or mesh owner change is retained.
