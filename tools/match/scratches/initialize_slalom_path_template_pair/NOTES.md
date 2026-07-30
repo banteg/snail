@@ -411,3 +411,22 @@ Truth-first and negated spellings are byte-identical. No parity branch is
 retained on Slalom's current frontier; the native duplicated calls remain a
 bounded allocation residual rather than a reason to keep an asymmetric or
 regressive source.
+
+## 2026-07-31 fixed-cursor and mesh-row interaction bound
+
+Slalom's native mesh block independently carries the same nonnegative guard,
+logical row, and `0xa8` sample cursor recovered in SlalomBig. Transferring that
+complete owner to the final Slalom allocation loses **56.01 weighted bytes**,
+adds four instructions, and leaves the six-instruction prefix unchanged.
+
+The prologue also gives EDI to the two fixed-sample byte cursors while keeping
+`lead_out_start` in EBX, so the paired entrance/departure cursors were rebuilt
+with their native increment order and tested together with the mesh row. The
+fixed cursors alone lose 22.66 weighted bytes and three instructions. Closing
+the fixed-plus-mesh dependency loses 67.64 bytes and produces 691/696
+instructions, again without moving the prefix or reference receipt.
+
+No owner is retained. Slalom remains **59.16%**, 690/696 instructions, prefix
+6/696, with all 40 references clean. The target register-role swap is real,
+but these complete instruction-backed owners do not reproduce it in isolation
+or together on the current source schedule.
