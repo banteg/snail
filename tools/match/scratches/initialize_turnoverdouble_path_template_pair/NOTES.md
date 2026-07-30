@@ -303,3 +303,27 @@ lead/tail Z owner is byte-neutral and only moves the mismatching float slot
 from `esp+0x1c` to `esp+0x10`, not native `esp+0x20`. These results isolate
 the residual as a wider allocation dependency rather than another safe tail
 semantic change.
+
+## 2026-07-30 post-tail face-control closure
+
+The relative-tail recovery changed the enclosing allocation after the previous
+checkerboard bound, so both parity sites were replayed on the current 58.81%
+frontier. The second branch alone reaches **59.10%** but adds seven candidate
+instructions; the first branch falls to 58.59%, and the evidence-consistent
+pair falls to 56.91%. The one-sided metric gain therefore remains an
+unsupported partial control transfer rather than a retained recovery.
+
+Raw Windows instructions at `0x427e32..0x427f8e` also prove that each face arm
+materializes its own record pointer. The complete sibling face-owner plan was
+replayed to test that missing interaction. Branch-local records without parity
+reach only **57.86%** at 668/680 instructions and shorten the exact prefix from
+54 to 36; adding both parity branches falls to **54.19%** at 682/680 with an
+18-instruction prefix. On the branch-local baseline, the best one-sided parity
+form reaches 58.47%, still below the retained source, while the complete pair
+again reaches 54.19%.
+
+All variants preserve 46 clean references. TurnoverDouble therefore remains
+**58.81%**, 653/680 instructions, prefix 54/680, with its shared face source.
+The branch-local native addresses are a bounded VC6 scheduling residual on
+this dependency graph, not justification for forcing a lower-quality source
+lifetime.
