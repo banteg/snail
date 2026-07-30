@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-sample-owner",
+      "find": "    for (row = 0; row <= path->segment_count; ++row) {\n        PathTemplateSample* sample = &path->primary_samples[row];\n\n        for (column = 0; column <= path->width_cells; ++column) {\n            double lateral = (float)column - (float)path->width_cells * 0.5f;",
+      "replacements": [
+        {
+          "name": "inner-before-lateral",
+          "text": "    for (row = 0; row <= path->segment_count; ++row) {\n        for (column = 0; column <= path->width_cells; ++column) {\n            PathTemplateSample* sample = &path->primary_samples[row];\n            double lateral = (float)column - (float)path->width_cells * 0.5f;"
+        },
+        {
+          "name": "inner-after-lateral",
+          "text": "    for (row = 0; row <= path->segment_count; ++row) {\n        for (column = 0; column <= path->width_cells; ++column) {\n            double lateral = (float)column - (float)path->width_cells * 0.5f;\n            PathTemplateSample* sample = &path->primary_samples[row];"
+        }
+      ]
+    },
+    {
+      "name": "mesh-vertex-owner",
+      "find": "            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];\n            if (row != path->segment_count) {\n                Vector3 lateral_offset =\n                    sample->transform.basis_right * lateral;\n                Vector3 generated_position(\n                    sample->transform.position.x + lateral_offset.x,\n                    sample->transform.position.y + lateral_offset.y,\n                    sample->transform.position.z + lateral_offset.z);\n                *vertex = generated_position;\n            } else {\n                PathTemplateSample* previous = sample - 1;\n                Vector3 lateral_offset =\n                    previous->transform.basis_right * lateral;\n                Vector3 endpoint(\n                    previous->transform.position.x,\n                    previous->transform.position.y,\n                    previous->transform.position.z + 1.0f);\n                Vector3 generated_position =\n                    endpoint + lateral_offset;\n                *vertex = generated_position;\n            }",
+      "replacements": [
+        {
+          "name": "late-branch-local-pointer",
+          "text": "            if (row != path->segment_count) {\n                Vector3 lateral_offset =\n                    sample->transform.basis_right * lateral;\n                Vector3 generated_position(\n                    sample->transform.position.x + lateral_offset.x,\n                    sample->transform.position.y + lateral_offset.y,\n                    sample->transform.position.z + lateral_offset.z);\n                Vector3* vertex =\n                    &vertices[column + row * (path->width_cells + 1)];\n                *vertex = generated_position;\n            } else {\n                PathTemplateSample* previous = sample - 1;\n                Vector3 lateral_offset =\n                    previous->transform.basis_right * lateral;\n                Vector3 endpoint(\n                    previous->transform.position.x,\n                    previous->transform.position.y,\n                    previous->transform.position.z + 1.0f);\n                Vector3 generated_position =\n                    endpoint + lateral_offset;\n                Vector3* vertex =\n                    &vertices[column + row * (path->width_cells + 1)];\n                *vertex = generated_position;\n            }"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-sample-owner",
+      "find": "    for (row = 0; row <= path->segment_count; ++row) {\n        PathTemplateSample* sample = &path->primary_samples[row];\n\n        for (column = 0; column <= path->width_cells; ++column) {\n            double lateral = (float)column - (float)path->width_cells * 0.5f;",
+      "replacements": [
+        {
+          "name": "inner-before-lateral",
+          "text": "    for (row = 0; row <= path->segment_count; ++row) {\n        for (column = 0; column <= path->width_cells; ++column) {\n            PathTemplateSample* sample = &path->primary_samples[row];\n            double lateral = (float)column - (float)path->width_cells * 0.5f;"
+        },
+        {
+          "name": "inner-after-lateral",
+          "text": "    for (row = 0; row <= path->segment_count; ++row) {\n        for (column = 0; column <= path->width_cells; ++column) {\n            double lateral = (float)column - (float)path->width_cells * 0.5f;\n            PathTemplateSample* sample = &path->primary_samples[row];"
+        },
+        {
+          "name": "inner-bank-then-row",
+          "text": "    for (row = 0; row <= path->segment_count; ++row) {\n        for (column = 0; column <= path->width_cells; ++column) {\n            PathTemplateSample* sample_bank = path->primary_samples;\n            double lateral = (float)column - (float)path->width_cells * 0.5f;\n            PathTemplateSample* sample = &sample_bank[row];"
+        }
+      ]
+    }
+  ]
+}

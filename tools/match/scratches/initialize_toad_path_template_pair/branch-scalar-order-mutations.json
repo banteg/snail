@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "branch-scalar-order",
+      "find": "    if (turn_left) {\n        lead_count = 1;\n        tail_count = 3;\n        start_x = -2.0f;\n        turn_sign = -1.0f;\n    } else {\n        lead_count = 2;\n        tail_count = 1;\n        start_x = 2.0f;\n        turn_sign = 1.0f;\n    }",
+      "replacements": [
+        {
+          "name": "lead-start-sign-tail",
+          "text": "    if (turn_left) {\n        lead_count = 1;\n        start_x = -2.0f;\n        turn_sign = -1.0f;\n        tail_count = 3;\n    } else {\n        lead_count = 2;\n        start_x = 2.0f;\n        turn_sign = 1.0f;\n        tail_count = 1;\n    }"
+        },
+        {
+          "name": "start-sign-lead-tail",
+          "text": "    if (turn_left) {\n        start_x = -2.0f;\n        turn_sign = -1.0f;\n        lead_count = 1;\n        tail_count = 3;\n    } else {\n        start_x = 2.0f;\n        turn_sign = 1.0f;\n        lead_count = 2;\n        tail_count = 1;\n    }"
+        },
+        {
+          "name": "start-lead-sign-tail",
+          "text": "    if (turn_left) {\n        start_x = -2.0f;\n        lead_count = 1;\n        turn_sign = -1.0f;\n        tail_count = 3;\n    } else {\n        start_x = 2.0f;\n        lead_count = 2;\n        turn_sign = 1.0f;\n        tail_count = 1;\n    }"
+        },
+        {
+          "name": "lead-start-tail-sign",
+          "text": "    if (turn_left) {\n        lead_count = 1;\n        start_x = -2.0f;\n        tail_count = 3;\n        turn_sign = -1.0f;\n    } else {\n        lead_count = 2;\n        start_x = 2.0f;\n        tail_count = 1;\n        turn_sign = 1.0f;\n    }"
+        },
+        {
+          "name": "start-tail-lead-sign",
+          "text": "    if (turn_left) {\n        start_x = -2.0f;\n        tail_count = 3;\n        lead_count = 1;\n        turn_sign = -1.0f;\n    } else {\n        start_x = 2.0f;\n        tail_count = 1;\n        lead_count = 2;\n        turn_sign = 1.0f;\n    }"
+        },
+        {
+          "name": "sign-start-lead-tail",
+          "text": "    if (turn_left) {\n        turn_sign = -1.0f;\n        start_x = -2.0f;\n        lead_count = 1;\n        tail_count = 3;\n    } else {\n        turn_sign = 1.0f;\n        start_x = 2.0f;\n        lead_count = 2;\n        tail_count = 1;\n    }"
+        }
+      ]
+    }
+  ]
+}

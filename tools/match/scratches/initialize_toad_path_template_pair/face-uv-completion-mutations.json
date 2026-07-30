@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-final-v",
+      "find": "                    face->uv[3].u = u0;",
+      "replacements": [
+        {
+          "name": "branch-complete",
+          "text": "                    face->uv[3].u = u0;\n                    face->uv[3].v = v1;"
+        }
+      ]
+    },
+    {
+      "name": "back-final-v",
+      "find": "                    face->uv[3].u = u1;",
+      "replacements": [
+        {
+          "name": "branch-complete",
+          "text": "                    face->uv[3].u = u1;\n                    face->uv[3].v = v1;"
+        }
+      ]
+    },
+    {
+      "name": "joined-final-v",
+      "find": "                face->uv[3].v = v1;",
+      "replacements": [
+        {
+          "name": "remove-join",
+          "text": ""
+        }
+      ]
+    }
+  ]
+}

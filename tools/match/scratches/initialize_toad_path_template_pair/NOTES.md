@@ -197,3 +197,42 @@ The primary current/previous orientation operator loses 59.46 weighted bytes
 and falls to 48.20%, while preserving the 15-instruction prefix and all 33
 clean references. Toad keeps the expanded component constructor and the
 independently retained secondary terminal-delta operator.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Native `0x42d217..0x42d2ff` keeps the column-relative lateral value on the x87
+stack across both vertex branches. Each branch materializes a lateral-offset
+vector, and the terminal branch separately owns its raised endpoint and
+generated position. Recovering the x87 owner as a `double` local adds 14.04
+weighted bytes. The paired authored `Vector3::operator*` boundaries add 12.16,
+and the terminal `Vector3::operator+` adds another 22.42; the ordinary add is
+byte-neutral.
+
+The retained result moves from 50.65% to **52.66%**:
+
+```text
+target: 663 insns, candidate: 632 insns
+prefix: 15/663 target insns
+masked operands: 33 ok, 0 unresolved, 0 mismatch
+```
+
+This is a 48.62 weighted-byte gain with four fewer candidate instructions.
+The count gap grows, but the removed spill/reload instructions agree with the
+native x87 lifetime, so the source correction is retained.
+
+The surrounding native mesh and face schedule was then bounded explicitly:
+
+- late branch-local vertex declarations, per-column sample ownership, and
+  their interaction lose 26 to 32 weighted bytes;
+- separate face records with complete branch-local UV writes lose 46 bytes,
+  and adding both native parity branches loses 50;
+- adding only the back-face parity branch gains 8.01 bytes, but the symmetric
+  pair loses 57.05, so the unsupported one-sided metric result is rejected;
+- removing the joined final V write gains 28.16 bytes only by omitting required
+  UV state; the semantically complete two-branch form loses 50.46 and is
+  rejected;
+- sharing the lead/tail induction owner is byte-neutral, and six symmetric
+  branch-scalar assignment orders are neutral or worse.
+
+The current frontier therefore preserves complete face semantics and closes
+the evidence-backed mesh, face, and initial stack-home neighborhoods.
