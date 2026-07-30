@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-direct-face-texture-parity",
+      "find": "                        facequads[face_offset].texture_ref = g_texture_refs.Add(texture_a, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                        if ((column ^ row) & 1) {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        } else {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        }"
+        }
+      ]
+    },
+    {
+      "name": "second-direct-face-texture-parity",
+      "find": "                        facequads[face_offset].texture_ref = g_texture_refs.Add(texture_b, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                        if ((column ^ row) & 1) {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        } else {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        }"
+        }
+      ]
+    }
+  ]
+}

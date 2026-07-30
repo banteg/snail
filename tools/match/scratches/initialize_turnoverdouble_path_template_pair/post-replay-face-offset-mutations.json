@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-offset-expression",
+      "find": "                    int face_offset =\n                        2 * column + 2 * row * path->width_cells + face_index;",
+      "replacements": [
+        {
+          "name": "logical-grouped",
+          "text": "                    int face_offset =\n                        face_index + 2 * (row * path->width_cells + column);"
+        },
+        {
+          "name": "row-major-grouped",
+          "text": "                    int face_offset =\n                        2 * (row * path->width_cells + column) + face_index;"
+        },
+        {
+          "name": "column-first-grouped",
+          "text": "                    int face_offset =\n                        face_index + 2 * (column + row * path->width_cells);"
+        },
+        {
+          "name": "shifted",
+          "text": "                    int face_offset =\n                        ((row * path->width_cells + column) << 1) + face_index;"
+        }
+      ]
+    }
+  ]
+}

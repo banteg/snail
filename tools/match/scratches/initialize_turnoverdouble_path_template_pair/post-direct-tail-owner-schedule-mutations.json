@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-tail-owner-schedule",
+      "find": "    i = curve_segments + 6;\n    int tail_control_base = -6 - curve_segments;\n    int tail_sample_offset =\n        (curve_segments + 6) * sizeof(AttachmentSample);",
+      "replacements": [
+        {
+          "name": "index-offset-base",
+          "text": "    i = curve_segments + 6;\n    int tail_sample_offset =\n        (curve_segments + 6) * sizeof(AttachmentSample);\n    int tail_control_base = -6 - curve_segments;"
+        },
+        {
+          "name": "base-index-offset",
+          "text": "    int tail_control_base = -6 - curve_segments;\n    i = curve_segments + 6;\n    int tail_sample_offset =\n        (curve_segments + 6) * sizeof(AttachmentSample);"
+        },
+        {
+          "name": "offset-index-base",
+          "text": "    int tail_sample_offset =\n        (curve_segments + 6) * sizeof(AttachmentSample);\n    i = curve_segments + 6;\n    int tail_control_base = -6 - curve_segments;"
+        },
+        {
+          "name": "offset-base-index",
+          "text": "    int tail_sample_offset =\n        (curve_segments + 6) * sizeof(AttachmentSample);\n    int tail_control_base = -6 - curve_segments;\n    i = curve_segments + 6;"
+        },
+        {
+          "name": "base-offset-index",
+          "text": "    int tail_control_base = -6 - curve_segments;\n    int tail_sample_offset =\n        (curve_segments + 6) * sizeof(AttachmentSample);\n    i = curve_segments + 6;"
+        }
+      ]
+    }
+  ]
+}

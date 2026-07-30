@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-tail-schedule",
+      "find": "        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = z;\n        lead_sample_offset += sizeof(AttachmentSample);\n        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset - sizeof(AttachmentSample)))->delta_length = 1.0f;\n        ++lead_index;",
+      "replacements": [
+        {
+          "name": "offset-index-delta",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = z;\n        lead_sample_offset += sizeof(AttachmentSample);\n        ++lead_index;\n        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset - sizeof(AttachmentSample)))->delta_length = 1.0f;"
+        },
+        {
+          "name": "index-offset-delta",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = z;\n        ++lead_index;\n        lead_sample_offset += sizeof(AttachmentSample);\n        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset - sizeof(AttachmentSample)))->delta_length = 1.0f;"
+        },
+        {
+          "name": "delta-index-offset",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = z;\n        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->delta_length = 1.0f;\n        ++lead_index;\n        lead_sample_offset += sizeof(AttachmentSample);"
+        },
+        {
+          "name": "index-delta-offset",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = z;\n        ++lead_index;\n        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->delta_length = 1.0f;\n        lead_sample_offset += sizeof(AttachmentSample);"
+        },
+        {
+          "name": "delta-offset-index",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = z;\n        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->delta_length = 1.0f;\n        lead_sample_offset += sizeof(AttachmentSample);\n        ++lead_index;"
+        }
+      ]
+    }
+  ]
+}

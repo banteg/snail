@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-owner-schedule",
+      "find": "    i = curve_segments + 6;\n    int tail_control_base = -6 - curve_segments;\n    int tail_sample_offset = i * sizeof(AttachmentSample);",
+      "replacements": [
+        {
+          "name": "base-before-index",
+          "text": "    int tail_control_base = -6 - curve_segments;\n    i = curve_segments + 6;\n    int tail_sample_offset = i * sizeof(AttachmentSample);"
+        },
+        {
+          "name": "offset-before-base",
+          "text": "    i = curve_segments + 6;\n    int tail_sample_offset = i * sizeof(AttachmentSample);\n    int tail_control_base = -6 - curve_segments;"
+        },
+        {
+          "name": "split-base-after-offset",
+          "text": "    int tail_control_base;\n    i = curve_segments + 6;\n    int tail_sample_offset = i * sizeof(AttachmentSample);\n    tail_control_base = -6 - curve_segments;"
+        },
+        {
+          "name": "split-base-before-offset",
+          "text": "    int tail_control_base;\n    i = curve_segments + 6;\n    tail_control_base = -6 - curve_segments;\n    int tail_sample_offset = i * sizeof(AttachmentSample);"
+        },
+        {
+          "name": "split-offset",
+          "text": "    i = curve_segments + 6;\n    int tail_control_base = -6 - curve_segments;\n    int tail_sample_offset;\n    tail_sample_offset = i * sizeof(AttachmentSample);"
+        },
+        {
+          "name": "split-all-index-first",
+          "text": "    int tail_control_base;\n    int tail_sample_offset;\n    i = curve_segments + 6;\n    tail_sample_offset = i * sizeof(AttachmentSample);\n    tail_control_base = -6 - curve_segments;"
+        },
+        {
+          "name": "split-all-base-first",
+          "text": "    int tail_control_base;\n    int tail_sample_offset;\n    tail_control_base = -6 - curve_segments;\n    i = curve_segments + 6;\n    tail_sample_offset = i * sizeof(AttachmentSample);"
+        },
+        {
+          "name": "offset-from-curve-count",
+          "text": "    i = curve_segments + 6;\n    int tail_control_base = -6 - curve_segments;\n    int tail_sample_offset =\n        (curve_segments + 6) * sizeof(AttachmentSample);"
+        }
+      ]
+    }
+  ]
+}

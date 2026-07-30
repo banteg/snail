@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-owner-init-order",
+      "find": "    i = curve_segments + 6;\n    int tail_control_base = -6 - curve_segments;\n    int tail_sample_offset = i * sizeof(AttachmentSample);",
+      "replacements": [
+        {
+          "name": "offset-before-relative-base",
+          "text": "    i = curve_segments + 6;\n    int tail_sample_offset = i * sizeof(AttachmentSample);\n    int tail_control_base = -6 - curve_segments;"
+        }
+      ]
+    }
+  ]
+}

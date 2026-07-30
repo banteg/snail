@@ -327,3 +327,67 @@ All variants preserve 46 clean references. TurnoverDouble therefore remains
 The branch-local native addresses are a bounded VC6 scheduling residual on
 this dependency graph, not justification for forcing a lower-quality source
 lifetime.
+
+## 2026-07-31 mesh, face, and fixed-sample dependency closure
+
+The earlier face and terminal-mesh bounds were allocation-specific rather than
+final. Replaying the complete Windows mesh-row unit first supplies the missing
+dependency: a non-negative segment guard, a `0xa8` sample byte cursor, nested
+post-tested row/column loops, ordinary-first branch order, branch-local sample
+and vertex owners, and the terminal row's `sample[-1]` read. That unit raises
+focused matching from **58.81% to 64.82%**, a gain of 148 rounded weighted
+bytes, while preserving the 54-instruction prefix and all 46 clean references.
+
+On the recovered row allocation, a default terminal endpoint adds five more
+rounded weighted bytes. Its explicit generated-position component constructor
+loses seven alone but gains four more when paired with that endpoint owner.
+The retained combination reaches **65.18%** at 661/680 instructions.
+
+The new allocation also reverses the old face result. A common logical
+`face_offset` with direct indexed record writes adds 74 rounded weighted bytes,
+reaching **68.20%**. It moves the first mismatch from target instruction 54 to
+36, but also fixes the formerly wrong `esp+0x20` float home and is backed by
+the native common offset. Restoring both checkerboard parity branches then
+adds another 103 rounded weighted bytes as a pair and reaches **72.38%**.
+Neither branch works alone: the first loses 40 and the second loses 12.
+
+The target's branch-local record pointers remain compiler-derived. Replaying
+them after both parity branches loses 287 rounded weighted bytes and falls to
+60.72%; either single arm is slightly worse. Four face-offset expressions,
+both parity polarities, and indexed versus named UV fields are byte-identical.
+The direct indexed owner plus paired parity control is therefore the complete
+retained face unit.
+
+Finally, the face allocation makes the native six-sample lead byte owner
+productive. One logical `lead_index` plus a `lead_sample_offset` controlled
+against `6 * sizeof(AttachmentSample)` adds 49 rounded weighted bytes and
+extends the exact prefix from 36 to 71 instructions. Ordering the tail as
+logical increment, current secondary delta write, then byte-cursor advance
+adds 14 more and extends the prefix to 80. Android independently exposes the
+same precomputed next index and current-record delta. Reusing that logical
+index through the fixed tail and curve is byte-identical and matches the
+portable owner.
+
+Both Windows and Android compute the fixed-tail byte offset directly from
+`curve_segments + 6`. Recovering that expression adds another seven rounded
+weighted bytes. The retained frontier is:
+
+```text
+match: 75.28%
+target: 680 insns, candidate: 683 insns
+prefix: 80/680 target insns
+masked operands: 46 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The remaining `esp+0x1c` tail-base lifetime is bounded without artificial
+volatility or address escapes. Declaration permutations, split definitions,
+four algebraic base forms, six inline/absolute predicates, and an explicit
+condition temporary are neutral or lose up to 74 rounded weighted bytes.
+Direct terminal-delta arrays lose 203; explicit logical-plus-byte delta
+control loses nine; guarded logical control and scoped pointer/reference or
+bank owners are byte-identical; both subtraction operators remain negative.
+All 24 curve-cursor initialization/advance combinations are also identical.
+
+The checked ledger now contains 54 records and 280 unique variants with no
+malformed entries. The last three sweeps do not improve the retained result,
+closing the current evidence-backed TurnoverDouble neighborhood.

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-texture-parity-polarity",
+      "find": "                        if ((column ^ row) & 1) {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        } else {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        }",
+      "replacements": [
+        {
+          "name": "even-first",
+          "text": "                        if (((column ^ row) & 1) == 0) {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        } else {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        }"
+        }
+      ]
+    },
+    {
+      "name": "second-texture-parity-polarity",
+      "find": "                        if ((column ^ row) & 1) {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        } else {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        }",
+      "replacements": [
+        {
+          "name": "even-first",
+          "text": "                        if (((column ^ row) & 1) == 0) {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        } else {\n                            facequads[face_offset].texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        }"
+        }
+      ]
+    }
+  ]
+}

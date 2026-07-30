@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-condition-owner",
+      "find": "    int tail_sample_offset = i * sizeof(AttachmentSample);\n    do {",
+      "replacements": [
+        {
+          "name": "explicit-local",
+          "text": "    int tail_sample_offset = i * sizeof(AttachmentSample);\n    int tail_condition;\n    do {"
+        }
+      ]
+    },
+    {
+      "name": "tail-condition-control",
+      "find": "        tail_sample_offset += sizeof(AttachmentSample);\n        ++i;\n    } while (i + tail_control_base < 2);",
+      "replacements": [
+        {
+          "name": "assign-after-increment",
+          "text": "        tail_sample_offset += sizeof(AttachmentSample);\n        ++i;\n        tail_condition = tail_control_base + i;\n    } while (tail_condition < 2);",
+          "requires": [
+            "tail-condition-owner/explicit-local"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-endpoint-owner",
+      "find": "                        Vector3 endpoint(\n                            sample[-1].transform.position.x,\n                            sample[-1].transform.position.y,\n                            sample[-1].transform.position.z + 1.0f);",
+      "replacements": [
+        {
+          "name": "default-components",
+          "text": "                        Vector3 endpoint;\n                        endpoint.x = sample[-1].transform.position.x;\n                        endpoint.y = sample[-1].transform.position.y;\n                        endpoint.z = sample[-1].transform.position.z + 1.0f;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-generated-owner",
+      "find": "                        Vector3 generated_position =\n                            endpoint + lateral_offset;",
+      "replacements": [
+        {
+          "name": "component-constructor",
+          "text": "                        Vector3 generated_position(\n                            endpoint.x + lateral_offset.x,\n                            endpoint.y + lateral_offset.y,\n                            endpoint.z + lateral_offset.z);"
+        }
+      ]
+    }
+  ]
+}

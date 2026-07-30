@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-delta-bank-owner",
+      "find": "        PathTemplateSample* primary = &path->primary_samples[i];\n        PathTemplateSample* primary_next = &path->primary_samples[i + 1];\n        primary->delta_dir_to_next = Vector3(\n            primary_next->transform.position.x - primary->transform.position.x,\n            primary_next->transform.position.y - primary->transform.position.y,\n            primary_next->transform.position.z - primary->transform.position.z);\n        primary->delta_length = primary->delta_dir_to_next.Normalize();",
+      "replacements": [
+        {
+          "name": "indexed-bank",
+          "text": "        PathTemplateSample* primary_samples = path->primary_samples;\n        primary_samples[i].delta_dir_to_next = Vector3(\n            primary_samples[i + 1].transform.position.x -\n                primary_samples[i].transform.position.x,\n            primary_samples[i + 1].transform.position.y -\n                primary_samples[i].transform.position.y,\n            primary_samples[i + 1].transform.position.z -\n                primary_samples[i].transform.position.z);\n        primary_samples[i].delta_length =\n            primary_samples[i].delta_dir_to_next.Normalize();"
+        }
+      ]
+    },
+    {
+      "name": "secondary-delta-bank-owner",
+      "find": "        PathTemplateSample* secondary = &path->secondary_samples[i];\n        PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];\n        secondary->delta_dir_to_next = Vector3(\n            secondary_next->transform.position.x - secondary->transform.position.x,\n            secondary_next->transform.position.y - secondary->transform.position.y,\n            secondary_next->transform.position.z - secondary->transform.position.z);\n        secondary->delta_length = secondary->delta_dir_to_next.Normalize();",
+      "replacements": [
+        {
+          "name": "indexed-bank",
+          "text": "        PathTemplateSample* secondary_samples = path->secondary_samples;\n        secondary_samples[i].delta_dir_to_next = Vector3(\n            secondary_samples[i + 1].transform.position.x -\n                secondary_samples[i].transform.position.x,\n            secondary_samples[i + 1].transform.position.y -\n                secondary_samples[i].transform.position.y,\n            secondary_samples[i + 1].transform.position.z -\n                secondary_samples[i].transform.position.z);\n        secondary_samples[i].delta_length =\n            secondary_samples[i].delta_dir_to_next.Normalize();"
+        }
+      ]
+    }
+  ]
+}

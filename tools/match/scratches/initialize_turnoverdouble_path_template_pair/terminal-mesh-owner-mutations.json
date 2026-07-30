@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-mesh-owner",
+      "find": "            } else {\n                PathTemplateSample* previous = sample - 1;\n                Vector3 lateral_offset =\n                    previous->transform.basis_right * lateral;\n                Vector3 endpoint(\n                    previous->transform.position.x,\n                    previous->transform.position.y,\n                    previous->transform.position.z + 1.0f);\n                Vector3 generated_position =\n                    endpoint + lateral_offset;\n                *vertex = generated_position;\n            }",
+      "replacements": [
+        {
+          "name": "negative-sample",
+          "text": "            } else {\n                Vector3 lateral_offset =\n                    sample[-1].transform.basis_right * lateral;\n                Vector3 endpoint(\n                    sample[-1].transform.position.x,\n                    sample[-1].transform.position.y,\n                    sample[-1].transform.position.z + 1.0f);\n                Vector3 generated_position =\n                    endpoint + lateral_offset;\n                *vertex = generated_position;\n            }"
+        },
+        {
+          "name": "default-endpoint",
+          "text": "            } else {\n                PathTemplateSample* previous = sample - 1;\n                Vector3 lateral_offset =\n                    previous->transform.basis_right * lateral;\n                Vector3 endpoint;\n                endpoint.x = previous->transform.position.x;\n                endpoint.y = previous->transform.position.y;\n                endpoint.z = previous->transform.position.z + 1.0f;\n                Vector3 generated_position =\n                    endpoint + lateral_offset;\n                *vertex = generated_position;\n            }"
+        },
+        {
+          "name": "component-generated",
+          "text": "            } else {\n                PathTemplateSample* previous = sample - 1;\n                Vector3 lateral_offset =\n                    previous->transform.basis_right * lateral;\n                Vector3 endpoint(\n                    previous->transform.position.x,\n                    previous->transform.position.y,\n                    previous->transform.position.z + 1.0f);\n                Vector3 generated_position(\n                    endpoint.x + lateral_offset.x,\n                    endpoint.y + lateral_offset.y,\n                    endpoint.z + lateral_offset.z);\n                *vertex = generated_position;\n            }"
+        },
+        {
+          "name": "negative-sample-default-endpoint",
+          "text": "            } else {\n                Vector3 lateral_offset =\n                    sample[-1].transform.basis_right * lateral;\n                Vector3 endpoint;\n                endpoint.x = sample[-1].transform.position.x;\n                endpoint.y = sample[-1].transform.position.y;\n                endpoint.z = sample[-1].transform.position.z + 1.0f;\n                Vector3 generated_position =\n                    endpoint + lateral_offset;\n                *vertex = generated_position;\n            }"
+        },
+        {
+          "name": "negative-sample-component-generated",
+          "text": "            } else {\n                Vector3 lateral_offset =\n                    sample[-1].transform.basis_right * lateral;\n                Vector3 endpoint(\n                    sample[-1].transform.position.x,\n                    sample[-1].transform.position.y,\n                    sample[-1].transform.position.z + 1.0f);\n                Vector3 generated_position(\n                    endpoint.x + lateral_offset.x,\n                    endpoint.y + lateral_offset.y,\n                    endpoint.z + lateral_offset.z);\n                *vertex = generated_position;\n            }"
+        },
+        {
+          "name": "default-endpoint-component-generated",
+          "text": "            } else {\n                PathTemplateSample* previous = sample - 1;\n                Vector3 lateral_offset =\n                    previous->transform.basis_right * lateral;\n                Vector3 endpoint;\n                endpoint.x = previous->transform.position.x;\n                endpoint.y = previous->transform.position.y;\n                endpoint.z = previous->transform.position.z + 1.0f;\n                Vector3 generated_position(\n                    endpoint.x + lateral_offset.x,\n                    endpoint.y + lateral_offset.y,\n                    endpoint.z + lateral_offset.z);\n                *vertex = generated_position;\n            }"
+        },
+        {
+          "name": "negative-sample-default-endpoint-component-generated",
+          "text": "            } else {\n                Vector3 lateral_offset =\n                    sample[-1].transform.basis_right * lateral;\n                Vector3 endpoint;\n                endpoint.x = sample[-1].transform.position.x;\n                endpoint.y = sample[-1].transform.position.y;\n                endpoint.z = sample[-1].transform.position.z + 1.0f;\n                Vector3 generated_position(\n                    endpoint.x + lateral_offset.x,\n                    endpoint.y + lateral_offset.y,\n                    endpoint.z + lateral_offset.z);\n                *vertex = generated_position;\n            }"
+        }
+      ]
+    }
+  ]
+}

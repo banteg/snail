@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-uv-owner",
+      "find": "                        facequads[face_offset].uv[0].u = u0;\n                        facequads[face_offset].uv[0].v = v0;\n                        facequads[face_offset].uv[1].u = u1;\n                        facequads[face_offset].uv[1].v = v0;\n                        facequads[face_offset].uv[2].u = u1;\n                        facequads[face_offset].uv[2].v = v1;\n                        facequads[face_offset].uv[3].u = u0;\n                        facequads[face_offset].uv[3].v = v1;",
+      "replacements": [
+        {
+          "name": "named-components",
+          "text": "                        facequads[face_offset].u0 = u0;\n                        facequads[face_offset].v0 = v0;\n                        facequads[face_offset].u1 = u1;\n                        facequads[face_offset].v1 = v0;\n                        facequads[face_offset].u2 = u1;\n                        facequads[face_offset].v2 = v1;\n                        facequads[face_offset].u3 = u0;\n                        facequads[face_offset].v3 = v1;"
+        }
+      ]
+    },
+    {
+      "name": "second-face-uv-owner",
+      "find": "                        facequads[face_offset].uv[0].u = u1;\n                        facequads[face_offset].uv[0].v = v0;\n                        facequads[face_offset].uv[1].u = u0;\n                        facequads[face_offset].uv[1].v = v0;\n                        facequads[face_offset].uv[2].u = u0;\n                        facequads[face_offset].uv[2].v = v1;\n                        facequads[face_offset].uv[3].u = u1;\n                        facequads[face_offset].uv[3].v = v1;",
+      "replacements": [
+        {
+          "name": "named-components",
+          "text": "                        facequads[face_offset].u0 = u1;\n                        facequads[face_offset].v0 = v0;\n                        facequads[face_offset].u1 = u0;\n                        facequads[face_offset].v1 = v0;\n                        facequads[face_offset].u2 = u0;\n                        facequads[face_offset].v2 = v1;\n                        facequads[face_offset].u3 = u1;\n                        facequads[face_offset].v3 = v1;"
+        }
+      ]
+    }
+  ]
+}

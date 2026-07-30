@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-control-predicate",
+      "find": "    } while (i + tail_control_base < 2);",
+      "replacements": [
+        {
+          "name": "inline-left-associated",
+          "text": "    } while (i - 6 - curve_segments < 2);"
+        },
+        {
+          "name": "inline-grouped",
+          "text": "    } while (i - (curve_segments + 6) < 2);"
+        },
+        {
+          "name": "inline-base-first",
+          "text": "    } while (-6 - curve_segments + i < 2);"
+        },
+        {
+          "name": "inline-negative-base",
+          "text": "    } while (i + (-6 - curve_segments) < 2);"
+        },
+        {
+          "name": "absolute-end",
+          "text": "    } while (i < curve_segments + 8);"
+        },
+        {
+          "name": "difference-end",
+          "text": "    } while (i - curve_segments < 8);"
+        }
+      ]
+    }
+  ]
+}
