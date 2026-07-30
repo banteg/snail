@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cell-position-zero-owner",
+      "find": "            *(int*)(cell + CELL_POSITION_Z) = 0;\n            *(int*)(cell + CELL_POSITION_Y) = 0;\n            *(int*)(cell + CELL_POSITION_X) = 0;",
+      "replacements": [
+        {
+          "name": "typed-position-owner",
+          "text": "            Vector3* cell_position =\n                (Vector3*)(cell + CELL_POSITION_X);\n            cell_position->z = 0.0f;\n            cell_position->y = 0.0f;\n            cell_position->x = 0.0f;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "segment-cursor-initializer",
+      "find": "    int segment_cursor = 0;\n    mode = level_mode;",
+      "replacements": [
+        {
+          "name": "initialize-in-consuming-modes",
+          "text": "    int segment_cursor;\n    mode = level_mode;"
+        }
+      ]
+    }
+  ]
+}

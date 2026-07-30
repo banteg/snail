@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "early-byte-owner",
+      "find": "void cRSubGame::BuildLevel()\n{\n    int runtime_build_seed;",
+      "replacements": [
+        {
+          "name": "retain-base-from-entry",
+          "text": "void cRSubGame::BuildLevel()\n{\n    char* build_runtime_base = (char*)this;\n    int runtime_build_seed;"
+        }
+      ]
+    },
+    {
+      "name": "main-loop-byte-owner",
+      "find": "    char* base = (char*)this;\n    int segment_row;",
+      "replacements": [
+        {
+          "name": "consume-entry-base",
+          "text": "    char* base = build_runtime_base;\n    int segment_row;"
+        }
+      ]
+    }
+  ]
+}

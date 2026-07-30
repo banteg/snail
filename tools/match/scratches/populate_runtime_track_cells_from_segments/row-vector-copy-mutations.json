@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-model-position-copy",
+      "find": "            *(int*)(row_record + ROW_MODEL_POSITION_X) =\n                *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_X);\n            *(int*)(row_record + ROW_MODEL_POSITION_Y) =\n                *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_Y);\n            *(int*)(row_record + ROW_MODEL_POSITION_Z) =\n                *(int*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_Z);",
+      "replacements": [
+        {
+          "name": "vector-assignment",
+          "text": "            *(Vector3*)(row_record + ROW_MODEL_POSITION_X) =\n                *(Vector3*)(authored_row + AUTHORED_ROW_OBJECT_POSITION_X);"
+        }
+      ]
+    },
+    {
+      "name": "row-model-velocity-copy",
+      "find": "                *(int*)(row_record + ROW_MODEL_VELOCITY_X) =\n                    *(int*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_X);\n                *(int*)(row_record + ROW_MODEL_VELOCITY_Y) =\n                    *(int*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_Y);\n                *(int*)(row_record + ROW_MODEL_VELOCITY_Z) =\n                    *(int*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_Z);",
+      "replacements": [
+        {
+          "name": "vector-assignment",
+          "text": "                *(Vector3*)(row_record + ROW_MODEL_VELOCITY_X) =\n                    *(Vector3*)(authored_row + AUTHORED_ROW_OBJECT_VELOCITY_X);"
+        }
+      ]
+    },
+    {
+      "name": "row-parcel-position-copy",
+      "find": "            *(int*)(row_record + ROW_PROJECTION_X) =\n                *(int*)(authored_row + AUTHORED_ROW_LOCAL_X);\n            *(int*)(row_record + ROW_PROJECTION_Y) =\n                *(int*)(authored_row + AUTHORED_ROW_LOCAL_Y);\n            *(int*)(row_record + ROW_PROJECTION_Z) =\n                *(int*)(authored_row + AUTHORED_ROW_LOCAL_Z);",
+      "replacements": [
+        {
+          "name": "vector-assignment",
+          "text": "            *(Vector3*)(row_record + ROW_PROJECTION_X) =\n                *(Vector3*)(authored_row + AUTHORED_ROW_LOCAL_X);"
+        }
+      ]
+    }
+  ]
+}

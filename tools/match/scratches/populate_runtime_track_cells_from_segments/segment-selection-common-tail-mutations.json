@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "general-selection-tail",
+      "find": "            segment_row = 0;\n            ((SubSegment*)active_segment)->row_base = build_row;\n            if (((SubSegment*)active_segment)->row_count < 0)\n                report_errorf(\"Negative Segment Length\");\n            selected_new_segment = true;",
+      "replacements": [
+        {
+          "name": "defer-common-work",
+          "text": "            segment_row = 0;\n            selected_new_segment = true;"
+        }
+      ]
+    },
+    {
+      "name": "common-selection-tail",
+      "find": "        if (selected_new_segment)\n            SwitchMirror();",
+      "replacements": [
+        {
+          "name": "mirror-row-base-and-length",
+          "text": "        if (selected_new_segment) {\n            SwitchMirror();\n            ((SubSegment*)active_segment)->row_base = build_row;\n            if (((SubSegment*)active_segment)->row_count < 0)\n                report_errorf(\"Negative Segment Length\");\n        }"
+        }
+      ]
+    }
+  ]
+}

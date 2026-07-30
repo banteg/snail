@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "attachment-span-owner-slot",
+      "find": "                            if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) == 0) {\n                                stamped_row->flags =\n                                    stamped_flags | SUBROW_FLAG_PRIMARY_ATTACHMENT;\n                                stamped_row->primary_attachment_cell = runtime_cell;\n                            } else {\n                                stamped_row->flags =\n                                    stamped_flags | SUBROW_FLAG_SECONDARY_ATTACHMENT;\n                                stamped_row->secondary_attachment_cell = runtime_cell;\n                            }",
+      "replacements": [
+        {
+          "name": "secondary-first",
+          "text": "                            if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {\n                                stamped_row->flags =\n                                    stamped_flags | SUBROW_FLAG_SECONDARY_ATTACHMENT;\n                                stamped_row->secondary_attachment_cell = runtime_cell;\n                            } else {\n                                stamped_row->flags =\n                                    stamped_flags | SUBROW_FLAG_PRIMARY_ATTACHMENT;\n                                stamped_row->primary_attachment_cell = runtime_cell;\n                            }"
+        }
+      ]
+    }
+  ]
+}

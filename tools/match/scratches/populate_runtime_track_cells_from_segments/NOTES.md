@@ -7,8 +7,9 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-runtime-grid high-score, segment-rate, and row-event ownership slices: 29.27%, 1208/1245 candidate
-instructions (`tools/match/match.sh
+glyph-dispatch, authored-row, attachment, and clear-loop ownership slices:
+45.47%, 1240/1245 candidate instructions, with a 9-instruction exact prefix
+(`uv run snail match scratch
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
 
@@ -981,3 +982,73 @@ matching remains at 32.32% (1,230/1,245 instructions, two-instruction prefix,
 78 clean operands, 115 unaudited, and the existing jump-table mismatch).
 Guarded replay is idempotent, and the strict paired export reports zero
 Binary Ninja or IDA mismatches with all 1,149 decompile-health checks passing.
+
+## 2026-07-30 native glyph dispatch order
+
+The target jump table and its physical case blocks settle the authored switch
+order as:
+
+`' '`, `'R'`, `'#'`, `'@'`, `'G'`, `'_'`, `'$'`, `'o'`, `'M'`, `'F'`,
+`'.'`, `'s'`, `'&'`, `','`, `'+'`, `'J'`, `'-'`, `'='`/`'|'`, `'('`,
+`'>'`, `'}'`, `'{'`, `'<'`, `'['`, `'P'`/`'p'`, `'0'`, `'1'` through
+`'9'`, and `default`.
+
+Reordering the source cases to that native block order raises focused matching
+from 32.43% to 40.84%. The candidate retains the real switch and its one known
+table-layout mismatch; the table was not padded, reordered with dummy code, or
+masked as proof.
+
+The surrounding segment selection now leaves `SwitchMirror()`, the selected
+segment's runtime `row_base`, and its negative-length check on the common
+new-segment tail. Redundant entry initializers for `segment_row` and
+`active_segment` are gone. Removing the unconditional `segment_cursor`
+initializer was independently retested at the later register frontier and
+regressed weighted matching by 11.20 bytes, so it remains in source.
+
+## 2026-07-30 attachment and post-switch owners
+
+The `P`/`p` cases now install the borrowed template directly in
+`runtime_cell->attachment_template_record`; every later object and span
+consumer reloads that cell-owned field. This raises matching from 40.84% to
+41.81%. The target's physical branch order tests an already-primary row first
+and installs the secondary link on that path, raising the result again to
+41.97%.
+
+A typed `Vector3* cell_position` now owns the complete post-switch position
+lifetime rather than only the initial zero stores. That measured owner raises
+the result to 42.36% and remains visible through anchor placement, ramp
+adjustment, trampoline placement, and the borrowed fringe-object copies. A
+zero-store-only position alias was byte-neutral and was not retained as a
+partial explanation.
+
+## 2026-07-30 authored-row lifetime recovery
+
+The first mirrored/no-fall/jetpack-off flag stores form their row addresses
+directly; the reusable `row_record` owner begins only after those stores. That
+native lifetime raises focused matching from 42.36% to 43.18%, extends the
+exact prefix from 2 to 9 instructions, fixes the receiver register for the
+whole function, and leaves only the known glyph jump-table mismatch.
+
+The row model position, row model velocity, and parcel projection are three
+whole `Vector3` copies in the authored source. Keeping all three independently
+improving assignments raises the result to 44.07%. The selected authored row
+is then retained as the indexed `AuthoredSegmentRow` owner while each flag
+test reloads its leading word, matching the target's repeated loads and
+raising the result to 44.96%.
+
+## 2026-07-30 runtime clear flag update
+
+The runtime-cell clear pass updates byte 1 of `lane_and_flags` directly:
+`((unsigned char*)cell_flags)[1] &= 0x5f`. Removing the temporary whole-word
+round trip cuts 15 candidate instructions and raises focused matching to the
+current 45.47% frontier: 1240/1245 instructions, a 9-instruction exact prefix,
+108 clean references, 0 unresolved, 1 mismatch, and 60 unaudited. The sole
+audited mismatch remains
+`populate_runtime_track_cells_glyph_jump_table@0x437194` versus the candidate
+local switch table.
+
+A fresh inner-lane countdown `do` loop compiles byte-for-byte identically to
+the retained `for` loop. Earlier whole-clear countdown spelling was likewise
+neutral, while cursor-first payload advancement regressed. Those variants are
+recorded in `experiments.jsonl`; no loop-shape coercion, volatile dependency,
+register forcing, or jump-table fakematch was retained.

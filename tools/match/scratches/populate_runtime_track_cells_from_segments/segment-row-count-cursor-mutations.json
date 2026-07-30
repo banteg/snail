@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "segment-row-count-sum",
+      "find": "            for (int i = 0; i < level_definition.segment_count; ++i)\n                runtime_row_count += level_definition.segment_slots[i].row_count;",
+      "replacements": [
+        {
+          "name": "field-cursor-for-loop",
+          "text": "            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            for (int segment_slot_index = 0;\n                 segment_slot_index < level_definition.segment_count;\n                 ++segment_slot_index) {\n                runtime_row_count += *segment_row_count_cursor;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }"
+        },
+        {
+          "name": "field-cursor-while-loop",
+          "text": "            int segment_slot_index = 0;\n            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            while (segment_slot_index < level_definition.segment_count) {\n                runtime_row_count += *segment_row_count_cursor;\n                ++segment_slot_index;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }"
+        }
+      ]
+    }
+  ]
+}

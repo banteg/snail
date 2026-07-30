@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "attachment-path-mirror-branch",
+      "find": "                Path* template_record;\n                if (base[TRACK_MIRROR_FLAG_OFFSET] == 0)\n                    template_record = (Path*)(\n                        base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));\n                else\n                    template_record = (Path*)(\n                        base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA\n                        + template_index * sizeof(PathPair));",
+      "replacements": [
+        {
+          "name": "secondary-first",
+          "text": "                Path* template_record;\n                if (base[TRACK_MIRROR_FLAG_OFFSET])\n                    template_record = (Path*)(\n                        base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA\n                        + template_index * sizeof(PathPair));\n                else\n                    template_record = (Path*)(\n                        base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));"
+        }
+      ]
+    }
+  ]
+}

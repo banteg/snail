@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-lane-flags",
+      "find": "            int flags = *(int*)cell_flags;\n            ((unsigned char*)&flags)[1] &= 0x5f;\n            *(int*)cell_flags = flags;",
+      "replacements": [
+        {
+          "name": "direct-byte-mask",
+          "text": "            ((unsigned char*)cell_flags)[1] &= 0x5f;"
+        }
+      ]
+    }
+  ]
+}

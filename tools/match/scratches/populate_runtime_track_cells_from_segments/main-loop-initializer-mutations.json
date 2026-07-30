@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "segment-row-initializer",
+      "find": "    int segment_row = 0;",
+      "replacements": [
+        {
+          "name": "initialize-on-selection",
+          "text": "    int segment_row;"
+        }
+      ]
+    },
+    {
+      "name": "active-segment-initializer",
+      "find": "    char* active_segment = 0;",
+      "replacements": [
+        {
+          "name": "initialize-on-selection",
+          "text": "    char* active_segment;"
+        }
+      ]
+    }
+  ]
+}
