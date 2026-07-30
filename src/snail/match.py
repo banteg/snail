@@ -1881,6 +1881,66 @@ def audit_masked_operands(
         candidate_index for _, candidate_index in remaining_reference_pairs
     )
 
+    # Register allocation and constant staging can change the normalized
+    # instruction text while leaving a masked operand in the same semantic
+    # position. Give still-unpaired references one final ordered alignment on
+    # opcode, operand slot/kind, and canonical reference identity. This audits
+    # e.g. `mov edx, [ADDR]` against `mov eax, [ADDR]` without pairing a load
+    # with a store or treating two unrelated globals as equivalent.
+    def relaxed_reference_token(
+        line: DisassemblyLine,
+    ) -> tuple[str, tuple[tuple[int, str, tuple[str, ...]], ...]]:
+        opcode = line.text.partition(" ")[0]
+        return (
+            opcode,
+            tuple(
+                (
+                    reference.operand_index,
+                    reference.kind,
+                    alignment_keys(reference),
+                )
+                for reference in line.masked_references
+            ),
+        )
+
+    relaxed_target_indices = [
+        index
+        for index, line in enumerate(target_disassembly)
+        if line.masked_references and index not in used_target_indices
+    ]
+    relaxed_candidate_indices = [
+        index
+        for index, line in enumerate(candidate_disassembly)
+        if line.masked_references and index not in used_candidate_indices
+    ]
+    relaxed_reference_matcher = difflib.SequenceMatcher(
+        a=tuple(
+            relaxed_reference_token(target_disassembly[index])
+            for index in relaxed_target_indices
+        ),
+        b=tuple(
+            relaxed_reference_token(candidate_disassembly[index])
+            for index in relaxed_candidate_indices
+        ),
+        autojunk=False,
+    )
+    relaxed_reference_pairs = {
+        (
+            relaxed_target_indices[target_index],
+            relaxed_candidate_indices[candidate_index],
+        )
+        for target_index, candidate_index in equal_pairs(
+            relaxed_reference_matcher
+        )
+    }
+    reference_masked_pairs.update(relaxed_reference_pairs)
+    used_target_indices.update(
+        target_index for target_index, _ in relaxed_reference_pairs
+    )
+    used_candidate_indices.update(
+        candidate_index for _, candidate_index in relaxed_reference_pairs
+    )
+
     text_matcher = difflib.SequenceMatcher(
         a=tuple(line.text for line in target_disassembly),
         b=tuple(line.text for line in candidate_disassembly),

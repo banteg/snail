@@ -703,6 +703,118 @@ def test_masked_operand_audit_aligns_alias_equivalent_call_sequence() -> None:
     assert (5, 9) not in pairs
 
 
+def test_masked_operand_audit_aligns_equivalent_global_across_register_scheduling() -> None:
+    def global_line(
+        index: int,
+        text: str,
+        source: str,
+        key: str,
+        *alternate_keys: str,
+    ) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=index,
+            address=0x401000 + index,
+            text=text,
+            masked_references=(
+                MaskedReference(
+                    operand_index=1,
+                    kind="disp",
+                    source=source,
+                    value=None,
+                    text=f"{source}:{key}",
+                    key=f"ref:{key}",
+                    alternate_keys=tuple(
+                        f"ref:{alternate_key}"
+                        for alternate_key in alternate_keys
+                    ),
+                    explained=True,
+                ),
+            ),
+        )
+
+    target = (
+        global_line(
+            0,
+            "mov eax, dword [ADDR]",
+            "image",
+            "g_highest_route",
+            "g_runtime_config+0xa0",
+        ),
+        global_line(
+            1,
+            "mov ebx, dword [ADDR]",
+            "image",
+            "g_game",
+        ),
+    )
+    candidate = (
+        global_line(
+            0,
+            "mov edx, dword [ADDR]",
+            "reloc",
+            "g_runtime_config+0xa0",
+        ),
+        global_line(
+            1,
+            "mov eax, dword [ADDR]",
+            "reloc",
+            "g_game",
+        ),
+    )
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.ok_count == 2
+    assert audit.problem_count == 0
+    assert audit.entries[0].target_index == 0
+    assert audit.entries[0].candidate_index == 0
+    assert audit.entries[1].target_index == 1
+    assert audit.entries[1].candidate_index == 1
+
+
+def test_masked_operand_audit_does_not_relax_reference_operand_position() -> None:
+    reference = MaskedReference(
+        operand_index=1,
+        kind="disp",
+        source="image",
+        value=None,
+        text="image:g_state",
+        key="ref:g_state",
+        explained=True,
+    )
+    target = (
+        DisassemblyLine(
+            offset=0,
+            address=0x401000,
+            text="mov eax, dword [ADDR]",
+            masked_references=(reference,),
+        ),
+    )
+    candidate = (
+        DisassemblyLine(
+            offset=0,
+            address=0x401000,
+            text="mov dword [ADDR], eax",
+            masked_references=(
+                MaskedReference(
+                    operand_index=0,
+                    kind="disp",
+                    source="reloc",
+                    value=None,
+                    text="reloc:g_state",
+                    key="ref:g_state",
+                    explained=True,
+                ),
+            ),
+        ),
+    )
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.ok_count == 0
+    assert audit.unaudited_count == 2
+
+
 def test_masked_operand_audit_flags_unresolved_target_reference() -> None:
     # target: push 0x402000; ret. The image address has no function/string name,
     # so a matching ADDR shape against a candidate symbol is not proof-grade.
