@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "main-builder-lifetimes",
+      "find": "    if (runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)this;\n    int segment_row;\n    char* active_segment;\n    for (int build_row = 0; build_row < runtime_row_count;) {",
+      "replacements": [
+        {
+          "name": "build-row-before-empty-guard",
+          "text": "    int build_row = 0;\n    if (runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)this;\n    int segment_row;\n    char* active_segment;\n    while (build_row < runtime_row_count) {"
+        },
+        {
+          "name": "external-build-row-after-guard",
+          "text": "    if (runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)this;\n    int segment_row;\n    char* active_segment;\n    int build_row = 0;\n    while (build_row < runtime_row_count) {"
+        },
+        {
+          "name": "typed-runtime-owner",
+          "text": "    if (runtime_row_count <= 0)\n        return;\n\n    cRSubGame* build_runtime_owner = this;\n    char* base = (char*)build_runtime_owner;\n    int segment_row;\n    char* active_segment;\n    for (int build_row = 0; build_row < runtime_row_count;) {"
+        },
+        {
+          "name": "build-row-before-guard-with-typed-owner",
+          "text": "    int build_row = 0;\n    if (runtime_row_count <= 0)\n        return;\n\n    cRSubGame* build_runtime_owner = this;\n    char* base = (char*)build_runtime_owner;\n    int segment_row;\n    char* active_segment;\n    while (build_row < runtime_row_count) {"
+        },
+        {
+          "name": "active-segment-before-row-index",
+          "text": "    if (runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)this;\n    char* active_segment;\n    int segment_row;\n    for (int build_row = 0; build_row < runtime_row_count;) {"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-row-owner-lifetime",
+      "find": "            char* row_record = base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE;\n            *(char**)(row_record + offsetof(SubRow, source_segment)) = active_segment;\n            *(int*)(row_record + offsetof(SubRow, row_event_id)) = row_event_owner;",
+      "replacements": [
+        {
+          "name": "typed-owner-with-raw-alias",
+          "text": "            SubRow* runtime_row = (SubRow*)(\n                base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE);\n            char* row_record = (char*)runtime_row;\n            runtime_row->source_segment = (SubSegment*)active_segment;\n            runtime_row->row_event_id = row_event_owner;"
+        },
+        {
+          "name": "typed-owner-retain-raw-stores",
+          "text": "            SubRow* runtime_row = (SubRow*)(\n                base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE);\n            char* row_record = (char*)runtime_row;\n            *(char**)(row_record + offsetof(SubRow, source_segment)) = active_segment;\n            *(int*)(row_record + offsetof(SubRow, row_event_id)) = row_event_owner;"
+        },
+        {
+          "name": "raw-owner-with-typed-first-stores",
+          "text": "            char* row_record = base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE;\n            SubRow* runtime_row = (SubRow*)row_record;\n            runtime_row->source_segment = (SubSegment*)active_segment;\n            runtime_row->row_event_id = row_event_owner;"
+        },
+        {
+          "name": "source-store-before-raw-alias",
+          "text": "            SubRow* runtime_row = (SubRow*)(\n                base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE);\n            runtime_row->source_segment = (SubSegment*)active_segment;\n            runtime_row->row_event_id = row_event_owner;\n            char* row_record = (char*)runtime_row;"
+        }
+      ]
+    }
+  ]
+}

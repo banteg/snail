@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-lane-word-owner",
+      "find": "            ((unsigned char*)cell_flags)[1] &= 0x5f;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;",
+      "replacements": [
+        {
+          "name": "signed-word-byte-update",
+          "text": "            int lane_and_flags = *(int*)cell_flags;\n            ((unsigned char*)&lane_and_flags)[1] &= 0x5f;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;"
+        },
+        {
+          "name": "unsigned-word-byte-update",
+          "text": "            unsigned int lane_and_flags = *(unsigned int*)cell_flags;\n            ((unsigned char*)&lane_and_flags)[1] &= 0x5f;\n            *(unsigned int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;"
+        },
+        {
+          "name": "whole-word-mask",
+          "text": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;"
+        }
+      ]
+    }
+  ]
+}

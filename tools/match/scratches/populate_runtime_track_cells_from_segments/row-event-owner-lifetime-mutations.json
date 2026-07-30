@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-event-owner-declaration",
+      "find": "    int segment_cursor = 0;\n    mode = level_mode;",
+      "replacements": [
+        {
+          "name": "declare-before-segment-cursor",
+          "text": "    int row_event_owner;\n    int segment_cursor = 0;\n    mode = level_mode;"
+        }
+      ]
+    },
+    {
+      "name": "row-event-owner-initialization",
+      "find": "    int row_event_owner = 0;\n    player.follow_state.flag_3c = 0;",
+      "replacements": [
+        {
+          "name": "initialize-existing-owner",
+          "text": "    row_event_owner = 0;\n    player.follow_state.flag_3c = 0;"
+        }
+      ]
+    }
+  ]
+}

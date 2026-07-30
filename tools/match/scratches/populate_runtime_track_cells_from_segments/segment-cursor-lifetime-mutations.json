@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "segment-cursor-entry-owner",
+      "find": "void cRSubGame::BuildLevel()\n{\n    int runtime_build_seed;",
+      "replacements": [
+        {
+          "name": "declare-at-entry",
+          "text": "void cRSubGame::BuildLevel()\n{\n    int segment_cursor = 0;\n    int runtime_build_seed;"
+        }
+      ]
+    },
+    {
+      "name": "segment-cursor-late-owner",
+      "find": "    int segment_cursor = 0;\n    mode = level_mode;",
+      "replacements": [
+        {
+          "name": "consume-entry-owner",
+          "text": "    mode = level_mode;"
+        }
+      ]
+    }
+  ]
+}

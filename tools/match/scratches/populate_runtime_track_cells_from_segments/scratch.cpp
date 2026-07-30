@@ -317,7 +317,9 @@ void cRSubGame::BuildLevel()
         for (int lane = 0;
              lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));
              ++lane) {
-            ((unsigned char*)cell_flags)[1] &= 0x5f;
+            int lane_and_flags = *(int*)cell_flags;
+            lane_and_flags &= 0xffff5fff;
+            *(int*)cell_flags = lane_and_flags;
             *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;
             *(short*)cell_flags = 0;
             *(int*)cell_flags &= 0xffffafa7;

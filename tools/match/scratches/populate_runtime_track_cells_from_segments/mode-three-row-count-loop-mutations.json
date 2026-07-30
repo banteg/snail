@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-three-row-count-loop",
+      "find": "        for (int i = 0; i < 16; ++i)\n            runtime_row_count += level_definition.segment_slots[0].row_count;",
+      "replacements": [
+        {
+          "name": "countdown-do-loop",
+          "text": "        int rows_remaining = 16;\n        do {\n            runtime_row_count +=\n                level_definition.segment_slots[0].row_count;\n        } while (--rows_remaining != 0);"
+        },
+        {
+          "name": "countdown-explicit-store",
+          "text": "        int rows_remaining = 16;\n        do {\n            int next_runtime_row_count = runtime_row_count\n                + level_definition.segment_slots[0].row_count;\n            runtime_row_count = next_runtime_row_count;\n        } while (--rows_remaining != 0);"
+        },
+        {
+          "name": "countdown-for-loop",
+          "text": "        for (int rows_remaining = 16;\n             rows_remaining != 0;\n             --rows_remaining) {\n            runtime_row_count +=\n                level_definition.segment_slots[0].row_count;\n        }"
+        }
+      ]
+    }
+  ]
+}

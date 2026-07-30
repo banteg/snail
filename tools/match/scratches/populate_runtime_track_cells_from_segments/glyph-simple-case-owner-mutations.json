@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "glyph-g-cell-owner",
+      "find": "                case 'G':\n                    ((BodBase*)(cell + CELL_BOD_BASE))\n                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_GLYPH_G;\n                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;\n                    break;",
+      "replacements": [
+        {
+          "name": "scoped-complete-owner",
+          "text": "                case 'G': {\n                    cRSubLoc* runtime_cell =\n                        (cRSubLoc*)(cell + CELL_BOD_BASE);\n                    runtime_cell->SetObject(\n                        ROOT_BOD_OBJECT(slide_slices.storage[0]));\n                    runtime_cell->tile_id = SUBLOC_TILE_GLYPH_G;\n                    runtime_cell->list_flags |= 0x20;\n                    break;\n                }"
+        },
+        {
+          "name": "direct-complete-owner",
+          "text": "                case 'G':\n                    ((cRSubLoc*)(cell + CELL_BOD_BASE))->SetObject(\n                        ROOT_BOD_OBJECT(slide_slices.storage[0]));\n                    ((cRSubLoc*)(cell + CELL_BOD_BASE))->tile_id =\n                        SUBLOC_TILE_GLYPH_G;\n                    ((cRSubLoc*)(cell + CELL_BOD_BASE))->list_flags |= 0x20;\n                    break;"
+        },
+        {
+          "name": "explicit-list-flags-value",
+          "text": "                case 'G': {\n                    ((BodBase*)(cell + CELL_BOD_BASE))\n                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_GLYPH_G;\n                    int list_flags = *(int*)(cell + CELL_LIST_FLAGS);\n                    list_flags |= 0x20;\n                    *(int*)(cell + CELL_LIST_FLAGS) = list_flags;\n                    break;\n                }"
+        },
+        {
+          "name": "typed-stores-explicit-flags",
+          "text": "                case 'G': {\n                    cRSubLoc* runtime_cell =\n                        (cRSubLoc*)(cell + CELL_BOD_BASE);\n                    runtime_cell->SetObject(\n                        ROOT_BOD_OBJECT(slide_slices.storage[0]));\n                    runtime_cell->tile_id = SUBLOC_TILE_GLYPH_G;\n                    int list_flags = runtime_cell->list_flags;\n                    list_flags |= 0x20;\n                    runtime_cell->list_flags = list_flags;\n                    break;\n                }"
+        }
+      ]
+    }
+  ]
+}

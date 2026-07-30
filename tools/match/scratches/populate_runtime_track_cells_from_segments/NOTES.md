@@ -8,7 +8,7 @@ on.
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
 glyph-dispatch, authored-row, attachment, clear-loop, and segment-scoped row
-builder slices: 52.25%, 1239/1245 candidate instructions, with a 2-instruction
+builder slices: 55.64%, 1239/1245 candidate instructions, with a 9-instruction
 exact prefix
 (`uv run snail match scratch
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
@@ -1043,7 +1043,7 @@ raising the result to 44.96%.
 The runtime-cell clear pass updates byte 1 of `lane_and_flags` directly:
 `((unsigned char*)cell_flags)[1] &= 0x5f`. Removing the temporary whole-word
 round trip cuts 15 candidate instructions and raises focused matching to the
-current 45.47% frontier: 1240/1245 instructions, a 9-instruction exact prefix,
+then-current 45.47% frontier: 1240/1245 instructions, a 9-instruction exact prefix,
 108 clean references, 0 unresolved, 1 mismatch, and 60 unaudited. The sole
 audited mismatch remains
 `populate_runtime_track_cells_glyph_jump_table@0x437194` versus the candidate
@@ -1089,3 +1089,39 @@ The sole audited mismatch remains the real
 `populate_runtime_track_cells_glyph_jump_table@0x437194` layout versus the
 compiler-generated local switch table. It is not masked or replaced with a
 hand-authored table.
+
+## 2026-07-30 runtime clear word owner
+
+The Windows lane clear at `0x43612c..0x436131` loads the complete
+`lane_and_flags` word, clears byte 1 through `and ch, 0x5f`, and stores the
+complete word. Retaining that real value owner as
+`lane_and_flags &= 0xffff5fff` raises focused matching from 52.25% to 55.64%
+(`2805/5042` weighted bytes), restores the 9-instruction exact prefix, and
+keeps the candidate at 1239/1245 instructions. The masked audit remains
+111 clean / 0 unresolved / 1 mismatch / 55 unaudited; the only mismatch is
+still the physical glyph jump-table layout.
+
+This source shape also restores the target's EBX receiver and initial EBP zero
+carrier across the function. Byte-addressed signed and unsigned temporary
+variants reached only 54.82% and added audit/count debt, so the exact
+whole-word mask is the retained explanation.
+
+The improved allocator frontier was followed by bounded replays rather than
+register coercion:
+
+- lane countdown, mode-3 countdown, segment-row-count cursor, main-builder
+  lifetime/order, receiver-alias, runtime-row owner, and representative glyph
+  owner variants were byte-neutral;
+- a fully target-shaped countdown clear reached 55.53%, so its outer and
+  payload loop changes were rejected;
+- widening the setup-owner scopes or removing the unconditional segment
+  cursor initializer reached at most 55.34%;
+- a separately scoped `selected_segment` enlarged the frame from `0x44` to
+  `0x48` and regressed to 50.84%.
+
+The remaining first mismatch is the saved receiver at stack slot `-0x3c`
+instead of native `-0x38`; native uses the adjacent slot for
+`active_segment`. Declaration-order, typed-owner, alias-elision, and honest
+scope-interaction probes did not move those slots without a broader
+regression, so no dummy local, padding, volatile dependency, or forced
+register was retained.

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "setup-owner-declarations",
+      "find": "void cRSubGame::BuildLevel()\n{\n    int runtime_build_seed;",
+      "replacements": [
+        {
+          "name": "declare-native-setup-owners",
+          "text": "void cRSubGame::BuildLevel()\n{\n    int authored_length;\n    int segment_cursor;\n    int row_event_owner;\n    int runtime_build_seed;"
+        }
+      ]
+    },
+    {
+      "name": "segment-cursor-late-declaration",
+      "find": "    int segment_cursor = 0;\n    mode = level_mode;",
+      "replacements": [
+        {
+          "name": "consume-function-owner",
+          "text": "    mode = level_mode;"
+        }
+      ]
+    },
+    {
+      "name": "authored-length-late-declaration",
+      "find": "        int authored_length = level_definition.random_length;",
+      "replacements": [
+        {
+          "name": "assign-function-owner",
+          "text": "        authored_length = level_definition.random_length;"
+        }
+      ]
+    },
+    {
+      "name": "row-event-owner-late-declaration",
+      "find": "    int row_event_owner = 0;\n    player.follow_state.flag_3c = 0;",
+      "replacements": [
+        {
+          "name": "initialize-function-owner",
+          "text": "    row_event_owner = 0;\n    player.follow_state.flag_3c = 0;"
+        }
+      ]
+    }
+  ]
+}

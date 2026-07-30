@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "main-builder-local-order",
+      "find": "    char* base = (char*)this;\n    int segment_row;\n    char* active_segment;\n    for (int build_row = 0; build_row < runtime_row_count;) {",
+      "replacements": [
+        {
+          "name": "active-base-segment-row",
+          "text": "    char* active_segment;\n    char* base = (char*)this;\n    int segment_row;\n    for (int build_row = 0; build_row < runtime_row_count;) {"
+        },
+        {
+          "name": "segment-row-active-base",
+          "text": "    int segment_row;\n    char* active_segment;\n    char* base = (char*)this;\n    for (int build_row = 0; build_row < runtime_row_count;) {"
+        },
+        {
+          "name": "active-segment-row-base",
+          "text": "    char* active_segment;\n    int segment_row;\n    char* base = (char*)this;\n    for (int build_row = 0; build_row < runtime_row_count;) {"
+        }
+      ]
+    }
+  ]
+}

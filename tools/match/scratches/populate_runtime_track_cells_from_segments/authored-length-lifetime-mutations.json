@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "authored-length-declaration",
+      "find": "    int segment_cursor = 0;\n    mode = level_mode;",
+      "replacements": [
+        {
+          "name": "declare-before-segment-cursor",
+          "text": "    int authored_length;\n    int segment_cursor = 0;\n    mode = level_mode;"
+        }
+      ]
+    },
+    {
+      "name": "authored-length-assignment",
+      "find": "        int authored_length = level_definition.random_length;",
+      "replacements": [
+        {
+          "name": "assign-existing-owner",
+          "text": "        authored_length = level_definition.random_length;"
+        }
+      ]
+    }
+  ]
+}

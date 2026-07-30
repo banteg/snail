@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "receiver-alias-shape",
+      "find": "    char* base = (char*)this;",
+      "replacements": [
+        {
+          "name": "const-byte-alias",
+          "text": "    char* const base = (char*)this;"
+        },
+        {
+          "name": "typed-const-owner",
+          "text": "    cRSubGame* const build_runtime_owner = this;\n    char* const base = (char*)build_runtime_owner;"
+        },
+        {
+          "name": "direct-this-probe",
+          "text": "#define base ((char*)this)"
+        }
+      ]
+    }
+  ]
+}
