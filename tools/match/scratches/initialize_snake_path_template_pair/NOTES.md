@@ -301,3 +301,26 @@ weighted bytes while removing another instruction, so that marginal source
 expansion is rejected. Splitting the reused source sample index into separate
 lead and curve declarations, independently and together, is byte-identical;
 the existing compact spelling remains.
+
+## 2026-07-30 curve ownership bound
+
+Windows reloads both curve sample arrays through indexed expressions for the
+initializer and orientation blocks, but transferring those expressions into
+the scratch changes the enclosing register allocation destructively. A
+complete direct initializer-and-orientation transfer reaches exactly 652/652
+candidate instructions yet falls from **49.42%** to **44.48%**. Transferring
+only the orientation owners is also negative at **45.74%** (638/652), a loss
+of 89.62 weighted bytes.
+
+The two lanes were then isolated to rule out a coupled allocation artifact:
+
+```text
+direct primary orientation:   41.93%, 636/652, -182 weighted bytes
+direct secondary orientation: 42.20%, 637/652, -176 weighted bytes
+```
+
+All variants preserve the five-instruction prefix and the clean 40-reference
+audit. Because each direct lane independently regresses, exact instruction
+count in the complete transfer is not evidence of recovered ownership. The
+retained previous/current pointer form remains the strongest measured source
+at **49.42%**, 631/652 instructions.
