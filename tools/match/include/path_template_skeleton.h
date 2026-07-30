@@ -216,6 +216,9 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             primary_samples[sample_index].transform.basis_forward.cross_vectors(
                 &primary_samples[sample_index].transform.basis_right,
                 &primary_samples[sample_index].transform.basis_up);
+#if PATH_VARIANT == 1
+            primary_samples[sample_index].transform.RotLocalZ(roll);
+#endif
 
             secondary_samples[sample_index].transform.basis_right =
                 Vector3(1.0f, 0.0f, 0.0f);
@@ -230,7 +233,6 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 &secondary_samples[sample_index].transform.basis_up);
 
 #if PATH_VARIANT == 1
-            primary_samples[sample_index].transform.RotLocalZ(roll);
             secondary_samples[sample_index].transform.RotLocalZ(roll);
 #endif
         }

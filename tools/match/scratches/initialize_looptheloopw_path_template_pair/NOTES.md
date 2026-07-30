@@ -163,3 +163,21 @@ Focused matching rises from 65.73% (`746/745`) to **66.62%** (`744/745`) with
 the `10/745` prefix and clean `55/0/0/0` reference audit unchanged. Every
 other skeleton consumer recompiles byte-identically, so this is a bounded
 shared-family recovery rather than a variant-specific schedule tradeoff.
+
+## 2026-07-29 W-roll call-order recovery
+
+The Windows body finishes the primary basis and immediately applies its
+`RotLocalZ(roll)` before constructing the secondary basis. Only after the
+secondary cross product does it apply the secondary rotation. The shared
+skeleton had deferred both rotations until after both bases were complete,
+which changed observable call order as well as compiler lifetimes.
+
+Moving only the primary W rotation to its native position raises focused
+matching from 66.62% (`744/745`) to **67.29%** (`744/745`). The
+`10/745` exact prefix and clean `55/0/0/0` reference audit remain unchanged.
+The non-W LoopTheLoop consumer recompiles byte-identically at 70.64%, proving
+the recovery is isolated to `PATH_VARIANT == 1`.
+
+The corrected region still differs in address-register selection and stack
+homes, but its semantic basis/call sequence now matches the target. Those
+remaining allocation residuals are not evidence for another source rewrite.
