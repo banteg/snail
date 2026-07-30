@@ -184,13 +184,13 @@ void cRPath::initialize_slalombig_path_template_pair(
     char* texture_b,
     char* cap_texture)
 {
+    width_cells = width_cells_;
     kind = PATH_TEMPLATE_KIND_SLALOMBIG;
+    int lead_out_start = curve_segments + 4;
     is_mirrored_x = 0;
     side_exit_mode = 0;
-    width_cells = width_cells_;
-    width_or_scale = 1.0f;
-    int lead_out_start = curve_segments + 4;
     int total_segments = lead_out_start + 4;
+    width_or_scale = 1.0f;
     segment_count = total_segments;
     segment_count_f = (float)total_segments;
     get_path_nodes();
@@ -217,22 +217,22 @@ void cRPath::initialize_slalombig_path_template_pair(
 
     int departure_index = lead_out_start;
     do {
-        PathTemplateSample* primary = &primary_samples[departure_index];
-        PathTemplateSample* secondary = &secondary_samples[departure_index];
-        primary->center_x = 0.0f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
-        primary->transform.position.x = primary->center_x;
+        primary_samples[departure_index].center_x = 0.0f;
+        primary_samples[departure_index].rotation_scalar_98 = 0.0f;
+        primary_samples[departure_index].rotation_scalar_94 = 0.0f;
+        primary_samples[departure_index].special_scalar = 0.0f;
+        primary_samples[departure_index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[departure_index].transform);
+        primary_samples[departure_index].transform.position.x =
+            primary_samples[departure_index].center_x;
         float z = (float)departure_index;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = z;
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = z;
+        primary_samples[departure_index].transform.position.y = 0.0f;
+        primary_samples[departure_index].transform.position.z = z;
+        set_matrix_identity(&secondary_samples[departure_index].transform);
+        secondary_samples[departure_index].transform.position.x =
+            primary_samples[departure_index].center_x;
+        secondary_samples[departure_index].transform.position.y = 0.49000001f;
+        secondary_samples[departure_index].transform.position.z = z;
         ++departure_index;
     } while (departure_index - 4 - curve_segments < 4);
 
@@ -250,10 +250,71 @@ void cRPath::initialize_slalombig_path_template_pair(
         float angle = t * 6.2831855f;
         float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
         int sample_index = i + 4;
-        initialize_pair_sample(this, sample_index, center, 0.0f, (float)sample_index);
-        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];
-        orient_previous_with_up(primary_samples, sample_index, i, roll_source);
-        orient_previous_with_up(secondary_samples, sample_index, i, roll_source);
+        primary_samples[sample_index].center_x = center;
+        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[sample_index].special_scalar = 0.0f;
+        primary_samples[sample_index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[sample_index].transform);
+        primary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        float z = (float)(i + 4);
+        primary_samples[sample_index].transform.position.y = 0.0f;
+        primary_samples[sample_index].transform.position.z = z;
+
+        set_matrix_identity(&secondary_samples[sample_index].transform);
+        secondary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        secondary_samples[sample_index].transform.position.y = 0.49000001f;
+        secondary_samples[sample_index].transform.position.z = z;
+
+        if (i == 0) {
+            primary_samples[sample_index - 1].transform.RotIdentity();
+            secondary_samples[sample_index - 1].transform.RotIdentity();
+        } else {
+            primary_samples[sample_index - 1].transform.basis_up =
+                Vector3(0.0f, 1.0f, 0.0f);
+            primary_samples[sample_index - 1].transform.basis_forward =
+                Vector3(
+                    primary_samples[sample_index].transform.position.x
+                        - primary_samples[sample_index - 1].transform.position.x,
+                    primary_samples[sample_index].transform.position.y
+                        - primary_samples[sample_index - 1].transform.position.y,
+                    primary_samples[sample_index].transform.position.z
+                        - primary_samples[sample_index - 1].transform.position.z);
+            primary_samples[sample_index - 1]
+                .transform.basis_forward.Normalize();
+            primary_samples[sample_index - 1]
+                .transform.basis_right.cross_vectors(
+                    &primary_samples[sample_index - 1].transform.basis_up,
+                    &primary_samples[sample_index - 1].transform.basis_forward);
+            float primary_roll =
+                primary_samples[sample_index - 1].center_x * 0.2617994f;
+            primary_samples[sample_index - 1]
+                .transform.RotLocalZ(primary_roll);
+
+            secondary_samples[sample_index - 1].transform.basis_up =
+                Vector3(0.0f, 1.0f, 0.0f);
+            secondary_samples[sample_index - 1].transform.basis_forward =
+                Vector3(
+                    secondary_samples[sample_index].transform.position.x
+                        - secondary_samples[sample_index - 1].transform.position.x,
+                    secondary_samples[sample_index].transform.position.y
+                        - secondary_samples[sample_index - 1].transform.position.y,
+                    secondary_samples[sample_index].transform.position.z
+                        - secondary_samples[sample_index - 1].transform.position.z);
+            secondary_samples[sample_index - 1]
+                .transform.basis_forward.Normalize();
+            secondary_samples[sample_index - 1]
+                .transform.basis_right.cross_vectors(
+                    &secondary_samples[sample_index - 1].transform.basis_up,
+                    &secondary_samples[sample_index - 1].transform.basis_forward);
+
+            float secondary_roll =
+                primary_samples[sample_index - 1].center_x * 0.2617994f;
+            secondary_samples[sample_index - 1]
+                .transform.RotLocalZ(secondary_roll);
+        }
     }
 
     compute_terminal_deltas(this);

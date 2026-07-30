@@ -262,3 +262,31 @@ from 36.90% (659/696) to **39.82%** (655/696), a total gain of 74.92 weighted
 bytes. The two-instruction prefix and the 39 clean plus 2 unaudited reference
 receipt remain unchanged. The four-instruction shortening is bounded to
 directly proven native arithmetic owners.
+
+## 2026-07-30 complete sample-owner dependency
+
+Raw Windows instructions preserve the same ownership graph already recovered
+for Slalom: width is stored before kind, `curve_segments + 4` remains the
+departure owner, both fixed arrays are reloaded through that index, and the
+curved initializer and both orientation lanes share one advancing sample
+offset. The paired mobile bodies independently support the logical
+first-curve guard.
+
+Recovering the native header, direct departure samples, direct curved
+initializer, and shared direct orientation as one transaction raises focused
+matching from **39.82%** to **50.98%**. It adds 286 weighted bytes, moves the
+candidate from 655 to **685/696** instructions, grows the exact prefix from 2
+to **6/696**, and resolves the two remaining unaudited operands. The receipt is
+now **40 clean references with no unresolved, mismatched, or unaudited
+entries**.
+
+Reverse probes bound each required part on the new frontier. Restoring the
+departure pointer pair loses 316 weighted bytes; restoring only the curved
+initializer helper loses 303; restoring the two orientation helpers loses 273
+and reintroduces both audit gaps. Changing the nonnegative logical
+`i == 0` guard to signed `i <= 0` loses 141 weighted bytes.
+
+The old header order happens to gain four fuzzy bytes after the other owners
+are fixed, but it contradicts the observed width/kind/departure/flag store
+order and adds no prefix, instruction-count, or audit benefit. That metric-only
+tradeoff is recorded and rejected; the instruction-backed header is retained.
