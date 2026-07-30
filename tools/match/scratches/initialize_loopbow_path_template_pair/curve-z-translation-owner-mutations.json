@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-z-translation-owner",
+      "find": "            primary_samples[sample_index].transform.position.z -= 7.0f;\n            secondary_samples[sample_index].transform.position.z -= 7.0f;\n            primary_samples[sample_index].transform.Multiply(rotation);\n            secondary_samples[sample_index].transform.Multiply(rotation);\n            primary_samples[sample_index].transform.position.z += 7.0f;\n            secondary_samples[sample_index].transform.position.z += 7.0f;",
+      "replacements": [
+        {
+          "name": "assigned-direct-z",
+          "text": "            primary_samples[sample_index].transform.position.z =\n                primary_samples[sample_index].transform.position.z - 7.0f;\n            secondary_samples[sample_index].transform.position.z =\n                secondary_samples[sample_index].transform.position.z - 7.0f;\n            primary_samples[sample_index].transform.Multiply(rotation);\n            secondary_samples[sample_index].transform.Multiply(rotation);\n            primary_samples[sample_index].transform.position.z =\n                primary_samples[sample_index].transform.position.z + 7.0f;\n            secondary_samples[sample_index].transform.position.z =\n                secondary_samples[sample_index].transform.position.z + 7.0f;"
+        },
+        {
+          "name": "position-pointers",
+          "text": "            Vector3* primary_curve_position =\n                &primary_samples[sample_index].transform.position;\n            Vector3* secondary_curve_position =\n                &secondary_samples[sample_index].transform.position;\n            primary_curve_position->z -= 7.0f;\n            secondary_curve_position->z -= 7.0f;\n            primary_samples[sample_index].transform.Multiply(rotation);\n            secondary_samples[sample_index].transform.Multiply(rotation);\n            primary_curve_position->z += 7.0f;\n            secondary_curve_position->z += 7.0f;"
+        },
+        {
+          "name": "z-pointers",
+          "text": "            float* primary_curve_z =\n                &primary_samples[sample_index].transform.position.z;\n            float* secondary_curve_z =\n                &secondary_samples[sample_index].transform.position.z;\n            *primary_curve_z -= 7.0f;\n            *secondary_curve_z -= 7.0f;\n            primary_samples[sample_index].transform.Multiply(rotation);\n            secondary_samples[sample_index].transform.Multiply(rotation);\n            *primary_curve_z += 7.0f;\n            *secondary_curve_z += 7.0f;"
+        },
+        {
+          "name": "sample-pointers",
+          "text": "            AttachmentSample* primary_curve_sample =\n                &primary_samples[sample_index];\n            AttachmentSample* secondary_curve_sample =\n                &secondary_samples[sample_index];\n            primary_curve_sample->transform.position.z -= 7.0f;\n            secondary_curve_sample->transform.position.z -= 7.0f;\n            primary_curve_sample->transform.Multiply(rotation);\n            secondary_curve_sample->transform.Multiply(rotation);\n            primary_curve_sample->transform.position.z += 7.0f;\n            secondary_curve_sample->transform.position.z += 7.0f;"
+        },
+        {
+          "name": "assigned-subtract-compound-add",
+          "text": "            primary_samples[sample_index].transform.position.z =\n                primary_samples[sample_index].transform.position.z - 7.0f;\n            secondary_samples[sample_index].transform.position.z =\n                secondary_samples[sample_index].transform.position.z - 7.0f;\n            primary_samples[sample_index].transform.Multiply(rotation);\n            secondary_samples[sample_index].transform.Multiply(rotation);\n            primary_samples[sample_index].transform.position.z += 7.0f;\n            secondary_samples[sample_index].transform.position.z += 7.0f;"
+        },
+        {
+          "name": "compound-subtract-assigned-add",
+          "text": "            primary_samples[sample_index].transform.position.z -= 7.0f;\n            secondary_samples[sample_index].transform.position.z -= 7.0f;\n            primary_samples[sample_index].transform.Multiply(rotation);\n            secondary_samples[sample_index].transform.Multiply(rotation);\n            primary_samples[sample_index].transform.position.z =\n                primary_samples[sample_index].transform.position.z + 7.0f;\n            secondary_samples[sample_index].transform.position.z =\n                secondary_samples[sample_index].transform.position.z + 7.0f;"
+        }
+      ]
+    }
+  ]
+}

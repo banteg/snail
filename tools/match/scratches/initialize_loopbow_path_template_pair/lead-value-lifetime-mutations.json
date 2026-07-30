@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-value-lifetime",
+      "find": "    int i = 0;\n    do {\n        float fi = (float)i;",
+      "replacements": [
+        {
+          "name": "function-block-float-after-index",
+          "text": "    int i = 0;\n    float fi;\n    do {\n        fi = (float)i;"
+        },
+        {
+          "name": "function-block-float-before-index",
+          "text": "    float fi;\n    int i = 0;\n    do {\n        fi = (float)i;"
+        },
+        {
+          "name": "initialized-function-block-float",
+          "text": "    int i = 0;\n    float fi = 0.0f;\n    do {\n        fi = (float)i;"
+        },
+        {
+          "name": "split-loop-local-float",
+          "text": "    int i = 0;\n    do {\n        float fi;\n        fi = (float)i;"
+        }
+      ]
+    }
+  ]
+}

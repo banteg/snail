@@ -324,3 +324,25 @@ exactly 796/796 candidate/target instructions, prefix 10/796, the native
 `0x9c` frame, and all 63 masked references clean. The expanded ledger now
 validates as eight sweeps covering 84 unique variants with no malformed or
 repeated records; this evidence supersedes the prior stalled marker.
+
+## 2026-07-30 scalar stack-coloring boundary
+
+The current target and candidate both contain exactly 796 instructions and use
+the native `0x9c` frame, but their early scalar owners occupy different stack
+homes. Native places `curve_segment_count_f` and the lead-pass float at
+`[esp+0x18]` and `[esp+0x1c]`; the candidate assigns those two values in the
+opposite order. The center offset and integer count owners are likewise a
+permutation, which cascades into later vector temporary slots.
+
+Ordinary source lifetime changes do not recover that coloring. Four loop- and
+function-block placements for the lead float are byte-identical. Six split,
+combined, and reordered declaration schedules for the curve, total, and
+floating counts are also byte-identical. The allocator is responding to the
+full interference graph rather than lexical declaration order.
+
+The adjacent curve-pivot translation is similarly bounded. Compound and
+assigned direct Z writes are byte-identical at 72.49%; position or float
+pointers lose 120 weighted bytes, and persistent sample pointers lose 378.
+The direct operators therefore remain retained. These three non-improving
+sweeps close the evidenced scalar-layout neighborhood without register,
+volatile, or dummy-lifetime forcing.

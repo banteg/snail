@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "count-local-schedule",
+      "find": "    int curve_segment_count = (int)(curve_scale * 6.2831855f);\n    int total_segment_count = curve_segment_count + 14;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)total_segment_count;\n\n    float curve_segment_count_f = (float)curve_segment_count;\n    curve_scale = curve_segment_count_f * 0.15915494f;",
+      "replacements": [
+        {
+          "name": "split-count-declarations",
+          "text": "    int curve_segment_count;\n    int total_segment_count;\n    curve_segment_count = (int)(curve_scale * 6.2831855f);\n    total_segment_count = curve_segment_count + 14;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)total_segment_count;\n\n    float curve_segment_count_f = (float)curve_segment_count;\n    curve_scale = curve_segment_count_f * 0.15915494f;"
+        },
+        {
+          "name": "combined-count-declaration",
+          "text": "    int curve_segment_count, total_segment_count;\n    curve_segment_count = (int)(curve_scale * 6.2831855f);\n    total_segment_count = curve_segment_count + 14;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)total_segment_count;\n\n    float curve_segment_count_f = (float)curve_segment_count;\n    curve_scale = curve_segment_count_f * 0.15915494f;"
+        },
+        {
+          "name": "total-declared-first",
+          "text": "    int total_segment_count;\n    int curve_segment_count = (int)(curve_scale * 6.2831855f);\n    total_segment_count = curve_segment_count + 14;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)total_segment_count;\n\n    float curve_segment_count_f = (float)curve_segment_count;\n    curve_scale = curve_segment_count_f * 0.15915494f;"
+        },
+        {
+          "name": "float-declared-first",
+          "text": "    float curve_segment_count_f;\n    int curve_segment_count = (int)(curve_scale * 6.2831855f);\n    int total_segment_count = curve_segment_count + 14;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)total_segment_count;\n\n    curve_segment_count_f = (float)curve_segment_count;\n    curve_scale = curve_segment_count_f * 0.15915494f;"
+        },
+        {
+          "name": "float-then-split-counts",
+          "text": "    float curve_segment_count_f;\n    int curve_segment_count;\n    int total_segment_count;\n    curve_segment_count = (int)(curve_scale * 6.2831855f);\n    total_segment_count = curve_segment_count + 14;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)total_segment_count;\n\n    curve_segment_count_f = (float)curve_segment_count;\n    curve_scale = curve_segment_count_f * 0.15915494f;"
+        },
+        {
+          "name": "counts-then-float-declaration",
+          "text": "    int curve_segment_count;\n    int total_segment_count;\n    float curve_segment_count_f;\n    curve_segment_count = (int)(curve_scale * 6.2831855f);\n    total_segment_count = curve_segment_count + 14;\n    width_or_scale = 1.0f;\n    segment_count = total_segment_count;\n    segment_count_f = (float)total_segment_count;\n\n    curve_segment_count_f = (float)curve_segment_count;\n    curve_scale = curve_segment_count_f * 0.15915494f;"
+        }
+      ]
+    }
+  ]
+}
