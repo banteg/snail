@@ -256,3 +256,21 @@ the aggregate loses 15.20 weighted bytes from the winner, retaining only the
 position pointer loses 33.87, and restoring the scalar-direct form loses
 26.87. The paired source is retained because both native lifetimes and the
 bounded compiler result agree.
+
+## 2026-07-30 fixed-sample byte ownership bound
+
+Windows `0x426d1b..0x426de7` preserves a logical lead Z index beside the
+`0xa8` sample-byte cursor, and `0x426ded..0x426ee4` preserves a logical tail
+index beside its separately derived byte cursor. Replaying both address owners
+closes the remaining fixed-sample hypothesis.
+
+The tail byte cursor is exactly byte-identical to the retained indexed source:
+**56.45%**, 647/671 instructions, prefix 54/671, with all 41 references clean.
+The lead cursor alone loses 57.38 weighted bytes, grows the candidate by two
+instructions, and cuts the exact prefix to 15. Adding the neutral tail owner
+recovers 20.46 of those bytes and the two instructions, but the pair still
+loses 36.92 weighted bytes and keeps the shorter prefix.
+
+The native byte cursors are therefore compiler-derived from the retained
+logical owners in this allocation context; no neutral or regressive source
+change is kept.

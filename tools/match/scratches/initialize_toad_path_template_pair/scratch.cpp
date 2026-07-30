@@ -197,50 +197,77 @@ void cRPath::initialize_toad_path_template_pair(
         secondary_samples[index].delta_length = 1.0f;
     }
 
+    int curve_sample_offset = lead_count * sizeof(AttachmentSample);
     for (i = 0; i < 26; ++i) {
-        int index = lead_count + i;
         float phase = (float)i * 6.2831855f / 26.0f;
         float angle = (1.0f - cosine(phase)) * 0.5f;
         angle = angle * turn_sign * 3.1415927f * 0.5f;
 
-        primary_samples[index].center_x = start_x;
-        primary_samples[index].rotation_scalar_98 = 0.0f;
-        primary_samples[index].rotation_scalar_94 = 0.0f;
-        primary_samples[index].special_scalar = 0.0f;
-        primary_samples[index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[index].transform);
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->center_x =
+            start_x;
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->rotation_scalar_98 =
+            0.0f;
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->rotation_scalar_94 =
+            0.0f;
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->special_scalar =
+            0.0f;
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->lateral_scale =
+            1.0f;
+        set_matrix_identity(
+            &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->transform);
         float turn_x = sine(angle);
-        primary_samples[index].transform.position.x = turn_x + turn_x + start_x;
-        primary_samples[index].transform.position.z = (float)(lead_count + i);
-        primary_samples[index].transform.position.y = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.position.x = turn_x + turn_x + start_x;
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.position.z = (float)(lead_count + i);
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.position.y = 0.0f;
 
-        primary_samples[index].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-        primary_samples[index].transform.basis_forward = Vector3(
-            primary_samples[index].transform.position.x -
-                primary_samples[index - 1].transform.position.x,
-            primary_samples[index].transform.position.y -
-                primary_samples[index - 1].transform.position.y,
-            primary_samples[index].transform.position.z -
-                primary_samples[index - 1].transform.position.z);
-        primary_samples[index].transform.basis_forward.Normalize();
-        primary_samples[index].transform.basis_right.cross_vectors(
-            &primary_samples[index].transform.basis_up,
-            &primary_samples[index].transform.basis_forward);
-        primary_samples[index].transform.RotLocalZ(angle);
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.basis_forward = Vector3(
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                    ->transform.position.x
+                - ((AttachmentSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                    ->transform.position.x,
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                    ->transform.position.y
+                - ((AttachmentSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                    ->transform.position.y,
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                    ->transform.position.z
+                - ((AttachmentSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                    ->transform.position.z);
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.basis_forward.Normalize();
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.basis_right.cross_vectors(
+            &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.basis_up,
+            &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.basis_forward);
+        ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.RotLocalZ(angle);
 
-        secondary_samples[index].transform = primary_samples[index].transform;
+        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))->transform =
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->transform;
         float offset_x =
-            primary_samples[index].transform.basis_up.x * 0.49000001f;
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.basis_up.x * 0.49000001f;
         float offset_y =
-            primary_samples[index].transform.basis_up.y * 0.49000001f;
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.basis_up.y * 0.49000001f;
         float offset_z =
-            primary_samples[index].transform.basis_up.z * 0.49000001f;
-        secondary_samples[index].transform.position.x +=
-            offset_x;
-        secondary_samples[index].transform.position.y +=
-            offset_y;
-        secondary_samples[index].transform.position.z +=
-            offset_z;
+            ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.basis_up.z * 0.49000001f;
+        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))
+            ->transform.position.x += offset_x;
+        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))
+            ->transform.position.y += offset_y;
+        ((AttachmentSample*)((char*)secondary_samples + curve_sample_offset))
+            ->transform.position.z += offset_z;
+        curve_sample_offset += sizeof(AttachmentSample);
     }
 
     compute_path_deltas(this);

@@ -268,3 +268,31 @@ pointers lose 62 bytes, and direct arrays lose 136. Swapping facequad/vertex
 source declarations is byte-identical. Retesting the native-looking
 per-column sample plus late vertex destination loses 11 bytes, while either
 half alone loses 12 to 17. No delta or mesh owner change is retained.
+
+## 2026-07-30 curved sample byte ownership
+
+Windows `0x42ce5c..0x42d02e` and both mobile bodies preserve a logical
+26-sample curve counter beside one advancing `0xa8` byte cursor initialized
+from `lead_count`. Replacing the derived array index with that direct cursor
+adds 3.73 weighted bytes without changing any structural metric:
+
+```text
+match: 58.18% (was 58.02%)
+target: 663 insns, candidate: 633 insns
+prefix: 15/663 target insns
+masked operands: 33 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The source keeps direct base-plus-offset casts because they reproduce the
+native repeated address graph. Materializing scoped primary, previous, and
+secondary pointers instead expands the stack frame, falls to 39.00%, shortens
+the candidate to 619 instructions, and leaves a one-instruction prefix.
+
+The adjacent fixed loops are closed on the new frontier. Windows
+`0x42cc97..0x42cd57` and `0x42cd69..0x42ce52` also contain logical and byte
+owners, but explicit lead addressing loses 138.12 weighted bytes and two
+prefix instructions. Tail addressing loses 37.89 bytes with the retained
+tail counter; switching to the native-looking absolute relative-bound index
+loses 121.73 bytes and one prefix instruction. Both lead/tail interactions
+remain negative, so those cursors are treated as compiler-derived and only the
+contributing curve owner is retained.
