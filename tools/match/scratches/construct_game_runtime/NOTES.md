@@ -644,3 +644,27 @@ remain clean. The first mismatch is now the substantive residual:
 the target batches eight two-argument debug calls before one
 `add esp, 0x40`, while the candidate cleans `esp` after each call. The
 constructor source remains unchanged by this matcher correction.
+
+## 2026-07-30 fixed-arity debug-report call views
+
+The remaining cleanup cadence came from the source-level call prototype, not
+the exception wrapper. Exact neighboring functions establish the same
+stripped reporter through fixed one- and two-argument cdecl views when their
+call sites have uniform arity. Declaring the 34 size-ledger calls through the
+fixed `(char*, int)` view lets VC6 coalesce each eight-call group into the
+native `add esp, 0x40`.
+
+The final three counter reports each pass two integer values, so they use an
+explicit `(char*, int, int)` cdecl call view. As in the exact
+`display_score_stats` anchor, the cast changes only the caller's arity
+knowledge; the relocation still targets the same `debug_report_stub`.
+Together the two source changes also recover the native cleanup spanning the
+last two size reports and `operator new`, plus the shared three-counter
+cleanup at the epilogue.
+
+A recorded three-variant interaction sweep isolates the result: the tail call
+view alone improves the score slightly, the fixed two-argument declaration
+alone correctly fails the three-argument calls, and their combination is
+proof-grade. Focused matching is now exact at 100.00%, 268/268 instructions,
+with all 120 masked operands clean and no unresolved, mismatched, or unaudited
+references.

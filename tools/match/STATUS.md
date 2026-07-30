@@ -2,11 +2,11 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**543/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **99915/294937** bytes (**33.88%**) are proof-grade, and overall fuzzy is **79.79%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **79.83%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
-## Proof Grade (543)
+## Proof Grade (544)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -68,6 +68,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | read_left_mouse_button_state | 0x407810 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
 | ✅ | read_right_mouse_button_state | 0x407830 | 18 | 4/4 | 100.00% | 4/4 | 2 ok |  | boundary |
 | ✅ | noop_runtime_ai | 0x407b50 | 1 | 1/1 | 100.00% | 1/1 | - |  | core |
+| ✅ | construct_game_runtime | 0x407b60 | 1169 | 268/268 | 100.00% | 268/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
 | ✅ | initialize_game_player | 0x408000 | 61 | 17/17 | 100.00% | 17/17 | 6 ok |  | core |
 | ✅ | initialize_noop_renderable_bod | 0x408040 | 18 | 7/7 | 100.00% | 7/7 | 2 ok |  | core |
 | ✅ | initialize_runtime_pools_and_path_template_bank | 0x408060 | 932 | 227/227 | 100.00% | 227/227 | 72 ok |  | core |
@@ -586,13 +587,12 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (42)
+## High Progress (80-94.99%) (41)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 707/712 | 85.13% | 16/712 | 68 ok |  | core |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 278/278 | 92.81% | 23/278 | 46 ok |  | core |
-| 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 89.95% | 10/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 42 ok |  | core |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5405/5411 | 81.34% | 0/5411 | 2 unaudited, 1880 ok |  | core |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 89.71% | 17/67 | 7 ok |  | core |
