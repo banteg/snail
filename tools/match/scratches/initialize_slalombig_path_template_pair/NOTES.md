@@ -244,3 +244,21 @@ The remaining previous/current orientation helper was tested with the authored
 operator form and compiles byte-identically. The retained frontier stays
 **36.90%**, 659/696 instructions, prefix 2/696, with 39 clean and 2 unaudited
 references.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The native vertex block at `0x4228bd..0x4229a1` preserves the lateral value on
+the x87 stack across SlalomBig's already-recovered five-vector graph. `double
+lateral` gains 6.60 weighted bytes, and the terminal
+`Vector3::operator+` gains another 5.21 while the ordinary addition is
+byte-neutral.
+
+Both `Vector3::operator*` expressions improve independently and gain 63.11
+weighted bytes together. Rechecking the ordinary addition in that final state
+is still byte-neutral, so it remains component-authored.
+
+The retained scalar, terminal add, and paired scales raise focused matching
+from 36.90% (659/696) to **39.82%** (655/696), a total gain of 74.92 weighted
+bytes. The two-instruction prefix and the 39 clean plus 2 unaudited reference
+receipt remain unchanged. The four-instruction shortening is bounded to
+directly proven native arithmetic owners.

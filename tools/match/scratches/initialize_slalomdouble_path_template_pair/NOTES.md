@@ -233,3 +233,20 @@ The paired inline primary and secondary orientation expressions were tested
 alone and together. All three authored-operator variants are byte-identical,
 so the retained frontier remains **39.85%**, 642/683 instructions, prefix
 5/683, with 44 clean and 2 unaudited references.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Native instructions at `0x425704..0x4257e1` preserve one x87 lateral value
+across the already-recovered five-vector branch graph. `double lateral` gains
+3.06 weighted bytes, and the ordinary `Vector3::operator+` gains 3.84. The
+terminal addition initially loses 2.31, so it is not transferred prematurely.
+
+Both `Vector3::operator*` expressions then improve independently and gain 23.04
+weighted bytes together. On that recovered scale baseline, the terminal
+addition changes from a regression to a 7.68-byte gain and is retained.
+
+The complete interaction raises focused matching from 39.85% (642/683) to
+**41.33%** (638/683), a total gain of 37.62 weighted bytes. The
+five-instruction prefix and the 44 clean plus 2 unaudited reference receipt
+remain unchanged. The four-instruction shortening is confined to the directly
+proven native arithmetic owners.

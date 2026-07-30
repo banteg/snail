@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-position-add",
+      "find": "                Vector3 generated_position(\n                    endpoint.x + lateral_offset.x,\n                    endpoint.y + lateral_offset.y,\n                    endpoint.z + lateral_offset.z);",
+      "replacements": [
+        {
+          "name": "operator-add",
+          "text": "                Vector3 generated_position =\n                    endpoint + lateral_offset;"
+        }
+      ]
+    }
+  ]
+}
