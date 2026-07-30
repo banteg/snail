@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode1-selector-values",
+      "find": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        return;",
+      "replacements": [
+        {
+          "name": "selector-enable",
+          "text": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x1b, blend_mode);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        return;"
+        },
+        {
+          "name": "selector-source",
+          "text": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x13, blend_mode + 4);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        return;"
+        },
+        {
+          "name": "selector-destination",
+          "text": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x14, blend_mode + 5);\n        return;"
+        },
+        {
+          "name": "selector-all",
+          "text": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x1b, blend_mode);\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x13, blend_mode + 4);\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x14, blend_mode + 5);\n        return;"
+        },
+        {
+          "name": "selector-derived-locals",
+          "text": "    case 1: {\n        int source_blend = blend_mode + 4;\n        int destination_blend = blend_mode + 5;\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x1b, blend_mode);\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x13, source_blend);\n        g_d3d_device->vtbl->SetRenderState(\n            g_d3d_device, 0x14, destination_blend);\n        return;\n    }"
+        }
+      ]
+    }
+  ]
+}

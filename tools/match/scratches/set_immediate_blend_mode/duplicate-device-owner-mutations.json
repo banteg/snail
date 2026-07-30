@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode1-device-owner",
+      "find": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        return;",
+      "replacements": [
+        {
+          "name": "case-local-device",
+          "text": "    case 1: {\n        Direct3DDevice8* device = g_d3d_device;\n        device->vtbl->SetRenderState(device, 0x1b, 1);\n        device->vtbl->SetRenderState(device, 0x13, 5);\n        device->vtbl->SetRenderState(device, 0x14, 6);\n        return;\n    }"
+        }
+      ]
+    },
+    {
+      "name": "mode4-device-owner",
+      "find": "    case 4:\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        return;",
+      "replacements": [
+        {
+          "name": "case-local-device",
+          "text": "    case 4: {\n        Direct3DDevice8* device = g_d3d_device;\n        device->vtbl->SetRenderState(device, 0x1b, 1);\n        device->vtbl->SetRenderState(device, 0x13, 5);\n        device->vtbl->SetRenderState(device, 0x14, 6);\n        return;\n    }"
+        }
+      ]
+    }
+  ]
+}

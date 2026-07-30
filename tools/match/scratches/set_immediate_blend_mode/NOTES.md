@@ -71,3 +71,22 @@ artifact resolves every state write through `g_direct3d_renderer.device`.
 Case-local `break`/`return` variants and a full switch-wide return variant were
 byte-neutral; the retained semantic switch stays at 85.50% with its honest
 tail-sharing/jump-table residual.
+
+## 2026-07-30 bounded mode-1 block ownership
+
+Three recorded sweeps cover the remaining distinct native mode-1 block.
+Spelling its `1/5/6` values from the known case selector, with or without
+locals, compiles byte-identically. Scoped, `break`, one-iteration, and
+redundant-selector-guard control forms are also neutral.
+
+Under the current recovered Direct3D header, case-local device owners are no
+longer neutral: applying them to both duplicate blocks falls to 75.25%, while
+applying one side falls to 46.26-47.97% and can increase reference debt. This
+current recorded evidence supersedes the older manual device-local note.
+
+Across 12 unique variants, none improve, nine are byte-identical, and three
+regress. The experiment ledger formally stalls the lane at 85.50%, 126/136
+candidate/target instructions, prefix 2/136, with 20 clean references, two
+target-only device loads, and the explicit nonuniform jump-table mismatch. No
+selector dependency, duplicate receiver lifetime, or goto is retained solely
+to defeat VC6's identical-block merge.

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode1-control-shape",
+      "find": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        return;",
+      "replacements": [
+        {
+          "name": "scoped-block",
+          "text": "    case 1: {\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        return;\n    }"
+        },
+        {
+          "name": "break",
+          "text": "    case 1:\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n        g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        break;"
+        },
+        {
+          "name": "do-while-zero",
+          "text": "    case 1:\n        do {\n            g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n            g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n            g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        } while (0);\n        return;"
+        },
+        {
+          "name": "redundant-selector-guard",
+          "text": "    case 1:\n        if (blend_mode == 1) {\n            g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x1b, 1);\n            g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x13, 5);\n            g_d3d_device->vtbl->SetRenderState(g_d3d_device, 0x14, 6);\n        }\n        return;"
+        }
+      ]
+    }
+  ]
+}
