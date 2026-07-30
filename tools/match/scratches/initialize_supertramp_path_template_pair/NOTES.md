@@ -268,3 +268,24 @@ Three following bounded sweeps close the adjacent ownership choices:
 The first residual remains the native `0x40` versus candidate `0x44`
 count/radius stack-home swap. The semantic lifetime probes do not reproduce
 it, so no allocator forcing is retained.
+
+## 2026-07-30 post-cascade arc byte cursor rejected
+
+The explicit arc cursor was retested after the direct initializer,
+orientation, delta, and generated-position ownership cascade. Windows loads
+the seven-sample byte offset `0x498` into `edi` at `0x424099`, increments the
+logical arc index separately at `0x424257`, advances the cursor by `0xa8` at
+`0x424258`, and tests the logical index at `0x42425e`.
+
+Replaying that physical address owner across both arc arrays falls from
+**55.08%** to **54.89%**. Candidate and target counts remain 541/552,
+prefix remains 17/552, and all 36 references stay clean; the cursor loses
+exactly 3.54 weighted bytes, equal to the independently proven
+generated-position `Vector3::operator+` gain.
+
+Placing the cursor before or after the secondary radius and logical-index
+initialization, and removing the now-dead derived sample index, all compile
+byte-identically. The reverse probe is recorded and the 55.08% source is
+restored. Supertramp therefore keeps direct array ownership: the native arc
+byte cursor remains compiler-derived, and it is not used to trade away a
+separate authored operator boundary.

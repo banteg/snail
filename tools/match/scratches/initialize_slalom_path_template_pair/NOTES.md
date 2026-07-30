@@ -350,3 +350,22 @@ An exhaustive 49-variant sweep covers cursor initialization, stride spelling,
 advance order, and the now-codegen-neutral logical `sample_index` declaration.
 Every variant is byte-identical. The material recovery is the address owner
 itself, and the earlier pre-dependency negative result remains in the ledger.
+
+## 2026-07-30 fixed-sample byte cursors rejected after curved ownership
+
+Windows also exposes byte cursors in the two fixed-sample loops. The lead
+cursor advances by `0xa8` at `0x41f850`, increments the logical height index at
+`0x41f856`, and is bounded directly against `0x2a0` at `0x41f857`. The
+departure cursor advances at `0x41f922`, increments its logical index at
+`0x41f928`, and tests the relative logical bound at `0x41f929`-`0x41f92f`.
+
+Those owners do not transfer through the recovered source schedule. On the
+58.87% frontier, the departure cursor alone falls to **58.19%**. The native
+lead cursor-control form falls to **57.29%**, while retaining logical loop
+control falls further to **56.77%**. Pairing the native lead cursor with the
+departure cursor produces **57.14%**, still 690/696 instructions with prefix
+6/696 and all 40 references clean, but loses 44.40 weighted bytes.
+
+The paired reverse probe records that complete interaction. No fixed cursor is
+retained, and the scratch source is restored to the direct indexed fixed-owner
+frontier.

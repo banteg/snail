@@ -302,3 +302,26 @@ Slalom materializes its face record inside each arm.
 This native control-flow difference closes the sibling hypothesis without a
 metric probe. SlalomBig remains **50.98%**, 685/696 instructions, prefix
 6/696, with all 40 references clean.
+
+## 2026-07-30 post-ownership curved byte cursor rejected
+
+The Slalom cursor win was retested only after SlalomBig's complete direct
+sample-owner dependency was retained. Native SlalomBig has the same physical
+induction: `edi` starts at `0x2a0` at `0x4223de`, the logical curve counter
+increments independently at `0x4226ba`, the cursor advances by `0xa8` at
+`0x4226bb`, and the logical counter is tested at `0x4226c1`.
+
+That physical similarity does not transfer as explicit source ownership.
+Addressing the current and preceding samples through a direct byte cursor
+rotates the candidate's long-lived `this`, logical counter, and address cursor
+across EDI/ESI/EBX. The simple form falls from **50.98%** to **34.42%**
+(681/696 instructions). Adding the native positive guard and one hoisted
+floating curve count reaches only **34.52%** (683/696) and loses 422.03
+weighted bytes from the retained frontier. Both forms keep all 40 references
+clean, so the regression is allocation and schedule debt rather than an audit
+artifact.
+
+The guarded reverse probe is recorded and the source is restored. SlalomBig
+therefore keeps direct array ownership; its native byte cursor remains a
+compiler-derived consequence of that dependency in the current source
+context.
