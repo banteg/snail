@@ -279,3 +279,27 @@ no tradeoff.
 Both inline orientation expressions were tested independently and together.
 Every authored-operator variant is byte-identical, preserving **54.34%**,
 exact 679/679 instruction parity, prefix 6/679, and all 41 clean references.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Native instructions at `0x4260a2..0x42618c` preserve the lateral value on the
+x87 stack and materialize the same branch-local offset/position aggregates as
+the turnover family. This evidence is independent of P's still-unresolved row
+control, which remains unchanged.
+
+Recovering `double lateral` gains 13.98 weighted bytes. The terminal
+`Vector3::operator+` gains another 9.35 while the ordinary addition is
+byte-neutral. On that baseline, both `Vector3::operator*` expressions together
+gain 20.98 weighted bytes; both isolated scales also improve, and the symmetric
+pair matches the native offset construction.
+
+The retained arithmetic owners raise focused matching from 54.34% (679/679) to
+**56.13%** (675/679), a total gain of 44.31 weighted bytes. The exact
+six-instruction prefix and all 41 masked references remain clean. This gives up
+four instructions of exact count parity, but every retained edit is directly
+supported by the native aggregate graph and improves the weighted match;
+unproven guarded byte-cursor row control is not imported to compensate.
+
+Moving the shared vertex owner into the two late branch-local positions loses
+100.90 weighted bytes, so the target's late vertex address calculation remains
+compiler scheduling rather than a recovered source lifetime.

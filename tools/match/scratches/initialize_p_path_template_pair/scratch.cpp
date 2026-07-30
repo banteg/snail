@@ -26,14 +26,12 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 
     for (row = 0; row <= path->segment_count; ++row) {
         for (column = 0; column <= path->width_cells; ++column) {
-            float lateral = (float)column - (float)path->width_cells * 0.5f;
+            double lateral = (float)column - (float)path->width_cells * 0.5f;
             PathTemplateSample* sample = &path->primary_samples[row];
             Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
             if (row != path->segment_count) {
-                Vector3 lateral_offset(
-                    lateral * sample->transform.basis_right.x,
-                    lateral * sample->transform.basis_right.y,
-                    lateral * sample->transform.basis_right.z);
+                Vector3 lateral_offset =
+                    sample->transform.basis_right * lateral;
                 Vector3 generated_position(
                     sample->transform.position.x + lateral_offset.x,
                     sample->transform.position.y + lateral_offset.y,
@@ -41,18 +39,14 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                 *vertex = generated_position;
             } else {
                 PathTemplateSample* previous = sample - 1;
-                Vector3 lateral_offset(
-                    lateral * previous->transform.basis_right.x,
-                    lateral * previous->transform.basis_right.y,
-                    lateral * previous->transform.basis_right.z);
+                Vector3 lateral_offset =
+                    previous->transform.basis_right * lateral;
                 Vector3 endpoint(
                     previous->transform.position.x,
                     previous->transform.position.y,
                     previous->transform.position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
+                Vector3 generated_position =
+                    endpoint + lateral_offset;
                 *vertex = generated_position;
             }
         }
