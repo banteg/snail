@@ -430,3 +430,31 @@ instructions. Initializing both counters before the guard is neutral, while
 moving both inside the guarded `do/while` is byte-identical to the retained
 logical-before-guard spelling. The committed form therefore follows the
 instruction evidence rather than the largest aggregate score.
+
+## 2026-07-31 native mesh-row ownership
+
+The mesh vertex block has the same logical row and physical sample traversal
+seen in the native body: a nonnegative segment guard, a guarded post-tested
+column loop, and independent `row` and `0xa8` sample-offset advances. Replaying
+that ownership while preserving the already-proven double lateral arithmetic,
+ordinary vector operators, and terminal `sample[-1]` endpoint raises focused
+matching from **64.27% to 65.37%**. It adds **28.28 weighted bytes**, shortens
+the candidate from 692 to **690/696** instructions, keeps the exact prefix at
+48/696, and leaves all 40 masked references clean. Reverting only this owner
+loses the same 28.28 weighted bytes, so the source change is retained.
+
+The surrounding owner frontier is bounded rather than guessed through. A
+separate departure-bound local loses 102.69 weighted bytes and collapses the
+prefix to 6. Moving the curve phase earlier loses 285.46 weighted bytes; only
+the named-denominator late-angle spelling is byte-identical. Explicit mesh
+object acquisition is neutral when face records stay first, while
+vertices-first acquisition loses 3.70 weighted bytes.
+
+The terminal endpoint's closest default-construction spelling still loses
+8.51 weighted bytes and adds four instructions; alternate assignment orders
+lose more, and copy-then-add forms lose 117.09. Finally, replaying the complete
+native-style positive guards and post-tested face loops on this new frontier
+loses 25.90 weighted bytes without changing the prefix or instruction count.
+The target's remaining terminal and face-register differences therefore do not
+transfer as isolated source owners. The retained milestone stops at the
+evidence-backed mesh-row replay.

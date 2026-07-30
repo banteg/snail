@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-phase-lifetime",
+      "find": "        float t = (float)i / (float)curve_segments;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float angle = t * 6.2831855f;\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;",
+      "replacements": [
+        {
+          "name": "early-angle",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t * 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "early-const-angle",
+          "text": "        float t = (float)i / (float)curve_segments;\n        const float angle = t * 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "early-assigned-angle",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle;\n        angle = t * 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "early-staged-angle",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t;\n        angle *= 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "named-denominator-late-angle",
+          "text": "        float curve_segments_f = (float)curve_segments;\n        float t = (float)i / curve_segments_f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float angle = t * 6.2831855f;\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "named-denominator-early-angle",
+          "text": "        float curve_segments_f = (float)curve_segments;\n        float t = (float)i / curve_segments_f;\n        float angle = t * 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "named-denominator-staged-angle",
+          "text": "        float curve_segments_f = (float)curve_segments;\n        float t = (float)i / curve_segments_f;\n        float angle = t;\n        angle *= 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "early-angle-wave-result",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t * 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float wave = sine(angle);\n        float center = wave * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "named-denominator-early-angle-wave-result",
+          "text": "        float curve_segments_f = (float)curve_segments;\n        float t = (float)i / curve_segments_f;\n        float angle = t * 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float wave = sine(angle);\n        float center = wave * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        }
+      ]
+    }
+  ]
+}

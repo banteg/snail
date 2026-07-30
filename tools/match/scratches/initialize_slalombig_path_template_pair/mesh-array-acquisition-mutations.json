@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-array-acquisition",
+      "find": "    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* vertices = path->strip_mesh->vertices;",
+      "replacements": [
+        {
+          "name": "vertices-first",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;"
+        },
+        {
+          "name": "object-owner-vertices-first",
+          "text": "    cRObject* strip_mesh = path->strip_mesh;\n    Vector3* vertices = strip_mesh->vertices;\n    cRFaceQuad* facequads = strip_mesh->facequads;"
+        },
+        {
+          "name": "object-owner-facequads-first",
+          "text": "    cRObject* strip_mesh = path->strip_mesh;\n    cRFaceQuad* facequads = strip_mesh->facequads;\n    Vector3* vertices = strip_mesh->vertices;"
+        }
+      ]
+    }
+  ]
+}
