@@ -156,3 +156,11 @@ Windows `void Path*` ABI instead of its stale five-parameter prototype.
 
 This is ownership-only: focused matching remains **60.11%** (`726/718`), with
 52 masked operands clean and no unresolved, mismatched, or unaudited entries.
+
+## 2026-07-30 terminal-delta subtraction bound
+
+The exact two-site `Vector3::operator-` plan from the neighboring path
+constructors compiles byte-identically here. Both isolated replacements and
+their combination leave 60.11%, 726/718 instructions, prefix 0/718, and all 52
+clean references unchanged. Loopout retains its expanded component spelling
+and records the exhaustive neutral bound.

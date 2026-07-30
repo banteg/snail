@@ -229,3 +229,12 @@ Nine recorded sweeps cover 46 variants. After retaining the signed guard, three
 consecutive non-improving sweeps formally stall the remaining stride/call
 alignment. Further work needs a broader recovered curve-loop lifetime, not raw
 byte arithmetic or another local initializer/guard spelling.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The paired SlalomBig recovery proves that each primary and secondary terminal
+delta is authored through `Vector3::operator-`, not a component constructor.
+An exhaustive two-site sweep raises focused matching from 32.42% to **32.72%**
+by 7.59 weighted bytes. The candidate remains 655/696 instructions with prefix
+1/696 and the same 38 clean plus 4 unaudited references. Either site alone
+gains half as much; the paired form is the unique best result.

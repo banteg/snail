@@ -237,3 +237,11 @@ refresh also closes its stale artifact onto the independently proved Windows
 Matcher source and bytes are unchanged: focused matching remains **54.53%** at
 **541/552** candidate/target instructions, prefix **17/552**, with **36
 accepted, 0 unresolved, 0 mismatched, and 0 unaudited** masked operands.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The exact shared terminal-delta block supports the paired authored
+`Vector3::operator-` form. The exhaustive two-site sweep adds 7.08 weighted
+bytes and raises focused matching from 54.53% to **54.89%**. Candidate and
+target counts remain 541/552, prefix remains 17/552, and all 36 references stay
+clean; either isolated operator gains half as much.

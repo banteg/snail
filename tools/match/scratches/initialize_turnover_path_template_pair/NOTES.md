@@ -172,3 +172,11 @@ scoped forms are byte-identical to the retained source. Direct arrays lose
 candidate from 651 to 657 instructions; the 15-instruction prefix and all 41
 references remain clean. Turnover therefore retains its loop-wide pointer
 owners.
+
+## 2026-07-30 terminal-delta expression bound
+
+Preserving pointer ownership does not make the authored-operator transfer
+viable here. Secondary-only `Vector3::operator-` loses 4.63 weighted bytes,
+primary-only loses 19.34, and the paired form loses 23.96. Combining either or
+both operators with direct arrays loses at least 218.23 bytes. The retained
+51.89%, 651/671-instruction source therefore keeps both component constructors.

@@ -308,3 +308,12 @@ unchanged.
 This is analysis-only. Focused matching remains **43.20%** (691/707), with an
 18-instruction prefix and 55 clean masked operands. Strict paired Binary Ninja
 and IDA 9.4 export reports zero selector mismatches.
+
+## 2026-07-30 terminal-delta subtraction bound
+
+The exhaustive two-site family transfer is asymmetric but non-improving.
+Applying `Vector3::operator-` only to the primary delta is byte-identical;
+applying it to the secondary delta, alone or paired, loses 14.83 weighted bytes
+and falls to 42.63%. The candidate remains 691/707 instructions with prefix
+18/707 and all 55 references clean. Halfpipe retains both component
+constructors.

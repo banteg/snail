@@ -173,3 +173,20 @@ byte-identically to the retained source. Direct arrays lose 68.41 weighted
 bytes and fall from 47.92% to **45.09%**, while moving the candidate from 635
 to 641 instructions; the 15-instruction prefix and all 33 references remain
 clean. Toad therefore retains its loop-wide pointer owners.
+
+## 2026-07-30 secondary terminal-delta expression ownership
+
+Keeping the proven loop-wide pointer owners while applying
+`Vector3::operator-` only to the secondary delta adds 66.15 weighted bytes and
+raises focused matching from 47.92% to **50.65%**. The candidate moves from
+635 to 636 instructions against 663; prefix 15/663 and all 33 clean references
+are unchanged. Applying the operator only to primary gains 51.01 bytes, while
+applying it to both gains 47.37 bytes.
+
+The source asymmetry is retained narrowly rather than generalized. Android and
+iOS independently corroborate the two component subtractions but cannot expose
+the inlined C++ spelling. On Windows, localized diffing shows the secondary
+operator improves the delta-loop region itself: the former 37-instruction
+mismatch splits into a better 32-instruction region and a 50%-matching tail.
+Scoped and unscoped pointer forms emit the same bytes, while all three
+direct-array/operator interactions repeat the prior 68.41-byte regression.

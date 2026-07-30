@@ -25,10 +25,8 @@ static __forceinline void compute_path_deltas(Path* path)
 
         PathTemplateSample* secondary = &path->secondary_samples[i];
         PathTemplateSample* secondary_next = &path->secondary_samples[i + 1];
-        secondary->delta_dir_to_next = Vector3(
-            secondary_next->transform.position.x - secondary->transform.position.x,
-            secondary_next->transform.position.y - secondary->transform.position.y,
-            secondary_next->transform.position.z - secondary->transform.position.z);
+        secondary->delta_dir_to_next =
+            secondary_next->transform.position - secondary->transform.position;
         secondary->delta_length = secondary->delta_dir_to_next.Normalize();
     }
 

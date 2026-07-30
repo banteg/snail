@@ -166,3 +166,11 @@ formally stalled after three consecutive non-improving sweeps. The semantic
 per-lane recomputation remains recorded from both ports, but recovering it in
 matcher source now requires a broader neighboring-loop lifetime change rather
 than another local trig spelling.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The independent terminal-delta block is exact across the constructor family
+despite the stalled trig schedule. Replacing both component constructors with
+`Vector3::operator-` adds 7.50 weighted bytes and raises focused matching from
+48.53% to **48.84%**. Candidate and target counts remain 646/685, prefix stays
+6/685, and the receipt remains 38 clean plus 2 unaudited references.

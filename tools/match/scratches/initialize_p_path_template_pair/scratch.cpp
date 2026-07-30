@@ -260,23 +260,15 @@ void cRPath::initialize_p_path_template_pair(
     int delta_index = 0;
     if (segment_count - 1 > 0) {
         do {
-            primary_samples[delta_index].delta_dir_to_next = Vector3(
-                primary_samples[delta_index + 1].transform.position.x -
-                    primary_samples[delta_index].transform.position.x,
-                primary_samples[delta_index + 1].transform.position.y -
-                    primary_samples[delta_index].transform.position.y,
-                primary_samples[delta_index + 1].transform.position.z -
-                    primary_samples[delta_index].transform.position.z);
+            primary_samples[delta_index].delta_dir_to_next =
+                primary_samples[delta_index + 1].transform.position -
+                primary_samples[delta_index].transform.position;
             primary_samples[delta_index].delta_length =
                 primary_samples[delta_index].delta_dir_to_next.Normalize();
 
-            secondary_samples[delta_index].delta_dir_to_next = Vector3(
-                secondary_samples[delta_index + 1].transform.position.x -
-                    secondary_samples[delta_index].transform.position.x,
-                secondary_samples[delta_index + 1].transform.position.y -
-                    secondary_samples[delta_index].transform.position.y,
-                secondary_samples[delta_index + 1].transform.position.z -
-                    secondary_samples[delta_index].transform.position.z);
+            secondary_samples[delta_index].delta_dir_to_next =
+                secondary_samples[delta_index + 1].transform.position -
+                secondary_samples[delta_index].transform.position;
             secondary_samples[delta_index].delta_length =
                 secondary_samples[delta_index].delta_dir_to_next.Normalize();
             ++delta_index;

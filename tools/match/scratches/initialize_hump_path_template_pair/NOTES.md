@@ -324,3 +324,11 @@ This is ownership-only: focused matching remains **60.00%** (`695/685`), with
 42 clean masked operands, two pre-existing unaudited normalize-call alignment
 entries, and no unresolved or mismatched operands. Matcher source and the
 Windows-only mesh tail are unchanged.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The exact Slalom-family terminal-delta block proves the paired
+`Vector3::operator-` expression boundary. The exhaustive two-site sweep adds
+7.40 weighted bytes and raises focused matching from 60.00% to **60.29%**.
+Candidate and target counts remain 695/685, prefix remains 20/685, and all 43
+currently audited references stay clean.

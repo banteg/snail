@@ -264,3 +264,12 @@ guarded byte-cursor source shape. The result is therefore recorded as an
 instruction-count tradeoff and not retained. Further P mesh work should first
 recover its native row-control owner rather than importing the family schedule
 on score alone.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+Unlike the rejected mesh-row transfer, the terminal-delta expression boundary
+is exact across the constructor family. Replacing both component constructors
+with `Vector3::operator-` adds 7.31 weighted bytes and raises focused matching
+from 54.05% to **54.34%**. The exact 679/679 instruction count, prefix 6/679,
+and all 41 clean references are unchanged; the exhaustive two-site sweep has
+no tradeoff.

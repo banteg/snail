@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-delta-subtraction",
+      "find": "            primary_samples[sample_index].delta_dir_to_next = Vector3(\n                primary_samples[sample_index + 1].transform.position.x\n                    - primary_samples[sample_index].transform.position.x,\n                primary_samples[sample_index + 1].transform.position.y\n                    - primary_samples[sample_index].transform.position.y,\n                primary_samples[sample_index + 1].transform.position.z\n                    - primary_samples[sample_index].transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "            primary_samples[sample_index].delta_dir_to_next =\n                primary_samples[sample_index + 1].transform.position -\n                primary_samples[sample_index].transform.position;"
+        }
+      ]
+    },
+    {
+      "name": "secondary-delta-subtraction",
+      "find": "            secondary_samples[sample_index].delta_dir_to_next = Vector3(\n                secondary_samples[sample_index + 1].transform.position.x\n                    - secondary_samples[sample_index].transform.position.x,\n                secondary_samples[sample_index + 1].transform.position.y\n                    - secondary_samples[sample_index].transform.position.y,\n                secondary_samples[sample_index + 1].transform.position.z\n                    - secondary_samples[sample_index].transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "            secondary_samples[sample_index].delta_dir_to_next =\n                secondary_samples[sample_index + 1].transform.position -\n                secondary_samples[sample_index].transform.position;"
+        }
+      ]
+    }
+  ]
+}

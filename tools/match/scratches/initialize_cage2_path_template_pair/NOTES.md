@@ -303,3 +303,11 @@ all 1,142 decompile health checks pass. Matcher source and bytes are unchanged:
 focused matching remains **59.43%** at **651/648** candidate/target
 instructions, prefix **7/648**, with **46 accepted, 0 unresolved, 0
 mismatched, and 0 unaudited** masked operands.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The direct-array terminal-delta block shares the recovered family expression
+boundary. Replacing both component constructors with `Vector3::operator-`
+adds 7.46 weighted bytes and raises focused matching from 59.43% to **59.74%**.
+Candidate and target counts remain 651/648, prefix remains 7/648, and all 46
+references stay clean; either isolated operator gains half as much.

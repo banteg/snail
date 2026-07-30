@@ -185,3 +185,11 @@ the expected type; an idempotency replay found all operations already current.
 This is analysis-only. The scratch remains at the honest **48.89%** focused
 match, **646/655** candidate instructions, a 20-instruction exact prefix, and
 37 accepted masked operands. No source expression or matcher exception changed.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The exact Slalom-family terminal-delta block proves the paired
+`Vector3::operator-` expression boundary. The exhaustive two-site sweep adds
+7.35 weighted bytes and raises focused matching from 48.89% to **49.19%**.
+Candidate and target counts remain 646/655, prefix remains 20/655, and all 37
+references stay clean.

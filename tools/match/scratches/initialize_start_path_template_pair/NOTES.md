@@ -263,3 +263,11 @@ This is analysis-only. Focused Windows matching remains honestly **63.70%**,
 **605/610** candidate instructions, a zero-instruction exact prefix, and 35
 accepted masked operands with no unresolved, mismatched, or unaudited
 operands. No source expression or matcher exception changed.
+
+## 2026-07-30 terminal-delta subtraction bound
+
+The exact two-site `Vector3::operator-` plan from the neighboring path
+constructors compiles byte-identically here. Both isolated replacements and
+their combination leave 63.70%, 605/610 instructions, prefix 0/610, and all 35
+clean references unchanged. Start retains its expanded component spelling and
+records the exhaustive neutral bound.

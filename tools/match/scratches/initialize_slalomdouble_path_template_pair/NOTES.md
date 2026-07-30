@@ -218,3 +218,11 @@ tradeoff is recorded but not retained.
 The ledger contains 40 variants and is formally stalled after three trailing
 non-improving sweeps. The honest frontier remains 39.55%, 642/683
 instructions, prefix 5/683, with 44 audited and two unaudited references.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The Slalom family recovery proves the same paired `Vector3::operator-` boundary
+in this constructor. The exhaustive two-site sweep adds 7.66 weighted bytes
+and raises focused matching from 39.55% to **39.85%**. Candidate and target
+counts remain 642/683, prefix stays 5/683, and the receipt remains 44 clean
+plus 2 unaudited references. Both single-site forms improve by half as much.

@@ -216,3 +216,11 @@ This is analysis-only. Focused matching remains **33.70%** (618/652 candidate
 instructions), with a five-instruction exact prefix and 40 accepted,
 0 unresolved, 0 mismatched, and 0 unaudited operands. No source edit or
 synthetic branch was introduced.
+
+## 2026-07-30 authored terminal-delta subtraction
+
+The exact SlalomDouble terminal-delta block transfers without adaptation.
+Replacing both component constructors with the authored `Vector3::operator-`
+form adds 7.67 weighted bytes and raises focused matching from 33.70% to
+**34.02%**. The candidate remains 618/652 instructions, prefix 5/652, with all
+40 references clean; either isolated operator gains half as much.
