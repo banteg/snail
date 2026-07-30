@@ -266,3 +266,23 @@ The guarded Binary Ninja ABI repair now reuses the canonical builder-lifetime
 catalog rather than maintaining a second list. Recreating the function to
 correct its result type therefore preserves all recovered row/cell selectors,
 directional colors, and borrowed `Fringe*` values.
+
+## 2026-07-30 bounded skirt-color receiver schedule
+
+The four remaining one-sided references are the native singleton reloads
+before each `GetSkirtColour` call. The source invokes the same member through
+its borrowed `cRSubGame* this`, which preserves the stronger surrounding
+register schedule.
+
+Three recorded sweeps exhaust the plausible owner boundary. All 15 subsets of
+front/right/left/back singleton receivers reduce the audit debt but regress
+fuzzy matching: one reload loses 15-21 bytes, two lose 161-169, three lose
+176-184, and all four reproduce the known 42.25% frame change. Explicit or
+borrowed `this` owners are byte-neutral; root/subgame locals lose one or
+fifteen bytes. Four function-scope `family` lifetimes are also neutral.
+
+Across 24 unique variants, none improve, seven are byte-identical, and
+seventeen regress. The experiment ledger formally stalls this lane at 60.39%,
+492/495 instructions, prefix 3/495, with 49 clean references and four
+target-only singleton loads. No global receiver or register-shaped family
+lifetime is retained merely to reduce the audit count.

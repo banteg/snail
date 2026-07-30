@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "fringe-family-lifetime",
+      "find": "    int edge_a = 0;\n    int row = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row_record = runtime_rows;\n        cRSubLoc* cell = &runtime_cells[0][0];\n        SubRow* row_record_head = row_record;\n\n        do {\n            int lane_count =\n                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n            do {\n                unsigned char open_edge_mask = cell->open_edge_mask;\n                int family = 0;",
+      "replacements": [
+        {
+          "name": "function-scope-uninitialized",
+          "text": "    int edge_a = 0;\n    int family;\n    int row = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row_record = runtime_rows;\n        cRSubLoc* cell = &runtime_cells[0][0];\n        SubRow* row_record_head = row_record;\n\n        do {\n            int lane_count =\n                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n            do {\n                unsigned char open_edge_mask = cell->open_edge_mask;\n                family = 0;"
+        },
+        {
+          "name": "function-scope-initialized",
+          "text": "    int edge_a = 0;\n    int family = 0;\n    int row = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row_record = runtime_rows;\n        cRSubLoc* cell = &runtime_cells[0][0];\n        SubRow* row_record_head = row_record;\n\n        do {\n            int lane_count =\n                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n            do {\n                unsigned char open_edge_mask = cell->open_edge_mask;\n                family = 0;"
+        },
+        {
+          "name": "function-scope-before-edge",
+          "text": "    int family;\n    int edge_a = 0;\n    int row = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row_record = runtime_rows;\n        cRSubLoc* cell = &runtime_cells[0][0];\n        SubRow* row_record_head = row_record;\n\n        do {\n            int lane_count =\n                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n            do {\n                unsigned char open_edge_mask = cell->open_edge_mask;\n                family = 0;"
+        },
+        {
+          "name": "register-function-scope",
+          "text": "    int edge_a = 0;\n    register int family;\n    int row = 0;\n    if (runtime_row_count > 0) {\n        SubRow* row_record = runtime_rows;\n        cRSubLoc* cell = &runtime_cells[0][0];\n        SubRow* row_record_head = row_record;\n\n        do {\n            int lane_count =\n                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n            do {\n                unsigned char open_edge_mask = cell->open_edge_mask;\n                family = 0;"
+        }
+      ]
+    }
+  ]
+}

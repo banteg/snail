@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-color-owner",
+      "find": "                        tColour* skirt_color = GetSkirtColour(&color0);",
+      "replacements": [
+        {
+          "name": "explicit-this",
+          "text": "                        tColour* skirt_color =\n                            this->GetSkirtColour(&color0);"
+        },
+        {
+          "name": "borrowed-this-pointer",
+          "text": "                        cRSubGame* skirt_game = this;\n                        tColour* skirt_color =\n                            skirt_game->GetSkirtColour(&color0);"
+        },
+        {
+          "name": "borrowed-this-reference",
+          "text": "                        cRSubGame& skirt_game = *this;\n                        tColour* skirt_color =\n                            skirt_game.GetSkirtColour(&color0);"
+        },
+        {
+          "name": "singleton-root-local",
+          "text": "                        GameRoot* skirt_root = g_game;\n                        tColour* skirt_color =\n                            skirt_root->subgame.GetSkirtColour(&color0);"
+        },
+        {
+          "name": "singleton-subgame-local",
+          "text": "                        cRSubGame* skirt_game = &g_game->subgame;\n                        tColour* skirt_color =\n                            skirt_game->GetSkirtColour(&color0);"
+        }
+      ]
+    }
+  ]
+}

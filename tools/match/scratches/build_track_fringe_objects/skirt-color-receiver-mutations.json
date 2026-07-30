@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-skirt-color-receiver",
+      "find": "                        tColour* skirt_color = GetSkirtColour(&color0);",
+      "replacements": [
+        {
+          "name": "singleton-subgame",
+          "text": "                        tColour* skirt_color =\n                            g_game->subgame.GetSkirtColour(&color0);"
+        }
+      ]
+    },
+    {
+      "name": "right-skirt-color-receiver",
+      "find": "                        tColour* skirt_color = GetSkirtColour(&color1);",
+      "replacements": [
+        {
+          "name": "singleton-subgame",
+          "text": "                        tColour* skirt_color =\n                            g_game->subgame.GetSkirtColour(&color1);"
+        }
+      ]
+    },
+    {
+      "name": "left-skirt-color-receiver",
+      "find": "                        tColour* skirt_color = GetSkirtColour(&color2);",
+      "replacements": [
+        {
+          "name": "singleton-subgame",
+          "text": "                        tColour* skirt_color =\n                            g_game->subgame.GetSkirtColour(&color2);"
+        }
+      ]
+    },
+    {
+      "name": "back-skirt-color-receiver",
+      "find": "                        tColour* skirt_color = GetSkirtColour(&color3);",
+      "replacements": [
+        {
+          "name": "singleton-subgame",
+          "text": "                        tColour* skirt_color =\n                            g_game->subgame.GetSkirtColour(&color3);"
+        }
+      ]
+    }
+  ]
+}
