@@ -246,3 +246,19 @@ primary/secondary orientation expressions. All six isolated and paired
 variants compile byte-identically. Slalom therefore retains the component
 constructors at **32.72%**, 655/696 instructions, prefix 1/696, with 38 clean
 and 4 unaudited references.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The previously proved branch mesh graph owns ordinary and terminal
+right-vector/position pairs independently before each branch materializes its
+late destination. A `double` lateral local, both `Vector3::operator*` scales,
+and the terminal `Vector3::operator+` add recover that arithmetic boundary and
+add 48.17 weighted bytes.
+
+The ordinary add is byte-identical before and after the scale rewrites.
+Split-float is neutral, the full double expression adds reference debt, and
+volatile float collapses the prefix, so none is retained. Focused matching
+rises from **32.72%** to **34.60%**, candidate instructions move from 655 to
+651 against 696 target instructions, prefix stays 1/696, and the existing
+curve-schedule receipt remains 38 clean plus 4 explicitly unaudited
+references.
