@@ -32,6 +32,7 @@ from .symbols import (
 )
 
 IMAGE_FILE_MACHINE_I386 = 0x14C
+IMAGE_REL_I386_DIR32 = 0x06
 IMAGE_SYM_CLASS_EXTERNAL = 2
 IMAGE_SYM_CLASS_STATIC = 3
 IMAGE_SCN_CNT_CODE = 0x00000020
@@ -889,6 +890,17 @@ def extract_object_function(
             )
             continue
         addend = _read_u32(section.data, relocation.virtual_address)
+        # VC6 emits __except_list as an external absolute pseudo-symbol for
+        # the FS:[0] SEH chain head. Its DIR32 relocation resolves to zero at
+        # link time, so preserve the encoded zero instead of masking it as an
+        # image address. Nonzero addends and all other relocations stay
+        # explicit and subject to the normal reference audit.
+        if (
+            relocation.relocation_type == IMAGE_REL_I386_DIR32
+            and _canonical_symbol_name(symbol.name) == "except_list"
+            and addend == 0
+        ):
+            continue
         text, key, explained = _resolve_object_relocation(
             obj,
             symbol,

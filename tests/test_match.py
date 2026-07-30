@@ -121,6 +121,59 @@ def test_extract_object_function_records_relocation_symbols() -> None:
     assert function.relocation_references[0].key == "name:callee"
 
 
+def test_extract_object_function_resolves_except_list_as_absolute_zero() -> None:
+    from snail.match import CoffObject, CoffRelocation, CoffSection, CoffSymbol
+
+    obj = CoffObject(
+        sections=(
+            CoffSection(
+                name=".text",
+                data=bytes.fromhex("64a100000000c3"),
+                characteristics=0x20,
+                relocations=(CoffRelocation(2, 1, 0x06),),
+            ),
+        ),
+        symbols=(
+            CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            CoffSymbol(1, "__except_list", 0, 0, 0, 2),
+        ),
+    )
+
+    function = extract_object_function(obj, "foo")
+
+    assert function.relocation_offsets == frozenset()
+    assert function.relocation_references == ()
+    assert normalize_function(function.data)[0] == "mov eax, dword fs:[0x0]"
+
+
+def test_extract_object_function_preserves_nonzero_except_list_addend() -> None:
+    from snail.match import CoffObject, CoffRelocation, CoffSection, CoffSymbol
+
+    obj = CoffObject(
+        sections=(
+            CoffSection(
+                name=".text",
+                data=bytes.fromhex("64a104000000c3"),
+                characteristics=0x20,
+                relocations=(CoffRelocation(2, 1, 0x06),),
+            ),
+        ),
+        symbols=(
+            CoffSymbol(0, "_foo", 0, 1, 0x20, 2),
+            CoffSymbol(1, "__except_list", 0, 0, 0, 2),
+        ),
+    )
+
+    function = extract_object_function(obj, "foo")
+
+    assert function.relocation_offsets == frozenset({2})
+    assert function.relocation_references[0].symbol_name == "__except_list"
+    assert normalize_function(
+        function.data,
+        relocation_offsets=function.relocation_offsets,
+    )[0] == "mov eax, dword fs:[ADDR]"
+
+
 def test_normalize_masks_relocated_and_absolute_operands() -> None:
     # mov eax, [0x004a1234]; ret
     code = bytes.fromhex("a134124a00c3")

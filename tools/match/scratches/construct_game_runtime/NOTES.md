@@ -626,3 +626,21 @@ size ledger, `operator new`, exception cleanup, global publication, and
 allocation counters. The crosswalk therefore maps the inlined constructor
 region for owner provenance without renaming the whole wrapper or claiming
 body identity.
+
+## 2026-07-29 absolute SEH-chain relocation
+
+The VC6 object declares `__except_list` as an undefined external absolute
+symbol with value zero and emits three `IMAGE_REL_I386_DIR32` relocations to
+it, at `.text` offsets `0x9`, `0x11`, and `0x4e5`. These are the compiler's
+object-file spelling for the process SEH chain at `FS:[0]`, not image
+addresses. The matcher now preserves the encoded zero only for zero-addend
+i386 `DIR32` references to that pseudo-symbol; a regression test keeps
+nonzero addends on the ordinary relocation/audit path.
+
+With the false address masking removed, focused matching improves from
+88.89% to 89.95%, the exact prefix grows from 2 to 10 target instructions,
+and the three unaudited operands become zero. All 120 real masked operands
+remain clean. The first mismatch is now the substantive residual:
+the target batches eight two-argument debug calls before one
+`add esp, 0x40`, while the candidate cleans `esp` after each call. The
+constructor source remains unchanged by this matcher correction.
