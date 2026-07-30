@@ -2125,6 +2125,69 @@ def audit_masked_operands(
         candidate_index for _, candidate_index in compare_reference_pairs
     )
 
+    # A switch selector can move between registers without moving its computed
+    # dispatch. Pair a native curated jump table with a compiler-local table
+    # only when both JMPs remain at the exact same function offset and expose
+    # the same primary entry count. The content audit below still has to prove
+    # every ordered case destination; this phase only makes that proof possible.
+    def local_jump_table_token(
+        line: DisassemblyLine,
+    ) -> tuple[int, int] | None:
+        if (
+            len(line.masked_references) != 1
+            or not line.text.startswith("jmp dword [")
+        ):
+            return None
+        reference = line.masked_references[0]
+        if reference.operand_index != 0 or reference.jump_table_entries is None:
+            return None
+        return line.offset, len(reference.jump_table_entries)
+
+    jump_table_target_indices = [
+        index
+        for index, line in enumerate(target_disassembly)
+        if (
+            index not in used_target_indices
+            and local_jump_table_token(line) is not None
+            and line.masked_references[0].text.startswith("jump_table:")
+        )
+    ]
+    jump_table_candidate_indices = [
+        index
+        for index, line in enumerate(candidate_disassembly)
+        if (
+            index not in used_candidate_indices
+            and local_jump_table_token(line) is not None
+            and line.masked_references[0].source == "reloc"
+            and line.masked_references[0].text.startswith("sym:$L")
+        )
+    ]
+    jump_table_matcher = difflib.SequenceMatcher(
+        a=tuple(
+            local_jump_table_token(target_disassembly[index])
+            for index in jump_table_target_indices
+        ),
+        b=tuple(
+            local_jump_table_token(candidate_disassembly[index])
+            for index in jump_table_candidate_indices
+        ),
+        autojunk=False,
+    )
+    jump_table_reference_pairs = {
+        (
+            jump_table_target_indices[target_index],
+            jump_table_candidate_indices[candidate_index],
+        )
+        for target_index, candidate_index in equal_pairs(jump_table_matcher)
+    }
+    reference_masked_pairs.update(jump_table_reference_pairs)
+    used_target_indices.update(
+        target_index for target_index, _ in jump_table_reference_pairs
+    )
+    used_candidate_indices.update(
+        candidate_index for _, candidate_index in jump_table_reference_pairs
+    )
+
     text_matcher = difflib.SequenceMatcher(
         a=tuple(line.text for line in target_disassembly),
         b=tuple(line.text for line in candidate_disassembly),

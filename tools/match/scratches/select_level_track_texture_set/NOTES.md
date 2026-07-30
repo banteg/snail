@@ -102,3 +102,18 @@ address, or add another register-allocation coercion. The mobile bodies confirm
 the owner and algorithm but use different texture-set counts and cannot prove
 the Windows source lifetime. Further progress needs original Windows source or
 compiler provenance, neither of which is currently available.
+
+## 2026-07-30 exact-offset jump-table audit
+
+The audit now pairs a native curated jump table with a compiler-local table
+when both computed jumps remain at the exact same function offset and expose
+the same entry count. Pairing alone grants no proof: the existing ordered
+destination verifier still accepts or rejects the table contents.
+
+Here the `eax` and `edi` dispatches both remain at `+0xd`, but the table is
+correctly rejected. Five entries are identical; native's default entry lands
+at `+0x45` to reload the parameter into `edi`, while the candidate entry lands
+at `+0x43` because that value is already live. The former two one-sided entries
+are now one explicit jump-table mismatch. Source, score, and the formally
+stalled lifetime boundary remain unchanged at 76.19%, 41/43 instructions, and
+prefix 0/43.

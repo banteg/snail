@@ -1304,10 +1304,15 @@ def local_jump_table_candidate(
     second_entry_offset: int,
     *,
     table_key: str = "name:$Ltable",
+    index_register: str = "eax",
 ) -> ObjectFunction:
+    dispatch = {
+        "eax": "ff2485",
+        "edi": "ff24bd",
+    }[index_register]
     return ObjectFunction(
         name="_foo",
-        data=bytes.fromhex("ff248500000000c3") + (b"\x00" * 8),
+        data=bytes.fromhex(f"{dispatch}00000000c3") + (b"\x00" * 8),
         relocation_offsets=frozenset({3, 8, 12}),
         relocation_references=(
             ObjectRelocationReference(
@@ -1447,6 +1452,70 @@ def test_masked_operand_audit_accepts_matching_local_jump_table_contents() -> No
     entry = result.masked_operand_audit.entries[0]
     assert entry.target_references[0].jump_table_entries == (0, 7)
     assert entry.candidate_references[0].jump_table_entries == (0, 7)
+
+
+def test_masked_operand_audit_aligns_local_jump_table_across_index_registers() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)
+    result = match_function(
+        bytes.fromhex("ff248500204000c3"),
+        local_jump_table_candidate(
+            second_entry_offset=7,
+            index_register="edi",
+        ),
+        image=LoadedImage(
+            mapped=bytes(mapped),
+            image_base=0x400000,
+            size_of_image=0x3000,
+        ),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                    size=0x8,
+                ),
+            ),
+        ),
+    )
+
+    assert result.masked_operand_audit.ok_count == 1
+    assert result.masked_operand_audit.problem_count == 0
+
+
+def test_masked_operand_audit_rejects_cross_register_jump_table_mismatch() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<II", mapped, 0x2000, 0x401000, 0x401007)
+    result = match_function(
+        bytes.fromhex("ff248500204000c3"),
+        local_jump_table_candidate(
+            second_entry_offset=0,
+            index_register="edi",
+        ),
+        image=LoadedImage(
+            mapped=bytes(mapped),
+            image_base=0x400000,
+            size_of_image=0x3000,
+        ),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                    size=0x8,
+                ),
+            ),
+        ),
+    )
+
+    assert result.masked_operand_audit.ok_count == 0
+    assert result.masked_operand_audit.mismatch_count == 1
 
 
 def test_masked_operand_audit_accepts_aligned_shifted_jump_table_targets() -> None:
