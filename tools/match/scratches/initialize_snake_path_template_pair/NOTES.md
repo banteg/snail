@@ -346,3 +346,34 @@ Truth-first and negated polarity spellings compile byte-identically in every
 pairing, so the canonical truth-first family form is retained. This recovers
 the repeated source-family control flow visible in the binary; it does not
 invent a semantic texture distinction between equal arms.
+
+## 2026-07-30 lead cursor and curve-initializer ownership
+
+The checkerboard recovery changes the surrounding allocation enough to make
+the previously marginal lead byte cursor decisive. Advancing a byte offset by
+`sizeof(PathTemplateSample)` while keeping `i` as the logical Z owner raises
+focused matching from **54.28%** (645/652) to **55.25%** (644/652), gains
+23.58 weighted bytes, and extends the exact prefix from 21 to **64/652**.
+
+The curve has a narrower ownership split than the earlier all-or-nothing
+transfer suggested. Its initializer repeatedly reloads the two sample arrays,
+while its orientation block keeps the recovered previous/current sample
+pointers live. Retaining direct indexed initializer stores with pointer-owned
+orientation raises focused matching from **55.25%** (644/652) to **58.96%**
+(654/652), a gain of 90.42 weighted bytes. The 64-instruction prefix and all
+40 masked references remain clean.
+
+Reverse sweeps from the final source make both dependencies explicit:
+
+```text
+direct lead index:          57.23%, 655/652, prefix 21, -42.10 weighted bytes
+borrowed initializer pair:  55.25%, 644/652, prefix 64, -90.42 weighted bytes
+direct orientation arrays:  48.29%, 665/652, prefix 6, -259.85 weighted bytes
+```
+
+An explicit byte cursor for the curve itself gained only about two weighted
+bytes before the initializer recovery, removed two candidate instructions,
+and did not improve the prefix or reference audit, so it was rejected. The
+final retained form therefore models three distinct lifetimes: byte-relative
+lead traversal, indexed curve initialization, and pointer-owned curve
+orientation.

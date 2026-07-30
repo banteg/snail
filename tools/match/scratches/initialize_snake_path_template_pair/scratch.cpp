@@ -144,23 +144,26 @@ void cRPath::initialize_snake_path_template_pair(
     has_entry_mesh_transition = 0;
 
     int i;
+    int lead_offset;
 
-    for (i = 0; i < 6; ++i) {
-        primary_samples[i].center_x = 0.0f;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+    for (i = 0, lead_offset = 0;
+         lead_offset < 6 * (int)sizeof(PathTemplateSample);
+         ++i, lead_offset += (int)sizeof(PathTemplateSample)) {
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->center_x = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->special_scalar = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->lateral_scale = 1.0f;
+        set_matrix_identity(&((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform);
         float z = (float)i;
-        primary_samples[i].transform.position.x = 0.0f;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = z;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.x = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.y = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_offset))->transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x = 0.0f;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = z;
+        set_matrix_identity(&((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.x = 0.0f;
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.y = 0.49000001f;
+        ((PathTemplateSample*)((char*)secondary_samples + lead_offset))->transform.position.z = z;
     }
 
     int departure_index = 24;
@@ -189,48 +192,59 @@ void cRPath::initialize_snake_path_template_pair(
     int curve_index = 0;
     for (i = 6; i < 24; ++i) {
         float angle = (float)curve_index * 0.34906587f;
-        PathTemplateSample* primary = &primary_samples[i];
-        PathTemplateSample* secondary = &secondary_samples[i];
-        primary->center_x = (0.5f - cosine(angle * 0.5f) * 0.5f)
+        primary_samples[i].center_x =
+            (0.5f - cosine(angle * 0.5f) * 0.5f)
             * primary_samples[24].center_x;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = -(1.0f - cosine(angle));
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        primary_samples[i].transform.position.y =
+            -(1.0f - cosine(angle));
         float z = (float)(curve_index + 6);
-        primary->transform.position.z = z;
+        primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f - (1.0f - cosine(angle));
-        secondary->transform.position.z = z;
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y =
+            0.49000001f - (1.0f - cosine(angle));
+        secondary_samples[i].transform.position.z = z;
+
         PathTemplateSample* primary_previous = &primary_samples[i - 1];
         PathTemplateSample* primary_current = &primary_samples[i];
         PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
         PathTemplateSample* secondary_current = &secondary_samples[i];
-
         if (curve_index == 0) {
             primary_previous->transform.RotIdentity();
             secondary_previous->transform.RotIdentity();
         } else {
-            primary_previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+            primary_previous->transform.basis_right =
+                Vector3(1.0f, 0.0f, 0.0f);
             primary_previous->transform.basis_forward = Vector3(
-                primary_current->transform.position.x - primary_previous->transform.position.x,
-                primary_current->transform.position.y - primary_previous->transform.position.y,
-                primary_current->transform.position.z - primary_previous->transform.position.z);
+                primary_current->transform.position.x
+                    - primary_previous->transform.position.x,
+                primary_current->transform.position.y
+                    - primary_previous->transform.position.y,
+                primary_current->transform.position.z
+                    - primary_previous->transform.position.z);
             primary_previous->transform.basis_forward.Normalize();
             primary_previous->transform.basis_up.cross_vectors(
                 &primary_previous->transform.basis_forward,
                 &primary_previous->transform.basis_right);
 
-            secondary_previous->transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);
+            secondary_previous->transform.basis_right =
+                Vector3(1.0f, 0.0f, 0.0f);
             secondary_previous->transform.basis_forward = Vector3(
-                secondary_current->transform.position.x - secondary_previous->transform.position.x,
-                secondary_current->transform.position.y - secondary_previous->transform.position.y,
-                secondary_current->transform.position.z - secondary_previous->transform.position.z);
+                secondary_current->transform.position.x
+                    - secondary_previous->transform.position.x,
+                secondary_current->transform.position.y
+                    - secondary_previous->transform.position.y,
+                secondary_current->transform.position.z
+                    - secondary_previous->transform.position.z);
             secondary_previous->transform.basis_forward.Normalize();
             secondary_previous->transform.basis_up.cross_vectors(
                 &secondary_previous->transform.basis_forward,
