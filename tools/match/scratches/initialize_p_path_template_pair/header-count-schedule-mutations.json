@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "header-count-schedule",
+      "find": "    kind = (PathTemplateKind)(variant + 0x21);\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    int last_index = curve_segments + 1;\n    int sample_count = last_index + 1;\n    segment_count = sample_count;\n    segment_count_f = (float)sample_count;",
+      "replacements": [
+        {
+          "name": "native-store-order",
+          "text": "    kind = (PathTemplateKind)(variant + 0x21);\n    int last_index = curve_segments + 1;\n    int sample_count = last_index + 1;\n    segment_count = sample_count;\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    segment_count_f = (float)sample_count;"
+        },
+        {
+          "name": "counts-before-header",
+          "text": "    int last_index = curve_segments + 1;\n    int sample_count = last_index + 1;\n    kind = (PathTemplateKind)(variant + 0x21);\n    segment_count = sample_count;\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    segment_count_f = (float)sample_count;"
+        },
+        {
+          "name": "direct-last-derived-count",
+          "text": "    kind = (PathTemplateKind)(variant + 0x21);\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    int last_index = curve_segments + 1;\n    segment_count = last_index + 1;\n    segment_count_f = (float)(last_index + 1);"
+        },
+        {
+          "name": "direct-curve-derived-count",
+          "text": "    kind = (PathTemplateKind)(variant + 0x21);\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    int last_index = curve_segments + 1;\n    segment_count = curve_segments + 2;\n    segment_count_f = (float)(curve_segments + 2);"
+        },
+        {
+          "name": "last-before-kind",
+          "text": "    int last_index = curve_segments + 1;\n    kind = (PathTemplateKind)(variant + 0x21);\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    int sample_count = last_index + 1;\n    segment_count = sample_count;\n    segment_count_f = (float)sample_count;"
+        }
+      ]
+    }
+  ]
+}

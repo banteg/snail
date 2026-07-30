@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "constant-owner-declarations",
+      "find": "{\n    kind = (PathTemplateKind)(variant + 0x21);\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;",
+      "replacements": [
+        {
+          "name": "shared-zero-and-endpoint-one",
+          "text": "{\n    float shared_zero = 0.0f;\n    float endpoint_one = 1.0f;\n    kind = (PathTemplateKind)(variant + 0x21);\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = endpoint_one;"
+        }
+      ]
+    },
+    {
+      "name": "first-sample-constant-owners",
+      "find": "    primary_samples[0].rotation_scalar_98 = 0.0f;\n    primary_samples[0].rotation_scalar_94 = 0.0f;\n    primary_samples[0].special_scalar = 0.0f;\n    primary_samples[0].lateral_scale = 1.0f;\n    set_matrix_identity(&primary_samples[0].transform);\n    primary_samples[0].transform.position.x = primary_samples[0].center_x;\n    primary_samples[0].transform.position.y = 0.0f;\n    primary_samples[0].transform.position.z = 0.0f;\n    set_matrix_identity(&secondary_samples[0].transform);\n    secondary_samples[0].transform.position.x = primary_samples[0].center_x;\n    secondary_samples[0].transform.position.y = 0.49000001f;\n    secondary_samples[0].transform.position.z = 0.0f;",
+      "replacements": [
+        {
+          "name": "shared-zero-and-endpoint-one",
+          "text": "    primary_samples[0].rotation_scalar_98 = shared_zero;\n    primary_samples[0].rotation_scalar_94 = shared_zero;\n    primary_samples[0].special_scalar = shared_zero;\n    primary_samples[0].lateral_scale = endpoint_one;\n    set_matrix_identity(&primary_samples[0].transform);\n    primary_samples[0].transform.position.x = primary_samples[0].center_x;\n    primary_samples[0].transform.position.y = shared_zero;\n    primary_samples[0].transform.position.z = shared_zero;\n    set_matrix_identity(&secondary_samples[0].transform);\n    secondary_samples[0].transform.position.x = primary_samples[0].center_x;\n    secondary_samples[0].transform.position.y = 0.49000001f;\n    secondary_samples[0].transform.position.z = shared_zero;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-sample-constant-owners",
+      "find": "    primary_samples[last_index].rotation_scalar_98 = 0.0f;\n    primary_samples[last_index].rotation_scalar_94 = 0.0f;\n    primary_samples[last_index].special_scalar = 0.0f;\n    primary_samples[last_index].lateral_scale = 1.0f;\n    set_matrix_identity(&primary_samples[last_index].transform);\n    float terminal_z = (float)last_index;\n    primary_samples[last_index].transform.position.x = primary_samples[last_index].center_x;\n    primary_samples[last_index].transform.position.y = 0.0f;",
+      "replacements": [
+        {
+          "name": "shared-zero-and-endpoint-one",
+          "text": "    primary_samples[last_index].rotation_scalar_98 = shared_zero;\n    primary_samples[last_index].rotation_scalar_94 = shared_zero;\n    primary_samples[last_index].special_scalar = shared_zero;\n    primary_samples[last_index].lateral_scale = endpoint_one;\n    set_matrix_identity(&primary_samples[last_index].transform);\n    float terminal_z = (float)last_index;\n    primary_samples[last_index].transform.position.x = primary_samples[last_index].center_x;\n    primary_samples[last_index].transform.position.y = shared_zero;"
+        }
+      ]
+    },
+    {
+      "name": "curve-zero-owner",
+      "find": "            primary_samples[i].rotation_scalar_98 = 0.0f;\n            primary_samples[i].rotation_scalar_94 = 0.0f;\n            primary_samples[i].special_scalar = 0.0f;\n            primary_samples[i].lateral_scale = 1.0f;",
+      "replacements": [
+        {
+          "name": "shared-zero",
+          "text": "            primary_samples[i].rotation_scalar_98 = shared_zero;\n            primary_samples[i].rotation_scalar_94 = shared_zero;\n            primary_samples[i].special_scalar = shared_zero;\n            primary_samples[i].lateral_scale = 1.0f;"
+        }
+      ]
+    }
+  ]
+}

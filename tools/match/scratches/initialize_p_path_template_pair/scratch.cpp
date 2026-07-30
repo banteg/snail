@@ -209,7 +209,7 @@ void cRPath::initialize_p_path_template_pair(
             primary_samples[i].lateral_scale = 1.0f;
             set_matrix_identity(&primary_samples[i].transform);
             ++curve_index;
-            float z = (float)curve_index;
+            float z = (float)i;
             primary_samples[i].transform.position.x = primary_samples[i].center_x;
             primary_samples[i].transform.position.y = 0.0f;
             primary_samples[i].transform.position.z = z;

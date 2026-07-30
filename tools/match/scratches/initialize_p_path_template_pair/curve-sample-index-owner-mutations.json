@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-z-owner",
+      "find": "            ++curve_index;\n            float z = (float)curve_index;",
+      "replacements": [
+        {
+          "name": "one-based-sample-index",
+          "text": "            ++curve_index;\n            float z = (float)i;"
+        }
+      ]
+    },
+    {
+      "name": "curve-bound-owner",
+      "find": "            ++i;\n        } while (curve_index < curve_segments);",
+      "replacements": [
+        {
+          "name": "one-based-sample-index",
+          "text": "            ++i;\n        } while (i <= curve_segments);"
+        }
+      ]
+    }
+  ]
+}

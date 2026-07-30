@@ -258,10 +258,11 @@ sweep. It raises the scalar score from 54.05% to 54.43% by nine weighted bytes
 and preserves the six-instruction prefix and all 41 clean references, but grows
 the candidate from exact 679/679 instruction parity to 688/679.
 
-P's native evidence proves branch-local vector values and distinct face-record
-owners, but it does not yet prove that the row control shares the siblings'
-guarded byte-cursor source shape. The result is therefore recorded as an
-instruction-count tradeoff and not retained. Further P mesh work should first
+At this stage, P's native evidence proved branch-local vector values and
+distinct face-record owners, but it did not yet prove that the row control
+shares the siblings' guarded byte-cursor source shape. The result is therefore
+recorded as an instruction-count tradeoff and not retained. Further P mesh
+work should first
 recover its native row-control owner rather than importing the family schedule
 on score alone.
 
@@ -303,3 +304,32 @@ unproven guarded byte-cursor row control is not imported to compensate.
 Moving the shared vertex owner into the two late branch-local positions loses
 100.90 weighted bytes, so the target's late vertex address calculation remains
 compiler scheduling rather than a recovered source lifetime.
+
+## 2026-07-30 P owner closure
+
+The exact Android body independently proves that the curved sample Z value is
+owned by the one-based sample index, while the phase and loop bound remain
+owned by the zero-based curve counter. Retaining only that Z owner raises the
+current focused result from 56.13% (675/679 candidate/target instructions) to
+**56.19%** (677/679), preserving the six-instruction prefix and all **41**
+clean references. Moving the loop bound to the one-based index regressed by
+40 weighted bytes; combining it with the Z change still regressed by 34.
+
+Five source-equivalent header/count schedules bound the prologue store-order
+question. Deriving the count directly from `last_index` was byte-identical;
+the other four variants lost 7 to 84 weighted bytes and collapsed the exact
+prefix from six instructions to one. Reusing one logical sample index from the
+terminal setup into the curve was also byte-identical.
+
+Raw Windows assembly at `0x42606f..0x4261b5` now proves separate logical-row
+and `0xa8` sample-byte cursors, signed outer and inner guards, and a
+primary-sample base fetched before the terminal-row branch. Both an explicit
+guarded byte cursor and a guarded indexed spelling compile byte-identically to
+the retained `for` loops, showing that VC6 already derives the native row
+control.
+
+Finally, the native prologue's long-lived zero, endpoint-only `1.0f`, and
+curve-counter register lifetimes were replayed through eight valid combinations
+of explicit source locals and uses. Every combination was byte-identical. The
+remaining EBX/EBP/EDI rotation is therefore bounded as compiler allocation
+debt; no synthetic register-forcing source is retained.

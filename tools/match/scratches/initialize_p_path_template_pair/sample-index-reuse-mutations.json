@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-sample-index-owner",
+      "find": "    int last_index = curve_segments + 1;\n    int sample_count = last_index + 1;",
+      "replacements": [
+        {
+          "name": "shared-index-probe",
+          "text": "    int i = curve_segments + 1;\n#define last_index i\n    int sample_count = i + 1;"
+        }
+      ]
+    },
+    {
+      "name": "curve-sample-index-owner",
+      "find": "        float curve_segments_f = (float)curve_segments;\n        int i = 1;",
+      "replacements": [
+        {
+          "name": "reuse-terminal-index",
+          "text": "        float curve_segments_f = (float)curve_segments;\n        i = 1;"
+        }
+      ]
+    }
+  ]
+}
