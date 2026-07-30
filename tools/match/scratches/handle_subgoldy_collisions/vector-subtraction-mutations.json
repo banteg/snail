@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "salt-vector-subtraction",
+      "find": "                    delta.x = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, x))\n                            - cached_camera_target_world.x;\n                    delta.y = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, y))\n                            - cached_camera_target_world.y;\n                    delta.z = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, z))\n                            - cached_camera_target_world.z;",
+      "replacements": [
+        {
+          "name": "whole-vector",
+          "text": "                    delta =\n                        *(Vec3*)(slot + SALT_POSITION_FROM_SUBGAME)\n                        - cached_camera_target_world;"
+        }
+      ]
+    },
+    {
+      "name": "sub-lazer-vector-subtraction",
+      "find": "                delta.x = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, x))\n                        - cached_camera_target_world.x;\n                delta.y = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, y))\n                        - cached_camera_target_world.y;\n                delta.z = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, z))\n                        - cached_camera_target_world.z;",
+      "replacements": [
+        {
+          "name": "whole-vector",
+          "text": "                delta =\n                    *(Vec3*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME)\n                    - cached_camera_target_world;"
+        }
+      ]
+    },
+    {
+      "name": "garbage-vector-subtraction",
+      "find": "                delta.x = garbage->transform.position.x - cached_camera_target_world.x;\n                delta.y = garbage->transform.position.y - cached_camera_target_world.y;\n                delta.z = garbage->transform.position.z - cached_camera_target_world.z;",
+      "replacements": [
+        {
+          "name": "whole-vector",
+          "text": "                delta =\n                    garbage->transform.position - cached_camera_target_world;"
+        }
+      ]
+    },
+    {
+      "name": "slug-vector-subtraction",
+      "find": "                slug_delta.x =\n                    game->slug_hazards.slots[m].transform.position.x\n                    - cached_camera_target_world.x;\n                slug_delta.y =\n                    game->slug_hazards.slots[m].transform.position.y\n                    - cached_camera_target_world.y;\n                slug_delta.z =\n                    game->slug_hazards.slots[m].transform.position.z\n                    - cached_camera_target_world.z;",
+      "replacements": [
+        {
+          "name": "whole-vector",
+          "text": "                slug_delta =\n                    game->slug_hazards.slots[m].transform.position\n                    - cached_camera_target_world;"
+        }
+      ]
+    }
+  ]
+}

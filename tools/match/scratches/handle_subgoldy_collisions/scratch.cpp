@@ -69,15 +69,9 @@ void cRSubGoldy::Collision()
                 char* slot = (char*)game + i;
                 if (*(int*)(slot + SALT_STATE_FROM_SUBGAME) == 1
                     && *(unsigned char*)(slot + SALT_COLLISION_ARMED_FROM_SUBGAME) == 1) {
-                    delta.x = *(float*)(slot + SALT_POSITION_FROM_SUBGAME
-                                       + offsetof(Vector3, x))
-                            - cached_camera_target_world.x;
-                    delta.y = *(float*)(slot + SALT_POSITION_FROM_SUBGAME
-                                       + offsetof(Vector3, y))
-                            - cached_camera_target_world.y;
-                    delta.z = *(float*)(slot + SALT_POSITION_FROM_SUBGAME
-                                       + offsetof(Vector3, z))
-                            - cached_camera_target_world.z;
+                    delta =
+                        *(Vec3*)(slot + SALT_POSITION_FROM_SUBGAME)
+                        - cached_camera_target_world;
                     probe_salt = delta;
                     if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {
                         if (damage_retrigger_timer == 0.0f)
@@ -116,9 +110,8 @@ void cRSubGoldy::Collision()
              garbage;
              garbage = garbage->next_active) {
             if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
-                delta.x = garbage->transform.position.x - cached_camera_target_world.x;
-                delta.y = garbage->transform.position.y - cached_camera_target_world.y;
-                delta.z = garbage->transform.position.z - cached_camera_target_world.z;
+                delta =
+                    garbage->transform.position - cached_camera_target_world;
                 probe_b = delta;
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {
                     if ((shoot_flags & 0x80) == 0) {
@@ -142,17 +135,12 @@ void cRSubGoldy::Collision()
             SubSlugState state = game->slug_hazards.slots[m].state;
             if (state == SUB_SLUG_STATE_ACTIVE
                 || state == SUB_SLUG_STATE_LATERAL_ACTIVE) {
-                delta.x =
-                    game->slug_hazards.slots[m].transform.position.x
-                    - cached_camera_target_world.x;
-                delta.y =
-                    game->slug_hazards.slots[m].transform.position.y
-                    - cached_camera_target_world.y;
-                delta.z =
-                    game->slug_hazards.slots[m].transform.position.z
-                    - cached_camera_target_world.z;
-                probe_b = delta;
-                if (delta.z < 2.0f) {
+                Vec3 slug_delta;
+                slug_delta =
+                    game->slug_hazards.slots[m].transform.position
+                    - cached_camera_target_world;
+                probe_b = slug_delta;
+                if (slug_delta.z < 2.0f) {
                     float distance = normalize_vector(&probe_b);
                     if (distance < 1.5675001f) {
                         if ((shoot_flags & 0x80) == 0) {
@@ -194,22 +182,24 @@ void cRSubGoldy::Collision()
                         }
                     }
                 }
-            }
         }
-        for (int n = 0; n < 50; ++n) {
-            if (game->parcel_manager.slots[n].state
+    }
+    for (int n = 0; n < 50; ++n) {
+        if (game->parcel_manager.slots[n].state
                 == PARCEL_STATE_TRACK_ACTIVE) {
-                probe_salt.x =
+                Vec3 parcel_delta;
+                parcel_delta.x =
                     game->parcel_manager.slots[n].position.x
                     - cached_camera_target_world.x;
-                probe_salt.y =
+                parcel_delta.y =
                     game->parcel_manager.slots[n].position.y
                     - cached_camera_target_world.y;
-                probe_salt.z =
+                parcel_delta.z =
                     game->parcel_manager.slots[n].position.z
                     - cached_camera_target_world.z;
-                probe_rings = probe_salt;
-                if (probe_salt.z < 1.0f && normalize_vector(&probe_rings) < 1.24f) {
+                probe_rings = parcel_delta;
+                if (parcel_delta.z < 1.0f
+                    && normalize_vector(&probe_rings) < 1.24f) {
                     ScoreAdd(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
                     g_voice_manager.play_voice_manager(
                         VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
@@ -267,7 +257,7 @@ void cRSubGoldy::Collision()
         probe_b.z =
             game->speedup_pickup.transform.position.z
             - cached_camera_target_world.z;
-        probe_c = probe_b;
+        Vec3 speedup_probe = probe_b;
         if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {
             float pickup_y;
             if (probe_b.y < 0.0f)
@@ -275,7 +265,7 @@ void cRSubGoldy::Collision()
             else
                 pickup_y = probe_b.y;
             if (pickup_y < 0.40000001f
-                && normalize_vector(&probe_c) < 0.98000002f) {
+                && normalize_vector(&speedup_probe) < 0.98000002f) {
                 game->speedup_pickup.state =
                     TRACK_PICKUP_STATE_TEARDOWN_PENDING;
                 noop_runtime_ai();
@@ -299,17 +289,18 @@ void cRSubGoldy::Collision()
     }
     for (int jj = 0; jj < SUB_RING_POOL_CAPACITY; ++jj) {
         if (game->ring_effects.slots[jj].state == SUB_RING_STATE_ACTIVE) {
-            probe_salt.x =
+            Vec3 ring_delta;
+            ring_delta.x =
                 game->ring_effects.slots[jj].transform.position.x
                 - cached_camera_target_world.x;
-            probe_salt.y =
+            ring_delta.y =
                 game->ring_effects.slots[jj].transform.position.y
                 - cached_camera_target_world.y;
-            probe_salt.z =
+            ring_delta.z =
                 game->ring_effects.slots[jj].transform.position.z
                 - cached_camera_target_world.z;
-            probe_fx = probe_salt;
-            if (probe_salt.z < 1.0f) {
+            probe_fx = ring_delta;
+            if (ring_delta.z < 1.0f) {
                 if (normalize_vector(&probe_fx) < 0.98000002f) {
                     game->ring_effects.slots[jj].state =
                         SUB_RING_STATE_COLLECT_PENDING;

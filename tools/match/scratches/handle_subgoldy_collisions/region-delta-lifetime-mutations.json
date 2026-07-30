@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "salt-delta-lifetime",
+      "find": "                    delta.x = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, x))\n                            - cached_camera_target_world.x;\n                    delta.y = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, y))\n                            - cached_camera_target_world.y;\n                    delta.z = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, z))\n                            - cached_camera_target_world.z;\n                    probe_salt = delta;\n                    if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "                    Vec3 salt_delta;\n                    salt_delta.x = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                            + offsetof(Vector3, x))\n                                 - cached_camera_target_world.x;\n                    salt_delta.y = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                            + offsetof(Vector3, y))\n                                 - cached_camera_target_world.y;\n                    salt_delta.z = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                            + offsetof(Vector3, z))\n                                 - cached_camera_target_world.z;\n                    probe_salt = salt_delta;\n                    if (salt_delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {"
+        }
+      ]
+    },
+    {
+      "name": "sub-lazer-delta-lifetime",
+      "find": "                delta.x = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, x))\n                        - cached_camera_target_world.x;\n                delta.y = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, y))\n                        - cached_camera_target_world.y;\n                delta.z = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, z))\n                        - cached_camera_target_world.z;\n                probe_b = delta;\n                if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "                Vec3 sub_lazer_delta;\n                sub_lazer_delta.x = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                             + offsetof(Vector3, x))\n                                  - cached_camera_target_world.x;\n                sub_lazer_delta.y = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                             + offsetof(Vector3, y))\n                                  - cached_camera_target_world.y;\n                sub_lazer_delta.z = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                             + offsetof(Vector3, z))\n                                  - cached_camera_target_world.z;\n                probe_b = sub_lazer_delta;\n                if (sub_lazer_delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {"
+        }
+      ]
+    },
+    {
+      "name": "garbage-delta-lifetime",
+      "find": "                delta.x = garbage->transform.position.x - cached_camera_target_world.x;\n                delta.y = garbage->transform.position.y - cached_camera_target_world.y;\n                delta.z = garbage->transform.position.z - cached_camera_target_world.z;\n                probe_b = delta;\n                if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "                Vec3 garbage_delta;\n                garbage_delta.x = garbage->transform.position.x - cached_camera_target_world.x;\n                garbage_delta.y = garbage->transform.position.y - cached_camera_target_world.y;\n                garbage_delta.z = garbage->transform.position.z - cached_camera_target_world.z;\n                probe_b = garbage_delta;\n                if (garbage_delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {"
+        }
+      ]
+    },
+    {
+      "name": "slug-delta-lifetime",
+      "find": "                delta.x =\n                    game->slug_hazards.slots[m].transform.position.x\n                    - cached_camera_target_world.x;\n                delta.y =\n                    game->slug_hazards.slots[m].transform.position.y\n                    - cached_camera_target_world.y;\n                delta.z =\n                    game->slug_hazards.slots[m].transform.position.z\n                    - cached_camera_target_world.z;\n                probe_b = delta;\n                if (delta.z < 2.0f) {",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "                Vec3 slug_delta;\n                slug_delta.x =\n                    game->slug_hazards.slots[m].transform.position.x\n                    - cached_camera_target_world.x;\n                slug_delta.y =\n                    game->slug_hazards.slots[m].transform.position.y\n                    - cached_camera_target_world.y;\n                slug_delta.z =\n                    game->slug_hazards.slots[m].transform.position.z\n                    - cached_camera_target_world.z;\n                probe_b = slug_delta;\n                if (slug_delta.z < 2.0f) {"
+        }
+      ]
+    }
+  ]
+}

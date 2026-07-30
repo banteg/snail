@@ -4,14 +4,14 @@
 
 | Metric | Before | After |
 |---|---:|---:|
-| Match | 54.23% | **75.06%** |
+| Match | 54.23% | **84.40%** |
 | Target instructions | 673 | 673 |
-| Candidate instructions | 651 | **670** |
-| Exact common prefix | 8 / 673 | **8 / 673** |
+| Candidate instructions | 651 | **673** |
+| Exact common prefix | 8 / 673 | **18 / 673** |
 | Stack frame | `0x74` | **`0x74`** |
 | Masked operands | 88 ok, 0 unresolved, 0 mismatch, 2 unaudited | **89 ok, 0 unresolved, 0 mismatch, 0 unaudited** |
 
-The mobile-assisted ownership pass improves the focused score by **20.83
+The mobile-assisted ownership and vector-lifetime passes improve the focused score by **30.17
 percentage points** while preserving the native frame and a completely clean
 reference audit.
 
@@ -23,9 +23,20 @@ reference audit.
 - Retained the salt and sub-lazer sweeps as game-relative byte cursors. Their
   ownership is fully typed through `cRSubGame` offsets, but direct element
   rewrites regress the Windows code shape.
-- Copied the complete health/speedup/jetpack delta with
-  `probe_c = probe_b` after assigning z. IDA 9.4 and both mobile bodies support
-  this source order, and it recovers the native x87 schedule.
+- Copied the complete health/jetpack delta with `probe_c = probe_b` after
+  assigning z. The singleton speedup branch uses its own scoped copy. IDA 9.4
+  and both mobile bodies support these source lifetimes.
+- Split the slug subtraction result from the earlier shared `delta` lifetime.
+  That one evidence-backed boundary moves the shared Windows subtraction
+  temporary onto its native stack lane and raises the focused match from
+  75.06% to 77.89%.
+- Used the exact inline `tVector::operator-` expression for salt, garbage, and
+  slug collision deltas. The three-site combination reaches 82.76%, the exact
+  673-instruction topology, an 18-instruction prefix, and keeps all 89
+  references clean.
+- Kept parcel and ring source vectors branch-local, matching the separate
+  locals retained by both mobile ports. Their combined split raises the final
+  result from 83.06% to 84.40%.
 - Recovered the parcel count update as
   `int collected = ++parcels_collected`, matching the mobile expression and
   restoring Windows' long-lived `ebx` result.
@@ -51,21 +62,33 @@ reference audit.
 - Long-lived per-slot pointer owners for the fixed banks are contradicted by
   the mobile loops and produce substantially worse Windows register
   allocation.
+- Assigning collision subtraction expressions directly to the normalized
+  probe removes a real native intermediate and falls as low as 76.10%.
+  Branch-initialized variants likewise regress.
+- Combining the scaled slug vector and cached target through nested
+  `operator*`/`operator+` expressions drops the match to 72.04-72.65% and
+  destroys the exact prefix. The retained staged component copies are the
+  supported Windows shape.
+- Splitting the salt or firework source vector from their shared lifetime
+  drops the match to 72.38-75.06%. Whole-vector sub-lazer variants fall to
+  79.08%. Those regions remain intentionally shared/manual.
 
 ## Remaining region
 
-The candidate is now only three instructions shorter than the target. The
-remaining systematic debt is the early vector stack-slot rotation
-(`probe_c`, `delta`, the slug velocity temporary, and the shared
-parcel/ring vector) plus the slug firework staging schedule. Those locals
-should be revisited only with a source-supported lifetime relation; synthetic
-padding or dummy locals would be fakematching.
+The candidate now has the exact 673-instruction count and native `0x74` frame.
+The remaining systematic debt is a balanced schedule difference: the early
+salt expression emits three extra copies, while the slug firework staging is
+three instructions shorter. The health/jetpack normalize copy also retains a
+different stack color. Direct probes, initialization forms, nested vector
+expressions, and broader lexical splits are bounded in `experiments.jsonl`.
+Resume these regions only with new source or ownership evidence; synthetic
+padding, register forcing, or dummy locals would be fakematching.
 
 ## Final audit
 
 - Fixed toolchain: `msvc6.5 /O2 /G5 /W3`.
-- Final matcher result: `75.06%`, target `673`, candidate `670`, prefix
-  `8/673`, masks `89/0/0/0`.
+- Final matcher result: `84.40%`, target `673`, candidate `673`, prefix
+  `18/673`, masks `89/0/0/0`.
 - No inline assembly, naked functions, volatile padding, fake
   globals/constants, dummy externs, stack padding, or normalizer-specific
   tricks.

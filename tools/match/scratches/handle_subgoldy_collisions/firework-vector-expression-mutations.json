@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "firework-position-expression",
+      "find": "                                burst_offset = probe_b * half;\n                                probe_salt.x = burst_offset.x + cached_camera_target_world.x;\n                                burst_position.x = probe_salt.x;\n                                int slot_id = player_slot;\n                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;\n                                burst_position.y = probe_salt.y;\n                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;\n                                burst_position.z = probe_salt.z;",
+      "replacements": [
+        {
+          "name": "direct-scale-plus-target",
+          "text": "                                burst_position =\n                                    probe_b * half + cached_camera_target_world;\n                                int slot_id = player_slot;"
+        },
+        {
+          "name": "shared-sum-then-position",
+          "text": "                                probe_salt =\n                                    probe_b * half + cached_camera_target_world;\n                                burst_position = probe_salt;\n                                int slot_id = player_slot;"
+        },
+        {
+          "name": "local-sum-then-position",
+          "text": "                                Vec3 burst_sum =\n                                    probe_b * half + cached_camera_target_world;\n                                burst_position = burst_sum;\n                                int slot_id = player_slot;"
+        },
+        {
+          "name": "target-plus-scale",
+          "text": "                                burst_position =\n                                    cached_camera_target_world + probe_b * half;\n                                int slot_id = player_slot;"
+        }
+      ]
+    }
+  ]
+}

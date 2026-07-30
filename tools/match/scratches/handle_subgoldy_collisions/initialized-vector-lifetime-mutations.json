@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "salt-initialized-delta",
+      "find": "                    delta =\n                        *(Vec3*)(slot + SALT_POSITION_FROM_SUBGAME)\n                        - cached_camera_target_world;\n                    probe_salt = delta;\n                    if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {",
+      "replacements": [
+        {
+          "name": "branch-initializer",
+          "text": "                    Vec3 salt_delta =\n                        *(Vec3*)(slot + SALT_POSITION_FROM_SUBGAME)\n                        - cached_camera_target_world;\n                    probe_salt = salt_delta;\n                    if (salt_delta.z < 1.0f\n                        && normalize_vector(&probe_salt) < 0.98000002f) {"
+        }
+      ]
+    },
+    {
+      "name": "garbage-initialized-delta",
+      "find": "                delta =\n                    garbage->transform.position - cached_camera_target_world;\n                probe_b = delta;\n                if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {",
+      "replacements": [
+        {
+          "name": "branch-initializer",
+          "text": "                Vec3 garbage_delta =\n                    garbage->transform.position - cached_camera_target_world;\n                probe_b = garbage_delta;\n                if (garbage_delta.z < 1.0f\n                    && normalize_vector(&probe_b) < 0.98000002f) {"
+        }
+      ]
+    },
+    {
+      "name": "slug-initialized-delta",
+      "find": "                Vec3 slug_delta;\n                slug_delta =\n                    game->slug_hazards.slots[m].transform.position\n                    - cached_camera_target_world;",
+      "replacements": [
+        {
+          "name": "branch-initializer",
+          "text": "                Vec3 slug_delta =\n                    game->slug_hazards.slots[m].transform.position\n                    - cached_camera_target_world;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "salt-direct-probe",
+      "find": "                    delta =\n                        *(Vec3*)(slot + SALT_POSITION_FROM_SUBGAME)\n                        - cached_camera_target_world;\n                    probe_salt = delta;\n                    if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {",
+      "replacements": [
+        {
+          "name": "direct-expression",
+          "text": "                    probe_salt =\n                        *(Vec3*)(slot + SALT_POSITION_FROM_SUBGAME)\n                        - cached_camera_target_world;\n                    if (probe_salt.z < 1.0f\n                        && normalize_vector(&probe_salt) < 0.98000002f) {"
+        }
+      ]
+    },
+    {
+      "name": "sub-lazer-direct-probe",
+      "find": "                delta.x = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, x))\n                        - cached_camera_target_world.x;\n                delta.y = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, y))\n                        - cached_camera_target_world.y;\n                delta.z = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, z))\n                        - cached_camera_target_world.z;\n                probe_b = delta;\n                if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {",
+      "replacements": [
+        {
+          "name": "direct-expression",
+          "text": "                probe_b =\n                    *(Vec3*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME)\n                    - cached_camera_target_world;\n                if (probe_b.z < 1.0f\n                    && normalize_vector(&probe_b) < 0.49000001f) {"
+        }
+      ]
+    },
+    {
+      "name": "garbage-direct-probe",
+      "find": "                delta =\n                    garbage->transform.position - cached_camera_target_world;\n                probe_b = delta;\n                if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {",
+      "replacements": [
+        {
+          "name": "direct-expression",
+          "text": "                probe_b =\n                    garbage->transform.position - cached_camera_target_world;\n                if (probe_b.z < 1.0f\n                    && normalize_vector(&probe_b) < 0.98000002f) {"
+        }
+      ]
+    },
+    {
+      "name": "slug-direct-probe",
+      "find": "                Vec3 slug_delta;\n                slug_delta =\n                    game->slug_hazards.slots[m].transform.position\n                    - cached_camera_target_world;\n                probe_b = slug_delta;\n                if (slug_delta.z < 2.0f) {",
+      "replacements": [
+        {
+          "name": "direct-expression",
+          "text": "                probe_b =\n                    game->slug_hazards.slots[m].transform.position\n                    - cached_camera_target_world;\n                if (probe_b.z < 2.0f) {"
+        }
+      ]
+    }
+  ]
+}

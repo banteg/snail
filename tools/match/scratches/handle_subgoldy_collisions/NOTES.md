@@ -717,3 +717,34 @@ The Windows scratch now spells the equivalent multiply chain as
 `random * -0.000061035156f`. This is the nearest VC6-compatible rendering of
 the cross-port source hierarchy and remains byte-identical: focused matching is
 75.06%, 670/673 instructions, prefix 8/673, with all 89 masked operands clean.
+
+## 2026-07-29 mobile-backed vector lifetime recovery
+
+IDA's native stack map and the verified Android/iOS collision bodies agree that
+salt, sub-lazer, garbage, slug, parcel, pickup, and ring collisions use
+distinct vector lifetimes even when Windows colors several of them onto shared
+stack slots. Nine bounded mutation sweeps cover 83 unique variants with no
+repeats or metric tradeoffs: 25 improve, 5 are byte-identical, and 53 regress.
+
+The retained progression is:
+
+- making the slug subtraction result branch-local ends the false function-wide
+  `delta` lifetime and raises 75.06% to 77.89%;
+- spelling salt, garbage, and slug subtraction through the exact inline
+  `tVector::operator-` raises the result to 82.76%, recovers the exact
+  673-instruction count, and advances the prefix from 8 to 18;
+- a singleton speedup normalize copy reaches 83.06%; and
+- independent parcel and ring source vectors reach 84.40%.
+
+Every retained step preserves the native `0x74` frame and the fully clean
+`89/0/0/0` reference audit. The final candidate and target both contain 673
+instructions.
+
+The ledger also bounds the plausible alternatives. Direct probe assignment
+removes a native intermediate; initialized subtraction locals regress; nested
+scale-plus-target expressions destroy the prefix; splitting salt or firework
+source vectors loses the recovered allocation; and every whole-vector
+sub-lazer form falls to 79.08%. A direct `player_slot` firework argument is
+byte-identical. The remaining salt/firework copy balance and pickup stack
+colors therefore need new evidence, not synthetic padding, volatile state, or
+register coercion.

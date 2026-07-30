@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "sub-lazer-vector-shape",
+      "find": "                delta.x = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, x))\n                        - cached_camera_target_world.x;\n                delta.y = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, y))\n                        - cached_camera_target_world.y;\n                delta.z = *(float*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME\n                                   + offsetof(Vector3, z))\n                        - cached_camera_target_world.z;\n                probe_b = delta;\n                if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {",
+      "replacements": [
+        {
+          "name": "shared-whole-vector",
+          "text": "                delta =\n                    *(Vec3*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME)\n                    - cached_camera_target_world;\n                probe_b = delta;\n                if (delta.z < 1.0f\n                    && normalize_vector(&probe_b) < 0.49000001f) {"
+        },
+        {
+          "name": "direct-probe-vector",
+          "text": "                probe_b =\n                    *(Vec3*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME)\n                    - cached_camera_target_world;\n                if (probe_b.z < 1.0f\n                    && normalize_vector(&probe_b) < 0.49000001f) {"
+        },
+        {
+          "name": "branch-assigned-vector",
+          "text": "                Vec3 sub_lazer_delta;\n                sub_lazer_delta =\n                    *(Vec3*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME)\n                    - cached_camera_target_world;\n                probe_b = sub_lazer_delta;\n                if (sub_lazer_delta.z < 1.0f\n                    && normalize_vector(&probe_b) < 0.49000001f) {"
+        },
+        {
+          "name": "branch-initialized-vector",
+          "text": "                Vec3 sub_lazer_delta =\n                    *(Vec3*)(slot + SUB_LAZER_POSITION_FROM_SUBGAME)\n                    - cached_camera_target_world;\n                probe_b = sub_lazer_delta;\n                if (sub_lazer_delta.z < 1.0f\n                    && normalize_vector(&probe_b) < 0.49000001f) {"
+        }
+      ]
+    }
+  ]
+}
