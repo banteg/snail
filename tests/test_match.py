@@ -1385,6 +1385,87 @@ def test_masked_operand_audit_accepts_aligned_shifted_jump_table_targets() -> No
     assert result.masked_operand_audit.problem_count == 0
 
 
+def test_masked_operand_audit_accepts_uniformly_shifted_jump_table_targets() -> None:
+    mapped = bytearray(b"\x00" * 0x3000)
+    struct.pack_into("<II", mapped, 0x2000, 0x401007, 0x40100D)
+    target = bytes.fromhex(
+        "ff248500204000"
+        "b801000000"
+        "c3"
+        "bb02000000"
+        "c3"
+    )
+    candidate_code = bytes.fromhex(
+        "ff248500000000"
+        "9090"
+        "b901000000"
+        "c3"
+        "ba02000000"
+        "c3"
+    )
+    candidate = ObjectFunction(
+        name="_foo",
+        data=candidate_code + (b"\x00" * 8),
+        relocation_offsets=frozenset({3, 21, 25}),
+        relocation_references=(
+            ObjectRelocationReference(
+                offset=3,
+                symbol_name="$Ltable",
+                text="sym:$Ltable",
+                key="name:$Ltable",
+                explained=True,
+                addend=0,
+                symbol_offset=21,
+                symbol_size=8,
+            ),
+            ObjectRelocationReference(
+                offset=21,
+                symbol_name="$Lcase0",
+                text="sym:$Lcase0",
+                key="name:$Lcase0",
+                explained=True,
+                addend=0,
+                symbol_offset=9,
+            ),
+            ObjectRelocationReference(
+                offset=25,
+                symbol_name="$Lcase1",
+                text="sym:$Lcase1",
+                key="name:$Lcase1",
+                explained=True,
+                addend=0,
+                symbol_offset=15,
+            ),
+        ),
+    )
+    result = match_function(
+        target,
+        candidate,
+        image=LoadedImage(
+            mapped=bytes(mapped),
+            image_base=0x400000,
+            size_of_image=0x3000,
+        ),
+        target_va=0x401000,
+        reference_manifest=ReferenceSymbolManifest(
+            name="test references",
+            symbols=(
+                ReferenceSymbol(
+                    address=0x402000,
+                    name="foo_jump_table",
+                    kind="jump_table",
+                    size=0x8,
+                ),
+            ),
+        ),
+    )
+    entry = result.masked_operand_audit.entries[0]
+    assert entry.target_references[0].jump_table_entries == (7, 13)
+    assert entry.candidate_references[0].jump_table_entries == (9, 15)
+    assert entry.status == "ok"
+    assert result.masked_operand_audit.problem_count == 0
+
+
 def test_masked_operand_audit_accepts_jump_target_at_aligned_replace_span() -> None:
     mapped = bytearray(b"\x00" * 0x3000)
     struct.pack_into("<I", mapped, 0x2000, 0x401009)

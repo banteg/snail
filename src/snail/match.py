@@ -1614,6 +1614,8 @@ def _reference_status(
     candidate_references: tuple[MaskedReference, ...],
     *,
     aligned_instruction_offsets: frozenset[tuple[int, int]] = frozenset(),
+    target_instruction_offsets: frozenset[int] = frozenset(),
+    candidate_instruction_offsets: frozenset[int] = frozenset(),
 ) -> str:
     def is_local_jump_table(
         target: MaskedReference, candidate: MaskedReference
@@ -1656,6 +1658,43 @@ def _reference_status(
         )
         if set(target_options) & set(candidate_options):
             return True
+
+        def is_uniform_instruction_translation(
+            target_entries: tuple[int, ...],
+            candidate_entries: tuple[int, ...],
+        ) -> bool:
+            # A source change before a switch can move every case block by one
+            # constant amount even when register allocation prevents the case
+            # entry instructions from aligning textually. Preserve proof of the
+            # ordered table contents when every destination remains a real
+            # instruction boundary and at least two distinct cases establish
+            # the same translation. A permuted or independently shifted table
+            # still fails this check.
+            return (
+                len(target_entries) == len(candidate_entries)
+                and len(target_entries) >= 2
+                and len(set(target_entries)) >= 2
+                and len(set(candidate_entries)) >= 2
+                and all(
+                    target_offset in target_instruction_offsets
+                    for target_offset in target_entries
+                )
+                and all(
+                    candidate_offset in candidate_instruction_offsets
+                    for candidate_offset in candidate_entries
+                )
+                and len(
+                    {
+                        candidate_offset - target_offset
+                        for target_offset, candidate_offset in zip(
+                            target_entries,
+                            candidate_entries,
+                        )
+                    }
+                )
+                == 1
+            )
+
         # Compare ordered destinations independently when surrounding source
         # shape shifts only some case blocks. An equal function-relative
         # offset is already the same local destination; otherwise require the
@@ -1669,6 +1708,10 @@ def _reference_status(
                     target_entries,
                     candidate_entries,
                 )
+            )
+            or is_uniform_instruction_translation(
+                target_entries,
+                candidate_entries,
             )
             for target_entries in target_options
             for candidate_entries in candidate_options
@@ -1963,6 +2006,12 @@ def audit_masked_operands(
         )
         for target_index, candidate_index in structural_pairs
     )
+    target_instruction_offsets = frozenset(
+        line.offset for line in target_disassembly
+    )
+    candidate_instruction_offsets = frozenset(
+        line.offset for line in candidate_disassembly
+    )
     audit_pairs = list(reference_masked_pairs)
     for target_index, candidate_index in text_pairs:
         target_line = target_disassembly[target_index]
@@ -1997,6 +2046,8 @@ def audit_masked_operands(
                     target_line.masked_references,
                     candidate_line.masked_references,
                     aligned_instruction_offsets=aligned_instruction_offsets,
+                    target_instruction_offsets=target_instruction_offsets,
+                    candidate_instruction_offsets=candidate_instruction_offsets,
                 ),
             )
         )

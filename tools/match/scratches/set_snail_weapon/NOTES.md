@@ -126,3 +126,17 @@ Windows remains 73.02% (`245/248`) with all 23 runtime references clean. The
 sole masked mismatch is still the candidate's compiler-local jump-table label;
 the three-sweep no-improvement streak is therefore treated as a bounded VC6
 register-allocation and private-label residual, not a semantic mismatch.
+
+## 2026-07-30 translated jump-table proof
+
+The matcher now verifies compiler-local jump tables by their ordered
+destinations even when one uniform prologue-size difference shifts every case
+block. It requires at least two distinct entries, proves every entry is an
+instruction boundary on its own side, and still rejects permuted or
+independently shifted tables.
+
+The seven movement-dispatch entries are exactly such a table: native offsets
+`36, 50, 67, 80, 107, 93, 124` correspond to candidate offsets
+`38, 52, 69, 82, 109, 95, 126`, uniformly translated by two bytes. The retained
+source stays at 73.02% (`245/248`), but the former private-label mismatch is now
+content-proved. All 24 masked operands are audited and clean.

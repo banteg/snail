@@ -673,7 +673,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 2 unaudited, 128 ok |  | core |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 70.58% | 6/501 | 70 ok |  | core |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 670/673 | 75.06% | 8/673 | 89 ok |  | core |
-| 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 1 mismatch, 23 ok |  | core |
+| 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 24 ok |  | core |
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 575/571 | 65.79% | 7/571 | 5 unaudited, 91 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 57 ok |  | boundary |
 
