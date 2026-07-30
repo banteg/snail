@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-total-count",
+      "find": "    int departure_index = curve_count + 7;\n    segment_count = departure_index + 7;\n    segment_count_f = (float)(departure_index + 7);",
+      "replacements": [
+        {
+          "name": "curve-count-plus-fourteen",
+          "text": "    segment_count = curve_count + 14;\n    segment_count_f = (float)(curve_count + 14);"
+        }
+      ]
+    },
+    {
+      "name": "late-departure-index",
+      "find": "    do {\n        primary_samples[departure_index].center_x =",
+      "replacements": [
+        {
+          "name": "declare-after-approach",
+          "text": "    int departure_index = curve_count + 7;\n    do {\n        primary_samples[departure_index].center_x ="
+        }
+      ]
+    }
+  ]
+}

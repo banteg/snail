@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "common-and-first-face-record-index",
+      "find": "                for (int face_index = 0; face_index < 2; ++face_index) {\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[\n                            face_index\n                            + 2 * (face_row * width_cells + face_column)];\n                        face->header_word = 0;\n                        face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);",
+      "replacements": [
+        {
+          "name": "declare-and-use-common-index",
+          "text": "                for (int face_index = 0; face_index < 2; ++face_index) {\n                    int face_record_index = face_index\n                        + 2 * (face_row * width_cells + face_column);\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;\n                        face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);"
+        }
+      ]
+    },
+    {
+      "name": "second-face-record-index",
+      "find": "                    } else {\n                        cRFaceQuad* face = &facequads[\n                            face_index\n                            + 2 * (face_row * width_cells + face_column)];\n                        face->header_word = 0;\n                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;",
+      "replacements": [
+        {
+          "name": "use-common-index",
+          "text": "                    } else {\n                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;\n                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;"
+        }
+      ]
+    }
+  ]
+}

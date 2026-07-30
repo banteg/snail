@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-terminal-sample-owner",
+      "find": "                    PathAttachmentSample* previous =\n                        (PathAttachmentSample*)((char*)primary_samples\n                            + mesh_sample_offset)\n                        - 1;",
+      "replacements": [
+        {
+          "name": "current-then-previous",
+          "text": "                    PathAttachmentSample* sample =\n                        (PathAttachmentSample*)((char*)primary_samples\n                            + mesh_sample_offset);\n                    PathAttachmentSample* previous = sample - 1;"
+        },
+        {
+          "name": "current-reassigned-to-previous",
+          "text": "                    PathAttachmentSample* sample =\n                        (PathAttachmentSample*)((char*)primary_samples\n                            + mesh_sample_offset);\n                    sample -= 1;\n                    PathAttachmentSample* previous = sample;"
+        },
+        {
+          "name": "current-named-previous",
+          "text": "                    PathAttachmentSample* previous =\n                        (PathAttachmentSample*)((char*)primary_samples\n                            + mesh_sample_offset);\n                    --previous;"
+        }
+      ]
+    }
+  ]
+}

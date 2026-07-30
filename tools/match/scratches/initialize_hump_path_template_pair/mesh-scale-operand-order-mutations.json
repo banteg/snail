@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-scale-order",
+      "find": "                    Vector3 lateral_offset(\n                        lateral * sample->transform.basis_right.x,\n                        lateral * sample->transform.basis_right.y,\n                        lateral * sample->transform.basis_right.z);",
+      "replacements": [
+        {
+          "name": "component-first",
+          "text": "                    Vector3 lateral_offset(\n                        sample->transform.basis_right.x * lateral,\n                        sample->transform.basis_right.y * lateral,\n                        sample->transform.basis_right.z * lateral);"
+        }
+      ]
+    },
+    {
+      "name": "terminal-scale-order",
+      "find": "                    Vector3 lateral_offset(\n                        lateral * previous->transform.basis_right.x,\n                        lateral * previous->transform.basis_right.y,\n                        lateral * previous->transform.basis_right.z);",
+      "replacements": [
+        {
+          "name": "component-first",
+          "text": "                    Vector3 lateral_offset(\n                        previous->transform.basis_right.x * lateral,\n                        previous->transform.basis_right.y * lateral,\n                        previous->transform.basis_right.z * lateral);"
+        }
+      ]
+    }
+  ]
+}

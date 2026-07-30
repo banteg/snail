@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "departure-bias-owner",
+      "find": "    do {\n        primary_samples[departure_index].center_x =",
+      "replacements": [
+        {
+          "name": "negative-seven-minus-count",
+          "text": "    int departure_bias = -7 - curve_count;\n    do {\n        primary_samples[departure_index].center_x ="
+        },
+        {
+          "name": "negated-boundary",
+          "text": "    int departure_bias = -(curve_count + 7);\n    do {\n        primary_samples[departure_index].center_x ="
+        }
+      ]
+    },
+    {
+      "name": "departure-latch-expression",
+      "find": "    } while (departure_index - 7 - curve_count < 7);",
+      "replacements": [
+        {
+          "name": "bias-plus-index",
+          "text": "    } while (departure_bias + departure_index < 7);"
+        }
+      ]
+    }
+  ]
+}

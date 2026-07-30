@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-column-declaration",
+      "find": "    int mesh_row = 0;\n    if (mesh_row <= segment_count) {",
+      "replacements": [
+        {
+          "name": "column-before-row",
+          "text": "    int mesh_column;\n    int mesh_row = 0;\n    if (mesh_row <= segment_count) {"
+        },
+        {
+          "name": "column-after-row",
+          "text": "    int mesh_row = 0;\n    int mesh_column;\n    if (mesh_row <= segment_count) {"
+        }
+      ]
+    },
+    {
+      "name": "mesh-column-loop-owner",
+      "find": "            for (int mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {",
+      "replacements": [
+        {
+          "name": "use-outer-column",
+          "text": "            for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        }
+      ]
+    }
+  ]
+}

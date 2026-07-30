@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "declared-uninitialized-departure",
+      "find": "    int departure_index = curve_count + 7;\n    segment_count = departure_index + 7;\n    segment_count_f = (float)(departure_index + 7);",
+      "replacements": [
+        {
+          "name": "direct-total-count",
+          "text": "    int departure_index;\n    segment_count = curve_count + 14;\n    segment_count_f = (float)(curve_count + 14);"
+        },
+        {
+          "name": "early-departure-direct-total-count",
+          "text": "    int departure_index = curve_count + 7;\n    segment_count = curve_count + 14;\n    segment_count_f = (float)(curve_count + 14);"
+        }
+      ]
+    },
+    {
+      "name": "late-departure-assignment",
+      "find": "    do {\n        primary_samples[departure_index].center_x =",
+      "replacements": [
+        {
+          "name": "assign-after-approach",
+          "text": "    departure_index = curve_count + 7;\n    do {\n        primary_samples[departure_index].center_x ="
+        }
+      ]
+    }
+  ]
+}

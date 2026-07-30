@@ -341,3 +341,49 @@ secondary alone is neutral, but replacing both component constructors adds
 7.40 weighted bytes. The dependency-closed pair is retained, raising focused
 matching from 60.29% to **60.58%** with 695/685 instructions, prefix 20/685,
 and all 43 references clean.
+
+## 2026-07-30 curved-arm and mesh expression ownership
+
+Raw Windows control flow at `0x41d4f5` jumps on the first curved sample to the
+short pair of `RotIdentity` calls and otherwise falls through into the complete
+primary/secondary orientation body. Reordering the semantically equivalent
+source arms to that native later-sample-first layout adds 126.17 weighted bytes
+without changing instruction count, prefix, or relocation health.
+
+The generated mesh at `0x41d6d9..0x41d7c3` also preserves a double-width x87
+lateral lifetime across its row-terminal branch. Changing that local from
+`float` to `double` removes four excess instructions. With that lifetime in
+place, both branch arms depend on the authored vector boundaries: the paired
+`basis_right * lateral` expressions add 22.26 weighted bytes, and the paired
+position `operator+` expressions add another 25.98. Each one-sided scale probe
+regresses, while the complete pair improves cleanly.
+
+Together these changes raise focused matching from **60.58%** to **67.59%**:
+
+```text
+match: 67.59%
+target: 685 insns, candidate: 691 insns
+prefix: 20/685 target insns
+masked operands: 43 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The retained gain is 178.90 weighted bytes with no reference debt. Broader
+sample-base owners fall to 49.96% or worse, while terminal aliases and scale
+operand order are byte-neutral. Explicit approach cursors fall to 58.70%.
+Moving or delaying the departure index falls to 62.06% or worse; a separately
+named `-7 - curve_count` latch invariant reaches only 62.70% while shortening
+the prefix to 16 and growing the candidate to 693 instructions, so that metric
+tradeoff is rejected.
+
+The face tail is bounded independently. Parity orientation, all five
+mesh/face declaration orders, and outer mesh-column scopes compile identically.
+A first-arm common face index is neutral, but using it in both arms collapses
+matching to 56.89%, confirming that Binary Ninja's common scalar is an SSA
+artifact rather than a source owner.
+
+The experiment ledger now contains 19 sweeps and 62 unique evaluated variants:
+13 improve, 29 are neutral, 20 degrade, and three are metric tradeoffs. The
+operator-scale spec was intentionally rerun once after the double-lifetime
+change because its result is baseline-dependent; no variant source hash was
+repeated. Three consecutive non-improving sweeps mark this frontier stalled
+until new native evidence appears.
