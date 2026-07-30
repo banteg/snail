@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "exit-frontend-state-lvalue",
+      "find": "                    if (persistent)\n                        g_game->players[0].frontend_state = 26;\n                    else\n                        g_game->players[0].frontend_state = 27;",
+      "replacements": [
+        {
+          "name": "shared-player",
+          "text": "                    GamePlayer* frontend_player = &g_game->players[0];\n                    if (persistent)\n                        frontend_player->frontend_state = 26;\n                    else\n                        frontend_player->frontend_state = 27;"
+        },
+        {
+          "name": "shared-field-pointer",
+          "text": "                    int* frontend_state =\n                        &g_game->players[0].frontend_state;\n                    if (persistent)\n                        *frontend_state = 26;\n                    else\n                        *frontend_state = 27;"
+        },
+        {
+          "name": "shared-field-reference",
+          "text": "                    int& frontend_state =\n                        g_game->players[0].frontend_state;\n                    if (persistent)\n                        frontend_state = 26;\n                    else\n                        frontend_state = 27;"
+        },
+        {
+          "name": "const-shared-player",
+          "text": "                    GamePlayer* const frontend_player =\n                        &g_game->players[0];\n                    if (persistent)\n                        frontend_player->frontend_state = 26;\n                    else\n                        frontend_player->frontend_state = 27;"
+        },
+        {
+          "name": "register-shared-player",
+          "text": "                    register GamePlayer* frontend_player =\n                        &g_game->players[0];\n                    if (persistent)\n                        frontend_player->frontend_state = 26;\n                    else\n                        frontend_player->frontend_state = 27;"
+        }
+      ]
+    }
+  ]
+}

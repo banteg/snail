@@ -881,3 +881,25 @@ instructions, with 314 clean masked operands, no unresolved or mismatched
 references, and three visible unaudited global loads. A local switch-table
 audit false positive exposed by this honest source change was fixed in the
 matcher rather than waived or hidden with a symbol alias.
+
+## 2026-07-30 exit frontend-state owner boundary
+
+The remaining one-sided reference is isolated to the completion-exit branch.
+Native reads `selected_level_record_persistent`, loads `g_game` once for the
+saved/current frontend-state copy, then loads it a second time before the
+branch and reuses that owner for both state 26 and state 27 stores. VC6 hoists
+the copy owner before the flag read and reloads `g_game` independently in each
+branch arm.
+
+Three recorded sweeps cover shared `GameRoot` and `GamePlayer` owners,
+destination pointers/references, conditional or selected-state stores, and
+separately scoped copy/branch owners. All 15 unique variants regress. The
+smallest loss is 21 fuzzy bytes for a shared field pointer/reference; broader
+owners lose 46 to 121 bytes by perturbing the surrounding register schedule.
+Most variants clear the audit entry, but none are a net match improvement.
+
+The experiment ledger therefore formally stalls this lane. The retained
+source remains 82.75%, 2,087/2,087 instructions, prefix 12/2,087, with 315
+clean references and one explicitly unaudited duplicated `g_game` load. No
+longer-lived root owner or conditional-store rewrite is kept merely to make
+the audit count look cleaner.

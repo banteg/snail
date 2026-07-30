@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "exit-frontend-copy-owner",
+      "find": "                    unsigned char persistent =\n                        exit_game->selected_level_record_persistent;\n                    g_game->players[0].saved_frontend_state =\n                        g_game->players[0].frontend_state;\n                    if (persistent)\n                        g_game->players[0].frontend_state = 26;\n                    else\n                        g_game->players[0].frontend_state = 27;",
+      "replacements": [
+        {
+          "name": "scoped-copy-and-branch-roots",
+          "text": "                    unsigned char persistent =\n                        exit_game->selected_level_record_persistent;\n                    {\n                        GameRoot* copy_game = g_game;\n                        copy_game->players[0].saved_frontend_state =\n                            copy_game->players[0].frontend_state;\n                    }\n                    GameRoot* frontend_game = g_game;\n                    if (persistent)\n                        frontend_game->players[0].frontend_state = 26;\n                    else\n                        frontend_game->players[0].frontend_state = 27;"
+        },
+        {
+          "name": "scoped-copy-and-field-pointer",
+          "text": "                    unsigned char persistent =\n                        exit_game->selected_level_record_persistent;\n                    {\n                        GameRoot* copy_game = g_game;\n                        copy_game->players[0].saved_frontend_state =\n                            copy_game->players[0].frontend_state;\n                    }\n                    int* frontend_state =\n                        &g_game->players[0].frontend_state;\n                    if (persistent)\n                        *frontend_state = 26;\n                    else\n                        *frontend_state = 27;"
+        },
+        {
+          "name": "copy-player-and-branch-player",
+          "text": "                    unsigned char persistent =\n                        exit_game->selected_level_record_persistent;\n                    GamePlayer* copy_player = &g_game->players[0];\n                    copy_player->saved_frontend_state =\n                        copy_player->frontend_state;\n                    GamePlayer* frontend_player = &g_game->players[0];\n                    if (persistent)\n                        frontend_player->frontend_state = 26;\n                    else\n                        frontend_player->frontend_state = 27;"
+        },
+        {
+          "name": "cached-predicate-and-branch-root",
+          "text": "                    unsigned char persistent =\n                        exit_game->selected_level_record_persistent;\n                    bool use_persistent_state = persistent != 0;\n                    g_game->players[0].saved_frontend_state =\n                        g_game->players[0].frontend_state;\n                    GameRoot* frontend_game = g_game;\n                    if (use_persistent_state)\n                        frontend_game->players[0].frontend_state = 26;\n                    else\n                        frontend_game->players[0].frontend_state = 27;"
+        },
+        {
+          "name": "cached-copy-value-and-branch-root",
+          "text": "                    unsigned char persistent =\n                        exit_game->selected_level_record_persistent;\n                    int current_frontend_state =\n                        g_game->players[0].frontend_state;\n                    g_game->players[0].saved_frontend_state =\n                        current_frontend_state;\n                    GameRoot* frontend_game = g_game;\n                    if (persistent)\n                        frontend_game->players[0].frontend_state = 26;\n                    else\n                        frontend_game->players[0].frontend_state = 27;"
+        }
+      ]
+    }
+  ]
+}

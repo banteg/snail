@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "exit-frontend-state-owner",
+      "find": "                    if (persistent)\n                        g_game->players[0].frontend_state = 26;\n                    else\n                        g_game->players[0].frontend_state = 27;",
+      "replacements": [
+        {
+          "name": "shared-branch-root",
+          "text": "                    GameRoot* frontend_game = g_game;\n                    if (persistent)\n                        frontend_game->players[0].frontend_state = 26;\n                    else\n                        frontend_game->players[0].frontend_state = 27;"
+        },
+        {
+          "name": "shared-branch-player",
+          "text": "                    Player* frontend_player = &g_game->players[0];\n                    if (persistent)\n                        frontend_player->frontend_state = 26;\n                    else\n                        frontend_player->frontend_state = 27;"
+        },
+        {
+          "name": "conditional-store",
+          "text": "                    g_game->players[0].frontend_state =\n                        persistent ? 26 : 27;"
+        },
+        {
+          "name": "shared-root-conditional-store",
+          "text": "                    GameRoot* frontend_game = g_game;\n                    frontend_game->players[0].frontend_state =\n                        persistent ? 26 : 27;"
+        },
+        {
+          "name": "selected-state-store",
+          "text": "                    int frontend_state;\n                    if (persistent)\n                        frontend_state = 26;\n                    else\n                        frontend_state = 27;\n                    g_game->players[0].frontend_state = frontend_state;"
+        }
+      ]
+    }
+  ]
+}
