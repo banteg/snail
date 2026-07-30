@@ -203,3 +203,23 @@ bytes. All 24 one- and two-site parity orientations are byte-neutral.
 The checked ledger contains eleven sweeps and 52 unique variants: seven
 improving, 26 neutral, and 19 degrading. Its three-sweep non-improvement streak
 bounds the currently evidenced SBend source-shape frontier.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The native mesh block already proven at `0x42e3e2..0x42e4b0` also preserves
+allocation-sensitive arithmetic ownership. Widening the shared lateral
+temporary from `float` to `double` adds 8.32 weighted bytes, while the
+expression-only double spelling incurs reference debt and the split-float and
+volatile alternatives are neutral or sharply worse.
+
+An exhaustive 35-variant interaction sweep then proves that both branch-local
+lateral scales and both generated-position additions use the authored
+`Vector3` operators. All four sites are required for the best result; either
+operand order for the additions emits identical bytes. The retained
+position-first spelling is consistent with the independently recovered mesh
+family.
+
+Together the five changes add 44.20 weighted bytes and raise focused matching
+from 66.03% to **68.17%**. The candidate is 574/579 instructions, the exact
+prefix remains 67/579, and all 39 masked references remain clean. The two
+bounded sweeps cover all 39 planned variants without truncation.

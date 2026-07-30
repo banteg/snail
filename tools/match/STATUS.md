@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **80.95%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **81.05%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -634,7 +634,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 24 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 
-## Mid Progress (50-79.99%) (40)
+## Mid Progress (50-79.99%) (42)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -652,6 +652,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 727/718 | 66.44% | 0/718 | 52 ok |  | core |
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 691/685 | 67.59% | 20/685 | 43 ok |  | core |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 697/690 | 62.87% | 8/690 | 43 ok |  | core |
+| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 642/655 | 52.12% | 20/655 | 37 ok |  | core |
+| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 642/685 | 50.34% | 6/685 | 2 unaudited, 38 ok |  | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 712/726 | 75.66% | 122/726 | 65 ok |  | core |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 55.08% | 17/552 | 36 ok |  | core |
@@ -660,14 +662,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 647/671 | 53.87% | 15/671 | 41 ok |  | core |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 651/680 | 53.34% | 15/680 | 46 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 666/687 | 52.48% | 6/687 | 45 ok |  | core |
-| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 616/608 | 68.30% | 85/608 | 39 ok |  | core |
+| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 612/608 | 70.33% | 85/608 | 39 ok |  | core |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 611/600 | 70.69% | 109/600 | 35 ok |  | core |
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 682/677 | 71.38% | 94/677 | 49 ok |  | core |
 | 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 682/677 | 71.38% | 94/677 | 49 ok |  | core |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 801/796 | 71.88% | 10/796 | 63 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 632/663 | 52.66% | 15/663 | 33 ok |  | core |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 674/668 | 56.48% | 19/668 | 41 ok |  | core |
-| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 578/579 | 66.03% | 67/579 | 39 ok |  | core |
+| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 574/579 | 68.17% | 67/579 | 39 ok |  | core |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 654/648 | 68.20% | 10/648 | 46 ok |  | core |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 77.74% | 0/141 | 17 ok |  | core |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  | core |
@@ -679,18 +681,16 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 560/571 | 68.26% | 7/571 | 91 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 57 ok |  | boundary |
 
-## Early Progress (>0-49.99%) (9)
+## Early Progress (>0-49.99%) (7)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 646/655 | 49.19% | 20/655 | 37 ok |  | core |
-| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 646/685 | 48.84% | 6/685 | 2 unaudited, 38 ok |  | core |
-| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 655/696 | 32.72% | 1/696 | 4 unaudited, 38 ok |  | core |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 651/696 | 34.60% | 1/696 | 4 unaudited, 38 ok |  | core |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 655/696 | 39.82% | 2/696 | 2 unaudited, 39 ok |  | core |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 610/652 | 38.51% | 5/652 | 37 ok |  | core |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 614/652 | 36.33% | 5/652 | 40 ok |  | core |
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 638/683 | 41.33% | 5/683 | 2 unaudited, 44 ok |  | core |
-| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 691/707 | 43.20% | 18/707 | 55 ok |  | core |
+| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 687/707 | 44.62% | 18/707 | 55 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1230/1245 | 32.32% | 2/1245 | 1 mismatch, 77 unaudited, 97 ok |  | core |
 
 ## Excluded: Replaceable Platform (120)
