@@ -231,3 +231,31 @@ spellings destabilize Sweep's allocation, add four or five instructions, and
 fall from **51.67%** to 41.89%..41.92%. The retained `segment_count > 1`
 guard therefore remains independently measured rather than being normalized
 to the Snake spelling.
+
+## 2026-07-30 direct curved-orientation ownership
+
+The earlier inline-orientation probe predated the dependency-complete direct
+sample-array transfer and was no longer representative. Windows
+`0x422eb9..0x423028` owns one shared first-curve branch and then independently
+reloads both sample arrays for the preceding/current orientation work.
+Replaying that complete block against the current baseline changes the result
+in the opposite direction from the old probe:
+
+```text
+match: 55.19% (was 51.67%)
+target: 652 insns, candidate: 649 insns (was 637)
+prefix: 5/652 target insns
+masked operands: 37 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+This adds 85.47 weighted bytes. Mixed ownership confirms that the symmetric
+transfer is dependency-complete: direct primary with pointer-owned secondary
+falls to 44.51% (642/652), while pointer-owned primary with direct secondary
+reaches 54.50% (647/652) but still trails the fully direct form.
+
+The bounded first-sample guard grid leaves `curve_index == 0` strongest.
+Logical negation is byte-identical; signed-zero forms lose one weighted byte;
+and the equivalent sample-index forms lose 1..136 weighted bytes. The direct
+block is retained because it matches the independently recovered Windows
+owners and is the unique measured winner, not because it happens to leave the
+candidate three instructions short of the target.

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "orientation-curve-guard",
+      "find": "        if (curve_index == 0) {",
+      "replacements": [
+        {
+          "name": "curve-index-nonpositive",
+          "text": "        if (curve_index <= 0) {"
+        },
+        {
+          "name": "curve-index-less-than-one",
+          "text": "        if (curve_index < 1) {"
+        },
+        {
+          "name": "logical-not-curve-index",
+          "text": "        if (!curve_index) {"
+        }
+      ]
+    }
+  ]
+}

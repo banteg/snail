@@ -12,30 +12,6 @@ float cosine(float angle);
 typedef AttachmentSample PathTemplateSample;
 
 
-static __forceinline void orient_previous_with_up(
-    PathTemplateSample* samples, int current_index, int curve_index, float roll_angle)
-{
-    PathTemplateSample* previous = &samples[current_index - 1];
-    PathTemplateSample* current = &samples[current_index];
-
-    if (curve_index == 0) {
-        previous->transform.RotIdentity();
-        return;
-    }
-
-    previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
-    previous->transform.basis_forward = Vector3(
-        current->transform.position.x - previous->transform.position.x,
-        current->transform.position.y - previous->transform.position.y,
-        current->transform.position.z - previous->transform.position.z);
-    previous->transform.basis_forward.Normalize();
-    previous->transform.basis_right.cross_vectors(
-        &previous->transform.basis_up,
-        &previous->transform.basis_forward);
-    if (roll_angle != 0.0f)
-        previous->transform.RotLocalZ(roll_angle);
-}
-
 static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)
 {
     path->strip_mesh->RequestVertices(
@@ -225,8 +201,38 @@ void cRPath::initialize_sweep_path_template_pair(
         secondary_samples[i].transform.position.y =
             primary_samples[i].transform.position.y + 0.49000001f;
         secondary_samples[i].transform.position.z = z;
-        orient_previous_with_up(primary_samples, i, curve_index, 0.0f);
-        orient_previous_with_up(secondary_samples, i, curve_index, 0.0f);
+        if (curve_index == 0) {
+            primary_samples[i - 1].transform.RotIdentity();
+            secondary_samples[i - 1].transform.RotIdentity();
+        } else {
+            primary_samples[i - 1].transform.basis_up =
+                Vector3(0.0f, 1.0f, 0.0f);
+            primary_samples[i - 1].transform.basis_forward = Vector3(
+                primary_samples[i].transform.position.x
+                    - primary_samples[i - 1].transform.position.x,
+                primary_samples[i].transform.position.y
+                    - primary_samples[i - 1].transform.position.y,
+                primary_samples[i].transform.position.z
+                    - primary_samples[i - 1].transform.position.z);
+            primary_samples[i - 1].transform.basis_forward.Normalize();
+            primary_samples[i - 1].transform.basis_right.cross_vectors(
+                &primary_samples[i - 1].transform.basis_up,
+                &primary_samples[i - 1].transform.basis_forward);
+
+            secondary_samples[i - 1].transform.basis_up =
+                Vector3(0.0f, 1.0f, 0.0f);
+            secondary_samples[i - 1].transform.basis_forward = Vector3(
+                secondary_samples[i].transform.position.x
+                    - secondary_samples[i - 1].transform.position.x,
+                secondary_samples[i].transform.position.y
+                    - secondary_samples[i - 1].transform.position.y,
+                secondary_samples[i].transform.position.z
+                    - secondary_samples[i - 1].transform.position.z);
+            secondary_samples[i - 1].transform.basis_forward.Normalize();
+            secondary_samples[i - 1].transform.basis_right.cross_vectors(
+                &secondary_samples[i - 1].transform.basis_up,
+                &secondary_samples[i - 1].transform.basis_forward);
+        }
         ++curve_index;
     }
 

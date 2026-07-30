@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "orientation-first-sample-guard",
+      "find": "        if (curve_index == 0) {",
+      "replacements": [
+        {
+          "name": "sample-index-at-first",
+          "text": "        if (i == 3) {"
+        },
+        {
+          "name": "sample-index-not-past-first",
+          "text": "        if (i <= 3) {"
+        },
+        {
+          "name": "derived-curve-index-zero",
+          "text": "        if (i - 3 == 0) {"
+        }
+      ]
+    }
+  ]
+}
