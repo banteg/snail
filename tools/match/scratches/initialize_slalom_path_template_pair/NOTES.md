@@ -239,6 +239,29 @@ by 7.59 weighted bytes. The candidate remains 655/696 instructions with prefix
 1/696 and the same 38 clean plus 4 unaudited references. Either site alone
 gains half as much; the paired form is the unique best result.
 
+## 2026-07-30 delta byte-cursor ownership
+
+Windows `0x41fc3d..0x41fd10` carries a logical sample counter beside an
+independent byte cursor advanced by `sizeof(PathAttachmentSample)` (`0xa8`).
+The verified Android and iOS `BuildSlalom` bodies independently preserve the
+same two-owner delta traversal. Replacing the derived array scale with one
+shared physical cursor adds **3.70 weighted bytes**; moving that cursor's
+lifetime ahead of the count guard adds another **3.70**. The retained result
+moves from 58.87% to **59.16%**:
+
+```text
+target: 696 insns, candidate: 690 insns
+prefix: 6/696 target insns
+masked operands: 40 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The narrower control and role schedules are bounded on this frontier. Separate
+logical-counter lifetimes lose 1.51 to 7.40 weighted bytes. Reconstructing the
+mobile-looking guarded `do/while` with the existing shared `i` owner loses
+212.71 to 216.41 bytes, while new-counter `do/while` forms lose 136.63 to
+212.71. Slalom therefore keeps the ordinary `for` control, the proven
+per-lane subtraction operators, and only the contributing physical cursor.
+
 ## 2026-07-30 orientation subtraction bound
 
 Two exhaustive sweeps cover the paired shared helpers and the paired inline

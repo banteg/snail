@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "delta-cursor-role-init",
+      "find": "    int delta_offset = 0;\n    if (segment_count - 1 > 0) {\n        for (i = 0; i < segment_count - 1;",
+      "replacements": [
+        {
+          "name": "logical-before-physical-after",
+          "text": "    i = 0;\n    if (segment_count - 1 > 0) {\n        int delta_offset = 0;\n        for (; i < segment_count - 1;"
+        },
+        {
+          "name": "logical-then-physical-before",
+          "text": "    i = 0;\n    int delta_offset = 0;\n    if (segment_count - 1 > 0) {\n        for (; i < segment_count - 1;"
+        },
+        {
+          "name": "physical-then-logical-before",
+          "text": "    int delta_offset = 0;\n    i = 0;\n    if (segment_count - 1 > 0) {\n        for (; i < segment_count - 1;"
+        }
+      ]
+    }
+  ]
+}

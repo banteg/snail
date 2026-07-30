@@ -314,3 +314,19 @@ No parity branch is retained. This supersedes the earlier pre-cursor
 measurement while reaching the same source conclusion: the current face
 record schedule lacks a wider dependency needed to reproduce the authored
 pair, and the metric-only back branch is not accepted on its own.
+
+## 2026-07-30 delta physical-cursor transfer bound
+
+Windows `0x42d034..0x42d107` carries a logical delta counter beside an
+independent `0xa8` byte cursor, the same broad machine shape that contributed
+in Snake. Replaying that ownership after Toad's curved byte cursor recovery
+does not transfer. The guarded pointer-owner form loses **64.50 weighted
+bytes** and reaches 55.51% at 634/663 instructions; the repeated direct-owner
+form loses **139.28 bytes** and reaches 52.42% at 638/663.
+
+Both variants preserve Toad's proven component-wise primary subtraction,
+authored secondary `Vector3::operator-`, 15-instruction prefix, and all 33
+clean references. The retained direct-index delta loop therefore remains at
+**58.18%**, 633/663 instructions. Native dual induction is sufficient evidence
+to test the source owner, but this negative transfer shows that Snake's cursor
+win depends on its surrounding allocation rather than a family-wide spelling.

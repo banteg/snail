@@ -618,19 +618,31 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     }
 #endif
 
+    int delta_offset = 0;
     if (segment_count - 1 > 0) {
-        for (i = 0; i < segment_count - 1; ++i) {
-            primary_samples[i].delta_dir_to_next =
-                primary_samples[i + 1].transform.position -
-                primary_samples[i].transform.position;
-            primary_samples[i].delta_length =
-                primary_samples[i].delta_dir_to_next.Normalize();
+        for (i = 0; i < segment_count - 1;
+             ++i, delta_offset += (int)sizeof(PathAttachmentSample)) {
+            ((PathAttachmentSample*)((char*)primary_samples + delta_offset))
+                ->delta_dir_to_next =
+                ((PathAttachmentSample*)((char*)primary_samples + delta_offset) + 1)
+                    ->transform.position -
+                ((PathAttachmentSample*)((char*)primary_samples + delta_offset))
+                    ->transform.position;
+            ((PathAttachmentSample*)((char*)primary_samples + delta_offset))
+                ->delta_length =
+                ((PathAttachmentSample*)((char*)primary_samples + delta_offset))
+                    ->delta_dir_to_next.Normalize();
 
-            secondary_samples[i].delta_dir_to_next =
-                secondary_samples[i + 1].transform.position -
-                secondary_samples[i].transform.position;
-            secondary_samples[i].delta_length =
-                secondary_samples[i].delta_dir_to_next.Normalize();
+            ((PathAttachmentSample*)((char*)secondary_samples + delta_offset))
+                ->delta_dir_to_next =
+                ((PathAttachmentSample*)((char*)secondary_samples + delta_offset) + 1)
+                    ->transform.position -
+                ((PathAttachmentSample*)((char*)secondary_samples + delta_offset))
+                    ->transform.position;
+            ((PathAttachmentSample*)((char*)secondary_samples + delta_offset))
+                ->delta_length =
+                ((PathAttachmentSample*)((char*)secondary_samples + delta_offset))
+                    ->delta_dir_to_next.Normalize();
         }
     }
 
