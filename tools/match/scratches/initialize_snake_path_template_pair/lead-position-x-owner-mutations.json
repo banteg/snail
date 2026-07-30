@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-lead-position-x",
+      "find": "        primary_samples[i].transform.position.x =\n            primary_samples[i].center_x;",
+      "replacements": [
+        {
+          "name": "direct-zero",
+          "text": "        primary_samples[i].transform.position.x = 0.0f;"
+        }
+      ]
+    },
+    {
+      "name": "secondary-lead-position-x",
+      "find": "        secondary_samples[i].transform.position.x =\n            primary_samples[i].center_x;",
+      "replacements": [
+        {
+          "name": "direct-zero",
+          "text": "        secondary_samples[i].transform.position.x = 0.0f;"
+        }
+      ]
+    }
+  ]
+}

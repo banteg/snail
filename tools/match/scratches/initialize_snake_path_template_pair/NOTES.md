@@ -266,3 +266,38 @@ all produce the same marginal tradeoff: four additional weighted bytes while
 removing five candidate instructions and moving farther from the
 652-instruction target. That face-index form is not retained, and the equal-
 texture parity branches remain deliberately absent.
+
+## 2026-07-30 lead X and delta-count ownership
+
+Native `0x423603..0x423649` writes literal zero to both lead-sample X
+positions after their matrix calls. The scratch instead reloaded the earlier
+`center_x` value across each call. Either isolated correction disrupts the
+shared zero lifetime and regresses, but the dependency-complete pair removes
+the four reload/store instructions absent from the target and gains 30.18
+weighted bytes:
+
+```text
+match: 48.36% (was 47.12%)
+target: 652 insns, candidate: 630 insns (was 634)
+prefix: 5/652 target insns
+masked operands: 40 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The delta-loop preheader at `0x4239d3..0x4239de` then materializes
+`segment_count - 1`, tests that derived count, and enters only when it is
+positive. Recovering that signed guard adds 25.66 more weighted bytes and one
+candidate instruction:
+
+```text
+match: 49.42%
+target: 652 insns, candidate: 631 insns
+prefix: 5/652 target insns
+masked operands: 40 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The combined retained gain is 55.85 weighted bytes. An explicit lead byte
+offset reproduces the already-proved dual induction but gains only 0.92
+weighted bytes while removing another instruction, so that marginal source
+expansion is rejected. Splitting the reused source sample index into separate
+lead and curve declarations, independently and together, is byte-identical;
+the existing compact spelling remains.

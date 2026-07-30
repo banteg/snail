@@ -143,14 +143,12 @@ void cRPath::initialize_snake_path_template_pair(
         primary_samples[i].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[i].transform);
         float z = (float)i;
-        primary_samples[i].transform.position.x =
-            primary_samples[i].center_x;
+        primary_samples[i].transform.position.x = 0.0f;
         primary_samples[i].transform.position.y = 0.0f;
         primary_samples[i].transform.position.z = z;
 
         set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x =
-            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.x = 0.0f;
         secondary_samples[i].transform.position.y = 0.49000001f;
         secondary_samples[i].transform.position.z = z;
     }
@@ -232,7 +230,7 @@ void cRPath::initialize_snake_path_template_pair(
     }
 
     int delta_index = 0;
-    if (segment_count > 1) {
+    if (segment_count - 1 > 0) {
         do {
             primary_samples[delta_index].delta_dir_to_next =
                 primary_samples[delta_index + 1].transform.position -

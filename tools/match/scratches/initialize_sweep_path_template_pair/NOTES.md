@@ -222,3 +222,12 @@ winner: focused matching rises from **38.51%** (610/652) to **51.67%**
 (637/652), a gain of 319 weighted bytes. The five-instruction prefix and all
 37 masked references remain clean, with no unresolved, mismatched, or
 unaudited operands.
+
+## 2026-07-30 delta-count guard non-transfer
+
+Snake's derived `segment_count - 1 > 0` delta guard does not transfer across
+the otherwise parallel constructor family. All three equivalent derived-count
+spellings destabilize Sweep's allocation, add four or five instructions, and
+fall from **51.67%** to 41.89%..41.92%. The retained `segment_count > 1`
+guard therefore remains independently measured rather than being normalized
+to the Snake spelling.

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "delta-count-guard",
+      "find": "    if (segment_count > 1) {",
+      "replacements": [
+        {
+          "name": "derived-count-positive",
+          "text": "    if (segment_count - 1 > 0) {"
+        },
+        {
+          "name": "zero-less-than-derived-count",
+          "text": "    if (0 < segment_count - 1) {"
+        },
+        {
+          "name": "derived-count-truthy",
+          "text": "    if (segment_count - 1) {"
+        }
+      ]
+    }
+  ]
+}
