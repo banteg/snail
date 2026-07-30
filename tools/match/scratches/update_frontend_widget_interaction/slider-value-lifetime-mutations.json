@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "more-branch-slider-value",
+      "find": "            slider_value += 0.2f;\n            if (slider_value >= 0.89999998f)\n                slider_value = 1.0f;",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "            float current_slider_value = slider_value + 0.2f;\n            if (current_slider_value >= 0.89999998f)\n                current_slider_value = 1.0f;\n            slider_value = current_slider_value;"
+        }
+      ]
+    },
+    {
+      "name": "less-branch-slider-value",
+      "find": "            slider_value -= 0.2f;\n            if (slider_value <= 0.1f)\n                slider_value = 0.0f;",
+      "replacements": [
+        {
+          "name": "branch-local",
+          "text": "            float current_slider_value = slider_value - 0.2f;\n            if (current_slider_value <= 0.1f)\n                current_slider_value = 0.0f;\n            slider_value = current_slider_value;"
+        }
+      ]
+    },
+    {
+      "name": "slider-tail-value",
+      "find": "        if (slider_value == 0.0f)\n            less->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            less->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;\n\n        if (slider_value == 1.0f)\n            more->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            more->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;\n\n        FrontendWidget* value = slider_value_widget;\n        value->current_text_color = current_text_color;\n        value->hover_blend_target = hover_blend_target;\n        value->hover_blend_current = hover_blend_current;\n        sprintf(value->text_buffer, \"%02i%%\", (int)(slider_value * 100.0f + 0.1f));",
+      "replacements": [
+        {
+          "name": "tail-local",
+          "text": "        float current_slider_value = slider_value;\n        if (current_slider_value == 0.0f)\n            less->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            less->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;\n\n        if (current_slider_value == 1.0f)\n            more->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;\n        else\n            more->widget_flags &= ~FRONTEND_WIDGET_FLAG_DISABLED;\n\n        FrontendWidget* value = slider_value_widget;\n        value->current_text_color = current_text_color;\n        value->hover_blend_target = hover_blend_target;\n        value->hover_blend_current = hover_blend_current;\n        sprintf(value->text_buffer, \"%02i%%\", (int)(current_slider_value * 100.0f + 0.1f));"
+        }
+      ]
+    }
+  ]
+}

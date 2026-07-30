@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "highlighted-hover-target-one",
+      "find": "    if ((flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)\n        hover_blend_target = 1.0f;",
+      "replacements": [
+        {
+          "name": "unsuffixed-one",
+          "text": "    if ((flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)\n        hover_blend_target = 1.0;"
+        }
+      ]
+    },
+    {
+      "name": "pointer-hover-target-one",
+      "find": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {\n        hover_blend_target = 1.0f;",
+      "replacements": [
+        {
+          "name": "unsuffixed-one",
+          "text": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0) {\n        hover_blend_target = 1.0;"
+        }
+      ]
+    },
+    {
+      "name": "pointer-text-target-one",
+      "find": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)\n        text_effect_target = 1.0f;",
+      "replacements": [
+        {
+          "name": "unsuffixed-one",
+          "text": "    if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_TEXT_EFFECT_ENABLED) != 0)\n        text_effect_target = 1.0;"
+        }
+      ]
+    },
+    {
+      "name": "slider-clamp-one",
+      "find": "            if (slider_value >= 0.89999998f)\n                slider_value = 1.0f;",
+      "replacements": [
+        {
+          "name": "unsuffixed-one",
+          "text": "            if (slider_value >= 0.89999998f)\n                slider_value = 1.0;"
+        }
+      ]
+    },
+    {
+      "name": "slider-endpoint-one",
+      "find": "        if (slider_value == 1.0f)",
+      "replacements": [
+        {
+          "name": "unsuffixed-one",
+          "text": "        if (slider_value == 1.0)"
+        }
+      ]
+    }
+  ]
+}

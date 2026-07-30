@@ -295,3 +295,28 @@ four-lane color call rather than preserving one C++ local across both calls.
 Removing that false shared lifetime raises the focused match from 75.73% to
 77.07%. The candidate remains an honest 648 instructions against the
 647-instruction target, and all 96 masked operands are now audited cleanly.
+
+## 2026-07-29 bounded frontend constant schedule
+
+Three complete mutation sweeps tested the remaining source-natural ways to
+remove the candidate's extra saved `ebx`: equivalent zero predicates, original
+unsuffixed `1.0` spellings, and slider-value lifetimes suggested by the
+Android/iOS `cRBorder::AI()` bodies. The ledger covers 53 unique variants with
+no repeats: 1 score-only improvement, 30 byte-identical variants, and 22
+regressions.
+
+All 15 zero-predicate combinations and the 30 float-preserving literal
+combinations were neutral. The unsuffixed slider endpoint comparison instead
+introduced a double comparison, two extra instructions, and an unaudited
+reference, so it was rejected.
+
+The mobile-style `more` branch local combined with a separate slider-tail
+local moved the first mismatch from instruction 1 to instruction 37, confirming
+that a float lifetime can repair the opening register schedule. It is not a
+material improvement: the fuzzy score rises only 3 weighted bytes while the
+candidate grows from 648 to 659 instructions against a 647-instruction target
+and introduces three unaudited references. The other six slider-lifetime
+combinations regress. The clean 77.07%, 648/647, 96-reference baseline remains
+the retained source; recovering the native prologue now needs new ownership or
+control-flow evidence rather than more constant spelling or artificial
+register coercion.

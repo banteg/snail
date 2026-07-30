@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "empty-flags-predicate",
+      "find": "    if (flags == 0) {",
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "    if (!flags) {"
+        }
+      ]
+    },
+    {
+      "name": "mouse-history-warmup-predicate",
+      "find": "        && mouse_history_warmup_frames == 0",
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "        && !mouse_history_warmup_frames"
+        }
+      ]
+    },
+    {
+      "name": "pointer-hit-predicate",
+      "find": "    if (g_game->players[0].mouse_cursor.is_mouse_captured() == 0\n        || border_mouse_test() == 0) {",
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "    if (!g_game->players[0].mouse_cursor.is_mouse_captured()\n        || !border_mouse_test()) {"
+        }
+      ]
+    },
+    {
+      "name": "warmup-countdown-predicate",
+      "find": "    if (mouse_history_warmup_frames != 0)",
+      "replacements": [
+        {
+          "name": "implicit-bool",
+          "text": "    if (mouse_history_warmup_frames)"
+        }
+      ]
+    }
+  ]
+}
