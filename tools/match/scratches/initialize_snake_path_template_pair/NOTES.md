@@ -377,3 +377,31 @@ and did not improve the prefix or reference audit, so it was rejected. The
 final retained form therefore models three distinct lifetimes: byte-relative
 lead traversal, indexed curve initialization, and pointer-owned curve
 orientation.
+
+## 2026-07-30 post-initializer curve cursor recovery
+
+The earlier curve-cursor result is superseded after the checkerboard, lead,
+and direct-initializer cascade. Windows advances one physical curve cursor
+from `0x3f0` to `0xfc0` in `0xa8`-byte steps while a separate logical index
+owns the phase and Z value. Replaying that complete unit across the initializer
+and orientation raises focused matching from **58.96%** to **60.74%**, adds
+43.30 weighted bytes, and closes the candidate from 654 to the target's exact
+**652/652** instructions. The 64-instruction prefix and all 40 references
+remain clean.
+
+Constructing each previous/current orientation pair independently from the
+physical cursor adds another 18.68 weighted bytes without changing size,
+prefix, or references. Previous-first and current-first declaration orders
+compile byte-identically, so the source retains the previous-first form that
+matches the orientation's use order. The final receipt is **61.50%**,
+**652/652**, prefix **64/652**, with 40 accepted references.
+
+Two nearby controls are now bounded:
+
+- testing the physical cursor for the first orientation gains only 1.14
+  weighted bytes while moving away from the exact count to 651/652, so the
+  clearer logical-index guard remains;
+- materializing the native-looking flat mesh-face index now collapses the
+  surrounding allocation to **52.66%**, 647/652, prefix 5/652. Its recorded
+  reverse probe restores 215.52 weighted bytes and the complete retained
+  receipt.

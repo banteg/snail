@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-first-orientation-guard",
+      "find": "        if (curve_index == 0) {",
+      "replacements": [
+        {
+          "name": "cursor-less-equal-sizeof",
+          "text": "        if (i <= 6 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "cursor-equal-sizeof",
+          "text": "        if (i == 6 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "cursor-less-equal-constant",
+          "text": "        if (i <= 0x3f0) {"
+        },
+        {
+          "name": "cursor-equal-constant",
+          "text": "        if (i == 0x3f0) {"
+        },
+        {
+          "name": "cursor-less-next-sample",
+          "text": "        if (i < 7 * (int)sizeof(PathTemplateSample)) {"
+        }
+      ]
+    },
+    {
+      "name": "curve-pointer-owner",
+      "find": "        PathTemplateSample* primary_current =\n            (PathTemplateSample*)((char*)primary_samples + i);\n        PathTemplateSample* primary_previous = primary_current - 1;\n        PathTemplateSample* secondary_current =\n            (PathTemplateSample*)((char*)secondary_samples + i);\n        PathTemplateSample* secondary_previous = secondary_current - 1;",
+      "replacements": [
+        {
+          "name": "previous-first-direct-pair",
+          "text": "        PathTemplateSample* primary_previous =\n            (PathTemplateSample*)((char*)primary_samples + i) - 1;\n        PathTemplateSample* primary_current =\n            (PathTemplateSample*)((char*)primary_samples + i);\n        PathTemplateSample* secondary_previous =\n            (PathTemplateSample*)((char*)secondary_samples + i) - 1;\n        PathTemplateSample* secondary_current =\n            (PathTemplateSample*)((char*)secondary_samples + i);"
+        },
+        {
+          "name": "previous-first-derived-current",
+          "text": "        PathTemplateSample* primary_previous =\n            (PathTemplateSample*)((char*)primary_samples + i) - 1;\n        PathTemplateSample* primary_current = primary_previous + 1;\n        PathTemplateSample* secondary_previous =\n            (PathTemplateSample*)((char*)secondary_samples + i) - 1;\n        PathTemplateSample* secondary_current = secondary_previous + 1;"
+        },
+        {
+          "name": "current-first-direct-pair",
+          "text": "        PathTemplateSample* primary_current =\n            (PathTemplateSample*)((char*)primary_samples + i);\n        PathTemplateSample* primary_previous =\n            (PathTemplateSample*)((char*)primary_samples + i) - 1;\n        PathTemplateSample* secondary_current =\n            (PathTemplateSample*)((char*)secondary_samples + i);\n        PathTemplateSample* secondary_previous =\n            (PathTemplateSample*)((char*)secondary_samples + i) - 1;"
+        }
+      ]
+    }
+  ]
+}

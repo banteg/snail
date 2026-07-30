@@ -190,34 +190,42 @@ void cRPath::initialize_snake_path_template_pair(
     } while (departure_index - 24 < 3);
 
     int curve_index = 0;
-    for (i = 6; i < 24; ++i) {
+    for (i = 6 * (int)sizeof(PathTemplateSample);
+         i < 24 * (int)sizeof(PathTemplateSample);
+         i += (int)sizeof(PathTemplateSample)) {
         float angle = (float)curve_index * 0.34906587f;
-        primary_samples[i].center_x =
+        ((PathTemplateSample*)((char*)primary_samples + i))->center_x =
             (0.5f - cosine(angle * 0.5f) * 0.5f)
             * primary_samples[24].center_x;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
-        primary_samples[i].transform.position.x =
-            primary_samples[i].center_x;
-        primary_samples[i].transform.position.y =
+        ((PathTemplateSample*)((char*)primary_samples + i))->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + i))->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + i))->special_scalar = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + i))->lateral_scale = 1.0f;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)primary_samples + i))->transform);
+        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;
+        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =
             -(1.0f - cosine(angle));
         float z = (float)(curve_index + 6);
-        primary_samples[i].transform.position.z = z;
+        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x =
-            primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y =
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)secondary_samples + i))->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;
+        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =
             0.49000001f - (1.0f - cosine(angle));
-        secondary_samples[i].transform.position.z = z;
+        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.z = z;
 
-        PathTemplateSample* primary_previous = &primary_samples[i - 1];
-        PathTemplateSample* primary_current = &primary_samples[i];
-        PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
-        PathTemplateSample* secondary_current = &secondary_samples[i];
+        PathTemplateSample* primary_previous =
+            (PathTemplateSample*)((char*)primary_samples + i) - 1;
+        PathTemplateSample* primary_current =
+            (PathTemplateSample*)((char*)primary_samples + i);
+        PathTemplateSample* secondary_previous =
+            (PathTemplateSample*)((char*)secondary_samples + i) - 1;
+        PathTemplateSample* secondary_current =
+            (PathTemplateSample*)((char*)secondary_samples + i);
         if (curve_index == 0) {
             primary_previous->transform.RotIdentity();
             secondary_previous->transform.RotIdentity();

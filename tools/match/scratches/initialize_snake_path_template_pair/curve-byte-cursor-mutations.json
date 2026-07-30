@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-cursor-control",
+      "find": "    int curve_index = 0;\n    for (i = 6; i < 24; ++i) {",
+      "replacements": [
+        {
+          "name": "physical-byte-offset",
+          "text": "    int curve_index = 0;\n    for (i = 6 * (int)sizeof(PathTemplateSample);\n         i < 24 * (int)sizeof(PathTemplateSample);\n         i += (int)sizeof(PathTemplateSample)) {"
+        }
+      ]
+    },
+    {
+      "name": "curve-initializer-address",
+      "find": "        float angle = (float)curve_index * 0.34906587f;\n        primary_samples[i].center_x =\n            (0.5f - cosine(angle * 0.5f) * 0.5f)\n            * primary_samples[24].center_x;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        primary_samples[i].transform.position.x =\n            primary_samples[i].center_x;\n        primary_samples[i].transform.position.y =\n            -(1.0f - cosine(angle));\n        float z = (float)(curve_index + 6);\n        primary_samples[i].transform.position.z = z;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x =\n            primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            0.49000001f - (1.0f - cosine(angle));\n        secondary_samples[i].transform.position.z = z;",
+      "replacements": [
+        {
+          "name": "physical-byte-offset",
+          "text": "        float angle = (float)curve_index * 0.34906587f;\n        ((PathTemplateSample*)((char*)primary_samples + i))->center_x =\n            (0.5f - cosine(angle * 0.5f) * 0.5f)\n            * primary_samples[24].center_x;\n        ((PathTemplateSample*)((char*)primary_samples + i))->rotation_scalar_98 = 0.0f;\n        ((PathTemplateSample*)((char*)primary_samples + i))->rotation_scalar_94 = 0.0f;\n        ((PathTemplateSample*)((char*)primary_samples + i))->special_scalar = 0.0f;\n        ((PathTemplateSample*)((char*)primary_samples + i))->lateral_scale = 1.0f;\n        set_matrix_identity(\n            &((PathTemplateSample*)((char*)primary_samples + i))->transform);\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =\n            -(1.0f - cosine(angle));\n        float z = (float)(curve_index + 6);\n        ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;\n\n        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + i))->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + i))->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =\n            0.49000001f - (1.0f - cosine(angle));\n        ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.z = z;",
+          "requires": [
+            "curve-cursor-control/physical-byte-offset"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "curve-orientation-address",
+      "find": "        PathTemplateSample* primary_previous = &primary_samples[i - 1];\n        PathTemplateSample* primary_current = &primary_samples[i];\n        PathTemplateSample* secondary_previous = &secondary_samples[i - 1];\n        PathTemplateSample* secondary_current = &secondary_samples[i];",
+      "replacements": [
+        {
+          "name": "physical-byte-offset",
+          "text": "        PathTemplateSample* primary_current =\n            (PathTemplateSample*)((char*)primary_samples + i);\n        PathTemplateSample* primary_previous = primary_current - 1;\n        PathTemplateSample* secondary_current =\n            (PathTemplateSample*)((char*)secondary_samples + i);\n        PathTemplateSample* secondary_previous = secondary_current - 1;",
+          "requires": [
+            "curve-cursor-control/physical-byte-offset"
+          ]
+        }
+      ]
+    }
+  ]
+}
