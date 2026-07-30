@@ -269,3 +269,49 @@ for all five endpoint forms and all ten header forms. No interaction improves
 its 52.53% scalar tradeoff or restores the lost prefix. The scratch therefore
 keeps the 52.27%, 642/655-instruction, 22-prefix baseline with all 37 references
 clean.
+
+## 2026-07-31 phase and cursor ownership recovery
+
+The earlier phase result was incomplete rather than intrinsically regressive.
+Windows keeps separate logical sample and cosine-phase owners, hands the
+incremented sample index back to the phase owner at `0x41e84d`, and lays out
+the orientation branch as a fallthrough into the full adjacent-sample path.
+The exact Android and iOS `cRPath::BuildDip` bodies independently preserve
+that phase/control separation and branch-local preceding samples.
+
+The native orientation order is byte-neutral by itself. A complete phase split
+raises the retained 52.27% baseline to 52.53%, while phase plus native branch
+order reaches 52.84%; both temporarily shorten the exact prefix from 22 to 7
+instructions. On that dependency-complete baseline, moving the primary and
+secondary preceding-sample pointers into their respective branches adds
+39.71 weighted bytes, raises the focused match to **54.50%**, reduces the
+candidate from 647 to 644 instructions, and restores the 22-instruction
+prefix. This reverses the earlier isolated result, where the same pointer
+ownership lost 4.65 weighted bytes.
+
+The target delta pass separately carries a logical index and a `0xa8` byte
+cursor. Replaying both with direct array-plus-offset expressions adds another
+24.12 weighted bytes and produces:
+
+```text
+match: 55.51%
+target: 655 insns, candidate: 642 insns
+prefix: 22/655 target insns
+masked operands: 37 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+Pointer-local and record-cursor spellings lose 236 and 259 weighted bytes,
+respectively. The direct form is retained because both desktop instructions
+and the paired mobile bodies support the two owners, the exact prefix is
+preserved, and the reference receipt remains clean.
+
+The new allocation closes the adjacent header, endpoint, and mesh questions.
+All ten header/count forms, five endpoint-offset forms, four height-scale
+forms, and three orientation-subtraction spellings are neutral or regressive.
+At the mesh prologue, native keeps the facequad and vertex arrays on the stack,
+the logical row in EDX, the byte cursor in EBX, and the column in EDI. Twenty-
+seven acquisition/declaration interactions are byte-neutral. Reusing the
+native logical row across the face pass is also neutral, while reusing the
+column loses 25.80 to 29.48 weighted bytes. The mesh register-role inversion is
+therefore recorded as a surrounding-allocation residual rather than forced
+with volatile storage, dummy uses, or register directives.

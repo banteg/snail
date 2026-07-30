@@ -425,6 +425,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 
     if (width_cells_ > 0) {
         int i = 0;
+        int curve_phase_index = 0;
         int sample_offset = (int)sizeof(PathAttachmentSample);
         do {
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))->center_x =
@@ -437,7 +438,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 ->special_scalar = 0.0f;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->lateral_scale = 1.0f;
-            float angle = (float)i * 6.2831855f / curve_count_f;
+            float angle =
+                (float)curve_phase_index * 6.2831855f / curve_count_f;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->transform.Identity();
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
@@ -462,24 +464,27 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 0.49000001f - (1.0f - cosine(angle)) * curve_source;
             ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
                 ->transform.position.z = z;
-            PathAttachmentSample* previous_primary =
-                (PathAttachmentSample*)((char*)primary_samples + sample_offset)
-                - 1;
-            PathAttachmentSample* previous_secondary =
-                (PathAttachmentSample*)((char*)secondary_samples + sample_offset)
-                - 1;
-            if (sample_offset <= (int)sizeof(PathAttachmentSample)) {
-                previous_primary->transform.RotIdentity();
-                previous_secondary->transform.RotIdentity();
-            } else {
+            if (sample_offset > (int)sizeof(PathAttachmentSample)) {
+                PathAttachmentSample* previous_primary =
+                    (PathAttachmentSample*)((char*)primary_samples + sample_offset) - 1;
+                PathAttachmentSample* previous_secondary =
+                    (PathAttachmentSample*)((char*)secondary_samples + sample_offset) - 1;
                 orient_previous_with_fixed_right(
                     previous_primary,
                     (PathAttachmentSample*)((char*)primary_samples + sample_offset));
                 orient_previous_with_fixed_right(
                     previous_secondary,
                     (PathAttachmentSample*)((char*)secondary_samples + sample_offset));
+            } else {
+                PathAttachmentSample* previous_primary =
+                    (PathAttachmentSample*)((char*)primary_samples + sample_offset) - 1;
+                PathAttachmentSample* previous_secondary =
+                    (PathAttachmentSample*)((char*)secondary_samples + sample_offset) - 1;
+                previous_primary->transform.RotIdentity();
+                previous_secondary->transform.RotIdentity();
             }
             sample_offset += (int)sizeof(PathAttachmentSample);
+            curve_phase_index = i;
         } while (i < width_cells_);
     }
 #elif PATH_VARIANT == 6
@@ -625,19 +630,34 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 #endif
 
     if (segment_count - 1 > 0) {
-        for (int i = 0; i < segment_count - 1; ++i) {
-            primary_samples[i].delta_dir_to_next =
-                primary_samples[i + 1].transform.position -
-                primary_samples[i].transform.position;
-            primary_samples[i].delta_length =
-                primary_samples[i].delta_dir_to_next.Normalize();
+        int delta_index = 0;
+        int delta_sample_offset = 0;
+        do {
+            ((PathAttachmentSample*)((char*)primary_samples
+                    + delta_sample_offset))->delta_dir_to_next =
+                ((PathAttachmentSample*)((char*)primary_samples
+                    + delta_sample_offset) + 1)->transform.position -
+                ((PathAttachmentSample*)((char*)primary_samples
+                    + delta_sample_offset))->transform.position;
+            ((PathAttachmentSample*)((char*)primary_samples
+                    + delta_sample_offset))->delta_length =
+                ((PathAttachmentSample*)((char*)primary_samples
+                    + delta_sample_offset))->delta_dir_to_next.Normalize();
 
-            secondary_samples[i].delta_dir_to_next =
-                secondary_samples[i + 1].transform.position -
-                secondary_samples[i].transform.position;
-            secondary_samples[i].delta_length =
-                secondary_samples[i].delta_dir_to_next.Normalize();
-        }
+            ((PathAttachmentSample*)((char*)secondary_samples
+                    + delta_sample_offset))->delta_dir_to_next =
+                ((PathAttachmentSample*)((char*)secondary_samples
+                    + delta_sample_offset) + 1)->transform.position -
+                ((PathAttachmentSample*)((char*)secondary_samples
+                    + delta_sample_offset))->transform.position;
+            ((PathAttachmentSample*)((char*)secondary_samples
+                    + delta_sample_offset))->delta_length =
+                ((PathAttachmentSample*)((char*)secondary_samples
+                    + delta_sample_offset))->delta_dir_to_next.Normalize();
+
+            ++delta_index;
+            delta_sample_offset += (int)sizeof(PathAttachmentSample);
+        } while (delta_index < segment_count - 1);
     }
 
     primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);

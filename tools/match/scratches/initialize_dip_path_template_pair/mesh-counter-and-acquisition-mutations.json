@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-array-acquisition",
+      "find": "    cRFaceQuad* facequads = strip_mesh->facequads;\n    Vector3* vertices = strip_mesh->vertices;",
+      "replacements": [
+        {
+          "name": "split-facequads-first",
+          "text": "    cRFaceQuad* facequads;\n    Vector3* vertices;\n    facequads = strip_mesh->facequads;\n    vertices = strip_mesh->vertices;"
+        },
+        {
+          "name": "split-vertices-declaration-first",
+          "text": "    Vector3* vertices;\n    cRFaceQuad* facequads;\n    facequads = strip_mesh->facequads;\n    vertices = strip_mesh->vertices;"
+        },
+        {
+          "name": "vertices-first",
+          "text": "    Vector3* vertices = strip_mesh->vertices;\n    cRFaceQuad* facequads = strip_mesh->facequads;"
+        }
+      ]
+    },
+    {
+      "name": "mesh-counter-scope",
+      "find": "    int mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        int mesh_sample_offset = 0;\n        do {\n            for (int mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {",
+      "replacements": [
+        {
+          "name": "outer-row-and-column",
+          "text": "    int mesh_row;\n    int mesh_column;\n    mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        int mesh_sample_offset = 0;\n        do {\n            for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        },
+        {
+          "name": "outer-column",
+          "text": "    int mesh_column;\n    int mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        int mesh_sample_offset = 0;\n        do {\n            for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        },
+        {
+          "name": "outer-byte-cursor",
+          "text": "    int mesh_row = 0;\n    int mesh_sample_offset = 0;\n    if (mesh_row <= segment_count) {\n        do {\n            for (int mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        },
+        {
+          "name": "declared-byte-cursor-before-row",
+          "text": "    int mesh_sample_offset;\n    int mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        mesh_sample_offset = 0;\n        do {\n            for (int mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        },
+        {
+          "name": "outer-all-row-first",
+          "text": "    int mesh_row;\n    int mesh_sample_offset;\n    int mesh_column;\n    mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        mesh_sample_offset = 0;\n        do {\n            for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        },
+        {
+          "name": "outer-all-column-first",
+          "text": "    int mesh_column;\n    int mesh_row;\n    int mesh_sample_offset;\n    mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        mesh_sample_offset = 0;\n        do {\n            for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        }
+      ]
+    }
+  ]
+}

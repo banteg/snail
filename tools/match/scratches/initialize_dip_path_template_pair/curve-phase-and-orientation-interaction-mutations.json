@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-phase-declaration",
+      "find": "    if (width_cells_ > 0) {\n        int i = 0;\n        int sample_offset = (int)sizeof(PathAttachmentSample);",
+      "replacements": [
+        {
+          "name": "separate-phase-index",
+          "text": "    if (width_cells_ > 0) {\n        int i = 0;\n        int curve_phase_index = 0;\n        int sample_offset = (int)sizeof(PathAttachmentSample);"
+        }
+      ]
+    },
+    {
+      "name": "curve-phase-expression",
+      "find": "            float angle = (float)i * 6.2831855f / curve_count_f;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "separate-phase-index",
+          "text": "            float angle =\n                (float)curve_phase_index * 6.2831855f / curve_count_f;"
+        }
+      ]
+    },
+    {
+      "name": "curve-phase-handoff",
+      "find": "            sample_offset += (int)sizeof(PathAttachmentSample);\n        } while (i < width_cells_);",
+      "replacements": [
+        {
+          "name": "sample-index-to-phase-index",
+          "text": "            sample_offset += (int)sizeof(PathAttachmentSample);\n            curve_phase_index = i;\n        } while (i < width_cells_);"
+        }
+      ]
+    },
+    {
+      "name": "curve-orientation-branch-order",
+      "find": "            PathAttachmentSample* previous_primary =\n                (PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                - 1;\n            PathAttachmentSample* previous_secondary =\n                (PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                - 1;\n            if (sample_offset <= (int)sizeof(PathAttachmentSample)) {\n                previous_primary->transform.RotIdentity();\n                previous_secondary->transform.RotIdentity();\n            } else {\n                orient_previous_with_fixed_right(\n                    previous_primary,\n                    (PathAttachmentSample*)((char*)primary_samples + sample_offset));\n                orient_previous_with_fixed_right(\n                    previous_secondary,\n                    (PathAttachmentSample*)((char*)secondary_samples + sample_offset));\n            }",
+      "replacements": [
+        {
+          "name": "orientation-fallthrough",
+          "text": "            PathAttachmentSample* previous_primary =\n                (PathAttachmentSample*)((char*)primary_samples + sample_offset)\n                - 1;\n            PathAttachmentSample* previous_secondary =\n                (PathAttachmentSample*)((char*)secondary_samples + sample_offset)\n                - 1;\n            if (sample_offset > (int)sizeof(PathAttachmentSample)) {\n                orient_previous_with_fixed_right(\n                    previous_primary,\n                    (PathAttachmentSample*)((char*)primary_samples + sample_offset));\n                orient_previous_with_fixed_right(\n                    previous_secondary,\n                    (PathAttachmentSample*)((char*)secondary_samples + sample_offset));\n            } else {\n                previous_primary->transform.RotIdentity();\n                previous_secondary->transform.RotIdentity();\n            }"
+        }
+      ]
+    }
+  ]
+}
