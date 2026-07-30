@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "segment-eof-path-owner",
+      "find": "            report_errorf(\"Unexpected end of file in %s\", filename);",
+      "replacements": [
+        {
+          "name": "level-path",
+          "text": "            report_errorf(\"Unexpected end of file in %s\", level_path);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "initial-level-path-eof",
+      "find": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor == 0) {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    if (cursor < segments_end) {",
+      "replacements": [
+        {
+          "name": "jump-to-shared-diagnostic",
+          "text": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor == 0)\n        goto unexpected_level_path_eof;\n\n    if (cursor < segments_end) {"
+        }
+      ]
+    },
+    {
+      "name": "first-level-path-eof",
+      "find": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor == 0) {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    char* special_out = segment_name;",
+      "replacements": [
+        {
+          "name": "host-shared-diagnostic",
+          "text": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor != 0)\n        goto first_segment_ready;\nunexpected_level_path_eof:\n    report_errorf(\"Unexpected end of file in %s\", level_path);\n    return;\nfirst_segment_ready:\n\n    char* special_out = segment_name;"
+        }
+      ]
+    }
+  ]
+}

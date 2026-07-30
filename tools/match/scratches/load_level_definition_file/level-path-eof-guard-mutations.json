@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "initial-level-path-eof-guard",
+      "find": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor == 0) {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    if (cursor < segments_end) {",
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "    cursor = advance_to_next_crlf_line(cursor);\n    if (!cursor) {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    if (cursor < segments_end) {"
+        },
+        {
+          "name": "inverted-success",
+          "text": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor != 0) {\n    } else {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    if (cursor < segments_end) {"
+        }
+      ]
+    },
+    {
+      "name": "first-level-path-eof-guard",
+      "find": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor == 0) {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    char* special_out = segment_name;",
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "    cursor = advance_to_next_crlf_line(cursor);\n    if (!cursor) {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    char* special_out = segment_name;"
+        },
+        {
+          "name": "inverted-success",
+          "text": "    cursor = advance_to_next_crlf_line(cursor);\n    if (cursor != 0) {\n    } else {\n        report_errorf(\"Unexpected end of file in %s\", level_path);\n        return;\n    }\n\n    char* special_out = segment_name;"
+        }
+      ]
+    }
+  ]
+}

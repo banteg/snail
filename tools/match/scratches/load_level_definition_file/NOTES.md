@@ -220,3 +220,24 @@ Focused matching rises from 82.50% to 84.63%: candidate instructions fall from
 943 to 941 against 926 target instructions, all 183 masked operands remain
 clean, and the only two unaudited operands remain the honest candidate-only
 cold EOF diagnostic.
+
+## 2026-07-30 bounded cold EOF tail
+
+Localized target/candidate dumps close the remaining two one-sided references
+to one duplicated candidate diagnostic. Native shares the initial
+post-`Segments Begin:` level-path EOF block with the later `First:` line
+advance, while retaining distinct filename and `Last:` diagnostics. The clean
+source makes VC6 emit the initial block in place instead.
+
+Three recorded sweeps cover the tempting alternatives. Changing the
+segment-loop diagnostic from its correct `filename` owner to `level_path`
+regresses to 77.88%. Reproducing the native shared branch with coupled labels
+falls as low as 69.06% and increases unaudited reference entries from two to
+twelve. Ordinary `!cursor` guards are byte-neutral; inverted success/else
+forms fall to 71.90-75.15%.
+
+Across 12 unique variants, none improve, three are byte-identical, and nine
+regress or fail. The experiment ledger formally stalls this cold-tail lane.
+The retained parser remains 84.63%, 941/926 instructions, prefix 20/926, with
+183 clean references and the two candidate-only diagnostic entries. No wrong
+path owner or explicit goto scaffold is kept to force tail sharing.
