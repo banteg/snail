@@ -46,42 +46,57 @@ static __forceinline void build_strip_mesh(
     Vector3* vertices = path->strip_mesh->vertices;
     cRFaceQuad* facequads = path->strip_mesh->facequads;
 
-    int row;
+    int row = 0;
     int column;
     int face_index;
-    for (row = 0; row <= path->segment_count; ++row) {
-        PathTemplateSample* sample = &path->primary_samples[row];
-
-        for (column = 0; column <= path->width_cells; ++column) {
-            float lateral = (float)column - (float)path->width_cells * 0.5f;
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
-            if (row != path->segment_count) {
-                Vector3 lateral_offset(
-                    lateral * sample->transform.basis_right.x,
-                    lateral * sample->transform.basis_right.y,
-                    lateral * sample->transform.basis_right.z);
-                Vector3 generated_position(
-                    sample->transform.position.x + lateral_offset.x,
-                    sample->transform.position.y + lateral_offset.y,
-                    sample->transform.position.z + lateral_offset.z);
-                *vertex = generated_position;
-            } else {
-                PathTemplateSample* previous = sample - 1;
-                Vector3 lateral_offset(
-                    lateral * previous->transform.basis_right.x,
-                    lateral * previous->transform.basis_right.y,
-                    lateral * previous->transform.basis_right.z);
-                Vector3 endpoint(
-                    previous->transform.position.x,
-                    previous->transform.position.y,
-                    previous->transform.position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
-                *vertex = generated_position;
+    if (path->segment_count >= 0) {
+        int sample_offset = 0;
+        do {
+            column = 0;
+            if (path->width_cells >= 0) {
+                do {
+                    float lateral =
+                        (float)column - (float)path->width_cells * 0.5f;
+                    if (row != path->segment_count) {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
+                        Vector3 lateral_offset(
+                            lateral * sample->transform.basis_right.x,
+                            lateral * sample->transform.basis_right.y,
+                            lateral * sample->transform.basis_right.z);
+                        Vector3 generated_position(
+                            sample->transform.position.x + lateral_offset.x,
+                            sample->transform.position.y + lateral_offset.y,
+                            sample->transform.position.z + lateral_offset.z);
+                        Vector3* vertex =
+                            &vertices[column + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    } else {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
+                        PathTemplateSample* previous = sample - 1;
+                        Vector3 lateral_offset(
+                            lateral * previous->transform.basis_right.x,
+                            lateral * previous->transform.basis_right.y,
+                            lateral * previous->transform.basis_right.z);
+                        Vector3 endpoint(
+                            previous->transform.position.x,
+                            previous->transform.position.y,
+                            previous->transform.position.z + 1.0f);
+                        Vector3 generated_position(
+                            endpoint.x + lateral_offset.x,
+                            endpoint.y + lateral_offset.y,
+                            endpoint.z + lateral_offset.z);
+                        Vector3* vertex =
+                            &vertices[column + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    }
+                    ++column;
+                } while (column <= path->width_cells);
             }
-        }
+            ++row;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (row <= path->segment_count);
     }
 
     for (row = 0; row < path->segment_count; ++row) {
@@ -100,7 +115,10 @@ static __forceinline void build_strip_mesh(
                     face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                    face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                    if ((column ^ row) & 1)
+                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                    else
+                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
                     face->uv[0].u = u0;
                     face->uv[0].v = v0;
                     face->uv[1].u = u1;
@@ -113,7 +131,10 @@ static __forceinline void build_strip_mesh(
                     face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
                     face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
                     face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                    if ((column ^ row) & 1)
+                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                    else
+                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
                     face->uv[0].u = u1;
                     face->uv[0].v = v0;
                     face->uv[1].u = u0;

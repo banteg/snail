@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-face-parity",
+      "find": "                    if ((column ^ row) & 1)\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);",
+      "replacements": [
+        {
+          "name": "equal-zero",
+          "text": "                    if (((column ^ row) & 1) == 0)\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);"
+        },
+        {
+          "name": "swapped-truthy",
+          "text": "                    if ((row ^ column) & 1)\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);"
+        },
+        {
+          "name": "swapped-equal-zero",
+          "text": "                    if (((row ^ column) & 1) == 0)\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);"
+        },
+        {
+          "name": "not-equal-zero",
+          "text": "                    if (((column ^ row) & 1) != 0)\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);"
+        }
+      ]
+    },
+    {
+      "name": "back-face-parity",
+      "find": "                    if ((column ^ row) & 1)\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);",
+      "replacements": [
+        {
+          "name": "equal-zero",
+          "text": "                    if (((column ^ row) & 1) == 0)\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);"
+        },
+        {
+          "name": "swapped-truthy",
+          "text": "                    if ((row ^ column) & 1)\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);"
+        },
+        {
+          "name": "swapped-equal-zero",
+          "text": "                    if (((row ^ column) & 1) == 0)\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);"
+        },
+        {
+          "name": "not-equal-zero",
+          "text": "                    if (((column ^ row) & 1) != 0)\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);\n                    else\n                        face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);"
+        }
+      ]
+    }
+  ]
+}

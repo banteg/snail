@@ -178,3 +178,28 @@ The primary orientation expression carries the same independently recovered
 `Vector3::operator-` ownership. It adds 14.50 weighted bytes and raises
 focused matching from 56.09% to **56.79%**, while preserving 562/579
 instructions, prefix 67/579, and all 39 clean references.
+
+## 2026-07-30 native mesh replay and face emission
+
+Raw Windows assembly proves the mesh row is a guarded, nested do-loop using a
+`0xa8`-byte sample cursor, with the ordinary row as fallthrough and separate
+sample/vertex owners in the ordinary and terminal branches. Replaying that
+complete schedule is a material win: 56.79% becomes **65.21%**, adding 173.99
+weighted bytes while preserving the 67-instruction prefix and all 39 clean
+references.
+
+The native face tail contains parity-controlled equal-arm texture calls.
+Adding those authored branches while retaining the existing common face record
+adds another 17.10 weighted bytes and brings the candidate from 562 to 578
+instructions against the native 579. Branch-local face records and the full
+guarded face schedule both regress sharply, so they are not retained.
+
+The final focused result is **66.03%** (578/579 candidate/target instructions),
+prefix 67/579, exact `0x48` frame, and 39 clean references. Retesting the
+secondary offset after the mesh change rejects all eight vector and scalar
+owner alternatives; the closest named-scalar form still loses 19.04 weighted
+bytes. All 24 one- and two-site parity orientations are byte-neutral.
+
+The checked ledger contains eleven sweeps and 52 unique variants: seven
+improving, 26 neutral, and 19 degrading. Its three-sweep non-improvement streak
+bounds the currently evidenced SBend source-shape frontier.

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-offset-scalar-owner",
+      "find": "        secondary_samples[i].transform.position.x +=\n            primary_samples[i].transform.basis_up.x * 0.49000001f;\n        secondary_samples[i].transform.position.y +=\n            primary_samples[i].transform.basis_up.y * 0.49000001f;\n        secondary_samples[i].transform.position.z +=\n            primary_samples[i].transform.basis_up.z * 0.49000001f;",
+      "replacements": [
+        {
+          "name": "named-scalars-direct-destination",
+          "text": "        float offset_x =\n            primary_samples[i].transform.basis_up.x * 0.49000001f;\n        float offset_y =\n            primary_samples[i].transform.basis_up.y * 0.49000001f;\n        float offset_z =\n            primary_samples[i].transform.basis_up.z * 0.49000001f;\n        secondary_samples[i].transform.position.x += offset_x;\n        secondary_samples[i].transform.position.y += offset_y;\n        secondary_samples[i].transform.position.z += offset_z;"
+        },
+        {
+          "name": "named-scalars-position-pointer",
+          "text": "        float offset_x =\n            primary_samples[i].transform.basis_up.x * 0.49000001f;\n        float offset_y =\n            primary_samples[i].transform.basis_up.y * 0.49000001f;\n        float offset_z =\n            primary_samples[i].transform.basis_up.z * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[i].transform.position;\n        secondary_position->x += offset_x;\n        secondary_position->y += offset_y;\n        secondary_position->z += offset_z;"
+        },
+        {
+          "name": "basis-pointer-named-scalars-position-pointer",
+          "text": "        Vector3* primary_up =\n            &primary_samples[i].transform.basis_up;\n        float offset_x = primary_up->x * 0.49000001f;\n        float offset_y = primary_up->y * 0.49000001f;\n        float offset_z = primary_up->z * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[i].transform.position;\n        secondary_position->x += offset_x;\n        secondary_position->y += offset_y;\n        secondary_position->z += offset_z;"
+        },
+        {
+          "name": "assigned-vector-position-pointer",
+          "text": "        Vector3 secondary_offset;\n        secondary_offset.x =\n            primary_samples[i].transform.basis_up.x * 0.49000001f;\n        secondary_offset.y =\n            primary_samples[i].transform.basis_up.y * 0.49000001f;\n        secondary_offset.z =\n            primary_samples[i].transform.basis_up.z * 0.49000001f;\n        Vector3* secondary_position =\n            &secondary_samples[i].transform.position;\n        secondary_position->x += secondary_offset.x;\n        secondary_position->y += secondary_offset.y;\n        secondary_position->z += secondary_offset.z;"
+        }
+      ]
+    }
+  ]
+}
