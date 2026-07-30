@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shared-first-curve-predicate",
+      "find": "        PathTemplateSample* primary_previous = &primary_samples[i - 1];",
+      "replacements": [
+        {
+          "name": "bool-predicate",
+          "text": "        bool first_curve = curve_index == 0;\n        PathTemplateSample* primary_previous = &primary_samples[i - 1];"
+        },
+        {
+          "name": "int-predicate",
+          "text": "        int first_curve = curve_index == 0;\n        PathTemplateSample* primary_previous = &primary_samples[i - 1];"
+        }
+      ]
+    },
+    {
+      "name": "primary-first-curve-condition",
+      "find": "        if (curve_index == 0) {",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "shared-predicate",
+          "text": "        if (first_curve) {"
+        }
+      ]
+    },
+    {
+      "name": "secondary-first-curve-condition",
+      "find": "        if (curve_index == 0) {",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "shared-predicate",
+          "text": "        if (first_curve) {"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "paired-first-curve-guard",
+      "find": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        orient_previous_with_up(primary_samples, sample_index, i, roll_source);\n        orient_previous_with_up(secondary_samples, sample_index, i, roll_source);",
+      "replacements": [
+        {
+          "name": "outer-index-zero",
+          "text": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        if (i == 0) {\n            primary_samples[sample_index - 1].transform.RotIdentity();\n            secondary_samples[sample_index - 1].transform.RotIdentity();\n        } else {\n            orient_previous_with_up(\n                primary_samples, sample_index, i, roll_source);\n            orient_previous_with_up(\n                secondary_samples, sample_index, i, roll_source);\n        }"
+        },
+        {
+          "name": "outer-index-nonzero",
+          "text": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        if (i != 0) {\n            orient_previous_with_up(\n                primary_samples, sample_index, i, roll_source);\n            orient_previous_with_up(\n                secondary_samples, sample_index, i, roll_source);\n        } else {\n            primary_samples[sample_index - 1].transform.RotIdentity();\n            secondary_samples[sample_index - 1].transform.RotIdentity();\n        }"
+        },
+        {
+          "name": "outer-sample-bound",
+          "text": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        if (sample_index <= 4) {\n            primary_samples[sample_index - 1].transform.RotIdentity();\n            secondary_samples[sample_index - 1].transform.RotIdentity();\n        } else {\n            orient_previous_with_up(\n                primary_samples, sample_index, i, roll_source);\n            orient_previous_with_up(\n                secondary_samples, sample_index, i, roll_source);\n        }"
+        },
+        {
+          "name": "outer-direct-previous",
+          "text": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        PathTemplateSample* primary_previous =\n            &primary_samples[sample_index - 1];\n        PathTemplateSample* secondary_previous =\n            &secondary_samples[sample_index - 1];\n        if (i == 0) {\n            primary_previous->transform.RotIdentity();\n            secondary_previous->transform.RotIdentity();\n        } else {\n            orient_previous_with_up(\n                primary_samples, sample_index, i, roll_source);\n            orient_previous_with_up(\n                secondary_samples, sample_index, i, roll_source);\n        }"
+        }
+      ]
+    }
+  ]
+}

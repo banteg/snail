@@ -193,3 +193,28 @@ with ordinary loads. This is proof-only: focused matching remains 39.55%,
 642/683 instructions, and prefix 5/683. The current receipt has 44 clean plus
 2 unaudited entries, down from 42 clean plus 6 unaudited, with no unresolved
 or mismatched references.
+
+## 2026-07-30 lane-local identity-call schedule bound
+
+As in SlalomBig, the final two audit entries are an unpaired native/candidate
+`set_matrix_rotation_identity` call. Native places both first-curve lane calls
+adjacent. The paired mobile bodies preserve lane-local logical
+`curve_index == 0` guards, and the retained Windows source follows that owner
+graph.
+
+Six sweeps cover pair-level zero/nonzero and sample-index guards, a shared
+boolean/integer predicate, equivalent lane-local condition spellings,
+branch-free non-first helpers, and the sibling guarded-lane helper. Moving the
+branch outside both lanes audits all 45 references but reaches at most 31.70%,
+far below the retained 39.55%. Helper factoring is either byte-identical or
+regresses as low as 37.29%.
+
+One asymmetric legacy spelling, changing only the primary guard to `i <= 4`,
+raises the score by five weighted bytes to 39.73%. It also removes one
+candidate instruction, leaves both references unaudited, and conflicts with
+the independently proven paired-mobile logical owner. This metric-only
+tradeoff is recorded but not retained.
+
+The ledger contains 40 variants and is formally stalled after three trailing
+non-improving sweeps. The honest frontier remains 39.55%, 642/683
+instructions, prefix 5/683, with 44 audited and two unaudited references.

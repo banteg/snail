@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "nonfirst-orientation-helper",
+      "find": "static __forceinline void orient_previous_with_up(\n    PathTemplateSample* samples,\n    int current_index,\n    int curve_index,\n    PathTemplateSample* roll_source)\n{\n    PathTemplateSample* previous = &samples[current_index - 1];\n    PathTemplateSample* current = &samples[current_index];\n\n    if (curve_index == 0) {\n        previous->transform.RotIdentity();\n        return;\n    }\n\n    previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n    previous->transform.basis_forward = Vector3(\n        current->transform.position.x - previous->transform.position.x,\n        current->transform.position.y - previous->transform.position.y,\n        current->transform.position.z - previous->transform.position.z);\n    previous->transform.basis_forward.Normalize();\n    previous->transform.basis_right.cross_vectors(\n        &previous->transform.basis_up,\n        &previous->transform.basis_forward);\n    float roll_angle = roll_source->center_x * 0.2617994f;\n    previous->transform.RotLocalZ(roll_angle);\n}",
+      "replacements": [
+        {
+          "name": "remove-inner-first-curve-branch",
+          "text": "static __forceinline void orient_previous_with_up(\n    PathTemplateSample* samples,\n    int current_index,\n    int curve_index,\n    PathTemplateSample* roll_source)\n{\n    PathTemplateSample* previous = &samples[current_index - 1];\n    PathTemplateSample* current = &samples[current_index];\n    previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n    previous->transform.basis_forward = Vector3(\n        current->transform.position.x - previous->transform.position.x,\n        current->transform.position.y - previous->transform.position.y,\n        current->transform.position.z - previous->transform.position.z);\n    previous->transform.basis_forward.Normalize();\n    previous->transform.basis_right.cross_vectors(\n        &previous->transform.basis_up,\n        &previous->transform.basis_forward);\n    float roll_angle = roll_source->center_x * 0.2617994f;\n    previous->transform.RotLocalZ(roll_angle);\n    (void)curve_index;\n}"
+        }
+      ]
+    },
+    {
+      "name": "outer-pair-guard",
+      "find": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        orient_previous_with_up(primary_samples, sample_index, i, roll_source);\n        orient_previous_with_up(secondary_samples, sample_index, i, roll_source);",
+      "replacements": [
+        {
+          "name": "zero-first",
+          "text": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        if (i == 0) {\n            primary_samples[sample_index - 1].transform.RotIdentity();\n            secondary_samples[sample_index - 1].transform.RotIdentity();\n        } else {\n            orient_previous_with_up(\n                primary_samples, sample_index, i, roll_source);\n            orient_previous_with_up(\n                secondary_samples, sample_index, i, roll_source);\n        }"
+        },
+        {
+          "name": "nonzero-first",
+          "text": "        PathTemplateSample* roll_source = &primary_samples[sample_index - 1];\n        if (i != 0) {\n            orient_previous_with_up(\n                primary_samples, sample_index, i, roll_source);\n            orient_previous_with_up(\n                secondary_samples, sample_index, i, roll_source);\n        } else {\n            primary_samples[sample_index - 1].transform.RotIdentity();\n            secondary_samples[sample_index - 1].transform.RotIdentity();\n        }"
+        }
+      ]
+    }
+  ]
+}

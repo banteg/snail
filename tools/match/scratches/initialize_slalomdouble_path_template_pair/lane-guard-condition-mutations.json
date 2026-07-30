@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-lane-first-curve-condition",
+      "find": "        if (curve_index == 0) {",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "        if (!curve_index) {"
+        },
+        {
+          "name": "sample-equals-four",
+          "text": "        if (i == 4) {"
+        },
+        {
+          "name": "sample-at-most-four",
+          "text": "        if (i <= 4) {"
+        }
+      ]
+    },
+    {
+      "name": "secondary-lane-first-curve-condition",
+      "find": "        if (curve_index == 0) {",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "        if (!curve_index) {"
+        },
+        {
+          "name": "sample-equals-four",
+          "text": "        if (i == 4) {"
+        },
+        {
+          "name": "sample-at-most-four",
+          "text": "        if (i <= 4) {"
+        }
+      ]
+    }
+  ]
+}

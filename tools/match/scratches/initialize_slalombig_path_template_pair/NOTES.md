@@ -202,3 +202,22 @@ same zero constant without equating either instruction with an ordinary load.
 Source and bytes remain unchanged at 33.80%, 653/696 instructions, and prefix
 2/696. The current receipt has 39 clean plus 2 unaudited entries, down from
 37 clean plus 6 unaudited, with no unresolved or mismatched references.
+
+## 2026-07-30 paired identity-call schedule bound
+
+The two unaudited entries are one native and one candidate
+`set_matrix_rotation_identity` call. Both sides invoke the helper for each lane,
+but native finishes the lane work before one shared first-curve branch, so its
+two calls are adjacent; the current forced-inline lane helpers retain separate
+guards and leave one call pair outside sequence alignment.
+
+Three bounded sweeps cover outer zero/nonzero and sample-index guards, removal
+of the redundant helper branch, and path/array pair-helper ownership. Every
+pair-level guard audits all 40 references, but the best form loses 27 weighted
+bytes and falls from 33.80% to 32.77%. Pair helpers reach at most 32.62%.
+
+The append-only ledger contains 17 variants: 2 are byte-identical and 15
+regress. Three consecutive non-improving sweeps formally stall the target at
+the retained 33.80%, 653/696-instruction frontier. Recovering the adjacency now
+requires a broader loop-lifetime change, not another local guard or helper
+spelling.

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "add-nonfirst-orientation-helper",
+      "find": "}\n\nstatic __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)",
+      "replacements": [
+        {
+          "name": "pointer-helper",
+          "text": "}\n\nstatic __forceinline void orient_nonfirst_sample(\n    PathTemplateSample* previous,\n    PathTemplateSample* current,\n    PathTemplateSample* roll_source)\n{\n    previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n    previous->transform.basis_forward = Vector3(\n        current->transform.position.x - previous->transform.position.x,\n        current->transform.position.y - previous->transform.position.y,\n        current->transform.position.z - previous->transform.position.z);\n    previous->transform.basis_forward.Normalize();\n    previous->transform.basis_right.cross_vectors(\n        &previous->transform.basis_up,\n        &previous->transform.basis_forward);\n    float roll = roll_source->center_x * 0.2617994f;\n    previous->transform.RotLocalZ(roll);\n}\n\nstatic __forceinline void build_strip_mesh(Path* path, char* texture_a, char* texture_b)"
+        }
+      ]
+    },
+    {
+      "name": "primary-nonfirst-orientation",
+      "find": "        } else {\n            primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n            primary_previous->transform.basis_forward = Vector3(\n                primary_current->transform.position.x\n                    - primary_previous->transform.position.x,\n                primary_current->transform.position.y\n                    - primary_previous->transform.position.y,\n                primary_current->transform.position.z\n                    - primary_previous->transform.position.z);\n            primary_previous->transform.basis_forward.Normalize();\n            primary_previous->transform.basis_right.cross_vectors(\n                &primary_previous->transform.basis_up,\n                &primary_previous->transform.basis_forward);\n            float primary_roll = primary_previous->center_x * 0.2617994f;\n            primary_previous->transform.RotLocalZ(primary_roll);\n        }",
+      "replacements": [
+        {
+          "name": "call-pointer-helper",
+          "text": "        } else {\n            orient_nonfirst_sample(\n                primary_previous, primary_current, primary_previous);\n        }"
+        }
+      ]
+    },
+    {
+      "name": "secondary-nonfirst-orientation",
+      "find": "        } else {\n            secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n            secondary_previous->transform.basis_forward = Vector3(\n                secondary_current->transform.position.x\n                    - secondary_previous->transform.position.x,\n                secondary_current->transform.position.y\n                    - secondary_previous->transform.position.y,\n                secondary_current->transform.position.z\n                    - secondary_previous->transform.position.z);\n            secondary_previous->transform.basis_forward.Normalize();\n            secondary_previous->transform.basis_right.cross_vectors(\n                &secondary_previous->transform.basis_up,\n                &secondary_previous->transform.basis_forward);\n            float secondary_roll = primary_previous->center_x * 0.2617994f;\n            secondary_previous->transform.RotLocalZ(secondary_roll);\n        }",
+      "replacements": [
+        {
+          "name": "call-pointer-helper",
+          "text": "        } else {\n            orient_nonfirst_sample(\n                secondary_previous, secondary_current, primary_previous);\n        }"
+        }
+      ]
+    }
+  ]
+}
