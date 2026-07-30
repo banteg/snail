@@ -1416,3 +1416,38 @@ already mapped to the inlined constructor region inside
 sources here. The generated crosswalk excludes only those exact demangled
 symbols while retaining the negative evidence and reasons. No Windows method
 name, mobile layout offset, phase boundary, or return contract was transferred.
+
+## 2026-07-30 inline list and animation-cleanup lifetimes
+
+The eight startup insertions use the same inline
+`BodNode::add_bod_after` operation. Marking that already documented inline
+template operation `__forceinline` removes the candidate's lone out-of-line
+eighth call and restores the native `List ADDafter` error island. The focused
+receipt improves from 80.50% to 80.83%, from 5,392 to 5,407 candidate
+instructions against 5,411 native instructions, and from seven to four
+unaudited references.
+
+The first presentation cleanup loop now indexes the canonical
+`cutscene_animation_slots` owner while counting down. VC6 consequently carries
+the same borrowed `body.object` field-stride induction as native without
+introducing the analysis-only cursor type or raw pointer arithmetic. This
+retained source shape improves the receipt again to 81.34%, recovers 119
+weighted bytes, and clears the native `Player +0x2af4` and `+0x3cd8`
+references. The candidate has 5,405 instructions and 1,880 audited references,
+with only two unaudited references remaining.
+
+The final two references are the already proven Golb vapour-object stride:
+native carries `&golb_shots[0].vapour.object` and advances it by
+`sizeof(GolbShot)`, while the best semantic source carries the complete
+`GolbShot*`. Four indexed owner/subowner forms compile identically to the
+retained loop. Removing the `Object*` local does recover all 1,881 references,
+but loses 455 weighted bytes and drops the overall match to 79.37%; removing
+the pre-loop owner lifetime does not recover that schedule, and explicit
+rocket-subowner forms fall as low as 70.75%. The raw analysis cursor remains
+excluded from matcher source.
+
+The append-only ledger contains five bounded sweeps and 28 variants:
+2 improve, 5 are identical, and 21 regress. Three consecutive non-improving
+sweeps now mark this scratch stalled at the retained 81.34% frontier. A future
+retry needs new original-source evidence or a neighboring lifetime change,
+not another spelling of the same owner/index loop.

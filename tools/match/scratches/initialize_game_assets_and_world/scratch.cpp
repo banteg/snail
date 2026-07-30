@@ -2620,16 +2620,19 @@ char GameRoot::initialize_game_assets_and_world()
     int animation_count =
         sizeof(subgame.player.presentation.cutscene_animation_slots)
         / sizeof(subgame.player.presentation.cutscene_animation_slots[0]);
-    PresentationAnimationSlot* animation_slot =
-        &subgame.player.presentation.cutscene_animation_slots[0];
+    PresentationAnimationSlot* animation_slot;
+    int cutscene_animation_index = 0;
     do {
-        Object* animation_object = animation_slot->body.object;
+        Object* animation_object =
+            subgame.player.presentation
+                .cutscene_animation_slots[cutscene_animation_index]
+                .body.object;
         animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;
         animation_object->ApplyToon(0);
         animation_object->distort.z_wave = 0.0f;
         animation_object->distort.y_squash = 0.0f;
         animation_object->distort.xyz_scale = 0.0f;
-        ++animation_slot;
+        ++cutscene_animation_index;
     } while (--animation_count != 0);
 
     subgame.player.presentation.object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;

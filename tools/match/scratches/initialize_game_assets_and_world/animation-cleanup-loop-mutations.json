@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cutscene-animation-cleanup-loop",
+      "find": "    int animation_count =\n        sizeof(subgame.player.presentation.cutscene_animation_slots)\n        / sizeof(subgame.player.presentation.cutscene_animation_slots[0]);\n    PresentationAnimationSlot* animation_slot =\n        &subgame.player.presentation.cutscene_animation_slots[0];\n    do {\n        Object* animation_object = animation_slot->body.object;\n        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;\n        animation_object->ApplyToon(0);\n        animation_object->distort.z_wave = 0.0f;\n        animation_object->distort.y_squash = 0.0f;\n        animation_object->distort.xyz_scale = 0.0f;\n        ++animation_slot;\n    } while (--animation_count != 0);",
+      "replacements": [
+        {
+          "name": "indexed-countdown",
+          "text": "    int animation_count =\n        sizeof(subgame.player.presentation.cutscene_animation_slots)\n        / sizeof(subgame.player.presentation.cutscene_animation_slots[0]);\n    PresentationAnimationSlot* animation_slot;\n    int cutscene_animation_index = 0;\n    do {\n        Object* animation_object =\n            subgame.player.presentation\n                .cutscene_animation_slots[cutscene_animation_index]\n                .body.object;\n        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;\n        animation_object->ApplyToon(0);\n        animation_object->distort.z_wave = 0.0f;\n        animation_object->distort.y_squash = 0.0f;\n        animation_object->distort.xyz_scale = 0.0f;\n        ++cutscene_animation_index;\n    } while (--animation_count != 0);"
+        },
+        {
+          "name": "indexed-bound",
+          "text": "    int animation_count =\n        sizeof(subgame.player.presentation.cutscene_animation_slots)\n        / sizeof(subgame.player.presentation.cutscene_animation_slots[0]);\n    PresentationAnimationSlot* animation_slot;\n    for (int cutscene_animation_index = 0;\n         cutscene_animation_index < animation_count;\n         ++cutscene_animation_index) {\n        Object* animation_object =\n            subgame.player.presentation\n                .cutscene_animation_slots[cutscene_animation_index]\n                .body.object;\n        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;\n        animation_object->ApplyToon(0);\n        animation_object->distort.z_wave = 0.0f;\n        animation_object->distort.y_squash = 0.0f;\n        animation_object->distort.xyz_scale = 0.0f;\n    }"
+        }
+      ]
+    },
+    {
+      "name": "jetpack-animation-cleanup-loop",
+      "find": "    animation_count = 2;\n    animation_slot =\n        &subgame.player.presentation.jetpack_channel.animation_slots[0];\n    do {\n        Object* animation_object = animation_slot->body.object;\n        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;\n        animation_object->ApplyToon(0);\n        animation_object->distort.z_wave = 0.0f;\n        animation_object->distort.y_squash = 0.0f;\n        animation_object->distort.xyz_scale = 0.0f;\n        ++animation_slot;\n    } while (--animation_count != 0);",
+      "replacements": [
+        {
+          "name": "indexed-countdown",
+          "text": "    animation_count = 2;\n    int jetpack_animation_index = 0;\n    do {\n        Object* animation_object =\n            subgame.player.presentation.jetpack_channel\n                .animation_slots[jetpack_animation_index]\n                .body.object;\n        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;\n        animation_object->ApplyToon(0);\n        animation_object->distort.z_wave = 0.0f;\n        animation_object->distort.y_squash = 0.0f;\n        animation_object->distort.xyz_scale = 0.0f;\n        ++jetpack_animation_index;\n    } while (--animation_count != 0);"
+        },
+        {
+          "name": "indexed-bound",
+          "text": "    animation_count = 2;\n    for (int jetpack_animation_index = 0;\n         jetpack_animation_index < animation_count;\n         ++jetpack_animation_index) {\n        Object* animation_object =\n            subgame.player.presentation.jetpack_channel\n                .animation_slots[jetpack_animation_index]\n                .body.object;\n        animation_object->flags |= OBJECT_FLAG_DYNAMIC_VERTICES;\n        animation_object->ApplyToon(0);\n        animation_object->distort.z_wave = 0.0f;\n        animation_object->distort.y_squash = 0.0f;\n        animation_object->distort.xyz_scale = 0.0f;\n    }"
+        }
+      ]
+    }
+  ]
+}

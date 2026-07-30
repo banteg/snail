@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "golb-shot-vapour-loop",
+      "find": "    int golb_shot_count = 12;\n    do {\n        golb_shot->vapour.SetObject(\n            g_object_list.Add());\n        Object* vapour_object = golb_shot->vapour.object;\n        vapour_object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        vapour_object->blend_mode = 9;\n        load_object_definition((char*)\"Objects/VapourLazer\", vapour_object);\n        golb_shot->vapour.initialize_vapour(vapour_object, 0.159999996f);\n        golb_shot->tertiary_body.SetObject(rocket_object);\n        ++golb_shot;\n    } while (--golb_shot_count != 0);",
+      "replacements": [
+        {
+          "name": "indexed-current-shot",
+          "text": "    int golb_shot_count = 12;\n    int golb_shot_index = 0;\n    do {\n        GolbShot* current_shot =\n            &subgame.player.golb_shots[golb_shot_index];\n        current_shot->vapour.SetObject(\n            g_object_list.Add());\n        Object* vapour_object = current_shot->vapour.object;\n        vapour_object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        vapour_object->blend_mode = 9;\n        load_object_definition((char*)\"Objects/VapourLazer\", vapour_object);\n        current_shot->vapour.initialize_vapour(vapour_object, 0.159999996f);\n        current_shot->tertiary_body.SetObject(rocket_object);\n        ++golb_shot_index;\n    } while (--golb_shot_count != 0);"
+        },
+        {
+          "name": "indexed-direct-members",
+          "text": "    int golb_shot_count = 12;\n    int golb_shot_index = 0;\n    do {\n        subgame.player.golb_shots[golb_shot_index].vapour.SetObject(\n            g_object_list.Add());\n        Object* vapour_object =\n            subgame.player.golb_shots[golb_shot_index].vapour.object;\n        vapour_object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        vapour_object->blend_mode = 9;\n        load_object_definition((char*)\"Objects/VapourLazer\", vapour_object);\n        subgame.player.golb_shots[golb_shot_index]\n            .vapour.initialize_vapour(vapour_object, 0.159999996f);\n        subgame.player.golb_shots[golb_shot_index]\n            .tertiary_body.SetObject(rocket_object);\n        ++golb_shot_index;\n    } while (--golb_shot_count != 0);"
+        },
+        {
+          "name": "indexed-subowners",
+          "text": "    int golb_shot_count = 12;\n    int golb_shot_index = 0;\n    do {\n        Vapour* current_vapour =\n            &subgame.player.golb_shots[golb_shot_index].vapour;\n        GolbRocket* current_rocket =\n            &subgame.player.golb_shots[golb_shot_index].tertiary_body;\n        current_vapour->SetObject(\n            g_object_list.Add());\n        Object* vapour_object = current_vapour->object;\n        vapour_object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        vapour_object->blend_mode = 9;\n        load_object_definition((char*)\"Objects/VapourLazer\", vapour_object);\n        current_vapour->initialize_vapour(vapour_object, 0.159999996f);\n        current_rocket->SetObject(rocket_object);\n        ++golb_shot_index;\n    } while (--golb_shot_count != 0);"
+        },
+        {
+          "name": "indexed-for",
+          "text": "    for (int golb_shot_index = 0; golb_shot_index < 12;\n         ++golb_shot_index) {\n        subgame.player.golb_shots[golb_shot_index].vapour.SetObject(\n            g_object_list.Add());\n        Object* vapour_object =\n            subgame.player.golb_shots[golb_shot_index].vapour.object;\n        vapour_object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        vapour_object->blend_mode = 9;\n        load_object_definition((char*)\"Objects/VapourLazer\", vapour_object);\n        subgame.player.golb_shots[golb_shot_index]\n            .vapour.initialize_vapour(vapour_object, 0.159999996f);\n        subgame.player.golb_shots[golb_shot_index]\n            .tertiary_body.SetObject(rocket_object);\n    }"
+        }
+      ]
+    }
+  ]
+}

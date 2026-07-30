@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "golb-vapour-object-lifetime",
+      "find": "    int golb_shot_count = 12;\n    do {\n        golb_shot->vapour.SetObject(\n            g_object_list.Add());\n        Object* vapour_object = golb_shot->vapour.object;\n        vapour_object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        vapour_object->blend_mode = 9;\n        load_object_definition((char*)\"Objects/VapourLazer\", vapour_object);\n        golb_shot->vapour.initialize_vapour(vapour_object, 0.159999996f);\n        golb_shot->tertiary_body.SetObject(rocket_object);\n        ++golb_shot;\n    } while (--golb_shot_count != 0);",
+      "replacements": [
+        {
+          "name": "owner-no-object-local",
+          "text": "    int golb_shot_count = 12;\n    do {\n        golb_shot->vapour.SetObject(\n            g_object_list.Add());\n        golb_shot->vapour.object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        golb_shot->vapour.object->blend_mode = 9;\n        load_object_definition(\n            (char*)\"Objects/VapourLazer\", golb_shot->vapour.object);\n        golb_shot->vapour.initialize_vapour(\n            golb_shot->vapour.object, 0.159999996f);\n        golb_shot->tertiary_body.SetObject(rocket_object);\n        ++golb_shot;\n    } while (--golb_shot_count != 0);"
+        },
+        {
+          "name": "indexed-direct-no-object-local",
+          "text": "    int golb_shot_count = 12;\n    int golb_shot_index = 0;\n    do {\n        subgame.player.golb_shots[golb_shot_index].vapour.SetObject(\n            g_object_list.Add());\n        subgame.player.golb_shots[golb_shot_index].vapour.object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        subgame.player.golb_shots[golb_shot_index]\n            .vapour.object->blend_mode = 9;\n        load_object_definition(\n            (char*)\"Objects/VapourLazer\",\n            subgame.player.golb_shots[golb_shot_index].vapour.object);\n        subgame.player.golb_shots[golb_shot_index].vapour.initialize_vapour(\n            subgame.player.golb_shots[golb_shot_index].vapour.object,\n            0.159999996f);\n        subgame.player.golb_shots[golb_shot_index]\n            .tertiary_body.SetObject(rocket_object);\n        ++golb_shot_index;\n    } while (--golb_shot_count != 0);"
+        },
+        {
+          "name": "indexed-current-no-object-local",
+          "text": "    int golb_shot_count = 12;\n    int golb_shot_index = 0;\n    do {\n        GolbShot* current_shot =\n            &subgame.player.golb_shots[golb_shot_index];\n        current_shot->vapour.SetObject(\n            g_object_list.Add());\n        current_shot->vapour.object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        current_shot->vapour.object->blend_mode = 9;\n        load_object_definition(\n            (char*)\"Objects/VapourLazer\", current_shot->vapour.object);\n        current_shot->vapour.initialize_vapour(\n            current_shot->vapour.object, 0.159999996f);\n        current_shot->tertiary_body.SetObject(rocket_object);\n        ++golb_shot_index;\n    } while (--golb_shot_count != 0);"
+        },
+        {
+          "name": "indexed-subowner-no-object-local",
+          "text": "    int golb_shot_count = 12;\n    int golb_shot_index = 0;\n    do {\n        Vapour* current_vapour =\n            &subgame.player.golb_shots[golb_shot_index].vapour;\n        current_vapour->SetObject(\n            g_object_list.Add());\n        current_vapour->object->flags |=\n            OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;\n        current_vapour->object->blend_mode = 9;\n        load_object_definition(\n            (char*)\"Objects/VapourLazer\", current_vapour->object);\n        current_vapour->initialize_vapour(\n            current_vapour->object, 0.159999996f);\n        subgame.player.golb_shots[golb_shot_index]\n            .tertiary_body.SetObject(rocket_object);\n        ++golb_shot_index;\n    } while (--golb_shot_count != 0);"
+        }
+      ]
+    }
+  ]
+}
