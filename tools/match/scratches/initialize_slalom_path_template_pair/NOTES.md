@@ -369,3 +369,22 @@ departure cursor produces **57.14%**, still 690/696 instructions with prefix
 The paired reverse probe records that complete interaction. No fixed cursor is
 retained, and the scratch source is restored to the direct indexed fixed-owner
 frontier.
+
+## 2026-07-30 checkerboard texture-control bound
+
+The native mesh tail preserves duplicated texture calls behind
+`(face_column ^ face_row) & 1` in both branch-local face records. Sweep and
+Snake's dependency-complete wins justified testing the same control only after
+Slalom's face-index, direct sample, and curved-cursor owners were recovered.
+
+All eight polarity and one-/two-site variants compile. The first parity branch
+alone loses 67.03 weighted bytes. The second alone gains 14.34, but the
+unsupported one-sided result is rejected. Restoring the symmetric native pair
+loses **84.55 weighted bytes** and falls from **58.87% to 55.57%**. Candidate
+instructions grow from 690 to 704/696; prefix remains 6/696 and all 40
+references remain clean.
+
+Truth-first and negated spellings are byte-identical. No parity branch is
+retained on Slalom's current frontier; the native duplicated calls remain a
+bounded allocation residual rather than a reason to keep an asymmetric or
+regressive source.

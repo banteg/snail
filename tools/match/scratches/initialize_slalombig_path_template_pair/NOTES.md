@@ -325,3 +325,22 @@ The guarded reverse probe is recorded and the source is restored. SlalomBig
 therefore keeps direct array ownership; its native byte cursor remains a
 compiler-derived consequence of that dependency in the current source
 context.
+
+## 2026-07-30 checkerboard texture control
+
+SlalomBig's native mesh keeps the same duplicated per-face texture calls
+behind `(column ^ row) & 1`, but its hoisted face-record owner differs from
+Slalom's branch-local records. Testing the two texture branches in isolation
+and together confirms that this allocation supports the complete control
+unit.
+
+The first parity branch alone adds 31.32 weighted bytes; the second alone
+loses 63.02. Restoring both is the unique best native-backed result: it adds
+**45.90 weighted bytes**, raises focused matching from **50.98% to 52.77%**,
+and grows the candidate from 685 to **695/696** instructions. Prefix remains
+6/696 and all 40 references stay clean.
+
+The symmetric truth-first family form is retained. The near-exact instruction
+count is a corroborating consequence, not the selection criterion: the
+evidence-complete pair wins on weighted agreement and preserves the target's
+observed control flow, while the tempting one-sided alternatives do not.

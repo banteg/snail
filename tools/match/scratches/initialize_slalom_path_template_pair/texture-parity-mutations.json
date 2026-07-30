@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-texture-parity",
+      "find": "                        face->texture_ref =\n                            g_texture_refs.Add(texture_a, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                        if ((face_column ^ face_row) & 1) {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        } else {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        }"
+        },
+        {
+          "name": "even-first",
+          "text": "                        if (!((face_column ^ face_row) & 1)) {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        } else {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        }"
+        }
+      ]
+    },
+    {
+      "name": "second-face-texture-parity",
+      "find": "                        face->texture_ref =\n                            g_texture_refs.Add(texture_b, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                        if ((face_column ^ face_row) & 1) {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        } else {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        }"
+        },
+        {
+          "name": "even-first",
+          "text": "                        if (!((face_column ^ face_row) & 1)) {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        } else {\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        }"
+        }
+      ]
+    }
+  ]
+}
