@@ -152,3 +152,14 @@ remains 65.73% (745 target / 746 candidate instructions), prefix 10/745, with
 55 clean masked operands and no unresolved, mismatched, or unaudited operands.
 Repository validation is 497 tests passed, exact-only masked audit clean,
 extern lint clean, and generated status deterministic.
+
+## 2026-07-30 shared delta-loop recovery
+
+The exact Windows and mobile bodies use one positive `segment_count - 1` guard
+followed by a do/while delta-normalization pass. Replacing the shared
+guarded-`for` spelling removes the redundant candidate precheck.
+
+Focused matching rises from 65.73% (`746/745`) to **66.62%** (`744/745`) with
+the `10/745` prefix and clean `55/0/0/0` reference audit unchanged. Every
+other skeleton consumer recompiles byte-identically, so this is a bounded
+shared-family recovery rather than a variant-specific schedule tradeoff.

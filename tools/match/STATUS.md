@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **79.93%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **79.94%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -647,8 +647,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | create_golb | 0x415280 | 2349 | 549/582 | 77.98% | 81/582 | 1 unaudited, 47 ok |  | core |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  | core |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 13 ok |  | core |
-| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 725/721 | 69.71% | 22/721 | 49 ok |  | core |
-| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 746/745 | 65.73% | 10/745 | 55 ok |  | core |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 723/721 | 70.64% | 22/721 | 49 ok |  | core |
+| 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 744/745 | 66.62% | 10/745 | 55 ok |  | core |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 726/718 | 60.11% | 0/718 | 52 ok |  | core |
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 695/685 | 60.00% | 20/685 | 43 ok |  | core |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 703/690 | 56.86% | 8/690 | 43 ok |  | core |

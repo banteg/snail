@@ -169,3 +169,16 @@ remains 69.71% (721 target / 725 candidate instructions), prefix 22/721, with
 49 clean masked operands and no unresolved, mismatched, or unaudited operands.
 Repository validation is 497 tests passed, exact-only masked audit clean, and
 extern lint clean.
+
+## 2026-07-30 shared delta-loop recovery
+
+Windows, Android, and iOS all preserve one positive `segment_count - 1` guard
+followed by a do/while normalization pass. The shared skeleton instead used a
+guarded `for`, causing VC6 to retain a redundant second precheck in both
+LoopTheLoop builders.
+
+Recovering the authored do/while control removes two candidate instructions
+and raises focused matching from 69.71% (`725/721`) to **70.64%** (`723/721`).
+The `22/721` prefix and fully clean `49/0/0/0` reference audit are preserved.
+A full dashboard rebuild shows the same improvement in the W sibling and
+byte-identical output for every other skeleton consumer.

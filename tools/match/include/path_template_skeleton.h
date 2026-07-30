@@ -581,7 +581,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 #endif
 
     if (segment_count - 1 > 0) {
-        for (i = 0; i < segment_count - 1; ++i) {
+        i = 0;
+        do {
             primary_samples[i].delta_dir_to_next = Vector3(
                 primary_samples[i + 1].transform.position.x
                     - primary_samples[i].transform.position.x,
@@ -601,7 +602,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     - secondary_samples[i].transform.position.z);
             secondary_samples[i].delta_length =
                 secondary_samples[i].delta_dir_to_next.Normalize();
-        }
+            ++i;
+        } while (i < segment_count - 1);
     }
 
     primary_samples[segment_count - 1].delta_dir_to_next = Vector3(0.0f, 0.0f, 1.0f);
