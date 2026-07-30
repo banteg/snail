@@ -215,3 +215,33 @@ neutral, and the full double-expression spelling adds reference debt, so none
 is retained. Focused matching rises from **49.19%** to **52.12%**, candidate
 instructions move from 646 to 642 against 655 target instructions, the exact
 prefix remains 20/655, and all 37 references remain clean.
+
+## 2026-07-30 header count ownership
+
+Native `0x41e46f..0x41e491` keeps the derived far-end index in `edi`, writes
+`width_or_scale` at `0x41e480`, then stores and converts the total sample count.
+Placing the width write before the source declaration of `endpoint_index`
+recovers that observable header schedule. It adds 3.69 weighted bytes and
+extends the exact prefix without changing candidate size or relocation health:
+
+```text
+match: 52.27% (was 52.12%)
+target: 655 insns, candidate: 642 insns
+prefix: 22/655 target insns (was 20/655)
+masked operands: 37 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The retained-baseline header grid closes seven alternate count expressions.
+Restoring the endpoint declaration before the width write or introducing a
+named total count returns to 52.12% and prefix 20; direct count expressions,
+a separate curve count, and moving the endpoint declaration after the total
+count fall to 50.12%..51.66% and shorten the prefix.
+
+The adjacent ownership hypotheses do not resolve the next register split.
+Five ways to capture, convert, or reuse the endpoint byte offset are either
+byte-identical or lose 8.32 weighted bytes. References are byte-identical,
+branch-local pointers lose 4.65 weighted bytes, direct preceding-sample
+addresses lose 13.80, and keeping only one preceding pointer collapses the
+exact prefix. An explicit persistent curve-phase owner raises the scalar score
+to 52.53%, but moves the first mismatch earlier and cuts the exact prefix from
+22 to 7 instructions; it is recorded as a metric tradeoff and rejected.

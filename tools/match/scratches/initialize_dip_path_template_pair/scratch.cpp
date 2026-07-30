@@ -366,8 +366,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     }
 #elif PATH_VARIANT == 5
     width_cells_ = (int)curve_count_source;
-    int endpoint_index = width_cells_ + 1;
     width_or_scale = height_scale_value;
+    int endpoint_index = width_cells_ + 1;
     segment_count = endpoint_index + 1;
     segment_count_f = (float)(endpoint_index + 1);
     float curve_count_f = (float)width_cells_;
