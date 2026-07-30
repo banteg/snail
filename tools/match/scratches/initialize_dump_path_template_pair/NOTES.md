@@ -326,3 +326,13 @@ The scale spec was intentionally rerun after the branch-order change because
 that register-allocation result is baseline-dependent. Its terminal-only
 closure reaches the same final source as the earlier coupled probe, accounting
 for the single repeated variant; it is not treated as independent evidence.
+
+## 2026-07-30 copied face-index ownership bound
+
+Dump also rejects the common integer face-index owner despite the analogous
+native SSA shape. Hoisting only
+`face_index + 2 * (face_row * width_cells + face_column)` while leaving pointer
+formation inside each arm drops focused matching from **62.87%** to **56.94%**.
+Candidate instructions shrink from 697 to 687 against 690 target instructions,
+prefix remains 8/690, and all 43 references remain clean. The result is kept as
+a rejected reverse probe and bounds this transfer independently of Hump.

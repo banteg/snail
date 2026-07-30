@@ -235,3 +235,14 @@ native trig calls audit all 40 references but lose at least 103.79 weighted
 bytes. Five equivalent departure predicates are neutral or regress, and two
 post-tested delta controls each lose 12.41 bytes. Those local schedules remain
 bounded; the material result comes from the interacting sample/control graph.
+
+## 2026-07-30 face-pointer ownership bound
+
+Screw's native tail computes a common integer face index but materializes the
+pointer and zero header inside each parity arm. Reproducing that ownership
+literally is strongly negative on the recovered sample/control baseline:
+focused matching falls from **62.21%** to **49.34%**, candidate instructions
+grow from 675 to exact count parity at 685/685, and the exact prefix contracts
+from 26 to 6. The receipt remains 38 clean plus 2 unaudited references, so the
+instruction-count coincidence is not evidence of a better decomp. The
+branch-local pointer form is recorded and rejected.

@@ -668,10 +668,12 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 float u0 = (float)face_column * 0.125f;
                 float u1 = (float)(face_column + 1) * 0.125f;
                 for (face_index = 0; face_index < 2; ++face_index) {
-                    cRFaceQuad* face =
-                        &facequads[2 * face_column + 2 * face_row * width_cells + face_index];
-                    face->header_word = 0;
+                    int face_record_index =
+                        face_index
+                        + 2 * (face_row * width_cells + face_column);
                     if (face_index == 0) {
+                        cRFaceQuad* face = &facequads[face_record_index];
+                        face->header_word = 0;
                         face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_2 =
@@ -689,6 +691,8 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[3].u = u0;
                         face->uv[3].v = v1;
                     } else {
+                        cRFaceQuad* face = &facequads[face_record_index];
+                        face->header_word = 0;
                         face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_2 =

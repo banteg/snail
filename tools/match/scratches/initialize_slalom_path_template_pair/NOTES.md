@@ -275,3 +275,18 @@ The retained frontier therefore remains **34.60%**, 651/696 instructions,
 prefix 1/696, with 38 clean plus 4 unaudited references. The recorded
 three-variant sweep closes this local ownership spelling; the sibling result
 does not transfer through Slalom's different register schedule.
+
+## 2026-07-30 face-index ownership
+
+The native face tail keeps the integer
+`face_index + 2 * (face_row * width_cells + face_column)` owner common while
+forming the `cRFaceQuad*` and clearing its header separately in each parity
+arm. Recovering that exact split raises focused matching from **34.60%** to
+**35.83%**, adds 32 fuzzy-match bytes, and moves the candidate from 651 to
+655 instructions against 696 target instructions. Prefix remains 1/696 and
+the receipt remains 38 clean plus 4 explicitly unaudited references.
+
+The previous hoisted-pointer form is recorded as a reverse probe and loses the
+same 32 fuzzy-match bytes. The integer-only owner is retained because it is
+native-backed, materially improves the whole function, and adds no reference
+debt.

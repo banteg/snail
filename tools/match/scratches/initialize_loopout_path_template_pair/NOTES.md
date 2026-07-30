@@ -215,3 +215,14 @@ type/stride spellings are byte-identical.
 The ledger now contains 12 sweeps and 74 unique variants: 12 improve, 21 are
 neutral, 41 degrade, and three carry metric tradeoffs. Three consecutive
 non-improving sweeps close this source-shape frontier.
+
+## 2026-07-30 copied face-index ownership bound
+
+The later LoopTheLoop/Slalom face-index recoveries were tested directly
+against LoopOut's native common integer index. Hoisting only
+`face_index + 2 * (face_row * width_cells + face_column)` while keeping each
+face pointer branch-local is not portable here: focused matching falls from
+**66.44%** to **61.37%**, candidate instructions shrink from 727 to 716 against
+718 target instructions, prefix remains 0/718, and all 52 references remain
+clean. The exact native-looking spelling is recorded as a rejected reverse
+probe rather than transferred across the different register schedule.

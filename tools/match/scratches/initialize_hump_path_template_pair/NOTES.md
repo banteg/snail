@@ -387,3 +387,14 @@ operator-scale spec was intentionally rerun once after the double-lifetime
 change because its result is baseline-dependent; no variant source hash was
 repeated. Three consecutive non-improving sweeps mark this frontier stalled
 until new native evidence appears.
+
+## 2026-07-30 copied face-index ownership bound
+
+The common integer face index seen in native code is not a recoverable C++
+owner on Hump's current schedule. Hoisting only
+`face_index + 2 * (face_row * width_cells + face_column)` and retaining
+branch-local pointers drops focused matching from **67.59%** to **56.89%**.
+Candidate instructions move from 691 to 686 against 685 target instructions,
+the exact prefix contracts from 20 to 8, and all 43 references remain clean.
+This confirms the earlier two-arm face-index regression with the minimal
+integer-only spelling and records it as a rejected reverse probe.
