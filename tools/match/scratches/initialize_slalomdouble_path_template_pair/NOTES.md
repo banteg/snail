@@ -301,3 +301,30 @@ interaction and gains **266.49 weighted bytes**, raising focused matching from
 **41.33%** to **51.84%** at **648/683** instructions. Prefix remains 5/683 and
 the reference receipt remains 44 clean plus 2 explicitly unaudited entries.
 The exact native-backed pair is retained.
+
+## 2026-07-30 post-checkerboard sample ownership
+
+The checkerboard recovery materially changed the VC6 register schedule, so the
+previously negative three-phase sample-owner sweep was replayed rather than
+treated as a permanent family bound. The new interaction is decisive: direct
+indexed ownership for the four lead samples, four departure samples, and all
+62 curved samples together gains **120.65 weighted bytes** and expands the
+candidate from 648 to **681/683** instructions. Focused matching rises from
+**51.84%** to **56.60%**. The five-instruction prefix and the 44 clean plus 2
+explicitly unaudited references remain unchanged.
+
+No partial transfer explains the full gain. Lead plus curve reaches 54.97%,
+departure plus curve 54.28%, lead plus departure 54.18%, and lead alone
+52.46%; departure alone is nearly neutral at 51.75%, while curve alone falls
+to 45.15%. The exhaustive seven-variant receipt therefore justifies retaining
+all three direct phases as one compilation-context recovery.
+
+Native instructions at `0x425091..0x425510` were then used to bound the next
+owner hypotheses. Explicit byte cursors for the fixed lead and departure loops
+lose 59 and 126 weighted bytes respectively, and lose 150 together. Rewriting
+the departure guard as `i - 66 < 4`, `<= 3`, or `!= 4` loses 142–146 weighted
+bytes. A whole curved-loop byte cursor falls slightly to **56.43%** at 678/683
+instructions, and an explicit shared floating zero owner is byte-identical.
+The sample-index guard alternatives also fall to 46.71% and 45.37%. These
+bounds leave the compact direct-indexed source as the honest frontier rather
+than forcing target register names through artificial cursor lifetimes.

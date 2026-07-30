@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "departure-loop-guard",
+      "find": "    for (i = 66; i < 70; ++i) {",
+      "replacements": [
+        {
+          "name": "relative-less-than-four",
+          "text": "    for (i = 66; i - 66 < 4; ++i) {"
+        },
+        {
+          "name": "relative-at-most-three",
+          "text": "    for (i = 66; i - 66 <= 3; ++i) {"
+        },
+        {
+          "name": "relative-not-four",
+          "text": "    for (i = 66; i - 66 != 4; ++i) {"
+        }
+      ]
+    }
+  ]
+}

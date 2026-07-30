@@ -154,11 +154,45 @@ void cRPath::initialize_slalomdouble_path_template_pair(
     has_entry_mesh_transition = 0;
 
     int i;
-    for (i = 0; i < 4; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
+    for (i = 0; i < 4; ++i) {
+        primary_samples[i].center_x = 0.0f;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        float z = (float)i;
+        primary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
 
-    for (i = 66; i < 70; ++i)
-        initialize_pair_sample(this, i, 0.0f, 0.0f, i);
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
+    }
+
+    for (i = 66; i < 70; ++i) {
+        primary_samples[i].center_x = 0.0f;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        float z = (float)i;
+        primary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
+
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
+    }
 
     int curve_index = 0;
     for (i = 4; i < 66; ++i) {
@@ -174,24 +208,25 @@ void cRPath::initialize_slalomdouble_path_template_pair(
             folded = -folded;
 
         float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
-        PathTemplateSample* primary = &primary_samples[i];
-        PathTemplateSample* secondary = &secondary_samples[i];
-        primary->center_x = center;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 1.0f - cosine(angle * 0.5f);
+        primary_samples[i].center_x = center;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
+        primary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        primary_samples[i].transform.position.y =
+            1.0f - cosine(angle * 0.5f);
         float z = (float)(curve_index + 4);
-        primary->transform.position.z = z;
+        primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y =
-            primary->transform.position.y + 0.49000001f;
-        secondary->transform.position.z = z;
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y =
+            primary_samples[i].transform.position.y + 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
         PathTemplateSample* primary_previous = &primary_samples[i - 1];
         PathTemplateSample* primary_current = &primary_samples[i];
         if (curve_index == 0) {
