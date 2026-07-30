@@ -250,3 +250,16 @@ The complete interaction raises focused matching from 39.85% (642/683) to
 five-instruction prefix and the 44 clean plus 2 unaudited reference receipt
 remain unchanged. The four-instruction shortening is confined to the directly
 proven native arithmetic owners.
+
+## 2026-07-30 sample-array ownership bound
+
+The native fixed and curved sample constructors repeatedly reload both arrays
+from the `Path` owner, so the four-sample lead, four-sample departure, and
+62-sample curve initializer were expanded into direct indexed ownership. An
+exhaustive seven-variant sweep tests every isolated and combined phase.
+
+None improves the retained compilation context. The best combination,
+departure plus curve, loses 4 weighted bytes; the other forms lose 12–44.
+Matching remains **41.33%**, 638/683 instructions, prefix 5/683, with 44 clean
+plus 2 unaudited references. The target's array reloads therefore need a
+broader register-lifetime recovery, not another local pointer-to-index rewrite.

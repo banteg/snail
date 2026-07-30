@@ -262,3 +262,16 @@ rises from **32.72%** to **34.60%**, candidate instructions move from 655 to
 651 against 696 target instructions, prefix stays 1/696, and the existing
 curve-schedule receipt remains 38 clean plus 4 explicitly unaudited
 references.
+
+## 2026-07-30 fixed-sample ownership bound
+
+The Snake and Sweep wins motivated an exhaustive transfer check for the four
+fixed lead and departure samples. Direct primary/secondary array ownership was
+tested in each phase alone and together. All three variants regress: the lead
+form loses 5 weighted bytes, the departure form loses 48, and the combined
+form loses 17.
+
+The retained frontier therefore remains **34.60%**, 651/696 instructions,
+prefix 1/696, with 38 clean plus 4 unaudited references. The recorded
+three-variant sweep closes this local ownership spelling; the sibling result
+does not transfer through Slalom's different register schedule.

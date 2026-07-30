@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-sample-owners",
+      "find": "    for (i = 0; i < 4; ++i) {\n        PathAttachmentSample* primary = &primary_samples[i];\n        PathAttachmentSample* secondary = &secondary_samples[i];\n\n        primary->center_x = 0.0f;\n        primary->rotation_scalar_98 = 0.0f;\n        primary->rotation_scalar_94 = 0.0f;\n        primary->special_scalar = 0.0f;\n        primary->lateral_scale = 1.0f;\n        set_matrix_identity(&primary->transform);\n        float z = (float)i;\n        primary->transform.position.x = primary->center_x;\n        primary->transform.position.y = 0.0f;\n        primary->transform.position.z = z;\n\n        set_matrix_identity(&secondary->transform);\n        secondary->transform.position.x = primary->center_x;\n        secondary->transform.position.y = 0.49000001f;\n        secondary->transform.position.z = z;\n    }",
+      "replacements": [
+        {
+          "name": "direct-indexed",
+          "text": "    for (i = 0; i < 4; ++i) {\n        primary_samples[i].center_x = 0.0f;\n        primary_samples[i].rotation_scalar_98 = 0.0f;\n        primary_samples[i].rotation_scalar_94 = 0.0f;\n        primary_samples[i].special_scalar = 0.0f;\n        primary_samples[i].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[i].transform);\n        float z = (float)i;\n        primary_samples[i].transform.position.x =\n+            primary_samples[i].center_x;\n        primary_samples[i].transform.position.y = 0.0f;\n        primary_samples[i].transform.position.z = z;\n\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x =\n+            primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y = 0.49000001f;\n        secondary_samples[i].transform.position.z = z;\n    }"
+        }
+      ]
+    },
+    {
+      "name": "departure-sample-owners",
+      "find": "    int departure_index = lead_out_start;\n    do {\n        PathAttachmentSample* primary = &primary_samples[departure_index];\n        PathAttachmentSample* secondary = &secondary_samples[departure_index];\n\n        primary->center_x = 0.0f;\n        primary->rotation_scalar_98 = 0.0f;\n        primary->rotation_scalar_94 = 0.0f;\n        primary->special_scalar = 0.0f;\n        primary->lateral_scale = 1.0f;\n        set_matrix_identity(&primary->transform);\n        primary->transform.position.x = primary->center_x;\n        float z = (float)departure_index;\n        primary->transform.position.y = 0.0f;\n        primary->transform.position.z = z;\n\n        set_matrix_identity(&secondary->transform);\n        secondary->transform.position.x = primary->center_x;\n        secondary->transform.position.y = 0.49000001f;\n        secondary->transform.position.z = z;\n        ++departure_index;\n    } while (departure_index - 4 - curve_count < 4);",
+      "replacements": [
+        {
+          "name": "direct-indexed",
+          "text": "    int departure_index = lead_out_start;\n    do {\n        primary_samples[departure_index].center_x = 0.0f;\n        primary_samples[departure_index].rotation_scalar_98 = 0.0f;\n        primary_samples[departure_index].rotation_scalar_94 = 0.0f;\n        primary_samples[departure_index].special_scalar = 0.0f;\n        primary_samples[departure_index].lateral_scale = 1.0f;\n        set_matrix_identity(&primary_samples[departure_index].transform);\n        primary_samples[departure_index].transform.position.x =\n+            primary_samples[departure_index].center_x;\n        float z = (float)departure_index;\n        primary_samples[departure_index].transform.position.y = 0.0f;\n        primary_samples[departure_index].transform.position.z = z;\n\n        set_matrix_identity(&secondary_samples[departure_index].transform);\n        secondary_samples[departure_index].transform.position.x =\n+            primary_samples[departure_index].center_x;\n        secondary_samples[departure_index].transform.position.y = 0.49000001f;\n        secondary_samples[departure_index].transform.position.z = z;\n        ++departure_index;\n    } while (departure_index - 4 - curve_count < 4);"
+        }
+      ]
+    }
+  ]
+}

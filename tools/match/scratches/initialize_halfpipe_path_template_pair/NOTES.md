@@ -340,3 +340,16 @@ all regress, with the latter collapsing the exact prefix. Focused matching
 rises from **43.20%** to **44.62%**, candidate instructions move from 691 to
 687 against 707 target instructions, prefix stays 18/707, and all 55
 references remain clean.
+
+## 2026-07-30 tail sample-owner bound
+
+The native 16-sample tail carries separate logical and `0xa8` byte-offset
+owners while reloading both sample arrays. Replacing the scratch's two
+per-iteration aliases with repeated direct byte-offset ownership was tested
+independently from the previously rejected middle-loop cursor. It loses 87.95
+weighted bytes and falls to 41.23%; a direct logical-index form loses 121.22
+and falls to 39.94%.
+
+Halfpipe therefore remains **44.62%**, 687/707 instructions, prefix 18/707,
+with all 55 references clean. The target's tail reload schedule does not emerge
+from a local alias removal in the current compilation context.
