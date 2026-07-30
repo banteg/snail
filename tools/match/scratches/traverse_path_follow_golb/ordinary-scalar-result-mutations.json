@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-product-result-staging",
+      "find": "        Vec3 right_offset = transform.basis_right * local_x;\n        Vec3 base(base_x, base_y, base_z);\n        Vec3 result = right_offset + base;\n        *output = result;",
+      "replacements": [
+        {
+          "name": "products-then-results",
+          "text": "        float right_x = transform.basis_right.x * local_x;\n        float right_y = transform.basis_right.y * local_x;\n        float right_z = transform.basis_right.z * local_x;\n        float result_x = right_x + base_x;\n        float result_y = right_y + base_y;\n        float result_z = right_z + base_z;\n        output->x = result_x;\n        output->y = result_y;\n        output->z = result_z;"
+        },
+        {
+          "name": "declare-results-before-products",
+          "text": "        float result_x;\n        float result_y;\n        float result_z;\n        float right_x = transform.basis_right.x * local_x;\n        float right_y = transform.basis_right.y * local_x;\n        float right_z = transform.basis_right.z * local_x;\n        result_x = right_x + base_x;\n        result_y = right_y + base_y;\n        result_z = right_z + base_z;\n        output->x = result_x;\n        output->y = result_y;\n        output->z = result_z;"
+        },
+        {
+          "name": "interleaved-products-results",
+          "text": "        float right_x = transform.basis_right.x * local_x;\n        float result_x = right_x + base_x;\n        float right_y = transform.basis_right.y * local_x;\n        float result_y = right_y + base_y;\n        float right_z = transform.basis_right.z * local_x;\n        float result_z = right_z + base_z;\n        output->x = result_x;\n        output->y = result_y;\n        output->z = result_z;"
+        },
+        {
+          "name": "vector-product-scalar-results",
+          "text": "        Vec3 right_offset = transform.basis_right * local_x;\n        float result_x = right_offset.x + base_x;\n        float result_y = right_offset.y + base_y;\n        float result_z = right_offset.z + base_z;\n        output->x = result_x;\n        output->y = result_y;\n        output->z = result_z;"
+        },
+        {
+          "name": "scalar-products-vector-result",
+          "text": "        float right_x = transform.basis_right.x * local_x;\n        float right_y = transform.basis_right.y * local_x;\n        float right_z = transform.basis_right.z * local_x;\n        Vec3 result;\n        result.x = right_x + base_x;\n        result.y = right_y + base_y;\n        result.z = right_z + base_z;\n        *output = result;"
+        },
+        {
+          "name": "declared-scalars-vector-result",
+          "text": "        float right_x;\n        float right_y;\n        float right_z;\n        Vec3 result;\n        right_x = transform.basis_right.x * local_x;\n        right_y = transform.basis_right.y * local_x;\n        right_z = transform.basis_right.z * local_x;\n        result.x = right_x + base_x;\n        result.y = right_y + base_y;\n        result.z = right_z + base_z;\n        *output = result;"
+        }
+      ]
+    }
+  ]
+}

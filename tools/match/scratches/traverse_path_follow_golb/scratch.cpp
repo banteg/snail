@@ -33,25 +33,24 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
             if (terminal_template->kind == PATH_TEMPLATE_KIND_SUPERTRAMP) {
                 velocity->y = velocity->z * 0.69999999f;
                 float old_x = position->x;
-                int count = terminal_template->segment_count;
-                float carry = delta + terminal_template->width_or_scale;
+                Path* launch_template = template_record;
+                int count = launch_template->segment_count;
+                float carry = delta + launch_template->width_or_scale;
                 AttachmentSample* terminal =
-                    &terminal_template->secondary_samples[count];
+                    &launch_template->secondary_samples[count];
                 Vec3* anchor = &source_cell->position;
 
-                float forward_x = carry * terminal[-1].transform.basis_forward.x;
-                float forward_y = carry * terminal[-1].transform.basis_forward.y;
-                float forward_z = carry * terminal[-1].transform.basis_forward.z;
-                float base_x = anchor->x + terminal[-1].transform.position.x;
-                float base_y = anchor->y + terminal[-1].transform.position.y;
-                float base_z = anchor->z + terminal[-1].transform.position.z;
-                position->x = base_x + forward_x;
-                position->y = base_y + forward_y;
-                position->z = base_z + forward_z;
+                Vec3 forward = terminal[-1].transform.basis_forward * carry;
+                Vec3 terminal_position;
+                terminal_position.x =
+                    anchor->x + terminal[-1].transform.position.x + forward.x;
+                terminal_position.y =
+                    anchor->y + terminal[-1].transform.position.y + forward.y;
+                terminal_position.z =
+                    anchor->z + terminal[-1].transform.position.z + forward.z;
+                *position = terminal_position;
                 position->x = old_x;
-                shot->flight_transform.position.x = position->x;
-                shot->flight_transform.position.y = position->y;
-                shot->flight_transform.position.z = position->z;
+                shot->flight_transform.position = *position;
             } else {
                 float z =
                     delta
@@ -132,25 +131,29 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
         transform.basis_right.y *= lateral_scale;
         transform.basis_right.z *= lateral_scale;
         vertical_offset = motion->y + vertical_offset;
-        Vec3* output = &output_position;
-        output->x = transform.position.x;
-        output->y = transform.position.y;
-        output->z = z;
+        output_position.x = transform.position.x;
+        output_position.y = transform.position.y;
+        output_position.z = z;
     } else {
-        AttachmentSample* sample = &current_template->secondary_samples[sample_index];
-        Vec3* anchor = &source_cell->position;
+        AttachmentSample* ordinary_samples =
+            current_template->secondary_samples;
         float base_x =
-            advanced * sample->delta_dir_to_next.x * lateral_scale
-            + sample->transform.position.x
-            + anchor->x;
+            lateral_scale
+                * (advanced
+                   * ordinary_samples[sample_index].delta_dir_to_next.x)
+            + ordinary_samples[sample_index].transform.position.x
+            + source_cell->position.x;
         float base_y =
-            advanced * sample->delta_dir_to_next.y * lateral_scale
-            + sample->transform.position.y
-            + anchor->y;
+            lateral_scale
+                * (advanced
+                   * ordinary_samples[sample_index].delta_dir_to_next.y)
+            + ordinary_samples[sample_index].transform.position.y
+            + source_cell->position.y;
         float base_z =
-            advanced * sample->delta_dir_to_next.z
-            + sample->transform.position.z
-            + anchor->z;
+            advanced * ordinary_samples[sample_index].delta_dir_to_next.z
+            + ordinary_samples[sample_index].transform.position.z
+            + source_cell->position.z;
+        AttachmentSample* sample = &ordinary_samples[sample_index];
 
         if (sample_index == terminal_index) {
             transform.Identity();
@@ -175,10 +178,9 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
 
         Vec3* output = &output_position;
         float local_x = input_position->x - center_x;
-        Vec3 result = transform.basis_right * local_x;
-        result.x += base_x;
-        result.y += base_y;
-        result.z += base_z;
+        Vec3 right_offset = transform.basis_right * local_x;
+        Vec3 base(base_x, base_y, base_z);
+        Vec3 result = right_offset + base;
         *output = result;
     }
 
@@ -195,11 +197,7 @@ int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* posi
     basis_forward->y = transform.basis_forward.y;
     basis_forward->z = transform.basis_forward.z;
 
-    Vec3* shot_velocity = &shot->velocity;
-    Vec3* shot_direction = &shot->direction;
-    shot_velocity->x = shot_direction->x;
-    shot_velocity->y = shot_direction->y;
-    shot_velocity->z = shot_direction->z;
+    shot->velocity = shot->direction;
 
     float abs_lateral = input_position->x - center_x;
     if (abs_lateral < 0.0f)

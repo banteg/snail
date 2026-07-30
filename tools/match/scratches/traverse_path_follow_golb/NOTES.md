@@ -325,3 +325,43 @@ All six current/next scalar accesses render through named fields with zero
 synthetic `__offset` expressions. The one-past-end terminal secondary cursor
 still reads the preceding record and remains byte-typed rather than receiving
 a misleading negative-offset cast. Matcher source is unchanged at 71.82%.
+
+## 2026-07-29 vector-expression and owner-lifetime campaign
+
+The paired mobile bodies and the now-typed Windows export supplied enough
+source evidence to replace the former scalar publication spellings with the
+authored vector lifetimes. The retained changes are:
+
+- aggregate terminal-position and direction-to-velocity copies;
+- one vector product plus an explicit result vector for the terminal launch;
+- separate product, base, and result vectors on the ordinary path;
+- direct nonlinear-branch publication to `output_position`;
+- a borrowed ordinary secondary-sample bank with direct source-cell fields;
+- `lateral_scale * (advanced * delta)` grouping, which reproduces the native
+  x87 multiplication order; and
+- a fresh `launch_template` borrow immediately after saving `position->x`.
+  This last lifetime recovers the target's branch-local template reload and
+  accounts for the largest single improvement.
+
+Focused matching rises from 71.82% to **85.82%**. The retained candidate is
+421 instructions against 425 target instructions, keeps the 32-instruction
+exact prefix, and resolves all seven masked operands with zero unresolved,
+mismatched, or unaudited references.
+
+The append-only ledger covers 12 complete mutation sweeps and 214 unique
+variants: 34 improve their sweep baseline, 41 are identical, 139 regress,
+six sweeps produce retained winners, and no variants repeat or fail. Eleven
+metric tradeoffs are recorded. Three consecutive non-improving sweeps after
+the final owner-lifetime win now mark this lane formally stalled.
+
+The remaining four-instruction deficit is localized and bounded. The target
+spills the y/z components of `anchor + terminal.position` before adding the
+forward vector; the retained candidate folds those two base components into
+the result. Natural named-base and alternate operator-association spellings
+do produce four extra instructions, but expand/recolor the complete frame,
+lose the exact prefix, and regress to 72-79%. The ordinary interpolation and
+publication sequence is otherwise instruction-for-instruction identical
+apart from stack-slot coloring, plus scale-one SIB base/index spelling in the
+three scalar interpolations. Explicit scalar-result variants regress as low as
+59.11%. No volatile barrier, synthetic dependency, padding, or register
+forcing is retained.
