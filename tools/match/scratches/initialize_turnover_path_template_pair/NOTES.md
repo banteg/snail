@@ -312,3 +312,21 @@ instructions; without parity they fall to **40.96%** and 657 instructions.
 Both erase the exact prefix and lose about 455 weighted bytes. The current
 shared face source remains retained, and the native branch-local tail stays a
 bounded compiler-allocation residual rather than a metric-driven rewrite.
+
+## 2026-07-30 tail relative-base ownership bound
+
+Turnoverdouble's recovered fixed-tail control suggested one final sibling
+transfer: Windows Turnover also materializes `-6 - curve_segments` beside the
+tail sample's compiler-derived `0xa8` byte cursor. The complete 14-variant
+control sweep rejects that owner on Turnover's retained typed tail. The
+precomputed relative base plus its matching predicate loses 68 fuzzy points,
+falls from **59.77%** to **56.97%**, and cuts the exact prefix from 54 to 17
+instructions. Grouping the existing inline expression is byte-identical; the
+direct `segment_count` endpoint loses nine fuzzy points.
+
+The cursor interaction is bounded separately because the tail byte owner was
+previously neutral in isolation. Coupling the direct byte cursor with the
+precomputed relative base reaches only **59.18%** and grows the candidate from
+644 to 647 instructions. Swapping the two declaration orders is byte-identical.
+Both coupled forms keep the 54-instruction prefix and all 41 references clean
+but remain below the retained source, so neither owner is kept.

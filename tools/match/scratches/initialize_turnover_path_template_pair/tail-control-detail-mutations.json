@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-control-detail",
+      "find": "    i = curve_segments + 6;\n    do {",
+      "replacements": [
+        {
+          "name": "precomputed-relative-base",
+          "text": "    i = curve_segments + 6;\n    int tail_control_base = -6 - curve_segments;\n    do {"
+        },
+        {
+          "name": "precomputed-tail-end",
+          "text": "    i = curve_segments + 6;\n    int tail_end = curve_segments + 8;\n    do {"
+        }
+      ]
+    },
+    {
+      "name": "tail-control-predicate",
+      "find": "    } while (i - 6 - curve_segments < 2);",
+      "replacements": [
+        {
+          "name": "grouped-relative",
+          "text": "    } while (i - (curve_segments + 6) < 2);"
+        },
+        {
+          "name": "direct-segment-count",
+          "text": "    } while (i < segment_count);"
+        },
+        {
+          "name": "precomputed-relative-base",
+          "text": "    } while (i + tail_control_base < 2);",
+          "requires": [
+            "tail-control-detail/precomputed-relative-base"
+          ]
+        },
+        {
+          "name": "precomputed-tail-end",
+          "text": "    } while (i < tail_end);",
+          "requires": [
+            "tail-control-detail/precomputed-tail-end"
+          ]
+        }
+      ]
+    }
+  ]
+}
