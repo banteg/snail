@@ -222,3 +222,21 @@ weighted bytes from the retained result; the pointer-only form loses 89.29,
 and the scalar-direct form loses 19.13. Binary Ninja's typed destination can
 therefore be explained as a compiler-derived address in this dependency
 context, while the aggregate value is the bounded source-level recovery.
+
+## 2026-07-30 fixed-sample byte ownership bound
+
+Windows `0x4276ab..0x427777` and `0x427784..0x427870` preserve separate
+logical indices and `0xa8` byte offsets for the six-sample lead and two-sample
+tail. The scratch already recovers the logical owners, so both address
+transfers were tested independently.
+
+Repeated direct byte ownership in the lead loses 24.15 weighted bytes whether
+the existing two logical indices are kept or merged. Using the logical index
+instead of the byte offset as loop control loses 123.65 bytes and cuts the
+exact prefix from 54 to 6 instructions. Both dedicated and reused logical tail
+indices with direct byte addressing are byte-identical; making the tail byte
+offset control the loop loses 4.44 bytes.
+
+TurnoverDouble therefore remains **55.26%**, 652/680 instructions, prefix
+54/680, with all 46 references clean. Its native offsets are compiler-derived
+from the retained logical source in this allocation context.

@@ -227,25 +227,31 @@ void cRPath::initialize_turnunder_path_template_pair(
     } while (i < 6);
 
     i = interior_count + 6;
+    int tail_sample_offset = i * sizeof(AttachmentSample);
     do {
-        primary_samples[i].center_x =
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x =
             -(4.0f - (float)width_cells * 0.5f);
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->rotation_scalar_98 = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->rotation_scalar_94 = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->special_scalar = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->lateral_scale = 1.0f;
+        set_matrix_identity(
+            &((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform);
         float z = (float)i;
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = z;
-        primary_samples[i].delta_length = 1.0f;
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.x =
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.y = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->transform.position.z = z;
+        ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = z;
-        secondary_samples[i].delta_length = 1.0f;
+        set_matrix_identity(
+            &((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform);
+        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.x =
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))->center_x;
+        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.y = 0.49000001f;
+        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.z = z;
+        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->delta_length = 1.0f;
+        tail_sample_offset += sizeof(AttachmentSample);
         ++i;
     } while (i < segment_count);
 

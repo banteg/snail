@@ -256,3 +256,35 @@ loses 18.78 weighted bytes from the winner, pointer-only loses 48.57, and the
 scalar-direct form loses 41.50. The sibling-specific pairing is retained
 rather than assuming TurnoverDouble's different compiler schedule applies
 here.
+
+## 2026-07-30 fixed-tail byte ownership
+
+Windows `0x42804b..0x42811d` and `0x42812a..0x428220` preserve separate
+logical indices and `0xa8` byte offsets for the six-sample lead and two-sample
+tail. The native-shaped lead transfer is independently negative: it loses
+82.75 weighted bytes on the old frontier and still loses 53.30 after the tail
+change, so no lead interaction is hidden.
+
+The tail is different. Retaining the existing logical `i` and mobile-backed
+`segment_count` bound while addressing both arrays through one
+`tail_sample_offset` gains 16.81 weighted bytes:
+
+```text
+match: 56.49% (was 55.81%)
+target: 687 insns, candidate: 662 insns (was 664)
+prefix: 6/687 target insns
+masked operands: 45 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+A dedicated tail logical index emits identical bytes. Making the offset own
+loop control loses 60.87 weighted bytes, so only the address owner is
+retained. The two-instruction shortening is accepted because the source shape
+is independently proved by Windows and both mobile bodies, and the focused
+score improves without reference debt.
+
+The adjacent curved-endpoint owner is bounded separately. A direct derived
+byte offset is byte-identical. Reusing the final tail cursor minus two samples
+gains 4.18 bytes but shortens the candidate by four more instructions and
+contradicts the native saved-initial-offset lifetime at `0x42813f`; that metric
+tradeoff is rejected. Saving the initial offset exactly loses about 61
+weighted bytes.

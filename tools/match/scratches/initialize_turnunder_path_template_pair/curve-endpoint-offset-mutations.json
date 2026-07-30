@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-endpoint-owner",
+      "find": "primary_samples[interior_count + 6].center_x",
+      "replacements": [
+        {
+          "name": "final-offset-minus-two",
+          "text": "((AttachmentSample*)((char*)primary_samples + tail_sample_offset - 2 * sizeof(AttachmentSample)))->center_x"
+        },
+        {
+          "name": "direct-derived-byte-offset",
+          "text": "((AttachmentSample*)((char*)primary_samples + (interior_count + 6) * sizeof(AttachmentSample)))->center_x"
+        }
+      ]
+    }
+  ]
+}

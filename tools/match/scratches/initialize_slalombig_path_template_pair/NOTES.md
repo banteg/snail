@@ -290,3 +290,15 @@ The old header order happens to gain four fuzzy bytes after the other owners
 are fixed, but it contradicts the observed width/kind/departure/flag store
 order and adds no prefix, instruction-count, or audit benefit. That metric-only
 tradeoff is recorded and rejected; the instruction-backed header is retained.
+
+## 2026-07-30 face-index ownership divergence
+
+The branch-local face-index recovery from Slalom does not transfer to
+SlalomBig. Native `0x422a5e..0x422a6b` computes the common record offset,
+materializes one `ObjectFaceQuad*`, and clears its header before testing the
+parity arm. That is exactly the current hoisted-pointer source shape, whereas
+Slalom materializes its face record inside each arm.
+
+This native control-flow difference closes the sibling hypothesis without a
+metric probe. SlalomBig remains **50.98%**, 685/696 instructions, prefix
+6/696, with all 40 references clean.
