@@ -290,3 +290,43 @@ The previous hoisted-pointer form is recorded as a reverse probe and loses the
 same 32 fuzzy-match bytes. The integer-only owner is retained because it is
 native-backed, materially improves the whole function, and adds no reference
 debt.
+
+## 2026-07-30 interacting fixed-sample and header ownership
+
+The Windows prologue assigns width and kind before deriving
+`lead_out_start = curve_count + 4`, clears the two mode flags, derives the total
+segment count, and finally stores the unit width/scale. Keeping that Slalom-only
+header order is byte-neutral by itself, but it improves the recovered fixed
+sample owners once the face-index split establishes the native register
+schedule.
+
+On the 35.83% frontier, direct primary/secondary array ownership gains 229
+weighted bytes in the four lead samples and 302 in the four departure samples.
+The complete paired form is the unique best result at **50.84%**, adding 385
+weighted bytes and moving the candidate from 655 to 673/696 instructions.
+Prefix grows from 1 to 6 instructions without changing the 38 clean plus 4
+unaudited reference receipt. Reverting only the header loses 11 weighted bytes;
+mutating `lead_out_start` in place loses 15. These reverse probes keep the
+native header and the separate departure cursor evidence-bounded.
+
+This interaction also explains the earlier fixed-sample rejection: the same
+three variants all regressed before the face-index lifetime changed register
+allocation. The prior negative sweep remains in the ledger rather than being
+discarded.
+
+## 2026-07-30 complete curved-sample ownership
+
+The native curved body repeatedly reloads both sample arrays through the same
+byte-offset owner for initialization and for the later orientation frame.
+Direct array ownership in only the initializer regresses the 50.84% frontier to
+49.20%. Direct ownership in only the orientation block falls to 42.70%, despite
+auditing all 40 references. Together, however, they close the lifetime:
+focused matching rises to **58.59%**, adds 199 weighted bytes, and moves the
+candidate from 673 to **690/696** instructions.
+
+The retained combination also resolves the four remaining unaudited operands,
+leaving **40 clean references with no unresolved, mismatched, or unaudited
+entries**. Prefix remains 6/696. Pointer-owner and curve-index variants were
+rechecked on the new fixed-owner frontier and all regress; the direct
+initializer/orientation pair is retained only as the complete native-backed
+dependency.
