@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-generated-x-order",
+      "find": "                            endpoint.x + lateral_offset.x,",
+      "replacements": [
+        {
+          "name": "offset-first",
+          "text": "                            lateral_offset.x + endpoint.x,"
+        }
+      ]
+    },
+    {
+      "name": "terminal-generated-y-order",
+      "find": "                            endpoint.y + lateral_offset.y,",
+      "replacements": [
+        {
+          "name": "offset-first",
+          "text": "                            lateral_offset.y + endpoint.y,"
+        }
+      ]
+    },
+    {
+      "name": "terminal-generated-z-order",
+      "find": "                            endpoint.z + lateral_offset.z);",
+      "replacements": [
+        {
+          "name": "offset-first",
+          "text": "                            lateral_offset.z + endpoint.z);"
+        }
+      ]
+    }
+  ]
+}

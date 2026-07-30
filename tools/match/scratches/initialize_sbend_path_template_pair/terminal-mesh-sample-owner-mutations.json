@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-mesh-sample-owner",
+      "find": "                        PathTemplateSample* sample =\n                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);\n                        PathTemplateSample* previous = sample - 1;\n                        Vector3 lateral_offset =\n                            previous->transform.basis_right * lateral;\n                        Vector3 endpoint(\n                            previous->transform.position.x,\n                            previous->transform.position.y,\n                            previous->transform.position.z + 1.0f);",
+      "replacements": [
+        {
+          "name": "current-cursor-indexed-previous",
+          "text": "                        PathTemplateSample* sample =\n                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);\n                        Vector3 lateral_offset =\n                            sample[-1].transform.basis_right * lateral;\n                        Vector3 endpoint(\n                            sample[-1].transform.position.x,\n                            sample[-1].transform.position.y,\n                            sample[-1].transform.position.z + 1.0f);"
+        },
+        {
+          "name": "current-cursor-repeated-minus-one",
+          "text": "                        PathTemplateSample* sample =\n                            (PathTemplateSample*)((char*)path->primary_samples + sample_offset);\n                        Vector3 lateral_offset =\n                            (sample - 1)->transform.basis_right * lateral;\n                        Vector3 endpoint(\n                            (sample - 1)->transform.position.x,\n                            (sample - 1)->transform.position.y,\n                            (sample - 1)->transform.position.z + 1.0f);"
+        },
+        {
+          "name": "direct-byte-cursor-indexed-previous",
+          "text": "                        Vector3 lateral_offset =\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.basis_right * lateral;\n                        Vector3 endpoint(\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.x,\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.y,\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.z + 1.0f);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "orientation-cross-owner",
+      "find": "        primary_samples[i].transform.basis_right.cross_vectors(\n            &primary_samples[i].transform.basis_up,\n            &primary_samples[i].transform.basis_forward);",
+      "replacements": [
+        {
+          "name": "native-pointer-compat",
+          "text": "        primary_samples[i].transform.basis_up.cross_vectors(\n            &primary_samples[i].transform.basis_forward,\n            &primary_samples[i].transform.basis_right);"
+        },
+        {
+          "name": "native-owned-reference",
+          "text": "        primary_samples[i].transform.basis_up.Cross(\n            primary_samples[i].transform.basis_forward,\n            primary_samples[i].transform.basis_right);"
+        }
+      ]
+    }
+  ]
+}

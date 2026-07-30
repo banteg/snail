@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-position-add-current",
+      "find": "                        Vector3 generated_position =\n                            endpoint + lateral_offset;",
+      "replacements": [
+        {
+          "name": "offset-first",
+          "text": "                        Vector3 generated_position =\n                            lateral_offset + endpoint;"
+        },
+        {
+          "name": "component-constructor",
+          "text": "                        Vector3 generated_position(\n                            endpoint.x + lateral_offset.x,\n                            endpoint.y + lateral_offset.y,\n                            endpoint.z + lateral_offset.z);"
+        },
+        {
+          "name": "default-then-components",
+          "text": "                        Vector3 generated_position;\n                        generated_position.x = endpoint.x + lateral_offset.x;\n                        generated_position.y = endpoint.y + lateral_offset.y;\n                        generated_position.z = endpoint.z + lateral_offset.z;"
+        },
+        {
+          "name": "endpoint-copy-operator-add-assign",
+          "text": "                        Vector3 generated_position = endpoint;\n                        generated_position += lateral_offset;"
+        },
+        {
+          "name": "endpoint-copy-component-add-assign",
+          "text": "                        Vector3 generated_position = endpoint;\n                        generated_position.x += lateral_offset.x;\n                        generated_position.y += lateral_offset.y;\n                        generated_position.z += lateral_offset.z;"
+        },
+        {
+          "name": "offset-copy-operator-add-assign",
+          "text": "                        Vector3 generated_position = lateral_offset;\n                        generated_position += endpoint;"
+        },
+        {
+          "name": "offset-copy-component-add-assign",
+          "text": "                        Vector3 generated_position = lateral_offset;\n                        generated_position.x += endpoint.x;\n                        generated_position.y += endpoint.y;\n                        generated_position.z += endpoint.z;"
+        }
+      ]
+    }
+  ]
+}

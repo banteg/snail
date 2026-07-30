@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "orientation-basis-owner",
+      "find": "        primary_samples[i].transform.basis_up = Vector3(1.0f, 0.0f, 0.0f);\n        primary_samples[i].transform.basis_forward =\n            primary_samples[i].transform.position -\n            primary_samples[i - 1].transform.position;\n        primary_samples[i].transform.basis_forward.Normalize();\n        primary_samples[i].transform.basis_right.cross_vectors(\n            &primary_samples[i].transform.basis_up,\n            &primary_samples[i].transform.basis_forward);",
+      "replacements": [
+        {
+          "name": "native-pointer-compat",
+          "text": "        primary_samples[i].transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);\n        primary_samples[i].transform.basis_forward =\n            primary_samples[i].transform.position -\n            primary_samples[i - 1].transform.position;\n        primary_samples[i].transform.basis_forward.Normalize();\n        primary_samples[i].transform.basis_up.cross_vectors(\n            &primary_samples[i].transform.basis_forward,\n            &primary_samples[i].transform.basis_right);"
+        },
+        {
+          "name": "native-owned-reference",
+          "text": "        primary_samples[i].transform.basis_right = Vector3(1.0f, 0.0f, 0.0f);\n        primary_samples[i].transform.basis_forward =\n            primary_samples[i].transform.position -\n            primary_samples[i - 1].transform.position;\n        primary_samples[i].transform.basis_forward.Normalize();\n        primary_samples[i].transform.basis_up.Cross(\n            primary_samples[i].transform.basis_forward,\n            primary_samples[i].transform.basis_right);"
+        }
+      ]
+    }
+  ]
+}

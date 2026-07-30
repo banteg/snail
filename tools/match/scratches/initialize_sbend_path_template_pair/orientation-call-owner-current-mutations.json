@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "orientation-call-owner-current",
+      "find": "        primary_samples[i].transform.basis_up.Cross(\n            primary_samples[i].transform.basis_forward,\n            primary_samples[i].transform.basis_right);",
+      "replacements": [
+        {
+          "name": "sample-pointer-owned-reference",
+          "text": "        PathTemplateSample* oriented_sample = &primary_samples[i];\n        oriented_sample->transform.basis_up.Cross(\n            oriented_sample->transform.basis_forward,\n            oriented_sample->transform.basis_right);"
+        },
+        {
+          "name": "sample-pointer-pointer-compat",
+          "text": "        PathTemplateSample* oriented_sample = &primary_samples[i];\n        oriented_sample->transform.basis_up.cross_vectors(\n            &oriented_sample->transform.basis_forward,\n            &oriented_sample->transform.basis_right);"
+        },
+        {
+          "name": "matrix-pointer-owned-reference",
+          "text": "        TransformMatrix* orientation =\n            &primary_samples[i].transform;\n        orientation->basis_up.Cross(\n            orientation->basis_forward,\n            orientation->basis_right);"
+        },
+        {
+          "name": "matrix-pointer-pointer-compat",
+          "text": "        TransformMatrix* orientation =\n            &primary_samples[i].transform;\n        orientation->basis_up.cross_vectors(\n            &orientation->basis_forward,\n            &orientation->basis_right);"
+        },
+        {
+          "name": "named-vector-pointers",
+          "text": "        Vector3* right =\n            &primary_samples[i].transform.basis_right;\n        Vector3* forward =\n            &primary_samples[i].transform.basis_forward;\n        Vector3* up =\n            &primary_samples[i].transform.basis_up;\n        up->cross_vectors(forward, right);"
+        },
+        {
+          "name": "named-vector-references",
+          "text": "        Vector3& right =\n            primary_samples[i].transform.basis_right;\n        Vector3& forward =\n            primary_samples[i].transform.basis_forward;\n        Vector3& up =\n            primary_samples[i].transform.basis_up;\n        up.Cross(forward, right);"
+        }
+      ]
+    }
+  ]
+}

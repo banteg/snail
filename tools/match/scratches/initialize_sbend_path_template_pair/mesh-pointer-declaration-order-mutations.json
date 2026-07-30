@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-pointer-declaration-order",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;",
+      "replacements": [
+        {
+          "name": "facequads-first",
+          "text": "    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* vertices = path->strip_mesh->vertices;"
+        },
+        {
+          "name": "vertices-declared-first-split-assignments",
+          "text": "    Vector3* vertices;\n    cRFaceQuad* facequads;\n    vertices = path->strip_mesh->vertices;\n    facequads = path->strip_mesh->facequads;"
+        },
+        {
+          "name": "facequads-declared-first-native-load-order",
+          "text": "    cRFaceQuad* facequads;\n    Vector3* vertices;\n    vertices = path->strip_mesh->vertices;\n    facequads = path->strip_mesh->facequads;"
+        },
+        {
+          "name": "facequads-declared-first-face-load-first",
+          "text": "    cRFaceQuad* facequads;\n    Vector3* vertices;\n    facequads = path->strip_mesh->facequads;\n    vertices = path->strip_mesh->vertices;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-endpoint-owner",
+      "find": "                        Vector3 endpoint(\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.x,\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.y,\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.z + 1.0f);",
+      "replacements": [
+        {
+          "name": "position-copy-compound-z",
+          "text": "                        Vector3 endpoint =\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position;\n                        endpoint.z += 1.0f;"
+        },
+        {
+          "name": "position-copy-assigned-z",
+          "text": "                        Vector3 endpoint =\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position;\n                        endpoint.z = endpoint.z + 1.0f;"
+        },
+        {
+          "name": "default-then-components",
+          "text": "                        Vector3 endpoint;\n                        endpoint.x =\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.x;\n                        endpoint.y =\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.y;\n                        endpoint.z =\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position.z + 1.0f;"
+        },
+        {
+          "name": "named-previous-position-pointer",
+          "text": "                        Vector3* previous_position =\n                            &((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position;\n                        Vector3 endpoint(\n                            previous_position->x,\n                            previous_position->y,\n                            previous_position->z + 1.0f);"
+        },
+        {
+          "name": "named-previous-position-copy",
+          "text": "                        Vector3 previous_position =\n                            ((PathTemplateSample*)((char*)path->primary_samples\n                                + sample_offset))[-1].transform.position;\n                        Vector3 endpoint(\n                            previous_position.x,\n                            previous_position.y,\n                            previous_position.z + 1.0f);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-generated-component-order",
+      "find": "                        Vector3 generated_position =\n                            endpoint + lateral_offset;",
+      "replacements": [
+        {
+          "name": "x-z-y",
+          "text": "                        Vector3 generated_position;\n                        generated_position.x = endpoint.x + lateral_offset.x;\n                        generated_position.z = endpoint.z + lateral_offset.z;\n                        generated_position.y = endpoint.y + lateral_offset.y;"
+        },
+        {
+          "name": "y-x-z",
+          "text": "                        Vector3 generated_position;\n                        generated_position.y = endpoint.y + lateral_offset.y;\n                        generated_position.x = endpoint.x + lateral_offset.x;\n                        generated_position.z = endpoint.z + lateral_offset.z;"
+        },
+        {
+          "name": "y-z-x",
+          "text": "                        Vector3 generated_position;\n                        generated_position.y = endpoint.y + lateral_offset.y;\n                        generated_position.z = endpoint.z + lateral_offset.z;\n                        generated_position.x = endpoint.x + lateral_offset.x;"
+        },
+        {
+          "name": "z-x-y",
+          "text": "                        Vector3 generated_position;\n                        generated_position.z = endpoint.z + lateral_offset.z;\n                        generated_position.x = endpoint.x + lateral_offset.x;\n                        generated_position.y = endpoint.y + lateral_offset.y;"
+        },
+        {
+          "name": "z-y-x",
+          "text": "                        Vector3 generated_position;\n                        generated_position.z = endpoint.z + lateral_offset.z;\n                        generated_position.y = endpoint.y + lateral_offset.y;\n                        generated_position.x = endpoint.x + lateral_offset.x;"
+        }
+      ]
+    }
+  ]
+}

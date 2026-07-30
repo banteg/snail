@@ -243,3 +243,42 @@ Retesting the native-looking three-scalar secondary offset after the mesh
 arithmetic change still loses at least 19.04 weighted bytes, while pointer and
 aggregate forms lose more than 239. The compact direct secondary additions
 therefore remain independently measured.
+
+## 2026-07-31 terminal, face, and secondary ownership
+
+The Windows terminal mesh row retains the current `0xa8`-byte sample cursor and
+addresses the prior sample through a negative element index. Removing the
+scratch-only `sample - 1` pointer adds 17.94 weighted bytes. Reconstructing the
+endpoint as a default `Vector3` with separate X, Y, and extended-Z assignments
+adds another 15.43 weighted bytes and recovers the native integer Y copy.
+
+The face tail is a guarded nested schedule: `column` is zeroed before the
+positive-width guard and the width loop is a do-loop. More importantly, the
+native reuses the original argument homes for `face_index`, `column`, and the
+facequad base. A common face pointer obscured that ownership. Naming the
+integer face offset while keeping direct indexed record writes recovers the
+three exact stack homes and raises the focused match from 71.00% to **79.07%**.
+All 24 parity orientations are byte-neutral.
+
+Several tempting address shapes are now bounded. Branch-local face pointers
+regress to 61.01%; branch-local integer offsets regress to 70.02%; and repeating
+the complete index at every field expands the candidate to 741 instructions
+and 44.55%. Array and pointer-plus-index spellings for the interior samples are
+byte-identical, as are asymmetric indexed and pointer access spellings for the
+second face. The stable integer offset is therefore retained.
+
+The exact Android and iOS bodies independently confirm that the copied
+secondary transform receives a scaled `basis_up` vector. Replaying that
+aggregate offset after the face allocation graph stabilized is a material
+late-context improvement: it adds 40.63 weighted bytes and reduces the
+candidate from 582 to 581 instructions, moving 79.07% to **81.03%**. An
+explicit component constructor for the terminal generated position then adds
+3.57 weighted bytes.
+
+The retained result is **81.21%** (581/579 candidate/target instructions),
+prefix 67/579, exact `0x48` frame, and 39 clean references with no unresolved,
+mismatched, or unaudited masks. The checked ledger now contains 33 sweeps and
+205 unique variants; all seven terminal component operand-order combinations
+are byte-neutral. The remaining gaps are register/SIB selection, one
+cross-call argument schedule, terminal x87 stack order, and face-tail code
+layout rather than unresolved behavior.

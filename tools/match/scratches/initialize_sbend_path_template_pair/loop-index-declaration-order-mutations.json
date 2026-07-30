@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "loop-index-declaration-order",
+      "find": "    int row = 0;\n    int column;\n    int face_index;",
+      "replacements": [
+        {
+          "name": "row-face-column",
+          "text": "    int row = 0;\n    int face_index;\n    int column;"
+        },
+        {
+          "name": "column-row-face",
+          "text": "    int column;\n    int row = 0;\n    int face_index;"
+        },
+        {
+          "name": "column-face-row",
+          "text": "    int column;\n    int face_index;\n    int row = 0;"
+        },
+        {
+          "name": "face-row-column",
+          "text": "    int face_index;\n    int row = 0;\n    int column;"
+        },
+        {
+          "name": "face-column-row",
+          "text": "    int face_index;\n    int column;\n    int row = 0;"
+        }
+      ]
+    }
+  ]
+}
