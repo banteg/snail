@@ -89,3 +89,9 @@ checkerboard branch cannot be recovered independently of the earlier native
 mesh-vector lifetime that fixes that frame; then retest the now-proven sibling
 parity idiom as a combination. Artificial stack padding, volatile copies, or
 branch-only byte shaping remain out of scope.
+
+That combination has now been tested exhaustively. An instruction-backed
+11-variant sweep combines the correct-frame by-value scalar ABI, full-expression
+and component-result lifetimes, and checkerboard selection. Every combination
+regresses; the closest loses one weighted byte, while the correct-frame form
+loses 153. Resume Worm only with new operator/source provenance.

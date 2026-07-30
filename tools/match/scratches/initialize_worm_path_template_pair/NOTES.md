@@ -267,3 +267,34 @@ sweeps mark this region stalled. The next justified attempt must recover the
 native `0x80` vector/x87 lifetime first and then combine it with the proven
 checkerboard branch; padding or branch-only byte shaping would be
 fakematching.
+
+## 2026-07-30 instruction-backed mesh-frame dependency bounded
+
+The native mesh trace now bounds that prerequisite directly. From
+`0x4207e8` through `0x420958`, Windows evaluates the cosine/up component before
+the sine/right component, retains the intermediate `position + right` result,
+then materializes the final `+ up` result before copying it to the vertex
+array. MLIL folds the same sequence into one
+`vertices[...] = position + right + up` aggregate. The extra return staging
+explains the target's `0x80` frame, but it does not by itself identify a
+different authored operator.
+
+Natural direct-expression, parenthesization, helper-parameter, and result-order
+spellings were first checked against that trace. Direct left-associated chains
+are byte-identical to the retained named form; helper shapes using reference,
+one-value, and two-value operands are neutral or worse. Removing the named
+intermediates reaches only **72.35%**.
+
+The reproducible dependency sweep then combines the only three material
+alternatives: the by-value scalar-left operand that recovers the `0x80` frame,
+the full aggregate or component-wise final result, and the sibling-proven
+checkerboard texture selection. All **11/11** possible one-, two-, and
+three-site variants compile and none improves. The closest component-wise
+result is **72.78%**, one weighted byte below the **72.81%** frontier. The
+correct-frame ABI reaches **67.25%** and a 17-instruction prefix but loses 153
+weighted bytes; adding the other dependencies cannot recover that loss. All
+variants retain 37 clean references.
+
+Worm therefore remains at **72.81%**, 728/736 instructions, with the scratch
+restored. Further work on this frame requires new operator or source
+provenance, not another spill-shape variant.

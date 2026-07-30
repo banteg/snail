@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "scalar-left-operand-abi",
+      "find": "inline Vector3 operator*(float scalar, const Vector3& value)",
+      "replacements": [
+        {
+          "name": "by-value",
+          "text": "inline Vector3 operator*(float scalar, Vector3 value)"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-mesh-result-lifetime",
+      "find": "                        float radius = primary_samples[row].lateral_scale;\n                        radius *= WORM_RADIUS;\n\n                        Vector3 up_radius =\n                            radius * primary_samples[row].transform.basis_up;\n                        float column_as_float = (float)column;\n                        Vector3 up_component =\n                            cosine(column_as_float / (float)width_cells * WORM_TAU) *\n                                up_radius;\n                        Vector3 base_plus_right =\n                            primary_samples[row].transform.position +\n                            sine(column_as_float / (float)width_cells * WORM_TAU) *\n                                (radius * primary_samples[row].transform.basis_right);\n                        Vector3 vertex = base_plus_right + up_component;\n                        vertices[column + row * width_cells] = vertex;",
+      "replacements": [
+        {
+          "name": "named-full-expression",
+          "text": "                        float radius = primary_samples[row].lateral_scale;\n                        radius *= WORM_RADIUS;\n                        float column_as_float = (float)column;\n                        Vector3 vertex =\n                            primary_samples[row].transform.position +\n                            sine(column_as_float / (float)width_cells * WORM_TAU) *\n                                (radius * primary_samples[row].transform.basis_right) +\n                            cosine(column_as_float / (float)width_cells * WORM_TAU) *\n                                (radius * primary_samples[row].transform.basis_up);\n                        vertices[column + row * width_cells] = vertex;"
+        },
+        {
+          "name": "component-final-vector",
+          "text": "                        float radius = primary_samples[row].lateral_scale;\n                        radius *= WORM_RADIUS;\n\n                        Vector3 up_radius =\n                            radius * primary_samples[row].transform.basis_up;\n                        float column_as_float = (float)column;\n                        Vector3 up_component =\n                            cosine(column_as_float / (float)width_cells * WORM_TAU) *\n                                up_radius;\n                        Vector3 base_plus_right =\n                            primary_samples[row].transform.position +\n                            sine(column_as_float / (float)width_cells * WORM_TAU) *\n                                (radius * primary_samples[row].transform.basis_right);\n                        Vector3 vertex;\n                        vertex.x = base_plus_right.x + up_component.x;\n                        vertex.y = base_plus_right.y + up_component.y;\n                        vertex.z = base_plus_right.z + up_component.z;\n                        vertices[column + row * width_cells] = vertex;"
+        }
+      ]
+    },
+    {
+      "name": "checkerboard-texture-selection",
+      "find": "                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);",
+      "replacements": [
+        {
+          "name": "selected-path-xor-truthy",
+          "text": "                        char* face_texture;\n                        if ((column ^ face_row) & 1)\n                            face_texture = texture_path;\n                        else\n                            face_texture = texture_path;\n                        face->texture_ref =\n                            g_texture_refs.Add(face_texture, 0, 0);"
+        }
+      ]
+    }
+  ]
+}
