@@ -192,3 +192,18 @@ form adds 7.67 weighted bytes and raises focused matching from 35.86% to
 The previous/current orientation helper was tested with the authored operator
 form and is byte-identical. Sweep remains **36.18%**, 614/652 instructions,
 prefix 5/652, with all 37 references clean.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The native x87 block at `0x423226..0x423310` keeps one lateral value across the
+already-recovered five-vector branch graph. `double lateral` gains 6.63
+weighted bytes. Both position additions improve independently and gain 9.11
+together; both scale operators then improve independently and gain 40.91
+together.
+
+Retaining the complete symmetric arithmetic package raises focused matching
+from 36.18% (614/652) to **38.51%** (610/652), a total gain of 56.65 weighted
+bytes. The five-instruction prefix and all 37 masked references remain clean.
+The candidate becomes four instructions shorter, but no control or vertex
+lifetime changes: every edit is confined to the native x87/vector ownership
+already proved for this mesh.

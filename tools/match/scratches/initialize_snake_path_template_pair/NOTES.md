@@ -230,3 +230,17 @@ form adds 7.67 weighted bytes and raises focused matching from 33.70% to
 Both inline orientation expressions were tested independently and together.
 All three authored-operator variants compile byte-identically. Snake remains
 **34.02%**, 618/652 instructions, prefix 5/652, with all 40 references clean.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Snake's mesh target is instruction-for-instruction parallel to Sweep's and
+preserves the same x87 lateral lifetime across its already-recovered
+five-vector graph. `double lateral` gains 6.47 weighted bytes. Both position
+additions improve independently and gain 9.03 together; both scale operators
+then improve independently and gain 41.00 together.
+
+The retained symmetric package raises focused matching from 34.02% (618/652)
+to **36.33%** (614/652), a total gain of 56.49 weighted bytes. The
+five-instruction prefix and all 40 masked references remain clean. As in
+Sweep, the four-instruction shortening is accepted because the changes are
+bounded to the directly proven native arithmetic owners.
