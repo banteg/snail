@@ -136,46 +136,45 @@ void cRPath::initialize_snake_path_template_pair(
     int i;
 
     for (i = 0; i < 6; ++i) {
-        PathTemplateSample* primary = &primary_samples[i];
-        PathTemplateSample* secondary = &secondary_samples[i];
-
-        primary->center_x = 0.0f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
+        primary_samples[i].center_x = 0.0f;
+        primary_samples[i].rotation_scalar_98 = 0.0f;
+        primary_samples[i].rotation_scalar_94 = 0.0f;
+        primary_samples[i].special_scalar = 0.0f;
+        primary_samples[i].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[i].transform);
         float z = (float)i;
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = z;
+        primary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        primary_samples[i].transform.position.y = 0.0f;
+        primary_samples[i].transform.position.z = z;
 
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = z;
+        set_matrix_identity(&secondary_samples[i].transform);
+        secondary_samples[i].transform.position.x =
+            primary_samples[i].center_x;
+        secondary_samples[i].transform.position.y = 0.49000001f;
+        secondary_samples[i].transform.position.z = z;
     }
 
     int departure_index = 24;
     do {
-        PathTemplateSample* primary = &primary_samples[departure_index];
-        PathTemplateSample* secondary = &secondary_samples[departure_index];
-
-        primary->center_x = 4.0f - (float)width_cells * 0.5f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = 0.0f;
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
+        primary_samples[departure_index].center_x =
+            4.0f - (float)width_cells * 0.5f;
+        primary_samples[departure_index].rotation_scalar_98 = 0.0f;
+        primary_samples[departure_index].rotation_scalar_94 = 0.0f;
+        primary_samples[departure_index].special_scalar = 0.0f;
+        primary_samples[departure_index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[departure_index].transform);
         float z = (float)departure_index;
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = z;
+        primary_samples[departure_index].transform.position.x =
+            primary_samples[departure_index].center_x;
+        primary_samples[departure_index].transform.position.y = 0.0f;
+        primary_samples[departure_index].transform.position.z = z;
 
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = z;
+        set_matrix_identity(&secondary_samples[departure_index].transform);
+        secondary_samples[departure_index].transform.position.x =
+            primary_samples[departure_index].center_x;
+        secondary_samples[departure_index].transform.position.y = 0.49000001f;
+        secondary_samples[departure_index].transform.position.z = z;
         ++departure_index;
     } while (departure_index - 24 < 3);
 

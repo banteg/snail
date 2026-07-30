@@ -244,3 +244,25 @@ to **36.33%** (614/652), a total gain of 56.49 weighted bytes. The
 five-instruction prefix and all 40 masked references remain clean. As in
 Sweep, the four-instruction shortening is accepted because the changes are
 bounded to the directly proven native arithmetic owners.
+
+## 2026-07-30 direct lead and departure sample ownership
+
+Windows repeatedly reloads the primary and secondary sample arrays through a
+byte-offset induction in both the six-sample lead and three-sample departure
+phases. Android and iOS preserve the same owning arrays. The scratch-local
+`primary` and `secondary` convenience pointers incorrectly collapsed those
+loads and kept two sample bases live.
+
+A complete seven-variant phase interaction sweep proves the direct indexed
+form. Retaining it for the lead and departure phases raises focused matching
+from **36.33%** (614/652) to **47.12%** (634/652), a gain of 263 weighted
+bytes, with the five-instruction prefix and all 40 references clean. The same
+form is negative in Snake's curve phase, both alone and in the winning
+interaction, so the curve's recovered previous/current owners remain intact.
+
+The native mesh tail also computes a flat face index before selecting the
+winding branch. Three equivalent shared-index spellings were recorded, but
+all produce the same marginal tradeoff: four additional weighted bytes while
+removing five candidate instructions and moving farther from the
+652-instruction target. That face-index form is not retained, and the equal-
+texture parity branches remain deliberately absent.

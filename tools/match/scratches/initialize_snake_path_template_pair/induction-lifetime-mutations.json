@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-induction-declaration",
+      "find": "{\n    kind = PATH_TEMPLATE_KIND_SNAKE;\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    segment_count = 27;\n    segment_count_f = 27.0f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;\n\n    int i;",
+      "replacements": [
+        {
+          "name": "declare-before-setup",
+          "text": "{\n    int i;\n\n    kind = PATH_TEMPLATE_KIND_SNAKE;\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    segment_count = 27;\n    segment_count_f = 27.0f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;"
+        },
+        {
+          "name": "initialize-before-setup",
+          "text": "{\n    int i = 0;\n\n    kind = PATH_TEMPLATE_KIND_SNAKE;\n    is_mirrored_x = 0;\n    side_exit_mode = 0;\n    width_cells = width_cells_;\n    width_or_scale = 1.0f;\n    segment_count = 27;\n    segment_count_f = 27.0f;\n    get_path_nodes();\n    has_entry_mesh_transition = 0;"
+        }
+      ]
+    }
+  ]
+}

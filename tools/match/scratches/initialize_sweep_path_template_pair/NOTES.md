@@ -207,3 +207,18 @@ bytes. The five-instruction prefix and all 37 masked references remain clean.
 The candidate becomes four instructions shorter, but no control or vertex
 lifetime changes: every edit is confined to the native x87/vector ownership
 already proved for this mesh.
+
+## 2026-07-30 direct sample-array ownership
+
+Windows repeatedly reloads the primary and secondary sample arrays through
+byte-offset inductions in the lead, departure, and curve phases. Android and
+iOS retain the same two owning arrays. The scratch-local `primary` and
+`secondary` convenience pointers incorrectly collapsed those loads and
+extended two derived sample bases across each phase.
+
+All seven phase combinations were compiled and recorded. Each direct phase
+improves independently, and the complete three-phase package is the unique
+winner: focused matching rises from **38.51%** (610/652) to **51.67%**
+(637/652), a gain of 319 weighted bytes. The five-instruction prefix and all
+37 masked references remain clean, with no unresolved, mismatched, or
+unaudited operands.
