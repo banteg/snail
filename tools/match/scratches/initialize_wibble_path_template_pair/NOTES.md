@@ -294,3 +294,25 @@ ordinary add order is neutral in every winning combination. Focused matching
 rises from **68.30%** to **70.33%**, candidate instructions move from 616 to
 612 against 608 target instructions, prefix stays 85/608, and all 39
 references remain clean.
+
+## 2026-07-30 interior schedule boundary
+
+Native `0x428b29..0x428d0a` keeps distinct zero-based index and `0xa8`-byte
+sample-cursor owners. It stores the base phase before sample initialization,
+multiplies that stored phase by three after the position stores, and terminates
+the loop through the advanced byte cursor.
+
+Those facts do not identify a better current VC6 source shape. Retesting all
+four prior roll-phase placements after the mesh and delta changes loses
+22..36 weighted bytes. Six equivalent backedge spellings show that deriving
+the test from `sample_index * sizeof(PathTemplateSample)` extends the exact
+prefix from 85 to 97 instructions, but loses 39 weighted bytes overall.
+Coupling that byte-derived backedge with the native phase placement loses
+75 weighted bytes and scores 66.94%, so the two individually plausible
+tradeoffs do not complete one another.
+
+Finally, named mutable, const, and aggregate basis-Z owners are all
+byte-identical to the retained literal zero. The current 70.33% spelling is
+therefore retained, and this three-sweep non-improvement boundary closes the
+interior phase, termination, and zero-owner neighborhood without register or
+volatile forcing.

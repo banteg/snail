@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-backedge-owner",
+      "find": "    } while (sample_index < 31);",
+      "replacements": [
+        {
+          "name": "sample-byte-offset",
+          "text": "    } while (sample_index * (int)sizeof(PathTemplateSample) <\n+             31 * (int)sizeof(PathTemplateSample));"
+        },
+        {
+          "name": "sample-byte-offset-reversed",
+          "text": "    } while ((int)sizeof(PathTemplateSample) * sample_index <\n+             (int)sizeof(PathTemplateSample) * 31);"
+        },
+        {
+          "name": "sample-address",
+          "text": "    } while ((char*)&primary_samples[sample_index] <\n+             (char*)&primary_samples[31]);"
+        },
+        {
+          "name": "not-terminal-sample",
+          "text": "    } while (sample_index != 31);"
+        },
+        {
+          "name": "last-interior-inclusive",
+          "text": "    } while (sample_index <= 30);"
+        },
+        {
+          "name": "derived-signed-count",
+          "text": "    } while (sample_index - 31 < 0);"
+        }
+      ]
+    }
+  ]
+}
