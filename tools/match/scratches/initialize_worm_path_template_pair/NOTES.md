@@ -243,3 +243,27 @@ The IDA 9.4 refresh independently renders the same 0-through-3,
 replaces the stale tracked `strip_mesh`/non-void artifact with the already
 proved `Path*`, `bod.object`, and void finalizer ABI. A paired IDA health check
 now pins that second-opinion owner and control shape.
+
+## 2026-07-30 bounded Windows mesh-tail pass
+
+The redundant-looking native texture branch is now semantically grounded:
+LoopOut, Hump, Dump, Screw, LoopBow, Twister, Wibble, and other sibling
+constructors preserve the same checkerboard `(column ^ row) & 1` generator
+branch even when each arm passes the same texture argument. Six Worm source
+spellings restore that behavior, but none can be retained while the earlier
+mesh frame remains wrong. Duplicated-call forms fall to 58.38-58.42%; selecting
+a path before the common lookup reaches 68.35%.
+
+Seven vector-staging variants confirm that the retained ordinary-row
+expression is already the best natural schedule. Explicit right-side
+temporaries are byte-identical; component-wise, copied-position, in-place, and
+shared-angle forms regress. Five sibling-style face-index variants, including
+the family’s `(unsigned short)width_cells` multiplication vocabulary, are
+byte-identical at 72.81%.
+
+The new ledger contains 18 unique variants: zero better, six neutral, and
+twelve worse, with no repeats or tradeoffs. Three consecutive non-improving
+sweeps mark this region stalled. The next justified attempt must recover the
+native `0x80` vector/x87 lifetime first and then combine it with the proven
+checkerboard branch; padding or branch-only byte shaping would be
+fakematching.

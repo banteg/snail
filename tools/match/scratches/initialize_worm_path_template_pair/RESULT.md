@@ -10,9 +10,9 @@ tools/match/match.sh \
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.27% | **72.28%** |
+| Match | 0.27% | **72.81%** |
 | Target instructions | 736 | 736 |
-| Candidate instructions | 2 | **725** |
+| Candidate instructions | 2 | **728** |
 | Common prefix | 0 / 736 | **0 / 736** |
 | Masked operands | none | **37 ok, 0 unresolved, 0 mismatch** |
 
@@ -63,12 +63,29 @@ resolves to the correct native reference.
 - No artificial frame padding, volatile barriers, dummy externs, inline
   assembly, or normalizer gaming was used.
 
-## Next region to attack
+## Bounded mesh-tail experiments
 
-Start with the face/UV tail at `target[556:736]` versus
-`candidate[549:725]` (45.51%). The next useful evidence would be a plausible
-source construct that explains the target's duplicated texture-selection
-control flow and longer-lived side/column float temporaries without spelling a
-redundant branch by hand. After that, revisit the vertex arithmetic at
-`target[461:525]` to recover the extra natural vector-copy lifetimes responsible
-for the `0x80` native frame.
+The Windows sibling constructors establish that the checkerboard texture
+branch is authored shared-generator behavior even when both arms receive the
+same texture argument. Restoring that branch in isolation is not yet
+retainable: direct duplicated-call forms fall to 58.38-58.42%, while a
+selected-path form reaches only 68.35%. The latter emits 730 instructions but
+still inherits the wrong frame and broad stack-colour changes.
+
+Seven natural tube-vector staging variants produce no improvement. Explicit
+right-radius/right-component temporaries are byte-identical to the retained
+source; component, copied-position, in-place, and shared-angle forms regress.
+Five sibling-backed 16-bit face-index spellings are also byte-identical.
+
+The experiment ledger therefore closes 18 unique variants at zero better, six
+neutral, and twelve worse, with no repeats or tradeoffs. Three consecutive
+non-improving sweeps mark the mesh-tail region stalled.
+
+## Remaining dependency
+
+The face/UV tail remains `target[556:736]` versus `candidate[551:728]`, but the
+checkerboard branch cannot be recovered independently of the earlier native
+`0x80` vector/x87 frame. Resume only with new evidence for a natural
+mesh-vector lifetime that fixes that frame; then retest the now-proven sibling
+parity idiom as a combination. Artificial stack padding, volatile copies, or
+branch-only byte shaping remain out of scope.

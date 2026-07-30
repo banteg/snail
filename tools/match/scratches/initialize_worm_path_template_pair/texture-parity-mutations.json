@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "checkerboard-texture-selection",
+      "find": "                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);",
+      "replacements": [
+        {
+          "name": "sibling-xor-truthy",
+          "text": "                        if ((column ^ face_row) & 1)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "sibling-xor-even",
+          "text": "                        if (((column ^ face_row) & 1) == 0)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "sibling-xor-not",
+          "text": "                        if (!((column ^ face_row) & 1))\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "selected-path-xor-truthy",
+          "text": "                        char* face_texture;\n                        if ((column ^ face_row) & 1)\n                            face_texture = texture_path;\n                        else\n                            face_texture = texture_path;\n                        face->texture_ref =\n                            g_texture_refs.Add(face_texture, 0, 0);"
+        },
+        {
+          "name": "sum-parity-duplicated-call",
+          "text": "                        if ((column + face_row) & 1)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "bit-equality-duplicated-call",
+          "text": "                        if ((column & 1) == (face_row & 1))\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);"
+        }
+      ]
+    }
+  ]
+}
