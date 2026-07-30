@@ -200,3 +200,32 @@ loads. No source or instruction match changed: the focused result remains
 32.15%, 654/696 instructions, and prefix 1/696. Two compare pairs move the
 receipt from 36 clean plus 8 unaudited entries to 38 clean plus 4 unaudited,
 with no unresolved or mismatched references.
+
+## 2026-07-30 signed first-curve guard and stride bound
+
+The native curved loop carries a separate sample-stride lifetime beginning at
+`4 * sizeof(PathAttachmentSample)` and advances it by `0xa8`, while the
+candidate recomputes `(i + 4) * 0xa8`. Coupled integer indices canonicalize to
+the current code or lose 2–7 weighted bytes. Explicit primary/secondary sample
+cursors are substantially wrong: the complete cursor form drops to 20.76%,
+even though its altered alignment happens to audit all 40 references.
+
+Direct curved-initializer variants confirm that native delays the `(i + 4)`
+float conversion until after the primary identity and position-X stores, but
+that spelling recovers only one weighted byte and costs an instruction at the
+old frontier. Combining it with coupled indices regresses. Natural `for`,
+`while`, and `do/while` controls compile identically.
+
+The first-curve predicate does provide one clean Windows win. Because the curve
+induction starts at zero and only increments, `i <= 0` is semantically
+equivalent to the paired-mobile `i == 0` owner. It also matches the native
+signed first-iteration branch more closely, adds one candidate instruction
+toward the native count, and recovers seven weighted bytes without changing
+the prefix or audit. The retained frontier is therefore **32.42%**,
+**655/696** instructions, prefix **1/696**, with 38 audited and four unaudited
+references.
+
+Nine recorded sweeps cover 46 variants. After retaining the signed guard, three
+consecutive non-improving sweeps formally stall the remaining stride/call
+alignment. Further work needs a broader recovered curve-loop lifetime, not raw
+byte arithmetic or another local initializer/guard spelling.

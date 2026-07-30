@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-curved-sample-initializer",
+      "find": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            initialize_sample_pair(\n                &primary_samples[sample_index],\n                &secondary_samples[sample_index],\n                center,\n                0.0f,\n                0.49000001f,\n                (float)(i + 4),\n                0);",
+      "replacements": [
+        {
+          "name": "pointer-owners-delayed-z",
+          "text": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            PathAttachmentSample* primary =\n                &primary_samples[sample_index];\n            PathAttachmentSample* secondary =\n                &secondary_samples[sample_index];\n            primary->center_x = center;\n            primary->rotation_scalar_98 = 0.0f;\n            primary->rotation_scalar_94 = 0.0f;\n            primary->special_scalar = 0.0f;\n            primary->lateral_scale = 1.0f;\n            set_matrix_identity(&primary->transform);\n            primary->transform.position.x = primary->center_x;\n            float z = (float)(i + 4);\n            primary->transform.position.y = 0.0f;\n            primary->transform.position.z = z;\n            set_matrix_identity(&secondary->transform);\n            secondary->transform.position.x = primary->center_x;\n            secondary->transform.position.y = 0.49000001f;\n            secondary->transform.position.z = z;"
+        },
+        {
+          "name": "pointer-owners-early-z",
+          "text": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            PathAttachmentSample* primary =\n                &primary_samples[sample_index];\n            PathAttachmentSample* secondary =\n                &secondary_samples[sample_index];\n            float z = (float)(i + 4);\n            primary->center_x = center;\n            primary->rotation_scalar_98 = 0.0f;\n            primary->rotation_scalar_94 = 0.0f;\n            primary->special_scalar = 0.0f;\n            primary->lateral_scale = 1.0f;\n            set_matrix_identity(&primary->transform);\n            primary->transform.position.x = primary->center_x;\n            primary->transform.position.y = 0.0f;\n            primary->transform.position.z = z;\n            set_matrix_identity(&secondary->transform);\n            secondary->transform.position.x = primary->center_x;\n            secondary->transform.position.y = 0.49000001f;\n            secondary->transform.position.z = z;"
+        },
+        {
+          "name": "direct-arrays-delayed-z",
+          "text": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            primary_samples[sample_index].center_x = center;\n            primary_samples[sample_index].rotation_scalar_98 = 0.0f;\n            primary_samples[sample_index].rotation_scalar_94 = 0.0f;\n            primary_samples[sample_index].special_scalar = 0.0f;\n            primary_samples[sample_index].lateral_scale = 1.0f;\n            set_matrix_identity(&primary_samples[sample_index].transform);\n            primary_samples[sample_index].transform.position.x =\n                primary_samples[sample_index].center_x;\n            float z = (float)(i + 4);\n            primary_samples[sample_index].transform.position.y = 0.0f;\n            primary_samples[sample_index].transform.position.z = z;\n            set_matrix_identity(&secondary_samples[sample_index].transform);\n            secondary_samples[sample_index].transform.position.x =\n                primary_samples[sample_index].center_x;\n            secondary_samples[sample_index].transform.position.y = 0.49000001f;\n            secondary_samples[sample_index].transform.position.z = z;"
+        }
+      ]
+    }
+  ]
+}

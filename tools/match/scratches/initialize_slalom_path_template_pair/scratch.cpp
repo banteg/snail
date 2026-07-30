@@ -549,7 +549,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 0.49000001f,
                 (float)(i + 4),
                 0);
-            if (i == 0) {
+            if (i <= 0) {
                 primary_samples[sample_index - 1].transform.RotIdentity();
                 secondary_samples[sample_index - 1].transform.RotIdentity();
             } else {

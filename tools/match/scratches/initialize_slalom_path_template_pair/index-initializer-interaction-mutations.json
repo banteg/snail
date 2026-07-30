@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "coupled-curve-sample-index",
+      "find": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        for (i = 0; i < curve_count; ++i) {\n            int sample_index = i + 4;",
+      "replacements": [
+        {
+          "name": "coupled-index",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        int sample_index;\n        for (i = 0, sample_index = 4;\n             i < curve_count;\n             ++i, ++sample_index) {"
+        },
+        {
+          "name": "preseeded-sample-index",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        int sample_index = 4;\n        for (i = 0; i < curve_count; ++i, ++sample_index) {"
+        }
+      ]
+    },
+    {
+      "name": "delayed-direct-curved-initializer",
+      "find": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            initialize_sample_pair(\n                &primary_samples[sample_index],\n                &secondary_samples[sample_index],\n                center,\n                0.0f,\n                0.49000001f,\n                (float)(i + 4),\n                0);",
+      "replacements": [
+        {
+          "name": "pointer-owners-delayed-z",
+          "text": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            PathAttachmentSample* primary =\n                &primary_samples[sample_index];\n            PathAttachmentSample* secondary =\n                &secondary_samples[sample_index];\n            primary->center_x = center;\n            primary->rotation_scalar_98 = 0.0f;\n            primary->rotation_scalar_94 = 0.0f;\n            primary->special_scalar = 0.0f;\n            primary->lateral_scale = 1.0f;\n            set_matrix_identity(&primary->transform);\n            primary->transform.position.x = primary->center_x;\n            float z = (float)(i + 4);\n            primary->transform.position.y = 0.0f;\n            primary->transform.position.z = z;\n            set_matrix_identity(&secondary->transform);\n            secondary->transform.position.x = primary->center_x;\n            secondary->transform.position.y = 0.49000001f;\n            secondary->transform.position.z = z;"
+        }
+      ]
+    }
+  ]
+}

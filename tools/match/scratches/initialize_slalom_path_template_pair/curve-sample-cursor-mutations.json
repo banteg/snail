@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-sample-cursors",
+      "find": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        for (i = 0; i < curve_count; ++i) {\n            int sample_index = i + 4;",
+      "replacements": [
+        {
+          "name": "paired-cursors",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        PathAttachmentSample* primary_cursor = &primary_samples[4];\n        PathAttachmentSample* secondary_cursor = &secondary_samples[4];\n        for (i = 0; i < curve_count;\n             ++i, ++primary_cursor, ++secondary_cursor) {\n            int sample_index = i + 4;"
+        }
+      ]
+    },
+    {
+      "name": "curve-initializer-cursor-owners",
+      "find": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            initialize_sample_pair(\n                &primary_samples[sample_index],\n                &secondary_samples[sample_index],\n                center,\n                0.0f,\n                0.49000001f,\n                (float)(i + 4),\n                0);",
+      "replacements": [
+        {
+          "name": "paired-cursors",
+          "text": "            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff_copy) * 5.0f;\n            initialize_sample_pair(\n                primary_cursor,\n                secondary_cursor,\n                center,\n                0.0f,\n                0.49000001f,\n                (float)(i + 4),\n                0);"
+        }
+      ]
+    },
+    {
+      "name": "curve-orientation-cursor-owners",
+      "find": "            if (i == 0) {\n                primary_samples[sample_index - 1].transform.RotIdentity();\n                secondary_samples[sample_index - 1].transform.RotIdentity();\n            } else {\n                PathAttachmentSample* primary_previous = &primary_samples[sample_index - 1];\n                PathAttachmentSample* primary_current = &primary_samples[sample_index];\n                PathAttachmentSample* secondary_previous = &secondary_samples[sample_index - 1];\n                PathAttachmentSample* secondary_current = &secondary_samples[sample_index];\n\n                primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n                primary_previous->transform.basis_forward = Vector3(\n                    primary_current->transform.position.x\n                        - primary_previous->transform.position.x,\n                    primary_current->transform.position.y\n                        - primary_previous->transform.position.y,\n                    primary_current->transform.position.z\n                        - primary_previous->transform.position.z);\n                primary_previous->transform.basis_forward.Normalize();\n                primary_previous->transform.basis_right.cross_vectors(\n                    &primary_previous->transform.basis_up,\n                    &primary_previous->transform.basis_forward);\n                float primary_roll = primary_previous->center_x * 0.2617994f;\n                primary_previous->transform.RotLocalZ(primary_roll);\n\n                secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n                secondary_previous->transform.basis_forward = Vector3(\n                    secondary_current->transform.position.x\n                        - secondary_previous->transform.position.x,\n                    secondary_current->transform.position.y\n                        - secondary_previous->transform.position.y,\n                    secondary_current->transform.position.z\n                        - secondary_previous->transform.position.z);\n                secondary_previous->transform.basis_forward.Normalize();\n                secondary_previous->transform.basis_right.cross_vectors(\n                    &secondary_previous->transform.basis_up,\n                    &secondary_previous->transform.basis_forward);\n\n                float secondary_roll = primary_previous->center_x * 0.2617994f;\n                secondary_previous->transform.RotLocalZ(secondary_roll);\n            }",
+      "replacements": [
+        {
+          "name": "paired-cursors",
+          "text": "            if (i == 0) {\n                (primary_cursor - 1)->transform.RotIdentity();\n                (secondary_cursor - 1)->transform.RotIdentity();\n            } else {\n                PathAttachmentSample* primary_previous = primary_cursor - 1;\n                PathAttachmentSample* primary_current = primary_cursor;\n                PathAttachmentSample* secondary_previous = secondary_cursor - 1;\n                PathAttachmentSample* secondary_current = secondary_cursor;\n\n                primary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n                primary_previous->transform.basis_forward = Vector3(\n                    primary_current->transform.position.x\n                        - primary_previous->transform.position.x,\n                    primary_current->transform.position.y\n                        - primary_previous->transform.position.y,\n                    primary_current->transform.position.z\n                        - primary_previous->transform.position.z);\n                primary_previous->transform.basis_forward.Normalize();\n                primary_previous->transform.basis_right.cross_vectors(\n                    &primary_previous->transform.basis_up,\n                    &primary_previous->transform.basis_forward);\n                float primary_roll = primary_previous->center_x * 0.2617994f;\n                primary_previous->transform.RotLocalZ(primary_roll);\n\n                secondary_previous->transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);\n                secondary_previous->transform.basis_forward = Vector3(\n                    secondary_current->transform.position.x\n                        - secondary_previous->transform.position.x,\n                    secondary_current->transform.position.y\n                        - secondary_previous->transform.position.y,\n                    secondary_current->transform.position.z\n                        - secondary_previous->transform.position.z);\n                secondary_previous->transform.basis_forward.Normalize();\n                secondary_previous->transform.basis_right.cross_vectors(\n                    &secondary_previous->transform.basis_up,\n                    &secondary_previous->transform.basis_forward);\n\n                float secondary_roll = primary_previous->center_x * 0.2617994f;\n                secondary_previous->transform.RotLocalZ(secondary_roll);\n            }"
+        }
+      ]
+    }
+  ]
+}

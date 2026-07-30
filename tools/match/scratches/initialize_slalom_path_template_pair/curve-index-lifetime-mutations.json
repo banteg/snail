@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-and-sample-induction",
+      "find": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        for (i = 0; i < curve_count; ++i) {\n            int sample_index = i + 4;",
+      "replacements": [
+        {
+          "name": "coupled-index",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        int sample_index;\n        for (i = 0, sample_index = 4;\n             i < curve_count;\n             ++i, ++sample_index) {"
+        },
+        {
+          "name": "preseeded-sample-index",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        int sample_index = 4;\n        for (i = 0; i < curve_count; ++i, ++sample_index) {"
+        },
+        {
+          "name": "named-curve-and-sample-index",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        int sample_index;\n        for (int curve_index = 0, sample_index = 4;\n             curve_index < curve_count;\n             ++curve_index, ++sample_index) {\n            i = curve_index;"
+        },
+        {
+          "name": "sample-index-bound",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        int curve_end = curve_count + 4;\n        for (int sample_index = 4;\n             sample_index < curve_end;\n             ++sample_index) {\n            i = sample_index - 4;"
+        }
+      ]
+    }
+  ]
+}

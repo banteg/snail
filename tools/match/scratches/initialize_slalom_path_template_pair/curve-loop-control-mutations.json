@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-loop-entry",
+      "find": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        for (i = 0; i < curve_count; ++i) {\n            int sample_index = i + 4;",
+      "replacements": [
+        {
+          "name": "do-while",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        i = 0;\n        do {\n            int sample_index = i + 4;"
+        },
+        {
+          "name": "explicit-while",
+          "text": "    if (curve_count > 0) {\n        float curve_count_f = (float)curve_count;\n        i = 0;\n        while (i < curve_count) {\n            int sample_index = i + 4;"
+        }
+      ]
+    },
+    {
+      "name": "curve-loop-exit",
+      "find": "                float secondary_roll = primary_previous->center_x * 0.2617994f;\n                secondary_previous->transform.RotLocalZ(secondary_roll);\n            }\n        }\n    }\n#endif",
+      "replacements": [
+        {
+          "name": "do-while",
+          "text": "                float secondary_roll = primary_previous->center_x * 0.2617994f;\n                secondary_previous->transform.RotLocalZ(secondary_roll);\n            }\n            ++i;\n        } while (i < curve_count);\n    }\n#endif"
+        },
+        {
+          "name": "explicit-while",
+          "text": "                float secondary_roll = primary_previous->center_x * 0.2617994f;\n                secondary_previous->transform.RotLocalZ(secondary_roll);\n            }\n            ++i;\n        }\n    }\n#endif"
+        }
+      ]
+    }
+  ]
+}

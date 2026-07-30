@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-curve-guard",
+      "find": "            if (i == 0) {",
+      "replacements": [
+        {
+          "name": "logical-not",
+          "text": "            if (!i) {"
+        },
+        {
+          "name": "nonpositive-index",
+          "text": "            if (i <= 0) {"
+        },
+        {
+          "name": "sample-equals-four",
+          "text": "            if (sample_index == 4) {"
+        },
+        {
+          "name": "sample-at-most-four",
+          "text": "            if (sample_index <= 4) {"
+        }
+      ]
+    }
+  ]
+}
