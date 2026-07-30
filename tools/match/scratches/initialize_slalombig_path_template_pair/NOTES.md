@@ -221,3 +221,19 @@ regress. Three consecutive non-improving sweeps formally stall the target at
 the retained 33.80%, 653/696-instruction frontier. Recovering the adjacency now
 requires a broader loop-lifetime change, not another local guard or helper
 spelling.
+
+## 2026-07-30 terminal-delta expression ownership
+
+The exact terminal-delta helper shape shared with Twister provides a new
+independent owner boundary outside the stalled identity-call schedule.
+Replacing the four loop-wide sample pointers with direct primary and secondary
+array ownership raises focused matching from 33.80% to **36.61%**, adds 71.85
+weighted bytes, and moves the candidate from 653 to 659 instructions against
+696. The two-instruction prefix and the 39 clean plus 2 unaudited references
+are unchanged.
+
+Applying authored `Vector3::operator-` at both delta sites adds another 7.57
+weighted bytes. The retained result is **36.90%**, 659/696 instructions,
+prefix 2/696, with the same 39 clean and 2 unaudited references. The exhaustive
+two-site sweep proves that either operator alone gains 3.78 bytes and that the
+paired form is the unique best result.

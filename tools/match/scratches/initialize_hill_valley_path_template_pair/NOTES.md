@@ -189,3 +189,18 @@ unchanged. A few Binary Ninja expressions still render reads from the original
 `centered` home because the dword overwrite is represented as
 `MLIL_SET_VAR_FIELD`; the replay helper was extended to recognize that
 destination safely, without changing the authored `bool` ABI.
+
+## 2026-07-30 terminal-delta array ownership
+
+The exact terminal-delta helper shape shared with Twister exposes one remaining
+source-owner choice: four loop-wide sample pointers or direct ownership by the
+primary and secondary arrays. An exhaustive three-variant sweep covers direct
+arrays, separately scoped pointer pairs, and separately scoped references.
+
+Direct array ownership raises focused matching from 51.04% to **54.09%**,
+improving weighted agreement by 74.50 bytes. The candidate moves from 676 to
+678 instructions against 668, so the sweep records the instruction-count
+tradeoff, while the 19-instruction prefix and all 41 masked references remain
+clean. Both authored `Vector3::operator-` delta sites and the matching primary
+orientation site compile byte-identically; the retained spelling changes only
+the allocation owner established by the measured result.

@@ -163,3 +163,13 @@ void, exposes `lead_count`, `tail_count`, `start_x`, `turn_sign`, and
 `lead_count_bound` as scalars, and retains `primary_sample_bank` as a borrowed
 `PathTemplateSample*` only for its real lifetime. No mobile layout or
 Windows-only mesh-tail statement is transferred.
+
+## 2026-07-30 terminal-delta array-owner bound
+
+The exact terminal-delta helper shape also appears in the Twister family, so
+the same one-site plan exhaustively tests direct arrays, separately scoped
+pointer pairs, and separately scoped references. The two scoped forms compile
+byte-identically to the retained source. Direct arrays lose 68.41 weighted
+bytes and fall from 47.92% to **45.09%**, while moving the candidate from 635
+to 641 instructions; the 15-instruction prefix and all 33 references remain
+clean. Toad therefore retains its loop-wide pointer owners.

@@ -136,3 +136,13 @@ tracked five-argument `PathTemplate*`/`int32_t` export with the recovered
 seven-argument `Path*`/`void` Windows signature and current object/mesh types.
 This analysis-only recovery leaves focused matching at 50.79% (655/680), with
 a 15-instruction prefix and 46 clean masked operands.
+
+## 2026-07-30 terminal-delta array-owner bound
+
+The exact terminal-delta helper shape shared with Twister permits the same
+exhaustive direct-array, scoped-pointer, and scoped-reference owner sweep. Both
+scoped forms are byte-identical to the retained source. Direct arrays lose
+236.54 weighted bytes and fall from 50.79% to **41.16%**, while moving the
+candidate from 655 to 661 instructions; the 15-instruction prefix and all 46
+references remain clean. TurnoverDouble therefore retains its loop-wide
+pointer owners.

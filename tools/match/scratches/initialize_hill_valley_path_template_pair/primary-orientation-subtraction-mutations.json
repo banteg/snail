@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-orientation-subtraction",
+      "find": "        path->primary_samples[current_index - 1].transform.basis_forward = Vector3(\n            path->primary_samples[current_index].transform.position.x -\n                path->primary_samples[current_index - 1].transform.position.x,\n            path->primary_samples[current_index].transform.position.y -\n                path->primary_samples[current_index - 1].transform.position.y,\n            path->primary_samples[current_index].transform.position.z -\n                path->primary_samples[current_index - 1].transform.position.z);",
+      "replacements": [
+        {
+          "name": "authored-operator",
+          "text": "        path->primary_samples[current_index - 1].transform.basis_forward =\n            path->primary_samples[current_index].transform.position -\n            path->primary_samples[current_index - 1].transform.position;"
+        }
+      ]
+    }
+  ]
+}

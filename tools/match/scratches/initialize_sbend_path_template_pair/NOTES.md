@@ -155,3 +155,19 @@ the matcher source remains 44.99%. Binary Ninja still prints a few reads from
 the original `centered` home because the dword counter overwrite is an
 `MLIL_SET_VAR_FIELD`; the replay helper now sees that destination and splits it
 transactionally while retaining the mobile-proven `bool` parameter.
+
+## 2026-07-30 terminal-delta expression ownership
+
+The exact terminal-delta helper shape shared with Twister permits a bounded
+allocation-owner transfer. Replacing four function-loop pointer aliases with
+direct primary and secondary array ownership raises focused matching from
+44.99% to **55.57%**, adds 218.67 weighted bytes, and extends the exact prefix
+from 7 to **67/579** instructions. The candidate moves from 559 to 562
+instructions and all 39 masked references remain clean.
+
+With those direct owners established, replacing both expanded component-wise
+subtractions with the authored `Vector3::operator-` form adds another 10.87
+weighted bytes. The retained result is **56.09%**, 562/579 candidate/target
+instructions, prefix 67/579, and 39 clean references. The exhaustive two-site
+sweep also covers either operator in isolation; the paired form is the unique
+best result and introduces no proof-state or instruction-count tradeoff.
