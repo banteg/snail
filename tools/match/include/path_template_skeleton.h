@@ -619,34 +619,75 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 
     for (mesh_row = 0; mesh_row <= segment_count; ++mesh_row) {
         for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
-            float lateral = (float)mesh_column - (float)width_cells * 0.5f;
+#if PATH_MESH_LATERAL_MODE == 1
+            double lateral =
+                (float)mesh_column - (float)width_cells * 0.5f;
+#elif PATH_MESH_LATERAL_MODE == 2
+            float half_width = (float)width_cells * 0.5f;
+            float lateral = (float)mesh_column - half_width;
+#elif PATH_MESH_LATERAL_MODE == 3
+            double lateral =
+                (double)mesh_column - (double)width_cells * 0.5;
+#elif PATH_MESH_LATERAL_MODE == 4
+            volatile float lateral =
+                (float)mesh_column - (float)width_cells * 0.5f;
+#else
+            float lateral =
+                (float)mesh_column - (float)width_cells * 0.5f;
+#endif
             if (mesh_row != segment_count) {
                 PathAttachmentSample* sample = &primary_samples[mesh_row];
+#if PATH_MESH_ORDINARY_SCALE_OPERATOR
+                Vector3 lateral_offset =
+                    sample->transform.basis_right * lateral;
+#else
                 Vector3 lateral_offset(
                     lateral * sample->transform.basis_right.x,
                     lateral * sample->transform.basis_right.y,
                     lateral * sample->transform.basis_right.z);
+#endif
+#if PATH_MESH_ORDINARY_ADD_ORDER == 1
+                Vector3 generated_position =
+                    sample->transform.position + lateral_offset;
+#elif PATH_MESH_ORDINARY_ADD_ORDER == 2
+                Vector3 generated_position =
+                    lateral_offset + sample->transform.position;
+#else
                 Vector3 generated_position(
                     sample->transform.position.x + lateral_offset.x,
                     sample->transform.position.y + lateral_offset.y,
                     sample->transform.position.z + lateral_offset.z);
+#endif
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
             } else {
                 PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
+#if PATH_MESH_TERMINAL_SCALE_OPERATOR
+                Vector3 lateral_offset =
+                    previous->transform.basis_right * lateral;
+#else
                 Vector3 lateral_offset(
                     lateral * previous->transform.basis_right.x,
                     lateral * previous->transform.basis_right.y,
                     lateral * previous->transform.basis_right.z);
+#endif
                 Vector3 endpoint(
                     previous->transform.position.x,
                     previous->transform.position.y,
                     previous->transform.position.z + 1.0f);
+#if PATH_MESH_TERMINAL_ADD_ORDER == 1
+                Vector3 generated_position =
+                    endpoint + lateral_offset;
+#elif PATH_MESH_TERMINAL_ADD_ORDER == 2
+                Vector3 generated_position =
+                    lateral_offset + endpoint;
+#else
                 Vector3 generated_position(
                     endpoint.x + lateral_offset.x,
                     endpoint.y + lateral_offset.y,
                     endpoint.z + lateral_offset.z);
+#endif
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;

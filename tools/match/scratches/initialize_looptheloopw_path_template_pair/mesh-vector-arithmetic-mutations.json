@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-lateral-scale",
+      "find": "#define PATH_MESH_ORDINARY_SCALE_OPERATOR 0",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "#define PATH_MESH_ORDINARY_SCALE_OPERATOR 1"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-position-add",
+      "find": "#define PATH_MESH_ORDINARY_ADD_ORDER 0",
+      "replacements": [
+        {
+          "name": "position-first",
+          "text": "#define PATH_MESH_ORDINARY_ADD_ORDER 1"
+        },
+        {
+          "name": "offset-first",
+          "text": "#define PATH_MESH_ORDINARY_ADD_ORDER 2"
+        }
+      ]
+    },
+    {
+      "name": "terminal-lateral-scale",
+      "find": "#define PATH_MESH_TERMINAL_SCALE_OPERATOR 0",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "#define PATH_MESH_TERMINAL_SCALE_OPERATOR 1"
+        }
+      ]
+    },
+    {
+      "name": "terminal-position-add",
+      "find": "#define PATH_MESH_TERMINAL_ADD_ORDER 0",
+      "replacements": [
+        {
+          "name": "position-first",
+          "text": "#define PATH_MESH_TERMINAL_ADD_ORDER 1"
+        },
+        {
+          "name": "offset-first",
+          "text": "#define PATH_MESH_TERMINAL_ADD_ORDER 2"
+        }
+      ]
+    }
+  ]
+}

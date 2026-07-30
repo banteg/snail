@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-lateral-owner",
+      "find": "#define PATH_MESH_LATERAL_MODE 0",
+      "replacements": [
+        {
+          "name": "double-local",
+          "text": "#define PATH_MESH_LATERAL_MODE 1"
+        },
+        {
+          "name": "split-float-local",
+          "text": "#define PATH_MESH_LATERAL_MODE 2"
+        },
+        {
+          "name": "double-expression",
+          "text": "#define PATH_MESH_LATERAL_MODE 3"
+        },
+        {
+          "name": "volatile-float-local",
+          "text": "#define PATH_MESH_LATERAL_MODE 4"
+        }
+      ]
+    }
+  ]
+}

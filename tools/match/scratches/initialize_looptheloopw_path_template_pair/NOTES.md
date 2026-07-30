@@ -192,3 +192,25 @@ clean `55/0/0/0` reference audit remain unchanged.
 Either operator in isolation reaches only **67.43%** at `744/745`
 instructions. The exact-parity improvement depends on retaining both lanes as
 one coupled expression-owner recovery.
+
+## 2026-07-30 mesh arithmetic boundary
+
+The W-roll builder independently exercises the shared-skeleton mesh switches.
+Its complete lateral-owner sweep matches the plain sibling's negative
+evidence: `double` loses 34.22 weighted bytes, split float is byte-neutral, the
+expression-only double form loses 38.01 weighted bytes and adds reference
+debt, and volatile float collapses the prefix. The authored owner remains
+`float`.
+
+Across all 35 vector-operator interactions, the unique minimal improvement is
+again the ordinary generated-position addition through
+`Vector3::operator+`. Either operand order is byte-identical; both scales are
+individually neutral, and the terminal addition degrades. Retaining the
+position-first spelling adds 3.66 weighted bytes and raises focused matching
+from 69.40% to **69.53%**, while preserving the exact 745/745 instruction
+count, prefix 10/745, and all 55 clean references.
+
+The new ledger contains two complete sweeps and 39 unique variants. Its result
+also explains the older whole-mesh operator regression: coupling both neutral
+scale spellings is sharply negative even though the ordinary addition alone
+is a clean win.

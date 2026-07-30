@@ -195,3 +195,24 @@ or only the secondary operator produces the same **68.88%** result with
 `722/721` instructions, below the explicit-component baseline. The retained
 paired form is therefore one coupled expression-owner recovery, not two
 independent score-selected rewrites.
+
+## 2026-07-30 mesh arithmetic boundary
+
+The shared-skeleton mesh was the remaining untested member of the recovered
+arithmetic family. Byte-neutral per-variant switches make its authored source
+alternatives independently measurable without duplicating the builder.
+
+A complete four-way lateral-owner sweep rejects `double`: it loses 33.54
+weighted bytes. Split float is byte-neutral, the expression-only double form
+loses 36.51 weighted bytes and adds reference debt, and volatile float
+collapses the prefix. The retained lateral owner is therefore the original
+`float`.
+
+The exhaustive 35-variant vector interaction sweep isolates one clean change:
+the ordinary branch adds its lateral offset to the sample position through
+`Vector3::operator+`. Either operand order emits identical bytes, while both
+scale operators are individually neutral and the terminal addition degrades.
+The minimal position-first spelling adds 3.64 weighted bytes and raises the
+focused result from 70.91% to **71.05%**. Candidate/target instructions remain
+723/721, prefix 22/721, and all 49 references remain clean. The new ledger
+contains two complete sweeps and 39 unique variants.

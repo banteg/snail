@@ -5,5 +5,10 @@
 #define PATH_CURVE_COUNT ((int)(curve_source * 6.2831855f))
 #define PATH_HEIGHT_SCALE 1.0f
 #define PATH_VARIANT 0
+#define PATH_MESH_LATERAL_MODE 0
+#define PATH_MESH_ORDINARY_SCALE_OPERATOR 0
+#define PATH_MESH_ORDINARY_ADD_ORDER 1
+#define PATH_MESH_TERMINAL_SCALE_OPERATOR 0
+#define PATH_MESH_TERMINAL_ADD_ORDER 0
 
 #include "path_template_skeleton.h"
