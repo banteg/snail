@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "route-icon-owner-order",
+      "find": "                int record_offset = route_index * sizeof(GalaxyStar);\n                GalaxyRouteIndexedSlotView* record =\n                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);\n                color = route_names[record->route_name_index].color;",
+      "replacements": [
+        {
+          "name": "explicit-route-name-owner",
+          "text": "                int record_offset = route_index * sizeof(GalaxyStar);\n                GalaxyRouteIndexedSlotView* record =\n                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);\n                GalaxyRouteNameRecord* route_name =\n                    &route_names[record->route_name_index];\n                color = route_name->color;"
+        },
+        {
+          "name": "named-index-then-record",
+          "text": "                int record_offset = route_index * sizeof(GalaxyStar);\n                int route_name_index =\n                    ((GalaxyRouteIndexedSlotView*)((char*)this + record_offset))\n                        ->route_name_index;\n                GalaxyRouteIndexedSlotView* record =\n                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);\n                color = route_names[route_name_index].color;"
+        },
+        {
+          "name": "named-index-name-then-record",
+          "text": "                int record_offset = route_index * sizeof(GalaxyStar);\n                int route_name_index =\n                    ((GalaxyRouteIndexedSlotView*)((char*)this + record_offset))\n                        ->route_name_index;\n                GalaxyRouteNameRecord* route_name =\n                    &route_names[route_name_index];\n                color = route_name->color;\n                GalaxyRouteIndexedSlotView* record =\n                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);"
+        },
+        {
+          "name": "direct-color-then-record",
+          "text": "                int record_offset = route_index * sizeof(GalaxyStar);\n                color = route_names[\n                    ((GalaxyRouteIndexedSlotView*)((char*)this + record_offset))\n                        ->route_name_index]\n                            .color;\n                GalaxyRouteIndexedSlotView* record =\n                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);"
+        },
+        {
+          "name": "base-borrow-name-then-record",
+          "text": "                int record_offset = route_index * sizeof(GalaxyStar);\n                char* record_base = (char*)this + record_offset;\n                int route_name_index =\n                    ((GalaxyRouteIndexedSlotView*)record_base)->route_name_index;\n                GalaxyRouteNameRecord* route_name =\n                    &route_names[route_name_index];\n                color = route_name->color;\n                GalaxyRouteIndexedSlotView* record =\n                    (GalaxyRouteIndexedSlotView*)record_base;"
+        },
+        {
+          "name": "indexed-borrow-name-owner",
+          "text": "                int record_offset = route_index * sizeof(GalaxyStar);\n                GalaxyRouteIndexedSlotView* indexed_record =\n                    (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);\n                GalaxyRouteNameRecord* route_name =\n                    &route_names[indexed_record->route_name_index];\n                color = route_name->color;\n                GalaxyRouteIndexedSlotView* record = indexed_record;"
+        }
+      ]
+    }
+  ]
+}

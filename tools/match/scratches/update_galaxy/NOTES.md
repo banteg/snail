@@ -251,3 +251,30 @@ The matcher, Binary Ninja replay, and IDA replay now use `GalaxyStar` as the
 primary owner while retaining `GalaxyRouteSlot` only as a compatibility
 typedef. Matching remains honestly unchanged at 71.01%; this slice recovers
 class identity and cross-port provenance, not a compiler-shape trick.
+
+## 2026-07-30 bounded lifetime sweep
+
+Three complete mutation plans tested the remaining evidence-backed compiler
+shapes without changing the retained source:
+
+- 11/11 connector `map_y` and card-edge lifetime variants;
+- 6/6 route-icon record/name owner-order variants;
+- 76/76 mouse-input, tail-borrow, and returned-vector materialization variants.
+
+None of the 93 unique variants improves the 71.01% baseline. Twenty-three
+hover variants are byte-identical, while every changed candidate regresses
+the fuzzy match or exact prefix. In particular, naming the connector ordinate
+moves the first mismatch earlier, direct `active_padding` reloads shrink the
+frame and lose the complete prefix, delayed route-record owners lose at least
+four weighted bytes, and the source-equivalent vector declaration/assignment
+forms compile identically. The function is therefore formally stalled on its
+documented stack-slot and register-coloring residuals until new source or
+compiler evidence appears.
+
+The same pass exposed six formerly unaudited global references where target
+and candidate used the same manifest identity but different destination
+registers. The matcher now performs a conservative final reference alignment
+on opcode, masked operand position/kind, and canonical identity. Focused
+matching remains 71.01%, 569/566 instructions, and prefix 48/566, while the
+audit improves from 52 clean plus 6 unaudited entries to 55 clean with no
+unresolved, mismatched, or unaudited operands.

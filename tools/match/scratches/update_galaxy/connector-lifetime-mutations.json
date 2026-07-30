@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "connector-map-y-lifetime",
+      "find": "            GalaxyRouteIndexedSlotView* selected_record =\n                (GalaxyRouteIndexedSlotView*)((char*)this +\n                                              selected_index * sizeof(GalaxyStar));\n            FrontendWidget* card = bounds_frame_widget;\n\n            if (card->frame_x > selected_record->map_x) {\n                draw_galaxy_line(153, selected_record->map_x + 16.0f, selected_record->map_y,\n                                 card->frame_x - 6.0f, selected_record->map_y, 4.0f, &color);\n            } else {\n                draw_galaxy_line(153, selected_record->map_x - 16.0f, selected_record->map_y,\n                                 card->frame_width + card->frame_x + 6.0f, selected_record->map_y,\n                                 4.0f, &color);\n            }",
+      "replacements": [
+        {
+          "name": "named-map-y-after-card",
+          "text": "            GalaxyRouteIndexedSlotView* selected_record =\n                (GalaxyRouteIndexedSlotView*)((char*)this +\n                                              selected_index * sizeof(GalaxyStar));\n            FrontendWidget* card = bounds_frame_widget;\n            float selected_map_y = selected_record->map_y;\n\n            if (card->frame_x > selected_record->map_x) {\n                draw_galaxy_line(153, selected_record->map_x + 16.0f, selected_map_y,\n                                 card->frame_x - 6.0f, selected_map_y, 4.0f, &color);\n            } else {\n                draw_galaxy_line(153, selected_record->map_x - 16.0f, selected_map_y,\n                                 card->frame_width + card->frame_x + 6.0f, selected_map_y,\n                                 4.0f, &color);\n            }"
+        },
+        {
+          "name": "named-map-y-before-card",
+          "text": "            GalaxyRouteIndexedSlotView* selected_record =\n                (GalaxyRouteIndexedSlotView*)((char*)this +\n                                              selected_index * sizeof(GalaxyStar));\n            float selected_map_y = selected_record->map_y;\n            FrontendWidget* card = bounds_frame_widget;\n\n            if (card->frame_x > selected_record->map_x) {\n                draw_galaxy_line(153, selected_record->map_x + 16.0f, selected_map_y,\n                                 card->frame_x - 6.0f, selected_map_y, 4.0f, &color);\n            } else {\n                draw_galaxy_line(153, selected_record->map_x - 16.0f, selected_map_y,\n                                 card->frame_width + card->frame_x + 6.0f, selected_map_y,\n                                 4.0f, &color);\n            }"
+        },
+        {
+          "name": "record-owner-and-map-y",
+          "text": "            GalaxyRouteRecord* selected_record =\n                &route_slots[selected_index].record;\n            FrontendWidget* card = bounds_frame_widget;\n            float selected_map_y = selected_record->map_y;\n\n            if (card->frame_x > selected_record->map_x) {\n                draw_galaxy_line(153, selected_record->map_x + 16.0f, selected_map_y,\n                                 card->frame_x - 6.0f, selected_map_y, 4.0f, &color);\n            } else {\n                draw_galaxy_line(153, selected_record->map_x - 16.0f, selected_map_y,\n                                 card->frame_width + card->frame_x + 6.0f, selected_map_y,\n                                 4.0f, &color);\n            }"
+        }
+      ]
+    },
+    {
+      "name": "card-edge-lifetime",
+      "find": "        FrontendWidget* card = bounds_frame_widget;\n        float edge = card->active_padding;\n        if (card->frame_x - edge < mouse_x &&\n            card->frame_width + edge + card->frame_x > mouse_x &&\n            card->frame_y - edge < mouse_y &&\n            card->frame_height + card->frame_y + edge > mouse_y) {",
+      "replacements": [
+        {
+          "name": "direct-padding-reloads",
+          "text": "        FrontendWidget* card = bounds_frame_widget;\n        if (card->frame_x - card->active_padding < mouse_x &&\n            card->frame_width + card->active_padding + card->frame_x > mouse_x &&\n            card->frame_y - card->active_padding < mouse_y &&\n            card->frame_height + card->frame_y + card->active_padding > mouse_y) {"
+        },
+        {
+          "name": "assigned-edge-local",
+          "text": "        FrontendWidget* card = bounds_frame_widget;\n        float edge;\n        edge = card->active_padding;\n        if (card->frame_x - edge < mouse_x &&\n            card->frame_width + edge + card->frame_x > mouse_x &&\n            card->frame_y - edge < mouse_y &&\n            card->frame_height + card->frame_y + edge > mouse_y) {"
+        }
+      ]
+    }
+  ]
+}

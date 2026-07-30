@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mouse-input-lifetime",
+      "find": "    GameInput* mouse_state = g_game->players[0].game_input;\n    float mouse_x = mouse_state->input.authored_x;\n    float mouse_y = mouse_state->input.authored_y;",
+      "replacements": [
+        {
+          "name": "root-then-input",
+          "text": "    GameRoot* game = g_game;\n    GameInput* mouse_state = game->players[0].game_input;\n    float mouse_x = mouse_state->input.authored_x;\n    float mouse_y = mouse_state->input.authored_y;"
+        },
+        {
+          "name": "coordinates-before-pointer",
+          "text": "    float mouse_x = g_game->players[0].game_input->input.authored_x;\n    float mouse_y = g_game->players[0].game_input->input.authored_y;\n    GameInput* mouse_state = g_game->players[0].game_input;"
+        },
+        {
+          "name": "assigned-coordinate-scalars",
+          "text": "    GameInput* mouse_state = g_game->players[0].game_input;\n    float mouse_x;\n    float mouse_y;\n    mouse_x = mouse_state->input.authored_x;\n    mouse_y = mouse_state->input.authored_y;"
+        },
+        {
+          "name": "reverse-coordinate-load",
+          "text": "    GameInput* mouse_state = g_game->players[0].game_input;\n    float mouse_y = mouse_state->input.authored_y;\n    float mouse_x = mouse_state->input.authored_x;"
+        }
+      ]
+    },
+    {
+      "name": "tail-input-borrow",
+      "find": "            unsigned int mouse_flags = mouse_state->input.pressed_buttons;",
+      "replacements": [
+        {
+          "name": "direct-root-reload",
+          "text": "            unsigned int mouse_flags =\n                g_game->players[0].game_input->input.pressed_buttons;"
+        },
+        {
+          "name": "fresh-input-borrow",
+          "text": "            GameInput* current_mouse_state =\n                g_game->players[0].game_input;\n            unsigned int mouse_flags =\n                current_mouse_state->input.pressed_buttons;"
+        },
+        {
+          "name": "refresh-existing-borrow",
+          "text": "            mouse_state = g_game->players[0].game_input;\n            unsigned int mouse_flags = mouse_state->input.pressed_buttons;"
+        }
+      ]
+    },
+    {
+      "name": "selected-probe-materialization",
+      "find": "            Vector3 selected_probe = subtract_screen_xy(\n                *(Vector3*)&selected_record->map_x, mouse_x, mouse_y);",
+      "replacements": [
+        {
+          "name": "declare-then-assign",
+          "text": "            Vector3 selected_probe;\n            selected_probe = subtract_screen_xy(\n                *(Vector3*)&selected_record->map_x, mouse_x, mouse_y);"
+        },
+        {
+          "name": "named-result-then-copy",
+          "text": "            Vector3 selected_result = subtract_screen_xy(\n                *(Vector3*)&selected_record->map_x, mouse_x, mouse_y);\n            Vector3 selected_probe = selected_result;"
+        },
+        {
+          "name": "manual-components",
+          "text": "            Vector3 selected_probe;\n            selected_probe.x = selected_record->map_x - mouse_x;\n            selected_probe.y = selected_record->map_y - mouse_y;\n            selected_probe.z = selected_record->map_z;"
+        }
+      ]
+    },
+    {
+      "name": "loop-probe-materialization",
+      "find": "                Vector3 probe = subtract_screen_xy(\n                    *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);",
+      "replacements": [
+        {
+          "name": "declare-then-assign",
+          "text": "                Vector3 probe;\n                probe = subtract_screen_xy(\n                    *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);"
+        },
+        {
+          "name": "named-result-then-copy",
+          "text": "                Vector3 probe_result = subtract_screen_xy(\n                    *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);\n                Vector3 probe = probe_result;"
+        },
+        {
+          "name": "manual-components",
+          "text": "                Vector3 probe;\n                probe.x = probe_slot->record.map_x - mouse_x;\n                probe.y = probe_slot->record.map_y - mouse_y;\n                probe.z = probe_slot->record.map_z;"
+        }
+      ]
+    }
+  ]
+}
