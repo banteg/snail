@@ -455,3 +455,24 @@ tradeoffs. Passing the recovered caller index into the inlined delta helper is
 byte-neutral and leaves that cursor result unchanged; the scoped-pointer
 cursor loses 4.86 bytes. The direct-cursor score is recorded but rejected
 until a source-backed dependency can preserve the proven prefix.
+
+## 2026-07-31 dependency-complete cursor interaction bound
+
+The fixed lead and tail cursors were previously replayed only as single-site
+changes after the face-record recovery. A complete 23-variant sweep now covers
+every one-, two-, and three-site interaction among the lead cursor, three tail
+cursor/control shapes, and both delta cursor shapes.
+
+No interaction preserves the proven frontier. The exact guarded tail replay
+with the native absolute logical index and independent `0xa8` byte cursor
+loses **199.68 weighted bytes** and collapses the exact prefix from 89 to 14
+instructions. Adding it to the direct delta cursor still loses 62.14 bytes
+against the retained source. The closest complete fixed-loop interaction uses
+the local tail counter: lead plus tail plus the direct delta cursor gains only
+**12.10 weighted bytes**, but moves the first mismatch from target offset
+`0x173` to `0x26` and cuts the prefix from 89 to 13 instructions.
+
+The delta cursor alone remains the sweep's aggregate-score leader at the
+already-recorded 69.02% tradeoff result; every added fixed-loop owner reduces
+that score. No cursor interaction is retained. This closes the Toad
+lead/tail/delta ownership dependency on the current face and curve allocation.
