@@ -118,9 +118,11 @@ void cRObject::CalcFaceQuadNormals()
 
     int vertex_offset = 0;
     index = 0;
+    float* tally_cursor;
     if (vertex_count > 0) {
+        tally_cursor = normal_tally;
         do {
-            float tally = normal_tally[index];
+            const float& tally = *tally_cursor;
             {
                 Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);
                 normal->x = normal->x / tally;
@@ -128,6 +130,7 @@ void cRObject::CalcFaceQuadNormals()
                 normal->z = normal->z / tally;
             }
             ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();
+            ++tally_cursor;
 
             Vector3* inverted = (Vector3*)((char*)vertex_normals + vertex_offset);
             vertex_offset += sizeof(Vector3);

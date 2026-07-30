@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tally-load-lifetime",
+      "find": "            float& tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }",
+      "replacements": [
+        {
+          "name": "const-float-value",
+          "text": "            const float tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }"
+        },
+        {
+          "name": "register-float-value",
+          "text": "            register float tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }"
+        },
+        {
+          "name": "double-value",
+          "text": "            double tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = (float)(normal->x / tally);\n                normal->y = (float)(normal->y / tally);\n                normal->z = (float)(normal->z / tally);\n            }"
+        },
+        {
+          "name": "long-double-value",
+          "text": "            long double tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = (float)(normal->x / tally);\n                normal->y = (float)(normal->y / tally);\n                normal->z = (float)(normal->z / tally);\n            }"
+        },
+        {
+          "name": "reference-float-copy",
+          "text": "            float& tally_ref = *tally_cursor;\n            float tally = tally_ref;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }"
+        },
+        {
+          "name": "reference-register-copy",
+          "text": "            float& tally_ref = *tally_cursor;\n            register float tally = tally_ref;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }"
+        },
+        {
+          "name": "reference-double-copy",
+          "text": "            float& tally_ref = *tally_cursor;\n            double tally = tally_ref;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = (float)(normal->x / tally);\n                normal->y = (float)(normal->y / tally);\n                normal->z = (float)(normal->z / tally);\n            }"
+        },
+        {
+          "name": "reference-unary-plus-copy",
+          "text": "            float& tally_ref = *tally_cursor;\n            float tally = +tally_ref;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }"
+        }
+      ]
+    }
+  ]
+}

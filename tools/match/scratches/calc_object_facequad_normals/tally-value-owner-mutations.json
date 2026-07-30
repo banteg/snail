@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tally-value-owner",
+      "find": "            float tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }\n            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();\n            ++tally_cursor;",
+      "replacements": [
+        {
+          "name": "reference-copy-address-advance",
+          "text": "            float& tally_ref = *tally_cursor;\n            float tally = tally_ref;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }\n            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();\n            tally_cursor = &tally_ref + 1;"
+        },
+        {
+          "name": "const-reference-copy-address-advance",
+          "text": "            const float& tally_ref = *tally_cursor;\n            float tally = tally_ref;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }\n            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();\n            tally_cursor = &tally_ref + 1;"
+        },
+        {
+          "name": "current-pointer-copy-advance",
+          "text": "            float* current_tally = tally_cursor;\n            float tally = *current_tally;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }\n            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();\n            tally_cursor = current_tally + 1;"
+        },
+        {
+          "name": "post-incremented-current-pointer",
+          "text": "            float* current_tally = tally_cursor++;\n            float tally = *current_tally;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }\n            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();"
+        },
+        {
+          "name": "pointer-reference-copy",
+          "text": "            float* const& current_tally = tally_cursor;\n            float tally = *current_tally;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }\n            ((Vector3*)((char*)vertex_normals + vertex_offset))->Normalize();\n            ++tally_cursor;"
+        }
+      ]
+    }
+  ]
+}

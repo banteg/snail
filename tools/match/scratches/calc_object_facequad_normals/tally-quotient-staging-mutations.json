@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tally-quotient-staging",
+      "find": "            float& tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x = normal->x / tally;\n                normal->y = normal->y / tally;\n                normal->z = normal->z / tally;\n            }",
+      "replacements": [
+        {
+          "name": "stage-three-quotients",
+          "text": "            float& tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                float x = normal->x / tally;\n                float y = normal->y / tally;\n                float z = normal->z / tally;\n                normal->x = x;\n                normal->y = y;\n                normal->z = z;\n            }"
+        },
+        {
+          "name": "stage-and-store-each-quotient",
+          "text": "            float& tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                float quotient = normal->x / tally;\n                normal->x = quotient;\n                quotient = normal->y / tally;\n                normal->y = quotient;\n                quotient = normal->z / tally;\n                normal->z = quotient;\n            }"
+        },
+        {
+          "name": "compound-divide-fields",
+          "text": "            float& tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                normal->x /= tally;\n                normal->y /= tally;\n                normal->z /= tally;\n            }"
+        },
+        {
+          "name": "stage-vector-quotient",
+          "text": "            float& tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                Vector3 averaged;\n                averaged.x = normal->x / tally;\n                averaged.y = normal->y / tally;\n                averaged.z = normal->z / tally;\n                *normal = averaged;\n            }"
+        },
+        {
+          "name": "component-pointer-divides",
+          "text": "            float& tally = *tally_cursor;\n            {\n                Vector3* normal = (Vector3*)((char*)vertex_normals + vertex_offset);\n                float* component = &normal->x;\n                component[0] = component[0] / tally;\n                component[1] = component[1] / tally;\n                component[2] = component[2] / tally;\n            }"
+        }
+      ]
+    }
+  ]
+}

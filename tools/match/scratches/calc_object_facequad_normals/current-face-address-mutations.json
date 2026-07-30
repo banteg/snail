@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "current-face-address",
+      "find": "#define CURRENT_FACE \\\n    ((cRFaceQuad*)((char*)facequads + face_offset))",
+      "replacements": [
+        {
+          "name": "offset-plus-byte-base",
+          "text": "#define CURRENT_FACE \\\n    ((cRFaceQuad*)(face_offset + (char*)facequads))"
+        },
+        {
+          "name": "integer-base-plus-offset",
+          "text": "#define CURRENT_FACE \\\n    ((cRFaceQuad*)((int)facequads + face_offset))"
+        },
+        {
+          "name": "offset-plus-integer-base",
+          "text": "#define CURRENT_FACE \\\n    ((cRFaceQuad*)(face_offset + (int)facequads))"
+        },
+        {
+          "name": "offset-pointer-plus-integer-base",
+          "text": "#define CURRENT_FACE \\\n    ((cRFaceQuad*)((char*)face_offset + (int)facequads))"
+        },
+        {
+          "name": "byte-subscript",
+          "text": "#define CURRENT_FACE \\\n    ((cRFaceQuad*)&((char*)facequads)[face_offset])"
+        },
+        {
+          "name": "unsigned-integer-address",
+          "text": "#define CURRENT_FACE \\\n    ((cRFaceQuad*)((unsigned int)facequads + (unsigned int)face_offset))"
+        }
+      ]
+    }
+  ]
+}

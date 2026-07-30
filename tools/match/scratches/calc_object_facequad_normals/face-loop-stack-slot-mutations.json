@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-loop-stack-slots",
+      "find": "    int face_offset = 0;\n    int index = 0;\n    int normal_offset;\n    if (facequad_count > 0) {\n        normal_offset = 0;\n        do {",
+      "replacements": [
+        {
+          "name": "declare-normal-offset-before-index",
+          "text": "    int face_offset = 0;\n    int normal_offset;\n    int index = 0;\n    if (facequad_count > 0) {\n        normal_offset = 0;\n        do {"
+        },
+        {
+          "name": "block-scoped-normal-offset",
+          "text": "    int face_offset = 0;\n    int index = 0;\n    if (facequad_count > 0) {\n        int normal_offset = 0;\n        do {"
+        },
+        {
+          "name": "block-scoped-offset-before-index",
+          "text": "    int face_offset = 0;\n    int index = 0;\n    if (facequad_count > 0) {\n        int normal_offset;\n        normal_offset = 0;\n        do {"
+        },
+        {
+          "name": "assign-index-after-offset-declaration",
+          "text": "    int face_offset = 0;\n    int normal_offset;\n    int index;\n    index = 0;\n    if (facequad_count > 0) {\n        normal_offset = 0;\n        do {"
+        },
+        {
+          "name": "scoped-index-and-offset",
+          "text": "    int face_offset = 0;\n    int index;\n    int normal_offset;\n    index = 0;\n    if (facequad_count > 0) {\n        normal_offset = 0;\n        do {"
+        }
+      ]
+    }
+  ]
+}

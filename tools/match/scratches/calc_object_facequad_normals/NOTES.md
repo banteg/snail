@@ -117,3 +117,32 @@ shared `RObject.o` family also preserves `CalcTextureGroups`, `AddEdge`, and
 `CalcEdges`. Those authored member names now replace the descriptive matcher
 surface and all typed Windows callsites; the stable scratch IDs, addresses,
 calling conventions, and honest residuals remain unchanged.
+
+## 2026-07-30 final tally cursor lifetime
+
+Focused Wibo improves from 90.03% to **93.56%**. The exact prefix grows from
+27 to 98 instructions, all 22 masked references remain clean, and the retained
+source now keeps the final tally cursor explicitly:
+
+- `ebp` owns the advancing `float*` tally cursor;
+- the shared face/vertex index occupies native's `esp+0x10` stack slot;
+- the face-normal byte offset occupies native's `esp+0x14` stack slot;
+- the face-loop tail and final vertex-loop setup consequently match native.
+
+The current tally element is a borrowed `const float&`. This is semantically safe
+here because `normal_tally` is a fresh tracked allocation and cannot alias the
+object-owned `vertex_normals` written between cursor advances. It also leaves
+an honest codegen tradeoff visible: native snapshots the tally once on the x87
+stack and uses three `fdiv st(1)` operations before popping it, while this
+candidate divides through the borrowed memory slot three times. The candidate
+is therefore 433 instructions against native's 437 rather than proof-grade.
+
+Eight recorded sweeps covered 42 variants. Declaration and scope changes,
+copied scalar values, separate vertex indices, quotient staging, direct face
+address spellings, and an experimentally inlined scalar vector division were
+neutral or worse. Any copied tally value makes VC6 give `ebp` back to the
+counter and restores the old swapped stack-slot schedule; direct face-address
+forms also preserve the repeated scale-one SIB base/index reversal. Five
+consecutive post-win sweeps found no better source shape, so both residuals
+remain explicit without volatile state, inline assembly, or a speculative
+shared vector operator.
