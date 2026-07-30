@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **82.13%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **82.17%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -634,7 +634,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 24 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 
-## Mid Progress (50-79.99%) (46)
+## Mid Progress (50-79.99%) (47)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -659,6 +659,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 712/726 | 75.66% | 122/726 | 65 ok |  | core |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 685/696 | 50.98% | 6/696 | 40 ok |  | core |
 | 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 649/652 | 55.19% | 5/652 | 37 ok |  | core |
+| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 645/652 | 54.28% | 21/652 | 40 ok |  | core |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 541/552 | 55.08% | 17/552 | 36 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 677/679 | 56.64% | 6/679 | 41 ok |  | core |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 605/610 | 63.70% | 0/610 | 35 ok |  | core |
@@ -685,11 +686,10 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | load_segment_definitions | 0x448160 | 1937 | 560/571 | 68.26% | 7/571 | 91 ok |  | core |
 | 🚧 | register_font_texture_sheet | 0x449f50 | 1031 | 275/274 | 75.41% | 0/274 | 57 ok |  | boundary |
 
-## Early Progress (>0-49.99%) (3)
+## Early Progress (>0-49.99%) (2)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
-| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 631/652 | 49.42% | 5/652 | 40 ok |  | core |
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 638/683 | 41.33% | 5/683 | 2 unaudited, 44 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1230/1245 | 32.32% | 2/1245 | 1 mismatch, 77 unaudited, 97 ok |  | core |
 

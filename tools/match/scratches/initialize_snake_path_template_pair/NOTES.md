@@ -324,3 +324,25 @@ audit. Because each direct lane independently regresses, exact instruction
 count in the complete transfer is not evidence of recovered ownership. The
 retained previous/current pointer form remains the strongest measured source
 at **49.42%**, 631/652 instructions.
+
+## 2026-07-30 checkerboard texture control
+
+The earlier classification of Snake's equal-texture parity tests as an
+isolated scheduling artifact is superseded by the recovered path-constructor
+family. LoopOut, Start, Screw, Hump, Dip, Invert, Twister, Supertramp, and
+other independent Windows builders preserve the same checkerboard
+`(column ^ row) & 1` generator branch even when both outcomes request the same
+per-face texture. Snake's target contains the complete duplicated-call form at
+`0x423dae..0x423e05` and `0x423e61..0x423eff`.
+
+The exhaustive two-site sweep confirms that the two face branches are a
+dependency-complete source unit. The first branch alone loses 5.54 weighted
+bytes, while the second alone gains only 13.30. Restoring both adds **118.48
+weighted bytes**, raises focused matching from **49.42% to 54.28%**, grows the
+candidate from 631 to **645/652** instructions, and extends the exact prefix
+from 5 to **21/652**. All 40 references remain clean.
+
+Truth-first and negated polarity spellings compile byte-identically in every
+pairing, so the canonical truth-first family form is retained. This recovers
+the repeated source-family control flow visible in the binary; it does not
+invent a semantic texture distinction between equal arms.
