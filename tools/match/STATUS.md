@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **84.01%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **84.07%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -608,7 +608,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  | core |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  | core |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 669/668 | 81.68% | 21/668 | 41 ok |  | core |
-| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 581/579 | 81.21% | 67/579 | 39 ok |  | core |
+| 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 578/579 | 90.06% | 373/579 | 39 ok |  | core |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 433/437 | 93.56% | 98/437 | 22 ok |  | core |
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 226/227 | 86.53% | 15/227 | 3 unaudited, 34 ok |  | core |
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  | core |

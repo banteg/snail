@@ -282,3 +282,33 @@ mismatched, or unaudited masks. The checked ledger now contains 33 sweeps and
 are byte-neutral. The remaining gaps are register/SIB selection, one
 cross-call argument schedule, terminal x87 stack order, and face-tail code
 layout rather than unresolved behavior.
+
+## 2026-07-31 sample and delta cursor cascade
+
+The exact iOS and Android bodies use a logical sample counter alongside a
+physical `0xa8`-byte sample cursor. The Windows target has the same ownership:
+EBX initially holds the positive `steps` guard, then becomes the `0xa8` cursor,
+while a separate logical counter drives the phase and loop condition.
+Replaying that guarded do-loop and materializing the fixed `(1, 0, 0)` up
+vector before the cursor recovers the authored register lifetime. The focused
+match rises from **81.21%** to **88.85%**, and the exact prefix extends from 67
+to 216 instructions.
+
+The inlined delta pass has the same two-owner shape: a logical counter controls
+the `segment_count - 1` loop while a byte cursor advances through both sample
+arrays. Recovering it raises the result to **90.06%**, with 578/579
+candidate/target instructions, an exact 373-instruction prefix, the exact
+`0x48` frame, and all 39 references clean. Reverting only the delta cursor
+loses 25.02 weighted bytes and 157 prefix instructions; reverting the complete
+sample-cursor cascade loses 183.09 weighted bytes, adds three candidate
+instructions, and shortens the prefix by 306. Inlining the fixed up-vector
+value independently loses 3.57 weighted bytes and drops the prefix from 373
+to 69.
+
+The new frontier starts in the terminal endpoint's x87 addition schedule.
+All seven component operand-order combinations, all six named component
+lifetime orders, and all 24 face-parity orientations are byte-neutral.
+Reintroducing a common face pointer after the cursor recovery regresses to
+80.42%. These bounded replays leave terminal x87 scheduling and equivalent
+face-tail layout as the residual, not an unimplemented behavior or unsafe
+reference shortcut.

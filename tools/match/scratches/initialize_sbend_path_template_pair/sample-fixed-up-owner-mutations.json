@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "sample-fixed-up-owner",
+      "find": "            ((PathTemplateSample*)((char*)primary_samples + sample_offset))\n                ->transform.basis_up = fixed_up;",
+      "replacements": [
+        {
+          "name": "inline-vector-value",
+          "text": "            ((PathTemplateSample*)((char*)primary_samples + sample_offset))\n                ->transform.basis_up = Vector3(1.0f, 0.0f, 0.0f);"
+        }
+      ]
+    }
+  ]
+}

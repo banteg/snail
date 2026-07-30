@@ -13,18 +13,34 @@ typedef AttachmentSample PathTemplateSample;
 
 static __forceinline void compute_path_deltas(Path* path)
 {
-    for (int i = 0; i < path->segment_count - 1; ++i) {
-        path->primary_samples[i].delta_dir_to_next =
-            path->primary_samples[i + 1].transform.position -
-            path->primary_samples[i].transform.position;
-        path->primary_samples[i].delta_length =
-            path->primary_samples[i].delta_dir_to_next.Normalize();
+    int i = 0;
+    if (path->segment_count - 1 > 0) {
+        int sample_offset = 0;
+        do {
+            ((PathTemplateSample*)((char*)path->primary_samples + sample_offset))
+                ->delta_dir_to_next =
+                ((PathTemplateSample*)((char*)path->primary_samples + sample_offset) + 1)
+                    ->transform.position -
+                ((PathTemplateSample*)((char*)path->primary_samples + sample_offset))
+                    ->transform.position;
+            ((PathTemplateSample*)((char*)path->primary_samples + sample_offset))
+                ->delta_length =
+                ((PathTemplateSample*)((char*)path->primary_samples + sample_offset))
+                    ->delta_dir_to_next.Normalize();
 
-        path->secondary_samples[i].delta_dir_to_next =
-            path->secondary_samples[i + 1].transform.position -
-            path->secondary_samples[i].transform.position;
-        path->secondary_samples[i].delta_length =
-            path->secondary_samples[i].delta_dir_to_next.Normalize();
+            ((PathTemplateSample*)((char*)path->secondary_samples + sample_offset))
+                ->delta_dir_to_next =
+                ((PathTemplateSample*)((char*)path->secondary_samples + sample_offset) + 1)
+                    ->transform.position -
+                ((PathTemplateSample*)((char*)path->secondary_samples + sample_offset))
+                    ->transform.position;
+            ((PathTemplateSample*)((char*)path->secondary_samples + sample_offset))
+                ->delta_length =
+                ((PathTemplateSample*)((char*)path->secondary_samples + sample_offset))
+                    ->delta_dir_to_next.Normalize();
+            ++i;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (i < path->segment_count - 1);
     }
 
     path->primary_samples[path->segment_count - 1].delta_dir_to_next =
@@ -212,40 +228,72 @@ void cRPath::initialize_sbend_path_template_pair(
     secondary_samples[0].transform.position.y = 0.49000001f;
     secondary_samples[0].transform.position.z = 0.0f;
 
-    for (int sample_index = 0; sample_index < steps; ++sample_index) {
-        int i = sample_index + 1;
-        float phase = (float)sample_index * 6.2831855f / (float)steps;
-        primary_samples[i].center_x = primary_samples[0].center_x;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        float y = (1.0f - cosine(phase * 0.5f)) * 0.5f;
-        y *= height;
-        primary_samples[i].transform.position.y = y;
-        float z = (1.0f - cosine(phase * 1.5f)) * 0.5f;
-        z = z * z_amplitude * 0.33333334f + 1.0f;
-        primary_samples[i].transform.position.z = z;
+    int sample_index = 0;
+    if (steps > 0) {
+        Vector3 fixed_up(1.0f, 0.0f, 0.0f);
+        int sample_offset = sizeof(PathTemplateSample);
+        do {
+            float phase =
+                (float)sample_index * 6.2831855f / (float)steps;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->center_x = primary_samples[0].center_x;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->rotation_scalar_98 = 0.0f;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->rotation_scalar_94 = 0.0f;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->special_scalar = 0.0f;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->lateral_scale = 1.0f;
+            set_matrix_identity(
+                &((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->transform);
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->transform.position.x =
+                ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->center_x;
+            float y = (1.0f - cosine(phase * 0.5f)) * 0.5f;
+            y *= height;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->transform.position.y = y;
+            float z = (1.0f - cosine(phase * 1.5f)) * 0.5f;
+            z = z * z_amplitude * 0.33333334f + 1.0f;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->transform.position.z = z;
 
-        primary_samples[i].transform.basis_up = Vector3(1.0f, 0.0f, 0.0f);
-        primary_samples[i].transform.basis_forward =
-            primary_samples[i].transform.position -
-            primary_samples[i - 1].transform.position;
-        primary_samples[i].transform.basis_forward.Normalize();
-        primary_samples[i].transform.basis_up.Cross(
-            primary_samples[i].transform.basis_forward,
-            primary_samples[i].transform.basis_right);
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->transform.basis_up = fixed_up;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->transform.basis_forward =
+                ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->transform.position -
+                ((PathTemplateSample*)((char*)primary_samples + sample_offset))[-1]
+                    .transform.position;
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->transform.basis_forward.Normalize();
+            ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                ->transform.basis_up.Cross(
+                ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->transform.basis_forward,
+                ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->transform.basis_right);
 
-        secondary_samples[i].transform = primary_samples[i].transform;
-        Vector3 secondary_offset =
-            primary_samples[i].transform.basis_up * 0.49000001f;
-        Vector3* secondary_position =
-            &secondary_samples[i].transform.position;
-        secondary_position->x += secondary_offset.x;
-        secondary_position->y += secondary_offset.y;
-        secondary_position->z += secondary_offset.z;
+            ((PathTemplateSample*)((char*)secondary_samples + sample_offset))
+                ->transform =
+                ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->transform;
+            Vector3 secondary_offset =
+                ((PathTemplateSample*)((char*)primary_samples + sample_offset))
+                    ->transform.basis_up * 0.49000001f;
+            Vector3* secondary_position =
+                &((PathTemplateSample*)((char*)secondary_samples + sample_offset))
+                    ->transform.position;
+            secondary_position->x += secondary_offset.x;
+            secondary_position->y += secondary_offset.y;
+            secondary_position->z += secondary_offset.z;
+            sample_offset += sizeof(PathTemplateSample);
+            ++sample_index;
+        } while (sample_index < steps);
     }
 
     compute_path_deltas(this);

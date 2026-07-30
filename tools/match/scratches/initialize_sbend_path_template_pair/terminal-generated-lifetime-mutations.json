@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-generated-lifetime",
+      "find": "                        Vector3 generated_position(\n                            endpoint.x + lateral_offset.x,\n                            endpoint.y + lateral_offset.y,\n                            endpoint.z + lateral_offset.z);",
+      "replacements": [
+        {
+          "name": "named-x-y-z",
+          "text": "                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        Vector3 generated_position(\n                            generated_x, generated_y, generated_z);"
+        },
+        {
+          "name": "named-x-z-y",
+          "text": "                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        Vector3 generated_position(\n                            generated_x, generated_y, generated_z);"
+        },
+        {
+          "name": "named-y-x-z",
+          "text": "                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        Vector3 generated_position(\n                            generated_x, generated_y, generated_z);"
+        },
+        {
+          "name": "named-y-z-x",
+          "text": "                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        Vector3 generated_position(\n                            generated_x, generated_y, generated_z);"
+        },
+        {
+          "name": "named-z-x-y",
+          "text": "                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        Vector3 generated_position(\n                            generated_x, generated_y, generated_z);"
+        },
+        {
+          "name": "named-z-y-x",
+          "text": "                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        Vector3 generated_position(\n                            generated_x, generated_y, generated_z);"
+        }
+      ]
+    }
+  ]
+}
