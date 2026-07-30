@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-face-parity",
+      "find": "                            if (((cell_index ^ segment) & 1) == 0) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            }",
+      "replacements": [
+        {
+          "name": "truthy",
+          "text": "                            if ((cell_index ^ segment) & 1) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            }"
+        },
+        {
+          "name": "swapped-equal-zero",
+          "text": "                            if (((segment ^ cell_index) & 1) == 0) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            }"
+        },
+        {
+          "name": "swapped-truthy",
+          "text": "                            if ((segment ^ cell_index) & 1) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            }"
+        },
+        {
+          "name": "not-equal-zero",
+          "text": "                            if (((cell_index ^ segment) & 1) != 0) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_a, 0, 0);\n                            }"
+        }
+      ]
+    },
+    {
+      "name": "back-face-parity",
+      "find": "                            if (((cell_index ^ segment) & 1) == 0) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            }",
+      "replacements": [
+        {
+          "name": "truthy",
+          "text": "                            if ((cell_index ^ segment) & 1) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            }"
+        },
+        {
+          "name": "swapped-equal-zero",
+          "text": "                            if (((segment ^ cell_index) & 1) == 0) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            }"
+        },
+        {
+          "name": "swapped-truthy",
+          "text": "                            if ((segment ^ cell_index) & 1) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            }"
+        },
+        {
+          "name": "not-equal-zero",
+          "text": "                            if (((cell_index ^ segment) & 1) != 0) {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            } else {\n                                face->texture_ref =\n                                    g_texture_refs.Add(\n                                        texture_b, 0, 0);\n                            }"
+        }
+      ]
+    }
+  ]
+}

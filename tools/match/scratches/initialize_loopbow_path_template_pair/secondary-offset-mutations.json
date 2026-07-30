@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-offset-owner",
+      "find": "            Vector3 secondary_offset(\n                primary_samples[sample_index].transform.basis_up.x * 0.49000001f,\n                primary_samples[sample_index].transform.basis_up.y * 0.49000001f,\n                primary_samples[sample_index].transform.basis_up.z * 0.49000001f);\n            Vector3* secondary_position =\n                &secondary_samples[sample_index].transform.position;\n            secondary_position->x += secondary_offset.x;\n            secondary_position->y += secondary_offset.y;\n            secondary_position->z += secondary_offset.z;",
+      "replacements": [
+        {
+          "name": "primary-up-pointer",
+          "text": "            Vector3* primary_up =\n                &primary_samples[sample_index].transform.basis_up;\n            Vector3 secondary_offset(\n                primary_up->x * 0.49000001f,\n                primary_up->y * 0.49000001f,\n                primary_up->z * 0.49000001f);\n            Vector3* secondary_position =\n                &secondary_samples[sample_index].transform.position;\n            secondary_position->x += secondary_offset.x;\n            secondary_position->y += secondary_offset.y;\n            secondary_position->z += secondary_offset.z;"
+        },
+        {
+          "name": "primary-up-reference",
+          "text": "            Vector3& primary_up =\n                primary_samples[sample_index].transform.basis_up;\n            Vector3 secondary_offset(\n                primary_up.x * 0.49000001f,\n                primary_up.y * 0.49000001f,\n                primary_up.z * 0.49000001f);\n            Vector3* secondary_position =\n                &secondary_samples[sample_index].transform.position;\n            secondary_position->x += secondary_offset.x;\n            secondary_position->y += secondary_offset.y;\n            secondary_position->z += secondary_offset.z;"
+        },
+        {
+          "name": "operator-multiply",
+          "text": "            Vector3 secondary_offset =\n                primary_samples[sample_index].transform.basis_up * 0.49000001f;\n            Vector3* secondary_position =\n                &secondary_samples[sample_index].transform.position;\n            secondary_position->x += secondary_offset.x;\n            secondary_position->y += secondary_offset.y;\n            secondary_position->z += secondary_offset.z;"
+        },
+        {
+          "name": "copy-then-scale",
+          "text": "            Vector3 secondary_offset =\n                primary_samples[sample_index].transform.basis_up;\n            secondary_offset *= 0.49000001f;\n            Vector3* secondary_position =\n                &secondary_samples[sample_index].transform.position;\n            secondary_position->x += secondary_offset.x;\n            secondary_position->y += secondary_offset.y;\n            secondary_position->z += secondary_offset.z;"
+        },
+        {
+          "name": "value-addition",
+          "text": "            Vector3 secondary_offset(\n                primary_samples[sample_index].transform.basis_up.x * 0.49000001f,\n                primary_samples[sample_index].transform.basis_up.y * 0.49000001f,\n                primary_samples[sample_index].transform.basis_up.z * 0.49000001f);\n            secondary_samples[sample_index].transform.position += secondary_offset;"
+        }
+      ]
+    }
+  ]
+}

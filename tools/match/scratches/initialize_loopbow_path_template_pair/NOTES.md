@@ -237,3 +237,47 @@ source is intentionally unchanged: focused matching remains 67.54% (796 target
 / 800 candidate instructions), prefix 10/796, with 63 clean masked operands
 and no unresolved, mismatched, or unaudited operands. Repository validation is
 497 tests passed, exact-only masked audit clean, and extern lint clean.
+
+## 2026-07-30 value ownership and mesh control
+
+An evidence-bounded VC6 source-shape pass improves the focused match from
+67.54% (800/796 candidate/target instructions) to 71.88% (801/796). The local
+frame remains the native `0x9c`, the exact prefix remains 10 instructions, and
+all 63 masked operands remain clean.
+
+The accepted changes are ordinary authored constructs:
+
+- The secondary curve offset is now the value returned by
+  `tVector::operator*(float)`, then added through a pointer to the secondary
+  position. A five-way mutation sweep raised this block from 68.76% to 69.39%
+  and rejected copy-then-scale ownership.
+- Each delta is expressed with the recovered binary subtraction operator.
+  Both primary and secondary directions are normalized before advancing the
+  shared sample index, matching the native loop-carried control order.
+- The face loop presents the front face as the `side == 0` fallthrough and the
+  back face as the alternate arm. This semantically equivalent winding order
+  is the largest mesh-tail gain, raising the complete candidate from 70.26% to
+  71.88%.
+- The synthetic endpoint value is scoped to the terminal-row branch. This is
+  byte-neutral but records its actual lifetime.
+
+The bounded negative evidence is retained rather than hidden:
+
+- All four mesh-owner declaration schedules were byte-neutral after correcting
+  an initial malformed generated sweep. The earlier compile failures were
+  tooling noise caused by literal patch markers, not candidate evidence.
+- Reversing the ordinary/terminal row condition fell to 67.46%. Replacing the
+  mesh values with scalar components fell to 63.88% and changed the frame from
+  `0x9c` to `0x78`.
+- Vector operators in the mesh-row calculation lost the smaller subtraction
+  gain, so the explicit value constructors remain.
+- Hoisting one face pointer and header clear above the side branch fell from
+  71.88% to 65.41% and enlarged the frame to `0xa0`; the duplicated
+  branch-local owners are therefore retained.
+- A complete 24-variant sweep of equivalent parity-condition orientations at
+  both texture sites was byte-neutral. Native's out-of-line duplicate texture
+  arm cannot be recovered by respelling that condition, and the authored
+  parity control is not simplified away.
+
+`experiments.jsonl` validates as four mutation sweeps covering 37 unique
+variants with no malformed records or repeats.

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-owner-order",
+      "find": "    cRFaceQuad* facequads = strip_mesh->facequads;\n    Vector3* vertices = strip_mesh->vertices;\n\n    int row = 0;",
+      "replacements": [
+        {
+          "name": "facequads-row-vertices",
+          "text": "    cRFaceQuad* facequads = strip_mesh->facequads;\n    int row = 0;\n    Vector3* vertices = strip_mesh->vertices;"
+        },
+        {
+          "name": "row-facequads-vertices",
+          "text": "    int row = 0;\n    cRFaceQuad* facequads = strip_mesh->facequads;\n    Vector3* vertices = strip_mesh->vertices;"
+        },
+        {
+          "name": "facequads-vertices-split-row",
+          "text": "    cRFaceQuad* facequads = strip_mesh->facequads;\n    Vector3* vertices = strip_mesh->vertices;\n\n    int row;\n    row = 0;"
+        },
+        {
+          "name": "facequads-split-row-vertices",
+          "text": "    cRFaceQuad* facequads = strip_mesh->facequads;\n    int row;\n    row = 0;\n    Vector3* vertices = strip_mesh->vertices;"
+        }
+      ]
+    }
+  ]
+}

@@ -10,11 +10,6 @@
 float sine(float angle);
 float cosine(float angle);
 
-static __inline Vector3 vector_subtract(const Vector3& lhs, const Vector3& rhs)
-{
-    return Vector3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
-}
-
 // The native caller ignores the incidental EAX state left by this finalizer.
 void __fastcall calc_path_length_z(Path* path);
 
@@ -27,7 +22,6 @@ void cRPath::initialize_loopbow_path_template_pair(
     char* vertical_texture)
 {
     int cell_index = 0;
-    Vector3 endpoint;
     kind = (PathTemplateKind)cell_index;
     float center_offset = 0.0f;
     if (width_cells_arg == 4) {
@@ -186,15 +180,13 @@ void cRPath::initialize_loopbow_path_template_pair(
             secondary_samples[sample_index].transform =
                 primary_samples[sample_index].transform;
 
-            float offset_x =
-                primary_samples[sample_index].transform.basis_up.x * 0.49000001f;
-            float offset_y =
-                primary_samples[sample_index].transform.basis_up.y * 0.49000001f;
-            float offset_z =
-                primary_samples[sample_index].transform.basis_up.z * 0.49000001f;
-            secondary_samples[sample_index].transform.position.x += offset_x;
-            secondary_samples[sample_index].transform.position.y += offset_y;
-            secondary_samples[sample_index].transform.position.z += offset_z;
+            Vector3 secondary_offset =
+                primary_samples[sample_index].transform.basis_up * 0.49000001f;
+            Vector3* secondary_position =
+                &secondary_samples[sample_index].transform.position;
+            secondary_position->x += secondary_offset.x;
+            secondary_position->y += secondary_offset.y;
+            secondary_position->z += secondary_offset.z;
 
             ++i;
         } while (i < curve_segment_count);
@@ -203,18 +195,18 @@ void cRPath::initialize_loopbow_path_template_pair(
     i = 0;
     if (segment_count - 1 > 0) {
         do {
-            primary_samples[i].delta_dir_to_next = vector_subtract(
-                primary_samples[i + 1].transform.position,
-                primary_samples[i].transform.position);
+            primary_samples[i].delta_dir_to_next =
+                primary_samples[i + 1].transform.position
+                - primary_samples[i].transform.position;
             primary_samples[i].delta_length =
                 primary_samples[i].delta_dir_to_next.Normalize();
 
-            secondary_samples[i].delta_dir_to_next = vector_subtract(
-                secondary_samples[i + 1].transform.position,
-                secondary_samples[i].transform.position);
+            secondary_samples[i].delta_dir_to_next =
+                secondary_samples[i + 1].transform.position
+                - secondary_samples[i].transform.position;
+            secondary_samples[i].delta_length =
+                secondary_samples[i].delta_dir_to_next.Normalize();
             ++i;
-            secondary_samples[i - 1].delta_length =
-                secondary_samples[i - 1].delta_dir_to_next.Normalize();
         } while (i < segment_count - 1);
     }
 
@@ -249,6 +241,7 @@ void cRPath::initialize_loopbow_path_template_pair(
                             lateral * sample[-1].transform.basis_right.x,
                             lateral * sample[-1].transform.basis_right.y,
                             lateral * sample[-1].transform.basis_right.z);
+                        Vector3 endpoint;
                         endpoint.x = sample[-1].transform.position.x;
                         endpoint.y = sample[-1].transform.position.y;
                         endpoint.z = sample[-1].transform.position.z + 1.0f;
@@ -270,8 +263,8 @@ void cRPath::initialize_loopbow_path_template_pair(
                             lateral_offset.x + sample->transform.position.x,
                             lateral_offset.y + sample->transform.position.y,
                             lateral_offset.z + sample->transform.position.z);
-                    int vertex_index =
-                        column + row * (width_cells + 1);
+                        int vertex_index =
+                            column + row * (width_cells + 1);
                         vertices[vertex_index] = point;
                     }
                     ++column;
@@ -295,40 +288,7 @@ void cRPath::initialize_loopbow_path_template_pair(
                     float u0 = (float)cell_index * 0.125f;
                     float u1 = (float)(cell_index + 1) * 0.125f;
                     do {
-                        if (side != 0) {
-                            cRFaceQuad* face =
-                                &facequads[side + 2 *
-                                    (cell_index + segment * width_cells)];
-                            face->header_word = 0;
-                            face->vertex_0 =
-                                segment * (width_cells + 1) + cell_index + 1;
-                            face->vertex_1 =
-                                cell_index + segment * (width_cells + 1);
-                            face->vertex_2 =
-                                cell_index + (segment + 1) * (width_cells + 1);
-                            face->vertex_3 =
-                                (segment + 1) * (width_cells + 1)
-                                + cell_index + 1;
-
-                            if (((cell_index ^ segment) & 1) == 0) {
-                                face->texture_ref =
-                                    g_texture_refs.Add(
-                                        texture_b, 0, 0);
-                            } else {
-                                face->texture_ref =
-                                    g_texture_refs.Add(
-                                        texture_b, 0, 0);
-                            }
-
-                            face->u0 = u1;
-                            face->v0 = v0;
-                            face->u1 = u0;
-                            face->v1 = v0;
-                            face->u2 = u0;
-                            face->v2 = v1;
-                            face->u3 = u1;
-                            face->v3 = v1;
-                        } else {
+                        if (side == 0) {
                             cRFaceQuad* face =
                                 &facequads[side + 2 *
                                     (cell_index + segment * width_cells)];
@@ -360,6 +320,39 @@ void cRPath::initialize_loopbow_path_template_pair(
                             face->u2 = u1;
                             face->v2 = v1;
                             face->u3 = u0;
+                            face->v3 = v1;
+                        } else {
+                            cRFaceQuad* face =
+                                &facequads[side + 2 *
+                                    (cell_index + segment * width_cells)];
+                            face->header_word = 0;
+                            face->vertex_0 =
+                                segment * (width_cells + 1) + cell_index + 1;
+                            face->vertex_1 =
+                                cell_index + segment * (width_cells + 1);
+                            face->vertex_2 =
+                                cell_index + (segment + 1) * (width_cells + 1);
+                            face->vertex_3 =
+                                (segment + 1) * (width_cells + 1)
+                                + cell_index + 1;
+
+                            if (((cell_index ^ segment) & 1) == 0) {
+                                face->texture_ref =
+                                    g_texture_refs.Add(
+                                        texture_b, 0, 0);
+                            } else {
+                                face->texture_ref =
+                                    g_texture_refs.Add(
+                                        texture_b, 0, 0);
+                            }
+
+                            face->u0 = u1;
+                            face->v0 = v0;
+                            face->u1 = u0;
+                            face->v1 = v0;
+                            face->u2 = u0;
+                            face->v2 = v1;
+                            face->u3 = u1;
                             face->v3 = v1;
                         }
                         ++side;
