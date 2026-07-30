@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-lane-schedule",
+      "find": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();",
+      "replacements": [
+        {
+          "name": "list-after-color",
+          "text": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;"
+        },
+        {
+          "name": "explicit-list-after-color",
+          "text": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            int cell_list_flags =\n                *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);\n            cell_list_flags &= 0xffffff7f;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) =\n                cell_list_flags;"
+        },
+        {
+          "name": "tile-before-first-word",
+          "text": "            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();"
+        },
+        {
+          "name": "tile-after-first-short",
+          "text": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(short*)cell_flags = 0;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();"
+        },
+        {
+          "name": "tile-after-second-short",
+          "text": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();"
+        },
+        {
+          "name": "tile-before-word-list-after-color",
+          "text": "            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;"
+        }
+      ]
+    }
+  ]
+}

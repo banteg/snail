@@ -3,6 +3,9 @@
 
 #include <stddef.h>
 
+extern "C" void* memset(void* destination, int value, unsigned int count);
+#pragma intrinsic(memset)
+
 #include "sprite.h"
 #include "fringe_object.h"
 #include "game_root.h"
@@ -354,10 +357,7 @@ void cRSubGame::BuildLevel()
              lane_payload
                 < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));
              ++lane_payload) {
-            *(int*)cell_payload = 0;
-            *(int*)(cell_payload + 4) = 0;
-            *(int*)(cell_payload + 8) = 0;
-            *(int*)(cell_payload + 12) = 0;
+            memset(cell_payload, 0, 4 * sizeof(int));
             cell_payload += sizeof(cRSubLoc);
         }
         cell_payload_cursor = cell_payload;

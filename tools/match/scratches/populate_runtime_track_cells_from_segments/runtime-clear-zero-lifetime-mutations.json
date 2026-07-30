@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-row-zero-owner",
+      "find": "        row_cursor[ROW_CURSOR_TO_FLAGS] = 0;\n        row_cursor[ROW_CURSOR_TO_INSTALLED_HEADING] = 0;\n        row_cursor[ROW_CURSOR_TO_ATTACHMENT_TEMPLATE_INDEX] = 0;\n        row_cursor[ROW_CURSOR_TO_RING_SPEED] = 0;\n        row_cursor[ROW_CURSOR_TO_PRIMARY_ATTACHMENT_CELL] = 0;\n        row_cursor[ROW_CURSOR_TO_PROJECTION_Z] = 0;\n        row_cursor[ROW_CURSOR_TO_PROJECTION_Y] = 0;\n        row_cursor[ROW_CURSOR_TO_PROJECTION_X] = 0;\n        row_cursor[ROW_CURSOR_TO_PARCEL_SET_ID] = 0;\n        row_cursor[ROW_CURSOR_TO_SOURCE_SEGMENT] = 0;\n        row_cursor[ROW_CURSOR_TO_ROW_EVENT_ID] = 0;",
+      "replacements": [
+        {
+          "name": "scoped-named-zero",
+          "text": "        int row_zero = 0;\n        row_cursor[ROW_CURSOR_TO_FLAGS] = row_zero;\n        row_cursor[ROW_CURSOR_TO_INSTALLED_HEADING] = row_zero;\n        row_cursor[ROW_CURSOR_TO_ATTACHMENT_TEMPLATE_INDEX] = row_zero;\n        row_cursor[ROW_CURSOR_TO_RING_SPEED] = row_zero;\n        row_cursor[ROW_CURSOR_TO_PRIMARY_ATTACHMENT_CELL] = row_zero;\n        row_cursor[ROW_CURSOR_TO_PROJECTION_Z] = row_zero;\n        row_cursor[ROW_CURSOR_TO_PROJECTION_Y] = row_zero;\n        row_cursor[ROW_CURSOR_TO_PROJECTION_X] = row_zero;\n        row_cursor[ROW_CURSOR_TO_PARCEL_SET_ID] = row_zero;\n        row_cursor[ROW_CURSOR_TO_SOURCE_SEGMENT] = row_zero;\n        row_cursor[ROW_CURSOR_TO_ROW_EVENT_ID] = row_zero;"
+        }
+      ]
+    },
+    {
+      "name": "runtime-clear-lane-countdown-owner",
+      "find": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        for (int lane = 0;\n             lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane) {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        }",
+      "replacements": [
+        {
+          "name": "countdown-do-loop",
+          "text": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        int lanes_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        } while (--lanes_remaining != 0);"
+        }
+      ]
+    },
+    {
+      "name": "runtime-clear-payload-zero-owner",
+      "find": "        char* cell_payload = cell_payload_cursor;\n        for (int lane_payload = 0;\n             lane_payload\n                < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane_payload) {\n            *(int*)cell_payload = 0;\n            *(int*)(cell_payload + 4) = 0;\n            *(int*)(cell_payload + 8) = 0;\n            *(int*)(cell_payload + 12) = 0;\n            cell_payload += sizeof(cRSubLoc);\n        }",
+      "replacements": [
+        {
+          "name": "named-zero-index-loop",
+          "text": "        char* cell_payload = cell_payload_cursor;\n        int payload_zero = 0;\n        for (int lane_payload = 0;\n             lane_payload\n                < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane_payload) {\n            *(int*)cell_payload = payload_zero;\n            *(int*)(cell_payload + 4) = payload_zero;\n            *(int*)(cell_payload + 8) = payload_zero;\n            *(int*)(cell_payload + 12) = payload_zero;\n            cell_payload += sizeof(cRSubLoc);\n        }"
+        },
+        {
+          "name": "named-zero-countdown-loop",
+          "text": "        char* cell_payload = cell_payload_cursor;\n        int payload_zero = 0;\n        int payloads_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            *(int*)cell_payload = payload_zero;\n            *(int*)(cell_payload + 4) = payload_zero;\n            *(int*)(cell_payload + 8) = payload_zero;\n            *(int*)(cell_payload + 12) = payload_zero;\n            cell_payload += sizeof(cRSubLoc);\n        } while (--payloads_remaining != 0);"
+        },
+        {
+          "name": "named-zero-cursor-first-countdown",
+          "text": "        char* cell_payload = cell_payload_cursor;\n        int payload_zero = 0;\n        int payloads_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            char* current_payload = cell_payload;\n            cell_payload += sizeof(cRSubLoc);\n            --payloads_remaining;\n            *(int*)current_payload = payload_zero;\n            *(int*)(current_payload + 4) = payload_zero;\n            *(int*)(current_payload + 8) = payload_zero;\n            *(int*)(current_payload + 12) = payload_zero;\n        } while (payloads_remaining != 0);"
+        }
+      ]
+    }
+  ]
+}

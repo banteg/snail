@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "memset-declaration",
+      "find": "#include <stddef.h>\n",
+      "replacements": [
+        {
+          "name": "include-string-header",
+          "text": "#include <stddef.h>\n#include <string.h>\n"
+        },
+        {
+          "name": "extern-memset",
+          "text": "#include <stddef.h>\n\nextern \"C\" void* memset(void* destination, int value, unsigned int count);\n"
+        },
+        {
+          "name": "intrinsic-memset",
+          "text": "#include <stddef.h>\n\nextern \"C\" void* memset(void* destination, int value, unsigned int count);\n#pragma intrinsic(memset)\n"
+        },
+        {
+          "name": "include-and-intrinsic",
+          "text": "#include <stddef.h>\n#include <string.h>\n#pragma intrinsic(memset)\n"
+        }
+      ]
+    },
+    {
+      "name": "runtime-clear-payload-reset",
+      "find": "        char* cell_payload = cell_payload_cursor;\n        for (int lane_payload = 0;\n             lane_payload\n                < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane_payload) {\n            *(int*)cell_payload = 0;\n            *(int*)(cell_payload + 4) = 0;\n            *(int*)(cell_payload + 8) = 0;\n            *(int*)(cell_payload + 12) = 0;\n            cell_payload += sizeof(cRSubLoc);\n        }",
+      "replacements": [
+        {
+          "name": "memset-index-loop",
+          "text": "        char* cell_payload = cell_payload_cursor;\n        for (int lane_payload = 0;\n             lane_payload\n                < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane_payload) {\n            memset(cell_payload, 0, 4 * sizeof(int));\n            cell_payload += sizeof(cRSubLoc);\n        }"
+        },
+        {
+          "name": "memset-countdown-loop",
+          "text": "        char* cell_payload = cell_payload_cursor;\n        int payloads_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            memset(cell_payload, 0, 4 * sizeof(int));\n            cell_payload += sizeof(cRSubLoc);\n        } while (--payloads_remaining != 0);"
+        },
+        {
+          "name": "memset-cursor-first-countdown",
+          "text": "        char* cell_payload = cell_payload_cursor;\n        int payloads_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            char* current_payload = cell_payload;\n            cell_payload += sizeof(cRSubLoc);\n            --payloads_remaining;\n            memset(current_payload, 0, 4 * sizeof(int));\n        } while (payloads_remaining != 0);"
+        }
+      ]
+    },
+    {
+      "name": "runtime-clear-lane-countdown-owner",
+      "find": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        for (int lane = 0;\n             lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane) {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        }",
+      "replacements": [
+        {
+          "name": "countdown-do-loop",
+          "text": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        int lanes_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        } while (--lanes_remaining != 0);"
+        }
+      ]
+    }
+  ]
+}

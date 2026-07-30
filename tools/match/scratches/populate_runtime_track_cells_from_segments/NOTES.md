@@ -1166,3 +1166,28 @@ correctly shortened the duplicated path but spilled the tag/range and lost
 reference alignment; the retained shared-result form explains the native
 tail without that debt. The sole audited mismatch remains the physical glyph
 jump table at `0x437194` versus VC6's candidate-local switch table.
+
+## 2026-07-31 intrinsic fringe reset
+
+The four consecutive fringe handles at each runtime cell are one 16-byte reset
+operation. Expressing that operation as intrinsic `memset` raises focused
+matching from **60.19%** to **62.59%** (`3034.95 -> 3155.57` weighted bytes)
+and moves the candidate from 1237 to 1238 instructions against native's 1245.
+The 9-instruction exact prefix and audit remain 111 clean / 0 unresolved /
+1 mismatch / 53 unaudited.
+
+VC6 inlines the reset into the native payload loop exactly: `EAX` advances by
+`0x54`, `ESI` owns the current payload, `EDX` is the fresh zero value, and
+`ECX` counts eight lanes. It also recovers native's preceding row-clear
+transition from the `EAX` zero owner to the `EBP` lane countdown. The same
+intrinsic 16-byte fringe reset is independently retained in the exact
+`initialize_subgame` scratch, so this is shared field-level behavior rather
+than a register-shaped shim.
+
+Declaration through `<string.h>`, an explicit `memset` prototype, and
+`#pragma intrinsic(memset)` all emit the same winning bytes; the scratch keeps
+the explicit intrinsic form already used by the exact sibling. Index and
+countdown payload loops are likewise byte-identical. Cursor-first advancement
+reaches only 61.70%. Explicit row/payload zero locals, lane countdown
+spellings, complete-cell/list owners, and semantically equivalent tile/list
+operation schedules are neutral or regressive, so none is retained.
