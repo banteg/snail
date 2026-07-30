@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "controller-cursor-declaration-order",
+      "find": "    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;",
+      "replacements": [
+        {
+          "name": "cursor-x-y",
+          "text": "    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;\n    int authored_x = 0x43a00000;\n    int authored_y = 0x43700000;"
+        },
+        {
+          "name": "x-cursor-y",
+          "text": "    int authored_x = 0x43a00000;\n    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;\n    int authored_y = 0x43700000;"
+        },
+        {
+          "name": "y-x-cursor",
+          "text": "    int authored_y = 0x43700000;\n    int authored_x = 0x43a00000;\n    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;"
+        },
+        {
+          "name": "y-cursor-x",
+          "text": "    int authored_y = 0x43700000;\n    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;\n    int authored_x = 0x43a00000;"
+        },
+        {
+          "name": "cursor-y-x",
+          "text": "    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;\n    int authored_y = 0x43700000;\n    int authored_x = 0x43a00000;"
+        }
+      ]
+    }
+  ]
+}

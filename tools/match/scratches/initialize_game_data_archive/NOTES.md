@@ -111,3 +111,24 @@ single symbol assigned to the identical-code-folded body at `0x415e20`; both
 the real enemy-manager initializer and the tracked-allocation-stack initializer
 share that body. Keep the call-site owner in the source and analysis notes;
 inventing separate machine functions or a per-call symbol would be fakematching.
+
+## 2026-07-30 bounded controller-cursor sweeps
+
+Three recorded sweeps now make the remaining cursor schedule reproducible.
+They cover eight ordinary base expressions, all five declaration orders for
+the pointer and authored coordinates, and three typed cursor/record owners.
+Across 16 unique variants, none improve: ten compile byte-identically and six
+regress.
+
+The recovered aggregate forms are specifically worse. Taking
+`&g_input_controller_slot0.axis_y` directly produces the previously known
+82.47% `esi` cursor shape; walking complete `InputControllerSlot` records
+falls to 80.85%. The existing buttons-relative byte or integer cursor remains
+94.74%, 48/47 instructions, prefix 27/47, with 19 clean references and the two
+one-sided derived-address entries.
+
+The experiment ledger has three consecutive no-improvement sweeps and formally
+marks this lane stalled. Native materializes `g_input_slot0_axis_y` after the
+allocator cleanup; VC6 materializes `g_input_slot0_buttons` before cleanup and
+subtracts four. No volatile, address-forcing helper, or false contiguous-record
+owner is introduced to coerce that scheduling choice.

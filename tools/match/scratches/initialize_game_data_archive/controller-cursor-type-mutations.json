@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "controller-cursor-type",
+      "find": "    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;\n    do {\n        *(int*)(slot_axis_y - 4) = 0;\n        *(int*)slot_axis_y = 0;\n        *(int*)(slot_axis_y + 4) = 0;\n        *(int*)(slot_axis_y + 0x10) = authored_x;\n        *(int*)(slot_axis_y + 0x14) = authored_y;\n        *(int*)(slot_axis_y + 0x18) = 0;\n        slot_axis_y += 0x38;\n    } while ((int)slot_axis_y < 0x5033b0);",
+      "replacements": [
+        {
+          "name": "int-cursor-from-buttons",
+          "text": "    int* slot_axis_y = g_input_slot0_buttons - 1;\n    do {\n        slot_axis_y[-1] = 0;\n        slot_axis_y[0] = 0;\n        slot_axis_y[1] = 0;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(int);\n    } while ((int)slot_axis_y < 0x5033b0);"
+        },
+        {
+          "name": "int-cursor-from-aggregate",
+          "text": "    int* slot_axis_y = (int*)&g_input_controller_slot0.axis_y;\n    do {\n        slot_axis_y[-1] = 0;\n        slot_axis_y[0] = 0;\n        slot_axis_y[1] = 0;\n        slot_axis_y[4] = authored_x;\n        slot_axis_y[5] = authored_y;\n        slot_axis_y[6] = 0;\n        slot_axis_y += INPUT_CONTROLLER_SLOT_STRIDE / sizeof(int);\n    } while ((int)slot_axis_y < 0x5033b0);"
+        },
+        {
+          "name": "slot-record-cursor",
+          "text": "    InputControllerSlot* slot = &g_input_controller_slot0;\n    do {\n        *(int*)&slot->axis_x = 0;\n        *(int*)&slot->axis_y = 0;\n        slot->buttons = 0;\n        *(int*)&slot->authored_x = authored_x;\n        *(int*)&slot->authored_y = authored_y;\n        *(int*)&slot->pointer_value = 0;\n        slot = (InputControllerSlot*)((char*)slot\n            + INPUT_CONTROLLER_SLOT_STRIDE);\n    } while ((int)&slot->axis_y < 0x5033b0);"
+        }
+      ]
+    }
+  ]
+}

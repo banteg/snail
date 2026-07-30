@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "controller-cursor-base",
+      "find": "    char* slot_axis_y = (char*)g_input_slot0_buttons - 4;",
+      "replacements": [
+        {
+          "name": "aggregate-axis-y",
+          "text": "    char* slot_axis_y = (char*)&g_input_controller_slot0.axis_y;"
+        },
+        {
+          "name": "aggregate-base-plus-float",
+          "text": "    char* slot_axis_y = (char*)&g_input_controller_slot0 + sizeof(float);"
+        },
+        {
+          "name": "axis-y-lane",
+          "text": "    char* slot_axis_y = (char*)g_input_slot0_axis_y;"
+        },
+        {
+          "name": "axis-y-first-element",
+          "text": "    char* slot_axis_y = (char*)&g_input_slot0_axis_y[0];"
+        },
+        {
+          "name": "buttons-prior-element",
+          "text": "    char* slot_axis_y = (char*)&g_input_slot0_buttons[-1];"
+        },
+        {
+          "name": "buttons-pointer-minus-one",
+          "text": "    char* slot_axis_y = (char*)(g_input_slot0_buttons - 1);"
+        },
+        {
+          "name": "buttons-integer-minus-size",
+          "text": "    char* slot_axis_y = (char*)((int)g_input_slot0_buttons - sizeof(int));"
+        },
+        {
+          "name": "buttons-byte-minus-size",
+          "text": "    char* slot_axis_y = (char*)g_input_slot0_buttons - sizeof(int);"
+        }
+      ]
+    }
+  ]
+}
