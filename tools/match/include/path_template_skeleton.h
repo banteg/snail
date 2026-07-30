@@ -13,6 +13,10 @@ float cosine(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
+#ifndef PATH_FACE_OWNER_MODE
+#define PATH_FACE_OWNER_MODE 0
+#endif
+
 static inline void initialize_sample_pair(
     PathAttachmentSample* primary,
     PathAttachmentSample* secondary,
@@ -706,10 +710,27 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 float u0 = (float)face_column * 0.125f;
                 float u1 = (float)(face_column + 1) * 0.125f;
                 for (face_index = 0; face_index < 2; ++face_index) {
+#if PATH_FACE_OWNER_MODE == 1
+                    cRFaceQuad* face = &facequads[
+                        face_index
+                        + 2 * (face_row * width_cells + face_column)];
+#elif PATH_FACE_OWNER_MODE == 2
+                    int face_array_index =
+                        face_index
+                        + 2 * (face_row * width_cells + face_column);
+#elif PATH_FACE_OWNER_MODE == 3
+                    int face_array_index =
+                        2 * (face_row * width_cells + face_column)
+                        + face_index;
+#endif
                     if (face_index == 0) {
+#if PATH_FACE_OWNER_MODE == 0
                         cRFaceQuad* face = &facequads[
                             face_index
                             + 2 * (face_row * width_cells + face_column)];
+#elif PATH_FACE_OWNER_MODE == 2 || PATH_FACE_OWNER_MODE == 3
+                        cRFaceQuad* face = &facequads[face_array_index];
+#endif
                         face->header_word = 0;
                         face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
@@ -732,9 +753,13 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[3].u = u0;
                         face->uv[3].v = v1;
                     } else {
+#if PATH_FACE_OWNER_MODE == 0
                         cRFaceQuad* face = &facequads[
                             face_index
                             + 2 * (face_row * width_cells + face_column)];
+#elif PATH_FACE_OWNER_MODE == 2 || PATH_FACE_OWNER_MODE == 3
+                        cRFaceQuad* face = &facequads[face_array_index];
+#endif
                         face->header_word = 0;
                         face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
                         face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);

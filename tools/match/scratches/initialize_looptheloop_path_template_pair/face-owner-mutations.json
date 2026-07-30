@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-owner",
+      "find": "#define PATH_VARIANT 0\n#define PATH_MESH_LATERAL_MODE 0",
+      "replacements": [
+        {
+          "name": "common-face-pointer",
+          "text": "#define PATH_VARIANT 0\n#define PATH_FACE_OWNER_MODE 1\n#define PATH_MESH_LATERAL_MODE 0"
+        },
+        {
+          "name": "common-face-index",
+          "text": "#define PATH_VARIANT 0\n#define PATH_FACE_OWNER_MODE 2\n#define PATH_MESH_LATERAL_MODE 0"
+        },
+        {
+          "name": "common-base-first-index",
+          "text": "#define PATH_VARIANT 0\n#define PATH_FACE_OWNER_MODE 3\n#define PATH_MESH_LATERAL_MODE 0"
+        }
+      ]
+    }
+  ]
+}

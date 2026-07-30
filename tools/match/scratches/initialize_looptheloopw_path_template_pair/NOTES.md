@@ -214,3 +214,19 @@ The new ledger contains two complete sweeps and 39 unique variants. Its result
 also explains the older whole-mesh operator regression: coupling both neutral
 scale spellings is sharply negative even though the ordinary addition alone
 is a clean win.
+
+## 2026-07-30 face index ownership
+
+The W native shares the plain builder's face-tail boundary: it materializes
+`face_index + 2 * (row * width + column)` before selecting the first or second
+face layout. Keeping that integer common while leaving each branch to form its
+own pointer adds 38.34 weighted bytes and raises focused matching from
+**69.53%** (`745/745`) to **70.94%** (`738/745`). The `10/745` exact prefix and
+clean `55/0/0/0` reference audit remain unchanged.
+
+The commuted index expression is byte-identical. A common pointer is not: it
+loses 41 weighted bytes and falls to 68.02%. The nearby lead-progress split
+loses 58-62 weighted bytes, while reversing the redundant checkerboard texture
+condition is byte-neutral. These bounded results isolate the common integer
+owner as the only retained face-control recovery, with the seven-instruction
+count deficit recorded as an explicit tradeoff rather than hidden.

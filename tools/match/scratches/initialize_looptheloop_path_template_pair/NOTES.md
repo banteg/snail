@@ -216,3 +216,22 @@ The minimal position-first spelling adds 3.64 weighted bytes and raises the
 focused result from 70.91% to **71.05%**. Candidate/target instructions remain
 723/721, prefix 22/721, and all 49 references remain clean. The new ledger
 contains two complete sweeps and 39 unique variants.
+
+## 2026-07-30 face index ownership
+
+The native tail computes `face_index + 2 * (row * width + column)` once before
+dispatching the two face layouts. The shared skeleton instead repeated the
+complete face pointer expression inside each branch, letting VC6 specialize
+the zero-index arm and obscuring the common integer owner.
+
+Hoisting only the integer index adds 27.40 weighted bytes and raises focused
+matching from **71.05%** (`723/721`) to **72.09%** (`716/721`). The exact
+`22/721` prefix and clean `49/0/0/0` reference audit are preserved. Both
+addition orders compile identically. Hoisting the pointer itself is rejected:
+it loses 52 weighted bytes and drops to 69.09%.
+
+Two adjacent native-looking ideas are now bounded as dead ends. Splitting the
+lead-pass `z * (1/7) * wiggle` expression loses 46-53 weighted bytes, and
+negating the deliberately redundant checkerboard texture condition is
+byte-identical. The retained change is therefore the narrow common integer
+owner, despite moving the candidate instruction count five below target.
