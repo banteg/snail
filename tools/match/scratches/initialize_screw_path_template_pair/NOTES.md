@@ -181,3 +181,20 @@ Both shared orientation helpers were tested independently and together with
 the authored operator form. Every variant is byte-identical, preserving
 **48.84%**, 646/685 instructions, prefix 6/685, and the same 38 clean plus 2
 unaudited references.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The independently proved native block at `0x41f43e..0x41f50e` uses distinct
+ordinary and terminal right-vector/position pairs before converging on Screw's
+shared late vertex destination. A `double` lateral local, both
+`Vector3::operator*` scales, and both `Vector3::operator+` position adds
+recover that arithmetic boundary and add 37.52 weighted bytes.
+
+The position-add result is interaction-dependent: before the scale rewrites,
+the ordinary add gains 3.76 weighted bytes and the terminal add regresses;
+after both scales, the complete add pair gains 11.28. Split-float is neutral,
+the full double expression adds reference debt, and volatile float collapses
+the prefix, so those lateral variants are rejected. Focused matching rises
+from **48.84%** to **50.34%**, candidate instructions move from 646 to 642
+against 685 target instructions, prefix stays 6/685, and the existing trig
+receipt remains 38 clean plus 2 explicitly unaudited references.

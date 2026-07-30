@@ -601,34 +601,26 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 
     for (mesh_row = 0; mesh_row <= segment_count; ++mesh_row) {
         for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {
-            float lateral = (float)mesh_column - (float)width_cells * 0.5f;
+            double lateral = (float)mesh_column - (float)width_cells * 0.5f;
             if (mesh_row != segment_count) {
                 PathAttachmentSample* sample = &primary_samples[mesh_row];
-                Vector3 lateral_offset(
-                    lateral * sample->transform.basis_right.x,
-                    lateral * sample->transform.basis_right.y,
-                    lateral * sample->transform.basis_right.z);
-                Vector3 generated_position(
-                    sample->transform.position.x + lateral_offset.x,
-                    sample->transform.position.y + lateral_offset.y,
-                    sample->transform.position.z + lateral_offset.z);
+                Vector3 lateral_offset =
+                    sample->transform.basis_right * lateral;
+                Vector3 generated_position =
+                    sample->transform.position + lateral_offset;
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
             } else {
                 PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
-                Vector3 lateral_offset(
-                    lateral * previous->transform.basis_right.x,
-                    lateral * previous->transform.basis_right.y,
-                    lateral * previous->transform.basis_right.z);
+                Vector3 lateral_offset =
+                    previous->transform.basis_right * lateral;
                 Vector3 endpoint(
                     previous->transform.position.x,
                     previous->transform.position.y,
                     previous->transform.position.z + 1.0f);
-                Vector3 generated_position(
-                    endpoint.x + lateral_offset.x,
-                    endpoint.y + lateral_offset.y,
-                    endpoint.z + lateral_offset.z);
+                Vector3 generated_position =
+                    endpoint + lateral_offset;
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
