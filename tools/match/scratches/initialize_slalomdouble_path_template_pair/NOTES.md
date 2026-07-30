@@ -285,3 +285,19 @@ remain in source with 44 clean plus 2 explicitly unaudited references. This
 bounds the family transfer: SlalomDouble's fixed-count prologue and curved
 height calculation create a different VC6 register schedule even though the
 native semantic array graph is homologous.
+
+## 2026-07-30 checkerboard texture control
+
+Native instructions at `0x4258fd..0x425916` and `0x42599c..0x4259bc`
+independently preserve the same odd-parity branch around each texture lookup
+that is visible throughout the authored strip-mesh constructor family. Both
+arms deliberately request the same texture; the control flow is nevertheless
+part of the original VC6 compilation and is not reduced to one call.
+
+The exhaustive two-site sweep tests each branch alone and the pair. The first
+branch alone gains 25.84 weighted bytes at 644/683 instructions. The second
+alone loses 37.62 bytes at 642/683. Restoring both together exposes the
+interaction and gains **266.49 weighted bytes**, raising focused matching from
+**41.33%** to **51.84%** at **648/683** instructions. Prefix remains 5/683 and
+the reference receipt remains 44 clean plus 2 explicitly unaudited entries.
+The exact native-backed pair is retained.

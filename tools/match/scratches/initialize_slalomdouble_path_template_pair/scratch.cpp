@@ -94,7 +94,13 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
                     face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                    face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);
+                    if ((column ^ row) & 1) {
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_a, 0, 0);
+                    } else {
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_a, 0, 0);
+                    }
                     face->uv[0].u = u0;
                     face->uv[0].v = v0;
                     face->uv[1].u = u1;
@@ -108,7 +114,13 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
                     face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
                     face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);
+                    if ((column ^ row) & 1) {
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_b, 0, 0);
+                    } else {
+                        face->texture_ref =
+                            g_texture_refs.Add(texture_b, 0, 0);
+                    }
                     face->uv[0].u = u1;
                     face->uv[0].v = v0;
                     face->uv[1].u = u0;
