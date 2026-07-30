@@ -144,3 +144,25 @@ rendering to the recovered `Path*`, boolean mode, and cap-texture ABI. No
 matcher source changed: focused Windows matching remains honestly **48.53%**,
 **646/685** candidate instructions, a six-instruction exact prefix, 38 accepted
 and two unaudited masked operands, with no unresolved or mismatched operands.
+
+## 2026-07-30 per-lane orientation schedule bound
+
+The two remaining unaudited references are the second `cosine(angle)` and
+`sine(angle)` calls at native offsets `+0x3b1` and `+0x3bb`. Android and iOS
+independently recompute that pair after finishing the primary orientation and
+before building the secondary orientation. The retained matcher source shares
+one pair because direct transfer of the semantic source fact destabilizes
+VC6's surrounding loop schedule.
+
+Three bounded sweeps cover 21 variants of that boundary: sequential and scoped
+per-lane locals, direct helper arguments, explicit lane bodies, angle-taking
+helpers, and a split between assigning the up vector and running the
+normalize/cross tail. Per-lane helper forms audit all 40 references but regress
+to 37.26%; the best exact-reference split reaches only 40.24%. The strongest
+non-exact explicit form reaches 44.03%, still below the retained 48.53%.
+
+No source variant improves the canonical metric, and the append-only ledger is
+formally stalled after three consecutive non-improving sweeps. The semantic
+per-lane recomputation remains recorded from both ports, but recovering it in
+matcher source now requires a broader neighboring-loop lifetime change rather
+than another local trig spelling.
