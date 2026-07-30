@@ -238,3 +238,21 @@ loses 33.67 weighted bytes. Moving the inlined delta loop index to function
 scope is also byte-identical. Neither neutral spelling is retained. The
 remaining six-instruction prefix is caused by the function-wide EBX/ESI
 zero-versus-one lifetime; no register-forcing source was introduced.
+
+## 2026-07-30 curved secondary-offset ownership
+
+Native instructions at `0x428405..0x42844d` multiply all three primary
+`basis_up` lanes by `0.49000001f` before updating the copied secondary
+position, with a distinct `secondary_position` owner surviving across those
+updates. The prior source multiplied and applied each lane immediately.
+
+Recovering both the aggregate offset and destination pointer raises focused
+matching from **54.14%** (665/687) to **55.81%** (664/687), a gain of 41.50
+weighted bytes. The exact prefix remains 6/687 and all 45 references remain
+clean.
+
+The complete owner sweep keeps the paired dependency closed: aggregate-only
+loses 18.78 weighted bytes from the winner, pointer-only loses 48.57, and the
+scalar-direct form loses 41.50. The sibling-specific pairing is retained
+rather than assuming TurnoverDouble's different compiler schedule applies
+here.

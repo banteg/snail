@@ -284,3 +284,20 @@ The `Vector3` add and scale operators were then tested alone and together.
 Every form is byte-identical, so Start retains its component arithmetic at
 **63.70%**, **605/610** instructions, prefix 0/610, and 35 clean references.
 This exhausts the bounded arithmetic family without a source edit.
+
+## 2026-07-30 branch-local grid dependency bound
+
+The earlier rejected branch-local face lifetime was expanded into its adjacent
+grid and orientation dependencies. Splitting face row and column owners around
+the two branch-local records falls from the retained **63.70%** to **52.77%**
+(618/610), with prefix 7/610 and all 35 references clean. Giving the vertex
+grid separate owners is byte-identical to that result, so it does not recover
+the native cyclic EBP/EBX/EDI assignment.
+
+Replacing the two previous-sample aliases with direct identity callsite
+addresses in the same exact-frame variant falls further to **50.45%**
+(615/610). The simpler branch-local face probe remains **54.72%** (618/610):
+it reaches the native `0x44` frame, but none of the dependency-complete
+variants restores whole-function agreement. Start therefore keeps its shared
+face owner and `0x48` frame; frame parity alone is not sufficient evidence for
+a lower-agreement rewrite.

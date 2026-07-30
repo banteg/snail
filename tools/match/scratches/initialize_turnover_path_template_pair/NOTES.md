@@ -237,3 +237,22 @@ The corresponding seven-variant lead-index sweep is bounded. A complete
 single-index lead is byte-identical, while changing only its control owner
 loses 190.08 weighted bytes and collapses the prefix to six instructions. The
 neutral lead spelling is not retained.
+
+## 2026-07-30 curved secondary-offset ownership
+
+Native instructions at `0x42709f..0x4270e7` multiply all three primary
+`basis_up` lanes by `0.49000001f` before updating the copied secondary
+position, and preserve a distinct `secondary_position` owner across those
+updates. The prior scalar source instead multiplied and applied each lane
+immediately.
+
+Recovering both the authored `Vector3 secondary_offset` value and the
+destination pointer raises focused matching from **55.34%** (648/671) to
+**56.45%** (647/671), a gain of 26.87 weighted bytes. The exact prefix remains
+54/671 and all 41 references remain clean.
+
+The complete three-variant owner sweep confirms the dependency: retaining only
+the aggregate loses 15.20 weighted bytes from the winner, retaining only the
+position pointer loses 33.87, and restoring the scalar-direct form loses
+26.87. The paired source is retained because both native lifetimes and the
+bounded compiler result agree.

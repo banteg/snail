@@ -204,3 +204,21 @@ the prefix; the relative two-sample predicate loses 3.69. The corresponding
 seven-variant lead-index sweep is also bounded: the complete single-index form
 is byte-identical, while changing only its control owner loses 74.72 weighted
 bytes. The neutral lead spelling is not retained.
+
+## 2026-07-30 curved secondary-offset ownership
+
+Native instructions at `0x427a4e..0x427a96` materialize all three products of
+the primary `basis_up` vector and `0.49000001f` before updating the copied
+secondary position. Recovering the authored `Vector3 secondary_offset`
+therefore replaces the prior lane-at-a-time multiply/add source.
+
+The aggregate raises focused matching from **54.48%** (649/680) to **55.26%**
+(652/680), a gain of 19.13 weighted bytes. The exact prefix remains 54/680 and
+all 46 references remain clean.
+
+The sibling's source-level destination owner is intentionally not forced.
+Adding an explicit `secondary_position` pointer to the aggregate loses 55.14
+weighted bytes from the retained result; the pointer-only form loses 89.29,
+and the scalar-direct form loses 19.13. Binary Ninja's typed destination can
+therefore be explained as a compiler-derived address in this dependency
+context, while the aggregate value is the bounded source-level recovery.

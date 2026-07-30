@@ -282,12 +282,11 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
                 &primary_samples[i].transform.basis_forward);
 
             secondary_samples[i].transform = primary_samples[i].transform;
-            secondary_samples[i].transform.position.x +=
-                primary_samples[i].transform.basis_up.x * 0.49000001f;
-            secondary_samples[i].transform.position.y +=
-                primary_samples[i].transform.basis_up.y * 0.49000001f;
-            secondary_samples[i].transform.position.z +=
-                primary_samples[i].transform.basis_up.z * 0.49000001f;
+            Vector3 secondary_offset =
+                primary_samples[i].transform.basis_up * 0.49000001f;
+            secondary_samples[i].transform.position.x += secondary_offset.x;
+            secondary_samples[i].transform.position.y += secondary_offset.y;
+            secondary_samples[i].transform.position.z += secondary_offset.z;
 
             ++i;
             ++curve_index;
