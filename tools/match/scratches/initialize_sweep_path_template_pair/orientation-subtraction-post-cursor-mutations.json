@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "primary-orientation-subtraction",
+      "find": "            ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                ->transform.basis_forward =\n                ((PathTemplateSample*)((char*)primary_samples + i))\n                    ->transform.position -\n                ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                    ->transform.position;",
+      "replacements": [
+        {
+          "name": "component-constructor",
+          "text": "            ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                ->transform.basis_forward = Vector3(\n                ((PathTemplateSample*)((char*)primary_samples + i))\n                        ->transform.position.x\n                    - ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                        ->transform.position.x,\n                ((PathTemplateSample*)((char*)primary_samples + i))\n                        ->transform.position.y\n                    - ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                        ->transform.position.y,\n                ((PathTemplateSample*)((char*)primary_samples + i))\n                        ->transform.position.z\n                    - ((PathTemplateSample*)((char*)primary_samples + i) - 1)\n                        ->transform.position.z);"
+        }
+      ]
+    },
+    {
+      "name": "secondary-orientation-subtraction",
+      "find": "            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                ->transform.basis_forward =\n                ((PathTemplateSample*)((char*)secondary_samples + i))\n                    ->transform.position -\n                ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                    ->transform.position;",
+      "replacements": [
+        {
+          "name": "component-constructor",
+          "text": "            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                ->transform.basis_forward = Vector3(\n                ((PathTemplateSample*)((char*)secondary_samples + i))\n                        ->transform.position.x\n                    - ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                        ->transform.position.x,\n                ((PathTemplateSample*)((char*)secondary_samples + i))\n                        ->transform.position.y\n                    - ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                        ->transform.position.y,\n                ((PathTemplateSample*)((char*)secondary_samples + i))\n                        ->transform.position.z\n                    - ((PathTemplateSample*)((char*)secondary_samples + i) - 1)\n                        ->transform.position.z);"
+        }
+      ]
+    }
+  ]
+}

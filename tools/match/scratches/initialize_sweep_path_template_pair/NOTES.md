@@ -285,3 +285,67 @@ byte-neutral; using it for both faces shrinks the candidate to 653
 instructions but loses 159.74 weighted bytes and falls to **54.87%**. This
 bounded result rejects instruction-count chasing while preserving the
 stronger source-backed control recovery.
+
+## 2026-07-30 curve and departure byte cursors
+
+The checkerboard and direct-array cascade invalidated the earlier logical
+curve-index result. Windows keeps a physical `0x1f8..0x11b8` cursor advancing
+by `0xa8` independently from the 24-step curve counter. Replaying that complete
+address owner raises focused matching from **61.44% to 66.92%**, shrinks the
+candidate from 663 to 657 instructions, and moves the exact prefix from 6 to
+24 instructions. All 37 references remain clean.
+
+Using the physical cursor for the first-orientation test is another
+dependency-complete gain. The source-equivalent equality spelling
+`i == 3 * sizeof(PathTemplateSample)` is strongest at **70.38%** and adds
+84 weighted bytes; the monotonic `<=` forms rendered by the decompiler reach
+68.70%, while `< next sample` reaches 68.55%. Constant and `sizeof` equality
+spellings are byte-identical.
+
+The distinct `0x11b8` departure cursor then adds 57 weighted bytes and reaches
+**72.73%**. It removes one instruction without extending the logical
+departure-index lifetime into sample addressing. The analogous lead cursor
+recovers 21 more exact prefix instructions but falls to 72.02% on this
+pre-orientation-operator baseline; mixing a physical primary lead cursor with
+a logical secondary index falls further to 68.65%. Both lead forms are
+therefore bounded rather than retained.
+
+The complete retained cursor cascade is also recorded as a reverse probe
+against the pre-milestone source:
+
+```text
+baseline: 73.19%, 657/652 instructions, prefix 24
+revert:   61.44%, 663/652 instructions, prefix 6
+delta:    +285 weighted bytes, +11.74 percentage points
+```
+
+## 2026-07-30 cursor-dependent orientation subtraction
+
+The authored `Vector3::operator-` replay that was byte-identical before cursor
+recovery becomes positive afterward. Both primary and secondary lanes must use
+the operator form together: reverting either lane or both lanes loses the same
+11 weighted bytes. Retaining the symmetric pair raises the final result from
+72.73% to **73.19%**, with 657/652 instructions, prefix 24, and all 37
+references clean.
+
+Explicit previous/current sample pointers do not transfer from Snake. They
+collapse the score to 55.09%, shorten the candidate to 655 instructions, and
+leave two cross-product calls unaudited. Sweep therefore keeps the independent
+array reloads proved by its own Windows body.
+
+## 2026-07-30 post-cursor bounds
+
+The surrounding stale controls were replayed after the complete cursor
+cascade:
+
+- all three derived delta-count guards fall to 64.74%..64.79%;
+- every first-face flat-index spelling remains byte-identical, while applying
+  the shared index to both faces falls to 57.98%;
+- an explicit mesh-row byte cursor reaches 72.48%, and the complete guarded
+  cursor control reaches 72.94%, both below the retained indexed loop;
+- a shared mesh-sample pointer falls to 68.97%, while moving the row
+  initialization to its native decompiler order is byte-identical;
+- distinct logical face-column and UV-column owners fall to 72.12%.
+
+These probes bound the adjacent control and mesh lifetimes without retaining
+instruction-count or decompiler-shape regressions.

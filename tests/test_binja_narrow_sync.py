@@ -21350,7 +21350,8 @@ def test_sweep_snake_path_replay_preserves_clean_owner_lifetimes() -> None:
         assert rejected_face_pass_phi not in replay
     for rejected_index in (760, 1685, 769, 1693):
         assert f"({rejected_index}, 66," not in replay
-    assert "if (curve_index == 0)" in sweep_scratch
+    assert "if (i == 3 * (int)sizeof(PathTemplateSample))" in sweep_scratch
+    assert "if (curve_index == 0)" not in sweep_scratch
     assert "if (curve_index == 0)" in snake_scratch
     assert "if (current_index <= 3)" not in sweep_scratch
     assert "if (i <= 6)" not in snake_scratch
