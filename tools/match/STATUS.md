@@ -568,7 +568,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | calc_object_bounding_box | 0x42fb10 | 402 | 119/119 | 99.16% | 28/119 | 1 ok |  | core |
 | 🚧 | calc_object_texture_groups | 0x4303f0 | 127 | 55/55 | 98.18% | 18/55 | 1 ok |  | core |
 | 🚧 | replace_object_list_texture_refs | 0x430d90 | 129 | 53/53 | 96.23% | 24/53 | 1 ok |  | core |
-| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 134/134 | 98.51% | 131/134 | 4 unaudited, 30 ok |  | boundary |
+| 🚧 | update_input_controller_pointer_region | 0x4321c0 | 466 | 134/134 | 98.51% | 131/134 | 32 ok |  | boundary |
 | 🚧 | read_repeating_text_input_key_code | 0x4327e0 | 1337 | 440/440 | 99.32% | 408/440 | 74 ok |  | boundary |
 | 🚧 | initialize_track_render_cache_manager | 0x433060 | 436 | 122/122 | 99.18% | 29/122 | 18 ok |  | core |
 | 🚧 | build_track_render_caches | 0x433220 | 1552 | 475/475 | 99.79% | 90/475 | 20 ok |  | core |
@@ -594,14 +594,14 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 278/278 | 92.81% | 23/278 | 46 ok |  | core |
 | 🚧 | construct_game_runtime | 0x407b60 | 1169 | 299/268 | 89.95% | 10/268 | 120 ok | msvc6.5 /O2 /G5 /W3 /GX | core |
 | 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 42 ok |  | core |
-| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 9 unaudited, 1875 ok |  | core |
+| 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5392/5411 | 80.50% | 0/5411 | 7 unaudited, 1876 ok |  | core |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 89.71% | 17/67 | 7 ok |  | core |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 137/139 | 90.58% | 7/139 | 4 ok |  | boundary |
 | 🚧 | get_or_append_object_texture_group_vertex | 0x413bb0 | 411 | 128/127 | 83.14% | 25/127 | 18 ok |  | boundary |
 | 🚧 | update_golb_ai | 0x414820 | 2656 | 693/694 | 91.56% | 9/694 | 71 ok |  | core |
 | 🚧 | add_time_trial_high_score | 0x4178b0 | 143 | 49/49 | 89.80% | 29/49 | 1 ok |  | core |
 | 🚧 | mini_delete_high_score_entry | 0x417af0 | 92 | 33/33 | 84.85% | 15/33 | - |  | core |
-| 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 4 unaudited, 52 ok |  | core |
+| 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 54 ok |  | core |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.89% | 88/521 | 66 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1551 | 421/425 | 85.82% | 32/425 | 7 ok |  | core |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  | core |
@@ -670,7 +670,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 4 unaudited, 49 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
-| 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 2 unaudited, 128 ok |  | core |
+| 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 129 ok |  | core |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 70.58% | 6/501 | 70 ok |  | core |
 | 🚧 | handle_subgoldy_collisions | 0x444cf0 | 2887 | 670/673 | 75.06% | 8/673 | 89 ok |  | core |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 24 ok |  | core |
@@ -691,7 +691,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 691/707 | 43.20% | 18/707 | 55 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 635/663 | 47.92% | 15/663 | 33 ok |  | core |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 559/579 | 44.99% | 7/579 | 39 ok |  | core |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1230/1245 | 32.32% | 2/1245 | 1 mismatch, 85 unaudited, 93 ok |  | core |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1230/1245 | 32.32% | 2/1245 | 1 mismatch, 77 unaudited, 97 ok |  | core |
 
 ## Excluded: Replaceable Platform (120)
 
@@ -704,7 +704,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🖥 | toggle_archive_high_bit_in_place | 0x405350 | 24 | 11/11 | 100.00% | 11/11 | - |  | replaceable-platform |
 | 🖥 | rebuild_game_archive_if_needed | 0x405370 | 715 | 232/232 | 66.38% | 5/232 | 22 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | log_startup_timestamp | 0x406d30 | 58 | 19/19 | 100.00% | 19/19 | 4 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
-| 🖥 | game_startup_and_main_loop | 0x406dc0 | 1316 | 327/325 | 70.86% | 1/325 | 33 unaudited, 146 ok |  | replaceable-platform |
+| 🖥 | game_startup_and_main_loop | 0x406dc0 | 1316 | 327/325 | 70.86% | 1/325 | 25 unaudited, 150 ok |  | replaceable-platform |
 | 🖥 | handle_game_window_activate | 0x4072f0 | 187 | 44/44 | 100.00% | 44/44 | 26 ok |  | replaceable-platform |
 | 🖥 | show_and_focus_game_window | 0x4073b0 | 141 | 33/33 | 100.00% | 33/33 | 19 ok |  | replaceable-platform |
 | 🖥 | handle_game_window_deactivate | 0x407440 | 69 | 18/18 | 100.00% | 18/18 | 9 ok |  | replaceable-platform |

@@ -1984,6 +1984,82 @@ def audit_masked_operands(
         candidate_index for _, candidate_index in relaxed_reference_pairs
     )
 
+    # A compiler may implement the same typed self-copy through different
+    # register classes. In particular, VC6 can use MOV for a float field that
+    # the native translation unit round-trips through FLD/FSTP. Align only
+    # single-reference memory transfers that preserve canonical identity,
+    # access direction, width, and order; a load must never pair with a store.
+    def memory_transfer_token(
+        line: DisassemblyLine,
+    ) -> tuple[str, str, tuple[str, ...]] | None:
+        if len(line.masked_references) != 1:
+            return None
+        reference = line.masked_references[0]
+        opcode = line.text.partition(" ")[0]
+        width_match = re.search(
+            r"\b(tbyte|qword|dword|word|byte) \[[^\]]*\bADDR\b[^\]]*\]",
+            line.text,
+        )
+        if width_match is None:
+            return None
+        access = None
+        if opcode == "mov":
+            if reference.operand_index == 0:
+                access = "write"
+            elif reference.operand_index == 1:
+                access = "read"
+        elif opcode == "fld" and reference.operand_index == 0:
+            access = "read"
+        elif opcode == "fstp" and reference.operand_index == 0:
+            access = "write"
+        if access is None:
+            return None
+        return access, width_match.group(1), alignment_keys(reference)
+
+    transfer_target_indices = [
+        index
+        for index, line in enumerate(target_disassembly)
+        if (
+            line.masked_references
+            and index not in used_target_indices
+            and memory_transfer_token(line) is not None
+        )
+    ]
+    transfer_candidate_indices = [
+        index
+        for index, line in enumerate(candidate_disassembly)
+        if (
+            line.masked_references
+            and index not in used_candidate_indices
+            and memory_transfer_token(line) is not None
+        )
+    ]
+    transfer_matcher = difflib.SequenceMatcher(
+        a=tuple(
+            memory_transfer_token(target_disassembly[index])
+            for index in transfer_target_indices
+        ),
+        b=tuple(
+            memory_transfer_token(candidate_disassembly[index])
+            for index in transfer_candidate_indices
+        ),
+        autojunk=False,
+    )
+    transfer_reference_pairs = {
+        (
+            transfer_target_indices[target_index],
+            transfer_candidate_indices[candidate_index],
+        )
+        for target_index, candidate_index in equal_pairs(transfer_matcher)
+    }
+    reference_masked_pairs.update(transfer_reference_pairs)
+    used_target_indices.update(
+        target_index for target_index, _ in transfer_reference_pairs
+    )
+    used_candidate_indices.update(
+        candidate_index for _, candidate_index in transfer_reference_pairs
+    )
+
     text_matcher = difflib.SequenceMatcher(
         a=tuple(line.text for line in target_disassembly),
         b=tuple(line.text for line in candidate_disassembly),

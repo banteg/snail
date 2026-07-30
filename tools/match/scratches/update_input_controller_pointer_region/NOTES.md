@@ -136,3 +136,15 @@ partial alignment; the preceding 30 references remain clean. The operation is
 entirely local after the last branch, so translation-unit co-location cannot
 supply a missing source relationship. No volatile, arithmetic no-op, or TU
 cluster is introduced to force x87.
+
+## 2026-07-30 final transfer reference proof
+
+The masked-reference audit now aligns single-reference memory transfers across
+register classes when canonical identity, access direction, width, and order
+all agree. This proves the native `fld dword` / `fstp dword` self-copy against
+the candidate's `mov` load/store pair without treating a load as a store;
+reversed transfer order remains explicitly rejected by regression coverage.
+
+The retained source and score remain unchanged at 98.51%, 134/134
+instructions, prefix 131/134. The former four one-sided audit entries are now
+two paired and proved accesses, leaving all 32 masked operands clean.

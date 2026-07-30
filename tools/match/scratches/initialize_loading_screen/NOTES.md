@@ -125,3 +125,15 @@ Sequence alignment cannot pair them after the whole-function EBX/EDI swap and
 nearby independent load scheduling. All other 50 masked operands audit clean.
 The verified thiscall/void source remains unchanged; forcing the register split
 would reduce both the fuzzy match and reference evidence.
+
+## 2026-07-30 transfer-aware reference audit
+
+The matcher can now align ordered same-width memory transfers across integer
+and x87 register classes while preserving reference identity and read/write
+direction. Combined with the earlier register-scheduling alignment, that
+closes the bounded one-sided entries without changing this scratch or accepting
+a weaker symbol match.
+
+The retained initializer remains 83.00%, 253/253 instructions, prefix 5/253.
+All 54 paired masked-reference sites are now audited and clean; no unresolved,
+mismatched, or unaudited reference remains.

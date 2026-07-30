@@ -611,3 +611,12 @@ verified instruction comments, so future non-materialized owners can be
 preserved without fakematching or fake pointer lifetimes. This is analysis-only
 and leaves the honest focused frontier unchanged at 79.94%, 1036/1033
 instructions, 123 clean operands, and the two jump-table identity residuals.
+
+## 2026-07-30 transfer-aware reference audit
+
+The ordered memory-transfer audit now pairs the remaining same-field accesses
+across x87 and integer register allocation without changing the source or
+normalizing their instructions as equal. The focused frontier stays 79.94%,
+1036/1033 instructions, prefix 9/1033, while all 129 masked-reference sites
+are now audited and clean. The earlier two one-sided audit residuals were
+alignment debt, not different jump-table targets or missing owners.

@@ -815,6 +815,84 @@ def test_masked_operand_audit_does_not_relax_reference_operand_position() -> Non
     assert audit.unaudited_count == 2
 
 
+def test_masked_operand_audit_aligns_equivalent_memory_transfer_sequence() -> None:
+    def transfer_line(
+        index: int,
+        text: str,
+        operand_index: int,
+        source: str,
+    ) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=index,
+            address=0x401000 + index,
+            text=text,
+            masked_references=(
+                MaskedReference(
+                    operand_index=operand_index,
+                    kind="disp",
+                    source=source,
+                    value=None,
+                    text=f"{source}:g_pointer_y",
+                    key="ref:g_pointer_y",
+                    explained=True,
+                ),
+            ),
+        )
+
+    target = (
+        transfer_line(0, "fld dword [ecx+ADDR]", 0, "image"),
+        transfer_line(1, "fstp dword [ecx+ADDR]", 0, "image"),
+    )
+    candidate = (
+        transfer_line(0, "mov edx, dword [ecx+ADDR]", 1, "reloc"),
+        transfer_line(1, "mov dword [ecx+ADDR], edx", 0, "reloc"),
+    )
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.ok_count == 2
+    assert audit.problem_count == 0
+
+
+def test_masked_operand_audit_rejects_reversed_memory_transfer_sequence() -> None:
+    def transfer_line(
+        index: int,
+        text: str,
+        operand_index: int,
+        source: str,
+    ) -> DisassemblyLine:
+        return DisassemblyLine(
+            offset=index,
+            address=0x401000 + index,
+            text=text,
+            masked_references=(
+                MaskedReference(
+                    operand_index=operand_index,
+                    kind="disp",
+                    source=source,
+                    value=None,
+                    text=f"{source}:g_pointer_y",
+                    key="ref:g_pointer_y",
+                    explained=True,
+                ),
+            ),
+        )
+
+    target = (
+        transfer_line(0, "fld dword [ecx+ADDR]", 0, "image"),
+        transfer_line(1, "fstp dword [ecx+ADDR]", 0, "image"),
+    )
+    candidate = (
+        transfer_line(0, "mov dword [ecx+ADDR], edx", 0, "reloc"),
+        transfer_line(1, "mov edx, dword [ecx+ADDR]", 1, "reloc"),
+    )
+
+    audit = audit_masked_operands(target, candidate)
+
+    assert audit.ok_count == 1
+    assert audit.unaudited_count == 2
+
+
 def test_masked_operand_audit_flags_unresolved_target_reference() -> None:
     # target: push 0x402000; ret. The image address has no function/string name,
     # so a matching ADDR shape against a candidate symbol is not proof-grade.
