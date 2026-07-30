@@ -7,8 +7,9 @@ on.
 ## Scratch status
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
-glyph-dispatch, authored-row, attachment, clear-loop, and segment-scoped row
-builder slices: 55.64%, 1239/1245 candidate instructions, with a 9-instruction
+glyph-dispatch, authored-row, attachment, clear-loop, segment-scoped row
+builder, segment-count owner, and shared random-selection slices: 60.19%,
+1237/1245 candidate instructions, with a 9-instruction
 exact prefix
 (`uv run snail match scratch
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
@@ -1125,3 +1126,43 @@ instead of native `-0x38`; native uses the adjacent slot for
 scope-interaction probes did not move those slots without a broader
 regression, so no dummy local, padding, volatile dependency, or forced
 register was retained.
+
+## 2026-07-30 segment accumulators and shared random tail
+
+The mode-3 accumulator now retains borrowed `SubSegment` owners for the first,
+last, and repeated segment records. The repeated-segment owner prevents VC6
+from hoisting the row count and recovers the native load/add/store countdown;
+the last-segment owner recovers both native completion-row stores, and the
+first-segment owner restores the native initial register order. These changes
+move the focused frontier from 55.64% to 57.62%. The one remaining instruction
+in that block is an honest compiler-value-forwarding residual:
+`mov ecx, edx` instead of reloading the first-segment row count.
+
+The ordinary authored-segment sum now keeps first/last segment borrows, a
+borrowed `segment_count` field, and a guarded `row_count` cursor. The
+`segment_count` owner prevents the loop from collapsing into a cached
+countdown, while the positive guard delays cursor formation until after the
+empty check. The resulting initial sum and complete cursor/index loop match
+the native instruction sequence; focused matching reaches 59.45%.
+
+Random segment selection now branches only around the two direct RNG
+expressions and merges through a shared float result. This reproduces the
+native branch-specific `"Segdif"`/`"Segtra"` pushes and the single shared
+`_ftol`, rate scale, second `_ftol`, and segment-address tail. It removes 21
+candidate instructions, preserves all 111 aligned references, and reduces
+unaudited references from 56 to 53. Binary Ninja also proves that
+`first_or_last_row` is initialized once and set for first/last selections but
+is not cleared in the general-segment branch; removing that disproven reset
+sets the current frontier to 60.19%, 1237/1245 instructions, with a
+9-instruction prefix and 111 clean / 0 unresolved / 1 mismatch /
+53 unaudited operands.
+
+Recorded bounded sweeps close the local alternatives: initial-sum operand and
+accumulator spellings, mode-3 loop forms, cursor-initializer removal,
+function-scope setup owners, runtime-clear counter and complete-cell owners,
+main-builder declaration/order/receiver aliases, random-enabled byte owners,
+and shared tag variables were neutral or regressive. The shared-tag form
+correctly shortened the duplicated path but spilled the tag/range and lost
+reference alignment; the retained shared-result form explains the native
+tail without that debt. The sole audited mismatch remains the physical glyph
+jump table at `0x437194` versus VC6's candidate-local switch table.

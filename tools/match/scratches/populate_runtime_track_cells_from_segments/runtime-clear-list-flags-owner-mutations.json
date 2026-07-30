@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-list-flags-owner",
+      "find": "            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();",
+      "replacements": [
+        {
+          "name": "signed-word-owner",
+          "text": "            int cell_list_flags =\n                *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);\n            cell_list_flags &= 0xffffff7f;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) =\n                cell_list_flags;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();"
+        },
+        {
+          "name": "unsigned-word-owner",
+          "text": "            unsigned int cell_list_flags =\n                *(unsigned int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);\n            cell_list_flags &= 0xffffff7f;\n            *(unsigned int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) =\n                cell_list_flags;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();"
+        },
+        {
+          "name": "byte-owner",
+          "text": "            unsigned char cell_list_flags =\n                *(unsigned char*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);\n            cell_list_flags &= 0x7f;\n            *(unsigned char*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) =\n                cell_list_flags;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();"
+        }
+      ]
+    }
+  ]
+}

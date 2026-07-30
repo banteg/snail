@@ -95,10 +95,24 @@ void cRSubGame::BuildLevel()
                     * (float)authored_length);
         }
         if (level_definition.random_enabled == 0) {
-            runtime_row_count = level_definition.first_segment.row_count
-                + level_definition.last_segment.row_count;
-            for (int i = 0; i < level_definition.segment_count; ++i)
-                runtime_row_count += level_definition.segment_slots[i].row_count;
+            SubSegment* first_segment =
+                &level_definition.first_segment;
+            SubSegment* last_segment =
+                &level_definition.last_segment;
+            runtime_row_count = last_segment->row_count
+                + first_segment->row_count;
+            int* segment_count = &level_definition.segment_count;
+            int segment_slot_index = 0;
+            if (*segment_count > 0) {
+                int* segment_row_count_cursor =
+                    &level_definition.segment_slots[0].row_count;
+                do {
+                    runtime_row_count += *segment_row_count_cursor;
+                    ++segment_slot_index;
+                    segment_row_count_cursor = (int*)(
+                        (char*)segment_row_count_cursor + sizeof(SubSegment));
+                } while (segment_slot_index < *segment_count);
+            }
             segment_cursor = 0;
         }
         completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
@@ -109,14 +123,20 @@ void cRSubGame::BuildLevel()
                 3100);
         }
     } else if (mode == 3) {
+        SubSegment* first_segment =
+            &level_definition.first_segment;
+        SubSegment* last_segment =
+            &level_definition.last_segment;
         first_block_row_count = level_definition.first_segment.row_count;
-        runtime_row_count = level_definition.first_segment.row_count
-            + level_definition.last_segment.row_count;
+        runtime_row_count = first_segment->row_count
+            + last_segment->row_count;
+        SubSegment* repeated_segment =
+            &level_definition.segment_slots[0];
         for (int i = 0; i < 16; ++i)
-            runtime_row_count += level_definition.segment_slots[0].row_count;
+            runtime_row_count += repeated_segment->row_count;
         segment_cursor = 0;
-        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
-        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;
+        completion_row_start = runtime_row_count - last_segment->row_count;
+        completion_row_start = runtime_row_count - last_segment->row_count;
     }
 
     track_mirror_enabled = false;
@@ -365,25 +385,23 @@ void cRSubGame::BuildLevel()
             first_or_last_row = 1;
             ((SubSegment*)active_segment)->row_base = build_row;
         } else {
-            first_or_last_row = 0;
             base_subgame_rate = 1.0f;
             if (level_definition.random_enabled == 1) {
-                float segment_pick_range;
+                float picked_value;
                 if (level_mode == 1) {
-                    segment_pick_range =
+                    picked_value = random_float_below(
                         (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)
-                        * (float)level_definition.segment_count;
-                    int picked = (int)random_float_below(segment_pick_range, "Segdif");
-                    picked = (int)((float)picked * base_subgame_rate);
-                    active_segment =
-                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
+                            * (float)level_definition.segment_count,
+                        "Segdif");
                 } else {
-                    segment_pick_range = (float)level_definition.segment_count;
-                    int picked = (int)random_float_below(segment_pick_range, "Segtra");
-                    picked = (int)((float)picked * base_subgame_rate);
-                    active_segment =
-                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
+                    picked_value = random_float_below(
+                        (float)level_definition.segment_count,
+                        "Segtra");
                 }
+                int picked = (int)picked_value;
+                picked = (int)((float)picked * base_subgame_rate);
+                active_segment =
+                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;
                 ((SubSegment*)active_segment)->visited = 1;
             } else {
                 int picked = segment_cursor;

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "random-segment-shared-draw",
+      "find": "                float segment_pick_range;\n                if (level_mode == 1) {\n                    segment_pick_range =\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                        * (float)level_definition.segment_count;\n                    int picked = (int)random_float_below(segment_pick_range, \"Segdif\");\n                    picked = (int)((float)picked * base_subgame_rate);\n                    active_segment =\n                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                } else {\n                    segment_pick_range = (float)level_definition.segment_count;\n                    int picked = (int)random_float_below(segment_pick_range, \"Segtra\");\n                    picked = (int)((float)picked * base_subgame_rate);\n                    active_segment =\n                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                }\n                ((SubSegment*)active_segment)->visited = 1;",
+      "replacements": [
+        {
+          "name": "branch-range-and-tag",
+          "text": "                float segment_pick_range;\n                char* segment_pick_tag;\n                if (level_mode == 1) {\n                    segment_pick_range =\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                        * (float)level_definition.segment_count;\n                    segment_pick_tag = \"Segdif\";\n                } else {\n                    segment_pick_range = (float)level_definition.segment_count;\n                    segment_pick_tag = \"Segtra\";\n                }\n                int picked =\n                    (int)random_float_below(segment_pick_range, segment_pick_tag);\n                picked = (int)((float)picked * base_subgame_rate);\n                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;"
+        },
+        {
+          "name": "branch-range-conditional-tag",
+          "text": "                float segment_pick_range;\n                if (level_mode == 1) {\n                    segment_pick_range =\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                        * (float)level_definition.segment_count;\n                } else {\n                    segment_pick_range = (float)level_definition.segment_count;\n                }\n                char* segment_pick_tag =\n                    level_mode == 1 ? \"Segdif\" : \"Segtra\";\n                int picked =\n                    (int)random_float_below(segment_pick_range, segment_pick_tag);\n                picked = (int)((float)picked * base_subgame_rate);\n                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;"
+        },
+        {
+          "name": "tag-first-branch-range",
+          "text": "                char* segment_pick_tag;\n                float segment_pick_range;\n                if (level_mode == 1) {\n                    segment_pick_tag = \"Segdif\";\n                    segment_pick_range =\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                        * (float)level_definition.segment_count;\n                } else {\n                    segment_pick_tag = \"Segtra\";\n                    segment_pick_range = (float)level_definition.segment_count;\n                }\n                int picked =\n                    (int)random_float_below(segment_pick_range, segment_pick_tag);\n                picked = (int)((float)picked * base_subgame_rate);\n                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;"
+        }
+      ]
+    }
+  ]
+}

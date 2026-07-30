@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-three-segment-owner",
+      "find": "        for (int i = 0; i < 16; ++i)\n            runtime_row_count += level_definition.segment_slots[0].row_count;",
+      "replacements": [
+        {
+          "name": "typed-owner-countdown",
+          "text": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        int rows_remaining = 16;\n        do {\n            runtime_row_count += repeated_segment->row_count;\n        } while (--rows_remaining != 0);"
+        },
+        {
+          "name": "raw-owner-countdown",
+          "text": "        char* repeated_segment =\n            (char*)&level_definition.segment_slots[0];\n        int rows_remaining = 16;\n        do {\n            runtime_row_count +=\n                *(int*)(repeated_segment + offsetof(SubSegment, row_count));\n        } while (--rows_remaining != 0);"
+        },
+        {
+          "name": "typed-owner-index-loop",
+          "text": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count += repeated_segment->row_count;"
+        },
+        {
+          "name": "raw-owner-index-loop",
+          "text": "        char* repeated_segment =\n            (char*)&level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count +=\n                *(int*)(repeated_segment + offsetof(SubSegment, row_count));"
+        }
+      ]
+    }
+  ]
+}

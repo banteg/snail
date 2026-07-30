@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-lane-counter",
+      "find": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        for (int lane = 0;\n             lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane) {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        }",
+      "replacements": [
+        {
+          "name": "countdown-do-loop",
+          "text": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        int lanes_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        } while (--lanes_remaining != 0);"
+        },
+        {
+          "name": "register-countdown-do-loop",
+          "text": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        register int lanes_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        do {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        } while (--lanes_remaining != 0);"
+        },
+        {
+          "name": "countdown-while-postdecrement",
+          "text": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        int lanes_remaining =\n            sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);\n        while (lanes_remaining-- != 0) {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        }"
+        },
+        {
+          "name": "register-index-loop",
+          "text": "        char* cell_flags = cell_payload_cursor + CELL_FRINGE_TO_LANE_FLAGS;\n        for (register int lane = 0;\n             lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));\n             ++lane) {\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();\n            cell_flags += sizeof(cRSubLoc);\n        }"
+        }
+      ]
+    }
+  ]
+}

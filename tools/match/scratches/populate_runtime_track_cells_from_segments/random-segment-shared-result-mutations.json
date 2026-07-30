@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "random-segment-shared-result",
+      "find": "                float segment_pick_range;\n                if (level_mode == 1) {\n                    segment_pick_range =\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                        * (float)level_definition.segment_count;\n                    int picked = (int)random_float_below(segment_pick_range, \"Segdif\");\n                    picked = (int)((float)picked * base_subgame_rate);\n                    active_segment =\n                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                } else {\n                    segment_pick_range = (float)level_definition.segment_count;\n                    int picked = (int)random_float_below(segment_pick_range, \"Segtra\");\n                    picked = (int)((float)picked * base_subgame_rate);\n                    active_segment =\n                        base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                }\n                ((SubSegment*)active_segment)->visited = 1;",
+      "replacements": [
+        {
+          "name": "shared-integer-result",
+          "text": "                int picked;\n                float segment_pick_range;\n                if (level_mode == 1) {\n                    segment_pick_range =\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                        * (float)level_definition.segment_count;\n                    picked =\n                        (int)random_float_below(segment_pick_range, \"Segdif\");\n                } else {\n                    segment_pick_range = (float)level_definition.segment_count;\n                    picked =\n                        (int)random_float_below(segment_pick_range, \"Segtra\");\n                }\n                picked = (int)((float)picked * base_subgame_rate);\n                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;"
+        },
+        {
+          "name": "shared-integer-direct-arguments",
+          "text": "                int picked;\n                if (level_mode == 1) {\n                    picked = (int)random_float_below(\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                            * (float)level_definition.segment_count,\n                        \"Segdif\");\n                } else {\n                    picked = (int)random_float_below(\n                        (float)level_definition.segment_count,\n                        \"Segtra\");\n                }\n                picked = (int)((float)picked * base_subgame_rate);\n                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;"
+        },
+        {
+          "name": "shared-float-result",
+          "text": "                float picked_value;\n                if (level_mode == 1) {\n                    float segment_pick_range =\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                        * (float)level_definition.segment_count;\n                    picked_value =\n                        random_float_below(segment_pick_range, \"Segdif\");\n                } else {\n                    float segment_pick_range =\n                        (float)level_definition.segment_count;\n                    picked_value =\n                        random_float_below(segment_pick_range, \"Segtra\");\n                }\n                int picked = (int)picked_value;\n                picked = (int)((float)picked * base_subgame_rate);\n                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;"
+        },
+        {
+          "name": "shared-float-direct-arguments",
+          "text": "                float picked_value;\n                if (level_mode == 1) {\n                    picked_value = random_float_below(\n                        (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)\n                            * (float)level_definition.segment_count,\n                        \"Segdif\");\n                } else {\n                    picked_value = random_float_below(\n                        (float)level_definition.segment_count,\n                        \"Segtra\");\n                }\n                int picked = (int)picked_value;\n                picked = (int)((float)picked * base_subgame_rate);\n                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;"
+        }
+      ]
+    }
+  ]
+}

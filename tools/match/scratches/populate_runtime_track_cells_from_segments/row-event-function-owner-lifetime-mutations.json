@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-event-owner-declaration",
+      "find": "void cRSubGame::BuildLevel()\n{\n    int runtime_build_seed;",
+      "replacements": [
+        {
+          "name": "declare-function-owner",
+          "text": "void cRSubGame::BuildLevel()\n{\n    int row_event_owner;\n    int runtime_build_seed;"
+        }
+      ]
+    },
+    {
+      "name": "row-event-owner-initialization",
+      "find": "    int row_event_owner = 0;\n    player.follow_state.flag_3c = 0;",
+      "replacements": [
+        {
+          "name": "initialize-function-owner",
+          "text": "    row_event_owner = 0;\n    player.follow_state.flag_3c = 0;"
+        }
+      ]
+    }
+  ]
+}

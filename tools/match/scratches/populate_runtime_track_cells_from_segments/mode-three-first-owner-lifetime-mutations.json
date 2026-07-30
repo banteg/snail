@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-three-first-owner-lifetime",
+      "find": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;",
+      "replacements": [
+        {
+          "name": "first-owner-after-store",
+          "text": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        SubSegment* first_segment =\n            &level_definition.first_segment;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;"
+        },
+        {
+          "name": "both-owners-after-store-first-last",
+          "text": "        first_block_row_count = level_definition.first_segment.row_count;\n        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;"
+        },
+        {
+          "name": "both-owners-after-store-last-first",
+          "text": "        first_block_row_count = level_definition.first_segment.row_count;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        SubSegment* first_segment =\n            &level_definition.first_segment;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;"
+        },
+        {
+          "name": "raw-first-owner-after-store",
+          "text": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        char* first_segment =\n            (char*)&level_definition.first_segment;\n        runtime_row_count =\n            *(int*)(first_segment + offsetof(SubSegment, row_count))\n            + last_segment->row_count;"
+        }
+      ]
+    }
+  ]
+}

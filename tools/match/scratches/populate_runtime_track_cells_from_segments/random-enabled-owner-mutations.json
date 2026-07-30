@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "general-selection-random-enabled-owner",
+      "find": "        } else {\n            base_subgame_rate = 1.0f;\n            if (level_definition.random_enabled == 1) {",
+      "replacements": [
+        {
+          "name": "byte-pointer-after-rate-store",
+          "text": "        } else {\n            base_subgame_rate = 1.0f;\n            unsigned char* random_enabled =\n                &level_definition.random_enabled;\n            if (*random_enabled == 1) {"
+        },
+        {
+          "name": "byte-reference-after-rate-store",
+          "text": "        } else {\n            base_subgame_rate = 1.0f;\n            unsigned char& random_enabled =\n                level_definition.random_enabled;\n            if (random_enabled == 1) {"
+        },
+        {
+          "name": "tracks-owner-after-rate-store",
+          "text": "        } else {\n            base_subgame_rate = 1.0f;\n            SubTracks* tracks = &level_definition;\n            if (tracks->random_enabled == 1) {"
+        },
+        {
+          "name": "byte-pointer-before-rate-store",
+          "text": "        } else {\n            unsigned char* random_enabled =\n                &level_definition.random_enabled;\n            base_subgame_rate = 1.0f;\n            if (*random_enabled == 1) {"
+        }
+      ]
+    }
+  ]
+}

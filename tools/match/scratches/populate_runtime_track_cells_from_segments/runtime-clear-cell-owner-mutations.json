@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-cell-owner",
+      "find": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();",
+      "replacements": [
+        {
+          "name": "complete-owner-fields",
+          "text": "            cRSubLoc* clear_cell = (cRSubLoc*)(\n                cell_flags - offsetof(cRSubLoc, lane_and_flags));\n            int lane_and_flags = clear_cell->lane_and_flags;\n            lane_and_flags &= 0xffff5fff;\n            clear_cell->lane_and_flags = lane_and_flags;\n            clear_cell->open_edge_mask = 0;\n            *(short*)&clear_cell->lane_and_flags = 0;\n            clear_cell->lane_and_flags &= 0xffffafa7;\n            *(short*)&clear_cell->lane_and_flags = 0;\n            clear_cell->list_flags &= 0xffffff7f;\n            clear_cell->color.White();"
+        },
+        {
+          "name": "complete-owner-explicit-values",
+          "text": "            cRSubLoc* clear_cell = (cRSubLoc*)(\n                cell_flags - offsetof(cRSubLoc, lane_and_flags));\n            int lane_and_flags = clear_cell->lane_and_flags;\n            lane_and_flags &= 0xffff5fff;\n            clear_cell->lane_and_flags = lane_and_flags;\n            clear_cell->open_edge_mask = 0;\n            *(short*)&clear_cell->lane_and_flags = 0;\n            clear_cell->lane_and_flags &= 0xffffafa7;\n            *(short*)&clear_cell->lane_and_flags = 0;\n            int cell_list_flags = clear_cell->list_flags;\n            cell_list_flags &= 0xffffff7f;\n            clear_cell->list_flags = cell_list_flags;\n            clear_cell->color.White();"
+        },
+        {
+          "name": "raw-cursor-typed-members",
+          "text": "            cRSubLoc* clear_cell = (cRSubLoc*)(\n                cell_flags - offsetof(cRSubLoc, lane_and_flags));\n            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            clear_cell->open_edge_mask = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            clear_cell->list_flags &= 0xffffff7f;\n            clear_cell->color.White();"
+        }
+      ]
+    }
+  ]
+}

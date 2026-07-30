@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-three-last-segment-owner",
+      "find": "        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = level_definition.first_segment.row_count\n            + level_definition.last_segment.row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count += repeated_segment->row_count;\n        segment_cursor = 0;\n        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;\n        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;",
+      "replacements": [
+        {
+          "name": "typed-owner-all-reads",
+          "text": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = level_definition.first_segment.row_count\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count += repeated_segment->row_count;\n        segment_cursor = 0;\n        completion_row_start = runtime_row_count - last_segment->row_count;\n        completion_row_start = runtime_row_count - last_segment->row_count;"
+        },
+        {
+          "name": "typed-owner-count-and-direct-completion",
+          "text": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = level_definition.first_segment.row_count\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count += repeated_segment->row_count;\n        segment_cursor = 0;\n        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;\n        completion_row_start = runtime_row_count - level_definition.last_segment.row_count;"
+        },
+        {
+          "name": "direct-count-and-typed-completion",
+          "text": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = level_definition.first_segment.row_count\n            + level_definition.last_segment.row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count += repeated_segment->row_count;\n        segment_cursor = 0;\n        completion_row_start = runtime_row_count - last_segment->row_count;\n        completion_row_start = runtime_row_count - last_segment->row_count;"
+        },
+        {
+          "name": "raw-owner-all-reads",
+          "text": "        char* last_segment =\n            (char*)&level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = level_definition.first_segment.row_count\n            + *(int*)(last_segment + offsetof(SubSegment, row_count));\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count += repeated_segment->row_count;\n        segment_cursor = 0;\n        completion_row_start = runtime_row_count\n            - *(int*)(last_segment + offsetof(SubSegment, row_count));\n        completion_row_start = runtime_row_count\n            - *(int*)(last_segment + offsetof(SubSegment, row_count));"
+        }
+      ]
+    }
+  ]
+}

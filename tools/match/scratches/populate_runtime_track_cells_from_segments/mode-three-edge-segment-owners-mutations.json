@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-three-edge-segment-owners",
+      "find": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = level_definition.first_segment.row_count\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];",
+      "replacements": [
+        {
+          "name": "typed-first-then-last",
+          "text": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = first_segment->row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];"
+        },
+        {
+          "name": "typed-last-then-first",
+          "text": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        SubSegment* first_segment =\n            &level_definition.first_segment;\n        first_block_row_count = first_segment->row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];"
+        },
+        {
+          "name": "typed-first-assignment-only",
+          "text": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = first_segment->row_count;\n        runtime_row_count = level_definition.first_segment.row_count\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];"
+        },
+        {
+          "name": "typed-first-sum-only",
+          "text": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];"
+        },
+        {
+          "name": "raw-first-and-typed-last",
+          "text": "        char* first_segment =\n            (char*)&level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count =\n            *(int*)(first_segment + offsetof(SubSegment, row_count));\n        runtime_row_count =\n            *(int*)(first_segment + offsetof(SubSegment, row_count))\n            + last_segment->row_count;\n        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];"
+        }
+      ]
+    }
+  ]
+}

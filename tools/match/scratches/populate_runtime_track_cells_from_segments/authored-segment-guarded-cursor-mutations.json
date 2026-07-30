@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "authored-segment-guarded-cursor",
+      "find": "            int* segment_count = &level_definition.segment_count;\n            int segment_slot_index = 0;\n            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            while (segment_slot_index < *segment_count) {\n                runtime_row_count += *segment_row_count_cursor;\n                ++segment_slot_index;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }",
+      "replacements": [
+        {
+          "name": "positive-guard-do-while",
+          "text": "            int* segment_count = &level_definition.segment_count;\n            int segment_slot_index = 0;\n            if (*segment_count > 0) {\n                int* segment_row_count_cursor =\n                    &level_definition.segment_slots[0].row_count;\n                do {\n                    runtime_row_count += *segment_row_count_cursor;\n                    ++segment_slot_index;\n                    segment_row_count_cursor = (int*)(\n                        (char*)segment_row_count_cursor + sizeof(SubSegment));\n                } while (segment_slot_index < *segment_count);\n            }"
+        },
+        {
+          "name": "positive-guard-for-loop",
+          "text": "            int* segment_count = &level_definition.segment_count;\n            if (*segment_count > 0) {\n                int* segment_row_count_cursor =\n                    &level_definition.segment_slots[0].row_count;\n                for (int segment_slot_index = 0;\n                     segment_slot_index < *segment_count;\n                     ++segment_slot_index) {\n                    runtime_row_count += *segment_row_count_cursor;\n                    segment_row_count_cursor = (int*)(\n                        (char*)segment_row_count_cursor + sizeof(SubSegment));\n                }\n            }"
+        },
+        {
+          "name": "positive-guard-indexed-array",
+          "text": "            int* segment_count = &level_definition.segment_count;\n            if (*segment_count > 0) {\n                for (int segment_slot_index = 0;\n                     segment_slot_index < *segment_count;\n                     ++segment_slot_index) {\n                    runtime_row_count +=\n                        level_definition.segment_slots[segment_slot_index].row_count;\n                }\n            }"
+        }
+      ]
+    }
+  ]
+}

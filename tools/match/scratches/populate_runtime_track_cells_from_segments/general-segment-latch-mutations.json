@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "general-segment-first-last-latch",
+      "find": "        } else {\n            first_or_last_row = 0;\n            base_subgame_rate = 1.0f;",
+      "replacements": [
+        {
+          "name": "retain-edge-latch",
+          "text": "        } else {\n            base_subgame_rate = 1.0f;"
+        }
+      ]
+    }
+  ]
+}

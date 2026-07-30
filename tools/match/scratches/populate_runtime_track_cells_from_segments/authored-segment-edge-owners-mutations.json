@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "authored-segment-edge-owners",
+      "find": "        if (level_definition.random_enabled == 0) {\n            runtime_row_count = level_definition.first_segment.row_count\n                + level_definition.last_segment.row_count;\n            for (int i = 0; i < level_definition.segment_count; ++i)\n                runtime_row_count += level_definition.segment_slots[i].row_count;\n            segment_cursor = 0;\n        }",
+      "replacements": [
+        {
+          "name": "typed-last-plus-first",
+          "text": "        if (level_definition.random_enabled == 0) {\n            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            for (int i = 0; i < level_definition.segment_count; ++i)\n                runtime_row_count += level_definition.segment_slots[i].row_count;\n            segment_cursor = 0;\n        }"
+        },
+        {
+          "name": "typed-first-plus-last",
+          "text": "        if (level_definition.random_enabled == 0) {\n            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            runtime_row_count = first_segment->row_count\n                + last_segment->row_count;\n            for (int i = 0; i < level_definition.segment_count; ++i)\n                runtime_row_count += level_definition.segment_slots[i].row_count;\n            segment_cursor = 0;\n        }"
+        },
+        {
+          "name": "typed-last-first-and-slot-owner",
+          "text": "        if (level_definition.random_enabled == 0) {\n            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            SubSegment* segment_slot =\n                &level_definition.segment_slots[0];\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            for (int i = 0; i < level_definition.segment_count; ++i) {\n                runtime_row_count += segment_slot->row_count;\n                ++segment_slot;\n            }\n            segment_cursor = 0;\n        }"
+        },
+        {
+          "name": "typed-last-first-and-field-cursor",
+          "text": "        if (level_definition.random_enabled == 0) {\n            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            for (int i = 0; i < level_definition.segment_count; ++i) {\n                runtime_row_count += *segment_row_count_cursor;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }\n            segment_cursor = 0;\n        }"
+        }
+      ]
+    }
+  ]
+}

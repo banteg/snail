@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-three-owned-loop-shape",
+      "find": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i)\n            runtime_row_count += repeated_segment->row_count;",
+      "replacements": [
+        {
+          "name": "index-explicit-next",
+          "text": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int i = 0; i < 16; ++i) {\n            int next_runtime_row_count =\n                runtime_row_count + repeated_segment->row_count;\n            runtime_row_count = next_runtime_row_count;\n        }"
+        },
+        {
+          "name": "countdown-do-explicit-next",
+          "text": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        int rows_remaining = 16;\n        do {\n            int next_runtime_row_count =\n                runtime_row_count + repeated_segment->row_count;\n            runtime_row_count = next_runtime_row_count;\n        } while (--rows_remaining != 0);"
+        },
+        {
+          "name": "countdown-while-postdecrement",
+          "text": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        int rows_remaining = 16;\n        while (rows_remaining-- != 0)\n            runtime_row_count += repeated_segment->row_count;"
+        },
+        {
+          "name": "countdown-for",
+          "text": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        for (int rows_remaining = 16;\n             rows_remaining != 0;\n             --rows_remaining)\n            runtime_row_count += repeated_segment->row_count;"
+        },
+        {
+          "name": "preincrement-index",
+          "text": "        SubSegment* repeated_segment =\n            &level_definition.segment_slots[0];\n        int i = 0;\n        do {\n            runtime_row_count += repeated_segment->row_count;\n        } while (++i < 16);"
+        }
+      ]
+    }
+  ]
+}

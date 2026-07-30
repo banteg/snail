@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mode-three-initial-count-order",
+      "find": "        runtime_row_count = level_definition.first_segment.row_count\n            + level_definition.last_segment.row_count;",
+      "replacements": [
+        {
+          "name": "last-then-first",
+          "text": "        runtime_row_count = level_definition.last_segment.row_count\n            + level_definition.first_segment.row_count;"
+        }
+      ]
+    }
+  ]
+}

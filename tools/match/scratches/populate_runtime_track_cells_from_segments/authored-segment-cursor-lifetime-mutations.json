@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "authored-segment-cursor-lifetime",
+      "find": "            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            for (int i = 0; i < level_definition.segment_count; ++i) {\n                runtime_row_count += *segment_row_count_cursor;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }",
+      "replacements": [
+        {
+          "name": "cursor-after-initial-total",
+          "text": "            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            for (int i = 0; i < level_definition.segment_count; ++i) {\n                runtime_row_count += *segment_row_count_cursor;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }"
+        },
+        {
+          "name": "cursor-and-index-after-total",
+          "text": "            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            int segment_slot_index = 0;\n            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            while (segment_slot_index < level_definition.segment_count) {\n                runtime_row_count += *segment_row_count_cursor;\n                ++segment_slot_index;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }"
+        },
+        {
+          "name": "count-owner-and-cursor-after-total",
+          "text": "            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            int* segment_count = &level_definition.segment_count;\n            int segment_slot_index = 0;\n            int* segment_row_count_cursor =\n                &level_definition.segment_slots[0].row_count;\n            while (segment_slot_index < *segment_count) {\n                runtime_row_count += *segment_row_count_cursor;\n                ++segment_slot_index;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }"
+        },
+        {
+          "name": "tracks-owner-after-total",
+          "text": "            SubSegment* first_segment =\n                &level_definition.first_segment;\n            SubSegment* last_segment =\n                &level_definition.last_segment;\n            runtime_row_count = last_segment->row_count\n                + first_segment->row_count;\n            SubTracks* tracks = &level_definition;\n            int segment_slot_index = 0;\n            int* segment_row_count_cursor =\n                &tracks->segment_slots[0].row_count;\n            while (segment_slot_index < tracks->segment_count) {\n                runtime_row_count += *segment_row_count_cursor;\n                ++segment_slot_index;\n                segment_row_count_cursor = (int*)(\n                    (char*)segment_row_count_cursor + sizeof(SubSegment));\n            }"
+        }
+      ]
+    }
+  ]
+}
