@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "unused-function-scope-pickup-vector",
+      "find": "    Vec3 probe_b;      // v67\n    Vec3 probe_c;      // v68\n    Vec3 delta;        // v69",
+      "replacements": [
+        {
+          "name": "remove-dead-owner",
+          "text": "    Vec3 probe_b;      // v67\n    Vec3 delta;        // v69"
+        }
+      ]
+    }
+  ]
+}

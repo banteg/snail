@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "salt-vector-current",
+      "find": "                    delta =\n                        *(Vec3*)(slot + SALT_POSITION_FROM_SUBGAME)\n                        - cached_camera_target_world;\n                    probe_salt = delta;\n                    if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {",
+      "replacements": [
+        {
+          "name": "component-assigned-shared-delta",
+          "text": "                    delta.x = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, x))\n                            - cached_camera_target_world.x;\n                    delta.y = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, y))\n                            - cached_camera_target_world.y;\n                    delta.z = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                       + offsetof(Vector3, z))\n                            - cached_camera_target_world.z;\n                    probe_salt = delta;\n                    if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {"
+        },
+        {
+          "name": "component-assigned-branch-delta",
+          "text": "                    Vec3 salt_delta;\n                    salt_delta.x = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                            + offsetof(Vector3, x))\n                                 - cached_camera_target_world.x;\n                    salt_delta.y = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                            + offsetof(Vector3, y))\n                                 - cached_camera_target_world.y;\n                    salt_delta.z = *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                            + offsetof(Vector3, z))\n                                 - cached_camera_target_world.z;\n                    probe_salt = salt_delta;\n                    if (salt_delta.z < 1.0f\n                        && normalize_vector(&probe_salt) < 0.98000002f) {"
+        },
+        {
+          "name": "component-constructed-shared-delta",
+          "text": "                    delta = Vec3(\n                        *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                  + offsetof(Vector3, x))\n                            - cached_camera_target_world.x,\n                        *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                  + offsetof(Vector3, y))\n                            - cached_camera_target_world.y,\n                        *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                  + offsetof(Vector3, z))\n                            - cached_camera_target_world.z);\n                    probe_salt = delta;\n                    if (delta.z < 1.0f && normalize_vector(&probe_salt) < 0.98000002f) {"
+        },
+        {
+          "name": "direct-probe-components",
+          "text": "                    probe_salt.x =\n                        *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                  + offsetof(Vector3, x))\n                        - cached_camera_target_world.x;\n                    probe_salt.y =\n                        *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                  + offsetof(Vector3, y))\n                        - cached_camera_target_world.y;\n                    probe_salt.z =\n                        *(float*)(slot + SALT_POSITION_FROM_SUBGAME\n                                  + offsetof(Vector3, z))\n                        - cached_camera_target_world.z;\n                    if (probe_salt.z < 1.0f\n                        && normalize_vector(&probe_salt) < 0.98000002f) {"
+        }
+      ]
+    }
+  ]
+}

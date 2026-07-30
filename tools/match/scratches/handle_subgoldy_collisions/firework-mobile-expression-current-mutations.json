@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "firework-mobile-expression-current",
+      "find": "                                burst_offset = probe_b * half;\n                                probe_salt.x = burst_offset.x + cached_camera_target_world.x;\n                                burst_position.x = probe_salt.x;\n                                int slot_id = player_slot;\n                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;\n                                burst_position.y = probe_salt.y;\n                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;\n                                burst_position.z = probe_salt.z;",
+      "replacements": [
+        {
+          "name": "direct-output-product-first",
+          "text": "                                burst_position.x =\n                                    probe_b.x * half + cached_camera_target_world.x;\n                                int slot_id = player_slot;\n                                burst_position.y =\n                                    probe_b.y * half + cached_camera_target_world.y;\n                                burst_position.z =\n                                    probe_b.z * half + cached_camera_target_world.z;"
+        },
+        {
+          "name": "direct-output-target-first",
+          "text": "                                burst_position.x =\n                                    cached_camera_target_world.x + probe_b.x * half;\n                                int slot_id = player_slot;\n                                burst_position.y =\n                                    cached_camera_target_world.y + probe_b.y * half;\n                                burst_position.z =\n                                    cached_camera_target_world.z + probe_b.z * half;"
+        },
+        {
+          "name": "scaled-vector-direct-output",
+          "text": "                                burst_offset = probe_b * half;\n                                burst_position.x =\n                                    burst_offset.x + cached_camera_target_world.x;\n                                int slot_id = player_slot;\n                                burst_position.y =\n                                    burst_offset.y + cached_camera_target_world.y;\n                                burst_position.z =\n                                    burst_offset.z + cached_camera_target_world.z;"
+        },
+        {
+          "name": "component-scaled-vector-direct-output",
+          "text": "                                burst_offset.x = probe_b.x * half;\n                                burst_offset.y = probe_b.y * half;\n                                burst_offset.z = probe_b.z * half;\n                                burst_position.x =\n                                    burst_offset.x + cached_camera_target_world.x;\n                                int slot_id = player_slot;\n                                burst_position.y =\n                                    burst_offset.y + cached_camera_target_world.y;\n                                burst_position.z =\n                                    burst_offset.z + cached_camera_target_world.z;"
+        },
+        {
+          "name": "scalar-products-direct-output",
+          "text": "                                float burst_x = probe_b.x * half;\n                                float burst_y = probe_b.y * half;\n                                float burst_z = probe_b.z * half;\n                                burst_position.x =\n                                    burst_x + cached_camera_target_world.x;\n                                int slot_id = player_slot;\n                                burst_position.y =\n                                    burst_y + cached_camera_target_world.y;\n                                burst_position.z =\n                                    burst_z + cached_camera_target_world.z;"
+        }
+      ]
+    }
+  ]
+}

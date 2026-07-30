@@ -53,7 +53,6 @@ void cRSubGoldy::Collision()
     };
 
     Vec3 probe_b;      // v67
-    Vec3 probe_c;      // v68
     Vec3 delta;        // v69
     Vec3 probe_salt;   // vector (also rings/effects source)
     Vec3 burst_offset;
@@ -218,6 +217,7 @@ void cRSubGoldy::Collision()
             }
         }
     }
+    Vec3 pickup_probe;
     for (int ii = 0; ii < 8; ++ii) {
         if (game->health_pickups[ii].state == TRACK_PICKUP_STATE_ACTIVE) {
             probe_b.x =
@@ -229,7 +229,7 @@ void cRSubGoldy::Collision()
             probe_b.z =
                 game->health_pickups[ii].position.z
                 - cached_camera_target_world.z;
-            probe_c = probe_b;
+            pickup_probe = probe_b;
             if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {
                 float pickup_y;
                 if (probe_b.y < 0.0f)
@@ -237,7 +237,7 @@ void cRSubGoldy::Collision()
                 else
                     pickup_y = probe_b.y;
                 if (pickup_y < 0.40000001f
-                    && normalize_vector(&probe_c) < 0.98000002f) {
+                    && normalize_vector(&pickup_probe) < 0.98000002f) {
                     g_sound_effect_manager.play_sound_effect(14);
                     game->health_pickups[ii].state =
                         TRACK_PICKUP_STATE_TEARDOWN_PENDING;
@@ -257,7 +257,7 @@ void cRSubGoldy::Collision()
         probe_b.z =
             game->speedup_pickup.transform.position.z
             - cached_camera_target_world.z;
-        Vec3 speedup_probe = probe_b;
+        pickup_probe = probe_b;
         if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {
             float pickup_y;
             if (probe_b.y < 0.0f)
@@ -265,7 +265,7 @@ void cRSubGoldy::Collision()
             else
                 pickup_y = probe_b.y;
             if (pickup_y < 0.40000001f
-                && normalize_vector(&speedup_probe) < 0.98000002f) {
+                && normalize_vector(&pickup_probe) < 0.98000002f) {
                 game->speedup_pickup.state =
                     TRACK_PICKUP_STATE_TEARDOWN_PENDING;
                 noop_runtime_ai();
@@ -280,8 +280,8 @@ void cRSubGoldy::Collision()
             game->jetpack_pickup.position.y - cached_camera_target_world.y;
         probe_b.z =
             game->jetpack_pickup.position.z - cached_camera_target_world.z;
-        probe_c = probe_b;
-        if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&probe_c) < 3.0f) {
+        pickup_probe = probe_b;
+        if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&pickup_probe) < 3.0f) {
             game->jetpack_pickup.state =
                 TRACK_PICKUP_STATE_TEARDOWN_PENDING;
             sub_hover.arm_jetpack_gauge();

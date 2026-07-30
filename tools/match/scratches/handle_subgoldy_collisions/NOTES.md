@@ -748,3 +748,32 @@ sub-lazer form falls to 79.08%. A direct `player_slot` firework argument is
 byte-identical. The remaining salt/firework copy balance and pickup stack
 colors therefore need new evidence, not synthetic padding, volatile state, or
 register coercion.
+
+## 2026-07-30 shared pickup vector ownership
+
+Android and iOS both reuse one collision vector across the health, speedup, and
+jetpack checks. Windows independently uses the same `esp+0x24..0x2c` vector
+slot for all three normalized probes. Moving that owner to the start of the
+pickup sequence and reusing it across all three checks raises focused matching
+from **84.40% to 85.88%** (+43 weighted bytes). The candidate retains the
+exact 673-instruction count, native `0x74` frame, 18-instruction prefix, and
+fully clean 89-reference audit. Every mismatch in the three pickup regions is
+eliminated.
+
+The superseded function-scope probe declaration is compiler-dead; removing it
+is byte-identical and leaves the source with only the recovered late owner.
+Four current-state follow-up sweeps bound the adjacent allocation:
+
+- branch-local salt, garbage, and slug initialization all regress;
+- salt component assignment falls to 77.89-79.67%, while an explicit
+  component constructor is byte-identical;
+- five mobile-shaped direct firework position expressions fall to
+  73.04-75.35%; and
+- the retained Windows firework copy schedule remains necessary despite the
+  shorter mobile expression.
+
+The complete ledger now contains 100 unique variants across fourteen sweeps,
+with five sweep wins and four consecutive non-improving follow-ups. This lane
+is formally stalled at 85.88%; the remaining early stack-color differences
+need new source provenance, while the final two ring-kind differences are only
+equivalent scale-one SIB base/index encodings.
