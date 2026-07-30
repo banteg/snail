@@ -309,3 +309,16 @@ independently reproduced result replaces the prior stalled frontier; remaining
 work is concentrated in the interior sample allocation and face-record
 scheduling rather than mesh row induction, destination ownership, or vector
 subtraction spelling.
+
+## 2026-07-30 mesh arithmetic bound
+
+Two exhaustive sweeps reproduce Twister exactly: four lateral-owner spellings
+and every 35-way combination of ordinary/terminal scale operators plus both
+operand orders for the position adds. Twelve variants are byte-identical and
+27 regress; none improves the retained source.
+
+The existing float lateral owner is best. Both scales and either ordinary add
+order are neutral alone and in all non-terminal-add combinations. A terminal
+position add loses 6.28 weighted bytes in position-first order or 17.08 in
+offset-first order, including their scale interactions. Twister2 remains
+**71.38%**, 682/677 instructions, prefix 94/677, and 49 clean references.

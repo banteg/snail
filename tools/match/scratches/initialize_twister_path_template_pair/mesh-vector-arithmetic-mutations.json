@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-lateral-scale",
+      "find": "                        Vector3 lateral_offset(\n                            lateral * sample->transform.basis_right.x,\n                            lateral * sample->transform.basis_right.y,\n                            lateral * sample->transform.basis_right.z);",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "                        Vector3 lateral_offset =\n                            sample->transform.basis_right * lateral;"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-position-add",
+      "find": "                        Vector3 generated_position(\n                            sample->transform.position.x + lateral_offset.x,\n                            sample->transform.position.y + lateral_offset.y,\n                            sample->transform.position.z + lateral_offset.z);",
+      "replacements": [
+        {
+          "name": "position-first",
+          "text": "                        Vector3 generated_position =\n                            sample->transform.position + lateral_offset;"
+        },
+        {
+          "name": "offset-first",
+          "text": "                        Vector3 generated_position =\n                            lateral_offset + sample->transform.position;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-lateral-scale",
+      "find": "                        Vector3 lateral_offset(\n                            lateral * sample[-1].transform.basis_right.x,\n                            lateral * sample[-1].transform.basis_right.y,\n                            lateral * sample[-1].transform.basis_right.z);",
+      "replacements": [
+        {
+          "name": "operator-scale",
+          "text": "                        Vector3 lateral_offset =\n                            sample[-1].transform.basis_right * lateral;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-position-add",
+      "find": "                        Vector3 generated_position(\n                            endpoint.x + lateral_offset.x,\n                            endpoint.y + lateral_offset.y,\n                            endpoint.z + lateral_offset.z);",
+      "replacements": [
+        {
+          "name": "position-first",
+          "text": "                        Vector3 generated_position =\n                            endpoint + lateral_offset;"
+        },
+        {
+          "name": "offset-first",
+          "text": "                        Vector3 generated_position =\n                            lateral_offset + endpoint;"
+        }
+      ]
+    }
+  ]
+}

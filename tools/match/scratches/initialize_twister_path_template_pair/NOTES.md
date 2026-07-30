@@ -329,3 +329,16 @@ sweeps and has two consecutive non-improving sweeps. Full and partial
 direct-owner forms are therefore bounded on the present dependency state. No
 source change is retained; further interior work needs new provenance rather
 than another sample/transform alias split.
+
+## 2026-07-30 mesh arithmetic bound
+
+Two exhaustive sweeps cover four lateral-owner spellings and every 35-way
+combination of ordinary/terminal scale operators plus both operand orders for
+the position adds. Twelve variants are byte-identical and 27 regress; none
+improves the retained source.
+
+The existing float lateral owner is best. Both scales and either ordinary add
+order are neutral alone and in all non-terminal-add combinations. A terminal
+position add loses 6.28 weighted bytes in position-first order or 17.08 in
+offset-first order, including their scale interactions. Twister remains
+**71.38%**, 682/677 instructions, prefix 94/677, and 49 clean references.
