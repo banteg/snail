@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "blend-size-declaration-order",
+      "find": "    int glow_blend_mode = blend_mode;\n\n    float width = layout_width;\n    float height = layout_height;",
+      "replacements": [
+        {
+          "name": "sizes-before-blend-copy",
+          "text": "    float width = layout_width;\n    float height = layout_height;\n\n    int glow_blend_mode = blend_mode;"
+        },
+        {
+          "name": "height-width-then-blend-copy",
+          "text": "    float height = layout_height;\n    float width = layout_width;\n\n    int glow_blend_mode = blend_mode;"
+        },
+        {
+          "name": "blend-copy-height-width",
+          "text": "    int glow_blend_mode = blend_mode;\n\n    float height = layout_height;\n    float width = layout_width;"
+        },
+        {
+          "name": "assigned-blend-copy-after-sizes",
+          "text": "    int glow_blend_mode;\n    float width = layout_width;\n    float height = layout_height;\n    glow_blend_mode = blend_mode;"
+        }
+      ]
+    },
+    {
+      "name": "slider-color-value-order",
+      "find": "        slider_color = current_text_color;\n        tColour* color = &slider_color;\n        float slider = slider_position_current;",
+      "replacements": [
+        {
+          "name": "slider-before-color",
+          "text": "        float slider = slider_position_current;\n        slider_color = current_text_color;\n        tColour* color = &slider_color;"
+        },
+        {
+          "name": "slider-pointer-before-color",
+          "text": "        float slider = slider_position_current;\n        tColour* color = &slider_color;\n        slider_color = current_text_color;"
+        },
+        {
+          "name": "assigned-slider-before-color",
+          "text": "        float slider;\n        slider = slider_position_current;\n        slider_color = current_text_color;\n        tColour* color = &slider_color;"
+        },
+        {
+          "name": "slider-color-pointer-last",
+          "text": "        float slider = slider_position_current;\n        slider_color = current_text_color;\n        tColour* color;\n        color = &slider_color;"
+        },
+        {
+          "name": "color-pointer-slider-color",
+          "text": "        tColour* color = &slider_color;\n        float slider = slider_position_current;\n        slider_color = current_text_color;"
+        }
+      ]
+    }
+  ]
+}

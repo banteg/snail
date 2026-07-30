@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "blend-branch-lifetime",
+      "find": "    int blend_mode;\n    if ((g_runtime_config.render_flags & 0x80) == 0) {\n        blend_mode = 0;\n        white.a = 1.0f;\n        reserved_color_0.a = 1.0f;\n    } else {\n        blend_mode = 3;\n    }\n    int glow_blend_mode = blend_mode;",
+      "replacements": [
+        {
+          "name": "copy-inside-both-branches",
+          "text": "    int blend_mode;\n    int glow_blend_mode;\n    if ((g_runtime_config.render_flags & 0x80) == 0) {\n        blend_mode = 0;\n        white.a = 1.0f;\n        reserved_color_0.a = 1.0f;\n        glow_blend_mode = blend_mode;\n    } else {\n        blend_mode = 3;\n        glow_blend_mode = blend_mode;\n    }"
+        },
+        {
+          "name": "native-observed-assignment-order",
+          "text": "    int blend_mode;\n    int glow_blend_mode;\n    if ((g_runtime_config.render_flags & 0x80) == 0) {\n        blend_mode = 0;\n        white.a = 1.0f;\n        reserved_color_0.a = 1.0f;\n        glow_blend_mode = blend_mode;\n    } else {\n        glow_blend_mode = 3;\n        blend_mode = glow_blend_mode;\n    }"
+        },
+        {
+          "name": "long-lived-first",
+          "text": "    int blend_mode;\n    int glow_blend_mode;\n    if ((g_runtime_config.render_flags & 0x80) == 0) {\n        glow_blend_mode = 0;\n        white.a = 1.0f;\n        reserved_color_0.a = 1.0f;\n        blend_mode = glow_blend_mode;\n    } else {\n        glow_blend_mode = 3;\n        blend_mode = glow_blend_mode;\n    }"
+        },
+        {
+          "name": "copy-after-alpha-temporaries",
+          "text": "    int blend_mode;\n    int glow_blend_mode;\n    if ((g_runtime_config.render_flags & 0x80) == 0) {\n        white.a = 1.0f;\n        reserved_color_0.a = 1.0f;\n        blend_mode = 0;\n        glow_blend_mode = blend_mode;\n    } else {\n        blend_mode = 3;\n        glow_blend_mode = blend_mode;\n    }"
+        }
+      ]
+    }
+  ]
+}

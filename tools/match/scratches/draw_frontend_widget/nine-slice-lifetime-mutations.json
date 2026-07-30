@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "nine-slice-coordinate-lifetime",
+      "find": "    float x = texture_hit_x;\n    float y = texture_hit_y;\n    float edge = render_inset_base;\n    float u0 = edge * 0.0078125f;\n    float u1 = 1.0f - u0;\n\n    if (render_inset_dynamic != 0) {\n        edge = 4.0f;\n        u0 = 0.1f;\n        u1 = 0.89999998f;\n        x += 4.0f;\n        y += 3.0f;\n        width -= 8.0f;\n        height -= 6.0f;\n    } else if (current_padding < render_inset_base) {\n        float delta = render_inset_base - current_padding;\n        render_inset_delta = delta;\n        edge = render_inset_base;\n        x += delta;\n        y += delta;\n        width -= delta + delta;\n        height -= delta + delta;\n        u0 = edge * 0.0078125f;\n        u1 = 1.0f - u0;\n    } else {\n        edge = current_padding;\n        u0 = 0.2f;\n        u1 = 0.80000001f;\n    }",
+      "replacements": [
+        {
+          "name": "branch-assigned-coordinates",
+          "text": "    float x;\n    float y;\n    float edge = render_inset_base;\n    float u0 = edge * 0.0078125f;\n    float u1 = 1.0f - u0;\n\n    if (render_inset_dynamic != 0) {\n        edge = 4.0f;\n        u0 = 0.1f;\n        u1 = 0.89999998f;\n        x = texture_hit_x + 4.0f;\n        y = texture_hit_y + 3.0f;\n        width -= 8.0f;\n        height -= 6.0f;\n    } else if (current_padding < render_inset_base) {\n        float delta = render_inset_base - current_padding;\n        render_inset_delta = delta;\n        edge = render_inset_base;\n        x = texture_hit_x + delta;\n        y = texture_hit_y + delta;\n        width -= delta + delta;\n        height -= delta + delta;\n        u0 = edge * 0.0078125f;\n        u1 = 1.0f - u0;\n    } else {\n        x = texture_hit_x;\n        y = texture_hit_y;\n        edge = current_padding;\n        u0 = 0.2f;\n        u1 = 0.80000001f;\n    }"
+        },
+        {
+          "name": "fully-branch-assigned",
+          "text": "    float x;\n    float y;\n    float edge;\n    float u0;\n    float u1;\n\n    if (render_inset_dynamic != 0) {\n        x = texture_hit_x + 4.0f;\n        y = texture_hit_y + 3.0f;\n        edge = 4.0f;\n        u0 = 0.1f;\n        u1 = 0.89999998f;\n        width -= 8.0f;\n        height -= 6.0f;\n    } else if (current_padding < render_inset_base) {\n        float delta = render_inset_base - current_padding;\n        render_inset_delta = delta;\n        x = texture_hit_x + delta;\n        y = texture_hit_y + delta;\n        edge = render_inset_base;\n        width -= delta + delta;\n        height -= delta + delta;\n        u0 = edge * 0.0078125f;\n        u1 = 1.0f - u0;\n    } else {\n        x = texture_hit_x;\n        y = texture_hit_y;\n        edge = current_padding;\n        u0 = 0.2f;\n        u1 = 0.80000001f;\n    }"
+        },
+        {
+          "name": "coordinates-before-inset-values",
+          "text": "    float x;\n    float y;\n    float edge;\n    float u0;\n    float u1;\n\n    if (render_inset_dynamic != 0) {\n        x = texture_hit_x + 4.0f;\n        y = texture_hit_y + 3.0f;\n        width -= 8.0f;\n        height -= 6.0f;\n        edge = 4.0f;\n        u0 = 0.1f;\n        u1 = 0.89999998f;\n    } else if (current_padding < render_inset_base) {\n        float delta = render_inset_base - current_padding;\n        x = texture_hit_x + delta;\n        y = texture_hit_y + delta;\n        width -= delta + delta;\n        height -= delta + delta;\n        render_inset_delta = delta;\n        edge = render_inset_base;\n        u0 = edge * 0.0078125f;\n        u1 = 1.0f - u0;\n    } else {\n        x = texture_hit_x;\n        y = texture_hit_y;\n        edge = current_padding;\n        u0 = 0.2f;\n        u1 = 0.80000001f;\n    }"
+        },
+        {
+          "name": "inset-values-before-coordinates",
+          "text": "    float x;\n    float y;\n    float edge;\n    float u0;\n    float u1;\n\n    if (render_inset_dynamic != 0) {\n        edge = 4.0f;\n        u0 = 0.1f;\n        u1 = 0.89999998f;\n        width -= 8.0f;\n        height -= 6.0f;\n        x = texture_hit_x + 4.0f;\n        y = texture_hit_y + 3.0f;\n    } else if (current_padding < render_inset_base) {\n        float delta = render_inset_base - current_padding;\n        render_inset_delta = delta;\n        edge = render_inset_base;\n        u0 = edge * 0.0078125f;\n        u1 = 1.0f - u0;\n        width -= delta + delta;\n        height -= delta + delta;\n        x = texture_hit_x + delta;\n        y = texture_hit_y + delta;\n    } else {\n        edge = current_padding;\n        u0 = 0.2f;\n        u1 = 0.80000001f;\n        x = texture_hit_x;\n        y = texture_hit_y;\n    }"
+        }
+      ]
+    }
+  ]
+}

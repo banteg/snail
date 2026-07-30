@@ -165,3 +165,28 @@ instructions, prefix 3/712, with 65 clean and four unaudited operands to
 85.13%, 707/712 instructions, prefix 16/712, with all 68 masked operands
 audited and clean. Direct member-only slider experiments and declaration-order
 changes regressed the global schedule and were rejected.
+
+## 2026-07-30 bounded renderer lifetime sweep
+
+Live Binary Ninja MLIL confirms that the remaining early mismatch is scheduling,
+not a missing renderer branch: the native retains separate blend-value phis,
+loads the slider before copying its color, duplicates the highlighted sprite
+calls, and joins the three nine-slice coordinate branches exactly where the
+scratch does.
+
+Four bounded mutation sweeps tested the source shapes supported by those facts:
+
+- 29 slider/color/blend declaration and paired-order variants produced two
+  codegen-identical results and 27 regressions;
+- four branch-owned nine-slice coordinate forms all regressed by 53 to 86
+  weighted bytes;
+- three single-dispatch extended-sprite forms regressed by 7 to 9 weighted
+  bytes and left one reference unaudited;
+- four explicit branch-local blend-copy forms regressed by 3 to 9 weighted
+  bytes.
+
+The retained source therefore remains at 85.13%, 707/712 instructions, prefix
+16/712, with all 68 masked operands clean. The ledger now contains 40 unique
+variants, zero improvements, two equivalent results, 38 regressions, and four
+consecutive no-improvement sweeps. This scratch is formally stalled until new
+source or binary evidence identifies a different authored lifetime.

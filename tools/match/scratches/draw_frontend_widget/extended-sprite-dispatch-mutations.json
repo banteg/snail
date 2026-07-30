@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "extended-sprite-texture-dispatch",
+      "find": "        if ((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0) {\n            queue_axis_aligned_textured_quad_uv(\n                sprite_hot_texture_id,\n                texture_hit_x + wobble - pad,\n                texture_hit_y - pad,\n                texture_hit_width + border_edge,\n                texture_hit_height + border_edge,\n                0x1000000,\n                &current_text_color,\n                0.0f,\n                0.0f,\n                1.0f,\n                1.0f,\n                texture_layer,\n                0);\n        } else {\n            queue_axis_aligned_textured_quad_uv(\n                texture_id,\n                texture_hit_x + wobble - pad,\n                texture_hit_y - pad,\n                texture_hit_width + border_edge,\n                texture_hit_height + border_edge,\n                0x1000000,\n                &current_text_color,\n                0.0f,\n                0.0f,\n                1.0f,\n                1.0f,\n                texture_layer,\n                0);\n        }",
+      "replacements": [
+        {
+          "name": "conditional-first-argument",
+          "text": "        queue_axis_aligned_textured_quad_uv(\n            (widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0\n                ? sprite_hot_texture_id\n                : texture_id,\n            texture_hit_x + wobble - pad,\n            texture_hit_y - pad,\n            texture_hit_width + border_edge,\n            texture_hit_height + border_edge,\n            0x1000000,\n            &current_text_color,\n            0.0f,\n            0.0f,\n            1.0f,\n            1.0f,\n            texture_layer,\n            0);"
+        },
+        {
+          "name": "selected-texture-local",
+          "text": "        int selected_texture =\n            (widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0\n                ? sprite_hot_texture_id\n                : texture_id;\n        queue_axis_aligned_textured_quad_uv(\n            selected_texture,\n            texture_hit_x + wobble - pad,\n            texture_hit_y - pad,\n            texture_hit_width + border_edge,\n            texture_hit_height + border_edge,\n            0x1000000,\n            &current_text_color,\n            0.0f,\n            0.0f,\n            1.0f,\n            1.0f,\n            texture_layer,\n            0);"
+        },
+        {
+          "name": "assigned-texture-local",
+          "text": "        int selected_texture = texture_id;\n        if ((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)\n            selected_texture = sprite_hot_texture_id;\n        queue_axis_aligned_textured_quad_uv(\n            selected_texture,\n            texture_hit_x + wobble - pad,\n            texture_hit_y - pad,\n            texture_hit_width + border_edge,\n            texture_hit_height + border_edge,\n            0x1000000,\n            &current_text_color,\n            0.0f,\n            0.0f,\n            1.0f,\n            1.0f,\n            texture_layer,\n            0);"
+        }
+      ]
+    }
+  ]
+}
