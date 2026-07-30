@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "endpoint-z-lifetime",
+      "find": "    if (centered)\n        primary_samples[last].center_x = 0.0f;\n    else\n        primary_samples[last].center_x = (float)width_cells * 0.5f - 4.0f;\n    primary_samples[last].rotation_scalar_98 = 0.0f;\n    primary_samples[last].rotation_scalar_94 = 0.0f;\n    primary_samples[last].special_scalar = 0.0f;\n    primary_samples[last].lateral_scale = 1.0f;\n    set_matrix_identity(&primary_samples[last].transform);\n    primary_samples[last].transform.position.x = primary_samples[last].center_x;\n    float last_z = (float)last;",
+      "replacements": [
+        {
+          "name": "before-centered-branch",
+          "text": "    float last_z = (float)last;\n    if (centered)\n        primary_samples[last].center_x = 0.0f;\n    else\n        primary_samples[last].center_x = (float)width_cells * 0.5f - 4.0f;\n    primary_samples[last].rotation_scalar_98 = 0.0f;\n    primary_samples[last].rotation_scalar_94 = 0.0f;\n    primary_samples[last].special_scalar = 0.0f;\n    primary_samples[last].lateral_scale = 1.0f;\n    set_matrix_identity(&primary_samples[last].transform);\n    primary_samples[last].transform.position.x = primary_samples[last].center_x;"
+        },
+        {
+          "name": "after-centered-branch",
+          "text": "    if (centered)\n        primary_samples[last].center_x = 0.0f;\n    else\n        primary_samples[last].center_x = (float)width_cells * 0.5f - 4.0f;\n    float last_z = (float)last;\n    primary_samples[last].rotation_scalar_98 = 0.0f;\n    primary_samples[last].rotation_scalar_94 = 0.0f;\n    primary_samples[last].special_scalar = 0.0f;\n    primary_samples[last].lateral_scale = 1.0f;\n    set_matrix_identity(&primary_samples[last].transform);\n    primary_samples[last].transform.position.x = primary_samples[last].center_x;"
+        }
+      ]
+    }
+  ]
+}

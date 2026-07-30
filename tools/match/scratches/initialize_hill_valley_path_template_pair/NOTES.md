@@ -204,3 +204,41 @@ tradeoff, while the 19-instruction prefix and all 41 masked references remain
 clean. Both authored `Vector3::operator-` delta sites and the matching primary
 orientation site compile byte-identically; the retained spelling changes only
 the allocation owner established by the measured result.
+
+## 2026-07-30 mesh arithmetic ownership
+
+Native `0x42dbc9..0x42dc99` keeps the lateral value live on the x87 stack
+through both mesh branches, then materializes branch-local lateral offsets.
+Recovering that owner as a `double` local removes four candidate instructions
+and raises focused matching from 54.09% to 54.69%. Spelling both lateral
+offsets through the authored `Vector3::operator*` adds another 25.53 weighted
+bytes, and the terminal generated position through `Vector3::operator+` adds
+18.23 more. The ordinary generated-position operator is byte-neutral and is
+left in its explicit component form.
+
+The retained result is:
+
+```text
+match: 56.48%
+target: 668 insns, candidate: 674 insns
+prefix: 19/668 target insns
+masked operands: 41 ok, 0 unresolved, 0 mismatch
+```
+
+This is a 58.65 weighted-byte gain over the 54.09% baseline while moving the
+candidate four instructions closer to the target. An explicit mesh byte cursor
+paired only with the ordinary branch scored 57.25%, but grew the candidate by
+ten instructions and created a second lifetime absent from the native body.
+Using that cursor in both branches, as the native ownership would require,
+regressed by 10.94 weighted bytes, so the partial metric tradeoff is rejected.
+
+Three subsequent bounded sweeps found no honest retained improvement:
+
+- sharing one source sample owner across both mesh branches regressed by
+  139.50 weighted bytes and lost twelve prefix instructions;
+- all independent and paired hill-height multiplication orders were neutral or
+  worse;
+- moving the terminal Z conversion to either side of the centered branch
+  regressed by 12.00 or 110.00 weighted bytes.
+
+Those results close the current evidence-backed mesh and endpoint neighborhood.

@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-height-scale-order",
+      "find": "    float y = (1.0f - cosine(phase)) * 0.5f * height;\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;",
+      "replacements": [
+        {
+          "name": "height-then-half",
+          "text": "    float y = (1.0f - cosine(phase)) * height * 0.5f;\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;"
+        },
+        {
+          "name": "group-height-half",
+          "text": "    float y = (1.0f - cosine(phase)) * (height * 0.5f);\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;"
+        },
+        {
+          "name": "group-half-height",
+          "text": "    float y = (1.0f - cosine(phase)) * (0.5f * height);\n    path->secondary_samples[index].transform.position.y = y + 0.49000001f;"
+        }
+      ]
+    },
+    {
+      "name": "primary-height-scale-order",
+      "find": "        float y = (1.0f - cosine(phase)) * 0.5f * height;\n        primary_samples[i].transform.position.y = y;",
+      "replacements": [
+        {
+          "name": "height-then-half",
+          "text": "        float y = (1.0f - cosine(phase)) * height * 0.5f;\n        primary_samples[i].transform.position.y = y;"
+        },
+        {
+          "name": "group-height-half",
+          "text": "        float y = (1.0f - cosine(phase)) * (height * 0.5f);\n        primary_samples[i].transform.position.y = y;"
+        },
+        {
+          "name": "group-half-height",
+          "text": "        float y = (1.0f - cosine(phase)) * (0.5f * height);\n        primary_samples[i].transform.position.y = y;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "hoist-current-row-sample",
+      "find": "            double lateral = (float)column - (float)path->width_cells * 0.5f;\n            if (row != path->segment_count) {\n                PathTemplateSample* sample = &path->primary_samples[row];",
+      "replacements": [
+        {
+          "name": "shared-row-sample",
+          "text": "            double lateral = (float)column - (float)path->width_cells * 0.5f;\n            PathTemplateSample* sample = &path->primary_samples[row];\n            if (row != path->segment_count) {"
+        }
+      ]
+    },
+    {
+      "name": "terminal-from-shared-sample",
+      "find": "                PathTemplateSample* previous = &path->primary_samples[row - 1];",
+      "replacements": [
+        {
+          "name": "shared-sample-minus-one",
+          "text": "                PathTemplateSample* previous = sample - 1;"
+        }
+      ]
+    }
+  ]
+}
