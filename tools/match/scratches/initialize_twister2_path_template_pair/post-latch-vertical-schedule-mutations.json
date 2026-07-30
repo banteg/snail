@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "interior-vertical-schedule",
+      "find": "        float angle_sine = sine(angle);\n        int sample_z = local_index + 1;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)sample_z;\n        orient_previous_sample_pair(this, i);\n        local_index = sample_z;",
+      "replacements": [
+        {
+          "name": "late-preincrement",
+          "text": "        float angle_sine = sine(angle);\n        int sample_z = local_index + 1;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)sample_z;\n        orient_previous_sample_pair(this, i);\n        ++local_index;"
+        },
+        {
+          "name": "pre-y-increment",
+          "text": "        float angle_sine = sine(angle);\n        int sample_z = local_index + 1;\n        ++local_index;\n        primary_samples[i].transform.position.y =\n            sine(half_angle) * angle_sine * height;\n        primary_samples[i].transform.position.z = (float)sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)sample_z;\n        orient_previous_sample_pair(this, i);"
+        },
+        {
+          "name": "float-pre-height-factor",
+          "text": "        float angle_sine = sine(angle);\n        float vertical_factor = sine(half_angle) * angle_sine;\n        ++local_index;\n        primary_samples[i].transform.position.y = vertical_factor * height;\n        primary_samples[i].transform.position.z = (float)local_index;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)local_index;\n        orient_previous_sample_pair(this, i);"
+        },
+        {
+          "name": "double-pre-height-factor",
+          "text": "        float angle_sine = sine(angle);\n        double vertical_factor = (double)sine(half_angle) * angle_sine;\n        ++local_index;\n        primary_samples[i].transform.position.y =\n            (float)(vertical_factor * height);\n        primary_samples[i].transform.position.z = (float)local_index;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)local_index;\n        orient_previous_sample_pair(this, i);"
+        },
+        {
+          "name": "integer-z-pre-height-factor",
+          "text": "        float angle_sine = sine(angle);\n        int sample_z = local_index + 1;\n        float vertical_factor = sine(half_angle) * angle_sine;\n        local_index = sample_z;\n        primary_samples[i].transform.position.y = vertical_factor * height;\n        primary_samples[i].transform.position.z = (float)sample_z;\n        set_matrix_identity(&secondary_samples[i].transform);\n        secondary_samples[i].transform.position.x = primary_samples[i].center_x;\n        secondary_samples[i].transform.position.y =\n            primary_samples[i].transform.position.y + 0.49000001f;\n        secondary_samples[i].transform.position.z = (float)sample_z;\n        orient_previous_sample_pair(this, i);"
+        }
+      ]
+    }
+  ]
+}

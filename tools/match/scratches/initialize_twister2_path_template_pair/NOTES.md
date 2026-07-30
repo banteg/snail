@@ -358,3 +358,23 @@ candidate as `[cursor + base]`. Adding a parallel `0xa8` cursor is byte-neutral,
 but addressing the current samples through it drops to **56.87%** and restores
 the old 94-instruction prefix. The explicit cursor is therefore rejected as a
 source owner; no register or operand-order forcing is introduced.
+
+## 2026-07-31 post-latch schedule bound
+
+The common face-record index was retested after the interior allocation
+changed. First-face use remains byte-neutral, while the complete two-branch
+owner now loses 235.63 weighted bytes, falls to **63.73%**, and collapses the
+exact prefix from 123 to seven instructions. The stronger frontier therefore
+reinforces the rejection rather than unlocking the native-looking owner.
+
+The target schedules its logical-index increment between the two floating
+multiplications that produce sample Y. Five equivalent source forms tested a
+late preincrement, a pre-Y increment, float and double pre-height factors, and
+an integer-Z factor. Every form regresses by 165.99 to 179.60 weighted bytes
+and shortens the prefix to 94 or 99 instructions. The retained
+`sample_z` assignment is the only tested form preserving the 123-instruction
+prefix.
+
+Twister2 remains **73.01%**, 690/677 instructions, prefix 123/677, and 49 clean
+references. The commutative SIB order at the first mismatch is left as
+compiler encoding debt rather than inviting source-level operand forcing.
