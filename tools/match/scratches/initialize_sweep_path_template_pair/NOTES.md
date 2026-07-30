@@ -259,3 +259,29 @@ and the equivalent sample-index forms lose 1..136 weighted bytes. The direct
 block is retained because it matches the independently recovered Windows
 owners and is the unique measured winner, not because it happens to leave the
 candidate three instructions short of the target.
+
+## 2026-07-30 checkerboard texture control
+
+Snake's dependency-complete checkerboard recovery justified revisiting the
+same omitted source-family unit here. Sweep's target preserves duplicated
+per-face texture calls behind `(column ^ row) & 1` at
+`0x423426..0x42347d` and `0x4234d9..0x423577`. As in Snake and the broader
+constructor family, both outcomes request the same texture for their winding
+pass.
+
+All eight one- and two-site variants compile. The first branch alone loses
+7.55 weighted bytes, while the second alone gains only 10.89. Restoring the
+dependency-complete pair adds **151.84 weighted bytes** and raises focused
+matching from **55.19% to 61.44%**. The candidate grows from 649 to
+**663/652** instructions and the exact prefix moves from 5 to **6/652**; all
+37 references remain clean. Truth-first and negated spellings are
+byte-identical, so the canonical truth-first family form is retained.
+
+The eleven-instruction excess is recorded rather than optimized by score.
+The adjacent target does compute one flat face index before the winding
+branch, but all five natural grouped, expanded, multiplied, and shifted source
+spellings behave identically. Using that owner for the first face is
+byte-neutral; using it for both faces shrinks the candidate to 653
+instructions but loses 159.74 weighted bytes and falls to **54.87%**. This
+bounded result rejects instruction-count chasing while preserving the
+stronger source-backed control recovery.

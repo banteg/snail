@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-index-owner",
+      "find": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    if (face_index == 0) {\n                        cRFaceQuad* face =\n                            &facequads[2 * column\n                                + 2 * row * path->width_cells + face_index];",
+      "replacements": [
+        {
+          "name": "shared-flat-index",
+          "text": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    int flat_face_index =\n                        2 * column + 2 * row * path->width_cells + face_index;\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[flat_face_index];"
+        },
+        {
+          "name": "grouped-row-column",
+          "text": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    int flat_face_index =\n                        face_index + 2 * (row * path->width_cells + column);\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[flat_face_index];"
+        },
+        {
+          "name": "grouped-row-column-index-last",
+          "text": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    int flat_face_index =\n                        2 * (row * path->width_cells + column) + face_index;\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[flat_face_index];"
+        },
+        {
+          "name": "shifted-row-column",
+          "text": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    int flat_face_index =\n                        face_index + ((row * path->width_cells + column) << 1);\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[flat_face_index];"
+        },
+        {
+          "name": "multiplied-row-column",
+          "text": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    int flat_face_index =\n                        (row * path->width_cells + column) * 2 + face_index;\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[flat_face_index];"
+        }
+      ]
+    },
+    {
+      "name": "second-face-index-owner",
+      "find": "                        cRFaceQuad* face =\n                            &facequads[2 * column\n                                + 2 * row * path->width_cells + face_index];",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "shared-flat-index",
+          "text": "                        cRFaceQuad* face = &facequads[flat_face_index];"
+        }
+      ]
+    }
+  ]
+}
