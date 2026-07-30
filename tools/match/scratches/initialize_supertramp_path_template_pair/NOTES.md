@@ -330,3 +330,17 @@ candidate keeps the row in a register and spills the offset. Ordinary
 declaration-order and lifetime changes do not reproduce that swap, so no
 padding, volatility, artificial register binding, or other allocator forcing
 is retained.
+
+## 2026-07-30 post-grid arc cursor replay
+
+The native arc byte cursor was replayed once more after the lead, count, and
+face-grid ownership gains raised the retained baseline to **68.00%**. In this
+context, spelling the separate `0x498`/`0xa8` physical cursor across both arc
+arrays is decisively worse: focused matching falls to **61.48%**, losing
+126.19 weighted bytes and four candidate instructions.
+
+The exact prefix remains 16/552 and all 36 references remain clean, so the
+regression is code ownership rather than a masking artifact. The recorded
+reverse probe restores the full **68.00%**, **545/552** retained receipt.
+Direct indexed arc ownership is therefore closed on the stronger post-grid
+baseline as well.
