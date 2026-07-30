@@ -240,3 +240,25 @@ offset control the loop loses 4.44 bytes.
 TurnoverDouble therefore remains **55.26%**, 652/680 instructions, prefix
 54/680, with all 46 references clean. Its native offsets are compiler-derived
 from the retained logical source in this allocation context.
+
+## 2026-07-30 curved and tail byte ownership
+
+Windows initializes the curved-sample address to `0x3f0` at `0x42788e` and
+advances it independently by `0xa8` at `0x427a77`. Recovering that owner adds
+52.73 weighted bytes and raises focused matching from **55.26%** to
+**57.40%**, with 651/680 instructions, prefix 54/680, and all 46 references
+clean. All 24 nearby cursor initialization and advance spellings are
+byte-identical.
+
+The changed allocation context also unlocks the separately proved tail byte
+cursor. Retaining logical `i < segment_count` control while addressing both
+sample arrays through `tail_sample_offset` adds another 13.22 weighted bytes.
+The final retained result is **57.94%**, 649/680 instructions, prefix 54/680,
+with all 46 references clean. A dedicated logical tail index emits identical
+bytes.
+
+Making the tail byte offset own loop control scores 18.34 bytes above the
+curve-only baseline, but is rejected: native `0x427860..0x427870` increments
+and tests the logical index separately from the byte cursor. Rechecking the
+lead on the final baseline also remains negative by 11.10 to 122.07 weighted
+bytes, so no lead cursor is retained.

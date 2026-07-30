@@ -288,3 +288,19 @@ gains 4.18 bytes but shortens the candidate by four more instructions and
 contradicts the native saved-initial-offset lifetime at `0x42813f`; that metric
 tradeoff is rejected. Saving the initial offset exactly loses about 61
 weighted bytes.
+
+## 2026-07-30 curved byte-cursor transfer rejected
+
+Turnunder's native loop also initializes a current-sample byte offset to
+`0x3f0` at `0x42823e` and advances it by `0xa8` at `0x42842e`, independently
+from its logical curve counter. The direct source transfer used successfully
+by Turnover and TurnoverDouble does not reproduce this compiler allocation
+here: it loses 287.52 weighted bytes, falls from **56.49%** to **44.93%**,
+shortens the candidate from 662 to 653 instructions, and removes the
+six-instruction exact prefix. All 45 references remain clean.
+
+That source spelling is therefore recorded but rejected. The already-retained
+tail byte cursor and Turnunder-specific component-wise forward-vector
+construction remain the honest source boundary; the curved native cursor is
+left as compiler-derived allocation debt until a dependency-closed owner
+recovery explains the divergent schedule.

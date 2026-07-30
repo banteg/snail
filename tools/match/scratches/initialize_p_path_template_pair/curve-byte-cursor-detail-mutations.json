@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-cursor-init",
+      "find": "        int i = 1;\n        int curve_sample_offset = sizeof(PathTemplateSample);",
+      "replacements": [
+        {
+          "name": "derived-from-index",
+          "text": "        int i = 1;\n        int curve_sample_offset = i * sizeof(PathTemplateSample);"
+        },
+        {
+          "name": "explicit-int-size",
+          "text": "        int i = 1;\n        int curve_sample_offset = (int)sizeof(PathTemplateSample);"
+        },
+        {
+          "name": "cursor-before-index",
+          "text": "        int curve_sample_offset = sizeof(PathTemplateSample);\n        int i = 1;"
+        },
+        {
+          "name": "literal-stride",
+          "text": "        int i = 1;\n        int curve_sample_offset = 0xa8;"
+        }
+      ]
+    },
+    {
+      "name": "curve-cursor-advance",
+      "find": "            ++i;\n            curve_sample_offset += sizeof(PathTemplateSample);",
+      "replacements": [
+        {
+          "name": "cursor-first",
+          "text": "            curve_sample_offset += sizeof(PathTemplateSample);\n            ++i;"
+        },
+        {
+          "name": "explicit-int-size",
+          "text": "            ++i;\n            curve_sample_offset += (int)sizeof(PathTemplateSample);"
+        },
+        {
+          "name": "literal-stride",
+          "text": "            ++i;\n            curve_sample_offset += 0xa8;"
+        }
+      ]
+    }
+  ]
+}

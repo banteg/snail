@@ -274,3 +274,19 @@ loses 36.92 weighted bytes and keeps the shorter prefix.
 The native byte cursors are therefore compiler-derived from the retained
 logical owners in this allocation context; no neutral or regressive source
 change is kept.
+
+## 2026-07-30 curved-sample byte ownership
+
+The curved loop is the exception to the fixed-sample bound. Windows loads its
+current-sample byte offset as `0x3f0` and advances it by `0xa8` at
+`0x4270c8`, while the logical curve index remains a separate stack owner.
+Addressing both current arrays and the prior primary sample through that
+cursor raises focused matching from **56.45%** to **59.77%**, a gain of
+80.84 weighted bytes. The candidate moves from 647 to 644 instructions,
+retains prefix 54/671, and keeps all 41 references clean.
+
+All 24 nearby cursor initialization and advance-order variants are
+byte-identical. Rechecking the fixed owners on the new baseline leaves the
+tail cursor byte-identical, while the lead cursor loses 94.58 weighted bytes;
+the paired fixed-cursor form still loses 37.00. Only the independently
+contributing curved address owner is retained.

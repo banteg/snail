@@ -186,43 +186,70 @@ void cRPath::initialize_p_path_template_pair(
     if (curve_segments > 0) {
         float curve_segments_f = (float)curve_segments;
         int i = 1;
+        int curve_sample_offset = sizeof(PathTemplateSample);
         do {
             float angle = (float)curve_index * 3.1415927f / curve_segments_f;
             switch (kind) {
             case 0x21:
-                primary_samples[i].center_x =
+                ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->center_x =
                     sine(angle + 1.5707964f) * scale_arg - scale_arg + 0.5f;
                 break;
             case 0x22:
-                primary_samples[i].center_x =
+                ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->center_x =
                     2.0f - cosine(angle) * scale_arg - scale_arg + 0.5f;
                 break;
             case 0x23:
-                primary_samples[i].center_x =
+                ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->center_x =
                     (sine(angle + 1.5707964f) + 1.0f) * scale_arg + 0.5f;
                 break;
             }
 
-            primary_samples[i].rotation_scalar_98 = 0.0f;
-            primary_samples[i].rotation_scalar_94 = 0.0f;
-            primary_samples[i].special_scalar = 0.0f;
-            primary_samples[i].lateral_scale = 1.0f;
-            set_matrix_identity(&primary_samples[i].transform);
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->rotation_scalar_98 = 0.0f;
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->rotation_scalar_94 = 0.0f;
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->special_scalar = 0.0f;
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->lateral_scale = 1.0f;
+            set_matrix_identity(
+                &((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->transform);
             ++curve_index;
             float z = (float)i;
-            primary_samples[i].transform.position.x = primary_samples[i].center_x;
-            primary_samples[i].transform.position.y = 0.0f;
-            primary_samples[i].transform.position.z = z;
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.position.x =
+                ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->center_x;
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.position.y = 0.0f;
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform.position.z = z;
 
-            set_matrix_identity(&secondary_samples[i].transform);
-            secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-            secondary_samples[i].transform.position.y =
-                primary_samples[i].transform.position.y + 0.49000001f;
-            secondary_samples[i].transform.position.z = z;
-            PathTemplateSample* primary_previous = &primary_samples[i - 1];
-            PathTemplateSample* primary_current = &primary_samples[i];
-            PathTemplateSample* secondary_previous = &secondary_samples[i - 1];
-            PathTemplateSample* secondary_current = &secondary_samples[i];
+            set_matrix_identity(
+                &((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+                    ->transform);
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+                ->transform.position.x =
+                ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->center_x;
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+                ->transform.position.y =
+                ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                    ->transform.position.y + 0.49000001f;
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+                ->transform.position.z = z;
+            PathTemplateSample* primary_previous =
+                (PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1;
+            PathTemplateSample* primary_current =
+                (PathTemplateSample*)((char*)primary_samples + curve_sample_offset);
+            PathTemplateSample* secondary_previous =
+                (PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1;
+            PathTemplateSample* secondary_current =
+                (PathTemplateSample*)((char*)secondary_samples + curve_sample_offset);
             if (i <= 1) {
                 primary_previous->transform.RotIdentity();
                 secondary_previous->transform.RotIdentity();
@@ -248,6 +275,7 @@ void cRPath::initialize_p_path_template_pair(
                     &secondary_previous->transform.basis_forward);
             }
             ++i;
+            curve_sample_offset += sizeof(PathTemplateSample);
         } while (curve_index < curve_segments);
     }
 

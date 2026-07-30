@@ -333,3 +333,17 @@ curve-counter register lifetimes were replayed through eight valid combinations
 of explicit source locals and uses. Every combination was byte-identical. The
 remaining EBX/EBP/EDI rotation is therefore bounded as compiler allocation
 debt; no synthetic register-forcing source is retained.
+
+## 2026-07-30 curved-sample byte ownership
+
+Raw Windows instructions at `0x425eae..0x425ebe` advance the current primary
+and secondary sample address by `0xa8` independently from the logical
+one-based sample index and zero-based curve counter. Recovering that direct
+byte cursor throughout the curved body adds 10.98 weighted bytes and raises
+focused matching from **56.19%** to **56.64%**. The candidate remains
+677/679 instructions, with prefix 6/679 and all 41 references clean.
+
+All 19 combinations of nearby cursor initialization, declaration order,
+`sizeof` spelling, literal stride, and cursor/index advance order are
+byte-identical. The contributing recovery is the address owner itself rather
+than a constant or statement-order spelling.

@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-cursor-init",
+      "find": "        i = 6;\n        int curve_sample_offset = 6 * sizeof(AttachmentSample);",
+      "replacements": [
+        {
+          "name": "derived-from-index",
+          "text": "        i = 6;\n        int curve_sample_offset = i * sizeof(AttachmentSample);"
+        },
+        {
+          "name": "reversed-product",
+          "text": "        i = 6;\n        int curve_sample_offset = sizeof(AttachmentSample) * 6;"
+        },
+        {
+          "name": "cursor-before-index",
+          "text": "        int curve_sample_offset = 6 * sizeof(AttachmentSample);\n        i = 6;"
+        },
+        {
+          "name": "literal-offset",
+          "text": "        i = 6;\n        int curve_sample_offset = 0x3f0;"
+        }
+      ]
+    },
+    {
+      "name": "curve-cursor-advance",
+      "find": "            ++i;\n            ++curve_index;\n            curve_sample_offset += sizeof(AttachmentSample);",
+      "replacements": [
+        {
+          "name": "cursor-first",
+          "text": "            curve_sample_offset += sizeof(AttachmentSample);\n            ++i;\n            ++curve_index;"
+        },
+        {
+          "name": "cursor-before-curve-index",
+          "text": "            ++i;\n            curve_sample_offset += sizeof(AttachmentSample);\n            ++curve_index;"
+        },
+        {
+          "name": "explicit-int-size",
+          "text": "            ++i;\n            ++curve_index;\n            curve_sample_offset += (int)sizeof(AttachmentSample);"
+        },
+        {
+          "name": "literal-stride",
+          "text": "            ++i;\n            ++curve_index;\n            curve_sample_offset += 0xa8;"
+        }
+      ]
+    }
+  ]
+}
