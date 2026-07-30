@@ -458,3 +458,23 @@ loses 25.90 weighted bytes without changing the prefix or instruction count.
 The target's remaining terminal and face-register differences therefore do not
 transfer as isolated source owners. The retained milestone stops at the
 evidence-backed mesh-row replay.
+
+## 2026-07-31 lead secondary-acquisition bound
+
+The 48-instruction prefix ends at the lead loop's secondary identity call:
+native forms the address by loading the array base into EAX and adding the byte
+cursor through ECX, while the candidate loads the base directly into ECX.
+Arithmetic-order spellings were already neutral, so four scoped acquisition
+owners were tested around the call.
+
+Call-only `PathTemplateSample*` and `TransformMatrix*` owners compile
+byte-identically. Extending the record owner through the three position stores
+loses 74.00 weighted bytes and collapses the prefix to one instruction.
+Addressing only the identity call through the logical sample index loses
+499.18 weighted bytes, adds four instructions, reduces the clean audit to 39
+references plus two unaudited entries, and also leaves only a one-instruction
+prefix.
+
+No acquisition owner is retained. SlalomBig remains **65.37%**, 690/696
+instructions, prefix 48/696, with all 40 references clean; the register choice
+at the identity call remains compiler allocation debt.

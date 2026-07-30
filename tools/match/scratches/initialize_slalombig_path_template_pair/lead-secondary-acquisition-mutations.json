@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-secondary-acquisition",
+      "find": "        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n                ->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.z = z;",
+      "replacements": [
+        {
+          "name": "record-for-call-only",
+          "text": "        PathTemplateSample* secondary_sample =\n            (PathTemplateSample*)((char*)secondary_samples + lead_sample_offset);\n        set_matrix_identity(&secondary_sample->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.z = z;"
+        },
+        {
+          "name": "record-for-complete-secondary",
+          "text": "        PathTemplateSample* secondary_sample =\n            (PathTemplateSample*)((char*)secondary_samples + lead_sample_offset);\n        set_matrix_identity(&secondary_sample->transform);\n        secondary_sample->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))\n                ->center_x;\n        secondary_sample->transform.position.y = 0.49000001f;\n        secondary_sample->transform.position.z = z;"
+        },
+        {
+          "name": "transform-for-call-only",
+          "text": "        TransformMatrix* secondary_transform =\n            &((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n                ->transform;\n        set_matrix_identity(secondary_transform);\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.z = z;"
+        },
+        {
+          "name": "logical-index-for-call",
+          "text": "        set_matrix_identity(\n            &secondary_samples[lead_sample_index].transform);\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.z = z;"
+        }
+      ]
+    }
+  ]
+}
