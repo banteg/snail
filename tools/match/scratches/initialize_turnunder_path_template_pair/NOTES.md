@@ -322,3 +322,25 @@ Prefix remains 6/687 and all 45 references stay clean.
 No parity branch is retained. The result bounds this isolated transfer and
 leaves the duplicated native control as dependency-closure debt in the face
 construction schedule rather than accepting the metric-only second branch.
+
+## 2026-07-31 native mesh replay bound
+
+Turnover's dependency-closed mesh-row source does not transfer as a unit into
+Turnunder. Replaying the complete endpoint, generated-row, face, parity, and
+terminal-owner chain drops focused matching from **56.49%** to **50.97%**,
+reduces the candidate to 659 instructions, removes the six-instruction exact
+prefix, and shrinks the frame to `0x50` while native Turnunder keeps `0x54`.
+The source was reverted.
+
+Narrowing the replay does not expose a portable subset. The branch-local face
+records alone reach only **39.73%** with the same undersized frame; adding both
+native parity branches reaches **39.91%** at 681 instructions. Both manual
+probes were reverted. A recorded terminal-detail sweep closes the adjacent
+owners: default endpoint components are best but still lose 18.44 weighted
+bytes, generated-component/default construction loses 22.12, and an explicit
+copy-then-add loses 97.99 while adding six instructions. Prefix and all 45
+clean references otherwise remain stable.
+
+Turnunder therefore retains its local curved-offset and tail-byte owners. The
+native face/terminal schedule remains dependency-closure debt rather than
+borrowing Turnover's superficially similar source graph.

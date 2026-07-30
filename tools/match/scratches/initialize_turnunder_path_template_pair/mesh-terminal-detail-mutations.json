@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "terminal-endpoint-detail",
+      "find": "                Vector3 endpoint(\n                    previous->transform.position.x,\n                    previous->transform.position.y,\n                    previous->transform.position.z + 1.0f);",
+      "replacements": [
+        {
+          "name": "default-components",
+          "text": "                Vector3 endpoint;\n                endpoint.x = previous->transform.position.x;\n                endpoint.y = previous->transform.position.y;\n                endpoint.z = previous->transform.position.z + 1.0f;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-generated-detail",
+      "find": "                Vector3 generated_position =\n                    endpoint + lateral_offset;",
+      "replacements": [
+        {
+          "name": "component-constructor",
+          "text": "                Vector3 generated_position(\n                    endpoint.x + lateral_offset.x,\n                    endpoint.y + lateral_offset.y,\n                    endpoint.z + lateral_offset.z);"
+        },
+        {
+          "name": "default-components",
+          "text": "                Vector3 generated_position;\n                generated_position.x = endpoint.x + lateral_offset.x;\n                generated_position.y = endpoint.y + lateral_offset.y;\n                generated_position.z = endpoint.z + lateral_offset.z;"
+        },
+        {
+          "name": "copy-then-add",
+          "text": "                Vector3 generated_position = endpoint;\n                generated_position.x += lateral_offset.x;\n                generated_position.y += lateral_offset.y;\n                generated_position.z += lateral_offset.z;"
+        }
+      ]
+    }
+  ]
+}
