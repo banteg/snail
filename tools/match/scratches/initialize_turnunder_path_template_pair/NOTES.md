@@ -344,3 +344,26 @@ clean references otherwise remain stable.
 Turnunder therefore retains its local curved-offset and tail-byte owners. The
 native face/terminal schedule remains dependency-closure debt rather than
 borrowing Turnover's superficially similar source graph.
+
+## 2026-07-31 mesh-row and curve/parity dependency closure
+
+The broad mesh replay mixed row traversal with face-record and terminal
+rewrites, so its regression did not initially identify a causal owner.
+Replaying only the native nonnegative row/column guards, post-tested column
+loop, and independent `0xa8` sample-row cursor reproduces the same **50.97%**,
+659/687-instruction result, removes the six-instruction prefix, and shrinks the
+frame from the native `0x54` to `0x50`. The row owner alone is therefore the
+regressing dependency; the narrower source was reverted.
+
+The curved byte cursor was also retested with the complete native checkerboard
+texture control. The reconstructed cursor first reproduces its recorded
+**44.93%**, 653/687-instruction, prefix-zero control result exactly. On that
+frontier the first parity branch loses another 11.55 weighted bytes, the second
+loses 53.81, and the complete native pair loses 47.50 while reaching only
+43.02% at 666 instructions. All three variants keep the 45 references clean
+and are recorded.
+
+This closes the strongest nearby interaction suggested by SlalomBig: unlike
+that constructor, Turnunder's cursor and parity owners do not unlock each
+other. The retained source remains **56.49%**, 662/687 instructions, prefix
+6/687, with 45 clean references.
