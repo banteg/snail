@@ -387,3 +387,35 @@ dependency in place, including explicit current, previous, and secondary
 sample owners. It still regresses to 41.25% (670/707), so that control-owner
 transfer remains bounded rather than being hidden by the old scalar offset
 spelling.
+
+## 2026-07-30 lead and tail sample ownership
+
+Native code at `0x429b68..0x429c80` keeps a dedicated lead logical index and
+an independent byte offset, then reloads the primary and secondary sample
+arrays for each direct access. Replacing the shared logical subscript with
+that repeated byte-offset ownership raises the focused score by 54.22 weighted
+bytes, from **54.85%** to **56.94%**. A separate logical index alone is
+byte-identical, while retaining per-iteration sample pointers regresses to
+51.30% and cuts the exact prefix from 18 to 8 instructions. Spelling the
+native signed `0xa80` offset bound explicitly adds another 3.73 weighted bytes
+and reaches **57.08%**.
+
+That allocation change invalidated the earlier tail-owner rejection above, so
+the bounded two-variant tail sweep was repeated once against the new retained
+baseline. The direct logical-index form now gains 11.64 weighted bytes and ten
+exact instructions, while the repeated byte-offset form remains negative at
+54.32%. This dependency flip agrees with the native tail at
+`0x429c8a..0x429dbd`: it owns both `exit_index` and the `0xa8` cursor, but the
+compiler derives the repeated sample addresses from `exit_index + 50`.
+Signed-size, signed-product, literal `0x2b50`, and not-at-end tail bounds are
+all byte-identical; the signed-size form is retained because it records the
+native comparison without a magic byte count.
+
+The recovered pair leaves Halfpipe at:
+
+```text
+match: 57.53% (was 54.85%)
+target: 707 insns, candidate: 694 insns (was 686)
+prefix: 18/707 target insns
+masked operands: 55 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```

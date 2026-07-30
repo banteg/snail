@@ -30,60 +30,64 @@ void cRPath::initialize_halfpipe_path_template_pair(
     get_path_nodes();
     has_entry_mesh_transition = 0;
 
-    int i = 0;
+    int lead_index = 0;
+    int lead_sample_offset = 0;
     do {
-        float index = (float)i;
+        float index = (float)lead_index;
         float angle_base = index * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
         float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
-        primary_samples[i].center_x = (float)width_cells * 0.5f - 4.0f;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = (depth * depth + 16.0f) / (depth + depth);
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = index;
-        primary_samples[i].delta_length = 1.0f;
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x = (float)width_cells * 0.5f - 4.0f;
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->rotation_scalar_98 = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->rotation_scalar_94 = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->special_scalar = (depth * depth + 16.0f) / (depth + depth);
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->lateral_scale = 1.0f;
+        set_matrix_identity(&((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform);
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.x = ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x;
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.y = 0.0f;
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->transform.position.z = index;
+        ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = index;
-        secondary_samples[i].delta_length = 1.0f;
-        ++i;
-    } while (i < 16);
+        set_matrix_identity(&((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform);
+        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.x = ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x;
+        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.y = 0.49000001f;
+        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->transform.position.z = index;
+        ((AttachmentSample*)((char*)secondary_samples + lead_sample_offset))->delta_length = 1.0f;
+        lead_sample_offset += sizeof(AttachmentSample);
+        ++lead_index;
+    } while (lead_sample_offset < 16 * (int)sizeof(AttachmentSample));
+    int i;
 
     int exit_index = 0;
     int exit_sample_offset = 50 * sizeof(AttachmentSample);
     do {
-        AttachmentSample* primary =
-            (AttachmentSample*)((char*)primary_samples + exit_sample_offset);
-        AttachmentSample* secondary =
-            (AttachmentSample*)((char*)secondary_samples + exit_sample_offset);
+        int sample_index = exit_index + 50;
         float angle_base = 1.0f - (float)exit_index * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
         float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
-        primary->center_x = 4.0f - (float)width_cells * 0.5f;
-        primary->rotation_scalar_98 = 0.0f;
-        primary->rotation_scalar_94 = 0.0f;
-        primary->special_scalar = (depth * depth + 16.0f) / (depth + depth);
-        primary->lateral_scale = 1.0f;
-        set_matrix_identity(&primary->transform);
-        primary->transform.position.x = primary->center_x;
-        primary->transform.position.y = 0.0f;
-        primary->transform.position.z = (float)(exit_index + 50);
-        primary->delta_length = 1.0f;
+        primary_samples[sample_index].center_x =
+            4.0f - (float)width_cells * 0.5f;
+        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
+        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
+        primary_samples[sample_index].special_scalar =
+            (depth * depth + 16.0f) / (depth + depth);
+        primary_samples[sample_index].lateral_scale = 1.0f;
+        set_matrix_identity(&primary_samples[sample_index].transform);
+        primary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        primary_samples[sample_index].transform.position.y = 0.0f;
+        primary_samples[sample_index].transform.position.z = (float)sample_index;
+        primary_samples[sample_index].delta_length = 1.0f;
 
-        set_matrix_identity(&secondary->transform);
-        secondary->transform.position.x = primary->center_x;
-        secondary->transform.position.y = 0.49000001f;
-        secondary->transform.position.z = (float)(exit_index + 50);
-        secondary->delta_length = 1.0f;
+        set_matrix_identity(&secondary_samples[sample_index].transform);
+        secondary_samples[sample_index].transform.position.x =
+            primary_samples[sample_index].center_x;
+        secondary_samples[sample_index].transform.position.y = 0.49000001f;
+        secondary_samples[sample_index].transform.position.z = (float)sample_index;
+        secondary_samples[sample_index].delta_length = 1.0f;
         ++exit_index;
         exit_sample_offset += sizeof(AttachmentSample);
-    } while (exit_sample_offset < 66 * sizeof(AttachmentSample));
+    } while (exit_sample_offset < 66 * (int)sizeof(AttachmentSample));
 
     float out_angle;
     int middle = 0;

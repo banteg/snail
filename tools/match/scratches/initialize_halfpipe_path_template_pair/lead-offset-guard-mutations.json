@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-offset-guard",
+      "find": "    } while (lead_sample_offset < 16 * sizeof(AttachmentSample));",
+      "replacements": [
+        {
+          "name": "signed-size",
+          "text": "    } while (lead_sample_offset < 16 * (int)sizeof(AttachmentSample));"
+        },
+        {
+          "name": "signed-product",
+          "text": "    } while (lead_sample_offset < (int)(16 * sizeof(AttachmentSample)));"
+        },
+        {
+          "name": "literal-native-bound",
+          "text": "    } while (lead_sample_offset < 0xa80);"
+        },
+        {
+          "name": "not-at-end",
+          "text": "    } while (lead_sample_offset != 16 * sizeof(AttachmentSample));"
+        }
+      ]
+    }
+  ]
+}
