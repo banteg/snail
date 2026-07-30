@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "departure-relative-base-owner",
+      "find": "    int departure_sample_offset =\n        departure_index * (int)sizeof(PathAttachmentSample);",
+      "replacements": [
+        {
+          "name": "precompute-negative-start",
+          "text": "    int departure_sample_offset =\n        departure_index * (int)sizeof(PathAttachmentSample);\n    int departure_relative_base = -3 - curve_count;"
+        }
+      ]
+    },
+    {
+      "name": "departure-relative-base-use",
+      "find": "    } while (departure_index - 3 - curve_count < 5);",
+      "replacements": [
+        {
+          "name": "add-precomputed-base",
+          "text": "    } while (departure_index + departure_relative_base < 5);"
+        }
+      ]
+    }
+  ]
+}

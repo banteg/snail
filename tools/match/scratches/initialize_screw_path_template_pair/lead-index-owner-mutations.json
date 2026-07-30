@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-index-owner",
+      "find": "    i = 0;\n    int lead_sample_offset = 0;",
+      "replacements": [
+        {
+          "name": "dedicated-index",
+          "text": "    int lead_sample_index = 0;\n#define i lead_sample_index\n    int lead_sample_offset = 0;"
+        }
+      ]
+    },
+    {
+      "name": "lead-index-scope",
+      "find": "    } while (lead_sample_offset < 3 * (int)sizeof(PathAttachmentSample));\n\n    int departure_index = curve_count + 3;",
+      "replacements": [
+        {
+          "name": "end-dedicated-index",
+          "text": "    } while (lead_sample_offset < 3 * (int)sizeof(PathAttachmentSample));\n#undef i\n\n    int departure_index = curve_count + 3;"
+        }
+      ]
+    }
+  ]
+}

@@ -246,3 +246,40 @@ grow from 675 to exact count parity at 685/685, and the exact prefix contracts
 from 26 to 6. The receipt remains 38 clean plus 2 unaudited references, so the
 instruction-count coincidence is not evidence of a better decomp. The
 branch-local pointer form is recorded and rejected.
+
+## 2026-07-30 fixed and curved byte-owner cascade
+
+The recovered Windows owners keep a logical entrance index beside a `0xa8`
+sample cursor, a count-relative departure index beside its derived cursor, and
+the helical logical index beside a cursor starting at `0x1f8`. Replaying those
+owners on the 62.21% frontier exposes another allocation cascade.
+
+The departure cursor improves alone to **62.69%** and the curve cursor improves
+alone to **62.59%**. The entrance cursor initially falls to 59.16%, but makes
+the first 58 instructions exact instead of 26. Entrance plus departure reaches
+60.97%; adding the curve cursor recovers to 63.42% while preserving the longer
+prefix. The final missing owner is identity rather than width: the entrance
+must reuse the constructor's shared `i` slot instead of introducing a
+lead-only logical index. A recorded reverse mutation loses 128.80 weighted
+bytes, while the shared owner produces the retained result:
+
+```text
+match: 68.58% (was 62.21%)
+target: 685 insns, candidate: 671 insns (was 675)
+prefix: 58/685 target insns (was 26/685)
+masked operands: 38 ok, 0 unresolved, 0 mismatch, 2 unaudited
+```
+
+The complete source recovery adds 159.14 weighted bytes and follows the exact
+native index/cursor graph; the four-instruction count tradeoff is not used as
+the evidence for retaining it.
+
+Adjacent owners are bounded again on this frontier. Five equivalent departure
+predicates are neutral or strongly negative, and an explicit precomputed
+`-3 - curve_count` local collapses matching to 45.56%. Three per-lane trig
+spelling variants, four split up-vector/tail variants, and four angle-helper
+interactions resolve both unaudited calls but remain 117.60–126.11 weighted
+bytes below the retained source. The branch-local face pointer still reproduces
+its prior 49.34% result exactly. A derived entrance cursor falls to 62.34%;
+swapping the entrance declarations cuts the prefix to 23, and moving the index
+increment into the loop condition is byte-identical.

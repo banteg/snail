@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shared-face-index",
+      "find": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    cRFaceQuad* face =\n                        &facequads[2 * face_column + 2 * face_row * width_cells + face_index];\n                    face->header_word = 0;\n                    if (face_index == 0) {",
+      "replacements": [
+        {
+          "name": "branch-local-primary-pointer",
+          "text": "                for (face_index = 0; face_index < 2; ++face_index) {\n                    int face_record_index =\n                        2 * face_column + 2 * face_row * width_cells + face_index;\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;"
+        }
+      ]
+    },
+    {
+      "name": "secondary-face-pointer",
+      "find": "                    } else {\n                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;",
+      "replacements": [
+        {
+          "name": "branch-local-secondary-pointer",
+          "text": "                    } else {\n                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;\n                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;"
+        }
+      ]
+    }
+  ]
+}

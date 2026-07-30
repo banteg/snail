@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "per-lane-orientation-trig",
+      "find": "            } else {\n                float up_y = cosine(angle);\n                float up_x = -sine(angle);\n                orient_previous_with_fixed_up(\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE,\n                    PRIMARY_CURVE_SAMPLE,\n                    up_x,\n                    up_y,\n                    0.0f,\n                    0.0f);\n                orient_previous_with_fixed_up(\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE,\n                    SECONDARY_CURVE_SAMPLE,\n                    up_x,\n                    up_y,\n                    0.0f,\n                    0.0f);\n            }",
+      "replacements": [
+        {
+          "name": "sequential-lane-locals",
+          "text": "            } else {\n                float primary_up_y = cosine(angle);\n                float primary_up_x = -sine(angle);\n                orient_previous_with_fixed_up(\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE,\n                    PRIMARY_CURVE_SAMPLE,\n                    primary_up_x,\n                    primary_up_y,\n                    0.0f,\n                    0.0f);\n                float secondary_up_y = cosine(angle);\n                float secondary_up_x = -sine(angle);\n                orient_previous_with_fixed_up(\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE,\n                    SECONDARY_CURVE_SAMPLE,\n                    secondary_up_x,\n                    secondary_up_y,\n                    0.0f,\n                    0.0f);\n            }"
+        },
+        {
+          "name": "direct-helper-expressions",
+          "text": "            } else {\n                orient_previous_with_fixed_up(\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE,\n                    PRIMARY_CURVE_SAMPLE,\n                    -sine(angle),\n                    cosine(angle),\n                    0.0f,\n                    0.0f);\n                orient_previous_with_fixed_up(\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE,\n                    SECONDARY_CURVE_SAMPLE,\n                    -sine(angle),\n                    cosine(angle),\n                    0.0f,\n                    0.0f);\n            }"
+        },
+        {
+          "name": "scoped-lane-locals",
+          "text": "            } else {\n                {\n                    float up_y = cosine(angle);\n                    float up_x = -sine(angle);\n                    orient_previous_with_fixed_up(\n                        PREVIOUS_PRIMARY_CURVE_SAMPLE,\n                        PRIMARY_CURVE_SAMPLE,\n                        up_x,\n                        up_y,\n                        0.0f,\n                        0.0f);\n                }\n                {\n                    float up_y = cosine(angle);\n                    float up_x = -sine(angle);\n                    orient_previous_with_fixed_up(\n                        PREVIOUS_SECONDARY_CURVE_SAMPLE,\n                        SECONDARY_CURVE_SAMPLE,\n                        up_x,\n                        up_y,\n                        0.0f,\n                        0.0f);\n                }\n            }"
+        }
+      ]
+    }
+  ]
+}

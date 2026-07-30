@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "orientation-tail-helper",
+      "find": "static inline void orient_previous_with_fixed_up(\n    PathAttachmentSample* previous,\n    PathAttachmentSample* next,\n    float up_x,\n    float up_y,\n    float up_z,\n    float roll)\n{\n    previous->transform.basis_up = Vector3(up_x, up_y, up_z);\n    previous->transform.basis_forward = Vector3(\n        next->transform.position.x - previous->transform.position.x,\n        next->transform.position.y - previous->transform.position.y,\n        next->transform.position.z - previous->transform.position.z);\n    previous->transform.basis_forward.Normalize();\n    previous->transform.basis_right.cross_vectors(\n        &previous->transform.basis_up,\n        &previous->transform.basis_forward);\n    if (roll != 0.0f)\n        previous->transform.RotLocalZ(roll);\n}",
+      "replacements": [
+        {
+          "name": "add-tail-helper",
+          "text": "static inline void orient_previous_with_fixed_up(\n    PathAttachmentSample* previous,\n    PathAttachmentSample* next,\n    float up_x,\n    float up_y,\n    float up_z,\n    float roll)\n{\n    previous->transform.basis_up = Vector3(up_x, up_y, up_z);\n    previous->transform.basis_forward = Vector3(\n        next->transform.position.x - previous->transform.position.x,\n        next->transform.position.y - previous->transform.position.y,\n        next->transform.position.z - previous->transform.position.z);\n    previous->transform.basis_forward.Normalize();\n    previous->transform.basis_right.cross_vectors(\n        &previous->transform.basis_up,\n        &previous->transform.basis_forward);\n    if (roll != 0.0f)\n        previous->transform.RotLocalZ(roll);\n}\n\nstatic __forceinline void orient_previous_after_up_vector(\n    PathAttachmentSample* previous,\n    PathAttachmentSample* next)\n{\n    previous->transform.basis_forward = Vector3(\n        next->transform.position.x - previous->transform.position.x,\n        next->transform.position.y - previous->transform.position.y,\n        next->transform.position.z - previous->transform.position.z);\n    previous->transform.basis_forward.Normalize();\n    previous->transform.basis_right.cross_vectors(\n        &previous->transform.basis_up,\n        &previous->transform.basis_forward);\n}"
+        }
+      ]
+    },
+    {
+      "name": "per-lane-up-vector-and-tail",
+      "find": "            } else {\n                float up_y = cosine(angle);\n                float up_x = -sine(angle);\n                orient_previous_with_fixed_up(\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE,\n                    PRIMARY_CURVE_SAMPLE,\n                    up_x,\n                    up_y,\n                    0.0f,\n                    0.0f);\n                orient_previous_with_fixed_up(\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE,\n                    SECONDARY_CURVE_SAMPLE,\n                    up_x,\n                    up_y,\n                    0.0f,\n                    0.0f);\n            }",
+      "replacements": [
+        {
+          "name": "lane-locals",
+          "text": "            } else {\n                PathAttachmentSample* previous_primary =\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE;\n                float primary_up_y = cosine(angle);\n                float primary_up_x = -sine(angle);\n                previous_primary->transform.basis_up =\n                    Vector3(primary_up_x, primary_up_y, 0.0f);\n                orient_previous_after_up_vector(\n                    previous_primary, PRIMARY_CURVE_SAMPLE);\n\n                PathAttachmentSample* previous_secondary =\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE;\n                float secondary_up_y = cosine(angle);\n                float secondary_up_x = -sine(angle);\n                previous_secondary->transform.basis_up =\n                    Vector3(secondary_up_x, secondary_up_y, 0.0f);\n                orient_previous_after_up_vector(\n                    previous_secondary, SECONDARY_CURVE_SAMPLE);\n            }"
+        },
+        {
+          "name": "direct-vectors",
+          "text": "            } else {\n                PathAttachmentSample* previous_primary =\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE;\n                previous_primary->transform.basis_up =\n                    Vector3(-sine(angle), cosine(angle), 0.0f);\n                orient_previous_after_up_vector(\n                    previous_primary, PRIMARY_CURVE_SAMPLE);\n\n                PathAttachmentSample* previous_secondary =\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE;\n                previous_secondary->transform.basis_up =\n                    Vector3(-sine(angle), cosine(angle), 0.0f);\n                orient_previous_after_up_vector(\n                    previous_secondary, SECONDARY_CURVE_SAMPLE);\n            }"
+        },
+        {
+          "name": "direct-owner-locals",
+          "text": "            } else {\n                float primary_up_y = cosine(angle);\n                float primary_up_x = -sine(angle);\n                PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_up =\n                    Vector3(primary_up_x, primary_up_y, 0.0f);\n                orient_previous_after_up_vector(\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE,\n                    PRIMARY_CURVE_SAMPLE);\n\n                float secondary_up_y = cosine(angle);\n                float secondary_up_x = -sine(angle);\n                PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_up =\n                    Vector3(secondary_up_x, secondary_up_y, 0.0f);\n                orient_previous_after_up_vector(\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE,\n                    SECONDARY_CURVE_SAMPLE);\n            }"
+        },
+        {
+          "name": "reused-locals",
+          "text": "            } else {\n                float up_y = cosine(angle);\n                float up_x = -sine(angle);\n                PREVIOUS_PRIMARY_CURVE_SAMPLE->transform.basis_up =\n                    Vector3(up_x, up_y, 0.0f);\n                orient_previous_after_up_vector(\n                    PREVIOUS_PRIMARY_CURVE_SAMPLE,\n                    PRIMARY_CURVE_SAMPLE);\n\n                up_y = cosine(angle);\n                up_x = -sine(angle);\n                PREVIOUS_SECONDARY_CURVE_SAMPLE->transform.basis_up =\n                    Vector3(up_x, up_y, 0.0f);\n                orient_previous_after_up_vector(\n                    PREVIOUS_SECONDARY_CURVE_SAMPLE,\n                    SECONDARY_CURVE_SAMPLE);\n            }"
+        }
+      ]
+    }
+  ]
+}
