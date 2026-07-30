@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "height-scale-owner",
+      "find": "    float height_scale_value = PATH_HEIGHT_SCALE;",
+      "replacements": [
+        {
+          "name": "direct-constant",
+          "text": "#define height_scale_value PATH_HEIGHT_SCALE"
+        },
+        {
+          "name": "const-local",
+          "text": "    const float height_scale_value = PATH_HEIGHT_SCALE;"
+        },
+        {
+          "name": "split-assignment",
+          "text": "    float height_scale_value;\n    height_scale_value = PATH_HEIGHT_SCALE;"
+        },
+        {
+          "name": "register-local",
+          "text": "    register float height_scale_value = PATH_HEIGHT_SCALE;"
+        }
+      ]
+    }
+  ]
+}

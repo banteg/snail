@@ -245,3 +245,27 @@ addresses lose 13.80, and keeping only one preceding pointer collapses the
 exact prefix. An explicit persistent curve-phase owner raises the scalar score
 to 52.53%, but moves the first mismatch earlier and cuts the exact prefix from
 22 to 7 instructions; it is recorded as a metric tradeoff and rejected.
+
+## 2026-07-30 endpoint register-lifetime bound
+
+The native header retains the far-end index in `edi` through both sample-zero
+initializers, retains the `1.0f` word in `ebx`, and only then turns `edi` into
+the endpoint byte offset. The retained candidate instead spills the index
+early and reuses `ebx` for the offset. A complete 17-variant interaction grid
+combines the two strongest target-backed header owners with all five endpoint
+capture/conversion forms. None improves the retained 52.27% result: two forms
+remain byte-identical, three lose 8 weighted bytes alone, and their header
+interactions lose 4 or 12 weighted bytes.
+
+Four height-scale owners—direct constant, `const`, split assignment, and
+`register` local—are all byte-identical, ruling out that source spelling as
+the cause of the `ebx` lifetime. Member-sourced and chained total-count
+conversions were also tested because native stores `segment_count` before the
+x87 conversion. A named chained assignment is byte-identical; direct
+member-sourced forms fall to 48.15% and add reference debt.
+
+Finally, the explicit curve sample/phase split was used as a temporary baseline
+for all five endpoint forms and all ten header forms. No interaction improves
+its 52.53% scalar tradeoff or restores the lost prefix. The scratch therefore
+keeps the 52.27%, 642/655-instruction, 22-prefix baseline with all 37 references
+clean.

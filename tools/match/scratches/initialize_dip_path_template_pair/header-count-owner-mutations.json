@@ -32,6 +32,18 @@
         {
           "name": "curve-float-before-endpoint",
           "text": "    width_cells_ = (int)curve_count_source;\n    float curve_count_f = (float)width_cells_;\n    int endpoint_index = width_cells_ + 1;\n    width_or_scale = height_scale_value;\n    segment_count = endpoint_index + 1;\n    segment_count_f = (float)(endpoint_index + 1);\n    curve_source = curve_count_f * 0.047746483f;"
+        },
+        {
+          "name": "member-total-conversion",
+          "text": "    width_cells_ = (int)curve_count_source;\n    width_or_scale = height_scale_value;\n    int endpoint_index = width_cells_ + 1;\n    segment_count = endpoint_index + 1;\n    segment_count_f = (float)segment_count;\n    float curve_count_f = (float)width_cells_;\n    curve_source = curve_count_f * 0.047746483f;"
+        },
+        {
+          "name": "chained-total-assignment",
+          "text": "    width_cells_ = (int)curve_count_source;\n    width_or_scale = height_scale_value;\n    int endpoint_index = width_cells_ + 1;\n    segment_count_f = (float)(segment_count = endpoint_index + 1);\n    float curve_count_f = (float)width_cells_;\n    curve_source = curve_count_f * 0.047746483f;"
+        },
+        {
+          "name": "named-chained-total-assignment",
+          "text": "    width_cells_ = (int)curve_count_source;\n    width_or_scale = height_scale_value;\n    int endpoint_index = width_cells_ + 1;\n    int total_count = endpoint_index + 1;\n    segment_count_f = (float)(segment_count = total_count);\n    float curve_count_f = (float)width_cells_;\n    curve_source = curve_count_f * 0.047746483f;"
         }
       ]
     }

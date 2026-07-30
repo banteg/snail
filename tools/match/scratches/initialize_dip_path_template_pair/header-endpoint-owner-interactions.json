@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "header-count-owner",
+      "find": "    width_cells_ = (int)curve_count_source;\n    width_or_scale = height_scale_value;\n    int endpoint_index = width_cells_ + 1;\n    segment_count = endpoint_index + 1;\n    segment_count_f = (float)(endpoint_index + 1);\n    float curve_count_f = (float)width_cells_;\n    curve_source = curve_count_f * 0.047746483f;",
+      "replacements": [
+        {
+          "name": "named-total-count",
+          "text": "    width_cells_ = (int)curve_count_source;\n    int endpoint_index = width_cells_ + 1;\n    int total_count = endpoint_index + 1;\n    width_or_scale = height_scale_value;\n    segment_count = total_count;\n    segment_count_f = (float)total_count;\n    float curve_count_f = (float)width_cells_;\n    curve_source = curve_count_f * 0.047746483f;"
+        },
+        {
+          "name": "endpoint-before-width",
+          "text": "    width_cells_ = (int)curve_count_source;\n    int endpoint_index = width_cells_ + 1;\n    width_or_scale = height_scale_value;\n    segment_count = endpoint_index + 1;\n    segment_count_f = (float)(endpoint_index + 1);\n    float curve_count_f = (float)width_cells_;\n    curve_source = curve_count_f * 0.047746483f;"
+        }
+      ]
+    },
+    {
+      "name": "endpoint-offset-owner",
+      "find": "    int endpoint_sample_offset =\n        endpoint_index * (int)sizeof(PathAttachmentSample);\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->center_x = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_98 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_94 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->special_scalar = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->lateral_scale = height_scale_value;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->transform.Identity();\n    float endpoint_z = (float)endpoint_index;",
+      "replacements": [
+        {
+          "name": "endpoint-z-before-offset",
+          "text": "    float endpoint_z = (float)endpoint_index;\n    int endpoint_sample_offset =\n        endpoint_index * (int)sizeof(PathAttachmentSample);\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->center_x = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_98 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_94 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->special_scalar = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->lateral_scale = height_scale_value;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->transform.Identity();"
+        },
+        {
+          "name": "reuse-endpoint-index-as-offset",
+          "text": "    float endpoint_z = (float)endpoint_index;\n    endpoint_index *= (int)sizeof(PathAttachmentSample);\n    int endpoint_sample_offset = endpoint_index;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->center_x = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_98 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_94 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->special_scalar = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->lateral_scale = height_scale_value;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->transform.Identity();"
+        },
+        {
+          "name": "reuse-endpoint-offset",
+          "text": "    int endpoint_sample_offset = endpoint_index;\n    float endpoint_z = (float)endpoint_sample_offset;\n    endpoint_sample_offset *= (int)sizeof(PathAttachmentSample);\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->center_x = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_98 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_94 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->special_scalar = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->lateral_scale = height_scale_value;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->transform.Identity();"
+        },
+        {
+          "name": "endpoint-z-from-count-slot",
+          "text": "    int endpoint_sample_offset =\n        endpoint_index * (int)sizeof(PathAttachmentSample);\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->center_x = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_98 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_94 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->special_scalar = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->lateral_scale = height_scale_value;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->transform.Identity();\n    float endpoint_z = (float)(width_cells_ + 1);"
+        },
+        {
+          "name": "offset-first-then-convert",
+          "text": "    int endpoint_sample_offset = endpoint_index;\n    endpoint_sample_offset *= (int)sizeof(PathAttachmentSample);\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->center_x = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_98 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->rotation_scalar_94 = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->special_scalar = 0.0f;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->lateral_scale = height_scale_value;\n    ((PathAttachmentSample*)((char*)primary_samples + endpoint_sample_offset))\n        ->transform.Identity();\n    float endpoint_z = (float)endpoint_index;"
+        }
+      ]
+    }
+  ]
+}
