@@ -232,15 +232,13 @@ void cRPath::initialize_loopbow_path_template_pair(
             int column = 0;
             if (width_cells >= 0) {
                 do {
-                    float lateral =
+                    double lateral =
                         (float)column - (float)width_cells * 0.5f;
                     if (row == segment_count) {
                         AttachmentSample* sample =
                             (AttachmentSample*)((char*)primary_samples + sample_offset);
-                        Vector3 lateral_offset(
-                            lateral * sample[-1].transform.basis_right.x,
-                            lateral * sample[-1].transform.basis_right.y,
-                            lateral * sample[-1].transform.basis_right.z);
+                        Vector3 lateral_offset =
+                            sample[-1].transform.basis_right * lateral;
                         Vector3 endpoint;
                         endpoint.x = sample[-1].transform.position.x;
                         endpoint.y = sample[-1].transform.position.y;

@@ -302,3 +302,25 @@ The bounded negative evidence is retained rather than hidden:
 
 `experiments.jsonl` validates as four mutation sweeps covering 37 unique
 variants with no malformed records or repeats.
+
+## 2026-07-30 mesh arithmetic ownership
+
+The later mesh-family recoveries provide new allocation evidence beyond the
+earlier ownership frontier. A complete four-way sweep proves that the
+column-relative lateral value is an authored `double` local: it adds 10.33
+weighted bytes, reaches 72.24%, and preserves all 63 references. The
+expression-only double spelling adds reference debt, the split-float form is
+neutral, and the volatile form loses the exact prefix.
+
+An exhaustive 35-variant interaction sweep then isolates one further authored
+operator: only the terminal branch scales the previous sample's right vector
+with `Vector3::operator*`. That minimal change adds another 7.38 weighted
+bytes. The ordinary scale is byte-neutral, both additions are neutral in the
+terminal branch and degrading in the ordinary branch, and no multi-site form
+beats the single terminal scale.
+
+The retained result is **72.49%**, up 17.71 weighted bytes from 71.88%, with
+exactly 796/796 candidate/target instructions, prefix 10/796, the native
+`0x9c` frame, and all 63 masked references clean. The expanded ledger now
+validates as eight sweeps covering 84 unique variants with no malformed or
+repeated records; this evidence supersedes the prior stalled marker.
