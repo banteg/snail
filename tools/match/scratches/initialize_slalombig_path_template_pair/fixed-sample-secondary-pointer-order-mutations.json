@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-secondary-pointer-order",
+      "find": "        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n                ->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))\n            ->transform.position.z = z;",
+      "replacements": [
+        {
+          "name": "offset-plus-base",
+          "text": "        set_matrix_identity(\n            &((PathTemplateSample*)(lead_sample_offset + (char*)secondary_samples))\n                ->transform);\n        ((PathTemplateSample*)(lead_sample_offset + (char*)secondary_samples))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)(lead_sample_offset + (char*)secondary_samples))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)(lead_sample_offset + (char*)secondary_samples))\n            ->transform.position.z = z;"
+        }
+      ]
+    },
+    {
+      "name": "departure-secondary-pointer-order",
+      "find": "        set_matrix_identity(\n            &((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))\n                ->transform);\n        ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))\n            ->transform.position.z = z;",
+      "replacements": [
+        {
+          "name": "offset-plus-base",
+          "text": "        set_matrix_identity(\n            &((PathTemplateSample*)(departure_sample_offset + (char*)secondary_samples))\n                ->transform);\n        ((PathTemplateSample*)(departure_sample_offset + (char*)secondary_samples))\n            ->transform.position.x =\n            ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))\n                ->center_x;\n        ((PathTemplateSample*)(departure_sample_offset + (char*)secondary_samples))\n            ->transform.position.y = 0.49000001f;\n        ((PathTemplateSample*)(departure_sample_offset + (char*)secondary_samples))\n            ->transform.position.z = z;"
+        }
+      ]
+    }
+  ]
+}

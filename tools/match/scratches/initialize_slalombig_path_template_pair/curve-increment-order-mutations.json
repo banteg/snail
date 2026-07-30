@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-increment-order",
+      "find": "    for (i = 0; i < curve_segments;\n         ++i,\n         ++curve_sample_index,\n         curve_sample_offset += (int)sizeof(PathTemplateSample)) {",
+      "replacements": [
+        {
+          "name": "logical-byte-sample",
+          "text": "    for (i = 0; i < curve_segments;\n         ++i,\n         curve_sample_offset += (int)sizeof(PathTemplateSample),\n         ++curve_sample_index) {"
+        },
+        {
+          "name": "sample-logical-byte",
+          "text": "    for (i = 0; i < curve_segments;\n         ++curve_sample_index,\n         ++i,\n         curve_sample_offset += (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "sample-byte-logical",
+          "text": "    for (i = 0; i < curve_segments;\n         ++curve_sample_index,\n         curve_sample_offset += (int)sizeof(PathTemplateSample),\n         ++i) {"
+        },
+        {
+          "name": "byte-logical-sample",
+          "text": "    for (i = 0; i < curve_segments;\n         curve_sample_offset += (int)sizeof(PathTemplateSample),\n         ++i,\n         ++curve_sample_index) {"
+        },
+        {
+          "name": "byte-sample-logical",
+          "text": "    for (i = 0; i < curve_segments;\n         curve_sample_offset += (int)sizeof(PathTemplateSample),\n         ++curve_sample_index,\n         ++i) {"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-phase-schedule",
+      "find": "        float t = (float)i / (float)curve_segments;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;\n\n        float angle = t * 6.2831855f;",
+      "replacements": [
+        {
+          "name": "phase-before-distances",
+          "text": "        float t = (float)i / (float)curve_segments;\n        float angle = t * 6.2831855f;\n        float folded = t - 0.5f;\n        float folded_copy;\n        if (folded >= 0.0f)\n            folded_copy = folded;\n        else\n            folded_copy = -folded;\n        if (folded < 0.0f)\n            folded = -folded;"
+        }
+      ]
+    }
+  ]
+}

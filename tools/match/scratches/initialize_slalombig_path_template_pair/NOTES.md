@@ -344,3 +344,54 @@ The symmetric truth-first family form is retained. The near-exact instruction
 count is a corroborating consequence, not the selection criterion: the
 evidence-complete pair wins on weighted agreement and preserves the target's
 observed control flow, while the tempting one-sided alternatives do not.
+
+## 2026-07-30 post-parity curve cursor recovery
+
+The earlier physical curve-cursor probe was not a permanent negative result.
+It preceded the complete direct sample-owner dependency and checkerboard
+control recovery. Replaying the same `0x2a0` start and `0xa8` stride on that
+stronger frontier changes the allocation cascade: the cursor plus a
+first-physical-sample equality guard raises focused matching from **52.77% to
+61.25%**, keeps the candidate at 695/696 instructions, and extends the exact
+prefix from 6 to **26/696**. All 40 references remain clean.
+
+The equality expresses the cross-port logical first-iteration condition under
+the positive cursor invariant. A complete six-way guard sweep bounds the
+choice on the final cursor frontier. Hexadecimal equality is byte-identical;
+the logical loop index loses 188 weighted bytes, the native rendered
+less-or-equal range loses 225, the next-sample range loses 349, and the
+separate logical sample index loses 355. The committed pre-cursor source loses
+218 weighted bytes in the intermediate reverse probe.
+
+This resolves the prior 34.42% reversal as an ordering dependency, not evidence
+against the native cursor. The physical owner only becomes profitable after
+the surrounding array, orientation, and texture-control lifetimes agree.
+
+## 2026-07-30 fixed-sample byte cursors
+
+The native entrance and departure loops independently advance byte offsets
+beside their logical sample indices. Replaying both owners after the curve
+cursor recovery improves each site independently: the entrance cursor adds
+10 weighted bytes and grows the exact prefix from 26 to 48 instructions; the
+departure cursor adds 34. Their paired form reaches **62.97%** and adds 44
+weighted bytes over the 61.25% curve-cursor result.
+
+The entrance's independent logical counter is retained from the native owner
+graph; splitting it from the later curve counter is byte-identical. Ordering
+its semantic increment before the byte stride adds another 11 weighted bytes,
+while reversing only the departure increments loses 7. Alternative secondary
+pointer-addition orders are byte-identical. Three algebraically equivalent
+departure bounds are also byte-identical, while direct upper-bound and
+lead-out-owner conditions regress by 429 and 572 weighted bytes.
+
+The complete sample-cursor cascade raises SlalomBig from **52.77% to 63.40%**,
+adds **273 weighted bytes**, shortens the candidate from 695 to **692/696**
+instructions, and grows the exact prefix from 6 to **48/696**. The masked
+receipt remains proof-clean at 40 accepted references with no unresolved,
+mismatched, or unaudited entries.
+
+Post-cascade controls do not expose a hidden follow-up: all six curve increment
+orders are neutral or lose four bytes, authored orientation subtraction stays
+byte-identical, and moving the sine phase ahead of the two falloff comparisons
+loses 285 weighted bytes. The retained source therefore stops at the measured
+owner boundary rather than coercing the remaining register-order differences.

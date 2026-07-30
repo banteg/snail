@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-counter-declaration",
+      "find": "    i = 0;\n    int lead_sample_offset = 0;",
+      "replacements": [
+        {
+          "name": "separate-lead-counter",
+          "text": "    int lead_sample_index = 0;\n    int lead_sample_offset = 0;"
+        }
+      ]
+    },
+    {
+      "name": "lead-z-owner",
+      "find": "        float z = (float)i;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "separate-lead-counter",
+          "text": "        float z = (float)lead_sample_index;"
+        }
+      ]
+    },
+    {
+      "name": "lead-counter-increment",
+      "find": "        ++i;\n        lead_sample_offset += (int)sizeof(PathTemplateSample);",
+      "replacements": [
+        {
+          "name": "separate-lead-counter",
+          "text": "        ++lead_sample_index;\n        lead_sample_offset += (int)sizeof(PathTemplateSample);"
+        }
+      ]
+    }
+  ]
+}

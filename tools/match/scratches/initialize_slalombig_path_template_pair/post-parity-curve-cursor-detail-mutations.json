@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-curve-sample-guard",
+      "find": "        if (curve_sample_offset == 4 * (int)sizeof(PathTemplateSample)) {",
+      "replacements": [
+        {
+          "name": "logical-loop-index-zero",
+          "text": "        if (i == 0) {"
+        },
+        {
+          "name": "logical-sample-index-zero",
+          "text": "        if (curve_sample_index == 0) {"
+        },
+        {
+          "name": "physical-less-equal-sizeof",
+          "text": "        if (curve_sample_offset <= 4 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "physical-equal-hex",
+          "text": "        if (curve_sample_offset == 0x2a0) {"
+        },
+        {
+          "name": "physical-less-equal-hex",
+          "text": "        if (curve_sample_offset <= 0x2a0) {"
+        },
+        {
+          "name": "physical-less-than-next",
+          "text": "        if (curve_sample_offset < 5 * (int)sizeof(PathTemplateSample)) {"
+        }
+      ]
+    }
+  ]
+}

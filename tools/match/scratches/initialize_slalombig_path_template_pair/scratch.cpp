@@ -209,46 +209,94 @@ void cRPath::initialize_slalombig_path_template_pair(
     has_entry_mesh_transition = 0;
 
     int i;
-    for (i = 0; i < 4; ++i) {
-        primary_samples[i].center_x = 0.0f;
-        primary_samples[i].rotation_scalar_98 = 0.0f;
-        primary_samples[i].rotation_scalar_94 = 0.0f;
-        primary_samples[i].special_scalar = 0.0f;
-        primary_samples[i].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[i].transform);
-        float z = (float)i;
-        primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        primary_samples[i].transform.position.y = 0.0f;
-        primary_samples[i].transform.position.z = z;
+    int lead_sample_index = 0;
+    int lead_sample_offset = 0;
+    do {
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->center_x = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->special_scalar = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->lateral_scale = 1.0f;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+                ->transform);
+        float z = (float)lead_sample_index;
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+                ->center_x;
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->transform.position.y = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+            ->transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[i].transform);
-        secondary_samples[i].transform.position.x = primary_samples[i].center_x;
-        secondary_samples[i].transform.position.y = 0.49000001f;
-        secondary_samples[i].transform.position.z = z;
-    }
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))
+                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + lead_sample_offset))
+                ->center_x;
+        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))
+            ->transform.position.y = 0.49000001f;
+        ((PathTemplateSample*)((char*)secondary_samples + lead_sample_offset))
+            ->transform.position.z = z;
+        ++lead_sample_index;
+        lead_sample_offset += (int)sizeof(PathTemplateSample);
+    } while (lead_sample_offset < 4 * (int)sizeof(PathTemplateSample));
 
     int departure_index = lead_out_start;
+    int departure_sample_offset =
+        departure_index * (int)sizeof(PathTemplateSample);
     do {
-        primary_samples[departure_index].center_x = 0.0f;
-        primary_samples[departure_index].rotation_scalar_98 = 0.0f;
-        primary_samples[departure_index].rotation_scalar_94 = 0.0f;
-        primary_samples[departure_index].special_scalar = 0.0f;
-        primary_samples[departure_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[departure_index].transform);
-        primary_samples[departure_index].transform.position.x =
-            primary_samples[departure_index].center_x;
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->center_x = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->special_scalar = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->lateral_scale = 1.0f;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+                ->transform);
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+                ->center_x;
         float z = (float)departure_index;
-        primary_samples[departure_index].transform.position.y = 0.0f;
-        primary_samples[departure_index].transform.position.z = z;
-        set_matrix_identity(&secondary_samples[departure_index].transform);
-        secondary_samples[departure_index].transform.position.x =
-            primary_samples[departure_index].center_x;
-        secondary_samples[departure_index].transform.position.y = 0.49000001f;
-        secondary_samples[departure_index].transform.position.z = z;
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->transform.position.y = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+            ->transform.position.z = z;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))
+                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + departure_sample_offset))
+                ->center_x;
+        ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))
+            ->transform.position.y = 0.49000001f;
+        ((PathTemplateSample*)((char*)secondary_samples + departure_sample_offset))
+            ->transform.position.z = z;
+        departure_sample_offset += (int)sizeof(PathTemplateSample);
         ++departure_index;
     } while (departure_index - 4 - curve_segments < 4);
 
-    for (i = 0; i < curve_segments; ++i) {
+    int curve_sample_index = 0;
+    int curve_sample_offset = 4 * (int)sizeof(PathTemplateSample);
+    for (i = 0; i < curve_segments;
+         ++i,
+         ++curve_sample_index,
+         curve_sample_offset += (int)sizeof(PathTemplateSample)) {
         float t = (float)i / (float)curve_segments;
         float folded = t - 0.5f;
         float folded_copy;
@@ -261,71 +309,111 @@ void cRPath::initialize_slalombig_path_template_pair(
 
         float angle = t * 6.2831855f;
         float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
-        int sample_index = i + 4;
-        primary_samples[sample_index].center_x = center;
-        primary_samples[sample_index].rotation_scalar_98 = 0.0f;
-        primary_samples[sample_index].rotation_scalar_94 = 0.0f;
-        primary_samples[sample_index].special_scalar = 0.0f;
-        primary_samples[sample_index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[sample_index].transform);
-        primary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        float z = (float)(i + 4);
-        primary_samples[sample_index].transform.position.y = 0.0f;
-        primary_samples[sample_index].transform.position.z = z;
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->center_x = center;
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->rotation_scalar_98 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->rotation_scalar_94 = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->special_scalar = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->lateral_scale = 1.0f;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->transform);
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->center_x;
+        float z = (float)(curve_sample_index + 4);
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.position.y = 0.0f;
+        ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+            ->transform.position.z = z;
 
-        set_matrix_identity(&secondary_samples[sample_index].transform);
-        secondary_samples[sample_index].transform.position.x =
-            primary_samples[sample_index].center_x;
-        secondary_samples[sample_index].transform.position.y = 0.49000001f;
-        secondary_samples[sample_index].transform.position.z = z;
+        set_matrix_identity(
+            &((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+                ->transform);
+        ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+            ->transform.position.x =
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
+                ->center_x;
+        ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+            ->transform.position.y = 0.49000001f;
+        ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset))
+            ->transform.position.z = z;
 
-        if (i == 0) {
-            primary_samples[sample_index - 1].transform.RotIdentity();
-            secondary_samples[sample_index - 1].transform.RotIdentity();
+        if (curve_sample_offset == 4 * (int)sizeof(PathTemplateSample)) {
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                ->transform.RotIdentity();
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
+                ->transform.RotIdentity();
         } else {
-            primary_samples[sample_index - 1].transform.basis_up =
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                ->transform.basis_up =
                 Vector3(0.0f, 1.0f, 0.0f);
-            primary_samples[sample_index - 1].transform.basis_forward =
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                ->transform.basis_forward =
                 Vector3(
-                    primary_samples[sample_index].transform.position.x
-                        - primary_samples[sample_index - 1].transform.position.x,
-                    primary_samples[sample_index].transform.position.y
-                        - primary_samples[sample_index - 1].transform.position.y,
-                    primary_samples[sample_index].transform.position.z
-                        - primary_samples[sample_index - 1].transform.position.z);
-            primary_samples[sample_index - 1]
-                .transform.basis_forward.Normalize();
-            primary_samples[sample_index - 1]
-                .transform.basis_right.cross_vectors(
-                    &primary_samples[sample_index - 1].transform.basis_up,
-                    &primary_samples[sample_index - 1].transform.basis_forward);
+                    ((PathTemplateSample*)((char*)primary_samples
+                        + curve_sample_offset))->transform.position.x
+                        - ((PathTemplateSample*)((char*)primary_samples
+                            + curve_sample_offset) - 1)->transform.position.x,
+                    ((PathTemplateSample*)((char*)primary_samples
+                        + curve_sample_offset))->transform.position.y
+                        - ((PathTemplateSample*)((char*)primary_samples
+                            + curve_sample_offset) - 1)->transform.position.y,
+                    ((PathTemplateSample*)((char*)primary_samples
+                        + curve_sample_offset))->transform.position.z
+                        - ((PathTemplateSample*)((char*)primary_samples
+                            + curve_sample_offset) - 1)->transform.position.z);
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                ->transform.basis_forward.Normalize();
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                ->transform.basis_right.cross_vectors(
+                    &((PathTemplateSample*)((char*)primary_samples
+                        + curve_sample_offset) - 1)->transform.basis_up,
+                    &((PathTemplateSample*)((char*)primary_samples
+                        + curve_sample_offset) - 1)->transform.basis_forward);
             float primary_roll =
-                primary_samples[sample_index - 1].center_x * 0.2617994f;
-            primary_samples[sample_index - 1]
-                .transform.RotLocalZ(primary_roll);
+                ((PathTemplateSample*)((char*)primary_samples
+                    + curve_sample_offset) - 1)->center_x * 0.2617994f;
+            ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset) - 1)
+                ->transform.RotLocalZ(primary_roll);
 
-            secondary_samples[sample_index - 1].transform.basis_up =
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
+                ->transform.basis_up =
                 Vector3(0.0f, 1.0f, 0.0f);
-            secondary_samples[sample_index - 1].transform.basis_forward =
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
+                ->transform.basis_forward =
                 Vector3(
-                    secondary_samples[sample_index].transform.position.x
-                        - secondary_samples[sample_index - 1].transform.position.x,
-                    secondary_samples[sample_index].transform.position.y
-                        - secondary_samples[sample_index - 1].transform.position.y,
-                    secondary_samples[sample_index].transform.position.z
-                        - secondary_samples[sample_index - 1].transform.position.z);
-            secondary_samples[sample_index - 1]
-                .transform.basis_forward.Normalize();
-            secondary_samples[sample_index - 1]
-                .transform.basis_right.cross_vectors(
-                    &secondary_samples[sample_index - 1].transform.basis_up,
-                    &secondary_samples[sample_index - 1].transform.basis_forward);
+                    ((PathTemplateSample*)((char*)secondary_samples
+                        + curve_sample_offset))->transform.position.x
+                        - ((PathTemplateSample*)((char*)secondary_samples
+                            + curve_sample_offset) - 1)->transform.position.x,
+                    ((PathTemplateSample*)((char*)secondary_samples
+                        + curve_sample_offset))->transform.position.y
+                        - ((PathTemplateSample*)((char*)secondary_samples
+                            + curve_sample_offset) - 1)->transform.position.y,
+                    ((PathTemplateSample*)((char*)secondary_samples
+                        + curve_sample_offset))->transform.position.z
+                        - ((PathTemplateSample*)((char*)secondary_samples
+                            + curve_sample_offset) - 1)->transform.position.z);
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
+                ->transform.basis_forward.Normalize();
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
+                ->transform.basis_right.cross_vectors(
+                    &((PathTemplateSample*)((char*)secondary_samples
+                        + curve_sample_offset) - 1)->transform.basis_up,
+                    &((PathTemplateSample*)((char*)secondary_samples
+                        + curve_sample_offset) - 1)->transform.basis_forward);
 
             float secondary_roll =
-                primary_samples[sample_index - 1].center_x * 0.2617994f;
-            secondary_samples[sample_index - 1]
-                .transform.RotLocalZ(secondary_roll);
+                ((PathTemplateSample*)((char*)primary_samples
+                    + curve_sample_offset) - 1)->center_x * 0.2617994f;
+            ((PathTemplateSample*)((char*)secondary_samples + curve_sample_offset) - 1)
+                ->transform.RotLocalZ(secondary_roll);
         }
     }
 

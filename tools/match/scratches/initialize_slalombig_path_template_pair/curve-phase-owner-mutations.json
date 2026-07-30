@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-phase-owner",
+      "find": "        float angle = t * 6.2831855f;\n        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;",
+      "replacements": [
+        {
+          "name": "inline-sine-phase",
+          "text": "        float center = sine(t * 6.2831855f)\n            * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        },
+        {
+          "name": "separate-wave-result",
+          "text": "        float wave = sine(t * 6.2831855f);\n        float center = wave * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;"
+        }
+      ]
+    }
+  ]
+}

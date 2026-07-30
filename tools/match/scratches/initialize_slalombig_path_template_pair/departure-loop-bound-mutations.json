@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "departure-loop-bound",
+      "find": "    } while (departure_index - 4 - curve_segments < 4);",
+      "replacements": [
+        {
+          "name": "subtract-curve-then-four",
+          "text": "    } while (departure_index - curve_segments - 4 < 4);"
+        },
+        {
+          "name": "invariant-first",
+          "text": "    } while (-4 - curve_segments + departure_index < 4);"
+        },
+        {
+          "name": "grouped-invariant",
+          "text": "    } while (departure_index + (-4 - curve_segments) < 4);"
+        },
+        {
+          "name": "subtract-lead-out-start",
+          "text": "    } while (departure_index - lead_out_start < 4);"
+        },
+        {
+          "name": "direct-upper-bound",
+          "text": "    } while (departure_index < lead_out_start + 4);"
+        }
+      ]
+    }
+  ]
+}

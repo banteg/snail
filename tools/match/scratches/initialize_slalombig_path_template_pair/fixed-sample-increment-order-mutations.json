@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lead-increment-order",
+      "find": "        lead_sample_offset += (int)sizeof(PathTemplateSample);\n        ++i;",
+      "replacements": [
+        {
+          "name": "logical-then-byte",
+          "text": "        ++i;\n        lead_sample_offset += (int)sizeof(PathTemplateSample);"
+        }
+      ]
+    },
+    {
+      "name": "departure-increment-order",
+      "find": "        departure_sample_offset += (int)sizeof(PathTemplateSample);\n        ++departure_index;",
+      "replacements": [
+        {
+          "name": "logical-then-byte",
+          "text": "        ++departure_index;\n        departure_sample_offset += (int)sizeof(PathTemplateSample);"
+        }
+      ]
+    }
+  ]
+}

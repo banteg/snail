@@ -21209,7 +21209,13 @@ def test_slalom_path_replay_preserves_shared_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     for rejected_index in (853, 962, 1052, 1845):
         assert f"({rejected_index}, 66," not in replay
-    assert "if (curve_index == 0)" in slalombig_scratch
+    assert "int lead_sample_offset = 0;" in slalombig_scratch
+    assert "int departure_sample_offset =" in slalombig_scratch
+    assert "int curve_sample_offset =" in slalombig_scratch
+    assert (
+        "if (curve_sample_offset == 4 * (int)sizeof(PathTemplateSample))"
+        in slalombig_scratch
+    )
     assert "if (current_index <= 4)" not in slalombig_scratch
 
 
