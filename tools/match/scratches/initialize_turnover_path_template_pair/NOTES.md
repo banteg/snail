@@ -290,3 +290,25 @@ byte-identical. Rechecking the fixed owners on the new baseline leaves the
 tail cursor byte-identical, while the lead cursor loses 94.58 weighted bytes;
 the paired fixed-cursor form still loses 37.00. Only the independently
 contributing curved address owner is retained.
+
+## 2026-07-30 post-cursor face-control bound
+
+Sweep and Snake's coupled checkerboard wins justified replaying Turnover's
+native parity control after the curved byte cursor changed the enclosing
+allocation. Isolating the texture branches from the older split-record probe
+shows that the transfer still does not close on Turnover's retained shared
+face owner.
+
+The first parity branch alone loses 5.51 weighted bytes. The second alone
+gains 7.02 but adds seven candidate instructions; that unsupported one-sided
+result is rejected. Restoring the evidence-consistent pair loses **182.79
+weighted bytes**, falls from **59.77% to 52.26%**, grows the candidate from
+644 to 657/671 instructions, and cuts the exact prefix from 54 to 18. All 41
+references remain clean.
+
+The complete recorded face-owner plan was also replayed on the new cursor
+frontier. Separate records with parity fall to **41.07%** and 673
+instructions; without parity they fall to **40.96%** and 657 instructions.
+Both erase the exact prefix and lose about 455 weighted bytes. The current
+shared face source remains retained, and the native branch-local tail stays a
+bounded compiler-allocation residual rather than a metric-driven rewrite.

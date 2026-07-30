@@ -262,3 +262,18 @@ curve-only baseline, but is rejected: native `0x427860..0x427870` increments
 and tests the logical index separately from the byte cursor. Rechecking the
 lead on the final baseline also remains negative by 11.10 to 122.07 weighted
 bytes, so no lead cursor is retained.
+
+## 2026-07-30 post-cursor face-control bound
+
+The duplicated checkerboard texture calls were isolated from face-record
+ownership and retested after the curved and tail cursor recoveries. The first
+branch alone loses 5.34 weighted bytes. The second alone gains 7.26 but grows
+the candidate by seven instructions, so the unsupported asymmetric result is
+rejected.
+
+Restoring both native parity branches loses **46.76 weighted bytes** and falls
+from **57.94% to 56.04%**, while growing the candidate from 649 to 662/680
+instructions. The 54-instruction prefix and all 46 references remain clean.
+Unlike the dependency-complete Sweep and Snake results, TurnoverDouble's
+shared face owner does not support the paired control transfer; the retained
+source therefore remains unchanged.

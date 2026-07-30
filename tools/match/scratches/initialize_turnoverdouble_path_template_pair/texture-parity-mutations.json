@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-texture-parity",
+      "find": "                    face->texture_ref = g_texture_refs.Add(texture_a, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                    if ((column ^ row) & 1) {\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_a, 0, 0);\n                    } else {\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_a, 0, 0);\n                    }"
+        }
+      ]
+    },
+    {
+      "name": "second-face-texture-parity",
+      "find": "                    face->texture_ref = g_texture_refs.Add(texture_b, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                    if ((column ^ row) & 1) {\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_b, 0, 0);\n                    } else {\n                        face->texture_ref =\n                            g_texture_refs.Add(texture_b, 0, 0);\n                    }"
+        }
+      ]
+    }
+  ]
+}
