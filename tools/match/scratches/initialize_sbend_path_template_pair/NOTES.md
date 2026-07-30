@@ -312,3 +312,21 @@ Reintroducing a common face pointer after the cursor recovery regresses to
 80.42%. These bounded replays leave terminal x87 scheduling and equivalent
 face-tail layout as the residual, not an unimplemented behavior or unsafe
 reference shortcut.
+
+## 2026-07-31 post-cursor terminal emission bound
+
+The broader terminal construction grid had previously been measured before
+the sample/delta cursor cascade, so it was replayed against the final 90.06%
+allocation. Neither authored `Vector3::operator+` order nor default component
+assignment reproduces the native x87 stack; each loses 3.57 weighted bytes.
+Copy-plus-assign forms lose 161.90 to 172.55 weighted bytes, add six to eight
+instructions, and shorten the exact prefix from 373 to 69.
+
+Five direct vertex-emission forms close the remaining source boundary.
+Constructor assignment is byte-identical to the retained local constructor.
+Direct pointer/array fields and named component stores instead shorten the
+candidate by five instructions, collapse the prefix to zero, and fall to
+79.86%. The scratch remains **90.06%**, 578/579 instructions, prefix 373/579,
+with all 39 references clean. The first mismatch at `0x42e477` is now bounded
+across operand order, local lifetime, aggregate construction, compound
+assignment, and direct destination emission.

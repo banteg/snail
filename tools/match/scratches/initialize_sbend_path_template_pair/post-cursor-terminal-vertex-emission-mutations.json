@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-cursor-terminal-vertex-emission",
+      "find": "                        Vector3 generated_position(\n                            endpoint.x + lateral_offset.x,\n                            endpoint.y + lateral_offset.y,\n                            endpoint.z + lateral_offset.z);\n                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = generated_position;",
+      "replacements": [
+        {
+          "name": "direct-pointer-components",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        vertex->x = endpoint.x + lateral_offset.x;\n                        vertex->y = endpoint.y + lateral_offset.y;\n                        vertex->z = endpoint.z + lateral_offset.z;"
+        },
+        {
+          "name": "direct-pointer-constructor-assignment",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = Vector3(\n                            endpoint.x + lateral_offset.x,\n                            endpoint.y + lateral_offset.y,\n                            endpoint.z + lateral_offset.z);"
+        },
+        {
+          "name": "direct-array-components",
+          "text": "                        int vertex_index =\n                            column + row * (path->width_cells + 1);\n                        vertices[vertex_index].x =\n                            endpoint.x + lateral_offset.x;\n                        vertices[vertex_index].y =\n                            endpoint.y + lateral_offset.y;\n                        vertices[vertex_index].z =\n                            endpoint.z + lateral_offset.z;"
+        },
+        {
+          "name": "named-components-then-pointer",
+          "text": "                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        vertex->x = generated_x;\n                        vertex->y = generated_y;\n                        vertex->z = generated_z;"
+        },
+        {
+          "name": "pointer-then-named-components",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        float generated_x =\n                            endpoint.x + lateral_offset.x;\n                        float generated_y =\n                            endpoint.y + lateral_offset.y;\n                        float generated_z =\n                            endpoint.z + lateral_offset.z;\n                        vertex->x = generated_x;\n                        vertex->y = generated_y;\n                        vertex->z = generated_z;"
+        }
+      ]
+    }
+  ]
+}
