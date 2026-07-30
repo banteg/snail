@@ -330,3 +330,49 @@ precomputed relative base reaches only **59.18%** and grows the candidate from
 644 to 647 instructions. Swapping the two declaration orders is byte-identical.
 Both coupled forms keep the 54-instruction prefix and all 41 references clean
 but remain below the retained source, so neither owner is kept.
+
+## 2026-07-31 native mesh-row and dependent ownership replay
+
+The complete Windows row unit at `0x4272ba..0x4273ea` resolves the outstanding
+mesh-control ambiguity. It uses signed nonnegative guards, a separate `0xa8`
+sample cursor, post-tested row and column loops, branch-local sample and
+generated-position owners, and the terminal row's `sample[-1]` endpoint. Replaying
+that unit while preserving Turnover's already-proven vector operators raises
+focused matching from **59.77%** (644/671 instructions) to **63.33%**
+(649/671), a gain of 86.65 weighted bytes. The 54-instruction prefix and all 41
+masked references remain clean.
+
+The replay exposes a productive dependency chain that was regressive or neutral
+on the old allocation frontier:
+
+- a component-authored terminal endpoint adds 14.75 weighted bytes, reaching
+  **63.94%**;
+- a distinct tail sample byte cursor adds 7.37, reaching **64.24%**;
+- coupling that cursor with the native `-6 - curve_segments` relative-control
+  owner adds 103.02, reaching **68.48%**;
+- restoring both native face-texture parity branches together adds 20.02 and
+  reaches **69.30%**, while also bringing the candidate to the target's exact
+  671-instruction count;
+- the terminal generated-position component constructor adds the final 3.63
+  weighted bytes and reaches **69.45%**.
+
+The face column loop is now expressed as the native guarded post-tested loop,
+and its shared logical `face_offset` is retained. Both refinements are
+byte-identical on the recovered frontier. The complete Android and iOS
+`BuildTurnover` bodies independently confirm the fixed-sample and curve
+semantics, including the direct curve-end interpolation source; their portable
+bodies end before the Windows-only mesh builder.
+
+The adjacent allocation hypotheses are exhaustively bounded. Direct or
+branch-local face records lose at least 89.41 weighted bytes on the final
+frontier. A lead byte cursor loses 65.27 and cuts the prefix to 15. Saving the
+curve-end byte offset in the closest declaration orders loses 16.65 and seven
+instructions; direct saved-owner spellings lose more than 221. A complete
+shared fixed-sample Z lifetime loses 21.76 and cuts the prefix to 25, while
+partial spellings are byte-identical. Delta-bank owners lose 60.44, and all
+tested curve-cursor, mesh-vertex, face-V, tail-schedule, and ordinary generated
+position lifetimes are neutral or worse.
+
+The retained source therefore closes this evidence-backed replay at
+**69.45%**, with exactly **671/671 instructions**, prefix **54/671**, and
+**41/0/0/0** clean masked references.

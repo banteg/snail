@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-vertex-owner",
+      "find": "                        int vertex_index =\n                            column + row * (path->width_cells + 1);\n                        vertices[vertex_index] = generated_position;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "branch-local-pointer",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = generated_position;"
+        },
+        {
+          "name": "branch-local-reference",
+          "text": "                        Vector3& vertex =\n                            vertices[column + row * (path->width_cells + 1)];\n                        vertex = generated_position;"
+        },
+        {
+          "name": "direct-index-expression",
+          "text": "                        vertices[column + row * (path->width_cells + 1)] =\n                            generated_position;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-vertex-owner",
+      "find": "                        int vertex_index =\n                            column + row * (path->width_cells + 1);\n                        vertices[vertex_index] = generated_position;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "branch-local-pointer",
+          "text": "                        Vector3* vertex =\n                            &vertices[column + row * (path->width_cells + 1)];\n                        *vertex = generated_position;"
+        },
+        {
+          "name": "branch-local-reference",
+          "text": "                        Vector3& vertex =\n                            vertices[column + row * (path->width_cells + 1)];\n                        vertex = generated_position;"
+        },
+        {
+          "name": "direct-index-expression",
+          "text": "                        vertices[column + row * (path->width_cells + 1)] =\n                            generated_position;"
+        }
+      ]
+    }
+  ]
+}

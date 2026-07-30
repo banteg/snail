@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-offset-owner",
+      "find": "                    cRFaceQuad* face =\n                        &facequads[2 * column + 2 * row * path->width_cells + face_index];",
+      "replacements": [
+        {
+          "name": "common-offset-shared-pointer",
+          "text": "                    int face_offset =\n                        2 * column + 2 * row * path->width_cells + face_index;\n                    cRFaceQuad* face = &facequads[face_offset];"
+        },
+        {
+          "name": "grouped-offset-shared-pointer",
+          "text": "                    int face_offset =\n                        face_index + 2 * (row * path->width_cells + column);\n                    cRFaceQuad* face = &facequads[face_offset];"
+        }
+      ]
+    }
+  ]
+}

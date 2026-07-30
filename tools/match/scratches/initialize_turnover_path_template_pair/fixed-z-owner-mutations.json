@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "z-declaration",
+      "find": "    int lead_z_index = 0;\n    int i = 0;\n    do {",
+      "replacements": [
+        {
+          "name": "shared-z",
+          "text": "    int lead_z_index = 0;\n    int i = 0;\n    float z;\n    do {"
+        }
+      ]
+    },
+    {
+      "name": "lead-z",
+      "find": "        float z = (float)lead_z_index;",
+      "replacements": [
+        {
+          "name": "shared-z",
+          "text": "        z = (float)lead_z_index;",
+          "requires": [
+            "z-declaration/shared-z"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "tail-z",
+      "find": "        float z = (float)i;",
+      "replacements": [
+        {
+          "name": "shared-z",
+          "text": "        z = (float)i;",
+          "requires": [
+            "z-declaration/shared-z"
+          ]
+        }
+      ]
+    }
+  ]
+}

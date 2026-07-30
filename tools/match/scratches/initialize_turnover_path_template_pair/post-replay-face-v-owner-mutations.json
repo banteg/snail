@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-v-owner",
+      "find": "            float v0 = (float)(row % 8) * 0.125f;\n            float v1 = (float)(row % 8 + 1) * 0.125f;",
+      "replacements": [
+        {
+          "name": "split-declarations",
+          "text": "            float v0;\n            float v1;\n            v0 = (float)(row % 8) * 0.125f;\n            v1 = (float)(row % 8 + 1) * 0.125f;"
+        },
+        {
+          "name": "reverse-declaration-order",
+          "text": "            float v1;\n            float v0 = (float)(row % 8) * 0.125f;\n            v1 = (float)(row % 8 + 1) * 0.125f;"
+        },
+        {
+          "name": "late-v1-definition",
+          "text": "            float v0 = (float)(row % 8) * 0.125f;\n            float v1;\n            v1 = (float)(row % 8 + 1) * 0.125f;"
+        }
+      ]
+    }
+  ]
+}

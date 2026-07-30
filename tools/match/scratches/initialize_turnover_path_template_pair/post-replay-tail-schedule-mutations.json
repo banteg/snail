@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-schedule",
+      "find": "        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.z = z;\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->delta_length = 1.0f;\n        tail_sample_offset += sizeof(AttachmentSample);\n        ++i;",
+      "replacements": [
+        {
+          "name": "index-delta-offset",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.z = z;\n        ++i;\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->delta_length = 1.0f;\n        tail_sample_offset += sizeof(AttachmentSample);"
+        },
+        {
+          "name": "delta-index-offset",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.z = z;\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->delta_length = 1.0f;\n        ++i;\n        tail_sample_offset += sizeof(AttachmentSample);"
+        },
+        {
+          "name": "index-offset-delta-current",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.z = z;\n        ++i;\n        tail_sample_offset += sizeof(AttachmentSample);\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset -\n            sizeof(AttachmentSample)))->delta_length = 1.0f;"
+        },
+        {
+          "name": "offset-index-delta-current",
+          "text": "        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))->transform.position.z = z;\n        tail_sample_offset += sizeof(AttachmentSample);\n        ++i;\n        ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset -\n            sizeof(AttachmentSample)))->delta_length = 1.0f;"
+        }
+      ]
+    }
+  ]
+}

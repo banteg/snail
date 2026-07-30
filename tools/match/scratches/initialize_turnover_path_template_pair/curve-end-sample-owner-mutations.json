@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "curve-end-owner",
+      "find": "    int tail_sample_offset = i * sizeof(AttachmentSample);",
+      "replacements": [
+        {
+          "name": "saved-byte-offset",
+          "text": "    int tail_sample_offset = i * sizeof(AttachmentSample);\n    int curve_end_sample_offset = tail_sample_offset;"
+        },
+        {
+          "name": "saved-pointer",
+          "text": "    int tail_sample_offset = i * sizeof(AttachmentSample);\n    AttachmentSample* curve_end_sample =\n        (AttachmentSample*)((char*)primary_samples + tail_sample_offset);"
+        }
+      ]
+    },
+    {
+      "name": "curve-end-read",
+      "find": "primary_samples[curve_segments + 6].center_x",
+      "replacements": [
+        {
+          "name": "saved-byte-offset",
+          "text": "((AttachmentSample*)((char*)primary_samples + curve_end_sample_offset))->center_x",
+          "requires": [
+            "curve-end-owner/saved-byte-offset"
+          ]
+        },
+        {
+          "name": "saved-pointer",
+          "text": "curve_end_sample->center_x",
+          "requires": [
+            "curve-end-owner/saved-pointer"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ordinary-generated-detail",
+      "find": "                        Vector3 generated_position =\n                            sample->transform.position + lateral_offset;",
+      "replacements": [
+        {
+          "name": "component-constructor",
+          "text": "                        Vector3 generated_position(\n                            sample->transform.position.x + lateral_offset.x,\n                            sample->transform.position.y + lateral_offset.y,\n                            sample->transform.position.z + lateral_offset.z);"
+        },
+        {
+          "name": "default-components",
+          "text": "                        Vector3 generated_position;\n                        generated_position.x =\n                            sample->transform.position.x + lateral_offset.x;\n                        generated_position.y =\n                            sample->transform.position.y + lateral_offset.y;\n                        generated_position.z =\n                            sample->transform.position.z + lateral_offset.z;"
+        }
+      ]
+    }
+  ]
+}
