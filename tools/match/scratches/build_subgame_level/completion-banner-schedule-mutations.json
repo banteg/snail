@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-banner-schedule",
+      "find": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;",
+      "replacements": [
+        {
+          "name": "split-z-declaration-before-zeroing",
+          "text": "    float completion_z;\n    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "split-z-declaration-after-zeroing",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    float completion_z;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "player-before-row-conversion",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    cRSubGoldy* player_owner = embedded_player();\n    float completion_z = (float)completion_row_start;\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "mask-before-row-conversion",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "masked-flags-initializer",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags =\n        banners.slots[1].list_flags & ~BOD_FLAG_RENDER_ENABLED;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "direct-row-conversion-store",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = (float)completion_row_start;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "row-store-before-owner-and-flags",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].position.z = completion_z;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "owner-before-mask",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    banners.slots[1].owner_player = player_owner;\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "direct-member-flag-mask",
+          "text": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "named-row-integer",
+          "text": "    int completion_row = completion_row_start;\n    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "zeroing-inner-scope",
+          "text": "    {\n        *(int*)&banners.slots[1].position.z = zero;\n        *(int*)&banners.slots[1].position.y = zero;\n        *(int*)&banners.slots[1].position.x = zero;\n    }\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        },
+        {
+          "name": "flags-before-zeroing",
+          "text": "    unsigned int completion_flags = banners.slots[1].list_flags;\n    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    banners.slots[1].owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    *(int*)&banners.slots[1].color.a = row_alpha;"
+        }
+      ]
+    }
+  ]
+}

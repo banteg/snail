@@ -614,7 +614,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | add_object_edge | 0x4305a0 | 772 | 226/227 | 86.53% | 15/227 | 3 unaudited, 34 ok |  | core |
 | 🚧 | promote_track_tiles_to_fringe_variants | 0x4355f0 | 251 | 75/75 | 81.33% | 11/75 | 6 ok |  | core |
 | 🚧 | switch_track_mirror | 0x435e60 | 79 | 27/30 | 91.23% | 20/30 | 3 ok |  | core |
-| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 84.68% | 177/555 | 108 ok |  | core |
+| 🚧 | build_subgame_level | 0x437eb0 | 2128 | 555/555 | 85.59% | 177/555 | 108 ok |  | core |
 | 🚧 | remove_sub_loc | 0x439bc0 | 396 | 130/131 | 91.19% | 87/131 | 18 ok |  | core |
 | 🚧 | update_jetpack_gauge | 0x43a390 | 490 | 131/131 | 94.66% | 6/131 | 34 ok |  | core |
 | 🚧 | play_subgoldy_shoot_sfx | 0x43afd0 | 335 | 96/88 | 89.13% | 26/88 | 2 unaudited, 19 ok |  | core |

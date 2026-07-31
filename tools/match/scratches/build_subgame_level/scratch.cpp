@@ -170,43 +170,21 @@ void cRSubGame::StartLevel(int level_index)
     }
 
     BodNode* track_bod_list = &track_body_list_head;
-    {
-        BodNode* start_row = &banners.slots[0];
-        if ((start_row->list_flags & BOD_FLAG_LINKED) != zero) {
-            report_errorf("List ADDafter");
-        } else {
-            start_row->list_prev = track_bod_list;
-            start_row->list_next = track_bod_list->list_next;
-            track_bod_list->list_next = start_row;
-            if (start_row->list_next != 0)
-                start_row->list_next->list_prev = start_row;
-            start_row->list_flags |= BOD_FLAG_LINKED;
-        }
-    }
+    banners.slots[0].add_bod_after(track_bod_list);
 
-    *(int*)&banners.slots[0].position.z = zero;
-    *(int*)&banners.slots[0].position.y = zero;
-    *(int*)&banners.slots[0].position.x = zero;
+    {
+        tVector* start_position = &banners.slots[0].position;
+        start_position->z = 0.0f;
+        start_position->y = 0.0f;
+        start_position->x = 0.0f;
+    }
     unsigned int start_flags = banners.slots[0].list_flags;
     banners.slots[0].owner_player = embedded_player();
     banners.slots[0].position.z = (float)first_block_row_count;
-    int row_alpha = 0x3f7fbe77;
     banners.slots[0].list_flags = start_flags & ~BOD_FLAG_RENDER_ENABLED;
-    *(int*)&banners.slots[0].color.a = row_alpha;
+    banners.slots[0].color.a = 0.999f;
 
-    {
-        BodNode* completion_row = &banners.slots[1];
-        if ((completion_row->list_flags & BOD_FLAG_LINKED) != zero) {
-            report_errorf("List ADDafter");
-        } else {
-            completion_row->list_prev = track_bod_list;
-            completion_row->list_next = track_bod_list->list_next;
-            track_bod_list->list_next = completion_row;
-            if (completion_row->list_next != 0)
-                completion_row->list_next->list_prev = completion_row;
-            completion_row->list_flags |= BOD_FLAG_LINKED;
-        }
-    }
+    banners.slots[1].add_bod_after(track_bod_list);
 
     *(int*)&banners.slots[1].position.z = zero;
     *(int*)&banners.slots[1].position.y = zero;
@@ -218,7 +196,7 @@ void cRSubGame::StartLevel(int level_index)
     banners.slots[1].owner_player = player_owner;
     banners.slots[1].list_flags = completion_flags;
     banners.slots[1].position.z = completion_z;
-    *(int*)&banners.slots[1].color.a = row_alpha;
+    banners.slots[1].color.a = 0.999f;
 
     track_state_latch = (unsigned char)zero;
     replay_update_cursor = zero;

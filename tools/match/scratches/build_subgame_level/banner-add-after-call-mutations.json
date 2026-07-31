@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "start-banner-add-after",
+      "find": "    {\n        BodNode* start_row = &banners.slots[0];\n        if ((start_row->list_flags & BOD_FLAG_LINKED) != zero) {\n            report_errorf(\"List ADDafter\");\n        } else {\n            start_row->list_prev = track_bod_list;\n            start_row->list_next = track_bod_list->list_next;\n            track_bod_list->list_next = start_row;\n            if (start_row->list_next != 0)\n                start_row->list_next->list_prev = start_row;\n            start_row->list_flags |= BOD_FLAG_LINKED;\n        }\n    }",
+      "replacements": [
+        {
+          "name": "typed-member-call",
+          "text": "    banners.slots[0].add_bod_after(track_bod_list);"
+        },
+        {
+          "name": "node-cast-member-call",
+          "text": "    ((BodNode*)&banners.slots[0])->add_bod_after(track_bod_list);"
+        },
+        {
+          "name": "named-node-member-call",
+          "text": "    {\n        BodNode* start_row = &banners.slots[0];\n        start_row->add_bod_after(track_bod_list);\n    }"
+        },
+        {
+          "name": "named-banner-member-call",
+          "text": "    {\n        Banner* start_row = &banners.slots[0];\n        start_row->add_bod_after(track_bod_list);\n    }"
+        }
+      ]
+    },
+    {
+      "name": "completion-banner-add-after",
+      "find": "    {\n        BodNode* completion_row = &banners.slots[1];\n        if ((completion_row->list_flags & BOD_FLAG_LINKED) != zero) {\n            report_errorf(\"List ADDafter\");\n        } else {\n            completion_row->list_prev = track_bod_list;\n            completion_row->list_next = track_bod_list->list_next;\n            track_bod_list->list_next = completion_row;\n            if (completion_row->list_next != 0)\n                completion_row->list_next->list_prev = completion_row;\n            completion_row->list_flags |= BOD_FLAG_LINKED;\n        }\n    }",
+      "replacements": [
+        {
+          "name": "typed-member-call",
+          "text": "    banners.slots[1].add_bod_after(track_bod_list);"
+        },
+        {
+          "name": "node-cast-member-call",
+          "text": "    ((BodNode*)&banners.slots[1])->add_bod_after(track_bod_list);"
+        },
+        {
+          "name": "named-node-member-call",
+          "text": "    {\n        BodNode* completion_row = &banners.slots[1];\n        completion_row->add_bod_after(track_bod_list);\n    }"
+        },
+        {
+          "name": "named-banner-member-call",
+          "text": "    {\n        Banner* completion_row = &banners.slots[1];\n        completion_row->add_bod_after(track_bod_list);\n    }"
+        }
+      ]
+    }
+  ]
+}

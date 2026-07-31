@@ -607,3 +607,42 @@ allocation and address materialization, not list semantics or ownership. The
 row-controller scheduling and honest landscape fallback reload remain the
 earlier substantive differences; no volatile, register qualifier, raw offset,
 or other fakematch was added.
+
+## 2026-07-31 Banner position-owner replay
+
+The native start-row schedule is now recovered through the ordinary borrowed
+`tVector*` that owns the first Banner's three position lanes. Android and iOS
+independently preserve the same sequence: link the row actor, clear its
+position, retain the embedded Player backlink, convert the authored row count,
+clear render visibility, and write alpha. The Windows target likewise
+materializes the Banner and position owners across this block.
+
+This changes no layout or behavior, but prevents VC6 from moving the
+`first_block_row_count` conversion ahead of the three zero stores. The whole
+start-row block is now instruction-for-instruction aligned. Focused matching
+rises from 84.68% to 85.59%, about 19.17 additional weighted bytes, while
+remaining exactly `555/555` instructions with prefix 177 and all 108 masked
+operands clean.
+
+The retained source also uses the proved inline `BodNode::add_bod_after`
+operation for both rows and ordinary `0.999f` alpha stores. Complete sweeps of
+24 AddAfter call spellings and three natural alpha spellings were byte-neutral,
+so these are semantic source cleanup rather than score shaping.
+
+The surrounding boundary is now bounded:
+
+- all 80 one- and two-row position-initialization variants were compiled;
+  pointer/reference ownership recovers either row independently, while adding
+  distinct owners for both rows perturbs earlier VC6 allocation and regresses;
+- direct float initialization removes one of the target's real redundant
+  stores, producing a 554-instruction tradeoff that was rejected;
+- twelve declaration, mask, owner, conversion, and store schedules for the
+  completion row were neutral;
+- removing the explicit alpha carrier does not make a second completion
+  position owner viable; all four such combinations regress to 82.42% with a
+  jump-table reference mismatch.
+
+The remaining completion-row delta is therefore a compiler alias/scheduling
+boundary, and the earlier landscape default-arm stack reload remains
+unexplained. No volatile, register qualifier, escaped raw offset, redundant
+arithmetic dependency, or other fakematch was introduced.

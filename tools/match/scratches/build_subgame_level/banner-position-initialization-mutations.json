@@ -1,0 +1,81 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "start-banner-position-initialization",
+      "find": "    *(int*)&banners.slots[0].position.z = zero;\n    *(int*)&banners.slots[0].position.y = zero;\n    *(int*)&banners.slots[0].position.x = zero;",
+      "replacements": [
+        {
+          "name": "direct-float-zyx",
+          "text": "    banners.slots[0].position.z = 0.0f;\n    banners.slots[0].position.y = 0.0f;\n    banners.slots[0].position.x = 0.0f;"
+        },
+        {
+          "name": "integer-alias-xyz",
+          "text": "    *(int*)&banners.slots[0].position.x = zero;\n    *(int*)&banners.slots[0].position.y = zero;\n    *(int*)&banners.slots[0].position.z = zero;"
+        },
+        {
+          "name": "direct-float-xyz",
+          "text": "    banners.slots[0].position.x = 0.0f;\n    banners.slots[0].position.y = 0.0f;\n    banners.slots[0].position.z = 0.0f;"
+        },
+        {
+          "name": "vector-constructor-literals",
+          "text": "    banners.slots[0].position = tVector(0.0f, 0.0f, 0.0f);"
+        },
+        {
+          "name": "vector-constructor-zero",
+          "text": "    banners.slots[0].position =\n        tVector((float)zero, (float)zero, (float)zero);"
+        },
+        {
+          "name": "position-pointer-integer-aliases",
+          "text": "    tVector* start_position = &banners.slots[0].position;\n    *(int*)&start_position->z = zero;\n    *(int*)&start_position->y = zero;\n    *(int*)&start_position->x = zero;"
+        },
+        {
+          "name": "position-reference-integer-aliases",
+          "text": "    tVector& start_position = banners.slots[0].position;\n    *(int*)&start_position.z = zero;\n    *(int*)&start_position.y = zero;\n    *(int*)&start_position.x = zero;"
+        },
+        {
+          "name": "position-pointer-floats",
+          "text": "    tVector* start_position = &banners.slots[0].position;\n    start_position->z = 0.0f;\n    start_position->y = 0.0f;\n    start_position->x = 0.0f;"
+        }
+      ]
+    },
+    {
+      "name": "completion-banner-position-initialization",
+      "find": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;",
+      "replacements": [
+        {
+          "name": "direct-float-zyx",
+          "text": "    banners.slots[1].position.z = 0.0f;\n    banners.slots[1].position.y = 0.0f;\n    banners.slots[1].position.x = 0.0f;"
+        },
+        {
+          "name": "integer-alias-xyz",
+          "text": "    *(int*)&banners.slots[1].position.x = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.z = zero;"
+        },
+        {
+          "name": "direct-float-xyz",
+          "text": "    banners.slots[1].position.x = 0.0f;\n    banners.slots[1].position.y = 0.0f;\n    banners.slots[1].position.z = 0.0f;"
+        },
+        {
+          "name": "vector-constructor-literals",
+          "text": "    banners.slots[1].position = tVector(0.0f, 0.0f, 0.0f);"
+        },
+        {
+          "name": "vector-constructor-zero",
+          "text": "    banners.slots[1].position =\n        tVector((float)zero, (float)zero, (float)zero);"
+        },
+        {
+          "name": "position-pointer-integer-aliases",
+          "text": "    tVector* completion_position = &banners.slots[1].position;\n    *(int*)&completion_position->z = zero;\n    *(int*)&completion_position->y = zero;\n    *(int*)&completion_position->x = zero;"
+        },
+        {
+          "name": "position-reference-integer-aliases",
+          "text": "    tVector& completion_position = banners.slots[1].position;\n    *(int*)&completion_position.z = zero;\n    *(int*)&completion_position.y = zero;\n    *(int*)&completion_position.x = zero;"
+        },
+        {
+          "name": "position-pointer-floats",
+          "text": "    tVector* completion_position = &banners.slots[1].position;\n    completion_position->z = 0.0f;\n    completion_position->y = 0.0f;\n    completion_position->x = 0.0f;"
+        }
+      ]
+    }
+  ]
+}
