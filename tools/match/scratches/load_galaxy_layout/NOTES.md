@@ -233,3 +233,30 @@ The larger tail block-order delta is likewise bounded by the worse fallthrough
 form. Existing marker-cursor assignment, temporary, null-comparison, and
 terminal-error alternatives were already measured in the earlier passes, so
 they were not repeated. No live-index alias or control-flow reshaping is kept.
+
+## 2026-07-31 marker and guarded-star-loop replay
+
+The first mismatch was replayed after the parser ABI and reference audit
+stabilized. Native compares the marker-search result with the live zero-valued
+star index in `ebx`, then spills the cursor; the candidate spills first and
+uses `test eax, eax`. Seven assignment, initialization, temporary-publication,
+pointer, and integer comparison forms were measured. Six are byte-identical
+to the retained source, including direct comparison with `star_index`; moving
+temporary publication after the branch loses 3.42 weighted bytes. The native
+compare/store schedule is therefore not recoverable from an ordinary cursor
+owner boundary.
+
+Android and iOS independently prove a positive star-count guard followed by a
+post-tested route expansion loop. Replaying that complete control unit on
+Windows moves the candidate from 236 to 234 instructions, but loses 21.04
+weighted bytes and falls from 88.27% to **85.65%** with no prefix or reference
+gain. Four narrower `step` declaration and initialization boundaries are all
+byte-identical, including initialization from the live zero-valued
+`star_index`.
+
+The portable guard is retained as semantic evidence but not transferred into
+the Windows scratch: Windows remains authoritative for its allocator and
+parser-tail layout. The checked ledger now contains six sweeps and 16 unique
+variants, with 0 improving, 10 neutral, and 6 degrading results. The retained
+frontier remains **88.27%**, 236/233 instructions, prefix 62/233, and 42 clean
+references.

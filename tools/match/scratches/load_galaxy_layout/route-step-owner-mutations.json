@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "route-step-owner",
+      "find": "        for (int step = 0;\n             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];\n             step += 10) {",
+      "replacements": [
+        {
+          "name": "declared-then-for-assigned",
+          "text": "        int step;\n        for (step = 0;\n             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];\n             step += 10) {"
+        },
+        {
+          "name": "initialized-before-for",
+          "text": "        int step = 0;\n        for (;\n             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];\n             step += 10) {"
+        },
+        {
+          "name": "initialized-from-star-index",
+          "text": "        int step = star_index;\n        for (;\n             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];\n             step += 10) {"
+        },
+        {
+          "name": "declared-then-star-index-assigned",
+          "text": "        int step;\n        step = star_index;\n        for (;\n             star_index < route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT];\n             step += 10) {"
+        }
+      ]
+    }
+  ]
+}

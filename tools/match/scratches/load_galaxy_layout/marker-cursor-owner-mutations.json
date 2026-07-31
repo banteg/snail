@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "marker-cursor-owner",
+      "find": "        char* cursor;\n        if ((cursor = find_case_insensitive_substring(marker, file_text)) == (char*)0)\n            goto missing_galaxy;",
+      "replacements": [
+        {
+          "name": "assigned-compare-star-index",
+          "text": "        char* cursor;\n        if ((cursor = find_case_insensitive_substring(marker, file_text))\n            == (char*)star_index)\n            goto missing_galaxy;"
+        },
+        {
+          "name": "separate-assignment-compare-star-index",
+          "text": "        char* cursor;\n        cursor = find_case_insensitive_substring(marker, file_text);\n        if (cursor == (char*)star_index)\n            goto missing_galaxy;"
+        },
+        {
+          "name": "initialized-cursor-compare-star-index",
+          "text": "        char* cursor =\n            find_case_insensitive_substring(marker, file_text);\n        if (cursor == (char*)star_index)\n            goto missing_galaxy;"
+        },
+        {
+          "name": "initialized-cursor-compare-null",
+          "text": "        char* cursor =\n            find_case_insensitive_substring(marker, file_text);\n        if (cursor == (char*)0)\n            goto missing_galaxy;"
+        },
+        {
+          "name": "temporary-compare-then-publish",
+          "text": "        char* cursor;\n        char* marker_cursor =\n            find_case_insensitive_substring(marker, file_text);\n        if (marker_cursor == (char*)star_index)\n            goto missing_galaxy;\n        cursor = marker_cursor;"
+        },
+        {
+          "name": "temporary-publish-then-compare",
+          "text": "        char* cursor;\n        char* marker_cursor =\n            find_case_insensitive_substring(marker, file_text);\n        cursor = marker_cursor;\n        if (marker_cursor == (char*)star_index)\n            goto missing_galaxy;"
+        },
+        {
+          "name": "integer-compare-star-index",
+          "text": "        char* cursor;\n        if ((int)(cursor = find_case_insensitive_substring(marker, file_text))\n            == star_index)\n            goto missing_galaxy;"
+        }
+      ]
+    }
+  ]
+}
