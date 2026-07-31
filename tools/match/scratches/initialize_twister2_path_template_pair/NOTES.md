@@ -402,3 +402,25 @@ combinations, including the still-negative terminal addition and double
 lateral owner. The two Windows targets remain byte-identical across this mesh
 region, so the paired scratch sources retain the same ordinary position
 boundary.
+
+## 2026-07-31 paired post-face phase-owner closure
+
+The remaining native mesh/face lifetimes were replayed after direct face
+records and the ordinary position addition. All four facequads/vertices
+declaration and load orders are byte-identical to the retained source,
+including native facequads-first acquisition.
+
+Windows also preserves a saved vertex-bank value across the ordinary/terminal
+mesh branch. The complete seven-combination declaration-and-consumption sweep
+is neutral in every valid form, including both branches together; incomplete
+consumer-only forms correctly fail without the saved owner. VC6 already
+produces the spill from the simpler source.
+
+A fresh face-row source counter is not equivalent allocation ownership. It
+loses **74.76 weighted bytes** and falls from **77.85%** to **74.91%** without
+changing the 682/677 instruction count, 123-instruction prefix, or 49 clean
+references. Twister independently reproduces every result exactly.
+
+No source change is retained. Three consecutive non-improving sweeps formally
+stall the paired Twister frontier at **77.85%**, 682/677 instructions, prefix
+123/677, with all 49 references clean.

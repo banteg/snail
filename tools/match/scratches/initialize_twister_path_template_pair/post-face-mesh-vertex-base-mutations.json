@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-vertex-base-owner",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;",
+      "replacements": [
+        {
+          "name": "saved-mesh-base",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* mesh_vertices = vertices;"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-vertex-base",
+      "find": "                        vertices[vertex_index] = generated_position;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "saved-mesh-base",
+          "text": "                        mesh_vertices[vertex_index] = generated_position;"
+        }
+      ]
+    },
+    {
+      "name": "terminal-vertex-base",
+      "find": "                        vertices[vertex_index] = generated_position;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "saved-mesh-base",
+          "text": "                        mesh_vertices[vertex_index] = generated_position;"
+        }
+      ]
+    }
+  ]
+}
