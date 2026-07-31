@@ -356,3 +356,38 @@ from **75.49%** to **67.92%**. Candidate size grows from 685 to 691
 instructions against 690 native, while prefix 20/690 and all 43 references
 remain unchanged. The direct-face recovery therefore does not revive the
 earlier broad sample-base owner.
+
+## 2026-07-31 post-face counter and vector ownership
+
+Dump independently confirms the shared mesh/face counter transfer. Declaring
+the mesh column beside the row and reusing both in the face pass adds **7.46
+weighted bytes**, raising the direct-face baseline from 75.49% to 75.78% with
+unchanged size, prefix, and reference quality.
+
+That counter allocation unlocks two authored vector boundaries that had been
+negative or neutral on the earlier source. The terminal
+`basis_right * lateral` expression adds **15.79 weighted bytes** and two
+candidate instructions; the ordinary
+`position + lateral_offset` expression then adds another **3.72 weighted
+bytes** without changing size. Together with the counter owner, they produce:
+
+```text
+match: 76.54%
+target: 690 insns, candidate: 687 insns
+prefix: 20/690 target insns
+masked operands: 43 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The retained unit completes the native mesh arithmetic symmetrically: both
+branches now own the observed vector scale, and both generated positions use
+the authored vector addition boundary.
+
+All three terminal sample aliases are byte-identical on the final allocation.
+Vertices-first acquisition remains neutral across both counter declaration
+placements, while the three facequads-first orders lose 3.72 weighted bytes.
+Delaying the departure index loses 32.58 weighted bytes and contracts the
+prefix from 20 to 15 instructions.
+
+The ledger now contains 22 records, 19 mutation sweeps, 3 probes, and 55
+unique variants. Three consecutive non-improving sweeps bound the updated
+Dump frontier.

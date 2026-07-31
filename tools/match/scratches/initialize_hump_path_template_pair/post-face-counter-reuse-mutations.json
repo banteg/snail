@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-mesh-column",
+      "find": "    int mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        int mesh_sample_offset = 0;\n        do {\n            for (int mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {",
+      "replacements": [
+        {
+          "name": "declare-before-row",
+          "text": "    int mesh_column;\n    int mesh_row = 0;\n    if (mesh_row <= segment_count) {\n        int mesh_sample_offset = 0;\n        do {\n            for (mesh_column = 0; mesh_column <= width_cells; ++mesh_column) {"
+        }
+      ]
+    },
+    {
+      "name": "face-counter-reuse",
+      "find": "    for (int face_row = 0; face_row < segment_count; ++face_row) {\n        if (width_cells > 0) {\n            float v0 = (float)(face_row % 8) * 0.125f;\n            float v1 = (float)(face_row % 8 + 1) * 0.125f;\n            int face_column = 0;\n            int next_column;\n            do {\n                next_column = face_column + 1;",
+      "replacements": [
+        {
+          "name": "reuse-row",
+          "text": "#define face_row mesh_row\n    for (mesh_row = 0; mesh_row < segment_count; ++mesh_row) {\n        if (width_cells > 0) {\n            float v0 = (float)(face_row % 8) * 0.125f;\n            float v1 = (float)(face_row % 8 + 1) * 0.125f;\n            int face_column = 0;\n            int next_column;\n            do {\n                next_column = face_column + 1;"
+        },
+        {
+          "name": "reuse-column",
+          "text": "#define face_column mesh_column\n    for (int face_row = 0; face_row < segment_count; ++face_row) {\n        if (width_cells > 0) {\n            float v0 = (float)(face_row % 8) * 0.125f;\n            float v1 = (float)(face_row % 8 + 1) * 0.125f;\n            mesh_column = 0;\n            int next_column;\n            do {\n                next_column = face_column + 1;"
+        },
+        {
+          "name": "reuse-row-and-column",
+          "text": "#define face_row mesh_row\n#define face_column mesh_column\n    for (mesh_row = 0; mesh_row < segment_count; ++mesh_row) {\n        if (width_cells > 0) {\n            float v0 = (float)(face_row % 8) * 0.125f;\n            float v1 = (float)(face_row % 8 + 1) * 0.125f;\n            mesh_column = 0;\n            int next_column;\n            do {\n                next_column = face_column + 1;"
+        }
+      ]
+    }
+  ]
+}

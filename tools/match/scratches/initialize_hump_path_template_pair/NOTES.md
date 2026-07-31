@@ -419,3 +419,27 @@ direct-face baseline loses 167 weighted bytes and falls from **74.51%** to
 **67.98%**. It also grows the candidate from 684 to 686 instructions against
 685 native. Prefix 20/685 and all 43 references remain unchanged, so the
 branch-local sample owners remain independently bounded.
+
+## 2026-07-31 post-face counter reuse
+
+The direct face-offset recovery changed the shared mesh/face tail enough to
+replay its counter ownership. Declaring the mesh column beside the mesh row
+and reusing both variables in the face pass adds **7.46 weighted bytes**,
+raising Hump from 74.51% to **74.80%** without changing its 684/685
+instruction count, 20-instruction prefix, or 43 clean references.
+
+The result is dependency-complete. Reusing only the row, hoisting only the
+column declaration, or combining those two partial changes is byte-identical.
+Reusing the column without the declaration is incomplete; the valid
+declaration-plus-column half loses 48 weighted bytes. This matches the shared
+path-tail source pattern recovered independently in Dip.
+
+On the retained allocation, all three terminal sample/previous aliases are
+byte-identical. Keeping vertices before facequads is neutral across both
+counter declaration placements, while all three facequads-first orders lose
+3.73 weighted bytes. Delaying the departure index loses 58.65 weighted bytes
+and contracts the exact prefix from 20 to 15 instructions.
+
+The ledger now contains 26 records, 23 mutation sweeps, 3 probes, and 80
+unique variants. Three consecutive non-improving sweeps bound the updated
+Hump frontier.
