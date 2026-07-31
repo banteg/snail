@@ -373,7 +373,6 @@ void cRSubGame::BuildLevel()
         return;
 
     char* base = (char*)this;
-    int segment_row;
     char* active_segment;
     for (int build_row = 0; build_row < runtime_row_count;) {
         if (build_row == 0) {
@@ -415,24 +414,30 @@ void cRSubGame::BuildLevel()
         if (((SubSegment*)active_segment)->row_count < 0)
             report_errorf("Negative Segment Length");
 
-        segment_row = 0;
+        int segment_row = 0;
         while (build_row < runtime_row_count) {
             if (segment_row >= ((SubSegment*)active_segment)->row_count)
                 break;
             if (level_mode != 2 && build_row >= completion_row_start) {
-                if (level_mode == 0 || level_mode == 4 || level_mode == 1 || level_mode == 7) {
-                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;
-                    if (build_row == completion_row_start)
-                        segment_row = 0;
-                } else if (level_mode == 3) {
+                if (level_mode != 0
+                    && level_mode != 4
+                    && level_mode != 1
+                    && level_mode != 7)
                     active_segment =
                         base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);
-                }
+                if (level_mode == 0
+                    || level_mode == 4
+                    || level_mode == 1
+                    || level_mode == 7
+                    || level_mode == 3)
+                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;
+                if (build_row == completion_row_start)
+                    segment_row = 0;
+            }
 
+            if (level_mode != 2) {
                 int segment_end =
                     ((SubSegment*)active_segment)->row_count - segment_row + build_row;
-                // Keep byte-shaped address formation for scratch slots 1, 3, and
-                // 4 while deriving their storage from the complete owner.
                 if (segment_end > completion_row_start
                     && active_segment
                         != base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment)
@@ -444,8 +449,8 @@ void cRSubGame::BuildLevel()
                         || level_mode == 4
                         || level_mode == 1
                         || level_mode == 7
-                        || (level_mode == 3
-                            && active_segment != base + LEVEL_LAST_SEGMENT_BASE))) {
+                        || level_mode == 3)
+                    && active_segment != base + LEVEL_LAST_SEGMENT_BASE) {
                     int extra_rows = ((SubSegment*)active_segment)->row_count
                         - completion_row_start - segment_row + build_row;
                     completion_row_start += extra_rows;

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-segment-selection",
+      "find": "                if (level_mode != 0\n                    && level_mode != 4\n                    && level_mode != 1\n                    && level_mode != 7)\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);\n                if (level_mode == 0\n                    || level_mode == 4\n                    || level_mode == 1\n                    || level_mode == 7\n                    || level_mode == 3)\n                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;",
+      "replacements": [
+        {
+          "name": "single-if-else",
+          "text": "                if (level_mode == 0\n                    || level_mode == 4\n                    || level_mode == 1\n                    || level_mode == 7\n                    || level_mode == 3)\n                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n                else\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);"
+        },
+        {
+          "name": "typed-conditional-owner",
+          "text": "                SubSegment* completion_segment;\n                if (level_mode == 0\n                    || level_mode == 4\n                    || level_mode == 1\n                    || level_mode == 7\n                    || level_mode == 3)\n                    completion_segment =\n                        (SubSegment*)(base + LEVEL_LAST_SEGMENT_BASE);\n                else\n                    completion_segment = (SubSegment*)(\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment));\n                active_segment = (char*)completion_segment;"
+        },
+        {
+          "name": "scratch-default-last-override",
+          "text": "                active_segment =\n                    base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);\n                if (level_mode == 0\n                    || level_mode == 4\n                    || level_mode == 1\n                    || level_mode == 7\n                    || level_mode == 3)\n                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;"
+        },
+        {
+          "name": "last-default-scratch-override",
+          "text": "                active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n                if (level_mode != 0\n                    && level_mode != 4\n                    && level_mode != 1\n                    && level_mode != 7\n                    && level_mode != 3)\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);"
+        }
+      ]
+    }
+  ]
+}

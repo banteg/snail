@@ -1263,3 +1263,40 @@ Bounded alternatives close the local score temptations:
 The sole audited mismatch remains the real physical glyph jump table at
 `0x437194`; no pointer macro, component-copy tradeoff, manual jump table, or
 allocator coercion is retained.
+
+## 2026-07-31 segment extension control flow
+
+The native row loop separates two operations that the former scratch nested:
+
+1. at or beyond `completion_row_start`, modes 0, 1, 3, 4, and 7 select the
+   last segment while other non-mode-2 paths select scratch slot 1;
+2. on every non-mode-2 row, the selected segment's projected end is checked
+   against `completion_row_start`, excluding scratch slots 1, 3, and 4 and
+   the last segment before extending both runtime bounds.
+
+Binary Ninja confirms that split at `0x436306..0x4363c0`. In particular, mode
+3 first passes through the scratch fallback and is then overwritten with the
+last segment; the former `else if (level_mode == 3)` retained scratch slot 1
+and incorrectly kept the extension test inside the completion-range branch.
+
+Restoring the two checks raises focused matching from **69.46%** to
+**70.99%** (`3502.01 -> 3579.50/5042` weighted bytes) and extends the exact
+prefix from **9 to 76 instructions**. The candidate has 1251 instructions
+against native's 1245; the audit remains 162 clean / 0 unresolved /
+1 mismatch / 4 unaudited.
+
+The selected segment's `segment_row` lifetime is now scoped to that segment;
+moving the declaration from the function setup is byte-neutral. Equivalent
+condition spellings do not improve the result:
+
+- one `if/else` loses 49 weighted bytes and collapses the prefix to 9;
+- scratch-default and last-default override forms each lose 59 weighted
+  bytes and likewise collapse the prefix;
+- a typed conditional owner loses 75 weighted bytes;
+- caching `level_mode` loses 8 weighted bytes;
+- removing the unconditional segment-cursor initializer extends the prefix
+  by one instruction but loses 128 weighted bytes overall.
+
+No duplicated side effect, dummy owner, or forced branch was introduced; the
+retained two source checks are the behavior proven by the native control
+flow.

@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-segment-row-declaration",
+      "find": "    char* base = (char*)this;\n    int segment_row;\n    char* active_segment;",
+      "replacements": [
+        {
+          "name": "remove-function-owner",
+          "text": "    char* base = (char*)this;\n    char* active_segment;"
+        }
+      ]
+    },
+    {
+      "name": "selected-segment-row-declaration",
+      "find": "        if (((SubSegment*)active_segment)->row_count < 0)\n            report_errorf(\"Negative Segment Length\");\n\n        segment_row = 0;",
+      "replacements": [
+        {
+          "name": "declare-selected-segment-owner",
+          "text": "        if (((SubSegment*)active_segment)->row_count < 0)\n            report_errorf(\"Negative Segment Length\");\n\n        int segment_row = 0;"
+        }
+      ]
+    }
+  ]
+}
