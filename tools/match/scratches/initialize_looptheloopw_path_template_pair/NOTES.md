@@ -253,3 +253,18 @@ instructions with the prefix and 55/0/0/0 reference audit unchanged. The
 preincrement `<` form is byte-identical, `!=` loses four weighted bytes, and
 the old guarded `for` loses 22. The mirrored result across both Windows
 builders and both mobile families closes this as shared authored control.
+
+## 2026-07-31 direct record-owner transfer rejected
+
+The plain sibling's final direct face-record owner is not shared by the W
+allocation context. Replacing the retained branch-local pointers with direct
+`facequads[index]` writes adds three candidate instructions but loses 11
+weighted bytes, falling from **72.51%** to **72.09%**. The retained
+integer-index plus branch-pointer form therefore remains specific to this
+variant.
+
+The neighboring direct vertex-index owner is more sharply negative. Hoisting
+one index across the ordinary/terminal mesh branch loses 120 weighted bytes,
+falls to **68.11%**, and shortens the candidate from 739 to 738 instructions.
+Both rejected transfers preserve the 10/745 prefix and all 55 clean
+references, and both are recorded as complete one-site sweeps.

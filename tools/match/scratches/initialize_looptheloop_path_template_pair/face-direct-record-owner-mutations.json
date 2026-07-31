@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-record-owner",
+      "find": "#define PATH_FACE_OWNER_MODE 4",
+      "replacements": [
+        {
+          "name": "shared-index-branch-pointers",
+          "text": "#define PATH_FACE_OWNER_MODE 2"
+        }
+      ]
+    }
+  ]
+}

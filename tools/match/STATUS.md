@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.17%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.20%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -650,7 +650,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | create_golb | 0x415280 | 2349 | 549/582 | 77.98% | 81/582 | 1 unaudited, 47 ok |  | core |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  | core |
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 13 ok |  | core |
-| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 717/721 | 74.69% | 44/721 | 49 ok |  | core |
+| 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 720/721 | 74.81% | 44/721 | 49 ok |  | core |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 739/745 | 72.51% | 10/745 | 55 ok |  | core |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 723/718 | 67.87% | 0/718 | 52 ok |  | core |
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 684/685 | 74.51% | 20/685 | 43 ok |  | core |
@@ -663,8 +663,8 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 693/696 | 66.09% | 48/696 | 40 ok |  | core |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 645/652 | 73.25% | 168/652 | 40 ok |  | core |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 544/552 | 77.37% | 16/552 | 36 ok |  | core |
-| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 684/683 | 57.50% | 5/683 | 2 unaudited, 44 ok |  | core |
-| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 677/679 | 61.36% | 6/679 | 41 ok |  | core |
+| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 682/683 | 57.88% | 5/683 | 2 unaudited, 44 ok |  | core |
+| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 677/679 | 63.42% | 6/679 | 41 ok |  | core |
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 613/610 | 74.73% | 122/610 | 35 ok |  | core |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 671/671 | 69.45% | 54/671 | 41 ok |  | core |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 683/680 | 75.28% | 80/680 | 46 ok |  | core |

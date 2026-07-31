@@ -466,3 +466,13 @@ Candidate size drops from exact count parity at 652/652 to 645/652, an explicit
 instruction-count tradeoff. The change is retained because it adds 170
 weighted bytes, materially extends the exact prefix, and expresses ordinary
 array-record ownership without any allocator control.
+
+## 2026-07-31 direct vertex-index transfer rejected
+
+Hoisting one integer vertex index across Snake's ordinary/terminal mesh branch
+destroys the recovered allocation context: focused matching falls from
+**73.25%** to **61.46%**, the exact prefix collapses from 168 to 6
+instructions, and candidate size moves from 645 to 653 against 652 native.
+All 40 references remain clean, so the loss is source-shape evidence rather
+than an operand-audit artifact. The branch-local vertex pointer remains and
+the rejection is recorded.

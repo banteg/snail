@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "vertex-record-owner",
+      "find": "#define PATH_FACE_OWNER_MODE 4",
+      "replacements": [
+        {
+          "name": "direct-indexed-record",
+          "text": "#define PATH_FACE_OWNER_MODE 4\n#define PATH_VERTEX_OWNER_MODE 1"
+        }
+      ]
+    }
+  ]
+}

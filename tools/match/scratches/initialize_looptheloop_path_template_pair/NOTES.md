@@ -265,3 +265,19 @@ The equivalent preincrement form is byte-identical; the two `!=` forms lose
 four weighted bytes and the old guarded `for` loses 22. Windows and both
 mobile bodies agree on the guarded post-test control, so the retained `<`
 spelling records the portable owner without introducing a native-only cursor.
+
+## 2026-07-31 direct face-record and vertex-owner boundary
+
+The face tail was still extending a branch-local pointer from the shared
+integer index. Directly consuming that index through `facequads[...]` adds
+3.21 weighted bytes, raises focused matching from **74.69%** to **74.81%**,
+and moves the candidate from 717 to **720/721** instructions. Prefix remains
+44/721 and all 49 references remain clean. This narrow record-owner recovery
+is retained because it improves agreement while closing three of the four
+remaining instruction-count bytes.
+
+The adjacent mesh-vertex lifetime does not transfer. Hoisting one integer
+vertex index above the ordinary/terminal branch and writing
+`vertices[index]` loses 28 weighted bytes and falls to **73.74%** at 722/721
+instructions. The branch-local `Vector3*` owner remains, and the complete
+one-site rejection is recorded.

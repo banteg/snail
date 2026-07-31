@@ -17,6 +17,10 @@ typedef AttachmentSample PathAttachmentSample;
 #define PATH_FACE_OWNER_MODE 0
 #endif
 
+#ifndef PATH_VERTEX_OWNER_MODE
+#define PATH_VERTEX_OWNER_MODE 0
+#endif
+
 #ifndef PATH_LOOP_SEGMENT_OWNER_MODE
 #define PATH_LOOP_SEGMENT_OWNER_MODE 0
 #endif
@@ -682,6 +686,10 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             float lateral =
                 (float)mesh_column - (float)width_cells * 0.5f;
 #endif
+#if PATH_VERTEX_OWNER_MODE == 1
+            int vertex_index =
+                mesh_column + mesh_row * (width_cells + 1);
+#endif
             if (mesh_row != segment_count) {
                 PathAttachmentSample* sample = &primary_samples[mesh_row];
 #if PATH_MESH_ORDINARY_SCALE_OPERATOR
@@ -705,9 +713,13 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     sample->transform.position.y + lateral_offset.y,
                     sample->transform.position.z + lateral_offset.z);
 #endif
+#if PATH_VERTEX_OWNER_MODE == 1
+                vertices[vertex_index] = generated_position;
+#else
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
+#endif
             } else {
                 PathAttachmentSample* previous = &primary_samples[mesh_row - 1];
 #if PATH_MESH_TERMINAL_SCALE_OPERATOR
@@ -735,9 +747,13 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     endpoint.y + lateral_offset.y,
                     endpoint.z + lateral_offset.z);
 #endif
+#if PATH_VERTEX_OWNER_MODE == 1
+                vertices[vertex_index] = generated_position;
+#else
                 Vector3* vertex =
                     &vertices[mesh_column + mesh_row * (width_cells + 1)];
                 *vertex = generated_position;
+#endif
             }
         }
     }
@@ -765,6 +781,15 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     int face_array_index =
                         2 * (face_row * width_cells + face_column)
                         + face_index;
+#elif PATH_FACE_OWNER_MODE == 4
+                    int face_array_index =
+                        face_index
+                        + 2 * (face_row * width_cells + face_column);
+#endif
+#if PATH_FACE_OWNER_MODE == 4
+#define PATH_FACE_FIELD(field) facequads[face_array_index].field
+#else
+#define PATH_FACE_FIELD(field) face->field
 #endif
                     if (face_index == 0) {
 #if PATH_FACE_OWNER_MODE == 0
@@ -774,27 +799,27 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 #elif PATH_FACE_OWNER_MODE == 2 || PATH_FACE_OWNER_MODE == 3
                         cRFaceQuad* face = &facequads[face_array_index];
 #endif
-                        face->header_word = 0;
-                        face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
-                        face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->vertex_2 =
+                        PATH_FACE_FIELD(header_word) = 0;
+                        PATH_FACE_FIELD(vertex_0) = face_column + face_row * ((unsigned short)width_cells + 1);
+                        PATH_FACE_FIELD(vertex_1) = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
+                        PATH_FACE_FIELD(vertex_2) =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->vertex_3 =
+                        PATH_FACE_FIELD(vertex_3) =
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
                         if ((face_column ^ face_row) & 1)
-                            face->texture_ref =
+                            PATH_FACE_FIELD(texture_ref) =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
-                            face->texture_ref =
+                            PATH_FACE_FIELD(texture_ref) =
                                 g_texture_refs.Add(texture_a, 0, 0);
-                        face->uv[0].u = u0;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u1;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u1;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u0;
-                        face->uv[3].v = v1;
+                        PATH_FACE_FIELD(uv[0].u) = u0;
+                        PATH_FACE_FIELD(uv[0].v) = v0;
+                        PATH_FACE_FIELD(uv[1].u) = u1;
+                        PATH_FACE_FIELD(uv[1].v) = v0;
+                        PATH_FACE_FIELD(uv[2].u) = u1;
+                        PATH_FACE_FIELD(uv[2].v) = v1;
+                        PATH_FACE_FIELD(uv[3].u) = u0;
+                        PATH_FACE_FIELD(uv[3].v) = v1;
                     } else {
 #if PATH_FACE_OWNER_MODE == 0
                         cRFaceQuad* face = &facequads[
@@ -803,28 +828,29 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
 #elif PATH_FACE_OWNER_MODE == 2 || PATH_FACE_OWNER_MODE == 3
                         cRFaceQuad* face = &facequads[face_array_index];
 #endif
-                        face->header_word = 0;
-                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
-                        face->vertex_2 =
+                        PATH_FACE_FIELD(header_word) = 0;
+                        PATH_FACE_FIELD(vertex_0) = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
+                        PATH_FACE_FIELD(vertex_1) = face_column + face_row * ((unsigned short)width_cells + 1);
+                        PATH_FACE_FIELD(vertex_2) =
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
-                        face->vertex_3 =
+                        PATH_FACE_FIELD(vertex_3) =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
                         if ((face_column ^ face_row) & 1)
-                            face->texture_ref =
+                            PATH_FACE_FIELD(texture_ref) =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else
-                            face->texture_ref =
+                            PATH_FACE_FIELD(texture_ref) =
                                 g_texture_refs.Add(texture_b, 0, 0);
-                        face->uv[0].u = u1;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u0;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u0;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u1;
-                        face->uv[3].v = v1;
+                        PATH_FACE_FIELD(uv[0].u) = u1;
+                        PATH_FACE_FIELD(uv[0].v) = v0;
+                        PATH_FACE_FIELD(uv[1].u) = u0;
+                        PATH_FACE_FIELD(uv[1].v) = v0;
+                        PATH_FACE_FIELD(uv[2].u) = u0;
+                        PATH_FACE_FIELD(uv[2].v) = v1;
+                        PATH_FACE_FIELD(uv[3].u) = u1;
+                        PATH_FACE_FIELD(uv[3].v) = v1;
                     }
+#undef PATH_FACE_FIELD
                 }
                 face_column = next_column;
             } while (next_column < width_cells);

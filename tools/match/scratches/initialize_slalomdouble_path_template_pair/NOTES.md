@@ -359,3 +359,15 @@ direct array-record writes. Focused matching rises from **56.60%** to
 683-instruction target. Prefix remains 5/683; the existing 44 clean and two
 unaudited references are unchanged. The gain is isolated to normal source
 ownership and does not attempt to force the constructor-wide register swap.
+
+## 2026-07-31 direct vertex-index ownership
+
+Hoisting the common mesh-vertex index above the ordinary/terminal branch adds
+9.57 weighted bytes and raises focused matching from **57.50%** to **57.88%**.
+It also closes the instruction-count residual from 684 to **682/683** while
+preserving prefix 5/683 and the existing 44 clean plus two explicitly
+unaudited references.
+
+This is the only other positive member of the broader direct-index probe
+besides P. The retained integer owner expresses the shared array address
+without introducing a byte cursor or register-forcing dependency.

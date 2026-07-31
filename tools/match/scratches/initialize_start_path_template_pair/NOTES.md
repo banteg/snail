@@ -358,3 +358,12 @@ clean.
 
 This result is compatible with the existing direct sample-array ownership and
 does not revive the separately rejected branch-local pointer/frame variants.
+
+## 2026-07-31 direct vertex-index boundary
+
+Replacing Start's shared mesh-vertex pointer with an integer index and direct
+array writes is exactly byte-neutral at **74.73%**, 613/610 instructions,
+prefix 122/610, and 35 clean references. No source edit is retained. Together
+with the sharply negative Snake result, this bounds the adjacent vertex-owner
+transfer rather than treating the face-record gain as a blanket array-access
+rule.

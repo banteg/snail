@@ -28,7 +28,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
         for (column = 0; column <= path->width_cells; ++column) {
             double lateral = (float)column - (float)path->width_cells * 0.5f;
             PathTemplateSample* sample = &path->primary_samples[row];
-            Vector3* vertex = &vertices[column + row * (path->width_cells + 1)];
+            int vertex_index = column + row * (path->width_cells + 1);
             if (row != path->segment_count) {
                 Vector3 lateral_offset =
                     sample->transform.basis_right * lateral;
@@ -36,7 +36,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     sample->transform.position.x + lateral_offset.x,
                     sample->transform.position.y + lateral_offset.y,
                     sample->transform.position.z + lateral_offset.z);
-                *vertex = generated_position;
+                vertices[vertex_index] = generated_position;
             } else {
                 PathTemplateSample* previous = sample - 1;
                 Vector3 lateral_offset =
@@ -47,7 +47,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                     previous->transform.position.z + 1.0f);
                 Vector3 generated_position =
                     endpoint + lateral_offset;
-                *vertex = generated_position;
+                vertices[vertex_index] = generated_position;
             }
         }
     }
