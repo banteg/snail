@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-vertex-counters",
+      "find": "    int sample_offset = 0;\n    for (int row = 0; row <= segment_count; ++row) {\n        int column = 0;\n        for (; column <= width_cells; ++column) {",
+      "replacements": [
+        {
+          "name": "declare-row-and-column",
+          "text": "    int sample_offset = 0;\n    int row;\n    int column;\n    for (row = 0; row <= segment_count; ++row) {\n        column = 0;\n        for (; column <= width_cells; ++column) {"
+        }
+      ]
+    },
+    {
+      "name": "face-counter-reuse",
+      "find": "    for (int mesh_row = 0; mesh_row < segment_count; ++mesh_row) {\n        int mesh_column = 0;\n        if (width_cells > 0) {",
+      "replacements": [
+        {
+          "name": "reuse-row",
+          "text": "#define mesh_row row\n    for (row = 0; mesh_row < segment_count; ++mesh_row) {\n        int mesh_column = 0;\n        if (width_cells > 0) {"
+        },
+        {
+          "name": "reuse-column",
+          "text": "#define mesh_column column\n    for (int mesh_row = 0; mesh_row < segment_count; ++mesh_row) {\n        column = 0;\n        if (width_cells > 0) {"
+        },
+        {
+          "name": "reuse-row-and-column",
+          "text": "#define mesh_row row\n#define mesh_column column\n    for (row = 0; mesh_row < segment_count; ++mesh_row) {\n        column = 0;\n        if (width_cells > 0) {"
+        }
+      ]
+    }
+  ]
+}

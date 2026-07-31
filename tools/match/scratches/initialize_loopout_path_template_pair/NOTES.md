@@ -250,3 +250,16 @@ gain with no structural change. It is rejected because native does the
 opposite at `0x41cc8b..0x41cc8e`: vertices are loaded first, then facequads.
 The recorded score-only alternative therefore does not override direct
 instruction evidence.
+
+## 2026-07-31 post-face counter-reuse bound
+
+Loopout has the closest remaining source shape to the recovered Dip, Hump, and
+Dump mesh/face counter ownership, so all three direct transfers were tested.
+Reusing only the row counter is byte-neutral. Reusing both counters loses four
+weighted bytes, and reusing only the column loses 18. The retained distinct
+`mesh_*` and `face_*` owners therefore remain the strongest local source.
+
+Focused matching stays **67.87%**, 723/718 instructions, prefix 0/718, with
+all 52 references clean. The ledger now contains 17 records, 13 mutation
+sweeps, four probes, and 77 unique variants. Four consecutive non-improving
+sweeps keep this frontier stalled.

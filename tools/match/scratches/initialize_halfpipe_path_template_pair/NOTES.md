@@ -472,3 +472,21 @@ Matching that ordinary source order adds 7.43 weighted bytes and raises
 focused matching from **66.38%** to **66.67%**. Candidate/target size remains
 688/707, prefix remains 18/707, and all 55 references remain clean. The
 reverse-order mutation records the complete loss.
+
+## 2026-07-31 post-face counter-reuse bound
+
+The mesh/face counter ownership recovered in Dip, Hump, and Dump does not
+transfer through Halfpipe's differently scoped vertex loop. The complete
+seven-variant interaction in `post-face-counter-reuse-mutations.json` tests
+the required outer declarations together with row reuse, column reuse, and
+their combination.
+
+Row reuse is byte-neutral. Reusing both counters loses 78.04 weighted bytes,
+and the valid column-only interaction loses 92.90. The variants that try to
+reuse the block-local column without first hoisting it fail to compile, as
+expected, and close no additional source shape. The retained baseline remains
+**66.67%**, 688/707 instructions, prefix 18/707, with all 55 references clean.
+
+The ledger now contains 19 records, 18 mutation sweeps, one probe, and 71
+evaluated variants (64 unique). Six consecutive non-improving sweeps leave
+this local ownership frontier stalled.
