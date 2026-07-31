@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "scalar-left-helper-body",
+      "find": "inline Vector3 operator*(float scalar, const Vector3& value)\n{\n    return Vector3(scalar * value.x, scalar * value.y, scalar * value.z);\n}",
+      "replacements": [
+        {
+          "name": "constructor-return-vector-first",
+          "text": "inline Vector3 operator*(float scalar, const Vector3& value)\n{\n    return Vector3(value.x * scalar, value.y * scalar, value.z * scalar);\n}"
+        },
+        {
+          "name": "delegate-to-member-operator",
+          "text": "inline Vector3 operator*(float scalar, const Vector3& value)\n{\n    return value * scalar;\n}"
+        }
+      ]
+    }
+  ]
+}

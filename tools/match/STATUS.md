@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.28%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.37%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -633,7 +633,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | extract_snail_local_hotspots | 0x445d50 | 208 | 68/74 | 91.55% | 31/74 | 7 ok |  | core |
 | 🚧 | update_cameraman | 0x4461d0 | 1274 | 322/322 | 92.86% | 36/322 | 76 ok |  | core |
 | 🚧 | initialize_nuke | 0x447110 | 193 | 64/64 | 93.75% | 30/64 | 5 ok |  | core |
-| 🚧 | load_level_definition_file | 0x447480 | 3039 | 941/926 | 84.63% | 20/926 | 2 unaudited, 183 ok |  | core |
+| 🚧 | load_level_definition_file | 0x447480 | 3039 | 942/926 | 88.12% | 20/926 | 2 unaudited, 183 ok |  | core |
 | 🚧 | initialize_tip | 0x448a40 | 511 | 154/154 | 84.42% | 19/154 | 27 ok |  | core |
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 24 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
@@ -644,7 +644,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | border_input_text | 0x4035b0 | 1581 | 439/446 | 74.80% | 6/446 | 8 ok |  | core |
 | 🚧 | update_galaxy | 0x4092f0 | 2051 | 569/566 | 71.01% | 48/566 | 55 ok |  | core |
-| 🚧 | render_game_frame | 0x40a490 | 1460 | 430/439 | 56.16% | 6/439 | 34 ok |  | boundary |
+| 🚧 | render_game_frame | 0x40a490 | 1460 | 431/439 | 68.28% | 6/439 | 34 ok |  | boundary |
 | 🚧 | update_input | 0x40aa80 | 44 | 15/19 | 52.94% | 5/19 | - |  | boundary |
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 1 mismatch, 6 ok |  | core |
 | 🚧 | create_golb | 0x415280 | 2349 | 549/582 | 77.98% | 81/582 | 1 unaudited, 47 ok |  | core |

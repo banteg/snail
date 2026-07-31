@@ -353,3 +353,20 @@ and does not recover its own isolated 123-byte regression.
 Worm therefore remains **73.09%**, 728/736 instructions, prefix 0/736, with
 all 37 references clean. The ledger now contains eight records, seven mutation
 sweeps, one probe, 88 evaluated variants, and 84 unique variants.
+
+## 2026-07-31 scalar-left helper provenance bounded
+
+The only remaining operator question is now closed against an independently
+exact caller. `get_path_position_at_node` matches 56/56 instructions with the
+same `operator*(float, const Vector3&)` signature and a constructor-return
+body; Worm already uses that exact helper shape. Reversing each commutative
+multiply is byte-neutral, while delegating to the vector's member operator
+drops focused matching to **68.86%** and removes three candidate
+instructions.
+
+No alternative recovers the native `0x80` frame. Worm remains **73.09%**,
+728/736 instructions, prefix 0/736, with all 37 references clean. The ledger
+now contains nine records, eight mutation sweeps, one probe, 90 evaluated
+variants, and 86 unique variants. Three consecutive non-improving sweeps mark
+the whole function formally stalled; resume only if new source or symbol
+provenance identifies a genuinely different authored vector operation.

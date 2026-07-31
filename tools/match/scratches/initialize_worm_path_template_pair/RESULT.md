@@ -10,13 +10,13 @@ tools/match/match.sh \
 
 | Metric | Starter | Final |
 |---|---:|---:|
-| Match | 0.27% | **72.81%** |
+| Match | 0.27% | **73.09%** |
 | Target instructions | 736 | 736 |
 | Candidate instructions | 2 | **728** |
 | Common prefix | 0 / 736 | **0 / 736** |
 | Masked operands | none | **37 ok, 0 unresolved, 0 mismatch** |
 
-Net improvement: **+72.01 percentage points**.
+Net improvement: **+72.82 percentage points**.
 
 The first mismatch remains the local-frame reservation:
 
@@ -95,3 +95,12 @@ That combination has now been tested exhaustively. An instruction-backed
 and component-result lifetimes, and checkerboard selection. Every combination
 regresses; the closest loses one weighted byte, while the correct-frame form
 loses 153. Resume Worm only with new operator/source provenance.
+
+The final ownership gain reuses the native vertex-column counter as the face
+row counter across the two mesh phases, raising the retained frontier to
+**73.09%** without changing candidate size or reference health. A final
+operator-provenance sweep confirms that Worm already uses the constructor-return
+scalar-left helper shape from the exact `get_path_position_at_node` caller.
+Reversed multiply operands are neutral and member-operator delegation
+regresses. With three consecutive non-improving sweeps, the function is
+formally stalled pending genuinely new source evidence.
