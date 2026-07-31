@@ -71,11 +71,10 @@ void SubTracks::load_level_definition_file(char* filename)
         cursor = find_case_insensitive_substring("Arcade", filename);
         if (cursor != 0) {
             cursor = find_case_insensitive_substring("e", cursor) + 1;
-            int galaxy_route_offset =
-                sizeof(GalaxyStar) * parse_next_signed_int(&cursor);
+            int galaxy_route_index = parse_next_signed_int(&cursor);
             sprintf(
-                g_game->subgame.galaxy.route_slots[0].record.detail_text
-                    + galaxy_route_offset,
+                g_game->subgame.galaxy.route_slots[galaxy_route_index]
+                    .record.detail_text,
                 "%s",
                 level_display_name);
 
@@ -83,16 +82,16 @@ void SubTracks::load_level_definition_file(char* filename)
             if (cursor == 0) {
                 report_warningf("Cannot find GalaxyText: in %s", filename);
                 rstrcpy_checked_ascii(
-                    g_game->subgame.galaxy.route_slots[0].record.description_text
-                        + galaxy_route_offset,
+                    g_game->subgame.galaxy.route_slots[galaxy_route_index]
+                        .record.description_text,
                     "TEXT MISSING");
             } else {
                 cursor = find_case_insensitive_substring("{", cursor);
                 if (cursor == 0) {
                     report_warningf("Cannot find { for GalaxyText: in %s", filename);
                     rstrcpy_checked_ascii(
-                        g_game->subgame.galaxy.route_slots[0].record.description_text
-                            + galaxy_route_offset,
+                        g_game->subgame.galaxy.route_slots[galaxy_route_index]
+                            .record.description_text,
                         "TEXT ERROR { MISSING");
                 } else {
                     cursor = advance_to_next_crlf_line(cursor);
@@ -100,14 +99,14 @@ void SubTracks::load_level_definition_file(char* filename)
                     if (close_brace == 0) {
                         report_warningf("Cannot find } for GalaxyText: in %s", filename);
                         rstrcpy_checked_ascii(
-                            g_game->subgame.galaxy.route_slots[0].record.description_text
-                                + galaxy_route_offset,
+                            g_game->subgame.galaxy.route_slots[galaxy_route_index]
+                                .record.description_text,
                             "TEXT ERROR } MISSING");
                     } else {
                         close_brace -= 2;
                         char* text_out =
-                            g_game->subgame.galaxy.route_slots[0].record.description_text
-                                + galaxy_route_offset;
+                            g_game->subgame.galaxy.route_slots[galaxy_route_index]
+                                .record.description_text;
                         while (cursor < close_brace) {
                             if (*cursor < 32) {
                                 *text_out++ = '>';

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "galaxy-route-offset-owner",
+      "find": "            int galaxy_route_offset =\n                sizeof(GalaxyStar) * parse_next_signed_int(&cursor);\n            sprintf(\n                g_game->subgame.galaxy.route_slots[0].record.detail_text\n                    + galaxy_route_offset,\n                \"%s\",\n                level_display_name);",
+      "replacements": [
+        {
+          "name": "assign-offset-inside-destination",
+          "text": "            int galaxy_route_offset;\n            sprintf(\n                g_game->subgame.galaxy.route_slots[0].record.detail_text\n                    + (galaxy_route_offset =\n                        sizeof(GalaxyStar) * parse_next_signed_int(&cursor)),\n                \"%s\",\n                level_display_name);"
+        },
+        {
+          "name": "assign-offset-inside-array-index",
+          "text": "            int galaxy_route_offset;\n            sprintf(\n                &(g_game->subgame.galaxy.route_slots[0].record.detail_text\n                    [(galaxy_route_offset =\n                        sizeof(GalaxyStar) * parse_next_signed_int(&cursor))]),\n                \"%s\",\n                level_display_name);"
+        },
+        {
+          "name": "named-destination-with-inline-offset",
+          "text": "            int galaxy_route_offset;\n            char* galaxy_detail_text =\n                g_game->subgame.galaxy.route_slots[0].record.detail_text\n                    + (galaxy_route_offset =\n                        sizeof(GalaxyStar) * parse_next_signed_int(&cursor));\n            sprintf(galaxy_detail_text, \"%s\", level_display_name);"
+        },
+        {
+          "name": "assign-index-inside-route-subscript",
+          "text": "            int galaxy_route_index;\n            sprintf(\n                g_game->subgame.galaxy\n                    .route_slots[(galaxy_route_index = parse_next_signed_int(&cursor))]\n                    .record.detail_text,\n                \"%s\",\n                level_display_name);\n            int galaxy_route_offset = sizeof(GalaxyStar) * galaxy_route_index;"
+        },
+        {
+          "name": "route-pointer-with-inline-index",
+          "text": "            int galaxy_route_index;\n            GalaxyStar* galaxy_route =\n                &g_game->subgame.galaxy\n                    .route_slots[(galaxy_route_index = parse_next_signed_int(&cursor))];\n            sprintf(galaxy_route->record.detail_text, \"%s\", level_display_name);\n            int galaxy_route_offset = sizeof(GalaxyStar) * galaxy_route_index;"
+        }
+      ]
+    }
+  ]
+}

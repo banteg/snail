@@ -273,3 +273,31 @@ is rejected at compile time because the included canonical declaration
 returns `int`, and no conflicting prototype is retained. The complete ledger
 now contains five sweeps and 23 unique variants, with the message-cursor sweep
 as its sole source-shape win.
+
+## 2026-07-31 galaxy route index ownership
+
+The parsed number after `Arcade` is the authored Galaxy route index, not a
+manually scaled byte offset. Windows keeps its `sizeof(GalaxyStar)` product in
+EDI and uses that owner for the detail string, all three diagnostic text
+destinations, and the successful text-copy destination. Android and iOS
+independently retain the same parsed index and reuse its `0x2a0` stride across
+the complete `GalaxyText:` branch family.
+
+Expressing all five destinations as `route_slots[galaxy_route_index]` restores
+the native offset-first indexed-address form. Two recorded owner sweeps cover
+42 combinations: each converted description destination contributes the same
+local improvement, and converting any three or all four reaches the same best
+alignment. The retained complete owner raises focused Wibo from 87.58% to
+88.12%, or 2678/3039 weighted bytes, while keeping 942/926
+candidate/target instructions, prefix 20, and 183 clean masked operands. The
+only two unaudited operands remain the already-bounded cold EOF diagnostic.
+
+The residual first mismatch is still the fallback caller-cleanup schedule.
+Seven ordinary statement/comma/block groupings are byte-identical. A further
+mobile-supported `void RShellError` contract probe, isolated from the
+transitive Windows `int` declaration, is also byte-identical; the return type
+does not explain VC6's cleanup boundary. Those two non-improving sweeps bound
+the early cleanup hypothesis without retaining declaration shielding or
+source-grouping scaffolds. The ledger now contains 11 sweeps and 81 unique
+variants, with four improving sweeps and a trailing no-improvement streak of
+two.

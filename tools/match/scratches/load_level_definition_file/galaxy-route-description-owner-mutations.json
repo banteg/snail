@@ -1,0 +1,55 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "route-offset-declaration",
+      "find": "            int galaxy_route_offset = sizeof(GalaxyStar) * galaxy_route_index;\n",
+      "replacements": [
+        {
+          "name": "derive-only-through-index",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "name": "missing-text-destination",
+      "find": "                    g_game->subgame.galaxy.route_slots[0].record.description_text\n                        + galaxy_route_offset,",
+      "replacements": [
+        {
+          "name": "route-index-owner",
+          "text": "                    g_game->subgame.galaxy.route_slots[galaxy_route_index]\n                        .record.description_text,"
+        }
+      ]
+    },
+    {
+      "name": "missing-open-brace-destination",
+      "find": "                        g_game->subgame.galaxy.route_slots[0].record.description_text\n                            + galaxy_route_offset,",
+      "replacements": [
+        {
+          "name": "route-index-owner",
+          "text": "                        g_game->subgame.galaxy.route_slots[galaxy_route_index]\n                            .record.description_text,"
+        }
+      ]
+    },
+    {
+      "name": "missing-close-brace-destination",
+      "find": "                            g_game->subgame.galaxy.route_slots[0].record.description_text\n                                + galaxy_route_offset,",
+      "replacements": [
+        {
+          "name": "route-index-owner",
+          "text": "                            g_game->subgame.galaxy.route_slots[galaxy_route_index]\n                                .record.description_text,"
+        }
+      ]
+    },
+    {
+      "name": "copied-text-destination",
+      "find": "                            g_game->subgame.galaxy.route_slots[0].record.description_text\n                                + galaxy_route_offset;",
+      "replacements": [
+        {
+          "name": "route-index-owner",
+          "text": "                            g_game->subgame.galaxy.route_slots[galaxy_route_index]\n                                .record.description_text;"
+        }
+      ]
+    }
+  ]
+}

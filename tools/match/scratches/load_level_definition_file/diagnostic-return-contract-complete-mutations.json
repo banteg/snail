@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "isolate-transitive-diagnostic-start",
+      "find": "#include \"sprite.h\"",
+      "replacements": [
+        {
+          "name": "rename-int-declaration",
+          "text": "#define report_errorf report_errorf_returning_int\n#include \"sprite.h\""
+        }
+      ]
+    },
+    {
+      "name": "isolate-transitive-diagnostic-end",
+      "find": "#include \"game_root.h\"",
+      "replacements": [
+        {
+          "name": "restore-parser-name",
+          "text": "#include \"game_root.h\"\n#undef report_errorf"
+        }
+      ]
+    },
+    {
+      "name": "parser-diagnostic-result",
+      "find": "int report_errorf(char* format, ...);",
+      "replacements": [
+        {
+          "name": "void-mobile-contract",
+          "text": "void report_errorf(char* format, ...);"
+        }
+      ]
+    }
+  ]
+}

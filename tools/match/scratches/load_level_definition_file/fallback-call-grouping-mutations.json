@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "fallback-call-grouping",
+      "find": "        report_errorf(\"Cannot find %s reverting to default.txt\", level_path);\n        sprintf(level_path, \"Levels/Default.txt\");\n        load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0);",
+      "replacements": [
+        {
+          "name": "single-comma-expression",
+          "text": "        report_errorf(\"Cannot find %s reverting to default.txt\", level_path),\n            sprintf(level_path, \"Levels/Default.txt\"),\n            load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0);"
+        },
+        {
+          "name": "parenthesized-comma-expression",
+          "text": "        (report_errorf(\"Cannot find %s reverting to default.txt\", level_path),\n         sprintf(level_path, \"Levels/Default.txt\"),\n         load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0));"
+        },
+        {
+          "name": "group-diagnostic-and-format",
+          "text": "        (report_errorf(\"Cannot find %s reverting to default.txt\", level_path),\n         sprintf(level_path, \"Levels/Default.txt\"));\n        load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0);"
+        },
+        {
+          "name": "group-format-and-load",
+          "text": "        report_errorf(\"Cannot find %s reverting to default.txt\", level_path);\n        (sprintf(level_path, \"Levels/Default.txt\"),\n         load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0));"
+        },
+        {
+          "name": "void-comma-expression",
+          "text": "        (void)(report_errorf(\"Cannot find %s reverting to default.txt\", level_path),\n               sprintf(level_path, \"Levels/Default.txt\"),\n               load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0));"
+        },
+        {
+          "name": "named-comma-result",
+          "text": "        void* fallback_result =\n            (report_errorf(\"Cannot find %s reverting to default.txt\", level_path),\n             sprintf(level_path, \"Levels/Default.txt\"),\n             load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0));\n        (void)fallback_result;"
+        },
+        {
+          "name": "single-iteration-block",
+          "text": "        do {\n            report_errorf(\"Cannot find %s reverting to default.txt\", level_path);\n            sprintf(level_path, \"Levels/Default.txt\");\n            load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0);\n        } while (0);"
+        }
+      ]
+    }
+  ]
+}

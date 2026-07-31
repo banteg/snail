@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "game-root-diagnostic-declaration",
+      "find": "#include \"game_root.h\"",
+      "replacements": [
+        {
+          "name": "isolate-transitive-int-declaration",
+          "text": "#define report_errorf report_errorf_from_game_root\n#include \"game_root.h\"\n#undef report_errorf"
+        }
+      ]
+    },
+    {
+      "name": "parser-diagnostic-result",
+      "find": "int report_errorf(char* format, ...);",
+      "replacements": [
+        {
+          "name": "void-mobile-contract",
+          "text": "void report_errorf(char* format, ...);"
+        }
+      ]
+    }
+  ]
+}
