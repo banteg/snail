@@ -396,3 +396,15 @@ references. Native nevertheless loads vertices at `0x424370` before
 facequads at `0x424377`, exactly matching the retained source. The contrary
 score-only order is recorded and rejected rather than replacing a proven
 instruction sequence.
+
+## 2026-07-31 post-face arithmetic replay
+
+The lateral and scale grids were replayed after direct face ownership. Member
+scaling remains byte-neutral, as does its interaction with a double lateral
+owner. Double lateral alone loses 14 weighted bytes; split float is neutral;
+the other double and volatile forms lose 18–35 weighted bytes, with one
+double-expression form also adding two unaudited references.
+
+No variant exceeds the retained **77.37%**, 544/552 instructions, prefix
+16/552, with 36 clean references. The pre-face arithmetic boundary therefore
+survives the new allocation unchanged.

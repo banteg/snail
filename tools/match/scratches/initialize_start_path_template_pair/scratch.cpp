@@ -40,10 +40,8 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
                         lateral * sample->transform.basis_right.x,
                         lateral * sample->transform.basis_right.y,
                         lateral * sample->transform.basis_right.z);
-                    Vector3 generated_position(
-                        sample->transform.position.x + lateral_offset.x,
-                        sample->transform.position.y + lateral_offset.y,
-                        sample->transform.position.z + lateral_offset.z);
+                    Vector3 generated_position =
+                        sample->transform.position + lateral_offset;
                     *vertex = generated_position;
                     ++column;
                 } while (column <= path->width_cells);

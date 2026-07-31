@@ -324,3 +324,16 @@ matching from **70.33%** to **74.14%**. Candidate size moves from 612 to 606
 instructions against the 608-instruction target, prefix remains 85/608, and
 all 39 references remain clean. This is a complete record-ownership change;
 the surrounding row, parity, and texture control remains untouched.
+
+## 2026-07-31 post-face ordinary position ownership
+
+The ordinary `Vector3::operator+` was byte-neutral in every winning
+pre-face arithmetic combination, but direct record ownership changed that
+allocation. Replaying it now adds **3.65 weighted bytes** and raises Wibble
+from **74.14% to 74.30%**. Candidate/target size remains 606/608, prefix stays
+85/608, and all 39 references remain clean. The recorded reverse probe
+reproduces the 74.14% predecessor.
+
+The retained source keeps the already proven double lateral owner, both scale
+operators, and terminal addition. Only the previously neutral ordinary
+addition changes in the post-face dependency context.

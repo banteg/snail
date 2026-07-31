@@ -86,10 +86,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                             (PathTemplateSample*)((char*)path->primary_samples + sample_offset);
                         Vector3 lateral_offset =
                             sample->transform.basis_right * lateral;
-                        Vector3 generated_position(
-                            sample->transform.position.x + lateral_offset.x,
-                            sample->transform.position.y + lateral_offset.y,
-                            sample->transform.position.z + lateral_offset.z);
+                        Vector3 generated_position =
+                            sample->transform.position + lateral_offset;
                         int vertex_index =
                             column + row * (path->width_cells + 1);
                         vertices[vertex_index] = generated_position;

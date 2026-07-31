@@ -359,3 +359,11 @@ clean.
 
 Four equivalent offset spellings compile byte-identically, so the gain belongs
 to direct indexed record ownership rather than expression spelling.
+
+## 2026-07-31 post-face addition bound
+
+The two position-addition boundaries were replayed after direct face
+ownership. Terminal `Vector3::operator+` remains byte-neutral at **74.31%**,
+792/796 instructions, prefix 10/796, with all 63 references clean. Ordinary
+addition instead falls to **74.18%**. The retained component forms preserve
+the closer post-face allocation.

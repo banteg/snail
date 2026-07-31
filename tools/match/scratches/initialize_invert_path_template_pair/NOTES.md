@@ -256,3 +256,17 @@ clean.
 Distributed, named-cell, split-assignment, and doubled-cell spellings are
 byte-identical at 75.52%. The direct indexed record boundary is retained; no
 pointer or register forcing is involved.
+
+## 2026-07-31 post-face ordinary position ownership
+
+Replaying all 15 mesh-operator combinations after direct face ownership
+unlocks only the ordinary authored `Vector3::operator+`. It adds **3.62
+weighted bytes** and raises Invert from **75.52% to 75.68%** while preserving
+605/600 instructions, prefix 109/600, and all 35 clean references. Both
+operand orders compile identically; the retained position-first spelling
+matches the semantic construction order. A reverse probe restores 75.52%.
+
+Either lateral scale operator remains byte-neutral alone and beside the
+winning add. Terminal addition loses 24 weighted bytes alone and at least 20
+beside the ordinary add. The exhaustive grid therefore isolates the retained
+ordinary addition without transferring the rest of the family mechanically.

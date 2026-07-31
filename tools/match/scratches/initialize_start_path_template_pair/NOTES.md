@@ -367,3 +367,18 @@ prefix 122/610, and 35 clean references. No source edit is retained. Together
 with the sharply negative Snake result, this bounds the adjacent vertex-owner
 transfer rather than treating the face-record gain as a blanket array-access
 rule.
+
+## 2026-07-31 post-face ordinary position ownership
+
+The complete mesh arithmetic grid was replayed after direct face ownership
+changed the whole-function allocation. The ordinary authored
+`Vector3::operator+`, previously neutral, now adds **3.64 weighted bytes** and
+raises Start from **74.73% to 74.90%**. Candidate/target size remains 613/610,
+prefix remains 122/610, and all 35 references remain clean. A reverse probe
+reproduces the 74.73% predecessor.
+
+The neighboring forms remain closed. Member scaling alone falls to 73.37%;
+pairing it with the addition reaches only 73.53%; and all four alternate
+lateral owners lose 30–49 weighted bytes and shorten the prefix to 68. The
+retained position add is therefore the only positive post-face arithmetic
+owner.

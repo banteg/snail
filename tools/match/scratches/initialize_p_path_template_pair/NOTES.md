@@ -381,3 +381,11 @@ pointers in favor of direct array records loses 103 bytes and falls to
 Both probes preserve prefix 6/679 and all 41 clean references. The retained
 sample pointer shared across the two branches is therefore a real part of P's
 63.42% mesh ownership, not stale pre-vertex scheduling.
+
+## 2026-07-31 post-face arithmetic replay
+
+The ordinary position addition was replayed after both direct face and direct
+vertex ownership changed the mesh allocation. `Vector3::operator+` remains
+exactly byte-neutral at **63.42%**, 677/679 instructions, prefix 6/679, with
+all 41 references clean. P therefore does not share the small post-face
+operator gain recovered in Start, Invert, Wibble, and the paired Twisters.

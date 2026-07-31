@@ -490,3 +490,10 @@ expected, and close no additional source shape. The retained baseline remains
 The ledger now contains 19 records, 18 mutation sweeps, one probe, and 71
 evaluated variants (64 unique). Six consecutive non-improving sweeps leave
 this local ownership frontier stalled.
+
+## 2026-07-31 post-face ordinary addition bound
+
+Replaying the ordinary `Vector3::operator+` after direct face ownership and
+native mesh acquisition order is exactly byte-neutral at **66.67%**, 688/707
+instructions, prefix 18/707, with all 55 references clean. The component form
+stays retained to preserve the existing explicit mesh-value provenance.
