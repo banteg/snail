@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "diagnostic-result",
+      "find": "int report_errorf(char* format, ...);",
+      "replacements": [
+        {
+          "name": "void-result",
+          "text": "void report_errorf(char* format, ...);"
+        }
+      ]
+    },
+    {
+      "name": "file-loader-result",
+      "find": "int load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);",
+      "replacements": [
+        {
+          "name": "void-pointer-result",
+          "text": "void* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);"
+        },
+        {
+          "name": "char-pointer-result",
+          "text": "char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);"
+        },
+        {
+          "name": "void-buffer-pointer-result",
+          "text": "void* load_file_bytes_from_archive_or_fs(char* path, void* out_buffer, void* out_size);"
+        }
+      ]
+    }
+  ]
+}

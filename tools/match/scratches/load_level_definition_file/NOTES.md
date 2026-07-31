@@ -241,3 +241,35 @@ regress or fail. The experiment ledger formally stalls this cold-tail lane.
 The retained parser remains 84.63%, 941/926 instructions, prefix 20/926, with
 183 clean references and the two candidate-only diagnostic entries. No wrong
 path owner or explicit goto scaffold is kept to force tail sharing.
+
+## 2026-07-31 message cursor ownership
+
+The native message parser advances the already-address-taken `line_cursor`
+past the opening quote and keeps that stack owner as the copy input. The
+scratch instead introduced a third `message_start` pointer and copied it back
+to `line_cursor` after every byte. Removing that synthetic owner restores the
+native stack-backed input cursor and leaves one register-only closing-quote
+sentinel. Android and iOS preserve the same single advancing message cursor.
+
+All four direct increment/assignment/`for` spellings compile identically under
+VC6. The retained direct form raises focused Wibo from 84.63% to 87.58%,
+adding 89.73 weighted bytes. The candidate is 942 instructions against 926
+native, with prefix 20 and the same 183 clean resolved operands. The only two
+unaudited operands remain the already-bounded candidate-only cold EOF
+diagnostic.
+
+This owner correction also restores the downstream register chain rather than
+only improving its local copy loop. The message end sentinel moves from EDI
+to the native EDX lifetime, so EDI preserves the `-1` bit pattern first used
+by the speed/hazard defaults and later reused for `message_sample_id`. The
+sample-name scan, slot-stride arithmetic, default store, and registered-sample
+lookup then align with the target.
+
+The file loader declaration now matches its exact standalone wrapper:
+`void* (char*, void*, int*)`. Pointer-return/buffer prototype variants are
+byte-neutral. A seven-variant fallback-call sweep does not recover the
+native's aggregated caller-stack cleanup; attempting a void diagnostic result
+is rejected at compile time because the included canonical declaration
+returns `int`, and no conflicting prototype is retained. The complete ledger
+now contains five sweeps and 23 unique variants, with the message-cursor sweep
+as its sole source-shape win.

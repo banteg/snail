@@ -16,7 +16,8 @@ extern char g_level_file_text_buffer[]; // data_74ec78
 int sprintf(char* buffer, char* format, ...);
 int report_errorf(char* format, ...);
 int report_warningf(char* format, ...);
-int load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out_size);
+void* load_file_bytes_from_archive_or_fs(
+    char* path, void* out_buffer, int* out_size);
 int find_registered_sound_sample_id_by_name(char* sample_name); // @ 0x432fc0
 
 struct LevelDefinitionParseBuffers {
@@ -43,10 +44,10 @@ void SubTracks::load_level_definition_file(char* filename)
 
     g_current_level_definition_name = filename;
     sprintf(level_path, "Levels/%s", filename);
-    if (!load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, (void*)0)) {
+    if (!load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0)) {
         report_errorf("Cannot find %s reverting to default.txt", level_path);
         sprintf(level_path, "Levels/Default.txt");
-        load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, (void*)0);
+        load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0);
     }
 
     cursor = find_case_insensitive_substring("Name:'", LEVEL_FILE_BUFFER);
@@ -310,8 +311,7 @@ void SubTracks::load_level_definition_file(char* filename)
                     report_errorf("Need \" after Message=");
                     return;
                 }
-                char* message_start = line_cursor + 1;
-                line_cursor = message_start;
+                line_cursor++;
                 char* message_end = line_cursor;
                 if (*message_end != '"') {
                     do {
@@ -320,10 +320,8 @@ void SubTracks::load_level_definition_file(char* filename)
                     } while (ch != '"');
                 }
                 char* message_out = segment_slots[segment_count].message_text;
-                while ((unsigned int)message_start < (unsigned int)message_end) {
-                    *message_out++ = *message_start;
-                    message_start++;
-                    line_cursor = message_start;
+                while ((unsigned int)line_cursor < (unsigned int)message_end) {
+                    *message_out++ = *line_cursor++;
                 }
                 *message_out = 0;
 

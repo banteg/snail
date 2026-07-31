@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "message-cursor-owner",
+      "find": "                char* message_start = line_cursor + 1;\n                line_cursor = message_start;\n                char* message_end = line_cursor;\n                if (*message_end != '\"') {\n                    do {\n                        message_end++;\n                        ch = *message_end;\n                    } while (ch != '\"');\n                }\n                char* message_out = segment_slots[segment_count].message_text;\n                while ((unsigned int)message_start < (unsigned int)message_end) {\n                    *message_out++ = *message_start;\n                    message_start++;\n                    line_cursor = message_start;\n                }\n                *message_out = 0;",
+      "replacements": [
+        {
+          "name": "direct-line-cursor",
+          "text": "                line_cursor++;\n                char* message_end = line_cursor;\n                if (*message_end != '\"') {\n                    do {\n                        message_end++;\n                        ch = *message_end;\n                    } while (ch != '\"');\n                }\n                char* message_out = segment_slots[segment_count].message_text;\n                while ((unsigned int)line_cursor < (unsigned int)message_end) {\n                    *message_out++ = *line_cursor++;\n                }\n                *message_out = 0;"
+        },
+        {
+          "name": "preincrement-line-cursor",
+          "text": "                char* message_end = ++line_cursor;\n                if (*message_end != '\"') {\n                    do {\n                        message_end++;\n                        ch = *message_end;\n                    } while (ch != '\"');\n                }\n                char* message_out = segment_slots[segment_count].message_text;\n                while ((unsigned int)line_cursor < (unsigned int)message_end) {\n                    *message_out++ = *line_cursor++;\n                }\n                *message_out = 0;"
+        },
+        {
+          "name": "assigned-line-cursor",
+          "text": "                line_cursor = line_cursor + 1;\n                char* message_end = line_cursor;\n                if (*message_end != '\"') {\n                    do {\n                        message_end++;\n                        ch = *message_end;\n                    } while (ch != '\"');\n                }\n                char* message_out = segment_slots[segment_count].message_text;\n                while ((unsigned int)line_cursor < (unsigned int)message_end) {\n                    *message_out++ = *line_cursor;\n                    line_cursor++;\n                }\n                *message_out = 0;"
+        },
+        {
+          "name": "direct-line-cursor-for",
+          "text": "                line_cursor++;\n                char* message_end = line_cursor;\n                if (*message_end != '\"') {\n                    do {\n                        message_end++;\n                        ch = *message_end;\n                    } while (ch != '\"');\n                }\n                char* message_out = segment_slots[segment_count].message_text;\n                for (; (unsigned int)line_cursor < (unsigned int)message_end;\n                     ++line_cursor) {\n                    *message_out++ = *line_cursor;\n                }\n                *message_out = 0;"
+        }
+      ]
+    }
+  ]
+}
