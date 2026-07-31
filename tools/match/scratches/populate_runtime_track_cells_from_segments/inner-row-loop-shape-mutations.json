@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "inner-row-loop-entry",
+      "find": "        int segment_row = 0;\n        while (build_row < runtime_row_count) {\n            if (segment_row >= ((SubSegment*)active_segment)->row_count)\n                break;",
+      "replacements": [
+        {
+          "name": "guarded-do-entry",
+          "text": "        int segment_row = 0;\n        if (build_row < runtime_row_count) {\n            do {\n                if (segment_row >= ((SubSegment*)active_segment)->row_count)\n                    break;"
+        },
+        {
+          "name": "for-loop-entry",
+          "text": "        for (int segment_row = 0;\n             build_row < runtime_row_count;\n             ++segment_row, ++build_row) {\n            if (segment_row >= ((SubSegment*)active_segment)->row_count)\n                break;"
+        }
+      ]
+    },
+    {
+      "name": "inner-row-loop-exit",
+      "find": "            ++segment_row;\n            ++build_row;\n        }\n        if (level_mode != 3 || first_or_last_row == 0) {",
+      "replacements": [
+        {
+          "name": "guarded-do-exit",
+          "text": "                ++segment_row;\n                ++build_row;\n            } while (build_row < runtime_row_count);\n        }\n        if (level_mode != 3 || first_or_last_row == 0) {"
+        },
+        {
+          "name": "for-loop-exit",
+          "text": "        }\n        if (level_mode != 3 || first_or_last_row == 0) {"
+        }
+      ]
+    }
+  ]
+}

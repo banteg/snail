@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "glyph-adjacent-list-flags-owner",
+      "find": "                case 'R':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RING_MARKER;\n                    *(int*)(cell + CELL_LIST_FLAGS) &= 0xffffffdf;\n                    break;\n                case '#':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_FLOOR_HASH_MARKER;\n                    *(int*)(cell + CELL_LIST_FLAGS) &= 0xffffffdf;\n                    break;\n                case '@':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;\n                    *(int*)(cell + CELL_LIST_FLAGS) &= 0xffffffdf;\n                    SwitchMirror();\n                    break;",
+      "replacements": [
+        {
+          "name": "consume-switch-owner",
+          "text": "                case 'R':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RING_MARKER;\n                    *glyph_list_flags &= 0xffffffdf;\n                    break;\n                case '#':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_FLOOR_HASH_MARKER;\n                    *glyph_list_flags &= 0xffffffdf;\n                    break;\n                case '@':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;\n                    *glyph_list_flags &= 0xffffffdf;\n                    SwitchMirror();\n                    break;"
+        }
+      ]
+    }
+  ]
+}

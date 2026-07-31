@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "glyph-g-shared-list-flags-owner",
+      "find": "                case 'G':\n                    ((BodBase*)(cell + CELL_BOD_BASE))\n                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_GLYPH_G;\n                    *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;\n                    break;",
+      "replacements": [
+        {
+          "name": "consume-switch-owner",
+          "text": "                case 'G':\n                    ((BodBase*)(cell + CELL_BOD_BASE))\n                        ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_GLYPH_G;\n                    *glyph_list_flags |= 0x20;\n                    break;"
+        }
+      ]
+    }
+  ]
+}

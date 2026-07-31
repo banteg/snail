@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-model-zero-velocity",
+      "find": "                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_X) =\n                        0;\n                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Y) =\n                        0;\n                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Z) =\n                        0;",
+      "replacements": [
+        {
+          "name": "typed-vector-value",
+          "text": "                    runtime_rows[build_row].row_model.velocity =\n                        Vector3(0.0f, 0.0f, 0.0f);"
+        },
+        {
+          "name": "reverse-component-bit-stores",
+          "text": "                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Z) =\n                        0;\n                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Y) =\n                        0;\n                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_X) =\n                        0;"
+        },
+        {
+          "name": "reverse-typed-component-stores",
+          "text": "                    runtime_rows[build_row].row_model.velocity.z = 0.0f;\n                    runtime_rows[build_row].row_model.velocity.y = 0.0f;\n                    runtime_rows[build_row].row_model.velocity.x = 0.0f;"
+        }
+      ]
+    }
+  ]
+}

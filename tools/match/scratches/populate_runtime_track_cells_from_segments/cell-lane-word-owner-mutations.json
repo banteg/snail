@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cell-lane-word-owner",
+      "find": "                int cell_word = *(int*)(cell + CELL_LANE_FLAGS);\n                ((unsigned char*)&cell_word)[0] &= 0xe0;\n                cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(int*)(cell + CELL_LANE_FLAGS) = cell_word;",
+      "replacements": [
+        {
+          "name": "signed-full-word-mask",
+          "text": "                int cell_word = *(int*)(cell + CELL_LANE_FLAGS);\n                cell_word &= 0xffffffe0;\n                cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(int*)(cell + CELL_LANE_FLAGS) = cell_word;"
+        },
+        {
+          "name": "unsigned-full-word-mask",
+          "text": "                unsigned int cell_word =\n                    *(unsigned int*)(cell + CELL_LANE_FLAGS);\n                cell_word &= 0xffffffe0;\n                cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(unsigned int*)(cell + CELL_LANE_FLAGS) = cell_word;"
+        },
+        {
+          "name": "masked-lane-or",
+          "text": "                int cell_word = *(int*)(cell + CELL_LANE_FLAGS);\n                cell_word &= 0xffffffe0;\n                cell_word |= lane & SUBLOC_LANE_INDEX_MASK;\n                *(int*)(cell + CELL_LANE_FLAGS) = cell_word;"
+        }
+      ]
+    }
+  ]
+}

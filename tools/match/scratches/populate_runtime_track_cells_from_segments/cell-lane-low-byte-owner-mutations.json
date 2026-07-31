@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cell-lane-low-byte-owner",
+      "find": "                int cell_word = *(int*)(cell + CELL_LANE_FLAGS);\n                cell_word &= 0xffffffe0;\n                cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(int*)(cell + CELL_LANE_FLAGS) = cell_word;",
+      "replacements": [
+        {
+          "name": "local-union-low-byte",
+          "text": "                union CellLaneWord {\n                    unsigned int word;\n                    unsigned char low_byte;\n                };\n                CellLaneWord cell_word;\n                cell_word.word = *(unsigned int*)(cell + CELL_LANE_FLAGS);\n                cell_word.low_byte &= 0xe0;\n                cell_word.word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(unsigned int*)(cell + CELL_LANE_FLAGS) = cell_word.word;"
+        },
+        {
+          "name": "anonymous-union-low-byte",
+          "text": "                union {\n                    unsigned int word;\n                    unsigned char low_byte;\n                } cell_word;\n                cell_word.word = *(unsigned int*)(cell + CELL_LANE_FLAGS);\n                cell_word.low_byte &= 0xe0;\n                cell_word.word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(unsigned int*)(cell + CELL_LANE_FLAGS) = cell_word.word;"
+        },
+        {
+          "name": "lane-word-pointer-with-low-byte",
+          "text": "                unsigned int* lane_word =\n                    (unsigned int*)(cell + CELL_LANE_FLAGS);\n                unsigned int cell_word = *lane_word;\n                ((unsigned char*)&cell_word)[0] &= 0xe0;\n                cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *lane_word = cell_word;"
+        },
+        {
+          "name": "separate-low-byte-value",
+          "text": "                unsigned int cell_word =\n                    *(unsigned int*)(cell + CELL_LANE_FLAGS);\n                unsigned char low_byte = (unsigned char)cell_word;\n                low_byte &= 0xe0;\n                cell_word &= 0xffffff00;\n                cell_word |= low_byte;\n                cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(unsigned int*)(cell + CELL_LANE_FLAGS) = cell_word;"
+        },
+        {
+          "name": "low-byte-reference",
+          "text": "                unsigned int cell_word =\n                    *(unsigned int*)(cell + CELL_LANE_FLAGS);\n                unsigned char& low_byte = *(unsigned char*)&cell_word;\n                low_byte &= 0xe0;\n                cell_word ^= lane & SUBLOC_LANE_INDEX_MASK;\n                *(unsigned int*)(cell + CELL_LANE_FLAGS) = cell_word;"
+        }
+      ]
+    }
+  ]
+}

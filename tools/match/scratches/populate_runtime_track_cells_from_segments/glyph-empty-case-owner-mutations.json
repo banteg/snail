@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "glyph-empty-case-owner",
+      "find": "                case ' ':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;\n                    *(int*)(cell + CELL_LIST_FLAGS) &= 0xffffffdf;\n                    break;",
+      "replacements": [
+        {
+          "name": "explicit-list-flags-value",
+          "text": "                case ' ': {\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;\n                    int list_flags = *(int*)(cell + CELL_LIST_FLAGS);\n                    list_flags &= 0xffffffdf;\n                    *(int*)(cell + CELL_LIST_FLAGS) = list_flags;\n                    break;\n                }"
+        },
+        {
+          "name": "typed-cell-owner",
+          "text": "                case ' ': {\n                    cRSubLoc* runtime_cell =\n                        (cRSubLoc*)(cell + CELL_BOD_BASE);\n                    runtime_cell->tile_id = SUBLOC_TILE_EMPTY;\n                    runtime_cell->list_flags &= 0xffffffdf;\n                    break;\n                }"
+        },
+        {
+          "name": "typed-cell-explicit-flags",
+          "text": "                case ' ': {\n                    cRSubLoc* runtime_cell =\n                        (cRSubLoc*)(cell + CELL_BOD_BASE);\n                    runtime_cell->tile_id = SUBLOC_TILE_EMPTY;\n                    int list_flags = runtime_cell->list_flags;\n                    list_flags &= 0xffffffdf;\n                    runtime_cell->list_flags = list_flags;\n                    break;\n                }"
+        },
+        {
+          "name": "list-flags-pointer-owner",
+          "text": "                case ' ': {\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;\n                    int* list_flags = (int*)(cell + CELL_LIST_FLAGS);\n                    *list_flags &= 0xffffffdf;\n                    break;\n                }"
+        }
+      ]
+    }
+  ]
+}

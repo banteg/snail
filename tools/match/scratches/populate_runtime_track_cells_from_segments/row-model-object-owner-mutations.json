@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-model-object-owner",
+      "find": "                int object_id = *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_OBJECT_ID);\n                Object* object =\n                    g_game->directx_loader.cached_x_mesh_slots[object_id].object;\n                runtime_rows[build_row].row_model.SetObject(object);",
+      "replacements": [
+        {
+          "name": "direct-call-with-id-owner",
+          "text": "                int object_id = *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_OBJECT_ID);\n                runtime_rows[build_row].row_model.SetObject(\n                    g_game->directx_loader.cached_x_mesh_slots[object_id].object);"
+        },
+        {
+          "name": "direct-call-with-inline-id",
+          "text": "                runtime_rows[build_row].row_model.SetObject(\n                    g_game->directx_loader.cached_x_mesh_slots[\n                        *(int*)(\n                            authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                            + AUTHORED_ROW_OBJECT_ID)]\n                        .object);"
+        }
+      ]
+    }
+  ]
+}

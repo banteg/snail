@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "glyph-list-flags-owner-declaration",
+      "find": "                char normalized = LevelConvert(\n                    *glyph_ptr, build_row, edge_row);\n                switch (normalized) {",
+      "replacements": [
+        {
+          "name": "declare-before-switch",
+          "text": "                char normalized = LevelConvert(\n                    *glyph_ptr, build_row, edge_row);\n                int* glyph_list_flags = (int*)(cell + CELL_LIST_FLAGS);\n                switch (normalized) {"
+        }
+      ]
+    },
+    {
+      "name": "glyph-empty-list-flags-owner",
+      "find": "                case ' ':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;\n                    *(int*)(cell + CELL_LIST_FLAGS) &= 0xffffffdf;\n                    break;",
+      "replacements": [
+        {
+          "name": "consume-switch-owner",
+          "text": "                case ' ':\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;\n                    *glyph_list_flags &= 0xffffffdf;\n                    break;"
+        }
+      ]
+    }
+  ]
+}

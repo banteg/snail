@@ -8,9 +8,9 @@ on.
 
 Promoted to a matcher scratch on 2026-06-13. Current result after the
 glyph-dispatch, authored-row, attachment, clear-loop, segment-scoped row
-builder, segment-count owner, and shared random-selection slices: 60.19%,
-1237/1245 candidate instructions, with a 9-instruction
-exact prefix
+builder, direct runtime-row, segment-extension, ring/lane, and switch-field
+ownership slices: 75.33%, 1248/1245 candidate instructions, with a
+76-instruction exact prefix
 (`uv run snail match scratch
 tools/match/scratches/populate_runtime_track_cells_from_segments --regions
 --max-regions 8`).
@@ -1300,3 +1300,44 @@ condition spellings do not improve the result:
 No duplicated side effect, dummy owner, or forced branch was introduced; the
 retained two source checks are the behavior proven by the native control
 flow.
+
+## 2026-07-31 ring, lane, and glyph list ownership
+
+Binary Ninja exposes the native ring-speed publication at
+`0x436624..0x436648` as a bit-preserving GPR copy whose source value remains
+live across initialization of the per-row attachment latch and lane counter.
+Keeping that integer value owner and delaying its destination store until
+after both initializers raises focused matching from **72.28%** to **72.68%**
+(`3644.48 -> 3664.70/5042` weighted bytes). Equivalent destination-pointer
+and union spellings produce the same or older bytes; six additional split,
+union-member, and float-owner forms are neutral or lose 20-74 weighted bytes.
+The remaining source-load/address order is therefore a bounded scheduling
+residual, not a reason to coerce a register.
+
+The runtime cell lane index is published through the complete
+`lane_and_flags` word. Replacing the former address-taken low-byte temporary
+with the equivalent full-word `0xffffffe0` mask removes four candidate
+instructions and raises matching by another 38.15 weighted bytes. Signed,
+unsigned, XOR, and OR spellings are byte-identical. Union, reference, pointer,
+and reconstructed-low-byte attempts to force the target's `and al, 0xe0`
+sequence all regress by 83-93 weighted bytes and are not retained.
+
+The switch cases share one pointer to the current cell's list-flags word.
+Declaring that owner before dispatch is byte-neutral; consuming it prevents
+VC6 from hoisting each list-flags load ahead of the preceding tile-id store.
+The empty case proves the interaction locally (+4 weighted bytes), the next
+three non-object cases add 16, and the object, ramp, attachment, trampoline,
+and digit cases repeat the same native ordering. Applying the owner to the
+complete dispatch raises the frontier from **72.68%** to **75.33%**
+(`3664.70 -> 3798.19/5042`) without changing the 1248/1245 instruction shape,
+76-instruction prefix, or 162 clean / 0 unresolved / 1 mismatch / 4 unaudited
+operand audit.
+
+The remaining mismatch is still the physical glyph jump table. The four
+unaudited references straddle the row-model/parcel block. Native-looking
+alternatives were replayed together rather than judged in isolation:
+removing the early segment-cursor initializer, a guarded `do` row loop, and
+the directly indexed parcel-set source all regress when combined. The guarded
+loop alone gains 11 weighted bytes and clears the four unaudited references,
+but collapses the exact prefix from 76 to 9 and moves the instruction count
+farther from native, so it is recorded as a tradeoff rather than retained.

@@ -20,6 +20,10 @@
         {
           "name": "last-default-scratch-override",
           "text": "                active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n                if (level_mode != 0\n                    && level_mode != 4\n                    && level_mode != 1\n                    && level_mode != 7\n                    && level_mode != 3)\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);"
+        },
+        {
+          "name": "ordinary-last-else-scratch-mode-three-last",
+          "text": "                if (level_mode == 0\n                    || level_mode == 4\n                    || level_mode == 1\n                    || level_mode == 7) {\n                    active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n                } else {\n                    active_segment =\n                        base + SCRATCH_SEGMENT_SLOTS_BASE + sizeof(SubSegment);\n                    if (level_mode == 3)\n                        active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n                }"
         }
       ]
     }

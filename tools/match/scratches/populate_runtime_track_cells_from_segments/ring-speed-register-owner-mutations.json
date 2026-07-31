@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ring-speed-register-owner",
+      "find": "            int authored_ring_speed_bits =\n                *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_RING_SPEED);\n            char attachment_entry_installed = 0;\n            int lane = 0;\n            *(int*)((char*)&runtime_rows[build_row]\n                + offsetof(SubRow, ring_speed)) = authored_ring_speed_bits;\n            for (; lane < RUNTIME_LANE_COUNT; ++lane) {",
+      "replacements": [
+        {
+          "name": "union-member-source",
+          "text": "            int authored_ring_speed_bits =\n                ((AuthoredFloatBits*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_RING_SPEED))->bits;\n            char attachment_entry_installed = 0;\n            int lane = 0;\n            *(int*)((char*)&runtime_rows[build_row]\n                + offsetof(SubRow, ring_speed)) = authored_ring_speed_bits;\n            for (; lane < RUNTIME_LANE_COUNT; ++lane) {"
+        },
+        {
+          "name": "separate-bit-assignment",
+          "text": "            int authored_ring_speed_bits;\n            authored_ring_speed_bits = *(int*)(\n                authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                + AUTHORED_ROW_RING_SPEED);\n            char attachment_entry_installed = 0;\n            int lane = 0;\n            *(int*)((char*)&runtime_rows[build_row]\n                + offsetof(SubRow, ring_speed)) = authored_ring_speed_bits;\n            for (; lane < RUNTIME_LANE_COUNT; ++lane) {"
+        },
+        {
+          "name": "assigned-union-bit-owner",
+          "text": "            AuthoredFloatBits authored_ring_speed;\n            authored_ring_speed.bits = *(int*)(\n                authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                + AUTHORED_ROW_RING_SPEED);\n            char attachment_entry_installed = 0;\n            int lane = 0;\n            *(int*)((char*)&runtime_rows[build_row]\n                + offsetof(SubRow, ring_speed)) = authored_ring_speed.bits;\n            for (; lane < RUNTIME_LANE_COUNT; ++lane) {"
+        },
+        {
+          "name": "delayed-float-owner",
+          "text": "            float authored_ring_speed =\n                *(float*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_RING_SPEED);\n            char attachment_entry_installed = 0;\n            int lane = 0;\n            runtime_rows[build_row].ring_speed = authored_ring_speed;\n            for (; lane < RUNTIME_LANE_COUNT; ++lane) {"
+        },
+        {
+          "name": "delayed-float-owner-bit-store",
+          "text": "            float authored_ring_speed =\n                *(float*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_RING_SPEED);\n            char attachment_entry_installed = 0;\n            int lane = 0;\n            *(int*)((char*)&runtime_rows[build_row]\n                + offsetof(SubRow, ring_speed)) = *(int*)&authored_ring_speed;\n            for (; lane < RUNTIME_LANE_COUNT; ++lane) {"
+        },
+        {
+          "name": "union-value-float-store",
+          "text": "            AuthoredFloatBits authored_ring_speed =\n                *(AuthoredFloatBits*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_RING_SPEED);\n            char attachment_entry_installed = 0;\n            int lane = 0;\n            runtime_rows[build_row].ring_speed = authored_ring_speed.value;\n            for (; lane < RUNTIME_LANE_COUNT; ++lane) {"
+        }
+      ]
+    }
+  ]
+}
