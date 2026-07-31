@@ -306,3 +306,18 @@ Replacing its scoped face pointer with an integer offset drops focused
 matching from **72.81%** to **70.95%** and moves candidate size from 728 to 727
 instructions against the 736-instruction target. Prefix remains 0/736 and all
 37 references remain clean. The probe is recorded and reverted.
+
+## 2026-07-31 vertex-column to face-row ownership
+
+Worm's cylindrical grid carries one counter across phases in a different role
+from the planar builders. Native vertex column `i` resets at `0x4207b8` and
+advances at `0x420a0c`; the face pass resets that same owner as its row at
+`0x420a3f` and advances it at `0x420c16`. Its face column is the distinct
+`j` owner introduced at `0x420a53`.
+
+The complete three-site interaction hoists the vertex column and reuses it as
+the face row while preserving a fresh face column. It adds 7.54 weighted bytes
+and raises focused matching from **72.81%** to **73.09%**. Candidate/target
+size remains 728/736, prefix remains 0/736, and all 37 references stay clean.
+Every partial interaction is byte-neutral or fails because its dependent
+owner is absent, so the retained gain belongs to the complete native lifetime.

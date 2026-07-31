@@ -179,6 +179,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
     strip_mesh->RequestFaceQuads(2 * segment_count * width_cells);
     strip_mesh->RequestColours();
     int row = 0;
+    int mesh_column;
     strip_mesh->flags |= OBJECT_FLAG_USE_VERTEX_COLOURS;
 
     Vector3* vertices = strip_mesh->vertices;
@@ -188,7 +189,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
     if (segment_count >= 0) {
         do {
             float row_angle = (float)row * WORM_TAU / segment_count;
-            int column = 0;
+            mesh_column = 0;
             if (width_cells > 0) {
                 do {
                     if (row < segment_count) {
@@ -197,7 +198,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
 
                         Vector3 up_radius =
                             radius * primary_samples[row].transform.basis_up;
-                        float column_as_float = (float)column;
+                        float column_as_float = (float)mesh_column;
                         Vector3 up_component =
                             cosine(column_as_float / (float)width_cells * WORM_TAU) *
                                 up_radius;
@@ -206,42 +207,42 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                             sine(column_as_float / (float)width_cells * WORM_TAU) *
                                 (radius * primary_samples[row].transform.basis_right);
                         Vector3 vertex = base_plus_right + up_component;
-                        vertices[column + row * width_cells] = vertex;
+                        vertices[mesh_column + row * width_cells] = vertex;
 
                         float double_row_angle = row_angle + row_angle;
                         float row_wave = cosine(double_row_angle);
                         float alpha = 0.5f - row_wave * 0.5f;
-                        vertex_colours[column + row * width_cells].store_color4f(
+                        vertex_colours[mesh_column + row * width_cells].store_color4f(
                             1.0f, 1.0f, 1.0f, alpha);
                     } else {
-                        vertices[column + row * width_cells] =
-                            vertices[column + (row - 1) * width_cells];
-                        vertices[column + row * width_cells].z += width_or_scale;
-                        vertex_colours[column + row * width_cells].store_color4f(
+                        vertices[mesh_column + row * width_cells] =
+                            vertices[mesh_column + (row - 1) * width_cells];
+                        vertices[mesh_column + row * width_cells].z += width_or_scale;
+                        vertex_colours[mesh_column + row * width_cells].store_color4f(
                             0.0f, 0.0f, 0.0f, 0.0f);
                     }
 
-                    if (vertices[column + row * width_cells].y < 0.0f) {
-                        float lowered_y = vertices[column + row * width_cells].y;
+                    if (vertices[mesh_column + row * width_cells].y < 0.0f) {
+                        float lowered_y = vertices[mesh_column + row * width_cells].y;
                         lowered_y *= WORM_UNDERSIDE_SCALE;
-                        vertices[column + row * width_cells].y = lowered_y;
+                        vertices[mesh_column + row * width_cells].y = lowered_y;
                     }
 
-                    ++column;
-                } while (column < width_cells);
+                    ++mesh_column;
+                } while (mesh_column < width_cells);
             }
 
             ++row;
         } while (row <= segment_count);
     }
 
-    int face_row = 0;
+    mesh_column = 0;
     if (segment_count > 0) {
         do {
             int column = 0;
             if (width_cells > 0) {
-                float row_v = (float)face_row * WORM_UV_ROW_STEP;
-                float next_row_v = (float)(face_row + 1) * WORM_UV_ROW_STEP;
+                float row_v = (float)mesh_column * WORM_UV_ROW_STEP;
+                float next_row_v = (float)(mesh_column + 1) * WORM_UV_ROW_STEP;
                 do {
                     int next_column = column + 1;
                     float column_f = (float)column;
@@ -249,26 +250,26 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                     int side = 0;
                     do {
                         cRFaceQuad* face =
-                            &facequads[side + 2 * (face_row * width_cells + column)];
+                            &facequads[side + 2 * (mesh_column * width_cells + column)];
                         face->header_word = 0;
                         if (side == 0) {
                             face->vertex_0 =
-                                (unsigned short)(face_row * width_cells + column);
+                                (unsigned short)(mesh_column * width_cells + column);
                             face->vertex_1 =
-                                (unsigned short)(face_row * width_cells + next_column % width_cells);
+                                (unsigned short)(mesh_column * width_cells + next_column % width_cells);
                             face->vertex_2 =
-                                (unsigned short)((face_row + 1) * width_cells + next_column % width_cells);
+                                (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);
                             face->vertex_3 =
-                                (unsigned short)((face_row + 1) * width_cells + column);
+                                (unsigned short)((mesh_column + 1) * width_cells + column);
                         } else {
                             face->vertex_0 =
-                                (unsigned short)(face_row * width_cells + next_column % width_cells);
+                                (unsigned short)(mesh_column * width_cells + next_column % width_cells);
                             face->vertex_1 =
-                                (unsigned short)(face_row * width_cells + column);
+                                (unsigned short)(mesh_column * width_cells + column);
                             face->vertex_2 =
-                                (unsigned short)((face_row + 1) * width_cells + column);
+                                (unsigned short)((mesh_column + 1) * width_cells + column);
                             face->vertex_3 =
-                                (unsigned short)((face_row + 1) * width_cells + next_column % width_cells);
+                                (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);
                         }
 
                         face->texture_ref =
@@ -304,8 +305,8 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                 } while (column < width_cells);
             }
 
-            ++face_row;
-        } while (face_row < segment_count);
+            ++mesh_column;
+        } while (mesh_column < segment_count);
     }
 
     calc_path_length_z();

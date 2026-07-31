@@ -375,3 +375,17 @@ references clean. Reversing the retained order reproduces the loss exactly.
 The complete 27-constructor order sweep found only two other clean gains that
 also agree with native load order: Halfpipe and Turnunder. Two larger
 score-only gains contradicted their native loads and were rejected.
+
+## 2026-07-31 mesh/face counter ownership already current
+
+The later cross-phase counter recoveries were checked against Cage2's native
+tail before another mutation sweep. The source already carries the physical
+row owner into the face phase as `mesh_cursor`: Windows resets that owner at
+`0x42ee59` and advances it at `0x42f072`. Its columns are intentionally
+distinct. The vertex column is `width_cells_2` at
+`0x42ed34..0x42ee41`, while the face column starts as fresh `j` at
+`0x42ee69` and advances at `0x42f05c`.
+
+No source variant is justified: Cage2 already expresses the exact asymmetric
+ownership, and the retained **68.36%**, 654/648 instructions, prefix 10/648,
+and 46 clean references remain unchanged.

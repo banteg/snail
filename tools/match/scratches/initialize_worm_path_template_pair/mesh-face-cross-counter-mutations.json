@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-mesh-column",
+      "find": "    int row = 0;",
+      "replacements": [
+        {
+          "name": "declare-carried-column",
+          "text": "    int row = 0;\n    int mesh_column;\n#define column mesh_column"
+        }
+      ]
+    },
+    {
+      "name": "vertex-column-scope",
+      "find": "            int column = 0;",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "use-carried-column",
+          "text": "            column = 0;"
+        }
+      ]
+    },
+    {
+      "name": "face-row-owner",
+      "find": "    int face_row = 0;",
+      "replacements": [
+        {
+          "name": "reuse-mesh-column",
+          "text": "#undef column\n#define face_row mesh_column\n    face_row = 0;"
+        }
+      ]
+    }
+  ]
+}
