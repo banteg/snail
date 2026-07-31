@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "frame-tail-noop-owner",
+      "find": "    noop_runtime_ai();\n}",
+      "replacements": [
+        {
+          "name": "global-folded-callback",
+          "text": "    ::noop_runtime_ai();\n}"
+        }
+      ]
+    }
+  ]
+}

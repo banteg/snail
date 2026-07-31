@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-sprite-reset-branch",
+      "find": "            post_sprite_count = 0;\n            if ((viewports[camera_index].flags & 2) == 0) {\n                RenderableBod* bod =",
+      "replacements": [
+        {
+          "name": "clear-inside-world-render-branch",
+          "text": "            if ((viewports[camera_index].flags & 2) == 0) {\n                post_sprite_count = 0;\n                RenderableBod* bod ="
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "depth-bucket-nested-guard",
+      "find": "                                SpriteDepthNode* previous = 0;\n                                SpriteDepthNode* cursor = head;\n                                while (cursor != 0 && depth_key < cursor->depth_key) {\n                                    previous = cursor;\n                                    cursor = cursor->next;\n                                }\n                                if (cursor == 0) {\n                                    previous->next = node;\n                                    node->next = 0;\n                                } else if (previous != 0) {\n                                    previous->next = node;\n                                    node->next = cursor;\n                                } else {\n                                    node->next = cursor;\n                                    g_sprite_depth_buckets[bucket_index] = node;\n                                }",
+      "replacements": [
+        {
+          "name": "explicit-cursor-guard",
+          "text": "                                SpriteDepthNode* previous = 0;\n                                SpriteDepthNode* cursor = head;\n                                if (cursor != 0) {\n                                    while (cursor != 0 && depth_key < cursor->depth_key) {\n                                        previous = cursor;\n                                        cursor = cursor->next;\n                                    }\n                                    if (cursor == 0) {\n                                        previous->next = node;\n                                        node->next = 0;\n                                    } else if (previous != 0) {\n                                        previous->next = node;\n                                        node->next = cursor;\n                                    } else {\n                                        node->next = cursor;\n                                        g_sprite_depth_buckets[bucket_index] = node;\n                                    }\n                                }"
+        },
+        {
+          "name": "explicit-cursor-guard-with-empty-else",
+          "text": "                                SpriteDepthNode* previous = 0;\n                                SpriteDepthNode* cursor = head;\n                                if (cursor != 0) {\n                                    while (cursor != 0 && depth_key < cursor->depth_key) {\n                                        previous = cursor;\n                                        cursor = cursor->next;\n                                    }\n                                    if (cursor == 0) {\n                                        previous->next = node;\n                                        node->next = 0;\n                                    } else if (previous != 0) {\n                                        previous->next = node;\n                                        node->next = cursor;\n                                    } else {\n                                        node->next = cursor;\n                                        g_sprite_depth_buckets[bucket_index] = node;\n                                    }\n                                } else {\n                                }"
+        }
+      ]
+    }
+  ]
+}

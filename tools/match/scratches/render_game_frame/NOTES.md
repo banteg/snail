@@ -359,3 +359,30 @@ weighted bytes. Three base-prefix/derived-body splits remain neutral both
 before and after the copied position is introduced. The complete renderer
 ledger now contains 11 sweeps and 64 unique variants, with four newly retained
 source-shape wins and no experiment errors.
+
+## 2026-07-31 conditional replay reset and frame-tail owner
+
+The native first pass tests the selected viewport's world-render bit before
+clearing the post-sprite BOD count. Android and iOS preserve the same
+relationship: their `gBodZList` count is reset only inside the branch that
+walks the active BOD list. Moving the Windows reset into that branch restores
+the native two stack-backed counter owners, the saved `GameRoot` slot, and the
+first-pass store order. Focused Wibo rises from 67.28% to 68.20%, adding 13.45
+weighted bytes and bringing the candidate from 429 to 432 instructions against
+439 native.
+
+The final folded call at `0x407b50` is likewise a global frame-tail callback,
+not `GameRoot::noop_runtime_ai()`. Native does not establish `this` in ECX,
+and both mobile renderers end through the global `G0RenderEnd()` surface.
+Spelling the global qualification removes the false receiver setup and raises
+the focused score again to 68.28%. It also removes one instruction, so the
+ledger records the honest instruction-count tradeoff rather than hiding it;
+the ABI and target callsite evidence justify retaining the source correction.
+
+A final two-variant probe wrapped the non-empty depth bucket in a redundant
+inner cursor guard to explain native's repeated null test. VC6 removes both
+ordinary spellings and emits the current bytes, so no volatile owner or
+duplicated condition is retained. The complete ledger now contains 14 sweeps
+and 68 unique variants: 12 improve, 26 are neutral, 30 regress, and the
+trailing no-improvement streak is one. The focused candidate is 431/439
+instructions, prefix 6, with all 34 masked operands clean.

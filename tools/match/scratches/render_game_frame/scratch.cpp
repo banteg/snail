@@ -116,8 +116,8 @@ void GameRoot::render_game_frame()
                 viewports[camera_index].draw_world,
                 0);
 
-            post_sprite_count = 0;
             if ((viewports[camera_index].flags & 2) == 0) {
+                post_sprite_count = 0;
                 RenderableBod* bod =
                     (RenderableBod*)active_bod_list.first;
                 RenderableBod** post_cursor = g_post_sprite_bods;
@@ -300,5 +300,5 @@ void GameRoot::render_game_frame()
         } while (remaining_cameras != 0);
     }
 
-    noop_runtime_ai();
+    ::noop_runtime_ai();
 }
