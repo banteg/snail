@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "trampoline-anchor-z-flow",
+      "find": "                if (*(unsigned char*)(cell + CELL_TILE_ID) == SUBLOC_TILE_TRAMPOLINE) {\n                    if (level_mode != 3\n                        || (runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) != 0) {\n                        cell_position->y = -3.0f;\n                        cell_position->z = row_anchor_z;\n                    }\n                }",
+      "replacements": [
+        {
+          "name": "unconditional-trampoline-z",
+          "text": "                if (*(unsigned char*)(cell + CELL_TILE_ID) == SUBLOC_TILE_TRAMPOLINE) {\n                    if (level_mode != 3\n                        || (runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) != 0)\n                        cell_position->y = -3.0f;\n                    cell_position->z = row_anchor_z;\n                }"
+        }
+      ]
+    }
+  ]
+}

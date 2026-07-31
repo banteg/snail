@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-switch-zero-owner",
+      "find": "                Vector3* cell_position =\n                    (Vector3*)(cell + CELL_POSITION_X);\n                cell_position->z = 0.0f;\n                cell_position->y = 0.0f;\n                cell_position->x = 0.0f;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Z) =\n                    0;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Y) =\n                    0;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_X) =\n                    0;",
+      "replacements": [
+        {
+          "name": "shared-bit-zero-after-pointer",
+          "text": "                Vector3* cell_position =\n                    (Vector3*)(cell + CELL_POSITION_X);\n                int post_switch_zero = 0;\n                *(int*)&cell_position->z = post_switch_zero;\n                *(int*)&cell_position->y = post_switch_zero;\n                *(int*)&cell_position->x = post_switch_zero;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Z) =\n                    post_switch_zero;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Y) =\n                    post_switch_zero;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_X) =\n                    post_switch_zero;"
+        },
+        {
+          "name": "shared-bit-zero-before-pointer",
+          "text": "                int post_switch_zero = 0;\n                Vector3* cell_position =\n                    (Vector3*)(cell + CELL_POSITION_X);\n                *(int*)&cell_position->z = post_switch_zero;\n                *(int*)&cell_position->y = post_switch_zero;\n                *(int*)&cell_position->x = post_switch_zero;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Z) =\n                    post_switch_zero;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Y) =\n                    post_switch_zero;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_X) =\n                    post_switch_zero;"
+        },
+        {
+          "name": "shared-float-zero",
+          "text": "                Vector3* cell_position =\n                    (Vector3*)(cell + CELL_POSITION_X);\n                float post_switch_zero = 0.0f;\n                cell_position->z = post_switch_zero;\n                cell_position->y = post_switch_zero;\n                cell_position->x = post_switch_zero;\n                *(float*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Z) =\n                    post_switch_zero;\n                *(float*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Y) =\n                    post_switch_zero;\n                *(float*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_X) =\n                    post_switch_zero;"
+        },
+        {
+          "name": "intrinsic-cell-zero",
+          "text": "                Vector3* cell_position =\n                    (Vector3*)(cell + CELL_POSITION_X);\n                memset(cell_position, 0, sizeof(Vector3));\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Z) =\n                    0;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Y) =\n                    0;\n                *(int*)(\n                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_X) =\n                    0;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cell-position-anchor-owner",
+      "find": "                Vector3* cell_position =\n                    (Vector3*)(cell + CELL_POSITION_X);\n                cell_position->z = 0.0f;\n                cell_position->y = 0.0f;\n                cell_position->x = 0.0f;",
+      "replacements": [
+        {
+          "name": "bod-member-pointer",
+          "text": "                Vector3* cell_position =\n                    &((BodBase*)(cell + CELL_BOD_BASE))->position;\n                cell_position->z = 0.0f;\n                cell_position->y = 0.0f;\n                cell_position->x = 0.0f;"
+        },
+        {
+          "name": "cell-member-pointer",
+          "text": "                Vector3* cell_position =\n                    &((cRSubLoc*)(cell + CELL_BOD_BASE))->position;\n                cell_position->z = 0.0f;\n                cell_position->y = 0.0f;\n                cell_position->x = 0.0f;"
+        },
+        {
+          "name": "bod-member-reference",
+          "text": "                Vector3& cell_position =\n                    ((BodBase*)(cell + CELL_BOD_BASE))->position;\n                cell_position.z = 0.0f;\n                cell_position.y = 0.0f;\n                cell_position.x = 0.0f;"
+        },
+        {
+          "name": "float-lane-pointer",
+          "text": "                float* cell_position =\n                    (float*)(cell + CELL_POSITION_X);\n                cell_position[2] = 0.0f;\n                cell_position[1] = 0.0f;\n                cell_position[0] = 0.0f;"
+        }
+      ]
+    }
+  ]
+}

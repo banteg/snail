@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "attachment-stamped-row-scope",
+      "find": "                        SubRow* stamped_row = &runtime_rows[build_row];\n                        int span_index = 0;\n                        if (runtime_cell->attachment_template_record->row_span_count > 0) {\n                            do {",
+      "replacements": [
+        {
+          "name": "form-row-after-positive-count",
+          "text": "                        int span_index = 0;\n                        if (runtime_cell->attachment_template_record->row_span_count > 0) {\n                            SubRow* stamped_row = &runtime_rows[build_row];\n                            do {"
+        },
+        {
+          "name": "index-inside-positive-count",
+          "text": "                        if (runtime_cell->attachment_template_record->row_span_count > 0) {\n                            int span_index = 0;\n                            SubRow* stamped_row = &runtime_rows[build_row];\n                            do {"
+        },
+        {
+          "name": "row-before-index-after-positive-count",
+          "text": "                        if (runtime_cell->attachment_template_record->row_span_count > 0) {\n                            SubRow* stamped_row = &runtime_rows[build_row];\n                            int span_index = 0;\n                            do {"
+        }
+      ]
+    }
+  ]
+}

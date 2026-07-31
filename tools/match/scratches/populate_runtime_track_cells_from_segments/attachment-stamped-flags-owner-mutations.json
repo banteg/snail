@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "attachment-stamped-flags-owner",
+      "find": "                                int stamped_flags = stamped_row->flags;\n                                if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {\n                                    stamped_row->flags =\n                                        stamped_flags | SUBROW_FLAG_SECONDARY_ATTACHMENT;\n                                    stamped_row->secondary_attachment_cell = runtime_cell;\n                                } else {\n                                    stamped_row->flags =\n                                        stamped_flags | SUBROW_FLAG_PRIMARY_ATTACHMENT;\n                                    stamped_row->primary_attachment_cell = runtime_cell;\n                                }",
+      "replacements": [
+        {
+          "name": "flags-slot-owner",
+          "text": "                                int* stamped_flags_slot = &stamped_row->flags;\n                                int stamped_flags = *stamped_flags_slot;\n                                if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {\n                                    *stamped_flags_slot =\n                                        stamped_flags | SUBROW_FLAG_SECONDARY_ATTACHMENT;\n                                    stamped_row->secondary_attachment_cell = runtime_cell;\n                                } else {\n                                    *stamped_flags_slot =\n                                        stamped_flags | SUBROW_FLAG_PRIMARY_ATTACHMENT;\n                                    stamped_row->primary_attachment_cell = runtime_cell;\n                                }"
+        },
+        {
+          "name": "pointer-store-before-flags",
+          "text": "                                int stamped_flags = stamped_row->flags;\n                                if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {\n                                    stamped_row->secondary_attachment_cell = runtime_cell;\n                                    stamped_row->flags =\n                                        stamped_flags | SUBROW_FLAG_SECONDARY_ATTACHMENT;\n                                } else {\n                                    stamped_row->primary_attachment_cell = runtime_cell;\n                                    stamped_row->flags =\n                                        stamped_flags | SUBROW_FLAG_PRIMARY_ATTACHMENT;\n                                }"
+        },
+        {
+          "name": "flags-value-reassignment",
+          "text": "                                int stamped_flags = stamped_row->flags;\n                                if ((stamped_flags & SUBROW_FLAG_PRIMARY_ATTACHMENT) != 0) {\n                                    stamped_flags |= SUBROW_FLAG_SECONDARY_ATTACHMENT;\n                                    stamped_row->flags = stamped_flags;\n                                    stamped_row->secondary_attachment_cell = runtime_cell;\n                                } else {\n                                    stamped_flags |= SUBROW_FLAG_PRIMARY_ATTACHMENT;\n                                    stamped_row->flags = stamped_flags;\n                                    stamped_row->primary_attachment_cell = runtime_cell;\n                                }"
+        }
+      ]
+    }
+  ]
+}

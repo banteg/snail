@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "trampoline-branch-shape",
+      "find": "                    if (trampoline_counter == 15)\n                        trampoline_counter = 0;\n                    if (trampoline_counter == 8) {\n                        ((BodBase*)(cell + CELL_BOD_BASE))\n                            ->SetObject(ROOT_BOD_OBJECT(trampoline));\n                        *glyph_list_flags |= 0x20;\n                        ((tColour*)(\n                            base + sizeof(cRSubLoc)\n                                * (lane + build_row * RUNTIME_LANE_COUNT\n                                   + CELL_COLOR_INDEX_BIAS)))\n                            ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);\n                    }\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_TRAMPOLINE;",
+      "replacements": [
+        {
+          "name": "else-if",
+          "text": "                    if (trampoline_counter == 15)\n                        trampoline_counter = 0;\n                    else if (trampoline_counter == 8) {\n                        ((BodBase*)(cell + CELL_BOD_BASE))\n                            ->SetObject(ROOT_BOD_OBJECT(trampoline));\n                        *glyph_list_flags |= 0x20;\n                        ((tColour*)(\n                            base + sizeof(cRSubLoc)\n                                * (lane + build_row * RUNTIME_LANE_COUNT\n                                   + CELL_COLOR_INDEX_BIAS)))\n                            ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);\n                    }\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_TRAMPOLINE;"
+        },
+        {
+          "name": "else-if-with-clear-else",
+          "text": "                    if (trampoline_counter == 15)\n                        trampoline_counter = 0;\n                    else if (trampoline_counter == 8) {\n                        ((BodBase*)(cell + CELL_BOD_BASE))\n                            ->SetObject(ROOT_BOD_OBJECT(trampoline));\n                        *glyph_list_flags |= 0x20;\n                        ((tColour*)(\n                            base + sizeof(cRSubLoc)\n                                * (lane + build_row * RUNTIME_LANE_COUNT\n                                   + CELL_COLOR_INDEX_BIAS)))\n                            ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);\n                    } else {\n                        *glyph_list_flags &= 0xffffffdf;\n                    }\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_TRAMPOLINE;"
+        },
+        {
+          "name": "nested-else-with-clear",
+          "text": "                    if (trampoline_counter == 15) {\n                        trampoline_counter = 0;\n                    } else {\n                        if (trampoline_counter == 8) {\n                            ((BodBase*)(cell + CELL_BOD_BASE))\n                                ->SetObject(ROOT_BOD_OBJECT(trampoline));\n                            *glyph_list_flags |= 0x20;\n                            ((tColour*)(\n                                base + sizeof(cRSubLoc)\n                                    * (lane + build_row * RUNTIME_LANE_COUNT\n                                       + CELL_COLOR_INDEX_BIAS)))\n                                ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);\n                        } else {\n                            *glyph_list_flags &= 0xffffffdf;\n                        }\n                    }\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_TRAMPOLINE;"
+        }
+      ]
+    }
+  ]
+}

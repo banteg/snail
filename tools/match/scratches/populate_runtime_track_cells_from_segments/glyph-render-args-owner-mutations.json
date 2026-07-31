@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "glyph-render-args-owner-declaration",
+      "find": "                int* glyph_list_flags = (int*)(cell + CELL_LIST_FLAGS);\n                switch (normalized) {",
+      "replacements": [
+        {
+          "name": "declare-before-switch",
+          "text": "                int* glyph_list_flags = (int*)(cell + CELL_LIST_FLAGS);\n                int* glyph_render_arg_1c =\n                    (int*)(cell + CELL_RENDER_ARG_1C);\n                int* glyph_render_arg_20 =\n                    (int*)(cell + CELL_RENDER_ARG_20);\n                switch (normalized) {"
+        }
+      ]
+    },
+    {
+      "name": "glyph-less-than-render-args",
+      "find": "                case '<':\n                    ((BodBase*)(cell + CELL_BOD_BASE))\n                        ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));\n                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;\n                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_LESS;\n                    *glyph_list_flags |= 0x20;\n                    break;",
+      "replacements": [
+        {
+          "name": "consume-switch-owners",
+          "text": "                case '<':\n                    ((BodBase*)(cell + CELL_BOD_BASE))\n                        ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));\n                    *glyph_render_arg_1c = 0;\n                    *glyph_render_arg_20 = 0;\n                    *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_LESS;\n                    *glyph_list_flags |= 0x20;\n                    break;"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "fringe-position-copy-owner",
+      "find": "                        object = *subobject_slot;\n                        object->position.x = cell_position->x;\n                        object->position.y = cell_position->y;\n                        object->position.z = cell_position->z;",
+      "replacements": [
+        {
+          "name": "aggregate-vector-copy",
+          "text": "                        object = *subobject_slot;\n                        object->position = *cell_position;"
+        },
+        {
+          "name": "aggregate-bit-copy",
+          "text": "                        object = *subobject_slot;\n                        *(Vector3*)&object->position = *cell_position;"
+        },
+        {
+          "name": "destination-pointer-aggregate-copy",
+          "text": "                        object = *subobject_slot;\n                        Vector3* object_position = &object->position;\n                        *object_position = *cell_position;"
+        },
+        {
+          "name": "raw-source-and-destination-pointers",
+          "text": "                        object = *subobject_slot;\n                        int* source_position = (int*)cell_position;\n                        int* object_position = (int*)&object->position;\n                        object_position[0] = source_position[0];\n                        object_position[1] = source_position[1];\n                        object_position[2] = source_position[2];"
+        },
+        {
+          "name": "typed-source-and-destination-pointers",
+          "text": "                        object = *subobject_slot;\n                        Vector3* source_position = cell_position;\n                        Vector3* object_position = &object->position;\n                        object_position->x = source_position->x;\n                        object_position->y = source_position->y;\n                        object_position->z = source_position->z;"
+        },
+        {
+          "name": "intrinsic-vector-copy",
+          "text": "                        object = *subobject_slot;\n                        memcpy(&object->position, cell_position, sizeof(Vector3));"
+        },
+        {
+          "name": "incrementing-bit-cursors",
+          "text": "                        object = *subobject_slot;\n                        int* source_position = (int*)cell_position;\n                        int* object_position = (int*)&object->position;\n                        *object_position = *source_position;\n                        *++object_position = *++source_position;\n                        *++object_position = *++source_position;"
+        },
+        {
+          "name": "postincrement-bit-cursors",
+          "text": "                        object = *subobject_slot;\n                        int* source_position = (int*)cell_position;\n                        int* object_position = (int*)&object->position;\n                        *object_position++ = *source_position++;\n                        *object_position++ = *source_position++;\n                        *object_position = *source_position;"
+        }
+      ]
+    }
+  ]
+}

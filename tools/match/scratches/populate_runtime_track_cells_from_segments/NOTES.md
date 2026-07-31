@@ -1341,3 +1341,40 @@ the directly indexed parcel-set source all regress when combined. The guarded
 loop alone gains 11 weighted bytes and clears the four unaudited references,
 but collapses the exact prefix from 76 to 9 and moves the instruction count
 farther from native, so it is recorded as a tradeoff rather than retained.
+
+## 2026-07-31 attachment and post-switch ownership
+
+Binary Ninja's attachment dispatch at `0x436d99..0x436de7` tests the mirror
+flag as the positive branch and selects the secondary path there. Reversing
+the equivalent source branch to the native layout gains 16 weighted bytes.
+The ramp cases also share the two render-argument field owners across the
+switch; consuming those owners in every ramp arm gains another 8 weighted
+bytes without changing behavior or reference quality.
+
+After dispatch, native retains separate source- and destination-position
+owners while copying the current cell position to each non-null fringe.
+Expressing those two real owners explicitly gains 11 weighted bytes. An
+aggregate assignment loses 25 weighted bytes and adds five instructions,
+while post-increment and cursor variants lose 2; those alternatives are
+recorded but not retained.
+
+The trampoline tail exposed one semantic error in the former scratch.
+Native's `0x4370d5..0x4370fa` control flow always restores
+`cell_position->z = row_anchor_z` for trampoline tiles. Only the
+`cell_position->y = -3.0f` write is conditional on mode 3 and runtime flag
+`0x400`. Moving the Z write outside that nested condition gains another
+4 weighted bytes and restores the observed behavior.
+
+Together these changes raise focused matching from **75.33%** to **76.10%**
+and move the candidate from 1248 to 1249 instructions against native's 1245.
+The 76-instruction exact prefix and 162 clean / 0 unresolved / 1 mismatch /
+4 unaudited operand audit remain intact. The sole audited mismatch is still
+the physical glyph jump table.
+
+The surrounding ownership space is bounded by recorded dependency-complete
+mutations: parcel-source owner lifetimes lose 298 weighted bytes; raw
+attachment-template slot lifetimes lose 61-77; stamped-row scoping loses
+576-599; stamped-flags and lane-UV value owners are neutral or regressive;
+post-switch zero owners are neutral or lose 92; and trampoline `else-if`
+spellings are neutral or gain only while degrading the reference audit.
+None is retained.

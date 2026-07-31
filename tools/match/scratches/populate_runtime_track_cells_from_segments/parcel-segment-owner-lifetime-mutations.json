@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "parcel-segment-owner-declaration",
+      "find": "            }\n\n            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_PARCEL)",
+      "replacements": [
+        {
+          "name": "raw-owner-before-test",
+          "text": "            }\n\n            char* parcel_segment_owner = active_segment;\n            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_PARCEL)"
+        },
+        {
+          "name": "typed-owner-before-test",
+          "text": "            }\n\n            SubSegment* parcel_segment_owner =\n                (SubSegment*)active_segment;\n            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_PARCEL)"
+        }
+      ]
+    },
+    {
+      "name": "parcel-set-owner-consumption",
+      "find": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);",
+      "replacements": [
+        {
+          "name": "indexed-owner-source",
+          "text": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        (char*)parcel_segment_owner\n                        + sizeof(AuthoredSegmentRow) * segment_row\n                        + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);"
+        },
+        {
+          "name": "typed-row-source",
+          "text": "                runtime_rows[build_row].parcel_set_id =\n                    ((SubSegment*)parcel_segment_owner)\n                        ->rows[segment_row].parcel_set_id;"
+        }
+      ]
+    }
+  ]
+}

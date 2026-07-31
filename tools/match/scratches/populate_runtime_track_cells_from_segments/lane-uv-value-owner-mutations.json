@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "lane-uv-value-owner",
+      "find": "                    int lane_uv = RUNTIME_LANE_COUNT - lane;\n                    *(float*)(cell + CELL_RENDER_ARG_1C) = (float)lane_uv * 0.125f;",
+      "replacements": [
+        {
+          "name": "load-then-reassign",
+          "text": "                    int lane_uv = lane;\n                    lane_uv = RUNTIME_LANE_COUNT - lane_uv;\n                    *(float*)(cell + CELL_RENDER_ARG_1C) = (float)lane_uv * 0.125f;"
+        },
+        {
+          "name": "separate-source-owner",
+          "text": "                    int lane_uv_source = lane;\n                    int lane_uv = RUNTIME_LANE_COUNT - lane_uv_source;\n                    *(float*)(cell + CELL_RENDER_ARG_1C) = (float)lane_uv * 0.125f;"
+        },
+        {
+          "name": "subtract-from-named-count",
+          "text": "                    int lane_uv = RUNTIME_LANE_COUNT;\n                    lane_uv -= lane;\n                    *(float*)(cell + CELL_RENDER_ARG_1C) = (float)lane_uv * 0.125f;"
+        }
+      ]
+    }
+  ]
+}

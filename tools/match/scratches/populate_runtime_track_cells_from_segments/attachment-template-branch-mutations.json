@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "attachment-template-branch",
+      "find": "                    if (base[TRACK_MIRROR_FLAG_OFFSET] == 0)\n                        runtime_cell->attachment_template_record = (Path*)(\n                            base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));\n                    else\n                        runtime_cell->attachment_template_record = (Path*)(\n                            base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA\n                            + template_index * sizeof(PathPair));",
+      "replacements": [
+        {
+          "name": "mirrored-first",
+          "text": "                    if (base[TRACK_MIRROR_FLAG_OFFSET] != 0)\n                        runtime_cell->attachment_template_record = (Path*)(\n                            base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA\n                            + template_index * sizeof(PathPair));\n                    else\n                        runtime_cell->attachment_template_record = (Path*)(\n                            base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));"
+        },
+        {
+          "name": "mirrored-truthy-first",
+          "text": "                    if (base[TRACK_MIRROR_FLAG_OFFSET])\n                        runtime_cell->attachment_template_record = (Path*)(\n                            base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA\n                            + template_index * sizeof(PathPair));\n                    else\n                        runtime_cell->attachment_template_record = (Path*)(\n                            base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));"
+        }
+      ]
+    }
+  ]
+}

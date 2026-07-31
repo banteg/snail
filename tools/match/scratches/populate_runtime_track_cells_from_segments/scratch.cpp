@@ -612,6 +612,10 @@ void cRSubGame::BuildLevel()
                 char normalized = LevelConvert(
                     *glyph_ptr, build_row, edge_row);
                 int* glyph_list_flags = (int*)(cell + CELL_LIST_FLAGS);
+                int* glyph_render_arg_1c =
+                    (int*)(cell + CELL_RENDER_ARG_1C);
+                int* glyph_render_arg_20 =
+                    (int*)(cell + CELL_RENDER_ARG_20);
                 switch (normalized) {
                 case ' ':
                     *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_EMPTY;
@@ -738,8 +742,8 @@ void cRSubGame::BuildLevel()
                             == SUBLOC_TILE_RAMP_GREATER) {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
-                        *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                        *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                        *glyph_render_arg_1c = 0;
+                        *glyph_render_arg_20 = 0;
                         *(unsigned char*)(cell + CELL_TILE_ID) =
                             SUBLOC_TILE_RAMP_GREATER_RAISED;
                         *glyph_list_flags |= 0x20;
@@ -748,8 +752,8 @@ void cRSubGame::BuildLevel()
                     } else {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
-                        *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                        *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                        *glyph_render_arg_1c = 0;
+                        *glyph_render_arg_20 = 0;
                         *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_GREATER;
                         *glyph_list_flags |= 0x20;
                     }
@@ -760,8 +764,8 @@ void cRSubGame::BuildLevel()
                             == SUBLOC_TILE_RAMP_GREATER) {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(ramp_edges[2]));
-                        *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                        *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                        *glyph_render_arg_1c = 0;
+                        *glyph_render_arg_20 = 0;
                         *(unsigned char*)(cell + CELL_TILE_ID) =
                             SUBLOC_TILE_RAMP_RIGHT_BRACE_RAISED;
                         *glyph_list_flags |= 0x20;
@@ -770,8 +774,8 @@ void cRSubGame::BuildLevel()
                     } else {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(ramp_edges[2]));
-                        *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                        *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                        *glyph_render_arg_1c = 0;
+                        *glyph_render_arg_20 = 0;
                         *(unsigned char*)(cell + CELL_TILE_ID) =
                             SUBLOC_TILE_RAMP_RIGHT_BRACE;
                         *glyph_list_flags |= 0x20;
@@ -783,8 +787,8 @@ void cRSubGame::BuildLevel()
                             == SUBLOC_TILE_RAMP_GREATER) {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
-                        *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                        *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                        *glyph_render_arg_1c = 0;
+                        *glyph_render_arg_20 = 0;
                         *(unsigned char*)(cell + CELL_TILE_ID) =
                             SUBLOC_TILE_RAMP_LEFT_BRACE_RAISED;
                         *glyph_list_flags |= 0x20;
@@ -793,8 +797,8 @@ void cRSubGame::BuildLevel()
                     } else {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
-                        *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                        *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                        *glyph_render_arg_1c = 0;
+                        *glyph_render_arg_20 = 0;
                         *(unsigned char*)(cell + CELL_TILE_ID) =
                             SUBLOC_TILE_RAMP_LEFT_BRACE;
                         *glyph_list_flags |= 0x20;
@@ -803,16 +807,16 @@ void cRSubGame::BuildLevel()
                 case '<':
                     ((BodBase*)(cell + CELL_BOD_BASE))
                         ->SetObject(ROOT_BOD_OBJECT(ramp_edges[1]));
-                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                    *glyph_render_arg_1c = 0;
+                    *glyph_render_arg_20 = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_LESS;
                     *glyph_list_flags |= 0x20;
                     break;
                 case '[':
                     ((BodBase*)(cell + CELL_BOD_BASE))
                         ->SetObject(ROOT_BOD_OBJECT(ramp_edges[0]));
-                    *(int*)(cell + CELL_RENDER_ARG_1C) = 0;
-                    *(int*)(cell + CELL_RENDER_ARG_20) = 0;
+                    *glyph_render_arg_1c = 0;
+                    *glyph_render_arg_20 = 0;
                     *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_RAMP_LEFT_BRACKET;
                     *glyph_list_flags |= 0x20;
                     break;
@@ -828,13 +832,13 @@ void cRSubGame::BuildLevel()
 
                     int template_index =
                         runtime_rows[build_row].attachment_template_index;
-                    if (base[TRACK_MIRROR_FLAG_OFFSET] == 0)
-                        runtime_cell->attachment_template_record = (Path*)(
-                            base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));
-                    else
+                    if (base[TRACK_MIRROR_FLAG_OFFSET])
                         runtime_cell->attachment_template_record = (Path*)(
                             base + PATH_PAIRS_BASE + PATH_PAIR_SECONDARY_DELTA
                             + template_index * sizeof(PathPair));
+                    else
+                        runtime_cell->attachment_template_record = (Path*)(
+                            base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));
 
                     *glyph_list_flags &= 0xffffffdf;
                     if (attachment_entry_installed == 0) {
@@ -1016,10 +1020,9 @@ void cRSubGame::BuildLevel()
 
                 if (*(unsigned char*)(cell + CELL_TILE_ID) == SUBLOC_TILE_TRAMPOLINE) {
                     if (level_mode != 3
-                        || (runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) != 0) {
+                        || (runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) != 0)
                         cell_position->y = -3.0f;
-                        cell_position->z = row_anchor_z;
-                    }
+                    cell_position->z = row_anchor_z;
                 }
 
                 for (int subobject_index = 0;
@@ -1031,9 +1034,11 @@ void cRSubGame::BuildLevel()
                         object->position.y = 0.0f;
                         object->position.x = 0.0f;
                         object = *subobject_slot;
-                        object->position.x = cell_position->x;
-                        object->position.y = cell_position->y;
-                        object->position.z = cell_position->z;
+                        Vector3* source_position = cell_position;
+                        Vector3* object_position = &object->position;
+                        object_position->x = source_position->x;
+                        object_position->y = source_position->y;
+                        object_position->z = source_position->z;
                     }
                     ++subobject_slot;
                 }
