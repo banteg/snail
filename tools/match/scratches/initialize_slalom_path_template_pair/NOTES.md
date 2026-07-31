@@ -492,3 +492,16 @@ one-sided score is rejected; both texture calls stay semantically direct.
 The ledger now contains 42 records, 33 mutation sweeps, nine probes, and 176
 evaluated variants (167 unique). The retained owner is the only large,
 instruction-backed gain in this post-counter interaction family.
+
+## 2026-07-31 post-face cursor replay bound
+
+The strongest earlier native-owner rejection was replayed once after the face
+record changed whole-function allocation. It remains closed: paired
+entrance/departure byte cursors lose 22 weighted bytes, the guarded logical
+plus physical mesh row loses 140, and their complete interaction loses 151.
+All three preserve prefix 6/696 and the 40-reference clean audit.
+
+Slalom therefore stays at **64.20%**, 684/696 instructions. The fixed cursors
+remain compiler-derived from direct indexed source, and the mesh row remains
+separate from its physical sample induction on this final face-owner
+allocation.
