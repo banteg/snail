@@ -660,7 +660,6 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     int mesh_row;
     int mesh_column;
     int face_row;
-    int face_column;
     int face_index;
 
     for (mesh_row = 0; mesh_row <= segment_count; ++mesh_row) {
@@ -698,25 +697,25 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         if (width_cells > 0) {
             float v0 = (float)(face_row % 8) * 0.125f;
             float v1 = (float)(face_row % 8 + 1) * 0.125f;
-            face_column = 0;
+            mesh_column = 0;
             int next_column;
             do {
-                next_column = face_column + 1;
-                float u0 = (float)face_column * 0.125f;
-                float u1 = (float)(face_column + 1) * 0.125f;
+                next_column = mesh_column + 1;
+                float u0 = (float)mesh_column * 0.125f;
+                float u1 = (float)(mesh_column + 1) * 0.125f;
                 for (face_index = 0; face_index < 2; ++face_index) {
                     int face_record_index =
                         face_index
-                        + 2 * (face_row * width_cells + face_column);
+                        + 2 * (face_row * width_cells + mesh_column);
                     if (face_index == 0) {
                         cRFaceQuad* face = &facequads[face_record_index];
                         face->header_word = 0;
-                        face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
-                        face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
+                        face->vertex_0 = mesh_column + face_row * ((unsigned short)width_cells + 1);
+                        face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
                         face->vertex_2 =
-                            (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
+                            (face_row + 1) * ((unsigned short)width_cells + 1) + mesh_column + 1;
                         face->vertex_3 =
-                            face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
+                            mesh_column + (face_row + 1) * ((unsigned short)width_cells + 1);
                         face->texture_ref =
                             g_texture_refs.Add(texture_a, 0, 0);
                         face->uv[0].u = u0;
@@ -730,12 +729,12 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     } else {
                         cRFaceQuad* face = &facequads[face_record_index];
                         face->header_word = 0;
-                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
+                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
+                        face->vertex_1 = mesh_column + face_row * ((unsigned short)width_cells + 1);
                         face->vertex_2 =
-                            face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
+                            mesh_column + (face_row + 1) * ((unsigned short)width_cells + 1);
                         face->vertex_3 =
-                            (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
+                            (face_row + 1) * ((unsigned short)width_cells + 1) + mesh_column + 1;
                         face->texture_ref =
                             g_texture_refs.Add(texture_b, 0, 0);
                         face->uv[0].u = u1;
@@ -748,7 +747,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         face->uv[3].v = v1;
                     }
                 }
-                face_column = next_column;
+                mesh_column = next_column;
             } while (next_column < width_cells);
         }
     }

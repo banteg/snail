@@ -445,3 +445,17 @@ Sharing the current sample across the ordinary and terminal mesh branches
 falls from **59.16%** to **56.98%**, loses 56 weighted bytes, and grows the
 candidate from 690 to 694 instructions against 696 native. Prefix 6/696 and
 all 40 references remain unchanged, so the branch-local sample owners stay.
+
+## 2026-07-31 mesh-column lifetime recovery
+
+The native tail distinguishes the two phase transitions precisely. Its mesh
+column owner runs through `0x41fe09..0x41ff22`; the terminal mesh arm exposes
+the carried `i_3` storage at `0x41fee4`, and the face pass resets and advances
+that same owner at `0x41ff49` and `0x42012a`. The face row instead starts a
+fresh `ebx_1` owner at `0x41ff3d`.
+
+Matching that asymmetry raises focused matching from **59.16%** to **60.61%**,
+adding 37 weighted bytes. Reusing both row and column gains only 30, while
+row-only reuse is byte-neutral, so only the independently supported column
+lifetime is retained. Candidate/target size remains 690/696, prefix remains
+6/696, and all 40 references remain clean.

@@ -301,3 +301,17 @@ recovered leading allocation: matching falls from **69.90%** to **54.68%**,
 the exact prefix contracts from 58 to 6 instructions, and candidate size
 moves from 674 to 672 against 685 native. The complete probe preserves the
 reference audit and decisively retains the two branch-local sample records.
+
+## 2026-07-31 mesh-to-face counter ownership
+
+Screw's native mesh and face tail carries both scalar counter owners across the
+phase boundary. The mesh ends at `0x41f531`; the face setup at
+`0x41f537..0x41f54b` resets the carried row/column storage rather than
+introducing two additional source lifetimes. Reusing both source counters adds
+18 weighted bytes and raises focused matching from **69.90%** to **70.64%**.
+Reusing only the column adds 11 bytes, while row-only reuse is byte-neutral.
+
+The retained complete ownership does not change candidate size: it remains
+674/685 instructions with prefix 58/685 and 38 clean plus two unaudited
+references. The three-way recorded sweep contains the neutral and partial
+alternatives.

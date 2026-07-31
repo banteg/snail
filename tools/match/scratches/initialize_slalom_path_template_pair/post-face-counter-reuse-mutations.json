@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-counter-owners",
+      "find": "    int mesh_row;\n    int mesh_column;\n    int face_row;\n    int face_column;\n    int face_index;",
+      "replacements": [
+        {
+          "name": "reuse-row",
+          "text": "    int mesh_row;\n    int mesh_column;\n    int face_column;\n    int face_index;\n#define face_row mesh_row"
+        },
+        {
+          "name": "reuse-column",
+          "text": "    int mesh_row;\n    int mesh_column;\n    int face_row;\n    int face_index;\n#define face_column mesh_column"
+        },
+        {
+          "name": "reuse-row-and-column",
+          "text": "    int mesh_row;\n    int mesh_column;\n    int face_index;\n#define face_row mesh_row\n#define face_column mesh_column"
+        }
+      ]
+    }
+  ]
+}
