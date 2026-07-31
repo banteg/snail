@@ -512,3 +512,50 @@ Toad remains at **65.76%**, 660/663 instructions, prefix 89/663, and 33 clean
 references. The ledger now contains 52 records, 49 mutation sweeps, 3 probes,
 and 213 unique variants; the remaining aggregate wins all carry the same
 prefix, first-mismatch, and instruction-count tradeoffs.
+
+## 2026-07-31 guarded tail logical and physical ownership
+
+Windows `0x42cd63..0x42ce52` proves a positive tail-count guard followed by a
+post-tested loop. The loop carries an absolute logical sample index and an
+independent `0xa8` byte cursor, while its latch combines the absolute index
+with the invariant `-26 - lead_count`. Android and iOS independently preserve
+the same logical tail count and advancing `0xa8` sample cursor, without
+transferring the Windows-only stack schedule.
+
+Materializing only the invariant control base loses 71.56 weighted bytes and
+one prefix instruction. Adding the absolute index and physical cursor closes
+that loss to 4.79 bytes, and restoring the native positive guard turns the
+complete unit into a clean **11.00 weighted-byte gain**. The retained result
+moves Toad from 65.76% to **66.21%**:
+
+```text
+target: 663 insns, candidate: 663 insns
+prefix: 89/663 target insns
+masked operands: 33 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The first mismatch remains at target offset `0x173`, and there are no
+canonical tradeoffs. This is the first tail replay on the recovered
+face-record allocation to preserve both the exact prefix and target
+instruction count.
+
+## 2026-07-31 tail latch expression bound
+
+The retained candidate strength-reduces the invariant-plus-index latch into a
+relative counter, while the target reloads the invariant and adds the
+incremented absolute index. Seven equivalent comparison spellings and six
+increment placements all compile byte-identically to the retained source.
+Four direct `index - lead_count - 26` spellings lose 210.65 weighted bytes,
+shorten the candidate to 655 instructions, and collapse the prefix from 89 to
+14 instructions.
+
+Seven initialization dependencies also fail to recover the target latch.
+Deriving the invariant from the absolute index loses 72.55 weighted bytes and
+cuts the prefix to 26; deriving the index from the invariant loses 92.96.
+Keeping both expressions independent is closest, but still loses 2.49 to
+6.34 weighted bytes.
+
+The ledger now contains 58 records, 55 mutation sweeps, 3 probes, and 240
+unique variants. Three consecutive bounded sweeps fail to improve the
+retained 66.21% source, so this tail neighborhood is formally stalled rather
+than widened with unsupported aliasing or volatile qualifiers.

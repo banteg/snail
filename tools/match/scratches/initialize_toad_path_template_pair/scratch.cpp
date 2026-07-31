@@ -208,25 +208,57 @@ void cRPath::initialize_toad_path_template_pair(
         secondary_samples[i].delta_length = 1.0f;
     }
 
-    for (int tail = 0; tail < tail_count; ++tail) {
-        int index = lead_count + 26 + tail;
-        primary_samples[index].center_x = start_x;
-        primary_samples[index].rotation_scalar_98 = 0.0f;
-        primary_samples[index].rotation_scalar_94 = 0.0f;
-        primary_samples[index].special_scalar = 0.0f;
-        primary_samples[index].lateral_scale = 1.0f;
-        set_matrix_identity(&primary_samples[index].transform);
-        float z = (float)index;
-        primary_samples[index].transform.position.x = primary_samples[index].center_x;
-        primary_samples[index].transform.position.y = 0.0f;
-        primary_samples[index].transform.position.z = z;
-        primary_samples[index].delta_length = 1.0f;
+    if (tail_count > 0) {
+        int tail_index = lead_count + 26;
+        int tail_sample_offset =
+            tail_index * (int)sizeof(AttachmentSample);
+        int tail_control_base = -26 - lead_count;
+        do {
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->center_x = start_x;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->rotation_scalar_98 = 0.0f;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->rotation_scalar_94 = 0.0f;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->special_scalar = 0.0f;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->lateral_scale = 1.0f;
+            set_matrix_identity(
+                &((AttachmentSample*)(
+                    (char*)primary_samples + tail_sample_offset))
+                    ->transform);
+            float z = (float)tail_index;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->transform.position.x =
+                ((AttachmentSample*)(
+                    (char*)primary_samples + tail_sample_offset))
+                    ->center_x;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->transform.position.y = 0.0f;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->transform.position.z = z;
+            ((AttachmentSample*)((char*)primary_samples + tail_sample_offset))
+                ->delta_length = 1.0f;
 
-        set_matrix_identity(&secondary_samples[index].transform);
-        secondary_samples[index].transform.position.x = primary_samples[index].center_x;
-        secondary_samples[index].transform.position.y = 0.49000001f;
-        secondary_samples[index].transform.position.z = z;
-        secondary_samples[index].delta_length = 1.0f;
+            set_matrix_identity(
+                &((AttachmentSample*)(
+                    (char*)secondary_samples + tail_sample_offset))
+                    ->transform);
+            ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))
+                ->transform.position.x =
+                ((AttachmentSample*)(
+                    (char*)primary_samples + tail_sample_offset))
+                    ->center_x;
+            ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))
+                ->transform.position.y = 0.49000001f;
+            ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))
+                ->transform.position.z = z;
+            ((AttachmentSample*)((char*)secondary_samples + tail_sample_offset))
+                ->delta_length = 1.0f;
+            tail_sample_offset += (int)sizeof(AttachmentSample);
+            ++tail_index;
+        } while (tail_index + tail_control_base < tail_count);
     }
 
     int curve_sample_offset = lead_count * sizeof(AttachmentSample);

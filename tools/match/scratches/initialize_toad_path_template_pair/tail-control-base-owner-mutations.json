@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-control-base-owner",
+      "find": "    for (int tail = 0; tail < tail_count; ++tail) {\n        int index = lead_count + 26 + tail;",
+      "replacements": [
+        {
+          "name": "negative-base-for-index",
+          "text": "    int tail_control_base = -26 - lead_count;\n    for (int index = lead_count + 26;\n         index + tail_control_base < tail_count;\n         ++index) {"
+        },
+        {
+          "name": "negated-sum-for-index",
+          "text": "    int tail_control_base = -(lead_count + 26);\n    for (int index = lead_count + 26;\n         index + tail_control_base < tail_count;\n         ++index) {"
+        },
+        {
+          "name": "zero-minus-base-for-index",
+          "text": "    int tail_control_base = 0 - lead_count - 26;\n    for (int index = lead_count + 26;\n         index + tail_control_base < tail_count;\n         ++index) {"
+        },
+        {
+          "name": "separate-index-before-base",
+          "text": "    int index = lead_count + 26;\n    int tail_control_base = -26 - lead_count;\n    for (; index + tail_control_base < tail_count; ++index) {"
+        },
+        {
+          "name": "separate-base-before-index",
+          "text": "    int tail_control_base = -26 - lead_count;\n    int index = lead_count + 26;\n    for (; index + tail_control_base < tail_count; ++index) {"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-base-initialization-dependency",
+      "find": "        int tail_index = lead_count + 26;\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);\n        int tail_control_base = -26 - lead_count;",
+      "replacements": [
+        {
+          "name": "base-first-index-from-base",
+          "text": "        int tail_control_base = -26 - lead_count;\n        int tail_index = -tail_control_base;\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);"
+        },
+        {
+          "name": "base-first-index-from-zero-minus-base",
+          "text": "        int tail_control_base = -26 - lead_count;\n        int tail_index = 0 - tail_control_base;\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);"
+        },
+        {
+          "name": "index-then-base-from-index-then-cursor",
+          "text": "        int tail_index = lead_count + 26;\n        int tail_control_base = -tail_index;\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);"
+        },
+        {
+          "name": "index-then-cursor-then-base-from-index",
+          "text": "        int tail_index = lead_count + 26;\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);\n        int tail_control_base = -tail_index;"
+        },
+        {
+          "name": "index-then-cursor-then-zero-minus-index",
+          "text": "        int tail_index = lead_count + 26;\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);\n        int tail_control_base = 0 - tail_index;"
+        },
+        {
+          "name": "index-then-base-from-sum-then-cursor",
+          "text": "        int tail_index = lead_count + 26;\n        int tail_control_base = -(lead_count + 26);\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);"
+        },
+        {
+          "name": "base-first-explicit-sum-index",
+          "text": "        int tail_control_base = -(lead_count + 26);\n        int tail_index = lead_count + 26;\n        int tail_sample_offset =\n            tail_index * (int)sizeof(AttachmentSample);"
+        }
+      ]
+    }
+  ]
+}

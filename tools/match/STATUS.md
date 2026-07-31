@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.37%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.38%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -675,7 +675,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 682/677 | 77.70% | 123/677 | 49 ok |  | core |
 | 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 682/677 | 77.70% | 123/677 | 49 ok |  | core |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 792/796 | 74.31% | 10/796 | 63 ok |  | core |
-| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 660/663 | 65.76% | 89/663 | 33 ok |  | core |
+| 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 663/663 | 66.21% | 89/663 | 33 ok |  | core |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 654/648 | 68.36% | 10/648 | 46 ok |  | core |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 77.74% | 0/141 | 17 ok |  | core |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 71.79% | 5/58 | 5 ok |  | core |

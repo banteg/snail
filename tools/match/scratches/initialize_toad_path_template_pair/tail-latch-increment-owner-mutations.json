@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-latch-increment-owner",
+      "find": "            tail_sample_offset += (int)sizeof(AttachmentSample);\n            ++tail_index;\n        } while (tail_index + tail_control_base < tail_count);",
+      "replacements": [
+        {
+          "name": "preincrement-in-condition",
+          "text": "            tail_sample_offset += (int)sizeof(AttachmentSample);\n        } while (++tail_index + tail_control_base < tail_count);"
+        },
+        {
+          "name": "preincrement-in-condition-base-first",
+          "text": "            tail_sample_offset += (int)sizeof(AttachmentSample);\n        } while (tail_control_base + ++tail_index < tail_count);"
+        },
+        {
+          "name": "both-updates-in-condition",
+          "text": "        } while (tail_sample_offset += (int)sizeof(AttachmentSample),\n                 ++tail_index + tail_control_base < tail_count);"
+        },
+        {
+          "name": "both-updates-in-condition-base-first",
+          "text": "        } while (tail_sample_offset += (int)sizeof(AttachmentSample),\n                 tail_control_base + ++tail_index < tail_count);"
+        },
+        {
+          "name": "reversed-comparison-with-preincrement",
+          "text": "            tail_sample_offset += (int)sizeof(AttachmentSample);\n        } while (tail_count > ++tail_index + tail_control_base);"
+        },
+        {
+          "name": "assignment-in-condition",
+          "text": "            tail_sample_offset += (int)sizeof(AttachmentSample);\n        } while ((tail_index += 1) + tail_control_base < tail_count);"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-latch-expression",
+      "find": "        } while (tail_index + tail_control_base < tail_count);",
+      "replacements": [
+        {
+          "name": "base-plus-index",
+          "text": "        } while (tail_control_base + tail_index < tail_count);"
+        },
+        {
+          "name": "index-minus-sum",
+          "text": "        } while (tail_index - (lead_count + 26) < tail_count);"
+        },
+        {
+          "name": "index-minus-lead-minus-constant",
+          "text": "        } while (tail_index - lead_count - 26 < tail_count);"
+        },
+        {
+          "name": "index-plus-negative-expression",
+          "text": "        } while (tail_index + (-26 - lead_count) < tail_count);"
+        },
+        {
+          "name": "negative-expression-plus-index",
+          "text": "        } while ((-26 - lead_count) + tail_index < tail_count);"
+        },
+        {
+          "name": "reversed-comparison",
+          "text": "        } while (tail_count > tail_index + tail_control_base);"
+        },
+        {
+          "name": "reversed-comparison-base-first",
+          "text": "        } while (tail_count > tail_control_base + tail_index);"
+        }
+      ]
+    }
+  ]
+}
