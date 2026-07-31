@@ -484,3 +484,45 @@ falls from **73.25%** to **68.51%**, and contracts the exact prefix from 168
 to 110 instructions. Candidate size moves from 645 to 647 against 652 native,
 with all 40 references still clean. Both the sample and vertex destinations
 therefore remain branch-local on the recovered direct-face schedule.
+
+## 2026-07-31 orientation and mesh cursor dependency closure
+
+The paired mobile bodies confirm that the first curved sample initializes the
+preceding rotations and every following sample derives orientation. Windows
+adds two stronger source-shape constraints: its `jle` branches to the identity
+case, and the fall-through orientation body independently reloads each owning
+sample array.
+
+Those constraints must be replayed together. Inverting the branch while
+retaining the four cached sample pointers falls from 73.25% to **62.91%** and
+loses 252 weighted bytes. Earlier direct-array orientation probes under the
+opposite branch layout were likewise negative. Combining the native branch
+layout with direct preceding/current array expressions instead raises the
+post-mesh result from **74.83% to 85.43%**, restores exact **652/652**
+instruction parity, and extends the exact prefix from 168 to **266/652**.
+All 40 references remain clean. This supersedes both isolated rejections
+without turning either one into an allocator-only hint.
+
+The mesh contribution is narrower than Sweep's but follows the same physical
+ownership. The outer `row`/`sample_offset` control is byte-identical while a
+cached terminal `previous` pointer remains. Consuming the current cursor's
+`[-1]` record directly raises 73.25% to **74.17%**; scalar endpoint assignment
+then reaches **74.83%**. The source-family component constructor for the final
+sum becomes positive after orientation recovery and leaves the final result at
+**85.74%**. Negated equal-texture parity is byte-neutral but preserves the
+native `jne` polarity, and `(column + 1)` is byte-identical while matching the
+verified Windows owner.
+
+Finally, declaring `delta_offset` inside the positive delta-count guard moves
+its zeroing after the native `jle`, extending the exact prefix from 266 to
+**289/652** and raising the score from 85.43% to **85.58%**. Reordering the
+commutative pointer/byte-offset source expression is byte-identical, so the
+remaining primary-delta SIB operand order is bounded rather than forced.
+
+The complete retained cascade is recorded against the preceding source:
+
+```text
+baseline: 85.74%, 652/652 instructions, prefix 289
+revert:   73.25%, 645/652 instructions, prefix 168
+delta:    +304 weighted bytes, +12.49 percentage points, +121 prefix
+```
