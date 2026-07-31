@@ -406,3 +406,23 @@ face-record reference collapses the result to 59.46%. Finally, negating both
 equal-texture checkerboard conditions is byte- and score-neutral but aligns
 their branch opcode with the native `jne`, so that evidence-backed spelling is
 retained.
+
+## 2026-07-31 post-row phase-lifetime bounds
+
+Native reuses the dead `0xa8` mesh sample-cursor stack slot as its face-row
+counter. Explicitly carrying that source variable across the phase boundary is
+byte-identical to the clearer retained logical-row spelling: **83.10%**,
+650/652 instructions, prefix 24/652, and 37 clean references. VC6 therefore
+already performs the physical slot reuse; changing a byte-offset owner into a
+row index in the source would not recover additional authored semantics.
+
+The neighboring saved mesh-vertex base was tested in all seven declaration
+and branch-consumption combinations. Declaring it or consuming it in either
+one branch is byte-identical; consuming it in both branches loses about four
+weighted bytes and falls to **82.95%**. Replaying the native-looking distinct
+face UV-column owner after direct face records and mesh-row recovery also
+falls to 82.95% at unchanged size, prefix, and reference quality.
+
+No phase-lifetime change is retained. These results bound the remaining
+physical stack reuse, vertex-base spill, and UV induction without mistaking
+compiler allocation for a source owner.

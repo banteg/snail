@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-vertex-base-owner",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;",
+      "replacements": [
+        {
+          "name": "saved-mesh-base",
+          "text": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    Vector3* mesh_vertices = vertices;"
+        }
+      ]
+    },
+    {
+      "name": "ordinary-vertex-base",
+      "find": "                        Vector3* vertex =\n                            &vertices[column\n                                + row * (path->width_cells + 1)];",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "saved-mesh-base",
+          "text": "                        Vector3* vertex =\n                            &mesh_vertices[column\n                                + row * (path->width_cells + 1)];"
+        }
+      ]
+    },
+    {
+      "name": "terminal-vertex-base",
+      "find": "                        Vector3* vertex =\n                            &vertices[column\n                                + row * (path->width_cells + 1)];",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "saved-mesh-base",
+          "text": "                        Vector3* vertex =\n                            &mesh_vertices[column\n                                + row * (path->width_cells + 1)];"
+        }
+      ]
+    }
+  ]
+}
