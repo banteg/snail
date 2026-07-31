@@ -130,10 +130,8 @@ static __forceinline void build_extrapolated_strip_mesh(
                                 + sample_offset);
                         Vector3 lateral_offset =
                             sample->transform.basis_right * lateral;
-                        Vector3 generated_position(
-                            sample->transform.position.x + lateral_offset.x,
-                            sample->transform.position.y + lateral_offset.y,
-                            sample->transform.position.z + lateral_offset.z);
+                        Vector3 generated_position =
+                            sample->transform.position + lateral_offset;
                         Vector3* vertex =
                             &vertices[column + row * (path->width_cells + 1)];
                         *vertex = generated_position;

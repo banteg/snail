@@ -661,7 +661,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 684/696 | 64.20% | 6/696 | 40 ok |  | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 73.09% | 0/736 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 712/726 | 75.66% | 122/726 | 65 ok |  | core |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 693/696 | 66.09% | 48/696 | 40 ok |  | core |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 693/696 | 66.23% | 48/696 | 40 ok |  | core |
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 544/552 | 77.37% | 16/552 | 36 ok |  | core |
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 682/683 | 57.88% | 5/683 | 2 unaudited, 44 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 677/679 | 63.42% | 6/679 | 41 ok |  | core |

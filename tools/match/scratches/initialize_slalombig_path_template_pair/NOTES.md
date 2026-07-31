@@ -494,3 +494,17 @@ weighted bytes and falls from **66.09%** to **60.71%**. Candidate size moves
 from 693 to 691 instructions against 696 native; prefix 48/696 and all 40
 references remain clean. The existing branch-local sample derivations remain
 part of the recovered row-cursor schedule.
+
+## 2026-07-31 post-face ordinary position-add replay
+
+The direct face-offset recovery changed the tail allocation after the earlier
+mesh-vector sweep. Replaying the ordinary generated-position expression on the
+new frontier raises focused matching from **66.09%** to **66.23%**, adding
+**3.69 weighted bytes** without changing the 693/696 instruction count,
+48-instruction prefix, or 40 clean references.
+
+The retained `position + lateral_offset` boundary completes the same
+post-face dependency seen in Start, Invert, Wibble, and Twister. Screw already
+owns both vector additions, while Hump and Dump have explicit post-counter
+vector bounds, so this closes the remaining untested member of the current
+mesh-tail family.
