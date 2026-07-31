@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "runtime-clear-field-owners",
+      "find": "            int lane_and_flags = *(int*)cell_flags;\n            lane_and_flags &= 0xffff5fff;\n            *(int*)cell_flags = lane_and_flags;\n            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;\n            *(short*)cell_flags = 0;\n            *(int*)cell_flags &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();",
+      "replacements": [
+        {
+          "name": "complete-pointer-owners",
+          "text": "            int* lane_word = (int*)cell_flags;\n            char* tile_flags =\n                cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS;\n            short* lane_low = (short*)cell_flags;\n            int* list_flags = (int*)(\n                cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);\n            tColour* color = (tColour*)(\n                cell_flags + CELL_LANE_FLAGS_TO_COLOR);\n            int lane_and_flags = *lane_word;\n            lane_and_flags &= 0xffff5fff;\n            *lane_word = lane_and_flags;\n            *tile_flags = 0;\n            *lane_low = 0;\n            *lane_word &= 0xffffafa7;\n            *lane_low = 0;\n            *list_flags &= 0xffffff7f;\n            color->White();"
+        },
+        {
+          "name": "split-pointer-owners",
+          "text": "            int* lane_word = (int*)cell_flags;\n            char* tile_flags =\n                cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS;\n            int lane_and_flags = *lane_word;\n            lane_and_flags &= 0xffff5fff;\n            *lane_word = lane_and_flags;\n            *tile_flags = 0;\n            *(short*)cell_flags = 0;\n            *lane_word &= 0xffffafa7;\n            *(short*)cell_flags = 0;\n            int* list_flags = (int*)(\n                cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);\n            *list_flags &= 0xffffff7f;\n            ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();"
+        },
+        {
+          "name": "late-pointer-owners",
+          "text": "            int* lane_word = (int*)cell_flags;\n            int lane_and_flags = *lane_word;\n            lane_and_flags &= 0xffff5fff;\n            *lane_word = lane_and_flags;\n            char* tile_flags =\n                cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS;\n            *tile_flags = 0;\n            short* lane_low = (short*)cell_flags;\n            *lane_low = 0;\n            *lane_word &= 0xffffafa7;\n            *lane_low = 0;\n            int* list_flags = (int*)(\n                cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);\n            *list_flags &= 0xffffff7f;\n            tColour* color = (tColour*)(\n                cell_flags + CELL_LANE_FLAGS_TO_COLOR);\n            color->White();"
+        },
+        {
+          "name": "typed-cell-with-field-owners",
+          "text": "            cRSubLoc* clear_cell = (cRSubLoc*)(\n                cell_flags - offsetof(cRSubLoc, lane_and_flags));\n            int* lane_word = &clear_cell->lane_and_flags;\n            char* tile_flags = &clear_cell->open_edge_mask;\n            short* lane_low = (short*)&clear_cell->lane_and_flags;\n            int* list_flags = &clear_cell->list_flags;\n            int lane_and_flags = *lane_word;\n            lane_and_flags &= 0xffff5fff;\n            *lane_word = lane_and_flags;\n            *tile_flags = 0;\n            *lane_low = 0;\n            *lane_word &= 0xffffafa7;\n            *lane_low = 0;\n            *list_flags &= 0xffffff7f;\n            clear_cell->color.White();"
+        }
+      ]
+    }
+  ]
+}

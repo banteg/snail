@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "segment-cursor-initialization",
+      "find": "    int segment_cursor = 0;\n    mode = level_mode;",
+      "replacements": [
+        {
+          "name": "initialize-in-consuming-modes",
+          "text": "    int segment_cursor;\n    mode = level_mode;"
+        }
+      ]
+    },
+    {
+      "name": "mode-three-first-block-owner",
+      "find": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        first_block_row_count = level_definition.first_segment.row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;",
+      "replacements": [
+        {
+          "name": "pointer-owner",
+          "text": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        int* first_block_owner = &first_block_row_count;\n        *first_block_owner = first_segment->row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;"
+        },
+        {
+          "name": "reference-owner",
+          "text": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        int& first_block_owner = first_block_row_count;\n        first_block_owner = first_segment->row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;"
+        },
+        {
+          "name": "late-first-segment-and-pointer-owner",
+          "text": "        SubSegment* last_segment =\n            &level_definition.last_segment;\n        SubSegment* first_segment =\n            &level_definition.first_segment;\n        int* first_block_owner = &first_block_row_count;\n        *first_block_owner = first_segment->row_count;\n        runtime_row_count = first_segment->row_count\n            + last_segment->row_count;"
+        },
+        {
+          "name": "row-count-pointer-and-field-owner",
+          "text": "        SubSegment* first_segment =\n            &level_definition.first_segment;\n        SubSegment* last_segment =\n            &level_definition.last_segment;\n        int* first_row_count = &first_segment->row_count;\n        int* first_block_owner = &first_block_row_count;\n        *first_block_owner = *first_row_count;\n        runtime_row_count = *first_row_count\n            + last_segment->row_count;"
+        }
+      ]
+    }
+  ]
+}

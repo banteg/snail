@@ -1423,3 +1423,32 @@ mobile `BuildLevel` bodies preserve the direct member read after that store,
 and Windows exposes no distinct borrowed owner. The ledger now contains 134
 records, 128 mutation sweeps, and 531 unique variants; no alias, dummy
 dependency, or register-shaped lifetime is retained.
+
+## 2026-07-31 runtime clear field ownership
+
+The native lane clear at `0x43612c..0x436156` publishes three distinct field
+owners in source order: the complete lane word, the tile byte, and the
+list-flags word. Naming those actual destinations prevents VC6 from hoisting
+the list-flags load and delaying the tile-byte store across the two lane-word
+updates. All three complete pointer forms compile identically and recover the
+native clear schedule; a typed `cRSubLoc` spelling is rejected because the
+current class definition does not expose the byte field with the required
+type.
+
+The retained split-owner form raises focused matching from **76.26%** to
+**76.58%** (`3845.18 -> 3861.36/5042` weighted bytes, +16.17) without changing
+the 1249/1245 instruction shape, 76-instruction exact prefix, or 162 clean /
+0 unresolved / 1 mismatch / 4 unaudited operand audit. The sole mismatch
+remains the physical glyph jump table.
+
+The improved allocation also reopens the early setup dependency cleanly.
+Removing the eager segment-cursor initialization alone loses 233 weighted
+bytes. Pairing that native-looking lifetime with pointer or reference
+publication of `first_block_row_count` extends the exact prefix from 76 to
+101 instructions, but still loses 35 weighted bytes overall; retaining the
+field owner without the lifetime change loses 198. All nine complete
+single- and two-site combinations were recorded, so the extra setup spill is
+still a bounded allocation residual rather than a reason to keep an alias.
+
+The ledger now contains 136 records, 130 mutation sweeps, 6 probes, 584
+evaluated variants, and 544 unique variants.

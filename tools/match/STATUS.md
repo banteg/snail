@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.22%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.28%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -656,9 +656,9 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 684/685 | 74.80% | 20/685 | 43 ok |  | core |
 | 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 687/690 | 76.54% | 20/690 | 43 ok |  | core |
 | 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 640/655 | 63.94% | 8/655 | 37 ok |  | core |
-| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 674/685 | 69.90% | 58/685 | 2 unaudited, 38 ok |  | core |
-| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 690/696 | 59.16% | 6/696 | 40 ok |  | core |
-| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  | core |
+| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 674/685 | 70.64% | 58/685 | 2 unaudited, 38 ok |  | core |
+| 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 684/696 | 64.20% | 6/696 | 40 ok |  | core |
+| 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 73.09% | 0/736 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 712/726 | 75.66% | 122/726 | 65 ok |  | core |
 | 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 693/696 | 66.09% | 48/696 | 40 ok |  | core |
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 645/652 | 73.25% | 168/652 | 40 ok |  | core |
@@ -681,7 +681,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 71.79% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 4 unaudited, 49 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1249/1245 | 76.26% | 76/1245 | 1 mismatch, 4 unaudited, 162 ok |  | core |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1249/1245 | 76.58% | 76/1245 | 1 mismatch, 4 unaudited, 162 ok |  | core |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 129 ok |  | core |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 71.77% | 6/501 | 70 ok |  | core |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 24 ok |  | core |

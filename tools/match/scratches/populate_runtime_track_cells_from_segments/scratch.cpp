@@ -344,14 +344,19 @@ void cRSubGame::BuildLevel()
         for (int lane = 0;
              lane < (int)(sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]));
              ++lane) {
-            int lane_and_flags = *(int*)cell_flags;
+            int* lane_word = (int*)cell_flags;
+            char* tile_flags =
+                cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS;
+            int lane_and_flags = *lane_word;
             lane_and_flags &= 0xffff5fff;
-            *(int*)cell_flags = lane_and_flags;
-            *(cell_flags + CELL_LANE_FLAGS_TO_TILE_FLAGS) = 0;
+            *lane_word = lane_and_flags;
+            *tile_flags = 0;
             *(short*)cell_flags = 0;
-            *(int*)cell_flags &= 0xffffafa7;
+            *lane_word &= 0xffffafa7;
             *(short*)cell_flags = 0;
-            *(int*)(cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS) &= 0xffffff7f;
+            int* list_flags = (int*)(
+                cell_flags + CELL_LANE_FLAGS_TO_LIST_FLAGS);
+            *list_flags &= 0xffffff7f;
             ((tColour*)(cell_flags + CELL_LANE_FLAGS_TO_COLOR))->White();
             cell_flags += sizeof(cRSubLoc);
         }
