@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-model-loader-owner",
+      "find": "                int object_id = *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_OBJECT_ID);\n                runtime_rows[build_row].row_model.SetObject(\n                    g_game->directx_loader.cached_x_mesh_slots[object_id].object);",
+      "replacements": [
+        {
+          "name": "game-root-after-id",
+          "text": "                int object_id = *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_OBJECT_ID);\n                GameRoot* game_owner = g_game;\n                runtime_rows[build_row].row_model.SetObject(\n                    game_owner->directx_loader.cached_x_mesh_slots[object_id].object);"
+        },
+        {
+          "name": "loader-after-id",
+          "text": "                int object_id = *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_OBJECT_ID);\n                DirectXLoader* loader_owner = &g_game->directx_loader;\n                runtime_rows[build_row].row_model.SetObject(\n                    loader_owner->cached_x_mesh_slots[object_id].object);"
+        },
+        {
+          "name": "slot-bank-after-id",
+          "text": "                int object_id = *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_OBJECT_ID);\n                CachedXMeshSlot* slot_bank =\n                    g_game->directx_loader.cached_x_mesh_slots;\n                runtime_rows[build_row].row_model.SetObject(\n                    slot_bank[object_id].object);"
+        },
+        {
+          "name": "object-value-after-id",
+          "text": "                int object_id = *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_OBJECT_ID);\n                Object* row_object =\n                    g_game->directx_loader.cached_x_mesh_slots[object_id].object;\n                runtime_rows[build_row].row_model.SetObject(row_object);"
+        }
+      ]
+    }
+  ]
+}

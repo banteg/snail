@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "model-velocity-source-owner",
+      "find": "                    runtime_rows[build_row].flags |=\n                        SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;\n                    runtime_rows[build_row].row_model.velocity =\n                        *(Vector3*)(\n                            authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                            + AUTHORED_ROW_OBJECT_VELOCITY_X);",
+      "replacements": [
+        {
+          "name": "pointer-before-flag",
+          "text": "                    Vector3* velocity_source = (Vector3*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_VELOCITY_X);\n                    runtime_rows[build_row].flags |=\n                        SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;\n                    runtime_rows[build_row].row_model.velocity = *velocity_source;"
+        },
+        {
+          "name": "reference-before-flag",
+          "text": "                    Vector3& velocity_source = *(Vector3*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_VELOCITY_X);\n                    runtime_rows[build_row].flags |=\n                        SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;\n                    runtime_rows[build_row].row_model.velocity = velocity_source;"
+        },
+        {
+          "name": "pointer-after-flag",
+          "text": "                    runtime_rows[build_row].flags |=\n                        SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;\n                    Vector3* velocity_source = (Vector3*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_VELOCITY_X);\n                    runtime_rows[build_row].row_model.velocity = *velocity_source;"
+        }
+      ]
+    },
+    {
+      "name": "parcel-set-indexed-source",
+      "find": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);",
+      "replacements": [
+        {
+          "name": "active-segment-row-index",
+          "text": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        active_segment\n                        + sizeof(AuthoredSegmentRow) * segment_row\n                        + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);"
+        }
+      ]
+    }
+  ]
+}

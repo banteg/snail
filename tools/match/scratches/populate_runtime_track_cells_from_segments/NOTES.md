@@ -1452,3 +1452,31 @@ still a bounded allocation residual rather than a reason to keep an alias.
 
 The ledger now contains 136 records, 130 mutation sweeps, 6 probes, 584
 evaluated variants, and 544 unique variants.
+
+## 2026-07-31 post-clear row-transfer ownership bound
+
+The four unaudited relocations remain concentrated in the native model and
+parcel transfer at `0x4364b5..0x436581`. That block visibly forms the authored
+velocity source before the runtime-row destination, and recomputes the parcel
+set through the selected segment plus its logical row index. Both dependencies
+were replayed after the clear-field owner changed the whole-function
+allocation.
+
+Pointer and reference owners for the model-velocity source are all
+byte-identical, alone and beside the parcel source. Recomputing the parcel set
+does clear all four unaudited relocations and adds two clean references, but it
+loses 306 weighted bytes, collapses the exact prefix from 76 to 2
+instructions, and falls to **70.52%**. The proof-quality improvement is not
+retained at that whole-function cost.
+
+The target also loads `g_game` between the authored object-id load and cached
+mesh-slot index formation. Four real singleton owners—the game root, DirectX
+loader, slot bank, and selected object—compile byte-identically to the direct
+member expression. That instruction order is therefore allocator-derived, not
+evidence for a distinct source owner.
+
+The ledger now contains 138 records, 132 mutation sweeps, 6 probes, 595
+evaluated variants, and 555 unique variants. Three consecutive complete
+non-improving sweeps formally stall this lane at **76.58%**, 1249/1245
+instructions, prefix 76/1245, with 162 clean / 0 unresolved / 1 physical
+jump-table mismatch / 4 unaudited references.
