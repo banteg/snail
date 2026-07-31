@@ -470,52 +470,57 @@ void cRSubGame::BuildLevel()
                 *(int*)(base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE) |=
                     SUBROW_FLAG_JETPACK_OFF;
 
-            char* row_record = base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE;
-            *(char**)(row_record + offsetof(SubRow, source_segment)) = active_segment;
-            *(int*)(row_record + offsetof(SubRow, row_event_id)) = row_event_owner;
+            runtime_rows[build_row].source_segment =
+                (SubSegment*)active_segment;
+            runtime_rows[build_row].row_event_id = row_event_owner;
 
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_3D_MODEL)
                 != 0) {
-                *(int*)row_record |= SUBROW_FLAG_ROW_MODEL_PRESENT;
+                runtime_rows[build_row].flags |= SUBROW_FLAG_ROW_MODEL_PRESENT;
                 int object_id = *(int*)(
                     authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                     + AUTHORED_ROW_OBJECT_ID);
                 Object* object =
                     g_game->directx_loader.cached_x_mesh_slots[object_id].object;
-                ((SubRow*)row_record)->row_model.SetObject(object);
-                ((SubRow*)row_record)->row_model.transform.Identity();
-                *(Vector3*)(row_record + ROW_MODEL_POSITION_X) =
+                runtime_rows[build_row].row_model.SetObject(object);
+                runtime_rows[build_row].row_model.transform.Identity();
+                runtime_rows[build_row].row_model.transform.position =
                     *(Vector3*)(
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                         + AUTHORED_ROW_OBJECT_POSITION_X);
-                *(float*)(row_record + ROW_MODEL_POSITION_Z) += (float)build_row;
+                *(float*)((char*)&runtime_rows[build_row] + ROW_MODEL_POSITION_Z) +=
+                    (float)build_row;
 
                 if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                         & AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY)
                     != 0) {
-                    *(int*)row_record |= SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;
-                    *(Vector3*)(row_record + ROW_MODEL_VELOCITY_X) =
+                    runtime_rows[build_row].flags |=
+                        SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;
+                    runtime_rows[build_row].row_model.velocity =
                         *(Vector3*)(
                             authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                             + AUTHORED_ROW_OBJECT_VELOCITY_X);
                 } else {
-                    *(int*)(row_record + ROW_MODEL_VELOCITY_X) = 0;
-                    *(int*)(row_record + ROW_MODEL_VELOCITY_Y) = 0;
-                    *(int*)(row_record + ROW_MODEL_VELOCITY_Z) = 0;
+                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_X) =
+                        0;
+                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Y) =
+                        0;
+                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Z) =
+                        0;
                 }
             }
 
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_PARCEL)
                 != 0) {
-                *(int*)row_record |=
+                runtime_rows[build_row].flags |=
                     SUBROW_FLAG_PARCEL_CANDIDATE | SUBROW_FLAG_PARCEL_Z_IS_LOCAL;
-                ((SubRow*)row_record)->parcel_set_id =
+                runtime_rows[build_row].parcel_set_id =
                     *(int*)(
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                         + AUTHORED_ROW_PARCEL_SET_ID);
-                *(Vector3*)(row_record + ROW_PROJECTION_X) =
+                runtime_rows[build_row].parcel_spawn_position =
                     *(Vector3*)(
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                         + AUTHORED_ROW_LOCAL_X);
@@ -523,8 +528,9 @@ void cRSubGame::BuildLevel()
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY)
                 != 0) {
-                *(int*)row_record |= SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;
-                ((SubRow*)row_record)->attachment_template_index =
+                runtime_rows[build_row].flags |=
+                    SUBROW_FLAG_PATH_OR_MODEL_VELOCITY;
+                runtime_rows[build_row].attachment_template_index =
                     *(int*)(
                         authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                         + AUTHORED_ROW_PATH_TEMPLATE_INDEX);
@@ -532,29 +538,30 @@ void cRSubGame::BuildLevel()
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_SUPPRESS_TRACK_RENDER)
                 != 0)
-                *(int*)row_record |= SUBROW_FLAG_SUPPRESS_TRACK_RENDER;
+                runtime_rows[build_row].flags |=
+                    SUBROW_FLAG_SUPPRESS_TRACK_RENDER;
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_NONE)
                 != 0)
-                *(int*)row_record |= SUBROW_FLAG_RING_NONE;
+                runtime_rows[build_row].flags |= SUBROW_FLAG_RING_NONE;
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_NORMAL)
                 != 0)
-                *(int*)row_record |= SUBROW_FLAG_RING_NORMAL;
+                runtime_rows[build_row].flags |= SUBROW_FLAG_RING_NORMAL;
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP)
                 != 0)
-                *(int*)row_record |= SUBROW_FLAG_RING_POWER_UP;
+                runtime_rows[build_row].flags |= SUBROW_FLAG_RING_POWER_UP;
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE)
                 != 0)
-                *(int*)row_record |= SUBROW_FLAG_RING_EXPLODE;
+                runtime_rows[build_row].flags |= SUBROW_FLAG_RING_EXPLODE;
             if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)
                     & AUTHORED_SEGMENT_ROW_FLAG_RING_SLOW)
                 != 0)
-                *(int*)row_record |= SUBROW_FLAG_RING_SLOW;
-            *(int*)(row_record + offsetof(SubRow, ring_speed)) =
-                *(int*)(
+                runtime_rows[build_row].flags |= SUBROW_FLAG_RING_SLOW;
+            runtime_rows[build_row].ring_speed =
+                *(float*)(
                     authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE
                     + AUTHORED_ROW_RING_SPEED);
 
@@ -813,7 +820,7 @@ void cRSubGame::BuildLevel()
                             SUBLOC_TILE_PATH_ENTRY_LOWERCASE;
 
                     int template_index =
-                        ((SubRow*)row_record)->attachment_template_index;
+                        runtime_rows[build_row].attachment_template_index;
                     if (base[TRACK_MIRROR_FLAG_OFFSET] == 0)
                         runtime_cell->attachment_template_record = (Path*)(
                             base + PATH_PAIRS_BASE + template_index * sizeof(PathPair));
@@ -828,14 +835,16 @@ void cRSubGame::BuildLevel()
                         ((BodBase*)(cell + CELL_BOD_BASE))->SetObject(
                             runtime_cell->attachment_template_record->object);
                         *(int*)(cell + CELL_LIST_FLAGS) |= 0x20;
-                        ((SubRow*)row_record)->attachment_body.SetObject(
+                        runtime_rows[build_row].attachment_body.SetObject(
                             runtime_cell->attachment_template_record
                                 ->fringe_mesh_bod.object);
-                        *(int*)(row_record + ROW_ATTACHMENT_LIST_FLAGS) |= 0x20;
-                        *(int*)(row_record + offsetof(SubRow, installed_heading_delta)) =
-                            *(int*)(active_segment + SEGMENT_ANGLE_RADIANS);
+                        *(int*)(
+                            (char*)&runtime_rows[build_row]
+                            + ROW_ATTACHMENT_LIST_FLAGS) |= 0x20;
+                        runtime_rows[build_row].installed_heading_delta =
+                            *(float*)(active_segment + SEGMENT_ANGLE_RADIANS);
 
-                        SubRow* stamped_row = (SubRow*)row_record;
+                        SubRow* stamped_row = &runtime_rows[build_row];
                         int span_index = 0;
                         if (runtime_cell->attachment_template_record->row_span_count > 0) {
                             do {
@@ -860,18 +869,24 @@ void cRSubGame::BuildLevel()
                 }
                 case '0':
                     if (level_mode == 1) {
-                        *(int*)row_record =
-                            (*(int*)row_record & ~SUBROW_FLAG_PARCEL_Z_IS_LOCAL)
+                        runtime_rows[build_row].flags =
+                            (runtime_rows[build_row].flags
+                                & ~SUBROW_FLAG_PARCEL_Z_IS_LOCAL)
                             | SUBROW_FLAG_PARCEL_CANDIDATE;
-                        ((SubRow*)row_record)->parcel_set_id = 0;
-                        *(float*)(row_record + ROW_PROJECTION_X) =
+                        runtime_rows[build_row].parcel_set_id = 0;
+                        *(float*)(
+                            (char*)&runtime_rows[build_row] + ROW_PROJECTION_X) =
                             (float)lane - 4.0f + 0.5f;
-                        *(int*)(row_record + ROW_PROJECTION_Y) =
+                        *(int*)(
+                            (char*)&runtime_rows[build_row] + ROW_PROJECTION_Y) =
                             *(int*)(cell + CELL_POSITION_Y);
-                        *(float*)(row_record + ROW_PROJECTION_Z) =
+                        *(float*)(
+                            (char*)&runtime_rows[build_row] + ROW_PROJECTION_Z) =
                             (float)build_row + 0.5f;
                         if (base[TRACK_MIRROR_FLAG_OFFSET])
-                            *(float*)(row_record + ROW_PROJECTION_X) *= -1.0f;
+                            *(float*)(
+                                (char*)&runtime_rows[build_row]
+                                + ROW_PROJECTION_X) *= -1.0f;
                     }
                 case '1':
                 case '2':
@@ -882,7 +897,8 @@ void cRSubGame::BuildLevel()
                 case '7':
                 case '8':
                 case '9':
-                    if ((*(int*)row_record & SUBROW_ATTACHMENT_MASK) == 0) {
+                    if ((runtime_rows[build_row].flags & SUBROW_ATTACHMENT_MASK)
+                        == 0) {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(slide_slices.storage[0]));
                         *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_SLIDE_UNDERSCORE;
@@ -906,9 +922,15 @@ void cRSubGame::BuildLevel()
                 cell_position->z = 0.0f;
                 cell_position->y = 0.0f;
                 cell_position->x = 0.0f;
-                *(int*)(row_record + ROW_ATTACHMENT_POSITION_Z) = 0;
-                *(int*)(row_record + ROW_ATTACHMENT_POSITION_Y) = 0;
-                *(int*)(row_record + ROW_ATTACHMENT_POSITION_X) = 0;
+                *(int*)(
+                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Z) =
+                    0;
+                *(int*)(
+                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_Y) =
+                    0;
+                *(int*)(
+                    (char*)&runtime_rows[build_row] + ROW_ATTACHMENT_POSITION_X) =
+                    0;
 
                 unsigned char tile = *(unsigned char*)(cell + CELL_TILE_ID);
                 float row_anchor_z;
@@ -918,19 +940,27 @@ void cRSubGame::BuildLevel()
                     cell_position->x = 0.0f;
                     cell_position->z = row_anchor_z - 0.5f;
                     if ((g_runtime_config.render_flags & RUNTIME_RENDER_TRACK_FRINGE) != 0) {
-                        *(int*)(row_record + ROW_ATTACHMENT_POSITION_X) = 0;
-                        *(float*)(row_record + ROW_ATTACHMENT_POSITION_Z) =
+                        *(int*)(
+                            (char*)&runtime_rows[build_row]
+                            + ROW_ATTACHMENT_POSITION_X) = 0;
+                        *(float*)(
+                            (char*)&runtime_rows[build_row]
+                            + ROW_ATTACHMENT_POSITION_Z) =
                             row_anchor_z - 0.5f;
 
                         tColour skirt_color;
                         tColour* resolved_color =
                             g_game->subgame.GetSkirtColour(&skirt_color);
-                        *(tColour*)(row_record + ROW_ATTACHMENT_COLOR) = *resolved_color;
+                        *(tColour*)(
+                            (char*)&runtime_rows[build_row]
+                            + ROW_ATTACHMENT_COLOR) = *resolved_color;
                         set_object_color(
-                            ((SubRow*)row_record)->attachment_body.object,
+                            runtime_rows[build_row].attachment_body.object,
                             *resolved_color);
                     } else {
-                        *(int*)(row_record + ROW_ATTACHMENT_LIST_FLAGS) &= 0xffffffdf;
+                        *(int*)(
+                            (char*)&runtime_rows[build_row]
+                            + ROW_ATTACHMENT_LIST_FLAGS) &= 0xffffffdf;
                     }
                 } else {
                     cell_position->x = (float)lane - 4.0f + 0.5f;

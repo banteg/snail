@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "parcel-set-source-owner",
+      "find": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);",
+      "replacements": [
+        {
+          "name": "indexed-active-segment-source",
+          "text": "                runtime_rows[build_row].parcel_set_id =\n                    *(int*)(\n                        active_segment\n                        + sizeof(AuthoredSegmentRow) * segment_row\n                        + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_PARCEL_SET_ID);"
+        }
+      ]
+    }
+  ]
+}

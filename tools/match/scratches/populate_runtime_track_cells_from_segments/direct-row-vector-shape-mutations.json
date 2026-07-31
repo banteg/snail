@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-model-position-copy",
+      "find": "                *(Vector3*)((char*)&runtime_rows[build_row] + ROW_MODEL_POSITION_X) =\n                    *(Vector3*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_POSITION_X);",
+      "replacements": [
+        {
+          "name": "typed-member-copy",
+          "text": "                runtime_rows[build_row].row_model.transform.position =\n                    *(Vector3*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_POSITION_X);"
+        },
+        {
+          "name": "component-bit-copies",
+          "text": "                *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_POSITION_X) =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_POSITION_X);\n                *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_POSITION_Y) =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_POSITION_Y);\n                *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_POSITION_Z) =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_OBJECT_POSITION_Z);"
+        }
+      ]
+    },
+    {
+      "name": "row-model-velocity-copy",
+      "find": "                    *(Vector3*)(\n                        (char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_X) =\n                        *(Vector3*)(\n                            authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                            + AUTHORED_ROW_OBJECT_VELOCITY_X);",
+      "replacements": [
+        {
+          "name": "typed-member-copy",
+          "text": "                    runtime_rows[build_row].row_model.velocity =\n                        *(Vector3*)(\n                            authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                            + AUTHORED_ROW_OBJECT_VELOCITY_X);"
+        },
+        {
+          "name": "component-bit-copies",
+          "text": "                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_X) =\n                        *(int*)(\n                            authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                            + AUTHORED_ROW_OBJECT_VELOCITY_X);\n                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Y) =\n                        *(int*)(\n                            authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                            + AUTHORED_ROW_OBJECT_VELOCITY_Y);\n                    *(int*)((char*)&runtime_rows[build_row] + ROW_MODEL_VELOCITY_Z) =\n                        *(int*)(\n                            authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                            + AUTHORED_ROW_OBJECT_VELOCITY_Z);"
+        }
+      ]
+    },
+    {
+      "name": "row-parcel-position-copy",
+      "find": "                *(Vector3*)((char*)&runtime_rows[build_row] + ROW_PROJECTION_X) =\n                    *(Vector3*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_LOCAL_X);",
+      "replacements": [
+        {
+          "name": "typed-member-copy",
+          "text": "                runtime_rows[build_row].parcel_spawn_position =\n                    *(Vector3*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_LOCAL_X);"
+        },
+        {
+          "name": "component-bit-copies",
+          "text": "                *(int*)((char*)&runtime_rows[build_row] + ROW_PROJECTION_X) =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_LOCAL_X);\n                *(int*)((char*)&runtime_rows[build_row] + ROW_PROJECTION_Y) =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_LOCAL_Y);\n                *(int*)((char*)&runtime_rows[build_row] + ROW_PROJECTION_Z) =\n                    *(int*)(\n                        authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                        + AUTHORED_ROW_LOCAL_Z);"
+        }
+      ]
+    }
+  ]
+}

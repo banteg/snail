@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "ring-speed-copy-type",
+      "find": "            *(int*)(\n                (char*)&runtime_rows[build_row] + offsetof(SubRow, ring_speed)) =\n                *(int*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_RING_SPEED);",
+      "replacements": [
+        {
+          "name": "typed-float-copy",
+          "text": "            runtime_rows[build_row].ring_speed =\n                *(float*)(\n                    authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE\n                    + AUTHORED_ROW_RING_SPEED);"
+        }
+      ]
+    },
+    {
+      "name": "heading-delta-copy-type",
+      "find": "                        *(int*)(\n                            (char*)&runtime_rows[build_row]\n                            + offsetof(SubRow, installed_heading_delta)) =\n                            *(int*)(active_segment + SEGMENT_ANGLE_RADIANS);",
+      "replacements": [
+        {
+          "name": "typed-float-copy",
+          "text": "                        runtime_rows[build_row].installed_heading_delta =\n                            *(float*)(active_segment + SEGMENT_ANGLE_RADIANS);"
+        }
+      ]
+    }
+  ]
+}

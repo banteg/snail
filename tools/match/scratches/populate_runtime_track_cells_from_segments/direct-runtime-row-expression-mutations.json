@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "direct-runtime-row-expression",
+      "find": "void set_object_color(Object* object, tColour color);\n\nvoid cRSubGame::BuildLevel()",
+      "replacements": [
+        {
+          "name": "expand-row-record-at-each-use",
+          "text": "void set_object_color(Object* object, tColour color);\n\n#define row_record ((char*)&runtime_rows[build_row])\n\nvoid cRSubGame::BuildLevel()"
+        }
+      ]
+    },
+    {
+      "name": "materialized-runtime-row-owner",
+      "find": "            char* row_record = base + sizeof(SubRow) * build_row + RUNTIME_ROWS_BASE;\n",
+      "replacements": [
+        {
+          "name": "remove-materialized-owner",
+          "text": ""
+        }
+      ]
+    }
+  ]
+}

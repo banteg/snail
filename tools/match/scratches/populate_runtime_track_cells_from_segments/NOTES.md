@@ -1225,3 +1225,41 @@ bytes), 1238/1245 instructions, a 9-instruction exact prefix, and 111 clean /
 0 unresolved / 1 mismatch / 53 unaudited references. No dummy stack owner,
 padding, volatile dependency, asymmetric flag rewrite, or register coercion
 was retained.
+
+## 2026-07-31 direct runtime-row ownership
+
+Native keeps the scaled runtime-row offset in `EBX` and applies each
+`SubRow` field displacement at the use site. The former scratch instead
+materialized one absolute `row_record` pointer, which collapsed those field
+references into small offsets and displaced the complete row-publication
+block.
+
+Using `runtime_rows[build_row]` directly for the complete row lifetime raises
+focused matching from **62.59%** to **69.46%**
+(`3155.57 -> 3502.01/5042` weighted bytes). The candidate now has 1240
+instructions against native's 1245, retains the 9-instruction exact prefix,
+and improves the operand audit from 111 clean / 0 unresolved / 1 mismatch /
+53 unaudited to **162 clean / 0 unresolved / 1 mismatch / 4 unaudited**.
+The five ring-flag transfers now reproduce native's full-width mask sequence
+without any source-level mask owner.
+
+The retained source uses typed aggregate copies for model position, model
+velocity, and parcel position, and typed float copies for `ring_speed` and
+`installed_heading_delta`; each is byte-identical to the corresponding
+bit-preserving raw expression. A macro expansion was used only to test the
+whole ownership hypothesis and is not retained.
+
+Bounded alternatives close the local score temptations:
+
+- recomputing the parcel-set source through `active_segment[segment_row]`
+  clears all four unaudited references but regresses to 66.21% and collapses
+  the exact prefix from 9 to 2 instructions;
+- splitting the parcel vector into three component copies gains 14 weighted
+  bytes but loses one clean reference, adds three unaudited references, and
+  moves the instruction count farther from native;
+- component model-velocity copies lose 7 weighted bytes, while component
+  model-position copies lose 267 and collapse the prefix to 2.
+
+The sole audited mismatch remains the real physical glyph jump table at
+`0x437194`; no pointer macro, component-copy tradeoff, manual jump table, or
+allocator coercion is retained.
