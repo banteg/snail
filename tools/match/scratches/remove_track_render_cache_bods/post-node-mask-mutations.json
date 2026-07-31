@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "linked-mask-owner",
+      "find": "    int rows = sizeof(slots) / sizeof(slots[0]);",
+      "replacements": [
+        {
+          "name": "unsigned-before-rows",
+          "text": "    unsigned int linked_mask = BOD_FLAG_LINKED;\n    int rows = sizeof(slots) / sizeof(slots[0]);"
+        },
+        {
+          "name": "signed-before-rows",
+          "text": "    int linked_mask = BOD_FLAG_LINKED;\n    int rows = sizeof(slots) / sizeof(slots[0]);"
+        },
+        {
+          "name": "unsigned-after-rows",
+          "text": "    int rows = sizeof(slots) / sizeof(slots[0]);\n    unsigned int linked_mask = BOD_FLAG_LINKED;"
+        },
+        {
+          "name": "signed-after-rows",
+          "text": "    int rows = sizeof(slots) / sizeof(slots[0]);\n    int linked_mask = BOD_FLAG_LINKED;"
+        },
+        {
+          "name": "register-unsigned",
+          "text": "    register unsigned int linked_mask = BOD_FLAG_LINKED;\n    int rows = sizeof(slots) / sizeof(slots[0]);"
+        }
+      ]
+    },
+    {
+      "name": "linked-mask-use",
+      "find": "            if ((node->list_flags & BOD_FLAG_LINKED) != 0) {",
+      "replacements": [
+        {
+          "name": "mask-not-zero",
+          "text": "            if ((node->list_flags & linked_mask) != 0) {"
+        },
+        {
+          "name": "mask-equality",
+          "text": "            if ((node->list_flags & linked_mask) == linked_mask) {"
+        },
+        {
+          "name": "commuted-mask-not-zero",
+          "text": "            if ((linked_mask & node->list_flags) != 0) {"
+        }
+      ]
+    }
+  ]
+}

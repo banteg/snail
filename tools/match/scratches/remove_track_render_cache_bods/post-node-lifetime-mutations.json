@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "node-lifetime",
+      "find": "    int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);",
+      "replacements": [
+        {
+          "name": "function-scope-before-rows",
+          "text": "    BodNode* node;\n    int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            node = BOD_NODE_FROM_NEXT_LINK(next_ref);"
+        },
+        {
+          "name": "function-scope-after-rows",
+          "text": "    int rows = sizeof(slots) / sizeof(slots[0]);\n    BodNode* node;\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            node = BOD_NODE_FROM_NEXT_LINK(next_ref);"
+        },
+        {
+          "name": "row-scope-before-count",
+          "text": "    int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        BodNode* node;\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            node = BOD_NODE_FROM_NEXT_LINK(next_ref);"
+        },
+        {
+          "name": "row-scope-after-count",
+          "text": "    int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        BodNode* node;\n        do {\n            node = BOD_NODE_FROM_NEXT_LINK(next_ref);"
+        },
+        {
+          "name": "iteration-scope-split-assignment",
+          "text": "    int rows = sizeof(slots) / sizeof(slots[0]);\n\n    do {\n        int count = sizeof(slots[0]) / sizeof(slots[0][0]);\n        do {\n            BodNode* node;\n            node = BOD_NODE_FROM_NEXT_LINK(next_ref);"
+        }
+      ]
+    }
+  ]
+}

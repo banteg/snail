@@ -14,10 +14,10 @@ void SegmentCache::remove_track_render_cache_bods()
     do {
         int count = sizeof(slots[0]) / sizeof(slots[0][0]);
         do {
-            unsigned int* flags_ref = &BOD_NEXT_LINK_FLAGS(next_ref);
-            if ((*flags_ref & BOD_FLAG_LINKED) != 0) {
+            BodNode* node = BOD_NODE_FROM_NEXT_LINK(next_ref);
+            if ((node->list_flags & BOD_FLAG_LINKED) != 0) {
                 BodList* list = &g_game->active_bod_list;
-                list->remove_bod(BOD_NODE_FROM_NEXT_LINK(next_ref));
+                list->remove_bod(node);
             }
             next_ref += sizeof(TrackRenderCacheSlot) / sizeof(*next_ref);
             count--;

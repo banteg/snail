@@ -207,3 +207,27 @@ following sweep. There is no proof-clean improvement. The retained frontier
 remains **70.59%** (`61/58`, prefix 5) with all five references audited; the
 remaining register allocation is bounded without forcing masks or weakening
 reference evidence.
+
+## 2026-07-31 transfer-audited node ownership
+
+The typed `BodNode*` borrow previously appeared to trade two candidate
+instructions for an unpaired root relocation. Replaying the same complete
+owner sweep after the ordered transfer audit was added proves that the native
+and candidate root loads are the same read of `g_game` despite the surrounding
+register-allocation shift. The ordinary node owner is now a proof-clean gain:
+focused matching rises from **70.59%** to **71.79%**, the candidate shrinks
+from 61 to 59 instructions against the 58-instruction target, and all five
+references remain clean with no unresolved, mismatched, or unaudited operands.
+
+The retained node also makes VC6 preserve the native full-width
+`~BOD_FLAG_LINKED` clear mask. Four current-state follow-up sweeps then bound
+the remaining allocation. All 149 cursor, counter, and update interactions are
+byte-identical; seven pointer/reference and gate owners are neutral or revert
+the gain; five function, row, and iteration node scopes are byte-identical;
+and all 23 signed, unsigned, register, comparison, and commuted linked-mask
+forms are byte-identical or fail only when the dependent declaration is absent.
+
+The ledger now contains 11 sweeps and 358 unique variants. Its four-sweep
+non-improvement streak formally stalls the remaining ESI/EBX cursor and
+full-width `0x200` mask allocation at the proof-clean **71.79%** frontier. No
+synthetic dependency, volatile qualifier, or register-shaped local is retained.

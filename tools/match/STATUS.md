@@ -678,7 +678,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 660/663 | 65.76% | 89/663 | 33 ok |  | core |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 654/648 | 68.36% | 10/648 | 46 ok |  | core |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 77.74% | 0/141 | 17 ok |  | core |
-| 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  | core |
+| 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 71.79% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 4 unaudited, 49 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
 | 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1249/1245 | 76.10% | 76/1245 | 1 mismatch, 4 unaudited, 162 ok |  | core |
