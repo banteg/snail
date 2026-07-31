@@ -476,3 +476,11 @@ instructions, and candidate size moves from 645 to 653 against 652 native.
 All 40 references remain clean, so the loss is source-shape evidence rather
 than an operand-audit artifact. The branch-local vertex pointer remains and
 the rejection is recorded.
+
+## 2026-07-31 post-face sample-owner replay
+
+Sharing one mesh sample across Snake's two branches loses 115 weighted bytes,
+falls from **73.25%** to **68.51%**, and contracts the exact prefix from 168
+to 110 instructions. Candidate size moves from 645 to 647 against 652 native,
+with all 40 references still clean. Both the sample and vertex destinations
+therefore remain branch-local on the recovered direct-face schedule.

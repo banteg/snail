@@ -104,8 +104,8 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
     path->strip_mesh->RequestFaceQuads(
         2 * path->width_cells * path->segment_count);
 
-    Vector3* vertices = path->strip_mesh->vertices;
     cRFaceQuad* facequads = path->strip_mesh->facequads;
+    Vector3* vertices = path->strip_mesh->vertices;
 
     int row;
     int column;

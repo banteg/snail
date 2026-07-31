@@ -438,3 +438,10 @@ weighted byte: **59.16%** to **59.21%**. It also removes one candidate
 instruction, moving from 690 to 689 against the 696-instruction target, while
 prefix 6/696 and all 40 references remain unchanged. The probe is recorded as
 an immaterial instruction-count tradeoff and no source edit is retained.
+
+## 2026-07-31 mesh-sample owner replay
+
+Sharing the current sample across the ordinary and terminal mesh branches
+falls from **59.16%** to **56.98%**, loses 56 weighted bytes, and grows the
+candidate from 690 to 694 instructions against 696 native. Prefix 6/696 and
+all 40 references remain unchanged, so the branch-local sample owners stay.

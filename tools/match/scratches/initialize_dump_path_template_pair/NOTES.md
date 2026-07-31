@@ -348,3 +348,11 @@ references remain clean.
 
 The 323-weighted-byte gain is retained as a semantic source recovery; the
 older pointer-based shared-index probe remains rejected.
+
+## 2026-07-31 post-face sample-owner replay
+
+One mesh sample shared across both branches loses 194 weighted bytes and falls
+from **75.49%** to **67.92%**. Candidate size grows from 685 to 691
+instructions against 690 native, while prefix 20/690 and all 43 references
+remain unchanged. The direct-face recovery therefore does not revive the
+earlier broad sample-base owner.

@@ -363,3 +363,15 @@ pointers with one offset owner drops focused matching from **68.20%** to
 648-instruction target, and leaves prefix 10/648 and all 46 references
 unchanged. The complete-source probe is recorded and the scratch remains
 untouched.
+
+## 2026-07-31 native mesh acquisition order
+
+Windows loads the facequad bank at `0x42ed16` and the vertex bank at
+`0x42ed19`. Restoring that facequads-first source order adds 3.72 weighted
+bytes and raises focused matching from **68.20%** to **68.36%**, with
+candidate/target size fixed at 654/648, prefix fixed at 10/648, and all 46
+references clean. Reversing the retained order reproduces the loss exactly.
+
+The complete 27-constructor order sweep found only two other clean gains that
+also agree with native load order: Halfpipe and Turnunder. Two larger
+score-only gains contradicted their native loads and were rejected.

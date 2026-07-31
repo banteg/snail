@@ -133,8 +133,8 @@ void cRPath::initialize_cage2_path_template_pair(
     strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->RequestFaceQuads(2 * width_cells * segment_count);
 
-    Vector3* vertices = strip_mesh->vertices;
     cRFaceQuad* facequads = strip_mesh->facequads;
+    Vector3* vertices = strip_mesh->vertices;
 
     for (int row = 0; row <= segment_count; ++row) {
         int column = 0;

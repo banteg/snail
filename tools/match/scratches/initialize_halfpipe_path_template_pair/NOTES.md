@@ -464,3 +464,11 @@ recorded by the probe.
 The direct indexed form is retained because it is semantic, agrees with the
 independently recovered path-builder family, and improves the actual face
 region without synthetic lifetime or allocation controls.
+
+## 2026-07-31 native mesh acquisition order
+
+The target loads `facequads` at `0x42a129` before `vertices` at `0x42a12c`.
+Matching that ordinary source order adds 7.43 weighted bytes and raises
+focused matching from **66.38%** to **66.67%**. Candidate/target size remains
+688/707, prefix remains 18/707, and all 55 references remain clean. The
+reverse-order mutation records the complete loss.

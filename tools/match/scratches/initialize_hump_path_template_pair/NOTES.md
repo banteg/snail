@@ -411,3 +411,11 @@ clean.
 This supersedes only the pointer-based common-index result; the recorded
 negative probe remains useful evidence that the array access boundary, not the
 scalar name alone, drives the VC6 schedule.
+
+## 2026-07-31 post-face sample-owner replay
+
+Sharing the mesh sample across the ordinary and terminal branches on the new
+direct-face baseline loses 167 weighted bytes and falls from **74.51%** to
+**67.98%**. It also grows the candidate from 684 to 686 instructions against
+685 native. Prefix 20/685 and all 43 references remain unchanged, so the
+branch-local sample owners remain independently bounded.

@@ -293,3 +293,11 @@ target. Prefix remains 58/685, and the existing 38 clean plus two unaudited
 references are unchanged. The independently rejected branch-local pointer
 result remains bounded; this retained form has one offset owner for both
 winding branches.
+
+## 2026-07-31 post-face sample-owner replay
+
+Moving the mesh sample above the ordinary/terminal branch destroys the
+recovered leading allocation: matching falls from **69.90%** to **54.68%**,
+the exact prefix contracts from 58 to 6 instructions, and candidate size
+moves from 674 to 672 against 685 native. The complete probe preserves the
+reference audit and decisively retains the two branch-local sample records.

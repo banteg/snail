@@ -368,3 +368,16 @@ all 41 references remain clean.
 The same mechanical owner transfer is neutral or strongly negative across
 nearby path constructors; P's improvement is retained as a measured
 constructor-specific lifetime, not a family-wide style rewrite.
+
+## 2026-07-31 post-vertex mesh-sample boundary
+
+The direct vertex owner materially changed P's mesh allocation, so the sample
+lifetime was replayed on the new baseline. Moving the current sample into the
+ordinary branch and constructing a separate preceding-sample pointer in the
+terminal branch loses 77 weighted bytes and falls to **60.32%**. Removing both
+pointers in favor of direct array records loses 103 bytes and falls to
+**59.28%**.
+
+Both probes preserve prefix 6/679 and all 41 clean references. The retained
+sample pointer shared across the two branches is therefore a real part of P's
+63.42% mesh ownership, not stale pre-vertex scheduling.

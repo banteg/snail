@@ -330,3 +330,11 @@ instructions; both tradeoffs are recorded. The direct form is retained because
 it matches the native common-index dataflow, is semantically simpler, and
 produces a dependency-complete face-region recovery rather than an allocator
 or instruction-count trick.
+
+## 2026-07-31 post-face sample-owner replay
+
+Sharing the current mesh sample across the terminal branch loses 120 weighted
+bytes and falls from **63.47%** to **58.46%**, while growing the candidate
+from 640 to 645 instructions. Prefix remains 8/655 and all 37 references stay
+clean. Dip therefore keeps the branch-local sample and preceding-sample owners
+on its direct-face baseline.

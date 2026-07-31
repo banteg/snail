@@ -238,3 +238,15 @@ to 723 instructions against the 718-instruction target, preserves prefix
 
 The complete-source probe is recorded separately from the older pointer-based
 variant, which remains correctly rejected.
+
+## 2026-07-31 post-face mesh-owner bounds
+
+Sharing one mesh-sample pointer across the ordinary and terminal branches
+loses 56 weighted bytes, falls to **65.74%**, and shortens the candidate from
+723 to 715 instructions against 718 native. The branch-local owners remain.
+
+Loading facequads before vertices nominally reaches **68.01%**, a four-byte
+gain with no structural change. It is rejected because native does the
+opposite at `0x41cc8b..0x41cc8e`: vertices are loaded first, then facequads.
+The recorded score-only alternative therefore does not override direct
+instruction evidence.

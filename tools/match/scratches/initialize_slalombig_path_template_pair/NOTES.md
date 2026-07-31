@@ -486,3 +486,11 @@ focused matching from **65.37%** to **66.09%** and moves candidate size from
 690 to 693 instructions against the 696-instruction target. Prefix remains
 48/696 and all 40 references remain clean. The secondary-acquisition bound
 above remains intact; this change is isolated to the later mesh record.
+
+## 2026-07-31 post-face sample-owner replay
+
+Hoisting the byte-derived current sample across the mesh branch loses 138
+weighted bytes and falls from **66.09%** to **60.71%**. Candidate size moves
+from 693 to 691 instructions against 696 native; prefix 48/696 and all 40
+references remain clean. The existing branch-local sample derivations remain
+part of the recovered row-cursor schedule.

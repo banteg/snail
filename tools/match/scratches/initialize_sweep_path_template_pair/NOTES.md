@@ -360,3 +360,11 @@ focused matching from **73.19%** to **80.18%** and moves candidate size from
 
 This supersedes the earlier pointer-based flat-index rejection while leaving
 the bounded row, UV, and cursor lifetimes unchanged.
+
+## 2026-07-31 post-face sample-owner replay
+
+One current-sample pointer shared across both mesh branches loses 122 weighted
+bytes and falls from **80.18%** to **75.17%**, while shortening the candidate
+from 650 to 649 instructions against 652 native. Prefix 24/652 and all 37
+references remain unchanged. Sweep keeps its branch-local current and
+preceding sample records.

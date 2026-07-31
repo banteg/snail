@@ -162,8 +162,8 @@ void cRPath::initialize_halfpipe_path_template_pair(
     strip_mesh->RequestVertices((width_cells + 1) * (segment_count + 1));
     strip_mesh->RequestFaceQuads(2 * segment_count * width_cells);
 
-    Vector3* vertices = strip_mesh->vertices;
     cRFaceQuad* facequads = strip_mesh->facequads;
+    Vector3* vertices = strip_mesh->vertices;
     TransformMatrix kind42_transform;
     set_matrix_identity(&kind42_transform);
 

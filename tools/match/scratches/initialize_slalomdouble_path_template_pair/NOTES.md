@@ -371,3 +371,18 @@ unaudited references.
 This is the only other positive member of the broader direct-index probe
 besides P. The retained integer owner expresses the shared array address
 without introducing a byte cursor or register-forcing dependency.
+
+## 2026-07-31 post-vertex sample interaction bound
+
+Extending one current-sample pointer across both mesh branches adds 15.49
+weighted bytes and reaches **58.49%**, but shortens the candidate from 682 to
+678 instructions against 683 native. Windows instead forms the current or
+preceding address inside each branch at `0x425711` and `0x425766`; naming the
+shared array base while retaining those branch-local records is byte-neutral.
+
+The count-tradeoff form also depends on the newly retained direct vertex
+index. Pairing its shared sample with the old branch-local vertex pointers
+falls to **54.07%** at 682/683 instructions. Direct sample records fall to
+53.08%, and swapping vertex/facequad acquisition is byte-neutral. The current
+57.88%, 682/683 source remains the best dependency-complete, instruction-backed
+frontier.

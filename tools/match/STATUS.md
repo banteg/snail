@@ -668,15 +668,15 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 613/610 | 74.73% | 122/610 | 35 ok |  | core |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 671/671 | 69.45% | 54/671 | 41 ok |  | core |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 683/680 | 75.28% | 80/680 | 46 ok |  | core |
-| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 662/687 | 56.49% | 6/687 | 45 ok |  | core |
+| 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 662/687 | 56.63% | 6/687 | 45 ok |  | core |
 | 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 606/608 | 74.14% | 85/608 | 39 ok |  | core |
 | 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 605/600 | 75.52% | 109/600 | 35 ok |  | core |
-| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 688/707 | 66.38% | 18/707 | 55 ok |  | core |
+| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 688/707 | 66.67% | 18/707 | 55 ok |  | core |
 | 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 682/677 | 77.70% | 123/677 | 49 ok |  | core |
 | 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 682/677 | 77.70% | 123/677 | 49 ok |  | core |
 | 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 792/796 | 74.31% | 10/796 | 63 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 660/663 | 65.76% | 89/663 | 33 ok |  | core |
-| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 654/648 | 68.20% | 10/648 | 46 ok |  | core |
+| 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 654/648 | 68.36% | 10/648 | 46 ok |  | core |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 77.74% | 0/141 | 17 ok |  | core |
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 61/58 | 70.59% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 4 unaudited, 49 ok |  | core |

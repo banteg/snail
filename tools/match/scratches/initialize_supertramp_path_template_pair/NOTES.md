@@ -387,3 +387,12 @@ and all 36 clean references are preserved.
 Four algebraically equivalent offset spellings are byte-identical. Cage2,
 Worm, and Turnover independently reject the same transfer, so this is retained
 as Supertramp's source boundary rather than a universal mesh rewrite.
+
+## 2026-07-31 acquisition-order score artifact
+
+Swapping the mesh banks raises aggregate matching from **77.37%** to
+**77.92%**, adding 10.59 weighted bytes without changing size, prefix, or
+references. Native nevertheless loads vertices at `0x424370` before
+facequads at `0x424377`, exactly matching the retained source. The contrary
+score-only order is recorded and rejected rather than replacing a proven
+instruction sequence.

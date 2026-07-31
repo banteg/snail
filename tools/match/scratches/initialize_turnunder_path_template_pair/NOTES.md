@@ -376,3 +376,12 @@ candidate/target size fixed at 662/687, prefix fixed at 6/687, and all 45
 references clean. With no corroborating local ownership change, the probe is
 recorded as below the materiality threshold and the retained source is
 unchanged.
+
+## 2026-07-31 native mesh acquisition order
+
+Windows loads the facequad bank at `0x428613` and the vertex bank at
+`0x428616`. Moving those two real owners into the same source order adds 3.69
+weighted bytes and raises focused matching from **56.49%** to **56.63%** at
+unchanged 662/687 instructions, prefix 6/687, and 45 clean references.
+Unlike the isolated face-record transfer above, this change is directly
+corroborated by the target prologue and is retained.
