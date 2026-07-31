@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-row-owner",
+      "find": "    for (int face_row = 0; face_row < path->segment_count; ++face_row) {",
+      "replacements": [
+        {
+          "name": "reuse-mesh-row",
+          "text": "    for (row = 0; row < path->segment_count; ++row) {\n#define face_row row"
+        }
+      ]
+    },
+    {
+      "name": "face-column-owner",
+      "find": "        for (int face_column = 0;\n             face_column < path->width_cells;\n             ++face_column) {",
+      "replacements": [
+        {
+          "name": "reuse-mesh-column",
+          "text": "        for (column = 0;\n             column < path->width_cells;\n             ++column) {\n#define face_column column"
+        }
+      ]
+    }
+  ]
+}

@@ -382,3 +382,26 @@ pairing it with the addition reaches only 73.53%; and all four alternate
 lateral owners lose 30–49 weighted bytes and shorten the prefix to 68. The
 retained position add is therefore the only positive post-face arithmetic
 owner.
+
+## 2026-07-31 post-face mesh/face counter reuse
+
+Direct face records changed the allocation dependency behind the earlier
+separate-grid result. Reusing only the mesh row in the face pass is
+byte-identical, while reusing the mesh column adds **36.35 weighted bytes**.
+Reusing both counters is the unique winner, adding **43.62 weighted bytes**
+and raising focused matching from **74.90%** to **76.86%**.
+
+The retained shared-counter source keeps candidate/target size at 613/610,
+prefix at 122/610, and all 35 references clean. A complete reverse probe
+restores the 74.90% predecessor. The native SSA names split the post-reset
+lifetimes, but do not prove distinct authored declarations; the paired
+dependency result and the family-wide reused-loop idiom support one source
+row/column pair reset between phases.
+
+The updated frontier is bounded again. All four vertices/facequads declaration
+and load orders are byte-identical. The member scale operator is also neutral.
+Split-float lateral arithmetic is neutral, while double and volatile forms
+lose 15–55 weighted bytes and the double expression adds reference debt.
+Three consecutive post-win non-improving sweeps formally stall Start at
+**76.86%**, 613/610 instructions, prefix 122/610, with all 35 references
+clean.
