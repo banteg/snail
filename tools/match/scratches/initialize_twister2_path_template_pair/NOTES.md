@@ -387,3 +387,18 @@ Direct indexed face records raise focused matching from **73.01%** to
 clean. The separately compiled Twister scratch produces the identical metric
 and instruction-count result, confirming the shared source-family boundary
 without relying on one twin as a binary oracle for the other.
+
+## 2026-07-31 post-face ordinary position ownership
+
+Replaying the mesh arithmetic after direct face ownership unlocks the same
+ordinary `Vector3::operator+` as Twister. It adds **3.74 weighted bytes** and
+raises Twister2 from **77.70% to 77.85%** with the same 682/677 instruction
+count, 123/677 prefix, and 49 clean references. A separately compiled reverse
+probe restores the 77.70% predecessor, so the paired result is independently
+measured rather than transferred from the sibling binary.
+
+Twister's exhaustive post-face arithmetic replay bounds the other 34
+combinations, including the still-negative terminal addition and double
+lateral owner. The two Windows targets remain byte-identical across this mesh
+region, so the paired scratch sources retain the same ordinary position
+boundary.

@@ -370,3 +370,25 @@ clean.
 
 Twister2 produces the same independent result, preserving the paired
 constructor symmetry without sharing scratch source.
+
+## 2026-07-31 post-face ordinary position ownership
+
+The mesh arithmetic grid was replayed after direct face ownership changed the
+whole-function allocation. The ordinary `Vector3::operator+` was neutral on
+the old 71.38% context but now adds **3.74 weighted bytes**, raising Twister
+from **77.70% to 77.85%**. Candidate and target remain 682/677 instructions,
+prefix remains 123/677, and all 49 references remain clean. Both operand
+orders compile identically, and an explicit reverse probe reproduces the
+77.70% predecessor.
+
+The other 34 arithmetic combinations bound the adjacent graph. Terminal
+scaling remains byte-neutral; terminal addition loses at least 13.56 weighted
+bytes; and all combinations without the ordinary add are neutral or worse.
+The lateral-owner replay also stays closed: split float is neutral, while
+double forms fall to 76.75% or 76.16%.
+
+Target-backed destination boundaries were checked separately. Hoisting one
+vertex index collapses the score to 62.40%, a shared branch-local destination
+with a common Z store reaches only 73.95%, and direct scalar emission shrinks
+the frame and falls to 69.46%. The retained local aggregate plus authored
+ordinary add is therefore the closest dependency-complete mesh owner.
