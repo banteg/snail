@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "current-entry-declaration",
+      "find": "    char* segment_file_name = segment_files[0];\n    int* row_count = &entries[0].row_count;\n    while (segment_index < count) {",
+      "replacements": [
+        {
+          "name": "entry-before-row-count",
+          "text": "    char* segment_file_name = segment_files[0];\n    SegmentCatalogEntry* entry = &entries[0];\n    int* row_count = &entry->row_count;\n    while (segment_index < count) {"
+        }
+      ]
+    },
+    {
+      "name": "current-entry-header",
+      "find": "        entries[segment_index].id = id;\n        sprintf(entries[segment_index].filename, \"%s\", segment_file_name);\n\n        char* name_cursor = find_case_insensitive_substring(\"Name:'\", file_buffer);\n        if (name_cursor == 0) {\n            report_errorf(\"Cannot find Name: in Segment %s\\n\", segment_files[segment_index]);\n            return;\n        }\n\n        name_cursor = find_case_insensitive_substring(\"'\", name_cursor) + 1;\n        char* display_out = entries[segment_index].display_name;",
+      "replacements": [
+        {
+          "name": "entry-fields",
+          "text": "        entry->id = id;\n        sprintf(entry->filename, \"%s\", segment_file_name);\n\n        char* name_cursor = find_case_insensitive_substring(\"Name:'\", file_buffer);\n        if (name_cursor == 0) {\n            report_errorf(\"Cannot find Name: in Segment %s\\n\", segment_files[segment_index]);\n            return;\n        }\n\n        name_cursor = find_case_insensitive_substring(\"'\", name_cursor) + 1;\n        char* display_out = entry->display_name;"
+        }
+      ]
+    },
+    {
+      "name": "current-entry-row-and-glyph",
+      "find": "            AuthoredSegmentRow* row = &entries[segment_index].rows[row_index];\n            char* glyph_cursor = data_cursor + 1;\n            row->flags = 0;\n\n            int lane = 0;\n            do {\n                char glyph = *glyph_cursor++;\n                entries[segment_index]\n                    .glyph_columns[*row_count][lane] = glyph;\n                ++lane;\n            } while (lane < 8);",
+      "replacements": [
+        {
+          "name": "entry-fields",
+          "text": "            AuthoredSegmentRow* row = &entry->rows[row_index];\n            char* glyph_cursor = data_cursor + 1;\n            row->flags = 0;\n\n            int lane = 0;\n            do {\n                char glyph = *glyph_cursor++;\n                entry->glyph_columns[*row_count][lane] = glyph;\n                ++lane;\n            } while (lane < 8);"
+        }
+      ]
+    },
+    {
+      "name": "current-entry-advance",
+      "find": "        ++segment_index;\n        row_count = &entries[segment_index].row_count;\n        segment_file_name += 0x80;",
+      "replacements": [
+        {
+          "name": "index-entry-row-file",
+          "text": "        ++segment_index;\n        ++entry;\n        row_count = &entry->row_count;\n        segment_file_name += 0x80;"
+        },
+        {
+          "name": "entry-index-row-file",
+          "text": "        ++entry;\n        ++segment_index;\n        row_count = &entry->row_count;\n        segment_file_name += 0x80;"
+        },
+        {
+          "name": "index-row-stride-entry-file",
+          "text": "        ++segment_index;\n        row_count = (int*)((char*)row_count + sizeof(SegmentCatalogEntry));\n        ++entry;\n        segment_file_name += 0x80;"
+        }
+      ]
+    }
+  ]
+}

@@ -313,3 +313,27 @@ worse; and nine outer cursor publication/stride variants are neutral or
 0.18-4.30 points worse. The remaining 11-instruction deficit is therefore an
 honest register/row-anchor residual, not evidence for restoring the duplicated
 header or manufacturing a containing-owner cast.
+
+## 2026-07-31 current-entry ownership boundary
+
+The Android and iOS importers independently retain a current entry pointer
+beside the logical segment index, so the corresponding Windows source shape was
+tested across the header, row/glyph loop, and outer-loop advance. Windows does
+not reward that spelling. Of 31 planned combinations, 16 dependency-complete
+variants compile; the other 15 intentionally reference `entry` without its
+declaration and are expected dependency-invalid combinations, not toolchain
+failures. The declaration alone loses 1.17 weighted bytes. Both complete
+current-entry forms retain the seven-instruction exact prefix and all 91 clean
+references but lose 27.39 weighted bytes, falling from 68.26% to 66.84%.
+
+A separate six-variant sweep permuted or split the segment index, filename
+cursor, and row-count cursor declarations. Five orders are byte-neutral; adding
+a first-entry reference loses the same 1.17 weighted bytes as the pointer
+declaration. Together these probes bound the mobile-backed owner hypothesis:
+the native row-count cursor may be derived from the same conceptual entry, but
+VC6's best Windows replay keeps the direct indexed fixed catalog plus its
+interior `row_count` cursor. No synthetic containing-owner alias is retained.
+
+The importer ledger now contains six recorded sweeps and 58 unique variants.
+Its current 68.26%, 560/571-instruction result remains the strongest audited
+source shape, with prefix 7 and 91/91 clean resolved operands.

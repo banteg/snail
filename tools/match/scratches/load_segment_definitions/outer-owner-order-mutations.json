@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "outer-owner-order",
+      "find": "    int segment_index = 0;\n    char* segment_file_name = segment_files[0];\n    int* row_count = &entries[0].row_count;\n    while (segment_index < count) {",
+      "replacements": [
+        {
+          "name": "row-count-before-file",
+          "text": "    int segment_index = 0;\n    int* row_count = &entries[0].row_count;\n    char* segment_file_name = segment_files[0];\n    while (segment_index < count) {"
+        },
+        {
+          "name": "file-and-row-before-index",
+          "text": "    char* segment_file_name = segment_files[0];\n    int* row_count = &entries[0].row_count;\n    int segment_index = 0;\n    while (segment_index < count) {"
+        },
+        {
+          "name": "row-and-file-before-index",
+          "text": "    int* row_count = &entries[0].row_count;\n    char* segment_file_name = segment_files[0];\n    int segment_index = 0;\n    while (segment_index < count) {"
+        },
+        {
+          "name": "split-file-then-row",
+          "text": "    int segment_index = 0;\n    char* segment_file_name;\n    int* row_count;\n    segment_file_name = segment_files[0];\n    row_count = &entries[0].row_count;\n    while (segment_index < count) {"
+        },
+        {
+          "name": "split-row-then-file",
+          "text": "    int segment_index = 0;\n    char* segment_file_name;\n    int* row_count;\n    row_count = &entries[0].row_count;\n    segment_file_name = segment_files[0];\n    while (segment_index < count) {"
+        },
+        {
+          "name": "first-entry-reference",
+          "text": "    int segment_index = 0;\n    char* segment_file_name = segment_files[0];\n    SegmentCatalogEntry& first_entry = entries[0];\n    int* row_count = &first_entry.row_count;\n    while (segment_index < count) {"
+        }
+      ]
+    }
+  ]
+}
