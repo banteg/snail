@@ -386,3 +386,24 @@ duplicated condition is retained. The complete ledger now contains 14 sweeps
 and 68 unique variants: 12 improve, 26 are neutral, 30 regress, and the
 trailing no-improvement streak is one. The focused candidate is 431/439
 instructions, prefix 6, with all 34 masked operands clean.
+
+## 2026-07-31 post-reset dependency replay bounded
+
+The conditional reset changed the renderer's stack and register allocation, so
+the four earlier ownership grids that cross that frame boundary were replayed
+once against the 68.28% frontier. All 35 variants compile with clean
+references and none improves:
+
+- the exact indexed mobile insertion exit now comes within 0.24 weighted byte
+  of the retained camera loop, but remains lower;
+- all three branch-local base/derived BOD reloads are byte-identical;
+- moving the ordered-count lifetime earlier loses 6.71 weighted bytes; and
+- five sentinel initializations remain neutral while the three explicit active
+  camera traversals lose between 7.66 and 104.05 weighted bytes.
+
+The native six-instruction camera-exit residual and replay-branch reload
+therefore do not transfer as isolated source owners even after the accepted
+frame change. The ledger now contains 18 sweeps and 103 unique variants:
+12 improve, 34 are neutral, and 57 regress. Five consecutive non-improving
+sweeps formally stall the function at **68.28%**, 431/439 instructions,
+prefix 6/439, and 34 clean masked operands.
