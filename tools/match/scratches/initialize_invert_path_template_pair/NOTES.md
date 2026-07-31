@@ -270,3 +270,24 @@ Either lateral scale operator remains byte-neutral alone and beside the
 winning add. Terminal addition loses 24 weighted bytes alone and at least 20
 beside the ordinary add. The exhaustive grid therefore isolates the retained
 ordinary addition without transferring the rest of the family mechanically.
+
+## 2026-07-31 post-face phase-owner closure
+
+The remaining native mesh/face lifetimes were replayed after direct face
+records and the ordinary position addition changed the allocation frontier.
+Giving the face phase its own logical row owner still loses **51 weighted
+bytes**, falling from **75.68%** to **73.36%** at unchanged 109-instruction
+prefix and 35 clean references.
+
+Windows loads facequads before vertices and retains a saved vertex-bank value
+across the mesh branch. All four declaration/load-order spellings compile
+byte-identically to the retained source. The complete seven-combination
+vertex-base sweep is also neutral in every valid declaration-plus-consumer
+form, including both branches together; incomplete consumers correctly fail
+without the saved owner.
+
+No source change is retained. These three consecutive non-improving sweeps
+formally stall Invert at **75.68%**, 605/600 instructions, prefix 109/600,
+with all 35 references clean. The native acquisition and saved-base shapes are
+already compiler-produced from the clearer source, while the separate face
+row remains a measured allocation regression.
