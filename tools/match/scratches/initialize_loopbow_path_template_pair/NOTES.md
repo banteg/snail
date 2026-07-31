@@ -346,3 +346,16 @@ pointers lose 120 weighted bytes, and persistent sample pointers lose 378.
 The direct operators therefore remain retained. These three non-improving
 sweeps close the evidenced scalar-layout neighborhood without register,
 volatile, or dummy-lifetime forcing.
+
+## 2026-07-31 direct face-offset record ownership
+
+The earlier common-index probe did not cover the consequential source
+boundary: one semantic integer offset consumed directly by every face-record
+write. Replacing the two branch-local face pointers with
+`facequads[face_offset]` raises focused matching from **72.49%** to **74.31%**
+and moves candidate size from 796 to 792 instructions against the
+796-instruction target. Prefix remains 10/796 and all 63 references remain
+clean.
+
+Four equivalent offset spellings compile byte-identically, so the gain belongs
+to direct indexed record ownership rather than expression spelling.

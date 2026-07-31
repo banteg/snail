@@ -350,3 +350,12 @@ whole-constructor allocation difference: the candidate uses the opposite two
 registers from its prologue through all sample phases. Local cursor spelling
 cannot resolve that swap, so no register-forcing or synthetic dependency is
 introduced.
+
+## 2026-07-31 direct face-offset record ownership
+
+The face loop's single pointer is replaced by a semantic integer offset and
+direct array-record writes. Focused matching rises from **56.60%** to
+**57.50%**, and candidate size moves from 681 to 684 instructions against the
+683-instruction target. Prefix remains 5/683; the existing 44 clean and two
+unaudited references are unchanged. The gain is isolated to normal source
+ownership and does not attempt to force the constructor-wide register swap.

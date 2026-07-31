@@ -478,3 +478,11 @@ prefix.
 No acquisition owner is retained. SlalomBig remains **65.37%**, 690/696
 instructions, prefix 48/696, with all 40 references clean; the register choice
 at the identity call remains compiler allocation debt.
+
+## 2026-07-31 direct face-offset record ownership
+
+Writing the face record directly through its semantic array offset raises
+focused matching from **65.37%** to **66.09%** and moves candidate size from
+690 to 693 instructions against the 696-instruction target. Prefix remains
+48/696 and all 40 references remain clean. The secondary-acquisition bound
+above remains intact; this change is isolated to the later mesh record.

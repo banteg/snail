@@ -346,3 +346,15 @@ compiler-derived loop owner rather than an authored source boundary; direct
 indexed arrays remain retained. The remaining 0x48-versus-0x44 frame
 difference is bounded to the cross-branch orientation allocation schedule and
 is not being forced through source-shape regressions.
+
+## 2026-07-31 direct face-offset record ownership
+
+Start's existing single face pointer still extended one address owner across
+both winding branches. Replacing it with a semantic integer offset and direct
+facequad array writes raises focused matching from **63.87%** to **74.73%**,
+extends the exact prefix from 0 to 122 instructions, and moves candidate size
+from 605 to 613 against the 610-instruction target. All 35 references remain
+clean.
+
+This result is compatible with the existing direct sample-array ownership and
+does not revive the separately rejected branch-local pointer/frame variants.

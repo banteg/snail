@@ -315,3 +315,18 @@ native logical row across the face pass is also neutral, while reusing the
 column loses 25.80 to 29.48 weighted bytes. The mesh register-role inversion is
 therefore recorded as a surrounding-allocation residual rather than forced
 with volatile storage, dummy uses, or register directives.
+
+## 2026-07-31 direct face-record indexing
+
+Windows computes one common record index at `0x41ebe1` before selecting the two
+complete winding records. Consuming that owner directly as
+`facequads[face_record_index]`, rather than rebuilding branch-local pointers,
+raises focused matching from **55.51%** to **63.47%** and adds 190 weighted
+bytes. Candidate size moves from 642 to 640 instructions against the
+655-instruction target, with all 37 references still clean.
+
+The first mismatch moves earlier and the exact prefix contracts from 22 to 8
+instructions; both tradeoffs are recorded. The direct form is retained because
+it matches the native common-index dataflow, is semantically simpler, and
+produces a dependency-complete face-region recovery rather than an allocator
+or instruction-count trick.

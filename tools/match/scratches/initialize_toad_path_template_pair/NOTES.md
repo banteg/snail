@@ -476,3 +476,12 @@ The delta cursor alone remains the sweep's aggregate-score leader at the
 already-recorded 69.02% tradeoff result; every added fixed-loop owner reduces
 that score. No cursor interaction is retained. This closes the Toad
 lead/tail/delta ownership dependency on the current face and curve allocation.
+
+## 2026-07-31 direct face-offset transfer rejected
+
+Direct indexed face records raise the aggregate score from **65.76%** to
+**67.32%**, but collapse the exact prefix from 89 to 16 instructions and move
+candidate size from 660 to 656 against the 663-instruction target. That result
+disrupts the independently recovered branch-local face unit and carries all
+three matcher tradeoff warnings. The complete probe is recorded; Toad keeps
+its stronger 65.76%, 89-prefix source.

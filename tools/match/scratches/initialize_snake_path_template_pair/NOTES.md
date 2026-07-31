@@ -453,3 +453,16 @@ bytes; the complete guarded row-cursor form is byte-identical; and five
 vertex/face/row declaration schedules are neutral or slightly regressive.
 No fake local, volatile dependency, forced register, or flat-index
 instruction-count chase is introduced.
+
+## 2026-07-31 direct face-offset record ownership
+
+The earlier flat-index probe retained branch-local face pointers and gained
+only four weighted bytes. Directly consuming the same semantic offset through
+the facequad array instead raises focused matching from **66.26%** to
+**73.25%** and extends the exact prefix from 110 to 168 instructions. All 40
+references remain clean.
+
+Candidate size drops from exact count parity at 652/652 to 645/652, an explicit
+instruction-count tradeoff. The change is retained because it adds 170
+weighted bytes, materially extends the exact prefix, and expresses ordinary
+array-record ownership without any allocator control.

@@ -85,50 +85,49 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
             float u1 = (float)(column + 1) * 0.125f;
 
             for (face_index = 0; face_index < 2; ++face_index) {
-                cRFaceQuad* face =
-                    &facequads[2 * column + 2 * row * path->width_cells + face_index];
-                face->header_word = 0;
+                int face_offset = 2 * column + 2 * row * path->width_cells + face_index;
+                facequads[face_offset].header_word = 0;
 
                 if (face_index == 0) {
-                    face->vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
-                    face->vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                    facequads[face_offset].vertex_0 = column + row * ((unsigned short)path->width_cells + 1);
+                    facequads[face_offset].vertex_1 = row * ((unsigned short)path->width_cells + 1) + column + 1;
+                    facequads[face_offset].vertex_2 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
+                    facequads[face_offset].vertex_3 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
                     if ((column ^ row) & 1) {
-                        face->texture_ref =
+                        facequads[face_offset].texture_ref =
                             g_texture_refs.Add(texture_a, 0, 0);
                     } else {
-                        face->texture_ref =
+                        facequads[face_offset].texture_ref =
                             g_texture_refs.Add(texture_a, 0, 0);
                     }
-                    face->uv[0].u = u0;
-                    face->uv[0].v = v0;
-                    face->uv[1].u = u1;
-                    face->uv[1].v = v0;
-                    face->uv[2].u = u1;
-                    face->uv[2].v = v1;
-                    face->uv[3].u = u0;
-                    face->uv[3].v = v1;
+                    facequads[face_offset].uv[0].u = u0;
+                    facequads[face_offset].uv[0].v = v0;
+                    facequads[face_offset].uv[1].u = u1;
+                    facequads[face_offset].uv[1].v = v0;
+                    facequads[face_offset].uv[2].u = u1;
+                    facequads[face_offset].uv[2].v = v1;
+                    facequads[face_offset].uv[3].u = u0;
+                    facequads[face_offset].uv[3].v = v1;
                 } else {
-                    face->vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
-                    face->vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
-                    face->vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                    face->vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
+                    facequads[face_offset].vertex_0 = row * ((unsigned short)path->width_cells + 1) + column + 1;
+                    facequads[face_offset].vertex_1 = column + row * ((unsigned short)path->width_cells + 1);
+                    facequads[face_offset].vertex_2 = column + (row + 1) * ((unsigned short)path->width_cells + 1);
+                    facequads[face_offset].vertex_3 = (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
                     if ((column ^ row) & 1) {
-                        face->texture_ref =
+                        facequads[face_offset].texture_ref =
                             g_texture_refs.Add(texture_b, 0, 0);
                     } else {
-                        face->texture_ref =
+                        facequads[face_offset].texture_ref =
                             g_texture_refs.Add(texture_b, 0, 0);
                     }
-                    face->uv[0].u = u1;
-                    face->uv[0].v = v0;
-                    face->uv[1].u = u0;
-                    face->uv[1].v = v0;
-                    face->uv[2].u = u0;
-                    face->uv[2].v = v1;
-                    face->uv[3].u = u1;
-                    face->uv[3].v = v1;
+                    facequads[face_offset].uv[0].u = u1;
+                    facequads[face_offset].uv[0].v = v0;
+                    facequads[face_offset].uv[1].u = u0;
+                    facequads[face_offset].uv[1].v = v0;
+                    facequads[face_offset].uv[2].u = u0;
+                    facequads[face_offset].uv[2].v = v1;
+                    facequads[face_offset].uv[3].u = u1;
+                    facequads[face_offset].uv[3].v = v1;
                 }
             }
         }

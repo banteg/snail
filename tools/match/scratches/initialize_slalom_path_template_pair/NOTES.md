@@ -430,3 +430,11 @@ No owner is retained. Slalom remains **59.16%**, 690/696 instructions, prefix
 6/696, with all 40 references clean. The target register-role swap is real,
 but these complete instruction-backed owners do not reproduce it in isolation
 or together on the current source schedule.
+
+## 2026-07-31 direct face-offset transfer bounded
+
+Replacing both face pointers with direct indexed records adds only one
+weighted byte: **59.16%** to **59.21%**. It also removes one candidate
+instruction, moving from 690 to 689 against the 696-instruction target, while
+prefix 6/696 and all 40 references remain unchanged. The probe is recorded as
+an immaterial instruction-count tradeoff and no source edit is retained.

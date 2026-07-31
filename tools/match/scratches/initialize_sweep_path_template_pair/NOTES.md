@@ -349,3 +349,14 @@ cascade:
 
 These probes bound the adjacent control and mesh lifetimes without retaining
 instruction-count or decompiler-shape regressions.
+
+## 2026-07-31 direct face-offset record ownership
+
+The common face scalar becomes productive only when every record field is
+written directly through `facequads[face_offset]`. That source boundary raises
+focused matching from **73.19%** to **80.18%** and moves candidate size from
+657 to 650 instructions against the 652-instruction target. Prefix remains
+24/652 and all 37 references remain clean.
+
+This supersedes the earlier pointer-based flat-index rejection while leaving
+the bounded row, UV, and cursor lifetimes unchanged.

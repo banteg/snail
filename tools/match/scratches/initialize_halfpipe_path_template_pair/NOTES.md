@@ -451,3 +451,16 @@ Three complete follow-up sweeps bound the spelling:
 The retained loop therefore records the portable logical dependency and lets
 VC6 derive its physical address induction. No explicit cursor or alternate
 comparison spelling is kept.
+
+## 2026-07-31 direct face-offset record ownership
+
+The mesh tail now preserves one logical face offset and writes both winding
+records directly through the facequad array. Focused matching rises from
+**64.19%** to **66.38%**, adding 57 weighted bytes with prefix 18/707 and all
+55 references unchanged. Candidate size moves from 692 to 688 instructions
+against the 707-instruction target, an explicit instruction-count tradeoff
+recorded by the probe.
+
+The direct indexed form is retained because it is semantic, agrees with the
+independently recovered path-builder family, and improves the actual face
+region without synthetic lifetime or allocation controls.

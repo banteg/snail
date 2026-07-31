@@ -283,3 +283,13 @@ bytes below the retained source. The branch-local face pointer still reproduces
 its prior 49.34% result exactly. A derived entrance cursor falls to 62.34%;
 swapping the entrance declarations cuts the prefix to 23, and moving the index
 increment into the loop condition is byte-identical.
+
+## 2026-07-31 direct face-offset record ownership
+
+Replacing the face pointer with a semantic integer offset and direct indexed
+record writes raises focused matching from **68.58%** to **69.90%** and moves
+candidate size from 671 to 674 instructions against the 685-instruction
+target. Prefix remains 58/685, and the existing 38 clean plus two unaudited
+references are unchanged. The independently rejected branch-local pointer
+result remains bounded; this retained form has one offset owner for both
+winding branches.

@@ -398,3 +398,16 @@ Candidate instructions move from 691 to 686 against 685 target instructions,
 the exact prefix contracts from 20 to 8, and all 43 references remain clean.
 This confirms the earlier two-arm face-index regression with the minimal
 integer-only spelling and records it as a rejected reverse probe.
+
+## 2026-07-31 direct face-offset record ownership
+
+The earlier regression hoisted a scalar but still reconstructed branch-local
+face pointers. Consuming the offset directly through
+`facequads[face_offset]` instead raises focused matching from **67.59%** to
+**74.51%** and moves candidate size from 691 to 684 instructions against the
+685-instruction target. Prefix remains 20/685 and all 43 references remain
+clean.
+
+This supersedes only the pointer-based common-index result; the recorded
+negative probe remains useful evidence that the array access boundary, not the
+scalar name alone, drives the VC6 schedule.

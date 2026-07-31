@@ -378,3 +378,12 @@ prefix.
 Twister2 remains **73.01%**, 690/677 instructions, prefix 123/677, and 49 clean
 references. The commutative SIB order at the first mismatch is left as
 compiler encoding debt rather than inviting source-level operand forcing.
+
+## 2026-07-31 direct face-offset record ownership
+
+Direct indexed face records raise focused matching from **73.01%** to
+**77.70%** and reduce candidate size from 690 to 682 instructions against the
+677-instruction target. Prefix remains 123/677 and all 49 references remain
+clean. The separately compiled Twister scratch produces the identical metric
+and instruction-count result, confirming the shared source-family boundary
+without relying on one twin as a binary oracle for the other.

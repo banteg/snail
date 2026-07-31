@@ -376,3 +376,12 @@ position lifetimes are neutral or worse.
 The retained source therefore closes this evidence-backed replay at
 **69.45%**, with exactly **671/671 instructions**, prefix **54/671**, and
 **41/0/0/0** clean masked references.
+
+## 2026-07-31 direct face-offset transfer rejected
+
+Turnover already owns the common scalar separately from its face pointer.
+Removing that pointer and writing the record directly through the array drops
+focused matching from **69.45%** to **65.77%**, grows the candidate from exact
+671/671 parity to 673 instructions, and contracts the prefix from 54 to 36.
+All 41 references remain clean. The complete-source probe is recorded and
+reverted.

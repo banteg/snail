@@ -347,3 +347,11 @@ All 19 combinations of nearby cursor initialization, declaration order,
 `sizeof` spelling, literal stride, and cursor/index advance order are
 byte-identical. The contributing recovery is the address owner itself rather
 than a constant or statement-order spelling.
+
+## 2026-07-31 direct face-offset record ownership
+
+Replacing both branch-local face pointers with direct indexed record writes
+raises focused matching from **56.64%** to **61.36%**, adding 117 weighted
+bytes with candidate/target size unchanged at 677/679. Prefix remains 6/679
+and all 41 references remain clean. The retained offset expression and all
+constructor behavior are unchanged; only the record access boundary moves.

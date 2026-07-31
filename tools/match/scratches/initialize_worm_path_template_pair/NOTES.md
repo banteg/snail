@@ -298,3 +298,11 @@ variants retain 37 clean references.
 Worm therefore remains at **72.81%**, 728/736 instructions, with the scratch
 restored. Further work on this frame requires new operator or source
 provenance, not another spill-shape variant.
+
+## 2026-07-31 direct face-offset transfer rejected
+
+Worm's cylindrical mesh rejects the planar-builder direct record form.
+Replacing its scoped face pointer with an integer offset drops focused
+matching from **72.81%** to **70.95%** and moves candidate size from 728 to 727
+instructions against the 736-instruction target. Prefix remains 0/736 and all
+37 references remain clean. The probe is recorded and reverted.

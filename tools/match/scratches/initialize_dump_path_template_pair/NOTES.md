@@ -336,3 +336,15 @@ formation inside each arm drops focused matching from **62.87%** to **56.94%**.
 Candidate instructions shrink from 697 to 687 against 690 target instructions,
 prefix remains 8/690, and all 43 references remain clean. The result is kept as
 a rejected reverse probe and bounds this transfer independently of Hump.
+
+## 2026-07-31 direct face-offset record ownership
+
+Dump confirms the distinction between a shared index feeding pointers and an
+authored direct array record. Writing both winding records through
+`facequads[face_offset]` raises focused matching from **62.87%** to **75.49%**,
+shrinks the candidate from 697 to 685 instructions against the 690-instruction
+target, and extends the exact prefix from 8 to 20 instructions. All 43
+references remain clean.
+
+The 323-weighted-byte gain is retained as a semantic source recovery; the
+older pointer-based shared-index probe remains rejected.

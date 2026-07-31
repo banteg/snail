@@ -226,3 +226,15 @@ face pointer branch-local is not portable here: focused matching falls from
 718 target instructions, prefix remains 0/718, and all 52 references remain
 clean. The exact native-looking spelling is recorded as a rejected reverse
 probe rather than transferred across the different register schedule.
+
+## 2026-07-31 direct face-offset record ownership
+
+The copied-index rejection above kept both face pointers branch-local. The
+new family evidence identifies a different source boundary: the common integer
+offset is consumed directly by every array-record write. That form raises
+focused matching from **66.44%** to **67.87%**, reduces candidate size from 727
+to 723 instructions against the 718-instruction target, preserves prefix
+0/718, and keeps all 52 references clean.
+
+The complete-source probe is recorded separately from the older pointer-based
+variant, which remains correctly rejected.

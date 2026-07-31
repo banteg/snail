@@ -374,3 +374,16 @@ trailing non-improvement streak to four and formally stall the local lifetime
 frontier at **68.00%**. Resolving either stack-home swap now requires a new
 semantic owner or source provenance, not declaration shuffling, volatility,
 padding, or forced allocation.
+
+## 2026-07-31 direct face-offset record ownership
+
+The local-lifetime stall above did not cover direct indexed record writes.
+Hoisting the semantic face offset before the front/back selection and
+addressing every field as `facequads[face_offset]` raises focused matching from
+**68.00%** to **77.37%**. Candidate size moves from 545 to 544 instructions
+against the 552-instruction target, while the exact 0x2c frame, 16/552 prefix,
+and all 36 clean references are preserved.
+
+Four algebraically equivalent offset spellings are byte-identical. Cage2,
+Worm, and Turnover independently reject the same transfer, so this is retained
+as Supertramp's source boundary rather than a universal mesh rewrite.

@@ -65,76 +65,75 @@ static __forceinline void build_direct_strip_mesh(
                 float u1 = (float)(face_column + 1) * 0.125f;
                 int side = 0;
                 do {
+                    int face_offset =
+                        side
+                        + 2 * (face_column + face_row * path->width_cells);
                     if (side == 0) {
-                        cRFaceQuad* face = &facequads[
-                            side + 2 * (face_column + face_row * path->width_cells)];
-                        face->header_word = 0;
-                        face->vertex_0 =
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 =
                             face_column +
                             face_row * ((unsigned short)path->width_cells + 1);
-                        face->vertex_1 = face_row *
+                        facequads[face_offset].vertex_1 = face_row *
                                 ((unsigned short)path->width_cells + 1) +
                             face_column + 1;
-                        face->vertex_2 = (face_row + 1) *
+                        facequads[face_offset].vertex_2 = (face_row + 1) *
                                 ((unsigned short)path->width_cells + 1) +
                             face_column + 1;
-                        face->vertex_3 = face_column +
+                        facequads[face_offset].vertex_3 = face_column +
                             (face_row + 1) *
                                 ((unsigned short)path->width_cells + 1);
                         if (face_row == path->segment_count - 1) {
-                            face->texture_ref =
+                            facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(
                                     cap_texture, 0, 0);
                         } else if ((face_column ^ face_row) & 1) {
-                            face->texture_ref =
+                            facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(
                                     top_texture, 0, 0);
                         } else {
-                            face->texture_ref =
+                            facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(
                                     top_texture, 0, 0);
                         }
-                        face->uv[0].u = u0;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u1;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u1;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u0;
-                        face->uv[3].v = v1;
+                        facequads[face_offset].uv[0].u = u0;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u1;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u1;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u0;
+                        facequads[face_offset].uv[3].v = v1;
                     } else {
-                        cRFaceQuad* face = &facequads[
-                            side + 2 * (face_column + face_row * path->width_cells)];
-                        face->header_word = 0;
-                        face->vertex_0 = face_row *
+                        facequads[face_offset].header_word = 0;
+                        facequads[face_offset].vertex_0 = face_row *
                                 ((unsigned short)path->width_cells + 1) +
                             face_column + 1;
-                        face->vertex_1 =
+                        facequads[face_offset].vertex_1 =
                             face_column +
                             face_row * ((unsigned short)path->width_cells + 1);
-                        face->vertex_2 = face_column +
+                        facequads[face_offset].vertex_2 = face_column +
                             (face_row + 1) *
                                 ((unsigned short)path->width_cells + 1);
-                        face->vertex_3 = (face_row + 1) *
+                        facequads[face_offset].vertex_3 = (face_row + 1) *
                                 ((unsigned short)path->width_cells + 1) +
                             face_column + 1;
                         if ((face_column ^ face_row) & 1) {
-                            face->texture_ref =
+                            facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(
                                     bottom_texture, 0, 0);
                         } else {
-                            face->texture_ref =
+                            facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(
                                     bottom_texture, 0, 0);
                         }
-                        face->uv[0].u = u1;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u0;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u0;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u1;
-                        face->uv[3].v = v1;
+                        facequads[face_offset].uv[0].u = u1;
+                        facequads[face_offset].uv[0].v = v0;
+                        facequads[face_offset].uv[1].u = u0;
+                        facequads[face_offset].uv[1].v = v0;
+                        facequads[face_offset].uv[2].u = u0;
+                        facequads[face_offset].uv[2].v = v1;
+                        facequads[face_offset].uv[3].u = u1;
+                        facequads[face_offset].uv[3].v = v1;
                     }
                     ++side;
                 } while (side < 2);

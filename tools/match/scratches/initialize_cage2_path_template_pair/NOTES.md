@@ -353,3 +353,13 @@ The checked ledger now contains twelve mutation sweeps and 72 unique variants:
 14 improving, 30 neutral, and 28 degrading, including eight metric tradeoffs.
 Five consecutive non-improving sweeps mark the current Cage2 frontier stalled
 at the clean **68.20%** result.
+
+## 2026-07-31 direct face-offset transfer rejected
+
+The direct indexed record form recovered in several sibling builders is not
+portable to Cage2's current schedule. Replacing its two branch-local face
+pointers with one offset owner drops focused matching from **68.20%** to
+**54.87%**, grows the candidate from 654 to 657 instructions against the
+648-instruction target, and leaves prefix 10/648 and all 46 references
+unchanged. The complete-source probe is recorded and the scratch remains
+untouched.

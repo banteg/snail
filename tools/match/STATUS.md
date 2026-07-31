@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **84.42%**.
+**544/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101084/294937** bytes (**34.27%**) are proof-grade, and overall fuzzy is **85.17%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -588,7 +588,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (44)
+## High Progress (80-94.99%) (45)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -605,6 +605,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_loading_screen | 0x418b50 | 758 | 253/253 | 83.00% | 5/253 | 54 ok |  | core |
 | 🚧 | initialize_intro_screen | 0x4191e0 | 1851 | 523/521 | 88.89% | 88/521 | 66 ok |  | core |
 | 🚧 | traverse_path_follow_golb | 0x4217b0 | 1551 | 421/425 | 85.82% | 32/425 | 7 ok |  | core |
+| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 650/652 | 80.18% | 24/652 | 37 ok |  | core |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  | core |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  | core |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 669/668 | 81.68% | 21/668 | 41 ok |  | core |
@@ -637,7 +638,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 24 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 
-## Mid Progress (50-79.99%) (46)
+## Mid Progress (50-79.99%) (45)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -651,30 +652,29 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 13 ok |  | core |
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 717/721 | 74.69% | 44/721 | 49 ok |  | core |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 739/745 | 72.51% | 10/745 | 55 ok |  | core |
-| 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 727/718 | 66.44% | 0/718 | 52 ok |  | core |
-| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 691/685 | 67.59% | 20/685 | 43 ok |  | core |
-| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 697/690 | 62.87% | 8/690 | 43 ok |  | core |
-| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 642/655 | 55.51% | 22/655 | 37 ok |  | core |
-| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 671/685 | 68.58% | 58/685 | 2 unaudited, 38 ok |  | core |
+| 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 723/718 | 67.87% | 0/718 | 52 ok |  | core |
+| 🚧 | initialize_hump_path_template_pair | 0x41d030 | 2553 | 684/685 | 74.51% | 20/685 | 43 ok |  | core |
+| 🚧 | initialize_dump_path_template_pair | 0x41da30 | 2563 | 685/690 | 75.49% | 20/690 | 43 ok |  | core |
+| 🚧 | initialize_dip_path_template_pair | 0x41e440 | 2390 | 640/655 | 63.47% | 8/655 | 37 ok |  | core |
+| 🚧 | initialize_screw_path_template_pair | 0x41eda0 | 2495 | 674/685 | 69.90% | 58/685 | 2 unaudited, 38 ok |  | core |
 | 🚧 | initialize_slalom_path_template_pair | 0x41f760 | 2564 | 690/696 | 59.16% | 6/696 | 40 ok |  | core |
 | 🚧 | initialize_worm_path_template_pair | 0x420170 | 2759 | 728/736 | 72.81% | 0/736 | 37 ok |  | core |
 | 🚧 | update_track_attachment_follow_state | 0x420cb0 | 2750 | 712/726 | 75.66% | 122/726 | 65 ok |  | core |
-| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 690/696 | 65.37% | 48/696 | 40 ok |  | core |
-| 🚧 | initialize_sweep_path_template_pair | 0x422c00 | 2428 | 657/652 | 73.19% | 24/652 | 37 ok |  | core |
-| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 652/652 | 66.26% | 110/652 | 40 ok |  | core |
-| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 545/552 | 68.00% | 16/552 | 36 ok |  | core |
-| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 681/683 | 56.60% | 5/683 | 2 unaudited, 44 ok |  | core |
-| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 677/679 | 56.64% | 6/679 | 41 ok |  | core |
-| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 605/610 | 63.87% | 0/610 | 35 ok |  | core |
+| 🚧 | initialize_slalombig_path_template_pair | 0x4221f0 | 2564 | 693/696 | 66.09% | 48/696 | 40 ok |  | core |
+| 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 645/652 | 73.25% | 168/652 | 40 ok |  | core |
+| 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 544/552 | 77.37% | 16/552 | 36 ok |  | core |
+| 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 684/683 | 57.50% | 5/683 | 2 unaudited, 44 ok |  | core |
+| 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 677/679 | 61.36% | 6/679 | 41 ok |  | core |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 613/610 | 74.73% | 122/610 | 35 ok |  | core |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 671/671 | 69.45% | 54/671 | 41 ok |  | core |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 683/680 | 75.28% | 80/680 | 46 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 662/687 | 56.49% | 6/687 | 45 ok |  | core |
-| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 612/608 | 70.33% | 85/608 | 39 ok |  | core |
-| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 611/600 | 70.69% | 109/600 | 35 ok |  | core |
-| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 692/707 | 64.19% | 18/707 | 55 ok |  | core |
-| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 690/677 | 73.01% | 123/677 | 49 ok |  | core |
-| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 690/677 | 73.01% | 123/677 | 49 ok |  | core |
-| 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 796/796 | 72.49% | 10/796 | 63 ok |  | core |
+| 🚧 | initialize_wibble_path_template_pair | 0x4289a0 | 2213 | 606/608 | 74.14% | 85/608 | 39 ok |  | core |
+| 🚧 | initialize_invert_path_template_pair | 0x429250 | 2182 | 605/600 | 75.52% | 109/600 | 35 ok |  | core |
+| 🚧 | initialize_halfpipe_path_template_pair | 0x429b20 | 2592 | 688/707 | 66.38% | 18/707 | 55 ok |  | core |
+| 🚧 | initialize_twister_path_template_pair | 0x42a540 | 2540 | 682/677 | 77.70% | 123/677 | 49 ok |  | core |
+| 🚧 | initialize_twister2_path_template_pair | 0x42af30 | 2540 | 682/677 | 77.70% | 123/677 | 49 ok |  | core |
+| 🚧 | initialize_loopbow_path_template_pair | 0x42ba80 | 2939 | 792/796 | 74.31% | 10/796 | 63 ok |  | core |
 | 🚧 | initialize_toad_path_template_pair | 0x42cbf0 | 2419 | 660/663 | 65.76% | 89/663 | 33 ok |  | core |
 | 🚧 | initialize_cage2_path_template_pair | 0x42e720 | 2422 | 654/648 | 68.20% | 10/648 | 46 ok |  | core |
 | 🚧 | calc_object_edges | 0x4308b0 | 382 | 142/141 | 77.74% | 0/141 | 17 ok |  | core |

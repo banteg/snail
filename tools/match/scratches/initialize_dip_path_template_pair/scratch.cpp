@@ -728,51 +728,49 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                         face_index
                         + 2 * (face_row * width_cells + face_column);
                     if (face_index == 0) {
-                        cRFaceQuad* face = &facequads[face_record_index];
-                        face->header_word = 0;
-                        face->vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
-                        face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->vertex_2 =
+                        facequads[face_record_index].header_word = 0;
+                        facequads[face_record_index].vertex_0 = face_column + face_row * ((unsigned short)width_cells + 1);
+                        facequads[face_record_index].vertex_1 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
+                        facequads[face_record_index].vertex_2 =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->vertex_3 =
+                        facequads[face_record_index].vertex_3 =
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
                         if (!((face_column ^ face_row) & 1))
-                            face->texture_ref =
+                            facequads[face_record_index].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         else
-                            face->texture_ref =
+                            facequads[face_record_index].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
-                        face->uv[0].u = u0;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u1;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u1;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u0;
-                        face->uv[3].v = v1;
+                        facequads[face_record_index].uv[0].u = u0;
+                        facequads[face_record_index].uv[0].v = v0;
+                        facequads[face_record_index].uv[1].u = u1;
+                        facequads[face_record_index].uv[1].v = v0;
+                        facequads[face_record_index].uv[2].u = u1;
+                        facequads[face_record_index].uv[2].v = v1;
+                        facequads[face_record_index].uv[3].u = u0;
+                        facequads[face_record_index].uv[3].v = v1;
                     } else {
-                        cRFaceQuad* face = &facequads[face_record_index];
-                        face->header_word = 0;
-                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
-                        face->vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
-                        face->vertex_2 =
+                        facequads[face_record_index].header_word = 0;
+                        facequads[face_record_index].vertex_0 = face_row * ((unsigned short)width_cells + 1) + face_column + 1;
+                        facequads[face_record_index].vertex_1 = face_column + face_row * ((unsigned short)width_cells + 1);
+                        facequads[face_record_index].vertex_2 =
                             face_column + (face_row + 1) * ((unsigned short)width_cells + 1);
-                        face->vertex_3 =
+                        facequads[face_record_index].vertex_3 =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + face_column + 1;
                         if (!((face_column ^ face_row) & 1))
-                            face->texture_ref =
+                            facequads[face_record_index].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         else
-                            face->texture_ref =
+                            facequads[face_record_index].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
-                        face->uv[0].u = u1;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u0;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u0;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u1;
-                        face->uv[3].v = v1;
+                        facequads[face_record_index].uv[0].u = u1;
+                        facequads[face_record_index].uv[0].v = v0;
+                        facequads[face_record_index].uv[1].u = u0;
+                        facequads[face_record_index].uv[1].v = v0;
+                        facequads[face_record_index].uv[2].u = u0;
+                        facequads[face_record_index].uv[2].v = v1;
+                        facequads[face_record_index].uv[3].u = u1;
+                        facequads[face_record_index].uv[3].v = v1;
                     }
                 }
                 face_column = next_column;

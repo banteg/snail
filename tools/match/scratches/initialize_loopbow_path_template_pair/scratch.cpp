@@ -286,72 +286,69 @@ void cRPath::initialize_loopbow_path_template_pair(
                     float u0 = (float)cell_index * 0.125f;
                     float u1 = (float)(cell_index + 1) * 0.125f;
                     do {
+                        int face_offset =
+                            side
+                            + 2 * (cell_index + segment * width_cells);
                         if (side == 0) {
-                            cRFaceQuad* face =
-                                &facequads[side + 2 *
-                                    (cell_index + segment * width_cells)];
-                            face->header_word = 0;
-                            face->vertex_0 =
+                            facequads[face_offset].header_word = 0;
+                            facequads[face_offset].vertex_0 =
                                 cell_index + segment * (width_cells + 1);
-                            face->vertex_1 =
+                            facequads[face_offset].vertex_1 =
                                 segment * (width_cells + 1) + cell_index + 1;
-                            face->vertex_2 =
+                            facequads[face_offset].vertex_2 =
                                 (segment + 1) * (width_cells + 1)
                                 + cell_index + 1;
-                            face->vertex_3 =
+                            facequads[face_offset].vertex_3 =
                                 cell_index + (segment + 1) * (width_cells + 1);
 
                             if (((cell_index ^ segment) & 1) == 0) {
-                                face->texture_ref =
+                                facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_a, 0, 0);
                             } else {
-                                face->texture_ref =
+                                facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_a, 0, 0);
                             }
 
-                            face->u0 = u0;
-                            face->v0 = v0;
-                            face->u1 = u1;
-                            face->v1 = v0;
-                            face->u2 = u1;
-                            face->v2 = v1;
-                            face->u3 = u0;
-                            face->v3 = v1;
+                            facequads[face_offset].u0 = u0;
+                            facequads[face_offset].v0 = v0;
+                            facequads[face_offset].u1 = u1;
+                            facequads[face_offset].v1 = v0;
+                            facequads[face_offset].u2 = u1;
+                            facequads[face_offset].v2 = v1;
+                            facequads[face_offset].u3 = u0;
+                            facequads[face_offset].v3 = v1;
                         } else {
-                            cRFaceQuad* face =
-                                &facequads[side + 2 *
-                                    (cell_index + segment * width_cells)];
-                            face->header_word = 0;
-                            face->vertex_0 =
+                            facequads[face_offset].header_word = 0;
+                            facequads[face_offset].vertex_0 =
                                 segment * (width_cells + 1) + cell_index + 1;
-                            face->vertex_1 =
+                            facequads[face_offset].vertex_1 =
                                 cell_index + segment * (width_cells + 1);
-                            face->vertex_2 =
+                            facequads[face_offset].vertex_2 =
                                 cell_index + (segment + 1) * (width_cells + 1);
-                            face->vertex_3 =
+                            facequads[face_offset].vertex_3 =
                                 (segment + 1) * (width_cells + 1)
                                 + cell_index + 1;
 
                             if (((cell_index ^ segment) & 1) == 0) {
-                                face->texture_ref =
+                                facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_b, 0, 0);
                             } else {
-                                face->texture_ref =
+                                facequads[face_offset].texture_ref =
                                     g_texture_refs.Add(
                                         texture_b, 0, 0);
                             }
 
-                            face->u0 = u1;
-                            face->v0 = v0;
-                            face->u1 = u0;
-                            face->v1 = v0;
-                            face->u2 = u0;
-                            face->v2 = v1;
-                            face->u3 = u1;
-                            face->v3 = v1;
+                            facequads[face_offset].u0 = u1;
+                            facequads[face_offset].v0 = v0;
+                            facequads[face_offset].u1 = u0;
+                            facequads[face_offset].v1 = v0;
+                            facequads[face_offset].u2 = u0;
+                            facequads[face_offset].v2 = v1;
+                            facequads[face_offset].u3 = u1;
+                            facequads[face_offset].v3 = v1;
                         }
                         ++side;
                     } while (side < 2);

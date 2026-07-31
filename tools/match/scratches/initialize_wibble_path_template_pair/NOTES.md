@@ -316,3 +316,11 @@ byte-identical to the retained literal zero. The current 70.33% spelling is
 therefore retained, and this three-sweep non-improvement boundary closes the
 interior phase, termination, and zero-owner neighborhood without register or
 volatile forcing.
+
+## 2026-07-31 direct face-offset record ownership
+
+Using the common face offset directly for every facequad field raises focused
+matching from **70.33%** to **74.14%**. Candidate size moves from 612 to 606
+instructions against the 608-instruction target, prefix remains 85/608, and
+all 39 references remain clean. This is a complete record-ownership change;
+the surrounding row, parity, and texture control remains untouched.

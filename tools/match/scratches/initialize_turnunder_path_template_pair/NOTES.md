@@ -367,3 +367,12 @@ This closes the strongest nearby interaction suggested by SlalomBig: unlike
 that constructor, Turnunder's cursor and parity owners do not unlock each
 other. The retained source remains **56.49%**, 662/687 instructions, prefix
 6/687, with 45 clean references.
+
+## 2026-07-31 direct face-offset transfer bounded
+
+Replacing the mesh face pointer with a direct array offset adds only four
+weighted bytes, moving focused matching from **56.49%** to **56.63%** with
+candidate/target size fixed at 662/687, prefix fixed at 6/687, and all 45
+references clean. With no corroborating local ownership change, the probe is
+recorded as below the materiality threshold and the retained source is
+unchanged.

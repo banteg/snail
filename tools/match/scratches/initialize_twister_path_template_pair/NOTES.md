@@ -358,3 +358,15 @@ their paired mobile control roles. A recorded reverse probe restores the old
 The paired source therefore keeps the owner despite the explicit
 instruction-count tradeoff. Twister2's recorded detail sweeps bound the nearby
 common face index, isolated latch spellings, and explicit sample-byte cursor.
+
+## 2026-07-31 direct face-offset record ownership
+
+The twin mesh tails use their common face scalar as an authored direct array
+offset. Replacing branch-local face pointers with complete
+`facequads[face_offset]` writes raises Twister from **73.01%** to **77.70%**
+and reduces candidate size from 690 to 682 instructions against the
+677-instruction target. Prefix remains 123/677 and all 49 references remain
+clean.
+
+Twister2 produces the same independent result, preserving the paired
+constructor symmetry without sharing scratch source.

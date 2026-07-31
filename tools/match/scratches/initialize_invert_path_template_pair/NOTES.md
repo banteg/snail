@@ -242,3 +242,17 @@ negative results are:
   addition via `operator+` falls to 69.92%;
 - the unsupported `scalar * Vector3` spelling was rejected by the recovered
   class ABI and rerun as the valid, byte-identical `Vector3 * scalar` form.
+
+## 2026-07-31 direct face-offset record ownership
+
+The face tail's common scalar is an authored array offset, not merely an SSA
+name feeding two branch-local pointers. Keeping one integer
+`face_offset` across the winding selection and writing each complete record
+through `facequads[face_offset]` raises focused matching from **70.69%** to
+**75.52%**. Candidate size closes from 611 to 605 instructions against the
+600-instruction target, prefix remains 109/600, and all 35 references remain
+clean.
+
+Distributed, named-cell, split-assignment, and doubled-cell spellings are
+byte-identical at 75.52%. The direct indexed record boundary is retained; no
+pointer or register forcing is involved.
