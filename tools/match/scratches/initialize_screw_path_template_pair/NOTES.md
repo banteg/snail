@@ -315,3 +315,23 @@ The retained complete ownership does not change candidate size: it remains
 674/685 instructions with prefix 58/685 and 38 clean plus two unaudited
 references. The three-way recorded sweep contains the neutral and partial
 alternatives.
+
+## 2026-07-31 post-counter trig replay bound
+
+The two native per-lane trig calls were replayed once more after mesh/face
+counter reuse changed the final allocation. All three call-complete source
+families remain decisively negative while preserving the 58-instruction
+prefix:
+
+- sequential, scoped, and direct per-lane calls lose 124 weighted bytes;
+- local/direct angle helpers lose 126;
+- the best split up-vector/orientation-tail form loses 117.
+
+Each complete form audits all 40 references, but falls to 65.59-65.93% from
+the retained **70.64%**. The matcher source therefore keeps its shared trig
+pair and records the two native calls as explicit unaudited debt rather than
+accepting a five-point whole-function regression.
+
+The ledger now contains 37 records, 34 mutation sweeps, three probes, and 153
+evaluated variants (147 unique). Four consecutive non-improving sweeps stall
+this post-counter call-schedule frontier.
