@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-record",
+      "find": "                    int face_record_index =\n                        face_index\n                        + 2 * (face_row * width_cells + mesh_column);\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;",
+      "replacements": [
+        {
+          "name": "hoist-pointer-and-header",
+          "text": "                    int face_record_index =\n                        face_index\n                        + 2 * (face_row * width_cells + mesh_column);\n                    cRFaceQuad* face = &facequads[face_record_index];\n                    face->header_word = 0;\n                    if (face_index == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "second-face-record",
+      "find": "                        cRFaceQuad* face = &facequads[face_record_index];\n                        face->header_word = 0;",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "use-common-record",
+          "text": ""
+        }
+      ]
+    }
+  ]
+}

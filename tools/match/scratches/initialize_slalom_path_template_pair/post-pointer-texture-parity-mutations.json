@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-face-texture-parity",
+      "find": "                        front_face->texture_ref =\n                            g_texture_refs.Add(texture_a, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                        if ((mesh_column ^ face_row) & 1) {\n                            front_face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        } else {\n                            front_face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        }"
+        },
+        {
+          "name": "even-first",
+          "text": "                        if (!((mesh_column ^ face_row) & 1)) {\n                            front_face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        } else {\n                            front_face->texture_ref =\n                                g_texture_refs.Add(texture_a, 0, 0);\n                        }"
+        }
+      ]
+    },
+    {
+      "name": "back-face-texture-parity",
+      "find": "                        back_face->texture_ref =\n                            g_texture_refs.Add(texture_b, 0, 0);",
+      "replacements": [
+        {
+          "name": "odd-first",
+          "text": "                        if ((mesh_column ^ face_row) & 1) {\n                            back_face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        } else {\n                            back_face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        }"
+        },
+        {
+          "name": "even-first",
+          "text": "                        if (!((mesh_column ^ face_row) & 1)) {\n                            back_face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        } else {\n                            back_face->texture_ref =\n                                g_texture_refs.Add(texture_b, 0, 0);\n                        }"
+        }
+      ]
+    }
+  ]
+}

@@ -707,44 +707,46 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     int face_record_index =
                         face_index
                         + 2 * (face_row * width_cells + mesh_column);
+                    cRFaceQuad* front_face =
+                        &facequads[face_record_index];
                     if (face_index == 0) {
-                        cRFaceQuad* face = &facequads[face_record_index];
-                        face->header_word = 0;
-                        face->vertex_0 = mesh_column + face_row * ((unsigned short)width_cells + 1);
-                        face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        face->vertex_2 =
+                        front_face->header_word = 0;
+                        front_face->vertex_0 = mesh_column + face_row * ((unsigned short)width_cells + 1);
+                        front_face->vertex_1 = face_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
+                        front_face->vertex_2 =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        face->vertex_3 =
+                        front_face->vertex_3 =
                             mesh_column + (face_row + 1) * ((unsigned short)width_cells + 1);
-                        face->texture_ref =
+                        front_face->texture_ref =
                             g_texture_refs.Add(texture_a, 0, 0);
-                        face->uv[0].u = u0;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u1;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u1;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u0;
-                        face->uv[3].v = v1;
+                        front_face->uv[0].u = u0;
+                        front_face->uv[0].v = v0;
+                        front_face->uv[1].u = u1;
+                        front_face->uv[1].v = v0;
+                        front_face->uv[2].u = u1;
+                        front_face->uv[2].v = v1;
+                        front_face->uv[3].u = u0;
+                        front_face->uv[3].v = v1;
                     } else {
-                        cRFaceQuad* face = &facequads[face_record_index];
-                        face->header_word = 0;
-                        face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        face->vertex_1 = mesh_column + face_row * ((unsigned short)width_cells + 1);
-                        face->vertex_2 =
+                        cRFaceQuad* back_face =
+                            &facequads[face_record_index];
+                        back_face->header_word = 0;
+                        back_face->vertex_0 = face_row * ((unsigned short)width_cells + 1) + mesh_column + 1;
+                        back_face->vertex_1 = mesh_column + face_row * ((unsigned short)width_cells + 1);
+                        back_face->vertex_2 =
                             mesh_column + (face_row + 1) * ((unsigned short)width_cells + 1);
-                        face->vertex_3 =
+                        back_face->vertex_3 =
                             (face_row + 1) * ((unsigned short)width_cells + 1) + mesh_column + 1;
-                        face->texture_ref =
+                        back_face->texture_ref =
                             g_texture_refs.Add(texture_b, 0, 0);
-                        face->uv[0].u = u1;
-                        face->uv[0].v = v0;
-                        face->uv[1].u = u0;
-                        face->uv[1].v = v0;
-                        face->uv[2].u = u0;
-                        face->uv[2].v = v1;
-                        face->uv[3].u = u1;
-                        face->uv[3].v = v1;
+                        back_face->uv[0].u = u1;
+                        back_face->uv[0].v = v0;
+                        back_face->uv[1].u = u0;
+                        back_face->uv[1].v = v0;
+                        back_face->uv[2].u = u0;
+                        back_face->uv[2].v = v1;
+                        back_face->uv[3].u = u1;
+                        back_face->uv[3].v = v1;
                     }
                 }
                 mesh_column = next_column;

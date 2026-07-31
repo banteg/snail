@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-pointer",
+      "find": "                    int face_record_index =\n                        face_index\n                        + 2 * (face_row * width_cells + mesh_column);\n                    if (face_index == 0) {\n                        cRFaceQuad* face = &facequads[face_record_index];",
+      "replacements": [
+        {
+          "name": "hoist-before-side-branch",
+          "text": "                    int face_record_index =\n                        face_index\n                        + 2 * (face_row * width_cells + mesh_column);\n                    cRFaceQuad* face = &facequads[face_record_index];\n                    if (face_index == 0) {"
+        }
+      ]
+    },
+    {
+      "name": "second-face-pointer",
+      "find": "                        cRFaceQuad* face = &facequads[face_record_index];",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "use-hoisted-pointer",
+          "text": ""
+        }
+      ]
+    }
+  ]
+}

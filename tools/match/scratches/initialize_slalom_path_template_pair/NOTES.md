@@ -459,3 +459,36 @@ adding 37 weighted bytes. Reusing both row and column gains only 30, while
 row-only reuse is byte-neutral, so only the independently supported column
 lifetime is retained. Candidate/target size remains 690/696, prefix remains
 6/696, and all 40 references remain clean.
+
+## 2026-07-31 post-counter face-record cascade
+
+The recovered mesh-column lifetime materially changes the face allocation, so
+the earlier face-record alternatives were rerun rather than treated as
+permanent. Direct indexed records now add 12.23 weighted bytes and reach
+61.08%, but remain weaker than the record-owner recovery below.
+
+Native code computes the current face address at `0x41ffce..0x41ffd3`, clears
+its header at `0x41ffd6`, and enters the side branch at `0x41ffdb`. Giving the
+front record an owner before that branch while retaining a fresh back-record
+scope adds **92.22 weighted bytes** and raises focused matching from **60.61%**
+to **64.20%**. The candidate shrinks from 690 to 684 instructions against 696
+native, an explicit size tradeoff, while prefix 6/696 and all 40 clean
+references remain unchanged.
+
+The surrounding interactions make the scope specific:
+
+- collapsing both sides onto the outer pointer falls to 44.49%;
+- explicitly assigning that pointer again in the back arm reaches 63.77%,
+  below the retained distinct back owner;
+- hoisting the header with the front pointer reaches 64.01%, five weighted
+  bytes below the retained branch-local header;
+- direct records reach only 61.08%.
+
+The native duplicated checkerboard texture controls were also rerun after the
+owner cascade. A back-only branch gains six weighted bytes, but the front
+branch loses 44 and the required symmetric pair loses 107. The unsupported
+one-sided score is rejected; both texture calls stay semantically direct.
+
+The ledger now contains 42 records, 33 mutation sweeps, nine probes, and 176
+evaluated variants (167 unique). The retained owner is the only large,
+instruction-backed gain in this post-counter interaction family.

@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "first-face-record-owner",
+      "find": "                        cRFaceQuad* face = &facequads[face_record_index];",
+      "occurrence": 1,
+      "replacements": [
+        {
+          "name": "direct-indexed-record",
+          "text": "#define face (&facequads[face_record_index])"
+        }
+      ]
+    },
+    {
+      "name": "second-face-record-owner",
+      "find": "                        cRFaceQuad* face = &facequads[face_record_index];",
+      "occurrence": 2,
+      "replacements": [
+        {
+          "name": "reuse-direct-index-expression",
+          "text": ""
+        }
+      ]
+    }
+  ]
+}
