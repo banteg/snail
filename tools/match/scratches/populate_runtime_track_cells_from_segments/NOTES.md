@@ -1191,3 +1191,37 @@ countdown payload loops are likewise byte-identical. Cursor-first advancement
 reaches only 61.70%. Explicit row/payload zero locals, lane countdown
 spellings, complete-cell/list owners, and semantically equivalent tile/list
 operation schedules are neutral or regressive, so none is retained.
+
+## 2026-07-31 post-reset owner interaction bound
+
+The first post-intrinsic mismatch remains the saved receiver at candidate
+stack slot `-0x3c` instead of native `-0x38`. A dependency-complete replay
+tested the real values whose lifetimes could honestly exchange the adjacent
+setup slots:
+
+- complete function-entry `row_event_owner` and `active_segment` lifetimes
+  are byte-neutral;
+- retaining the early runtime base and consuming it at the main loop is
+  byte-neutral;
+- all three declaration orders for `segment_row`, `active_segment`, and
+  `base` are byte-neutral;
+- moving the complete segment cursor lifetime to function entry loses
+  49.99 weighted bytes;
+- the valid combined native-setup lifetime arrangements lose 112.49 weighted
+  bytes;
+- four representative glyph-cell owner forms are neutral or lose 8.12
+  weighted bytes.
+
+The target's five consecutive ring-flag transfers visibly reuse a full-width
+mask for both the authored-row test and runtime-row publication. Replaying
+that ownership as one reassigned local, five branch-local values, and
+dependency-complete value- and pointer-parameter `__forceinline` helpers is
+byte-neutral in every valid case. VC6 folds all of those source forms back to
+the retained direct expressions, so the register pattern does not distinguish
+a recoverable source owner at this frontier.
+
+The focused baseline therefore remains **62.59%** (`3155.57/5042` weighted
+bytes), 1238/1245 instructions, a 9-instruction exact prefix, and 111 clean /
+0 unresolved / 1 mismatch / 53 unaudited references. No dummy stack owner,
+padding, volatile dependency, asymmetric flag rewrite, or register coercion
+was retained.

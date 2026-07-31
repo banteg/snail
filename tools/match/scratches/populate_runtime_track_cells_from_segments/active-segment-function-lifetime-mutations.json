@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "active-segment-function-declaration",
+      "find": "void cRSubGame::BuildLevel()\n{\n    int runtime_build_seed;",
+      "replacements": [
+        {
+          "name": "declare-active-segment-at-entry",
+          "text": "void cRSubGame::BuildLevel()\n{\n    char* active_segment;\n    int runtime_build_seed;"
+        }
+      ]
+    },
+    {
+      "name": "active-segment-late-declaration",
+      "find": "    char* base = (char*)this;\n    int segment_row;\n    char* active_segment;\n    for (int build_row = 0; build_row < runtime_row_count;) {",
+      "replacements": [
+        {
+          "name": "consume-entry-owner",
+          "text": "    char* base = (char*)this;\n    int segment_row;\n    for (int build_row = 0; build_row < runtime_row_count;) {"
+        }
+      ]
+    }
+  ]
+}

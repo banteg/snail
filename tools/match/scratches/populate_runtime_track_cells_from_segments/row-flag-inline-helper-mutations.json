@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "row-flag-helper-definition",
+      "find": "void set_object_color(Object* object, tColour color);\n\nvoid cRSubGame::BuildLevel()",
+      "replacements": [
+        {
+          "name": "value-parameters",
+          "text": "void set_object_color(Object* object, tColour color);\n\nstatic __forceinline void copy_authored_row_flag(\n    int authored_flags,\n    int* runtime_flags,\n    int mask)\n{\n    if ((authored_flags & mask) != 0)\n        *runtime_flags |= mask;\n}\n\nvoid cRSubGame::BuildLevel()"
+        },
+        {
+          "name": "pointer-parameters",
+          "text": "void set_object_color(Object* object, tColour color);\n\nstatic __forceinline void copy_authored_row_flag(\n    int* authored_flags,\n    int* runtime_flags,\n    int mask)\n{\n    if ((*authored_flags & mask) != 0)\n        *runtime_flags |= mask;\n}\n\nvoid cRSubGame::BuildLevel()"
+        }
+      ]
+    },
+    {
+      "name": "row-flag-helper-calls",
+      "find": "            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_RING_NONE)\n                != 0)\n                *(int*)row_record |= SUBROW_FLAG_RING_NONE;\n            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_RING_NORMAL)\n                != 0)\n                *(int*)row_record |= SUBROW_FLAG_RING_NORMAL;\n            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP)\n                != 0)\n                *(int*)row_record |= SUBROW_FLAG_RING_POWER_UP;\n            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE)\n                != 0)\n                *(int*)row_record |= SUBROW_FLAG_RING_EXPLODE;\n            if ((*(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE)\n                    & AUTHORED_SEGMENT_ROW_FLAG_RING_SLOW)\n                != 0)\n                *(int*)row_record |= SUBROW_FLAG_RING_SLOW;",
+      "replacements": [
+        {
+          "name": "value-calls",
+          "text": "            copy_authored_row_flag(\n                *(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_NONE);\n            copy_authored_row_flag(\n                *(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_NORMAL);\n            copy_authored_row_flag(\n                *(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_POWER_UP);\n            copy_authored_row_flag(\n                *(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_EXPLODE);\n            copy_authored_row_flag(\n                *(int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_SLOW);"
+        },
+        {
+          "name": "pointer-calls",
+          "text": "            copy_authored_row_flag(\n                (int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_NONE);\n            copy_authored_row_flag(\n                (int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_NORMAL);\n            copy_authored_row_flag(\n                (int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_POWER_UP);\n            copy_authored_row_flag(\n                (int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_EXPLODE);\n            copy_authored_row_flag(\n                (int*)(authored_row_owner + SEGMENT_AUTHORED_ROWS_BASE),\n                (int*)row_record,\n                SUBROW_FLAG_RING_SLOW);"
+        }
+      ]
+    }
+  ]
+}
