@@ -1378,3 +1378,48 @@ attachment-template slot lifetimes lose 61-77; stamped-row scoping loses
 post-switch zero owners are neutral or lose 92; and trampoline `else-if`
 spellings are neutral or gain only while degrading the reference audit.
 None is retained.
+
+## 2026-07-31 post-ownership loop initialization
+
+The latest row, glyph-list, attachment, and trampoline owners changed the
+enclosing allocation enough to justify replaying the setup and segment-loop
+frontiers against the current source.
+
+Windows' mode-3 accumulator at `0x435fd9..0x435ff2` is a post-tested
+16-iteration countdown. It computes the next row total in a register, publishes
+that total, and only then decrements the counter. Retaining the corresponding
+`rows_remaining` and `next_runtime_row_count` owners adds **4.04 weighted
+bytes** without changing instruction count, exact prefix, or reference
+quality. A preincrement index loop compiles to the same bytes, but the retained
+countdown follows the native control and value flow.
+
+The outer builder likewise initializes `build_row` at `0x4361ca` before the
+`runtime_row_count <= 0` exit at `0x4361d4`. Moving that real initialization
+before the guard and expressing the post-selection traversal as a `while`
+loop adds another **4.04 weighted bytes**. The resulting retained frontier is:
+
+```text
+match: 76.26%
+target: 1245 insns, candidate: 1249 insns
+prefix: 76/1245 target insns
+masked operands: 162 ok, 0 unresolved, 1 mismatch, 4 unaudited
+```
+
+The one mismatch remains the physical glyph jump table, and the four
+unaudited references remain the displaced row-model/parcel transfers.
+
+Current-state dependency checks bound the adjacent apparent owners. Of the 31
+selected-segment declaration/publication combinations, 8 complete forms are
+byte-identical, 8 complete forms lose four weighted bytes, and the 15 forms
+that use the owner without declaring it are intentionally invalid. No complete
+form improves the retained baseline. Eight receiver/loop forms show that a
+named `build_runtime_owner` does not recover the target's long-lived `EBX`;
+only the independently proved early `build_row` initialization contributes.
+
+Four pointer, reference, and `SubTracks` aliases for `random_enabled` add four
+more weighted bytes by preventing VC6 from hoisting its load above the
+`base_subgame_rate` store. They are rejected as score-only aliases: both
+mobile `BuildLevel` bodies preserve the direct member read after that store,
+and Windows exposes no distinct borrowed owner. The ledger now contains 134
+records, 128 mutation sweeps, and 531 unique variants; no alias, dummy
+dependency, or register-shaped lifetime is retained.

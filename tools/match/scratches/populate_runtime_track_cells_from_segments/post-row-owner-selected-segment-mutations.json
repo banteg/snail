@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "selected-segment-declaration",
+      "find": "    char* base = (char*)this;\n    char* active_segment;",
+      "replacements": [
+        {
+          "name": "separate-selected-owner",
+          "text": "    char* base = (char*)this;\n    char* selected_segment;\n    char* active_segment;"
+        }
+      ]
+    },
+    {
+      "name": "first-segment-publication",
+      "find": "            active_segment = base + LEVEL_FIRST_SEGMENT_BASE;\n            first_or_last_row = 1;\n            ((SubSegment*)active_segment)->row_base = build_row;",
+      "replacements": [
+        {
+          "name": "selected-then-active",
+          "text": "            selected_segment = base + LEVEL_FIRST_SEGMENT_BASE;\n            first_or_last_row = 1;\n            active_segment = selected_segment;\n            ((SubSegment*)selected_segment)->row_base = build_row;"
+        }
+      ]
+    },
+    {
+      "name": "last-segment-publication",
+      "find": "            active_segment = base + LEVEL_LAST_SEGMENT_BASE;\n            first_or_last_row = 1;\n            ((SubSegment*)active_segment)->row_base = build_row;",
+      "replacements": [
+        {
+          "name": "selected-then-active",
+          "text": "            selected_segment = base + LEVEL_LAST_SEGMENT_BASE;\n            first_or_last_row = 1;\n            active_segment = selected_segment;\n            ((SubSegment*)selected_segment)->row_base = build_row;"
+        }
+      ]
+    },
+    {
+      "name": "random-segment-publication",
+      "find": "                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                ((SubSegment*)active_segment)->visited = 1;",
+      "replacements": [
+        {
+          "name": "selected-then-active",
+          "text": "                selected_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                active_segment = selected_segment;\n                ((SubSegment*)selected_segment)->visited = 1;"
+        }
+      ]
+    },
+    {
+      "name": "sequential-segment-publication",
+      "find": "                active_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;",
+      "replacements": [
+        {
+          "name": "selected-then-active",
+          "text": "                selected_segment =\n                    base + LEVEL_SEGMENT_SLOTS_BASE + sizeof(SubSegment) * picked;\n                active_segment = selected_segment;"
+        }
+      ],
+      "occurrence": 2
+    }
+  ]
+}

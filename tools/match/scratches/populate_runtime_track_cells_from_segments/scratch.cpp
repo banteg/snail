@@ -135,8 +135,12 @@ void cRSubGame::BuildLevel()
             + last_segment->row_count;
         SubSegment* repeated_segment =
             &level_definition.segment_slots[0];
-        for (int i = 0; i < 16; ++i)
-            runtime_row_count += repeated_segment->row_count;
+        int rows_remaining = 16;
+        do {
+            int next_runtime_row_count =
+                runtime_row_count + repeated_segment->row_count;
+            runtime_row_count = next_runtime_row_count;
+        } while (--rows_remaining != 0);
         segment_cursor = 0;
         completion_row_start = runtime_row_count - last_segment->row_count;
         completion_row_start = runtime_row_count - last_segment->row_count;
@@ -369,12 +373,13 @@ void cRSubGame::BuildLevel()
             level_definition.segment_slots[i].visited = 0;
     }
 
+    int build_row = 0;
     if (runtime_row_count <= 0)
         return;
 
     char* base = (char*)this;
     char* active_segment;
-    for (int build_row = 0; build_row < runtime_row_count;) {
+    while (build_row < runtime_row_count) {
         if (build_row == 0) {
             active_segment = base + LEVEL_FIRST_SEGMENT_BASE;
             first_or_last_row = 1;

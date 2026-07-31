@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-row-owner-main-loop",
+      "find": "    if (runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)this;\n    char* active_segment;\n    for (int build_row = 0; build_row < runtime_row_count;) {",
+      "replacements": [
+        {
+          "name": "owner-before-check-for",
+          "text": "    cRSubGame* build_runtime_owner = this;\n    if (build_runtime_owner->runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)build_runtime_owner;\n    char* active_segment;\n    for (int build_row = 0;\n         build_row < build_runtime_owner->runtime_row_count;) {"
+        },
+        {
+          "name": "owner-after-check-for",
+          "text": "    if (runtime_row_count <= 0)\n        return;\n\n    cRSubGame* build_runtime_owner = this;\n    char* base = (char*)build_runtime_owner;\n    char* active_segment;\n    for (int build_row = 0;\n         build_row < build_runtime_owner->runtime_row_count;) {"
+        },
+        {
+          "name": "owner-before-check-while",
+          "text": "    cRSubGame* build_runtime_owner = this;\n    if (build_runtime_owner->runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)build_runtime_owner;\n    char* active_segment;\n    int build_row = 0;\n    while (build_row < build_runtime_owner->runtime_row_count) {"
+        },
+        {
+          "name": "owner-after-check-while",
+          "text": "    if (runtime_row_count <= 0)\n        return;\n\n    cRSubGame* build_runtime_owner = this;\n    char* base = (char*)build_runtime_owner;\n    char* active_segment;\n    int build_row = 0;\n    while (build_row < build_runtime_owner->runtime_row_count) {"
+        },
+        {
+          "name": "row-before-owner-while",
+          "text": "    int build_row = 0;\n    cRSubGame* build_runtime_owner = this;\n    if (build_runtime_owner->runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)build_runtime_owner;\n    char* active_segment;\n    while (build_row < build_runtime_owner->runtime_row_count) {"
+        },
+        {
+          "name": "row-before-owner-for",
+          "text": "    int build_row = 0;\n    cRSubGame* build_runtime_owner = this;\n    if (build_runtime_owner->runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)build_runtime_owner;\n    char* active_segment;\n    for (; build_row < build_runtime_owner->runtime_row_count;) {"
+        },
+        {
+          "name": "row-before-check-while",
+          "text": "    int build_row = 0;\n    if (runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)this;\n    char* active_segment;\n    while (build_row < runtime_row_count) {"
+        },
+        {
+          "name": "row-before-check-for",
+          "text": "    int build_row = 0;\n    if (runtime_row_count <= 0)\n        return;\n\n    char* base = (char*)this;\n    char* active_segment;\n    for (; build_row < runtime_row_count;) {"
+        }
+      ]
+    }
+  ]
+}
