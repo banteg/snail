@@ -485,3 +485,30 @@ candidate size from 660 to 656 against the 663-instruction target. That result
 disrupts the independently recovered branch-local face unit and carries all
 three matcher tradeoff warnings. The complete probe is recorded; Toad keeps
 its stronger 65.76%, 89-prefix source.
+
+## 2026-07-31 stable-prefix owner replay
+
+The direct-face and secondary-position recoveries changed the enclosing
+allocation, so the remaining ordinary owner grids were replayed against the
+65.76%, 89-prefix source.
+
+All six declaration orders for `lead_count`, `tail_count`, `start_x`, and
+`turn_sign` are byte-identical, confirming that the recovered branch
+assignment schedule—not declaration order—accounts for the exact header.
+All eight terminal-endpoint materializations regress; the closest
+default-constructed Y/X/Z form loses 10.96 weighted bytes while leaving the
+proven prefix and references unchanged.
+
+Replacing the delta loop's scoped sample pointers with direct arrays adds
+46.19 weighted bytes and reaches 67.67%, but reproduces the same structural
+tradeoff as the explicit delta cursor: candidate size grows from 660 to 667
+instructions, the exact prefix falls from 89 to 38 instructions, and the first
+mismatch moves from target offset `0x173` to `0xa1`. Scoped references are
+byte-identical, while bank pointers lose 56.12 weighted bytes. The direct-array
+result is rejected because it breaks the independently proved tail and curve
+frontier rather than resolving it.
+
+Toad remains at **65.76%**, 660/663 instructions, prefix 89/663, and 33 clean
+references. The ledger now contains 52 records, 49 mutation sweeps, 3 probes,
+and 213 unique variants; the remaining aggregate wins all carry the same
+prefix, first-mismatch, and instruction-count tradeoffs.
