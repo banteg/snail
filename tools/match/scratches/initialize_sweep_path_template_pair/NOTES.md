@@ -368,3 +368,41 @@ bytes and falls from **80.18%** to **75.17%**, while shortening the candidate
 from 650 to 649 instructions against 652 native. Prefix 24/652 and all 37
 references remain unchanged. Sweep keeps its branch-local current and
 preceding sample records.
+
+## 2026-07-31 mesh row and terminal cursor ownership
+
+The Windows mesh body at `0x42323c..0x423310` owns a physical sample byte
+offset alongside its logical row. Replacing the source-level indexed outer
+loop with the native `row`/`sample_offset` `do/while` control raises focused
+matching from **80.18%** to **81.11%** without changing the 650/652 instruction
+count, 24-instruction prefix, or 37 clean references.
+
+The terminal-row branch does not own a separately rebased `previous` sample.
+It keeps the current byte cursor and borrows the preceding record through
+negative `PathTemplateSample` offsets. Replaying that exact ownership raises
+the result again to **83.10%**, a total gain of about 71 weighted bytes over
+the pre-milestone source. A recorded reverse probe confirms the complete
+transfer:
+
+```text
+baseline: 83.10%, 650/652 instructions, prefix 24
+revert:   80.18%, 650/652 instructions, prefix 24
+delta:    +71 weighted bytes, +2.92 percentage points
+```
+
+The first curved sample is still the identity case. Spelling the following
+orientation branch as `i > 3 * sizeof(PathTemplateSample)` matches the native
+relational `jle` layout. The equivalent `i != ...` form scores 81.72% on the
+post-row baseline, but emits `je` and folds the identity addresses instead of
+preserving the native current-cursor relationship, so it is recorded but
+rejected. Seven equivalent guards were compiled twice across the dependency
+cascade.
+
+The endpoint constructor plus `Vector3::operator+` remains strongest. Scalar
+endpoint assignments reach 82.67% and recover the target-sized instruction
+count, while a manual generated-position constructor reaches 82.82%; neither
+justifies trading away the stronger native vector owner. A branch-local
+face-record reference collapses the result to 59.46%. Finally, negating both
+equal-texture checkerboard conditions is byte- and score-neutral but aligns
+their branch opcode with the native `jne`, so that evidence-backed spelling is
+retained.

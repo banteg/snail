@@ -21,36 +21,56 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
 
     Vector3* vertices = path->strip_mesh->vertices;
     cRFaceQuad* facequads = path->strip_mesh->facequads;
-    int row;
+    int row = 0;
     int column;
+    int face_index;
 
-    for (row = 0; row <= path->segment_count; ++row) {
-        for (column = 0; column <= path->width_cells; ++column) {
-            double lateral = (float)column - (float)path->width_cells * 0.5f;
-            if (row != path->segment_count) {
-                PathTemplateSample* sample = &path->primary_samples[row];
-                Vector3 lateral_offset =
-                    sample->transform.basis_right * lateral;
-                Vector3 generated_position =
-                    sample->transform.position + lateral_offset;
-                Vector3* vertex =
-                    &vertices[column + row * (path->width_cells + 1)];
-                *vertex = generated_position;
-            } else {
-                PathTemplateSample* previous = &path->primary_samples[row - 1];
-                Vector3 lateral_offset =
-                    previous->transform.basis_right * lateral;
-                Vector3 endpoint(
-                    previous->transform.position.x,
-                    previous->transform.position.y,
-                    previous->transform.position.z + 1.0f);
-                Vector3 generated_position =
-                    endpoint + lateral_offset;
-                Vector3* vertex =
-                    &vertices[column + row * (path->width_cells + 1)];
-                *vertex = generated_position;
+    if (path->segment_count >= 0) {
+        int sample_offset = 0;
+        do {
+            column = 0;
+            if (path->width_cells >= 0) {
+                do {
+                    double lateral =
+                        (float)column - (float)path->width_cells * 0.5f;
+                    if (row != path->segment_count) {
+                        PathTemplateSample* sample =
+                            (PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset);
+                        Vector3 lateral_offset =
+                            sample->transform.basis_right * lateral;
+                        Vector3 generated_position =
+                            sample->transform.position + lateral_offset;
+                        Vector3* vertex =
+                            &vertices[column
+                                + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    } else {
+                        Vector3 lateral_offset =
+                            ((PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset))[-1].transform.basis_right
+                            * lateral;
+                        Vector3 endpoint(
+                            ((PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset))[-1].transform.position.x,
+                            ((PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset))[-1].transform.position.y,
+                            ((PathTemplateSample*)((char*)path->primary_samples
+                                + sample_offset))[-1].transform.position.z
+                                + 1.0f);
+                        Vector3 generated_position =
+                            endpoint + lateral_offset;
+                        Vector3* vertex =
+                            &vertices[column
+                                + row * (path->width_cells + 1)];
+                        *vertex = generated_position;
+                    }
+                    ++column;
+                } while (column <= path->width_cells);
             }
-        }
+            ++row;
+            sample_offset += sizeof(PathTemplateSample);
+        } while (row <= path->segment_count);
     }
 
     for (row = 0; row < path->segment_count; ++row) {
@@ -63,7 +83,6 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                 next_column = column + 1;
                 float u0 = (float)column * 0.125f;
                 float u1 = (float)(column + 1) * 0.125f;
-                int face_index;
                 for (face_index = 0; face_index < 2; ++face_index) {
                     int face_offset =
                         2 * column
@@ -76,7 +95,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                             (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
                         facequads[face_offset].vertex_3 =
                             column + (row + 1) * ((unsigned short)path->width_cells + 1);
-                        if ((column ^ row) & 1) {
+                        if (!((column ^ row) & 1)) {
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_a, 0, 0);
                         } else {
@@ -99,7 +118,7 @@ static __forceinline void build_strip_mesh(Path* path, char* texture_a, char* te
                             column + (row + 1) * ((unsigned short)path->width_cells + 1);
                         facequads[face_offset].vertex_3 =
                             (row + 1) * ((unsigned short)path->width_cells + 1) + column + 1;
-                        if ((column ^ row) & 1) {
+                        if (!((column ^ row) & 1)) {
                             facequads[face_offset].texture_ref =
                                 g_texture_refs.Add(texture_b, 0, 0);
                         } else {
@@ -232,12 +251,7 @@ void cRPath::initialize_sweep_path_template_pair(
                 ->transform.position.y + 0.49000001f;
         ((PathTemplateSample*)((char*)secondary_samples + i))
             ->transform.position.z = z;
-        if (i == 3 * (int)sizeof(PathTemplateSample)) {
-            ((PathTemplateSample*)((char*)primary_samples + i) - 1)
-                ->transform.RotIdentity();
-            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
-                ->transform.RotIdentity();
-        } else {
+        if (i > 3 * (int)sizeof(PathTemplateSample)) {
             ((PathTemplateSample*)((char*)primary_samples + i) - 1)
                 ->transform.basis_up =
                 Vector3(0.0f, 1.0f, 0.0f);
@@ -273,6 +287,11 @@ void cRPath::initialize_sweep_path_template_pair(
                     ->transform.basis_up,
                 &((PathTemplateSample*)((char*)secondary_samples + i) - 1)
                     ->transform.basis_forward);
+        } else {
+            ((PathTemplateSample*)((char*)primary_samples + i) - 1)
+                ->transform.RotIdentity();
+            ((PathTemplateSample*)((char*)secondary_samples + i) - 1)
+                ->transform.RotIdentity();
         }
         ++curve_index;
     }

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-face-orientation-guard",
+      "find": "        if (i > 3 * (int)sizeof(PathTemplateSample)) {",
+      "replacements": [
+        {
+          "name": "cursor-greater-constant",
+          "text": "        if (i > 0x1f8) {"
+        },
+        {
+          "name": "cursor-at-least-next-sizeof",
+          "text": "        if (i >= 4 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "cursor-at-least-next-constant",
+          "text": "        if (i >= 0x2a0) {"
+        },
+        {
+          "name": "cursor-not-first-sizeof",
+          "text": "        if (i != 3 * (int)sizeof(PathTemplateSample)) {"
+        },
+        {
+          "name": "curve-index-positive",
+          "text": "        if (curve_index > 0) {"
+        },
+        {
+          "name": "curve-index-nonzero",
+          "text": "        if (curve_index != 0) {"
+        },
+        {
+          "name": "curve-index-at-least-one",
+          "text": "        if (curve_index >= 1) {"
+        }
+      ]
+    }
+  ]
+}
