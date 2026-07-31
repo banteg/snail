@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "sprite-workspace-acquisition",
+      "find": "            cRSprite* sprite = g_sprite_active_heads[camera_index];\n            SpriteDepthNode* next_depth_node = g_sprite_depth_nodes;\n            begin_sprite_depth_render_state();",
+      "replacements": [
+        {
+          "name": "split-sprite-then-node",
+          "text": "            cRSprite* sprite;\n            SpriteDepthNode* next_depth_node;\n            sprite = g_sprite_active_heads[camera_index];\n            next_depth_node = g_sprite_depth_nodes;\n            begin_sprite_depth_render_state();"
+        },
+        {
+          "name": "split-node-then-sprite",
+          "text": "            SpriteDepthNode* next_depth_node;\n            cRSprite* sprite;\n            sprite = g_sprite_active_heads[camera_index];\n            next_depth_node = g_sprite_depth_nodes;\n            begin_sprite_depth_render_state();"
+        },
+        {
+          "name": "node-first-initialized",
+          "text": "            SpriteDepthNode* next_depth_node = g_sprite_depth_nodes;\n            cRSprite* sprite = g_sprite_active_heads[camera_index];\n            begin_sprite_depth_render_state();"
+        },
+        {
+          "name": "sprite-initialized-node-split",
+          "text": "            cRSprite* sprite = g_sprite_active_heads[camera_index];\n            SpriteDepthNode* next_depth_node;\n            next_depth_node = g_sprite_depth_nodes;\n            begin_sprite_depth_render_state();"
+        },
+        {
+          "name": "node-declared-sprite-initialized",
+          "text": "            SpriteDepthNode* next_depth_node;\n            cRSprite* sprite = g_sprite_active_heads[camera_index];\n            next_depth_node = g_sprite_depth_nodes;\n            begin_sprite_depth_render_state();"
+        },
+        {
+          "name": "array-zero-address",
+          "text": "            cRSprite* sprite = g_sprite_active_heads[camera_index];\n            SpriteDepthNode* next_depth_node = &g_sprite_depth_nodes[0];\n            begin_sprite_depth_render_state();"
+        },
+        {
+          "name": "pointer-index-head",
+          "text": "            cRSprite* sprite = *(g_sprite_active_heads + camera_index);\n            SpriteDepthNode* next_depth_node = g_sprite_depth_nodes;\n            begin_sprite_depth_render_state();"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-sprite-position-copy",
+      "find": "                        transform.position.x = bod->position.x;\n                        transform.position.y = bod->position.y;\n                        transform.position.z = bod->position.z;",
+      "replacements": [
+        {
+          "name": "whole-vector",
+          "text": "                        transform.position = bod->position;"
+        },
+        {
+          "name": "borrowed-vector",
+          "text": "                        Vector3* position = &bod->position;\n                        transform.position = *position;"
+        },
+        {
+          "name": "copied-vector",
+          "text": "                        Vector3 position = bod->position;\n                        transform.position = position;"
+        }
+      ]
+    }
+  ]
+}

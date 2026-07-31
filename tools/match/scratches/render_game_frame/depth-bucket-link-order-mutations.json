@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "depth-bucket-link-order",
+      "find": "                                if (cursor == 0) {\n                                    previous->next = node;\n                                    node->next = 0;\n                                } else if (previous == 0) {\n                                    node->next = cursor;\n                                    g_sprite_depth_buckets[bucket_index] = node;\n                                } else {\n                                    previous->next = node;\n                                    node->next = cursor;\n                                }",
+      "replacements": [
+        {
+          "name": "non-null-previous-first",
+          "text": "                                if (cursor == 0) {\n                                    previous->next = node;\n                                    node->next = 0;\n                                } else if (previous != 0) {\n                                    previous->next = node;\n                                    node->next = cursor;\n                                } else {\n                                    node->next = cursor;\n                                    g_sprite_depth_buckets[bucket_index] = node;\n                                }"
+        },
+        {
+          "name": "nested-non-null-previous-first",
+          "text": "                                if (cursor == 0) {\n                                    previous->next = node;\n                                    node->next = 0;\n                                } else {\n                                    if (previous != 0) {\n                                        previous->next = node;\n                                        node->next = cursor;\n                                    } else {\n                                        node->next = cursor;\n                                        g_sprite_depth_buckets[bucket_index] = node;\n                                    }\n                                }"
+        },
+        {
+          "name": "nested-null-previous-first",
+          "text": "                                if (cursor == 0) {\n                                    previous->next = node;\n                                    node->next = 0;\n                                } else {\n                                    if (previous == 0) {\n                                        node->next = cursor;\n                                        g_sprite_depth_buckets[bucket_index] = node;\n                                    } else {\n                                        previous->next = node;\n                                        node->next = cursor;\n                                    }\n                                }"
+        }
+      ]
+    }
+  ]
+}

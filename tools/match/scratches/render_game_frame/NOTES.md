@@ -2,8 +2,8 @@
 
 Relationship-first scratch for the frame renderer at `0x40a490`.
 
-Current Wibo result after the original viewport-owner replay:
-56.16%, 430 candidate instructions versus 439 target instructions, with
+Current Wibo result after the depth-node and replay-copy ownership replay:
+67.28%, 429 candidate instructions versus 439 target instructions, with
 a 6-instruction exact prefix, 34 masked operands ok, 0 unresolved, and 0
 mismatch. The helper calls at `0x414650`, `0x413540`, `0x413650`, `0x411e10`,
 and `0x411de0` resolve to standalone exact scratches.
@@ -324,3 +324,38 @@ between 28 and 146. The append-only `experiments.jsonl` therefore reports
 mobile control flow remains valuable provenance, but forcing it into the
 Windows scratch destabilizes the broader VC6 allocation and is not an honest
 match improvement.
+
+## 2026-07-31 depth-node and replay-copy ownership
+
+The native sprite insertion allocates its current depth node before entering
+the bucket branches: it snapshots the workspace cursor and advances that
+cursor by one `0x18`-byte node immediately after loading the selected bucket.
+The scratch previously mutated the cursor only after filling the node, which
+kept the allocator in a register and distorted the entire insertion lane.
+Spelling the recovered event as `node = next_depth_node++` raises focused Wibo
+from 56.16% to 63.51% (+107.37 weighted bytes), with the same six-instruction
+prefix and all 34 operands clean. Its three post-increment/split-increment
+spellings are byte-identical; the retained form follows native evaluation
+order.
+
+Two smaller native control relationships compound that ownership correction.
+Scoping `previous` and `cursor` under the non-empty head guard adds 6.75
+weighted bytes, and testing the non-null previous node before the head-replace
+case adds another 6.75. The insertion lane consequently reaches 64.43%
+without casts, duplicated tests, or instruction-count padding.
+
+The post-sprite replay also uses a transient `Vector3` value before copying
+the staged BOD position into the reusable transform. This matches the native
+stack copy and the mobile replay's temporary position owner; the former three
+component stores were a decompiler-shaped spelling unique to the scratch.
+Retaining the copied value restores two candidate instructions and adds 41.57
+weighted bytes. The focused renderer now reaches 67.28%, 429/439
+instructions, prefix 6, with 34/34 clean resolved operands.
+
+Eight new recorded sweeps cover 32 unique variants. Six replay-ledger orders,
+six legal current-body owner splits, and six workspace-acquisition spellings
+are byte-neutral; initializing the node before the sprite regresses by 164
+weighted bytes. Three base-prefix/derived-body splits remain neutral both
+before and after the copied position is introduced. The complete renderer
+ledger now contains 11 sweeps and 64 unique variants, with four newly retained
+source-shape wins and no experiment errors.

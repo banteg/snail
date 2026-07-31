@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "post-sprite-ledger-order",
+      "find": "                int replay_count = post_sprite_count;\n                post_sprite_count = 0;\n                rendered_bod_count += replay_count;\n                RenderableBod** post_cursor =\n                    g_post_sprite_bods + replay_count;",
+      "replacements": [
+        {
+          "name": "snapshot-total-cursor-clear",
+          "text": "                int replay_count = post_sprite_count;\n                rendered_bod_count += replay_count;\n                RenderableBod** post_cursor =\n                    g_post_sprite_bods + replay_count;\n                post_sprite_count = 0;"
+        },
+        {
+          "name": "snapshot-direct-total-cursor-clear",
+          "text": "                int replay_count = post_sprite_count;\n                rendered_bod_count += post_sprite_count;\n                RenderableBod** post_cursor =\n                    g_post_sprite_bods + post_sprite_count;\n                post_sprite_count = 0;"
+        },
+        {
+          "name": "total-snapshot-cursor-clear",
+          "text": "                rendered_bod_count += post_sprite_count;\n                int replay_count = post_sprite_count;\n                RenderableBod** post_cursor =\n                    g_post_sprite_bods + replay_count;\n                post_sprite_count = 0;"
+        },
+        {
+          "name": "snapshot-cursor-total-clear",
+          "text": "                int replay_count = post_sprite_count;\n                RenderableBod** post_cursor =\n                    g_post_sprite_bods + replay_count;\n                rendered_bod_count += replay_count;\n                post_sprite_count = 0;"
+        },
+        {
+          "name": "snapshot-total-clear-cursor",
+          "text": "                int replay_count = post_sprite_count;\n                rendered_bod_count += replay_count;\n                post_sprite_count = 0;\n                RenderableBod** post_cursor =\n                    g_post_sprite_bods + replay_count;"
+        },
+        {
+          "name": "cursor-snapshot-total-clear",
+          "text": "                RenderableBod** post_cursor =\n                    g_post_sprite_bods + post_sprite_count;\n                int replay_count = post_sprite_count;\n                rendered_bod_count += replay_count;\n                post_sprite_count = 0;"
+        }
+      ]
+    }
+  ]
+}

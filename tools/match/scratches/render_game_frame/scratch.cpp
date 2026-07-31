@@ -194,34 +194,34 @@ void GameRoot::render_game_frame()
                         }
                         if (bucket_index >= 0) {
                             SpriteDepthNode* head = g_sprite_depth_buckets[bucket_index];
-                            SpriteDepthNode* previous = 0;
-                            SpriteDepthNode* cursor = head;
-                            if (cursor != 0) {
+                            SpriteDepthNode* node = next_depth_node++;
+                            if (head != 0) {
+                                SpriteDepthNode* previous = 0;
+                                SpriteDepthNode* cursor = head;
                                 while (cursor != 0 && depth_key < cursor->depth_key) {
                                     previous = cursor;
                                     cursor = cursor->next;
                                 }
                                 if (cursor == 0) {
-                                    previous->next = next_depth_node;
-                                    next_depth_node->next = 0;
-                                } else if (previous == 0) {
-                                    next_depth_node->next = cursor;
-                                    g_sprite_depth_buckets[bucket_index] = next_depth_node;
+                                    previous->next = node;
+                                    node->next = 0;
+                                } else if (previous != 0) {
+                                    previous->next = node;
+                                    node->next = cursor;
                                 } else {
-                                    previous->next = next_depth_node;
-                                    next_depth_node->next = cursor;
+                                    node->next = cursor;
+                                    g_sprite_depth_buckets[bucket_index] = node;
                                 }
                             } else {
-                                g_sprite_depth_buckets[bucket_index] = next_depth_node;
-                                next_depth_node->next = 0;
+                                g_sprite_depth_buckets[bucket_index] = node;
+                                node->next = 0;
                             }
 
-                            next_depth_node->position = projected;
-                            next_depth_node->depth_key = depth_key;
-                            next_depth_node->sprite = sprite;
+                            node->position = projected;
+                            node->depth_key = depth_key;
+                            node->sprite = sprite;
                             sprite->render_bucket_index = bucket_index;
                             sprite->render_depth_key = depth_key;
-                            ++next_depth_node;
                         }
                     }
                 } else {
@@ -280,9 +280,8 @@ void GameRoot::render_game_frame()
                             &bod->color,
                             (char)bod->IsAfterSprites());
                     } else {
-                        transform.position.x = bod->position.x;
-                        transform.position.y = bod->position.y;
-                        transform.position.z = bod->position.z;
+                        Vector3 position = bod->position;
+                        transform.position = position;
                         render_object(
                             bod->object,
                             &transform,
