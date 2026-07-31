@@ -13,7 +13,7 @@ extern char g_level_file_text_buffer[]; // data_74ec78
 
 #define LEVEL_FILE_BUFFER g_level_file_text_buffer
 
-int sprintf(char* buffer, char* format, ...);
+int sprintf(char* buffer, const char* format, ...);
 int report_errorf(char* format, ...);
 int report_warningf(char* format, ...);
 void* load_file_bytes_from_archive_or_fs(

@@ -301,3 +301,21 @@ the early cleanup hypothesis without retaining declaration shielding or
 source-grouping scaffolds. The ledger now contains 11 sweeps and 81 unique
 variants, with four improving sweeps and a trailing no-improvement streak of
 two.
+
+## 2026-07-31 CRT declaration cleanup bound
+
+The remaining early difference is where VC6 reclaims cdecl argument space
+across the fallback `report_errorf`/`sprintf`/file-load calls and the later
+Galaxy parse/format calls. The exact standalone error reporter confirms its
+integer return contract, while the file loader already has its exact wrapper
+prototype. The final untested declaration owner was therefore the real CRT
+`sprintf(char*, const char*, ...)` contract.
+
+All four const-qualified, explicit-cdecl, and C-linkage spellings are
+byte-identical at **88.12%**, 942/926 instructions, prefix 20/926, 183 clean
+references, and the same two bounded unaudited EOF diagnostics. The standard
+const-qualified declaration is retained as source truth, but it does not move
+the cleanup boundary. The ledger now contains 12 sweeps, 86 evaluated and 85
+unique variants, with a three-sweep no-improvement streak. The parser is
+formally stalled pending new compiler or original-source provenance for that
+cleanup schedule.
