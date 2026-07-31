@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "height-scale-declaration",
+      "find": "    float height_scale_value = PATH_HEIGHT_SCALE;",
+      "replacements": [
+        {
+          "name": "declaration-only",
+          "text": "    float height_scale_value;"
+        }
+      ]
+    },
+    {
+      "name": "height-scale-assignment",
+      "find": "    curve_count = (int)curve_count_source;\n    width_cells_ = curve_count;\n    width_or_scale = height_scale_value;\n    int endpoint_index = curve_count + 1;",
+      "replacements": [
+        {
+          "name": "after-curve-count",
+          "text": "    curve_count = (int)curve_count_source;\n    height_scale_value = PATH_HEIGHT_SCALE;\n    width_cells_ = curve_count;\n    width_or_scale = height_scale_value;\n    int endpoint_index = curve_count + 1;"
+        },
+        {
+          "name": "after-width-alias",
+          "text": "    curve_count = (int)curve_count_source;\n    width_cells_ = curve_count;\n    height_scale_value = PATH_HEIGHT_SCALE;\n    width_or_scale = height_scale_value;\n    int endpoint_index = curve_count + 1;"
+        },
+        {
+          "name": "after-endpoint-index",
+          "text": "    curve_count = (int)curve_count_source;\n    width_cells_ = curve_count;\n    int endpoint_index = curve_count + 1;\n    height_scale_value = PATH_HEIGHT_SCALE;\n    width_or_scale = height_scale_value;"
+        }
+      ]
+    }
+  ]
+}

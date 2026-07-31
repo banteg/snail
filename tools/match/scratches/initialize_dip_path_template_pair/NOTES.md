@@ -338,3 +338,45 @@ bytes and falls from **63.47%** to **58.46%**, while growing the candidate
 from 640 to 645 instructions. Prefix remains 8/655 and all 37 references stay
 clean. Dip therefore keeps the branch-local sample and preceding-sample owners
 on its direct-face baseline.
+
+## 2026-07-31 post-face count and counter ownership
+
+The direct face-record recovery changed Dip's global allocation enough to
+invalidate the earlier header and mesh-counter conclusions. Replaying those
+native-backed grids on the 63.47% baseline recovers two source owners.
+
+The converted curve count is a distinct logical value before it is copied to
+the reused `width_cells_` argument slot. Windows stores that value at
+`0x41e472`, and both exact mobile bodies independently retain their integer
+curve-count value across the count, endpoint, and loop calculations. Restoring
+the existing `curve_count` local adds **3.69 weighted bytes** without changing
+candidate size, prefix, or reference quality.
+
+The generated-mesh row and column are then reused by the face pass rather than
+being redeclared as new source variables. This is consistent with the
+function-family's shared counter declarations and with Windows carrying the
+mesh and face columns through `edi`; the decompiler's different SSA names do
+not require different authored variables. Retaining both owners together adds
+another **7.38 weighted bytes**. Either row reuse alone or the required outer
+column declaration alone is byte-neutral, while column reuse without its
+declaration is incomplete. The dependency-complete result is:
+
+```text
+match: 63.94%
+target: 655 insns, candidate: 640 insns
+prefix: 8/655 target insns
+masked operands: 37 ok, 0 unresolved, 0 mismatch, 0 unaudited
+```
+
+The superficially improving outer mesh-cursor scope is rejected. Moving
+`mesh_sample_offset = 0` before the segment-count guard adds 3.69 weighted
+bytes, but raw Windows initializes the cursor in `ebx` only after the signed
+guard at `0x41ea14..0x41ea20`; extending that lifetime would be a score-only
+register intervention. Seven delayed height-scale declaration/assignment
+forms are byte-neutral. On the retained baseline, all five endpoint-offset
+forms and all three orientation-subtraction combinations are also neutral or
+regressive.
+
+The ledger now contains 45 records, 42 mutation sweeps, 3 probes, and 250
+unique variants. Three consecutive dependency-complete non-improving sweeps
+bound the current Dip frontier.
