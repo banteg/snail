@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shared-logical-index-initializer",
+      "find": "    int i;\n\n#if PATH_VARIANT != 7",
+      "replacements": [
+        {
+          "name": "preseed-zero",
+          "text": "    int i = 0;\n\n#if PATH_VARIANT != 7"
+        }
+      ]
+    }
+  ]
+}

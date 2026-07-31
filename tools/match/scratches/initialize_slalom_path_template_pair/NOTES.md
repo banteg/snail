@@ -505,3 +505,23 @@ Slalom therefore stays at **64.20%**, 684/696 instructions. The fixed cursors
 remain compiler-derived from direct indexed source, and the mesh row remains
 separate from its physical sample induction on this final face-owner
 allocation.
+
+## 2026-07-31 prologue logical-index dependency bound
+
+The remaining prologue mismatch gives EBP the zero-valued logical lead-sample
+index before EDI is saved, while the candidate saves EDI first and later uses
+EBX for the direct indexed loop. Android independently preserves distinct
+logical and physical owners in both fixed-sample traversals, so the shared
+source index was pre-seeded with zero before the variant body and replayed
+against the native fixed-cursor and mesh-row forms.
+
+Pre-seeding `i` is byte-identical by itself. It also leaves the earlier owner
+losses unchanged: paired lead/departure byte cursors lose 22 weighted bytes,
+and the guarded logical-plus-physical mesh row loses 140. The source is
+restored to the simpler declaration because the initializer has no emitted or
+interaction effect.
+
+The ledger now contains 45 records, 36 mutation sweeps, nine probes, and 182
+evaluated variants (173 unique). Three consecutive complete non-improving
+sweeps formally stall this lane at **64.20%**, 684/696 instructions, prefix
+6/696, with all 40 references clean.
