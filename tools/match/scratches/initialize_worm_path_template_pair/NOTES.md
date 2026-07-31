@@ -321,3 +321,35 @@ and raises focused matching from **72.81%** to **73.09%**. Candidate/target
 size remains 728/736, prefix remains 0/736, and all 37 references stay clean.
 Every partial interaction is byte-neutral or fails because its dependent
 owner is absent, so the retained gain belongs to the complete native lifetime.
+
+## 2026-07-31 post-cross face-owner replay bounded
+
+The retained cross-phase counter changes Worm's final register allocation, so
+the native face tail was replayed once on the new **73.09%** frontier. Binary
+Ninja confirms a common face pointer at `0x420ac0`, separate row, column, and
+side owners, 16-bit vertex-index arithmetic, and the duplicated checkerboard
+texture control at `0x420b55..0x420b7e`.
+
+All **35/35** one-, two-, and three-site combinations of integer face offsets,
+pointer arithmetic, sibling width-cast expressions, and checkerboard control
+compile. The face-address and index spellings are byte-neutral in every
+combination. A selected-path checkerboard loses 123 weighted bytes, and the
+duplicated-call form loses 398; neither address nor index ownership recovers
+that allocation. The native branch remains a bounded residual rather than a
+reason to retain a regressive source form.
+
+## 2026-07-31 post-cross frame dependency replay bounded
+
+The only instruction-backed frame alternative was also replayed with the two
+natural mesh-result lifetimes and both checkerboard spellings. All **17/17**
+possible combinations compile and none improves. The closest component-wise
+mesh result loses one weighted byte. Passing the scalar-left vector operand by
+value again recovers the native `0x80` frame and extends the exact prefix from
+0 to 17 instructions, but loses 154 weighted bytes by itself; its best
+interaction still loses 142. The selected-path checkerboard can reduce the
+component-result loss to five bytes, but remains below the retained frontier
+and does not recover its own isolated 123-byte regression.
+
+Worm therefore remains **73.09%**, 728/736 instructions, prefix 0/736, with
+all 37 references clean. The ledger now contains eight records, seven mutation
+sweeps, one probe, 88 evaluated variants, and 84 unique variants.

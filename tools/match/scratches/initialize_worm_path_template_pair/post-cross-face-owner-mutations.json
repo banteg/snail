@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-record-address-owner",
+      "find": "                        cRFaceQuad* face =\n                            &facequads[side + 2 * (mesh_column * width_cells + column)];\n                        face->header_word = 0;",
+      "replacements": [
+        {
+          "name": "integer-record-offset",
+          "text": "                        int face_offset =\n                            side + 2 * (mesh_column * width_cells + column);\n                        cRFaceQuad* face = &facequads[face_offset];\n                        face->header_word = 0;"
+        },
+        {
+          "name": "pair-offset-plus-side",
+          "text": "                        int face_pair_offset =\n                            2 * (mesh_column * width_cells + column);\n                        cRFaceQuad* face =\n                            &facequads[face_pair_offset + side];\n                        face->header_word = 0;"
+        },
+        {
+          "name": "direct-pointer-arithmetic",
+          "text": "                        cRFaceQuad* face =\n                            facequads\n                            + side\n                            + 2 * (mesh_column * width_cells + column);\n                        face->header_word = 0;"
+        }
+      ]
+    },
+    {
+      "name": "checkerboard-texture-control",
+      "find": "                        face->texture_ref =\n                            g_texture_refs.Add(texture_path, 0, 0);",
+      "replacements": [
+        {
+          "name": "duplicated-call-xor",
+          "text": "                        if ((column ^ mesh_column) & 1)\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);\n                        else\n                            face->texture_ref =\n                                g_texture_refs.Add(texture_path, 0, 0);"
+        },
+        {
+          "name": "selected-path-xor",
+          "text": "                        char* face_texture;\n                        if ((column ^ mesh_column) & 1)\n                            face_texture = texture_path;\n                        else\n                            face_texture = texture_path;\n                        face->texture_ref =\n                            g_texture_refs.Add(face_texture, 0, 0);"
+        }
+      ]
+    },
+    {
+      "name": "face-vertex-index-arithmetic",
+      "find": "                        if (side == 0) {\n                            face->vertex_0 =\n                                (unsigned short)(mesh_column * width_cells + column);\n                            face->vertex_1 =\n                                (unsigned short)(mesh_column * width_cells + next_column % width_cells);\n                            face->vertex_2 =\n                                (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);\n                            face->vertex_3 =\n                                (unsigned short)((mesh_column + 1) * width_cells + column);\n                        } else {\n                            face->vertex_0 =\n                                (unsigned short)(mesh_column * width_cells + next_column % width_cells);\n                            face->vertex_1 =\n                                (unsigned short)(mesh_column * width_cells + column);\n                            face->vertex_2 =\n                                (unsigned short)((mesh_column + 1) * width_cells + column);\n                            face->vertex_3 =\n                                (unsigned short)((mesh_column + 1) * width_cells + next_column % width_cells);\n                        }",
+      "replacements": [
+        {
+          "name": "sibling-width-cast",
+          "text": "                        if (side == 0) {\n                            face->vertex_0 =\n                                mesh_column * (unsigned short)width_cells + column;\n                            face->vertex_1 =\n                                mesh_column * (unsigned short)width_cells\n                                + next_column % width_cells;\n                            face->vertex_2 =\n                                (mesh_column + 1) * (unsigned short)width_cells\n                                + next_column % width_cells;\n                            face->vertex_3 =\n                                (mesh_column + 1) * (unsigned short)width_cells + column;\n                        } else {\n                            face->vertex_0 =\n                                mesh_column * (unsigned short)width_cells\n                                + next_column % width_cells;\n                            face->vertex_1 =\n                                mesh_column * (unsigned short)width_cells + column;\n                            face->vertex_2 =\n                                (mesh_column + 1) * (unsigned short)width_cells + column;\n                            face->vertex_3 =\n                                (mesh_column + 1) * (unsigned short)width_cells\n                                + next_column % width_cells;\n                        }"
+        },
+        {
+          "name": "sibling-width-cast-addend-first",
+          "text": "                        if (side == 0) {\n                            face->vertex_0 =\n                                column + mesh_column * (unsigned short)width_cells;\n                            face->vertex_1 =\n                                next_column % width_cells\n                                + mesh_column * (unsigned short)width_cells;\n                            face->vertex_2 =\n                                next_column % width_cells\n                                + (mesh_column + 1) * (unsigned short)width_cells;\n                            face->vertex_3 =\n                                column + (mesh_column + 1) * (unsigned short)width_cells;\n                        } else {\n                            face->vertex_0 =\n                                next_column % width_cells\n                                + mesh_column * (unsigned short)width_cells;\n                            face->vertex_1 =\n                                column + mesh_column * (unsigned short)width_cells;\n                            face->vertex_2 =\n                                column + (mesh_column + 1) * (unsigned short)width_cells;\n                            face->vertex_3 =\n                                next_column % width_cells\n                                + (mesh_column + 1) * (unsigned short)width_cells;\n                        }"
+        }
+      ]
+    }
+  ]
+}
