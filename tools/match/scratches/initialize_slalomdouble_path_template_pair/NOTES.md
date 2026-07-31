@@ -386,3 +386,26 @@ falls to **54.07%** at 682/683 instructions. Direct sample records fall to
 53.08%, and swapping vertex/facequad acquisition is byte-neutral. The current
 57.88%, 682/683 source remains the best dependency-complete, instruction-backed
 frontier.
+
+## 2026-07-31 post-owner shared-orientation replay
+
+The shared-orientation closure was replayed after the checkerboard pair, all
+three direct sample phases, direct face offset, and direct vertex index had
+materially changed the constructor's register schedule. This tests the same
+kind of dependency cascade that unlocked the related Snake constructor rather
+than treating the earlier 41.33% context as permanent.
+
+The cascade does change the old result, but it does not reverse it. A shared
+logical first-curve branch with direct indexed orientation closes both
+remaining call references and reaches **51.38%** at 691/683 instructions,
+well below the retained **57.88%** at 682/683. Spelling the shared guard from
+the native physical sample boundary as `i <= 4` improves that alternative to
+**53.09%**, 692/683, and extends the exact prefix from five to six
+instructions, but still loses 121 weighted bytes against the retained source.
+
+Reversing the physical predicate to put the non-first orientation on the
+fallthrough path emits the target's `cmp offset, 0x2a0; jle identity` control
+shape, yet falls further to **44.22%** at the same 692/683 instructions. All
+three shared forms audit 45 clean references with no residuals. The two
+lane-local call residuals are therefore an explicit proof tradeoff, not enough
+reason to replace the substantially closer lane-local owner graph.
