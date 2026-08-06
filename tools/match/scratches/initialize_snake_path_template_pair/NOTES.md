@@ -526,3 +526,28 @@ baseline: 85.74%, 652/652 instructions, prefix 289
 revert:   73.25%, 645/652 instructions, prefix 168
 delta:    +304 weighted bytes, +12.49 percentage points, +121 prefix
 ```
+
+## 2026-08-06 post-orientation mesh-entry ownership closure
+
+The restarted Binary Ninja session preserves the exact seven-argument ABI and
+the recovered local/lifetime splits for the native function at `0x423580`.
+Live disassembly confirms that the first mismatch at `0x423a22` is the already
+bounded commutative SIB encoding for the primary-delta address. The later mesh
+entry independently acquires the strip mesh's vertex and face arrays before
+entering the row loop, so three remaining source-level owners were replayed
+without changing the retained source.
+
+Introducing an explicit mesh-object owner in either plausible declaration
+schedule is byte-identical at **85.74%**, **652/652** instructions, and a
+**289/652** exact prefix. Caching `width_cells` at the mesh-loop entry instead
+loses 143 weighted bytes, falls to **79.85%**, adds one candidate instruction,
+and contracts the prefix to **110/652**. Combining either object schedule with
+the cached width produces the same regression, closing all eight planned
+one- and two-site variants.
+
+The dependency-complete shared primary-sample-array owner is stronger evidence
+against hoisting: it loses 417 weighted bytes, falls to **68.61%**, moves to
+654 candidate instructions, and collapses the exact prefix to **6/652**. All
+variants retain **40/0/0/0** clean references. The mesh object remains implicit,
+the width and primary-sample loads remain branch-local, and no allocator-only
+source shape is retained.

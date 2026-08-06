@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "mesh-object-owner",
+      "find": "    Vector3* vertices = path->strip_mesh->vertices;\n    cRFaceQuad* facequads = path->strip_mesh->facequads;\n    int row = 0;\n    int column;",
+      "replacements": [
+        {
+          "name": "object-row-vertices-facequads",
+          "text": "    Object* mesh = path->strip_mesh;\n    int row = 0;\n    Vector3* vertices = mesh->vertices;\n    cRFaceQuad* facequads = mesh->facequads;\n    int column;"
+        },
+        {
+          "name": "object-vertices-facequads-row",
+          "text": "    Object* mesh = path->strip_mesh;\n    Vector3* vertices = mesh->vertices;\n    cRFaceQuad* facequads = mesh->facequads;\n    int row = 0;\n    int column;"
+        }
+      ]
+    },
+    {
+      "name": "mesh-width-owner",
+      "find": "        do {\n            column = 0;\n            if (path->width_cells >= 0) {\n                do {\n                    double lateral =\n                        (float)column - (float)path->width_cells * 0.5f;",
+      "replacements": [
+        {
+          "name": "width-before-column",
+          "text": "        do {\n            int mesh_width_cells = path->width_cells;\n            column = 0;\n            if (mesh_width_cells >= 0) {\n                do {\n                    double lateral =\n                        (float)column - (float)mesh_width_cells * 0.5f;"
+        },
+        {
+          "name": "column-before-width",
+          "text": "        do {\n            column = 0;\n            int mesh_width_cells = path->width_cells;\n            if (mesh_width_cells >= 0) {\n                do {\n                    double lateral =\n                        (float)column - (float)mesh_width_cells * 0.5f;"
+        }
+      ]
+    }
+  ]
+}
