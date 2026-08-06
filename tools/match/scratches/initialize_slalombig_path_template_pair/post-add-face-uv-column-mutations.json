@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "face-uv-column-owner",
+      "find": "    for (row = 0; row < path->segment_count; ++row) {\n        for (column = 0; column < path->width_cells; ++column) {\n            float v0 = (float)(row % 8) * 0.125f;\n            float v1 = (float)(row % 8 + 1) * 0.125f;\n            float u0 = (float)column * 0.125f;\n            float u1 = (float)(column + 1) * 0.125f;",
+      "replacements": [
+        {
+          "name": "separate-uv-column",
+          "text": "    for (row = 0; row < path->segment_count; ++row) {\n        int uv_column = 0;\n        for (column = 0;\n             column < path->width_cells;\n             ++column, ++uv_column) {\n            float v0 = (float)(row % 8) * 0.125f;\n            float v1 = (float)(row % 8 + 1) * 0.125f;\n            float u0 = (float)uv_column * 0.125f;\n            float u1 = (float)(column + 1) * 0.125f;"
+        }
+      ]
+    }
+  ]
+}

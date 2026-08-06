@@ -508,3 +508,22 @@ post-face dependency seen in Start, Invert, Wibble, and Twister. Screw already
 owns both vector additions, while Hump and Dump have explicit post-counter
 vector bounds, so this closes the remaining untested member of the current
 mesh-tail family.
+
+## 2026-07-31 post-add face-phase closure
+
+The remaining face-phase owners were replayed after the ordinary position
+addition changed the final allocation. Native loads vertices before facequads,
+but that explicit source order still loses **3.69 weighted bytes** and falls
+back to 66.09%; retaining a strip-mesh object with facequads-first acquisition
+is byte-identical to the current **66.23%** source.
+
+Separating the reused face counters is negative. A fresh face row loses about
+seven weighted bytes and reaches 65.95%; a fresh face column loses 37 and
+reaches 64.79%; separating both also reaches 64.79%. The native-looking
+independent UV-column owner is byte-identical, so VC6 already emits that
+physical lifetime from the clearer shared column.
+
+No source change is retained. Three consecutive non-improving sweeps formally
+stall SlalomBig at **66.23%**, 693/696 instructions, prefix 48/696, with all 40
+references clean. The remaining load and counter identities are bounded
+compiler-allocation residuals rather than untested source owners.
