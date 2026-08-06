@@ -385,3 +385,27 @@ weighted bytes and raises focused matching from **56.49%** to **56.63%** at
 unchanged 662/687 instructions, prefix 6/687, and 45 clean references.
 Unlike the isolated face-record transfer above, this change is directly
 corroborated by the target prologue and is retained.
+
+## 2026-08-06 prologue lead-index lifetime bound
+
+The restarted Binary Ninja session preserves the exact seven-argument
+Turnunder ABI and separates the native fixed-lead traversal into a logical
+`lead_sample_index` and a `0xa8`-stride `lead_sample_offset`. The first focused
+mismatch remains earlier: native assigns the long-lived zero value to EBX and
+the unit-float bits to ESI, while the candidate uses the opposite saved-register
+owners.
+
+A five-variant declaration/lifetime sweep tests whether that rotation is
+caused by introducing the real logical lead index too late. Moving the index
+to either side of allocation, moving it immediately before `get_path_nodes`,
+and publishing the header fields through one shared zero owner are all
+byte-identical at **56.63%**, **662/687** instructions, and a **6/687** exact
+prefix. Moving either the logical index alone or both lead indices across the
+header loses **140.11 weighted bytes** and falls to **51.00%**, without changing
+instruction count or prefix.
+
+All five variants retain **45/0/0/0** clean references. Together with the
+already-negative explicit lead-byte-cursor transfer, this closes the natural
+lead-index scope as the cause of the EBX/ESI rotation. The retained source
+keeps the shorter post-allocation declarations and does not introduce a dummy
+use, register hint, volatile qualifier, or fabricated dependency.
