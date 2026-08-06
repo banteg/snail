@@ -426,3 +426,22 @@ falls to 82.95% at unchanged size, prefix, and reference quality.
 No phase-lifetime change is retained. These results bound the remaining
 physical stack reuse, vertex-base spill, and UV induction without mistaking
 compiler allocation for a source owner.
+
+## 2026-07-31 post-row acquisition and face-counter bounds
+
+The final adjacent owner grid keeps the retained vertices-first mesh
+acquisition. Splitting the two requests or declaring facequads first while
+still loading vertices first is byte-identical at **83.10%**. Actually loading
+facequads first loses four weighted bytes and falls to **82.95%**, matching
+the earlier request-order result on the fully recovered baseline.
+
+Separating the source face counters also regresses the native allocation:
+a distinct face-column owner loses four weighted bytes and reaches 82.95%,
+while a distinct face-row owner loses 56 weighted bytes and falls to
+**80.80%**. Separating both reaches 82.95%. The retained reuse of `row` and
+`column` across mesh and face emission is therefore independently measured,
+not inferred from decompiler variable names.
+
+No acquisition or counter edit is retained. With three consecutive complete
+grids producing no improvement, the experiment log now formally marks this
+83.10% frontier stalled.
