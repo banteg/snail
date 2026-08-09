@@ -782,6 +782,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Compiler flags used for the baseline and variants.",
     )
     match_mutate_parser.add_argument(
+        "--min-changes",
+        type=_positive_int,
+        default=1,
+        help="Minimum mutation sites changed per variant (default: 1).",
+    )
+    match_mutate_parser.add_argument(
         "--max-changes",
         type=_positive_int,
         default=1,
@@ -1457,6 +1463,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "match" and args.match_command == "mutate":
         if args.time_budget is not None and args.time_budget <= 0:
             parser.error("--time-budget must be positive")
+        if args.min_changes > args.max_changes:
+            parser.error("--min-changes cannot exceed --max-changes")
         try:
             config = load_scratch_config(args.directory.resolve())
             mutation_spec = match_mutation.load_mutation_spec(
@@ -1481,6 +1489,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 manifest=manifest,
                 compiler=args.compiler,
                 cflags=args.cflags,
+                min_changes=args.min_changes,
                 max_changes=args.max_changes,
                 max_variants=args.max_variants,
                 jobs=args.jobs,

@@ -332,19 +332,34 @@ def generate_mutation_variants(
     source_text: str,
     spec: MutationSpec,
     *,
+    min_changes: int = 1,
     max_changes: int = 1,
     max_variants: int = 256,
 ) -> MutationBatch:
+    if min_changes < 1:
+        raise ValueError("min_changes must be at least 1")
     if max_changes < 1:
         raise ValueError("max_changes must be at least 1")
+    if min_changes > max_changes:
+        raise ValueError("min_changes cannot exceed max_changes")
     if max_variants < 1:
         raise ValueError("max_variants must be at least 1")
     resolved = _resolve_sites(source_text, spec)
     max_changes = min(max_changes, len(resolved))
-    possible_by_changes = _possible_variant_counts(resolved, max_changes)
+    if min_changes > max_changes:
+        raise ValueError(
+            "min_changes cannot exceed the number of mutation sites"
+        )
+    possible_by_changes = tuple(
+        count if changes >= min_changes else 0
+        for changes, count in enumerate(
+            _possible_variant_counts(resolved, max_changes),
+            start=1,
+        )
+    )
     variants: list[MutationVariant] = []
 
-    for change_count in range(1, max_changes + 1):
+    for change_count in range(min_changes, max_changes + 1):
         for selected_sites in itertools.combinations(resolved, change_count):
             alternatives = [
                 range(len(site.site.replacements))
@@ -440,6 +455,7 @@ def evaluate_mutation_sweep(
     manifest: FunctionSymbolManifest | None = None,
     compiler: str | None = None,
     cflags: str | None = None,
+    min_changes: int = 1,
     max_changes: int = 1,
     max_variants: int = 256,
     jobs: int = matchlib.DEFAULT_MATCH_JOBS,
@@ -464,6 +480,7 @@ def evaluate_mutation_sweep(
     batch = generate_mutation_variants(
         source_text,
         spec,
+        min_changes=min_changes,
         max_changes=max_changes,
         max_variants=max_variants,
     )

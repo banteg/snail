@@ -116,6 +116,76 @@ def test_mutation_spec_generates_bounded_combinations(
     assert batch.variants[-1].source_text == "const int value = y + x;\n"
 
 
+def test_mutation_spec_can_select_only_higher_order_combinations(
+    tmp_path: Path,
+) -> None:
+    spec_path = tmp_path / "mutations.json"
+    _write_spec(spec_path)
+    spec = load_mutation_spec(spec_path)
+
+    batch = generate_mutation_variants(
+        "int value = x + y;\n",
+        spec,
+        min_changes=2,
+        max_changes=2,
+    )
+
+    assert batch.possible_variants == 2
+    assert batch.possible_by_changes == (0, 2)
+    assert batch.planned_by_changes == (0, 2)
+    assert not batch.truncated
+    assert [variant.label for variant in batch.variants] == [
+        "sum-order/commuted+qualifier/const",
+        "sum-order/parenthesized+qualifier/const",
+    ]
+
+
+def test_mutation_spec_rejects_invalid_change_range(tmp_path: Path) -> None:
+    spec_path = tmp_path / "mutations.json"
+    _write_spec(spec_path)
+    spec = load_mutation_spec(spec_path)
+
+    with pytest.raises(ValueError, match="min_changes must be at least 1"):
+        generate_mutation_variants(
+            "int value = x + y;\n",
+            spec,
+            min_changes=0,
+        )
+    with pytest.raises(ValueError, match="cannot exceed max_changes"):
+        generate_mutation_variants(
+            "int value = x + y;\n",
+            spec,
+            min_changes=2,
+            max_changes=1,
+        )
+
+
+def test_mutate_cli_rejects_invalid_change_range(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    with pytest.raises(SystemExit) as error:
+        main(
+            [
+                "match",
+                "mutate",
+                str(tmp_path),
+                "--spec",
+                str(tmp_path / "mutations.json"),
+                "--min-changes",
+                "2",
+                "--max-changes",
+                "1",
+            ]
+        )
+
+    assert error.value.code == 2
+    assert (
+        "--min-changes cannot exceed --max-changes"
+        in capsys.readouterr().err
+    )
+
+
 def test_mutation_sites_reject_ambiguous_and_overlapping_spans() -> None:
     ambiguous = MutationSpec(
         sites=(
@@ -356,9 +426,16 @@ def test_mutate_cli_writes_only_an_improving_winner(
         possible_by_changes=(2, 3),
         planned_by_changes=(2, 0),
     )
+    received_min_changes = None
+
+    def fake_evaluate(*args: object, **kwargs: object) -> MutationSweep:
+        nonlocal received_min_changes
+        received_min_changes = kwargs["min_changes"]
+        return sweep
+
     monkeypatch.setattr(
         "snail.cli.match_mutation.evaluate_mutation_sweep",
-        lambda *args, **kwargs: sweep,
+        fake_evaluate,
     )
     output = tmp_path / "winner.cpp"
 
@@ -369,6 +446,10 @@ def test_mutate_cli_writes_only_an_improving_winner(
             str(scratch),
             "--spec",
             str(spec_path),
+            "--min-changes",
+            "2",
+            "--max-changes",
+            "2",
             "--write-best",
             str(output),
             "--record",
@@ -379,6 +460,7 @@ def test_mutate_cli_writes_only_an_improving_winner(
     )
 
     assert exit_code == 0
+    assert received_min_changes == 2
     payload = json.loads(capsys.readouterr().out)
     assert payload["best_improves"] is True
     assert payload["best_source_written_to"] == str(output)
