@@ -679,3 +679,39 @@ The surrounding hypotheses are recorded in the append-only experiment ledger:
 
 No volatile or register qualifier, raw offset, dummy relocation, duplicated
 dead store, or other fakematching construct was introduced.
+
+## 2026-08-09 default-arm and cross-row lifetime closure
+
+The first residual is now bounded by native control flow rather than only by
+the matcher diff. Windows converts the random selector at `0x4381a1`, sends
+values above three to `0x438200`, and only there reloads the incoming
+`level_index` from `[esp+0x14]`. The four authored import arms and that default
+then converge on one activation call at `0x43820b`. Android and iOS independently
+retain the same four imports, one shared result owner, and one post-switch
+`LandscapeManager::Init`; neither port supports duplicating activation into the
+arms.
+
+A complete 15-variant requested-level sweep tested short ordinary copies at
+the frontend load and `GenerateLevel` call, alone and together. VC6 coalesces
+every compiling form back to the current EDI lifetime, so all 14 compiling
+variants are byte-identical at **85.95%**, `555/555`, prefix 177, with all 108
+references clean. The exact sibling `cRTrack::Change(int)` has the same
+default-parameter reload topology and independently exhausts 25 ordinary
+selector/default lifetimes; only a removed volatile view forced its reload.
+The landscape default is therefore a shared VC6 allocation boundary, not an
+open source-semantic lane.
+
+Both mobile `StartLevel(int)` bodies also recover one embedded `cRSubGoldy*`
+used for the two Banner backlinks, `Init`, list insertion, and the barrier.
+The scratch now preserves that single cross-row owner from the start backlink
+through the existing completion and tail uses. This is provenance-backed and
+byte-neutral: focused output remains **85.95%**, `555/555`, prefix 177, with
+108 clean references.
+
+That owner does not change the remaining pre-mask schedule. Four short
+completion-position pointer/reference scopes all regress to 82.42%, `554/555`,
+prefix 141, `107` clean references and one mismatch. The accepted short
+backlink-only `Banner*` remains the narrow correct lifetime. Further row work
+would require repeating long owners or compiler-coercion experiments already
+rejected, so the completion pre-mask delta is also closed as a compiler
+scheduler boundary.

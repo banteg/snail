@@ -179,7 +179,8 @@ void cRSubGame::StartLevel(int level_index)
         start_position->x = 0.0f;
     }
     unsigned int start_flags = banners.slots[0].list_flags;
-    banners.slots[0].owner_player = embedded_player();
+    cRSubGoldy* player_owner = embedded_player();
+    banners.slots[0].owner_player = player_owner;
     banners.slots[0].position.z = (float)first_block_row_count;
     banners.slots[0].list_flags = start_flags & ~BOD_FLAG_RENDER_ENABLED;
     banners.slots[0].color.a = 0.999f;
@@ -191,7 +192,6 @@ void cRSubGame::StartLevel(int level_index)
     *(int*)&banners.slots[1].position.x = zero;
     unsigned int completion_flags = banners.slots[1].list_flags;
     float completion_z = (float)completion_row_start;
-    cRSubGoldy* player_owner = embedded_player();
     Banner* completion_banner = &banners.slots[1];
     completion_flags &= ~BOD_FLAG_RENDER_ENABLED;
     completion_banner->owner_player = player_owner;

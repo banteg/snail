@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "cross-row-player-owner-start",
+      "find": "    banners.slots[0].owner_player = embedded_player();",
+      "replacements": [
+        {
+          "name": "declare-at-start-backlink",
+          "text": "    cRSubGoldy* player_owner = embedded_player();\n    banners.slots[0].owner_player = player_owner;"
+        }
+      ]
+    },
+    {
+      "name": "cross-row-player-owner-completion",
+      "find": "    cRSubGoldy* player_owner = embedded_player();\n    Banner* completion_banner = &banners.slots[1];",
+      "replacements": [
+        {
+          "name": "reuse-start-owner",
+          "text": "    Banner* completion_banner = &banners.slots[1];"
+        }
+      ]
+    }
+  ]
+}

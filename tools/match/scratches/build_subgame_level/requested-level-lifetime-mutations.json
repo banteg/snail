@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "requested-level-owner-before-load",
+      "find": "    level_definition.load_frontend_level_by_mode_and_index(level_mode, level_index);",
+      "replacements": [
+        {
+          "name": "copy-used-by-load",
+          "text": "    int requested_level_index = level_index;\n    level_definition.load_frontend_level_by_mode_and_index(\n        level_mode, requested_level_index);"
+        },
+        {
+          "name": "const-copy-used-by-load",
+          "text": "    const int requested_level_index = level_index;\n    level_definition.load_frontend_level_by_mode_and_index(\n        level_mode, requested_level_index);"
+        },
+        {
+          "name": "copy-before-direct-load",
+          "text": "    int requested_level_index = level_index;\n    level_definition.load_frontend_level_by_mode_and_index(level_mode, level_index);"
+        }
+      ]
+    },
+    {
+      "name": "requested-level-owner-at-generate",
+      "find": "    GenerateLevel(level_index);",
+      "replacements": [
+        {
+          "name": "reuse-earlier-requested-level",
+          "text": "    GenerateLevel(requested_level_index);"
+        },
+        {
+          "name": "short-copy",
+          "text": "    int generated_level_index = level_index;\n    GenerateLevel(generated_level_index);"
+        },
+        {
+          "name": "short-const-copy",
+          "text": "    const int generated_level_index = level_index;\n    GenerateLevel(generated_level_index);"
+        }
+      ]
+    }
+  ]
+}

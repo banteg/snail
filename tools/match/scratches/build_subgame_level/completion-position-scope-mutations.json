@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-position-scope",
+      "find": "    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;",
+      "replacements": [
+        {
+          "name": "block-pointer-float-zeroes",
+          "text": "    {\n        tVector* completion_position = &banners.slots[1].position;\n        completion_position->z = 0.0f;\n        completion_position->y = 0.0f;\n        completion_position->x = 0.0f;\n    }"
+        },
+        {
+          "name": "pointer-float-zeroes",
+          "text": "    tVector* completion_position = &banners.slots[1].position;\n    completion_position->z = 0.0f;\n    completion_position->y = 0.0f;\n    completion_position->x = 0.0f;"
+        },
+        {
+          "name": "block-reference-float-zeroes",
+          "text": "    {\n        tVector& completion_position = banners.slots[1].position;\n        completion_position.z = 0.0f;\n        completion_position.y = 0.0f;\n        completion_position.x = 0.0f;\n    }"
+        },
+        {
+          "name": "block-pointer-integer-zeroes",
+          "text": "    {\n        tVector* completion_position = &banners.slots[1].position;\n        *(int*)&completion_position->z = zero;\n        *(int*)&completion_position->y = zero;\n        *(int*)&completion_position->x = zero;\n    }"
+        }
+      ]
+    }
+  ]
+}

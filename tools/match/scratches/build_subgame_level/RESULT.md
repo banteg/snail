@@ -73,12 +73,12 @@ are resolved to the neighboring
 - Retesting player-node and membership-flag register hints on the improved row
   setup was still codegen-neutral or worse.
 
-## Next region to attack
+## Frontier status
 
-First, recover the two-byte random-landscape default-arm drift without
-volatile qualification or duplicated activation arms. Then revisit the
-completion row's pre-mask scheduling: native performs all three zero stores
-before loading flags, converting the row, and materializing the Player owner;
-the accepted candidate now aligns from the mask onward. The active-list tail
-still preserves different EDI/EBP lifetimes, but its owner and inline-call
-spellings are already exhaustively bounded.
+This function is stalled at an honest compiler boundary. The random-landscape
+default reload now has a complete ordinary-lifetime sweep plus an exact sibling
+with the same irreducible VC6 topology. The completion pre-mask schedule is
+unchanged by the dual-mobile cross-row Player lifetime, while all short
+completion-position owners regress. The active-list tail's owner and inline
+call spellings were already exhaustively bounded. Do not retry these regions
+without new original-source or compiler-provenance evidence.
