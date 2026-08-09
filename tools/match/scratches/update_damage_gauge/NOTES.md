@@ -193,3 +193,42 @@ as `PlaySampleLooped(int)` / `StopSampleLooped(int)`. The existing
 damage-gauge expression; no scratch code or synthetic handle storage is
 needed. Focused matching remains 94.03%, 268/268 instructions, prefix 122,
 with all 65 masked operands clean.
+
+## 2026-08-09 completion-handoff drain contract
+
+The accelerated-drain gate is now closed as the player-owned completion
+handoff latch rather than an isolated gauge or root flag. The Windows
+producer/consumer chain is exact:
+
+- `initialize_subgoldy @ 0x43ae31` clears `Player +0x440`.
+- The course-end block in `update_subgoldy` seeds the handoff timer to zero,
+  its step to `1/60`, and the voice gate to zero, then the sole typed nonzero
+  writer at `0x43c7b0` sets `Player::completion_handoff_active = 1`.
+- `update_subgoldy` calls `update_damage_gauge` later in the same tick at
+  `0x43cb1e`, so the newly armed state is immediately visible to the gauge.
+- In `MONITORING`, the read at `0x44117e` blocks a fresh warning transition.
+  In `WARNING_TRANSITION`, the read at `0x441114` sets progress to `1.0` before
+  adding the ordinary step. In `DRAINING`, the read at `0x441074` gates the
+  extra `Take(-0.0066666668f, false)` call at `0x441087`, after the ordinary
+  forced `Take(-0.0016666667f, true)` call. The active handoff therefore drains
+  `0.0083333335` per tick in total, five times the ordinary automatic rate.
+
+Both shipped mobile `cRDamageGuage::AI()` bodies preserve this three-use
+contract. Android reads `Game +0x8179c` in the monitoring, transition, and
+draining arms; its adjacent attachment-exit gate is `Game +0x81779`, retaining
+the exact `+0x23` separation between Windows `Player +0x41d` and `+0x440`.
+iOS likewise uses `Game +0x823f0` beside attachment gate `Game +0x823cd`, sets
+transition progress to `1.0`, and conditionally calls
+`Take(-0.006666667f, false)` after `Take(-0.0016666667f, true)`. These are
+layout-relocated views of the same authored `cRSubGoldy` state, not three
+unrelated globals.
+
+The checked-in CDB arm capture independently stopped immediately after
+`0x43c7b0` with `active=1`, `timer=0`, `step=1/60`, and `voice_gate=0`.
+Consequently the old request for another Frida run to identify the `+0x440`
+writer is stale for this gauge contract. Runtime tracing may still answer
+broader completion-screen timing questions, but it cannot improve this field
+identity or the source-shaped accelerated-drain branch. The remaining matcher
+debt stays confined to the formally stalled render-local stack allocation;
+none of those mutation grids should be replayed without new compiler
+provenance.
