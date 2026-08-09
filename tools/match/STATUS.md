@@ -681,7 +681,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 71.79% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 4 unaudited, 49 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1253/1245 | 75.74% | 76/1245 | 4 unaudited, 163 ok |  | core |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1254/1245 | 75.79% | 76/1245 | 4 unaudited, 163 ok |  | core |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 129 ok |  | core |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 71.77% | 6/501 | 70 ok |  | core |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 24 ok |  | core |

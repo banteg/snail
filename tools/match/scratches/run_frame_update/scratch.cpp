@@ -20,7 +20,7 @@ int queue_axis_aligned_textured_quad(
 
 int GameRoot::run_frame_update()
 {
-    fade.update_frontend_transition_overlay();
+    fade.AI();
     g_audio_backend.noop_runtime_ai();
     g_cheat_state.update_cheat();
     g_voice_manager.update_voice_manager();
@@ -55,7 +55,7 @@ int GameRoot::run_frame_update()
     if (fixed_update_accumulator > 1.0f) {
         do {
             fixed_update_accumulator = fixed_update_accumulator - 1.0f;
-            players[0].frontend_overlay.draw_frontend_overlay_color_lerp();
+            players[0].frontend_overlay.AI();
 
             BodNode* bod = active_bod_list.first;
             if (bod != 0) {

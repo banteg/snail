@@ -4,7 +4,7 @@
 #include "frontend_overlay_color_lerp.h"
 #include "render_scene.h"
 
-void FrontendOverlayColorLerp::draw_frontend_overlay_color_lerp()
+void cRFlash::AI()
 {
     current.r = (target.r - current.r) * 0.145f + current.r;
     current.g = (target.g - current.g) * 0.145f + current.g;

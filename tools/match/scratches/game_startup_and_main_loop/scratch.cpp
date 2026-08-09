@@ -131,7 +131,7 @@ int __stdcall game_startup_and_main_loop(
             g_game_initialization_pending = 0;
             g_frame_render_requested = 0;
             g_loading_bar.destroy_loading_screen();
-            g_game->fade.begin_frontend_fade_in();
+            g_game->fade.StartOn();
             show_and_focus_game_window();
         }
 

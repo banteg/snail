@@ -1,9 +1,9 @@
 // initialize_border_stack @ 0x404350 (thiscall, ret)
 
-#include "border_batch_state.h"
+#include "frontend_fade.h"
 
-void BorderStack::initialize_border_stack()
+void cRFade::Init()
 {
-    generation = 0;
-    entry_count = 0;
+    state = 0;
+    alpha_bits = 0;
 }

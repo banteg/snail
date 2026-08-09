@@ -12,7 +12,7 @@ void cRSubGoldy::RessurectAI()
         resurrect_progress = progress;
         if (progress > 1.0f) {
             if (g_game->fade.state == 0)
-                g_game->fade.begin_frontend_fade_out(0);
+                g_game->fade.Start(0);
         }
     }
 

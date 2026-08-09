@@ -377,15 +377,20 @@ struct cRSubLoc : public BodBase {
 
 typedef char cRSubLoc_must_be_0x54[(sizeof(cRSubLoc) == 0x54) ? 1 : -1];
 
-// Owned moving model embedded in each SubRow. iOS preserves the authored
-// class and callback as cRRowModel::AI().
-class RowModel : public RenderableBod {
+// Authored moving-model owner embedded in each cRSubRow. Android and iOS both
+// preserve the class and callback as cRRowModel::AI().
+class cRRowModel : public RenderableBod {
 public:
-    void update_row_model(); // @ 0x443070, cRRowModel::AI
+    void AI(); // @ 0x443070
 
-    Vector3 velocity; // +0x80, outer SubRow +0x84
+    Vector3 velocity; // +0x80, outer cRSubRow +0x84
 };
 
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRRowModel RowModel;
+
+typedef char cRRowModel_must_be_0x8c[
+    (sizeof(cRRowModel) == 0x8c) ? 1 : -1];
 typedef char RowModel_must_be_0x8c[(sizeof(RowModel) == 0x8c) ? 1 : -1];
 
 // Runtime row state. The builder copies the authored lanes, then adds parcel
@@ -414,12 +419,13 @@ enum SubRowFlag {
 
 // Authored per-track-row runtime owner. The Windows constructor ledger names
 // the complete 3200-entry slab cRSubRow and reports 0xbea00 bytes, fixing one
-// SubRow at 0xf4 bytes. Live match sources use this authored owner directly.
-struct SubRow {                          // stride 0xf4
-    SubRow* initialize_track_row_runtime(); // @ 0x408590
+// cRSubRow at 0xf4 bytes. iOS independently retains cRSubRow* parameters on
+// AddParcel and AddRing.
+struct cRSubRow {                         // stride 0xf4
+    cRSubRow(); // @ 0x408590
 
     unsigned int flags;                  // +0x00, SubRowFlag bits
-    RowModel row_model;                   // +0x04, ends at +0x90
+    cRRowModel row_model;                 // +0x04, ends at +0x90
     // Authored parcel-local coordinates become the final world-space spawn
     // position in place_parcels_on_track: x mirrors with the row, y gains the
     // one-unit spawn-height offset, and z gains the absolute row center before
@@ -436,6 +442,11 @@ struct SubRow {                          // stride 0xf4
     int row_event_id;                     // +0xf0, completed-segment event-definition index
 };
 
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRSubRow SubRow;
+
+typedef char cRSubRow_must_be_0xf4[
+    (sizeof(cRSubRow) == 0xf4) ? 1 : -1];
 typedef char SubRow_must_be_0xf4[(sizeof(SubRow) == 0xf4) ? 1 : -1];
 
 class cRPathFollowGoldy {

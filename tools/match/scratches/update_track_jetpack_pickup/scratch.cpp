@@ -1,4 +1,4 @@
-// update_track_jetpack_pickup @ 0x43efb0 (thiscall, ret)
+// update_track_jetpack_pickup / cRJetPack::AI @ 0x43efb0 (thiscall, ret)
 // State 2 -> list remove + kill_sprite; state 1 -> cull behind the owner
 // kill plane or advance the wrapped sine bob on the nested sprite. The
 // embedded renderable bodies live below the pickup parent; this update only
@@ -12,7 +12,7 @@
 int report_errorf(char* format, ...);
 float sine(float radians);
 
-void JetPack::update_track_jetpack_pickup()
+void cRJetPack::AI()
 {
     int zero = 0;
 

@@ -818,12 +818,12 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
             "cRSubGame::LocFromPos(tVector)",
             "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUtVector@@@Z",
         ),
-        (
-            "get_track_runtime_cell_at_world_z",
-            "RowFromPos",
-            "cRSubGame::RowFromPos(tVector)",
-            "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUtVector@@@Z",
-        ),
+            (
+                "get_track_runtime_cell_at_world_z",
+                "RowFromPos",
+                "cRSubGame::RowFromPos(tVector)",
+                "?RowFromPos@cRSubGame@@QAEPAUcRSubRow@@PAUtVector@@@Z",
+            ),
         (
             "sample_track_floor_height_at_position",
             "GetY",
@@ -3760,6 +3760,204 @@ def test_mobile_vapour_pause_and_speedup_recover_authored_owners() -> None:
         in constructor
     )
     assert "sizeof(cRSubSpeedUp)" in size_ledger
+
+
+def test_mobile_frontend_jetpack_and_row_owners_stay_authored() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+
+    fade_header = (include_root / "frontend_fade.h").read_text(encoding="utf-8")
+    flash_header = (include_root / "frontend_overlay_color_lerp.h").read_text(
+        encoding="utf-8"
+    )
+    overlay_header = (include_root / "overlay.h").read_text(encoding="utf-8")
+    jetpack_header = (include_root / "track_jetpack_pickup.h").read_text(
+        encoding="utf-8"
+    )
+    row_header = (include_root / "track_attachment_types.h").read_text(
+        encoding="utf-8"
+    )
+    game_root_header = (include_root / "game_root.h").read_text(encoding="utf-8")
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+
+    for primary, compatibility, header in (
+        ("cRFade", "FrontendFade", fade_header),
+        ("cRFlash", "FrontendOverlayColorLerp", flash_header),
+        ("cROverlay", "Overlay", overlay_header),
+        ("cRJetPack", "JetPack", jetpack_header),
+        ("cRRowModel", "RowModel", row_header),
+        ("cRSubRow", "SubRow", row_header),
+    ):
+        assert f"class {primary}" in header or f"struct {primary}" in header
+        assert f"typedef {primary} {compatibility};" in header
+
+    assert "cRFade fade;" in game_root_header
+    assert "cRFlash frontend_overlay;" in game_root_header
+    assert game_root_header.count("cROverlay overlay_") == 3
+    assert "cRJetPack jetpack_pickup;" in subgame_header
+    assert "cRSubRow* RowFromPos(Vector3* position);" in subgame_header
+    assert "cRSubRow runtime_rows[" in subgame_header
+
+    expected_methods = (
+        (
+            "initialize_border_stack",
+            "cRFade_Init",
+            "void cRFade::Init()",
+            "?Init@cRFade@@QAEXXZ",
+            False,
+        ),
+        (
+            "begin_frontend_fade_out",
+            "cRFade_Start",
+            "void cRFade::Start(FrontendFadeCallback completion_callback_)",
+            "?Start@cRFade@@QAEXP6AXXZ@Z",
+            True,
+        ),
+        (
+            "begin_frontend_fade_in",
+            "cRFade_StartOn",
+            "void cRFade::StartOn()",
+            "?StartOn@cRFade@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_frontend_transition_overlay",
+            "cRFade_AI",
+            "void cRFade::AI()",
+            "?AI@cRFade@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_frontend_overlay_color_lerp",
+            "cRFlash_Init",
+            "void cRFlash::Init(int state_)",
+            "?Init@cRFlash@@QAEXH@Z",
+            True,
+        ),
+        (
+            "draw_frontend_overlay_color_lerp",
+            "cRFlash_AI",
+            "void cRFlash::AI()",
+            "?AI@cRFlash@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_overlay",
+            "cROverlay_Init",
+            "void cROverlay::Init()",
+            "?Init@cROverlay@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_overlay",
+            "cROverlay_AI",
+            "void cROverlay::AI()",
+            "?AI@cROverlay@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_track_jetpack_pickup_runtime",
+            "cRJetPack_ctor",
+            "cRJetPack::cRJetPack()",
+            "??0cRJetPack@@QAE@XZ",
+            False,
+        ),
+        (
+            "update_track_jetpack_pickup",
+            "cRJetPack_AI",
+            "void cRJetPack::AI()",
+            "?AI@cRJetPack@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_track_row_runtime",
+            "cRSubRow_ctor",
+            "cRSubRow::cRSubRow()",
+            "??0cRSubRow@@QAE@XZ",
+            False,
+        ),
+        (
+            "update_row_model",
+            "cRRowModel_AI",
+            "void cRRowModel::AI()",
+            "?AI@cRRowModel@@QAEXXZ",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["status"] == "verified"
+            assert entries[windows_name]["confidence"] == "high"
+
+    folded_aliases = references_by_name["initialize_border_stack"]["aliases"]
+    assert "?Init@cRBorderStack@@QAEXXZ" in folded_aliases
+    assert "?Init@cRFade@@QAEXXZ" in folded_aliases
+
+    assets = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    size_ledger = (
+        scratch_root / "construct_game_runtime/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    frame = (scratch_root / "run_frame_update/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    add_jetpack = (
+        scratch_root / "spawn_track_jetpack_pickup/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    assert (
+        "static __forceinline void initialize_overlay_slot(cROverlay* overlay)"
+        in assets
+    )
+    assert "overlay->Init();" in assets
+    assert "fade.Init();" in assets
+    assert "frontend_overlay.Init(" in assets
+    assert "fade.AI();" in frame
+    assert "frontend_overlay.AI();" in frame
+    assert (
+        "((RuntimeSlot*)&jetpack_pickup)->"
+        "initialize_track_jetpack_pickup_runtime();"
+        in constructor
+    )
+    assert "cRSubRow* row = runtime_rows;" in constructor
+    assert "((RuntimeSlot*)row)->initialize_track_row_runtime();" in constructor
+    assert "sizeof(cRJetPack)" in size_ledger
+    assert "cROverlay* overlay = &root->overlay_0;" in size_ledger
+    assert "void cRSubGame::AddJetPack(" in add_jetpack
+    assert "JetPack* scan = &jetpack_pickup;" in add_jetpack
 
 
 def test_mobile_warning_recovers_authored_owner() -> None:

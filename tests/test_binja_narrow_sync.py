@@ -6320,6 +6320,9 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
     fade_header = (
         repo_root / "tools/match/include/frontend_fade.h"
     ).read_text(encoding="utf-8")
+    flash_header = (
+        repo_root / "tools/match/include/frontend_overlay_color_lerp.h"
+    ).read_text(encoding="utf-8")
     begin_fade_source = (
         repo_root
         / "tools/match/scratches/begin_frontend_fade_out/scratch.cpp"
@@ -6416,14 +6419,15 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
         assert "FrameColor4f" not in header
 
     assert "typedef void (*FrontendFadeCallback)();" in fade_header
+    assert "class cRFade {" in fade_header
+    assert "typedef cRFade FrontendFade;" in fade_header
+    assert "void Start(FrontendFadeCallback completion_callback);" in fade_header
     assert (
-        "void begin_frontend_fade_out("
-        "FrontendFadeCallback completion_callback);"
-    ) in fade_header
-    assert (
-        "void FrontendFade::begin_frontend_fade_out("
+        "void cRFade::Start("
         "FrontendFadeCallback completion_callback_)"
     ) in begin_fade_source
+    assert "class cRFlash {" in flash_header
+    assert "typedef cRFlash FrontendOverlayColorLerp;" in flash_header
     assert "completion_callback = completion_callback_;" in begin_fade_source
     assert "hold_state" not in begin_fade_source
     assert "return completion_callback_" not in begin_fade_source
@@ -6447,6 +6451,54 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
     )
     assert "result = g_game->fade.begin_frontend_fade_out" not in delayed_action_source
     assert "return result;" not in delayed_action_source
+
+
+def test_matcher_authored_frontend_pickup_and_row_owners_preserve_analysis_vocabulary() -> None:
+    repo_root = Path(__file__).parents[1]
+    matcher_headers = {
+        name: (repo_root / "tools/match/include" / name).read_text(
+            encoding="utf-8"
+        )
+        for name in (
+            "frontend_fade.h",
+            "frontend_overlay_color_lerp.h",
+            "overlay.h",
+            "track_jetpack_pickup.h",
+            "track_attachment_types.h",
+        )
+    }
+    frame_analysis = (HEADER_DIR / "bn_frame_renderer_types.h").read_text(
+        encoding="utf-8"
+    )
+    overlay_analysis = (HEADER_DIR / "bn_overlay_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_analysis = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    for primary, compatibility, header_name in (
+        ("cRFade", "FrontendFade", "frontend_fade.h"),
+        (
+            "cRFlash",
+            "FrontendOverlayColorLerp",
+            "frontend_overlay_color_lerp.h",
+        ),
+        ("cROverlay", "Overlay", "overlay.h"),
+        ("cRJetPack", "JetPack", "track_jetpack_pickup.h"),
+        ("cRRowModel", "RowModel", "track_attachment_types.h"),
+        ("cRSubRow", "SubRow", "track_attachment_types.h"),
+    ):
+        header = matcher_headers[header_name]
+        assert f"class {primary}" in header or f"struct {primary}" in header
+        assert f"typedef {primary} {compatibility};" in header
+
+    assert "typedef struct FrontendFade {" in frame_analysis
+    assert "typedef struct FrontendOverlayColorLerp {" in frame_analysis
+    assert "typedef struct Overlay {" in overlay_analysis
+    assert "typedef struct JetPack {" in path_analysis
+    assert "typedef struct RowModel {" in path_analysis
+    assert "typedef struct SubRow {" in path_analysis
 
 
 def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> None:

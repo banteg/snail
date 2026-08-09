@@ -13,7 +13,7 @@ void Logo::update_intro_screen()
         int flags = game->players[0].game_input->input.pressed_buttons;
         if ((flags & INPUT_BUTTON_PRIMARY) != 0
             || read_pressed_text_input_key_code() == 0xb) {
-            g_game->fade.begin_frontend_fade_out(0);
+            g_game->fade.Start(0);
         }
     }
 
@@ -32,7 +32,7 @@ void Logo::update_intro_screen()
     case 1:
         progress = progress_step + progress;
         if (progress > 1.0f) {
-            g_game->fade.begin_frontend_fade_out(0);
+            g_game->fade.Start(0);
             ++state;
         }
         break;

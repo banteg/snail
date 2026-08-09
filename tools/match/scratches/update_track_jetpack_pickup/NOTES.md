@@ -85,3 +85,19 @@ The authored `cRJetPack` parent now shares `TrackPickupState` with
 collision requests teardown, and the exact next AI tick removes the inherited
 BOD and sprite before returning to inactive. Matching remains exact at 127/127
 instructions with all 20 operands clean.
+
+## 2026-08-09 primary cRJetPack::AI ownership
+
+Android and iOS independently export `cRJetPack::AI()`. The automated mobile
+crosswalk marks `0x43efb0` verified with high confidence and one body on each
+port; on Windows, raw bytes `b0 ef 43 00` at table `0x497318` bind that table
+slot to this updater. The matcher now emits the exact owner-qualified symbol
+`?AI@cRJetPack@@QAEXXZ`, while the stable function ID remains
+`update_track_jetpack_pickup` and `JetPack` remains a compatibility typedef.
+The semantic body is unchanged and exact at 127/127 with all 20 references
+clean.
+
+No new meaning is assigned to the opaque parent lanes at `+0x40..+0x43` or
+`+0x48..+0x63`. This parent AI still does not touch either embedded `cRVapour`
+child, so their constructor/table proof is not inflated into active trail
+semantics.

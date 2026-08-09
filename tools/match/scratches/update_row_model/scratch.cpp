@@ -1,4 +1,5 @@
 // update_row_model @ 0x443070 (thiscall, ret)
+// Authored owner: cRRowModel::AI().
 
 #include "game_root.h"
 #include "object_render_types.h"
@@ -6,7 +7,7 @@
 
 int report_errorf(char* format, ...);
 
-void RowModel::update_row_model()
+void cRRowModel::AI()
 {
     Vector3* position = &transform.position;
     position->x = velocity.x + position->x;

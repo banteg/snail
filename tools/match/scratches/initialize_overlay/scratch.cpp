@@ -2,7 +2,7 @@
 
 #include "overlay.h"
 
-void Overlay::initialize_overlay()
+void cROverlay::Init()
 {
     camera.overlay_rotation_angle = 0.0f;
     rotation_step = 0.00036547193f;

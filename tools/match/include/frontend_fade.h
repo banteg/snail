@@ -4,13 +4,13 @@
 
 typedef void (*FrontendFadeCallback)();
 
-class FrontendFade {
+class cRFade {
 public:
     // Windows folds this trivial initializer with cRBorderStack::Init().
-    void initialize_frontend_fade(); // @ 0x404350
-    void begin_frontend_fade_out(FrontendFadeCallback completion_callback);
-    void begin_frontend_fade_in();
-    void update_frontend_transition_overlay();
+    void Init(); // folded @ 0x404350
+    void Start(FrontendFadeCallback completion_callback); // @ 0x40abc0
+    void StartOn(); // @ 0x40abe0
+    void AI(); // @ 0x40abf0
 
     int state; // +0x00
     union {
@@ -21,5 +21,12 @@ public:
     float hold_progress_step; // +0x0c
     FrontendFadeCallback completion_callback; // +0x10
 };
+
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRFade FrontendFade;
+
+typedef char cRFade_must_be_0x14[(sizeof(cRFade) == 0x14) ? 1 : -1];
+typedef char FrontendFade_must_be_0x14[
+    (sizeof(FrontendFade) == 0x14) ? 1 : -1];
 
 #endif

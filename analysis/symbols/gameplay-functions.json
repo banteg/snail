@@ -168,7 +168,9 @@
       "address": "0x404350",
       "name": "initialize_border_stack",
       "aliases": [
-        "initialize_frontend_fade"
+        "initialize_frontend_fade",
+        "cRBorderStack_Init",
+        "cRFade_Init"
       ],
       "description": "Exact Windows cRBorderStack::Init(): resets the generation and borrowed-entry count of the BorderManager-owned visibility transition stack. Windows folds the same two-zero-store body with the root-owned cRFade::Init() projection; Android independently preserves both authored owners and their identical initializer bodies."
     },
@@ -563,7 +565,10 @@
     {
       "address": "0x4084d0",
       "name": "initialize_track_jetpack_pickup_runtime",
-      "description": "Exact Windows constructor for the authored `JetPack` (`cRJetPack` cross-port) singleton: constructs its inherited BOD, constructs two complete embedded 0x94-byte `cRVapour` children, and installs the table whose entry is `update_track_jetpack_pickup`. The complete 0x19c extent exactly matches the native `Size of cRJetPack` ledger."
+      "aliases": [
+        "cRJetPack_ctor"
+      ],
+      "description": "Exact Windows constructor for the primary authored `cRJetPack` singleton: constructs its inherited BOD, constructs two complete embedded 0x94-byte `cRVapour` children, and installs the table whose entry is `cRJetPack::AI()`. The complete 0x19c extent exactly matches the native size ledger; `JetPack` remains compatibility vocabulary."
     },
     {
       "address": "0x408510",
@@ -600,7 +605,10 @@
     {
       "address": "0x408590",
       "name": "initialize_track_row_runtime",
-      "description": "Exact initializer for one authored `SubRow`: constructs its embedded `RowModel` base at +0x04, installs the cRRowModel vtable whose entry is exact update_row_model, constructs its embedded attachment `BodBase` at +0xb0, and returns the receiver. It leaves the scalar/copied row payload untouched. `initialize_runtime_pools_and_path_template_bank` invokes it over the owned 3200-entry, 0xf4-stride row slab."
+      "aliases": [
+        "cRSubRow_ctor"
+      ],
+      "description": "Exact constructor for one primary authored `cRSubRow`: constructs its embedded `cRRowModel` base at +0x04, installs the cRRowModel table whose entry is exact `AI()`, and constructs its separate attachment `BodBase` at +0xb0. `initialize_runtime_pools_and_path_template_bank` invokes it over the owned 3200-entry, 0xf4-stride row slab."
     },
     {
       "address": "0x4085c0",
@@ -764,11 +772,17 @@
     {
       "address": "0x40a1b0",
       "name": "update_overlay",
+      "aliases": [
+        "cROverlay_AI"
+      ],
       "description": "Exact void Windows `cROverlay::AI()`: wraps the owned camera rotation, rebuilds the parent local-Z transform, copies it into the embedded camera, and refreshes the inverse view. Android and iOS preserve the same owner and operation."
     },
     {
       "address": "0x40a240",
       "name": "initialize_overlay",
+      "aliases": [
+        "cROverlay_Init"
+      ],
       "description": "Exact void Windows `cROverlay::Init()`: initializes the parent transform, embedded camera, 38-degree FOV, zero rotation, and fixed rotation step. Android preserves the same owner, constants, and lifecycle role."
     },
     {
@@ -808,26 +822,41 @@
     {
       "address": "0x40ab00",
       "name": "initialize_frontend_overlay_color_lerp",
+      "aliases": [
+        "cRFlash_Init"
+      ],
       "description": "Exact void Windows projection of Android cRFlash::Init(int): stores the render-scene mask and seeds the owned target/current tColour pair to white with zero alpha inside player zero at GameRoot +0x2a8."
     },
     {
       "address": "0x40ab40",
       "name": "draw_frontend_overlay_color_lerp",
+      "aliases": [
+        "cRFlash_AI"
+      ],
       "description": "Exact void Windows cRFlash::AI() projection: moves each current tColour channel 14.5% toward its target and draws the player-owned full-screen overlay while alpha exceeds 0.01. Android preserves the same 0x24-byte owner and body."
     },
     {
       "address": "0x40abc0",
       "name": "begin_frontend_fade_out",
+      "aliases": [
+        "cRFade_Start"
+      ],
       "description": "Exact void Windows cRFade::Start(void (*)()) projection: enters opaque-bound state 2, clears alpha, and stores the completion callback at +0x10. Every Windows caller passes null and discards EAX; the natural callback-shaped void source remains exact at 5/5 instructions."
     },
     {
       "address": "0x40abe0",
       "name": "begin_frontend_fade_in",
+      "aliases": [
+        "cRFade_StartOn"
+      ],
       "description": "Exact void Windows cRFade::StartOn() projection: seeds alpha to one and state 1 so cRFade::AI fades the black overlay away over 18 updates. Both iOS and Android retain the authored StartOn name."
     },
     {
       "address": "0x40abf0",
       "name": "update_frontend_transition_overlay",
+      "aliases": [
+        "cRFade_AI"
+      ],
       "description": "Exact void Windows cRFade::AI() projection: updates the owned alpha, three-tick opaque hold, externally polled state-4 handoff, and full-screen black draw. Android independently preserves the cRFade owner, alpha lane, state-1/state-2 step, and draw while using port-specific handoff gates."
     },
     {
@@ -3018,7 +3047,7 @@
       "aliases": [
         "cRSubGame_RowFromPos"
       ],
-      "description": "Exact Windows `cRSubGame::RowFromPos(tVector)`: clamps world z into the generated row array and returns the authored `SubRow` runtime record. Android preserves the same owned-row lookup with a port-specific capacity and stride; the Windows 0xf4 stride and 3200-row slab agree with the constructor ledger's `Size of cRSubRow` total of 0xbea00 bytes."
+      "description": "Exact Windows `cRSubGame::RowFromPos(tVector)`: clamps world z into the generated row array and returns the primary authored `cRSubRow` runtime record. Android preserves the same owned-row lookup with a port-specific capacity and stride; the Windows 0xf4 stride and 3200-row slab agree with the constructor ledger's total of 0xbea00 bytes."
     },
     {
       "address": "0x43d4d0",
@@ -3137,6 +3166,9 @@
     {
       "address": "0x43efb0",
       "name": "update_track_jetpack_pickup",
+      "aliases": [
+        "cRJetPack_AI"
+      ],
       "description": "Exact `cRJetPack::AI()`: runs the owned JetPack singleton through bobbing and teardown states, inlining the shared `cLinkedList<cRBod>::Remove` operation in both removal arms. The Windows constructor table at 0x497318 points directly here, while Android and iOS retain the authored member."
     },
     {
@@ -3527,7 +3559,10 @@
     {
       "address": "0x443070",
       "name": "update_row_model",
-      "description": "Exact per-frame update for the `RowModel` embedded at `SubRow +0x04`: adds its velocity at model +0x80 to the inherited transform position, then recycles the model's intrusive body node once it crosses the live row threshold. iOS preserves the authored callback as `cRRowModel::AI()`."
+      "aliases": [
+        "cRRowModel_AI"
+      ],
+      "description": "Exact `cRRowModel::AI()` for the primary model embedded at `cRSubRow +0x04`: adds velocity at model +0x80 to the inherited transform position, then recycles the model's intrusive body node once it crosses the live row threshold. Android and iOS preserve the authored callback."
     },
     {
       "address": "0x443130",

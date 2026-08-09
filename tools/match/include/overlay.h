@@ -1,20 +1,24 @@
-// Shared overlay transform state, used by the initializer and per-frame update.
+// Authored cROverlay transform state, used by Init and the per-frame AI.
 #ifndef OVERLAY_H
 #define OVERLAY_H
 
 #include "viewport.h"
 
-class Overlay : public RenderableBod {
+class cROverlay : public RenderableBod {
 public:
-    void initialize_overlay(); // @ 0x40a240; mobile cROverlay::Init()
-    void update_overlay(); // @ 0x40a1b0; mobile cROverlay::AI()
+    void Init(); // @ 0x40a240
+    void AI(); // @ 0x40a1b0
 
     // Viewport slots 0, 2, and 3 borrow the camera subobjects from the three
-    // root-owned Overlay instances. The parent transform drives its camera.
+    // root-owned cROverlay instances. The parent transform drives its camera.
     RenderCamera camera; // +0x80, ends at +0x148
     float rotation_step; // +0x148
 };
 
+typedef cROverlay Overlay;
+
+typedef char cROverlay_must_be_0x14c[
+    (sizeof(cROverlay) == 0x14c) ? 1 : -1];
 typedef char Overlay_must_be_0x14c[(sizeof(Overlay) == 0x14c) ? 1 : -1];
 
 #endif

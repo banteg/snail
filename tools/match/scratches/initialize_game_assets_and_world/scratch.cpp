@@ -76,10 +76,10 @@ static __forceinline void link_root_bod(BodBase* bod)
     *flags |= BOD_FLAG_LINKED;
 }
 
-static __forceinline void initialize_overlay_slot(Overlay* overlay)
+static __forceinline void initialize_overlay_slot(cROverlay* overlay)
 {
     link_root_bod(overlay);
-    overlay->initialize_overlay();
+    overlay->Init();
 }
 
 char GameRoot::initialize_game_assets_and_world()
@@ -94,7 +94,7 @@ char GameRoot::initialize_game_assets_and_world()
     fog_end = 50.0f;
     fog_enabled = 1;
     player_count = GAME_ROOT_PLAYER_SLOT_COUNT;
-    fade.initialize_frontend_fade();
+    fade.Init();
     frontend_link_latch = 0;
     subgame.subgame_pause_gate = 0;
 
@@ -3051,7 +3051,7 @@ char GameRoot::initialize_game_assets_and_world()
                 0.152129993f, 0.988296986f, 0.0111880004f, 0.0f,
                 0.985638976f, -0.152539998f, 0.0724840015f, 0.0f,
                 -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);
-            players[player_index].frontend_overlay.initialize_frontend_overlay_color_lerp(
+            players[player_index].frontend_overlay.Init(
                 0x1000000);
             players[player_index].mouse_cursor.release_mouse_cursor();
             players[player_index].mouse_cursor.suppress_next_draw = 0;

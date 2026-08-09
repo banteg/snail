@@ -21,3 +21,11 @@ step, and full-screen black draw while using port-specific handoff gates.
 iOS and Android also retain `cRFade::Start(void (*)())`; its store proves the
 Windows `+0x10` word is a completion callback, not a hold-state integer. All
 six Windows Start callsites pass null, and Windows externally polls state 4.
+
+## 2026-08-09 primary cRFade::AI promotion
+
+The exact callback is now defined as `cRFade::AI()` and exports
+`?AI@cRFade@@QAEXXZ`. Its Windows state machine still never reads or invokes
+the stored completion callback; that dead lane is preserved as layout evidence
+rather than assigned invented behavior. The existing jump-table reference and
+all nine masked operands remain clean at 62/62 instructions and full prefix.

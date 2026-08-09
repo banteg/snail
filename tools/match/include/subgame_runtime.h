@@ -121,7 +121,7 @@ public:
         Vector3* world_position,
         cRSubGoldy* ignored_player); // @ 0x443730, native binds embedded_player()
     cRSubLoc* LocFromPos(Vector3* position);
-    SubRow* RowFromPos(Vector3* position);
+    cRSubRow* RowFromPos(Vector3* position);
     double GetY(Vector3* position);
     void CalcRealPos(Vector3* position, float* out_angle);
     void Complete(unsigned char completed); // @ 0x438700
@@ -199,7 +199,7 @@ public:
     int active_level_score; // +0x355d94, copied from the selected bank record
     Time active_level_timer; // +0x355d98, embedded cRTime display snapshot
     cRSubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
-    JetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
+    cRJetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
     cRSubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
     SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots
     cRSubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
@@ -232,7 +232,7 @@ public:
     // +0x3bfac8, ends at +0x5ccac8
     // Fixed row records owned by cRSubGame. Their body objects are
     // embedded; source_segment and attachment-cell fields are borrowed links.
-    SubRow runtime_rows[SUBGAME_RUNTIME_ROW_CAPACITY]; // +0x5ccac8, ends at +0x68b4c8
+    cRSubRow runtime_rows[SUBGAME_RUNTIME_ROW_CAPACITY]; // +0x5ccac8, ends at +0x68b4c8
     // Both objects are embedded in cRSubGame. complete_subgame snapshots
     // into current_high_score_record, then lends that record to sub_high_score
     // for in-place normalization and value-copy persistence.

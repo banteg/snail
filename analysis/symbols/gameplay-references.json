@@ -999,6 +999,115 @@
       "description": "Exact authored cRVapour::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x404350",
+      "name": "initialize_border_stack",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRBorderStack@@QAEXXZ",
+        "?Init@cRFade@@QAEXXZ"
+      ],
+      "description": "Exact two-store body folded across the distinct cRBorderStack::Init() and cRFade::Init() authored owners."
+    },
+    {
+      "address": "0x4084d0",
+      "name": "initialize_track_jetpack_pickup_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRJetPack@@QAE@XZ"
+      ],
+      "description": "Exact authored cRJetPack constructor."
+    },
+    {
+      "address": "0x408590",
+      "name": "initialize_track_row_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRSubRow@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSubRow aggregate constructor."
+    },
+    {
+      "address": "0x40a1b0",
+      "name": "update_overlay",
+      "kind": "function",
+      "aliases": [
+        "?AI@cROverlay@@QAEXXZ"
+      ],
+      "description": "Exact authored cROverlay::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x40a240",
+      "name": "initialize_overlay",
+      "kind": "function",
+      "aliases": [
+        "?Init@cROverlay@@QAEXXZ"
+      ],
+      "description": "Exact authored cROverlay::Init() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x40ab00",
+      "name": "initialize_frontend_overlay_color_lerp",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRFlash@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRFlash::Init(int) member."
+    },
+    {
+      "address": "0x40ab40",
+      "name": "draw_frontend_overlay_color_lerp",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRFlash@@QAEXXZ"
+      ],
+      "description": "Exact authored cRFlash::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x40abc0",
+      "name": "begin_frontend_fade_out",
+      "kind": "function",
+      "aliases": [
+        "?Start@cRFade@@QAEXP6AXXZ@Z"
+      ],
+      "description": "Exact authored cRFade::Start(void (*)()) member."
+    },
+    {
+      "address": "0x40abe0",
+      "name": "begin_frontend_fade_in",
+      "kind": "function",
+      "aliases": [
+        "?StartOn@cRFade@@QAEXXZ"
+      ],
+      "description": "Exact authored cRFade::StartOn() member."
+    },
+    {
+      "address": "0x40abf0",
+      "name": "update_frontend_transition_overlay",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRFade@@QAEXXZ"
+      ],
+      "description": "Exact authored cRFade::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x43efb0",
+      "name": "update_track_jetpack_pickup",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRJetPack@@QAEXXZ"
+      ],
+      "description": "Exact authored cRJetPack::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x443070",
+      "name": "update_row_model",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRRowModel@@QAEXXZ"
+      ],
+      "description": "Exact authored cRRowModel::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x408550",
       "name": "initialize_garbage_hazard",
       "kind": "function",
@@ -2357,9 +2466,10 @@
       "name": "get_track_runtime_cell_at_world_z",
       "kind": "function",
       "aliases": [
-        "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUtVector@@@Z"
+        "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUtVector@@@Z",
+        "?RowFromPos@cRSubGame@@QAEPAUcRSubRow@@PAUtVector@@@Z"
       ],
-      "description": "Exact Windows cRSubGame::RowFromPos(tVector*) entry; Windows pointer ABI remains authoritative."
+      "description": "Exact Windows cRSubGame::RowFromPos(tVector*) entry returning the primary cRSubRow owner; the legacy SubRow alias remains normalized for analyzer compatibility."
     },
     {
       "address": "0x43d4d0",

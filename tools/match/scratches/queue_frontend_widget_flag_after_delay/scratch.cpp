@@ -9,7 +9,7 @@ void BorderManager::queue_frontend_widget_flag_after_delay(
 {
     if (delayed_widget_active == 0) {
         if ((widget->widget_flags & FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION) != 0)
-            g_game->fade.begin_frontend_fade_out(0);
+            g_game->fade.Start(0);
         delayed_widget = widget;
         delayed_widget_active = 1;
         delayed_widget_progress = 0.0f;

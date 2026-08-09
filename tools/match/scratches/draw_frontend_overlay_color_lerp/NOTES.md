@@ -2,7 +2,7 @@
 
 Small front-end overlay fade update/draw helper.
 
-- The function proves the `FrontendOverlayColorLerp` color layout:
+- The function proves the `cRFlash` color layout:
   `target` lives at `+0x04` and `current` lives at `+0x14`.
 - Each channel moves 14.5% of the remaining distance toward the target each
   update.
@@ -19,3 +19,16 @@ Android `cRFlash::AI()` preserves the complete 0x24-byte owner, all four
 14.5% channel lerps, the alpha threshold, scene mask, and current-color draw.
 That body independently proves this helper is a void `cRFlash` member and that
 both color fields use the shared `tColour` type.
+
+## 2026-08-09 authored-owner promotion
+
+The exact Windows leaf now uses primary authored `cRFlash::AI()` with
+`FrontendOverlayColorLerp` retained as compatibility vocabulary. The stable
+matcher target remains `draw_frontend_overlay_color_lerp`, and the exact MSVC
+symbol is `?AI@cRFlash@@QAEXXZ`.
+
+Live raw Windows xrefs show one direct call at `0x40a3ae` from
+`run_frame_update`, using the same player-owned `cRFlash` initialized by the
+paired leaf. Matching remains exact at 38/38 instructions with all six masked
+references clean. No frontend render/state-machine or widget lane was
+reopened.

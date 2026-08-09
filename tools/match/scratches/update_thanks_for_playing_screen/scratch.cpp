@@ -17,7 +17,7 @@ void ThanksScreen::update_thanks_for_playing_screen()
         && message_state >= 2
         && g_game->fade.state == 0) {
         g_sound_effect_manager.play_sound_effect(8);
-        g_game->fade.begin_frontend_fade_out(0);
+        g_game->fade.Start(0);
     }
 
     if (g_game->fade.state == 4) {

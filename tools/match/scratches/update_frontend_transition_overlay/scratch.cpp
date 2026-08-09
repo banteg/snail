@@ -3,7 +3,7 @@
 #include "frontend_fade.h"
 #include "font_system.h"
 
-void FrontendFade::update_frontend_transition_overlay()
+void cRFade::AI()
 {
     tColour color;
 

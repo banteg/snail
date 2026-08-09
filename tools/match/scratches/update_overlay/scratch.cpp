@@ -2,7 +2,7 @@
 
 #include "overlay.h"
 
-void Overlay::update_overlay()
+void cROverlay::AI()
 {
     camera.overlay_rotation_angle += rotation_step;
     if (camera.overlay_rotation_angle > 6.2831855f) {

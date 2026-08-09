@@ -3,7 +3,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment_types.h"
 
-SubRow* cRSubGame::RowFromPos(Vector3* position)
+cRSubRow* cRSubGame::RowFromPos(Vector3* position)
 {
     int row = (int)position->z;
 

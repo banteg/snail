@@ -2,7 +2,7 @@
 
 #include "frontend_fade.h"
 
-void FrontendFade::begin_frontend_fade_out(FrontendFadeCallback completion_callback_)
+void cRFade::Start(FrontendFadeCallback completion_callback_)
 {
     state = 2;
     alpha_bits = 0;

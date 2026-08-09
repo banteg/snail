@@ -1071,6 +1071,8 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x443160, "initialize_track_parcel_slots", "?Init@cRParcelManager@@QAEXXZ"),
             (0x442500, "initialize_vapour", "?Init@cRVapour@@QAEXPAUcRObject@@M@Z"),
             (0x43F5C0, "initialize_slug_voice_manager", "?Init@cRSlugVoiceManager@@QAEXXZ"),
+            (0x40A240, "initialize_overlay", "?Init@cROverlay@@QAEXXZ"),
+            (0x40AB00, "initialize_frontend_overlay_color_lerp", "?Init@cRFlash@@QAEXH@Z"),
             (0x440600, "uninit_pause_menu", "?UnInit@cRSubPause@@QAEXXZ"),
             (0x444AE0, "start_invincible_shell", "?Start@cRInvincible@@QAEXXZ"),
             (0x446F30, "start_warning", "?Start@cRWarning@@QAEXXZ"),
@@ -1093,6 +1095,11 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x43F200, "update_garbage_hazard", "?AI@cRSubGarbage@@QAEXXZ"),
             (0x43F5E0, "update_slug_voice_manager", "?AI@cRSlugVoiceManager@@QAEXXZ"),
             (0x43F930, "update_slug_hazard_ai", "?AI@cRSlug@@QAEXXZ"),
+            (0x40A1B0, "update_overlay", "?AI@cROverlay@@QAEXXZ"),
+            (0x40AB40, "draw_frontend_overlay_color_lerp", "?AI@cRFlash@@QAEXXZ"),
+            (0x40ABF0, "update_frontend_transition_overlay", "?AI@cRFade@@QAEXXZ"),
+            (0x43EFB0, "update_track_jetpack_pickup", "?AI@cRJetPack@@QAEXXZ"),
+            (0x443070, "update_row_model", "?AI@cRRowModel@@QAEXXZ"),
         )
     )
     manifest = ReferenceSymbolManifest(name="test references", symbols=symbols)
@@ -1185,17 +1192,34 @@ def test_folded_reference_aliases_preserve_both_authored_owners() -> None:
             "?Hover@cRSubHover@@QAEXAAUtVector@@M@Z",
         ),
     )
+    folded_init = ReferenceSymbol(
+        address=0x404350,
+        name="initialize_border_stack",
+        kind="function",
+        aliases=(
+            "?Init@cRBorderStack@@QAEXXZ",
+            "?Init@cRFade@@QAEXXZ",
+        ),
+    )
     manifest = ReferenceSymbolManifest(
         name="test references",
-        symbols=(folded_speedup,),
+        symbols=(folded_speedup, folded_init),
     )
 
-    for alias in folded_speedup.aliases:
-        assert _reference_symbol_for_symbol_name(manifest, alias) is folded_speedup
+    for symbol in (folded_speedup, folded_init):
+        for alias in symbol.aliases:
+            assert _reference_symbol_for_symbol_name(manifest, alias) is symbol
     assert (
         _reference_symbol_for_symbol_name(
             manifest,
             "?Hover@cRUnrelated@@QAEXAAUtVector@@M@Z",
+        )
+        is None
+    )
+    assert (
+        _reference_symbol_for_symbol_name(
+            manifest,
+            "?Init@cRUnrelated@@QAEXXZ",
         )
         is None
     )

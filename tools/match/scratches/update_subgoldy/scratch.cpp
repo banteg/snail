@@ -155,7 +155,7 @@ void cRSubGoldy::AI()
             g_game->players[0].frontend_state = 26;
             g_game->players[0].saved_frontend_state = 10;
             g_game->players[0].redispatch_requested = 1;
-            g_game->fade.begin_frontend_fade_in();
+            g_game->fade.StartOn();
             return;
         }
     } else {
@@ -797,7 +797,7 @@ steering_stored:
         if (completion_handoff_timer > 5.0f) {
             int fade_state = g_game->fade.state;
             if (!fade_state) {
-                g_game->fade.begin_frontend_fade_out(0);
+                g_game->fade.Start(0);
             } else if (fade_state == 4) {
                 cRSubGame* finish_game = game;
                 if (finish_game->completion.state != COMPLETION_STATE_INACTIVE)

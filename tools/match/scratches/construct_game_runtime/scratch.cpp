@@ -29,7 +29,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRTutorial\t%i\n", sizeof(Tutorial)); \
     debug_report_stub("   Size of cRSubTracks %i\n", sizeof(SubTracks)); \
     debug_report_stub("   Size of cRSubSpeedUp %i\n", sizeof(cRSubSpeedUp)); \
-    debug_report_stub("   Size of cRJetPack %i\n", sizeof(JetPack)); \
+    debug_report_stub("   Size of cRJetPack %i\n", sizeof(cRJetPack)); \
     debug_report_stub("   Size of cRSubHealth %i\n", sizeof(((cRSubGame*)0)->health_pickups)); \
     debug_report_stub("   Size of cRSlug %i\n", sizeof(((cRSubGame*)0)->slug_hazards.slots)); \
     debug_report_stub("   Size of cRSubLazerManager %i\n", sizeof(cRSubLazerManager)); \
@@ -102,7 +102,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
             --viewport_count;
         } while (viewport_count);
 
-        Overlay* overlay = &root->overlay_0;
+        cROverlay* overlay = &root->overlay_0;
         overlay->initialize_renderable_bod();
         overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;

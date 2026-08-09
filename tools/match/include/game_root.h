@@ -46,7 +46,7 @@ public:
     RenderCamera camera; // +0xa0, owned cRCamera subobject
     GameInput* game_input; // +0x168, borrows the matching root input owner
     MouseCursorState mouse_cursor; // +0x16c, root player 0 cursor state
-    FrontendOverlayColorLerp frontend_overlay; // +0x184, root player 0 overlay
+    cRFlash frontend_overlay; // +0x184, root player 0 overlay
     // During the gameplay completion handoff, update_subgoldy snapshots the
     // inherited transform here and lowers the copied Y position by one unit.
     TransformMatrix completion_handoff_transform; // +0x1a8
@@ -76,7 +76,7 @@ public:
     float fog_end; // +0x0c, D3DRS_FOGEND
     float fog_density; // +0x10, D3DRS_FOGDENSITY
     tColour fog_color; // +0x14, packed for D3DRS_FOGCOLOR
-    FrontendFade fade; // +0x24, root-owned transition controller
+    cRFade fade; // +0x24, root-owned transition controller
     union {
         int frontend_quit_requested; // +0x38, nonzero run-loop exit request
         int frontend_quit_mode; // exit prompt writes modes 1 and 3
@@ -99,9 +99,9 @@ public:
     BodBase inactive_bod_sentinel; // +0x570, constructed root free-list sentinel
     BodList active_bod_list; // +0x5a8, root-owned active/free intrusive BOD anchor
     Viewport viewports[5]; // +0x5b4, owned fixed cRViewport array
-    Overlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport 0
-    Overlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport 2
-    Overlay overlay_2; // +0x914, lends camera at +0x994 to viewport 3
+    cROverlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport 0
+    cROverlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport 2
+    cROverlay overlay_2; // +0x914, lends camera at +0x994 to viewport 3
     RenderableBod root_noop_renderable; // +0xa60, callback has an empty AI slot
     char unknown_000ae0[0xb24 - 0xae0];
     cRTrack track; // +0xb24, exact Windows owner with four track/slide pairs

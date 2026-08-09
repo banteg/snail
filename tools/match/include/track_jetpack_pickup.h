@@ -15,10 +15,10 @@
 
 class cRSubGame;
 
-class JetPack : public BodBase {
+class cRJetPack : public BodBase {
 public:
-    JetPack* initialize_track_jetpack_pickup_runtime(); // @ 0x4084d0
-    void update_track_jetpack_pickup(); // @ 0x43efb0
+    cRJetPack(); // @ 0x4084d0
+    void AI(); // @ 0x43efb0
 
     TrackPickupState state; // +0x38
     cRSubGoldy* owner; // +0x3c
@@ -33,6 +33,10 @@ public:
     cRVapour vapour_b; // +0x108, embedded cRVapour
 };
 
+typedef cRJetPack JetPack;
+
+typedef char cRJetPack_must_be_0x19c[
+    (sizeof(cRJetPack) == 0x19c) ? 1 : -1];
 typedef char JetPack_must_be_0x19c[
     (sizeof(JetPack) == 0x19c) ? 1 : -1];
 

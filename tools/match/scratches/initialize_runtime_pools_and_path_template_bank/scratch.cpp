@@ -78,7 +78,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
     golb_vapour_list_head.initialize_bod_base();
     unknown_bod_355d5c.initialize_bod_base();
     ((RuntimeSlot*)&speedup_pickup)->initialize_track_speedup_runtime();
-    jetpack_pickup.initialize_track_jetpack_pickup_runtime();
+    ((RuntimeSlot*)&jetpack_pickup)->initialize_track_jetpack_pickup_runtime();
 
     cRSubHealth* health_pickup = health_pickups;
     int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
@@ -163,10 +163,10 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         --loc_count;
     } while (loc_count);
 
-    SubRow* row = runtime_rows;
+    cRSubRow* row = runtime_rows;
     int row_count = sizeof(runtime_rows) / sizeof(runtime_rows[0]);
     do {
-        row->initialize_track_row_runtime();
+        ((RuntimeSlot*)row)->initialize_track_row_runtime();
         ++row;
         --row_count;
     } while (row_count);
