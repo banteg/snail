@@ -64,8 +64,9 @@ public:
     void border_input_text(); // @ 0x4035b0, iOS/Android cRBorder::InputText()
     void border_add_text_number(int value); // @ 0x401030,
         // iOS/Android cRBorder::AddTextNumber(int)
-    void border_sprite_extend(int sprite_a, int sprite_c, int sprite_b,
-        char flag); // @ 0x404540, Android cRBorder::SpriteExtend(int, int, int, bool)
+    void border_sprite_extend(int hot_texture_id, int retained_state,
+        int hit_mask_texture_id, char wobble_positive); // @ 0x404540,
+        // Android cRBorder::SpriteExtend(int, int, int, bool)
     unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
     void update_frontend_widget_interaction(); // @ 0x402820,
         // iOS/Android cRBorder::AI()
@@ -108,7 +109,7 @@ public:
         int texture_hit_test_sprite;
         int sprite_hit_mask_texture_id;
     }; // +0x064
-    int sprite_extend_texture_c; // +0x068, stored by border_sprite_extend
+    int sprite_extend_retained_state; // +0x068, write-only in the Windows image
     tColour color_06c; // +0x06c, constructed with the backing BorderRecord
     int widget_type; // +0x7c, border style/font preset
     TwinkleManager twinkle_manager; // +0x080, five inline twinkles and manager state

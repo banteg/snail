@@ -2,13 +2,17 @@
 
 #include "frontend_widget.h"
 
-void FrontendWidget::border_sprite_extend(int sprite_a, int sprite_c, int sprite_b, char flag)
+void FrontendWidget::border_sprite_extend(
+    int hot_texture_id,
+    int retained_state,
+    int hit_mask_texture_id,
+    char wobble_positive)
 {
-    sprite_hot_texture_id = sprite_a;
-    sprite_hit_mask_texture_id = sprite_b;
-    sprite_extend_texture_c = sprite_c;
+    sprite_hot_texture_id = hot_texture_id;
+    sprite_hit_mask_texture_id = hit_mask_texture_id;
+    sprite_extend_retained_state = retained_state;
     sprite_extend_enabled = 1;
-    sprite_wobble_positive = flag;
+    sprite_wobble_positive = wobble_positive;
     target_padding = 0.0f;
     idle_padding = 0.0f;
     hot_padding = 0.0f;
