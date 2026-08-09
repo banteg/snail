@@ -81,7 +81,9 @@ The port now has a runner-owned logical row-message token and runner-driven tuto
 Practical risk:
 
 - tutorial and parcel behavior can look close while still being driven from the wrong control boundary
-- completion fast-forward and `gate_18` style interactions remain underexplained
+- completion fast-forward is now closed as an authored lifecycle latch plus
+  the primary-button pressed edge; remaining row-event risk is payload/widget
+  timing rather than an unnamed `gate_18` controller source
 
 ### 5. Warning/damage owner
 
@@ -241,7 +243,11 @@ Work this top-down unless a new runtime capture invalidates the order.
   (`0x10`) spawn-suppression bits; it has no render/cache consumer.
 - [ ] Finish literal SubLazer and Salt pool ownership. The port now has plain-array `cRSubLazerManager` and `cRSalt` equivalents for the recovered damage lanes, but still needs the native intrusive lists, object/body owners, sprite ownership, suppression gates, and any remaining non-horizontal suppressor details. Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by `cRSubLoc::AI()` via `shoot_sub_lazer_pool` @ 0x441ad0. Reference: `update_sub_loc` @ 0x439d50 (RNG gate plus `game+0x74668 > game+0x42fdec` cadence), `spawn_sub_lazer_projectile` @ 0x441670, `deactivate_sub_lazer_projectile` @ 0x441740, `update_sub_lazer_projectile` @ 0x4417d0, `cRSalt` @ `game + 0x3578c0`; salt pool helpers: `initialize_salt_hazard_pool` @ 0x441540, `spawn_salt_hazard` @ 0x441560 (authored `0x22` tiles and `0x0f` with RNG gate `0.98 + 0.02*(1-scalar)`), `update_salt_hazard` @ 0x441c10.
 - [ ] Jetpack state 2 (hover) controller + `end_jetpack_hover` @ 0x43a370 — large; belongs with a broader jetpack hover-mode port that is not prioritized yet
-- [ ] Recover the exact `gate_18` input/controller source
+- [x] Recover the completion fast-forward input/controller contract:
+  `cRCompletion::Init` arms `fast_forward_enabled`, its exact AI clears the
+  latch on summary activation, and the sole Goldy consumer combines it with
+  `InputState::pressed_buttons & 0x4000`; the fixed player-0 UI and primary
+  Goldy routes alias `game_inputs[0].input`
 - [ ] Recover parcel-flight and row-event widget timing details that still rely on app-side or inferred helpers
 - [ ] Port the missing score events tied to replay, jetpack, slug kills, and the remaining unresolved branches
 - [ ] Port the recovered slug-hit velocity writes and sticky
@@ -291,23 +297,26 @@ Every current non-proof scratch ledger is now formally stalled. Do not start a
 session from fuzzy score alone; acquire a new producer, consumer, field xref,
 or original-source clue first. Use this evidence order:
 
-1. Promote `CutScene` to the primary authored `cRCutScene` type and bind its
-   `Init`/`AI` symbols. Exact initialization, hotspot production, presentation
-   dispatch, and camera consumption surround the 97.62% AI body. This is a
-   type/symbol ownership slice; do not reopen its 84 exhausted spill, join, or
-   matrix-lifetime variants.
-2. Promote `SubHover` to the primary authored `cRSubHover` type and bind its
-   seven lifecycle symbols. Six exact siblings surround the 94.66% AI partial
-   and both mobile builds preserve the owner. Keep the 47 exhausted
-   state-ladder, threshold-lifetime, and wobble-store variants closed.
-3. Close the `cRCompletion` fast-forward latch lifecycle and controller-owner
-   contract. The complete Windows xref set is arm `0x404cca`, clear `0x404e2e`,
-   consume `0x43c89e`; the primary Goldy input aliases the same root-owned
-   `InputState`, and both mobile builds preserve the chain. Add health checks
-   and retire stale tracing claims; no score sweep is warranted.
+1. Close `cRSubGoldy::shoot_flags & 0x80` as the invincibility capability bit.
+   Exact `SetShootFlags` is the complete nonzero producer family, while exact
+   `cRInvincible::AI`, exact `cRDamageGuage::Take`, and Collision consume it.
+   Propagate one named bit without assigning semantics to the lower weapon
+   selector bits; do not request another writer trace or reopen collision
+   stack-coloring.
+2. Retire the stale death-selector and visible-life tracing target. Exact
+   `DeathInit`, `RessurectInit`, and `RessurectAI` plus checked-in CDB captures
+   already prove respawn versus final-loss selection and the delayed Postal
+   decrement commit. Refresh the handoff docs; do not change the exact caller's
+   `y < -7` fall trigger or reopen proof-grade bodies.
+3. Promote the complete Tip family to primary authored `cRTipData`, `cRTip`,
+   and `cRTipManager` owners with compatibility typedefs and owner-qualified
+   lifecycle symbols. Six helpers are exact and `cRTip::Init` remains bounded
+   at 84.42% after 66 variants; this type slice must not claim the still-open
+   Zig payload-table/controller port is complete.
 
 Do not keep already proof-grade or evidence-closed lanes active merely because
-an older plan named them. Slug-hit motion and `slug_fall_active`, the
+an older plan named them. Primary `cRCutScene` and `cRSubHover` ownership, the
+completion fast-forward/input lifecycle, slug-hit motion and `slug_fall_active`, the
 selected-record gameplay multiplexer, directional-fringe/cache staging, Golb
 trail/impact shot-slot ownership, warning sample and completion-drain gates,
 random-hazard suppression, `active_window_min_z`, the live firing input chain,
