@@ -169,25 +169,39 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Recover the full installed-bank ownership and row-slot pairing rules
 - [x] Finish the swept local-frame entry owner strongly enough to gate it behind the native `attachment_exit_pending` branch instead of the current broader gameplay trigger
   - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows, the current row gates the swept probes through the recovered live owner bits (`0x40` first, then `0x80`), and raw BN plus IDA now show the first swept helper does not directly retire `attachment_exit_pending` before that `0x80` gate check
-- [ ] Recover the real consumer and semantics of
-  `post_follow_heading_carryover`
+- [x] Bound the two post-follow carryover lanes
   - `post_follow_exit_roll` is closed: while `attachment_exit_pending`,
     `update_cameraman` applies it as a world-z roll between the follow
-    orientation rotations and `heading_roll`; the adjacent
-    `post_follow_heading_carryover` lane still has only producer/clear writes
-    and no recovered consumer
+    orientation rotations and `heading_roll`
+  - `post_follow_heading_carryover` is write-only captured state in the shipped
+    Windows program: exact `begin_post_follow_carryover` supplies its only two
+    field references (copy or zero), while a whole-image search finds no load;
+    mobile bodies corroborate the paired producer only, so do not invent a
+    common gameplay consumer without new evidence
 - [x] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
   - resolved as dead code: the field at `[esi+0x44]` is `PathTemplate::segment_count` (not `sample_count` — the HLIL `_pad_3c[8].d` rendering is a char-pad byte index into the 0x3c-aligned block). The gate `sample_index + 1 == segment_count * 2` at `0x420d1d` is unreachable because the helper terminates at `sample_index == segment_count` first, with `sample_index` starting at 0 and advancing by 1. There is no second increment path or field aliasing that could close the gap. Do not port.
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story
   - entry-height narrowing (2026-06-12, matched source): neither entry lane is family-dependent — direct begin seeds world `y - 0.49`, swept entry seeds `0` plus a player-y snap; whatever kind-`42` distinctness remains lives in the follow update / exit lanes, not entry seeding (see invalidation ledger)
-  - newer static narrowing: `attachment_exit_pending` is no longer a generic open search
-  - BN field xrefs now show it is only written by `begin_post_follow_carryover` plus five clear sites inside `update_subgoldy` (`0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, `0x43ce75`)
-  - the paired `attachment_exit_progress` lane is only written by the fall-state initializer and the single update store at `0x43ce96`, so there is no separate helper-side or plain progress-expiry clear in current static RE
-  - stronger late-clear narrowing: `0x43ce75` sits behind native `sub_hover.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
-  - stronger special-lane narrowing: `0x43bcb3` sits inside the non-follow floor-cache/slide motion block (runtime tiles `0x0f/0x10/0x12/0x13`, plus slide-family cells when `damage_gauge.state == 2`) — mutually exclusive with the swept-reentry path (sibling of the `_pad_41c == 0` branch) so it is **not** the retirement winner
-  - winner after swept re-entry: **`0x43bf6f`** grounded-snap lane with predicate `!follow_state.active && y<0.49 && y≥-0.163 && !is_open_neighbor(cell) && cell->tile_id != 0x16 && velocity.y<-0.03 && velocity.y<0` → position.y=0.49, zero velocity, clear
-  - remaining two lanes: `0x43c06d` open-edge grounded re-snap (`velocity.y ≥ threshold(open_edge_mask)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49`), `0x43c3ea` trampoline bounce on tile `0x16` with `|y - cell_y| < 0.49` envelope, squidge, velocity flip, position.y=cell_y+0.49, play_sound_effect(0x29)
-  - current Zig consequence: the old `progress >= 1.0` timeout clear is gone; active-phase retirement uses the confirmed jetpack clear plus a broad trampoline-or-non-open-neighbor proxy that fires too eagerly compared to any of the three grounded-snap lanes
+  - `attachment_exit_pending` is no longer a generic open search: exact begin
+    arms it, and `update_subgoldy` contains four distinct live retirements plus
+    one dead `boost_one_tick` clear (`0x43bcb3`, with no nonzero Windows
+    producer)
+  - `0x43bf6f` retires the ordinary occupied, non-trampoline grounded envelope;
+    the pending clear is unconditional once that envelope is reached even when
+    upward velocity suppresses the accompanying y/velocity snap
+  - `0x43c06d` cancels a just-armed open-edge exit in the same tick when falling
+    is disabled (or cheat flag `0x2` is set), restoring the low player to
+    `y=0.49`
+  - `0x43c3ea` retires only after the trampoline envelope accepts the player,
+    then launches vertical velocity, sets the bounce latch, and plays SFX 41;
+    `0x43ce75` gives active `SubHover` authority and clears before the
+    progress/voice consumer
+  - retirement clears only the pending byte; there is no helper-side or plain
+    `progress >= 1.0` expiry, and exact begin overwrites the lifecycle state on
+    the next arm
+  - current Zig consequence: the broad trampoline-or-non-open-neighbor proxy
+    still fires too eagerly and should be replaced by these four authored
+    outcomes when the minimum motion fields land
 - [ ] Port the minimum player motion slice needed to tighten attachment-exit retirement to the native lanes (harvested from the retired 2026-04 infrastructure plan)
   - fields: `position_y` (Player+0x6c, rest value `0.49`), `velocity_y` (Player+0x414), `follow_active` derived from the existing follow state machine (Player+0x384)
   - steps (corrected 2026-06-12 from the update_subgoldy consumer read): gravity is `velocity.y += subgame_rate^2 * -0.01` inside the shared integration, with drags vz/vy *= (1 - rate*0.003), vx *= (1 - rate*0.1) and the shared acceleration quantum `2 * rate^2 * 0.004` (following non-DETOUR, slide tiles, jetpack; the +0x41c boost lane is dead — no producer in the binary, see the 06-12 ledger entry); then `position += velocity` — see tools/match/scratches/update_subgoldy/NOTES.md
@@ -259,25 +273,28 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 If there is time for only one focused RE session, use this order:
 
-1. `update_subgame` / saved outer-owner producers for the literal
-   `26/27/28/29/30` bridge
-2. `build_subgame_level` rebuild and continuation ownership
-   (`initialize_subgame` is already proof-grade)
-3. `extract_snail_local_hotspots` -> `update_cutscene` intro, completion, and
-   death handoff matrices and timing (`build_snail_world_hotspots` is already
-   proof-grade)
-4. the scoped `update_subgoldy` attachment-exit lanes: grounded and open-edge
-   re-snap, trampoline, hover clear, and the remaining post-follow consumer;
-   treat `update_track_attachment_follow_state` as semantics-pinned rather than
-   a generic score-golf target
-5. `populate_runtime_track_cells_from_segments` ->
-   `build_track_fringe_objects` / merge / promotion render-normalization chain
+1. `build_subgame_level`: recover the honest random-landscape default-arm stack
+   reload and the remaining completion-row pre-mask schedule. The short
+   backlink-only `Banner` owner is retained at 85.95%, exact 555/555 shape, with
+   all 108 references clean; do not duplicate landscape activation per arm.
+2. `merge_track_tile_runs` -> `promote_track_tiles_to_fringe_variants`: move the
+   render-normalization investigation downstream now that the trampoline
+   producer shape pairs all 28 physical glyph destinations. Keep
+   `populate_runtime_track_cells_from_segments` at the provenance-correct
+   75.79% shape unless new source evidence appears.
+3. `update_subgame`: investigate a new Windows lifetime in the earlier state-1,
+   ring, or HUD/handoff regions. The replay-exit tail and literal
+   `26/27/28/29/30` transition contract are closed; replay-owner and config-store
+   spelling sweeps are formally stalled.
 
 Do not keep already proof-grade helpers in the active decompile queue merely
 because an older plan named them. The death/resurrect pair, begin-follow, both
-row-event functions, and `update_warning` are closed. Shooting-audio and
-damage-warning follow-ups should re-enter this list only when new runtime or
-compiler-provenance evidence supplies a concrete hypothesis.
+row-event functions, and `update_warning` are closed. The hotspot/cutscene
+self-copy and spill, attachment-exit clears, follow update, outer replay bridge,
+and fringe-builder receiver swaps are evidence-bounded compiler residuals, not
+routine score targets. Shooting-audio and damage-warning follow-ups should
+re-enter this list only when new runtime, Windows-lifetime, original-source, or
+cross-port evidence supplies a concrete hypothesis.
 
 ## Checklist Discipline
 
