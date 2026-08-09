@@ -573,7 +573,10 @@
     {
       "address": "0x408530",
       "name": "initialize_slug_hazard_runtime",
-      "description": "Exact Windows constructor for one authored `Slug` (`cRSlug` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_slug_hazard_ai`. `initialize_runtime_pools_and_path_template_bank` walks eight inline 0xec-byte records whose 0x760 extent exactly matches the native `Size of cRSlug` ledger; reset seeds each slot's typed `SubSlugState` to `INACTIVE`."
+      "description": "Exact Windows constructor for one authored `cRSlug`: constructs the inherited renderable BOD and installs the table whose entry is `update_slug_hazard_ai`. `initialize_runtime_pools_and_path_template_bank` walks eight inline 0xec-byte records whose 0x760 extent exactly matches the native `Size of cRSlug` ledger; reset seeds each slot's typed `SubSlugState` to `INACTIVE`.",
+      "aliases": [
+        "cRSlug_ctor"
+      ]
     },
     {
       "address": "0x408550",
@@ -3131,42 +3134,66 @@
     {
       "address": "0x43f520",
       "name": "update_slug_voice_ai",
-      "description": "Exact per-slug voice cooldown update. Android retains the authored member as `cRSlug::VoiceAI()`."
+      "description": "Exact per-slug voice cooldown update. Android retains the authored member as `cRSlug::VoiceAI()`.",
+      "aliases": [
+        "cRSlug_VoiceAI"
+      ]
     },
     {
       "address": "0x43f560",
       "name": "play_slug_voice",
-      "description": "Exact per-slug voice trigger, gated by the embedded `SlugVoiceManager` and the slug's own cooldown. Android retains the authored member as `cRSlug::VoicePlay(int)`."
+      "description": "Exact per-slug voice trigger, gated by the embedded `cRSlugVoiceManager` and the slug's own cooldown. Android retains the authored member as `cRSlug::VoicePlay(int)`.",
+      "aliases": [
+        "cRSlug_VoicePlay"
+      ]
     },
     {
       "address": "0x43f5c0",
       "name": "initialize_slug_voice_manager",
-      "description": "Exact initializer for the 0x0c-byte `SlugVoiceManager` embedded at `cRSubGame +0x35bb7c`. Android retains the authored owner as `cRSlugVoiceManager::Init()`."
+      "description": "Exact initializer for the 0x0c-byte `cRSlugVoiceManager` embedded at `cRSubGame +0x35bb7c`. Android retains the authored owner as `cRSlugVoiceManager::Init()`.",
+      "aliases": [
+        "cRSlugVoiceManager_Init"
+      ]
     },
     {
       "address": "0x43f5e0",
       "name": "update_slug_voice_manager",
-      "description": "Exact update for the embedded 0x0c-byte `SlugVoiceManager`; Android retains the authored member as `cRSlugVoiceManager::AI()`."
+      "description": "Exact update for the embedded 0x0c-byte `cRSlugVoiceManager`; Android retains the authored member as `cRSlugVoiceManager::AI()`.",
+      "aliases": [
+        "cRSlugVoiceManager_AI"
+      ]
     },
     {
       "address": "0x43f620",
       "name": "hit_slug_hazard",
-      "description": "Exact hit handler on one live `Slug`: decrements hit points, routes underflow to `Kill`, or arms the hit flash and voice response. Android and iOS retain `cRSlug::Hit(int)`."
+      "description": "Exact hit handler on one live `cRSlug`: decrements hit points, routes underflow to `Kill`, or arms the hit flash and voice response. Android and iOS retain `cRSlug::Hit(int)`.",
+      "aliases": [
+        "cRSlug_Hit"
+      ]
     },
     {
       "address": "0x43f680",
       "name": "explode_slug_hazard",
-      "description": "Side-effect-only `Slug` explosion emitter that creates the 70-particle goo burst from a raw random/forward velocity vector scaled by the live cRSubGame rate. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`."
+      "description": "Side-effect-only `cRSlug` explosion emitter that creates the 70-particle goo burst from a raw random/forward velocity vector scaled by the live cRSubGame rate. Android retains `cRSlug::Explode()`; iOS v1.5 has the same form and v1.9 adds `cRSubGoldy*`.",
+      "aliases": [
+        "cRSlug_Explode"
+      ]
     },
     {
       "address": "0x43f8b0",
       "name": "kill_slug_hazard",
-      "description": "Exact `Slug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing cRSubGame's cRSubGoldy, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`."
+      "description": "Exact `cRSlug` kill transition from `SUB_SLUG_STATE_ACTIVE` to `SUB_SLUG_STATE_DEATH_TOSS_PENDING`: plays the death voice, records `SUB_SLUG_DEATH_TOSS_RIGHT` or `LEFT`, awards the slug score event through the containing cRSubGame's cRSubGoldy, and calls the explosion emitter. Android and iOS retain `cRSlug::Kill()`.",
+      "aliases": [
+        "cRSlug_Kill"
+      ]
     },
     {
       "address": "0x43f930",
       "name": "update_slug_hazard_ai",
-      "description": "Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each record borrows its containing cRSubGame, embedded owner cRSubGoldy, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`."
+      "description": "Void slot-zero callback running one owned `SlugPool` record through the typed `SubSlugState` lifecycle: inactive, active, lateral-active, death-toss-pending, and teardown-pending, with death flight oriented by `SubSlugDeathTossDirection`. Each `cRSlug` record borrows its containing cRSubGame, embedded owner cRSubGoldy, source cell, and SpriteManager handle. The exact Windows constructor table at 0x497324 points directly here, while Android and iOS retain `cRSlug::AI()`.",
+      "aliases": [
+        "cRSlug_AI"
+      ]
     },
     {
       "address": "0x440020",

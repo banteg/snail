@@ -15,7 +15,7 @@ as the subgame base and reached the shared player at `owner_game+0x3bb764`,
 removing the scratch-local `Game` shell. Focused Wibo remained exact at
 `100.00%`, `35/35`, with `7` clean masked operands.
 
-2026-07-11 ownership: the exact body now lives on the primary `Slug` type,
+2026-07-11 ownership: the exact body now lives on the primary `cRSlug` type,
 matching Android and iOS `cRSlug::Kill()`. Its call to the now-void explosion
 member remains byte-identical, confirming that the incidental EAX value was
 never part of the caller contract.
@@ -23,7 +23,7 @@ never part of the caller contract.
 2026-07-13 player-owner closure: the score award now reaches
 `owner_game->player` directly. This retires the final fixed-offset Player cast
 from the exact slug kill path and makes the lifetime explicit: each inline
-`Slug` borrows its enclosing `cRSubGame`, which owns the scoring Player.
+`cRSlug` borrows its enclosing `cRSubGame`, which owns the scoring Player.
 Focused Wibo remains exact at 35/35 with all seven masked operands clean.
 
 ## 2026-07-14 lifecycle roles

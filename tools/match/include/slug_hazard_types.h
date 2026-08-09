@@ -29,15 +29,15 @@ enum {
     SUB_SLUG_SLOT_CAPACITY = 8,
 };
 
-class Slug : public RenderableBod {
+class cRSlug : public RenderableBod {
 public:
-    Slug* initialize_slug_hazard_runtime();              // @ 0x408530
-    void update_slug_voice_ai();                         // @ 0x43f520
-    void play_slug_voice(int sample_index);              // @ 0x43f560
-    void hit_slug_hazard(int damage);                     // @ 0x43f620
-    void explode_slug_hazard();                           // @ 0x43f680
-    void kill_slug_hazard();                              // @ 0x43f8b0
-    void update_slug_hazard_ai();                         // @ 0x43f930
+    cRSlug(); // @ 0x408530
+    void VoiceAI(); // @ 0x43f520
+    void VoicePlay(int sample_index); // @ 0x43f560
+    void Hit(int damage); // @ 0x43f620
+    void Explode(); // @ 0x43f680
+    void Kill(); // @ 0x43f8b0
+    void AI(); // @ 0x43f930
 
     SubSlugState state;                // +0x80
     SubSlugDeathTossDirection death_toss_direction; // +0x84
@@ -70,13 +70,16 @@ public:
     float blink_step;                  // +0xe8
 };
 
-typedef Slug SlugHazardRuntime;
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRSlug Slug;
+typedef cRSlug SlugHazardRuntime;
 
+typedef char cRSlug_must_be_0xec[(sizeof(cRSlug) == 0xec) ? 1 : -1];
 typedef char Slug_must_be_0xec[(sizeof(Slug) == 0xec) ? 1 : -1];
 
 class SlugPool {
 public:
-    Slug slots[SUB_SLUG_SLOT_CAPACITY]; // owned storage
+    cRSlug slots[SUB_SLUG_SLOT_CAPACITY]; // owned storage
 };
 
 typedef SlugPool SlugHazardPool;

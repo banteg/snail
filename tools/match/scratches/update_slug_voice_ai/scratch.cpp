@@ -2,7 +2,7 @@
 
 #include "slug_hazard_types.h"
 
-void Slug::update_slug_voice_ai()
+void cRSlug::VoiceAI()
 {
     if (voice_active != 0) {
         float next_progress = voice_progress_step + voice_progress;

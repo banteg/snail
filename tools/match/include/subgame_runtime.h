@@ -207,7 +207,7 @@ public:
     BannerPool banners; // +0x359080, embedded start/completion actors
     SubGarbagePool garbage_hazards; // +0x359140, borrowed head + 50 owned slots
     SubRingPool ring_effects; // +0x35b78c, two embedded cRSubRing slots
-    SlugVoiceManager slug_voice_manager; // +0x35bb7c, authored cRSlugVoiceManager
+    cRSlugVoiceManager slug_voice_manager; // +0x35bb7c, authored manager
     // BorderManager pool handles. cRSubGame retains them for gameplay,
     // then destroy_subgame returns each handle through kill_border().
     FrontendWidget* top_score_widget; // +0x35bb88

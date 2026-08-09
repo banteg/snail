@@ -90,7 +90,7 @@ offset macros, or fake aliases.
 
 Android and iOS v1.5 retain the side-effect-only member as
 `cRSlug::Explode()`; iOS v1.9 only adds the owning `cRSubGoldy*` argument. Every
-Windows caller discards EAX. Changing the primary `Slug` declaration from an
+Windows caller discards EAX. Changing the primary `cRSlug` declaration from an
 artificial `int` return to `void` removes the candidate-only final
 `xor eax, eax` and improves focused Wibo from 81.63% to **81.91%**. The result
 is 146/147 instructions with all 32 masked operands clean. The remaining gap is
@@ -125,7 +125,7 @@ owner-load/x87 schedule and is not forced.
 
 ## 2026-07-19 analysis owner lift
 
-Reanalysis through the complete `Slug` and shared sprite prototypes lifts the
+Reanalysis through the complete compatibility `Slug` and shared sprite prototypes lifts the
 IDA artifact from raw `char*`/dword arithmetic to an owned `Sprite*` with
 typed flags, progress, color, size, gravity, velocity, and position. The two
 intermediate vectors also render as `Vec3` values. This improves the tracked

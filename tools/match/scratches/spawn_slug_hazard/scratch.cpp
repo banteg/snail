@@ -19,7 +19,7 @@ int report_errorf(char* format, ...);
 void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
 {
     int slot_index = 0;
-    Slug* scan = slug_hazards.slots;
+    cRSlug* scan = slug_hazards.slots;
     while (slot_index < SUB_SLUG_SLOT_CAPACITY
         && scan->state != SUB_SLUG_STATE_INACTIVE) {
         ++slot_index;

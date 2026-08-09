@@ -192,7 +192,7 @@ void cRSubGame::AI()
         if (level_mode == 7)
             tutorial.update_tutorial();
 
-        slug_voice_manager.update_slug_voice_manager();
+        slug_voice_manager.AI();
 
         if (resume_requested == one) {
             subgame_pause_gate = (unsigned char)zero;

@@ -2,7 +2,7 @@
 
 #include "slug_voice_manager.h"
 
-void SlugVoiceManager::update_slug_voice_manager()
+void cRSlugVoiceManager::AI()
 {
     if (progress > 0.0f) {
         float next_progress = step + progress;

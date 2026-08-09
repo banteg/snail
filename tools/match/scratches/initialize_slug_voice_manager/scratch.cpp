@@ -2,7 +2,7 @@
 
 #include "slug_voice_manager.h"
 
-void SlugVoiceManager::initialize_slug_voice_manager()
+void cRSlugVoiceManager::Init()
 {
     active = 0;
     progress = 0.0f;

@@ -4,17 +4,17 @@
 
 int next_math_random_value();
 
-void Slug::hit_slug_hazard(int damage)
+void cRSlug::Hit(int damage)
 {
     hit_points -= damage;
     if (hit_points < 0) {
         hit_points = 0;
-        kill_slug_hazard();
+        Kill();
         return;
     }
 
     hit_flash_pending = 1;
     int variant = (int)(
         (float)next_math_random_value() * 0.0000305175781f * -3.0f);
-    play_slug_voice(36 - variant);
+    VoicePlay(36 - variant);
 }

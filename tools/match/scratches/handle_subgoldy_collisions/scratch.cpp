@@ -156,7 +156,7 @@ void cRSubGoldy::Collision()
                                     CUT_SCENE_STATE_DEATH_PENDING;
                                 game->slug_hazards.slots[m]
                                     .player_encounter_latched = 1;
-                                game->slug_hazards.slots[m].play_slug_voice(
+                                game->slug_hazards.slots[m].VoicePlay(
                                     34 - (int)((float)next_math_random_value()
                                         * 0.0000305175781f * -2.0f));
                                 float half = distance * 0.5f;
@@ -178,7 +178,7 @@ void cRSubGoldy::Collision()
                                 damage_gauge.Take(1.0f, 0);
                             }
                         } else {
-                            game->slug_hazards.slots[m].kill_slug_hazard();
+                            game->slug_hazards.slots[m].Kill();
                         }
                     }
                 }

@@ -3153,6 +3153,163 @@ def test_mobile_sub_lazer_and_salt_recover_authored_owners() -> None:
     assert "sizeof(cRSalt)" in runtime_constructor
 
 
+def test_mobile_slug_family_recovers_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    slug_header = (include_root / "slug_hazard_types.h").read_text(
+        encoding="utf-8"
+    )
+    voice_header = (include_root / "slug_voice_manager.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRSlug : public RenderableBod {" in slug_header
+    assert "typedef cRSlug Slug;" in slug_header
+    assert "class Slug :" not in slug_header
+    assert "cRSlug slots[SUB_SLUG_SLOT_CAPACITY];" in slug_header
+    for declaration in (
+        "cRSlug();",
+        "void VoiceAI();",
+        "void VoicePlay(int sample_index);",
+        "void Hit(int damage);",
+        "void Explode();",
+        "void Kill();",
+        "void AI();",
+    ):
+        assert declaration in slug_header
+    assert "class cRSlugVoiceManager {" in voice_header
+    assert "typedef cRSlugVoiceManager SlugVoiceManager;" in voice_header
+    assert "class SlugVoiceManager {" not in voice_header
+    assert "void Init();" in voice_header
+    assert "void AI();" in voice_header
+
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRSlugVoiceManager slug_voice_manager;" in subgame_header
+
+    expected_methods = (
+        (
+            "initialize_slug_hazard_runtime",
+            "cRSlug_ctor",
+            "cRSlug::cRSlug()",
+            "??0cRSlug@@QAE@XZ",
+            False,
+        ),
+        (
+            "update_slug_voice_ai",
+            "cRSlug_VoiceAI",
+            "void cRSlug::VoiceAI()",
+            "?VoiceAI@cRSlug@@QAEXXZ",
+            True,
+        ),
+        (
+            "play_slug_voice",
+            "cRSlug_VoicePlay",
+            "void cRSlug::VoicePlay(int sample_index)",
+            "?VoicePlay@cRSlug@@QAEXH@Z",
+            True,
+        ),
+        (
+            "initialize_slug_voice_manager",
+            "cRSlugVoiceManager_Init",
+            "void cRSlugVoiceManager::Init()",
+            "?Init@cRSlugVoiceManager@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_slug_voice_manager",
+            "cRSlugVoiceManager_AI",
+            "void cRSlugVoiceManager::AI()",
+            "?AI@cRSlugVoiceManager@@QAEXXZ",
+            True,
+        ),
+        (
+            "hit_slug_hazard",
+            "cRSlug_Hit",
+            "void cRSlug::Hit(int damage)",
+            "?Hit@cRSlug@@QAEXH@Z",
+            True,
+        ),
+        (
+            "explode_slug_hazard",
+            "cRSlug_Explode",
+            "void cRSlug::Explode()",
+            "?Explode@cRSlug@@QAEXXZ",
+            True,
+        ),
+        (
+            "kill_slug_hazard",
+            "cRSlug_Kill",
+            "void cRSlug::Kill()",
+            "?Kill@cRSlug@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_slug_hazard_ai",
+            "cRSlug_AI",
+            "void cRSlug::AI()",
+            "?AI@cRSlug@@QAEXXZ",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["status"] == "verified"
+            assert entries[windows_name]["confidence"] == "high"
+
+    callers = {
+        "build_subgame_level": ("slug_voice_manager.Init();",),
+        "update_subgame": ("slug_voice_manager.AI();",),
+        "handle_subgoldy_collisions": (".VoicePlay(", ".Kill();"),
+        "update_golb_ai": ("->Hit(2);", "->Hit(4);"),
+        "spawn_slug_hazard": ("cRSlug* scan = slug_hazards.slots;",),
+        "reset_subgame": ("cRSlug* slug = slug_hazards.slots;",),
+    }
+    for scratch_name, expected_calls in callers.items():
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        for expected_call in expected_calls:
+            assert expected_call in source
+
+    constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRSlug* slug = slug_hazards.slots;" in constructor
+    assert (
+        "((RuntimeSlot*)slug)->initialize_slug_hazard_runtime();" in constructor
+    )
+    assert "new (slug)" not in constructor
+
+
 def test_mobile_warning_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

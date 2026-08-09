@@ -5,7 +5,7 @@
 
 void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
-void Slug::play_slug_voice(int sample_index)
+void cRSlug::VoicePlay(int sample_index)
 {
     if (voice_active == 0) {
         GameRoot* game = g_game;

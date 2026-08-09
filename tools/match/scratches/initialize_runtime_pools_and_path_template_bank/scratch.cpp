@@ -88,11 +88,11 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         --health_count;
     } while (health_count);
 
-    Slug* slug = slug_hazards.slots;
+    cRSlug* slug = slug_hazards.slots;
     int slug_count =
         sizeof(slug_hazards.slots) / sizeof(slug_hazards.slots[0]);
     do {
-        slug->initialize_slug_hazard_runtime();
+        ((RuntimeSlot*)slug)->initialize_slug_hazard_runtime();
         ++slug;
         --slug_count;
     } while (slug_count);

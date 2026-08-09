@@ -235,7 +235,7 @@ void cRSubGame::StartLevel(int level_index)
 
     g_game->active_bod_list.add_bod((BodNode*)player_owner);
 
-    slug_voice_manager.initialize_slug_voice_manager();
+    slug_voice_manager.Init();
 
     BodNode* barrier_node = &barrier;
     BodNode* barrier_list = &barrier_sub_lazer_list_head;

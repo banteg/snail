@@ -7,7 +7,7 @@ Both initialize the complete 0x0c-byte object to inactive, zero progress, and a
 after the two-record `SubRingPool` and immediately before the score-widget
 handles at `+0x35bb88`.
 
-The paired BN/IDA replay now types the Windows receiver as
-`SlugVoiceManager*`; `build_subgame_level` correspondingly passes the complete
-embedded owner instead of its first byte. This is analysis ownership recovery
-only and leaves the exact matcher source unchanged.
+The matcher now uses primary `cRSlugVoiceManager`; the paired BN/IDA replay
+retains `SlugVoiceManager*` as stable analysis vocabulary.
+`build_subgame_level` correspondingly passes the complete embedded owner
+instead of its first byte. The exact matcher body remains unchanged.

@@ -49,8 +49,8 @@ Residuals at the 66.15% baseline, all resolved by the exact closure below:
 
 ## 2026-07-17 Binary Ninja member ABI closure
 
-The exact slot constructor installs this function as the Slug AI callback,
-and the cross-port owner is `Slug::update_slug_hazard_ai`; the single ECX
+The exact slot constructor installs this function as the cRSlug AI callback,
+and the cross-port owner is `cRSlug::AI`; the single ECX
 argument is therefore an authored thiscall member even though the raw ABI is
 indistinguishable from a one-argument fastcall. A guarded Binary Ninja preview
 now accepts and reverts that convention cleanly, so normal replay owns the
@@ -88,7 +88,7 @@ Rejected probes:
 
 ## 2026-07-11 cRSlug owner and table relation
 
-The receiver is now the primary `Slug` type. Windows independently proves the
+The receiver is now the primary `cRSlug` type. Windows independently proves the
 method relation because the exact constructor installs table `0x497324`, whose
 entry is this function at 0x43f930; Android and iOS both retain
 `cRSlug::AI()`. Focused matching remains the honest 66.15%, 434/464
@@ -136,7 +136,8 @@ two documented structural mismatches.
 
 ## 2026-07-15 analysis-lane cRSlug replay
 
-Binary Ninja and IDA now receive the exact `Slug` owner used by the matcher.
+Binary Ninja and IDA retain the exact compatibility `Slug` analysis owner for
+the matcher-primary `cRSlug`.
 The stale `unknown_00[0x68]` prefix is replaced by the inherited
 `RenderableBod body`, recovering the BOD-list links and transform position in
 decompiler output. Binary Ninja retains its ABI-equivalent one-ECX-argument

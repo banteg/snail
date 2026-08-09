@@ -7535,7 +7535,8 @@ def test_slug_voice_manager_replay_uses_embedded_owner() -> None:
     assert "SLUG_VOICE_MANAGER_PROTO_UPDATES" in binja_sync
     assert 'typedef struct SlugVoiceManager {' in analysis_header
     assert "SlugVoiceManager slug_voice_manager;" in analysis_header
-    assert "class SlugVoiceManager" in matcher_header
+    assert "class cRSlugVoiceManager" in matcher_header
+    assert "typedef cRSlugVoiceManager SlugVoiceManager;" in matcher_header
     for marker in (
         '(0x43F5C0, "initialize_slug_voice_manager")',
         '(0x43F5E0, "update_slug_voice_manager")',
@@ -11098,7 +11099,6 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert '("SlugStateStrideCursor", SLUG_STATE_CURSOR_FIELD_UPDATES)' in pool_sync
 
     for header in (*analysis_headers, matcher_header):
-        assert "Slug slots[SUB_SLUG_SLOT_CAPACITY]" in header
         assert "float death_toss_progress;" in header
         assert "float death_toss_progress_step;" in header
         assert "float death_toss_secondary_progress;" in header
@@ -11114,7 +11114,12 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
         assert "SubSlugState state;" in header
         assert "SubSlugDeathTossDirection death_toss_direction;" in header
 
+    assert "class cRSlug : public RenderableBod" in matcher_header
+    assert "typedef cRSlug Slug;" in matcher_header
+    assert "cRSlug slots[SUB_SLUG_SLOT_CAPACITY]" in matcher_header
+
     for header in analysis_headers:
+        assert "Slug slots[SUB_SLUG_SLOT_CAPACITY]" in header
         assert "typedef struct Slug" in header
         assert "typedef enum SubSlugState" in header
         assert "typedef enum SubSlugDeathTossDirection" in header

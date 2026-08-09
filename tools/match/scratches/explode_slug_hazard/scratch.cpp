@@ -6,7 +6,7 @@
 
 int next_math_random_value();
 
-void Slug::explode_slug_hazard()
+void cRSlug::Explode()
 {
     int count = 70;
     do {

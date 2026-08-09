@@ -810,6 +810,87 @@
       "description": "Exact authored cRSalt::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x408530",
+      "name": "initialize_slug_hazard_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRSlug@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSlug constructor."
+    },
+    {
+      "address": "0x43f520",
+      "name": "update_slug_voice_ai",
+      "kind": "function",
+      "aliases": [
+        "?VoiceAI@cRSlug@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSlug::VoiceAI() member."
+    },
+    {
+      "address": "0x43f560",
+      "name": "play_slug_voice",
+      "kind": "function",
+      "aliases": [
+        "?VoicePlay@cRSlug@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRSlug::VoicePlay(int) member."
+    },
+    {
+      "address": "0x43f5c0",
+      "name": "initialize_slug_voice_manager",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSlugVoiceManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSlugVoiceManager::Init() member."
+    },
+    {
+      "address": "0x43f5e0",
+      "name": "update_slug_voice_manager",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSlugVoiceManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSlugVoiceManager::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x43f620",
+      "name": "hit_slug_hazard",
+      "kind": "function",
+      "aliases": [
+        "?Hit@cRSlug@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRSlug::Hit(int) member."
+    },
+    {
+      "address": "0x43f680",
+      "name": "explode_slug_hazard",
+      "kind": "function",
+      "aliases": [
+        "?Explode@cRSlug@@QAEXXZ"
+      ],
+      "description": "Authored cRSlug::Explode() member."
+    },
+    {
+      "address": "0x43f8b0",
+      "name": "kill_slug_hazard",
+      "kind": "function",
+      "aliases": [
+        "?Kill@cRSlug@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSlug::Kill() member."
+    },
+    {
+      "address": "0x43f930",
+      "name": "update_slug_hazard_ai",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSlug@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSlug::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",

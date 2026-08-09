@@ -21,12 +21,12 @@ void GolbShot::update_golb_ai()
         SLUG_POOL_FROM_SUBGAME =
             offsetof(cRSubGame, slug_hazards) + offsetof(SlugPool, slots),
         SLUG_POOL_EXTENT = sizeof(((SlugPool*)0)->slots),
-        SLUG_SLOT_STRIDE = sizeof(Slug),
+        SLUG_SLOT_STRIDE = sizeof(cRSlug),
         SLUG_STATE_FROM_SUBGAME =
-            SLUG_POOL_FROM_SUBGAME + offsetof(Slug, state),
+            SLUG_POOL_FROM_SUBGAME + offsetof(cRSlug, state),
         SLUG_POSITION_FROM_SUBGAME =
             SLUG_POOL_FROM_SUBGAME
-            + offsetof(Slug, transform)
+            + offsetof(cRSlug, transform)
             + offsetof(TransformMatrix, position)
     };
 
@@ -239,17 +239,17 @@ void GolbShot::update_golb_ai()
                             if (kind == 1) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(new_output);
-                                ((Slug*)((char*)game
+                                ((cRSlug*)((char*)game
                                     + SLUG_SLOT_STRIDE * slug_index
-                                    + SLUG_POOL_FROM_SUBGAME))->hit_slug_hazard(2);
+                                    + SLUG_POOL_FROM_SUBGAME))->Hit(2);
                                 return;
                             }
                             if (kind == 2) {
                                 kill_golb();
                                 spawn_golb_impact_sprite(new_output);
-                                ((Slug*)((char*)game
+                                ((cRSlug*)((char*)game
                                     + SLUG_SLOT_STRIDE * slug_index
-                                    + SLUG_POOL_FROM_SUBGAME))->hit_slug_hazard(4);
+                                    + SLUG_POOL_FROM_SUBGAME))->Hit(4);
                                 return;
                             }
                             if (kind == 0) {

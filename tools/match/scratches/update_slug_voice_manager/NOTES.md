@@ -6,6 +6,7 @@ clean masked operands. Android retains the authored member as
 and clear progress plus the active byte after it passes one. `update_subgame`
 calls the embedded `cRSubGame::slug_voice_manager` directly.
 
-The paired BN/IDA replay now types the receiver as `SlugVoiceManager*`, and the
-tracked `update_subgame` artifact passes `&game->slug_voice_manager` without the
-former `float*`/first-field cast. The exact matcher source remains unchanged.
+The matcher now uses primary `cRSlugVoiceManager`; the paired BN/IDA replay
+retains `SlugVoiceManager*` as stable analysis vocabulary. The tracked
+`update_subgame` artifact passes `&game->slug_voice_manager` without the former
+`float*`/first-field cast. The exact matcher body remains unchanged.

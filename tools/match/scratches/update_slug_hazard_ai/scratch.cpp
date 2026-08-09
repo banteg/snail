@@ -15,7 +15,7 @@
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-void Slug::update_slug_hazard_ai()
+void cRSlug::AI()
 {
     if (owner_game->subgame_pause_gate != 0)
         return;
@@ -79,7 +79,7 @@ active_state_tail:
                 random_value = next_math_random_value();
                 int variant =
                     (int)((float)random_value * 0.0000305175781f * -4.0f);
-                play_slug_voice(30 - variant);
+                VoicePlay(30 - variant);
             }
         }
 
@@ -101,7 +101,7 @@ active_state_tail:
             return;
         }
         if (owner_player->nuke_effect_progress > 0.0f)
-            kill_slug_hazard();
+            Kill();
         owner_game->enemy_manager.append_subgame_contact_target(
             &transform.position,
             2.0f,
@@ -113,7 +113,7 @@ update_tail:
         sprite->facing_angle = owner_player->heading_roll + attachment_facing_angle;
         if (owner_player->follow_state.active == 1)
             sprite->facing_angle += owner_player->follow_state.orientation_b;
-        update_slug_voice_ai();
+        VoiceAI();
         return;
 
     case SUB_SLUG_STATE_LATERAL_ACTIVE:
@@ -131,7 +131,7 @@ update_tail:
             return;
         }
         if (owner_player->nuke_effect_progress > 0.0f)
-            kill_slug_hazard();
+            Kill();
         goto update_tail;
 
     case SUB_SLUG_STATE_DEATH_TOSS_PENDING: {

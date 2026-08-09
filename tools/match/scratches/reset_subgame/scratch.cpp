@@ -35,7 +35,7 @@ void cRSubGame::ReSet()
         --garbage_count;
     } while (garbage_count);
 
-    Slug* slug = slug_hazards.slots;
+    cRSlug* slug = slug_hazards.slots;
     int slug_count =
         sizeof(slug_hazards.slots) / sizeof(slug_hazards.slots[0]);
     do {

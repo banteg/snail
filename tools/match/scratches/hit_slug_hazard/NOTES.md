@@ -9,7 +9,7 @@ The voice variant uses the native float-scale idiom:
 constant emitted a qword multiply and did not match.
 
 2026-07-11 ownership: the exact 25-instruction body now lives on the primary
-`Slug` type. Android and iOS both retain `cRSlug::Hit(int)`; the former also
+`cRSlug` type. Android and iOS both retain `cRSlug::Hit(int)`; the former also
 preserves the calls to the same `Kill` and `VoicePlay` siblings.
 
 ## 2026-07-28 mobile-backed voice range
