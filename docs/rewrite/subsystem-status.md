@@ -273,6 +273,13 @@ Status: `partial`
 Implemented now:
 
 - deterministic parcel, ring, health, jetpack, slug, garbage, and salt gameplay counters
+- matcher ownership is closed under primary `cRFade`, `cRFlash`, `cROverlay`,
+  `cRSubPause`, `cRVapour`, `cRSubSpeedUp`, `cRJetPack`, `cRSubRow` /
+  `cRRowModel`, `cRClickStart`, `cRSubHealth`, `cRSubRing` / `cRSubRingStar`,
+  `cRSubLazer` / `cRSubLazerManager`, `cRSalt` / `cRSaltManager`,
+  `cRSubGarbage`, `cRSlug` / `cRSlugVoiceManager`, and `cRParcel` /
+  `cRParcelManager`; their shorter legacy names remain compatibility or
+  analyzer vocabulary rather than primary authored owners
 - authored and ambient garbage/salt seeding into an 8-row live strip
 - row-event and prompt metadata surface into the default level path
 - live gameplay now renders visible tutorial/runtime actors for slug, garbage, salt, health, jetpack, rings/powerups, parcels, and `=` turret rows instead of leaving them as logic-only counters or debug markers
@@ -316,10 +323,15 @@ Still missing or approximate:
 
 - the remaining ambient spawn suppressor details beyond the now-ported generated-garbage postal/time-trial mode gates
 - the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
-- literal native ownership for the now-present SubLazer projectile pool (`cRSubLazerManager` @ `game + 0x356b00`, 20 slots stride 0xb0, fired by Wall2 AI via `shoot_sub_lazer_pool` for the `+0.02` damage lane) — historically misnamed "Wall2 ambient pool" in these docs; the Wall2 tile is the *emitter*, the slots themselves are projectiles
+- Zig parity for the recovered `cRSubLazer` / `cRSubLazerManager` projectile
+  pool (`game + 0x356b00`, 20 slots stride 0xb0, fired by Wall2 AI through
+  `shoot_sub_lazer_pool` for the `+0.02` damage lane): matcher ownership is
+  closed, while inherited BOD/list participation and exact object/sprite
+  presentation are not fully ported. Historically misnamed "Wall2 ambient
+  pool" in these docs; the Wall2 tile is the *emitter*.
 - the broader native forward-speed controller behind `Player.velocity.z` once negative-velocity rings or garbage hits hand control back, plus the still-unported attachment-follow consumers of that same velocity block
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
-- the surrounding `cRSubHover` behavior beyond the now-ported ramp-bias spawn lane and `JETPACKTHRUST` pre-warning visual channel; health collection is closed as eight generic SpriteManager records borrowing position from the separate inline `SubHealth` actor
+- the surrounding `cRSubHover` behavior beyond the now-ported ramp-bias spawn lane and `JETPACKTHRUST` pre-warning visual channel; health collection is closed as eight generic SpriteManager records borrowing position from the separate inline primary `cRSubHealth` actor
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards, including the exact pre-hit ring bod anchor/layout and child orbit packet
 - the completion fast-forward owner is closed: `cRCompletion::Init` arms
   `fast_forward_enabled`, its exact AI clears the latch on summary activation,
@@ -327,7 +339,7 @@ Still missing or approximate:
   edge. The fixed player-0 summary route and primary Goldy route both resolve
   to `game_inputs[0].input`; remaining completion work is timing and widget
   presentation, not an unnamed controller split.
-- exact parcel flight/runtime-object behavior, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details
+- exact `cRParcel` / `cRParcelManager` flight/runtime-object behavior in Zig, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 
 Best next work:
@@ -486,7 +498,15 @@ Best next work:
 
 If work resumes from this page alone, the best current order is:
 
-1. Finish attachment exit retirement and the remaining family-specific entry/exit behavior against built geometry.
-2. Port more of the outer subgame/frontend bridge (`26/27/28/29`, completion vs final-loss vs respawn ownership).
-3. Recover the remaining exact BOD-table and directional-fringe render/cache passes; `mark_track_warning_zones` is already closed as hazard spawn policy.
-4. Revisit nonlinear kind-`42` family semantics once there is enough evidence to separate `HALFPIPE`, `WARP`, and any sibling families more cleanly.
+1. Promote the exact `cRFringe` / `cRFringeManager` constructor, AI, `Init`,
+   and `GetFringe` surface while leaving the partial fringe builders and mesh
+   lanes frozen.
+2. Promote `cRLogo` / `cRLogoLetter` over the exact lifecycle and child leaves;
+   integrate the authored `Init(char*)` name without reopening its bounded
+   `88.89%` residual.
+3. Promote `cRGalaxy` / `cRGalaxyStar` over the seven exact route and lifecycle
+   leaves while freezing the `88.27%` loader and `71.01%` outer AI.
+4. Finish attachment exit retirement and the remaining family-specific entry/exit behavior against built geometry.
+5. Port more of the outer subgame/frontend bridge (`26/27/28/29`, completion vs final-loss vs respawn ownership).
+6. Recover the remaining exact BOD-table and directional-fringe render/cache passes; `mark_track_warning_zones` is already closed as hazard spawn policy.
+7. Revisit nonlinear kind-`42` family semantics once there is enough evidence to separate `HALFPIPE`, `WARP`, and any sibling families more cleanly.

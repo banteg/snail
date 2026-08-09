@@ -16,7 +16,8 @@ The current high-confidence `Player` fields are:
 - `+0x90`: `resurrect_progress_step`
 - `+0x98`: `ghost_sprite_a`
 - `+0x9c`: `ghost_sprite_b`
-- `+0xa0`: exact 0xac-byte `click_start` child (`cRClickStart`)
+- `+0xa0`: exact `0xac`-byte primary `cRClickStart` child; `ClickStart` remains
+  compatibility/analyzer vocabulary
   - child `+0x80` / Player `+0x120`: `state`, the complete observed
     `ClickStartState` graph: `INACTIVE (0)`, deliberately unresolved
     `UNKNOWN_1 (1)`, `WAITING_FOR_START (2)`, `START_PENDING (3)`, and
@@ -476,9 +477,10 @@ Current practical read:
 
 ## SubHover
 
-The exact 0x214-byte authored `cRSubHover` child at `Player +0x2750` is now
-typed as `SubHover`, distinct from both the `cRJetPack` pickup singleton and
-the `cRDamageGuage` contact-damage owner.
+The exact `0x214`-byte primary authored `cRSubHover` child at
+`Player +0x2750` retains `SubHover` only as compatibility/analyzer vocabulary.
+It is distinct from both the `JetPack` pickup singleton (cross-port
+`cRJetPack`) and the `cRDamageGuage` contact-damage owner.
 
 High-confidence current fields:
 
@@ -568,6 +570,26 @@ Practical interpretation:
   - deactivation at the `0.94` warning edge uses `set_weapon_animation(..., 1, 1, 8)` followed by a queued `-1`
 - the recovered asset family for that controller is `JETPACKTHRUST`; the separate `cRSubHover::Jets` nozzle-particle owner is now represented in Zig as the persistent bank above, including native-scaled width/back-offset jitter and the recovered trail-tip detached puff allocation branch
 
+## Frontend Transition And Overlay Owners
+
+The matcher now uses the authored primary frontend owners directly:
+
+- `GameRoot +0x24` is the exact `0x14`-byte `cRFade`; `FrontendFade` remains
+  compatibility vocabulary. `Init()` is the exact folded alias of
+  `cRBorderStack::Init()` at `0x404350`, while `Start()`, `StartOn()`, and
+  `AI()` retain their distinct exact bodies. The stored completion callback is
+  layout evidence on Windows; the Windows AI does not invoke it.
+- each root `GamePlayer +0x184` owns an exact `0x24`-byte `cRFlash` with exact
+  `Init(int)` and `AI()` members. `FrontendOverlayColorLerp` remains the legacy
+  compatibility spelling.
+- `GameRoot +0x67c`, `+0x7c8`, and `+0x914` are three exact `0x14c`-byte
+  `cROverlay` owners. Their exact `Init()` and callback-table `AI()` members
+  own the embedded camera and final rotation step; `Overlay` remains a
+  compatibility typedef.
+
+These primary-name promotions close matcher ownership only. They do not erase
+the remaining Zig widget polish or outer frontend-return gaps.
+
 ## cRSubGame
 
 The current high-confidence `cRSubGame` fields are:
@@ -581,6 +603,11 @@ embedded runtime-cell grid, high-score banks, HUD handles, player backlink,
 GUI, galaxy, completion, and times-up owners directly. `Game` remains useful
 only as historical decompiler spelling in older evidence.
 
+- `+0x14`: `sub_pause`
+  - exact `0x0c`-byte primary `cRSubPause` lifecycle owner; `SubPause` remains
+    compatibility vocabulary
+  - `Init()`, `AI()`, and `UnInit()` are exact across the complete construction,
+    update, teardown, and frontend-return route
 - `+0x34`: `challenge_difficulty_scalar`
 - `+0x38`: `track_center_x`
 - `+0x40`: `level_mode`
@@ -615,33 +642,44 @@ only as historical decompiler spelling in older evidence.
   - `+0x355cb4`: tile 29/30 special track bodies
   - the other five constructed group roles remain unknown on Windows
 - `+0x355db0`: `speedup_pickup`
-  - exact `0xb4`-byte authored `cRSubSpeedUp` singleton
+  - exact `0xb4`-byte primary `cRSubSpeedUp` singleton; `SubSpeedUp` and
+    `TrackSpeedupRuntime` remain compatibility typedefs
+  - its constructor and `AI()` are exact; the folded one-instruction
+    `cRSubGame::AddSpeedUp` / `cRSubHover::Hover` alias at `0x43d880` remains a
+    no-op, so the live activation producer is still unknown
 - `+0x355e64`: `jetpack_pickup`
-  - exact `0x19c`-byte `cRJetPack` singleton
-  - two complete embedded `0x94`-byte `cRVapour` children at `+0x74` and
-    `+0x108`; each begins with its complete inherited `RenderableBod`, and the
-    retained output `cRObject*` at child `+0x24` is
+  - exact `0x19c`-byte primary `cRJetPack` singleton; `JetPack` remains a
+    compatibility typedef
+  - its constructor and `AI()` are exact; `cRSubGame::AddJetPack` remains the
+    frozen honest partial at `87.29%` (`147/144`, prefix `44/144`)
+  - two complete embedded `0x94`-byte primary `cRVapour` children at `+0x74`
+    and `+0x108`; `Vapour` remains compatibility vocabulary. `Init`, `ReSet`,
+    `Add`, and `AI` are exact. Each child begins with its complete inherited
+    `RenderableBod`, and the retained output `cRObject*` at child `+0x24` is
     `body.bod.object`, not a separate sibling owner field
 - `+0x356000`: `health_pickups`
   - eight inline exact `0x74`-byte authored `cRSubHealth` slots
-  - `cRSubSpeedUp`, `cRJetPack`, and `cRSubHealth` share the recovered
+  - primary `cRSubSpeedUp`, `cRJetPack`, and `cRSubHealth` share the recovered
     `TrackPickupState` protocol: `INACTIVE (0)`, `ACTIVE (1)`, and
     `TEARDOWN_PENDING (2)`
   - the live spawners claim only `INACTIVE` slots, collision moves a collected
     `ACTIVE` pickup to `TEARDOWN_PENDING`, and the exact class AI removes its
     inherited BOD and sprite before returning the owner to `INACTIVE`
 - `+0x3563a0`: `slug_hazards`
-  - eight inline exact `0xec`-byte authored `Slug` (`cRSlug`) slots
+  - eight inline exact `0xec`-byte primary `cRSlug` slots; `Slug` and
+    `SlugHazardRuntime` remain compatibility typedefs
   - `SlugPool` owns the complete `0x760`-byte Windows extent
 - `+0x356b00`: `sub_lazers`
-  - exact `0xdc0`-byte authored `SubLazerManager` with 20 inline `0xb0`-byte
-    `SubLazer` (`cRSubLazer`) records
+  - exact `0xdc0`-byte authored `cRSubLazerManager` with 20 inline `0xb0`-byte
+    primary `cRSubLazer` records; `SubLazerManager` and `SubLazer` remain
+    compatibility typedefs
   - each record owns its inherited `RenderableBod` and borrows the containing
     subgame at slot `+0x88`
   - collision borrows slots while the subgame is live
 - `+0x3578c0`: `salt_hazards`
-  - exact `0x17c0`-byte authored `SaltManager` with 40 inline `0x98`-byte
-    `Salt` (`cRSalt`) records
+  - exact `0x17c0`-byte authored `cRSaltManager` with 40 inline `0x98`-byte
+    primary `cRSalt` records; `SaltManager` and `Salt` remain compatibility
+    typedefs
   - each record owns its inherited `RenderableBod` and borrows the containing
     subgame at slot `+0x88`
   - each slot owns a one-byte `collision_armed` latch at `+0x94`
@@ -652,7 +690,23 @@ only as historical decompiler spelling in older evidence.
 - `+0x359140`: `garbage_hazards`
   - exact `0x264c`-byte `SubGarbagePool` wrapper
   - borrowed active-chain head at pool `+0x00`, followed by 50 inline
-    `0xc4`-byte authored `SubGarbage` (`cRSubGarbage`) records at pool `+0x04`
+    `0xc4`-byte primary `cRSubGarbage` records at pool `+0x04`; `SubGarbage`
+    and `GarbageHazardSlot` remain compatibility/analyzer vocabulary
+- `+0x35b78c`: `ring_effects`
+  - exact `0x3f0`-byte `SubRingPool` with two inline primary `cRSubRing`
+    owners, each retaining ten inline `cRSubRingStar` children
+- `+0x35bb7c`: `slug_voice_manager`
+  - exact `0x0c`-byte primary `cRSlugVoiceManager`; `SlugVoiceManager` remains
+    a compatibility typedef
+- `+0x5ccac8`: `runtime_rows`
+  - 3200 inline primary `cRSubRow` records at exact `0xf4` stride; the native
+    size ledger names the complete slab as `0xbea00` bytes, and `SubRow`
+    remains compatibility vocabulary
+  - each row embeds one exact `0x8c`-byte primary `cRRowModel` at row `+0x04`;
+    `RowModel` remains a compatibility typedef
+  - `cRSubRow::cRSubRow()` is exact at `13/13` and constructs both the embedded
+    model and the independent attachment body; there is no separate recovered
+    `cRRowModel` constructor. `cRRowModel::AI()` is exact at `60/60`
 - `+0xff7c00`: `landscape_manager`
   - exact `0x97a4`-byte `cRLandscapeManager` owner ending at `+0x10013a4`
   - ten `0x90`-byte active entries at `+0x00`, script count at `+0x5a0`, and
@@ -670,9 +724,10 @@ only as historical decompiler spelling in older evidence.
   - the aggregate ends exactly at the parcel pool, so the count does not alias
     entry 0 and there is no terminal padding word
 - `+0x125e480`: `parcel_manager`
-  - exact `0x1b58`-byte `cRParcelManager` owner with 50 inline `0x8c`-byte
-    `Parcel` records
-  - each `Parcel` owns its inherited `BodBase` and borrows the enclosing
+  - exact `0x1b58`-byte primary `cRParcelManager` owner with 50 inline
+    `0x8c`-byte primary `cRParcel` records; `ParcelManager` and `Parcel` remain
+    compatibility/analyzer vocabulary
+  - each `cRParcel` owns its inherited `BodBase` and borrows the enclosing
     `cRSubGame`, embedded `Player`, and SpriteManager sprite handle
 - `+0x1260020`: `galaxy`
   - exact `0x10fa8`-byte `Galaxy` controller ending at `+0x1270fc8`
@@ -906,14 +961,14 @@ Current practical read:
     `InputState::pressed_buttons & 0x4000` edge before setting
     `completion_handoff_timer` to `5.1`
 - the main gameplay collision consumers now line up with the spawn helpers:
-  - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and `ParcelManager::slots`
+  - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and `cRParcelManager::slots`
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
     - when `shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE` is clear, the garbage-hit branch subtracts `normalized_contact.x * velocity.z * 0.18` from `player->velocity.x` and `normalized_contact.z * velocity.z * 0.10` from `player->velocity.z`
     - the grounded track leg in `update_subgoldy` then applies `position += velocity` and damps `velocity.x` by `1 - track_center_x * 0.1` each tick
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
-- the embedded `ParcelManager::slots` are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
+- the embedded `cRParcelManager::slots` are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
 - native `replay_update_cursor` is the per-update cursor advanced by `update_subgoldy`
 - the same cursor also drives selected replay-sample reads and the Time Trial terminal threshold
 - native `runtime_track_index` at `+0xff25e4` is separate and still names the rendered/current row index
@@ -1275,6 +1330,8 @@ Current practical read:
 ## Track Parcel Runtime
 
 The placed parcel pickups now line up on a dedicated embedded runtime slot shape rooted at `game + 0x125e480`.
+The primary matcher owners are `cRParcel` and `cRParcelManager`; `Parcel` and
+`ParcelManager` remain compatibility typedefs and stable analyzer vocabulary.
 
 High-confidence current fields:
 
@@ -1319,7 +1376,8 @@ Current practical read:
 
 The health and jetpack pickup spawners share the same leading pickup fields,
 but their complete owners differ: health ends after that compact prefix while
-the `0x19c`-byte `JetPack` continues with two embedded `Vapour` renderers.
+the `0x19c`-byte primary `cRJetPack` continues with two embedded primary
+`cRVapour` renderers. `JetPack` and `Vapour` remain compatibility vocabulary.
 
 High-confidence current fields:
 
@@ -1338,7 +1396,7 @@ Current practical read:
 - both helpers insert the pickup's zero-offset inherited `BodNode` into
   `GameRoot::active_bod_list`; the `BodNode **` head address and every branch
   reload are borrowed list lifetimes, while `cRSubGame` retains the
-  `SubHealth` array and `JetPack` singleton ownership
+  primary `cRSubHealth` array and `cRJetPack` singleton ownership
 - health seeds a parity-based `phase_offset` (`0.0` on odd `z`, `0.5` on even `z`) plus a `1/60` phase step, and `update_track_health_pickup` applies the native sprite-only bob `base_y + (sin(phase * tau) + 1.0) * 0.3`
 - jetpack seeds the same source-cell/parity lane but also applies the native ramp-side lateral bias at spawn time:
   - `+0.5` when `edge_mask & 7 == 3` and neighbor tiles `(lane - 1, lane + 2)` are both `0x0e`
@@ -1356,10 +1414,16 @@ Current practical read:
   - spawn-position carry `player->velocity.xyz * 3.0`
   - sprite size `0.1 x 0.5`, tint `(1.0, 0.75, 0.75, 1.0)`, and a small downward acceleration `-0.0002`
 - Android `cRSubGame::AddHealth` and `cRSubGame::AddJetPack` confirm the same field meanings even though later ports rearrange surrounding storage
+- the primary `cRJetPack` constructor and `AI()` are exact, but
+  `cRSubGame::AddJetPack` remains frozen at the honest `87.29%`, `147/144`
+  frontier; the primary-owner promotion is not an exact-spawner claim
 
-## Track Ring / Special-Effect Runtime
+## cRSubRing / cRSubRingStar Runtime
 
 The authored ring and special-effect pickups line up on a dedicated `2`-slot runtime bank rooted at `game + 0x35b78c`.
+The primary matcher owners are `cRSubRing` and the embedded
+`cRSubRingStar`; `SubRing` and `SubRingStar` remain compatibility typedefs
+only.
 
 High-confidence current fields:
 
@@ -1420,11 +1484,12 @@ Current practical read:
 
 ## cRSubGarbage Runtime
 
-The Windows garbage hazard pool is typed through the exact authored
-`SubGarbage` (`cRSubGarbage`) owner. `GarbageHazardSlot` and
-`GarbageHazardPool` remain compatibility aliases only; the earlier parcel and
-flattened `GarbageHazardRuntime` labels on `0x408550`, `0x43f130`, and
-`0x43f200` were a bad read of this same family.
+The Windows garbage hazard pool uses primary authored `cRSubGarbage` records
+inside the structural `SubGarbagePool` wrapper. `SubGarbage`,
+`GarbageHazardSlot`, and `GarbageHazardPool` remain compatibility/analyzer
+vocabulary only; the earlier parcel and flattened `GarbageHazardRuntime`
+labels on `0x408550`, `0x43f130`, and `0x43f200` were a bad read of this same
+family.
 
 High-confidence current fields:
 
@@ -1483,9 +1548,9 @@ Current practical read:
 
 ## cRSlug Runtime
 
-The Windows slug hazard pool is typed as the exact authored `Slug` (`cRSlug`)
-owner. `SlugHazardRuntime` remains only a matcher compatibility alias for older
-scratch vocabulary.
+The Windows slug hazard pool is typed through the primary authored `cRSlug`
+owner. `Slug` and `SlugHazardRuntime` remain matcher compatibility aliases for
+older scratch vocabulary.
 
 High-confidence current fields:
 
@@ -1538,10 +1603,16 @@ Current practical read:
   adjacent float `(progress, step)` pairs, seeding them to `(0, rate * 1/120)`
   and `(0, rate * 1/6)` before the immediate teardown fallthrough; neither
   retained build reads them, so `secondary` deliberately avoids inventing an
-  effect role, and the concrete `Slug` owner is retained instead of positing
-  an unsupported shared base with `SubGarbage`
+  effect role, and the concrete `cRSlug` owner is retained instead of positing
+  an unsupported shared base with `cRSubGarbage`
 - `spawn_slug_hazard` passes `attachment_facing_angle` to the track-attachment projector, and `update_slug_hazard_ai` later adds that projected angle to the player's heading for the sprite; the garbage family has the same producer/consumer contract at its own `attachment_facing_angle`
-- `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`, `voice_progress`, and `voice_progress_step` fields in addition to the global slug voice manager gate
+- `play_slug_voice` and `update_slug_voice_ai` use the per-slot `voice_active`,
+  `voice_progress`, and `voice_progress_step` fields in addition to the global
+  primary `cRSlugVoiceManager` gate; `SlugVoiceManager` is retained only as a
+  compatibility typedef
+- exact `cRSlugVoiceManager::Init()` and `AI()` seed and retire that shared
+  gate at `cRSubGame +0x35bb7c`; this manager is distinct from every
+  `cRSlug` slot's local voice-progress fields
 - later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
 - the exact constructor, reset, allocator, kill, and AI paths plus the collision
   consumer agree on the five state values and two toss directions; Binary
@@ -1551,16 +1622,18 @@ Current practical read:
 
 ## cRSubLazer and cRSalt Runtime
 
-The adjacent projectile managers now use their authored actor owners in both
-analysis lanes. `SubLazerSlot` and `SaltHazardSlot` remain compatibility aliases
-only; live receivers and manager arrays use `SubLazer` and `Salt`.
+The adjacent projectile managers now use primary authored
+`cRSubLazer` / `cRSubLazerManager` and `cRSalt` / `cRSaltManager` owners in
+both analysis lanes. `SubLazer`, `SubLazerSlot`, `SubLazerManager`, `Salt`,
+`SaltHazardSlot`, and `SaltManager` remain compatibility aliases only.
 
 - `initialize_sub_lazer_runtime` constructs the inherited `RenderableBod` and
   installs the table at `0x49733c`; its callback is
   `update_sub_lazer_projectile`, preserved as `cRSubLazer::AI()` on Android and
   iOS
-- `SubLazerManager` owns 20 inline `0xb0`-byte actors, exactly matching the
-  native `0xdc0` size ledger; each actor owns a 32-bit `SubLazerState` at
+- `cRSubLazerManager` owns 20 inline `0xb0`-byte `cRSubLazer` actors, exactly
+  matching the native `0xdc0` size ledger; each actor owns a 32-bit
+  `SubLazerState` at
   `+0x80`, stores its borrowed `owner_game` at `+0x88`, velocity at `+0x8c`,
   and bob phase pair at `+0x98/+0x9c`
 - the three proved SubLazer states are inactive `0`, active `1`, and
@@ -1568,17 +1641,19 @@ only; live receivers and manager arrays use `SubLazer` and `Salt`.
   writes active, and AI consumes recycle-pending after bob expiry or collision
 - `spawn_sub_lazer_projectile` is the slot-level authored `Shoot`, while
   `deactivate_sub_lazer_projectile` is `cRSubLazer::Kill()`; the manager-level
-  `shoot_sub_lazer_pool` scans the same inline array. Its formerly misassigned
+  `shoot_sub_lazer_pool` is `cRSubLazerManager::Shoot()` and scans the same
+  inline array. Its formerly misassigned
   `shoot_subgoldy` alias now belongs to the actual Goldy method at `0x43a300`
 - `initialize_salt_hazard_runtime` constructs the same inherited owner and
   installs the table at `0x497340`; its callback is the exact
   `cRSalt::AI()` at `update_salt_hazard`
-- `SaltManager` owns 40 inline `0x98`-byte actors, exactly matching the native
-  `0x17c0` size ledger; each actor owns a 32-bit `SaltState` at `+0x80` and
+- `cRSaltManager` owns 40 inline `0x98`-byte `cRSalt` actors, exactly matching
+  the native `0x17c0` size ledger; each actor owns a 32-bit `SaltState` at
+  `+0x80` and
   independent fade-alpha, spawn-y, and collision-latch fields at
   `+0x8c/+0x90/+0x94`, proved across spawn, collision, and AI
 - the allocator's state sweep is a borrowed field-first
-  `SaltStateStrideCursor`: it begins at `Salt::state` and advances by the full
+  `SaltStateStrideCursor`: it begins at `cRSalt::state` and advances by the full
   `0x98` actor stride without claiming separate slot ownership
 - `initialize_salt_hazard_pool` is the exact void `cRSaltManager::Init()`;
   `spawn_salt_hazard` is the authored void `cRSaltManager::Add(tVector&)`.

@@ -244,7 +244,19 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Port the literal `cRTipData` payload-table contents and `cRTip` widget/timing
   behavior behind `voice 13`; the actor/controller lifecycle owner is closed
 - [x] Recover the real warning actor/controller behind `update_warning`
-- [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring runtime owner, ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit `2 -> 3` effect lane, and the recovered `health_collect_particles` burst packet, especially parcel, garbage-impact, the original pre-hit ring bod anchor/layout fields, the dedicated jet-particle/nozzle owner, and the remaining deeper weapon presentation owners. The health burst itself is closed as eight generic SpriteManager records borrowing position from the separate inline `SubHealth` actor; no dedicated particle BOD exists.
+- [ ] Finish the remaining collision/powerup Zig and presentation work beyond
+  the recovered primary matcher owners `cRSubHealth`, `cRSubRing`, and
+  `cRSubRingStar`, the now-ported ring-kind ladder (`1`, `2/6`, `3/7`,
+  `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias
+  spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit
+  `2 -> 3` effect lane, and the recovered `health_collect_particles` burst
+  packet. Remaining work includes `cRParcel` / `cRParcelManager` flight and
+  delivery parity, `cRSubGarbage` impact parity, the original pre-hit ring BOD
+  anchor/layout fields, the dedicated
+  jet-particle/nozzle owner, and deeper weapon presentation. The health burst
+  itself is closed as eight generic SpriteManager records borrowing position
+  from the separate inline `cRSubHealth` actor; no dedicated particle BOD
+  exists.
 - [ ] Finish the remaining hit-flash presentation timing in the damage-warning
   owner.
   The `stop_warning_sample` contract is closed: Windows starts registered sample 50
@@ -272,7 +284,23 @@ Work this top-down unless a new runtime capture invalidates the order.
   generated-garbage postal/time-trial mode gates. `DeSaltTrack` is now closed
   as a six-row, two-lane producer of the independent salt (`0x08`) and garbage
   (`0x10`) spawn-suppression bits; it has no render/cache consumer.
-- [ ] Finish literal SubLazer and Salt pool ownership. The port now has plain-array `cRSubLazerManager` and `cRSalt` equivalents for the recovered damage lanes, but still needs the native intrusive lists, object/body owners, sprite ownership, suppression gates, and any remaining non-horizontal suppressor details. Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by `cRSubLoc::AI()` via `shoot_sub_lazer_pool` @ 0x441ad0. Reference: `update_sub_loc` @ 0x439d50 (RNG gate plus `game+0x74668 > game+0x42fdec` cadence), `spawn_sub_lazer_projectile` @ 0x441670, `deactivate_sub_lazer_projectile` @ 0x441740, `update_sub_lazer_projectile` @ 0x4417d0, `cRSalt` @ `game + 0x3578c0`; salt pool helpers: `initialize_salt_hazard_pool` @ 0x441540, `spawn_salt_hazard` @ 0x441560 (authored `0x22` tiles and `0x0f` with RNG gate `0.98 + 0.02*(1-scalar)`), `update_salt_hazard` @ 0x441c10.
+- [x] Recover literal authored lazer and salt ownership. The matcher now uses
+  primary `cRSubLazer` / `cRSubLazerManager` and `cRSalt` / `cRSaltManager`
+  owners; `SubLazer`, `SubLazerManager`, `Salt`, and `SaltManager` remain
+  compatibility typedefs only.
+- [ ] Port those recovered owners beyond the Zig runtime's current plain-array
+  equivalents: inherited BOD/list participation, object/sprite presentation,
+  suppression gates, and any remaining non-horizontal suppressor details are
+  still open. Historically misnamed "Wall2 ambient pool" in these docs — the
+  Wall2 tile is the *emitter*, and `cRSubLoc::AI()` fires the
+  `cRSubLazerManager` slots through `shoot_sub_lazer_pool` @ 0x441ad0.
+  Reference: `update_sub_loc` @ 0x439d50 (RNG gate plus
+  `game+0x74668 > game+0x42fdec` cadence), `spawn_sub_lazer_projectile` @
+  0x441670, `deactivate_sub_lazer_projectile` @ 0x441740,
+  `update_sub_lazer_projectile` @ 0x4417d0, `cRSaltManager` at
+  `game + 0x3578c0`; salt helpers: `initialize_salt_hazard_pool` @ 0x441540,
+  `spawn_salt_hazard` @ 0x441560 (authored `0x22` tiles and `0x0f` with RNG
+  gate `0.98 + 0.02*(1-scalar)`), and `update_salt_hazard` @ 0x441c10.
 - [ ] Port jetpack state 2 from the recovered `cRSubHover` lifecycle (`Init`,
   `On`, `AI`, `Hover`, `End`, and jet-particle helpers); owner recovery is closed,
   while the broader hover-mode gameplay/presentation port remains unprioritized
@@ -326,26 +354,33 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ## Decompile Targets By Priority
 
-Every current non-proof scratch ledger is now formally stalled. Do not start a
-session from fuzzy score alone; acquire a new producer, consumer, field xref,
-or original-source clue first. Use this evidence order:
+Every score-residual/non-proof scratch ledger remains formally stalled. Do not
+restart a fuzzy-score sweep without a new producer, consumer, field xref, or
+original-source clue. The next work is authored-owner promotion over exact
+core leaves, in this evidence order:
 
-1. Promote the proof-grade `cRWarning` lifecycle to its authored primary matcher
-   surface. The state graph and immediate play/stop sample-50 quirk are closed;
-   preserve the receiver-free Windows `StopSample` body instead of importing a
-   mobile handle field.
-2. Resume `promote_track_tiles_to_fringe_variants` only from the exact BOD
-   catalog/table producer or a renderer consumer. Directional fringe ownership
-   and cache-family-4 handoff are closed, so another cursor/register spelling
-   sweep is not evidence.
-3. Recover literal SubLazer/Salt pool ownership across the exact init, spawn,
-   and deactivate helpers and their near-exact updaters. Seek intrusive-list,
-   Object/Sprite, and suppression owners from full-image or mobile evidence
-   before changing the port.
+1. Promote primary `cRFringe` / `cRFringeManager` across the exact constructor,
+   callback AI, manager `Init`, and `GetFringe` leaves. The Windows pool is
+   exactly `7000 * 0x38` plus its count. Keep `build_track_fringe_objects`, both
+   fringe-mesh builders, and tile promotion frozen at their bounded partial
+   frontiers.
+2. Promote primary `cRLogo` / `cRLogoLetter` across the exact child constructor,
+   `Open`, `UnInit`, parent `AI`, and child `AI` leaves. Integrate the authored
+   `cRLogo::Init(char*)` name without reopening its frozen `88.89%`, `523/521`,
+   prefix-`88` residual.
+3. Promote primary `cRGalaxy` / `cRGalaxyStar` across the seven exact lifecycle,
+   route-box, line, child-AI, and border-bound leaves. Keep the layout loader at
+   `88.27%` and the outer AI at `71.01%`; this is owner routing, not another
+   score sweep or a mobile-offset transplant.
 
 Do not keep already proof-grade or evidence-closed lanes active merely because
-an older plan named them. Primary `cRCutScene`, `cRSubHover`, Tip-family,
-`cRInvincible`, `cRDamageGuage`, and `cRCompletion` ownership, the named
+an older plan named them. Primary `cRFade`, `cRFlash`, `cROverlay`, `cRSubPause`,
+`cRVapour`, `cRSubSpeedUp`, `cRJetPack`, `cRSubRow` / `cRRowModel`,
+`cRClickStart`, `cRSubHealth`, `cRSubRing` / `cRSubRingStar`, `cRSubLazer` /
+`cRSubLazerManager`, `cRSalt` / `cRSaltManager`, `cRSubGarbage`, `cRSlug` /
+`cRSlugVoiceManager`, `cRParcel` / `cRParcelManager`, `cRCutScene`,
+`cRSubHover`, Tip-family, `cRInvincible`, `cRDamageGuage`, and `cRCompletion`
+ownership, the named
 invincibility capability, the death selector/life commit,
 the completion fast-forward/input lifecycle, slug-hit motion and
 `slug_fall_active`, the selected-record gameplay multiplexer,
