@@ -466,6 +466,13 @@ def evaluate_mutation_sweep(
         raise ValueError("jobs must be at least 1")
     if time_budget is not None and time_budget <= 0:
         raise ValueError("time_budget must be positive")
+    batch = generate_mutation_variants(
+        source_text,
+        spec,
+        min_changes=min_changes,
+        max_changes=max_changes,
+        max_variants=max_variants,
+    )
     profile = replace(
         config,
         compiler=compiler or config.compiler,
@@ -476,13 +483,6 @@ def evaluate_mutation_sweep(
         match_root,
         image_path=image_path,
         manifest=manifest,
-    )
-    batch = generate_mutation_variants(
-        source_text,
-        spec,
-        min_changes=min_changes,
-        max_changes=max_changes,
-        max_variants=max_variants,
     )
 
     def evaluate(variant: MutationVariant) -> MutationEvaluation:

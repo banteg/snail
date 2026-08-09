@@ -160,6 +160,34 @@ def test_mutation_spec_rejects_invalid_change_range(tmp_path: Path) -> None:
         )
 
 
+def test_mutation_sweep_rejects_impossible_range_before_baseline(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    spec_path = tmp_path / "mutations.json"
+    _write_spec(spec_path)
+
+    def fail_baseline(*args: object, **kwargs: object) -> ScratchStatus:
+        pytest.fail("baseline evaluation must not run for an invalid range")
+
+    monkeypatch.setattr(
+        "snail.match_mutation.matchlib.evaluate_scratch",
+        fail_baseline,
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="cannot exceed the number of mutation sites",
+    ):
+        evaluate_mutation_sweep(
+            _config(tmp_path),
+            load_mutation_spec(spec_path),
+            source_text="int value = x + y;\n",
+            min_changes=3,
+            max_changes=3,
+        )
+
+
 def test_mutate_cli_rejects_invalid_change_range(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
