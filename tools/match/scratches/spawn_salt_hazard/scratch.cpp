@@ -8,19 +8,24 @@ int report_errorf(char* format, ...);
 
 void SaltManager::spawn_salt_hazard(const Vector3* position)
 {
+    enum {
+        SALT_SLOT_CAPACITY = sizeof(slots) / sizeof(slots[0]),
+    };
     int index = 0;
     Salt* scan = slots;
-    while (index < 40
+    while (index < SALT_SLOT_CAPACITY
         && scan->state != SALT_STATE_INACTIVE) {
         ++index;
         ++scan;
-        if (index >= 40)
+        if (index >= SALT_SLOT_CAPACITY)
             return;
     }
 
     Salt* slot = &slots[index];
     slot->state = SALT_STATE_ACTIVE;
     slot->fade_alpha = 0.0f;
+    // This mobile-preserved +0x90 seed is write-only in the recovered runtime;
+    // keep the compatibility field spelling without inventing a consumer.
     slot->spawn_velocity_y = g_game->subgame.subgame_rate * 0.033333335f;
     TransformMatrix* live_matrix = &slot->transform;
     Vector3* spawn_position = &slot->transform.position;

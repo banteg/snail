@@ -15,7 +15,7 @@ void Salt::update_salt_hazard()
     switch (state) {
     case SALT_STATE_RECYCLE_PENDING: {
         GameRoot* game = g_game;
-        SaltListAnchor* anchor = &game->active_bod_list;
+        BodList* anchor = &game->active_bod_list;
         int flags = list_flags;
         if ((flags & BOD_FLAG_LINKED) == 0) {
             report_errorf("List remove");

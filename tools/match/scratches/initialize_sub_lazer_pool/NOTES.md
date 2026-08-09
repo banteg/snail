@@ -31,3 +31,12 @@ manager lifecycle method is now declared `void`.
 `0xb0` actor and `0xdc0` manager extents; this exact initializer walks the
 manager-owned array with a typed state cursor and writes
 `SUB_LAZER_STATE_INACTIVE` without changing its 7/7-instruction object.
+
+## 2026-08-09 manager lifecycle xref closure
+
+The sole Windows caller at `0x437f77` resets this exact inline manager during
+level build. The next allocation path is `update_sub_loc ->
+shoot_sub_lazer_pool -> spawn_sub_lazer_projectile`; no pointer is transferred
+out of the manager. Android `cRSubLazerManager::Init @ 0x6c2e0` independently
+clears 20 state words at its platform `0xa4` stride. The exact Windows
+initializer remains 7/7 with no masked operands.

@@ -24,3 +24,12 @@ and exact at 7/7 instructions.
 Windows callsite in `build_subgame_level` discards EAX, Android preserves the
 `cRSaltManager::Init()` owner, and the natural `void` method still compiles to
 the exact seven instructions. The previous end-pointer return was incidental.
+
+## 2026-08-09 manager lifecycle xref closure
+
+The sole Windows caller at `0x437f82` resets the 40 inline actors during level
+build. Both direct and ambient track producers then call
+`spawn_salt_hazard` on this same embedded manager; no slot ownership escapes.
+Android `cRSaltManager::Init @ 0x6c2c0` independently clears 40 state words at
+its platform `0x8c` stride. The Windows initializer remains exact at 7/7 with
+no masked operands.

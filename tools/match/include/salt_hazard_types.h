@@ -33,8 +33,6 @@ typedef Salt SaltHazardSlot;
 
 typedef char Salt_must_be_0x98[(sizeof(Salt) == 0x98) ? 1 : -1];
 
-typedef BodList SaltListAnchor;
-
 class SaltManager {
 public:
     void initialize_salt_hazard_pool();              // @ 0x441540

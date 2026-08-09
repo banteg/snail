@@ -8,8 +8,9 @@ Semantics covered:
 - live matrix is reset with `set_matrix_identity`
 - origin is copied into the matrix position row at `+0x68`
 - direction is copied into velocity at `+0x8c`
-- sprite bob phase starts at zero and the bob step is
-  `owner_game->subgame_rate * 0.0055555557`
+- normalized flight-lifetime progress starts at zero and its step is
+  `owner_game->subgame_rate * 0.0055555557`; `AI` is the only consumer and
+  retires the actor once the progress exceeds one
 - slot is added after the `owner_game+0x355bd4` sub-lazer list head with
   list flag `0x200`, or reports `"List ADDafter"` if already linked
 - matrix forward axis is rebuilt from velocity through
@@ -18,7 +19,7 @@ Semantics covered:
 Exact-match source-shape fix:
 
 - Directly assigning `velocity = *direction` instead of copying through a local
-  `Vector3* velocity_copy` lets VC6 schedule the `sprite_bob_phase = 0.0f`
+  `Vector3* velocity_copy` lets VC6 schedule the `flight_lifetime_progress = 0.0f`
   store between loading direction z and spilling velocity z, matching native.
   The source remains normal struct-copy code.
 
@@ -28,7 +29,7 @@ Rejected source-plausible variants:
   80.00% by forcing x87 load/store traffic
 - direct component stores without the temporary regressed to 83.20% and lost
   the native pointer-copy register pattern
-- moving `sprite_bob_phase = 0.0f` before the vector copy stayed at 98.41%
+- moving `flight_lifetime_progress = 0.0f` before the vector copy stayed at 98.41%
   but shifted the mismatch earlier
 - `velocity_copy->x/y/z` field assignments regressed to 73.60% by changing
   register ownership
@@ -91,3 +92,19 @@ state and owned `SUB_LAZER_SLOT_CAPACITY`; spawn remains exact at 63/63.
 `SubLazerState` member at `+0x80`, so the tracked decompiles render this exact
 transition as `SUB_LAZER_STATE_ACTIVE` while retaining the inherited
 `RenderableBod`, owner backlink, velocity, and bob-phase fields.
+
+## 2026-08-09 list and lifetime ownership closure
+
+The startup object loop proves that this actor already borrows the shared
+lazer `cRObject` before Shoot. This method activates the manager-owned slot,
+uses the inherited transform, and inserts the actor's offset-zero `BodNode`
+after `cRSubGame::barrier_sub_lazer_list_head`; it does not allocate an Object,
+BOD, or Sprite. The group head is itself linked after the track-body head in
+the root active BOD chain.
+
+Whole-image field xrefs close `+0x98/+0x9c` as a normalized lifetime pair:
+Shoot writes zero and `subgame_rate / 180`, and `AI` is the only reader,
+advancing the value until it exceeds one and requests recycling. No relevant
+Windows, Android, or iOS body stores a persistent sprite pointer. Matcher and
+replay definitions now name the pair for that closed lifetime contract. This
+clarification is codegen-neutral at exact 63/63 with six clean operands.

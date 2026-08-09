@@ -4,9 +4,10 @@ First correctly named scratch for the salt runtime updater after the 2026-06-16
 vtable correction. `initialize_salt_hazard_runtime` installs vtable
 `data_497340`, and `data_497340` points at `0x441c10`.
 
-Pinned at `62.96%`, `79/83` target instructions. Field offsets are aligned;
-the remaining masked mismatch is the state-2 error-string tail merge (`List
-remove` versus `List remove NEXTBOD`) in the candidate control-flow shape.
+Current source is exact at `100.00%`, `83/83` target/candidate instructions,
+full prefix, and `12 ok / 0 mismatch` masked operands. The initial `62.96%`,
+`79/83` state and its error-tail residual are retained below as historical
+source-shape evidence.
 
 Recovered behavior:
 
@@ -98,3 +99,19 @@ Matching remains exact; no source-shape claim was changed.
 `SaltState` owner (`INACTIVE`, `ACTIVE`, `RECYCLE_PENDING`), and the updater
 writes `fade_alpha` directly. The exact 83/83 code and twelve clean operands
 are unchanged; the old `Vec3` overlay is retired.
+
+## 2026-08-09 exact actor and list ownership
+
+Callback table `0x497340` is the Windows entry owner. Active state reads only
+the borrowed subgame pause gate, inherited transform, player z bounds, and the
+dedicated fade lane; it does not consume the spawn scalar or collision latch.
+Crossing the trailing player plane writes recycle-pending, and the next update
+unlinks this actor's inherited offset-zero node through the root `BodList`,
+pushes it to the shared free stack, clears linked bit `0x200`, and marks the
+manager-owned record inactive.
+
+Android `cRSalt::AI @ 0x72318` and iOS `@ 0x30850` preserve the same state
+graph, pause owner, fade clamp, and remove path at their smaller mobile
+offsets. The explicit local anchor type is now the real `BodList`, not the old
+salt-specific alias. Focused Windows matching remains exact at 83/83 with all
+12 operands clean.

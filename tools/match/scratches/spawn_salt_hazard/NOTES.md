@@ -8,13 +8,14 @@ below is retained as evidence. All semantics remain verified in the diff body:
 
 - free scan over `slots[i].state` (+0x80, stride 0x98), bails when all 40 slots
   are occupied
-- seeding order: state=active, fade alpha +0x8c=0.0f, spawn-y +0x90 =
-  `Game::subgame_rate * (1/30)`, position triple into the live-matrix
+- seeding order: state=active, fade alpha +0x8c=0.0f, the write-only spawn
+  scalar at +0x90 = `Game::subgame_rate * (1/30)`, position triple into the live-matrix
   position row (+0x68), `set_matrix_rotation_identity` on +0x38,
   random world-y rotation `(rand() - 16384) * 0.0001917476` (±π),
   then arms the one-byte collision latch at +0x94
-- `+0x8c`, `+0x90`, and `+0x94` are independent fields: fade alpha,
-  spawn-time y velocity, and collision latch. The earlier claim that
+- `+0x8c`, `+0x90`, and `+0x94` are independent fields: fade alpha, a
+  platform-preserved but currently write-only spawn scalar, and collision
+  latch. The earlier claim that
   `update_salt_hazard` proves integration was based on the shifted
   `0x4417d0` name; the actual salt updater at `0x441c10` uses `+0x8c` as a
   fade fraction and does not read `+0x90/+0x94`.
@@ -170,3 +171,24 @@ inner exit was exact; the two post-loop bounded forms reached `92.54%`, and
 the other forms were neutral or worse. No scalar result, dummy operation,
 volatile access, or artificial return value is needed to preserve the native
 exit layout.
+
+## 2026-08-09 producer, suppression, and lane ownership
+
+Windows `cRSubGame::AI` reaches this one manager call from two producers. An
+authored salt tile `0x22` spawns directly inside the active row window. The
+ambient floor-dot/slide path additionally requires runtime flag `0x10000`, a
+passed start gate and RNG threshold, and clear `cRSubLoc::lane_and_flags` bit
+`0x08`. `cRSubGame::DeSaltTrack` writes `0x18` across its six-row/two-lane
+approach footprint, composing salt suppression `0x08` with independent garbage
+suppression `0x10`; it does not suppress authored salt tiles. The lane remains
+owned by the runtime grid cell, while this vector-only manager owns only its 40
+inline actors.
+
+The selected slot borrows the startup `salt.x` Object, enters active state,
+links its inherited `BodNode` after `salt_hazard_list_head`, initializes fade
+`+0x8c`, and arms collision byte `+0x94`. Collision is the sole Windows
+consumer of that byte and clears it after applying `0.15` damage. The `+0x90`
+rate-derived scalar has no Windows reader; Android/iOS Add write the homologous
+lane but their AI bodies also ignore it, so the existing field name is not
+evidence of live y integration. The local capacity now derives from
+`SaltManager::slots`; matching remains exact at 67/67 with ten clean operands.

@@ -89,8 +89,8 @@ SUB_LAZER_FIELD_UPDATES = (
     ("0x84", "unknown_84", "uint8_t[0x4]"),
     ("0x88", "owner_game", "cRSubGame*"),
     ("0x8c", "velocity", "Vec3"),
-    ("0x98", "sprite_bob_phase", "float"),
-    ("0x9c", "sprite_bob_phase_step", "float"),
+    ("0x98", "flight_lifetime_progress", "float"),
+    ("0x9c", "flight_lifetime_step", "float"),
     ("0xa0", "unknown_a0", "uint8_t[0x10]"),
 )
 

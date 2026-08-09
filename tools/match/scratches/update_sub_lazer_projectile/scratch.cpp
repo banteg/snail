@@ -24,10 +24,12 @@ void SubLazer::update_sub_lazer_projectile()
         return;
     }
     case SUB_LAZER_STATE_ACTIVE: {
-        float* progress = &sprite_bob_phase;
-        float* progress_step = &sprite_bob_phase_step;
-        *progress = *progress_step + *progress;
-        if (*progress > 1.0f) {
+        // The only consumer is the normalized flight-expiry test below; no
+        // cRSprite object is owned by this Windows slot.
+        float* lifetime_progress = &flight_lifetime_progress;
+        float* lifetime_step = &flight_lifetime_step;
+        *lifetime_progress = *lifetime_step + *lifetime_progress;
+        if (*lifetime_progress > 1.0f) {
             state = SUB_LAZER_STATE_RECYCLE_PENDING;
             return;
         }

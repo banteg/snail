@@ -97,3 +97,19 @@ Android's exact `cRSubGoldy::Shoot(cRSubGoldy*)` body maps to Windows
 0x43a300, not this manager. The misleading `shoot_subgoldy` compatibility
 alias is therefore retired here and assigned to its actual owner. This
 SubLazer pool remains exact at 48/48.
+
+## 2026-08-09 emitter and lane ownership
+
+The sole Windows call at `0x439ed6` comes from `cRSubLoc::AI` for authored
+Wall2 tile `0x0e`. The cell owns the lane-bearing world anchor and builds the
+origin/direction; this manager only selects the first inactive one of its 20
+inline actors, applies the `-0.01 * slot_index` y stagger, and dispatches the
+actor Shoot plus positional sound `15`. Neither the manager nor a slot owns a
+lane index or `cRSubLoc*`.
+
+Android `cRSubLoc::AI @ 0x77760` and iOS `@ 0x35a80` preserve that separation,
+while Android/iOS `cRSubLazerManager::Shoot` preserve the 20-slot scan and y
+stagger. Their vector-only checked-in bodies do not justify importing the
+`cRSubGoldy*` parameter seen only in the later iOS name inventory into the
+Windows owner. Focused Windows matching remains exact at 48/48 with four
+clean operands.

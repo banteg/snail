@@ -1,8 +1,9 @@
 # update_sub_lazer_projectile @ 0x4417d0
 
-Current best is `97.25%`, `218/218` candidate/target instructions, masked
-operands `24 ok / 0 mismatch`. The scratch was originally pinned at `48.39%`
-with `17 ok / 0 mismatch`.
+Current best is `99.08%`, `218/218` candidate/target instructions, prefix
+`86/218`, with `24 ok / 0 mismatch` masked operands. The only residual is the
+commutative y-lane add order documented in the bounded 2026-07-29 sweeps. The
+scratch was originally pinned at `48.39%` with `17 ok / 0 mismatch`.
 
 2026-06-16 vtable correction: this is the sub-lazer projectile updater, not
 the salt hazard updater. `initialize_sub_lazer_runtime` installs vtable
@@ -15,7 +16,8 @@ Layout facts settled by this asm and `spawn_sub_lazer_projectile`:
 - position is the renderable transform position row at `+0x68`
 - owner game is `+0x88`, with the root `subgame_pause_gate` visible at `+0x09`
 - velocity is a real `Vector3` at `+0x8c/+0x90/+0x94`
-- sprite bob phase/step are `+0x98/+0x9c`, inside the sub-lazer slot
+- normalized flight-lifetime progress/step are `+0x98/+0x9c`, inside the
+  sub-lazer slot
 
 The old salt interpretation made `+0x98/+0x9c` look like off-stride overlap
 because the salt pool stride is `0x98`; that was a naming/type error, not a
@@ -262,3 +264,21 @@ interleaved lifetimes. The final three sweeps produced no improvement.
 No volatile value, dummy write, or control-flow nudge is used. Keep the
 source-valid borrowed-lane improvement and treat the final y add as a bounded
 VC6 scheduling residual until new authored evidence supplies a stronger idiom.
+
+## 2026-08-09 producer/consumer and suppression closure
+
+Callback table `0x49733c` is the only Windows entry owner. State 1 advances
+the normalized lifetime and all three velocity lanes, then suppresses further
+flight below y zero, behind `Player::active_window_min_z`, on low Wall2, or on
+either primary/secondary attachment containment hit. Player collision is the
+other producer of `SUB_LAZER_STATE_RECYCLE_PENDING`; state 2 returns the same
+inherited node through the root active/free BOD list. The unused Windows word
+at `+0x84` still has no reader and remains unnamed.
+
+Android `cRSubLazer::AI @ 0x75d74` and iOS `@ 0x31a20` preserve the pause gate,
+three-axis integration, lifetime expiry, dual attachment probes, and recycle
+lifecycle at their smaller mobile offsets. They also confirm that the only
+remaining Windows mismatch is a commutative y-lane x87 ordering, not missing
+ownership or behavior. The six existing sweeps already cover 82 variants;
+none are reopened. Focused output stays 99.08%, 218/218, prefix 86, with all
+24 operands clean.

@@ -67,8 +67,8 @@ SUB_LAZER_OWNER_EXPECTED_MEMBERS = (
     (0x80, 4, "state", "SubLazerState"),
     (0x88, 4, "owner_game", "cRSubGame *"),
     (0x8C, 12, "velocity", "Vec3"),
-    (0x98, 4, "sprite_bob_phase", "float"),
-    (0x9C, 4, "sprite_bob_phase_step", "float"),
+    (0x98, 4, "flight_lifetime_progress", "float"),
+    (0x9C, 4, "flight_lifetime_step", "float"),
 )
 
 SUB_GARBAGE_OWNER_EXPECTED_SIZE = 0xC4

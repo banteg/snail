@@ -81,8 +81,8 @@ typedef struct SubLazer {
     uint8_t unknown_84[0x4];
     cRSubGame* owner_game;
     Vec3 velocity;
-    float sprite_bob_phase;
-    float sprite_bob_phase_step;
+    float flight_lifetime_progress;
+    float flight_lifetime_step;
     uint8_t unknown_a0[0x10];
 } SubLazer;
 

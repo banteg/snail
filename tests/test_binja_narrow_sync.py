@@ -11981,6 +11981,9 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
         assert "SUB_LAZER_STATE_ACTIVE = 1" in header
         assert "SUB_LAZER_STATE_RECYCLE_PENDING = 2" in header
         assert "SubLazerState state;" in header
+        assert "float flight_lifetime_progress;" in header
+        assert "float flight_lifetime_step;" in header
+        assert "sprite_bob_phase" not in header
         assert "Salt slots[40];" in header
         assert "typedef enum SaltState {" in header
         assert "SALT_STATE_INACTIVE = 0" in header
@@ -11996,6 +11999,9 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert '("0x00", "body", "RenderableBod")' in hazard_sync
     assert '("SubLazer", SUB_LAZER_FIELD_UPDATES)' in hazard_sync
     assert '("0x80", "state", "SubLazerState")' in hazard_sync
+    assert '("0x98", "flight_lifetime_progress", "float")' in hazard_sync
+    assert '("0x9c", "flight_lifetime_step", "float")' in hazard_sync
+    assert "sprite_bob_phase" not in hazard_sync
     assert '("Salt", SALT_FIELD_UPDATES)' in hazard_sync
     assert '("0x80", "state", "SaltState")' in hazard_sync
     assert (
@@ -12066,6 +12072,8 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "SUB_LAZER_OWNER_EXPECTED_SIZE = 0xB0" in ida_runtime_sync
     assert "SUB_LAZER_MANAGER_EXPECTED_SIZE = 0xDC0" in ida_runtime_sync
     assert '(0x80, 4, "state", "SubLazerState")' in ida_runtime_sync
+    assert '(0x98, 4, "flight_lifetime_progress", "float")' in ida_runtime_sync
+    assert '(0x9C, 4, "flight_lifetime_step", "float")' in ida_runtime_sync
     assert (
         "sub_lazer_owner_readback = _sub_lazer_owner_readback()"
         in ida_runtime_sync
@@ -12107,6 +12115,9 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
 
     assert "class SubLazer : public RenderableBod" in matcher_sub_lazer
     assert "SubLazerState state;" in matcher_sub_lazer
+    assert "float flight_lifetime_progress;" in matcher_sub_lazer
+    assert "float flight_lifetime_step;" in matcher_sub_lazer
+    assert "sprite_bob_phase" not in matcher_sub_lazer
     assert "int state;" not in matcher_sub_lazer
     assert "class Salt : public RenderableBod" in matcher_salt
     assert "enum SaltState {" in matcher_salt
@@ -12117,6 +12128,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "Vector3 velocity;" not in matcher_salt
     assert "fade_alpha()" not in matcher_salt
     assert "collision_armed()" not in matcher_salt
+    assert "SaltListAnchor" not in matcher_salt
     assert (
         "void SaltManager::initialize_salt_hazard_pool()"
         in salt_scratches["initialize_salt_hazard_pool"]
@@ -12124,10 +12136,19 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "SubLazerState* state" in (
         repo_root / "tools/match/scratches/initialize_sub_lazer_pool/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "int debug_report_stub(char* format, ...);" in (
+    sub_lazer_update = (
         repo_root
         / "tools/match/scratches/update_sub_lazer_projectile/scratch.cpp"
     ).read_text(encoding="utf-8")
+    assert "int debug_report_stub(char* format, ...);" in sub_lazer_update
+    assert "&flight_lifetime_progress" in sub_lazer_update
+    assert "&flight_lifetime_step" in sub_lazer_update
+    sub_lazer_spawn = (
+        repo_root
+        / "tools/match/scratches/spawn_sub_lazer_projectile/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "flight_lifetime_progress = 0.0f;" in sub_lazer_spawn
+    assert "flight_lifetime_step = owner_game->subgame_rate" in sub_lazer_spawn
     assert "SALT_STATE_ACTIVE" in salt_scratches["spawn_salt_hazard"]
     assert (
         "void SaltManager::spawn_salt_hazard("

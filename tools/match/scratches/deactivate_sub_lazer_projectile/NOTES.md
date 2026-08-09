@@ -80,3 +80,14 @@ Kill no longer loses the actor behind a `BodNode*` or offset expression. Both
 analysis lanes resolve the `+0x80` store as
 `state = SUB_LAZER_STATE_INACTIVE`; the matcher remains exact at 43/43 with
 all five operands clean.
+
+## 2026-08-09 intrusive-list lifecycle closure
+
+The actor is linked through its inherited offset-zero `BodNode`, not through
+manager metadata. The only direct Windows call is the `cRSubLazer::AI` kill
+tail at `0x441ac3`; recycle-pending AI also inlines the same removal. Both
+paths unlink the actor from its subgame group chain, push it onto
+`GameRoot::active_bod_list.free_top`, clear `BOD_FLAG_LINKED`, and leave the
+manager-owned record inactive. Android `cRSubLazer::Kill @ 0x6d73c` preserves
+the same remove-then-clear lifecycle. Matching remains exact at 43/43 with
+five clean operands.

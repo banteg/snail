@@ -13,8 +13,10 @@ void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* 
     Vector3* position = &transform.position;
     *position = *origin;
     velocity = *direction;
-    sprite_bob_phase = 0.0f;
-    sprite_bob_phase_step = owner_game->subgame_rate * 0.0055555557f;
+    // Compatibility field spelling: this pair is consumed as a normalized
+    // flight lifetime, not as a borrowed cRSprite.
+    flight_lifetime_progress = 0.0f;
+    flight_lifetime_step = owner_game->subgame_rate * 0.0055555557f;
 
     BodNode* head = &owner_game->barrier_sub_lazer_list_head;
     if ((list_flags & BOD_FLAG_LINKED) != 0) {

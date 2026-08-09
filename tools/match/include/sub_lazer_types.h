@@ -32,8 +32,8 @@ public:
     char unknown_84[0x88 - 0x84];
     cRSubGame* owner_game; // +0x88, borrowed containing subgame
     Vector3 velocity;         // +0x8c
-    float sprite_bob_phase;   // +0x98
-    float sprite_bob_phase_step; // +0x9c
+    float flight_lifetime_progress; // +0x98, normalized 0..1 lifetime
+    float flight_lifetime_step; // +0x9c
     char unknown_a0[0xb0 - 0xa0];
 };
 
