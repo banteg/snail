@@ -876,3 +876,10 @@ Replacing the three raw masks with the shared named capability is
 codegen-neutral. Focused Windows validation remains 85.88%, 673/673
 instructions, prefix 18, native frame `0x74`, and all 89 references clean.
 The formally stalled collision stack-coloring lane was not reopened.
+
+## 2026-08-09 stale mutation-plan retirement
+
+`shared-pickup-vector-mutations.json` is retired. The append-only experiment
+ledger already preserves the explored pickup-vector lane and its winning
+variant, while the plan's block anchor no longer matches the authored owner
+spelling in the current source.

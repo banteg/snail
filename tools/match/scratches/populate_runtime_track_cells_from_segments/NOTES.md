@@ -1514,3 +1514,10 @@ remains intact and the append-only historical probe receipt is unchanged.
 Explicit cached-flag and duplicated early-tile spellings were discarded: they
 either lost the native full-word `EBP` mask flow or collapsed the exact prefix.
 The ledger now contains 139 records: 132 mutation sweeps and 7 focused probes.
+
+## 2026-08-09 stale mutation-plan retirement
+
+`fringe-position-copy-owner-mutations.json` is retired. The append-only
+experiment ledger already preserves the explored position-copy lane and its
+best recorded variant, while the plan's anchor no longer matches the current
+authored fringe source.

@@ -149,3 +149,10 @@ This authored-name change is codegen-neutral: focused matching remains 84.42%,
 clean. None of the 66 exhausted source-shape variants was reopened. This closes
 the matcher owner spelling only; the rewrite's Zig Tip payload/controller gap
 remains separate work.
+
+## 2026-08-09 stale mutation-plan retirement
+
+`main-widget-lifetime-mutations.json` is retired. The append-only experiment
+ledger already preserves the explored widget-lifetime lane and its retained
+member-reference winner, while the plan's anchor no longer matches the current
+authored `cRTip` source.

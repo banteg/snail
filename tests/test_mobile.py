@@ -2596,15 +2596,13 @@ def test_mobile_tip_family_recovers_authored_owners() -> None:
     assert "cRTipData definition;" in (
         include_root / "player.h"
     ).read_text(encoding="utf-8")
-    for spec_name in (
-        "main-call-owner-interactions.json",
-        "main-widget-lifetime-mutations.json",
-    ):
-        spec = (scratch_root / "initialize_tip" / spec_name).read_text(
-            encoding="utf-8"
-        )
-        assert "cRTipData*" in spec
-        assert re.search(r"(?<!cR)\bTipData\*", spec) is None
+    tip_scratch = scratch_root / "initialize_tip"
+    spec = (tip_scratch / "main-call-owner-interactions.json").read_text(
+        encoding="utf-8"
+    )
+    assert "cRTipData*" in spec
+    assert re.search(r"(?<!cR)\bTipData\*", spec) is None
+    assert not (tip_scratch / "main-widget-lifetime-mutations.json").exists()
 
 
 def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
@@ -2814,12 +2812,10 @@ def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
         for expected_call in expected_calls:
             assert expected_call in source
 
-    collision_spec = (
+    assert not (
         scratch_root
         / "handle_subgoldy_collisions/shared-pickup-vector-mutations.json"
-    ).read_text(encoding="utf-8")
-    assert "damage_gauge.Take" in collision_spec
-    assert "apply_damage_gauge_delta" not in collision_spec
+    ).exists()
     for spec_name in (
         "completion-init-join-mutations.json",
         "perfect-delivery-default-mutations.json",
