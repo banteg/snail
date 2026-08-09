@@ -38,3 +38,15 @@ Exact match.
   are `GamePlayer::frontend_state/saved_frontend_state`, and root `+0x30d`
   is `GamePlayer::high_score_entry_pending`. The helper remains exact at
   `100.00%`, `76/76`, with all `13` masked operands clean.
+- 2026-08-09 visible-life commit closure: the checked-in BN and IDA exports put
+  the only respawn decrement at `0x44205b`, after resurrect progress passes
+  `1.0`, the fade reaches state `4`, `resurrect_final_loss == 0`, and
+  `level_mode == 0`. The March 15 CDB session stopped on that instruction and
+  then caught the non-seed watchpoint at `0x442061`, proving the delayed
+  `3 -> 2` write; a later zero-life final-loss pass instead reached
+  `complete_subgame(game, 1)` without decrementing again.
+- Android `cRSubGoldy::RessurectAI()` independently retains the same gated
+  Postal decrement and final-loss split. Zig likewise selects the outcome
+  after its death controller finishes, decrements only a Postal respawn, and
+  has focused tests for the Postal `3 -> 2` handoff, Challenge final loss, and
+  the floor resurrect delay. No additional Windows writer trace is needed.

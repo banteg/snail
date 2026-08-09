@@ -23,7 +23,6 @@ The remaining gaps are runtime-behavior questions:
 
 - when `P/p` rows become real attachment-follow transitions
 - how the player state evolves while attachment-follow is active and when it exits
-- how the death path selects respawn vs final loss and when visible lives decrement
 - when completion arms, initializes the completion screen, and first calls `complete_subgame`
 - how often `Salt:` spawns without authored `&` rows
 - how live salt hazards move after spawn
@@ -158,33 +157,16 @@ Important payload notes for the current script:
   - `before_follow_state_summary`, `before_template_summary`, `before_follow_sample_index`, `before_follow_progress`
   - post-call `attachment_exit_pending`, `attachment_exit_anchor_z`, `attachment_exit_progress`, `attachment_exit_progress_step`, and the follow-effect gates
 - if you are reusing an older local script copy on Windows, replace it first; the March 8 long capture proved the older copy misses `player_update` entirely and misreports `attachment_end`
-- the stable March 24 Windows death pack now disables these crash-prone probes by default:
-  - `death_handoff_cutscene`
-  - `death_handoff_update`
-  - `respawn_life_decrement`
-  - `respawn_complete_subgame_branch`
-- the stable reduced death-side probes are:
-  - `death_select_state_set` at `0x441fa0`
-  - `update_subgoldy_resurrect_enter` at `0x441fd0`
-- the current checked-in `failure_handoff` profile stays on that stable reduced pack:
-  - `death_select_state_set` at `0x441fa0`
-  - `update_subgoldy_resurrect_enter` at `0x441fd0`
-- `snailmail-trace-20260324-174006-708.ndjson` did capture one useful extra fact before crashing:
-  - `respawn_life_decrement` fired once at `respawn_progress = 1.008` with `lives_before = 3`, `final_loss = 0`, and `game_fade = 74`
-  - because that run died immediately afterward, `0x44205b` and `0x442096` are now treated as crash-prone and are no longer armed by default
-- `snailmail-trace-20260324-174348-6980.ndjson` confirmed that the restored reduced `failure_handoff` profile is stable again and does land the missing final-loss selector:
-  - `death_select_final_loss` fired with `final_loss = 1`, `lives = 0`, `app.owner = 0xb`, and `app.saved = 0xb`
-  - the same run also re-saw earlier spare-life respawn selectors while the player burned lives down, so the reduced pack is safe for repeated life-burn repros
-- the next three reduced-pack traces closed the remaining section-1 asks:
-  - `snailmail-trace-20260324-174803-7452.ndjson`
-    - Postal slug death and Postal fall death both landed `death_select_respawn`
-    - the fall lane is distinguishable by negative `world_y` and later `world_z`, but the selector outcome is the same
-  - `snailmail-trace-20260324-174918-6984.ndjson`
-    - Time Trial hazard death and Time Trial fall death both landed `death_select_final_loss`
-  - `snailmail-trace-20260324-175010-6056.ndjson`
-    - Challenge fall death also landed `death_select_final_loss`
-    - this closes the required non-Postal death-family evidence, even though the current reduced profile does not trace the later high-score-entry UI
-- the current checked-in default is now the stable `attachment_survey` profile:
+- the death-selector and visible-life-writer capture target is retired:
+  - the legacy `failure_handoff` profile remains available for regression and
+    keeps only `death_select_state_set` at `0x441fa0` plus
+    `update_subgoldy_resurrect_enter` at `0x441fd0`
+  - crash-prone mid-function probes at `0x44205b` and `0x442096` remain off by
+    default; the checked-in CDB evidence already closes both branches without
+    requiring another Frida run
+  - death camera geometry remains open, but it belongs to the source-matrix and
+    full-matrix capture targets rather than this selector profile
+- the stable `attachment_survey` profile remains available for attachment work:
   - `level_start`
   - `path_lookup`
   - `movement_flags_update`
@@ -246,11 +228,27 @@ Expected event names in the NDJSON:
 - `salt_deactivate`
 - `slug_spawn`
 
-Latest stable death-side result on 2026-03-24:
+Retired death-side result:
 
-- `snailmail-trace-20260324-165745-4468.ndjson` loaded the reduced pack without crashing
-- it captured a spare-life Postal death with `death_select_respawn` followed by repeated `respawn_enter`
-- the same trace then rolled into a fresh `level_start` and `attachment_begin`, which currently looks like an ordinary respawn rebuild path
+- the checked-in [March 15 CDB session](windows-cdb-session-2026-03-15.md)
+  captured `DeathInit` choosing `RessurectInit(0)` at `0x446e59` for Postal
+  spare-life deaths and `RessurectInit(1)` at `0x446e51` at zero lives
+- the same session stopped on `RessurectAI`'s Postal-only decrement at
+  `0x44205b`, confirmed the resulting non-seed life write at `0x442061`, and
+  proved that the zero-life final-loss branch reaches
+  `complete_subgame(game, 1)` without another decrement
+- `snailmail-trace-20260324-174006-708.ndjson` independently observed the
+  decrement probe at progress `1.008`, and the later reduced-pack traces
+  captured Postal respawn, Postal zero-life final loss, Time Trial hazard/fall
+  final loss, and Challenge fall final loss
+- checked-in BN/IDA exports and exact Windows scratches preserve the same
+  `DeathInit -> RessurectInit` selector and `RessurectAI` commit point; Android
+  `cRSubGoldy::DeathInit()` and `RessurectAI()` retain the same mode/life split
+- Zig mirrors the decision and delayed Postal life consumption, with focused
+  tests for the Postal `3 -> 2` respawn handoff, Challenge final loss, and the
+  floor resurrect delay
+- no new Frida death-selector or life-writer capture is requested; remaining
+  death work is limited to cutscene source-matrix ownership and camera timing
 
 Latest stable completion-side result on 2026-03-24:
 
@@ -379,15 +377,15 @@ Before running any new capture, sync the latest repo copy of [tools/frida/snailm
 
 Without that update, the capture will still be useful for probes, pickups, and hazard spawns, but it will under-report player state and attachment exits.
 
-Current checked-in default:
+Historical completion-handoff replay:
 
-- `TRACE_PROFILE = "completion_handoff"` in [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js)
+- set `TRACE_PROFILE = "completion_handoff"` in [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js)
 - that profile keeps only:
   - `level_start`
   - `completion_handoff_arm`
   - `completion_screen_init`
   - `complete_subgame_call`
-- verify the trace by checking `hooks_installed.profile = "completion_handoff"` in the second NDJSON row
+- verify the trace by checking `hooks_installed.profile = "completion_handoff"` in the second NDJSON row; the checked-in default remains `outer_bridge` as documented above
 
 For the path oracle, the newest script focuses on:
 

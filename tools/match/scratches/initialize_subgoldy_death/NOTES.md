@@ -23,3 +23,16 @@
 - 2026-06-21 subgame owner cleanup: the compact local `Game` view was replaced
   with a `cRSubGame` cast at the existing `Player::game` pointer. Focused
   Wibo remains exact at `100.00%`, `14/14`, with `3` clean masked operands.
+- 2026-08-09 selector closure: the checked-in BN and IDA exports preserve the
+  exact mode switch, and the March 15 CDB session observed both Postal arms at
+  their native calls: `0x446e59` passes `0` with spare lives and `0x446e51`
+  passes `1` at zero lives. Hazard death and a floor-gap fall enter through
+  different callers, but both reach this same selector. Android
+  `cRSubGoldy::DeathInit()` independently keeps the same Postal life test,
+  Challenge/Time Trial final-loss cases, tutorial respawn case, and calls to
+  `RessurectInit(int)`.
+- The Zig runner mirrors the recovered selector in `deathUsesFinalLoss`:
+  Postal is final only at zero visible lives, Challenge and Time Trial are
+  always final, and tutorial remains respawnable. Focused tests cover Postal
+  respawn, Challenge final loss, and the distinct floor-controller delay, so
+  another Windows selector trace is not required.

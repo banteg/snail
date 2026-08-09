@@ -18,7 +18,7 @@ Static RE is now good enough that the highest-value unknowns are no longer broad
 The remaining Windows-side value is in:
 
 - confirming the remaining source-matrix and hotspot-bank ownership behind the cutscene camera fields
-- proving the real handoff timing for completion, death, respawn, and final loss
+- proving the remaining completion and cutscene-camera handoff timing
 - replacing the last Zig-side fallback values with directly observed runtime fields
 - capturing the real cutscene camera construction path instead of inferring it from offsets and state labels
 
@@ -27,16 +27,15 @@ The remaining Windows-side value is in:
 Run the session in this order unless blocked:
 
 1. Cutscene anchor writers
-2. Failure handoff and death path
-3. Completion handoff controller
-4. Attachment-exit field consumers
-5. Outer subgame startup and fresh-start flags
-6. Full cutscene matrix capture
+2. Completion handoff controller
+3. Attachment-exit field consumers
+4. Outer subgame startup and fresh-start flags
+5. Full cutscene matrix capture
 
 That order is intentional:
 
 - the hotspot-bank source matrices unblock the last remaining intro/completion/death shot geometry questions
-- the failure and completion handoffs unblock the last major app-side timing fallbacks
+- the completion handoff unblocks the remaining app-side timing fallback
 - the attachment-exit consumers settle the remaining camera layering ambiguity
 
 ## 1. Cutscene Hotspot Source Matrices
@@ -85,48 +84,38 @@ What is still unresolved is upstream of that:
 - one capture shows the matrix inputs for completion
 - one capture shows the matrix inputs for death
 
-## 2. Failure Handoff And Death Path
+## Retired: Death Selector And Visible-Life Commit
 
-### Why this matters
+Do not schedule another generic death-selector or visible-life-writer trace.
+That target is closed by independent checked-in evidence:
 
-The Zig port still uses a provisional in-fall `world_y <= -7` boundary as the final respawn or final-loss handoff. Bundle 14 and bundle 15 both argue the real failure selector still lives in `initialize_subgoldy_death`, the player cutscene controller, and the resurrect path.
+- the exact Windows scratches recover `cRSubGoldy::DeathInit()`,
+  `RessurectInit(int)`, and `RessurectAI()` at `14/14`, `6/6`, and `76/76`
+  instructions respectively, with no unresolved, mismatched, or unaudited
+  masked operands
+- the checked-in BN and IDA exports show `DeathInit` choosing
+  `RessurectInit(0)` for Postal mode with spare lives and
+  `RessurectInit(1)` for Postal mode at zero lives; Challenge and Time Trial
+  use final loss, while tutorial uses respawn
+- the March 15 CDB session captured both Postal selector callsites
+  (`0x446e59` respawn and `0x446e51` final loss), then stopped on the delayed
+  Postal decrement at `RessurectAI + 0x8b` (`0x44205b`) and confirmed the
+  resulting non-seed write at `0x442061`
+- the same session showed that slug death and floor-gap fall have different
+  entry lanes but converge on the same `DeathInit` selector; `world_y < -7`
+  is the direct floor-fall entry condition, not a second outcome selector
+- Android `cRSubGoldy::DeathInit()` and `RessurectAI()` independently preserve
+  the same mode/life selector and the later Postal-only decrement
+- Zig mirrors the mode/life decision in `deathUsesFinalLoss`, consumes one
+  visible life only after a Postal respawn wins, and has focused tests for the
+  Postal `3 -> 2` handoff, Challenge final loss, and the floor resurrect delay
 
-### What to do
+The remaining death-side Windows work is camera geometry and timing: source
+matrix ownership in section 1 and the per-frame cutscene matrix capture in
+section 5. Those open targets do not require reopening selector ownership or
+the visible-life commit point.
 
-- Break on:
-  - `initialize_subgoldy_death`
-  - `update_cutscene`
-  - `update_subgoldy`
-  - `update_subgoldy_resurrect`
-- Watch:
-  - `player + 0x41d` `attachment_exit_pending`
-  - `player + 0x424` `attachment_exit_anchor_z`
-  - `player + 0x42c` `post_follow_value_a`
-  - `player + 0x430` `post_follow_value_b`
-  - `player + 0x434` `attachment_exit_progress`
-  - `player + 0x438` `attachment_exit_progress_step`
-  - visible lives
-  - current cutscene state
-- Trigger three cases separately:
-  - a hazard death with spare lives in Postal mode
-  - a hazard death with no spare lives in Postal mode
-  - a Challenge or Time Trial death
-
-### Questions to answer
-
-- What exact condition calls `initialize_subgoldy_death()`?
-- Is `world_y < -7` only an in-fall threshold, or is there a later gate before respawn/final loss?
-- Where does "respawn vs final loss" get selected?
-- When is the visible-life decrement actually committed?
-- Does the death path differ between hazard death and floor-gap fall?
-
-### Done when
-
-- the final respawn or failure selector is captured once with spare lives
-- the final-loss selector is captured once with no spare lives
-- the commit point for visible-life decrement is known
-
-## 3. Completion Handoff Controller
+## 2. Completion Handoff Controller
 
 ### Why this matters
 
@@ -177,7 +166,7 @@ The port still waits too long before entering the completion screen. Windows app
 - one capture shows the first call to `initialize_completion_screen`
 - one capture shows the first call to `complete_subgame`
 
-## 4. Attachment-Exit Field Consumers
+## 3. Attachment-Exit Field Consumers
 
 ### Why this matters
 
@@ -233,7 +222,7 @@ Static narrowing before the next Windows session:
 - the later retirement path for `attachment_exit_pending` after swept re-entry is identified
 - one note explains what each of the two gate bytes seems to control
 
-## 5. Outer Subgame Startup And Fresh-Start Flags
+## 4. Outer Subgame Startup And Fresh-Start Flags
 
 ### Why this matters
 
@@ -312,7 +301,7 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - each field has at least one observed writer and one observed read site
 - the fresh-start cutscene condition can be named more narrowly than "not tutorial-only"
 
-## 6. Full Cutscene Matrix Capture
+## 5. Full Cutscene Matrix Capture
 
 ### Why this matters
 
@@ -378,7 +367,6 @@ For each successful session, hand back:
 Good examples:
 
 - "writer for hotspot source matrix `player + 0x1604` found"
-- "respawn vs final-loss selector captured"
 - "first `initialize_completion_screen` call frame captured"
 - "all reads of `player + 0x430` accounted for"
 
