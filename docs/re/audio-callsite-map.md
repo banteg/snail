@@ -74,7 +74,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | runner-owned logical row-message token, prompt queue, and native-style payload playback for authored `Sample:` rows | partial; row-message dispatch now keys from the runner instead of frontend segment-sync, but the original payload tables and tip actor/controller are still not ported literally |
+| `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | runner-owned logical row-message token, prompt queue, and native-style payload playback for authored `Sample:` rows | partial; authored `cRTipData -> cRTipManager::TipNew -> cRTip` ownership is closed, but literal payload-table contents and widget/timing behavior are not ported |
 | `voice 8` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c874` | delayed completion-handoff voice after roughly `2.0s` | split completion handoff in `gameplay.zig` | ported; the app now keys `Victory` from the recovered `2.0s` handoff timer instead of the older `2.5s` approximation |
 
 ### Attachment-follow and post-follow voices

@@ -17,7 +17,8 @@ Static RE is now good enough that the highest-value unknowns are no longer broad
 
 The remaining Windows-side value is in:
 
-- confirming the remaining source-matrix and hotspot-bank ownership behind the cutscene camera fields
+- capturing the remaining per-frame source-matrix values and authored hotspot
+  selection behind the cutscene camera fields
 - proving the remaining completion and cutscene-camera handoff timing
 - replacing the last Zig-side fallback values with directly observed runtime fields
 - capturing the real cutscene camera construction path instead of inferring it from offsets and state labels
@@ -26,7 +27,7 @@ The remaining Windows-side value is in:
 
 Run the session in this order unless blocked:
 
-1. Cutscene anchor writers
+1. Cutscene hotspot inputs and selection
 2. Completion handoff controller
 3. Attachment-exit field consumers
 4. Outer subgame startup and fresh-start flags
@@ -47,15 +48,19 @@ writer-less cutscene fields. Later RE and the March 15 CDB session now explain
 those reads as `snail_hotspots_world[12]` and `snail_hotspots_world[18]`,
 maintained by `build_snail_world_hotspots`.
 
-What is still unresolved is upstream of that:
+Exact `update_snail_presentation` is now the closed writer: each tick it
+publishes the final rendered Snail body transform to `player + 0x1604` and the
+player body transform with `cached_camera_target_world` translation to
+`player + 0x1684`. What remains unresolved is how authored shots consume those
+values:
 
 - why hotspot slots `0..10` use one cached source matrix while `11..18` use another
-- which exact live player or animation/controller lanes publish those source matrices
 - whether completion and death reuse hotspot `18` for an authored reason or because another camera-target source is still missing
 
 ### What to do
 
-- Put write watchpoints on the two cached source matrices that feed the hotspot world bank:
+- Break on `update_snail_presentation` and `build_snail_world_hotspots`, and
+  record the two cached source matrices that feed the hotspot world bank:
   - `player + 0x1604`
   - `player + 0x1684`
 - Trigger:
@@ -72,14 +77,13 @@ What is still unresolved is upstream of that:
 
 ### Questions to answer
 
-- Which function writes each source matrix?
 - Do intro, completion, and death all reuse the same matrix writers?
-- Are the two matrices driven by player pose, snail-skin animation, cameraman state, or a separate controller?
+- Which per-frame values from the rendered Snail pose and cached player target
+  distinguish those shots?
 - Does hotspot `18` stay active in completion/death because of authored hotspot choice or because another target lane is still unresolved?
 
 ### Done when
 
-- the source-matrix writer functions are named or at least uniquely identified
 - one capture shows the matrix inputs for intro
 - one capture shows the matrix inputs for completion
 - one capture shows the matrix inputs for death
@@ -110,8 +114,8 @@ That target is closed by independent checked-in evidence:
   visible life only after a Postal respawn wins, and has focused tests for the
   Postal `3 -> 2` handoff, Challenge final loss, and the floor resurrect delay
 
-The remaining death-side Windows work is camera geometry and timing: source
-matrix ownership in section 1 and the per-frame cutscene matrix capture in
+The remaining death-side Windows work is camera geometry and timing: hotspot
+input values/selection in section 1 and the per-frame cutscene matrix capture in
 section 5. Those open targets do not require reopening selector ownership or
 the visible-life commit point.
 
@@ -137,34 +141,32 @@ The separate `Completion +0x18` skip lane is also statically closed. Init arms
 input's current-frame `0x4000` press edge before writing the handoff timer to
 `5.1`. No trace is needed to recover that writer or controller owner.
 
-The port still waits too long before entering the completion screen. Windows appears to initialize the completion screen at cutscene state `5`, not only after a delayed app-side handoff.
+The arm, voice gate, timer plateau, first completion-screen call, and first
+`complete_subgame` call are closed. The remaining Windows question is the exact
+cutscene state at the `cRCompletion::Init` edge: the checked-in hook confirms
+the call but its derived player/game fields are decoded incorrectly.
 
 ### What to do
 
-- Break on:
-  - `update_subgoldy`
+- Correct the `completion_screen_init` hook's owner decode, then break on:
   - `update_cutscene`
-  - `initialize_completion_screen`
-  - `complete_subgame`
-- Watch:
-  - `player + 0x440`
-  - `player + 0x444`
-  - `player + 0x448`
-  - `player + 0x44e`
+  - `cRCompletion::Init`
+- Record the decoded `presentation.cutscene.state` at the call edge. The
+  `player +0x440/+0x444/+0x448/+0x44e` arm/timer/step/voice lanes no longer need
+  another generic trace.
 - Trigger:
   - normal level completion
   - completion with a confirm press during the armed `Completion +0x18` window
 
 ### Questions to answer
 
-- At what exact cutscene state does `initialize_completion_screen()` fire?
+- At what exact cutscene state does `cRCompletion::Init()` fire?
 - Is state `5` only a one-shot initializer, with states `6/7` being pure blend/hold?
-- Which function owns the `2.0s` voice gate and `5.0s` fade path?
 
 ### Done when
 
-- one capture shows the first call to `initialize_completion_screen`
-- one capture shows the first call to `complete_subgame`
+- one corrected capture records the decoded cutscene state at the already-proven
+  first `cRCompletion::Init` call
 
 ## 3. Attachment-Exit Field Consumers
 
@@ -172,23 +174,29 @@ The port still waits too long before entering the completion screen. Windows app
 
 The broad shape is now known:
 
-- `post_follow_value_a` feeds `RotWorldZ` in the live cameraman
-- `post_follow_value_b` is written from the attachment-follow/template handoff
+- `post_follow_exit_roll` (`+0x42c`) feeds `RotWorldZ` in the live cameraman
+- `post_follow_heading_carryover` (`+0x430`) is captured by the handoff but is
+  write-only in the shipped Windows image; do not synthesize a gameplay consumer
 - `attachment_exit_progress` advances during fall
 - the two follow-effect gates flip during the in-flight transition
 
-What is still missing is the exact consumer set for `post_follow_value_b` and the precise semantics of the two gate bytes.
+What is still missing is the runtime presentation meaning of the two gate bytes
+and the port-side motion inputs needed to reproduce the proven retirement lanes.
 
 Static narrowing before the next Windows session:
 
 - `attachment_exit_pending` is no longer an unbounded "search anywhere" target
   - BN field xrefs now show only one setter outside the main loop: `begin_post_follow_carryover`
   - later retirement is limited to five `update_subgoldy` clear sites: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
-  - `0x43bcb3` is now statically tied to the non-follow floor-cache/slide motion branch: it first checks runtime tiles `0x0f/0x10/0x12/0x13`, then reaches the same block for slide-family cells only when `damage_gauge.state == 2`
-  - `0x43ce75` is now statically tied to `sub_hover.state == 1`, so it is not the generic/common late retirement lane
+  - `0x43bcb3` is the dead `boost_one_tick` lane: the shipped Windows image has
+    no nonzero producer
+  - the four live clears are distinct authored retirements: ordinary grounded
+    floor occupancy, open-edge same-tick cancellation when falling is disabled,
+    accepted trampoline bounce, and active `cRSubHover` authority
 - `attachment_exit_progress` also no longer supports the old progress-expiry guess
   - BN field xrefs show it is only written by `begin_post_follow_carryover` and the one progress-update store at `0x43ce96`
-  - practical consequence: the missing retirement path is one of those later `update_subgoldy` branches, not a helper-side or standalone timer helper
+  - practical consequence: source-shape work is closed; remaining port work is
+    the motion/cell state needed to enter the correct proven branch
 
 ### What to do
 
@@ -199,7 +207,6 @@ Static narrowing before the next Windows session:
 - Watch:
   - `player + 0x41d`
   - `player + 0x42c`
-  - `player + 0x430`
   - `player + 0x434`
   - `player + 0x44c`
   - `player + 0x44d`
@@ -211,15 +218,14 @@ Static narrowing before the next Windows session:
 
 ### Questions to answer
 
-- Is `post_follow_value_b` ever read directly after the handoff write?
 - Are `+0x44c` and `+0x44d` purely visual or do they gate gameplay state transitions?
-- After swept re-entry succeeds, does retirement route through the special `0x43bcb3` floor-cache/slide branch or through the grounded/floor-snap clears at `0x43bf6f` / `0x43c06d`, and can a geometrically valid overlap still drive both `0x40` and `0x80` probes in one tick?
-- Does `post_follow_value_a` get integrated in player space, world space, or mixed space before the camera call?
+- Which of the four live retirement branches fires after a swept re-entry in a
+  representative path, and can a valid overlap still drive both `0x40` and
+  `0x80` probes in one tick?
 
 ### Done when
 
-- every read of `player + 0x430` in the captured window is accounted for
-- the later retirement path for `attachment_exit_pending` after swept re-entry is identified
+- one captured swept re-entry identifies its later authored retirement branch
 - one note explains what each of the two gate bytes seems to control
 
 ## 4. Outer Subgame Startup And Fresh-Start Flags
@@ -256,11 +262,12 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - static replay-launch narrowing is now stronger too:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `data_4df904 + 4299515`, `+4299516`, `+17198056`, `+17198057`, and `+119190` before they jump to state `10`
   - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same fields later, so this is a real app-side replay-launch lane, not dead scratch
-- whole-image static disassembly now narrows the persistent selected-record question further:
-  - there is no direct static nonzero store to `game + 0xff25d1`
-  - the only direct store to that byte is the teardown clear in `destroy_subgame` at `0x438b13`
-  - the remaining hits are reads or compares in `initialize_subgame`, `build_subgame_level`, `update_subgame`, `update_subgoldy`, `update_subgoldy_resurrect`, and `initialize_click_start`
-  - treat the missing step as constructor/copy provenance, not another shallow writer sweep
+- whole-image static disassembly closes the persistent selected-record writer:
+  - `app + 0x1066be9` and `game + 0xff25d1` are the same overlapping byte, not
+    producer and destination
+  - replay launchers write it through the app-base alias; the literal game-base
+    store seen in `destroy_subgame` is only the teardown clear
+  - there is no constructor/copy step left to trace for this field
 - one likely false lead is now weaker:
   - `data_4df904 + 0x12e55e0` is not replay-specific enough to treat as the persistent-bit source
   - `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all write `2` there in ordinary front-end or overlay flow
@@ -294,7 +301,6 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Which helpers besides the now-confirmed `update_subgame` startup handoff write the saved-owner bridge slot consumed by `26/27/28`?
 - Which helper first seeds `[controller + 0x98]` before non-startup `26/27/28` uses?
 - Do the replay launch scratch globals above collapse into that same saved-owner write, or are they parallel owner-selection lanes?
-- Which function first turns the app-side replay scratch above into `game + 0xff25d1`?
 
 ### Done when
 

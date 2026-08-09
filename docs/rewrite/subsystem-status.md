@@ -256,7 +256,9 @@ Still missing or approximate:
   matrices beyond the currently consumed `12/17/18` camera slots
 - any still-missing `cRCutScene::AI()` branches outside the now-ported intro `1 -> 2 -> 8 -> 9`, completion `5 -> 6 -> 7`, and death `10 -> 11 -> 12` lanes
 - the exact gameplay model anchor/orientation and the rest of Turbo's state-specific animation switching beyond the current gameplay/talk split
-- the original row-event/tip actor/controller and payload-table path that own tutorial dialogue timing and presentation beyond the now-runner-owned row-message entry
+- literal `cRTipData` payload tables and `cRTip` widget/timing behavior beyond
+  the runner-owned row-message entry; the authored cRTipData/cRTip/cRTipManager
+  lifecycle and dispatch boundary are closed
 - the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass now uses the real barrier mesh, fixed `y = 0.4`, and an owner-like forward anchor from live gameplay `z`, but it still does not port the original owner object or render mode `7`
 
 Best next work:
@@ -350,7 +352,9 @@ Implemented now:
 
 Still missing or approximate:
 
-- the remaining hit-flash/global-flag exit and presentation timing from `update_damage_gauge`
+- Runner wiring of `SUBGOLDY_SHOOT_FLAG_INVINCIBLE` into the unforced-delta
+  context, plus the exact voice-result-conditioned hit-flash animation timing;
+  the producer, `cRDamageGuage::Take` gate, and hit-flash progress owner are closed
 - remaining hazard deltas and presentation details
 - full death/fall timing around these controllers
 

@@ -76,7 +76,9 @@ Audio RE now makes this much sharper than before: Windows still has a dedicated 
 
 ### 4. Row-event/tip ownership
 
-The port now has a runner-owned logical row-message token and runner-driven tutorial voice/prompt dispatch, but the native row-message payload tables and tip actor still are not ported literally.
+The authored ownership is closed as `cRTipData -> cRTipManager::TipNew -> cRTip`,
+but the port still substitutes a runner-owned row-message token for the literal
+payload tables and widget/timing behavior.
 
 Practical risk:
 
@@ -87,7 +89,9 @@ Practical risk:
 
 ### 5. Warning/damage owner
 
-The visible gauge and most voices are in, but the warning overlay still looks like a simplified gameplay helper instead of the original owned actor/controller.
+The authored `cRDamageGuage` and `cRWarning` controllers are recovered, but the
+port still simplifies their exact voice-result-conditioned hit-flash timing and
+has not yet wired the named invincibility capability at the Runner boundary.
 
 ### 6. Track render-normalization
 
@@ -161,8 +165,23 @@ Work this top-down unless a new runtime capture invalidates the order.
   - `build_snail_world_hotspots` routes hotspot slots `0..10` through `+0x1684` and
     slots `11..18` through `+0x1604`
 - [ ] Capture intro, completion, and death hotspot-source values from Windows
-- [ ] Confirm the exact failure selector and visible-life decrement commit point
-- [ ] Confirm the exact completion-screen init, voice gate, and late finalize timings
+- [x] Confirm the exact failure selector and visible-life decrement commit point
+  - exact `cRSubGoldy::DeathInit()` selects `RessurectInit(0)` for Postal
+    spare-life respawn and `RessurectInit(1)` at zero lives; Challenge and Time
+    Trial select final loss, while tutorial remains respawnable
+  - the checked-in CDB session proves the delayed Postal decrement at
+    `RessurectAI + 0x8b` (`0x44205b`) and the resulting write at `0x442061`;
+    final loss does not decrement again
+  - slug and floor-gap deaths have distinct entry lanes but converge on this
+    selector. The `world_y < -7` check is the floor-fall entry threshold, not a
+    second outcome owner, so no further selector/writer trace is needed
+- [ ] Pin the exact cutscene-state-to-`cRCompletion::Init` timing with a corrected
+  Windows decode
+  - the arm, `2.0s` voice gate, `5.1 -> ~4.983` timer plateau, first Init call,
+    and first `complete_subgame` call are already captured and statically closed
+  - the remaining capture question is which decoded cutscene state owns the Init
+    edge; the checked-in completion hook confirms the call but misdecodes its
+    derived player/game fields
 - [ ] Replace any remaining handoff timers or anchor producers that still use Zig-side fallback values
   - current narrowing: non-random `course_end_threshold` now comes from the recovered final-`Last:` block boundary in `populate_runtime_track_cells_from_segments`; random challenge-style previews now generate a seeded middle strip with the recovered `Length` / challenge-difficulty threshold producer, candidate-pool scalar, and segment-overrun extension. `SubSegment::visited` is the exact byte at `+0x08`: both Windows and Android `BuildLevel()` clear every eligible slot and set the chosen slot, but this builder does not consult it while selecting, so it is write-only bookkeeping here rather than a recovered no-repeat constraint. Remaining gap: exact row-copy source shape, not owner identity.
 
@@ -222,14 +241,26 @@ Work this top-down unless a new runtime capture invalidates the order.
   is exact `cRSubGoldy::Shoot(cRSubGoldy*)` / `shoot_subgoldy`.
 - [ ] Add a projectile-specific visual smoke path for the movement-fire VAPOURLAZER trail. The current laser-shot render fix is grounded in `create_golb` / `initialize_vapour` / `update_vapour`, but the CLI smoke path still cannot script a fired shot and capture the generated trail for visual regression review.
 - [ ] Port Golb shot path-follow over attachment cells. Native `update_golb_ai` @ 0x414820 switches a shot into path-follow mode (`initialize_path_follow_golb` @ 0x421770, `traverse_path_follow_golb`, `search_path_for_golb` @ 0x415e30) when it crosses a tile-`0x1e` cell, so shots ride humps/loops instead of flying level through them. The port now has the kind-0 `[0, 0.49]` level band + `subgame_rate * 0.017` gravity and the lifetime/window despawn from `create_golb`/`update_golb_ai`, but not the path-follow lane (also the rocket homing lane fed by `search_path_for_golb` at spawn). The initializer and search helper are proof-grade; `traverse_path_follow_golb` is semantics-complete at 85.82% with a documented scheduling residual. Port from those matched or pinned sources: candidate samples are gated on `0 < dz < 30` toward positive z and chosen by nearest 3D magnitude, first-best-wins.
-- [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
+- [ ] Port the literal `cRTipData` payload-table contents and `cRTip` widget/timing
+  behavior behind `voice 13`; the actor/controller lifecycle owner is closed
 - [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring runtime owner, ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit `2 -> 3` effect lane, and the recovered `health_collect_particles` burst packet, especially parcel, garbage-impact, the original pre-hit ring bod anchor/layout fields, the dedicated jet-particle/nozzle owner, and the remaining deeper weapon presentation owners. The health burst itself is closed as eight generic SpriteManager records borrowing position from the separate inline `SubHealth` actor; no dedicated particle BOD exists.
-- [ ] Recover the remaining hit-flash flag exit in the damage-warning owner.
+- [ ] Finish the remaining hit-flash presentation timing in the damage-warning
+  owner.
   The `stop_warning_sample` contract is closed: Windows starts registered sample 50
   and immediately stops the returned channel handle without storing it;
   Android's helper is a no-op.
-  - hit-flash side effects in `apply_damage_gauge_delta` @ 0x4413f0: gate `(*(game+0x4300b4) & 0x80) && !force` (no static writer found; likely `update_invincible_shell`), then `change_snail_skin(slot 1, 0.2s)`, voice `damage` with `ouch` fallback, and `dispatch_cutscene_animation(6, immediate, -1)` when `*(game+0x430054) == 0` else `(1, queued, -1)`; needs a `force: bool` parameter threaded through all call sites
+  - the entry gate is closed: exact `cRSubGoldy::SetShootFlags()` is the
+    complete nonzero producer of `SUBGOLDY_SHOOT_FLAG_INVINCIBLE` (`0x80`),
+    and exact `cRDamageGuage::Take(float, bool)` blocks unforced deltas while
+    that capability is active. The port controller API already carries the
+    force bypass and explicit unforced-delta context, but the Runner boundary
+    still needs to wire the named shoot-flag producer; do not request another
+    writer trace
+  - the remaining hit-flash presentation question is the exact voice/animation
+    timing: `change_snail_skin(slot 1, 0.2s)`, the `damage` voice with `ouch`
+    fallback, then both animation `6` immediate and animation `1` queued only
+    while `slug_fall_active` is clear
   - state-2 drain side effects: `change_snail_skin(slot 1, 0.2s)` each tick while draining, `postal` voice on the 1→2 transition, and the closed Windows start-then-stop sample-50 quirk on state-2 exit
   - the former accelerated-drain mystery is closed as
     `Player::completion_handoff_active`: one arming writer and three gauge
@@ -242,7 +273,9 @@ Work this top-down unless a new runtime capture invalidates the order.
   as a six-row, two-lane producer of the independent salt (`0x08`) and garbage
   (`0x10`) spawn-suppression bits; it has no render/cache consumer.
 - [ ] Finish literal SubLazer and Salt pool ownership. The port now has plain-array `cRSubLazerManager` and `cRSalt` equivalents for the recovered damage lanes, but still needs the native intrusive lists, object/body owners, sprite ownership, suppression gates, and any remaining non-horizontal suppressor details. Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by `cRSubLoc::AI()` via `shoot_sub_lazer_pool` @ 0x441ad0. Reference: `update_sub_loc` @ 0x439d50 (RNG gate plus `game+0x74668 > game+0x42fdec` cadence), `spawn_sub_lazer_projectile` @ 0x441670, `deactivate_sub_lazer_projectile` @ 0x441740, `update_sub_lazer_projectile` @ 0x4417d0, `cRSalt` @ `game + 0x3578c0`; salt pool helpers: `initialize_salt_hazard_pool` @ 0x441540, `spawn_salt_hazard` @ 0x441560 (authored `0x22` tiles and `0x0f` with RNG gate `0.98 + 0.02*(1-scalar)`), `update_salt_hazard` @ 0x441c10.
-- [ ] Jetpack state 2 (hover) controller + `end_jetpack_hover` @ 0x43a370 — large; belongs with a broader jetpack hover-mode port that is not prioritized yet
+- [ ] Port jetpack state 2 from the recovered `cRSubHover` lifecycle (`Init`,
+  `On`, `AI`, `Hover`, `End`, and jet-particle helpers); owner recovery is closed,
+  while the broader hover-mode gameplay/presentation port remains unprioritized
 - [x] Recover the completion fast-forward input/controller contract:
   `cRCompletion::Init` arms `fast_forward_enabled`, its exact AI clears the
   latch on summary activation, and the sole Goldy consumer combines it with
@@ -297,27 +330,26 @@ Every current non-proof scratch ledger is now formally stalled. Do not start a
 session from fuzzy score alone; acquire a new producer, consumer, field xref,
 or original-source clue first. Use this evidence order:
 
-1. Close `cRSubGoldy::shoot_flags & 0x80` as the invincibility capability bit.
-   Exact `SetShootFlags` is the complete nonzero producer family, while exact
-   `cRInvincible::AI`, exact `cRDamageGuage::Take`, and Collision consume it.
-   Propagate one named bit without assigning semantics to the lower weapon
-   selector bits; do not request another writer trace or reopen collision
-   stack-coloring.
-2. Retire the stale death-selector and visible-life tracing target. Exact
-   `DeathInit`, `RessurectInit`, and `RessurectAI` plus checked-in CDB captures
-   already prove respawn versus final-loss selection and the delayed Postal
-   decrement commit. Refresh the handoff docs; do not change the exact caller's
-   `y < -7` fall trigger or reopen proof-grade bodies.
-3. Promote the complete Tip family to primary authored `cRTipData`, `cRTip`,
-   and `cRTipManager` owners with compatibility typedefs and owner-qualified
-   lifecycle symbols. Six helpers are exact and `cRTip::Init` remains bounded
-   at 84.42% after 66 variants; this type slice must not claim the still-open
-   Zig payload-table/controller port is complete.
+1. Promote the proof-grade `cRWarning` lifecycle to its authored primary matcher
+   surface. The state graph and immediate play/stop sample-50 quirk are closed;
+   preserve the receiver-free Windows `StopSample` body instead of importing a
+   mobile handle field.
+2. Resume `promote_track_tiles_to_fringe_variants` only from the exact BOD
+   catalog/table producer or a renderer consumer. Directional fringe ownership
+   and cache-family-4 handoff are closed, so another cursor/register spelling
+   sweep is not evidence.
+3. Recover literal SubLazer/Salt pool ownership across the exact init, spawn,
+   and deactivate helpers and their near-exact updaters. Seek intrusive-list,
+   Object/Sprite, and suppression owners from full-image or mobile evidence
+   before changing the port.
 
 Do not keep already proof-grade or evidence-closed lanes active merely because
-an older plan named them. Primary `cRCutScene` and `cRSubHover` ownership, the
-completion fast-forward/input lifecycle, slug-hit motion and `slug_fall_active`, the
-selected-record gameplay multiplexer, directional-fringe/cache staging, Golb
+an older plan named them. Primary `cRCutScene`, `cRSubHover`, Tip-family,
+`cRInvincible`, `cRDamageGuage`, and `cRCompletion` ownership, the named
+invincibility capability, the death selector/life commit,
+the completion fast-forward/input lifecycle, slug-hit motion and
+`slug_fall_active`, the selected-record gameplay multiplexer,
+directional-fringe/cache staging, Golb
 trail/impact shot-slot ownership, warning sample and completion-drain gates,
 random-hazard suppression, `active_window_min_z`, the live firing input chain,
 health-particle ownership, and write-only SpriteExtend state are closed. The

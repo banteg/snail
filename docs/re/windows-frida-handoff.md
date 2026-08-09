@@ -56,9 +56,14 @@ Get-ChildItem .\artifacts\bin\SnailMail_unwrapped.exe
 - The script resolves addresses relative to the loaded module base, so ASLR is fine as long as the module is really the gameplay image.
 - Keep captures short and focused. Several short NDJSON files are much better than one giant noisy trace.
 
-## Current Hook Set
+## Available Hook Profiles
 
-The script currently hooks these points:
+The checked-in default is `outer_bridge`, which enables only frontend and
+saved-owner bridge hooks. The list below is the union available across the
+runtime profiles, not the set installed by every run. Select the profile for
+the capture and verify it in the emitted `hooks_installed.profile` field.
+
+Available runtime hook points include:
 
 - `0x437eb0` `normalize_level_runtime_fields`
 - `0x429ae0` `find_segment_path_index_by_name`
@@ -196,7 +201,7 @@ Important payload notes for the current script:
   - `respawn_life_decrement`
   - `respawn_complete_subgame_branch`
 
-Expected event names in the NDJSON:
+Possible event names across all profiles include:
 
 - `module_ready`
 - `hooks_installed`
@@ -248,7 +253,7 @@ Retired death-side result:
   tests for the Postal `3 -> 2` respawn handoff, Challenge final loss, and the
   floor resurrect delay
 - no new Frida death-selector or life-writer capture is requested; remaining
-  death work is limited to cutscene source-matrix ownership and camera timing
+  death work is limited to per-frame hotspot inputs/selection and camera timing
 
 Latest stable completion-side result on 2026-03-24:
 
@@ -262,7 +267,9 @@ Latest stable completion-side result on 2026-03-24:
   - `player + 0x448` is the step
   - `player + 0x44e` is the one-shot `2.0s` voice latch
   - once the completion logic forces the timer to `5.1f`, it immediately subtracts one step back to `~4.983` before checking the `> 5.0` branch
-- section 2 is now considered closed
+- the arm/voice/timer/final-call portion of section 2 is closed; the exact
+  cutscene-state-to-`cRCompletion::Init` edge remains open until the hook's bad
+  owner decode is corrected
 
 Latest stable attachment-side result on 2026-03-24:
 
@@ -340,6 +347,12 @@ Latest stable attachment-side result on 2026-03-24:
   - the exposed menu-local replay timer fields stayed flat too: `menu_t = 0`, `menu_step = 0`
   - no `initialize_subgame` or replay-backed launch happened in that window
   - current read: the static random replay branch in `update_new_game_menu` is real, but plain idling on this build does not seed the local timer or step needed to reach it
+
+The default `outer_bridge` profile is now useful only for the two named residual
+questions: a non-startup helper that seeds a distinct saved owner before a
+`26/27/28` bridge, or the dormant New Game replay-attract timer-step producer.
+The persistent selected-record byte is not one of those gaps:
+`app + 0x1066be9` already aliases `game + 0xff25d1` directly.
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
@@ -397,6 +410,18 @@ For the path oracle, the newest script focuses on:
 ## Capture Matrix
 
 Run these captures in roughly this order.
+
+Before each run, set `TRACE_PROFILE` deliberately:
+
+- use `attachment_survey` for stable attachment, pickup, salt, ring, and slug
+  surveys
+- use `broad_runtime` only when the mid-function `attachment_probe`, garbage,
+  or completion hooks are specifically required and the wider hook surface is
+  acceptable
+- use `completion_handoff` for the corrected completion-state decode
+- keep the default `outer_bridge` for saved-owner or dormant replay-attract
+  producer work; it will not emit the attachment/hazard events required by the
+  capture matrix below
 
 ### 1. Path Attachment Capture
 

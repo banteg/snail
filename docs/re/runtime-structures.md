@@ -41,7 +41,10 @@ The current high-confidence `Player` fields are:
 - `+0x1e0`: `surface_reaction_step`
 - `+0x1e8`: `row_event`
   - inline `PlayerRowEventState`
-- `+0x2d8`: `control_override_active`
+- `+0x2d8`: `slug_fall_active`
+  - initialized to zero and set only by the first accepted slug hit; it stays
+    active until the next Goldy Init and suppresses ordinary input, motion,
+    shooting, attachment, and presentation branches during the slug-fall mode
 - `+0x2dc`: `cutscene_pitch_cycle`
 - `+0x2e0`: `cutscene_pitch_cycle_step`
 - `+0x308`: `shooting_tier`
@@ -326,10 +329,15 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x0c`: `tip_definition.layout_y`
   - `+0x10`: `tip_definition.dismiss_seconds`
   - `+0x14`: `tip_definition.text`
-  - `update_subgoldy` seeds that tail as a small tip payload and passes `&player->row_event.tip_definition` to `enqueue_tip_message`; it is not a standalone row-event controller suffix
-- `player + 0x2d8` is a broader `control_override_active` gate than the earlier cutscene-only guess
-  - it suppresses several normal control and attachment branches in `update_subgoldy`
-  - `update_snail_presentation` also reads it to decide whether to auto-dispatch the default idle animation
+  - `update_subgoldy` seeds that tail as an inline `cRTipData` payload and
+    passes it to `cRTipManager::TipNew`; it is not a standalone row-event
+    controller suffix
+- `player + 0x2d8` is the sticky `slug_fall_active` mode latch
+  - the sole nonzero writer is the first accepted slug hit in
+    `cRSubGoldy::Collision`; Init is the sole clear
+  - it suppresses normal control, attachment, shooting, and presentation
+    branches, while repeat slug hits in the same collision sweep take the
+    already-falling damage/knockback lane
 - `player + 0x2dc/+0x2e0` form the current safe cutscene-side cycle pair
   - `cutscene_pitch_cycle`
   - `cutscene_pitch_cycle_step`
@@ -441,21 +449,24 @@ Current practical read:
     lifecycle methods are `void __thiscall(Warning*)`, IDA now renders the
     state/phase/border fields directly, and the receiver-free Windows
     `StopSample` body remains a member because the mobile ports retain that edge
-- `apply_damage_gauge_delta` ignores unforced positive damage while
+- `cRDamageGuage::Take` ignores unforced positive damage while
   `state == DAMAGE_GUAGE_STATE_DRAINING`; the draining auto-decay path is the
   forced caller
-- `apply_damage_gauge_delta` also ignores all unforced deltas while the sign bit
-  of `Game+0x4300b4` is set, and ignores unforced negative draining deltas while
-  `Game+0x42ff60 == 1`
-- `update_damage_gauge` reads several game-global gates:
+- it also ignores all unforced deltas while
+  `Player::shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE`; exact
+  `cRSubGoldy::SetShootFlags` is the complete nonzero producer. Unforced
+  negative draining deltas are also blocked during `trampoline_bounce_active`
+- `cRDamageGuage::AI` reads several player/game gates:
   - `Game+0x74621` is the global `pause_gate` consumed by controller math and `update_warning`
-  - `Game+0x430199` and `Game+0x4301bc` block fresh full-gauge startup from
-    `MONITORING`
-  - `Game+0x4301bc` also fast-forwards `WARNING_TRANSITION` and applies an
-    extra unforced `-0.0066666668` drain while `DRAINING`
-  - `Game+0x42fde8 == 0.49f` gates entry into `DRAINING` and its fill-zero exit
-  - `Game+0x4301c0 > 0`, `Game+0x42fe08 > 0`, or `Game+0x434064 != 0` also
-    return `DRAINING` to `MONITORING`
+  - `attachment_exit_pending` and `completion_handoff_active` block fresh
+    full-gauge startup from `MONITORING`
+  - `completion_handoff_active` also fast-forwards `WARNING_TRANSITION` and
+    applies an extra unforced `-0.0066666668` drain while `DRAINING`, composing
+    a 5x drain with the base forced `-0.0016666667`
+  - `Player::transform.position.y == 0.49f` gates entry into `DRAINING` and its
+    fill-zero exit
+  - positive `completion_handoff_timer`, positive `resurrect_progress`, or a
+    nonzero `presentation.cutscene.state` also return `DRAINING` to `MONITORING`
 - the currently recovered deltas line up with collision branches:
   - ambient hazard path `+0.02`
   - salt contact `+0.15`
@@ -726,7 +737,8 @@ Current practical read:
   - `+0x0c`: stored `Game` back-pointer
   - it sets runtime flags `0x600000` and clears the low `0x02` runtime bit while wiring that back-pointer
 - `update_tutorial` is not a hidden tutorial event runner; it dereferences the stored `Game` pointer and returns the current row cell from `get_track_grid_cell_at_world_position`
-- row-message/tutorial text dispatch continues through the normal `PlayerRowEventState -> TipMessageDefinition -> enqueue_tip_message -> TipManager` path
+- row-message/tutorial text dispatch continues through the normal
+  `PlayerRowEventState -> cRTipData -> cRTipManager::TipNew` path
 - the embedded level-definition slice is firmer now:
   - `load_level_definition_file` stores the middle-segment count at `game + 0xa874`, the authored `Length:` dword at `game + 0x1b0138`, and the `Random:yes` byte at `game + 0x1b013c`
   - `copy_segment_definition_to_level_slot` seeds each `0x4220` middle-segment slot from `game + 0xa878`, with the first slot's row count at `game + 0xa87c`
