@@ -127,8 +127,15 @@ Useful analysis helpers:
   trailing no-improvement streak. Three consecutive non-improving mutation
   sweeps flag a scratch as `stalled`, making it easier to stop repeating an
   exhausted source-shape hypothesis. Use `--sort no-improvement`,
-  repeat `--scratch <name>` to restrict the report, or add `--check` to reject
-  malformed ledgers in automation.
+  repeat `--scratch <name>` to restrict the report, or run
+  `uv run snail match experiments --check --check-specs` for repository-wide
+  validation. `--check` rejects malformed ledger records. `--check-specs`
+  treats a mutation plan whose exact current digest already appears in that
+  scratch's ledger as historical, while an unreceipted current digest is an
+  active input whose schema and exact `find` anchors must still resolve against
+  `scratch.cpp`. Run the combined gate after changing scratch sources or
+  mutation plans, and before committing matcher slices that rename owners or
+  otherwise rewrite source anchors.
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image
