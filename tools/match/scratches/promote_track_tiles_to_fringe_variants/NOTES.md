@@ -140,3 +140,33 @@ The append-only ledger therefore has three consecutive non-improving sweeps
 and marks this scratch stalled. Retain the typed `cRSubLoc*` induction: the
 remaining uniform `+0x24` displacement is bounded compiler scheduling, not
 missing ownership or an unresolved reference.
+
+## 2026-08-09 physical bank-index contract
+
+The now-closed producer and downstream normalization passes establish that
+both WarnTrack scans preserve one physical catalog index. Windows scans all
+eight floor/slide slice slots and maps a match to the same warning-slice slot,
+then independently scans all four floor/slide corner slots and maps a match to
+the same warning-corner slot. Android `cRSubGame::WarnTrack()` preserves the
+same two authored cases and bounds; the mobile layout is not transferred.
+
+The retained source therefore replaces the raw byte-offset catalog arithmetic
+with distinct `slice_index` and `corner_index` owners and direct typed
+`storage[index]` access. It also spells the warning marker and eight-lane
+countdown as full-width unsigned owners, matching the Windows dword
+`and`/`or` and `ebp = 8` lifetime. These changes are byte-identical at 81.33%,
+75/75 instructions, prefix 11/75, with all six references clean.
+
+One complete 15-variant sweep covers each ownership change alone and in every
+combination; all variants are byte-identical and the sweep is untruncated. The
+typed semantic form is retained despite the neutral score. It does not reopen
+the exhausted object-slot cursor lane: the remaining `+0x24` displacement is
+still the measured VC6 CSE boundary.
+
+The behavioral boundary is now explicit. WarnTrack visits rows
+`[0, runtime_row_count - 1)`, clears `SUBLOC_FLAG_WARNING_CACHE_FAMILY` before
+testing the same lane in the next row with `IsEmpty()`, and restores the flag
+only after a catalog replacement. `SlideSmoothTrack()` immediately skips that
+flag and `CondenseTrack()` excludes it from run membership. `FringeEdgeTrack()`
+does not consume either the promoted BOD pointer or this flag, so there is no
+invented direct promotion-to-directional-fringe dependency.

@@ -14,56 +14,55 @@ void cRSubGame::WarnTrack()
     int row = 0;
     if (runtime_row_count - 1 > 0) {
         cRSubLoc* cell = &runtime_cells[0][0];
-        int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;
+        unsigned int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;
         do {
-            int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
+            unsigned int lane_count =
+                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);
             do {
                 cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;
                 if ((cell + SUBGAME_TRACK_LANE_COUNT)->IsEmpty() != 0) {
                     GameRoot* game = g_game;
-                    int offset = 0;
+                    int slice_index = 0;
                     do {
                         void* object = ((BodBase*)cell)->object;
                         if (object
-                                == ((BodBase*)((char*)&game->root_bod_catalog.floor_slices
-                                    + offset))
-                                       ->object
+                                == game->root_bod_catalog.floor_slices
+                                       .storage[slice_index]
+                                       .object
                             || object
-                                == ((BodBase*)((char*)&game->root_bod_catalog.slide_slices
-                                    + offset))
-                                       ->object) {
+                                == game->root_bod_catalog.slide_slices
+                                       .storage[slice_index]
+                                       .object) {
                             ((BodBase*)cell)->SetObject(
-                                ((BodBase*)((char*)&game->root_bod_catalog.warning_slices
-                                    + offset))
-                                    ->object);
+                                game->root_bod_catalog.warning_slices
+                                    .storage[slice_index]
+                                    .object);
                             cell->lane_and_flags |= promoted_flag;
                             game = g_game;
                         }
-                        offset += sizeof(BodBase);
-                    } while (offset
-                        < (int)sizeof(game->root_bod_catalog.floor_slices));
+                        ++slice_index;
+                    } while (slice_index < TRACK_SLICE_BOD_COUNT);
 
-                    offset = 0;
+                    int corner_index = 0;
                     do {
                         void* object = ((BodBase*)cell)->object;
                         if (object
-                                == ((BodBase*)((char*)&game->root_bod_catalog.floor_corners
-                                    + offset))
-                                       ->object
+                                == game->root_bod_catalog.floor_corners
+                                       .storage[corner_index]
+                                       .object
                             || object
-                                == ((BodBase*)((char*)&game->root_bod_catalog.slide_corners
-                                    + offset))
-                                       ->object) {
+                                == game->root_bod_catalog.slide_corners
+                                       .storage[corner_index]
+                                       .object) {
                             ((BodBase*)cell)->SetObject(
-                                ((BodBase*)((char*)&game->root_bod_catalog.warning_corners
-                                    + offset))
-                                    ->object);
+                                game->root_bod_catalog.warning_corners
+                                    .storage[corner_index]
+                                    .object);
                             cell->lane_and_flags |= promoted_flag;
                             game = g_game;
                         }
-                        offset += sizeof(BodBase);
-                    } while (offset
-                        < (int)sizeof(game->root_bod_catalog.floor_corners));
+                        ++corner_index;
+                    } while (corner_index < TRACK_CORNER_BOD_COUNT);
                 }
                 ++cell;
                 --lane_count;

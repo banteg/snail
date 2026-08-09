@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "warning-flag-owner-width",
+      "find": "        int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;",
+      "replacements": [
+        {
+          "name": "unsigned-dword",
+          "text": "        unsigned int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;"
+        },
+        {
+          "name": "const-unsigned-dword",
+          "text": "        const unsigned int promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;"
+        },
+        {
+          "name": "typed-enum-dword",
+          "text": "        SubLocFlag promoted_flag = SUBLOC_FLAG_WARNING_CACHE_FAMILY;"
+        }
+      ]
+    },
+    {
+      "name": "lane-count-owner-width",
+      "find": "            int lane_count = sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);",
+      "replacements": [
+        {
+          "name": "unsigned-count",
+          "text": "            unsigned int lane_count =\n                sizeof(runtime_cells[0]) / sizeof(runtime_cells[0][0]);"
+        }
+      ]
+    },
+    {
+      "name": "physical-bank-index-pair",
+      "find": "                    int offset = 0;\n                    do {\n                        void* object = ((BodBase*)cell)->object;\n                        if (object\n                                == ((BodBase*)((char*)&game->root_bod_catalog.floor_slices\n                                    + offset))\n                                       ->object\n                            || object\n                                == ((BodBase*)((char*)&game->root_bod_catalog.slide_slices\n                                    + offset))\n                                       ->object) {\n                            ((BodBase*)cell)->SetObject(\n                                ((BodBase*)((char*)&game->root_bod_catalog.warning_slices\n                                    + offset))\n                                    ->object);\n                            cell->lane_and_flags |= promoted_flag;\n                            game = g_game;\n                        }\n                        offset += sizeof(BodBase);\n                    } while (offset\n                        < (int)sizeof(game->root_bod_catalog.floor_slices));\n\n                    offset = 0;\n                    do {\n                        void* object = ((BodBase*)cell)->object;\n                        if (object\n                                == ((BodBase*)((char*)&game->root_bod_catalog.floor_corners\n                                    + offset))\n                                       ->object\n                            || object\n                                == ((BodBase*)((char*)&game->root_bod_catalog.slide_corners\n                                    + offset))\n                                       ->object) {\n                            ((BodBase*)cell)->SetObject(\n                                ((BodBase*)((char*)&game->root_bod_catalog.warning_corners\n                                    + offset))\n                                    ->object);\n                            cell->lane_and_flags |= promoted_flag;\n                            game = g_game;\n                        }\n                        offset += sizeof(BodBase);\n                    } while (offset\n                        < (int)sizeof(game->root_bod_catalog.floor_corners));",
+      "replacements": [
+        {
+          "name": "distinct-direct-indices",
+          "text": "                    int slice_index = 0;\n                    do {\n                        void* object = ((BodBase*)cell)->object;\n                        if (object\n                                == game->root_bod_catalog.floor_slices\n                                       .storage[slice_index]\n                                       .object\n                            || object\n                                == game->root_bod_catalog.slide_slices\n                                       .storage[slice_index]\n                                       .object) {\n                            ((BodBase*)cell)->SetObject(\n                                game->root_bod_catalog.warning_slices\n                                    .storage[slice_index]\n                                    .object);\n                            cell->lane_and_flags |= promoted_flag;\n                            game = g_game;\n                        }\n                        ++slice_index;\n                    } while (slice_index < TRACK_SLICE_BOD_COUNT);\n\n                    int corner_index = 0;\n                    do {\n                        void* object = ((BodBase*)cell)->object;\n                        if (object\n                                == game->root_bod_catalog.floor_corners\n                                       .storage[corner_index]\n                                       .object\n                            || object\n                                == game->root_bod_catalog.slide_corners\n                                       .storage[corner_index]\n                                       .object) {\n                            ((BodBase*)cell)->SetObject(\n                                game->root_bod_catalog.warning_corners\n                                    .storage[corner_index]\n                                    .object);\n                            cell->lane_and_flags |= promoted_flag;\n                            game = g_game;\n                        }\n                        ++corner_index;\n                    } while (corner_index < TRACK_CORNER_BOD_COUNT);"
+        }
+      ]
+    }
+  ]
+}
