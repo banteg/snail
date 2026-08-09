@@ -10,8 +10,8 @@ drives the 0.8..1.0 random threshold and the salt lane drives the 0.98..1.0
 threshold; `build_subgame_level` seeds both and `complete_subgame` persists
 both into the replay/high-score record. The corrected completion snapshots and
 their two semantic source locals produce a focused 79.94% result
-(`1036/1033`, `123` clean operands, `12` explicitly unaudited operands, and no
-unresolved or mismatched masked operands).
+(`1036/1033`, `129` clean operands, and no unresolved, mismatched, or
+unaudited masked operands).
 
 ## Recovered control flow
 
@@ -77,8 +77,8 @@ cmp eax, 7
 ## Remaining differences
 
 Focused matcher result: 79.94%, 1036 candidate instructions versus 1033 target
-instructions, 9-instruction prefix, 123 clean masked operands, 12 explicitly
-unaudited operands, and no unresolved or mismatched masked operands.
+instructions, 9-instruction prefix, and 129 clean masked operands with no
+unresolved, mismatched, or unaudited operands.
 
 The first normalized instruction mismatch is the destination label of the
 range-check `ja`; its semantics agree, but later block sizes give the target and
@@ -89,7 +89,7 @@ label spelling.
 The semantic structure and ownership are pinned. The remaining non-proof-grade
 regions are:
 
-1. state-1 galaxy setup case ordering and shared build/destroy exits;
+1. residual state-1 configuration and galaxy-result register scheduling;
 2. residual authored/ambient ring register scheduling;
 3. residual HUD and handoff register scheduling;
 4. residual branch-label identities driven by the remaining block layout.
@@ -643,3 +643,51 @@ normalizing their instructions as equal. The focused frontier stays 79.94%,
 1036/1033 instructions, prefix 9/1033, while all 129 masked-reference sites
 are now audited and clean. The earlier two one-sided audit residuals were
 alignment debt, not different jump-table targets or missing owners.
+
+## 2026-08-09 outer-state bridge and Windows lifetime boundary
+
+The replay-exit tail is already byte-for-byte native once its function-relative
+displacement is ignored. The target sequence at `+0xdf4..+0xe62` and candidate
+sequence at `+0xdfa..+0xe68` have the same loads, saved/current state copies,
+literal `26`/`27` publications, attract-reset comparison, and epilogue. The
+six-byte shift is accumulated earlier in the state-2 body; it is not evidence
+for a different replay-exit owner or control-flow shape.
+
+Three exact neighboring scratches close the outer-state contract:
+
+- `update_frontend_state_machine` is 100.00%, 180/180 instructions, and proves
+  state 26 as `UnInit -> restore saved`, state 27 as
+  `UnInit -> Init -> restore saved`, state 28 as
+  `UnInit -> selector 0 -> Init -> restore saved`, and state 29 as the
+  initialize-and-fall-through entry to state-30 thanks-screen updates;
+- `destroy_subgame` is 100.00%, 246/246 instructions, and proves that a
+  persistent replay overwrites `saved_frontend_state` with state 18 while
+  clearing the persistent latch;
+- `update_subgoldy_resurrect` is 100.00%, 76/76 instructions, and proves the
+  saved-current-state copy followed by state 28 for an ordinary resurrection.
+
+Together with the native completion-exit producer, this makes the seemingly
+generic saved-state copy precise. `update_subgame` publishes state 26 for a
+persistent replay, whose teardown redirects to state 18, and state 27 for a
+transient replay, whose teardown/rebuild restores the saved gameplay owner.
+The last-galaxy completion producer stores state 29 before publishing state 26;
+after teardown the exact outer dispatcher enters the state-29/state-30 thanks
+screen pair.
+
+The recorded `replay-exit-owner` sweep bounds six natural source spellings.
+Decimal constants, branch-local `GameRoot*`/`GamePlayer*` borrows, and one
+common player borrow are codegen-neutral at 79.94%. Hoisting the duplicated
+saved-state copy regresses by 19 fuzzy bytes, while selecting state 26/27 into
+one local regresses by 23 fuzzy bytes and leaves one reference unaudited. The
+explicit sibling branches are therefore retained; collapsing them would erase
+both native layout evidence and the distinct teardown semantics.
+
+One additional Windows-witnessed state-one sweep tested all six placements of
+the challenge-speed store, `level_mode` snapshot, and challenge-difficulty
+load/store that were not covered by the earlier mobile-oriented lifetime
+sweep. Every form produced the same 79.75% result, seven fuzzy bytes below the
+retained source, while keeping all 129 references clean. This rules out that
+config/mode interleaving as the missing Windows lifetime. No matching source
+change is retained: the focused frontier remains 79.94%, 1036/1033
+instructions, prefix 9/1033, with 129 clean references and no unresolved,
+mismatched, or unaudited operands.

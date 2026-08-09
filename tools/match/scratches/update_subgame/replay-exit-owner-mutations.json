@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "replay-exit-owner",
+      "find": "        } else {\n            if (selected_level_record_persistent != zero) {\n                app->players[0].saved_frontend_state =\n                    app->players[0].frontend_state;\n                g_game->players[0].frontend_state = 0x1a;\n            } else {\n                app->players[0].saved_frontend_state =\n                    app->players[0].frontend_state;\n                g_game->players[0].frontend_state = 0x1b;\n            }\n            if (g_game->intro.attract_reset_progress <= 1.0f)\n                g_game->intro.hide_for_replay_latch = zero;\n            return;\n        }",
+      "replacements": [
+        {
+          "name": "decimal-state-literals",
+          "text": "        } else {\n            if (selected_level_record_persistent != zero) {\n                app->players[0].saved_frontend_state =\n                    app->players[0].frontend_state;\n                g_game->players[0].frontend_state = 26;\n            } else {\n                app->players[0].saved_frontend_state =\n                    app->players[0].frontend_state;\n                g_game->players[0].frontend_state = 27;\n            }\n            if (g_game->intro.attract_reset_progress <= 1.0f)\n                g_game->intro.hide_for_replay_latch = zero;\n            return;\n        }"
+        },
+        {
+          "name": "branch-local-root-owners",
+          "text": "        } else {\n            if (selected_level_record_persistent != zero) {\n                GameRoot* persistent_app = g_game;\n                persistent_app->players[0].saved_frontend_state =\n                    persistent_app->players[0].frontend_state;\n                g_game->players[0].frontend_state = 26;\n            } else {\n                GameRoot* transient_app = g_game;\n                transient_app->players[0].saved_frontend_state =\n                    transient_app->players[0].frontend_state;\n                g_game->players[0].frontend_state = 27;\n            }\n            if (g_game->intro.attract_reset_progress <= 1.0f)\n                g_game->intro.hide_for_replay_latch = zero;\n            return;\n        }"
+        },
+        {
+          "name": "branch-local-player-owners",
+          "text": "        } else {\n            if (selected_level_record_persistent != zero) {\n                GamePlayer* persistent_player = &app->players[0];\n                persistent_player->saved_frontend_state =\n                    persistent_player->frontend_state;\n                g_game->players[0].frontend_state = 26;\n            } else {\n                GamePlayer* transient_player = &app->players[0];\n                transient_player->saved_frontend_state =\n                    transient_player->frontend_state;\n                g_game->players[0].frontend_state = 27;\n            }\n            if (g_game->intro.attract_reset_progress <= 1.0f)\n                g_game->intro.hide_for_replay_latch = zero;\n            return;\n        }"
+        },
+        {
+          "name": "common-player-owner",
+          "text": "        } else {\n            GamePlayer* outer_player = &app->players[0];\n            if (selected_level_record_persistent != zero) {\n                outer_player->saved_frontend_state =\n                    outer_player->frontend_state;\n                g_game->players[0].frontend_state = 26;\n            } else {\n                outer_player->saved_frontend_state =\n                    outer_player->frontend_state;\n                g_game->players[0].frontend_state = 27;\n            }\n            if (g_game->intro.attract_reset_progress <= 1.0f)\n                g_game->intro.hide_for_replay_latch = zero;\n            return;\n        }"
+        },
+        {
+          "name": "common-saved-state-copy",
+          "text": "        } else {\n            app->players[0].saved_frontend_state =\n                app->players[0].frontend_state;\n            if (selected_level_record_persistent != zero)\n                g_game->players[0].frontend_state = 26;\n            else\n                g_game->players[0].frontend_state = 27;\n            if (g_game->intro.attract_reset_progress <= 1.0f)\n                g_game->intro.hide_for_replay_latch = zero;\n            return;\n        }"
+        },
+        {
+          "name": "selected-outer-state",
+          "text": "        } else {\n            int outer_state;\n            if (selected_level_record_persistent != zero)\n                outer_state = 26;\n            else\n                outer_state = 27;\n            app->players[0].saved_frontend_state =\n                app->players[0].frontend_state;\n            g_game->players[0].frontend_state = outer_state;\n            if (g_game->intro.attract_reset_progress <= 1.0f)\n                g_game->intro.hide_for_replay_latch = zero;\n            return;\n        }"
+        }
+      ]
+    }
+  ]
+}

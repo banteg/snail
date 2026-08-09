@@ -8,22 +8,24 @@
 | Target instructions | 1033 | 1033 |
 | Candidate instructions | 1 | 1036 |
 | Common prefix | 0 / 1033 | **9 / 1033** |
-| Masked operands | none | **121 clean, 0 unresolved, 2 mismatched, 12 unaudited** |
+| Masked operands | none | **129 clean, 0 unresolved, 0 mismatched, 0 unaudited** |
 
-Both switch jump-table operands are content-audited and classified as real
-mismatches. There are no unresolved masked operands. The matcher separately
-reports 12 reference-bearing instructions that partial sequence alignment
-cannot pair; those locations are not silently treated as clean or mislabeled
-as operand mismatches.
+Both switch jump tables are content-audited by their ordered destinations.
+All 129 reference-bearing instructions are paired and clean; there are no
+unresolved, mismatched, or unaudited masked operands.
 
 The first remaining mismatch is:
 
 ```text
 target[9]    ja Ld68
-candidate[9] ja Ld6d
+candidate[9] ja Ld6e
 ```
 
-The branch serves the same out-of-range/common-camera role; the label identity differs because the remaining body layout is not yet exact.
+The branch serves the same out-of-range/common-camera role; the label identity
+differs because the remaining body layout is not yet exact. The replay-exit
+tail itself is byte-for-byte identical at target `+0xdf4..+0xe62` and
+candidate `+0xdfa..+0xe68`, proving that its six-byte displacement accumulated
+earlier in the body.
 
 ## Accepted source-shape changes
 
@@ -79,7 +81,7 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 | Inline projected-cell addresses | 70.97% | 1027 | Kept; 115 clean operands |
 | Time-trial record-base owner retest | 71.32% | 1028 | Kept; 116 clean operands |
 | Split authored/procedural garbage arms | **78.22%** | **1033** | Final retained result; exact target instruction count |
-| Correct X/Y completion snapshots | **79.94%** | **1036** | Kept; real ownership, 121 paired operands, 12 explicitly unaudited |
+| Correct X/Y completion snapshots | **79.94%** | **1036** | Kept; real ownership; later transfer-aware audit pairs all 129 references cleanly |
 
 ## Rejected trials
 
@@ -110,8 +112,8 @@ The branch serves the same out-of-range/common-camera role; the label identity d
 The semantic state machine, runtime rows, and principal ownership are covered.
 The `0x3c` frame remains exact, while the candidate is three instructions
 longer than the 1033-instruction target. Remaining differences are state-1,
-ring, HUD/handoff register scheduling, 12 explicitly unaudited reference
-locations, and the two jump-table label identities. Do not force them with
-long-lived aliases, `volatile`, dummy symbols, raw offsets, or
-normalizer-specific control flow; resume only with new source or cross-port
-evidence.
+ring, and HUD/handoff register scheduling plus branch-label identities induced
+by that earlier layout. All masked operands are audited and clean. Do not force
+the residual with long-lived aliases, `volatile`, dummy symbols, raw offsets,
+or normalizer-specific control flow; resume only with a new Windows lifetime
+or independent source evidence.
