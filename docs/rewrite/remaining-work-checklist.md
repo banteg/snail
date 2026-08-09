@@ -259,7 +259,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 8. Tighten presentation layers last
 
 - [ ] Finish Turbo gameplay anchor/orientation and broader state-specific animation switching
-  - `dispatch_cutscene_animation` @ 0x444600 recovery (harvested from the retired 2026-04 infrastructure plan): `AnimDispatchState` layout per `path_template_types.h:354` (`active, progress, progress_step, active_keyframe, edge_latched, queued_animation_ids[10], queued_animation_count, self_ref, queue_sentinel`); `immediate=false` enqueues, `immediate=true` indexes the 128-byte-stride `animation_slot_table` at presentation_controller `+0x14c+0x24`, latches the keyframe, clears the queue, sets flag `0x20`
+  - `dispatch_cutscene_animation` @ 0x444600 is authored `cRSnail::SetAnimation(animation_id, immediate, mode)`: `Snail` owns `AnimManager +0x104` and ten `RenderableBod` animation slots from `+0x14c` at 0x80-byte stride; each slot's borrowed `Object*` is at `+0x24`. `immediate=false` appends the id to `queued_animations[queue_count++]`; `immediate=true` installs the slot animation and root object, applies mode unless it is `-1`, initializes forward or reverse progress, clears the queue, and sets the target model's `BOD_FLAG_RENDER_ENABLED`
   - anim ids: `1`=base, `3`/`4`=lookback-L/R, `5`=skidstop, `6`=damaged, `7`=intoshell, `8`=fall, `9`=talk; per-clip keyframes come from the shipped `X/_ANIMATION.TXT` entries
   - replace the manual turbo-talk family switch with a real `dispatch_cutscene_animation(.talk, immediate, 0)`
 - [ ] Jet-particle pool + `SPRITES/JETPACKTHRUST.TGA` / `SPRITES/SMOKE.TGA` loading (presentation polish; the sfx and mesh-swap lanes are already covered)
@@ -271,30 +271,38 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ## Decompile Targets By Priority
 
-If there is time for only one focused RE session, use this order:
+Every current non-proof scratch ledger is now formally stalled. Do not start a
+session from fuzzy score alone; acquire a new producer, consumer, field xref,
+or original-source clue first. Use this evidence order:
 
-1. `build_subgame_level`: recover the honest random-landscape default-arm stack
-   reload and the remaining completion-row pre-mask schedule. The short
-   backlink-only `Banner` owner is retained at 85.95%, exact 555/555 shape, with
-   all 108 references clean; do not duplicate landscape activation per arm.
-2. `merge_track_tile_runs` -> `promote_track_tiles_to_fringe_variants`: move the
-   render-normalization investigation downstream now that the trampoline
-   producer shape pairs all 28 physical glyph destinations. Keep
-   `populate_runtime_track_cells_from_segments` at the provenance-correct
-   75.79% shape unless new source evidence appears.
-3. `update_subgame`: investigate a new Windows lifetime in the earlier state-1,
-   ring, or HUD/handoff regions. The replay-exit tail and literal
-   `26/27/28/29/30` transition contract are closed; replay-owner and config-store
-   spelling sweeps are formally stalled.
+1. `handle_subgoldy_collisions`: close and port the slug-hit motion writes and
+   carryover handoff already enumerated in Phase 5. The matcher is shape-exact
+   at 673/673 with 89 clean references; do not retry the exhausted vector and
+   stack-color grids.
+2. `build_track_fringe_objects` plus its render/cache consumers: recover who
+   consumes `open_edge_mask`, `tile_id`, and row suppression to own directional
+   fringe and cache routing. This round proved that WarnTrack promotion and
+   CondenseTrack lane flags do not feed FringeEdgeTrack directly, so do not
+   resume receiver/register swaps without a new consumer.
+3. The remaining replay-flag gameplay/audio/effect consumers around
+   `update_subgame`. Its replay exit and authored ring argument lifetimes are
+   closed at 79.94%, 1036/1033, with 129 clean references; reopen only at a new
+   flag xref, not with another shared-owner or case-layout sweep.
+4. The Golb VFX consumer cluster (`update_golb_ai` and
+   `spawn_golb_impact_sprite`): propagate the recovered 12-slot
+   `shot_slot_index` identity through trail/impact ownership. Keep the existing
+   launch-vector and collision-side grids parked.
 
 Do not keep already proof-grade helpers in the active decompile queue merely
 because an older plan named them. The death/resurrect pair, begin-follow, both
-row-event functions, and `update_warning` are closed. The hotspot/cutscene
-self-copy and spill, attachment-exit clears, follow update, outer replay bridge,
-and fringe-builder receiver swaps are evidence-bounded compiler residuals, not
-routine score targets. Shooting-audio and damage-warning follow-ups should
-re-enter this list only when new runtime, Windows-lifetime, original-source, or
-cross-port evidence supplies a concrete hypothesis.
+row-event functions, `update_warning`, the level-builder default/pre-mask
+schedule, segment-import row anchors, authored ring ladder, and Golb creation
+identity are closed. The hotspot/cutscene self-copy and spill, attachment-exit
+clears, follow update, outer replay bridge, and fringe-builder receiver swaps
+are evidence-bounded compiler residuals, not routine score targets.
+Shooting-audio and damage-warning follow-ups should re-enter this list only
+when new runtime, Windows-lifetime, original-source, or cross-port evidence
+supplies a concrete hypothesis.
 
 ## Checklist Discipline
 
