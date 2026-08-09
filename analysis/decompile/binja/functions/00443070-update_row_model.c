@@ -7,7 +7,7 @@
 00443085        row_model->body.transform.position.y = fconvert.s(fconvert.t(row_model->velocity.y) + fconvert.t(row_model->body.transform.position.y))
 00443091        row_model->body.transform.position.z = fconvert.s(fconvert.t(row_model->velocity.z) + fconvert.t(row_model->body.transform.position.z))
 00443097        struct GameRoot* game_base_1 = g_game_base
-004430a3        long double x87_r7_6 = fconvert.t(row_model->body.bod.object->bounds_max.z) + fconvert.t(game_base_1->subgame.player.interaction_max_z)
+004430a3        long double x87_r7_6 = fconvert.t(row_model->body.bod.object->bounds_max.z) + fconvert.t(game_base_1->subgame.player.active_window_min_z)
 004430a9        long double temp0 = fconvert.t(row_model->body.transform.position.z)
 004430a9        x87_r7_6 - temp0
 004430b1        if ((((x87_r7_6 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_6, temp0) ? 1 : 0) << 0xa | (x87_r7_6 == temp0 ? 1 : 0) << 0xe):1.b & 0x41) != 0)

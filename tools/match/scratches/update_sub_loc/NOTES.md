@@ -20,7 +20,7 @@ of the cross-port symbol match.
   aimed at the player with +/-3 vertical jitter +8 z lead; fires only
   when the z delta < -4; direction normalized and scaled to 0.4/tick
   through the owned `SubLazerPool`; then the cull check
-- tile 22: cull behind `Player::interaction_max_z`
+- tile 22: cull behind `Player::active_window_min_z`
 - tiles 29/30 (attachment skirts): WORM templates fade by rate/30 with a
   fixed alpha; `cRSubGame::get_track_skirt_color` syncs into
   `runtime_rows[row].attachment_body.color` (`+0xd8` in the 0xf4-byte row);
@@ -79,7 +79,7 @@ a target, and assign `direction = target - spawn` before normalization. Direct
 component arrays, constructor initialization, and initializer-form subtraction
 all compiled worse; the retained copy/assignment form is semantic source, not a
 coercion-only temporary. Spelling the tile-22 comparison as
-`position.z >= interaction_max_z` becomes the native comparison order
+`position.z >= active_window_min_z` becomes the native comparison order
 after the owner rewrite. Focused Wibo improves from 46.77% to 82.67%, 188/187
 candidate/target instructions, prefix 26/187, with 34 clean masked operands.
 

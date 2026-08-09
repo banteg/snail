@@ -11,7 +11,7 @@ Recovered owner:
   compare; spelling the stores directly lets VC6 hoist `object` and keep the
   z result live on the x87 stack.
 - `object->bounds_max.z` is compared against the embedded player's
-  `interaction_max_z` row/world threshold.
+  `active_window_min_z` row/world threshold.
 - When the model has crossed the threshold, the function removes `this` from
   `GameRoot::active_bod_list` and pushes it onto the free list, using the same
   intrusive-list pattern as `update_active_bod` and
@@ -33,7 +33,7 @@ Status:
 Both analysis databases now carry the exact void member ABI,
 `update_row_model(RowModel*)`. The existing 0x8c-byte owner is sufficient to
 recover all three velocity-to-position additions, the inherited
-`Object::bounds_max.z` cull extent, the player's `interaction_max_z` plane,
+`Object::bounds_max.z` cull extent, the player's `active_window_min_z` plane,
 and the full `GameRoot::active_bod_list` unlink/free-stack transition without
 any local-variable override.
 

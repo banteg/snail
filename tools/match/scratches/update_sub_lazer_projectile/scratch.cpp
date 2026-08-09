@@ -39,7 +39,7 @@ void SubLazer::update_sub_lazer_projectile()
         position_y = velocity.y + position_y;
         position_z = velocity.z + position_z;
         if (transform.position.y >= 0.0f
-            && transform.position.z >= owner_game->player.interaction_max_z) {
+            && transform.position.z >= owner_game->player.active_window_min_z) {
             cRSubLoc* grid =
                 g_game->subgame.LocFromPos(live_position);
             SubRow* cell =

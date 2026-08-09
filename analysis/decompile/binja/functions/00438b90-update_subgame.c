@@ -137,14 +137,14 @@
 00438fda        bool cond:3_1 = game->level_mode != 2
 00438fdc        game->runtime_row_scan_begin = runtime_row_scan_end
 00438fdf        if (cond:3_1)
-00438ff4        int32_t eax_17 = ftol(x87control, fconvert.t(game->player.interaction_max_z)) + 0x2e
+00438ff4        int32_t eax_17 = ftol(x87control, fconvert.t(game->player.active_window_min_z)) + 0x2e
 00438ff9        if (eax_17 s> runtime_row_scan_end)
 00438ffb        game->runtime_row_scan_end = eax_17
 00438fe4        game->runtime_row_scan_end = game->runtime_row_count
 00438fb2        int32_t level_mode_1 = game->level_mode
 00438fb5        game->runtime_row_scan_begin = 0
 00438fba        if (level_mode_1 != 2)
-00438ffb        game->runtime_row_scan_end = ftol(x87control, fconvert.t(game->player.interaction_max_z)) + 0x2e
+00438ffb        game->runtime_row_scan_end = ftol(x87control, fconvert.t(game->player.active_window_min_z)) + 0x2e
 00438fbf        game->runtime_row_scan_end = game->runtime_row_count
 00439004        int32_t eax_21 = game->completion_row_start + 0x14
 00439009        if (game->runtime_row_scan_end s> eax_21)

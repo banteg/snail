@@ -43,7 +43,7 @@ void cRSubGoldy::Init(int player_slot)
     this->cutscene_pitch_cycle_step = 0.0f;
 
     this->presentation.object->distort.Init();
-    this->interaction_max_z = -19.0f;
+    this->active_window_min_z = -19.0f;
     this->shoot_sfx_variant_sample = zero;
     this->presentation.cutscene_roll_progress = 0.0f;
     this->presentation.cutscene_roll_step = 0.0166666675f;

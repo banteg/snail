@@ -5,7 +5,7 @@
 
 00433e83        long double x87_r7 = fconvert.t(slot->cache_row_base) + fconvert.t(24f)
 00433e89        struct GameRoot* game_base_1 = g_game_base
-00433e8f        long double temp0 = fconvert.t(game_base_1->subgame.player.interaction_max_z)
+00433e8f        long double temp0 = fconvert.t(game_base_1->subgame.player.active_window_min_z)
 00433e8f        x87_r7 - temp0
 00433e9a        if ((((x87_r7 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp0) ? 1 : 0) << 0xa | (x87_r7 == temp0 ? 1 : 0) << 0xe):1.b & 1) == 0)
 00433e9a        return

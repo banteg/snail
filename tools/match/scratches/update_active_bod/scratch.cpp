@@ -10,7 +10,7 @@ int report_errorf(char* format, ...);
 void TrackRenderCacheSlot::update_active_bod()
 {
     if (cache_row_base + 24.0f
-        < g_game->subgame.embedded_player()->interaction_max_z) {
+        < g_game->subgame.embedded_player()->active_window_min_z) {
         unsigned int flags = list_flags;
         BodList* list = &g_game->active_bod_list;
         if ((flags & BOD_FLAG_LINKED) == 0) {

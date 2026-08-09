@@ -43,12 +43,11 @@ Their corresponding pickup, ring, Golb, garbage, and slug readers use the
 stored player field with the same alive/cull polarity.
 
 Ownership is therefore correct: this is authored `cRSubGoldy`/`Player` state,
-produced by its AI and borrowed by the track runtime. The shared name
-`interaction_max_z` is stale and polarity-inverted; `active_window_min_z`
-describes both lifecycle and interaction consumers. The producer now uses that
-semantic local name, while the shared header retains its legacy field spelling
-and documents the proven lower-bound polarity. The rename is codegen-neutral
-at 82.75%, 2,087/2,087
+produced by its AI and borrowed by the track runtime. The former shared field
+name was stale and polarity-inverted; `active_window_min_z` describes both
+lifecycle and interaction consumers. The producer first adopted
+that semantic local name, and the completed shared rename remains
+codegen-neutral at 82.75%, 2,087/2,087
 instructions, prefix 12/2,087, with 315 clean masked operands, no unresolved
 or mismatched operands, and the same one visible unaudited `g_game` load.
 
@@ -199,7 +198,7 @@ basis_up.x +0x48, cutscene state +0x1964), authored cRSquidge +0x4344
 slide threshold +0x2738, track_z offset/anchor +0x273c/+0x2740, handoff
 cycle +0x2744/8, authored cRSubHover +0x2750 (state +0xc, wobble x/y/alpha
 +0x14/18/1c), camera target +0x2964, steering selector +0x2970,
-interaction_max_z +0x2980, movement_mode_selector +0x40c (0/2 = early
+active_window_min_z +0x2980, movement_mode_selector +0x40c (0/2 = early
 out), cRClickStart +0xa0 with state +0x120, resurrect_active +0x84,
 `PlayerRowEventState::{id,definition}` +0x1e8/+0x1ec, ghost anchor +0x304,
 wall stall +0x328/c, exit voice

@@ -17,7 +17,7 @@ void Fringe::refresh_fringe_object_draw_list()
     float current_z = position.z;
     this->color = *resolved;
 
-    if (current_z < g_game->subgame.embedded_player()->interaction_max_z) {
+    if (current_z < g_game->subgame.embedded_player()->active_window_min_z) {
         unsigned int flags = list_flags;
         BodList* list = &g_game->active_bod_list;
         if ((flags & BOD_FLAG_LINKED) == 0) {

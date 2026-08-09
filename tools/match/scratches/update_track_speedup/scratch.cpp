@@ -37,7 +37,7 @@ state_two:
     return;
 
 state_one:
-    if (transform.position.z >= owner->interaction_max_z) {
+    if (transform.position.z >= owner->active_window_min_z) {
         return;
     }
 

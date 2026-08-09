@@ -947,7 +947,7 @@ steering_stored:
     if (active_window_min_z >= player_trailing_min_z)
         active_window_min_z = player_trailing_min_z;
     SubHoverState hover_state = sub_hover.state;
-    interaction_max_z = active_window_min_z;
+    this->active_window_min_z = active_window_min_z;
     if (hover_state == SUB_HOVER_STATE_ACTIVE) {
         if (transform.position.y < 1.0f) {
             velocity.y = velocity.y * 0.89999998f;

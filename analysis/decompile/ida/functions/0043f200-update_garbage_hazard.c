@@ -40,7 +40,7 @@ void __thiscall update_garbage_hazard(SubGarbage *sub_garbage)
         p_position = &sub_garbage->body.transform.position;
         sub_garbage->sprite->position = sub_garbage->body.transform.position;
         owner_player = sub_garbage->owner_player;
-        if ( sub_garbage->body.transform.position.z < (double)owner_player->interaction_max_z )
+        if ( sub_garbage->body.transform.position.z < (double)owner_player->active_window_min_z )
           goto LABEL_4;
         if ( owner_player->nuke_effect_progress > 0.0 )
         {
@@ -115,7 +115,7 @@ LABEL_23:
                                 * -0.0099999998
                                 + sub_garbage->velocity.y;
         if ( sub_garbage->body.transform.position.y < -10.0
-          || (v19 = sub_garbage->owner_player, sub_garbage->body.transform.position.z < (double)v19->interaction_max_z) )
+          || (v19 = sub_garbage->owner_player, sub_garbage->body.transform.position.z < (double)v19->active_window_min_z) )
         {
 LABEL_4:
           destroy_garbage_hazard(sub_garbage);

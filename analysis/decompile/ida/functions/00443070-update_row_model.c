@@ -14,7 +14,7 @@ void __thiscall update_row_model(RowModel *row_model)
   row_model->body.transform.position.x = row_model->velocity.x + row_model->body.transform.position.x;
   row_model->body.transform.position.y = row_model->velocity.y + row_model->body.transform.position.y;
   row_model->body.transform.position.z = row_model->velocity.z + row_model->body.transform.position.z;
-  if ( row_model->body.bod.object->bounds_max.z + g_game_base->subgame.player.interaction_max_z > row_model->body.transform.position.z )
+  if ( row_model->body.bod.object->bounds_max.z + g_game_base->subgame.player.active_window_min_z > row_model->body.transform.position.z )
   {
     list_flags = row_model->body.bod.bod.list_flags;
     p_active_bod_list = &g_game_base->active_bod_list;

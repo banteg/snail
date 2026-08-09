@@ -23,7 +23,7 @@
 004418ff        if ((((x87_r7_9 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_9, temp3_1) ? 1 : 0) << 0xa | (x87_r7_9 == temp3_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00441ac3        deactivate_sub_lazer_projectile(sub_lazer)
 0044190b        long double x87_r7_10 = fconvert.t(sub_lazer->body.transform.position.z)
-0044190e        long double temp4_1 = fconvert.t(sub_lazer->owner_game->player.interaction_max_z)
+0044190e        long double temp4_1 = fconvert.t(sub_lazer->owner_game->player.active_window_min_z)
 0044190e        x87_r7_10 - temp4_1
 00441919        if ((((x87_r7_10 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_10, temp4_1) ? 1 : 0) << 0xa | (x87_r7_10 == temp4_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00441ac3        deactivate_sub_lazer_projectile(sub_lazer)

@@ -11,7 +11,7 @@ Recovered behavior:
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;
 - state `1` performs the same teardown once inherited `position.z` falls behind
-  `owner->interaction_max_z`;
+  `owner->active_window_min_z`;
 - all other nonzero states advance the health bob phase, wrap only when the
   phase is strictly greater than `1.0f`, and write
   `(sine(phase * tau) + 1.0f) * 0.30000001f + world_y` to
@@ -23,7 +23,7 @@ residual; the shared-list recovery below closes it.
 
 Rejected source-shaped probes:
 
-- nesting the state-1 removal block under `if (world_z < interaction_max_z)`
+- nesting the state-1 removal block under `if (world_z < active_window_min_z)`
   recovered the native branch direction but let VC6 merge the two unlink error
   tails, regressing to 58.47% and shrinking the candidate to 108 instructions;
 - spelling the state dispatch as the IDA-style `state`, `state - 1`,
@@ -33,10 +33,10 @@ Rejected source-shaped probes:
 
 2026-06-19 branch-layout retry:
 
-- spelling the state-one guard as `!(world_z < interaction_max_z)` is
+- spelling the state-one guard as `!(world_z < active_window_min_z)` is
   codegen-neutral at 71.88%; VC6 simplifies it back to the pinned
   bob-before-removal layout with `jne` into the state-one unlink block;
-- retesting the structured `if (world_z < interaction_max_z) { remove; }`
+- retesting the structured `if (world_z < active_window_min_z) { remove; }`
   form still recovers the native `je` around the state-one unlink block but
   merges the duplicated unlink error tails, reproducing the 58.47%,
   108-instruction regression;
@@ -48,7 +48,7 @@ Rejected source-shaped probes:
 
 2026-06-20 health-family retry:
 
-- retesting the structured `if (world_z < interaction_max_z) { remove; }`
+- retesting the structured `if (world_z < active_window_min_z) { remove; }`
   state-one arm again recovered the local branch direction but merged too much
   of the duplicate unlink/error body, regressing to 58.47% with 108 candidate
   instructions and 12 clean masked operands;
@@ -90,7 +90,7 @@ canonical owner. This also makes the pickup ownership agree with slug, salt,
 sub-lazer, garbage, and reset paths without changing generated code.
 
 2026-06-20 updater CFG improvement: the Pro Extended pass moved the state-one
-guard to the positive `world_position.z < owner->interaction_max_z` removal
+guard to the positive `world_position.z < owner->active_window_min_z` removal
 arm, split the two state-two list-error exits into cold labels, and added one
 state-one `Sprite*` snapshot shared by the two diagnostic exits. Local focused
 Wibo reproduces 87.94%, 129/128 instructions, 6/128 prefix, and 21 clean masked

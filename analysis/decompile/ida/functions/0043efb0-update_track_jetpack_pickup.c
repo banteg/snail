@@ -63,7 +63,7 @@ LABEL_21:
           goto LABEL_20;
         }
       }
-      else if ( jetpack->bod.position.z < (double)jetpack->owner->interaction_max_z )
+      else if ( jetpack->bod.position.z < (double)jetpack->owner->active_window_min_z )
       {
         v8 = jetpack->bod.bod.list_flags;
         jetpack->state = TRACK_PICKUP_STATE_INACTIVE;

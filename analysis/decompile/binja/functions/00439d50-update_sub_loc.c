@@ -60,13 +60,13 @@
 00439ed6        shoot_sub_lazer_pool(&g_game_base->subgame.sub_lazers, &origin, &var_34)
 00439edb        game_base_1 = g_game_base
 00439ee1        long double x87_r7_20 = fconvert.t(cell->anchor_position.z)
-00439ee4        long double temp2_1 = fconvert.t(game_base_1->subgame.player.interaction_max_z)
+00439ee4        long double temp2_1 = fconvert.t(game_base_1->subgame.player.active_window_min_z)
 00439ee4        x87_r7_20 - temp2_1
 00439eef        if ((((x87_r7_20 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp2_1) ? 1 : 0) << 0xa | (x87_r7_20 == temp2_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00439ef7        remove_sub_loc(cell)
 00439f03        if (eax_1.b == 0x16)
 00439f05        long double x87_r7_21 = fconvert.t(cell->anchor_position.z)
-00439f08        long double temp1_1 = fconvert.t(game_base_1->subgame.player.interaction_max_z)
+00439f08        long double temp1_1 = fconvert.t(game_base_1->subgame.player.active_window_min_z)
 00439f08        x87_r7_21 - temp1_1
 00439f13        if ((((x87_r7_21 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_21, temp1_1) ? 1 : 0) << 0xa | (x87_r7_21 == temp1_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00439f1b        remove_sub_loc(cell)
@@ -81,13 +81,13 @@
 00439fd0        ecx_12[1] = eax_11->g
 00439fd6        ecx_12[2] = eax_11->b
 00439fdd        ecx_12[3] = eax_11->a
-00439ff2        long double x87_r7_29 = fconvert.t(g_game_base->subgame.player.interaction_max_z) - (float.t(cell->attachment_template_record->row_span_count) + fconvert.t(5f))
+00439ff2        long double x87_r7_29 = fconvert.t(g_game_base->subgame.player.active_window_min_z) - (float.t(cell->attachment_template_record->row_span_count) + fconvert.t(5f))
 00439ff8        long double temp5_1 = fconvert.t(cell->anchor_position.z)
 00439ff8        x87_r7_29 - temp5_1
 0043a000        if ((((x87_r7_29 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_29, temp5_1) ? 1 : 0) << 0xa | (x87_r7_29 == temp5_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
 0043a004        remove_sub_loc(cell)
 00439f2d        long double x87_r7_22 = fconvert.t(cell->anchor_position.z)
-00439f30        long double temp6_1 = fconvert.t(game_base_1->subgame.player.interaction_max_z)
+00439f30        long double temp6_1 = fconvert.t(game_base_1->subgame.player.active_window_min_z)
 00439f30        x87_r7_22 - temp6_1
 00439f3b        if ((((x87_r7_22 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_22, temp6_1) ? 1 : 0) << 0xa | (x87_r7_22 == temp6_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00439f4a        var_34.x = game_base_1->subgame.completion_row_start - 5

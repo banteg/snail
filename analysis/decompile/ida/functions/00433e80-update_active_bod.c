@@ -11,7 +11,7 @@ void __thiscall update_active_bod(TrackRenderCacheSlot *slot)
   struct BodNode *list_prev; // eax
   uint32_t v5; // eax
 
-  if ( slot->cache_row_base + 24.0 < g_game_base->subgame.player.interaction_max_z )
+  if ( slot->cache_row_base + 24.0 < g_game_base->subgame.player.active_window_min_z )
   {
     list_flags = slot->bod.bod.list_flags;
     p_active_bod_list = &g_game_base->active_bod_list;

@@ -32,7 +32,7 @@ gameplay manifest and this scratch. The old shifted labels at `0x43ee50` and
 `0x43efb0` were corrected as part of the pickup/sub-lazer vtable cleanup.
 
 2026-06-16 bob-tail layout retry: inverting the state-1 z test so the removal
-block was nested under `world_position.z < owner->interaction_max_z` regressed
+block was nested under `world_position.z < owner->active_window_min_z` regressed
 to `58.12%` (`107/127`). VC6 merged the two unlink blocks just like the health
 pickup rejection notes warned. Keep the duplicated state-1/state-2 unlink
 source shape until the health pickup's anti-merge shape can be applied.

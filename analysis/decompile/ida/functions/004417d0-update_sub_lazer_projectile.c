@@ -35,7 +35,7 @@ void __thiscall update_sub_lazer_projectile(SubLazer *sub_lazer)
       sub_lazer->body.transform.position.y = sub_lazer->velocity.y + sub_lazer->body.transform.position.y;
       sub_lazer->body.transform.position.z = sub_lazer->velocity.z + sub_lazer->body.transform.position.z;
       if ( sub_lazer->body.transform.position.y >= 0.0
-        && sub_lazer->body.transform.position.z >= (double)sub_lazer->owner_game->player.interaction_max_z )
+        && sub_lazer->body.transform.position.z >= (double)sub_lazer->owner_game->player.active_window_min_z )
       {
         grid_cell = get_track_grid_cell_at_world_position(&g_game_base->subgame, &sub_lazer->body.transform.position);
         runtime_row = get_track_runtime_cell_at_world_z(&g_game_base->subgame, &sub_lazer->body.transform.position);

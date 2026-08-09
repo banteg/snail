@@ -902,7 +902,7 @@ LABEL_287:
         if ( v94 >= source_cellb )
           v94 = source_cellb;
         v95 = player->sub_hover.state;
-        player->interaction_max_z = v94;
+        player->active_window_min_z = v94;
         if ( v95 == SUB_HOVER_STATE_ACTIVE )
         {
           if ( player->body.transform.position.y < 1.0 )

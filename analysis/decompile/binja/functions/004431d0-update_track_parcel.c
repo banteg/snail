@@ -9,7 +9,7 @@
 004431f2        struct Vec3 vector
 004431f2        switch (parcel->state)
 004431ff        case PARCEL_STATE_TRACK_ACTIVE
-004431ff        long double x87_r7_2 = fconvert.t(owner_subgame_3->player.interaction_max_z) - fconvert.t(10f)
+004431ff        long double x87_r7_2 = fconvert.t(owner_subgame_3->player.active_window_min_z) - fconvert.t(10f)
 00443205        long double temp0_1 = fconvert.t(parcel->position.z)
 00443205        x87_r7_2 - temp0_1
 0044320d        if ((((x87_r7_2 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp0_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)

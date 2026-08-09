@@ -56,7 +56,7 @@ void Salt::update_salt_hazard()
         }
         fade_alpha = alpha;
         color.Alpha(0.899999976f);
-        if (transform.position.z < owner_game->player.interaction_max_z)
+        if (transform.position.z < owner_game->player.active_window_min_z)
             state = SALT_STATE_RECYCLE_PENDING;
         return;
     }

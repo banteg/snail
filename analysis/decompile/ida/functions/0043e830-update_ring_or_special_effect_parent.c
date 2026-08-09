@@ -90,7 +90,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing *ring)
         }
         while ( v8 != 0 );
         owner_player = ring->owner_player;
-        if ( ring->body.transform.position.z >= (double)owner_player->interaction_max_z )
+        if ( ring->body.transform.position.z >= (double)owner_player->active_window_min_z )
         {
           if ( owner_player->lives < ring->owner_lives_snapshot )
             ring->state = SUB_RING_STATE_EXPAND_PENDING;

@@ -23,7 +23,7 @@ void SubGarbage::update_garbage_hazard()
             *visual_position = *position;
 
             cRSubGoldy* owner = owner_player;
-            if (transform.position.z < owner->interaction_max_z)
+            if (transform.position.z < owner->active_window_min_z)
             {
                 destroy_garbage_hazard();
                 return;
@@ -116,7 +116,7 @@ side_adjustment_complete:
             velocity.y = gravity_step + velocity.y;
 
             if (transform.position.y < -10.0f
-                || transform.position.z < owner_player->interaction_max_z) {
+                || transform.position.z < owner_player->active_window_min_z) {
                 destroy_garbage_hazard();
                 return;
             }

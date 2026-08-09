@@ -37,7 +37,7 @@
 0043e904        do while (i != 1)
 0043e906        struct Player* owner_player = ring->owner_player
 0043e90c        long double x87_r7_8 = fconvert.t(ring->body.transform.position.z)
-0043e90f        long double temp7_1 = fconvert.t(owner_player->interaction_max_z)
+0043e90f        long double temp7_1 = fconvert.t(owner_player->active_window_min_z)
 0043e90f        x87_r7_8 - temp7_1
 0043e91a        if ((((x87_r7_8 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp7_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0043e920        uint16_t list_flags = (ring->body.bod.bod.list_flags).w

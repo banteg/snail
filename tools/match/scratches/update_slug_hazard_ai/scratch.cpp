@@ -94,7 +94,7 @@ active_state_tail:
         }
 
         sprite->position = transform.position;
-        if (transform.position.z < owner_player->interaction_max_z) {
+        if (transform.position.z < owner_player->active_window_min_z) {
             state = SUB_SLUG_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
             sprite->Kill();
@@ -124,7 +124,7 @@ update_tail:
         if (transform.position.z < owner_player->transform.position.z && passed_player == 0)
             passed_player = 1;
         sprite->position = transform.position;
-        if (transform.position.z < owner_player->interaction_max_z) {
+        if (transform.position.z < owner_player->active_window_min_z) {
             state = SUB_SLUG_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
             sprite->Kill();

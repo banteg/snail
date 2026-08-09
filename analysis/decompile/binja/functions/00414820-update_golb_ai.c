@@ -164,7 +164,7 @@
 00415263        return
 00414e3e        struct Player* owner_player = shot->owner_player
 00414e44        long double x87_r7_73 = fconvert.t(shot->flight_transform.position.z)
-00414e4a        long double temp15_1 = fconvert.t(owner_player->interaction_max_z)
+00414e4a        long double temp15_1 = fconvert.t(owner_player->active_window_min_z)
 00414e4a        x87_r7_73 - temp15_1
 00414e55        if ((((x87_r7_73 < temp15_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_73, temp15_1) ? 1 : 0) << 0xa | (x87_r7_73 == temp15_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00415263        kill_golb(shot)

@@ -90,7 +90,7 @@ The current high-confidence `Player` fields are:
 - `+0x2744`: `completion_handoff_cycle_progress`
 - `+0x2748`: `completion_handoff_cycle_step`
 - `+0x2750`: exact 0x214-byte `sub_hover` child (`cRSubHover`)
-- `+0x2980`: `interaction_max_z`
+- `+0x2980`: `active_window_min_z`
   - per-player collision and pickup ceiling
 - `+0x2984`: `presentation`
   - inline exact 0x19b4-byte `Snail` (`cRSnail`)

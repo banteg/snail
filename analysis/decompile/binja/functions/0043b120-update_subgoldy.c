@@ -1422,7 +1422,7 @@
 0043ce1d        unimplemented  {fstp st0, st0}
 0043ce1f        unimplemented  {fld st0, dword [esp+0x10]}
 0043ce23        enum SubHoverState state_1 = player->sub_hover.state
-0043ce29        player->interaction_max_z = fconvert.s(unimplemented  {fstp dword [ebp+0x2980], st0})
+0043ce29        player->active_window_min_z = fconvert.s(unimplemented  {fstp dword [ebp+0x2980], st0})
 0043ce29        unimplemented  {fstp dword [ebp+0x2980], st0}
 0043ce29        int16_t top_224 = top_222 + 1
 0043ce32        if (state_1 == SUB_HOVER_STATE_ACTIVE)

@@ -22,7 +22,7 @@
 00441d08        salt->fade_alpha = fconvert.s(x87_r7_4)
 00441d16        set_color_alpha(&salt->body.bod.color, 0.899999976f)
 00441d21        long double x87_r7_7 = fconvert.t(salt->body.transform.position.z)
-00441d24        long double temp4_1 = fconvert.t(salt->owner_game->player.interaction_max_z)
+00441d24        long double temp4_1 = fconvert.t(salt->owner_game->player.active_window_min_z)
 00441d24        x87_r7_7 - temp4_1
 00441d2f        if ((((x87_r7_7 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp4_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp4_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 00441d31        salt->state = SALT_STATE_RECYCLE_PENDING

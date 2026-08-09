@@ -25,7 +25,7 @@
 0043aa54        player->cutscene_pitch_cycle = 0f
 0043aa5a        player->cutscene_pitch_cycle_step = 0f
 0043aa6c        initialize_object_distort(&player->presentation.body.bod.object->distort)
-0043aa71        player->interaction_max_z = -19f
+0043aa71        player->active_window_min_z = -19f
 0043aa7b        player->shoot_sfx_variant_sample = 0
 0043aa86        player->presentation.cutscene_roll_progress = 0f
 0043aa8c        player->presentation.cutscene_roll_step = 0.0166666675f

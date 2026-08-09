@@ -442,7 +442,7 @@ the current residuals are source scheduling and owner-register issues inside
 the large update body.
 
 2026-06-20 Player header consolidation: this scratch now consumes shared
-`player.h` for `add_subgoldy_score`, `position.z`, and `interaction_max_z`.
+`player.h` for `add_subgoldy_score`, `position.z`, and `active_window_min_z`.
 Focused Wibo stays at `73.34%`, `645/694`, `68 ok / 0`; the large local
 `GolbShot` and `Game` owners remain scratch-local for the scheduling reasons
 above.

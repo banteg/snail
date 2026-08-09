@@ -6,7 +6,7 @@ This is the Windows callback for one authored `Fringe` (`cRFringe::AI()` owner
 on Android). It refreshes the object's skirt tint from
 `get_track_skirt_color`, then removes the object from the active BOD list and
 pushes it onto the shared free stack once its `world_z` falls behind the live
-fringe threshold at `Player::interaction_max_z`.
+fringe threshold at `Player::active_window_min_z`.
 
 The exact source shape has two useful details:
 
@@ -31,7 +31,7 @@ confirming that `Fringe` owns its body and color while root/subgame owners
 supply the shared list lifecycle and track-skirt color policy.
 
 2026-07-14 cull-owner closure: the last raw threshold access now follows
-`GameRoot::subgame.embedded_player()->interaction_max_z`, the same cull plane
+`GameRoot::subgame.embedded_player()->active_window_min_z`, the same cull plane
 used by the other pickup and hazard lifecycles. The canonical root pointer and
 active-list owner preserve the exact 63/63 instructions and all eight operands.
 

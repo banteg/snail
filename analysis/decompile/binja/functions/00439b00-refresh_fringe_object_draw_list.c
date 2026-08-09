@@ -11,7 +11,7 @@
 00439b2f        fringe->bod.color.b = eax->b
 00439b35        fringe->bod.color.a = eax->a
 00439b38        struct GameRoot* game_base_1 = g_game_base
-00439b3e        long double temp0 = fconvert.t(game_base_1->subgame.player.interaction_max_z)
+00439b3e        long double temp0 = fconvert.t(game_base_1->subgame.player.active_window_min_z)
 00439b3e        x87_r7 - temp0
 00439b49        if ((((x87_r7 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7, temp0) ? 1 : 0) << 0xa | (x87_r7 == temp0 ? 1 : 0) << 0xe):1.b & 1) == 0)
 00439b49        return

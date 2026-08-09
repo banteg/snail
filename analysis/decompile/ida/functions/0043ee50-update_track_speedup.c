@@ -59,7 +59,7 @@ LABEL_21:
       }
       else
       {
-        if ( speedup->body.transform.position.z >= (double)speedup->owner->interaction_max_z )
+        if ( speedup->body.transform.position.z >= (double)speedup->owner->active_window_min_z )
           return;
         v8 = speedup->body.bod.bod.list_flags;
         speedup->state = TRACK_PICKUP_STATE_INACTIVE;

@@ -92,7 +92,7 @@
 0043fbf5        *&eax_12[2] = slug->body.transform.position.z
 0043fbf8        struct Player* owner_player_1 = slug->owner_player
 0043fbfe        long double x87_r7_19 = fconvert.t(slug->body.transform.position.z)
-0043fc01        long double temp16_1 = fconvert.t(owner_player_1->interaction_max_z)
+0043fc01        long double temp16_1 = fconvert.t(owner_player_1->active_window_min_z)
 0043fc01        x87_r7_19 - temp16_1
 0043fc0c        if ((((x87_r7_19 < temp16_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_19, temp16_1) ? 1 : 0) << 0xa | (x87_r7_19 == temp16_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
 0043fc8d        long double x87_r7_20 = fconvert.t(owner_player_1->nuke_effect_progress)
@@ -217,7 +217,7 @@
 0043fd8b        edx_9->z = slug->body.transform.position.z
 0043fd8e        struct Player* owner_player_4 = slug->owner_player
 0043fd94        long double x87_r7_32 = fconvert.t(slug->body.transform.position.z)
-0043fd97        long double temp8_1 = fconvert.t(owner_player_4->interaction_max_z)
+0043fd97        long double temp8_1 = fconvert.t(owner_player_4->active_window_min_z)
 0043fd97        x87_r7_32 - temp8_1
 0043fda2        if ((((x87_r7_32 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_32, temp8_1) ? 1 : 0) << 0xa | (x87_r7_32 == temp8_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
 0043fe23        long double x87_r7_33 = fconvert.t(owner_player_4->nuke_effect_progress)

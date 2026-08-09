@@ -66,7 +66,7 @@ Residuals:
   (`fld world; fadd velocity` instead of `fld velocity; fadd world`), but the
   broad block layout is closer.
 - 2026-06-13 source-shaping follow-up 6: the state-3 teardown check now uses
-  `player->interaction_max_z` directly in the short-circuit condition and
+  `player->active_window_min_z` directly in the short-circuit condition and
   declares the smoke-call `owner` local after the destroy checks. This delays
   the `player` load until after the y `< -10` test, matching the native
   short-circuit shape without duplicating the destroy epilogue, and improves
@@ -145,7 +145,7 @@ Residuals:
   register selection. Do not force these with dummy locals, raw offset macros,
   volatile, or opaque casts without stronger original-source evidence.
 - 2026-06-16 Player consolidation: `heading_roll`, `nuke_effect_progress`, and
-  `interaction_max_z` now come from shared `player.h`. The final `+0x384` /
+  `active_window_min_z` now come from shared `player.h`. The final `+0x384` /
   `+0x3a0` roll-add path is the same embedded follow-state active/orientation
   lane used by camera and attachment carryover, now spelled through the
   canonical `follow_state.active` / `follow_state.orientation_b` owner.

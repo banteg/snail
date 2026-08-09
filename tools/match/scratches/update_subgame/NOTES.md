@@ -201,7 +201,7 @@ extent is exact: `0x3bb764 + sizeof(Player) (0x4364) == 0x3bfac8`, the first
 runtime track cell. This unifies the previously flattened aliases for
 `position.z +0x70`, `click_start.state +0x120`, `cameraman +0x200`, score/timer
 lanes `+0x2e4/+0x2e8`, `player_slot +0x380`, `velocity.z +0x418`,
-`control_source +0x43c`, and `interaction_max_z +0x2980`. The shared runtime
+`control_source +0x43c`, and `active_window_min_z +0x2980`. The shared runtime
 now embeds `Player player` directly; the temporary `player_storage` union and
 all contextual aliases have been retired. This scratch routes all player gates
 and spawn arguments through that member while preserving the current 78.22%,

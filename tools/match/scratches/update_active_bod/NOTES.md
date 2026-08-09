@@ -4,7 +4,7 @@ Exact match: 100.00%, 50/50 instructions.
 
 This helper updates one `TrackRenderCacheSlot`: once
 `cache_row_base + 24.0f` falls behind the embedded player's
-`interaction_max_z`, the node is removed from `GameRoot::active_bod_list` and
+`active_window_min_z`, the node is removed from `GameRoot::active_bod_list` and
 pushed onto its shared free stack.
 
 The exact source shape uses the same typed intrusive-list logic as exact
@@ -17,7 +17,7 @@ stayed exact at 50/50 instructions with 7 clean masked operands. The concrete
 owner recovery below supersedes that temporary generic view.
 
 2026-07-14 owner closure: root `+0x4326fc` is
-`subgame.player.interaction_max_z`, and root `+0x5a8` is the active/free BOD
+`subgame.player.active_window_min_z`, and root `+0x5a8` is the active/free BOD
 list owner. Following both through the canonical `GameRoot` graph preserves
 the exact 50/50 instructions and all seven operands.
 

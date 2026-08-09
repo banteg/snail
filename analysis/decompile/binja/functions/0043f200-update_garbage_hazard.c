@@ -21,7 +21,7 @@
 0043f24a        ecx_1->z = sub_garbage->body.transform.position.z
 0043f24d        struct Player* owner_player_1 = sub_garbage->owner_player
 0043f253        long double x87_r7_1 = fconvert.t(sub_garbage->body.transform.position.z)
-0043f256        long double temp1_1 = fconvert.t(owner_player_1->interaction_max_z)
+0043f256        long double temp1_1 = fconvert.t(owner_player_1->active_window_min_z)
 0043f256        x87_r7_1 - temp1_1
 0043f261        if ((((x87_r7_1 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp1_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp1_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0043f265        destroy_garbage_hazard(sub_garbage)
@@ -106,7 +106,7 @@
 0043f270        return
 0043f47d        struct Player* owner_player_2 = sub_garbage->owner_player
 0043f483        long double x87_r7_33 = fconvert.t(sub_garbage->body.transform.position.z)
-0043f486        long double temp5_1 = fconvert.t(owner_player_2->interaction_max_z)
+0043f486        long double temp5_1 = fconvert.t(owner_player_2->active_window_min_z)
 0043f486        x87_r7_33 - temp5_1
 0043f491        if ((((x87_r7_33 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_33, temp5_1) ? 1 : 0) << 0xa | (x87_r7_33 == temp5_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0043f265        destroy_garbage_hazard(sub_garbage)

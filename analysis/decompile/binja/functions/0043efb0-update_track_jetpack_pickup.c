@@ -11,7 +11,7 @@
 0043efce        struct BodList* ecx_1
 0043efce        if (state == 1)
 0043f048        long double x87_r7_1 = fconvert.t(jetpack->bod.position.z)
-0043f04b        long double temp2_1 = fconvert.t(jetpack->owner->interaction_max_z)
+0043f04b        long double temp2_1 = fconvert.t(jetpack->owner->active_window_min_z)
 0043f04b        x87_r7_1 - temp2_1
 0043f056        if ((((x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0043f05c        uint16_t list_flags_1 = (jetpack->bod.bod.list_flags).w

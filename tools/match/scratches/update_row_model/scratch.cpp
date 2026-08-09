@@ -14,7 +14,7 @@ void RowModel::update_row_model()
     position->z = velocity.z + position->z;
 
     if (((Object*)object)->bounds_max.z
-            + g_game->subgame.embedded_player()->interaction_max_z
+            + g_game->subgame.embedded_player()->active_window_min_z
         > transform.position.z) {
         unsigned int flags = list_flags;
         BodList* list = &g_game->active_bod_list;

@@ -43,13 +43,13 @@ void cRSubLoc::AI()
             g_game->subgame.sub_lazers.shoot_sub_lazer_pool(&spawn, &direction);
         }
 cull_check:
-        if (position.z < g_game->subgame.embedded_player()->interaction_max_z)
+        if (position.z < g_game->subgame.embedded_player()->active_window_min_z)
             Remove();
         return;
     }
 
     if (tile_id == SUBLOC_TILE_TRAMPOLINE) {
-        if (position.z >= g_game->subgame.embedded_player()->interaction_max_z)
+        if (position.z >= g_game->subgame.embedded_player()->active_window_min_z)
             return;
         goto destroy;
     }
@@ -65,14 +65,14 @@ cull_check:
         tColour* skirt = g_game->subgame.GetSkirtColour(&scratch);
         g_game->subgame.runtime_rows[Yi()]
             .attachment_body.color = *skirt;
-        if (g_game->subgame.embedded_player()->interaction_max_z
+        if (g_game->subgame.embedded_player()->active_window_min_z
                 - ((float)attachment_template_record->row_span_count + 5.0f)
             > position.z)
             Remove();
         return;
     }
 
-    if (position.z < g_game->subgame.embedded_player()->interaction_max_z
+    if (position.z < g_game->subgame.embedded_player()->active_window_min_z
         && (float)(g_game->subgame.completion_row_start - 5) > position.z) {
 destroy:
         Remove();

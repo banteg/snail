@@ -45,7 +45,7 @@ SUBGAME_FIELD_UPDATES = (
 )
 
 SUBGAME_PLAYER_FIELD_UPDATES = (
-    # update_sub_lazer_projectile reads Player::interaction_max_z through the
+    # update_sub_lazer_projectile reads Player::active_window_min_z through the
     # borrowed owner_game backlink. Install this only after the Player lane is complete.
     ("0x3bb764", "player", "Player"),
 )

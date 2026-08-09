@@ -17,7 +17,7 @@ void __thiscall refresh_fringe_object_draw_list(Fringe *fringe)
   track_skirt_color = get_track_skirt_color(&g_game_base->subgame, &out);
   z = fringe->bod.position.z;
   fringe->bod.color = *track_skirt_color;
-  if ( z < g_game_base->subgame.player.interaction_max_z )
+  if ( z < g_game_base->subgame.player.active_window_min_z )
   {
     list_flags = fringe->bod.bod.list_flags;
     p_active_bod_list = &g_game_base->active_bod_list;

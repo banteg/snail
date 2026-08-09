@@ -65,11 +65,11 @@ void __thiscall update_sub_loc(cRSubLoc *cell)
           }
           v2 = g_game_base;
 LABEL_9:
-          if ( cell->anchor_position.z < (double)v2->subgame.player.interaction_max_z )
+          if ( cell->anchor_position.z < (double)v2->subgame.player.active_window_min_z )
             remove_sub_loc(cell);
           return;
         case SUBLOC_TILE_TRAMPOLINE:
-          if ( cell->anchor_position.z >= (double)g_game_base->subgame.player.interaction_max_z )
+          if ( cell->anchor_position.z >= (double)g_game_base->subgame.player.active_window_min_z )
             return;
           goto LABEL_13;
         case SUBLOC_TILE_PATH_ENTRY_LOWERCASE:
@@ -82,13 +82,13 @@ LABEL_9:
           }
           track_skirt_color = get_track_skirt_color(&v2->subgame, &out);
           g_game_base->subgame.runtime_rows[get_track_cell_row_index(cell)].attachment_body.color = *track_skirt_color;
-          if ( g_game_base->subgame.player.interaction_max_z
+          if ( g_game_base->subgame.player.active_window_min_z
              - ((double)(int)cell->attachment_template_record->row_span_count
               + 5.0) > cell->anchor_position.z )
             remove_sub_loc(cell);
           break;
         default:
-          if ( cell->anchor_position.z < (double)g_game_base->subgame.player.interaction_max_z
+          if ( cell->anchor_position.z < (double)g_game_base->subgame.player.active_window_min_z
             && (double)(g_game_base->subgame.completion_row_start - 5) > cell->anchor_position.z )
           {
 LABEL_13:

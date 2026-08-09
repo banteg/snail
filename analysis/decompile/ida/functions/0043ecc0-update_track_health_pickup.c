@@ -63,7 +63,7 @@ LABEL_21:
           goto LABEL_20;
         }
       }
-      else if ( pickup->bod.position.z < (double)pickup->owner->interaction_max_z )
+      else if ( pickup->bod.position.z < (double)pickup->owner->active_window_min_z )
       {
         v8 = pickup->bod.bod.list_flags;
         pickup->state = TRACK_PICKUP_STATE_INACTIVE;

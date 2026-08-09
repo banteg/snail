@@ -18,7 +18,7 @@ void Parcel::update_track_parcel()
         break;
 
     case PARCEL_STATE_TRACK_ACTIVE: {
-        if (subgame->embedded_player()->interaction_max_z - 10.0f > position.z) {
+        if (subgame->embedded_player()->active_window_min_z - 10.0f > position.z) {
             sprite->Kill();
             state = PARCEL_STATE_INACTIVE;
         }

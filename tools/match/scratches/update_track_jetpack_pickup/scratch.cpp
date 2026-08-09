@@ -39,7 +39,7 @@ state_two:
     return;
 
 state_one:
-    if (position.z < owner->interaction_max_z) {
+    if (position.z < owner->active_window_min_z) {
         state = TRACK_PICKUP_STATE_INACTIVE;
         g_game->active_bod_list.remove_bod(this);
         sprite->Kill();

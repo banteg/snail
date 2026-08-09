@@ -12,7 +12,7 @@ Recovered behavior:
 - state `2` unlinks the pickup from the shared `g_game_base + 0x5a8` bod list,
   pushes it onto the free stack, clears `0x200`, and kills the sprite;
 - state `1` performs the same teardown once `transform.position.z` falls behind
-  `owner->interaction_max_z`.
+  `owner->active_window_min_z`.
 
 Both teardown arms now call the recovered inline `BodList::remove_bod`, matching
 Android's `cLinkedList<cRBod>::Remove` ownership. VC6 independently inlines the

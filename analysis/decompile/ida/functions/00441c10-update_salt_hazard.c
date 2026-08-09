@@ -33,7 +33,7 @@ void __thiscall update_salt_hazard(Salt *salt)
       }
       salt->fade_alpha = v9;
       set_color_alpha(&salt->body.bod.color, 0.89999998);
-      if ( salt->body.transform.position.z < (double)salt->owner_game->player.interaction_max_z )
+      if ( salt->body.transform.position.z < (double)salt->owner_game->player.active_window_min_z )
         salt->state = SALT_STATE_RECYCLE_PENDING;
     }
     else if ( v3 == 1 )

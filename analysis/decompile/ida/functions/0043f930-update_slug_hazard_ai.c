@@ -130,7 +130,7 @@ void __thiscall update_slug_hazard_ai(Slug *slug)
         p_position->y = slug->body.transform.position.y;
         p_position->z = slug->body.transform.position.z;
         v8 = slug->owner_player;
-        if ( slug->body.transform.position.z >= (double)v8->interaction_max_z )
+        if ( slug->body.transform.position.z >= (double)v8->active_window_min_z )
         {
           if ( v8->nuke_effect_progress > 0.0 )
             kill_slug_hazard(slug);
@@ -231,7 +231,7 @@ LABEL_69:
         v20->y = slug->body.transform.position.y;
         v20->z = slug->body.transform.position.z;
         v21 = slug->owner_player;
-        if ( slug->body.transform.position.z >= (double)v21->interaction_max_z )
+        if ( slug->body.transform.position.z >= (double)v21->active_window_min_z )
         {
           if ( v21->nuke_effect_progress > 0.0 )
             kill_slug_hazard(slug);

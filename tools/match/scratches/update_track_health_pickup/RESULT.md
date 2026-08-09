@@ -16,7 +16,7 @@
 ## Accepted changes
 
 - Structured the state-1 cull as the positive
-  `world_position.z < owner->interaction_max_z` arm, keeping the sine-bob tail
+  `world_position.z < owner->active_window_min_z` arm, keeping the sine-bob tail
   in the native final position instead of scheduling it before state-1
   teardown.
 - Split the two state-2 list errors into explicit cold exits, ordered so VC6

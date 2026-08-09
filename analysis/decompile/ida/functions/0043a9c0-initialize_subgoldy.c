@@ -38,7 +38,7 @@ void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->cutscene_pitch_cycle = 0.0;
   player->cutscene_pitch_cycle_step = 0.0;
   initialize_object_distort(&player->presentation.body.bod.object->distort);
-  player->interaction_max_z = -19.0;
+  player->active_window_min_z = -19.0;
   player->shoot_sfx_variant_sample = 0;
   player->presentation.cutscene_roll_progress = 0.0;
   player->presentation.cutscene_roll_step = 0.016666668;

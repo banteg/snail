@@ -290,7 +290,7 @@ void __thiscall update_golb_ai(GolbShot *shot)
       if ( v38 <= 1.0 )
       {
         owner_player = shot->owner_player;
-        if ( shot->flight_transform.position.z >= (double)owner_player->interaction_max_z
+        if ( shot->flight_transform.position.z >= (double)owner_player->active_window_min_z
           && owner_player->body.transform.position.z + 46.0 >= shot->flight_transform.position.z )
         {
           active_head = shot->game->garbage_hazards.active_head;

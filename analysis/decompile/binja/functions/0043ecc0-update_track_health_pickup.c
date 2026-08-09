@@ -11,7 +11,7 @@
 0043ecde        struct BodList* ecx_1
 0043ecde        if (state == 1)
 0043ed58        long double x87_r7_1 = fconvert.t(pickup->bod.position.z)
-0043ed5b        long double temp2_1 = fconvert.t(pickup->owner->interaction_max_z)
+0043ed5b        long double temp2_1 = fconvert.t(pickup->owner->active_window_min_z)
 0043ed5b        x87_r7_1 - temp2_1
 0043ed66        if ((((x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 0043ed6c        uint16_t list_flags_1 = (pickup->bod.bod.list_flags).w

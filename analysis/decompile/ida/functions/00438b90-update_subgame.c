@@ -219,7 +219,7 @@ LABEL_25:
           game->runtime_row_scan_end = game->runtime_row_count;
           goto LABEL_62;
         }
-        v12 = (__int64)game->player.interaction_max_z + 46;
+        v12 = (__int64)game->player.active_window_min_z + 46;
 LABEL_61:
         game->runtime_row_scan_end = v12;
         goto LABEL_62;
@@ -232,7 +232,7 @@ LABEL_61:
         game->runtime_row_scan_end = game->runtime_row_count;
         goto LABEL_62;
       }
-      v12 = (__int64)game->player.interaction_max_z + 46;
+      v12 = (__int64)game->player.active_window_min_z + 46;
       if ( v12 > runtime_row_scan_end )
         goto LABEL_61;
 LABEL_62:

@@ -8,7 +8,7 @@ Recovered relationships:
   (`g_game_base + 0x74618`), not the root game base. Its `+0x09` byte is the
   `subgame_pause_gate` checked at entry.
 - State `1` is the live bobbing pickup state. It culls behind
-  `Player::interaction_max_z` at `subgame+0x3be0e4`, mirrors inherited
+  `Player::active_window_min_z` at `subgame+0x3be0e4`, mirrors inherited
   `BodBase::position` into the sprite, and copies `Player::heading_roll` from
   the borrowed `owner_player`, optionally adding
   `follow_state.orientation_b` when `follow_state.active` is set.

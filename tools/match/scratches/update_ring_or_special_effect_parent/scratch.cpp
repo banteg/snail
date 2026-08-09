@@ -50,7 +50,7 @@ void SubRing::update_ring_or_special_effect_parent()
         } while (count != 0);
         }
 
-        if (transform.position.z < owner_player->interaction_max_z) {
+        if (transform.position.z < owner_player->active_window_min_z) {
             state = SUB_RING_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
 

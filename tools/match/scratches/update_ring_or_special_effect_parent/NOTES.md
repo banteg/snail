@@ -27,7 +27,7 @@ Evidence:
   `owner_player->lives` against it only when parent `position.z` is at or beyond
   the player's interaction Z limit. If the parent falls below that limit, native
   immediately removes the parent and kills the ten child sprites. This corrects
-  the earlier inverted `position.z < interaction_max_z` interpretation.
+  the earlier inverted `position.z < active_window_min_z` interpretation.
 - Parent `+0x1dc` gates the sine-driven `position.x` oscillation using
   `active_phase +0x1e0` and `active_phase_step +0x1e4`.
 - The state-3 collapse uses a real `Vector3 delta` toward
@@ -110,7 +110,7 @@ Residual:
   `Vector3`/indexed-array model rather than encoding register or byte-layout
   tricks for those six instruction-order differences.
 - 2026-06-16 state-1 branch-shape pass: spelling the z-threshold as
-  `position.z < owner_player->interaction_max_z` with the removal path in the
+  `position.z < owner_player->active_window_min_z` with the removal path in the
   taken source block recovers the native physical order for the remove-vs-lives
   decision. Focused Wibo improves from `79.53%` to `86.35%` while preserving
   the native `0x18` stack frame. The only new audit debt is the candidate local

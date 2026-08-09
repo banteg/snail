@@ -2573,7 +2573,7 @@ typedef struct Player {
     Vec3 cached_camera_target_world;
     int32_t steering_mode_selector;
     uint8_t _pad_2974[0xc];
-    float interaction_max_z;
+    float active_window_min_z;
     Snail presentation;
     int32_t parcels_collected;
     uint8_t _pad_433c[0x4];

@@ -1000,7 +1000,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2750", "sub_hover", "SubHover"),
     ("0x2964", "cached_camera_target_world", "Vec3"),
     ("0x2970", "steering_mode_selector", "int32_t"),
-    ("0x2980", "interaction_max_z", "float"),
+    ("0x2980", "active_window_min_z", "float"),
     ("0x2984", "presentation", "Snail"),
     ("0x4338", "parcels_collected", "int32_t"),
     ("0x4340", "visible_life_stock", "int32_t"),

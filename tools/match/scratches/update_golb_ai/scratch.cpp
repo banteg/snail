@@ -173,7 +173,7 @@ void GolbShot::update_golb_ai()
     previous_flight_transform.position = source_matrix.position;
     if (lived <= 1.0f) {
         cRSubGoldy* bounds_player = player;
-        if (flight_transform.position.z >= bounds_player->interaction_max_z
+        if (flight_transform.position.z >= bounds_player->active_window_min_z
             && bounds_player->transform.position.z + 46.0f >= flight_transform.position.z) {
             SubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {

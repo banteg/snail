@@ -64,7 +64,7 @@ void __thiscall update_track_parcel(Parcel *parcel)
     switch ( parcel->state )
     {
       case PARCEL_STATE_TRACK_ACTIVE:
-        if ( owner_subgame->player.interaction_max_z - 10.0 > parcel->bod.position.z )
+        if ( owner_subgame->player.active_window_min_z - 10.0 > parcel->bod.position.z )
         {
           kill_sprite(parcel->sprite);
           parcel->state = PARCEL_STATE_INACTIVE;

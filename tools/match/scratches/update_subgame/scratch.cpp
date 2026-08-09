@@ -232,14 +232,14 @@ void cRSubGame::AI()
             if (level_mode == two)
                 runtime_row_scan_end = runtime_row_count;
             else
-                runtime_row_scan_end = (int)player.interaction_max_z + 46;
+                runtime_row_scan_end = (int)player.active_window_min_z + 46;
         } else {
             int old_end = runtime_row_scan_end;
             runtime_row_scan_begin = old_end;
             if (level_mode == two) {
                 runtime_row_scan_end = runtime_row_count;
             } else {
-                int new_end = (int)player.interaction_max_z + 46;
+                int new_end = (int)player.active_window_min_z + 46;
                 if (new_end > old_end)
                     runtime_row_scan_end = new_end;
             }
