@@ -66,3 +66,19 @@ state/fade/spin layout before `cRSnail +0x1764`, where Snail's cutscene roll
 pair begins. Windows now mirrors that boundary: `Invincible` ends at
 `Snail +0x192c` after 0x98 bytes, and the unrelated roll/release lanes no
 longer inflate this authored owner.
+
+## 2026-08-09 named invincibility capability
+
+The four exact Windows tests at `0x444b72`, `0x444bcd`, `0x444be4`, and
+`0x444c3c` consume the same `Player::shoot_flags` bit `0x80`: it starts the
+inactive shell, moves fading-in or active state to fading-out when clear, and
+reactivates a fading-out shell when set. This complete state relationship is
+the primary semantic evidence that the bit is an invincibility capability,
+not another weapon-family selector.
+
+Android `cRInvincible::AI()` tests the homologous Goldy `+0x324` bit through
+the same four-state machine. iOS `cRInvincible::AI()` independently tests the
+same `+0x324` bit for start, fade-out, and reactivation while retaining the
+authored owner. Replacing the raw mask with the shared named capability is
+codegen-neutral: focused Windows matching remains exact at 98/98 instructions,
+full prefix, and 28 clean operands.

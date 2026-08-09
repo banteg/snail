@@ -857,3 +857,23 @@ paths do not set it.
 This closure is score-neutral. Focused validation remains 85.88%, 673/673,
 prefix 18, frame `0x74`, and 89 clean references; the stalled vector grids were
 not reopened.
+
+## 2026-08-09 invincibility-capability collision contract
+
+Windows loads the named `shoot_flags` capability mask once at `0x444d29` and
+reuses it at three exact collision decisions: the salt sweep is skipped while
+invincible, garbage still bursts and scores but its velocity knockback is
+suppressed, and a colliding slug is killed instead of entering the
+slug-fall/damage branch. Exact `cRDamageGuage::Take` separately blocks the
+unforced gauge deltas issued by the surrounding collision paths.
+
+Android and iOS `cRSubGoldy::Collision()` preserve the same three bit-`0x80`
+decisions at their homologous Goldy `shoot_flags +0x324`: salt exclusion,
+garbage knockback suppression, and slug kill-versus-fall selection. This
+corroborates capability semantics without assigning names to the lower seven
+weapon selector bits.
+
+Replacing the three raw masks with the shared named capability is
+codegen-neutral. Focused Windows validation remains 85.88%, 673/673
+instructions, prefix 18, native frame `0x74`, and all 89 references clean.
+The formally stalled collision stack-coloring lane was not reopened.

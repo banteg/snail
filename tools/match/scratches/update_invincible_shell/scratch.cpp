@@ -1,5 +1,5 @@
 // update_invincible_shell @ 0x444b50 (thiscall, ret)
-// Fade/spin controller for the invincible snail-shell presentation.
+// Fade/spin controller driven by Goldy's invincibility capability.
 
 #include "game_root.h"
 #include "invincible.h"
@@ -10,7 +10,8 @@ void Invincible::update_invincible_shell()
 {
     switch (state) {
     case INVINCIBLE_STATE_INACTIVE:
-        if ((g_game->subgame.player.shoot_flags & 0x80) != 0) {
+        if ((g_game->subgame.player.shoot_flags
+                & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) != 0) {
             start_invincible_shell();
         } else {
             g_game->subgame.player.presentation.invincible_shell.list_flags &=
@@ -24,12 +25,14 @@ void Invincible::update_invincible_shell()
             fade_progress = 1.0f;
             state = INVINCIBLE_STATE_ACTIVE;
         }
-        if ((g_game->subgame.player.shoot_flags & 0x80) == 0)
+        if ((g_game->subgame.player.shoot_flags
+                & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0)
             state = INVINCIBLE_STATE_FADING_OUT;
         break;
 
     case INVINCIBLE_STATE_ACTIVE:
-        if ((g_game->subgame.player.shoot_flags & 0x80) == 0)
+        if ((g_game->subgame.player.shoot_flags
+                & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0)
             state = INVINCIBLE_STATE_FADING_OUT;
         break;
 
@@ -42,7 +45,8 @@ void Invincible::update_invincible_shell()
                 SNAIL_SKIN_SLOT_DEFAULT, 0.0f);
             return;
         }
-        if ((g_game->subgame.player.shoot_flags & 0x80) != 0)
+        if ((g_game->subgame.player.shoot_flags
+                & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) != 0)
             state = INVINCIBLE_STATE_FADING_IN;
         break;
     }

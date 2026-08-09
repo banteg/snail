@@ -2,6 +2,7 @@
 // Eight pool sweeps against the player's cached camera target: salt,
 // sub-lazer, garbage (intrusive list), slugs, track rings/parcels, health
 // pickups, the speedup and jetpack singles, and the ring-effect ladder.
+// The invincibility capability gates salt, garbage knockback, and slug hits.
 // Shared idiom: delta z pre-gate < threshold, then normalize_vector distance.
 
 #include <stddef.h>
@@ -61,7 +62,7 @@ void cRSubGoldy::Collision()
     Vec3 probe_fx;     // v78
 
     if (!attachment_exit_pending && !boost_one_tick && !slug_fall_active) {
-        if ((shoot_flags & 0x80) == 0) {
+        if ((shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0) {
             for (int i = 0;
                  i < (int)sizeof(game->salt_hazards.slots);
                 i += (int)sizeof(Salt)) {
@@ -113,7 +114,7 @@ void cRSubGoldy::Collision()
                     garbage->transform.position - cached_camera_target_world;
                 probe_b = delta;
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.98000002f) {
-                    if ((shoot_flags & 0x80) == 0) {
+                    if ((shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0) {
                         velocity.x = velocity.x - probe_b.x * velocity.z * 0.18000001f;
                         velocity.z = velocity.z - probe_b.z * velocity.z * 0.1f;
                     }
@@ -142,7 +143,7 @@ void cRSubGoldy::Collision()
                 if (slug_delta.z < 2.0f) {
                     float distance = normalize_vector(&probe_b);
                     if (distance < 1.5675001f) {
-                        if ((shoot_flags & 0x80) == 0) {
+                        if ((shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0) {
                             if (!slug_fall_active) {
                                 cRSubGame* hit_game = game;
                                 slug_fall_active = 1;

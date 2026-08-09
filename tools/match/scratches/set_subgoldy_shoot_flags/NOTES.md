@@ -162,3 +162,22 @@ duplicated branch assignments, and the older two-value lifetime. Those shapes
 all regressed to 93.75%; the unconditional member refresh was the sole
 improving variant. No volatile access, dummy state, source label, or
 translation-unit coupling is involved.
+
+## 2026-08-09 invincibility-capability producer closure
+
+Whole-image Binary Ninja field xrefs close `cRSubGoldy::SetShootFlags()` as
+the complete nonzero producer family for `Player::shoot_flags`. Apart from the
+initializer's zero store, every write to `Player +0x338` belongs to this exact
+selector body. The cases that carry bit `0x80` are exactly `0xc0`, `0x90`, and
+`0x81`; the `0x01..0x40` cases leave it clear. This proves one independent
+invincibility capability over the otherwise still-unnamed lower weapon-family
+selector bits.
+
+Android `cRSubGoldy::SetShootFlags()` independently preserves the same table
+at mobile Goldy `+0x324`, including the three composite values, before the
+conditional `cRSnail::SetWeapon(int)` refresh. No lower-bit semantic names are
+transferred from their numeric selector positions.
+
+Spelling the three composite masks as the named invincibility bit OR the
+retained lower literals is codegen-neutral. Focused Windows validation remains
+exact at 50/50 instructions, full prefix, and two clean operands.

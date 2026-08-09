@@ -121,3 +121,16 @@ makes IDA render `SLOBYTE(g_game_base->subgame.player.shoot_flags) >= 0`,
 agreeing with Binary Ninja's `(shoot_flags & 0x80) == 0` interpretation.
 The signed-byte source shape therefore confirms bit `0x80` as the unforced
 damage gate without changing the already exact matching source.
+
+## 2026-08-09 invincibility-capability damage contract
+
+The exact Windows entry test at `0x4413f9` rejects every unforced gauge delta
+while the named invincibility capability is active; the explicit `force`
+argument is the sole bypass. This is the damage-side consumer paired with the
+visual lifecycle in exact `cRInvincible::AI()`.
+
+Android and iOS `cRDamageGuage::Take(float, bool)` independently test bit
+`0x80` of their homologous Goldy `shoot_flags` word at `+0x324` before the same
+force bypass and drain-state rules. The named mask does not alter the exact
+Windows source shape: focused matching remains 94/94 instructions, full
+prefix, and 24 clean operands.

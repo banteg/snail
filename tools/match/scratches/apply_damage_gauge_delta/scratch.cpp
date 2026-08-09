@@ -1,6 +1,6 @@
 // apply_damage_gauge_delta @ 0x4413f0 (thiscall, ret 0x8)
-// Hit-flash side-effect chain + gauge fill clamp. Gate: sign bit of the
-// owning cRSubGoldy's movement flags (unforced only); state 2 blocks unforced
+// Hit-flash side-effect chain + gauge fill clamp. Gate: the owning
+// cRSubGoldy's invincibility capability (unforced only); state 2 blocks unforced
 // positive deltas and negative ones during a trampoline bounce.
 
 #include "damage_guage.h"
@@ -10,7 +10,9 @@
 
 void DamageGuage::apply_damage_gauge_delta(float delta, bool force)
 {
-    if (((g_game->subgame.embedded_player()->shoot_flags & 0x80) == 0 || force)
+    if (((g_game->subgame.embedded_player()->shoot_flags
+                & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0
+            || force)
         && (state != DAMAGE_GUAGE_STATE_DRAINING || delta <= 0.0f)
         && (state != DAMAGE_GUAGE_STATE_DRAINING
             || delta >= 0.0f

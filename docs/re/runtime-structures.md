@@ -50,7 +50,10 @@ The current high-confidence `Player` fields are:
     table into `shoot_flags`
 - `+0x338`: `shoot_flags`
   - consumed by `Shoot`, `PlayShootSfx`, Golb creation, weapon presentation,
-    and the bit-`0x80` invincibility/damage gates
+    and the named `SUBGOLDY_SHOOT_FLAG_INVINCIBLE` capability at bit `0x80`
+  - exact `cRSubGoldy::SetShootFlags()` is the complete nonzero producer;
+    only tier composites `0xc0`, `0x90`, and `0x81` carry invincibility, while
+    the lower weapon-family selector bits remain intentionally unnamed
 - `+0x33c`: `previous_shoot_flags`
   - change detector for the owned `cRSnail::SetWeapon(int)` refresh
 - `+0x374`: `nuke_effect_progress`
@@ -217,6 +220,10 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x8c`: `fade_progress`
     - `+0x90`: `fade_step`
     - `initialize_invincible_shell`, `start_invincible_shell`, and `update_invincible_shell` all operate on this same embedded controller
+    - its complete external lifecycle input is
+      `Player::shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE`; the same
+      capability blocks unforced damage and selects salt, garbage-knockback,
+      and slug collision behavior
   - `+0x192c/+0x1930`: Snail-owned cutscene roll progress/step
   - `+0x1934`: Snail-owned animation-channel release-step gate
   - `+0x1938`: exact 0x20-byte `snail_skin` (`cRSnailSkin`)
@@ -891,7 +898,7 @@ Current practical read:
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
-    - when `shoot_flags & 0x80` is clear, the garbage-hit branch subtracts `normalized_contact.x * velocity.z * 0.18` from `player->velocity.x` and `normalized_contact.z * velocity.z * 0.10` from `player->velocity.z`
+    - when `shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE` is clear, the garbage-hit branch subtracts `normalized_contact.x * velocity.z * 0.18` from `player->velocity.x` and `normalized_contact.z * velocity.z * 0.10` from `player->velocity.z`
     - the grounded track leg in `update_subgoldy` then applies `position += velocity` and damps `velocity.x` by `1 - track_center_x * 0.1` each tick
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
 - the embedded `ParcelManager::slots` are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`

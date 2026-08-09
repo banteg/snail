@@ -134,6 +134,13 @@ public:
 typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
 typedef Snail cRSnail;
 
+// Capability bit composed with the lower weapon-family selectors by
+// cRSubGoldy::SetShootFlags. The lower selector bits remain intentionally
+// unnamed until their combined ownership is recovered.
+enum SubGoldyShootFlag {
+    SUBGOLDY_SHOOT_FLAG_INVINCIBLE = 0x80,
+};
+
 class cRSubGoldy : public RenderableBod {
 public:
     void AI();              // @ 0x43b120, cRSubGoldy::AI()

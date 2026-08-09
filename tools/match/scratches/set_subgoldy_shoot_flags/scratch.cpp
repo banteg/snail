@@ -1,4 +1,5 @@
 // set_subgoldy_shoot_flags @ 0x43a1a0, authored cRSubGoldy::SetShootFlags()
+// Bit 0x80 is the invincibility capability; lower weapon selectors stay literal.
 
 #include "player.h"
 
@@ -36,15 +37,15 @@ void cRSubGoldy::SetShootFlags()
         shoot_cooldown_step = 0.13333334f;
         break;
     case 7:
-        shoot_flags = 192;
+        shoot_flags = SUBGOLDY_SHOOT_FLAG_INVINCIBLE | 64;
         shoot_cooldown_step = 0.13333334f;
         break;
     case 8:
-        shoot_flags = 144;
+        shoot_flags = SUBGOLDY_SHOOT_FLAG_INVINCIBLE | 16;
         shoot_cooldown_step = 0.111111104f;
         break;
     default:
-        shoot_flags = 129;
+        shoot_flags = SUBGOLDY_SHOOT_FLAG_INVINCIBLE | 1;
 slow_fire:
         shoot_cooldown_step = 0.06666667f;
         break;

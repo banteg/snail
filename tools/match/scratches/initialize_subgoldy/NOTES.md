@@ -392,3 +392,16 @@ slot `1` selects their first root-owned `cRInput` at root `+0x94`, the other
 slot selects the second at root `+0x100`, and the chosen pointer is stored at
 the mobile Goldy field `+0x42c`. These are port-specific offsets corroborating
 the owner and selection rule; no mobile layout is transferred to Windows.
+
+## 2026-08-09 invincibility-capability initialization
+
+The exact store at `0x43aa14` clears the complete `Player::shoot_flags` word
+with the function-wide known-zero `ebx`. Whole-image field xrefs find no other
+initializer or alternate clear writer: the only remaining writer function is
+the exact authored `cRSubGoldy::SetShootFlags()` selector. Initialization thus
+starts the invincibility capability bit clear before the embedded
+`cRInvincible` child is initialized.
+
+This is an ownership proof, not a new source-shaping claim. The ordinary
+whole-word zero store remains exact at 279/279 instructions with all 27
+operands clean.
