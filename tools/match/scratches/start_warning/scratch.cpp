@@ -2,7 +2,7 @@
 
 #include "warning.h"
 
-void Warning::start_warning()
+void cRWarning::Start()
 {
     phase = 1.0f;
     state = WARNING_STATE_FADING;

@@ -86,7 +86,7 @@ void cRSubGoldy::AI()
         if (g_game->players[0].frontend_state != 9) {
             damage_gauge.AI();
             progress_bar.update_progress_bar();
-            warning.update_warning();
+            warning.AI();
             game->completion.AI();
         }
         return;
@@ -641,7 +641,7 @@ steering_stored:
         }
     }
 
-    warning.update_warning();
+    warning.AI();
 
     {
         Vector3 wall_probe;

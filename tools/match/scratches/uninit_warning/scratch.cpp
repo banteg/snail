@@ -4,7 +4,7 @@
 #include "warning.h"
 
 
-void Warning::uninit_warning()
+void cRWarning::UnInit()
 {
     g_game->border_manager.kill_border(border);
 }

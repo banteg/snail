@@ -11,14 +11,14 @@ enum WarningState {
     WARNING_STATE_FADING = 2,
 };
 
-class Warning {
+class cRWarning {
 public:
-    void initialize_warning(); // @ 0x446e80, cRWarning::Init
-    void uninit_warning(); // @ 0x446f10, cRWarning::UnInit
-    void start_warning(); // @ 0x446f30, cRWarning::Start
-    void stop_warning(); // @ 0x446f50, cRWarning::Stop
-    void stop_warning_sample(); // @ 0x446f60, cRWarning::StopSample
-    void update_warning(); // @ 0x446f80, cRWarning::AI
+    void Init(); // @ 0x446e80
+    void UnInit(); // @ 0x446f10
+    void Start(); // @ 0x446f30
+    void Stop(); // @ 0x446f50
+    void StopSample(); // @ 0x446f60, receiver unused by Windows body
+    void AI(); // @ 0x446f80
 
     WarningState state; // +0x00
     float phase; // +0x04
@@ -26,6 +26,9 @@ public:
     FrontendWidget* border; // +0x0c
 };
 
+typedef cRWarning Warning;
+
+typedef char cRWarning_must_be_0x10[(sizeof(cRWarning) == 0x10) ? 1 : -1];
 typedef char Warning_must_be_0x10[(sizeof(Warning) == 0x10) ? 1 : -1];
 
 #endif

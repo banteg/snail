@@ -2,7 +2,7 @@
 
 #include "warning.h"
 
-void Warning::stop_warning()
+void cRWarning::Stop()
 {
     state = WARNING_STATE_INACTIVE;
     border->hide_border_init();

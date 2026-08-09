@@ -20,3 +20,15 @@ receiver, matching the mobile `cRWarning::StopSample` ownership edge. Both
 tracked decompilers also preserve the nested `g_sound_effect_manager` receiver.
 Focused matching remains exact at 7/7 instructions with four clean masked
 operands.
+
+## 2026-08-09 primary cRWarning ownership
+
+The matcher now emits this sample edge as `cRWarning::StopSample()` and binds
+the owner-qualified VC6 symbol `?StopSample@cRWarning@@QAEXXZ`; `Warning`
+remains a compatibility typedef. The live Windows view confirms the member ABI
+and sole direct call at `0x441105`, while the seven-instruction body never
+reads the incoming ECX receiver: it binds `g_sound_effect_manager`, plays
+sample `0x32`, then stops the returned handle. Android and iOS independently
+retain the authored method even though Android's body is a port-specific no-op.
+Keeping the receiver-free Windows body source-honest remains exact at 7/7
+instructions with all four masked operands clean.

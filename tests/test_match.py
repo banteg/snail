@@ -1061,9 +1061,13 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x404920, "initialize_completion_screen", "?Init@cRCompletion@@QAEXHE@Z"),
             (0x440FA0, "initialize_damage_gauge", "?Init@cRDamageGuage@@QAEXXZ"),
             (0x444AC0, "initialize_invincible_shell", "?Init@cRInvincible@@QAEXXZ"),
+            (0x446E80, "initialize_warning", "?Init@cRWarning@@QAEXXZ"),
+            (0x444AE0, "start_invincible_shell", "?Start@cRInvincible@@QAEXXZ"),
+            (0x446F30, "start_warning", "?Start@cRWarning@@QAEXXZ"),
             (0x404CF0, "update_row_event_display", "?AI@cRCompletion@@QAEXXZ"),
             (0x440FD0, "update_damage_gauge", "?AI@cRDamageGuage@@QAEXXZ"),
             (0x444B50, "update_invincible_shell", "?AI@cRInvincible@@QAEXXZ"),
+            (0x446F80, "update_warning", "?AI@cRWarning@@QAEXXZ"),
         )
     )
     manifest = ReferenceSymbolManifest(name="test references", symbols=symbols)
@@ -1071,7 +1075,7 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
     for symbol in symbols:
         assert _reference_symbol_for_symbol_name(manifest, symbol.aliases[0]) is symbol
     assert (
-        _reference_symbol_for_symbol_name(manifest, "?AI@cRWarning@@QAEXXZ")
+        _reference_symbol_for_symbol_name(manifest, "?AI@cRUnknown@@QAEXXZ")
         is None
     )
 

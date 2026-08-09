@@ -235,7 +235,7 @@ void cRSubGame::Init()
     player->boost_one_tick = 0;
     player->lives = 0;
     player->list_flags &= ~0x20u;
-    player->warning.initialize_warning();
+    player->warning.Init();
 
     selector = subgame_rebuild_selector;
     if (selector != 0 && selector != 3) {

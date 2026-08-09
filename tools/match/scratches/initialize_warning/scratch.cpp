@@ -4,7 +4,7 @@
 #include "warning.h"
 
 
-void Warning::initialize_warning()
+void cRWarning::Init()
 {
     tColour color;
 

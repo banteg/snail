@@ -18,3 +18,13 @@ operand.
 `void __thiscall(Warning*)` ABI, including `warning->phase`, `state`, and owned
 `border`. Focused matching remains exact at 4/4 instructions with one clean
 masked operand.
+
+## 2026-08-09 primary cRWarning ownership
+
+The matcher now emits this transition as `cRWarning::Start()` and binds the
+owner-qualified VC6 symbol `?Start@cRWarning@@QAEXXZ`; `Warning` remains a
+compatibility typedef. The live Windows view confirms the void `thiscall`
+receiver and sole direct call at `0x4411a8` from the damage-gauge controller.
+Android independently exports the same authored method and caller edge. The
+promotion is codegen-neutral: focused matching remains exact at 4/4
+instructions with its one masked operand clean.

@@ -2832,6 +2832,133 @@ def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
         assert "initialize_completion_screen" not in spec
 
 
+def test_mobile_warning_recovers_authored_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    scratch_root = repo_root / "tools/match/scratches"
+    warning_header = (repo_root / "tools/match/include/warning.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRWarning {" in warning_header
+    assert "typedef cRWarning Warning;" in warning_header
+    assert "class Warning {" not in warning_header
+    for method in (
+        "void Init();",
+        "void UnInit();",
+        "void Start();",
+        "void Stop();",
+        "void StopSample();",
+        "void AI();",
+    ):
+        assert method in warning_header
+    for retired_method in (
+        "initialize_warning",
+        "uninit_warning",
+        "start_warning",
+        "stop_warning",
+        "stop_warning_sample",
+        "update_warning",
+    ):
+        assert retired_method not in warning_header
+
+    player_header = (repo_root / "tools/match/include/player.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRWarning warning;" in player_header
+
+    expected_methods = (
+        (
+            "initialize_warning",
+            "cRWarning::Init()",
+            "cRWarning_Init",
+            "void cRWarning::Init()",
+            "?Init@cRWarning@@QAEXXZ",
+        ),
+        (
+            "uninit_warning",
+            "cRWarning::UnInit()",
+            "cRWarning_UnInit",
+            "void cRWarning::UnInit()",
+            "?UnInit@cRWarning@@QAEXXZ",
+        ),
+        (
+            "start_warning",
+            "cRWarning::Start()",
+            "cRWarning_Start",
+            "void cRWarning::Start()",
+            "?Start@cRWarning@@QAEXXZ",
+        ),
+        (
+            "stop_warning",
+            "cRWarning::Stop()",
+            "cRWarning_Stop",
+            "void cRWarning::Stop()",
+            "?Stop@cRWarning@@QAEXXZ",
+        ),
+        (
+            "stop_warning_sample",
+            "cRWarning::StopSample()",
+            "cRWarning_StopSample",
+            "void cRWarning::StopSample()",
+            "?StopSample@cRWarning@@QAEXXZ",
+        ),
+        (
+            "update_warning",
+            "cRWarning::AI()",
+            "cRWarning_AI",
+            "void cRWarning::AI()",
+            "?AI@cRWarning@@QAEXXZ",
+        ),
+    )
+    for windows_name, mobile_symbol, alias, definition, object_symbol in (
+        expected_methods
+    ):
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    caller_expectations = {
+        "initialize_subgame": ("warning.Init();",),
+        "destroy_subgame": ("warning.UnInit();",),
+        "update_damage_gauge": (
+            "warning.Start();",
+            "warning.Stop();",
+            "warning.StopSample();",
+        ),
+        "update_subgoldy": ("warning.AI();",),
+    }
+    for scratch_name, expected_calls in caller_expectations.items():
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        for expected_call in expected_calls:
+            assert expected_call in source
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

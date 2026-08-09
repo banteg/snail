@@ -240,7 +240,7 @@ public:
     cRDamageGuage damage_gauge;   // +0x3c4
     ProgressBar progress_bar;               // +0x3f0, empty authored cRProgressBar
     char unknown_3f1[0x3f4 - 0x3f1];
-    Warning warning;                       // +0x3f4, authored cRWarning owner
+    cRWarning warning;                     // +0x3f4, authored cRWarning owner
     int lives;                            // +0x404
     // Non-owning backlink to the cRSubGame that embeds this cRSubGoldy.
     // initialize_subgoldy is its sole setter; teardown never frees through it.

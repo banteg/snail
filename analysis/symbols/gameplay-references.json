@@ -567,6 +567,60 @@
       "description": "Exact authored cRInvincible::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x446e80",
+      "name": "initialize_warning",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRWarning@@QAEXXZ"
+      ],
+      "description": "Exact authored no-argument Windows cRWarning::Init() member."
+    },
+    {
+      "address": "0x446f10",
+      "name": "uninit_warning",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRWarning@@QAEXXZ"
+      ],
+      "description": "Exact authored cRWarning::UnInit() member."
+    },
+    {
+      "address": "0x446f30",
+      "name": "start_warning",
+      "kind": "function",
+      "aliases": [
+        "?Start@cRWarning@@QAEXXZ"
+      ],
+      "description": "Exact authored cRWarning::Start() member."
+    },
+    {
+      "address": "0x446f50",
+      "name": "stop_warning",
+      "kind": "function",
+      "aliases": [
+        "?Stop@cRWarning@@QAEXXZ"
+      ],
+      "description": "Exact authored cRWarning::Stop() member."
+    },
+    {
+      "address": "0x446f60",
+      "name": "stop_warning_sample",
+      "kind": "function",
+      "aliases": [
+        "?StopSample@cRWarning@@QAEXXZ"
+      ],
+      "description": "Exact authored cRWarning::StopSample() member; its Windows body deliberately does not read the receiver."
+    },
+    {
+      "address": "0x446f80",
+      "name": "update_warning",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRWarning@@QAEXXZ"
+      ],
+      "description": "Exact authored cRWarning::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",

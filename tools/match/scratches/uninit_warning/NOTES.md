@@ -12,3 +12,13 @@ with two clean masked operands.
 `void __thiscall(Warning*)` ABI and release `warning->border` through the exact
 `0x10` owner. Focused matching remains exact at 6/6 instructions with two clean
 masked operands.
+
+## 2026-08-09 primary cRWarning ownership
+
+The matcher now emits this teardown as `cRWarning::UnInit()` and binds the
+owner-qualified VC6 symbol `?UnInit@cRWarning@@QAEXXZ`; `Warning` remains a
+compatibility typedef. The live Windows view confirms the void `thiscall`
+receiver and sole direct call at `0x43888b` from subgame teardown. Android
+independently exports the same authored method and border-release edge. The
+promotion is codegen-neutral: focused matching remains exact at 6/6
+instructions with both masked operands clean.

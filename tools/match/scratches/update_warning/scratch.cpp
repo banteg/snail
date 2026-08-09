@@ -8,7 +8,7 @@
 #include "warning.h"
 
 
-void Warning::update_warning()
+void cRWarning::AI()
 {
     if (!g_game->subgame.subgame_pause_gate) {
         float advanced;

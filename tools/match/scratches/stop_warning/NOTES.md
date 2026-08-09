@@ -16,3 +16,13 @@ its border. Matching remains exact at 3/3 instructions with one clean operand.
 `void __thiscall(Warning*)` ABI and renders the inactive state plus owned border
 directly. Focused matching remains exact at 3/3 instructions with one clean
 masked operand.
+
+## 2026-08-09 primary cRWarning ownership
+
+The matcher now emits this transition as `cRWarning::Stop()` and binds the
+owner-qualified VC6 symbol `?Stop@cRWarning@@QAEXXZ`; `Warning` remains a
+compatibility typedef. The live Windows view confirms the void `thiscall`
+receiver and sole direct call at `0x4410f4` from the damage-gauge controller.
+Android and iOS independently retain the same authored method. The promotion
+is codegen-neutral: focused matching remains exact at 3/3 instructions with
+its one masked operand clean.

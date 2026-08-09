@@ -43,3 +43,15 @@ was already current through the broader root replay; IDA applied the missing
 receiver types, so both tracked decompiles now expose `state`, `phase`,
 `phase_step`, and the owned `FrontendWidget* border` directly. Focused matching
 remains exact at 32/32 instructions with six clean masked operands.
+
+## 2026-08-09 primary cRWarning ownership
+
+The matcher now emits this initializer as `cRWarning::Init()` and binds the
+owner-qualified VC6 symbol `?Init@cRWarning@@QAEXXZ`; `Warning` remains a
+compatibility typedef for existing analysis replays. The live Windows view
+confirms the void `thiscall` receiver and sole direct call at `0x4379e5` from
+subgame initialization. Android independently exports `cRWarning::Init()`;
+iOS preserves the same owner role as `cRWarning::Init(cRSubGoldy*)`, with its
+port-specific parent argument and wider layout left local to that build. The
+promotion is codegen-neutral: focused matching remains exact at 32/32
+instructions with all six masked operands clean.

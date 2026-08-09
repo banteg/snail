@@ -48,7 +48,7 @@ void cRDamageGuage::AI()
                 state = DAMAGE_GUAGE_STATE_WARNING_TRANSITION;
                 warning_transition_progress = 0.0f;
                 warning_transition_step = 0.16666667f;
-                g_game->subgame.embedded_player()->warning.start_warning();
+                g_game->subgame.embedded_player()->warning.Start();
             }
             goto render_after_refresh;
         }
@@ -87,8 +87,8 @@ void cRDamageGuage::AI()
                 || game->subgame.embedded_player()->resurrect_progress > 0.0f
                 || game->subgame.embedded_player()->presentation.cutscene.state) {
                 state = DAMAGE_GUAGE_STATE_MONITORING;
-                g_game->subgame.embedded_player()->warning.stop_warning();
-                g_game->subgame.embedded_player()->warning.stop_warning_sample();
+                g_game->subgame.embedded_player()->warning.Stop();
+                g_game->subgame.embedded_player()->warning.StopSample();
                 goto render_after_refresh;
             }
             break;
