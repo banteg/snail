@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "suppressed-cell-bod-flags",
+      "find": "                    CELL_FROM_LANE_FLAGS(cell_lane_flags)->list_flags &= ~0x222;",
+      "replacements": [
+        {
+          "name": "named-lifecycle-mask",
+          "text": "                    CELL_FROM_LANE_FLAGS(cell_lane_flags)->list_flags &=\n                        ~(BOD_FLAG_HAS_OBJECT | BOD_FLAG_RENDER_ENABLED\n                            | BOD_FLAG_LINKED);"
+        }
+      ]
+    },
+    {
+      "name": "suppressed-row-attachment-flags",
+      "find": "                    *row_attachment_flags &= ~0x20;",
+      "replacements": [
+        {
+          "name": "named-render-mask",
+          "text": "                    *row_attachment_flags &= ~BOD_FLAG_RENDER_ENABLED;"
+        }
+      ]
+    }
+  ]
+}

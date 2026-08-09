@@ -3,7 +3,7 @@
 `cRSubGame::CondenseTrack` makes a second pass over the populated
 runtime track cells. It seeds every cell with the independent
 `SUBLOC_FLAG_AI_ENABLED | SUBLOC_FLAG_UNCACHED_BODY` (`0x6000`) bits,
-then scans each row's eight lanes for horizontal slide, floor, and worm-tunnel
+then scans each row's eight lanes for horizontal slide, floor, and wall/pillar
 runs. Multi-cell runs replace the first cell's object with a wider mesh and
 clear render/contact bits on the continuation cells.
 
@@ -210,3 +210,41 @@ candidate byte-high clears adopt native's full-dword form. The retained
 clean. The `0x14`-versus-`0x10` frame and parallel current-cell induction are
 now a measured compiler-allocation boundary, not an untried alias or store
 syntax.
+
+## 2026-08-09 normalization contract and suppressed-record ownership
+
+The complete Windows pipeline fixes this pass between the three normalization
+producers and the hazard/fringe consumers:
+`select_track_tile_edge_variants` (`0x437e09`),
+`promote_track_tiles_to_fringe_variants` (`0x437e10`), and
+`harmonize_center_lane_floor_slide_variants` (`0x437e17`) all run before the
+call here at `0x437e1e`; `mark_track_warning_zones` and
+`build_track_fringe_objects` follow at `0x437e25` and `0x437e2c`.
+The typed producer scratches and their Windows/mobile evidence prove that the
+low `0x20` and `0x40` lanes mean warning-family promotion and cache-family
+swapping, while `0x8000`
+marks a corner object. The opening `0x6000` seed remains two independent
+AI/uncached-eligibility bits rather than one cache-family state.
+
+That dependency order also closes two intentional branch asymmetries already
+present in the retained source. A run start excludes corner and swapped-family
+cells, but each floor/slide continuation must additionally retain the
+uncached-body bit and exclude both low cache-family flags. `IsFloor()` accepts
+tile `0x14`, while the condensible floor membership is deliberately only
+`{1, 0x15, 0x1b, 0x21, 0x22}`; flattening the helper and membership predicates
+would wrongly merge the excluded floor tile. In the wall branch, Windows and
+Android both advance only the tile cursor: the uncached-body gate and merged
+width remain owned by the first cell. No source rewrite is justified for any
+of those paths.
+
+One source-level record correction is retained. The row-suppression arm at
+`0x43538e..0x4353a6` clears the current cell's independently proven
+`BOD_FLAG_HAS_OBJECT | BOD_FLAG_RENDER_ENABLED | BOD_FLAG_LINKED` lifecycle
+bits, removes its uncached-body state, and clears `BOD_FLAG_RENDER_ENABLED`
+from the row attachment body. Naming these shared flags replaces the raw
+`0x222` and `0x20` masks without changing code generation. A complete
+three-variant sweep over the two substitutions is byte-neutral in every
+combination. The retained source SHA-256 is
+`7118dc2bffc93af621f2d8b592aafc71f1805e6d8d22b0201173d16c54f6cd03`;
+focused matching remains **67.50%**, `284/276` instructions, prefix `0/276`,
+with 12 clean and no unresolved, mismatched, or unaudited references.

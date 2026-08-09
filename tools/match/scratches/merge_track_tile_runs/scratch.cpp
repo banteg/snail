@@ -177,9 +177,11 @@ void cRSubGame::CondenseTrack()
                 if ((((unsigned char*)row_attachment_flags)[-0xb4]
                         & SUBROW_FLAG_SUPPRESS_TRACK_RENDER)
                     != 0) {
-                    CELL_FROM_LANE_FLAGS(cell_lane_flags)->list_flags &= ~0x222;
+                    CELL_FROM_LANE_FLAGS(cell_lane_flags)->list_flags &=
+                        ~(BOD_FLAG_HAS_OBJECT | BOD_FLAG_RENDER_ENABLED
+                            | BOD_FLAG_LINKED);
                     *cell_lane_flags &= ~SUBLOC_FLAG_UNCACHED_BODY;
-                    *row_attachment_flags &= ~0x20;
+                    *row_attachment_flags &= ~BOD_FLAG_RENDER_ENABLED;
                 }
 
                 ++lane;
