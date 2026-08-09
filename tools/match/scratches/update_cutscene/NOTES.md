@@ -1,14 +1,14 @@
 # update_cutscene @ 0x4466d0
 
 Structural recovery for authored `cRCutScene::AI` on the exact 0x5c-byte
-`CutScene` embedded at `Snail +0x1958`.
+`cRCutScene` embedded at `Snail +0x1958`.
 
 Recovered relationships:
 
-- `CutScene::state` drives the `1 -> 2 -> 8 -> 9` intro path, `5 -> 6 -> 7`
+- `cRCutScene::state` drives the `1 -> 2 -> 8 -> 9` intro path, `5 -> 6 -> 7`
   completion path, and `10 -> 11 -> 12` death path.
 - `camera_mode`, `live_matrix`, `progress`, `progress_step`, and
-  `force_camera_update` are confirmed members on the `CutScene` inline object.
+  `force_camera_update` are confirmed members on the `cRCutScene` inline object.
 - `Snail::snail_hotspots_world[12]` is the completion
   skid-stop source and `snail_hotspots_world[18]` is the recurring intro-talk
   look-at anchor.
@@ -77,9 +77,9 @@ mismatch). The gain is retained as ownership evidence, not tuned padding.
 owner offsets (`state +0x0c`, matrix `+0x10`, progress `+0x50/+0x54`, update
 gate `+0x58`) and the same intro/completion/death state families. iOS v1.5
 places `cRCutScene::AI` in `SubGame.o`. The shared type is now the exact 0x5c
-`CutScene`; the old analysis headers incorrectly padded it to 0x64 and thereby
+`cRCutScene`; the old analysis headers incorrectly padded it to 0x64 and thereby
 misattributed the following `Player::parcels_collected` word at `Player+0x4338`
-to a nonexistent CutScene tail.
+to a nonexistent cRCutScene tail.
 
 2026-07-12 camera/parcel ownership and source-shape pass:
 
@@ -154,7 +154,7 @@ with 57 clean masked operands and the existing jump-table mismatch.
 
 2026-07-14 presentation renderable inheritance: every camera target read now
 uses the `Snail` presentation's inherited `RenderableBod::transform`. The
-CutScene's own `live_matrix` and the Cameraman matrix remain separate owned
+cRCutScene's own `live_matrix` and the Cameraman matrix remain separate owned
 fields. Focused output is byte-identical at 93.25%, 503/505 instructions, with
 57 clean operands and the existing jump-table mismatch.
 
@@ -233,3 +233,15 @@ particular, the mobile-named `cRCompletion::Init(int, bool)` spelling is
 ABI-compatible but codegen-neutral here, and genuinely shared call joins
 regress to at most 91.18%. No volatile qualifier, aliasing trick, dummy local,
 or manual frame padding is retained to manufacture the final spill.
+
+## 2026-08-09 primary cRCutScene ownership
+
+The matcher now emits this body as `cRCutScene::AI()` and binds the exact VC6
+decorated symbol `?AI@cRCutScene@@QAEXXZ`; `CutScene` remains a compatibility
+typedef. The live Windows view confirms the void `thiscall` receiver and sole
+call at `0x442df2`, while Android and iOS independently preserve
+`cRCutScene::AI()` in `SubGame.o`. This authored-name change is codegen-neutral:
+the focused result remains 97.62%, 503/505 instructions, prefix 10/505, with
+all 58 masked operands clean. The final two-instruction comparison-byte spill
+remains the documented compiler-allocation frontier; none of the 84 exhausted
+spill, join, scope, or matrix-lifetime variants was reopened.

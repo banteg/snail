@@ -1,4 +1,4 @@
-// update_jetpack_gauge @ 0x43a390 (thiscall, ret)
+// update_jetpack_gauge / cRSubHover::AI @ 0x43a390 (thiscall, ret)
 // Jetpack countdown/warning controller used by update_subgoldy.
 
 #include "game_root.h"
@@ -13,7 +13,7 @@ float cosine(float angle);
 float sine(float angle);
 int debug_report_stub(char* format, ...);
 
-void SubHover::update_jetpack_gauge()
+void cRSubHover::AI()
 {
     int zero = 0;
 
@@ -45,7 +45,7 @@ void SubHover::update_jetpack_gauge()
             warning_intensity = (1.0f - next_progress) * 16.6666679f;
             if (next_progress - progress_step <= 0.94f) {
                 g_game->subgame.embedded_player()->presentation.set_snail_jetpack(0);
-                uninit_jet_particles();
+                JetUnInit();
             }
         } else {
             warning_intensity = 1.0f;
@@ -66,12 +66,12 @@ void SubHover::update_jetpack_gauge()
         wobble_alpha = 0.0f;
         *(int*)&warning_intensity_latch = intensity_bits;
         wobble_y = (wobble_y_sine * 0.25f + 1.0f) * warning_intensity;
-        spawn_track_speedup(&player->transform.position, progress);
+        Hover(player->transform.position, progress);
         return;
     }
 
 finish_hover:
-    end_jetpack_hover();
+    End();
     if (progress <= 0.94f)
         g_game->subgame.embedded_player()->presentation.set_snail_jetpack(0);
     state = SUB_HOVER_STATE_INACTIVE;

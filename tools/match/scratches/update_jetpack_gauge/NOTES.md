@@ -132,3 +132,22 @@ forms regress to 67–69% by introducing a different frame/copy family. The
 scalar component stores remain the honest source shape; neither aggregate
 assignment nor another state-syntax permutation is justified for the two
 remaining compiler-allocation differences.
+
+## 2026-08-09 authored cRSubHover surface
+
+`cRSubHover` is now the primary shared owner, with `SubHover` retained only as
+the Windows-analysis compatibility typedef. The seven lifecycle scratches
+define the authored `Init`, `On`, `End`, `AI`, `JetInit`, `JetUnInit`, and
+`Jets` methods and select their exact VC6 decorated symbols in `scratch.conf`.
+
+Live Binary Ninja xrefs in the Windows image retain the complete caller graph:
+Goldy initialization calls `Init`, collision calls `On`, Goldy AI calls `AI`,
+presentation calls `Jets`, `AI` calls `End`/`JetUnInit`, and `On` calls
+`JetInit`. The `AI` call at `0x43a536` still shares the folded `0x43d880` body
+with `cRSubGame::AddSpeedUp`; Android's separate `Hover(tVector&, float)` body
+supplies that authored spelling.
+
+The type/symbol promotion is codegen-neutral: all six exact siblings remain
+exact, while `AI` remains at 94.66%, 131/131 instructions, with all 34 masked
+operands clean. None of the 47 exhausted state, threshold, completion-owner,
+or wobble-lifetime variants was reopened.

@@ -17,7 +17,7 @@ enum {
         + offsetof(SubTracks, parcel_count),
 };
 
-void CutScene::update_cutscene()
+void cRCutScene::AI()
 {
     CutSceneState current_state = state;
     force_camera_update = 0;

@@ -30,18 +30,17 @@ enum SubHoverState {
     SUB_HOVER_STATE_ACTIVE = 1,
 };
 
-class SubHover {
+class cRSubHover {
 public:
-    void initialize_jetpack_gauge(int player_slot); // @ 0x43a930, cRSubHover::Init
-    void arm_jetpack_gauge(); // @ 0x43a980, cRSubHover::On
-    void end_jetpack_hover(); // @ 0x43a370, cRSubHover::End
-    void uninit_jet_particles(); // @ 0x43a580, cRSubHover::JetUnInit
-    void initialize_jet_particles(); // @ 0x43a5b0, cRSubHover::JetInit
-    void update_jet_particles(); // @ 0x43a690, cRSubHover::Jets
-    void update_jetpack_gauge(); // @ 0x43a390, cRSubHover::AI
-    // Stable Windows target name for the folded no-op also called as
-    // cRSubHover::Hover(Vector3&, float).
-    void spawn_track_speedup(Vector3* position, float progress); // alias @ 0x43d880
+    // Authored lifecycle surface retained by both mobile builds.
+    void Init(int player_slot); // @ 0x43a930
+    void On(); // @ 0x43a980
+    void End(); // @ 0x43a370
+    void JetUnInit(); // @ 0x43a580
+    void JetInit(); // @ 0x43a5b0
+    void Jets(); // @ 0x43a690
+    void AI(); // @ 0x43a390
+    void Hover(Vector3& position, float progress); // folded alias @ 0x43d880
 
     float progress; // +0x00
     float progress_step; // +0x04
@@ -59,6 +58,8 @@ public:
     float warning_intensity; // +0x210
 };
 
+typedef cRSubHover SubHover;
+typedef char cRSubHover_must_be_0x214[(sizeof(cRSubHover) == 0x214) ? 1 : -1];
 typedef char SubHover_must_be_0x214[(sizeof(SubHover) == 0x214) ? 1 : -1];
 
 #endif

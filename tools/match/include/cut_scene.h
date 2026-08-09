@@ -22,10 +22,10 @@ enum CutSceneState {
     CUT_SCENE_STATE_DEATH_HOLD = 12,
 };
 
-class CutScene {
+class cRCutScene {
 public:
-    void initialize_cutscene_ai(); // @ 0x446130, cRCutScene::Init
-    void update_cutscene(); // @ 0x4466d0, cRCutScene::AI
+    void Init(); // @ 0x446130
+    void AI(); // @ 0x4466d0
 
     Snail* presentation; // +0x00, non-owning parent cRSnail
     cRSubGoldy* player; // +0x04, non-owning Goldy owner
@@ -38,6 +38,9 @@ public:
     char unknown_59[0x5c - 0x59];
 };
 
+typedef cRCutScene CutScene;
+
+typedef char cRCutScene_must_be_0x5c[(sizeof(cRCutScene) == 0x5c) ? 1 : -1];
 typedef char CutScene_must_be_0x5c[(sizeof(CutScene) == 0x5c) ? 1 : -1];
 
 #endif

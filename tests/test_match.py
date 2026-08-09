@@ -1054,6 +1054,32 @@ def test_cpp_reference_alias_does_not_capture_another_method_owner() -> None:
     )
 
 
+def test_folded_reference_aliases_preserve_both_authored_owners() -> None:
+    folded_speedup = ReferenceSymbol(
+        address=0x43D880,
+        name="spawn_track_speedup",
+        kind="function",
+        aliases=(
+            "?AddSpeedUp@cRSubGame@@QAEXPAUcRSubLoc@@PAVcRSubGoldy@@@Z",
+            "?Hover@cRSubHover@@QAEXAAUtVector@@M@Z",
+        ),
+    )
+    manifest = ReferenceSymbolManifest(
+        name="test references",
+        symbols=(folded_speedup,),
+    )
+
+    for alias in folded_speedup.aliases:
+        assert _reference_symbol_for_symbol_name(manifest, alias) is folded_speedup
+    assert (
+        _reference_symbol_for_symbol_name(
+            manifest,
+            "?Hover@cRUnrelated@@QAEXAAUtVector@@M@Z",
+        )
+        is None
+    )
+
+
 def test_extract_object_function_does_not_global_resolve_local_label_alias() -> None:
     code = bytes.fromhex("a100000000c3") + b"\x00" * 8
     obj = parse_coff_object(build_object(code, [("_foo", 0), ("$L307", 6)], [(1, 1)]))

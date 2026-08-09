@@ -284,7 +284,7 @@ void cRSubGoldy::Collision()
         if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f && normalize_vector(&pickup_probe) < 3.0f) {
             game->jetpack_pickup.state =
                 TRACK_PICKUP_STATE_TEARDOWN_PENDING;
-            sub_hover.arm_jetpack_gauge();
+            sub_hover.On();
         }
     }
     for (int jj = 0; jj < SUB_RING_POOL_CAPACITY; ++jj) {

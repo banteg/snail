@@ -1,9 +1,9 @@
-// initialize_jet_particles @ 0x43a5b0 (thiscall)
+// initialize_jet_particles / cRSubHover::JetInit @ 0x43a5b0 (thiscall)
 
 #include "sub_hover.h"
 #include "sprite.h"
 
-void SubHover::initialize_jet_particles()
+void cRSubHover::JetInit()
 {
     JetParticleSlot* slot = &particle_slots[0][0];
     int rows = JET_PARTICLE_ROW_COUNT;

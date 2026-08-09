@@ -2357,6 +2357,118 @@ def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
         assert object_symbol in references_by_name[windows_name]["aliases"]
 
 
+def test_mobile_cutscene_and_subhover_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(repo_root / "analysis/symbols/gameplay-references.json")
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    cutscene_header = (include_root / "cut_scene.h").read_text(encoding="utf-8")
+    subhover_header = (include_root / "sub_hover.h").read_text(encoding="utf-8")
+    player_header = (include_root / "player.h").read_text(encoding="utf-8")
+
+    assert "class cRCutScene {" in cutscene_header
+    assert "typedef cRCutScene CutScene;" in cutscene_header
+    assert "class CutScene {" not in cutscene_header
+    assert "void Init();" in cutscene_header
+    assert "void AI();" in cutscene_header
+    assert "cRCutScene cutscene;" in player_header
+
+    assert "class cRSubHover {" in subhover_header
+    assert "typedef cRSubHover SubHover;" in subhover_header
+    assert "class SubHover {" not in subhover_header
+    for declaration in (
+        "void Init(int player_slot);",
+        "void On();",
+        "void End();",
+        "void JetUnInit();",
+        "void JetInit();",
+        "void Jets();",
+        "void AI();",
+        "void Hover(Vector3& position, float progress);",
+    ):
+        assert declaration in subhover_header
+    for retired_name in (
+        "initialize_jetpack_gauge",
+        "arm_jetpack_gauge",
+        "end_jetpack_hover",
+        "uninit_jet_particles",
+        "initialize_jet_particles",
+        "update_jet_particles",
+        "update_jetpack_gauge",
+        "spawn_track_speedup",
+    ):
+        assert retired_name not in subhover_header
+    assert "cRSubHover sub_hover;" in player_header
+
+    expected_methods = (
+        ("initialize_cutscene_ai", "cRCutScene::Init()", "cRCutScene_Init",
+         "void cRCutScene::Init()", "?Init@cRCutScene@@QAEXXZ"),
+        ("update_cutscene", "cRCutScene::AI()", "cRCutScene_AI",
+         "void cRCutScene::AI()", "?AI@cRCutScene@@QAEXXZ"),
+        ("end_jetpack_hover", "cRSubHover::End()", "cRSubHover_End",
+         "void cRSubHover::End()", "?End@cRSubHover@@QAEXXZ"),
+        ("update_jetpack_gauge", "cRSubHover::AI()", "cRSubHover_AI",
+         "void cRSubHover::AI()", "?AI@cRSubHover@@QAEXXZ"),
+        ("uninit_jet_particles", "cRSubHover::JetUnInit()",
+         "cRSubHover_JetUnInit", "void cRSubHover::JetUnInit()",
+         "?JetUnInit@cRSubHover@@QAEXXZ"),
+        ("initialize_jet_particles", "cRSubHover::JetInit()",
+         "cRSubHover_JetInit", "void cRSubHover::JetInit()",
+         "?JetInit@cRSubHover@@QAEXXZ"),
+        ("update_jet_particles", "cRSubHover::Jets()", "cRSubHover_Jets",
+         "void cRSubHover::Jets()", "?Jets@cRSubHover@@QAEXXZ"),
+        ("initialize_jetpack_gauge", "cRSubHover::Init(int)",
+         "cRSubHover_Init", "void cRSubHover::Init(int player_slot)",
+         "?Init@cRSubHover@@QAEXH@Z"),
+        ("arm_jetpack_gauge", "cRSubHover::On()", "cRSubHover_On",
+         "void cRSubHover::On()", "?On@cRSubHover@@QAEXXZ"),
+    )
+    for windows_name, mobile_symbol, alias, definition, object_symbol in expected_methods:
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    folded_aliases = references_by_name["spawn_track_speedup"]["aliases"]
+    assert "?AddSpeedUp@cRSubGame@@QAEXPAUcRSubLoc@@PAVcRSubGoldy@@@Z" in folded_aliases
+    assert "?Hover@cRSubHover@@QAEXAAUtVector@@M@Z" in folded_aliases
+    assert "cRSubHover_Hover" in functions_by_name["spawn_track_speedup"]["aliases"]
+
+    caller_expectations = {
+        "initialize_subgoldy": ("presentation.cutscene.Init();", "sub_hover.Init(gauge_slot);"),
+        "update_snail_presentation": ("cutscene.AI();", "sub_hover.Jets();"),
+        "handle_subgoldy_collisions": ("sub_hover.On();",),
+        "release_snail_weapons": ("sub_hover.End();",),
+        "update_subgoldy": ("sub_hover.End();", "sub_hover.AI();"),
+        "update_jetpack_gauge": ("Hover(player->transform.position, progress);",),
+    }
+    for scratch_name, expected_calls in caller_expectations.items():
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        for expected_call in expected_calls:
+            assert expected_call in source
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

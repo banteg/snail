@@ -4,7 +4,7 @@
 #include "player.h"
 
 
-void CutScene::initialize_cutscene_ai()
+void cRCutScene::Init()
 {
     presentation = &g_game->subgame.embedded_player()->presentation;
     player = g_game->subgame.embedded_player();

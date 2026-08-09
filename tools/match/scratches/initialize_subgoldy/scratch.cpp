@@ -155,7 +155,7 @@ void cRSubGoldy::Init(int player_slot)
     }
 
     this->presentation.snail_skin.initialize_snail_skin();
-    this->presentation.cutscene.initialize_cutscene_ai();
+    this->presentation.cutscene.Init();
     if (this->game->selected_level_record_active == 0)
         this->presentation.cutscene.state = CUT_SCENE_STATE_INTRO_PENDING;
     this->presentation.owner_player = this;
@@ -236,7 +236,7 @@ void cRSubGoldy::Init(int player_slot)
     this->completion_handoff_cycle_progress = 0.0f;
     this->completion_handoff_cycle_step = 0.208333343f;
     this->unused_274c = zero;
-    this->sub_hover.initialize_jetpack_gauge(gauge_slot);
+    this->sub_hover.Init(gauge_slot);
     this->lane_lean_state = zero;
     this->lane_lean_amplitude = 0.0f;
     this->lane_lean_progress = 0.0f;

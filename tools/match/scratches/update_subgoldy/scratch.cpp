@@ -748,7 +748,7 @@ steering_stored:
             }
             velocity.z = window;
             g_voice_manager.reset_voice_manager();
-            sub_hover.end_jetpack_hover();
+            sub_hover.End();
             presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING;
             g_sound_effect_manager.play_sound_effect(0);
             boost_one_tick = 0;
@@ -838,7 +838,7 @@ steering_stored:
     Vector3 stashed_position = *p_position;
     if (follow_state.active == 1)
         *p_position = follow_state.output_position;
-    sub_hover.update_jetpack_gauge();
+    sub_hover.AI();
     if (completion_handoff_active) {
         g_game->players[0].completion_handoff_transform =
             g_game->players[0].transform;

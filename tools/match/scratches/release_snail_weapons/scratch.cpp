@@ -33,7 +33,7 @@ void Snail::release_snail_weapons()
         forward_z = owner->velocity.z;
         release_step = &weapon_channels[1].release_step;
         *release_step = Vector3(random_x, random_y, forward_z) * 0.30000001f;
-        owner->sub_hover.end_jetpack_hover();
+        owner->sub_hover.End();
     }
     channel_release_steps_active = 1;
 }

@@ -1,10 +1,10 @@
-// arm_jetpack_gauge @ 0x43a980 (thiscall, ret)
+// arm_jetpack_gauge / cRSubHover::On @ 0x43a980 (thiscall, ret)
 
 #include "game_root.h"
 #include "sub_hover.h"
 
 
-void SubHover::arm_jetpack_gauge()
+void cRSubHover::On()
 {
     if (state == SUB_HOVER_STATE_INACTIVE) {
         state = SUB_HOVER_STATE_ACTIVE;
@@ -14,6 +14,6 @@ void SubHover::arm_jetpack_gauge()
         wobble_x = 0.0f;
 
         g_game->subgame.embedded_player()->presentation.set_snail_jetpack(1);
-        initialize_jet_particles();
+        JetInit();
     }
 }

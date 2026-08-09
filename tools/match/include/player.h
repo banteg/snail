@@ -129,7 +129,7 @@ public:
     unsigned char channel_release_steps_active;  // +0x1934
     char unknown_1935[0x1938 - 0x1935];
     SnailSkin snail_skin;                       // +0x1938, authored cRSnailSkin
-    CutScene cutscene;                          // +0x1958, authored cRCutScene
+    cRCutScene cutscene;                        // +0x1958, authored cRCutScene
 };
 typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
 typedef Snail cRSnail;
@@ -275,7 +275,7 @@ public:
     float completion_handoff_cycle_progress; // +0x2744
     float completion_handoff_cycle_step;    // +0x2748
     int unused_274c;                       // +0x274c, sole native access clears it
-    SubHover sub_hover;                     // +0x2750, authored cRSubHover
+    cRSubHover sub_hover;                    // +0x2750, authored cRSubHover
     Vector3 cached_camera_target_world;     // +0x2964, produced by update_subgoldy camera block
     int steering_mode_selector;             // +0x2970
     char unknown_2974[0x2980 - 0x2974];

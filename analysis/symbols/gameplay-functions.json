@@ -2840,36 +2840,57 @@
     {
       "address": "0x43a370",
       "name": "end_jetpack_hover",
+      "aliases": [
+        "cRSubHover_End"
+      ],
       "description": "Exact Windows `SubHover::end_jetpack_hover`, authored as `cRSubHover::End`: while the exact 0x214-byte owner is active, clamps progress to the 0.94 teardown threshold."
     },
     {
       "address": "0x43a390",
       "name": "update_jetpack_gauge",
+      "aliases": [
+        "cRSubHover_AI"
+      ],
       "description": "Windows `SubHover::update_jetpack_gauge`, authored as `cRSubHover::AI`: advances the hover countdown/warning envelope, applies runtime-row auto-shutoff, drives wobble and the authored Hover call, and clears the exact 0x214-byte owner at teardown."
     },
     {
       "address": "0x43a580",
       "name": "uninit_jet_particles",
+      "aliases": [
+        "cRSubHover_JetUnInit"
+      ],
       "description": "Exact Windows `SubHover::uninit_jet_particles`, authored as `cRSubHover::JetUnInit`: kills both sprites in each of the owner's fifteen inline jet rows."
     },
     {
       "address": "0x43a5b0",
       "name": "initialize_jet_particles",
+      "aliases": [
+        "cRSubHover_JetInit"
+      ],
       "description": "Exact Windows `SubHover::initialize_jet_particles`, authored as `cRSubHover::JetInit`: allocates and initializes the 15-by-2 inline jet sprite grid."
     },
     {
       "address": "0x43a690",
       "name": "update_jet_particles",
+      "aliases": [
+        "cRSubHover_Jets"
+      ],
       "description": "Windows `SubHover::update_jet_particles`, authored as `cRSubHover::Jets`: projects the owner's 15-by-2 jet exhaust grid backward from the authored snail hotspots and occasionally emits a detached puff with 85% of cRSubGoldy velocity."
     },
     {
       "address": "0x43a930",
       "name": "initialize_jetpack_gauge",
+      "aliases": [
+        "cRSubHover_Init"
+      ],
       "description": "Exact Windows `SubHover::initialize_jetpack_gauge`, authored as `cRSubHover::Init`: clears the 0x214-byte child state, seeds its 1/600 progress step, and stores borrowed cRSubGame and cRSubGoldy backlinks. The authored contract is void; the Windows integer parameter is unused."
     },
     {
       "address": "0x43a980",
       "name": "arm_jetpack_gauge",
+      "aliases": [
+        "cRSubHover_On"
+      ],
       "description": "Exact Windows `SubHover::arm_jetpack_gauge`, authored as `cRSubHover::On`: arms the child at cRSubGoldy +0x2750, clears progress and wobble, selects the snail jetpack visual, and calls JetInit. The authored contract is void."
     },
     {
@@ -2974,7 +2995,8 @@
       "name": "spawn_track_speedup",
       "aliases": [
         "sub_hover_hover",
-        "AddSpeedUp"
+        "AddSpeedUp",
+        "cRSubHover_Hover"
       ],
       "description": "Exact one-instruction no-op shared by two authored call surfaces: `cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)` and `cRSubHover::Hover(tVector&, float)`. Cross-port Android retains both as separate literal no-ops; Windows callsites prove the two receiver/signature families share this folded address."
     },
@@ -3578,6 +3600,9 @@
     {
       "address": "0x446130",
       "name": "initialize_cutscene_ai",
+      "aliases": [
+        "cRCutScene_Init"
+      ],
       "description": "Authored `cRCutScene::Init()`: initializes the exact 0x5c-byte CutScene embedded at `Snail + 0x1958` (`cRSubGoldy + 0x42dc`), wiring its Snail/cRSubGoldy backlinks and clearing state."
     },
     {
@@ -3593,6 +3618,9 @@
     {
       "address": "0x4466d0",
       "name": "update_cutscene",
+      "aliases": [
+        "cRCutScene_AI"
+      ],
       "description": "Authored `cRCutScene::AI()`: advances the exact embedded CutScene, blends from `cRSubGoldy::cameraman.live_matrix`, clears `cRSubGoldy::click_start.hide_prompt` at the intro handoff, consumes live snail hotspots for intro/completion/death camera anchors, and compares delivered parcels with `cRSubGame::level_definition.parcel_count` before the completion-screen handoff."
     },
     {

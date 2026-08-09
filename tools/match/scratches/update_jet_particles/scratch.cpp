@@ -1,4 +1,4 @@
-// update_jet_particles @ 0x43a690 (fastcall)
+// update_jet_particles / cRSubHover::Jets @ 0x43a690 (fastcall-shaped)
 
 #include "sub_hover.h"
 #include "object_render_types.h"
@@ -8,7 +8,7 @@
 
 int next_math_random_value();
 
-void SubHover::update_jet_particles()
+void cRSubHover::Jets()
 {
     if (state != SUB_HOVER_STATE_ACTIVE) {
         return;

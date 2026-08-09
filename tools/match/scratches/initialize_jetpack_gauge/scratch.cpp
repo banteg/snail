@@ -1,10 +1,10 @@
-// initialize_jetpack_gauge @ 0x43a930 (thiscall, ret 0x4)
+// initialize_jetpack_gauge / cRSubHover::Init @ 0x43a930 (thiscall, ret 0x4)
 
 #include "game_root.h"
 #include "sub_hover.h"
 
 
-void SubHover::initialize_jetpack_gauge(int player_slot)
+void cRSubHover::Init(int player_slot)
 {
     progress = 0.0f;
     cRSubGame* game_ptr = &g_game->subgame;
