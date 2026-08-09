@@ -2959,6 +2959,106 @@ def test_mobile_warning_recovers_authored_owner() -> None:
             assert expected_call in source
 
 
+def test_mobile_high_score_recovers_authored_lifecycle() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    scratch_root = repo_root / "tools/match/scratches"
+    high_score_header = (repo_root / "tools/match/include/high_score.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRHighScore {" in high_score_header
+    assert "typedef cRHighScore HighScore;" in high_score_header
+    assert "class HighScore {" not in high_score_header
+    for method in (
+        "void Init(int mode, int rank);",
+        "void UnInit();",
+        "void AI();",
+        "void Exit();",
+    ):
+        assert method in high_score_header
+    for retired_method in (
+        "initialize_high_score_screen",
+        "destroy_high_score_screen",
+        "update_high_score_screen",
+        "exit_high_score_screen",
+    ):
+        assert retired_method not in high_score_header
+
+    game_root_header = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRHighScore high_score;" in game_root_header
+
+    expected_methods = (
+        (
+            "initialize_high_score_screen",
+            "cRHighScore::Init(int, int)",
+            "cRHighScore_Init",
+            "void cRHighScore::Init(int mode_, int rank)",
+            "?Init@cRHighScore@@QAEXHH@Z",
+        ),
+        (
+            "destroy_high_score_screen",
+            "cRHighScore::UnInit()",
+            "cRHighScore_UnInit",
+            "void cRHighScore::UnInit()",
+            "?UnInit@cRHighScore@@QAEXXZ",
+        ),
+        (
+            "update_high_score_screen",
+            "cRHighScore::AI()",
+            "cRHighScore_AI",
+            "void cRHighScore::AI()",
+            "?AI@cRHighScore@@QAEXXZ",
+        ),
+        (
+            "exit_high_score_screen",
+            "cRHighScore::Exit()",
+            "cRHighScore_Exit",
+            "void cRHighScore::Exit()",
+            "?Exit@cRHighScore@@QAEXXZ",
+        ),
+    )
+    for windows_name, mobile_symbol, alias, definition, object_symbol in (
+        expected_methods
+    ):
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    frontend = (
+        scratch_root / "update_frontend_state_machine/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert frontend.count("high_score.Init(") == 2
+    assert frontend.count("high_score.AI();") == 2
+    assert "initialize_high_score_screen" not in frontend
+    assert "update_high_score_screen" not in frontend
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

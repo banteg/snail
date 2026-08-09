@@ -174,3 +174,17 @@ The focused result therefore remains 98.00%, 600/600 instructions, prefix 80,
 with all 137 masked operands clean. The residual is now bounded to VC6's
 otherwise-equivalent stack-slot colouring: honest declaration ordering,
 branch-local scoping, and temporary lifetimes do not influence it.
+
+## 2026-08-09 primary cRHighScore ownership
+
+The matcher now emits this lifecycle edge as `cRHighScore::Init(int, int)` and
+selects the owner-qualified VC6 symbol `?Init@cRHighScore@@QAEXHH@Z`; the
+stable matcher `FUNCTION` remains `initialize_high_score_screen`, and
+`HighScore` remains a compatibility typedef. Android and iOS independently
+retain the same authored owner and method. The live Windows view confirms the
+void `thiscall` ABI and three direct callers, all of which discard EAX.
+
+This promotion does not revisit the exhausted 275 `tColour` allocation probes
+or hide their twelve honest stack-slot permutations. The instruction stream
+remains at 98.00%, 600/600 instructions, prefix 80, with all 137 masked
+operands clean.

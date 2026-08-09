@@ -124,7 +124,7 @@ public:
     BodBase root_bod_4f3c8; // +0x4f3c8
     Logo logo; // +0x4f400, exact cRLogo owner with both 0x90-byte banks
     cRSubGame subgame; // +0x74618, owned cRSubGame runtime
-    HighScore high_score; // +0x12e6e50, known cRHighScore storage through +0x12e6f44
+    cRHighScore high_score; // +0x12e6e50, known cRHighScore storage through +0x12e6f44
     char unknown_12e6f44[0x12e6f58 - 0x12e6f44];
     cRTipManager tip_manager; // +0x12e6f58, owned root tutorial-message manager
     char unknown_12e6ff0[0x12e6ff4 - 0x12e6ff0];

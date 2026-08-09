@@ -33,3 +33,16 @@ ownership-only replay; the helper remains exact at 23/23 instructions.
 Binary Ninja now explicitly reanalyzes the lifecycle trio after the narrow
 high-score sync. Its paired tracked artifact and health canary keep the same
 typed root borrows durable without touching the exact matcher.
+
+## 2026-08-09 primary cRHighScore ownership
+
+The matcher now emits this transition as `cRHighScore::Exit()` and selects the
+owner-qualified VC6 symbol `?Exit@cRHighScore@@QAEXXZ`; the stable matcher
+`FUNCTION` remains `exit_high_score_screen`, and `HighScore` remains a
+compatibility typedef. Android retains the same authored lifecycle edge. The
+live Windows view confirms a void `thiscall` receiver and exactly two direct
+calls, both from `cRHighScore::AI()`.
+
+The promotion is codegen-neutral and does not broaden into platform-only exit
+helpers: focused matching remains exact at 23/23 instructions, full prefix,
+with all six masked operands clean.

@@ -1,4 +1,4 @@
-// initialize_high_score_screen @ 0x416910 (thiscall, ret 0x8)
+// initialize_high_score_screen / cRHighScore::Init @ 0x416910 (thiscall, ret 0x8)
 
 #include "backdrop.h"
 #include "border_manager.h"
@@ -16,7 +16,7 @@ extern char g_back_text[]; // 0x4a20ec
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-void HighScore::initialize_high_score_screen(int mode_, int rank)
+void cRHighScore::Init(int mode_, int rank)
 {
     // VC6 gives the short-lived color values distinct stack objects. Several
     // slots are reused after their title or row branch has ended.

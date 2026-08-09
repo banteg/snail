@@ -1,10 +1,10 @@
-// exit_high_score_screen @ 0x417b50 (thiscall, ret)
+// exit_high_score_screen / cRHighScore::Exit @ 0x417b50 (thiscall, ret)
 
 #include "game_root.h"
 #include "high_score.h"
 
 
-void HighScore::exit_high_score_screen()
+void cRHighScore::Exit()
 {
     GameRoot* game = g_game;
     if (game->subgame.level_mode == 0) {

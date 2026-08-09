@@ -11,12 +11,12 @@
 #include "runtime_config.h"
 #include "sprite.h"
 
-class HighScore {
+class cRHighScore {
 public:
-    void destroy_high_score_screen(); // @ 0x417220, cRHighScore::UnInit
-    void update_high_score_screen(); // @ 0x417260, cRHighScore::AI
-    void initialize_high_score_screen(int mode, int rank); // @ 0x416910, cRHighScore::Init
-    void exit_high_score_screen(); // @ 0x417b50, cRHighScore::Exit
+    void Init(int mode, int rank); // @ 0x416910
+    void UnInit(); // @ 0x417220
+    void AI(); // @ 0x417260
+    void Exit(); // @ 0x417b50
 
     int field_00;
     int mode; // +0x04, front-end return mode
@@ -38,6 +38,10 @@ public:
     FrontendWidget* replay_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0xcc
 };
 
+typedef cRHighScore HighScore;
+
+typedef char cRHighScore_known_extent_must_be_0xf4[
+    (sizeof(cRHighScore) == 0xf4) ? 1 : -1];
 typedef char HighScore_known_extent_must_be_0xf4[
     (sizeof(HighScore) == 0xf4) ? 1 : -1];
 

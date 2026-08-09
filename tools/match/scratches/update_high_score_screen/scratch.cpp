@@ -1,10 +1,10 @@
-// update_high_score_screen @ 0x417260 (thiscall, ret)
+// update_high_score_screen / cRHighScore::AI @ 0x417260 (thiscall, ret)
 
 #include "game_root.h"
 #include "high_score.h"
 
 
-void HighScore::update_high_score_screen()
+void cRHighScore::AI()
 {
     int result;
 
@@ -15,7 +15,7 @@ void HighScore::update_high_score_screen()
             selected_flags &= ~FRONTEND_WIDGET_FLAG_TEXT_INPUT_COMPLETE;
             selected_name->widget_flags = selected_flags;
 
-            destroy_high_score_screen();
+            UnInit();
             g_sprite_manager.KillGame();
 
             int rank = selected_rank;
@@ -29,7 +29,7 @@ void HighScore::update_high_score_screen()
             rstrcpy_checked_ascii(
                 g_runtime_config.last_entered_player_name,
                 name_row_widgets[selected_rank]->text_buffer);
-            exit_high_score_screen();
+            Exit();
             return;
         }
 
@@ -48,11 +48,11 @@ void HighScore::update_high_score_screen()
             result &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             cancel->widget_flags = result;
 
-            destroy_high_score_screen();
+            UnInit();
             g_sprite_manager.KillGame();
             g_game->subgame.sub_high_score.mini_delete_high_score_entry(
                 selected_rank);
-            exit_high_score_screen();
+            Exit();
             return;
         }
     } else {
@@ -62,7 +62,7 @@ void HighScore::update_high_score_screen()
             toggle_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             toggle->widget_flags = toggle_flags;
 
-            destroy_high_score_screen();
+            UnInit();
 
             switch (selected_bank) {
             case 0:
@@ -74,7 +74,7 @@ void HighScore::update_high_score_screen()
             }
 
             g_runtime_config.high_score_selected_bank = selected_bank;
-            initialize_high_score_screen(selected_bank, -1);
+            Init(selected_bank, -1);
             return;
         }
 
@@ -88,14 +88,14 @@ void HighScore::update_high_score_screen()
             if (current_mode == 1) {
                 g_game->players[0].frontend_state = 10;
                 g_game->players[0].redispatch_requested = 1;
-                destroy_high_score_screen();
+                UnInit();
                 return;
             }
 
             if (current_mode == 0)
                 g_game->players[0].frontend_state = 4;
 
-            destroy_high_score_screen();
+            UnInit();
             return;
         }
 
@@ -121,7 +121,7 @@ void HighScore::update_high_score_screen()
 
                             g_game->players[0].frontend_state = 10;
                             g_game->players[0].redispatch_requested = 1;
-                            destroy_high_score_screen();
+                            UnInit();
 
                             GameRoot* launch_game = g_game;
                             launch_game->subgame.replay_launch_record =

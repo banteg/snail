@@ -621,6 +621,42 @@
       "description": "Exact authored cRWarning::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x416910",
+      "name": "initialize_high_score_screen",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRHighScore@@QAEXHH@Z"
+      ],
+      "description": "Exact authored cRHighScore::Init(int,int) member."
+    },
+    {
+      "address": "0x417220",
+      "name": "destroy_high_score_screen",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRHighScore@@QAEXXZ"
+      ],
+      "description": "Exact authored cRHighScore::UnInit() member."
+    },
+    {
+      "address": "0x417260",
+      "name": "update_high_score_screen",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRHighScore@@QAEXXZ"
+      ],
+      "description": "Exact authored cRHighScore::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x417b50",
+      "name": "exit_high_score_screen",
+      "kind": "function",
+      "aliases": [
+        "?Exit@cRHighScore@@QAEXXZ"
+      ],
+      "description": "Exact authored cRHighScore::Exit() member."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",

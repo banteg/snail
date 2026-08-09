@@ -37,3 +37,16 @@ No matching source changed; the helper remains exact at 11/11 instructions.
 Binary Ninja now explicitly reanalyzes the lifecycle trio after its narrow
 high-score sync as well. The paired tracked artifact and health canary preserve
 the same root graph without changing this exact matcher.
+
+## 2026-08-09 primary cRHighScore ownership
+
+The matcher now emits this exact teardown as `cRHighScore::UnInit()` and
+selects the owner-qualified VC6 symbol `?UnInit@cRHighScore@@QAEXXZ`; the
+stable matcher `FUNCTION` remains `destroy_high_score_screen`, and `HighScore`
+remains a compatibility typedef. Android retains the same authored lifecycle
+edge, while the live Windows view confirms a void `thiscall` receiver and six
+direct calls, all from `cRHighScore::AI()`.
+
+The promotion is codegen-neutral and does not reopen MiniDelete or any wider
+high-score source-shape work: focused matching remains exact at 11/11
+instructions, full prefix, with all five masked operands clean.

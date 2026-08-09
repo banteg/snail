@@ -1,11 +1,11 @@
-// destroy_high_score_screen @ 0x417220 (thiscall, ret)
+// destroy_high_score_screen / cRHighScore::UnInit @ 0x417220 (thiscall, ret)
 
 #include "border_manager.h"
 #include "game_root.h"
 #include "high_score.h"
 
 
-void HighScore::destroy_high_score_screen()
+void cRHighScore::UnInit()
 {
     g_runtime_config.high_score_selected_bank = selected_bank;
     g_game->border_manager.kill_all_borders();

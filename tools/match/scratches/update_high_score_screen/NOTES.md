@@ -122,3 +122,21 @@ The Binary Ninja replay now splits those definitions and joins only the
 cursor's loop-carried lifetime. The decompiler retains both real owners,
 matches IDA 9.4's independent rendering, and no longer invents a
 `HighScore::field_00` read. Matching source remains exact at 205/205.
+
+## 2026-08-09 primary cRHighScore ownership
+
+The matcher now emits this state machine as `cRHighScore::AI()` and selects
+the owner-qualified VC6 symbol `?AI@cRHighScore@@QAEXXZ`; the stable matcher
+`FUNCTION` remains `update_high_score_screen`, and `HighScore` remains a
+compatibility typedef. Android and iOS independently retain the same authored
+method. The live Windows view confirms the void `thiscall` receiver, two
+external front-end dispatch calls, and the internal authored lifecycle edges.
+
+The replay action is also a closed producer/consumer contract: this method
+stores front-end return state `18` beside the selected persistent record, and
+the exact completion exit path later restores that value to the player shell.
+That evidence keeps the replay launch on `cRHighScore`, distinct from the
+persistent `cRSubHighScore` bank. With the shared aliases for `Init`, `UnInit`,
+and `Exit` installed, focused matching remains exact at 205/205 instructions,
+full prefix, with all 40 masked operands clean; no MiniDelete or broad
+source-shape sweep is reopened.

@@ -1337,16 +1337,25 @@
     {
       "address": "0x416910",
       "name": "initialize_high_score_screen",
+      "aliases": [
+        "cRHighScore_Init"
+      ],
       "description": "Void `cRHighScore::Init(int, int)`: builds the postal or challenge high-score screen, optionally enables inline name entry, and lays out five owned ten-handle row banks. Android AI tail-branches among the void lifecycle peers; all three Windows callers discard EAX."
     },
     {
       "address": "0x417220",
       "name": "destroy_high_score_screen",
+      "aliases": [
+        "cRHighScore_UnInit"
+      ],
       "description": "Exact void `cRHighScore::UnInit()`: tears down the active high-score widgets, preserves the selected bank index, and resets the shell-font scene. Android lifecycle branches and six Windows callers establish that the former zero result was incidental."
     },
     {
       "address": "0x417260",
       "name": "update_high_score_screen",
+      "aliases": [
+        "cRHighScore_AI"
+      ],
       "description": "Exact void Windows `cRHighScore::AI()`: runs replay launch, bank toggling, inline name submission, and exit actions while borrowing row widgets and the separate persistent cRSubHighScore bank. Android directly tail-branches to Init, UnInit, and Exit; the Windows transcription is proof-grade at 205/205 instructions."
     },
     {
@@ -1395,6 +1404,9 @@
     {
       "address": "0x417b50",
       "name": "exit_high_score_screen",
+      "aliases": [
+        "cRHighScore_Exit"
+      ],
       "description": "Exact void `cRHighScore::Exit()`: leaves the high-score screen, restores front-end state `2` for postal or `10` for challenge, and seeds rebuild selector `2` on both paths. Both Windows callers discard the incidental root pointer left in EAX."
     },
     {

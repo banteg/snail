@@ -1062,12 +1062,14 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x440FA0, "initialize_damage_gauge", "?Init@cRDamageGuage@@QAEXXZ"),
             (0x444AC0, "initialize_invincible_shell", "?Init@cRInvincible@@QAEXXZ"),
             (0x446E80, "initialize_warning", "?Init@cRWarning@@QAEXXZ"),
+            (0x416910, "initialize_high_score_screen", "?Init@cRHighScore@@QAEXHH@Z"),
             (0x444AE0, "start_invincible_shell", "?Start@cRInvincible@@QAEXXZ"),
             (0x446F30, "start_warning", "?Start@cRWarning@@QAEXXZ"),
             (0x404CF0, "update_row_event_display", "?AI@cRCompletion@@QAEXXZ"),
             (0x440FD0, "update_damage_gauge", "?AI@cRDamageGuage@@QAEXXZ"),
             (0x444B50, "update_invincible_shell", "?AI@cRInvincible@@QAEXXZ"),
             (0x446F80, "update_warning", "?AI@cRWarning@@QAEXXZ"),
+            (0x417260, "update_high_score_screen", "?AI@cRHighScore@@QAEXXZ"),
         )
     )
     manifest = ReferenceSymbolManifest(name="test references", symbols=symbols)
