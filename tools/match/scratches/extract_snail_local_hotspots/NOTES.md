@@ -176,3 +176,20 @@ formally stalled at 91.55%, 68/74 instructions, prefix 31, with all seven
 references clean. The residual remains one register-only error argument and a
 literal six-instruction self-copy; further work needs a new original-source
 idiom rather than another explicit redundant store.
+
+## 2026-08-09 whole-image self-copy provenance bound
+
+An exact-byte search of the authoritative unwrapped Windows image
+(`d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5`)
+finds the complete load-x/load-y/load-z/store-x/store-y/store-z tail signature
+only once, at `0x445de2` inside this function. The exact-matched neighboring
+`build_snail_world_hotspots` instead uses the plain indexed loop, a by-value
+matrix transform, and the authored 11/8 source-bank split; the exact-matched
+intro-logo integrator uses the shared aggregate `Vector3::operator+=` without
+retaining a self-copy. Android and iOS likewise preserve the one authored
+hotspot accumulation but not the Windows writeback.
+
+This closes the house-style check without a new source experiment: no repeated
+authored idiom supports spelling the unique native tail as a second hotspot
+publication. It remains bounded as VC6 residue, while the one register-only
+error-call difference and the honest 91.55% source stay unchanged.
