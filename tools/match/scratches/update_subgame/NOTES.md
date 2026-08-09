@@ -722,3 +722,37 @@ tail-merges. No source change is retained, and no shared kind, common owner,
 float spill, or register hint is justified. Focused output remains 79.94%,
 1036/1033 instructions, prefix 9/1033, with all 129 references clean. Canonical
 source SHA-256: `8829bbf7f6800ae3c0172c02d0c5a488a29733843358f626ff20ee6f6cabd7a0`.
+
+## 2026-08-09 selected-replay gameplay multiplexer closure
+
+A whole-image field-xref audit closes the meaning of
+`selected_level_record_active`: it is not merely a front-end launch latch.
+The state-0/state-7 writes in this function arm or disarm the gameplay replay
+multiplexer consumed by `cRSubGoldy::AI()`. The Windows consumer has four
+distinct reads with complementary responsibilities:
+
+- `0x43b289` selects recorded lateral position and track-state bit 2 from
+  `selected_level_record->run_records[replay_update_cursor]`; bit 3 is the
+  replay-end marker and immediately publishes front-end state 26;
+- `0x43cd16` suppresses the saved time-trial ghost path while the selected run
+  itself is playing, and `0x43cd8e` pins the ghost Z to the live replayed
+  player instead of advancing a second record;
+- `0x43d10e` keeps the active byte in `dl` across both weapon branches and
+  selects recorded fire bits 0/1 instead of the live control source. Both
+  sides converge on the same `PlayShootSfx` and `Shoot` calls, proving that
+  audio and projectile effects are replayed by the ordinary gameplay path.
+
+The neighboring record pointer and cursor accesses make the ownership
+unambiguous: the active byte gates a borrowed `SubSolution*` at `+0xff25d4`
+and the current sample at `+0xff25dc`. Android `cRSubGoldy::AI()` independently
+uses its corresponding active byte at game `+0x9d618`, record pointer at
+`+0x9d61c`, and cursor at `+0x9d624` to switch between live input recording and
+recorded movement/fire flags. iOS preserves the same split around
+`DAT_002e09cc`, `DAT_002e09d0`, and `DAT_002e09d8`.
+
+This evidence distinguishes the durable playback-mode field from the adjacent
+`selected_level_record_persistent` lifetime/exit policy. It also closes the
+state-0/state-7 assignments already expressed by the scratch: no replay-exit
+reshaping, common owner, or extra source lifetime is justified. Matching
+source and canonical SHA remain unchanged at 79.94%, 1036/1033 instructions,
+prefix 9/1033, with all 129 reference operands clean.
