@@ -162,3 +162,34 @@ downstream x87 operands move with those owners, and the complete 268-instruction
 control flow plus all 65 references remain aligned. Do not replace the two
 ordinary scalars with an artificial array/struct, `volatile`, or dummy
 lifetime solely to prescribe their stack addresses.
+
+## 2026-08-09 StopSample handle ownership closure
+
+The draining exit's second warning call is now closed through the complete
+Windows audio chain. `cRWarning::StopSample @ 0x446f60` deliberately passes
+registered sample `50` to `SoundEffectManager::play_warning_sample_backend @
+0x44de20`, which forwards through `RShellSoundPlayLooped @ 0x432dd0` to
+`cRBass::PlaySampleLooped @ 0x449a60`. That backend enables looping and returns
+the live playback channel in `EAX`. The caller immediately pushes that return
+value into `SoundEffectManager::stop_warning_sample_handle @ 0x44de30`, which
+forwards through `RShellSoundStopLooped @ 0x432de0` to the matching backend
+stop edge at `0x449a10`.
+
+There is no hidden warning-channel field or earlier stored handle: the exact
+Windows `Warning` owner is only `0x10` bytes (`state`, `phase`, `phase_step`,
+and `border`), and the seven-instruction `StopSample` body contains no store
+between the play return and stop argument. In source terms, sample 50 is
+started and the returned channel is stopped immediately. This is the authored
+Windows implementation, not a decompiler artifact or a request to retain a
+channel in `DamageGuage`.
+
+Mobile evidence fixes the ownership while documenting the platform split.
+Android `cRDamageGuage::AI()` invokes `cRWarning::StopSample()` on the same
+draining-to-monitoring exit, but Android ships that member as a four-byte
+no-op. iOS retains the authored `cRWarning::StopSample()` symbol, and the
+mobile RShell/cRBass names independently identify the nested Windows adapters
+as `PlaySampleLooped(int)` / `StopSampleLooped(int)`. The existing
+`warning.stop_warning_sample()` call is therefore already the source-honest
+damage-gauge expression; no scratch code or synthetic handle storage is
+needed. Focused matching remains 94.03%, 268/268 instructions, prefix 122,
+with all 65 masked operands clean.
