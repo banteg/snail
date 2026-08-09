@@ -108,3 +108,12 @@ advancing the value until it exceeds one and requests recycling. No relevant
 Windows, Android, or iOS body stores a persistent sprite pointer. Matcher and
 replay definitions now name the pair for that closed lifetime contract. This
 clarification is codegen-neutral at exact 63/63 with six clean operands.
+
+## 2026-08-09 primary actor Shoot ownership
+
+The matcher now emits the Windows pointer ABI as
+`cRSubLazer::Shoot(const tVector*, const tVector*)` and selects VC6 symbol
+`?Shoot@cRSubLazer@@QAEXPBUtVector@@0@Z`. Android independently retains the
+same actor-level Shoot behavior, while the sole Windows caller is the exact
+manager free-slot dispatch. The authored name changes only the COFF symbol;
+the body remains exact at 63/63 instructions with all six references clean.

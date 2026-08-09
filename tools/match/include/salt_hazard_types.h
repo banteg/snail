@@ -15,10 +15,10 @@ enum SaltState {
     SALT_STATE_RECYCLE_PENDING = 2,
 };
 
-class Salt : public RenderableBod {
+class cRSalt : public RenderableBod {
 public:
-    Salt* initialize_salt_hazard_runtime(); // @ 0x408630
-    void update_salt_hazard(); // @ 0x441c10
+    cRSalt(); // @ 0x408630
+    void AI(); // @ 0x441c10
 
     SaltState state;            // +0x80
     char unknown_84[0x88 - 0x84];
@@ -29,20 +29,26 @@ public:
     char unknown_95[0x98 - 0x95];
 };
 
-typedef Salt SaltHazardSlot;
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRSalt Salt;
+typedef cRSalt SaltHazardSlot;
 
+typedef char cRSalt_must_be_0x98[(sizeof(cRSalt) == 0x98) ? 1 : -1];
 typedef char Salt_must_be_0x98[(sizeof(Salt) == 0x98) ? 1 : -1];
 
-class SaltManager {
+class cRSaltManager {
 public:
-    void initialize_salt_hazard_pool();              // @ 0x441540
-    void spawn_salt_hazard(const Vector3* position); // @ 0x441560
+    void Init(); // @ 0x441540
+    void Add(tVector& position); // @ 0x441560
 
-    Salt slots[40];
+    cRSalt slots[40];
 };
 
-typedef SaltManager SaltHazardPool;
+typedef cRSaltManager SaltManager;
+typedef cRSaltManager SaltHazardPool;
 
+typedef char cRSaltManager_must_be_0x17c0[
+    (sizeof(cRSaltManager) == 0x17c0) ? 1 : -1];
 typedef char SaltManager_must_be_0x17c0[
     (sizeof(SaltManager) == 0x17c0) ? 1 : -1];
 

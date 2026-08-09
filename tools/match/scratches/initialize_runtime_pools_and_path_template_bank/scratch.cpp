@@ -99,12 +99,12 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
 
     initialize_array_with_constructor(
         (RuntimeSlot*)sub_lazers.slots,
-        sizeof(SubLazer),
+        sizeof(cRSubLazer),
         sizeof(sub_lazers.slots) / sizeof(sub_lazers.slots[0]),
         &RuntimeSlot::initialize_sub_lazer_runtime);
     initialize_array_with_constructor(
         (RuntimeSlot*)salt_hazards.slots,
-        sizeof(Salt),
+        sizeof(cRSalt),
         sizeof(salt_hazards.slots) / sizeof(salt_hazards.slots[0]),
         &RuntimeSlot::initialize_salt_hazard_runtime);
 

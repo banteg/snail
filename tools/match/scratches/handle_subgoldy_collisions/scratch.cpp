@@ -33,23 +33,23 @@ void cRSubGoldy::Collision()
 {
     enum {
         SALT_POOL_FROM_SUBGAME =
-            offsetof(cRSubGame, salt_hazards) + offsetof(SaltManager, slots),
-        SALT_STATE_FROM_SUBGAME = SALT_POOL_FROM_SUBGAME + offsetof(Salt, state),
+            offsetof(cRSubGame, salt_hazards) + offsetof(cRSaltManager, slots),
+        SALT_STATE_FROM_SUBGAME = SALT_POOL_FROM_SUBGAME + offsetof(cRSalt, state),
         SALT_POSITION_FROM_SUBGAME =
             SALT_POOL_FROM_SUBGAME
-            + offsetof(Salt, transform)
+            + offsetof(cRSalt, transform)
             + offsetof(TransformMatrix, position),
         SALT_COLLISION_ARMED_FROM_SUBGAME =
             SALT_POOL_FROM_SUBGAME
-            + offsetof(Salt, collision_armed),
+            + offsetof(cRSalt, collision_armed),
         SUB_LAZER_POOL_FROM_SUBGAME =
             offsetof(cRSubGame, sub_lazers)
-            + offsetof(SubLazerManager, slots),
+            + offsetof(cRSubLazerManager, slots),
         SUB_LAZER_STATE_FROM_SUBGAME =
-            SUB_LAZER_POOL_FROM_SUBGAME + offsetof(SubLazer, state),
+            SUB_LAZER_POOL_FROM_SUBGAME + offsetof(cRSubLazer, state),
         SUB_LAZER_POSITION_FROM_SUBGAME =
             SUB_LAZER_POOL_FROM_SUBGAME
-            + offsetof(SubLazer, transform)
+            + offsetof(cRSubLazer, transform)
             + offsetof(TransformMatrix, position)
     };
 
@@ -65,7 +65,7 @@ void cRSubGoldy::Collision()
         if ((shoot_flags & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0) {
             for (int i = 0;
                  i < (int)sizeof(game->salt_hazards.slots);
-                i += (int)sizeof(Salt)) {
+                i += (int)sizeof(cRSalt)) {
                 char* slot = (char*)game + i;
                 if (*(int*)(slot + SALT_STATE_FROM_SUBGAME) == 1
                     && *(unsigned char*)(slot + SALT_COLLISION_ARMED_FROM_SUBGAME) == 1) {
@@ -85,7 +85,7 @@ void cRSubGoldy::Collision()
         }
         for (int j = 0;
              j < (int)sizeof(game->sub_lazers.slots);
-             j += (int)sizeof(SubLazer)) {
+             j += (int)sizeof(cRSubLazer)) {
             char* slot = (char*)game + j;
             if (*(int*)(slot + SUB_LAZER_STATE_FROM_SUBGAME)
                 == SUB_LAZER_STATE_ACTIVE) {

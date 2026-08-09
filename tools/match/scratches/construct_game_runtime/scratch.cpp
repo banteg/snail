@@ -32,8 +32,8 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRJetPack %i\n", sizeof(JetPack)); \
     debug_report_stub("   Size of cRSubHealth %i\n", sizeof(((cRSubGame*)0)->health_pickups)); \
     debug_report_stub("   Size of cRSlug %i\n", sizeof(((cRSubGame*)0)->slug_hazards.slots)); \
-    debug_report_stub("   Size of cRSubLazerManager %i\n", sizeof(SubLazerManager)); \
-    debug_report_stub("   Size of cRSaltManager %i\n", sizeof(SaltManager)); \
+    debug_report_stub("   Size of cRSubLazerManager %i\n", sizeof(cRSubLazerManager)); \
+    debug_report_stub("   Size of cRSaltManager %i\n", sizeof(cRSaltManager)); \
     debug_report_stub("   Size of cRSubGarbage %i\n", sizeof(((cRSubGame*)0)->garbage_hazards.slots)); \
     debug_report_stub("   Size of cRSubRing %i\n", sizeof(SubRingPool)); \
     debug_report_stub("   Size of cRFringeManager %i\n", sizeof(FringeManager)); \

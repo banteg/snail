@@ -1,4 +1,5 @@
 // deactivate_sub_lazer_projectile @ 0x441740 (thiscall, ret)
+// Authored owner: cRSubLazer::Kill().
 // Unlinks the slot from the live list and pushes it onto the free stack
 // anchored at game+0x5a8; clears the live state either way.
 
@@ -7,7 +8,7 @@
 
 int report_errorf(char* format, ...);
 
-void SubLazer::deactivate_sub_lazer_projectile()
+void cRSubLazer::Kill()
 {
     BodList* anchor = &g_game->active_bod_list;
     int flags = list_flags;

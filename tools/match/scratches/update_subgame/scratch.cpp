@@ -440,8 +440,7 @@ void cRSubGame::AI()
                         if (hazard_tile == SUBLOC_TILE_SALT_HAZARD) {
                             if (cell_index >= first_block_row_count
                                 && cell_index < completion_row_start) {
-                                salt_hazards.spawn_salt_hazard(
-                                    &cell_slot->cell.position);
+                                salt_hazards.Add(cell_slot->cell.position);
                             }
                         } else if ((cell_slot->cell.lane_and_flags
                                         & SUBLOC_FLAG_SUPPRESS_SALT_SPAWN)
@@ -457,8 +456,7 @@ void cRSubGame::AI()
                                     + 0.98f
                             && cell_index >= first_block_row_count
                             && cell_index < completion_row_start) {
-                            salt_hazards.spawn_salt_hazard(
-                                &cell_slot->cell.position);
+                            salt_hazards.Add(cell_slot->cell.position);
                         }
 
                         if ((runtime_flags & SUBGAME_RUNTIME_FLAG_SLUG_HAZARDS) != 0

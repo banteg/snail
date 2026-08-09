@@ -1064,6 +1064,8 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x446E80, "initialize_warning", "?Init@cRWarning@@QAEXXZ"),
             (0x416910, "initialize_high_score_screen", "?Init@cRHighScore@@QAEXHH@Z"),
             (0x43E470, "initialize_ring_or_special_effect_particles", "?Init@cRSubRing@@QAEXH@Z"),
+            (0x441540, "initialize_salt_hazard_pool", "?Init@cRSaltManager@@QAEXXZ"),
+            (0x441650, "initialize_sub_lazer_pool", "?Init@cRSubLazerManager@@QAEXXZ"),
             (0x444AE0, "start_invincible_shell", "?Start@cRInvincible@@QAEXXZ"),
             (0x446F30, "start_warning", "?Start@cRWarning@@QAEXXZ"),
             (0x404CF0, "update_row_event_display", "?AI@cRCompletion@@QAEXXZ"),
@@ -1074,6 +1076,8 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x43ECC0, "update_track_health_pickup", "?AI@cRSubHealth@@QAEXXZ"),
             (0x43E780, "update_ring_or_special_effect_particle", "?AI@cRSubRingStar@@QAEXXZ"),
             (0x43E830, "update_ring_or_special_effect_parent", "?AI@cRSubRing@@QAEXXZ"),
+            (0x441C10, "update_salt_hazard", "?AI@cRSalt@@QAEXXZ"),
+            (0x4417D0, "update_sub_lazer_projectile", "?AI@cRSubLazer@@QAEXXZ"),
         )
     )
     manifest = ReferenceSymbolManifest(name="test references", symbols=symbols)
@@ -1082,6 +1086,41 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
         assert _reference_symbol_for_symbol_name(manifest, symbol.aliases[0]) is symbol
     assert (
         _reference_symbol_for_symbol_name(manifest, "?AI@cRUnknown@@QAEXXZ")
+        is None
+    )
+
+
+def test_sub_lazer_shoot_aliases_preserve_actor_and_manager_owners() -> None:
+    actor_shoot = ReferenceSymbol(
+        address=0x441670,
+        name="spawn_sub_lazer_projectile",
+        kind="function",
+        aliases=("?Shoot@cRSubLazer@@QAEXPBUtVector@@0@Z",),
+    )
+    manager_shoot = ReferenceSymbol(
+        address=0x441AD0,
+        name="shoot_sub_lazer_pool",
+        kind="function",
+        aliases=("?Shoot@cRSubLazerManager@@QAEXPAUtVector@@PBU2@@Z",),
+    )
+    manifest = ReferenceSymbolManifest(
+        name="test references",
+        symbols=(actor_shoot, manager_shoot),
+    )
+
+    assert (
+        _reference_symbol_for_symbol_name(manifest, actor_shoot.aliases[0])
+        is actor_shoot
+    )
+    assert (
+        _reference_symbol_for_symbol_name(manifest, manager_shoot.aliases[0])
+        is manager_shoot
+    )
+    assert (
+        _reference_symbol_for_symbol_name(
+            manifest,
+            "?Shoot@cRUnknown@@QAEXPAUtVector@@PBU2@@Z",
+        )
         is None
     )
 

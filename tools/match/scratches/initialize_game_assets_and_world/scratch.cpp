@@ -411,10 +411,10 @@ char GameRoot::initialize_game_assets_and_world()
     enum {
         BOD_OBJECT_OFFSET = offsetof(BodBase, object),
         SUB_LAZER_OWNER_FROM_OBJECT =
-            offsetof(SubLazer, owner_game) - offsetof(BodBase, object),
+            offsetof(cRSubLazer, owner_game) - offsetof(BodBase, object),
         SUB_LAZER_SLOT_COUNT =
-            sizeof(((SubLazerManager*)0)->slots)
-            / sizeof(((SubLazerManager*)0)->slots[0]),
+            sizeof(((cRSubLazerManager*)0)->slots)
+            / sizeof(((cRSubLazerManager*)0)->slots[0]),
         BANNER_POOL_FROM_ROOT =
             offsetof(GameRoot, subgame) + offsetof(cRSubGame, banners),
         BANNER_SLOT_COUNT =
@@ -431,7 +431,7 @@ char GameRoot::initialize_game_assets_and_world()
         ((tColour*)(sub_lazer_object + 1))
             ->store_color4f(1.0f, 1.0f, 1.0f, 0.7f);
         (*sub_lazer_object)->blend_mode = 9;
-        sub_lazer_object = (Object**)((char*)sub_lazer_object + sizeof(SubLazer));
+        sub_lazer_object = (Object**)((char*)sub_lazer_object + sizeof(cRSubLazer));
         --sub_lazer_count;
     } while (sub_lazer_count != 0);
 
@@ -442,13 +442,13 @@ char GameRoot::initialize_game_assets_and_world()
     cRSubGame** salt_owner = &subgame.salt_hazards.slots[0].owner_game;
     int salt_count = 40;
     do {
-        Salt* salt = (Salt*)((char*)salt_owner - 0x88);
+        cRSalt* salt = (cRSalt*)((char*)salt_owner - 0x88);
         salt->SetObject(salt_model->object);
         *salt_owner = &subgame;
         salt->color.store_color4f(1.0f, 1.0f, 1.0f, 0.9f);
         salt->object->blend_mode = 12;
         set_matrix_identity(&salt->transform);
-        salt_owner = (cRSubGame**)((char*)salt_owner + sizeof(Salt));
+        salt_owner = (cRSubGame**)((char*)salt_owner + sizeof(cRSalt));
         --salt_count;
     } while (salt_count != 0);
 

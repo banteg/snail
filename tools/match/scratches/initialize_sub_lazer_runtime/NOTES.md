@@ -34,3 +34,14 @@ Android and iOS independently construct each mobile actor as `cRBodPos` before
 installing the SubLazer table. Their `0xa4` stride is `0x0c` smaller than the
 Windows actor because the inherited mobile body prefix is smaller, so it
 confirms the relationship but must not be used as a Windows offset template.
+
+## 2026-08-09 primary cRSubLazer constructor
+
+The matcher now emits this exact wrapper as `cRSubLazer::cRSubLazer()` and
+selects VC6 symbol `??0cRSubLazer@@QAE@XZ`. The mobile crosswalk does not map a
+standalone constructor body, so ownership is grounded in Windows: the sole
+code xref is the 20-slot `cRSubGame` pool constructor, each record has the
+proved `0xb0` extent, and the installed table at `0x49733c` points directly to
+the dual-mobile-verified `cRSubLazer::AI()`. The ownership spelling is
+codegen-neutral at exact 7/7 instructions with both operands clean;
+`SubLazer` remains a compatibility typedef for analysis-shaped callers.

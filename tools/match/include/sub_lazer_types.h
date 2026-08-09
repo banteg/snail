@@ -21,12 +21,12 @@ enum {
     SUB_LAZER_SLOT_CAPACITY = 20,
 };
 
-class SubLazer : public RenderableBod {
+class cRSubLazer : public RenderableBod {
 public:
-    SubLazer* initialize_sub_lazer_runtime(); // @ 0x408610
-    void spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction); // @ 0x441670
-    void deactivate_sub_lazer_projectile(); // @ 0x441740
-    void update_sub_lazer_projectile(); // @ 0x4417d0
+    cRSubLazer(); // @ 0x408610
+    void Shoot(const Vector3* origin, const Vector3* direction); // @ 0x441670
+    void Kill(); // @ 0x441740
+    void AI(); // @ 0x4417d0
 
     SubLazerState state;      // +0x80
     char unknown_84[0x88 - 0x84];
@@ -37,20 +37,26 @@ public:
     char unknown_a0[0xb0 - 0xa0];
 };
 
-typedef SubLazer SubLazerSlot;
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRSubLazer SubLazer;
+typedef cRSubLazer SubLazerSlot;
 
+typedef char cRSubLazer_must_be_0xb0[(sizeof(cRSubLazer) == 0xb0) ? 1 : -1];
 typedef char SubLazer_must_be_0xb0[(sizeof(SubLazer) == 0xb0) ? 1 : -1];
 
-class SubLazerManager {
+class cRSubLazerManager {
 public:
-    void initialize_sub_lazer_pool(); // @ 0x441650
-    void shoot_sub_lazer_pool(Vector3* origin, const Vector3* direction); // @ 0x441ad0, cRSubLazerManager::Shoot
+    void Init(); // @ 0x441650
+    void Shoot(Vector3* origin, const Vector3* direction); // @ 0x441ad0
 
-    SubLazer slots[SUB_LAZER_SLOT_CAPACITY]; // owned storage
+    cRSubLazer slots[SUB_LAZER_SLOT_CAPACITY]; // owned storage
 };
 
-typedef SubLazerManager SubLazerPool;
+typedef cRSubLazerManager SubLazerManager;
+typedef cRSubLazerManager SubLazerPool;
 
+typedef char cRSubLazerManager_must_be_0xdc0[
+    (sizeof(cRSubLazerManager) == 0xdc0) ? 1 : -1];
 typedef char SubLazerManager_must_be_0xdc0[
     (sizeof(SubLazerManager) == 0xdc0) ? 1 : -1];
 

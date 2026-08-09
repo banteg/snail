@@ -59,8 +59,8 @@ void cRSubGame::StartLevel(int level_index)
     enemy_manager.initialize_enemy_manager();
     player.damage_gauge.Init();
     player.progress_bar.noop_runtime_ai();
-    sub_lazers.initialize_sub_lazer_pool();
-    salt_hazards.initialize_salt_hazard_pool();
+    sub_lazers.Init();
+    salt_hazards.Init();
     g_voice_manager.reset_voice_manager();
 
     level_definition.load_frontend_level_by_mode_and_index(level_mode, level_index);

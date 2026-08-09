@@ -282,3 +282,14 @@ remaining Windows mismatch is a commutative y-lane x87 ordering, not missing
 ownership or behavior. The six existing sweeps already cover 82 variants;
 none are reopened. Focused output stays 99.08%, 218/218, prefix 86, with all
 24 operands clean.
+
+## 2026-08-09 primary actor AI ownership
+
+The matcher now emits `cRSubLazer::AI()` and selects VC6 symbol
+`?AI@cRSubLazer@@QAEXXZ`. Android and iOS independently preserve that exact
+owner and method, while Windows callback table `0x49733c` points directly to
+this body. The internal exit dispatch now names `cRSubLazer::Kill()`; stable
+manifest aliases keep that relocation tied to the descriptive Windows target.
+The candidate remains at the honest 99.08%, 218/218-instruction, prefix-86
+baseline with all 24 references clean. The six formally stalled add-order
+mutation plans and their receipts remain byte-identical and are not rerun.

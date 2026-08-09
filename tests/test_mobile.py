@@ -2987,6 +2987,176 @@ def test_mobile_ring_and_health_recover_authored_owners() -> None:
     assert "slot->Init(player->lives);" in ring_spawn
 
 
+def test_mobile_sub_lazer_and_salt_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    sub_lazer_header = (include_root / "sub_lazer_types.h").read_text(
+        encoding="utf-8"
+    )
+    salt_header = (include_root / "salt_hazard_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRSubLazer : public RenderableBod {" in sub_lazer_header
+    assert "class cRSubLazerManager {" in sub_lazer_header
+    assert "typedef cRSubLazer SubLazer;" in sub_lazer_header
+    assert "typedef cRSubLazerManager SubLazerManager;" in sub_lazer_header
+    assert "class SubLazer :" not in sub_lazer_header
+    assert "class SubLazerManager {" not in sub_lazer_header
+    for declaration in (
+        "cRSubLazer();",
+        "void Shoot(const Vector3* origin, const Vector3* direction);",
+        "void Kill();",
+        "void AI();",
+        "void Init();",
+        "void Shoot(Vector3* origin, const Vector3* direction);",
+    ):
+        assert declaration in sub_lazer_header
+
+    assert "class cRSalt : public RenderableBod {" in salt_header
+    assert "class cRSaltManager {" in salt_header
+    assert "typedef cRSalt Salt;" in salt_header
+    assert "typedef cRSaltManager SaltManager;" in salt_header
+    assert "class Salt :" not in salt_header
+    assert "class SaltManager {" not in salt_header
+    for declaration in (
+        "cRSalt();",
+        "void AI();",
+        "void Init();",
+        "void Add(tVector& position);",
+    ):
+        assert declaration in salt_header
+
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRSubLazerManager sub_lazers;" in subgame_header
+    assert "cRSaltManager salt_hazards;" in subgame_header
+
+    expected_methods = (
+        (
+            "initialize_sub_lazer_runtime",
+            "cRSubLazer_ctor",
+            "cRSubLazer::cRSubLazer()",
+            "??0cRSubLazer@@QAE@XZ",
+            False,
+        ),
+        (
+            "initialize_sub_lazer_pool",
+            "cRSubLazerManager_Init",
+            "void cRSubLazerManager::Init()",
+            "?Init@cRSubLazerManager@@QAEXXZ",
+            True,
+        ),
+        (
+            "spawn_sub_lazer_projectile",
+            "cRSubLazer_Shoot",
+            "void cRSubLazer::Shoot(const Vector3* origin, const Vector3* direction)",
+            "?Shoot@cRSubLazer@@QAEXPBUtVector@@0@Z",
+            True,
+        ),
+        (
+            "deactivate_sub_lazer_projectile",
+            "cRSubLazer_Kill",
+            "void cRSubLazer::Kill()",
+            "?Kill@cRSubLazer@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_sub_lazer_projectile",
+            "cRSubLazer_AI",
+            "void cRSubLazer::AI()",
+            "?AI@cRSubLazer@@QAEXXZ",
+            True,
+        ),
+        (
+            "shoot_sub_lazer_pool",
+            "cRSubLazerManager_Shoot",
+            "void cRSubLazerManager::Shoot(Vector3* origin, const Vector3* direction)",
+            "?Shoot@cRSubLazerManager@@QAEXPAUtVector@@PBU2@@Z",
+            True,
+        ),
+        (
+            "initialize_salt_hazard_runtime",
+            "cRSalt_ctor",
+            "cRSalt::cRSalt()",
+            "??0cRSalt@@QAE@XZ",
+            False,
+        ),
+        (
+            "initialize_salt_hazard_pool",
+            "cRSaltManager_Init",
+            "void cRSaltManager::Init()",
+            "?Init@cRSaltManager@@QAEXXZ",
+            True,
+        ),
+        (
+            "spawn_salt_hazard",
+            "cRSaltManager_Add",
+            "void cRSaltManager::Add(tVector& position)",
+            "?Add@cRSaltManager@@QAEXAAUtVector@@@Z",
+            True,
+        ),
+        (
+            "update_salt_hazard",
+            "cRSalt_AI",
+            "void cRSalt::AI()",
+            "?AI@cRSalt@@QAEXXZ",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["status"] == "verified"
+            assert entries[windows_name]["confidence"] == "high"
+
+    build_level = (scratch_root / "build_subgame_level/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "sub_lazers.Init();" in build_level
+    assert "salt_hazards.Init();" in build_level
+    sub_loc = (scratch_root / "update_sub_loc/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "sub_lazers.Shoot(&spawn, &direction);" in sub_loc
+    subgame = (scratch_root / "update_subgame/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert subgame.count("salt_hazards.Add(cell_slot->cell.position);") == 2
+    runtime_constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "sizeof(cRSubLazer)" in runtime_constructor
+    assert "sizeof(cRSalt)" in runtime_constructor
+
+
 def test_mobile_warning_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

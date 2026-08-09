@@ -40,3 +40,12 @@ shoot_sub_lazer_pool -> spawn_sub_lazer_projectile`; no pointer is transferred
 out of the manager. Android `cRSubLazerManager::Init @ 0x6c2e0` independently
 clears 20 state words at its platform `0xa4` stride. The exact Windows
 initializer remains 7/7 with no masked operands.
+
+## 2026-08-09 primary manager Init ownership
+
+The matcher now emits `cRSubLazerManager::Init()` and selects VC6 symbol
+`?Init@cRSubLazerManager@@QAEXXZ`. Android preserves the same owner, method,
+20-record loop, and inactive-state transition. Windows has one direct caller,
+the level-build reset of the embedded `cRSubGame::sub_lazers` manager. Using
+the primary `cRSubLazer` stride is codegen-neutral: the body remains exact at
+7/7 instructions with no masked operands.

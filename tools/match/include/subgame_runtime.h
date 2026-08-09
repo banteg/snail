@@ -202,8 +202,8 @@ public:
     JetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
     cRSubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
     SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots
-    SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
-    SaltManager salt_hazards; // +0x3578c0, 40 owned cRSalt slots
+    cRSubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
+    cRSaltManager salt_hazards; // +0x3578c0, 40 owned cRSalt slots
     BannerPool banners; // +0x359080, embedded start/completion actors
     SubGarbagePool garbage_hazards; // +0x359140, borrowed head + 50 owned slots
     SubRingPool ring_effects; // +0x35b78c, two embedded cRSubRing slots

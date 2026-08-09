@@ -6,13 +6,13 @@
 int next_math_random_value();
 int report_errorf(char* format, ...);
 
-void SaltManager::spawn_salt_hazard(const Vector3* position)
+void cRSaltManager::Add(tVector& position)
 {
     enum {
         SALT_SLOT_CAPACITY = sizeof(slots) / sizeof(slots[0]),
     };
     int index = 0;
-    Salt* scan = slots;
+    cRSalt* scan = slots;
     while (index < SALT_SLOT_CAPACITY
         && scan->state != SALT_STATE_INACTIVE) {
         ++index;
@@ -21,7 +21,7 @@ void SaltManager::spawn_salt_hazard(const Vector3* position)
             return;
     }
 
-    Salt* slot = &slots[index];
+    cRSalt* slot = &slots[index];
     slot->state = SALT_STATE_ACTIVE;
     slot->fade_alpha = 0.0f;
     // This mobile-preserved +0x90 seed is write-only in the recovered runtime;
@@ -29,7 +29,7 @@ void SaltManager::spawn_salt_hazard(const Vector3* position)
     slot->spawn_velocity_y = g_game->subgame.subgame_rate * 0.033333335f;
     TransformMatrix* live_matrix = &slot->transform;
     Vector3* spawn_position = &slot->transform.position;
-    *spawn_position = *position;
+    *spawn_position = position;
     live_matrix->RotIdentity();
     live_matrix->RotLocalY(
         ((float)next_math_random_value() - 16384.0f)

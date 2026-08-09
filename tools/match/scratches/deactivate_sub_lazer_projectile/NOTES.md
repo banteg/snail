@@ -91,3 +91,11 @@ paths unlink the actor from its subgame group chain, push it onto
 manager-owned record inactive. Android `cRSubLazer::Kill @ 0x6d73c` preserves
 the same remove-then-clear lifecycle. Matching remains exact at 43/43 with
 five clean operands.
+
+## 2026-08-09 primary actor Kill ownership
+
+The matcher now emits `cRSubLazer::Kill()` and selects VC6 symbol
+`?Kill@cRSubLazer@@QAEXXZ`. Android preserves that exact lifecycle surface,
+and Windows has one direct call from the actor AI collision/exit tail. The
+ownership rename is codegen-neutral: the body remains exact at 43/43
+instructions with all five references clean.

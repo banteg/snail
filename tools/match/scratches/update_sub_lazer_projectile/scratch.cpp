@@ -1,4 +1,5 @@
 // update_sub_lazer_projectile @ 0x4417d0 (thiscall, ret)
+// Authored owner: cRSubLazer::AI().
 // Recycle-pending inlines the live-list removal; active integrates,
 // bounds-checks, and runs the two attachment containment probes before Kill.
 
@@ -13,7 +14,7 @@ extern char g_lazer_path_kill_format[]; // data_4a4f54
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped to xor eax/ret in release
 int report_errorf(char* format, ...);
 
-void SubLazer::update_sub_lazer_projectile()
+void cRSubLazer::AI()
 {
     if (owner_game->subgame_pause_gate)
         return;
@@ -54,7 +55,7 @@ void SubLazer::update_sub_lazer_projectile()
                         velocity * 1.05f,
                         cell->primary_attachment_cell)) {
                     debug_report_stub(g_lazer_path_kill_format);
-                    deactivate_sub_lazer_projectile();
+                    Kill();
                     return;
                 }
                 if ((cell->flags & SUBROW_FLAG_SECONDARY_ATTACHMENT) != 0
@@ -63,13 +64,13 @@ void SubLazer::update_sub_lazer_projectile()
                         velocity * 1.05f,
                         cell->secondary_attachment_cell)) {
                     debug_report_stub(g_lazer_path2_kill_format);
-                    deactivate_sub_lazer_projectile();
+                    Kill();
                     return;
                 }
                 return;
             }
         }
-        deactivate_sub_lazer_projectile();
+        Kill();
         return;
     }
     }

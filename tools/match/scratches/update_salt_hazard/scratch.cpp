@@ -7,7 +7,7 @@
 
 int report_errorf(char* format, ...);
 
-void Salt::update_salt_hazard()
+void cRSalt::AI()
 {
     if (owner_game->subgame_pause_gate)
         return;

@@ -113,3 +113,13 @@ stagger. Their vector-only checked-in bodies do not justify importing the
 `cRSubGoldy*` parameter seen only in the later iOS name inventory into the
 Windows owner. Focused Windows matching remains exact at 48/48 with four
 clean operands.
+
+## 2026-08-09 primary manager Shoot ownership
+
+The matcher now emits the Windows pointer ABI as
+`cRSubLazerManager::Shoot(tVector*, const tVector*)` and selects VC6 symbol
+`?Shoot@cRSubLazerManager@@QAEXPAUtVector@@PBU2@@Z`. Android and iOS preserve
+the same manager owner and 20-slot dispatch. The internal actor call now names
+`cRSubLazer::Shoot`; stable manifest aliases retain the descriptive Windows
+target identity. Candidate code remains exact at 48/48 instructions with all
+four references clean.

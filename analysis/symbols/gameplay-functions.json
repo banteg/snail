@@ -616,6 +616,9 @@
       "address": "0x408610",
       "name": "initialize_sub_lazer_runtime",
       "description": "Exact constructor wrapper for one authored `SubLazer` (`cRSubLazer` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_sub_lazer_projectile, and returns the receiver. The 20 inline 0xb0-byte records owned by SubLazerManager total the native 0xdc0 size ledger.",
+      "aliases": [
+        "cRSubLazer_ctor"
+      ],
       "mobile_candidate_rejections": [
         {
           "symbol": "cRSubLazerManager::Init()",
@@ -627,6 +630,9 @@
       "address": "0x408630",
       "name": "initialize_salt_hazard_runtime",
       "description": "Exact constructor wrapper for one authored `Salt` (`cRSalt` cross-port): constructs the renderable-body prefix, installs the table whose entry is update_salt_hazard, and returns the receiver. SaltManager owns 40 inline 0x98-byte records whose 0x17c0 total matches the native ledger.",
+      "aliases": [
+        "cRSalt_ctor"
+      ],
       "mobile_candidate_rejections": [
         {
           "symbol": "cRSaltManager::Init()",
@@ -3284,37 +3290,58 @@
     {
       "address": "0x441540",
       "name": "initialize_salt_hazard_pool",
-      "description": "Exact void Windows `cRSaltManager::Init()`: clears the 32-bit SaltState at +0x80 for each of the manager's 40 inline Salt records. Its sole Windows caller discards EAX, and Android preserves the same manager method and loop."
+      "description": "Exact void Windows `cRSaltManager::Init()`: clears the 32-bit SaltState at +0x80 for each of the manager's 40 inline Salt records. Its sole Windows caller discards EAX, and Android preserves the same manager method and loop.",
+      "aliases": [
+        "cRSaltManager_Init"
+      ]
     },
     {
       "address": "0x441560",
       "name": "spawn_salt_hazard",
-      "description": "Authored void `cRSaltManager::Add(tVector&)`: allocates one manager-owned Salt from the 40 inline slots, seeds its active state, independent fade/spawn-y/collision-latch fields, and inherited BOD link. Android's full-pool and successful exits leave a slot state and list-insertion residue in R0; iOS independently leaves this, a matrix-call residue, or an error-call residue, proving those incompatible values are incidental rather than a result. Android preserves the vector-only signature; iOS v1.9 adds the owning Goldy argument."
+      "description": "Authored void `cRSaltManager::Add(tVector&)`: allocates one manager-owned Salt from the 40 inline slots, seeds its active state, independent fade/spawn-y/collision-latch fields, and inherited BOD link. Android's full-pool and successful exits leave a slot state and list-insertion residue in R0; iOS independently leaves this, a matrix-call residue, or an error-call residue, proving those incompatible values are incidental rather than a result. Android preserves the vector-only signature; iOS v1.9 adds the owning Goldy argument.",
+      "aliases": [
+        "cRSaltManager_Add"
+      ]
     },
     {
       "address": "0x441650",
       "name": "initialize_sub_lazer_pool",
-      "description": "Exact void Windows `cRSubLazerManager::Init()`: clears the 32-bit SubLazerState of all 20 owned inline actors at `cRSubGame +0x356b00` to SUB_LAZER_STATE_INACTIVE before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental."
+      "description": "Exact void Windows `cRSubLazerManager::Init()`: clears the 32-bit SubLazerState of all 20 owned inline actors at `cRSubGame +0x356b00` to SUB_LAZER_STATE_INACTIVE before a level build. Android preserves the same manager method and loop; the end pointer left in EAX is incidental.",
+      "aliases": [
+        "cRSubLazerManager_Init"
+      ]
     },
     {
       "address": "0x441670",
       "name": "spawn_sub_lazer_projectile",
-      "description": "Exact Windows `cRSubLazer::Shoot` implementation: sets one manager-owned actor to SUB_LAZER_STATE_ACTIVE, stores body position at +0x68 and velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument."
+      "description": "Exact Windows `cRSubLazer::Shoot` implementation: sets one manager-owned actor to SUB_LAZER_STATE_ACTIVE, stores body position at +0x68 and velocity at +0x8c, resets its bob phase, links the inherited BOD node, and refreshes the forward basis. Android preserves the two-vector signature; iOS v1.9 adds the owning Goldy argument.",
+      "aliases": [
+        "cRSubLazer_Shoot"
+      ]
     },
     {
       "address": "0x441740",
       "name": "deactivate_sub_lazer_projectile",
-      "description": "Exact void Windows `cRSubLazer::Kill()`: sets one actor to SUB_LAZER_STATE_INACTIVE and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register."
+      "description": "Exact void Windows `cRSubLazer::Kill()`: sets one actor to SUB_LAZER_STATE_INACTIVE and unlinks its inherited BOD node through GameRoot's active/free list after collision or path exit. Android preserves the authored method name; its apparent result is only the list-removal call value left in the return register.",
+      "aliases": [
+        "cRSubLazer_Kill"
+      ]
     },
     {
       "address": "0x4417d0",
       "name": "update_sub_lazer_projectile",
-      "description": "Windows `cRSubLazer::AI()`: returns SUB_LAZER_STATE_RECYCLE_PENDING actors through GameRoot's shared active BOD list, integrates SUB_LAZER_STATE_ACTIVE actors, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 97.25% with 218/218 instructions; only three commutative x87 add orders differ."
+      "description": "Windows `cRSubLazer::AI()`: returns SUB_LAZER_STATE_RECYCLE_PENDING actors through GameRoot's shared active BOD list, integrates SUB_LAZER_STATE_ACTIVE actors, distinguishes primary and secondary track-attachment hits with their native debug markers, and dispatches void Kill after collision or exit. The exact constructor table at 0x49733c points directly here, and Android/iOS preserve the authored owner. The honest Windows scratch is 99.08% with 218/218 instructions; only the bounded commutative x87 add order differs.",
+      "aliases": [
+        "cRSubLazer_AI"
+      ]
     },
     {
       "address": "0x441ad0",
       "name": "shoot_sub_lazer_pool",
-      "description": "Exact `cRSubLazerManager::Shoot(tVector, tVector)`: scans the manager's 20 inline actors for SUB_LAZER_STATE_INACTIVE, dispatches that actor's Shoot method, and plays the positional fire cue. Android and iOS independently preserve the manager owner and signature. The formerly misassigned `shoot_subgoldy` alias now belongs to the actual Windows `cRSubGoldy::Shoot(cRSubGoldy*)` at 0x43a300."
+      "description": "Exact `cRSubLazerManager::Shoot(tVector, tVector)`: scans the manager's 20 inline actors for SUB_LAZER_STATE_INACTIVE, dispatches that actor's Shoot method, and plays the positional fire cue. Android and iOS independently preserve the manager owner and signature. The formerly misassigned `shoot_subgoldy` alias now belongs to the actual Windows `cRSubGoldy::Shoot(cRSubGoldy*)` at 0x43a300.",
+      "aliases": [
+        "cRSubLazerManager_Shoot"
+      ]
     },
     {
       "address": "0x441b70",
@@ -3329,7 +3356,10 @@
     {
       "address": "0x441c10",
       "name": "update_salt_hazard",
-      "description": "Exact Windows `cRSalt::AI()`: advances one live Salt fade state from the shared track z thresholds, updates its alpha tint, and retires the inherited BOD node at the far cutoff. The constructor table at 0x497340 points directly here; cross-port iOS preserves the owner."
+      "description": "Exact Windows `cRSalt::AI()`: advances one live Salt fade state from the shared track z thresholds, updates its alpha tint, and retires the inherited BOD node at the far cutoff. The constructor table at 0x497340 points directly here; cross-port iOS preserves the owner.",
+      "aliases": [
+        "cRSalt_AI"
+      ]
     },
     {
       "address": "0x441d40",

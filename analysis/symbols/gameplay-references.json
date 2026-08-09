@@ -720,6 +720,96 @@
       "description": "Exact authored cRSubRing::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x408610",
+      "name": "initialize_sub_lazer_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRSubLazer@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSubLazer constructor."
+    },
+    {
+      "address": "0x441650",
+      "name": "initialize_sub_lazer_pool",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSubLazerManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubLazerManager::Init() member."
+    },
+    {
+      "address": "0x441670",
+      "name": "spawn_sub_lazer_projectile",
+      "kind": "function",
+      "aliases": [
+        "?Shoot@cRSubLazer@@QAEXPBUtVector@@0@Z"
+      ],
+      "description": "Exact authored cRSubLazer::Shoot(const tVector*,const tVector*) Windows member."
+    },
+    {
+      "address": "0x441740",
+      "name": "deactivate_sub_lazer_projectile",
+      "kind": "function",
+      "aliases": [
+        "?Kill@cRSubLazer@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubLazer::Kill() member."
+    },
+    {
+      "address": "0x4417d0",
+      "name": "update_sub_lazer_projectile",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubLazer@@QAEXXZ"
+      ],
+      "description": "Authored cRSubLazer::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x441ad0",
+      "name": "shoot_sub_lazer_pool",
+      "kind": "function",
+      "aliases": [
+        "?Shoot@cRSubLazerManager@@QAEXPAUtVector@@PBU2@@Z"
+      ],
+      "description": "Exact authored cRSubLazerManager::Shoot(tVector*,const tVector*) Windows member."
+    },
+    {
+      "address": "0x408630",
+      "name": "initialize_salt_hazard_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRSalt@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSalt constructor."
+    },
+    {
+      "address": "0x441540",
+      "name": "initialize_salt_hazard_pool",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSaltManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSaltManager::Init() member."
+    },
+    {
+      "address": "0x441560",
+      "name": "spawn_salt_hazard",
+      "kind": "function",
+      "aliases": [
+        "?Add@cRSaltManager@@QAEXAAUtVector@@@Z"
+      ],
+      "description": "Exact authored cRSaltManager::Add(tVector&) Windows member."
+    },
+    {
+      "address": "0x441c10",
+      "name": "update_salt_hazard",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSalt@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSalt::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",

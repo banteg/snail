@@ -12145,13 +12145,19 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     ):
         assert declaration in ida_runtime_sync
 
-    assert "class SubLazer : public RenderableBod" in matcher_sub_lazer
+    assert "class cRSubLazer : public RenderableBod" in matcher_sub_lazer
+    assert "class cRSubLazerManager {" in matcher_sub_lazer
+    assert "typedef cRSubLazer SubLazer;" in matcher_sub_lazer
+    assert "typedef cRSubLazerManager SubLazerManager;" in matcher_sub_lazer
     assert "SubLazerState state;" in matcher_sub_lazer
     assert "float flight_lifetime_progress;" in matcher_sub_lazer
     assert "float flight_lifetime_step;" in matcher_sub_lazer
     assert "sprite_bob_phase" not in matcher_sub_lazer
     assert "int state;" not in matcher_sub_lazer
-    assert "class Salt : public RenderableBod" in matcher_salt
+    assert "class cRSalt : public RenderableBod" in matcher_salt
+    assert "class cRSaltManager {" in matcher_salt
+    assert "typedef cRSalt Salt;" in matcher_salt
+    assert "typedef cRSaltManager SaltManager;" in matcher_salt
     assert "enum SaltState {" in matcher_salt
     assert "SaltState state;" in matcher_salt
     assert "float fade_alpha;" in matcher_salt
@@ -12162,7 +12168,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "collision_armed()" not in matcher_salt
     assert "SaltListAnchor" not in matcher_salt
     assert (
-        "void SaltManager::initialize_salt_hazard_pool()"
+        "void cRSaltManager::Init()"
         in salt_scratches["initialize_salt_hazard_pool"]
     )
     assert "SubLazerState* state" in (
@@ -12183,7 +12189,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "flight_lifetime_step = owner_game->subgame_rate" in sub_lazer_spawn
     assert "SALT_STATE_ACTIVE" in salt_scratches["spawn_salt_hazard"]
     assert (
-        "void SaltManager::spawn_salt_hazard("
+        "void cRSaltManager::Add("
         in salt_scratches["spawn_salt_hazard"]
     )
     assert "slot->fade_alpha = 0.0f;" in salt_scratches["spawn_salt_hazard"]
@@ -12192,7 +12198,7 @@ def test_sub_lazer_and_salt_owner_replays_stay_aligned() -> None:
     assert "SALT_STATE_RECYCLE_PENDING" in salt_scratches["update_salt_hazard"]
     assert "fade_alpha = alpha;" in salt_scratches["update_salt_hazard"]
     assert (
-        "offsetof(Salt, collision_armed)"
+        "offsetof(cRSalt, collision_armed)"
         in salt_scratches["handle_subgoldy_collisions"]
     )
 

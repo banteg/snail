@@ -1,14 +1,15 @@
 // shoot_sub_lazer_pool @ 0x441ad0 (thiscall, ret 0x8)
+// Authored owner: cRSubLazerManager::Shoot().
 // Free-scan the 20-slot sub-lazer pool, stagger the spawn y down by
 // index * 0.01, route through the matched spawn, positional fire cue.
 
 #include "sub_lazer_types.h"
 #include "sound_effect_manager.h"
 
-void SubLazerManager::shoot_sub_lazer_pool(Vector3* origin, const Vector3* direction)
+void cRSubLazerManager::Shoot(Vector3* origin, const Vector3* direction)
 {
     int index = 0;
-    SubLazer* scan = slots;
+    cRSubLazer* scan = slots;
     while (index < SUB_LAZER_SLOT_CAPACITY) {
         if (scan->state == SUB_LAZER_STATE_INACTIVE)
             goto found_slot;
@@ -26,6 +27,6 @@ found_slot:
     raw.y = y;
     raw.z = origin->z;
     staged = raw;
-    slots[index].spawn_sub_lazer_projectile(&staged, direction);
+    slots[index].Shoot(&staged, direction);
     g_sound_effect_manager.play_sound_effect_at_position(15, *origin);
 }

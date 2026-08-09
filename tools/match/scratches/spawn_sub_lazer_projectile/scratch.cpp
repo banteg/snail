@@ -1,11 +1,12 @@
 // spawn_sub_lazer_projectile @ 0x441670 (thiscall, ret 0x8)
+// Authored owner: cRSubLazer::Shoot().
 #include "sub_lazer_types.h"
 #include "subgame_runtime.h"
 #include "transform_matrix.h"
 
 int report_errorf(char* format, ...);
 
-void SubLazer::spawn_sub_lazer_projectile(const Vector3* origin, const Vector3* direction)
+void cRSubLazer::Shoot(const Vector3* origin, const Vector3* direction)
 {
     state = SUB_LAZER_STATE_ACTIVE;
     TransformMatrix* live_matrix = &transform;

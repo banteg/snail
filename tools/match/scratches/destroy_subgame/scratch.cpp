@@ -91,7 +91,7 @@ void cRSubGame::UnInit()
              ++i) {
             if ((BOD_NEXT_LINK_FLAGS(sub_lazer_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(sub_lazer_next, linked_flag);
-            sub_lazer_next = (BodNode**)((char*)sub_lazer_next + sizeof(SubLazer));
+            sub_lazer_next = (BodNode**)((char*)sub_lazer_next + sizeof(cRSubLazer));
         }
 
         BodNode** salt_next = &salt_hazards.slots[0].list_next;
@@ -100,7 +100,7 @@ void cRSubGame::UnInit()
              ++j) {
             if ((BOD_NEXT_LINK_FLAGS(salt_next) & linked_flag) != 0)
                 REMOVE_BOD_NODE_FROM_NEXT_LINK(salt_next, linked_flag);
-            salt_next = (BodNode**)((char*)salt_next + sizeof(Salt));
+            salt_next = (BodNode**)((char*)salt_next + sizeof(cRSalt));
         }
 
         BodNode** banner_next = &banners.slots[0].list_next;
