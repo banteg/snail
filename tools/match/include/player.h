@@ -187,7 +187,7 @@ public:
     char unknown_1e5[0x1e8 - 0x1e5];
     PlayerRowEventState row_event;          // +0x1e8
     Cameraman cameraman;                    // +0x200, authored cRCameraman owner
-    unsigned char control_override_active;  // +0x2d8
+    unsigned char slug_fall_active;          // +0x2d8, sticky until player Init
     char unknown_2d9[0x2dc - 0x2d9];
     float cutscene_pitch_cycle;             // +0x2dc
     float cutscene_pitch_cycle_step;        // +0x2e0

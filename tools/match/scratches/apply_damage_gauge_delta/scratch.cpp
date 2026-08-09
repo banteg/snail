@@ -23,7 +23,7 @@ void DamageGuage::apply_damage_gauge_delta(float delta, bool force)
                 if (g_voice_manager.play_voice_manager(
                         VOICE_SET_OUCH, VOICE_PLAY_IF_IDLE, -1))
                     hit_flash_progress = hit_flash_step;
-                if (!g_game->subgame.embedded_player()->control_override_active) {
+                if (!g_game->subgame.embedded_player()->slug_fall_active) {
                     g_game->subgame.embedded_player()->presentation
                         .dispatch_cutscene_animation(
                             6, 1, OBJECT_ANIMATION_MODE_UNCHANGED);

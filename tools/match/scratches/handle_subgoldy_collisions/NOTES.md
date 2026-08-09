@@ -229,7 +229,7 @@ codegen shape, not because the slot layout is uncertain.
   confirmed by spawn/update/deactivate.
 
 2026-06-16 Player field promotion: `damage_retrigger_timer`/`step`
-(`+0x1d4/+0x1d8`), `control_override_active` (`+0x2d8`), and
+(`+0x1d4/+0x1d8`), `slug_fall_active` (`+0x2d8`), and
 `completion_handoff_active` (`+0x440`) are now promoted in shared
 `player.h`. These are cross-confirmed by this collision scratch and
 `update_subgoldy`; `completion_handoff_active` is also aligned with the
@@ -783,7 +783,7 @@ equivalent scale-one SIB base/index encodings.
 The Windows, Android, and iOS collision bodies close the remaining motion
 contract without changing the matcher source. On a first slug contact, Windows
 `0x4450cd..0x4451f1` borrows `game` before changing player state, sets
-`control_override_active`, clears `follow_state.active`, and writes the
+`slug_fall_active`, clears `follow_state.active`, and writes the
 velocity triplet
 `(0, subgame_rate * 0.2, subgame_rate * -0.2)`. It then calls the exact
 `begin_post_follow_carryover`, sets cutscene state 10, latches the colliding
@@ -804,8 +804,8 @@ texture id is 78 while Windows uses 92, so the proved cross-port invariants are
 the owner, half-distance position, player slot, and count 80 rather than the
 platform-local resource id.
 
-Repeat contacts at Windows `0x44520b..0x445226` while
-`control_override_active` is already set write only
+Repeat contacts at Windows `0x44520b..0x445226`, while
+`slug_fall_active` is already set, write only
 `velocity.z = subgame_rate * subgame_rate * 0.004 * -8` before applying full
 damage. The garbage impact branch at `0x444f64..0x444fc8` is also closed: after
 the velocity-x/z knockback, normalized collision x below zero writes
@@ -844,15 +844,15 @@ field. iOS clears the corresponding `+0x2c0` byte with the known-zero `r10` at
 store through `Game +0x2c0` is an unrelated root-state field, not the Player
 byte.
 
-The field is therefore a sticky falling/slug-fall latch for the lifetime of an
+The field is therefore a sticky slug-fall mode for the lifetime of an
 initialized Player, rather than a transient generic control override. Once the
 first slug sets it, later slug slots in that same already-entered sweep take the
 repeat-hit z-knockback branch. On later frames the collision entry gate skips
 the wrapped salt/sub-lazer/garbage/slug band entirely. The remaining consumers
 disable ordinary steering, motion, shooting, hit-animation, and idle-animation
-paths during the falling transition. The scratch retains the shared-header
-spelling `control_override_active`; a repository-wide rename to an authored
-falling name belongs in a separate shared ownership slice.
+paths during the slug-fall transition. The shared matcher owner and every
+consumer now spell the field `slug_fall_active`; ordinary non-slug falling
+paths do not set it.
 
 This closure is score-neutral. Focused validation remains 85.88%, 673/673,
 prefix 18, frame `0x74`, and 89 clean references; the stalled vector grids were

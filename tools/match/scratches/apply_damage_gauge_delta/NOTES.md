@@ -11,7 +11,7 @@ Semantics complete and they REFINE the harvested hit-flash plan:
   change_snail_skin(slot 1, 0.2s) on the owned `Player::presentation.snail_skin`
   child at `Game +0x434038`, voice 0 (damage) mode 1 seeding the timer on success;
   on FAILURE voice 9 (ouch) mode 0 (also seeding on success) and — only
-  in this failure branch, gated on `Player::control_override_active` clear —
+  in this failure branch, gated on `Player::slug_fall_active` clear —
   the anim pair dispatch_cutscene_animation(6, immediate) then (1, queued) on
   `Player::presentation` at `Game +0x432700`
 - fill at +0x1c accumulates the delta, clamped to [0, 1]
@@ -76,7 +76,7 @@ the shared type substitution is codegen-neutral at the same honest 72.43%.
 
 2026-07-12 Player-owner consolidation: the four former raw relocatable views
 are all fields of the embedded `cRSubGoldy`: `shoot_flags` at +0x338,
-`trampoline_bounce_active` at +0x1e4, `control_override_active` at +0x2d8,
+`trampoline_bounce_active` at +0x1e4, `slug_fall_active` at +0x2d8,
 and the authored `cRSnail` presentation at +0x2984. The skin receiver is the
 presentation's owned `cRSnailSkin` at +0x1938, hence `Player +0x42bc` and the
 correct relocatable address `Game +0x434038` (the earlier +0x430938 comment

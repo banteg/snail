@@ -60,7 +60,7 @@ void cRSubGoldy::Collision()
     Vec3 probe_rings;  // v77
     Vec3 probe_fx;     // v78
 
-    if (!attachment_exit_pending && !boost_one_tick && !control_override_active) {
+    if (!attachment_exit_pending && !boost_one_tick && !slug_fall_active) {
         if ((shoot_flags & 0x80) == 0) {
             for (int i = 0;
                  i < (int)sizeof(game->salt_hazards.slots);
@@ -143,9 +143,9 @@ void cRSubGoldy::Collision()
                     float distance = normalize_vector(&probe_b);
                     if (distance < 1.5675001f) {
                         if ((shoot_flags & 0x80) == 0) {
-                            if (!control_override_active) {
+                            if (!slug_fall_active) {
                                 cRSubGame* hit_game = game;
-                                control_override_active = 1;
+                                slug_fall_active = 1;
                                 follow_state.active = 0;
                                 float rate = hit_game->subgame_rate;
                                 velocity =

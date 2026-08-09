@@ -164,7 +164,7 @@ void cRSubGoldy::AI()
             track_z_anchor = 320.0f;
         } else {
             float resolved;
-            if (control_override_active) {
+            if (slug_fall_active) {
                 float pulled = track_z_offset
                              - (presentation.transform.basis_up.x
                                 + presentation.transform.basis_up.x);
@@ -346,7 +346,7 @@ steering_stored:
         }
     }
 
-    if (control_override_active) {
+    if (slug_fall_active) {
         if (velocity.z < 0.0f) {
             float rate = game->subgame_rate;
             float quantum = rate * rate * 0.0040000002f;
@@ -462,7 +462,7 @@ steering_stored:
                       & SUBROW_FLAG_NO_FALL)
                     == 0
                     && sub_hover.state == SUB_HOVER_STATE_INACTIVE
-                    && !control_override_active) {
+                    && !slug_fall_active) {
                     velocity.z = (1.0f - drag_game->subgame_rate * 0.2f) * velocity.z;
                 }
                 if (game
@@ -595,7 +595,7 @@ steering_stored:
                     if (surface_reaction_timer == 0.0f)
                         surface_reaction_timer = surface_reaction_step;
                     velocity.y = game->subgame_rate * 0.2f;
-                    if (!control_override_active) {
+                    if (!slug_fall_active) {
                         if (p_position->x > 0.0f)
                             presentation.dispatch_cutscene_animation(
                                 4, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
@@ -717,7 +717,7 @@ steering_stored:
     cRSubGame* completion_game = game;
     float completion_start = (float)completion_game->completion_row_start;
     if (transform.position.z < completion_start || attachment_exit_pending) {
-        if (!boost_one_tick && !control_override_active) {
+        if (!boost_one_tick && !slug_fall_active) {
             float speed = velocity.z;
             float window = completion_game->subgame_rate * 0.17f;
             if (speed >= window) {
@@ -962,9 +962,9 @@ steering_stored:
         if (advanced > 0.69999999f && !attachment_exit_gate_a) {
             g_voice_manager.play_voice_manager(
                 VOICE_SET_FALL, VOICE_PLAY_IF_IDLE, -1);
-            unsigned char override_active = control_override_active;
+            unsigned char slug_fall_snapshot = slug_fall_active;
             attachment_exit_gate_a = 1;
-            if (!override_active && transform.position.y < -6.0f)
+            if (!slug_fall_snapshot && transform.position.y < -6.0f)
                 presentation.dispatch_cutscene_animation(
                     5, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
         }
@@ -1020,7 +1020,7 @@ steering_stored:
             & SUBGAME_RUNTIME_FLAG_MOVEMENT_FIRE_EMITTERS)
             != 0
         && !completion_handoff_active
-        && !control_override_active
+        && !slug_fall_active
         && (click_start.state == CLICK_START_STATE_INACTIVE
             || click_start.state == CLICK_START_STATE_TEARDOWN)) {
         if (shoot_cooldown_progress > 0.0f) {

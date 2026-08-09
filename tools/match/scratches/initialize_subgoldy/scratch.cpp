@@ -24,7 +24,7 @@ void cRSubGoldy::Init(int player_slot)
     this->game = &g_game->subgame;
     this->heading_roll = 0.0f;
     this->row_event.id = zero;
-    this->control_override_active = (unsigned char)zero;
+    this->slug_fall_active = (unsigned char)zero;
     this->nuke.owner_player = this;
     this->nuke.state = NUKE_STATE_INACTIVE;
     this->row_event_cutscene_started = (unsigned char)zero;

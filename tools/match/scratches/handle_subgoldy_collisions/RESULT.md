@@ -45,8 +45,8 @@ reference audit.
   writes are the zero initializer at `0x43a9f0` and this function's first-hit
   set at `0x4450d3`; all other whole-image references are consumers. Android
   and iOS preserve the same player-relative zero-init/first-hit-set lifecycle.
-  The scratch keeps the shared-header spelling `control_override_active` until
-  a repository-wide ownership rename can update every consumer together.
+  The shared matcher owner and all consumers now spell the field
+  `slug_fall_active`; ordinary non-slug falling paths do not set it.
 - Recovered the parcel count update as
   `int collected = ++parcels_collected`, matching the mobile expression and
   restoring Windows' long-lived `ebx` result.
