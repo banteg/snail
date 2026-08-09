@@ -13,6 +13,13 @@
 The retained partial matches the native frame, nonvolatile register roles, loop
 nesting, table scans, data reloads, call ordering, and instruction count.
 
+The catalog contract is also closed independently of the score: the catalog
+producer builds parallel floor/warning/slide slice and corner banks, WarnTrack
+maps each match to the same physical index in the warning bank, and the render
+cache consumes the replaced `Object*` directly in its Warn lane. Slice index is
+strip width minus one; corner physical storage is `0,1,3,2` for authored ids
+`0,1,2,3`.
+
 The first remaining mismatch is the cursor anchor:
 
 ```text

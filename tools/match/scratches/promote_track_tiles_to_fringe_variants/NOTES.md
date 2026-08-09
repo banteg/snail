@@ -170,3 +170,54 @@ only after a catalog replacement. `SlideSmoothTrack()` immediately skips that
 flag and `CondenseTrack()` excludes it from run membership. `FringeEdgeTrack()`
 does not consume either the promoted BOD pointer or this flag, so there is no
 invented direct promotion-to-directional-fringe dependency.
+
+## 2026-08-09 catalog producer and Warn-cache closure
+
+The live Windows catalog producer makes the index contract concrete. At
+`0x40b74a..0x40b80e`, `initialize_game_assets_and_world` walks one `0..7`
+counter and creates the floor, warning, and slide slice objects at
+`GameRoot +0x447b4/+0x44974/+0x44b34 + 0x38 * index`. All three objects are
+built by `initialize_backdrop_slice_quad` with the same float index. That
+helper gives slot `i` a width of `i + 1` cells and the matching eighth-texture
+UV span, so the physical slot is geometry identity, not merely a convenient
+table offset. `CondenseTrack` installs floor/slide slot `run_length - 1`;
+WarnTrack must keep that exact slot when changing the texture family.
+
+The corner producer repeats one authored-selector sequence for all three
+banks. Selectors `0,1,2,3` are stored physically as `0,1,3,2` at
+`0x40bae0..0x40bcd4`. `SmoothTrack` installs a floor/slide corner by that
+physical storage index. WarnTrack's second scan therefore preserves physical
+index `0..3`; treating it as an authored corner id would swap selectors 2 and
+3 and is incorrect.
+
+The Windows body expresses both mappings directly in machine code. EDI walks
+`0..0x1bf` by the `0x38` BOD stride for the three slice object bases, then
+restarts at zero and walks `0..0xdf` for the three corner object bases. The
+same EDI value addresses the floor/slide comparisons and warning replacement;
+there is no remap table or independent warning index. Binary Ninja and IDA now
+agree on those six typed banks and the single-index replacement.
+
+The downstream renderer closes why both outputs matter. At
+`0x4333ab..0x4333fe`, a cell carrying `0x20|0x4000` contributes its current
+`Object*` to cache family 2 (`Warn`), and the shared tail at `0x4335d0` copies
+that object's face-quad texture reference to the Warn cache object. The flag
+selects the cache lane; the replaced object supplies the preserved
+strip/corner geometry and `TrackWarn` texture. The renderer does not
+reconstruct either property from the cell tile id.
+
+Android independently retains the catalog record identities despite its
+different `0x2c` BOD stride. `cRGame::Init3` builds three eight-slot slice
+banks in one loop and repeats the `0,1,3,2` corner storage order;
+`cRSubGame::WarnTrack` scans record ids `30..37` and `5..8`, respectively,
+and uses the same record id in the warning bank. Its shared `Surface0` plus UV
+transform path differs from Windows' distinct Track/TrackWarn/Slide textures,
+so no mobile address or texture ABI is transferred. iOS corroborates the same
+producer layout but has no exported WarnTrack body.
+
+This provenance justifies the retained direct `storage[index]` source and the
+typed short-lived `Object*` borrows. The latter exact pair was already covered
+by the closed 2026-07-30 sweep (`source_sha256`
+`c926aed627057b11c0ec4e9ec75125f6fe60792c2427cb8ab5415a69a31bd5d5`) and was
+byte-identical at 81.33%, 75/75, prefix 11/75, with all six references clean;
+it was adopted without rerunning any exhausted cursor/register/store variant.
+The remaining displacement-only cursor residual is unchanged.

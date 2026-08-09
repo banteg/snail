@@ -22,9 +22,10 @@ void cRSubGame::WarnTrack()
                 cell->lane_and_flags &= ~SUBLOC_FLAG_WARNING_CACHE_FAMILY;
                 if ((cell + SUBGAME_TRACK_LANE_COUNT)->IsEmpty() != 0) {
                     GameRoot* game = g_game;
+                    // Physical slice index is also the rendered strip width - 1.
                     int slice_index = 0;
                     do {
-                        void* object = ((BodBase*)cell)->object;
+                        Object* object = cell->object;
                         if (object
                                 == game->root_bod_catalog.floor_slices
                                        .storage[slice_index]
@@ -43,9 +44,10 @@ void cRSubGame::WarnTrack()
                         ++slice_index;
                     } while (slice_index < TRACK_SLICE_BOD_COUNT);
 
+                    // All three corner banks share the 0, 1, 3, 2 storage map.
                     int corner_index = 0;
                     do {
-                        void* object = ((BodBase*)cell)->object;
+                        Object* object = cell->object;
                         if (object
                                 == game->root_bod_catalog.floor_corners
                                        .storage[corner_index]
