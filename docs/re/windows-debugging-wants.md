@@ -137,6 +137,11 @@ The completion path is now typed more clearly in static RE:
 - `player + 0x448` `completion_handoff_timer_step`
 - `player + 0x44e` `completion_handoff_voice_gate`
 
+The first arm is already closed by the checked-in CDB capture and static xrefs:
+`update_subgoldy` is the sole nonzero writer of `completion_handoff_active`, and
+the damage gauge consumes it immediately as the 5× drain gate. New tracing
+should start after that arm and focus on completion-screen timing.
+
 The port still waits too long before entering the completion screen. Windows appears to initialize the completion screen at cutscene state `5`, not only after a delayed app-side handoff.
 
 ### What to do
@@ -153,18 +158,17 @@ The port still waits too long before entering the completion screen. Windows app
   - `player + 0x44e`
 - Trigger:
   - normal level completion
-  - completion with the fast-forward condition if you can reproduce the `Completion +0x18` gate
+  - completion with a confirm press during the armed `Completion +0x18` window
 
 ### Questions to answer
 
 - At what exact cutscene state does `initialize_completion_screen()` fire?
 - Is state `5` only a one-shot initializer, with states `6/7` being pure blend/hold?
 - Which function owns the `2.0s` voice gate and `5.0s` fade path?
-- What exactly fast-forwards the handoff timer to `5.1`?
+- On which observed frame does the known confirm-edge path write the handoff timer to `5.1`?
 
 ### Done when
 
-- one capture shows the first frame where `completion_handoff_active` becomes true
 - one capture shows the first call to `initialize_completion_screen`
 - one capture shows the first call to `complete_subgame`
 

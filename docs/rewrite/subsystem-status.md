@@ -131,7 +131,6 @@ Still missing or approximate:
 - exact BOD-table matching inside `promote_track_tiles_to_fringe_variants` and `harmonize_center_lane_floor_slide_variants`
 - `merge_track_tile_runs` beyond the currently ported ownership slice
   - marked-row suppression and the remaining low-bit flag semantics are still unresolved
-- the final warn-cache consumer for the recovered `mark_track_warning_zones` footprint beyond the now-ported fallback-hazard suppressor
 - real directional fringe objects and cache families
   - the underlying Windows pool is clearer now: `initialize_fringe_manager` + `allocate_fringe_object`
 
@@ -337,7 +336,7 @@ Implemented now:
 
 - separate damage and jetpack controllers on the Zig side, matching the current Windows split
 - native-shaped damage-gauge display fill, pulse, warning-transition, and drain behavior
-- runner-owned warning actor cadence and `sfx 50` loop ownership instead of the old app-side `1.0s` timer
+- runner-owned warning actor cadence and `sfx 50` loop ownership instead of the old app-side `1.0s` timer, including the closed Windows start-then-stop returned-channel quirk
 - shipped `DamageGuage`, `DamageGuageFull`, `DamageGuageBright`, and `Warning` HUD art in live gameplay instead of the old generic gauge block
 - slug first-hit vs repeated-hit split
 - visible life seed `3`, bonus-life thresholds, and runner-owned Postal respawn consumption in the death/resurrect path
@@ -346,7 +345,7 @@ Implemented now:
 
 Still missing or approximate:
 
-- the remaining global-flag exits and `stop_warning_sample` handle semantics from `update_damage_gauge`
+- the remaining hit-flash/global-flag exit and presentation timing from `update_damage_gauge`
 - remaining hazard deltas and presentation details
 - full death/fall timing around these controllers
 
@@ -480,5 +479,5 @@ If work resumes from this page alone, the best current order is:
 
 1. Finish attachment exit retirement and the remaining family-specific entry/exit behavior against built geometry.
 2. Port more of the outer subgame/frontend bridge (`26/27/28/29`, completion vs final-loss vs respawn ownership).
-3. Recover the remaining track render-normalization passes (`mark_track_warning_zones`, fringe solidity, directional fringe ownership).
+3. Recover the remaining exact BOD-table and directional-fringe render/cache passes; `mark_track_warning_zones` is already closed as hazard spawn policy.
 4. Revisit nonlinear kind-`42` family semantics once there is enough evidence to separate `HALFPIPE`, `WARP`, and any sibling families more cleanly.

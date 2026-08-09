@@ -72,7 +72,7 @@ Built-template follow is now strong enough to be useful, but the remaining gaps 
 
 ### 3. Movement-state ownership
 
-Audio RE now makes this much sharper than before: Windows still has a dedicated movement-state sound/controller layer. The port now mirrors the recovered selector-owned fire cadence, the startup cooldown reseed window, explicit live press-vs-held lanes, runtime fire feature flag, replay raw-bit gate, attachment-exit suppression, and the recovered turbo-spread plus laser/rocket shot-family ratios, but the deeper emitter owner and literal input-device source are still not ported.
+Audio RE now makes this much sharper than before: Windows still has a dedicated movement-state sound/controller layer. The emitter is exact `cRSubGoldy::Shoot`, and the live device chain is closed as mouse-left → controller slot 0 → root-owned `InputState`. The port mirrors the recovered selector-owned fire cadence, startup cooldown reseed, live press-vs-held lanes, runtime fire feature flag, replay raw-bit gate, attachment-exit suppression, and turbo-spread plus laser/rocket shot-family ratios, but still flattens the native device/controller ownership boundary.
 
 ### 4. Row-event/tip ownership
 
@@ -214,45 +214,61 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
-- [ ] Recover the literal input-device source behind
-  `play_subgoldy_shoot_sfx`. The emitter owner is now closed as exact
-  `cRSubGoldy::Shoot(cRSubGoldy*)` / `shoot_subgoldy`.
+- [x] Recover the literal input-device source behind
+  `play_subgoldy_shoot_sfx`: mouse-left publishes `0x4000` through controller
+  slot 0 into the root-owned `InputState` borrowed by Goldy. The emitter owner
+  is exact `cRSubGoldy::Shoot(cRSubGoldy*)` / `shoot_subgoldy`.
 - [ ] Add a projectile-specific visual smoke path for the movement-fire VAPOURLAZER trail. The current laser-shot render fix is grounded in `create_golb` / `initialize_vapour` / `update_vapour`, but the CLI smoke path still cannot script a fired shot and capture the generated trail for visual regression review.
 - [ ] Port Golb shot path-follow over attachment cells. Native `update_golb_ai` @ 0x414820 switches a shot into path-follow mode (`initialize_path_follow_golb` @ 0x421770, `traverse_path_follow_golb`, `search_path_for_golb` @ 0x415e30) when it crosses a tile-`0x1e` cell, so shots ride humps/loops instead of flying level through them. The port now has the kind-0 `[0, 0.49]` level band + `subgame_rate * 0.017` gravity and the lifetime/window despawn from `create_golb`/`update_golb_ai`, but not the path-follow lane (also the rocket homing lane fed by `search_path_for_golb` at spawn). The initializer and search helper are proof-grade; `traverse_path_follow_golb` is semantics-complete at 85.82% with a documented scheduling residual. Port from those matched or pinned sources: candidate samples are gated on `0 < dz < 30` toward positive z and chosen by nearest 3D magnitude, first-best-wins.
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
-- [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring runtime owner, ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit `2 -> 3` effect lane, and the recovered `health_collect_particles` burst packet, especially parcel, garbage-impact, the exact dedicated health-particle bod owner, the original pre-hit ring bod anchor/layout fields, the dedicated jet-particle/nozzle owner, and the remaining deeper weapon presentation owners
-- [ ] Recover the remaining global-flag exits and `stop_warning_sample` handle semantics in the damage-warning owner
+- [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring runtime owner, ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit `2 -> 3` effect lane, and the recovered `health_collect_particles` burst packet, especially parcel, garbage-impact, the original pre-hit ring bod anchor/layout fields, the dedicated jet-particle/nozzle owner, and the remaining deeper weapon presentation owners. The health burst itself is closed as eight generic SpriteManager records borrowing position from the separate inline `SubHealth` actor; no dedicated particle BOD exists.
+- [ ] Recover the remaining hit-flash flag exit in the damage-warning owner.
+  The `stop_warning_sample` contract is closed: Windows starts registered sample 50
+  and immediately stops the returned channel handle without storing it;
+  Android's helper is a no-op.
   - hit-flash side effects in `apply_damage_gauge_delta` @ 0x4413f0: gate `(*(game+0x4300b4) & 0x80) && !force` (no static writer found; likely `update_invincible_shell`), then `change_snail_skin(slot 1, 0.2s)`, voice `damage` with `ouch` fallback, and `dispatch_cutscene_animation(6, immediate, -1)` when `*(game+0x430054) == 0` else `(1, queued, -1)`; needs a `force: bool` parameter threaded through all call sites
-  - state-2 drain side effects: `change_snail_skin(slot 1, 0.2s)` each tick while draining, `postal` voice on the 1→2 transition, `stop_warning_sample` handle release on state-2 exit
-  - the 6× accelerated drain flag `*(game+0x4301bc)` has no writers in the decompile set; blocked on a live Frida trace before its meaning can be inferred
+  - state-2 drain side effects: `change_snail_skin(slot 1, 0.2s)` each tick while draining, `postal` voice on the 1→2 transition, and the closed Windows start-then-stop sample-50 quirk on state-2 exit
+  - the former accelerated-drain mystery is closed as
+    `Player::completion_handoff_active`: one arming writer and three gauge
+    consumers compose a 5× automatic drain; no new writer trace is needed
 
 ### Phase 5. Tighten gameplay runtime ownership
 
-- [ ] Port the remaining ambient hazard suppressor details beyond the generated-garbage postal/time-trial mode gates
+- [ ] Port the remaining ambient hazard suppressor details beyond the
+  generated-garbage postal/time-trial mode gates. `DeSaltTrack` is now closed
+  as a six-row, two-lane producer of the independent salt (`0x08`) and garbage
+  (`0x10`) spawn-suppression bits; it has no render/cache consumer.
 - [ ] Finish literal SubLazer and Salt pool ownership. The port now has plain-array `cRSubLazerManager` and `cRSalt` equivalents for the recovered damage lanes, but still needs the native intrusive lists, object/body owners, sprite ownership, suppression gates, and any remaining non-horizontal suppressor details. Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by `cRSubLoc::AI()` via `shoot_sub_lazer_pool` @ 0x441ad0. Reference: `update_sub_loc` @ 0x439d50 (RNG gate plus `game+0x74668 > game+0x42fdec` cadence), `spawn_sub_lazer_projectile` @ 0x441670, `deactivate_sub_lazer_projectile` @ 0x441740, `update_sub_lazer_projectile` @ 0x4417d0, `cRSalt` @ `game + 0x3578c0`; salt pool helpers: `initialize_salt_hazard_pool` @ 0x441540, `spawn_salt_hazard` @ 0x441560 (authored `0x22` tiles and `0x0f` with RNG gate `0.98 + 0.02*(1-scalar)`), `update_salt_hazard` @ 0x441c10.
 - [ ] Jetpack state 2 (hover) controller + `end_jetpack_hover` @ 0x43a370 — large; belongs with a broader jetpack hover-mode port that is not prioritized yet
 - [ ] Recover the exact `gate_18` input/controller source
 - [ ] Recover parcel-flight and row-event widget timing details that still rely on app-side or inferred helpers
 - [ ] Port the missing score events tied to replay, jetpack, slug kills, and the remaining unresolved branches
-- [ ] Port the slug-hit velocity writes once the motion slice lands (harvested from the retired 2026-04 infrastructure plan)
+- [ ] Port the recovered slug-hit velocity writes and sticky
+  `slug_fall_active` mode (harvested from the retired 2026-04 infrastructure
+  plan)
   - first hit: velocity triplet `(0, tc_x*0.2, -tc_x*0.2)` plus `begin_post_follow_carryover`, cutscene state `0xa`, `firework_shoot`, and `play_slug_voice(0x22 - rand)`
   - repeat hit: z-velocity knockback `tc_x² × 0.004 × -8`
-  - garbage impact: slot `+0x88` direction-of-hit field set to `1` or `2` from `vector.x > 0`
+  - garbage impact: slot `+0x88` direction-of-hit field is left when normalized collision x is negative, right otherwise
 - [ ] Small recovered gates, low impact: global pause gate `data_4df904 + 0x74621` on `update_warning` / `update_damage_gauge` / the pulse lane; health and jetpack pickup per-slot `player.live_matrix.position.y >= 0.49` gate (needs `position_y`)
 
 ### Phase 6. Recover track render-normalization
 
-- [ ] Recover the final render/cache consumer for the ported `mark_track_warning_zones` footprint beyond the now-ported fallback garbage/salt suppressor
+- [x] Close the `mark_track_warning_zones` footprint as gameplay spawn policy:
+  it stamps the salt/garbage suppression pair and has no render/cache consumer
 - [ ] Port the remaining edge and exact BOD-table fringe-promotion passes
-- [ ] Port directional fringe ownership and cache-family routing
+- [ ] Port directional fringe allocation and its transient cache-staging
+  handoff; native ownership is closed, while broader cache-family routing is
+  still open
 - [ ] Re-audit gameplay and segment-view rendering only after these normalization passes are in
 
 ### Phase 7. Finish replay only after the runtime consumers exist
 
 - [x] Hook initial runtime replay capture/saveback for new score entries using the recovered sample order and fixed-point scales
 - [x] Port the recovered Time Trial ghost Z-delta consumer for saved completion records
-- [ ] Recover the remaining replay-flag gameplay/audio/effect consumers
+- [x] Recover the selected-record gameplay/audio/effect multiplexer: recorded
+  movement/track/end flags, Time Trial ghost suppression/pinning, and recorded
+  fire bits all key off `selected_level_record_active`.
 - [ ] Port full replay payload read/write parity
 - [ ] Only then widen replay saveback behavior for new entries
 
@@ -275,34 +291,32 @@ Every current non-proof scratch ledger is now formally stalled. Do not start a
 session from fuzzy score alone; acquire a new producer, consumer, field xref,
 or original-source clue first. Use this evidence order:
 
-1. `handle_subgoldy_collisions`: close and port the slug-hit motion writes and
-   carryover handoff already enumerated in Phase 5. The matcher is shape-exact
-   at 673/673 with 89 clean references; do not retry the exhausted vector and
-   stack-color grids.
-2. `build_track_fringe_objects` plus its render/cache consumers: recover who
-   consumes `open_edge_mask`, `tile_id`, and row suppression to own directional
-   fringe and cache routing. This round proved that WarnTrack promotion and
-   CondenseTrack lane flags do not feed FringeEdgeTrack directly, so do not
-   resume receiver/register swaps without a new consumer.
-3. The remaining replay-flag gameplay/audio/effect consumers around
-   `update_subgame`. Its replay exit and authored ring argument lifetimes are
-   closed at 79.94%, 1036/1033, with 129 clean references; reopen only at a new
-   flag xref, not with another shared-owner or case-layout sweep.
-4. The Golb VFX consumer cluster (`update_golb_ai` and
-   `spawn_golb_impact_sprite`): propagate the recovered 12-slot
-   `shot_slot_index` identity through trail/impact ownership. Keep the existing
-   launch-vector and collision-side grids parked.
+1. Promote `CutScene` to the primary authored `cRCutScene` type and bind its
+   `Init`/`AI` symbols. Exact initialization, hotspot production, presentation
+   dispatch, and camera consumption surround the 97.62% AI body. This is a
+   type/symbol ownership slice; do not reopen its 84 exhausted spill, join, or
+   matrix-lifetime variants.
+2. Promote `SubHover` to the primary authored `cRSubHover` type and bind its
+   seven lifecycle symbols. Six exact siblings surround the 94.66% AI partial
+   and both mobile builds preserve the owner. Keep the 47 exhausted
+   state-ladder, threshold-lifetime, and wobble-store variants closed.
+3. Close the `cRCompletion` fast-forward latch lifecycle and controller-owner
+   contract. The complete Windows xref set is arm `0x404cca`, clear `0x404e2e`,
+   consume `0x43c89e`; the primary Goldy input aliases the same root-owned
+   `InputState`, and both mobile builds preserve the chain. Add health checks
+   and retire stale tracing claims; no score sweep is warranted.
 
-Do not keep already proof-grade helpers in the active decompile queue merely
-because an older plan named them. The death/resurrect pair, begin-follow, both
-row-event functions, `update_warning`, the level-builder default/pre-mask
-schedule, segment-import row anchors, authored ring ladder, and Golb creation
-identity are closed. The hotspot/cutscene self-copy and spill, attachment-exit
-clears, follow update, outer replay bridge, and fringe-builder receiver swaps
-are evidence-bounded compiler residuals, not routine score targets.
-Shooting-audio and damage-warning follow-ups should re-enter this list only
-when new runtime, Windows-lifetime, original-source, or cross-port evidence
-supplies a concrete hypothesis.
+Do not keep already proof-grade or evidence-closed lanes active merely because
+an older plan named them. Slug-hit motion and `slug_fall_active`, the
+selected-record gameplay multiplexer, directional-fringe/cache staging, Golb
+trail/impact shot-slot ownership, warning sample and completion-drain gates,
+random-hazard suppression, `active_window_min_z`, the live firing input chain,
+health-particle ownership, and write-only SpriteExtend state are closed. The
+hotspot/cutscene spill, attachment-exit clears, follow update, outer replay
+bridge, fringe receiver swaps, Golb allocator schedules, and collision stack
+coloring are bounded compiler residuals. Sprite `+0x20/+0x24` is dormant ABI
+documentation debt: every Windows allocator call passes `-1/-1` and no shipped
+renderer consumes it, so do not invent semantics or mutate exact Sprite code.
 
 ## Checklist Discipline
 
