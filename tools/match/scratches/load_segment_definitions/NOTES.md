@@ -337,3 +337,35 @@ interior `row_count` cursor. No synthetic containing-owner alias is retained.
 The importer ledger now contains six recorded sweeps and 58 unique variants.
 Its current 68.26%, 560/571-instruction result remains the strongest audited
 source shape, with prefix 7 and 91/91 clean resolved operands.
+
+## 2026-08-09 dependency-chain row-anchor closure
+
+The exact Windows loop at `0x44831b..0x44835d` and recurrence at
+`0x4487a8..0x4487ed` were rechecked against the now-complete ownership chain.
+The importer produces one logical `AuthoredSegmentRow`, the exact
+`copy_segment_definition_to_level_slot` sink copies those rows by direct typed
+subscript, and runtime normalization consumes the same row fields. Android and
+iOS independently retain a current entry plus a logical row index. Together
+that evidence confirms the retained `entries[segment_index].rows[row_index]`
+and `glyph_columns[row][lane]` semantics.
+
+A four-variant typed projection sweep was codegen-neutral at 68.26%: a scoped
+row bank, scoped entry owner, pointer-addition spelling, and direct containing
+owner for the initial flags store all canonicalize to the retained 560
+instructions, prefix 7, and 91/91 clean references. Repeating the exact-copy
+sink's direct subscript for every parser field instead expands to 566
+instructions, loses the prefix, and regresses to 64.73%.
+
+The decompiler's `segment_row_base += 0x127` and
+`glyph_row_base += 0x811` were also tested together across both producer
+expressions and the outer recurrence, with both units derived from the real
+typed sizes. That dependency-complete diagnostic regresses to 55.43% and 562
+instructions. These are VC6 strength reductions already emitted by the
+retained containing-entry arrays, not authored flattened source indices; no
+raw ordinal, cast, synthetic spill, or register hint was retained.
+
+The ledger now has seven mutation sweeps plus two probes, covering 62 unique
+variants with six consecutive non-improving sweeps. The 68.26% parser is
+formally stalled on this row-anchor family; retry it only with new Windows
+source provenance or a lifetime outside the entry/row/glyph projections now
+bounded here.
