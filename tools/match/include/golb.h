@@ -74,7 +74,7 @@ public:
     GolbShot* initialize_golb_shot(); // @ 0x408690
     void kill_golb(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
     void update_golb_ai(); // @ 0x414820, iOS/Android cRSubGolb::AI()
-    void create_golb(cRSubGoldy* player, int spawn_selector, int emitter_index); // @ 0x415280
+    void create_golb(cRSubGoldy* player, int spawn_selector, int shot_slot_index); // @ 0x415280
     cRSprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60,
         // Android cRSubGolb::Smoke(tVector)
@@ -110,7 +110,7 @@ public:
     cRSubGame* game;        // +0x270
     union {
         void* object_ref;        // +0x274, copied into spawned sprites
-        int emitter_index;       // +0x274, create_golb caller-facing identity
+        int shot_slot_index;     // +0x274, index in Goldy's 12-shot bank
     };
     union {
         cRSubGoldy* owner_player;  // +0x278

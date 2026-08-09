@@ -416,3 +416,30 @@ source evidence at `77.98%`, 549/582 instructions, prefix `81`, with 47 clean
 references and one native-only constant left unaudited. The 33-instruction
 deficit is bounded to native whole-tree stack/register allocation; no
 synthetic temporary is retained merely to reproduce one launch constructor.
+
+## 2026-08-09 shot-pool identity closure
+
+The third `Create` argument is the index of the live shot in Goldy's owned
+12-entry `GolbShot` bank, not an emitter owner. Exact Windows
+`cRSubGoldy::Shoot` passes its bank-loop index, and the independently shipped
+Android `cRSubGoldy::Shoot` does the same. Android and iOS `cRSubGolb::Create`
+then store that value in the same per-shot word for all three presentation
+kinds.
+
+The surrounding exact lifecycle rules out a second pointer owner at that
+word: `initialize_golb_shot` constructs the fixed 0x2e8-byte slot,
+`search_path_for_golb` returns the separate kind-2 target retained at `+0x198`,
+and `kill_golb` releases that target reservation without consulting `+0x274`.
+`update_golb_ai` reaches the word only through its kind-0 trail path:
+`spawn_golb_trail_sprite` forwards `+0x274` to each trail Sprite as an opaque
+`object_ref`. The scratch definition therefore names the incoming control
+value `shot_slot_index`; the shared `object_ref`/integer overlay is retained
+for the downstream sprite ABI.
+
+The recorded `shot-pool-slot-identity` probe is byte-neutral at the honest
+77.98% frontier: 549/582 instructions, prefix 81/582, 47 clean references,
+and the one documented unaudited constant. A second
+`shot-pool-slot-field-identity` receipt covers the shared-union rename; its
+source SHA-256 is
+`a1a05fd8a45a612f747f20b963872d176a34d7d1df047d500a2b48f40054ee80`.
+No launch-vector lifetime or source-shape coercion was retried.

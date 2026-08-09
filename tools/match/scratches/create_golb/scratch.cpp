@@ -18,7 +18,7 @@ typedef Vector3 Vec3;
 int report_errorf(char* format, ...);
 int next_math_random_value();
 
-void GolbShot::create_golb(cRSubGoldy* player_, int spawn_selector, int emitter_index)
+void GolbShot::create_golb(cRSubGoldy* player_, int spawn_selector, int shot_slot_index)
 {
     skip_one_tick = 0;
     slug_bounce_armed = 0;
@@ -210,7 +210,7 @@ after_shoot_flag_source:
 
             g_game->active_bod_list.add_bod(&tertiary_body);
 
-            this->emitter_index = emitter_index;
+            this->shot_slot_index = shot_slot_index;
             ContactTargetEntry* found =
                 game->enemy_manager.search_path_for_golb(position);
             if (found) {
@@ -245,7 +245,7 @@ after_shoot_flag_source:
 
             vapour.reset_vapour((float*)spawn_selector);
             vapour.color.store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
-            this->emitter_index = emitter_index;
+            this->shot_slot_index = shot_slot_index;
             vapour.add_vapour_point(&flight_transform);
             ((BodAiDispatch*)&vapour)->update_bod_ai();
             break;
@@ -275,7 +275,7 @@ after_shoot_flag_source:
                 * 0.0000610351562f * 3.1415927f;
             render_sprite->facing_angle_step =
                 game->subgame_rate * 0.58177644f;
-            this->emitter_index = emitter_index;
+            this->shot_slot_index = shot_slot_index;
             break;
         }
     }
