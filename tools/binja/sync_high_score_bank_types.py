@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_int_display_updates,
     apply_proto_updates,
@@ -16,7 +15,8 @@ from _narrow_sync import (
     emit_summary,
     types_declare,
 )
-
+from _target import DEFAULT_TARGET
+from sync_high_score_screen_types import HIGH_SCORE_INIT_PROTO_UPDATE
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_high_score_bank_types.h"
@@ -459,6 +459,17 @@ def main() -> int:
                 *PERSISTENCE_USER_VAR_UPDATES,
                 *EMBEDDED_RECORD_CURSOR_USER_VAR_UPDATES,
             ),
+        )
+    )
+    # The five initializer-local annotations above queue analysis for the same
+    # function. Reassert the narrow screen owner's void ABI only after that
+    # broader replay settles so an older inferred scalar result cannot become
+    # the final persisted prototype.
+    operations.extend(
+        apply_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=(HIGH_SCORE_INIT_PROTO_UPDATE,),
         )
     )
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)

@@ -5056,6 +5056,38 @@ def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
         assert expected in ida_source
 
 
+def test_high_score_bank_replay_settles_screen_init_prototype_last() -> None:
+    screen_sync = (
+        BINJA_DIR / "sync_high_score_screen_types.py"
+    ).read_text(encoding="utf-8")
+    bank_sync = (BINJA_DIR / "sync_high_score_bank_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    expected = (
+        'HIGH_SCORE_INIT_PROTO_UPDATE = (\n'
+        '    "initialize_high_score_screen",\n'
+        '    "void __thiscall initialize_high_score_screen(HighScore* high_score, '
+        'int32_t selected_bank, int32_t selected_rank)",\n'
+        ")"
+    )
+    assert expected in screen_sync
+    assert (
+        "from sync_high_score_screen_types import "
+        "HIGH_SCORE_INIT_PROTO_UPDATE"
+    ) in bank_sync
+    assert "int32_t __thiscall initialize_high_score_screen" not in bank_sync
+
+    main = bank_sync.split("def main() -> int:", 1)[1]
+    final_proto_replay = main.rfind("apply_proto_updates(")
+    final_user_var_replay = main.rfind("apply_user_var_updates(")
+    assert final_proto_replay > final_user_var_replay
+    assert (
+        "updates=(HIGH_SCORE_INIT_PROTO_UPDATE,)"
+        in main[final_proto_replay:]
+    )
+
+
 def test_high_score_lifecycle_replays_complete_owner_graph() -> None:
     repo_root = Path(__file__).parents[1]
     binja_source = (

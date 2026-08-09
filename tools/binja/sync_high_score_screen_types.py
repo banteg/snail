@@ -2,10 +2,9 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_split_user_var_update,
@@ -15,7 +14,7 @@ from _narrow_sync import (
     types_declare,
     types_declare_if_missing,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEADER_PATH = REPO_ROOT / "analysis/headers/bn_high_score_screen_types.h"
@@ -26,11 +25,13 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x12e6e50", "high_score", "HighScore"),
 )
 
+HIGH_SCORE_INIT_PROTO_UPDATE = (
+    "initialize_high_score_screen",
+    "void __thiscall initialize_high_score_screen(HighScore* high_score, int32_t selected_bank, int32_t selected_rank)",
+)
+
 PROTO_UPDATES = (
-    (
-        "initialize_high_score_screen",
-        "void __thiscall initialize_high_score_screen(HighScore* high_score, int32_t selected_bank, int32_t selected_rank)",
-    ),
+    HIGH_SCORE_INIT_PROTO_UPDATE,
     (
         "destroy_high_score_screen",
         "void __thiscall destroy_high_score_screen(HighScore* high_score)",
