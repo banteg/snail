@@ -148,7 +148,7 @@ public:
     char unknown_00000a[0x0c - 0x0a];
     float pause_fade; // +0x0c
     float pause_fade_step; // +0x10
-    SubPause sub_pause; // +0x14, authored cRSubPause
+    cRSubPause sub_pause; // +0x14, authored cRSubPause
     int runtime_row_scan_begin; int runtime_row_scan_end; // +0x20/+0x24, rolling row-window [begin, end)
     int challenge_speed_value; // +0x28, selected challenge speed percentage
     int challenge_difficulty_value; // +0x2c, selected challenge difficulty percentage
@@ -198,7 +198,7 @@ public:
     BodBase unknown_bod_355d5c; // +0x355d5c
     int active_level_score; // +0x355d94, copied from the selected bank record
     Time active_level_timer; // +0x355d98, embedded cRTime display snapshot
-    SubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
+    cRSubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
     JetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
     cRSubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
     SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots

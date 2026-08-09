@@ -4,7 +4,7 @@ First scratch for the authored `cRSubPause::Init()` member.
 
 - Allocates `End Game`, `Options`, and `Resume` widgets from the global border
   manager.
-- Confirms the `SubPause` slot order as `options_widget +0x00`,
+- Confirms the `cRSubPause` slot order as `options_widget +0x00`,
   `end_game_widget +0x04`, and `resume_widget +0x08`.
 - Assigns shortcut keys 11, 111, and 5, stacks Options below End Game, stacks
   Resume below Options, and captures the shared mouse cursor.
@@ -25,8 +25,12 @@ the exact 88/88 stream and all 23 clean operands.
 2026-07-14 owner closure: leaked iOS symbols place `cRSubPause::Init()` in
 `SubGame.o`, while the Android body independently stores the three allocated
 widgets at `+0x00/+0x04/+0x08` and captures the mouse cursor. The owner is the
-0x0c-byte `SubPause` embedded at `cRSubGame +0x14`; the method is `void`
+0x0c-byte `cRSubPause` embedded at `cRSubGame +0x14`; the method is `void`
 and remains exact at 88/88 instructions with all 23 operands clean.
+
+The stable matcher key binds the exact VC6 spelling
+`?Init@cRSubPause@@QAEXXZ`; `SubPause` remains compatibility vocabulary for
+the tracked analyzers.
 
 2026-07-18 focused replay closure: the `cRSubGame` replay now owns the
 three `cRSubPause` lifecycle symbols, prototypes, and reanalysis targets while

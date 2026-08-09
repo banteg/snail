@@ -2,7 +2,7 @@
 
 #include "vapour.h"
 
-void Vapour::reset_vapour(float* new_z_floor)
+void cRVapour::ReSet(float* new_z_floor)
 {
     point_count = 0;
     z_floor = new_z_floor;

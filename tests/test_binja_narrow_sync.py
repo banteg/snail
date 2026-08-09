@@ -4264,7 +4264,7 @@ def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None
         "    cRGolbRocket tertiary_body;"
     )
     matcher_owner = (
-        "    Vapour vapour; // +0x080, complete kind-1 trail renderer\n"
+        "    cRVapour vapour; // +0x080, complete kind-1 trail renderer\n"
         "    GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink\n"
         "    GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner"
     )
@@ -20800,7 +20800,9 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
         encoding="utf-8"
     )
 
-    assert "class Vapour : public RenderableBod" in matcher_header
+    assert "class cRVapour : public RenderableBod" in matcher_header
+    assert "typedef cRVapour Vapour;" in matcher_header
+    assert "class Vapour :" not in matcher_header
     assert "virtual void update_vapour" not in matcher_header
     assert "Object* owner;" not in matcher_header
     assert "typedef struct Vapour {\n    RenderableBod body;" in pool_header

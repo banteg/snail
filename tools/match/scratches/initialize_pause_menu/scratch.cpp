@@ -9,7 +9,7 @@ extern char g_resume_text[]; // 0x4a4f2c
 extern char g_end_game_text[]; // 0x4a4f34
 extern char g_options_text[]; // 0x4a3b60
 
-void SubPause::initialize_pause_menu()
+void cRSubPause::Init()
 {
     tColour color;
 

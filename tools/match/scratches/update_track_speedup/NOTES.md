@@ -43,7 +43,7 @@ removed in favor of the canonical `cRSubGame` owner. Focused matching
 remains exact.
 
 2026-07-11 authored owner: the receiver and intrusive-list neighbors now use
-the primary `SubSpeedUp` type; `TrackSpeedupRuntime` is a compatibility alias.
+the shared `SubSpeedUp` type; `TrackSpeedupRuntime` is a compatibility alias.
 The constructor-installed table at `0x497314` points directly here, while
 Android and iOS retain `cRSubSpeedUp::AI()`. The body remains exact at 103/103
 instructions with all 15 masked operands clean.
@@ -61,7 +61,7 @@ The Binary Ninja pool replay now also preserves inherited
 `int32_t` override contradicted both matcher and path-template headers.
 
 2026-07-14 renderable-owner closure: the state-1 kill-plane read now names
-`SubSpeedUp::transform.position.z`. Together with the exact constructor and
+`cRSubSpeedUp::transform.position.z`. Together with the exact constructor and
 the full-vector collision consumer, this promotes the real inherited
 `RenderableBod` rather than a duplicated prefix. The inherited `BodNode` still
 owns both teardown links, and matching remains exact at 103/103 with all 15
@@ -74,3 +74,18 @@ The receiver state now uses `TrackPickupState`, shared with the authored
 state 2 is a one-tick teardown request; both removal paths return the singleton
 to state 0. The semantic constants remain exact at 103/103 instructions with
 all 15 operands clean.
+
+## 2026-08-09 primary cRSubSpeedUp::AI ownership
+
+Android and iOS independently export `cRSubSpeedUp::AI()`, and the Windows
+constructor table at `0x497314` contains the raw pointer bytes `50 ee 43 00`
+for this exact body at `0x43ee50`. The matcher now emits the owner-qualified
+VC6 member `?AI@cRSubSpeedUp@@QAEXXZ` while retaining the stable
+`update_track_speedup` matcher ID. `SubSpeedUp` and `TrackSpeedupRuntime` remain
+compatibility typedefs. The source body is unchanged and stays exact at
+103/103 instructions with all 15 references clean.
+
+The AI proves only the inactive, live-cull, and teardown-pending consumers.
+It does not establish how state 1 is armed; the folded one-instruction
+AddSpeedUp/Hover address remains a no-op on Windows and is not promoted into
+an activation path.

@@ -3,7 +3,7 @@
 #include "object_render_types.h"
 #include "vapour.h"
 
-void Vapour::update_vapour()
+void cRVapour::AI()
 {
     int count = point_count;
     if (count < 2) {

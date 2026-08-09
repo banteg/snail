@@ -29,8 +29,8 @@ public:
     cRSubLoc* source_cell; // +0x68
     float bob_phase; // +0x6c
     float bob_phase_step; // +0x70
-    Vapour vapour_a; // +0x74, embedded cRVapour
-    Vapour vapour_b; // +0x108, embedded cRVapour
+    cRVapour vapour_a; // +0x74, embedded cRVapour
+    cRVapour vapour_b; // +0x108, embedded cRVapour
 };
 
 typedef char JetPack_must_be_0x19c[

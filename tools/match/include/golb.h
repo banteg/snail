@@ -81,7 +81,7 @@ public:
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80,
         // Android cRSubGolb::Explode(tVector)
 
-    Vapour vapour; // +0x080, complete kind-1 trail renderer
+    cRVapour vapour; // +0x080, complete kind-1 trail renderer
     GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
     GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner
     ContactTargetObject* homing_target_object; // +0x198, reserved target owner

@@ -72,3 +72,11 @@ the final tail alone lets VC6 preserve the exact native load order and SIB base.
 2026-07-12 authored owner and ABI closure: Android and iOS preserve the void
 `cRVapour::Add(tMatrix&)` member. The receiver is now the exact 0x94-byte
 `Vapour` owner; the rename and void contract keep the 47/47 Windows match exact.
+
+## 2026-08-09 primary cRVapour::Add promotion
+
+The exact leaf now uses the authored `cRVapour::Add(tMatrix&)` spelling and
+exports `?Add@cRVapour@@QAEXAAUtMatrix@@@Z`. The reference preserves the same
+one-word Windows ABI as the prior pointer view; only the two `memcpy` source
+expressions take its address. The optimizer-sensitive mixed raw/typed body is
+otherwise unchanged and remains exact at 47/47 instructions and full prefix.

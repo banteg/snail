@@ -63,3 +63,11 @@ uses inherited `object` directly instead of the duplicate `owner +0x24` view;
 the callback remains authored `cRVapour::AI()` while the matcher models its
 Windows table explicitly rather than adding a second compiler-generated
 vptr. Focused output remains exact at 227/227 instructions.
+
+## 2026-08-09 primary cRVapour::AI promotion
+
+The callback is now defined directly as `cRVapour::AI()` and exports
+`?AI@cRVapour@@QAEXXZ`, matching both mobile ports and the Windows table at
+`0x49731c`. The clamp, strip expansion, UV cases, and primitive-count tail are
+unchanged. Focused output remains exact at 227/227 instructions and full
+prefix, with no masked operands.

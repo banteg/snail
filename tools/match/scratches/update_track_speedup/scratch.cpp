@@ -1,4 +1,4 @@
-// update_track_speedup @ 0x43ee50 (thiscall, ret)
+// update_track_speedup / cRSubSpeedUp::AI @ 0x43ee50 (thiscall, ret)
 
 #include "bod_list.h"
 #include "game_root.h"
@@ -9,7 +9,7 @@
 
 int report_errorf(char* format, ...);
 
-void SubSpeedUp::update_track_speedup()
+void cRSubSpeedUp::AI()
 {
     int zero = 0;
 

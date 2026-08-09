@@ -147,7 +147,7 @@ void GolbShot::update_golb_ai()
         break;
     }
     case 1:
-        vapour.add_vapour_point(&source_matrix);
+        vapour.Add(source_matrix);
         break;
     case 0: {
         Vec3* body_position = &render_sprite->position;

@@ -77,7 +77,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
     unknown_bod_355cec.initialize_bod_base();
     golb_vapour_list_head.initialize_bod_base();
     unknown_bod_355d5c.initialize_bod_base();
-    speedup_pickup.initialize_track_speedup_runtime();
+    ((RuntimeSlot*)&speedup_pickup)->initialize_track_speedup_runtime();
     jetpack_pickup.initialize_track_jetpack_pickup_runtime();
 
     cRSubHealth* health_pickup = health_pickups;

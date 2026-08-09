@@ -243,10 +243,10 @@ after_shoot_flag_source:
                 vapour.list_flags |= BOD_FLAG_LINKED;
             }
 
-            vapour.reset_vapour((float*)spawn_selector);
+            vapour.ReSet((float*)spawn_selector);
             vapour.color.store_color4f(1.0f, 1.0f, 1.0f, 0.99000001f);
             this->shot_slot_index = shot_slot_index;
-            vapour.add_vapour_point(&flight_transform);
+            vapour.Add(flight_transform);
             ((BodAiDispatch*)&vapour)->update_bod_ai();
             break;
         }

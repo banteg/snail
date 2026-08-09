@@ -4,7 +4,7 @@
 #include "pause_menu.h"
 
 
-void SubPause::uninit_pause_menu()
+void cRSubPause::UnInit()
 {
     g_game->border_manager.kill_border(options_widget);
     g_game->border_manager.kill_border(end_game_widget);

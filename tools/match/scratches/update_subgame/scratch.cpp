@@ -64,10 +64,10 @@ void cRSubGame::AI()
         subgame_state = 4;
         subgame_pause_gate = (unsigned char)one;
         pause_fade = pause_fade_step;
-        sub_pause.initialize_pause_menu();
+        sub_pause.Init();
         // Native fallthrough: initialization immediately receives one update.
     case 4:
-        sub_pause.update_pause_menu();
+        sub_pause.AI();
         return;
 
     case 7:

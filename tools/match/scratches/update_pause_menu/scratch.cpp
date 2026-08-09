@@ -3,7 +3,7 @@
 #include "game_root.h"
 
 
-void SubPause::update_pause_menu()
+void cRSubPause::AI()
 {
     unsigned int flags = options_widget->widget_flags;
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
@@ -22,7 +22,7 @@ void SubPause::update_pause_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         resume->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        uninit_pause_menu();
+        UnInit();
         GameRoot* game = g_game;
         game->subgame.subgame_state = 2;
         g_game->subgame.resume_requested = 1;

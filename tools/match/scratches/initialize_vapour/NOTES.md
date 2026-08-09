@@ -25,3 +25,13 @@ The narrow Binary Ninja header now mirrors the same complete zero-offset
 `Object* owner` prevents broad/narrow replay order from changing the type;
 the retained pointer still resolves honestly as `body.bod.object` at `+0x24`.
 The exact 19/19 matcher body is unchanged.
+
+## 2026-08-09 authored Init promotion
+
+The exact Windows leaf is now defined as
+`cRVapour::Init(cRObject*, float)` and exports
+`?Init@cRVapour@@QAEXPAUcRObject@@M@Z`. The unused explicit object argument and
+inherited `object` read remain distinct, and the tail call now uses the authored
+`ReSet(0)` spelling. Matching remains 19/19 with a full prefix; the only
+temporary operand mismatch is that shared reference alias pending against the
+legacy Windows name `reset_vapour`.

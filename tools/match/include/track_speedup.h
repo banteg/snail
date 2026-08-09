@@ -13,10 +13,10 @@
 
 class cRSubGame;
 
-class SubSpeedUp : public RenderableBod {
+class cRSubSpeedUp : public RenderableBod {
 public:
-    SubSpeedUp* initialize_track_speedup_runtime(); // @ 0x4084b0
-    void update_track_speedup(); // @ 0x43ee50
+    cRSubSpeedUp(); // @ 0x4084b0
+    void AI(); // @ 0x43ee50
 
     TrackPickupState state; // +0x80
     cRSubGoldy* owner; // +0x84
@@ -27,8 +27,11 @@ public:
     char unknown_b0[0xb4 - 0xb0];
 };
 
-typedef SubSpeedUp TrackSpeedupRuntime;
+typedef cRSubSpeedUp SubSpeedUp;
+typedef cRSubSpeedUp TrackSpeedupRuntime;
 
+typedef char cRSubSpeedUp_must_be_0xb4[
+    (sizeof(cRSubSpeedUp) == 0xb4) ? 1 : -1];
 typedef char SubSpeedUp_must_be_0xb4[
     (sizeof(SubSpeedUp) == 0xb4) ? 1 : -1];
 

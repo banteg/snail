@@ -918,6 +918,87 @@
       "description": "Exact authored cRClickStart::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x4084b0",
+      "name": "initialize_track_speedup_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRSubSpeedUp@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSubSpeedUp constructor."
+    },
+    {
+      "address": "0x43ee50",
+      "name": "update_track_speedup",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubSpeedUp@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubSpeedUp::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x440600",
+      "name": "uninit_pause_menu",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRSubPause@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubPause::UnInit() member."
+    },
+    {
+      "address": "0x440660",
+      "name": "initialize_pause_menu",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSubPause@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubPause::Init() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x4407a0",
+      "name": "update_pause_menu",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubPause@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubPause::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x442500",
+      "name": "initialize_vapour",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRVapour@@QAEXPAUcRObject@@M@Z"
+      ],
+      "description": "Exact authored cRVapour::Init(cRObject*, float) member."
+    },
+    {
+      "address": "0x442540",
+      "name": "reset_vapour",
+      "kind": "function",
+      "aliases": [
+        "?ReSet@cRVapour@@QAEXPAM@Z"
+      ],
+      "description": "Exact authored cRVapour::ReSet(float*) member."
+    },
+    {
+      "address": "0x442560",
+      "name": "add_vapour_point",
+      "kind": "function",
+      "aliases": [
+        "?Add@cRVapour@@QAEXAAUtMatrix@@@Z"
+      ],
+      "description": "Exact authored cRVapour::Add(tMatrix&) member."
+    },
+    {
+      "address": "0x4425f0",
+      "name": "update_vapour",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRVapour@@QAEXXZ"
+      ],
+      "description": "Exact authored cRVapour::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x408550",
       "name": "initialize_garbage_hazard",
       "kind": "function",

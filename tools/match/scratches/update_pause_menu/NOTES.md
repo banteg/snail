@@ -1,6 +1,6 @@
 # update_pause_menu @ 0x4407a0
 
-First scratch for the pause-menu button dispatcher.
+Exact scratch for the authored `cRSubPause::AI()` button dispatcher.
 
 - Options clears its click bit, captures the current frontend state into the
   options-menu owner at `game+0x4f388`, clears byte `+0x4f38c`, and switches
@@ -30,14 +30,18 @@ function remains exact 55/55.
 2026-07-14 authored-owner and return closure: leaked iOS symbols identify the
 method as `cRSubPause::AI()` in `SubGame.o`; Android consumes the same three
 widget slots on a 0x0c-byte owner and exits without constructing a stable
-result. The Windows source now uses the embedded `SubPause` at
+result. The Windows source now uses the embedded `cRSubPause` at
 `cRSubGame +0x14` and an honest `void` contract instead of returning
 path-dependent incidental pointers. It remains exact at 55/55 instructions
 with all ten operands clean.
 
-The transactional Binary Ninja replay imports `SubPause` at size 0x0c,
-embeds it at `cRSubGame +0x14`, and reads all three Windows functions back
-as `void __thiscall(SubPause*)`. A second filtered replay reports no
+The stable matcher key binds the exact VC6 spelling
+`?AI@cRSubPause@@QAEXXZ`; `SubPause` remains compatibility vocabulary for the
+tracked analyzers.
+
+The transactional Binary Ninja replay imports compatibility `SubPause` at
+size 0x0c, embeds it at `cRSubGame +0x14`, and reads all three Windows
+functions back as `void __thiscall(SubPause*)`. A second filtered replay reports no
 non-idempotent mutation; only the six already-known pinned `Game*` owner
 prototypes remain deferred.
 

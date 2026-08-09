@@ -2892,7 +2892,7 @@ char GameRoot::initialize_game_assets_and_world()
             OBJECT_FLAG_DISABLE_CULLING | OBJECT_FLAG_DYNAMIC_VERTICES;
         vapour_object->blend_mode = 9;
         load_object_definition((char*)"Objects/VapourLazer", vapour_object);
-        golb_shot->vapour.initialize_vapour(vapour_object, 0.159999996f);
+        golb_shot->vapour.Init(vapour_object, 0.159999996f);
         golb_shot->tertiary_body.SetObject(rocket_object);
         ++golb_shot;
     } while (--golb_shot_count != 0);

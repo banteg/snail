@@ -3597,6 +3597,171 @@ def test_mobile_parcel_family_recovers_authored_owners() -> None:
     assert "&RuntimeSlot::initialize_track_parcel_runtime" in constructor
 
 
+def test_mobile_vapour_pause_and_speedup_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+
+    vapour_header = (include_root / "vapour.h").read_text(encoding="utf-8")
+    pause_header = (include_root / "pause_menu.h").read_text(encoding="utf-8")
+    speedup_header = (include_root / "track_speedup.h").read_text(
+        encoding="utf-8"
+    )
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    golb_header = (include_root / "golb.h").read_text(encoding="utf-8")
+    jetpack_header = (include_root / "track_jetpack_pickup.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRVapour : public RenderableBod" in vapour_header
+    assert "typedef cRVapour Vapour;" in vapour_header
+    assert "class Vapour :" not in vapour_header
+    assert "cRVapour vapour;" in golb_header
+    assert "cRVapour vapour_a;" in jetpack_header
+    assert "cRVapour vapour_b;" in jetpack_header
+    assert "class cRSubPause {" in pause_header
+    assert "typedef cRSubPause SubPause;" in pause_header
+    assert "class SubPause {" not in pause_header
+    assert "cRSubPause sub_pause;" in subgame_header
+    assert "class cRSubSpeedUp : public RenderableBod" in speedup_header
+    assert "typedef cRSubSpeedUp SubSpeedUp;" in speedup_header
+    assert "class SubSpeedUp :" not in speedup_header
+    assert "cRSubSpeedUp speedup_pickup;" in subgame_header
+
+    expected_methods = (
+        (
+            "initialize_vapour",
+            "cRVapour_Init",
+            "void cRVapour::Init(cRObject*, float new_half_width)",
+            "?Init@cRVapour@@QAEXPAUcRObject@@M@Z",
+            True,
+        ),
+        (
+            "reset_vapour",
+            "cRVapour_ReSet",
+            "void cRVapour::ReSet(float* new_z_floor)",
+            "?ReSet@cRVapour@@QAEXPAM@Z",
+            True,
+        ),
+        (
+            "add_vapour_point",
+            "cRVapour_Add",
+            "void cRVapour::Add(tMatrix& point)",
+            "?Add@cRVapour@@QAEXAAUtMatrix@@@Z",
+            True,
+        ),
+        (
+            "update_vapour",
+            "cRVapour_AI",
+            "void cRVapour::AI()",
+            "?AI@cRVapour@@QAEXXZ",
+            True,
+        ),
+        (
+            "uninit_pause_menu",
+            "cRSubPause_UnInit",
+            "void cRSubPause::UnInit()",
+            "?UnInit@cRSubPause@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_pause_menu",
+            "cRSubPause_Init",
+            "void cRSubPause::Init()",
+            "?Init@cRSubPause@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_pause_menu",
+            "cRSubPause_AI",
+            "void cRSubPause::AI()",
+            "?AI@cRSubPause@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_track_speedup_runtime",
+            "cRSubSpeedUp_ctor",
+            "cRSubSpeedUp::cRSubSpeedUp()",
+            "??0cRSubSpeedUp@@QAE@XZ",
+            False,
+        ),
+        (
+            "update_track_speedup",
+            "cRSubSpeedUp_AI",
+            "void cRSubSpeedUp::AI()",
+            "?AI@cRSubSpeedUp@@QAEXXZ",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["status"] == "verified"
+            assert entries[windows_name]["confidence"] == "high"
+
+    assets = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    create_golb = (scratch_root / "create_golb/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    golb_ai = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    subgame = (scratch_root / "update_subgame/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    completion = (
+        scratch_root / "update_completion_screen/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    size_ledger = (
+        scratch_root / "construct_game_runtime/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    assert "golb_shot->vapour.Init(vapour_object, 0.159999996f);" in assets
+    assert "vapour.ReSet((float*)spawn_selector);" in create_golb
+    assert "vapour.Add(flight_transform);" in create_golb
+    assert "vapour.Add(source_matrix);" in golb_ai
+    assert "sub_pause.Init();" in subgame
+    assert "sub_pause.AI();" in subgame
+    assert completion.count("sub_pause.UnInit();") == 4
+    assert (
+        "((RuntimeSlot*)&speedup_pickup)->initialize_track_speedup_runtime();"
+        in constructor
+    )
+    assert "sizeof(cRSubSpeedUp)" in size_ledger
+
+
 def test_mobile_warning_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
