@@ -818,12 +818,12 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
             "cRSubGame::LocFromPos(tVector)",
             "?LocFromPos@cRSubGame@@QAEPAUcRSubLoc@@PAUtVector@@@Z",
         ),
-            (
-                "get_track_runtime_cell_at_world_z",
-                "RowFromPos",
-                "cRSubGame::RowFromPos(tVector)",
-                "?RowFromPos@cRSubGame@@QAEPAUcRSubRow@@PAUtVector@@@Z",
-            ),
+        (
+            "get_track_runtime_cell_at_world_z",
+            "RowFromPos",
+            "cRSubGame::RowFromPos(tVector)",
+            "?RowFromPos@cRSubGame@@QAEPAUcRSubRow@@PAUtVector@@@Z",
+        ),
         (
             "sample_track_floor_height_at_position",
             "GetY",
@@ -898,6 +898,16 @@ def test_mobile_subgame_utilities_recover_authored_surface() -> None:
         assert f"FUNCTION={windows_name}\n" in scratch_config
         assert f"SYMBOL={object_symbol}\n" in scratch_config
         assert object_symbol in references_by_name[windows_name]["aliases"]
+
+    row_from_pos_aliases = references_by_name[
+        "get_track_runtime_cell_at_world_z"
+    ]["aliases"]
+    assert "?RowFromPos@cRSubGame@@QAEPAUSubRow@@PAUtVector@@@Z" in (
+        row_from_pos_aliases
+    )
+    assert "?RowFromPos@cRSubGame@@QAEPAUcRSubRow@@PAUtVector@@@Z" in (
+        row_from_pos_aliases
+    )
 
     subgoldy = (
         repo_root / "tools/match/scratches/update_subgoldy/scratch.cpp"
@@ -3920,6 +3930,12 @@ def test_mobile_frontend_jetpack_and_row_owners_stay_authored() -> None:
     folded_aliases = references_by_name["initialize_border_stack"]["aliases"]
     assert "?Init@cRBorderStack@@QAEXXZ" in folded_aliases
     assert "?Init@cRFade@@QAEXXZ" in folded_aliases
+    folded_function_aliases = functions_by_name["initialize_border_stack"][
+        "aliases"
+    ]
+    assert "initialize_frontend_fade" in folded_function_aliases
+    assert "cRBorderStack_Init" in folded_function_aliases
+    assert "cRFade_Init" in folded_function_aliases
 
     assets = (
         scratch_root / "initialize_game_assets_and_world/scratch.cpp"
