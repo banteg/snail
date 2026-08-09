@@ -1,4 +1,4 @@
-# WIP scratch — 75.06%, 670/673 insns (2026-07-26 mobile ownership pass)
+# WIP scratch — 85.88%, 673/673 insns (2026-08-09 motion-contract closure)
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The remaining debt is systematic local-stack and register allocation:
@@ -777,3 +777,44 @@ with five sweep wins and four consecutive non-improving follow-ups. This lane
 is formally stalled at 85.88%; the remaining early stack-color differences
 need new source provenance, while the final two ring-kind differences are only
 equivalent scale-one SIB base/index encodings.
+
+## 2026-08-09 slug-hit motion and falling-handoff closure
+
+The Windows, Android, and iOS collision bodies close the remaining motion
+contract without changing the matcher source. On a first slug contact, Windows
+`0x4450cd..0x4451f1` borrows `game` before changing player state, sets
+`control_override_active`, clears `follow_state.active`, and writes the
+velocity triplet
+`(0, subgame_rate * 0.2, subgame_rate * -0.2)`. It then calls the exact
+`begin_post_follow_carryover`, sets cutscene state 10, latches the colliding
+slug, selects the voice rooted at sample 34, clears the wobble lift step, and
+shoots a burst at the normalized half-distance contact point. Android
+`cRSubGoldy::Collision()` at `0x6f390` preserves the same sequence through the
+authored `cRSubGoldy::FallingInit()` call; iOS `cRSubGoldy::Collision()` at
+`0x2613c` inlines the corresponding falling-initializer field writes at
+`0x26e34..0x26ec8` before the cutscene/voice/firework tail through `0x2704c`.
+
+The pre-call `follow_state.active = 0` is significant. In this lane the exact
+Windows helper necessarily takes its inactive arm, zeroes both post-follow
+carryover values, and then arms the attachment-exit window at the current z.
+This is a death/fall transition that reuses the camera-exit machinery, not a
+write to `completion_handoff_active`. The cutscene state, slug voice, and
+firework are downstream effects after that transition. The mobile firework
+texture id is 78 while Windows uses 92, so the proved cross-port invariants are
+the owner, half-distance position, player slot, and count 80 rather than the
+platform-local resource id.
+
+Repeat contacts at Windows `0x44520b..0x445226` while
+`control_override_active` is already set write only
+`velocity.z = subgame_rate * subgame_rate * 0.004 * -8` before applying full
+damage. The garbage impact branch at `0x444f64..0x444fc8` is also closed: after
+the velocity-x/z knockback, normalized collision x below zero writes
+`SUB_GARBAGE_COLLISION_SIDE_LEFT`; zero or positive writes
+`SUB_GARBAGE_COLLISION_SIDE_RIGHT`. Both mobile bodies preserve the same sign
+split and side values.
+
+Focused validation remains 85.88%, 673/673 instructions, prefix 18, native
+`0x74` frame, and 89 clean references. Because the retained source already
+encodes every recovered write and ordering edge, no score-neutral spelling or
+new mutation sweep is warranted. The fourteen-sweep, 100-variant vector lane
+remains formally stalled until genuinely new source provenance appears.
