@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from collections.abc import Collection
+from dataclasses import replace
 from pathlib import Path
 from typing import Any, cast
 
+from . import match as matchlib
+
 EXPERIMENT_FILE = "experiments.jsonl"
 EXPERIMENT_SCHEMA = 1
+SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 EXPERIMENT_SORTS = frozenset(
     {
         "no-improvement",
@@ -159,14 +164,17 @@ def _inferred_tradeoffs(
     return tuple(warnings)
 
 
-def _variant_key(result: dict[str, Any]) -> tuple[str, str, str] | None:
+def _variant_key(
+    result: dict[str, Any],
+    dependency_sha256: str | None,
+) -> tuple[str, str, str, str] | None:
     source_sha256 = result.get("source_sha256")
     status = result.get("status")
     if not isinstance(source_sha256, str) or not source_sha256:
         return None
     compiler = str(status.get("compiler", "")) if isinstance(status, dict) else ""
     cflags = str(status.get("cflags", "")) if isinstance(status, dict) else ""
-    return source_sha256, compiler, cflags
+    return source_sha256, compiler, cflags, dependency_sha256 or ""
 
 
 def _recorded_function(record: dict[str, Any]) -> tuple[str | None, str | None]:
@@ -181,6 +189,26 @@ def _recorded_function(record: dict[str, Any]) -> tuple[str | None, str | None]:
     )
 
 
+def _recorded_dependency_profile(
+    path: Path,
+    record: dict[str, Any],
+) -> matchlib.ScratchConfig:
+    baseline = record.get("baseline")
+    if not isinstance(baseline, dict):
+        raise TypeError("dependency receipt requires a baseline object")
+    compiler = baseline.get("compiler")
+    cflags = baseline.get("cflags")
+    if not isinstance(compiler, str) or not compiler:
+        raise ValueError("dependency receipt requires a baseline compiler")
+    if not isinstance(cflags, str):
+        raise TypeError("dependency receipt requires baseline cflags")
+    return replace(
+        matchlib.load_scratch_config(path.parent),
+        compiler=compiler,
+        cflags=cflags,
+    )
+
+
 def summarize_experiment_log(
     path: Path,
     *,
@@ -190,7 +218,7 @@ def summarize_experiment_log(
     kinds: Counter[str] = Counter()
     mutation_improvements: list[bool] = []
     spec_shas: Counter[str] = Counter()
-    variant_keys: Counter[tuple[str, str, str]] = Counter()
+    variant_keys: Counter[tuple[str, str, str, str]] = Counter()
     latest_recorded_at: str | None = None
     function: str | None = None
     image: str | None = None
@@ -202,6 +230,8 @@ def summarize_experiment_log(
     improving_sweeps = 0
     improving_probes = 0
     exact_winners = 0
+    dependency_receipts: Counter[str] = Counter()
+    dependency_cache: dict[tuple[str, str], str] = {}
 
     for record_index, record in enumerate(records, start=1):
         context = f"{path}:{record_index}"
@@ -218,6 +248,41 @@ def summarize_experiment_log(
         recorded_function, recorded_image = _recorded_function(record)
         function = recorded_function or function
         image = recorded_image or image
+
+        recorded_dependency_sha: str | None = None
+        if "dependency_sha256" not in record:
+            dependency_receipts["historical"] += 1
+        else:
+            raw_dependency_sha = record.get("dependency_sha256")
+            if not isinstance(raw_dependency_sha, str) or not SHA256_RE.fullmatch(
+                raw_dependency_sha
+            ):
+                errors.append(
+                    f"{context}: dependency_sha256 must be a lowercase SHA-256 digest"
+                )
+                dependency_receipts["invalid"] += 1
+            else:
+                recorded_dependency_sha = raw_dependency_sha
+                try:
+                    profile = _recorded_dependency_profile(path, record)
+                    cache_key = (profile.compiler, profile.cflags)
+                    current_dependency_sha = dependency_cache.get(cache_key)
+                    if current_dependency_sha is None:
+                        current_dependency_sha = matchlib.scratch_dependency_sha256(
+                            profile,
+                            match_root,
+                        )
+                        dependency_cache[cache_key] = current_dependency_sha
+                except (OSError, TypeError, ValueError) as error:
+                    errors.append(
+                        f"{context}: cannot verify dependency_sha256: {error}"
+                    )
+                    dependency_receipts["invalid"] += 1
+                else:
+                    if recorded_dependency_sha == current_dependency_sha:
+                        dependency_receipts["current"] += 1
+                    else:
+                        dependency_receipts["stale"] += 1
 
         if kind == "mutation-sweep":
             results = record.get("results")
@@ -269,7 +334,7 @@ def summarize_experiment_log(
                     continue
                 typed_result = cast(dict[str, Any], result)
                 evaluated_variants += 1
-                key = _variant_key(typed_result)
+                key = _variant_key(typed_result, recorded_dependency_sha)
                 if key is None:
                     errors.append(
                         f"{context}: result {result_index} requires source_sha256"
@@ -320,6 +385,8 @@ def summarize_experiment_log(
         flags.append("stalled")
     if tradeoff_variants:
         flags.append("metric-tradeoffs")
+    if dependency_receipts["stale"]:
+        flags.append("stale-dependencies")
     if errors:
         flags.append("malformed")
 
@@ -347,6 +414,10 @@ def summarize_experiment_log(
             "unique_specs": len(spec_shas),
             "repeated_spec_runs": repeated_spec_runs,
             "latest_recorded_at": latest_recorded_at,
+            "dependency_receipts": {
+                state: dependency_receipts[state]
+                for state in ("historical", "current", "stale", "invalid")
+            },
             "flags": flags,
             "errors": len(errors),
         },
@@ -421,6 +492,10 @@ def summarize_experiments(
             "improving_probes": sum(int(row["improving_probes"]) for row in rows),
             "exact_winners": sum(int(row["exact_winners"]) for row in rows),
             "stalled_scratches": sum("stalled" in row["flags"] for row in rows),
+            "dependency_receipts": {
+                state: sum(int(row["dependency_receipts"][state]) for row in rows)
+                for state in ("historical", "current", "stale", "invalid")
+            },
             "errors": len(errors),
         },
         "errors": errors,
@@ -441,6 +516,7 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
             "wins",
             "exact",
             "streak",
+            "deps h/c/s/i",
             "flags",
         ),
     ]
@@ -461,6 +537,10 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
                 str(row["improving_sweeps"]),
                 str(row["exact_winners"]),
                 str(row["no_improvement_streak"]),
+                "/".join(
+                    str(row["dependency_receipts"][state])
+                    for state in ("historical", "current", "stale", "invalid")
+                ),
                 ",".join(row["flags"]) or "-",
             )
         )
@@ -486,6 +566,12 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
         f"sweep-wins={summary['improving_sweeps']} "
         f"exact={summary['exact_winners']} "
         f"stalled={summary['stalled_scratches']} "
+        f"deps-h/c/s/i="
+        + "/".join(
+            str(summary["dependency_receipts"][state])
+            for state in ("historical", "current", "stale", "invalid")
+        )
+        + " "
         f"errors={summary['errors']}"
     )
     return "\n".join(lines)

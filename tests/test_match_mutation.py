@@ -455,17 +455,29 @@ def test_mutate_cli_writes_only_an_improving_winner(
         planned_by_changes=(2, 0),
     )
     received_min_changes = None
+    received_match_root = None
 
     def fake_evaluate(*args: object, **kwargs: object) -> MutationSweep:
-        nonlocal received_min_changes
+        nonlocal received_match_root, received_min_changes
         received_min_changes = kwargs["min_changes"]
+        received_match_root = kwargs["match_root"]
         return sweep
 
     monkeypatch.setattr(
         "snail.cli.match_mutation.evaluate_mutation_sweep",
         fake_evaluate,
     )
+    dependency_match_root = None
+
+    def fake_dependency_sha(_config: object, root: Path) -> str:
+        nonlocal dependency_match_root
+        assert not output.exists()
+        dependency_match_root = root
+        return "d" * 64
+
+    monkeypatch.setattr("snail.cli.scratch_dependency_sha256", fake_dependency_sha)
     output = tmp_path / "winner.cpp"
+    match_root = tmp_path / "match-root"
 
     exit_code = main(
         [
@@ -474,6 +486,8 @@ def test_mutate_cli_writes_only_an_improving_winner(
             str(scratch),
             "--spec",
             str(spec_path),
+            "--match-root",
+            str(match_root),
             "--min-changes",
             "2",
             "--max-changes",
@@ -489,6 +503,8 @@ def test_mutate_cli_writes_only_an_improving_winner(
 
     assert exit_code == 0
     assert received_min_changes == 2
+    assert received_match_root == match_root
+    assert dependency_match_root == match_root
     payload = json.loads(capsys.readouterr().out)
     assert payload["best_improves"] is True
     assert payload["best_source_written_to"] == str(output)
@@ -517,6 +533,7 @@ def test_mutate_cli_writes_only_an_improving_winner(
     )
     assert recorded["schema"] == 1
     assert recorded["kind"] == "mutation-sweep"
+    assert recorded["dependency_sha256"] == "d" * 64
     assert recorded["spec_sha256"] == sweep.spec.sha256
     assert recorded["winner"]["label"] == variant.label
     assert len(recorded["results"]) == 2

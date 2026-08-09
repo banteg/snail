@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 
 from snail.cli import main
+from snail.match import load_scratch_config, scratch_dependency_sha256
 from snail.match_experiments import summarize_experiments
 
 
@@ -70,6 +71,8 @@ def _sweep(
         "baseline": {
             "function": "foo",
             "image": "SnailMail_unwrapped.exe",
+            "compiler": "msvc6.5",
+            "cflags": "/O2",
             "candidate_instructions": 10,
             "target_instructions": 10,
         },
@@ -78,7 +81,7 @@ def _sweep(
 
 
 def _write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
-    path.parent.mkdir(parents=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         "".join(json.dumps(record) + "\n" for record in records),
         encoding="utf-8",
@@ -130,6 +133,12 @@ def test_experiment_summary_surfaces_repeats_stalls_and_tradeoffs(
         "improving_probes": 1,
         "exact_winners": 1,
         "stalled_scratches": 0,
+        "dependency_receipts": {
+            "historical": 4,
+            "current": 0,
+            "stale": 0,
+            "invalid": 0,
+        },
         "errors": 0,
     }
     row = payload["rows"][0]
@@ -141,6 +150,127 @@ def test_experiment_summary_surfaces_repeats_stalls_and_tradeoffs(
         "repeated-specs",
         "metric-tradeoffs",
     ]
+
+
+def test_experiment_dependency_receipts_distinguish_history_from_drift(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    scratch = tmp_path / "scratches" / "foo"
+    include = tmp_path / "include"
+    compiler = tmp_path / "compilers" / "msvc6.5" / "Bin" / "CL.EXE"
+    scratch.mkdir(parents=True)
+    include.mkdir()
+    compiler.parent.mkdir(parents=True)
+    (tmp_path / "cl.sh").write_text("launcher\n", encoding="utf-8")
+    compiler.write_bytes(b"compiler")
+    (scratch / "scratch.conf").write_text(
+        "FUNCTION=foo COMPILER=msvc6.5 CFLAGS=/O2\n",
+        encoding="utf-8",
+    )
+    (scratch / "scratch.cpp").write_text(
+        '#include "shared.h"\nint foo() { return shared; }\n',
+        encoding="utf-8",
+    )
+    (include / "shared.h").write_text(
+        '#include "nested.h"\n',
+        encoding="utf-8",
+    )
+    nested = include / "nested.h"
+    nested.write_text("const int shared = 1;\n", encoding="utf-8")
+
+    dependency_sha = scratch_dependency_sha256(
+        load_scratch_config(scratch),
+        tmp_path,
+    )
+    record = _sweep("spec-a", [_result("variant-a", 0)])
+    record["dependency_sha256"] = dependency_sha
+    log = scratch / "experiments.jsonl"
+    _write_jsonl(log, [record])
+
+    payload = summarize_experiments(tmp_path)
+    assert payload["summary"]["dependency_receipts"] == {
+        "historical": 0,
+        "current": 1,
+        "stale": 0,
+        "invalid": 0,
+    }
+    assert payload["errors"] == []
+
+    nested.write_text("const int shared = 2;\n", encoding="utf-8")
+    payload = summarize_experiments(tmp_path)
+    assert payload["summary"]["dependency_receipts"] == {
+        "historical": 0,
+        "current": 0,
+        "stale": 1,
+        "invalid": 0,
+    }
+    assert payload["rows"][0]["flags"] == ["stale-dependencies"]
+    assert payload["errors"] == []
+    assert (
+        main(
+            [
+                "match",
+                "experiments",
+                "--match-root",
+                str(tmp_path),
+                "--check",
+                "--json",
+            ]
+        )
+        == 0
+    )
+    capsys.readouterr()
+
+    current_record = _sweep("spec-b", [_result("variant-a", 0)])
+    current_record["dependency_sha256"] = scratch_dependency_sha256(
+        load_scratch_config(scratch),
+        tmp_path,
+    )
+    _write_jsonl(log, [record, current_record])
+    payload = summarize_experiments(tmp_path)
+    assert payload["summary"]["dependency_receipts"] == {
+        "historical": 0,
+        "current": 1,
+        "stale": 1,
+        "invalid": 0,
+    }
+    assert payload["summary"]["unique_variants"] == 2
+    assert payload["summary"]["repeated_variants"] == 0
+
+    del record["dependency_sha256"]
+    del current_record["dependency_sha256"]
+    _write_jsonl(log, [record, current_record])
+    payload = summarize_experiments(tmp_path)
+    assert payload["summary"]["dependency_receipts"] == {
+        "historical": 2,
+        "current": 0,
+        "stale": 0,
+        "invalid": 0,
+    }
+    assert payload["summary"]["unique_variants"] == 1
+    assert payload["summary"]["repeated_variants"] == 1
+    assert payload["errors"] == []
+
+    record["dependency_sha256"] = "not-a-digest"
+    _write_jsonl(log, [record])
+    payload = summarize_experiments(tmp_path)
+    assert payload["summary"]["dependency_receipts"]["invalid"] == 1
+    assert payload["summary"]["errors"] == 1
+    assert (
+        main(
+            [
+                "match",
+                "experiments",
+                "--match-root",
+                str(tmp_path),
+                "--check",
+                "--json",
+            ]
+        )
+        == 1
+    )
+    capsys.readouterr()
 
 
 def test_experiment_summary_check_rejects_malformed_logs(

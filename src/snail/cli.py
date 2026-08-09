@@ -34,6 +34,7 @@ from .match import (
     run_match,
     run_match_dump,
     run_scratch_match,
+    scratch_dependency_sha256,
     type_consolidation_findings,
 )
 from .mobile import (
@@ -763,6 +764,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="JSON mutation plan.",
     )
     match_mutate_parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    match_mutate_parser.add_argument(
         "--image",
         type=Path,
         help="Path to the original image (default: the manifest primary target).",
@@ -1421,6 +1428,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 cflags=args.cflags,
                 label=args.label,
             )
+            dependency_sha256 = (
+                scratch_dependency_sha256(result.baseline.config, args.match_root)
+                if args.record
+                else None
+            )
         except Exception as error:  # noqa: BLE001
             print(
                 f"probe failed: {str(error).splitlines()[0]}",
@@ -1436,6 +1448,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "schema": match_experiments.EXPERIMENT_SCHEMA,
                 "kind": "probe",
                 "recorded_at": datetime.now(UTC).isoformat(),
+                "dependency_sha256": dependency_sha256,
                 **payload,
             }
             with record_path.open("a", encoding="utf-8") as handle:
@@ -1485,6 +1498,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 config,
                 mutation_spec,
                 source_text=source_text,
+                match_root=args.match_root,
                 image_path=image_path,
                 manifest=manifest,
                 compiler=args.compiler,
@@ -1495,6 +1509,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                 jobs=args.jobs,
                 stop_on_improvement=args.stop_on_improvement,
                 time_budget=args.time_budget,
+            )
+            dependency_sha256 = (
+                scratch_dependency_sha256(
+                    sweep.baseline.config,
+                    args.match_root,
+                )
+                if args.record
+                else None
             )
         except Exception as error:  # noqa: BLE001
             print(
@@ -1521,6 +1543,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "kind": "mutation-sweep",
                 "recorded_at": datetime.now(UTC).isoformat(),
                 "best_source_written_to": written_to,
+                "dependency_sha256": dependency_sha256,
                 **match_mutation.mutation_sweep_payload(sweep),
             }
             with record_path.open("a", encoding="utf-8") as handle:

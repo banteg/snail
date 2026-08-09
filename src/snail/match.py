@@ -2794,6 +2794,37 @@ def _scratch_build_key(
     }
 
 
+def scratch_dependency_sha256(
+    config: ScratchConfig,
+    match_root: Path = DEFAULT_MATCH_ROOT,
+) -> str:
+    """Hash the content-stable input graph for one scratch build."""
+
+    root = match_root.resolve()
+    source = (config.directory / "scratch.cpp").resolve()
+    dependencies: list[list[str]] = []
+    for path in _scratch_build_dependencies(config, match_root):
+        resolved = path.resolve()
+        if resolved == source:
+            name = "scratch.cpp"
+        else:
+            try:
+                name = resolved.relative_to(root).as_posix()
+            except ValueError:
+                name = str(resolved)
+        dependencies.append(
+            [name, hashlib.sha256(resolved.read_bytes()).hexdigest()]
+        )
+
+    payload = {
+        "compiler": config.compiler,
+        "argv": list(_scratch_compile_argv(config, match_root)[1:]),
+        "dependencies": dependencies,
+    }
+    encoded = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
 def _scratch_object_is_current(
     obj_path: Path,
     config: ScratchConfig,
