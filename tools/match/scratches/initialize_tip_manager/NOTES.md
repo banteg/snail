@@ -19,3 +19,12 @@ therefore comes from storage capacity rather than an unrelated magic limit.
 and explicit `Tip*` cursor view make both tracked decompilers walk
 `manager->tips` directly. Paired checks reject the old `this + 14`, scalar
 word-pointer, and compensating-offset forms. Matching remains exact at 7/7.
+
+## 2026-08-09 primary cRTipManager ownership
+
+The initializer now emits as `cRTipManager::Init()` over a `cRTip*` cursor and
+selects `?Init@cRTipManager@@QAEXXZ`; `TipManager` remains a compatibility
+typedef. Windows calls it once from `initialize_game_assets_and_world` at
+`0x410210`. Android and iOS preserve the same authored manager member and
+three-entry inline cRTip bank despite their smaller BodBase prefix. The
+owner/symbol promotion is byte-neutral and remains exact at 7/7 instructions.

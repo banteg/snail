@@ -7,5 +7,5 @@
 
 void Tutorial::uninit_tutorial()
 {
-    g_game->tip_manager.uninit_tips();
+    g_game->tip_manager.UnInitTips();
 }

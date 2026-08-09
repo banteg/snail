@@ -329,7 +329,7 @@ steering_stored:
                         ->level_definition
                         .segment_slots[definition - 1]
                         .message_sample_id);
-            g_game->tip_manager.enqueue_tip_message(&row_event.definition, 1);
+            g_game->tip_manager.TipNew(&row_event.definition, 1);
         }
     }
 

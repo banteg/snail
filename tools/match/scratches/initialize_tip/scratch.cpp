@@ -1,13 +1,13 @@
-// initialize_tip @ 0x448a40 (thiscall, ret 0x8)
+// initialize_tip / cRTip::Init @ 0x448a40 (thiscall, ret 0x8)
 
 #include "border_manager.h"
 #include "frontend_widget.h"
 #include "game_root.h"
 #include "tip_manager.h"
 
-extern TipData g_default_tip_message; // data_4ac5c8 / iOS gTips
+extern cRTipData g_default_tip_message; // data_4ac5c8 / iOS gTips
 
-void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
+void cRTip::Init(cRTipData* definition_, int hide_disable_button)
 {
     active = 1;
     if (definition_ != 0)
@@ -31,7 +31,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
         alignment >> 1,
         definition->anchor_x);
 
-    TipData* live_definition = definition;
+    cRTipData* live_definition = definition;
     int live_flags = live_definition->flags;
     if ((live_flags & 2) != 0) {
         dismiss_progress = 0.0f;
@@ -84,7 +84,7 @@ void Tip::initialize_tip(TipData* definition_, int hide_disable_button)
         widget_disable = 0;
     }
 
-    TipData* final_definition = definition;
+    cRTipData* final_definition = definition;
     previous_outer_owner = g_game->players[0].frontend_state;
     if ((final_definition->flags & 1) != 0)
         g_game->players[0].frontend_state = 0x16;

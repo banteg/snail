@@ -25,3 +25,14 @@ Android and Windows both route all three kills through the root-owned
 BorderManager. No `cRTip::UnInit()` export survives in the iOS corpus, so the
 crosswalk deliberately records Android-only proof rather than manufacturing
 an iOS mapping. The Windows method remains exact at 24/24 instructions.
+
+## 2026-08-09 primary cRTip ownership
+
+The exact Windows helper now emits as `cRTip::UnInit()` and selects
+`?UnInit@cRTip@@QAEXXZ`; `Tip` remains a compatibility typedef. Live Windows
+xrefs retain both teardown edges from `cRTip::AI` and the manager-bank edge
+from `cRTipManager::UnInitTips`. Android independently preserves the authored
+name and the same three-widget teardown, while the absent iOS export remains
+an explicit evidence boundary. The owner/symbol promotion is byte-neutral:
+focused matching stays exact at 24/24 instructions with all six references
+clean.

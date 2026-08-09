@@ -32,3 +32,16 @@ loads that gate as a 32-bit argument, so this exact member returns `Tip*`, takes
 `manager->tips` array without pointer-to-array artifacts or offset correction.
 Paired health checks pin that graph. Matching remains exact at 26/26 with three
 clean masked operands.
+
+## 2026-08-09 primary cRTipManager ownership
+
+The allocator now emits as
+`cRTipManager::TipNew(cRTipData*, int)`, returns `cRTip*`, calls the authored
+`cRTip::Init`, and selects the exact VC6 symbol
+`?TipNew@cRTipManager@@QAEPAVcRTip@@PAUcRTipData@@H@Z`. Windows calls it from
+Goldy row-event handling at `0x43b866`; Android and iOS preserve the same
+authored owner, return type, first-inactive scan, and three-entry exhaustion
+boundary. As with cRTip::Init, the Windows 32-bit gate remains authoritative
+over the mobile bool/signed-char spellings. Instruction matching remains exact
+at 26/26; the shared reference manifest binds the owner-qualified Init
+relocation, keeping its call operand audit-clean.

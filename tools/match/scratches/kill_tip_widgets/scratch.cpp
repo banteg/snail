@@ -1,10 +1,10 @@
-// kill_tip_widgets @ 0x4489e0 (thiscall, ret)
+// kill_tip_widgets / cRTip::UnInit @ 0x4489e0 (thiscall, ret)
 
 #include "game_root.h"
 #include "tip_manager.h"
 
 
-void Tip::kill_tip_widgets()
+void cRTip::UnInit()
 {
     g_game->border_manager.kill_border(widget_main);
     if (widget_ok != 0) {

@@ -2093,6 +2093,69 @@
       "description": "Exact Windows int cRSubLoc::Yi() entry with its authored decorated relocation name."
     },
     {
+      "address": "0x4489e0",
+      "name": "kill_tip_widgets",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRTip@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTip::UnInit() entry; the owner-qualified alias disambiguates it from other authored UnInit methods."
+    },
+    {
+      "address": "0x448a40",
+      "name": "initialize_tip",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRTip@@QAEXPAUcRTipData@@H@Z"
+      ],
+      "description": "Windows cRTip::Init(cRTipData*, int) entry with the authoritative 32-bit hide-disable-button formal."
+    },
+    {
+      "address": "0x448c40",
+      "name": "update_tip",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRTip@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTip::AI() entry; the owner-qualified alias disambiguates it from other authored AI methods."
+    },
+    {
+      "address": "0x448cf0",
+      "name": "initialize_tip_manager",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRTipManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTipManager::Init() entry; the owner-qualified alias disambiguates it from other authored Init methods."
+    },
+    {
+      "address": "0x448d10",
+      "name": "uninit_tips",
+      "kind": "function",
+      "aliases": [
+        "?UnInitTips@cRTipManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTipManager::UnInitTips() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x448d30",
+      "name": "enqueue_tip_message",
+      "kind": "function",
+      "aliases": [
+        "?TipNew@cRTipManager@@QAEPAVcRTip@@PAUcRTipData@@H@Z"
+      ],
+      "description": "Exact Windows cRTipManager::TipNew(cRTipData*, int) entry with its cRTip pointer result and authoritative 32-bit formal."
+    },
+    {
+      "address": "0x448d80",
+      "name": "update_tip_manager",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRTipManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTipManager::AI() entry; the owner-qualified alias disambiguates it from other authored AI methods."
+    },
+    {
       "address": "0x449260",
       "name": "initialize_voice_manager_set_jump_table",
       "kind": "jump_table",

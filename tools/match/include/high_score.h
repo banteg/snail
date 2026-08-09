@@ -1,6 +1,6 @@
 // Authored cRHighScore front-end owner. Windows proves controller storage
 // through +0xf4; the following 0x14 root bytes remain unassigned before the
-// exact TipManager boundary. cRSubHighScore is the separate persistent bank.
+// exact cRTipManager boundary. cRSubHighScore is the separate persistent bank.
 #ifndef HIGH_SCORE_H
 #define HIGH_SCORE_H
 

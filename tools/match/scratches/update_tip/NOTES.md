@@ -65,3 +65,14 @@ body and all nine masked operands.
 the player frontend-state restore, and the root border manager. Paired health
 checks forbid the former `TipSlot`, raw-root, and untyped widget views while
 the scratch stays exact at 51/51 with nine clean masks.
+
+## 2026-08-09 primary cRTip ownership
+
+The exact updater now emits as `cRTip::AI()` and selects
+`?AI@cRTip@@QAEXXZ`; both clicked-button edges call the authored `UnInit`
+member. The live Windows graph calls the teardown at `0x448c9c` and
+`0x448cd9`, and `cRTipManager::AI` reaches this body at `0x448d91`. Android and
+iOS independently preserve `cRTip::AI()` over the same owner fields and
+lifecycle. The spelling change does not alter codegen: focused matching remains
+exact at 51/51 instructions; the shared reference manifest binds the
+owner-qualified teardown relocation, keeping both call operands audit-clean.

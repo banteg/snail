@@ -1,4 +1,4 @@
-// update_tip @ 0x448c40 (thiscall, ret)
+// update_tip / cRTip::AI @ 0x448c40 (thiscall, ret)
 
 #include "border_manager.h"
 #include "frontend_widget.h"
@@ -6,7 +6,7 @@
 #include "tip_manager.h"
 
 
-void Tip::update_tip()
+void cRTip::AI()
 {
     if (g_game->subgame.subgame_pause_gate != 0) {
         widget_main->hide_border_init();
@@ -25,7 +25,7 @@ void Tip::update_tip()
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->players[0].frontend_state = previous_outer_owner;
-            kill_tip_widgets();
+            UnInit();
             g_game->border_manager.unhide_all_borders();
             active = 0;
             return;
@@ -41,7 +41,7 @@ void Tip::update_tip()
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->players[0].frontend_state = previous_outer_owner;
-            kill_tip_widgets();
+            UnInit();
             g_game->border_manager.unhide_all_borders();
             active = 0;
             return;
@@ -52,7 +52,7 @@ void Tip::update_tip()
         float progress = dismiss_step + dismiss_progress;
         dismiss_progress = progress;
         if (progress > 1.0f) {
-            kill_tip_widgets();
+            UnInit();
             active = 0;
         }
     }

@@ -1,14 +1,14 @@
-// uninit_tips @ 0x448d10 (thiscall, ret)
+// uninit_tips / cRTipManager::UnInitTips @ 0x448d10 (thiscall, ret)
 
 #include "tip_manager.h"
 
-void TipManager::uninit_tips()
+void cRTipManager::UnInitTips()
 {
-    Tip* tip = tips;
+    cRTip* tip = tips;
     int count = TIP_SLOT_COUNT;
     do {
         if (tip->active == 1) {
-            tip->kill_tip_widgets();
+            tip->UnInit();
         }
         ++tip;
         --count;

@@ -128,3 +128,24 @@ three trailing non-improving sweeps. `initialize_tip` is formally stalled at
 84.42%, 154/154 instructions, prefix 19, 26 clean references, and the same two
 unaudited global loads. The member reference remains the strongest honest
 source; no volatile reload, dummy use, or raw owner view is reintroduced.
+
+## 2026-08-09 primary cRTipData and cRTip ownership
+
+The matcher now emits this body as
+`cRTip::Init(cRTipData*, int)` and selects the exact VC6 symbol
+`?Init@cRTip@@QAEXPAUcRTipData@@H@Z`. `TipData` and `Tip` remain compatibility
+typedefs for shared callers and analyzer replays.
+
+The live Windows view confirms a void `thiscall` receiver, two 32-bit stack
+formals, and the sole direct call from `cRTipManager::TipNew` at `0x448d6a`.
+Android and iOS independently preserve `cRTip::Init(cRTipData*, bool)` and the
+same 0x14-byte definition / 0x20-byte owner graph; later iOS uses a signed-char
+gate. Windows still loads and compares the full 32-bit second argument, so this
+promotion deliberately keeps `int hide_disable_button` and does not import a
+mobile-width ABI.
+
+This authored-name change is codegen-neutral: focused matching remains 84.42%,
+154/154 instructions, prefix 19, with all 27 currently audited references
+clean. None of the 66 exhausted source-shape variants was reopened. This closes
+the matcher owner spelling only; the rewrite's Zig Tip payload/controller gap
+remains separate work.

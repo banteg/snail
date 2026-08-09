@@ -1,10 +1,10 @@
-// initialize_tip_manager @ 0x448cf0 (thiscall, ret)
+// initialize_tip_manager / cRTipManager::Init @ 0x448cf0 (thiscall, ret)
 
 #include "tip_manager.h"
 
-void TipManager::initialize_tip_manager()
+void cRTipManager::Init()
 {
-    Tip* tip = tips;
+    cRTip* tip = tips;
     int count = TIP_SLOT_COUNT;
     do {
         tip->active = 0;

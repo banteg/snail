@@ -171,7 +171,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
 
         root->subgame.initialize_runtime_pools_and_path_template_bank();
 
-        TipManager* tip_manager = &root->tip_manager;
+        cRTipManager* tip_manager = &root->tip_manager;
         tip_manager->initialize_bod_base();
         tip_manager->vtable = &g_tip_manager_callback_table;
 

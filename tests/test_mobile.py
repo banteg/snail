@@ -2469,6 +2469,144 @@ def test_mobile_cutscene_and_subhover_recover_authored_owners() -> None:
             assert expected_call in source
 
 
+def test_mobile_tip_family_recovers_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "tip_manager.h").read_text(encoding="utf-8")
+
+    for declaration in (
+        "struct cRTipData {",
+        "class cRTip {",
+        "class cRTipManager : public BodBase {",
+        "typedef cRTipData TipData;",
+        "typedef cRTip Tip;",
+        "typedef cRTipManager TipManager;",
+        "void Init(cRTipData* definition, int hide_disable_button);",
+        "cRTip* TipNew(cRTipData* definition, int hide_disable_button);",
+    ):
+        assert declaration in header
+    for retired_declaration in (
+        "initialize_tip(",
+        "kill_tip_widgets(",
+        "update_tip(",
+        "initialize_tip_manager(",
+        "uninit_tips(",
+        "enqueue_tip_message(",
+        "update_tip_manager(",
+    ):
+        assert retired_declaration not in header
+
+    expected_methods = (
+        (
+            "kill_tip_widgets",
+            "cRTip::UnInit()",
+            "cRTip_UnInit",
+            "void cRTip::UnInit()",
+            "?UnInit@cRTip@@QAEXXZ",
+        ),
+        (
+            "initialize_tip",
+            "cRTip::Init(cRTipData*, bool)",
+            "cRTip_Init",
+            "void cRTip::Init(",
+            "?Init@cRTip@@QAEXPAUcRTipData@@H@Z",
+        ),
+        (
+            "update_tip",
+            "cRTip::AI()",
+            "cRTip_AI",
+            "void cRTip::AI()",
+            "?AI@cRTip@@QAEXXZ",
+        ),
+        (
+            "initialize_tip_manager",
+            "cRTipManager::Init()",
+            "cRTipManager_Init",
+            "void cRTipManager::Init()",
+            "?Init@cRTipManager@@QAEXXZ",
+        ),
+        (
+            "uninit_tips",
+            "cRTipManager::UnInitTips()",
+            "cRTipManager_UnInitTips",
+            "void cRTipManager::UnInitTips()",
+            "?UnInitTips@cRTipManager@@QAEXXZ",
+        ),
+        (
+            "enqueue_tip_message",
+            "cRTipManager::TipNew(cRTipData*, bool)",
+            "cRTipManager_TipNew",
+            "cRTip* cRTipManager::TipNew(",
+            "?TipNew@cRTipManager@@QAEPAVcRTip@@PAUcRTipData@@H@Z",
+        ),
+        (
+            "update_tip_manager",
+            "cRTipManager::AI()",
+            "cRTipManager_AI",
+            "void cRTipManager::AI()",
+            "?AI@cRTipManager@@QAEXXZ",
+        ),
+    )
+    for windows_name, mobile_symbol, alias, definition, object_symbol in (
+        expected_methods
+    ):
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    shared_expectations = {
+        "construct_game_runtime": "cRTipManager* tip_manager",
+        "initialize_game_assets_and_world": "tip_manager.Init();",
+        "uninit_tutorial": "tip_manager.UnInitTips();",
+        "update_subgoldy": "tip_manager.TipNew(&row_event.definition, 1);",
+    }
+    for scratch_name, expected in shared_expectations.items():
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert expected in source
+
+    assert "cRTipManager tip_manager;" in (
+        include_root / "game_root.h"
+    ).read_text(encoding="utf-8")
+    assert "cRTipData definition;" in (
+        include_root / "player.h"
+    ).read_text(encoding="utf-8")
+    for spec_name in (
+        "main-call-owner-interactions.json",
+        "main-widget-lifetime-mutations.json",
+    ):
+        spec = (scratch_root / "initialize_tip" / spec_name).read_text(
+            encoding="utf-8"
+        )
+        assert "cRTipData*" in spec
+        assert re.search(r"(?<!cR)\bTipData\*", spec) is None
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

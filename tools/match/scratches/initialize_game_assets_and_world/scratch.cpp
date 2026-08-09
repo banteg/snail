@@ -3073,7 +3073,7 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.selected_level_record_persistent = 0;
     subgame.selected_level_record_active = 0;
 
-    tip_manager.initialize_tip_manager();
+    tip_manager.Init();
     active_bods->add_bod_to_front(&tip_manager);
     g_game->active_bod_list.add_bod_to_front(
         (BodNode*)&star_manager);

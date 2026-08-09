@@ -46,7 +46,7 @@ typedef InputState PlayerControlSource;
 
 struct PlayerRowEventState {
     int id;                         // +0x00
-    TipData definition; // +0x04, authored cRTipData
+    cRTipData definition; // +0x04, authored cRTipData
 };
 typedef char PlayerRowEventState_must_be_0x18[
     (sizeof(PlayerRowEventState) == 0x18) ? 1 : -1];

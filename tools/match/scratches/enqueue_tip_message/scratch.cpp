@@ -1,15 +1,15 @@
-// enqueue_tip_message @ 0x448d30 (thiscall, ret 0x8)
+// enqueue_tip_message / cRTipManager::TipNew @ 0x448d30 (thiscall, ret 0x8)
 
 #include "tip_manager.h"
 
 int report_errorf(char* format, ...);
 
-Tip* TipManager::enqueue_tip_message(
-    TipData* definition,
+cRTip* cRTipManager::TipNew(
+    cRTipData* definition,
     int hide_disable_button)
 {
     int index = 0;
-    Tip* tip;
+    cRTip* tip;
     tip = tips;
 
     while (1) {
@@ -25,7 +25,7 @@ Tip* TipManager::enqueue_tip_message(
         }
     }
 
-    Tip* result = &tips[index];
-    result->initialize_tip(definition, hide_disable_button);
+    cRTip* result = &tips[index];
+    result->Init(definition, hide_disable_button);
     return result;
 }
