@@ -722,3 +722,28 @@ remains at the current honest 90.84%, 693/694-instruction frontier with 69
 clean masks and four unaudited zero operands. Binary Ninja and IDA 9.4 both
 read the inherited body through `shot->bod.bod` and their guarded replays reject
 the retired `primary_body` composition.
+
+## 2026-08-09 shot-slot VFX consumer boundary
+
+The exact shot lifecycle closes the recovered `GolbShot +0x274` identity
+without adding a new read to this function. `cRSubGoldy::Shoot` supplies its
+owned 12-slot bank index to `create_golb`; the three creation kinds store that
+index at `+0x274`. Windows xrefs then show exactly one downstream reader:
+`spawn_golb_trail_sprite`, reached only by this function's kind-zero
+three-sprite trail chain. That exact helper forwards the value to
+`Sprite::object_ref`.
+
+The five impact calls in this body cover homing completion, garbage contact,
+three slug outcomes, and wall contact. Exact `spawn_golb_impact_sprite` does
+not read the slot word or write `Sprite::object_ref`; its standalone effect
+keeps the allocator's `-1` sentinel. Android and iOS independently preserve
+the same trail-versus-impact ownership distinction. Consequently no direct
+`shot_slot_index` local, impact argument, or post-allocation store belongs in
+`update_golb_ai`.
+
+No source or mask changed here. Focused Windows output remains at the current
+91.56%, 693/694-instruction frontier, prefix 9, with 71 clean references and
+no unresolved, mismatched, or unaudited operands. The VFX ownership target is
+closed; reopen this scratch only for a genuinely new Windows lifetime in the
+remaining collision/register regions, not for another launch-vector,
+collision-side, helper-receiver, or shot-slot spelling.

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "shot-slot-impact-boundary",
+      "find": "        int owner = owner_player->player_slot;\n        cRSprite* sprite = g_sprite_manager.New(owner, 0x21, -1, -1);\n        int flags = sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 velocity;\n        Vector3* out_velocity = &sprite->velocity;\n        velocity.x = 0.0f;\n        velocity.y = 0.05f;\n        velocity.z = 0.0f;\n        sprite->flags = flags;\n        sprite->progress = 0.0f;\n        sprite->lifetime = 0.0f;\n        sprite->gravity_step = 0.0f;\n        sprite->progress_step = 0.055555552f;\n        sprite->lifetime_step = 0.83333337f;\n        sprite->size_start = 0.5f;\n        sprite->size_end = 1.0f;\n        *out_velocity = velocity;\n        sprite->position = *position;",
+      "replacements": [
+        {
+          "name": "named-player-slot-and-impact-sprite",
+          "text": "        int player_slot = owner_player->player_slot;\n        cRSprite* impact_sprite = g_sprite_manager.New(player_slot, 0x21, -1, -1);\n        int flags = impact_sprite->flags;\n        flags |= SPRITE_FLAG_GAMEPLAY_OWNED;\n        Vector3 impact_velocity;\n        Vector3* sprite_velocity = &impact_sprite->velocity;\n        impact_velocity.x = 0.0f;\n        impact_velocity.y = 0.05f;\n        impact_velocity.z = 0.0f;\n        impact_sprite->flags = flags;\n        impact_sprite->progress = 0.0f;\n        impact_sprite->lifetime = 0.0f;\n        impact_sprite->gravity_step = 0.0f;\n        impact_sprite->progress_step = 0.055555552f;\n        impact_sprite->lifetime_step = 0.83333337f;\n        impact_sprite->size_start = 0.5f;\n        impact_sprite->size_end = 1.0f;\n        *sprite_velocity = impact_velocity;\n        impact_sprite->position = *position;"
+        }
+      ]
+    }
+  ]
+}

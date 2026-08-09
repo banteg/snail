@@ -29,6 +29,6 @@ cRSprite* GolbShot::spawn_golb_trail_sprite(Vector3* position)
     velocity->x = 0.0f;
     sprite->gravity_step = 0.0f;
     sprite->position = *position;
-    sprite->object_ref = object_ref;
+    sprite->object_ref = (void*)shot_slot_index;
     return sprite;
 }

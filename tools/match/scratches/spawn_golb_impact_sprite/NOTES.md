@@ -136,15 +136,15 @@ overwrite the observed Windows ABI.
 
 ## 2026-07-29 bounded impact-lifetime grid
 
-An incremental two-site sweep followed by the exhaustive three-site run covers
-all 519 unique combinations of allocator-owner lifetime, local velocity
-construction/publication, and zero-field store shape. The grid includes
+The exhaustive three-site receipt covers all 519 unique combinations of
+allocator-owner lifetime, local velocity construction/publication, and
+zero-field store shape. Its first 183 results repeat the earlier incremental
+one- and two-site sweep; both receipts remain in the append-only ledger. The
+grid includes
 ordinary pointer/value borrows, constructor and assignment forms, all
 plausible zero-lane chains, reordered destination publication, and the
 Android field order. None improves the 63.64%, 43/45-instruction baseline;
-306 evaluated results are byte-identical and 396 recorded results regress
-(the second sweep deliberately repeats the first 183 while adding every
-three-site combination).
+207 variants are byte-identical and 312 regress.
 
 The saved-ESI zero carrier and split local-vector copy remain a Windows VC6
 allocation choice, not missing Sprite behavior. Android independently proves
@@ -165,8 +165,36 @@ Y constant, and zero carrier. Deferred owner initialization is covered as
 well. Every variant is byte-identical to the retained 63.64% baseline: VC6
 ignores these storage hints rather than reproducing the native allocation.
 
-The ledger now contains 710 recorded results across three sweeps, representing
-527 unique source variants: 0 improve, 314 are byte-identical, and 396 regress.
-With three consecutive non-improving sweeps, this lane is formally stalled.
 Further progress needs new Windows source provenance for the local-vector copy
 idiom, not more allocator, field-order, storage-class, or ABI spellings.
+
+## 2026-08-09 shot-slot impact boundary and receipt accounting
+
+The recovered `GolbShot +0x274` word does not belong to this effect. Exact
+`create_golb` writes the incoming 12-slot bank index there for all three shot
+kinds, and exact `spawn_golb_trail_sprite` is its only Windows reader. That
+trail helper deliberately forwards the opaque value into `Sprite::object_ref`.
+All five Windows calls to this impact helper originate in `update_golb_ai`,
+but neither the callers nor this callee read `+0x274`. The impact Sprite keeps
+the `-1` object sentinel installed by `cRSpriteManager::New`/`cRSprite::Init`.
+Android and iOS `cRSubGolb::Explode` preserve the same standalone effect
+ownership and likewise provide no object-reference store.
+
+The source now names the proven owners as `player_slot`, `impact_sprite`, and
+`impact_velocity`; it does not invent a shot-slot write. The bounded
+`shot-slot-impact-boundary/named-player-slot-and-impact-sprite` receipt is
+byte-neutral at 63.64%, 43/45 candidate instructions, prefix 3, with all three
+references clean. Its accepted source SHA-256 is
+`c7734f529b9ebabae89ad9216743530146d305982243f5d87449ab00cd0ee0ac`.
+
+The original 183-result prefix sweep is a verified strict subset of the later
+519-result exhaustive sweep, but `experiments.jsonl` is append-only and both
+historical receipts remain intact. With the new targeted result, the ledger
+honestly reports 711 evaluations across four non-improving sweeps: 528 unique
+variants, 183 repeats, 315 neutral evaluations, and 396 degrading evaluations.
+The lane remains formally stalled. Future interaction-only extensions can use
+the mutation runner's `--min-changes` bound (for example,
+`--min-changes 3 --max-changes 3`) to avoid rescheduling the one- and two-site
+prefix without rewriting recorded history. The current source model is not
+stale; its remaining residual is still the Windows VC6 saved-ESI/local-vector
+schedule.

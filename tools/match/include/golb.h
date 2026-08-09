@@ -108,10 +108,7 @@ public:
     float lifetime;              // +0x268
     float lifetime_step;         // +0x26c
     cRSubGame* game;        // +0x270
-    union {
-        void* object_ref;        // +0x274, copied into spawned sprites
-        int shot_slot_index;     // +0x274, index in Goldy's 12-shot bank
-    };
+    int shot_slot_index;         // +0x274, index copied into trail Sprite::object_ref
     union {
         cRSubGoldy* owner_player;  // +0x278
         cRSubGoldy* player;        // +0x278, update_golb_ai bounds/collision view

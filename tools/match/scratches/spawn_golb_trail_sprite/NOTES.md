@@ -11,8 +11,8 @@ Golb family:
 - the player movement flag branch writes two alternate progress-step values,
   then the native source unconditionally overwrites the same lane with
   `0.55555558f`
-- the supplied world position is copied into the sprite and `object_ref` is
-  attached from the projectile
+- the supplied world position is copied into the sprite and the projectile's
+  `shot_slot_index` is forwarded bit-for-bit into `Sprite::object_ref`
 
 The typed `Vector3* velocity` local is required for the native store schedule:
 without it, VC6 delays the progress/size constants until after velocity zeroing
@@ -21,9 +21,9 @@ and lands at 93.62%.
 Type consolidation:
 
 - This scratch now uses the promoted `GolbShot` view in
-  `tools/match/include/golb.h`, sharing `object_ref +0x274` and
-  `owner_player +0x278` with `spawn_golb_smoke`,
-  `spawn_golb_impact_sprite`, and `kill_golb`. The match stays exact.
+  `tools/match/include/golb.h`, sharing `shot_slot_index +0x274` and
+  `owner_player +0x278` with the exact creation and lifecycle helpers. The
+  match stays exact.
 
 ## 2026-07-16 analysis receiver replay
 
@@ -41,3 +41,13 @@ the flags, progress, lifetime, size, velocity, gravity, position, and
 `object_ref` writes through `trail_sprite` instead of raw `void**` word
 indices. This is analysis-only and leaves the exact 47/47 source match
 unchanged.
+
+## 2026-08-09 shot-slot identity closure
+
+Whole-image Windows xrefs prove `GolbShot +0x274` is the 12-entry shot-bank
+index written by `create_golb`; this exact helper is its only reader. The
+explicit cast documents that the integer identity is copied into the trail
+sprite's opaque `object_ref` lane. Impact sprites do not consume the field and
+retain their allocator-installed `-1` sentinel. Removing the stale pointer
+alias from `GolbShot` leaves this helper exact at 47/47 instructions with both
+masked operands clean.
