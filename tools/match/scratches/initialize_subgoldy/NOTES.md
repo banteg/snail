@@ -369,3 +369,26 @@ shared field is named `timer_360_amplitude` and typed `float` without claiming
 an active camera effect. This replaces an integer-shaped unknown with a
 cross-port-owned lane; the zero store remains ordinary source and does not
 coerce code generation.
+
+## 2026-08-09 literal Goldy input-owner closure
+
+The Windows ownership chain is now closed end to end:
+
+- `build_subgame_level` is the sole caller of `initialize_subgoldy` and passes
+  the literal player slot `1` at `0x43838e`;
+- the `0x43adf0..0x43ae25` branch therefore selects
+  `GameRoot::game_inputs[0].input` at root `+0x7c`, whose separately proved
+  `InputState::controller_slot` is the literal slot `0`; and
+- full-image `Player::control_source +0x43c` xrefs contain one unique writer,
+  the store at `0x43ae25`. Every other reference is a consumer in
+  `update_subgame` or `update_subgoldy`.
+
+The scratch now spells the branch-local borrow as `InputState*` directly
+instead of its gameplay compatibility typedef. This is ownership-only and
+remains exact at 279/279 instructions, full prefix, with all 27 operands clean.
+
+Android and iOS `cRSubGoldy::Init(int)` preserve the same player-slot branch:
+slot `1` selects their first root-owned `cRInput` at root `+0x94`, the other
+slot selects the second at root `+0x100`, and the chosen pointer is stored at
+the mobile Goldy field `+0x42c`. These are port-specific offsets corroborating
+the owner and selection rule; no mobile layout is transferred to Windows.

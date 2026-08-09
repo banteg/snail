@@ -30,3 +30,14 @@ The sole Windows caller at `0x40aae6` adjusts the stack and calls
 `update_input` without consuming EAX. Both mobile ports declare the routine
 void. Removing the synthetic `out_pointer_value` return keeps the Windows
 scratch exact at 52/52 instructions with all 16 operands resolved.
+
+## 2026-08-09 slot-0 fire-word transfer
+
+For Goldy's literal controller slot `0`, the first branch reads
+`g_input_controller_slot0.buttons` at `0x4320fc` and writes it directly to
+`GameInput::input.current_buttons`. The source word's full-image xrefs include
+the exact keyboard and controller adapters plus the pointer adapter; among
+those Windows producers, the pointer adapter is the one that ORs
+`INPUT_BUTTON_PRIMARY` (`0x4000`) into slot 0. This exact 52/52 copy therefore
+connects the desktop mouse producer to the cRInput edge fields consumed by
+Goldy's firing gates without inventing an intermediate control state.

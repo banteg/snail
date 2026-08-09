@@ -39,3 +39,14 @@ right-to-left argument LEA schedule and exact-matches the bridge at 100.00%,
 0x70-byte input records at `GameRoot +0x44` and lends each record to the
 matching player through `GamePlayer +0x168`. Promoting the owner name and root
 fields keeps this bridge exact at 30/30 with 3 clean operands.
+
+## 2026-08-09 borrowed gameplay-input bridge
+
+This exact bridge is the producer-side boundary for Goldy's borrowed
+`InputState`: it passes the record's literal `controller_slot` to
+`copy_active_input_controller_state`, writes the sampled button word into
+`input.current_buttons`, and then invokes the edge updater that publishes
+`pressed_buttons` and `previous_buttons`. Goldy slot `1` borrows the first
+root record, whose controller slot is `0`; no separate gameplay-only input
+buffer exists. Focused matching remains exact at 30/30 with all three operands
+clean.

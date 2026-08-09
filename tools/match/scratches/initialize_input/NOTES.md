@@ -11,3 +11,12 @@ Windows happens to leave the shared zero-store temporary in EAX; the sole
 Windows call discards EAX. Those incompatible incidental values prove the
 authored member is side-effect-only. Declaring it `void` and removing the
 synthetic `return 0` preserves the exact Windows instruction stream.
+
+## 2026-08-09 Goldy input-owner corroboration
+
+Root initialization assigns literal controller slots `0` and `1` to the two
+`GameInput::input` subobjects before calling this exact initializer on each.
+The method clears the `pressed_buttons +0x04`, `previous_buttons +0x0c`, and
+current-button lanes later borrowed by Goldy; it does not allocate or return a
+separate gameplay control object. This supports the direct `InputState*`
+ownership at `Player::control_source` while preserving the exact 12/12 stream.

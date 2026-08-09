@@ -159,3 +159,33 @@ control flow preserves the stronger 299/335 fuzzy-byte result, 26-instruction
 prefix, and all 19 aligned references. The lower-clamp call duplication remains
 visible rather than being forced with an invalid jump or artificial side
 effect.
+
+## 2026-08-09 literal firing-input provenance
+
+The helper does not read a device itself: it consumes `shoot_flags` only after
+`cRSubGoldy::AI()` admits a firing edge. Windows now has a complete literal
+input chain for both live callsites:
+
+1. Goldy's sole initializer call uses player slot `1`, binding
+   `Player::control_source +0x43c` to root `game_inputs[0].input`, whose
+   `controller_slot` is `0`.
+2. Exact `update_mouse` passes `read_left_mouse_button_state(0)` as
+   `button_a` to the slot-0 pointer adapter. That adapter publishes
+   `INPUT_BUTTON_PRIMARY` (`0x4000`) into controller slot 0.
+3. Exact `copy_active_input_controller_state` copies that button word to
+   `InputState::current_buttons`; the cRInput edge update publishes the live
+   press at `pressed_buttons +0x04` and held/down state at
+   `previous_buttons +0x0c`.
+4. `update_subgoldy` tests those two fields at `0x43d138` and `0x43d188`, then
+   calls this helper at `0x43d143` and `0x43d19e`, respectively.
+
+This closes the Windows literal device source as mouse-left slot 0, while
+keeping replay-bit firing as a separate already-recovered path. Android and
+iOS `cRSubGoldy::AI()` independently test the chosen cRInput pointer at the
+same relative `+0x04/+0x0c` lanes with `0x4000` immediately before their
+`PlayShootSfx()` calls. The cross-port evidence corroborates InputState edge
+ownership and the consumer relationship, not the desktop mouse ABI.
+
+No clamp/tail source was retried. Focused matching remains the honest 89.13%,
+96/88-instruction result, prefix 26/88, with 19 clean and two candidate-only
+unaudited references.

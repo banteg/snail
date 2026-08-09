@@ -103,3 +103,14 @@ the Win32 clip region, and publish buttons and wheel input. Windows carries the
 extra owned `HWND` needed by that desktop implementation and returns its
 explicit zero; neither platform-specific ABI detail is projected onto Android.
 Focused Windows matching remains exact at 295/295 with all 81 operands clean.
+
+## 2026-08-09 Goldy primary-button source
+
+All three native window/clip branches pass
+`read_left_mouse_button_state(0)` as `button_a` to
+`update_input_controller_pointer_region(0, ...)`. The pointer adapter maps that
+argument to slot-0 `INPUT_BUTTON_PRIMARY` (`0x4000`). Because the sole Goldy
+initializer call uses player slot `1` and therefore borrows controller slot 0,
+this is the literal Windows device source behind its live firing edge and the
+later `PlayShootSfx()` calls. The exact poller remains 295/295 instructions
+with all 81 operands clean.
