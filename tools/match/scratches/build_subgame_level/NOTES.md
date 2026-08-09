@@ -646,3 +646,36 @@ The remaining completion-row delta is therefore a compiler alias/scheduling
 boundary, and the earlier landscape default-arm stack reload remains
 unexplained. No volatile, register qualifier, escaped raw offset, redundant
 arithmetic dependency, or other fakematch was introduced.
+
+## 2026-08-09 completion Banner backlink owner
+
+Binary Ninja and IDA both materialize the second embedded `Banner` together
+with the one embedded `cRSubGoldy` during completion-row setup. Android and iOS
+independently preserve the same Banner-to-Player backlink before the Player
+lifecycle tail. A complete nine-variant owner sweep found one minimal source
+shape that improves Windows codegen: a short `Banner*` borrow used only for the
+completion row's `owner_player` store.
+
+The retained change raises focused matching from 85.59% to **85.95%**, adding
+7.668 weighted matched bytes while preserving the exact `555/555` instruction
+shape, prefix 177, and all `108` masked operands clean. It aligns the target's
+mask, backlink, flags, converted-Z, and alpha sequence; the remaining local
+delta is bounded to VC6 hoisting the row conversion, flag load, and Player
+address ahead of the three zero stores.
+
+The surrounding hypotheses are recorded in the append-only experiment ledger:
+
+- five short landscape-result owners were neutral or regressed; reusing the
+  incoming parameter reduced the candidate to 552 instructions;
+- all nine declaration locations and pointer/reference spellings for the
+  accepted backlink-only borrow are byte-neutral once the owner boundary is
+  present;
+- five persistent Banner borrows spanning `ADDafter` or the position lanes
+  regressed substantially, confirming that the borrow must stay local to the
+  backlink;
+- spelling landscape activation once in each switch arm scored 87.77% but
+  produced 557 instructions. Both mobile bodies retain one activation after
+  the switch, so that candidate is rejected as a source-false score tradeoff.
+
+No volatile or register qualifier, raw offset, dummy relocation, duplicated
+dead store, or other fakematching construct was introduced.

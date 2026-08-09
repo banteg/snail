@@ -12,15 +12,15 @@ tools/match/match.sh \
 
 | Metric | Starter | Final scratch |
 |---|---:|---:|
-| Match | 0.36% | **77.67%** |
+| Match | 0.36% | **85.95%** |
 | Target instructions | 555 | 555 |
-| Candidate instructions | 1 | **560** |
+| Candidate instructions | 1 | **555** |
 | Common prefix | 0 / 555 | **177 / 555** |
-| Masked operands OK | 0 | **101** |
+| Masked operands OK | 0 | **108** |
 | Masked operands unresolved | 0 | **0** |
 | Masked operand mismatches | 0 | **0** |
 
-This is a 77.31 percentage-point improvement over the starter skeleton. The
+This is an 85.59 percentage-point improvement over the starter skeleton. The
 first mismatch is:
 
 ```text
@@ -43,10 +43,12 @@ are resolved to the neighboring
   constant folding.
 - Added parcel-slot setup, optional widget hiding, and the exact track rebuild
   member call.
-- Reconstructed landscape selection, activation, and starfield mirroring,
-  including the default stack reload.
+- Reconstructed landscape selection, activation, and starfield mirroring. The
+  honest default arm retains the input in EDI; native's stack reload remains
+  the first source-shape residual.
 - Added the two early `ADDafter` row-controller insertions and improved their
-  field initialization lifetimes.
+  field initialization lifetimes. A short completion-`Banner` borrow now owns
+  only the Player backlink and recovers the native post-mask store schedule.
 - Added latch resets, mouse release, and Subgoldy initialization.
 - Reconstructed the repeated active-list tail, voice-node attachment, mode-zero
   HUD update, pointer resets, and final subgame-rate calculation.
@@ -65,16 +67,18 @@ are resolved to the neighboring
   register allocation, and code size.
 - Typed or persistent player-pointer variants did not reproduce the target's
   EDI player / EBP `0x200` register assignment.
-- A direct `flags |= 0x80` visible-body update reduced the candidate to 552
-  instructions and scored lower.
+- Direct per-switch-arm landscape activation reached 87.77% but grew to
+  557/555 instructions and contradicts both mobile bodies' single post-switch
+  activation, so it was rejected as a score-only tradeoff.
 - Retesting player-node and membership-flag register hints on the improved row
   setup was still codegen-neutral or worse.
 
 ## Next region to attack
 
-First, recover the two-instruction control-flow size drift that makes the first
-label mismatch appear at target instruction 177. Then revisit the delayed
-`push ebp` in the first row-controller setup and the active-list tail, where
-native preserves the Player pointer in EDI and the `0x200` membership flag in
-EBP. Avoid artificial dead stores or helper extraction: both have already
-regressed code generation.
+First, recover the two-byte random-landscape default-arm drift without
+volatile qualification or duplicated activation arms. Then revisit the
+completion row's pre-mask scheduling: native performs all three zero stores
+before loading flags, converting the row, and materializing the Player owner;
+the accepted candidate now aligns from the mask onward. The active-list tail
+still preserves different EDI/EBP lifetimes, but its owner and inline-call
+spellings are already exhaustively bounded.

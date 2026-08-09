@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "completion-banner-row-borrow",
+      "find": "    banners.slots[1].add_bod_after(track_bod_list);\n\n    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    Banner* completion_banner = &banners.slots[1];\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    completion_banner->owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    banners.slots[1].color.a = 0.999f;",
+      "replacements": [
+        {
+          "name": "persistent-pointer-call-and-backlink",
+          "text": "    Banner* completion_banner = &banners.slots[1];\n    completion_banner->add_bod_after(track_bod_list);\n\n    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    completion_banner->owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    banners.slots[1].color.a = 0.999f;"
+        },
+        {
+          "name": "persistent-reference-call-and-backlink",
+          "text": "    Banner& completion_banner = banners.slots[1];\n    completion_banner.add_bod_after(track_bod_list);\n\n    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    completion_banner.owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    banners.slots[1].color.a = 0.999f;"
+        },
+        {
+          "name": "pointer-zeroes-and-backlink",
+          "text": "    Banner* completion_banner = &banners.slots[1];\n    completion_banner->add_bod_after(track_bod_list);\n\n    *(int*)&completion_banner->position.z = zero;\n    *(int*)&completion_banner->position.y = zero;\n    *(int*)&completion_banner->position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    completion_banner->owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    banners.slots[1].color.a = 0.999f;"
+        },
+        {
+          "name": "pointer-zeroes-flags-and-backlink",
+          "text": "    Banner* completion_banner = &banners.slots[1];\n    completion_banner->add_bod_after(track_bod_list);\n\n    *(int*)&completion_banner->position.z = zero;\n    *(int*)&completion_banner->position.y = zero;\n    *(int*)&completion_banner->position.x = zero;\n    unsigned int completion_flags = completion_banner->list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    completion_banner->owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    banners.slots[1].color.a = 0.999f;"
+        },
+        {
+          "name": "array-cursor-call-and-backlink",
+          "text": "    Banner* completion_banner = banners.slots + 1;\n    completion_banner->add_bod_after(track_bod_list);\n\n    *(int*)&banners.slots[1].position.z = zero;\n    *(int*)&banners.slots[1].position.y = zero;\n    *(int*)&banners.slots[1].position.x = zero;\n    unsigned int completion_flags = banners.slots[1].list_flags;\n    float completion_z = (float)completion_row_start;\n    cRSubGoldy* player_owner = embedded_player();\n    completion_flags &= ~BOD_FLAG_RENDER_ENABLED;\n    completion_banner->owner_player = player_owner;\n    banners.slots[1].list_flags = completion_flags;\n    banners.slots[1].position.z = completion_z;\n    banners.slots[1].color.a = 0.999f;"
+        }
+      ]
+    }
+  ]
+}
