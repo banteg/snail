@@ -319,7 +319,12 @@ Still missing or approximate:
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - the surrounding `cRSubHover` behavior beyond the now-ported ramp-bias spawn lane and `JETPACKTHRUST` pre-warning visual channel; health collection is closed as eight generic SpriteManager records borrowing position from the separate inline `SubHealth` actor
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards, including the exact pre-hit ring bod anchor/layout and child orbit packet
-- the exact input-controller bit source behind `gate_18`; the port now arms the row-event confirm gate from gameplay confirm input and preserves the late completion fast-forward lane, but the original controller-owner split is still not named literally
+- the completion fast-forward owner is closed: `cRCompletion::Init` arms
+  `fast_forward_enabled`, its exact AI clears the latch on summary activation,
+  and late Goldy handoff consumes the selected input's primary-button pressed
+  edge. The fixed player-0 summary route and primary Goldy route both resolve
+  to `game_inputs[0].input`; remaining completion work is timing and widget
+  presentation, not an unnamed controller split.
 - exact parcel flight/runtime-object behavior, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 

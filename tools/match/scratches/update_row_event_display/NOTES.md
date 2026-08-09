@@ -204,6 +204,28 @@ continue roles; their compact layouts are used as semantic evidence only.
 
 Windows `+0x18` is now `fast_forward_enabled`, not a visibility flag. Init
 sets it, this AI clears it when entering the summary, and `update_subgoldy`
-requires it alongside primary input before skipping the completion delay.
+requires it alongside the primary-button press edge before skipping the
+completion delay.
 The canonical BN/IDA owner and tracked decompiles now expose these roles while
 the matcher remains exact at 213/213.
+
+## 2026-08-09 completion fast-forward clear closure
+
+The exact clear at `0x404e2e` ends the early fast-forward window as
+`COMPLETION_STATE_SUMMARY_PENDING` reveals the continue widget and becomes
+`COMPLETION_STATE_SUMMARY_ACTIVE`. The complete Windows field-xref set is one
+arm at `0x404cca`, this clear, and one consumer load at `0x43c89e`. The
+consumer then tests the byte at `Player::control_source +0x05`, the high byte
+of `pressed_buttons +0x04`, for `INPUT_BUTTON_PRIMARY (0x4000)` and writes
+`5.1f` at `0x43c8ba`. This UI controller's separate accept route reads fixed
+`players[0].game_input->input.pressed_buttons` at `0x404ebc`--`0x404ec2` and
+enters state 5 at `0x404ecb`. The primary Goldy's Init alias makes that fixed
+player-0 input and its later `Player::control_source` consumer resolve to the
+same `game_inputs[0].input` record.
+
+Android and iOS preserve the same authored `cRCompletion::{Init,AI}` lifecycle:
+their compact `+0x14` byte is set by Init and cleared by AI at the corresponding
+summary transition, while `cRSubGoldy::AI()` consumes it with selected-input
+`+0x04 & 0x4000`. This closes the lifecycle without importing their offsets.
+Focused Windows matching remains exact at 213/213 instructions with all 38
+operands clean.

@@ -142,6 +142,12 @@ The first arm is already closed by the checked-in CDB capture and static xrefs:
 the damage gauge consumes it immediately as the 5× drain gate. New tracing
 should start after that arm and focus on completion-screen timing.
 
+The separate `Completion +0x18` skip lane is also statically closed. Init arms
+`fast_forward_enabled` at `0x404cca`, exact Completion AI clears it at
+`0x404e2e`, and the sole Goldy consumer at `0x43c89e` requires the selected
+input's current-frame `0x4000` press edge before writing the handoff timer to
+`5.1`. No trace is needed to recover that writer or controller owner.
+
 The port still waits too long before entering the completion screen. Windows appears to initialize the completion screen at cutscene state `5`, not only after a delayed app-side handoff.
 
 ### What to do
@@ -165,7 +171,6 @@ The port still waits too long before entering the completion screen. Windows app
 - At what exact cutscene state does `initialize_completion_screen()` fire?
 - Is state `5` only a one-shot initializer, with states `6/7` being pure blend/hold?
 - Which function owns the `2.0s` voice gate and `5.0s` fade path?
-- On which observed frame does the known confirm-edge path write the handoff timer to `5.1`?
 
 ### Done when
 

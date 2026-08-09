@@ -193,3 +193,20 @@ reordering the mobile fields regresses the prefix and score. The residual is
 therefore limited to VC6's `esi`/`ecx` allocation choice; the semantic field
 order, divisions, clamps, perfect-bonus test, and table ownership remain
 closed.
+
+## 2026-08-09 completion fast-forward producer closure
+
+The final byte store at `0x404cca` is the sole arm of the Windows completion
+fast-forward latch: it writes `1` to `Completion +0x18` after entering
+`COMPLETION_STATE_STAGING_PARCELS`. Exact `cRCompletion::AI` later clears the
+same byte at `0x404e2e`, and `cRSubGoldy::AI` is its only read at `0x43c89e`.
+That consumer pairs the latch with the primary player's current-frame
+`INPUT_BUTTON_PRIMARY (0x4000)` press edge and writes `5.1f` to the handoff
+timer; it is not a widget visibility bit or a held-fire flag.
+
+Android and iOS `cRCompletion::Init(int, bool)` independently set the homologous
+compact-layout byte at `+0x14`, while their `AI()` members clear it at the same
+summary transition and their `cRSubGoldy::AI()` consumers pair it with selected
+input `+0x04 & 0x4000`. No mobile offset is transferred into Windows. This is
+provenance-only; the honest focused result remains 92.81%, 278/278
+instructions, with the documented challenge-register residual.

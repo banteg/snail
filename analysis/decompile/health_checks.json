@@ -22109,6 +22109,7 @@
         "completion->bonus_summary_widget",
         "completion->bonus_icon_widget",
         "completion->fast_forward_enabled = 1",
+        "00404cca        completion->fast_forward_enabled = 1",
         "completion->state = COMPLETION_STATE_STAGING_PARCELS"
       ],
       "forbidden_substrings": [
@@ -22160,7 +22161,10 @@
         "completion->bonus_icon_widget",
         "completion->continue_widget",
         "completion->fast_forward_enabled = 0",
-        "completion->state = COMPLETION_STATE_SUMMARY_ACTIVE"
+        "00404e2e        completion->fast_forward_enabled = 0",
+        "completion->state = COMPLETION_STATE_SUMMARY_ACTIVE",
+        "game_base_2->players[0].game_input->input.pressed_buttons",
+        "completion->state = COMPLETION_STATE_CONTINUE_ACCEPTED"
       ],
       "forbidden_substrings": [
         "completion->widget_a",
@@ -22180,13 +22184,106 @@
         "completion->bonus_icon_widget",
         "completion->continue_widget",
         "completion->fast_forward_enabled = 0;",
-        "completion->state = COMPLETION_STATE_SUMMARY_ACTIVE;"
+        "completion->state = COMPLETION_STATE_SUMMARY_ACTIVE;",
+        "v11->players[0].game_input->input.pressed_buttons & 0x4000",
+        "completion->state = COMPLETION_STATE_CONTINUE_ACCEPTED;"
       ],
       "forbidden_substrings": [
         "completion->widget_a",
         "completion->bonus_widget",
         "completion->widget_d",
         "completion->gate_18"
+      ]
+    },
+    {
+      "name": "bn_completion_fast_forward_consumer_contract",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "0043c89c        if (level_mode_1 == 0 || level_mode_1 == 1)",
+        "0043c8b8        if (game_5->completion.fast_forward_enabled == 1",
+        "player->control_source->control_flags_a:1.b & 0x40",
+        "0043c8ba        player->completion_handoff_timer = 5.0999999f",
+        "0043c8c6        if (game_5->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED)",
+        "0043c8c8        player->completion_handoff_timer = 5.0999999f"
+      ],
+      "forbidden_substrings": [
+        "completion.gate_18",
+        "completion_handoff_timer = 5f"
+      ],
+      "min_counts": {
+        "player->completion_handoff_timer = 5.0999999f": 2
+      }
+    },
+    {
+      "name": "ida_completion_fast_forward_consumer_contract",
+      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "v66->completion.fast_forward_enabled == 1",
+        "player->control_source->control_flags_a & 0x4000",
+        "player->completion_handoff_timer = 5.0999999;",
+        "v66->completion.state == COMPLETION_STATE_CONTINUE_ACCEPTED"
+      ],
+      "forbidden_substrings": [
+        "completion.gate_18",
+        "completion_handoff_timer = 5.0;"
+      ],
+      "min_counts": {
+        "player->completion_handoff_timer = 5.0999999;": 2
+      }
+    },
+    {
+      "name": "bn_primary_controller_slot_seed_contract",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "0041007f        struct InputState* state = &game->game_inputs[0].input",
+        "00410085        int32_t i_2 = 0",
+        "0041009a        state->controller_slot = i_2",
+        "004100a2        state = &state[2]",
+        "004100a8        do while (i_2 s< 2)"
+      ],
+      "forbidden_substrings": [
+        "GameInputOwner",
+        "state->controller_slot = 1"
+      ]
+    },
+    {
+      "name": "ida_primary_controller_slot_seed_contract",
+      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "required_substrings": [
+        "p_input = &game->game_inputs[0].input;",
+        "v303 = 0;",
+        "p_input->controller_slot = v303;",
+        "while ( v303 < 2 );"
+      ],
+      "forbidden_substrings": [
+        "GameInputOwner",
+        "p_input->controller_slot = 1;"
+      ]
+    },
+    {
+      "name": "bn_primary_goldy_input_alias_contract",
+      "artifact": "analysis/decompile/binja/functions/0043a9c0-initialize_subgoldy.c",
+      "required_substrings": [
+        "0043adfe        if (player->player_slot != 1)",
+        "0043ae07        eax_8 = &game_base_1->game_inputs[0].input",
+        "0043ae25        player->control_source = eax_8"
+      ],
+      "forbidden_substrings": [
+        "GameInputOwner",
+        "player->control_source = &game_base_1->game_inputs[1].input"
+      ]
+    },
+    {
+      "name": "ida_primary_goldy_input_alias_contract",
+      "artifact": "analysis/decompile/ida/functions/0043a9c0-initialize_subgoldy.c",
+      "required_substrings": [
+        "if ( player->player_slot != 1 )",
+        "p_input = (PlayerControlSource *)&g_game_base->game_inputs[0].input;",
+        "player->control_source = p_input;"
+      ],
+      "forbidden_substrings": [
+        "GameInputOwner",
+        "player->control_source = &g_game_base->game_inputs[1].input;"
       ]
     },
     {

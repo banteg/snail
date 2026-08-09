@@ -880,7 +880,12 @@ Current practical read:
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`
   - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
   - `update_subgoldy` waits for `COMPLETION_STATE_CONTINUE_ACCEPTED` before allowing the completion handoff timer to finish
-  - the old `game + 0x12727f0` byte is `Completion +0x18` and remains a conservative controller gate: when it is `1` and the control source carries the `0x4000` accept/fire flag, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
+  - the old `game +0x12727f0` byte is `Completion +0x18`, authored as
+    `fast_forward_enabled`: `cRCompletion::Init` arms it at `0x404cca`, exact
+    `cRCompletion::AI` clears it at `0x404e2e` on summary activation, and its
+    only reader at `0x43c89e` combines it with the selected
+    `InputState::pressed_buttons & 0x4000` edge before setting
+    `completion_handoff_timer` to `5.1`
 - the main gameplay collision consumers now line up with the spawn helpers:
   - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and `ParcelManager::slots`
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
@@ -1241,7 +1246,12 @@ Current practical read:
   - the accept input moves `SUMMARY_ACTIVE` to `CONTINUE_ACCEPTED`
 - `register_parcel_delivery` increments `delivered_parcel_count`, awards the parcel score tier, applies the optional final bonus, and moves the final parcel to `SUMMARY_PENDING`
 - `flush_row_event_display` fast-forwards the remaining parcel payout, destroys the owned widgets, copies `display_token` into the global presentation slot, and returns the controller to `INACTIVE`
-- the byte at `+0x18` still contains the old `game + 0x12727f0` gate; it is now tracked as `completion_fast_forward_gate` because one recovered completion-handoff read uses it, but the nonzero writer is still unresolved
+- `fast_forward_enabled` at `+0x18` is a closed lifecycle latch: Init arms it,
+  AI clears it as `SUMMARY_PENDING` becomes `SUMMARY_ACTIVE`, and the sole
+  `cRSubGoldy::AI` consumer requires the current-frame primary-button press
+  edge before writing the `5.1f` handoff timer. The summary UI reads fixed
+  player 0 while Goldy reads its selected `control_source`; for the primary
+  Goldy both resolve to `game_inputs[0].input`.
 
 ## Track Parcel Runtime
 

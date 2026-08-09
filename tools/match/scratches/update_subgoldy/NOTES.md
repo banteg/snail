@@ -146,8 +146,8 @@ scratch additionally pins:
 - **Completion handoff machine**: timer step 1/60; entry resets voice
   gate, clamps vz into [rate*0.17, rate*0.5], `reset_voice_manager`,
   `end_jetpack_hover`, cutscene state 5, sound 0; past start+2.5 decays vz
-  by 2×quantum; voice 8 at t>2; skip lanes (`Completion::fast_forward_enabled`
-  + fire, or
+  by 2×quantum; voice 8 at t>2; skip lanes
+  (`Completion::fast_forward_enabled` + the primary-button press edge, or
   display state 5, level_mode ≤ 1) jump the timer to 5.0999999; t>5 holds
   by re-subtracting the step while display state != 5; then frontend fade
   state 0 → begin fade-out, state 4 → flush display + `complete_subgame`
@@ -1001,4 +1001,53 @@ instruction-for-instruction; their remaining listing displacement comes from
 earlier register scheduling. A fresh focused receipt remains 82.75%,
 2,087/2,087 instructions, prefix 12/2,087, with 315 clean masked operands, no
 unresolved or mismatched references, and one visible unaudited duplicated
+`g_game` load.
+
+## 2026-08-09 completion fast-forward latch closure
+
+The completion skip is a bounded one-shot lifecycle, not a generic held-fire
+gate:
+
+- native `cRCompletion::Init` arms Windows `Completion +0x18` at `0x404cca`;
+- exact `cRCompletion::AI` clears that byte at `0x404e2e` when it reveals the
+  summary and enters `COMPLETION_STATE_SUMMARY_ACTIVE`;
+- this consumer loads the same byte at `0x43c89e`, requires the literal value
+  `1`, then tests byte `Player::control_source +0x05` with mask `0x40` at
+  `0x43c8b4`; that byte test is the little-endian high byte of
+  `InputState::pressed_buttons +0x04 & INPUT_BUTTON_PRIMARY (0x4000)`, not the
+  held/down field at `+0x0c`; and
+- the accepted edge writes `0x40a33333` (`5.1f`) to
+  `completion_handoff_timer` at `0x43c8ba`. The independent
+  `COMPLETION_STATE_CONTINUE_ACCEPTED` lane writes the same value at
+  `0x43c8c8`.
+
+The player/controller alias is also closed. `build_subgame_level` passes the
+sole Goldy initializer argument `1` at `0x43838e`; `initialize_subgoldy`
+therefore stores `&GameRoot::game_inputs[0].input` into
+`Player::control_source` at `0x43ae25`. The root input loop starts its index at
+zero and writes it to the first record's `InputState::controller_slot` at
+`0x41009a`. Exact `cRGameInput::AI` samples that controller word into
+`current_buttons`, and native `cRInput::Update` derives the `pressed_buttons`
+edge consumed here. Thus the shipped primary player uses controller slot 0;
+there is no additional completion-only controller or input buffer.
+
+The two completion consumers reach that input through different, deliberate
+owners. The summary widget's accept route reads fixed
+`players[0].game_input->input.pressed_buttons` at `0x404ebc`--`0x404ec2` and
+enters state 5 at `0x404ecb`; this late Goldy handoff reads the owning
+`Player::control_source` at `0x43c8ae`. For the sole primary Goldy, the Init
+alias above makes both paths resolve to `game_inputs[0].input`.
+
+Android and iOS independently preserve the same contract despite their
+compact layouts: `cRCompletion::Init(int, bool)` sets its skip byte at compact
+`+0x14`, `cRCompletion::AI()` clears it on summary entry, and
+`cRSubGoldy::AI()` requires that byte plus the selected input's `+0x04 &
+0x4000` before assigning `0x40a33333`. Both mobile
+`cRSubGoldy::Init(int)` bodies also map player slot `1` to the first root input
+at root `+0x94`. These mobile offsets corroborate lifecycle and ownership only;
+Windows remains authoritative for `Completion +0x18` and Player layout.
+
+No source-shape retry was made: this closes provenance around an already
+recovered partial. The focused result remains honestly 82.75%, 2,087/2,087
+instructions, with 315 clean masked operands and the one documented duplicated
 `g_game` load.
