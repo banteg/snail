@@ -12,6 +12,8 @@ float sine(float radians);
 
 void SubHealth::update_track_health_pickup()
 {
+    // This SubHealth carries the pickup BOD/state. Its sprite member is the
+    // borrowed SpriteManager visual, not a particle-BOD owner.
     int zero = 0;
 
     if (owner_game->subgame_pause_gate != zero) {

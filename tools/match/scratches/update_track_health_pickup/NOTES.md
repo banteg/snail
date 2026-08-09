@@ -146,3 +146,20 @@ distinguishes inactive, live, and teardown-pending records; collision is the
 only recovered producer of the teardown state, while culling and teardown both
 return the slot to inactive. Matching remains exact at 128/128 instructions
 with all 21 operands clean.
+
+## 2026-08-09 lifecycle-owner closure
+
+The exact updater keeps all BOD and lifecycle work on `SubHealth` itself. It
+reads inherited `BodBase::position`, removes the same zero-offset node from
+`GameRoot::active_bod_list`, returns `state` to inactive, and kills the one
+borrowed pickup visual in `SubHealth::sprite`. The bob path likewise writes
+only that pickup sprite's y position from the actor's persistent BOD anchor.
+
+No collection-particle record is retained by `SubHealth`, and this updater has
+no particle-pool or particle-BOD xref. Android `cRSubHealth::AI @ 0x6e76c` and
+iOS `@ 0x31324` preserve the same actor/list removal followed by
+`cRSprite::Kill`. The collection burst is therefore an independent set of
+generic SpriteManager records, not a second BOD-backed health actor family.
+
+The clarifying source comment is codegen-neutral: focused matching remains
+exact at 128/128 with all 21 references clean.

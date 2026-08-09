@@ -39,12 +39,14 @@ void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
     BodNode* node = &slot->health_pickups[0];
     g_game->active_bod_list.add_bod(node);
 
-    cRSprite* sprite =
+    // The cRSubGame slot owns the inline SubHealth actor and its BOD/lifecycle.
+    // SpriteManager owns the visual; the slot retains a borrowed pointer.
+    cRSprite* pickup_sprite =
         g_sprite_manager.New(player->player_slot, 57, -1, -1);
-    slot->health_pickups[0].sprite = sprite;
-    unsigned int flags = sprite->flags;
+    slot->health_pickups[0].sprite = pickup_sprite;
+    unsigned int flags = pickup_sprite->flags;
     flags |= SPRITE_FLAG_GAMEPLAY_OWNED;
-    sprite->flags = flags;
+    pickup_sprite->flags = flags;
     slot->health_pickups[0].sprite->gravity_step = 0.0f;
     slot->health_pickups[0].sprite->progress = 0.0f;
     slot->health_pickups[0].sprite->progress_step = 0.0f;

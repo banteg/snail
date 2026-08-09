@@ -281,3 +281,26 @@ addition instead selects a different temporary family and regresses to
 45.24%–50.00%. The three-sweep non-improvement streak formally stalls the
 target at 122/122 instructions with all seven references clean. Do not force
 the last swap with a dummy dependency or raw register-shaped alias.
+
+## 2026-08-09 pickup actor / sprite boundary
+
+This allocator initializes the persistent half of the health-pickup contract.
+The selected record remains owned by `cRSubGame::health_pickups[8]`; its zero-offset
+inherited `BodBase` receives the staged track position and is linked into
+`GameRoot::active_bod_list`. The separately allocated sprite id `57` is only
+the pickup visual. `SubHealth::sprite @ +0x64` borrows the
+`g_sprite_manager` record so the spawner can seed it and the updater can bob
+or kill it.
+
+The full-image split is exact: this function is the only producer of the
+pickup sprite field (`0x43d7c5`) and the pickup's active state (`0x43d6ff`),
+while `health_collect_particles` later reads only the borrowed sprite
+position. Android `cRSubGame::AddHealth @ 0x6e250` independently inserts the
+inline `cRSubHealth` BOD through `cLinkedList<cRBod>::Add`, allocates one
+ordinary pickup sprite, and stores that pointer in the actor. It defines no
+separate particle BOD or particle pool.
+
+The local source name is now `pickup_sprite` to keep that visual distinct
+from the eight collection particles. This is byte-neutral at 99.18%, 122/122
+instructions, prefix 16, with all seven references clean. The bounded
+spawner ledger remains formally stalled; no source-shape sweep was reopened.

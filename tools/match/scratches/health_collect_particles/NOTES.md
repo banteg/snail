@@ -126,3 +126,32 @@ borrowed `SubHealth::sprite`, complete `Sprite` particle fields, and
 `RuntimeConfig::render_flags`. IDA independently renders the same owner chain.
 No matcher source or masks changed; the function remains exact at 104/104 with
 all 13 audited operands clean.
+
+## 2026-08-09 particle-owner closure
+
+There is no dedicated health-particle BOD owner. The exact Windows reference
+graph contains one `allocate_sprite @ 0x44e2a0` call at `0x43a043`, inside the
+eight-iteration loop, and no active-list, `BodBase`, render-Object, or BOD
+allocator reference. The returned `cRSprite*` is initialized only through the
+ordinary shared sprite fields and left under `g_sprite_manager` lifetime.
+
+The `SubHealth*` argument contributes exactly one borrowed value:
+`SubHealth::sprite @ +0x64` is loaded at `0x43a0c2`, and that sprite's
+`position @ +0x48` seeds each burst particle. The helper never reads or writes
+the pickup's inherited `BodBase`, state, list links, source cell, or bobbing
+fields. Its sole caller, `handle_subgoldy_collisions @ 0x445455`, first marks
+the same inline pickup `TRACK_PICKUP_STATE_TEARDOWN_PENDING`, then calls this
+helper while the pickup sprite is still live; `SubHealth::AI()` performs the
+later actor/list teardown.
+
+Android `cRSubGoldy::HealthCollect(cRSubHealth*) @ 0x70178` and iOS
+`@ 0x181e4` independently preserve the same split: each allocates eight
+ordinary `cRSpriteManager::New` records, copies position through the borrowed
+`cRSubHealth::sprite`, and touches no pickup BOD/list owner. Their texture id
+`0x74` is platform-specific; Windows uses `0x80`.
+
+The source now calls each new record `particle` and the borrowed input
+`pickup_sprite_position`. This is semantic-only and remains exact at 104/104
+with all 13 references clean. Any remaining request to recover a dedicated
+health-particle BOD owner is therefore stale; the real owner boundary is the
+generic sprite manager plus the separate inline `SubHealth` actor.
