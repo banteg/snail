@@ -41,6 +41,12 @@ reference audit.
   Android, iOS, and the Windows `esp+0x24..0x2c` lane agree on that lifetime;
   the change raises the final result from 84.40% to 85.88% and eliminates all
   mismatches in the three pickup regions.
+- Closed `Player +0x2d8` as a sticky falling/slug-fall latch. Its only Windows
+  writes are the zero initializer at `0x43a9f0` and this function's first-hit
+  set at `0x4450d3`; all other whole-image references are consumers. Android
+  and iOS preserve the same player-relative zero-init/first-hit-set lifecycle.
+  The scratch keeps the shared-header spelling `control_override_active` until
+  a repository-wide ownership rename can update every consumer together.
 - Recovered the parcel count update as
   `int collected = ++parcels_collected`, matching the mobile expression and
   restoring Windows' long-lived `ebx` result.

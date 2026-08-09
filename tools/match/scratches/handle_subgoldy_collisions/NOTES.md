@@ -818,3 +818,42 @@ Focused validation remains 85.88%, 673/673 instructions, prefix 18, native
 encodes every recovered write and ordering edge, no score-neutral spelling or
 new mutation sweep is warranted. The fourteen-sweep, 100-variant vector lane
 remains formally stalled until genuinely new source provenance appears.
+
+## 2026-08-09 falling-latch producer closure
+
+Whole-image Binary Ninja field xrefs and an independent disassembly search
+close the Windows producer set for `Player +0x2d8`. There are exactly two
+writes:
+
+- `initialize_subgoldy` at `0x43a9f0` stores `bl` after the function-wide
+  `xor ebx, ebx` at `0x43a9c9`, so initialization always writes zero; and
+- this collision body at `0x4450d3` writes one on the first accepted slug hit.
+
+Every other indexed field reference is a read: seven in `update_subgoldy`
+(`0x43b38a`, `0x43b8bc`, `0x43bd09`, `0x43c2a5`, `0x43ca50`, `0x43cec2`, and
+`0x43d09e`), one global-base read in `apply_damage_gauge_delta` at `0x4414b6`,
+one owner read in `update_snail_presentation` at `0x442e09`, and the two
+collision reads at `0x444d15` and `0x4450bf`. There are no data references and
+no startup or alternate nonzero producer.
+
+Both mobile builds preserve the same player-relative lifecycle. Android
+`cRSubGoldy::Init()` clears offset `+704`, while its collision body sets that
+byte immediately before `cRSubGoldy::FallingInit()`; its AI only reads the
+field. iOS clears the corresponding `+0x2c0` byte with the known-zero `r10` at
+`0x1e1b4` and sets it to one in collision at `0x26e44`. The apparent iOS AI
+store through `Game +0x2c0` is an unrelated root-state field, not the Player
+byte.
+
+The field is therefore a sticky falling/slug-fall latch for the lifetime of an
+initialized Player, rather than a transient generic control override. Once the
+first slug sets it, later slug slots in that same already-entered sweep take the
+repeat-hit z-knockback branch. On later frames the collision entry gate skips
+the wrapped salt/sub-lazer/garbage/slug band entirely. The remaining consumers
+disable ordinary steering, motion, shooting, hit-animation, and idle-animation
+paths during the falling transition. The scratch retains the shared-header
+spelling `control_override_active`; a repository-wide rename to an authored
+falling name belongs in a separate shared ownership slice.
+
+This closure is score-neutral. Focused validation remains 85.88%, 673/673,
+prefix 18, frame `0x74`, and 89 clean references; the stalled vector grids were
+not reopened.
