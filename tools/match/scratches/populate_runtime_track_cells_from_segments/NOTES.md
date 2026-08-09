@@ -9,7 +9,7 @@ on.
 Promoted to a matcher scratch on 2026-06-13. Current result after the
 glyph-dispatch, authored-row, attachment, clear-loop, segment-scoped row
 builder, direct runtime-row, segment-extension, ring/lane, switch-field
-ownership, and producer-backed trampoline cadence slices: 75.79%, 1254/1245
+ownership, and producer-backed trampoline cadence slices: 75.74%, 1253/1245
 candidate instructions, with a
 76-instruction exact prefix
 (`uv run snail match scratch
@@ -1493,7 +1493,7 @@ other non-15 path. Windows exposes the same shape at
 `0x436a13..0x436ab3`: the equal-15 path writes tile `0x16` and exits, while the
 non-15 fallback performs the second low-byte clear before writing tile `0x16`.
 
-The retained source now expresses that producer control directly as
+At the cadence acceptance receipt, the retained source expressed that producer control directly as
 `if (counter == 15) ... else if (counter == 8) ... else ...`. This expands the
 candidate by five instructions and lowers the whole-function fuzzy score from
 **76.58%** to **75.79%** (`3861.36 -> 3821.35/5042` weighted bytes), while
@@ -1506,6 +1506,11 @@ remain unchanged.
 
 The exact probe receipt is recorded as `trampoline-mobile-cadence-shape`
 (source SHA-256 `bf686f00753c5f454011d121aa64f0187af85ba8736a201062b75cc6b664cece`).
+The 2026-08-09 canonical global replay compiles that unchanged scratch SHA at
+**75.74%**, **1253/1245** instructions, with the same 76-instruction prefix and
+163 clean / 0 mismatch / 4 unaudited references. This is a one-instruction
+metric drift outside the retained source; the producer-backed audit correction
+remains intact and the append-only historical probe receipt is unchanged.
 Explicit cached-flag and duplicated early-tile spellings were discarded: they
 either lost the native full-word `EBP` mask flow or collapsed the exact prefix.
 The ledger now contains 139 records: 132 mutation sweeps and 7 focused probes.
