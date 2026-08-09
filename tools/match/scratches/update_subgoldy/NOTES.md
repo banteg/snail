@@ -903,3 +903,59 @@ source remains 82.75%, 2,087/2,087 instructions, prefix 12/2,087, with 315
 clean references and one explicitly unaudited duplicated `g_game` load. No
 longer-lived root owner or conditional-store rewrite is kept merely to make
 the audit count look cleaner.
+
+## 2026-08-09 attachment-exit retirement closure
+
+The four live direct clears of `attachment_exit_pending` are retirement
+events, not a progress-expiry state machine. They preserve the established
+`if (!pending) { floor } else { trampoline }` polarity and split into four
+distinct authored outcomes:
+
+- `0x43bf6f` retires the exit after entering the ordinary occupied,
+  non-trampoline grounded envelope. The pending byte is cleared even when
+  upward velocity prevents the accompanying y/velocity snap.
+- `0x43c06d` is the same-tick cancellation of the open-edge arm at
+  `0x43c008`: when falling is disabled (or `g_cheat_state.flags & 0x2` is set)
+  and y is below `0.49`, it squidges, zeros vertical velocity, restores y to
+  `0.49`, and retires the newly armed exit.
+- `0x43c3ea` retires a pending exit only after the trampoline cell's authored
+  `anchor_y +/- 0.49` envelope accepts the player; the same branch launches
+  vertical velocity, sets `trampoline_bounce_active`, and plays SFX 41.
+- `0x43ce75` makes active `SubHover` authoritative over the exit lifecycle. It
+  clears pending after the low-hover vertical response and before the exit
+  progress/voice-gate consumer.
+
+Windows field references show one fifth direct clear at `0x43bcb3`, but that
+branch is headed by `boost_one_tick`, whose complete field-xref set has no
+nonzero producer in the shipped binary. Android and iOS retain the same five
+source branches, independently confirming the four live retirement families
+without making the dead Windows boost lane live.
+
+Retirement deliberately clears only the pending byte. It does not clear the
+anchor, progress, gates, or either carryover lane; exact
+`begin_post_follow_carryover` overwrites all of the live lifecycle state on the
+next arm. In particular, the former `post_follow_value_b` at Player `+0x430`
+is now bounded as write-only carryover in the shipped Windows program:
+
+- the type-field reference set contains only `0x43af78` (copy the live
+  template's installed-heading dword) and `0x43af8c` (zero it when follow is
+  inactive);
+- a whole-image constant search for displacement `0x430` finds those two
+  member stores and no Player-field load, while `+0x42c` independently has
+  the expected `update_cameraman` consumer at `0x4465bb`;
+- Android's exact `cRSubGoldy::FallingInit()` and the retained iOS inlined
+  carryover paths corroborate the paired producer: they copy the same template
+  dword into their layout-relative second lane, or zero it when follow is
+  inactive. Their raw numeric offsets are not used as exhaustive cross-port
+  consumer evidence.
+
+This closes the shipped Windows consumer search, not a whole-program claim for
+the differently laid-out mobile binaries. Preserve the second value as
+captured state when tracing or comparing ports, but do not synthesize common
+gameplay from it without new consumer evidence. No source-shape rewrite was
+retained because the four native clear sequences already compile locally
+instruction-for-instruction; their remaining listing displacement comes from
+earlier register scheduling. A fresh focused receipt remains 82.75%,
+2,087/2,087 instructions, prefix 12/2,087, with 315 clean masked operands, no
+unresolved or mismatched references, and one visible unaudited duplicated
+`g_game` load.
