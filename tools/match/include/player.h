@@ -279,7 +279,8 @@ public:
     Vector3 cached_camera_target_world;     // +0x2964, produced by update_subgoldy camera block
     int steering_mode_selector;             // +0x2970
     char unknown_2974[0x2980 - 0x2974];
-    float interaction_max_z;                // +0x2980
+    // Legacy spelling: runtime consumers treat this as the trailing/lower edge.
+    float interaction_max_z;                // +0x2980, active-window minimum z
     Snail presentation;                       // +0x2984, authored cRSnail
     int parcels_collected;                 // +0x4338
     char unknown_433c[0x4340 - 0x433c];

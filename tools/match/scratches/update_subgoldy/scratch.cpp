@@ -939,12 +939,15 @@ steering_stored:
     g_game->backdrop.set_backdrop_zoom(backdrop_zoom);
 
     cRSubGame* horizon_game = game;
-    float interaction_limit = (float)horizon_game->completion_row_start - 30.0f;
-    float interaction_near = transform.position.z - 8.0f;
-    if (interaction_limit >= interaction_near)
-        interaction_limit = interaction_near;
+    // This is the trailing/lower edge of the shared active track window;
+    // readers retain or process objects while their z is at or above it.
+    float active_window_min_z =
+        (float)horizon_game->completion_row_start - 30.0f;
+    float player_trailing_min_z = transform.position.z - 8.0f;
+    if (active_window_min_z >= player_trailing_min_z)
+        active_window_min_z = player_trailing_min_z;
     SubHoverState hover_state = sub_hover.state;
-    interaction_max_z = interaction_limit;
+    interaction_max_z = active_window_min_z;
     if (hover_state == SUB_HOVER_STATE_ACTIVE) {
         if (transform.position.y < 1.0f) {
             velocity.y = velocity.y * 0.89999998f;

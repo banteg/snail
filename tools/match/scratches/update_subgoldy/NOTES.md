@@ -8,6 +8,50 @@ emitters) is pinned. Dual-mobile evidence now aligns the native follow scalar,
 both cruise-window speed snapshots, and the complete Windows wall-probe value
 copy.
 
+## 2026-08-09 active-window lower-bound closure
+
+Windows `0x43cdfc..0x43ce29` computes one exact per-tick plane and stores it at
+`Player +0x2980`:
+
+```text
+active_window_min_z = min(completion_row_start - 30, player_z - 8)
+```
+
+The live Binary Ninja field index contains 23 unique instruction sites: the
+initializer and this producer, plus 21 reads across 15 functions. Every reader
+uses `+0x2980` as a lower/trailing boundary, not a maximum:
+
+- health, speedup, jetpack, ring, garbage, slug, salt, and ordinary `cRSubLoc`
+  objects retire after their z falls below the plane;
+- `SubLazer` runs its floor/attachment collision probes only at or above it,
+  and Golb shots run contact sweeps only inside
+  `[active_window_min_z, player_z + 46]`;
+- fringe objects, cached BOD rows, and row models recycle behind the same
+  plane, with their authored extent adjustments;
+- parcels keep an extra ten-row teardown margin; path-entry `cRSubLoc` records
+  keep their template span plus five rows;
+- `update_subgame` derives the forward runtime-row scan end as
+  `(int)active_window_min_z + 46`.
+
+Android `cRSubGoldy::AI()` at `0x7ac54` and iOS at `0x277f8` independently
+retain the same player-relative `player_z - 8` minimum and a completion-side
+cap. The mobile decompilations spell that cap as
+`VectorSignedToFloat(route_endpoint) + 30`, rather than the Windows integer
+`completion_row_start - 30`; this proves the two-bound lifetime but does not
+justify importing either platform's route representation into the other.
+Their corresponding pickup, ring, Golb, garbage, and slug readers use the
+stored player field with the same alive/cull polarity.
+
+Ownership is therefore correct: this is authored `cRSubGoldy`/`Player` state,
+produced by its AI and borrowed by the track runtime. The shared name
+`interaction_max_z` is stale and polarity-inverted; `active_window_min_z`
+describes both lifecycle and interaction consumers. The producer now uses that
+semantic local name, while the shared header retains its legacy field spelling
+and documents the proven lower-bound polarity. The rename is codegen-neutral
+at 82.75%, 2,087/2,087
+instructions, prefix 12/2,087, with 315 clean masked operands, no unresolved
+or mismatched operands, and the same one visible unaudited `g_game` load.
+
 ## 2026-07-27 cruise and wall-value lifetime pass
 
 Both mobile bodies retain two instances of the completion/cruise clamp with
