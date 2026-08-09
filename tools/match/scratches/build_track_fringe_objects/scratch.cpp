@@ -82,10 +82,13 @@ void cRSubGame::FringeEdgeTrack()
                         else
                             edge_b = (TestLoc(cell, -1, 0) != 1) + 1;
 
-                        Fringe* object =
+                        // The cell slot is a transient borrowed handle. The
+                        // render-cache pass consumes and clears it after this
+                        // builder completes.
+                        Fringe* front_fringe =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
-                        cell->fringe_front = object;
-                        object->SetObject(
+                        cell->fringe_front = front_fringe;
+                        front_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
                         cell->fringe_front->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_front->position = cell->position;
@@ -106,10 +109,10 @@ void cRSubGame::FringeEdgeTrack()
                         else
                             edge_b = (TestLoc(cell, 0, 1) != 1) + 1;
 
-                        Fringe* object =
+                        Fringe* right_fringe =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
-                        cell->fringe_right = object;
-                        object->SetObject(
+                        cell->fringe_right = right_fringe;
+                        right_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
                         cell->fringe_right->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_right->position = cell->position;
@@ -130,10 +133,10 @@ void cRSubGame::FringeEdgeTrack()
                         else
                             edge_b = (TestLoc(cell, 0, -1) != 1) + 1;
 
-                        Fringe* object =
+                        Fringe* left_fringe =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
-                        cell->fringe_left = object;
-                        object->SetObject(
+                        cell->fringe_left = left_fringe;
+                        left_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
                         cell->fringe_left->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_left->position = cell->position;
@@ -154,10 +157,10 @@ void cRSubGame::FringeEdgeTrack()
                         else
                             edge_b = (TestLoc(cell, 1, 0) != 1) + 1;
 
-                        Fringe* object =
+                        Fringe* back_fringe =
                             g_game->subgame.fringe_manager.allocate_fringe_object();
-                        cell->fringe_back = object;
-                        object->SetObject(
+                        cell->fringe_back = back_fringe;
+                        back_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));
                         cell->fringe_back->list_flags |= BOD_FLAG_RENDER_ENABLED;
                         cell->fringe_back->position = cell->position;

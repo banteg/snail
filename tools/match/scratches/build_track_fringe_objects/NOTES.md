@@ -286,3 +286,61 @@ seventeen regress. The experiment ledger formally stalls this lane at 60.39%,
 492/495 instructions, prefix 3/495, with 49 clean references and four
 target-only singleton loads. No global receiver or register-shaped family
 lifetime is retained merely to reduce the audit count.
+
+## 2026-08-09 full-image consumer closure
+
+The native xref graph closes the topology-to-cache handoff without reopening
+the stalled receiver lane:
+
+- `BuildLevel()` clears `cRSubLoc::open_edge_mask @ +0x3d` at `0x436133`;
+  `select_track_tile_edge_variants @ 0x435a80` is its sole non-reset topology
+  producer. It clears the byte again, probes the four adjacent
+  cells, and writes previous-row `0x01`, next-row `0x02`, next-lane `0x04`,
+  and previous-lane `0x08`. `FringeEdgeTrack` reads that product at
+  `0x434c26`; the only later full-image read is `update_subgoldy @ 0x43bfb4`,
+  where bits `0x01/0x02` select the grounded re-snap thresholds. Neither
+  `WarnTrack` nor `CondenseTrack` writes or consumes this byte.
+- `tile_id @ +0x3c` remains the authored-cell identity built by
+  `cRSubGame::BuildLevel()`. This builder reads it at `0x434c59` only to
+  override fringe families `5..7` for ramps and suppress tile `0x20`.
+  The fringe cache does not reclassify by tile id; it consumes the directional
+  render objects already selected here.
+- `SubRow::flags & 0x04` is copied from the active segment's row metadata by
+  `BuildLevel()` at `0x4365a4..0x4365b5`. This builder tests it at
+  `0x434c9b` before allocation and again at `0x4350f0` to clear render bit
+  `0x20` on any surviving directional fringe. It is a row-wide render
+  suppressor, not a `cRSubLoc::lane_and_flags` bit.
+
+The four `cRSubLoc::fringe_*` slots are transient borrowed staging handles,
+not owners of their pooled `Fringe` records:
+
+- `build_track_render_caches @ 0x433220` walks all four pointers from
+  `fringe_front @ +0x44` through `fringe_back @ +0x50` at
+  `0x4332ff..0x43338b`. Each non-null record contributes its selected Object
+  and cell position to cache family `4` (`"Fringe"`), after which the cache
+  builder clears that exact cell slot at `0x433378`. The embedded
+  `FringeManager` remains the backing owner; `SegmentCache` owns the baked
+  buffers and cache BODs.
+- `update_subgame @ 0x43924c` has the complementary four-slot live path: any
+  non-null handle that survives is borrowed into
+  `fringe_attachment_list_head` and recolored from the current skirt color.
+  `remove_sub_loc @ 0x439cc6` likewise walks four slots and detaches any
+  listed fringe. These are defensive/live consumers of retained handles; the
+  canonical Windows `GenerateLevel()` pipeline calls the cache builder
+  immediately after `FringeEdgeTrack`, so initial static fringe slots are
+  consumed and nulled before gameplay scanning.
+
+Android `cRSubGame::FringeEdgeTrack @ 0x655bc` independently preserves the
+same contract with its platform layout: tile byte `+0x30`, edge byte `+0x31`,
+four adjacent pointer slots `+0x38..+0x44`, and row flag `0x04`. It selects
+pooled `cRFringeManager::GetFringe()` results into those slots and clears all
+four for suppressed rows. Android `GenerateLevel()` names the topology pass
+before it as `SmoothTrack`, followed by `WarnTrack`, `SlideSmoothTrack`,
+`CondenseTrack`, and `DeSaltTrack`; only the `SmoothTrack` product feeds the
+edge byte.
+
+The matcher source now names the four allocation results by direction and
+documents the transient slot handoff. This is semantic-only: focused matching
+remains at the honest 60.39%, 492/495 instructions, prefix 3, with 49 clean
+and four unaudited singleton-load references. No receiver, register, or cursor
+variant was retried.
