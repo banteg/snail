@@ -6,13 +6,13 @@
 #include "snail_skin.h"
 
 
-void Invincible::update_invincible_shell()
+void cRInvincible::AI()
 {
     switch (state) {
     case INVINCIBLE_STATE_INACTIVE:
         if ((g_game->subgame.player.shoot_flags
                 & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) != 0) {
-            start_invincible_shell();
+            Start();
         } else {
             g_game->subgame.player.presentation.invincible_shell.list_flags &=
                 0xffffffdf;

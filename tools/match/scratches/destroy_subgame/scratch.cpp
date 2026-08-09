@@ -83,7 +83,7 @@ void cRSubGame::UnInit()
     if (subgame_state != 1) {
         DWORD level_mode = this->level_mode;
         if (level_mode == 0 || level_mode == 1)
-            completion.flush_row_event_display();
+            completion.UnInit();
 
         BodNode** sub_lazer_next = &sub_lazers.slots[0].list_next;
         for (int i = 0;

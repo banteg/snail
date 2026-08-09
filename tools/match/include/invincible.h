@@ -12,11 +12,11 @@ enum InvincibleState {
     INVINCIBLE_STATE_FADING_OUT = 3,
 };
 
-class Invincible : public RenderableBod {
+class cRInvincible : public RenderableBod {
 public:
-    void initialize_invincible_shell(); // @ 0x444ac0, cRInvincible::Init
-    void start_invincible_shell(); // @ 0x444ae0, cRInvincible::Start
-    void update_invincible_shell(); // @ 0x444b50, cRInvincible::AI
+    void Init(); // @ 0x444ac0
+    void Start(); // @ 0x444ae0
+    void AI(); // @ 0x444b50
 
     // The complete inherited renderable BOD is linked by build_subgame_level
     // and owns the invincible shell render object. This child remains embedded
@@ -31,6 +31,11 @@ public:
     char unknown_94[0x98 - 0x94];
 };
 
-typedef char Invincible_must_be_0x98[(sizeof(Invincible) == 0x98) ? 1 : -1];
+typedef cRInvincible Invincible;
+
+typedef char cRInvincible_must_be_0x98[
+    (sizeof(cRInvincible) == 0x98) ? 1 : -1];
+typedef char Invincible_must_be_0x98[
+    (sizeof(Invincible) == 0x98) ? 1 : -1];
 
 #endif

@@ -1054,6 +1054,28 @@ def test_cpp_reference_alias_does_not_capture_another_method_owner() -> None:
     )
 
 
+def test_owner_qualified_controller_aliases_do_not_collide() -> None:
+    symbols = tuple(
+        ReferenceSymbol(address=address, name=name, kind="function", aliases=(alias,))
+        for address, name, alias in (
+            (0x404920, "initialize_completion_screen", "?Init@cRCompletion@@QAEXHE@Z"),
+            (0x440FA0, "initialize_damage_gauge", "?Init@cRDamageGuage@@QAEXXZ"),
+            (0x444AC0, "initialize_invincible_shell", "?Init@cRInvincible@@QAEXXZ"),
+            (0x404CF0, "update_row_event_display", "?AI@cRCompletion@@QAEXXZ"),
+            (0x440FD0, "update_damage_gauge", "?AI@cRDamageGuage@@QAEXXZ"),
+            (0x444B50, "update_invincible_shell", "?AI@cRInvincible@@QAEXXZ"),
+        )
+    )
+    manifest = ReferenceSymbolManifest(name="test references", symbols=symbols)
+
+    for symbol in symbols:
+        assert _reference_symbol_for_symbol_name(manifest, symbol.aliases[0]) is symbol
+    assert (
+        _reference_symbol_for_symbol_name(manifest, "?AI@cRWarning@@QAEXXZ")
+        is None
+    )
+
+
 def test_folded_reference_aliases_preserve_both_authored_owners() -> None:
     folded_speedup = ReferenceSymbol(
         address=0x43D880,

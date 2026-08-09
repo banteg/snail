@@ -1,7 +1,7 @@
 # Scratch status
 
 `flush_row_event_display` @ 0x404830 is the Windows
-`Completion::flush_row_event_display` / cross-port `cRCompletion::UnInit`.
+`cRCompletion::UnInit` (stable matcher key `flush_row_event_display`).
 It forces the parcel-display phase
 to its completed state: it pays out any remaining parcel deliveries, applies
 the optional bonus, kills all five row-event widgets, restores the display
@@ -15,7 +15,7 @@ score, then `delivered_parcel_count` increments once unconditionally before the
 widget teardown. The controller state clear also belongs at the shared tail,
 outside the active-state branch.
 
-The primary shared owner is now `Completion`, not a separate
+The primary shared owner is now `cRCompletion`, not a separate
 `RowEventDisplayController`. Its 0x50-byte extent is the native
 `Size of cRCompletion` ledger, and its fields overlay exactly with the result
 screen initialized by `cRCompletion::Init`. The owner consolidation preserves
@@ -54,3 +54,12 @@ mistaken that displacement for the standalone `g_player_block` evidence
 symbol. Exact operand normalization now agrees with Binary Ninja and the
 matcher source on `&g_game_base->subgame.player`; the exact 67/67 result is
 unchanged.
+
+## 2026-08-09 primary cRCompletion ownership
+
+The matcher now emits this exact 67/67 teardown as
+`cRCompletion::UnInit()` and binds the VC6 decorated symbol
+`?UnInit@cRCompletion@@QAEXXZ`. `Completion` remains a compatibility typedef
+for analysis and caller migration. Android and iOS independently retain
+`_ZN12cRCompletion6UnInitEv` on the same authored lifecycle owner; the Windows
+five-widget teardown and 0x50-byte layout remain the local ABI boundary.

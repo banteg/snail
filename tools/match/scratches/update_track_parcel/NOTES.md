@@ -19,8 +19,8 @@ Recovered relationships:
   from `1.0` to `0.4`, and adds a sine arc along `subgame+0x3be130`.
 - State `6` starts the row-display delivery arc and randomizes
   `delivery_offset`; state `7` flies from `subgame+0x3bf91c` to the owned
-  `Completion::widget_world` vector at `subgame+0x12727d8`, then
-  calls `register_parcel_delivery()`.
+  `cRCompletion::widget_world` vector at `subgame+0x12727d8`, then
+  calls `cRCompletion::RegisterParcel()`.
 
 The shared parcel header now models the primary authored `Parcel : BodBase`;
 the exact initializer and table entry join it to Android/iOS `cRParcel::AI()`.
@@ -95,7 +95,7 @@ used to force the ordering.
 The exact switch now exposes `ParcelState`: active track parcels bob until
 collision or retirement, `COLLECT_PENDING -> COLLECTING` owns the flight into
 the player's home anchor, and `DELIVERY_PENDING -> DELIVERING` owns the later
-flight into `Completion::widget_world`. All terminal paths return the slot to
+flight into `cRCompletion::widget_world`. All terminal paths return the slot to
 `INACTIVE`. Values `2` and `3` remain explicitly unknown because this updater
 only preserves them as inert states and no recovered live producer writes
 either one. Focused matching remains exact at 312/312 instructions with all 35

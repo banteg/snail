@@ -477,6 +477,96 @@
       "description": "Exact authored tMatrix::Multiply(const tMatrix&, const tMatrix&) member."
     },
     {
+      "address": "0x404830",
+      "name": "flush_row_event_display",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRCompletion@@QAEXXZ"
+      ],
+      "description": "Exact authored cRCompletion::UnInit() member; the owner-qualified alias keeps its generic lifecycle name collision-free."
+    },
+    {
+      "address": "0x404920",
+      "name": "initialize_completion_screen",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRCompletion@@QAEXHE@Z"
+      ],
+      "description": "Exact authored cRCompletion::Init(int,unsigned char) member; the Windows unsigned-char ABI remains authoritative."
+    },
+    {
+      "address": "0x404cf0",
+      "name": "update_row_event_display",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRCompletion@@QAEXXZ"
+      ],
+      "description": "Exact authored cRCompletion::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x405040",
+      "name": "register_parcel_delivery",
+      "kind": "function",
+      "aliases": [
+        "?RegisterParcel@cRCompletion@@QAEXXZ"
+      ],
+      "description": "Exact authored cRCompletion::RegisterParcel() member."
+    },
+    {
+      "address": "0x440fa0",
+      "name": "initialize_damage_gauge",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRDamageGuage@@QAEXXZ"
+      ],
+      "description": "Exact authored no-argument Windows cRDamageGuage::Init() member."
+    },
+    {
+      "address": "0x440fd0",
+      "name": "update_damage_gauge",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRDamageGuage@@QAEXXZ"
+      ],
+      "description": "Exact authored cRDamageGuage::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x4413f0",
+      "name": "apply_damage_gauge_delta",
+      "kind": "function",
+      "aliases": [
+        "?Take@cRDamageGuage@@QAEXM_N@Z"
+      ],
+      "description": "Exact authored cRDamageGuage::Take(float,bool) member."
+    },
+    {
+      "address": "0x444ac0",
+      "name": "initialize_invincible_shell",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRInvincible@@QAEXXZ"
+      ],
+      "description": "Exact authored cRInvincible::Init() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x444ae0",
+      "name": "start_invincible_shell",
+      "kind": "function",
+      "aliases": [
+        "?Start@cRInvincible@@QAEXXZ"
+      ],
+      "description": "Exact authored cRInvincible::Start() member."
+    },
+    {
+      "address": "0x444b50",
+      "name": "update_invincible_shell",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRInvincible@@QAEXXZ"
+      ],
+      "description": "Exact authored cRInvincible::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",

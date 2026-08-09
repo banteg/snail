@@ -50,7 +50,7 @@ void cRSubGoldy::Init(int player_slot)
     this->slow_commentary_timer = 0.0f;
     this->slow_commentary_step = 0.0166666675f;
     this->squidge.initialize_squidge();
-    this->presentation.invincible_shell.initialize_invincible_shell();
+    this->presentation.invincible_shell.Init();
     this->startup_voice_step = 0.0555555522f;
     this->startup_voice_timer = 0.0555555522f;
     this->attachment_exit_progress = 0.0f;
@@ -209,7 +209,7 @@ void cRSubGoldy::Init(int player_slot)
     this->shoot_cooldown_progress = 0.0f;
     this->completion_handoff_active = (unsigned char)zero;
     this->slide_extension_threshold_z = 0.0f;
-    this->damage_gauge.initialize_damage_gauge();
+    this->damage_gauge.Init();
     progress_bar.noop_runtime_ai();
     this->follow_state.active = (unsigned char)zero;
 

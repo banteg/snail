@@ -118,7 +118,7 @@ void Parcel::update_track_parcel()
         float advanced_progress = progress_step + progress;
         progress = advanced_progress;
         if (advanced_progress > 1.0f) {
-            owner_subgame->completion.register_parcel_delivery();
+            owner_subgame->completion.RegisterParcel();
             cRSprite* dying_sprite = sprite;
             state = PARCEL_STATE_INACTIVE;
             dying_sprite->Kill();

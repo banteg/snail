@@ -78,7 +78,7 @@ void cRSubGoldy::Collision()
                             damage_retrigger_timer = damage_retrigger_step;
                         *(unsigned char*)((char*)game + i
                             + SALT_COLLISION_ARMED_FROM_SUBGAME) = 0;
-                        damage_gauge.apply_damage_gauge_delta(0.15000001f, 0);
+                        damage_gauge.Take(0.15000001f, 0);
                     }
                 }
             }
@@ -102,7 +102,7 @@ void cRSubGoldy::Collision()
                 if (delta.z < 1.0f && normalize_vector(&probe_b) < 0.49000001f) {
                     *(int*)((char*)game + j + SUB_LAZER_STATE_FROM_SUBGAME) =
                         SUB_LAZER_STATE_RECYCLE_PENDING;
-                    damage_gauge.apply_damage_gauge_delta(0.02f, 0);
+                    damage_gauge.Take(0.02f, 0);
                 }
             }
         }
@@ -124,7 +124,7 @@ void cRSubGoldy::Collision()
                     else
                         garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                     ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
-                    damage_gauge.apply_damage_gauge_delta(0.039999999f, 0);
+                    damage_gauge.Take(0.039999999f, 0);
                     g_sound_effect_manager.play_sound_effect(
                         39 - (int)((float)next_math_random_value()
                             * 0.0000305175781f * -2.0f));
@@ -175,7 +175,7 @@ void cRSubGoldy::Collision()
                                 float rate = game->subgame_rate;
                                 float scaled_rate = rate * rate * 0.0040000002f;
                                 velocity.z = scaled_rate * -8.0f;
-                                damage_gauge.apply_damage_gauge_delta(1.0f, 0);
+                                damage_gauge.Take(1.0f, 0);
                             }
                         } else {
                             game->slug_hazards.slots[m].kill_slug_hazard();
@@ -243,7 +243,7 @@ void cRSubGoldy::Collision()
                     game->health_pickups[ii].state =
                         TRACK_PICKUP_STATE_TEARDOWN_PENDING;
                     HealthCollect(&game->health_pickups[ii]);
-                    damage_gauge.apply_damage_gauge_delta(-0.5f, 0);
+                    damage_gauge.Take(-0.5f, 0);
                 }
             }
         }

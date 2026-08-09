@@ -34,3 +34,15 @@ The narrow Snail-presentation replay now reanalyzes this method as part of the
 complete `Invincible` lifecycle. Both decompilers preserve the `Invincible*`
 receiver, enum transitions, embedded shell render-bit owner, and registered
 sound edge. Focused matching remains exact at 21/21 with four clean operands.
+
+## 2026-08-09 primary cRInvincible ownership
+
+The matcher now emits this transition as `cRInvincible::Start()` and binds the
+exact VC6 decorated symbol `?Start@cRInvincible@@QAEXXZ`; `Invincible` remains
+a compatibility typedef. The live Windows view confirms a void `thiscall`
+receiver and the sole direct call from `cRInvincible::AI()` at `0x444b7d`.
+Android independently exports `cRInvincible::Start()` and preserves the same
+state/spin/fade transitions; the available iOS builds retain the authored
+owner but do not expose Start as a standalone symbol. The promotion is
+codegen-neutral: focused matching remains exact at 21/21 instructions with
+all four masked operands clean.

@@ -179,12 +179,12 @@ void cRCutScene::AI()
             unsigned char perfect_delivery =
                 delivered_count
                 == *(int*)((char*)g_game + LEVEL_PARCEL_COUNT_FROM_GAME_ROOT);
-            game->subgame.completion.initialize_completion_screen(
+            game->subgame.completion.Init(
                 delivered_count,
                 perfect_delivery);
         } else if (game->subgame.level_mode == 1) {
             int delivered_count = player->parcels_collected;
-            game->subgame.completion.initialize_completion_screen(delivered_count, 1);
+            game->subgame.completion.Init(delivered_count, 1);
         }
         g_sound_effect_manager.play_sound_effect(46);
         // fall through

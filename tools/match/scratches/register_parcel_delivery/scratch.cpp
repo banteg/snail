@@ -1,4 +1,4 @@
-// register_parcel_delivery @ 0x405040 (thiscall, ret)
+// register_parcel_delivery @ 0x405040 (thiscall, ret) — cRCompletion::RegisterParcel()
 
 #include "audio_system.h"
 #include "completion.h"
@@ -6,7 +6,7 @@
 #include "player.h"
 
 
-void Completion::register_parcel_delivery()
+void cRCompletion::RegisterParcel()
 {
     if (delivered_parcel_count != parcel_target_count) {
         g_game->subgame.player.ScoreAdd(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);

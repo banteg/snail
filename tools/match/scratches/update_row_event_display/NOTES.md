@@ -138,13 +138,13 @@ the pointer-or-null result is real. The focused Windows result remains 99.53%,
 
 2026-07-11 authored-member recovery: mobile symbols identify this function as
 `cRCompletion::AI()`, on the same 0x50-byte object as Init, UnInit, and
-RegisterParcel. Defining it as `Completion::update_row_event_display()` rather
+RegisterParcel. Defining it as `cRCompletion::AI()` rather
 than a free `__fastcall` function is the missing Windows source shape: the
 scratch is now exact at 100.00%, 213/213, full prefix, with all 38 operands
 clean. The old separate `RowEventDisplayController` header is retired.
 
 2026-07-13 widget destination ownership: the producer's typed output at
-`Completion +0x34` is now the direct `Vector3 widget_world` member rather than
+`cRCompletion +0x34` is now the direct `Vector3 widget_world` member rather than
 a cast over three scalar names. The 100.00%, 213/213 exact result is unchanged,
 and `update_track_parcel` independently consumes the same owned vector in its
 state-7 delivery expression.
@@ -229,3 +229,12 @@ summary transition, while `cRSubGoldy::AI()` consumes it with selected-input
 `+0x04 & 0x4000`. This closes the lifecycle without importing their offsets.
 Focused Windows matching remains exact at 213/213 instructions with all 38
 operands clean.
+
+## 2026-08-09 primary cRCompletion ownership
+
+The matcher now emits the exact 213/213 state machine as `cRCompletion::AI()`
+and binds the VC6 decorated symbol `?AI@cRCompletion@@QAEXXZ`. The stable
+`update_row_event_display` key remains the target-address identity, while the
+candidate now carries the authored owner already retained by Android and iOS
+as `_ZN12cRCompletion2AIEv`. The receiver spelling and compatibility typedef
+are codegen-neutral; all 38 masked operands remain clean.

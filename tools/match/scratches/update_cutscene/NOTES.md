@@ -66,7 +66,7 @@ unchanged. Masked audit is `34 ok / 0 unresolved / 2 mismatch`.
 at 46.29%.
 
 2026-07-11 cRCompletion owner recovery: state 5 now calls
-`game->subgame.completion.initialize_completion_screen(...)` directly. The
+`game->subgame.completion.Init(...)` directly. The
 receiver is the same 0x50-byte owner proven by cRCompletion AI/UnInit/
 RegisterParcel, rather than a standalone root-level result screen. This source
 shape raises the focused match from 46.29% (480/505, 34 clean operands and two

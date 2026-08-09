@@ -1,4 +1,4 @@
-// apply_damage_gauge_delta @ 0x4413f0 (thiscall, ret 0x8)
+// apply_damage_gauge_delta / cRDamageGuage::Take @ 0x4413f0 (thiscall, ret 0x8)
 // Hit-flash side-effect chain + gauge fill clamp. Gate: the owning
 // cRSubGoldy's invincibility capability (unforced only); state 2 blocks unforced
 // positive deltas and negative ones during a trampoline bounce.
@@ -8,7 +8,7 @@
 #include "voice_manager.h"
 
 
-void DamageGuage::apply_damage_gauge_delta(float delta, bool force)
+void cRDamageGuage::Take(float delta, bool force)
 {
     if (((g_game->subgame.embedded_player()->shoot_flags
                 & SUBGOLDY_SHOOT_FLAG_INVINCIBLE) == 0

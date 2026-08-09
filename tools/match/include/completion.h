@@ -16,14 +16,15 @@ enum CompletionState {
     COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6,
 };
 
-class Completion {
+class cRCompletion {
 public:
-    void flush_row_event_display(); // @ 0x404830, cRCompletion::UnInit
-    void initialize_completion_screen(
+    // Authored lifecycle surface retained by both mobile builds.
+    void UnInit(); // @ 0x404830
+    void Init(
         int delivered_count,
-        unsigned char perfect_delivery); // @ 0x404920, cRCompletion::Init
-    void update_row_event_display(); // @ 0x404cf0, cRCompletion::AI
-    void register_parcel_delivery(); // @ 0x405040, cRCompletion::RegisterParcel
+        unsigned char perfect_delivery); // @ 0x404920
+    void AI(); // @ 0x404cf0
+    void RegisterParcel(); // @ 0x405040
 
     FrontendWidget* title_widget; // +0x00, "Delivery Complete!" heading
     FrontendWidget* delivered_count_widget; // +0x04
@@ -76,8 +77,10 @@ public:
     }; // +0x4c
 };
 
-typedef char Completion_must_be_0x50[
-    (sizeof(Completion) == 0x50) ? 1 : -1];
+typedef cRCompletion Completion;
+typedef char cRCompletion_must_be_0x50[
+    (sizeof(cRCompletion) == 0x50) ? 1 : -1];
+typedef char Completion_must_be_0x50[(sizeof(Completion) == 0x50) ? 1 : -1];
 
 enum {
     COMPLETION_BONUS_TABLE_CAPACITY = 6,

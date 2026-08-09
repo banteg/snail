@@ -51,7 +51,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRGUI %i\n", sizeof(GUI)); \
     debug_report_stub("   Size of cRGalaxy %i\n", sizeof(Galaxy)); \
     debug_report_stub("   Size of cREnemyManager %i\n", sizeof(EnemyManager)); \
-    debug_report_stub("   Size of cRCompletion %i\n", sizeof(Completion)); \
+    debug_report_stub("   Size of cRCompletion %i\n", sizeof(cRCompletion)); \
     debug_report_stub("   Size of cRTimesUp %i\n", sizeof(TimesUp)); \
     debug_report_stub("Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
     debug_report_stub("Size of cRBod %i\n", sizeof(BodBase)); \

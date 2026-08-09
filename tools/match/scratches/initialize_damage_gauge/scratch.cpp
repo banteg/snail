@@ -1,8 +1,8 @@
-// initialize_damage_gauge @ 0x440fa0 (thiscall, ret)
+// initialize_damage_gauge / cRDamageGuage::Init @ 0x440fa0 (thiscall, ret)
 
 #include "damage_guage.h"
 
-void DamageGuage::initialize_damage_gauge()
+void cRDamageGuage::Init()
 {
     pulse_step = 0.020833334f;
     fill = 0.0f;

@@ -1,11 +1,11 @@
-// initialize_completion_screen @ 0x404920 (thiscall, ret 0x8)
+// initialize_completion_screen @ 0x404920 (thiscall, ret 0x8) — cRCompletion::Init()
 
 #include "completion.h"
 #include "game_root.h"
 #include <string.h>
 
 
-void Completion::initialize_completion_screen(
+void cRCompletion::Init(
     int new_delivered_count,
     unsigned char new_perfect_delivery)
 {

@@ -46,3 +46,14 @@ matcher remains exact at 7/7 instructions with all three operands clean.
 `+0x1764`. Applying the same boundary to Windows yields the exact 0x98-byte
 owner ending at `Snail +0x192c`; the adjacent roll pair and release gate are
 now correctly direct `Snail` fields.
+
+## 2026-08-09 primary cRInvincible ownership
+
+The matcher now emits this initializer as `cRInvincible::Init()` and binds the
+exact VC6 decorated symbol `?Init@cRInvincible@@QAEXXZ`; `Invincible` remains
+a compatibility typedef for existing analysis replays. The live Windows view
+confirms the void `thiscall` receiver and its sole direct call at `0x43aaaf`.
+Android independently exports `cRInvincible::Init()` with the same state reset
+and adjacent skin handoff, while iOS retains the authored owner and method.
+The promotion is codegen-neutral: focused matching remains exact at 7/7
+instructions with all three masked operands clean.

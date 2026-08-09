@@ -134,3 +134,12 @@ Android and iOS `cRDamageGuage::Take(float, bool)` independently test bit
 force bypass and drain-state rules. The named mask does not alter the exact
 Windows source shape: focused matching remains 94/94 instructions, full
 prefix, and 24 clean operands.
+
+## 2026-08-09 primary `cRDamageGuage::Take` ownership
+
+The exact damage leaf now emits `cRDamageGuage::Take(float, bool)` and binds
+the VC6 decorated symbol `?Take@cRDamageGuage@@QAEXM_N@Z`. The explicit bool
+force bypass, named invincibility capability, independent draining guards,
+and `+0x0c` evidence boundary are unchanged. `DamageGuage` remains a
+compatibility typedef, and focused matching stays exact at 94/94 instructions
+with all 24 relocatable operands clean.

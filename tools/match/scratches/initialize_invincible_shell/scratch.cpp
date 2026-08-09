@@ -4,7 +4,7 @@
 #include "snail_skin.h"
 
 
-void Invincible::initialize_invincible_shell()
+void cRInvincible::Init()
 {
     state = INVINCIBLE_STATE_INACTIVE;
     g_game->subgame.embedded_player()->presentation.snail_skin

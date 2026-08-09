@@ -5,7 +5,7 @@
 #include "invincible.h"
 
 
-void Invincible::start_invincible_shell()
+void cRInvincible::Start()
 {
     InvincibleState current_state = state;
     if (current_state != INVINCIBLE_STATE_INACTIVE) {

@@ -82,3 +82,15 @@ same `+0x324` bit for start, fade-out, and reactivation while retaining the
 authored owner. Replacing the raw mask with the shared named capability is
 codegen-neutral: focused Windows matching remains exact at 98/98 instructions,
 full prefix, and 28 clean operands.
+
+## 2026-08-09 primary cRInvincible ownership
+
+The matcher now emits this controller as `cRInvincible::AI()` and binds the
+exact VC6 decorated symbol `?AI@cRInvincible@@QAEXXZ`; `Invincible` remains a
+compatibility typedef. The live Windows view confirms the void `thiscall`
+receiver and the shell update vtable reference at `0x497358`. Android and iOS
+independently retain `cRInvincible::AI()` and the same four-state controller.
+The authored method promotion preserves the direct named
+`SUBGOLDY_SHOOT_FLAG_INVINCIBLE` tests and is codegen-neutral: focused Windows
+matching remains exact at 98/98 instructions, full prefix, with all 28 masked
+operands clean.

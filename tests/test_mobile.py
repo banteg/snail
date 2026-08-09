@@ -2607,6 +2607,231 @@ def test_mobile_tip_family_recovers_authored_owners() -> None:
         assert re.search(r"(?<!cR)\bTipData\*", spec) is None
 
 
+def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    invincible_header = (include_root / "invincible.h").read_text(
+        encoding="utf-8"
+    )
+    damage_header = (include_root / "damage_guage.h").read_text(
+        encoding="utf-8"
+    )
+    completion_header = (include_root / "completion.h").read_text(
+        encoding="utf-8"
+    )
+
+    header_expectations = (
+        (
+            invincible_header,
+            "class cRInvincible : public RenderableBod {",
+            "typedef cRInvincible Invincible;",
+            "class Invincible :",
+            ("void Init();", "void Start();", "void AI();"),
+            (
+                "initialize_invincible_shell",
+                "start_invincible_shell",
+                "update_invincible_shell",
+            ),
+        ),
+        (
+            damage_header,
+            "class cRDamageGuage {",
+            "typedef cRDamageGuage DamageGuage;",
+            "class DamageGuage {",
+            ("void Init();", "void AI();", "void Take(float delta, bool force);"),
+            (
+                "initialize_damage_gauge",
+                "update_damage_gauge",
+                "apply_damage_gauge_delta",
+            ),
+        ),
+        (
+            completion_header,
+            "class cRCompletion {",
+            "typedef cRCompletion Completion;",
+            "class Completion {",
+            (
+                "void UnInit();",
+                "void Init(",
+                "unsigned char perfect_delivery",
+                "void AI();",
+                "void RegisterParcel();",
+            ),
+            (
+                "flush_row_event_display",
+                "initialize_completion_screen",
+                "update_row_event_display",
+                "register_parcel_delivery",
+            ),
+        ),
+    )
+    for header, primary, compatibility, retired_class, methods, retired_methods in (
+        header_expectations
+    ):
+        assert primary in header
+        assert compatibility in header
+        assert retired_class not in header
+        for method in methods:
+            assert method in header
+        for retired_method in retired_methods:
+            assert retired_method not in header
+
+    player_header = (include_root / "player.h").read_text(encoding="utf-8")
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRInvincible invincible_shell;" in player_header
+    assert "cRDamageGuage damage_gauge;" in player_header
+    assert "cRCompletion completion;" in subgame_header
+
+    expected_methods = (
+        (
+            "initialize_invincible_shell",
+            "cRInvincible::Init()",
+            "cRInvincible_Init",
+            "void cRInvincible::Init()",
+            "?Init@cRInvincible@@QAEXXZ",
+        ),
+        (
+            "start_invincible_shell",
+            "cRInvincible::Start()",
+            "cRInvincible_Start",
+            "void cRInvincible::Start()",
+            "?Start@cRInvincible@@QAEXXZ",
+        ),
+        (
+            "update_invincible_shell",
+            "cRInvincible::AI()",
+            "cRInvincible_AI",
+            "void cRInvincible::AI()",
+            "?AI@cRInvincible@@QAEXXZ",
+        ),
+        (
+            "initialize_damage_gauge",
+            "cRDamageGuage::Init()",
+            "cRDamageGuage_Init",
+            "void cRDamageGuage::Init()",
+            "?Init@cRDamageGuage@@QAEXXZ",
+        ),
+        (
+            "update_damage_gauge",
+            "cRDamageGuage::AI()",
+            "cRDamageGuage_AI",
+            "void cRDamageGuage::AI()",
+            "?AI@cRDamageGuage@@QAEXXZ",
+        ),
+        (
+            "apply_damage_gauge_delta",
+            "cRDamageGuage::Take(float, bool)",
+            "cRDamageGuage_Take",
+            "void cRDamageGuage::Take(float delta, bool force)",
+            "?Take@cRDamageGuage@@QAEXM_N@Z",
+        ),
+        (
+            "flush_row_event_display",
+            "cRCompletion::UnInit()",
+            "cRCompletion_UnInit",
+            "void cRCompletion::UnInit()",
+            "?UnInit@cRCompletion@@QAEXXZ",
+        ),
+        (
+            "initialize_completion_screen",
+            "cRCompletion::Init(int, bool)",
+            "cRCompletion_Init",
+            "void cRCompletion::Init(",
+            "?Init@cRCompletion@@QAEXHE@Z",
+        ),
+        (
+            "update_row_event_display",
+            "cRCompletion::AI()",
+            "cRCompletion_AI",
+            "void cRCompletion::AI()",
+            "?AI@cRCompletion@@QAEXXZ",
+        ),
+        (
+            "register_parcel_delivery",
+            "cRCompletion::RegisterParcel()",
+            "cRCompletion_RegisterParcel",
+            "void cRCompletion::RegisterParcel()",
+            "?RegisterParcel@cRCompletion@@QAEXXZ",
+        ),
+    )
+    for windows_name, mobile_symbol, alias, definition, object_symbol in (
+        expected_methods
+    ):
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    caller_expectations = {
+        "initialize_subgoldy": (
+            "presentation.invincible_shell.Init();",
+            "damage_gauge.Init();",
+        ),
+        "build_subgame_level": ("damage_gauge.Init();",),
+        "update_invincible_shell": ("Start();",),
+        "update_damage_gauge": ("Take(-0.0016666667f, 1);",),
+        "handle_subgoldy_collisions": ("damage_gauge.Take(",),
+        "update_subgoldy": (
+            "damage_gauge.AI();",
+            "completion.AI();",
+            "completion.UnInit();",
+        ),
+        "update_cutscene": ("completion.Init(",),
+        "destroy_subgame": ("completion.UnInit();",),
+        "update_track_parcel": ("completion.RegisterParcel();",),
+        "construct_game_runtime": ("sizeof(cRCompletion)",),
+    }
+    for scratch_name, expected_calls in caller_expectations.items():
+        source = (scratch_root / scratch_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        for expected_call in expected_calls:
+            assert expected_call in source
+
+    collision_spec = (
+        scratch_root
+        / "handle_subgoldy_collisions/shared-pickup-vector-mutations.json"
+    ).read_text(encoding="utf-8")
+    assert "damage_gauge.Take" in collision_spec
+    assert "apply_damage_gauge_delta" not in collision_spec
+    for spec_name in (
+        "completion-init-join-mutations.json",
+        "perfect-delivery-default-mutations.json",
+        "perfect-delivery-publication-mutations.json",
+    ):
+        spec = (scratch_root / "update_cutscene" / spec_name).read_text(
+            encoding="utf-8"
+        )
+        assert "completion.Init" in spec
+        assert "initialize_completion_screen" not in spec
+
+
 def test_mobile_initializers_recover_authored_owners_without_layout_transfer() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

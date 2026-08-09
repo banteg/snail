@@ -9,11 +9,11 @@ enum DamageGuageState {
     DAMAGE_GUAGE_STATE_DRAINING = 2,
 };
 
-class DamageGuage {
+class cRDamageGuage {
 public:
-    void initialize_damage_gauge(); // @ 0x440fa0, cRDamageGuage::Init
-    void update_damage_gauge(); // @ 0x440fd0, cRDamageGuage::AI
-    void apply_damage_gauge_delta(float delta, bool force); // @ 0x4413f0, cRDamageGuage::Take
+    void Init(); // @ 0x440fa0
+    void AI(); // @ 0x440fd0
+    void Take(float delta, bool force); // @ 0x4413f0
 
     DamageGuageState state; // +0x00
     float pulse_progress; // +0x04
@@ -30,6 +30,10 @@ public:
     float hit_flash_step; // +0x28
 };
 
+typedef cRDamageGuage DamageGuage;
+
+typedef char cRDamageGuage_must_be_0x2c[
+    (sizeof(cRDamageGuage) == 0x2c) ? 1 : -1];
 typedef char DamageGuage_must_be_0x2c[
     (sizeof(DamageGuage) == 0x2c) ? 1 : -1];
 

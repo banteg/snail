@@ -232,3 +232,16 @@ identity or the source-shaped accelerated-drain branch. The remaining matcher
 debt stays confined to the formally stalled render-local stack allocation;
 none of those mutation grids should be replayed without new compiler
 provenance.
+
+## 2026-08-09 primary `cRDamageGuage::AI` ownership
+
+The matcher now emits `cRDamageGuage::AI()` and binds the exact VC6 decorated
+symbol `?AI@cRDamageGuage@@QAEXXZ`. Its state-machine and render body are
+otherwise unchanged, including the two authored `Take(float, bool)` drain
+calls. Focused output remains the honest 94.03%, 268/268-instruction result
+with prefix 122 and all 65 masked operands clean.
+
+The three recorded render-local mutation grids still account for the same 16
+exhausted variants. Only the method-signature anchor in the hoist grid was
+mechanically updated for the authored owner; no variant was reopened or added,
+and the historical ledger remains untouched.

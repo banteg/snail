@@ -3,15 +3,15 @@
   "sites": [
     {
       "name": "method-local-owner",
-      "find": "void DamageGuage::update_damage_gauge()\n{\n    GameRoot* game = g_game;",
+      "find": "void cRDamageGuage::AI()\n{\n    GameRoot* game = g_game;",
       "replacements": [
         {
           "name": "alpha-at-method-entry",
-          "text": "void DamageGuage::update_damage_gauge()\n{\n    float alpha;\n    GameRoot* game = g_game;"
+          "text": "void cRDamageGuage::AI()\n{\n    float alpha;\n    GameRoot* game = g_game;"
         },
         {
           "name": "mask-at-method-entry",
-          "text": "void DamageGuage::update_damage_gauge()\n{\n    float mask_height;\n    GameRoot* game = g_game;"
+          "text": "void cRDamageGuage::AI()\n{\n    float mask_height;\n    GameRoot* game = g_game;"
         }
       ]
     },

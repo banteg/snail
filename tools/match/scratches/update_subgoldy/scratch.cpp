@@ -84,10 +84,10 @@ void cRSubGoldy::AI()
     cRSubGame* current_game = game;
     if (current_game->subgame_pause_gate) {
         if (g_game->players[0].frontend_state != 9) {
-            damage_gauge.update_damage_gauge();
+            damage_gauge.AI();
             progress_bar.update_progress_bar();
             warning.update_warning();
-            game->completion.update_row_event_display();
+            game->completion.AI();
         }
         return;
     }
@@ -801,7 +801,7 @@ steering_stored:
             } else if (fade_state == 4) {
                 cRSubGame* finish_game = game;
                 if (finish_game->completion.state != COMPLETION_STATE_INACTIVE)
-                    finish_game->completion.flush_row_event_display();
+                    finish_game->completion.UnInit();
                 cRSubGame* dispatch_game = game;
                 if (!dispatch_game->level_mode) {
                     if (dispatch_game->level_mode_arg
@@ -845,7 +845,7 @@ steering_stored:
         g_game->players[0].completion_handoff_transform.position.y =
             g_game->players[0].completion_handoff_transform.position.y - 1.0f;
     }
-    damage_gauge.update_damage_gauge();
+    damage_gauge.AI();
     progress_bar.update_progress_bar();
 
     Vector3* camera_target = &cached_camera_target_world;
@@ -1059,7 +1059,7 @@ steering_stored:
         }
     }
 
-    game->completion.update_row_event_display();
+    game->completion.AI();
     cRSubGame* tick_game = game;
     tick_game->current_high_score_record.replay_sample_count =
         tick_game->current_high_score_record.replay_sample_count + 1;

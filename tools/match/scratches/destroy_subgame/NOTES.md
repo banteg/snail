@@ -56,7 +56,7 @@ created after the tracked allocation mark and released together by
 ## 2026-07-11 cRCompletion owner
 
 The mode-0/1 teardown now calls
-`cRSubGame::completion.flush_row_event_display()` directly. Mobile symbols
+`cRSubGame::completion.UnInit()` directly. Mobile symbols
 name the exact callee `cRCompletion::UnInit()`, and its 0x50-byte owner ends
 exactly at `times_up`. The old independent row-event controller view is
 retired; the teardown remains exact at 246/246 with all 41 operands clean.

@@ -7,7 +7,7 @@ screen object used by the cutscene completion handoff. It is called only from
 
 Recovered relationships:
 
-- The authored `Completion` uses widgets at `+0x00/+0x04/+0x08/+0x0c/+0x10`.
+- The authored `cRCompletion` uses widgets at `+0x00/+0x04/+0x08/+0x0c/+0x10`.
 - `+0x48` is the computed bonus score and `+0x4c` is the total score built from
   `game+0x430060 + delivered_count * 100 + bonus`.
 - Postal perfect delivery awards `50,000`; challenge mode indexes the two
@@ -210,3 +210,14 @@ summary transition and their `cRSubGoldy::AI()` consumers pair it with selected
 input `+0x04 & 0x4000`. No mobile offset is transferred into Windows. This is
 provenance-only; the honest focused result remains 92.81%, 278/278
 instructions, with the documented challenge-register residual.
+
+## 2026-08-09 primary cRCompletion ownership
+
+The matcher now emits this honest 92.81%, 278/278 initializer as
+`cRCompletion::Init(int, unsigned char)` and binds the VC6 decorated symbol
+`?Init@cRCompletion@@QAEXHE@Z`. The Windows second argument deliberately
+remains `unsigned char`: mobile's source-level `bool` corroborates its role,
+but does not replace the one-byte Windows ABI. Android and iOS independently
+retain `_ZN12cRCompletion4InitEib`. The recorded 61 exhausted challenge/color
+variants remain historical evidence and were not reopened; the only residual
+is still the bounded difficulty/speed register allocation.

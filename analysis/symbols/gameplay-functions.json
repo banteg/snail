@@ -210,22 +210,34 @@
     {
       "address": "0x404830",
       "name": "flush_row_event_display",
-      "description": "Exact Windows `Completion::flush_row_event_display` teardown for the embedded 0x50-byte `cRCompletion`: pays any remaining parcel awards, destroys its five widgets, restores the display token, and clears state. Android and iOS retain this member as `cRCompletion::UnInit()`."
+      "description": "Exact Windows `cRCompletion::UnInit()` teardown for the embedded 0x50-byte owner: pays any remaining parcel awards, destroys its five widgets, restores the display token, and clears state. Android and iOS retain the same member.",
+      "aliases": [
+        "cRCompletion_UnInit"
+      ]
     },
     {
       "address": "0x404920",
       "name": "initialize_completion_screen",
-      "description": "Builds the Delivery Complete phase of the embedded 0x50-byte `Completion`, reusing the same storage that drives the parcel display. It seeds package-count and bonus widgets and lays out the continue prompt. Android and iOS retain `cRCompletion::Init(int, bool)`."
+      "description": "Windows `cRCompletion::Init(int, unsigned char)` builds the Delivery Complete phase of the embedded 0x50-byte owner, reusing the same storage that drives the parcel display. It seeds package-count and bonus widgets and lays out the continue prompt; Android and iOS retain the member with a compact bool formal.",
+      "aliases": [
+        "cRCompletion_Init"
+      ]
     },
     {
       "address": "0x404cf0",
       "name": "update_row_event_display",
-      "description": "Exact Windows `Completion::update_row_event_display`/`cRCompletion::AI()` state machine: stages parcel sprites, drives score and widget transitions, and hands off to the completion phase. Modeling it as the authored member makes all 213 instructions exact; Android and iOS retain the same owner."
+      "description": "Exact Windows `cRCompletion::AI()` state machine: stages parcel sprites, drives score and widget transitions, and hands off to the completion phase. Modeling it as the authored member makes all 213 instructions exact; Android and iOS retain the same owner.",
+      "aliases": [
+        "cRCompletion_AI"
+      ]
     },
     {
       "address": "0x405040",
       "name": "register_parcel_delivery",
-      "description": "Exact Windows `Completion::register_parcel_delivery`: records one delivered parcel, awards the per-parcel score event, and dispatches the final bonus. Android and iOS retain this member as `cRCompletion::RegisterParcel()`."
+      "description": "Exact Windows `cRCompletion::RegisterParcel()`: records one delivered parcel, awards the per-parcel score event, and dispatches the final bonus. Android and iOS retain the same member.",
+      "aliases": [
+        "cRCompletion_RegisterParcel"
+      ]
     },
     {
       "address": "0x4050c0",
@@ -3215,17 +3227,26 @@
     {
       "address": "0x440fa0",
       "name": "initialize_damage_gauge",
-      "description": "Initializes Goldy's contact-damage gauge controller at player +0x3c4. Cross-port iOS v1.9 symbols match this helper to the intentionally misspelled `cRDamageGuage::Init(cRSubGoldy*)` owner."
+      "description": "Exact Windows `cRDamageGuage::Init()` initializes Goldy's contact-damage controller at player +0x3c4. Android preserves the no-argument member; iOS v1.9's `Init(cRSubGoldy*)` spelling is version-specific provenance rather than the Windows ABI.",
+      "aliases": [
+        "cRDamageGuage_Init"
+      ]
     },
     {
       "address": "0x440fd0",
       "name": "update_damage_gauge",
-      "description": "Advances the player-embedded contact-damage gauge controller at `cRSubGoldy+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `cRSubGame::subgame_pause_gate` suspends updates; `cRSubGoldy::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `cRSubGoldy::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`."
+      "description": "Authored `cRDamageGuage::AI()` advances the player-embedded contact-damage controller at `cRSubGoldy+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `cRSubGame::subgame_pause_gate` suspends updates; `cRSubGoldy::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `cRSubGoldy::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve the same owner role.",
+      "aliases": [
+        "cRDamageGuage_AI"
+      ]
     },
     {
       "address": "0x4413f0",
       "name": "apply_damage_gauge_delta",
-      "description": "Applies one signed delta to `cRSubGoldy::damage_gauge` at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Unforced deltas are blocked by bit 0x80 of `cRSubGoldy::shoot_flags`; state 2 ignores unforced positive deltas and also ignores unforced negative deltas while `cRSubGoldy::trampoline_bounce_active == 1`. Its fallback path changes `cRSubGoldy::presentation.snail_skin`, then dispatches damage animations through the same presentation unless `cRSubGoldy::control_override_active` is set. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path. Cross-port iOS symbols match this helper to `cRDamageGuage::Take(float, bool)`."
+      "description": "Authored `cRDamageGuage::Take(float, bool)` applies one signed delta, clamps fill to [0,1], and triggers the matching sound or animation effects. Unforced deltas are blocked by `SUBGOLDY_SHOOT_FLAG_INVINCIBLE`; state 2 ignores unforced positive deltas and unforced negative deltas during a trampoline bounce. Its fallback changes the owned snail skin and dispatches damage animations only while `cRSubGoldy::slug_fall_active` is clear. Windows collision callsites feed -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and +0.02 SubLazer damage; Android and iOS retain the same member.",
+      "aliases": [
+        "cRDamageGuage_Take"
+      ]
     },
     {
       "address": "0x441540",
@@ -3490,17 +3511,26 @@
     {
       "address": "0x444ac0",
       "name": "initialize_invincible_shell",
-      "description": "Authored `cRInvincible::Init()`: resets the exact 0x98-byte visual owner embedded at `Snail + 0x1894` (`cRSubGoldy + 0x4218`) and restores the normal snail skin."
+      "description": "Authored `cRInvincible::Init()`: resets the exact 0x98-byte visual owner embedded at `Snail + 0x1894` (`cRSubGoldy + 0x4218`) and restores the normal snail skin.",
+      "aliases": [
+        "cRInvincible_Init"
+      ]
     },
     {
       "address": "0x444ae0",
       "name": "start_invincible_shell",
-      "description": "Authored `cRInvincible::Start()`: arms the embedded visual owner when the native invincible bit becomes active, seeds its spin/fade lanes, raises the shared render bit, and plays `SFX2/INVINCIBLE.OGG`."
+      "description": "Authored `cRInvincible::Start()`: arms the embedded visual owner when `SUBGOLDY_SHOOT_FLAG_INVINCIBLE` becomes active, seeds its spin/fade lanes, raises the shared render bit, and plays `SFX2/INVINCIBLE.OGG`.",
+      "aliases": [
+        "cRInvincible_Start"
+      ]
     },
     {
       "address": "0x444b50",
       "name": "update_invincible_shell",
-      "description": "Authored `cRInvincible::AI()`: fades the embedded shell visual in while bit 0x80 of the owning cRSubGoldy's `shoot_flags` stays active, spins it on the shared snail matrix, and fades back to the base skin once invincibility clears."
+      "description": "Authored `cRInvincible::AI()`: fades the embedded shell visual in while the owning cRSubGoldy's named invincibility capability stays active, spins it on the shared snail matrix, and fades back to the base skin once the capability clears.",
+      "aliases": [
+        "cRInvincible_AI"
+      ]
     },
     {
       "address": "0x444cf0",

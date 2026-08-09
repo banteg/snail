@@ -1,10 +1,10 @@
-// flush_row_event_display @ 0x404830 (thiscall, ret)
+// flush_row_event_display @ 0x404830 (thiscall, ret) — cRCompletion::UnInit()
 
 #include "completion.h"
 #include "game_root.h"
 
 
-void Completion::flush_row_event_display()
+void cRCompletion::UnInit()
 {
     if (state != COMPLETION_STATE_INACTIVE) {
         if (delivered_parcel_count != parcel_target_count) {

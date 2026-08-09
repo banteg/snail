@@ -366,7 +366,8 @@ def test_mobile_finalizer_high_score_and_tip_lifecycles_are_persisted() -> None:
     )
     assert "cRGame::InitLast" in game_root_header
     assert "cRSubHighScore::Init" in sub_high_score_header
-    assert "cRTip::UnInit" in tip_header
+    assert "class cRTip {" in tip_header
+    assert "void UnInit(); // @ 0x4489e0" in tip_header
 
 
 def test_android_root_constructor_recovers_inlined_game_owner() -> None:

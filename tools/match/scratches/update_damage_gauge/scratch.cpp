@@ -1,4 +1,4 @@
-// update_damage_gauge @ 0x440fd0 (thiscall, ret)
+// update_damage_gauge / cRDamageGuage::AI @ 0x440fd0 (thiscall, ret)
 // Advances the contact-damage gauge state machine and queues its HUD quads.
 
 #include "damage_guage.h"
@@ -25,7 +25,7 @@ int queue_axis_aligned_textured_quad_uv(
     int blend_mode,
     float rotation);
 
-void DamageGuage::update_damage_gauge()
+void cRDamageGuage::AI()
 {
     GameRoot* game = g_game;
     if (!game->subgame.subgame_pause_gate) {
@@ -74,11 +74,11 @@ void DamageGuage::update_damage_gauge()
             skin_game->subgame.embedded_player()
                 ->presentation.snail_skin.change_snail_skin(
                     SNAIL_SKIN_SLOT_DAMAGE, 0.2f);
-            apply_damage_gauge_delta(-0.0016666667f, 1);
+            Take(-0.0016666667f, 1);
             skin_hold_ticks = 5;
             game = g_game;
             if (game->subgame.embedded_player()->completion_handoff_active) {
-                apply_damage_gauge_delta(-0.0066666668f, 0);
+                Take(-0.0066666668f, 0);
                 game = g_game;
             }
             if ((fill == 0.0f

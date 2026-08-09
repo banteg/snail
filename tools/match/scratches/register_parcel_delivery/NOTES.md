@@ -1,8 +1,8 @@
 # Exact match
 
 `register_parcel_delivery` @ 0x405040 is the exact Windows
-`Completion::register_parcel_delivery` / cross-port
-`cRCompletion::RegisterParcel`. It records one parcel delivery on the
+`cRCompletion::RegisterParcel` (stable matcher key
+`register_parcel_delivery`). It records one parcel delivery on the
 embedded completion owner, awards the per-parcel score event, plays the
 delivery sound, and switches directly to state 3 when the final parcel is
 registered.
@@ -36,3 +36,13 @@ the exact embedded Player boundary. IDA's `g_player_block` rendering was an
 address collision, not a separate owner. The canonical replay now exposes
 both borrows as `&g_game_base->subgame.player`, matching Binary Ninja and the
 already exact source without changing the 36/36 result.
+
+## 2026-08-09 primary cRCompletion ownership
+
+The matcher now emits this exact 36/36 helper as
+`cRCompletion::RegisterParcel()` and binds the VC6 decorated symbol
+`?RegisterParcel@cRCompletion@@QAEXXZ`. Android and iOS independently retain
+`_ZN12cRCompletion14RegisterParcelEv` on the same lifecycle owner. The
+`Completion` compatibility typedef preserves analysis consumers while the
+candidate surface adopts the authored name; all 10 masked operands remain
+clean.

@@ -12,9 +12,9 @@
 
 typedef Vector3 Vec3;
 
-void Completion::update_row_event_display()
+void cRCompletion::AI()
 {
-    Completion* controller = this;
+    cRCompletion* controller = this;
     if (controller->state == COMPLETION_STATE_INACTIVE)
         return;
 

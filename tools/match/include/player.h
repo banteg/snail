@@ -120,7 +120,7 @@ public:
     RenderableBod snail_hotspot_body;        // +0x164c, owns model at +0x1670 and transform at +0x1684
     Vector3 snail_hotspots_local[SNAIL_HOTSPOT_COUNT];   // +0x16cc
     Vector3 snail_hotspots_world[SNAIL_HOTSPOT_COUNT];   // +0x17b0
-    Invincible invincible_shell;                // +0x1894, exact 0x98-byte cRInvincible
+    cRInvincible invincible_shell;              // +0x1894, exact 0x98-byte cRInvincible
     // These lanes are consumed by cRSnail/cRCutScene, not cRInvincible.
     // Android and iOS place the corresponding fields at +0x1764..+0x176c,
     // immediately after their smaller cRInvincible renderable owner.
@@ -237,7 +237,7 @@ public:
     // Authored cRPathFollowGoldy owner. Its absolute address in the embedded
     // player is 0x430100, previously mistaken for an independent global.
     cRPathFollowGoldy follow_state;         // +0x384
-    DamageGuage damage_gauge;     // +0x3c4
+    cRDamageGuage damage_gauge;   // +0x3c4
     ProgressBar progress_bar;               // +0x3f0, empty authored cRProgressBar
     char unknown_3f1[0x3f4 - 0x3f1];
     Warning warning;                       // +0x3f4, authored cRWarning owner
