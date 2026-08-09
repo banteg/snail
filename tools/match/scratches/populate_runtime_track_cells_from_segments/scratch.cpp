@@ -732,9 +732,9 @@ void cRSubGame::BuildLevel()
                 case '(':
                     ++trampoline_counter;
                     *glyph_list_flags &= 0xffffffdf;
-                    if (trampoline_counter == 15)
+                    if (trampoline_counter == 15) {
                         trampoline_counter = 0;
-                    if (trampoline_counter == 8) {
+                    } else if (trampoline_counter == 8) {
                         ((BodBase*)(cell + CELL_BOD_BASE))
                             ->SetObject(ROOT_BOD_OBJECT(trampoline));
                         *glyph_list_flags |= 0x20;
@@ -743,6 +743,8 @@ void cRSubGame::BuildLevel()
                                 * (lane + build_row * RUNTIME_LANE_COUNT
                                    + CELL_COLOR_INDEX_BIAS)))
                             ->store_color4f(1.0f, 1.0f, 1.0f, 0.99900001f);
+                    } else {
+                        *glyph_list_flags &= 0xffffffdf;
                     }
                     *(unsigned char*)(cell + CELL_TILE_ID) = SUBLOC_TILE_TRAMPOLINE;
                     break;
