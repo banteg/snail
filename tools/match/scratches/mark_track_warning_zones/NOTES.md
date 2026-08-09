@@ -145,3 +145,32 @@ still native's cell-cursor reload before the saved-row reload versus VC6's
 opposite scheduling of those independent hazard-path loads. Further work needs
 compiler provenance, not another declaration, comma expression, recurrence,
 or synthetic dependency.
+
+## 2026-08-09 suppression producer/consumer closure
+
+The packed `cRSubLoc::lane_and_flags +0x40` contract is now closed across the
+Windows image. `DeSaltTrack` loads the destination dword at `0x43558f`, ORs
+literal `0x18` at `0x43559d`, and stores it back at `0x4355a0`. The two low
+bits have separate gameplay consumers in `update_subgame`:
+
+- `0x43937c` tests `0x10` and skips the ambient `AddGarbage` path when set;
+  the authored garbage tile at id `0x21` is handled before this gate.
+- `0x4394c5` tests `0x08` and skips the ambient salt-spawn path when set;
+  the authored salt tile at id `0x22` is likewise handled before this gate.
+
+The whole-image field-xref audit finds no consumer of `0x18` as a third,
+independent flag. Other users of the packed word consume disjoint meanings:
+lane index `0x0007`, warning/cache family `0x0020`, family swap `0x0040`,
+merged width `0x0f00`, AI enable `0x2000`, uncached body `0x4000`, and corner
+object `0x8000`. In particular, `build_track_render_caches` checks only
+`0x20`, `0x40`, and `0x4000`, then clears `0x40`; it neither reads nor clears
+the `0x08/0x10` suppression pair. The footprint is therefore gameplay spawn
+policy, not a render/cache warning marker.
+
+Android authored `cRSubGame::DeSaltTrack()` independently writes
+`(flags & 0xe7) | 0x18` over the same six-row, two-lane footprint. Clearing
+then setting exactly those two bits is equivalent to the Windows OR and pins
+`SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED` as the composition of
+`SUBLOC_FLAG_SUPPRESS_SALT_SPAWN | SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN`, not a
+separate bit. The source-shaped scratch already uses that combined semantic
+name, so no local rewrite or further reload-order experiment is warranted.
