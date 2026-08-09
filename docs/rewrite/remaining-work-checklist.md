@@ -169,8 +169,13 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Recover the full installed-bank ownership and row-slot pairing rules
 - [x] Finish the swept local-frame entry owner strongly enough to gate it behind the native `attachment_exit_pending` branch instead of the current broader gameplay trigger
   - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows, the current row gates the swept probes through the recovered live owner bits (`0x40` first, then `0x80`), and raw BN plus IDA now show the first swept helper does not directly retire `attachment_exit_pending` before that `0x80` gate check
-- [ ] Recover the real consumers and semantics of `post_follow_value_a` / `post_follow_value_b`
-  - value_a consumer found (2026-06-12, update_cameraman read): while `attachment_exit_pending` the camera applies a world-z roll by `post_follow_value_a` each tick, between the follow orientation rotations and `heading_roll`; value_b's consumer remains open
+- [ ] Recover the real consumer and semantics of
+  `post_follow_heading_carryover`
+  - `post_follow_exit_roll` is closed: while `attachment_exit_pending`,
+    `update_cameraman` applies it as a world-z roll between the follow
+    orientation rotations and `heading_roll`; the adjacent
+    `post_follow_heading_carryover` lane still has only producer/clear writes
+    and no recovered consumer
 - [x] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
   - resolved as dead code: the field at `[esi+0x44]` is `PathTemplate::segment_count` (not `sample_count` — the HLIL `_pad_3c[8].d` rendering is a char-pad byte index into the 0x3c-aligned block). The gate `sample_index + 1 == segment_count * 2` at `0x420d1d` is unreachable because the helper terminates at `sample_index == segment_count` first, with `sample_index` starting at 0 and advancing by 1. There is no second increment path or field aliasing that could close the gap. Do not port.
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story
@@ -199,7 +204,7 @@ Work this top-down unless a new runtime capture invalidates the order.
   `play_subgoldy_shoot_sfx`. The emitter owner is now closed as exact
   `cRSubGoldy::Shoot(cRSubGoldy*)` / `shoot_subgoldy`.
 - [ ] Add a projectile-specific visual smoke path for the movement-fire VAPOURLAZER trail. The current laser-shot render fix is grounded in `create_golb` / `initialize_vapour` / `update_vapour`, but the CLI smoke path still cannot script a fired shot and capture the generated trail for visual regression review.
-- [ ] Port Golb shot path-follow over attachment cells. Native `update_golb_ai` @ 0x414820 switches a shot into path-follow mode (`initialize_path_follow_golb` @ 0x421770, `traverse_path_follow_golb`, `search_path_for_golb` @ 0x415e30) when it crosses a tile-`0x1e` cell, so shots ride humps/loops instead of flying level through them. The port now has the kind-0 `[0, 0.49]` level band + `subgame_rate * 0.017` gravity and the lifetime/window despawn from `create_golb`/`update_golb_ai`, but not the path-follow lane (also the rocket homing lane fed by `search_path_for_golb` at spawn). Both helpers are matched in `tools/match/scratches` (100% and 92% with a documented scheduling-only residual) — port from the matched sources: candidate samples are gated on `0 < dz < 30` toward positive z and chosen by nearest 3D magnitude, first-best-wins.
+- [ ] Port Golb shot path-follow over attachment cells. Native `update_golb_ai` @ 0x414820 switches a shot into path-follow mode (`initialize_path_follow_golb` @ 0x421770, `traverse_path_follow_golb`, `search_path_for_golb` @ 0x415e30) when it crosses a tile-`0x1e` cell, so shots ride humps/loops instead of flying level through them. The port now has the kind-0 `[0, 0.49]` level band + `subgame_rate * 0.017` gravity and the lifetime/window despawn from `create_golb`/`update_golb_ai`, but not the path-follow lane (also the rocket homing lane fed by `search_path_for_golb` at spawn). The initializer and search helper are proof-grade; `traverse_path_follow_golb` is semantics-complete at 85.82% with a documented scheduling residual. Port from those matched or pinned sources: candidate samples are gated on `0 < dz < 30` toward positive z and chosen by nearest 3D magnitude, first-best-wins.
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring runtime owner, ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit `2 -> 3` effect lane, and the recovered `health_collect_particles` burst packet, especially parcel, garbage-impact, the exact dedicated health-particle bod owner, the original pre-hit ring bod anchor/layout fields, the dedicated jet-particle/nozzle owner, and the remaining deeper weapon presentation owners
@@ -254,15 +259,25 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 If there is time for only one focused RE session, use this order:
 
-1. `update_subgame` / outer bridge state machine
-2. `initialize_subgame` / `build_subgame_level` rebuild ownership
-3. `build_snail_world_hotspots` / `update_cutscene` hotspot-source matrix path
-4. `initialize_subgoldy_death` / `update_subgoldy_resurrect`
-5. `begin_track_attachment_follow_state` / `update_track_attachment_follow_state`
-6. `update_row_event_display` / `flush_row_event_display`
-7. `play_subgoldy_shoot_sfx` and `shooting_tier` / `shoot_flags` producers
-8. `update_warning` and the damage-warning owner chain
-9. track render-normalization helpers
+1. `update_subgame` / saved outer-owner producers for the literal
+   `26/27/28/29/30` bridge
+2. `build_subgame_level` rebuild and continuation ownership
+   (`initialize_subgame` is already proof-grade)
+3. `extract_snail_local_hotspots` -> `update_cutscene` intro, completion, and
+   death handoff matrices and timing (`build_snail_world_hotspots` is already
+   proof-grade)
+4. the scoped `update_subgoldy` attachment-exit lanes: grounded and open-edge
+   re-snap, trampoline, hover clear, and the remaining post-follow consumer;
+   treat `update_track_attachment_follow_state` as semantics-pinned rather than
+   a generic score-golf target
+5. `populate_runtime_track_cells_from_segments` ->
+   `build_track_fringe_objects` / merge / promotion render-normalization chain
+
+Do not keep already proof-grade helpers in the active decompile queue merely
+because an older plan named them. The death/resurrect pair, begin-follow, both
+row-event functions, and `update_warning` are closed. Shooting-audio and
+damage-warning follow-ups should re-enter this list only when new runtime or
+compiler-provenance evidence supplies a concrete hypothesis.
 
 ## Checklist Discipline
 
