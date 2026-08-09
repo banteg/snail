@@ -30,12 +30,12 @@ enum VoicePlayMode {
     VOICE_PLAY_INTERRUPT = 2,
 };
 
-class VoiceSet {
+class cRVoiceSet {
 public:
-    void initialize_voice_set(int count); // @ 0x448df0, Android cRVoiceSet::Init(int)
-    void shuffle_voice_set(); // @ 0x448e60, Android cRVoiceSet::Shuffle()
-    bool play_voice_set(int sample_override); // @ 0x449390, Android cRVoiceSet::Play(int)
-    void update_voice_set(); // @ 0x449360, Android cRVoiceSet::AI()
+    void Init(int count); // @ 0x448df0
+    void Shuffle(); // @ 0x448e60
+    bool Play(int sample_override); // @ 0x449390
+    void AI(); // @ 0x449360
 
     int sample_count;          // +0x00
     int next_index;            // +0x04
@@ -45,23 +45,33 @@ public:
     float cooldown_step;       // +0x14
 };
 
-class VoiceManager {
-public:
-    void reset_voice_manager(); // @ 0x448ec0
-    void initialize_voice_manager(); // @ 0x448ee0
-    void update_voice_manager(); // @ 0x4492a0
-    bool play_voice_manager(
-        int set_id, unsigned int mode, int sample_override); // @ 0x4492d0
-    int is_voice_playing(); // @ 0x449410, Android cRVoiceManager::IsPlaying()
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRVoiceSet VoiceSet;
 
-    VoiceSet sets[VOICE_SET_COUNT]; // +0x000
+class cRVoiceManager {
+public:
+    void ReSet(); // @ 0x448ec0
+    void Init(); // @ 0x448ee0
+    void AI(); // @ 0x4492a0
+    bool Play(
+        int set_id, unsigned int mode, int sample_override); // @ 0x4492d0
+    int IsPlaying(); // @ 0x449410
+
+    cRVoiceSet sets[VOICE_SET_COUNT]; // +0x000
     float global_progress;           // +0x180
     float global_frequency_seconds;  // +0x184
 };
 
-extern VoiceManager g_voice_manager; // unk_751498
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRVoiceManager VoiceManager;
 
+extern cRVoiceManager g_voice_manager; // unk_751498
+
+typedef char cRVoiceSet_must_be_0x18[
+    (sizeof(cRVoiceSet) == 0x18) ? 1 : -1];
 typedef char VoiceSet_must_be_0x18[(sizeof(VoiceSet) == 0x18) ? 1 : -1];
+typedef char cRVoiceManager_must_be_0x188[
+    (sizeof(cRVoiceManager) == 0x188) ? 1 : -1];
 typedef char VoiceManager_must_be_0x188[
     (sizeof(VoiceManager) == 0x188) ? 1 : -1];
 

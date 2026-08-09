@@ -23,7 +23,7 @@ int GameRoot::run_frame_update()
     fade.AI();
     g_audio_backend.noop_runtime_ai();
     g_cheat_state.update_cheat();
-    g_voice_manager.update_voice_manager();
+    g_voice_manager.AI();
 
     int sprite_update_count = 0;
     int next_frame_counter = frame_counter + 1;

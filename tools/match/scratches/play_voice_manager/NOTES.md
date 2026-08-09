@@ -85,3 +85,13 @@ and subtract or cast back through its first `sets` member on every iteration.
 This is an ownership-only decompiler improvement. The exact reset, update, and
 playing-query matcher results remain byte-identical; no source was changed to
 imitate either decompiler's presentation.
+
+## 2026-08-09 authored source promotion
+
+The matcher source now uses `cRVoiceManager::Play` and binds the exact Windows
+symbol `?Play@cRVoiceManager@@QAE_NHIH@Z`. The Windows middle parameter remains
+`unsigned int`: Android and iOS demangle their corresponding member as
+`Play(int, int, int)`, but that portable signature does not override the
+already exact Windows ABI. Calls to `IsPlaying()` and `cRVoiceSet::Play()` use
+their primary authored spellings. The body remains exact at 51/51 instructions
+with five audited operands once shared semantic aliases are applied.

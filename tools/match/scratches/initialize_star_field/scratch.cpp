@@ -1,4 +1,4 @@
-// initialize_star_field @ 0x434310 (thiscall)
+// cRStarManager::Init @ 0x434310 (thiscall)
 
 #include "game_root.h"
 
@@ -10,7 +10,7 @@ inline Vector3 operator/(const Vector3& vector, float scale)
     return Vector3(vector.x / scale, vector.y / scale, vector.z / scale);
 }
 
-void StarManager::initialize_star_field()
+void cRStarManager::Init()
 {
     int i = 0;
     if (count > 0) {
@@ -87,5 +87,5 @@ void StarManager::initialize_star_field()
         } while (index < count);
     }
 
-    update_star_field_callback();
+    AI();
 }

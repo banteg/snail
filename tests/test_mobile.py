@@ -4218,6 +4218,208 @@ def test_mobile_fringe_logo_and_galaxy_recover_authored_owners() -> None:
     assert update_subgame.count("galaxy.AI();") == 2
 
 
+def test_mobile_voice_star_and_landscape_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+
+    voice_header = (include_root / "voice_manager.h").read_text(encoding="utf-8")
+    star_header = (include_root / "star_manager.h").read_text(encoding="utf-8")
+    landscape_header = (include_root / "landscape_manager.h").read_text(
+        encoding="utf-8"
+    )
+    game_root_header = (include_root / "game_root.h").read_text(encoding="utf-8")
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+
+    for primary, compatibility, header in (
+        ("cRVoiceSet", "VoiceSet", voice_header),
+        ("cRVoiceManager", "VoiceManager", voice_header),
+        ("cRStarManager", "StarManager", star_header),
+        ("cRLandscapeManager", "LandscapeManager", landscape_header),
+    ):
+        assert f"class {primary}" in header
+        assert f"typedef {primary} {compatibility};" in header
+
+    assert "extern cRVoiceManager g_voice_manager;" in voice_header
+    assert "cRStarManager star_manager;" in game_root_header
+    assert "cRLandscapeManager landscape_manager;" in subgame_header
+
+    expected_methods = (
+        (
+            "initialize_voice_set",
+            "cRVoiceSet_Init",
+            "void cRVoiceSet::Init(int count)",
+            "?Init@cRVoiceSet@@QAEXH@Z",
+        ),
+        (
+            "shuffle_voice_set",
+            "cRVoiceSet_Shuffle",
+            "void cRVoiceSet::Shuffle()",
+            "?Shuffle@cRVoiceSet@@QAEXXZ",
+        ),
+        (
+            "reset_voice_manager",
+            "cRVoiceManager_ReSet",
+            "void cRVoiceManager::ReSet()",
+            "?ReSet@cRVoiceManager@@QAEXXZ",
+        ),
+        (
+            "initialize_voice_manager",
+            "cRVoiceManager_Init",
+            "void cRVoiceManager::Init()",
+            "?Init@cRVoiceManager@@QAEXXZ",
+        ),
+        (
+            "update_voice_manager",
+            "cRVoiceManager_AI",
+            "void cRVoiceManager::AI()",
+            "?AI@cRVoiceManager@@QAEXXZ",
+        ),
+        (
+            "play_voice_manager",
+            "cRVoiceManager_Play",
+            "bool cRVoiceManager::Play(",
+            "?Play@cRVoiceManager@@QAE_NHIH@Z",
+        ),
+        (
+            "update_voice_set",
+            "cRVoiceSet_AI",
+            "void cRVoiceSet::AI()",
+            "?AI@cRVoiceSet@@QAEXXZ",
+        ),
+        (
+            "play_voice_set",
+            "cRVoiceSet_Play",
+            "bool cRVoiceSet::Play(int sample_override)",
+            "?Play@cRVoiceSet@@QAE_NH@Z",
+        ),
+        (
+            "is_voice_playing",
+            "cRVoiceManager_IsPlaying",
+            "int cRVoiceManager::IsPlaying()",
+            "?IsPlaying@cRVoiceManager@@QAEHXZ",
+        ),
+        (
+            "destroy_star_field",
+            "cRStarManager_UnInit",
+            "void cRStarManager::UnInit()",
+            "?UnInit@cRStarManager@@QAEXXZ",
+        ),
+        (
+            "open_star_field",
+            "cRStarManager_Open",
+            "void cRStarManager::Open(int star_count)",
+            "?Open@cRStarManager@@QAEXH@Z",
+        ),
+        (
+            "initialize_star_field",
+            "cRStarManager_Init",
+            "void cRStarManager::Init()",
+            "?Init@cRStarManager@@QAEXXZ",
+        ),
+        (
+            "hide_star_field",
+            "cRStarManager_Hide",
+            "void cRStarManager::Hide()",
+            "?Hide@cRStarManager@@QAEXXZ",
+        ),
+        (
+            "unhide_star_field",
+            "cRStarManager_UnHide",
+            "void cRStarManager::UnHide()",
+            "?UnHide@cRStarManager@@QAEXXZ",
+        ),
+        (
+            "update_star_field",
+            "cRStarManager_AI",
+            "void cRStarManager::AI()",
+            "?AI@cRStarManager@@UAEXXZ",
+        ),
+        (
+            "update_star_positions",
+            "cRStarManager_UpdateStars",
+            "void cRStarManager::UpdateStars(float fade_alpha)",
+            "?UpdateStars@cRStarManager@@QAEXM@Z",
+        ),
+        (
+            "reset_landscape_manager",
+            "cRLandscapeManager_Open",
+            "void cRLandscapeManager::Open()",
+            "?Open@cRLandscapeManager@@QAEXXZ",
+        ),
+        (
+            "load_landscape_script_by_name",
+            "cRLandscapeManager_Import",
+            "int cRLandscapeManager::Import(char* script_name)",
+            "?Import@cRLandscapeManager@@QAEHPAD@Z",
+        ),
+        (
+            "activate_landscape_entry",
+            "cRLandscapeManager_Init",
+            "void cRLandscapeManager::Init(int script_index)",
+            "?Init@cRLandscapeManager@@QAEXH@Z",
+        ),
+        (
+            "clear_active_landscape_entries",
+            "cRLandscapeManager_UnInit",
+            "void cRLandscapeManager::UnInit()",
+            "?UnInit@cRLandscapeManager@@QAEXXZ",
+        ),
+    )
+    for windows_name, alias, definition, object_symbol in expected_methods:
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert entries[windows_name]["status"] == "verified"
+        assert entries[windows_name]["confidence"] == "high"
+
+    assets = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    frame = (scratch_root / "run_frame_update/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    build = (scratch_root / "build_subgame_level/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    subgoldy = (scratch_root / "update_subgoldy/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "g_voice_manager.Init();" in assets
+    assert "g_voice_manager.AI();" in frame
+    assert "g_voice_manager.ReSet();" in build
+    assert "g_voice_manager.ReSet();" in subgoldy
+    assert "g_voice_manager.Play(" in subgoldy
+    assert "star_manager.Open(36);" in assets
+    assert "g_game->star_manager.UnHide();" in build
+    assert "landscape->Open();" in assets
+    assert assets.count("landscape->Import(") == 3
+    assert "landscape_manager\n        .Import(" in assets
+    assert build.count("landscape_manager.Init(") == 2
+
+
 def test_mobile_warning_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

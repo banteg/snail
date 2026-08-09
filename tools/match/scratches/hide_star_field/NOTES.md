@@ -10,3 +10,9 @@ The authored `cRStarManager::Hide()` member is `void`. All six Windows callers
 discard EAX; the observed state or count at return is only residue from the
 loop condition. Keeping that loop variable while removing the synthetic return
 preserves the exact instruction stream.
+
+## 2026-08-09 primary cRStarManager::Hide promotion
+
+The primary matcher symbol is `?Hide@cRStarManager@@QAEXXZ`, with
+`hide_star_field` retained as the stable harness name. The authored spelling is
+codegen-neutral at 100.00%, 23/23, prefix 23/23, with no masked operands.

@@ -23,3 +23,10 @@ Android independently retains `void cRVoiceSet::Shuffle()` and the same
 platform-specific; the shared owner, playlist relationship, and void contract
 map directly to Windows. Focused Windows matching remains exact at 34/34
 instructions with six clean masked operands.
+
+## 2026-08-09 authored source promotion
+
+The primary source spelling is now `cRVoiceSet::Shuffle()` with exact MSVC
+binding `?Shuffle@cRVoiceSet@@QAEXXZ`. This is an owner/name promotion only:
+the stable function directory remains `shuffle_voice_set`, and the focused
+receipt stays exact at 34/34 instructions with six clean operands.

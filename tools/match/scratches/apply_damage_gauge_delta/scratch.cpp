@@ -20,9 +20,9 @@ void cRDamageGuage::Take(float delta, bool force)
         if (hit_flash_progress == 0.0f && delta > 0.0f) {
             g_game->subgame.embedded_player()->presentation.snail_skin
                 .change_snail_skin(SNAIL_SKIN_SLOT_DAMAGE, 0.2f);
-            if (!g_voice_manager.play_voice_manager(
+            if (!g_voice_manager.Play(
                     VOICE_SET_DAMAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1)) {
-                if (g_voice_manager.play_voice_manager(
+                if (g_voice_manager.Play(
                         VOICE_SET_OUCH, VOICE_PLAY_IF_IDLE, -1))
                     hit_flash_progress = hit_flash_step;
                 if (!g_game->subgame.embedded_player()->slug_fall_active) {

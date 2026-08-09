@@ -12,18 +12,22 @@ enum {
     LANDSCAPE_SCRIPT_CAPACITY = 128,
 };
 
-class LandscapeManager {
+class cRLandscapeManager {
 public:
-    void reset_landscape_manager(); // @ 0x4182e0
-    int load_landscape_script_by_name(char* script_name); // @ 0x4182f0
-    void activate_landscape_entry(int script_index); // @ 0x418870
-    void clear_active_landscape_entries(); // @ 0x418a30
+    void Open(); // @ 0x4182e0
+    int Import(char* script_name); // @ 0x4182f0
+    void Init(int script_index); // @ 0x418870
+    void UnInit(); // @ 0x418a30
 
     ActiveLandscapeEntry active_entries[LANDSCAPE_ACTIVE_ENTRY_COUNT]; // +0x0000
     int script_count; // +0x05a0
     LandscapeScriptRecord scripts[LANDSCAPE_SCRIPT_CAPACITY]; // +0x05a4
 };
 
+typedef cRLandscapeManager LandscapeManager;
+
+typedef char cRLandscapeManager_must_be_0x97a4[
+    (sizeof(cRLandscapeManager) == 0x97a4) ? 1 : -1];
 typedef char LandscapeManager_must_be_0x97a4[
     (sizeof(LandscapeManager) == 0x97a4) ? 1 : -1];
 

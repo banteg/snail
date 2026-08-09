@@ -8,3 +8,10 @@ The shared body also confirms the `void` contract.
 Focused Windows matching remains exact at 14/14 instructions with two clean
 masked operands. Mobile evidence is used for ownership and field provenance;
 it does not alter the matching source.
+
+## 2026-08-09 authored source promotion
+
+The matcher now spells the body `cRVoiceSet::AI()` and binds
+`?AI@cRVoiceSet@@QAEXXZ`. The stable function directory remains
+`update_voice_set`; focused matching stays exact at 14/14 instructions with
+two clean operands.

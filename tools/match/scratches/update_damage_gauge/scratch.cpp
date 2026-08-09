@@ -63,7 +63,7 @@ void cRDamageGuage::AI()
                 if (*(int*)&game->subgame.embedded_player()->transform.position.y != 0x3efae148)
                     goto render;
                 state = DAMAGE_GUAGE_STATE_DRAINING;
-                g_voice_manager.play_voice_manager(
+                g_voice_manager.Play(
                     VOICE_SET_POSTAL, VOICE_PLAY_IF_IDLE, -1);
             }
             goto render_after_refresh;

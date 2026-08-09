@@ -30,7 +30,7 @@ void set_input_controller_pointer_authored_xy(int controller, float x, float y);
 
 void cRSubGame::StartLevel(int level_index)
 {
-    g_game->star_manager.unhide_star_field();
+    g_game->star_manager.UnHide();
     if (level_mode == 7)
         HideScores();
     else
@@ -61,7 +61,7 @@ void cRSubGame::StartLevel(int level_index)
     player.progress_bar.noop_runtime_ai();
     sub_lazers.Init();
     salt_hazards.Init();
-    g_voice_manager.reset_voice_manager();
+    g_voice_manager.ReSet();
 
     level_definition.load_frontend_level_by_mode_and_index(level_mode, level_index);
 
@@ -138,35 +138,35 @@ void cRSubGame::StartLevel(int level_index)
         case 0:
             landscape_index =
                 g_game->subgame.landscape_manager
-                    .load_landscape_script_by_name("SpaceBluesWhorl.txt");
+                    .Import("SpaceBluesWhorl.txt");
             break;
         case 1:
             landscape_index =
                 g_game->subgame.landscape_manager
-                    .load_landscape_script_by_name("SpaceGreenWarp.txt");
+                    .Import("SpaceGreenWarp.txt");
             break;
         case 2:
             landscape_index =
                 g_game->subgame.landscape_manager
-                    .load_landscape_script_by_name("SpacePurple.txt");
+                    .Import("SpacePurple.txt");
             break;
         case 3:
             landscape_index =
                 g_game->subgame.landscape_manager
-                    .load_landscape_script_by_name("SpaceRed.txt");
+                    .Import("SpaceRed.txt");
             break;
         default:
             landscape_index = level_index;
             break;
         }
 
-        landscape_manager.activate_landscape_entry(landscape_index);
+        landscape_manager.Init(landscape_index);
         if (random_float_below(1.0f, 0) > 0.5f)
             g_game->backdrop.pending_flip = 1;
         else
             g_game->backdrop.pending_flip = (unsigned char)zero;
     } else {
-        landscape_manager.activate_landscape_entry(level_definition.landscape_script_index);
+        landscape_manager.Init(level_definition.landscape_script_index);
     }
 
     BodNode* track_bod_list = &track_body_list_head;

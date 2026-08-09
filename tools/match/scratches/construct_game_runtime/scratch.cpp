@@ -45,7 +45,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRTimeTrial %i\n", sizeof(TimeTrial)); \
     debug_report_stub("   Size of cRPathManager %i\n", sizeof(cRPathManager)); \
     debug_report_stub("   Size of cRPath %i\n", sizeof(((cRSubGame*)0)->path_pairs)); \
-    debug_report_stub("   Size of cRLandscapeManager %i\n", sizeof(LandscapeManager)); \
+    debug_report_stub("   Size of cRLandscapeManager %i\n", sizeof(cRLandscapeManager)); \
     debug_report_stub("   Size of cRSMTracks %i\n", sizeof(cRSMTracks)); \
     debug_report_stub("   Size of cRParcelManager %i\n", sizeof(cRParcelManager)); \
     debug_report_stub("   Size of cRGUI %i\n", sizeof(GUI)); \
@@ -152,7 +152,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
         backdrop->secondary_world_blend.color.noop_this_constructor();
         backdrop->vtable = &g_backdrop_callback_table;
 
-        StarManager* star_manager = &root->star_manager;
+        cRStarManager* star_manager = &root->star_manager;
         ((BodBase*)star_manager)->initialize_bod_base();
         ((BodBase*)star_manager)->vtable = &g_star_field_callback_table;
 

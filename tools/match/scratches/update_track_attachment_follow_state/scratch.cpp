@@ -50,7 +50,7 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
         sample_index = index;
 
         if (index == 2 * this->template_record->segment_count) {
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_MISC, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
         }
 
@@ -314,7 +314,7 @@ terminal_path:
             player->cutscene_pitch_cycle_step =
                 g_game->subgame.subgame_rate * 0.013888888f;
             player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step;
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_SUPERTRAMP, VOICE_PLAY_IF_IDLE, -1);
         } else {
             out_position->z =

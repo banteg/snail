@@ -165,3 +165,12 @@ consecutive non-improving sweeps the canonical lane is formally stalled at
 keeps the shared, independently proven vector operator and exact instruction
 and reference counts; the remaining travel/color and corner-scale reorderings
 are bounded VC6 scheduling debt.
+
+## 2026-08-09 primary cRStarManager::Init promotion
+
+The primary matcher method is `cRStarManager::Init()`, symbol
+`?Init@cRStarManager@@QAEXXZ`. Its final authored `AI()` call remains virtual
+through the manager's slot-zero table. Only owner and method spellings changed:
+the body remains frozen at **97.57%**, 247/247, prefix 126, with all 26
+references clean. All seven mutation specs and the nine-record experiment
+ledger remain byte-identical; no scheduling lane was reopened.

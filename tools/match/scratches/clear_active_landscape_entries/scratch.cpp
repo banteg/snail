@@ -1,4 +1,4 @@
-// clear_active_landscape_entries @ 0x418a30 (thiscall, ret)
+// cRLandscapeManager::UnInit @ 0x418a30 (thiscall, ret)
 // Removes all linked active landscape slots from the active BOD list.
 
 #include "game_root.h"
@@ -7,7 +7,7 @@
 
 int report_errorf(char* format, ...);
 
-void LandscapeManager::clear_active_landscape_entries()
+void cRLandscapeManager::UnInit()
 {
     ActiveLandscapeEntry* entry = active_entries;
     int count = sizeof(active_entries) / sizeof(active_entries[0]);

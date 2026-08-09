@@ -129,13 +129,13 @@ char GameRoot::initialize_game_assets_and_world()
     memset(g_directx_loader_scratch, 0, 0x15c);
     DirectXLoader* loader = &directx_loader;
     loader->initialize_directx_loader();
-    LandscapeManager* landscape = &subgame.landscape_manager;
-    landscape->reset_landscape_manager();
+    cRLandscapeManager* landscape = &subgame.landscape_manager;
+    landscape->Open();
     cRSMTracks* sm_tracks = &subgame.sm_tracks;
     sm_tracks->Import();
-    landscape->load_landscape_script_by_name((char*)"Starmap.txt");
-    landscape->load_landscape_script_by_name((char*)"Splash.txt");
-    landscape->load_landscape_script_by_name(g_help_script_path);
+    landscape->Import((char*)"Starmap.txt");
+    landscape->Import((char*)"Splash.txt");
+    landscape->Import(g_help_script_path);
 
     subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
     ((SubgameOwnerLink*)&subgame.gui)->bind_subgame_owner();
@@ -144,11 +144,11 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.player.cameraman.initialize_cameraman();
     logo.Open();
     g_sound_effect_manager.initialize_sound_bank(g_sound_bank_entries);
-    g_voice_manager.initialize_voice_manager();
+    g_voice_manager.Init();
     options.apply_audio_config_volumes();
     sm_tracks->OpenLevels();
     g_game->subgame.landscape_manager
-        .load_landscape_script_by_name(g_menu_background_script_path);
+        .Import(g_menu_background_script_path);
     subgame.level_definition_scratch.load_builtin_segment_definitions(
         g_builtin_segment_definitions);
 
@@ -3077,7 +3077,7 @@ char GameRoot::initialize_game_assets_and_world()
     active_bods->add_bod_to_front(&tip_manager);
     g_game->active_bod_list.add_bod_to_front(
         (BodNode*)&star_manager);
-    star_manager.open_star_field(36);
+    star_manager.Open(36);
     subgame.bottom_score_widget = 0;
     subgame.top_score_widget = 0;
     active_bods->add_bod_to_front(&backdrop);

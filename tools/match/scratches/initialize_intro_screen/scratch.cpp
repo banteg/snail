@@ -35,11 +35,11 @@ void cRLogo::Init(char* file_name)
 {
     cache_music_file((char*)"music/introtext.ogg", 0, g_blank_text);
     int script_index = g_game->subgame.landscape_manager
-                           .load_landscape_script_by_name((char*)"SpaceRed.txt");
+                           .Import((char*)"SpaceRed.txt");
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
     g_game->border_manager.set_border_justify_centre(0.0f);
-    g_game->star_manager.unhide_star_field();
+    g_game->star_manager.UnHide();
 
     char* file_bytes = load_file_bytes(file_name, 0);
     saved_render_flags = g_runtime_config.render_flags;

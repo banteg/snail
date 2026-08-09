@@ -266,7 +266,7 @@ public:
     BarrierActor barrier; // +0xff7bc4, embedded tutorial barrier actor
     // Exact cRLandscapeManager owner: ten active render entries followed by
     // the script count and 128 parsed 0x124-byte records.
-    LandscapeManager landscape_manager; // +0xff7c00, ends at +0x10013a4
+    cRLandscapeManager landscape_manager; // +0xff7c00, ends at +0x10013a4
     Face smtrack_heightfield; // +0x10013a4, authored cRFace; ends at +0x10014cc
     // The count precedes 150 constructor-built 0x4088-byte records. Their
     // exact aggregate extent reaches the following parcel pool.

@@ -2580,37 +2580,58 @@
     {
       "address": "0x434270",
       "name": "destroy_star_field",
-      "description": "Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0. This is a void lifecycle edge; its sole Windows caller discards the incidental count left in EAX. Cross-port Android symbols match this exact member to `cRStarManager::UnInit()`."
+      "description": "Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0. This is a void lifecycle edge; its sole Windows caller discards the incidental count left in EAX. Cross-port Android symbols match this exact member to `cRStarManager::UnInit()`.",
+      "aliases": [
+        "cRStarManager_UnInit"
+      ]
     },
     {
       "address": "0x4342c0",
       "name": "open_star_field",
-      "description": "Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes the live streak sprite pool for the requested slot count. Cross-port Android and iOS symbols match this exact member to `cRStarManager::Open(int)`."
+      "description": "Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes the live streak sprite pool for the requested slot count. Cross-port Android and iOS symbols match this exact member to `cRStarManager::Open(int)`.",
+      "aliases": [
+        "cRStarManager_Open"
+      ]
     },
     {
       "address": "0x434310",
       "name": "initialize_star_field",
-      "description": "Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Both direct Windows callers ignore a result and its inherited callback target is the void `cRStarManager::AI()`, proving this lifecycle member is void. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`."
+      "description": "Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields. Both direct Windows callers ignore a result and its inherited callback target is the void `cRStarManager::AI()`, proving this lifecycle member is void. Cross-port Android and iOS symbols match this member to `cRStarManager::Init()`.",
+      "aliases": [
+        "cRStarManager_Init"
+      ]
     },
     {
       "address": "0x434670",
       "name": "hide_star_field",
-      "description": "Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state. All six Windows callers discard the incidental loop value in EAX, proving this exact lifecycle member is void. Cross-port Android and iOS symbols match it to `cRStarManager::Hide()`."
+      "description": "Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state. All six Windows callers discard the incidental loop value in EAX, proving this exact lifecycle member is void. Cross-port Android and iOS symbols match it to `cRStarManager::Hide()`.",
+      "aliases": [
+        "cRStarManager_Hide"
+      ]
     },
     {
       "address": "0x4346b0",
       "name": "unhide_star_field",
-      "description": "Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller. Both Windows callers discard the incidental loop value in EAX, proving this exact lifecycle member is void. Cross-port Android and iOS symbols match it to `cRStarManager::UnHide()`."
+      "description": "Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller. Both Windows callers discard the incidental loop value in EAX, proving this exact lifecycle member is void. Cross-port Android and iOS symbols match it to `cRStarManager::UnHide()`.",
+      "aliases": [
+        "cRStarManager_UnHide"
+      ]
     },
     {
       "address": "0x4346f0",
       "name": "update_star_field",
-      "description": "Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update. Cross-port Android and iOS symbols match this exact member to `cRStarManager::AI()`."
+      "description": "Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update. Cross-port Android and iOS symbols match this exact member to `cRStarManager::AI()`.",
+      "aliases": [
+        "cRStarManager_AI"
+      ]
     },
     {
       "address": "0x434800",
       "name": "update_star_positions",
-      "description": "Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor. Cross-port Android and iOS symbols match this member to `cRStarManager::UpdateStars(float)`."
+      "description": "Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor. Cross-port Android and iOS symbols match this member to `cRStarManager::UpdateStars(float)`.",
+      "aliases": [
+        "cRStarManager_UpdateStars"
+      ]
     },
     {
       "address": "0x434980",
@@ -4094,47 +4115,74 @@
     {
       "address": "0x448df0",
       "name": "initialize_voice_set",
-      "description": "Exact void cRVoiceSet::Init(int) member: allocates the playlist and sample banks, seeds the playlist order, and shuffles it. Windows and Android leave different incidental return-register residue, and every caller discards it."
+      "description": "Exact void cRVoiceSet::Init(int) member: allocates the playlist and sample banks, seeds the playlist order, and shuffles it. Windows and Android leave different incidental return-register residue, and every caller discards it.",
+      "aliases": [
+        "cRVoiceSet_Init"
+      ]
     },
     {
       "address": "0x448e60",
       "name": "shuffle_voice_set",
-      "description": "Exact void cRVoiceSet::Shuffle() member: performs 100 in-place random playlist swaps. Android preserves the same owner, method, and loop role; its only caller discards the platform-specific incidental return-register residue."
+      "description": "Exact void cRVoiceSet::Shuffle() member: performs 100 in-place random playlist swaps. Android preserves the same owner, method, and loop role; its only caller discards the platform-specific incidental return-register residue.",
+      "aliases": [
+        "cRVoiceSet_Shuffle"
+      ]
     },
     {
       "address": "0x448ec0",
       "name": "reset_voice_manager",
-      "description": "Exact `cRVoiceManager::ReSet()` member: clears global voice progress and all 16 inline VoiceSet cooldowns."
+      "description": "Exact `cRVoiceManager::ReSet()` member: clears global voice progress and all 16 inline VoiceSet cooldowns.",
+      "aliases": [
+        "cRVoiceManager_ReSet"
+      ]
     },
     {
       "address": "0x448ee0",
       "name": "initialize_voice_manager",
-      "description": "Recovered void `cRVoiceManager::Init()` member: parses the authored 16-set Voice/_Voice.txt bank, registers each sample, applies normalization and frequency settings, and resets cooldown state."
+      "description": "Recovered void `cRVoiceManager::Init()` member: parses the authored 16-set Voice/_Voice.txt bank, registers each sample, applies normalization and frequency settings, and resets cooldown state.",
+      "aliases": [
+        "cRVoiceManager_Init"
+      ]
     },
     {
       "address": "0x4492a0",
       "name": "update_voice_manager",
-      "description": "Exact `cRVoiceManager::AI()` member: advances all 16 inline VoiceSets and the manager's global voice-frequency timer."
+      "description": "Exact `cRVoiceManager::AI()` member: advances all 16 inline VoiceSets and the manager's global voice-frequency timer.",
+      "aliases": [
+        "cRVoiceManager_AI"
+      ]
     },
     {
       "address": "0x4492d0",
       "name": "play_voice_manager",
-      "description": "Exact `cRVoiceManager::Play(int, int, int)` member: applies current-voice and frequency gating, optionally stops the active sample, and dispatches through the selected inline VoiceSet."
+      "description": "Exact Windows `cRVoiceManager::Play(int, unsigned int, int)` member: applies current-voice and frequency gating, optionally stops the active sample, and dispatches through the selected inline VoiceSet.",
+      "aliases": [
+        "cRVoiceManager_Play"
+      ]
     },
     {
       "address": "0x449360",
       "name": "update_voice_set",
-      "description": "Exact void cRVoiceSet::AI() member: advances an active per-set cooldown and clears it after the normalized interval completes. Android preserves the same owner, fields, and state transition."
+      "description": "Exact void cRVoiceSet::AI() member: advances an active per-set cooldown and clears it after the normalized interval completes. Android preserves the same owner, fields, and state transition.",
+      "aliases": [
+        "cRVoiceSet_AI"
+      ]
     },
     {
       "address": "0x449390",
       "name": "play_voice_set",
-      "description": "Exact bool cRVoiceSet::Play(int) member: gates on the per-set cooldown, plays an override or the next shuffled bite, and advances the playlist cursor. Android preserves the owner and boolean contract while storing larger platform-specific VoiceBite records."
+      "description": "Exact bool cRVoiceSet::Play(int) member: gates on the per-set cooldown, plays an override or the next shuffled bite, and advances the playlist cursor. Android preserves the owner and boolean contract while storing larger platform-specific VoiceBite records.",
+      "aliases": [
+        "cRVoiceSet_Play"
+      ]
     },
     {
       "address": "0x449410",
       "name": "is_voice_playing",
-      "description": "Exact cRVoiceManager::IsPlaying() member: scans all 16 inline VoiceSets and returns the first currently playing registered sample, or -1. Android preserves the authored owner and name but stubs its platform body to -1."
+      "description": "Exact cRVoiceManager::IsPlaying() member: scans all 16 inline VoiceSets and returns the first currently playing registered sample, or -1. Android preserves the authored owner and name but stubs its platform body to -1.",
+      "aliases": [
+        "cRVoiceManager_IsPlaying"
+      ]
     },
     {
       "address": "0x449460",

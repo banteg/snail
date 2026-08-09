@@ -1,8 +1,8 @@
-// destroy_star_field @ 0x434270 (thiscall)
+// cRStarManager::UnInit @ 0x434270 (thiscall)
 
 #include "star_manager.h"
 
-void StarManager::destroy_star_field()
+void cRStarManager::UnInit()
 {
     int i = 0;
     int result = count;

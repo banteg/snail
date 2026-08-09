@@ -74,7 +74,7 @@ void cRSubGame::UnInit()
         tutorial.uninit_tutorial();
 
     embedded_player()->warning.UnInit();
-    landscape_manager.clear_active_landscape_entries();
+    landscape_manager.UnInit();
     times_up.uninit_times_up();
     RemoveBods();
 

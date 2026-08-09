@@ -100,3 +100,10 @@ HLIL still folds the three typed `respawn_position` stores into one aggregate
 `Sprite +0x48` write; MLIL retains the `Vec3*` owner, and IDA independently
 renders the same write as `sprite->position`, so the canary does not pretend
 that the remaining BN presentation offset has disappeared.
+
+## 2026-08-09 primary cRStarManager::UpdateStars promotion
+
+The primary matcher surface is `void cRStarManager::UpdateStars(float)`, symbol
+`?UpdateStars@cRStarManager@@QAEXM@Z`; `update_star_positions` remains the
+stable harness name. The promotion preserves 100.00%, 106/106, prefix 106/106,
+and all 11 clean references.

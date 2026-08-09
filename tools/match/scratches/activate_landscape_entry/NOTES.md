@@ -1,4 +1,4 @@
-# activate_landscape_entry @ 0x418870
+# activate_landscape_entry / cRLandscapeManager::Init(int) @ 0x418870
 
 Near-exact source: 123/123 instructions with all masks clean; the sole residual
 is the ordinary state-store/load schedule documented below.
@@ -162,3 +162,11 @@ interior relationship without exposing pointer arithmetic.
 
 Focused matching is now **100.00%**, 123/123 instructions, with all 20 masked
 operands clean.
+
+## 2026-08-09 primary matcher owner
+
+The primary matcher surface is now `cRLandscapeManager::Init(int)`, with
+`LandscapeManager` retained as a compatibility typedef and the stable
+`activate_landscape_entry` function route preserved. VC6 emits the exact
+symbol `?Init@cRLandscapeManager@@QAEXH@Z`. The Windows-only repeated DirectX
+slice activation remains part of this authored desktop implementation.

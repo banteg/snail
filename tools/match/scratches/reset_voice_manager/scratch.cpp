@@ -2,10 +2,10 @@
 
 #include "voice_manager.h"
 
-void VoiceManager::reset_voice_manager()
+void cRVoiceManager::ReSet()
 {
     global_progress = 0.0f;
-    VoiceSet* set = sets;
+    cRVoiceSet* set = sets;
     int count = VOICE_SET_COUNT;
     do {
         set->cooldown = 0.0f;

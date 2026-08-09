@@ -1,4 +1,4 @@
-# load_landscape_script_by_name @ 0x4182f0
+# load_landscape_script_by_name / cRLandscapeManager::Import(char*) @ 0x4182f0
 
 Structure-first recovery for the landscape script cache loader.
 
@@ -59,3 +59,11 @@ loads an X mesh for repeated landscape BODs. Mobile uses a 0x1ac-byte record
 with additional `Portrait:`, `Width:`, `Height:`, and `Menu:Yes` fields. The
 cross-port evidence therefore recovers the owner and original method name, not
 a false shared struct layout.
+
+## 2026-08-09 primary matcher owner
+
+The matcher now spells the exact desktop loader as
+`cRLandscapeManager::Import(char*)`, while retaining `LandscapeManager` as a
+compatibility typedef and the stable scratch/manifest name. VC6 emits
+`?Import@cRLandscapeManager@@QAEHPAD@Z`. This naming promotion does not import
+the wider mobile record layout or change the exact Windows parser body.

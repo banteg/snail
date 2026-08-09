@@ -1,4 +1,4 @@
-# clear_active_landscape_entries @ 0x418a30
+# clear_active_landscape_entries / cRLandscapeManager::UnInit() @ 0x418a30
 
 Exact match: 49/49 instructions, clean masks.
 
@@ -45,3 +45,11 @@ calls `uninit_warning`, this helper, `uninit_times_up`, and
 The mobile renderer has no Windows-style pool of ten repeated DirectX
 landscape entries, so it has nothing to unlink. Windows' exact 49/49 body is
 the desktop implementation of the shared authored `UnInit()` lifecycle.
+
+## 2026-08-09 primary matcher owner
+
+The matcher now exposes this desktop teardown as
+`cRLandscapeManager::UnInit()`. `LandscapeManager` remains a compatibility
+typedef, and the stable scratch/manifest route remains
+`clear_active_landscape_entries`. VC6 emits the exact symbol
+`?UnInit@cRLandscapeManager@@QAEXXZ`; the mobile empty-body split is preserved.

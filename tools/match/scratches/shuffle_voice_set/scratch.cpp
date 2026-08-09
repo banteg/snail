@@ -4,7 +4,7 @@
 
 int next_math_random_value();
 
-void VoiceSet::shuffle_voice_set()
+void cRVoiceSet::Shuffle()
 {
     int remaining = 100;
     int second_index;

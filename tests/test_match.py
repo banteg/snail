@@ -1070,6 +1070,10 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x440660, "initialize_pause_menu", "?Init@cRSubPause@@QAEXXZ"),
             (0x443160, "initialize_track_parcel_slots", "?Init@cRParcelManager@@QAEXXZ"),
             (0x447090, "initialize_fringe_manager", "?Init@cRFringeManager@@QAEXXZ"),
+            (0x448DF0, "initialize_voice_set", "?Init@cRVoiceSet@@QAEXH@Z"),
+            (0x448EE0, "initialize_voice_manager", "?Init@cRVoiceManager@@QAEXXZ"),
+            (0x434310, "initialize_star_field", "?Init@cRStarManager@@QAEXXZ"),
+            (0x418870, "activate_landscape_entry", "?Init@cRLandscapeManager@@QAEXH@Z"),
             (0x408CF0, "initialize_galaxy", "?Init@cRGalaxy@@QAEXXZ"),
             (0x4191E0, "initialize_intro_screen", "?Init@cRLogo@@QAEXPAD@Z"),
             (0x442500, "initialize_vapour", "?Init@cRVapour@@QAEXPAUcRObject@@M@Z"),
@@ -1079,6 +1083,8 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x440600, "uninit_pause_menu", "?UnInit@cRSubPause@@QAEXXZ"),
             (0x408C10, "destroy_galaxy", "?UnInit@cRGalaxy@@QAEXXZ"),
             (0x419920, "destroy_intro_screen", "?UnInit@cRLogo@@QAEXXZ"),
+            (0x434270, "destroy_star_field", "?UnInit@cRStarManager@@QAEXXZ"),
+            (0x418A30, "clear_active_landscape_entries", "?UnInit@cRLandscapeManager@@QAEXXZ"),
             (0x444AE0, "start_invincible_shell", "?Start@cRInvincible@@QAEXXZ"),
             (0x446F30, "start_warning", "?Start@cRWarning@@QAEXXZ"),
             (0x404CF0, "update_row_event_display", "?AI@cRCompletion@@QAEXXZ"),
@@ -1110,6 +1116,9 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x4199E0, "update_intro_screen", "?AI@cRLogo@@QAEXXZ"),
             (0x419A90, "update_intro_logo_renderable", "?AI@cRLogoLetter@@QAEXXZ"),
             (0x439B00, "refresh_fringe_object_draw_list", "?AI@cRFringe@@QAEXXZ"),
+            (0x4492A0, "update_voice_manager", "?AI@cRVoiceManager@@QAEXXZ"),
+            (0x449360, "update_voice_set", "?AI@cRVoiceSet@@QAEXXZ"),
+            (0x4346F0, "update_star_field", "?AI@cRStarManager@@UAEXXZ"),
         )
     )
     manifest = ReferenceSymbolManifest(name="test references", symbols=symbols)

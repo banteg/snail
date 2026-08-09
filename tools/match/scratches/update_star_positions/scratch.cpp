@@ -1,10 +1,10 @@
-// update_star_positions @ 0x434800 (thiscall, ret 0x4)
+// cRStarManager::UpdateStars @ 0x434800 (thiscall, ret 0x4)
 
 #include "game_root.h"
 #include "star_manager.h"
 
 
-void StarManager::update_star_positions(float fade_alpha)
+void cRStarManager::UpdateStars(float fade_alpha)
 {
     int i = 0;
     if (count > 0) {

@@ -4,7 +4,7 @@
 
 void play_voice_backend(int sample_id, float volume, float pitch, float pan);
 
-bool VoiceSet::play_voice_set(int sample_override)
+bool cRVoiceSet::Play(int sample_override)
 {
     while (cooldown == 0.0f) {
         cooldown = cooldown_step;

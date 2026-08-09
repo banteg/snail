@@ -18,3 +18,11 @@ instructions with all five operands clean.
   followed by a void return.
 - The focused Windows match remains exact at `33/33` instructions with all five
   audited operands clean; this is ABI closure with no byte-shape concession.
+
+## 2026-08-09 authored source promotion
+
+The matcher source now uses the primary `cRVoiceSet::Init(int)` spelling and
+binds `?Init@cRVoiceSet@@QAEXH@Z`. The stable function directory remains
+`initialize_voice_set`, and `VoiceSet` remains a compatibility typedef. The
+body stays exact at 33/33 instructions; its final Shuffle reference becomes
+clean through the shared `cRVoiceSet_Shuffle` semantic alias.

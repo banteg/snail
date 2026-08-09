@@ -198,6 +198,42 @@
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member."
     },
     {
+      "address": "0x4182e0",
+      "name": "reset_landscape_manager",
+      "kind": "function",
+      "aliases": [
+        "?Open@cRLandscapeManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRLandscapeManager::Open() member."
+    },
+    {
+      "address": "0x4182f0",
+      "name": "load_landscape_script_by_name",
+      "kind": "function",
+      "aliases": [
+        "?Import@cRLandscapeManager@@QAEHPAD@Z"
+      ],
+      "description": "Exact authored cRLandscapeManager::Import(char*) member."
+    },
+    {
+      "address": "0x418870",
+      "name": "activate_landscape_entry",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRLandscapeManager@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRLandscapeManager::Init(int) member."
+    },
+    {
+      "address": "0x418a30",
+      "name": "clear_active_landscape_entries",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRLandscapeManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRLandscapeManager::UnInit() member."
+    },
+    {
       "address": "0x419110",
       "name": "open_logo",
       "kind": "function",
@@ -2231,6 +2267,60 @@
       "description": "Compiler-emitted message-state switch jump table used by update_thanks_for_playing_screen."
     },
     {
+      "address": "0x434270",
+      "name": "destroy_star_field",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRStarManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRStarManager::UnInit() member."
+    },
+    {
+      "address": "0x4342c0",
+      "name": "open_star_field",
+      "kind": "function",
+      "aliases": [
+        "?Open@cRStarManager@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRStarManager::Open(int) member."
+    },
+    {
+      "address": "0x434310",
+      "name": "initialize_star_field",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRStarManager@@QAEXXZ"
+      ],
+      "description": "Authored cRStarManager::Init() member; the retained source is frozen at its proven compiler residual."
+    },
+    {
+      "address": "0x434670",
+      "name": "hide_star_field",
+      "kind": "function",
+      "aliases": [
+        "?Hide@cRStarManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRStarManager::Hide() member."
+    },
+    {
+      "address": "0x4346b0",
+      "name": "unhide_star_field",
+      "kind": "function",
+      "aliases": [
+        "?UnHide@cRStarManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRStarManager::UnHide() member."
+    },
+    {
+      "address": "0x4346f0",
+      "name": "update_star_field",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRStarManager@@UAEXXZ"
+      ],
+      "description": "Exact authored virtual cRStarManager::AI() member."
+    },
+    {
       "address": "0x4347e8",
       "name": "update_star_field_jump_table",
       "kind": "jump_table",
@@ -2239,6 +2329,15 @@
       ],
       "size": "0x10",
       "description": "Compiler-emitted lifecycle-state switch jump table that follows update_star_field immediately after the terminal return."
+    },
+    {
+      "address": "0x434800",
+      "name": "update_star_positions",
+      "kind": "function",
+      "aliases": [
+        "?UpdateStars@cRStarManager@@QAEXM@Z"
+      ],
+      "description": "Exact authored cRStarManager::UpdateStars(float) member."
     },
     {
       "address": "0x434b60",
@@ -3034,6 +3133,42 @@
       "description": "Exact Windows cRTipManager::AI() entry; the owner-qualified alias disambiguates it from other authored AI methods."
     },
     {
+      "address": "0x448df0",
+      "name": "initialize_voice_set",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRVoiceSet@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRVoiceSet::Init(int) member."
+    },
+    {
+      "address": "0x448e60",
+      "name": "shuffle_voice_set",
+      "kind": "function",
+      "aliases": [
+        "?Shuffle@cRVoiceSet@@QAEXXZ"
+      ],
+      "description": "Exact authored cRVoiceSet::Shuffle() member."
+    },
+    {
+      "address": "0x448ec0",
+      "name": "reset_voice_manager",
+      "kind": "function",
+      "aliases": [
+        "?ReSet@cRVoiceManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRVoiceManager::ReSet() member."
+    },
+    {
+      "address": "0x448ee0",
+      "name": "initialize_voice_manager",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRVoiceManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRVoiceManager::Init() member."
+    },
+    {
       "address": "0x449260",
       "name": "initialize_voice_manager_set_jump_table",
       "kind": "jump_table",
@@ -3042,6 +3177,51 @@
       ],
       "size": "0x40",
       "description": "Compiler-emitted 16-entry voice-set name switch jump table used by initialize_voice_manager."
+    },
+    {
+      "address": "0x4492a0",
+      "name": "update_voice_manager",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRVoiceManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRVoiceManager::AI() member."
+    },
+    {
+      "address": "0x4492d0",
+      "name": "play_voice_manager",
+      "kind": "function",
+      "aliases": [
+        "?Play@cRVoiceManager@@QAE_NHIH@Z"
+      ],
+      "description": "Exact authored cRVoiceManager::Play(int,unsigned int,int) member."
+    },
+    {
+      "address": "0x449360",
+      "name": "update_voice_set",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRVoiceSet@@QAEXXZ"
+      ],
+      "description": "Exact authored cRVoiceSet::AI() member."
+    },
+    {
+      "address": "0x449390",
+      "name": "play_voice_set",
+      "kind": "function",
+      "aliases": [
+        "?Play@cRVoiceSet@@QAE_NH@Z"
+      ],
+      "description": "Exact authored cRVoiceSet::Play(int) member."
+    },
+    {
+      "address": "0x449410",
+      "name": "is_voice_playing",
+      "kind": "function",
+      "aliases": [
+        "?IsPlaying@cRVoiceManager@@QAEHXZ"
+      ],
+      "description": "Exact authored cRVoiceManager::IsPlaying() member."
     },
     {
       "address": "0x449c00",

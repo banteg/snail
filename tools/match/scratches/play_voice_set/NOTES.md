@@ -12,3 +12,10 @@ offset is transplanted into the Windows 0x18-byte `VoiceSet`.
 
 Focused Windows matching remains exact at 43/43 instructions with three clean
 masked operands.
+
+## 2026-08-09 authored source promotion
+
+The primary source spelling is now `cRVoiceSet::Play(int)` with exact MSVC
+binding `?Play@cRVoiceSet@@QAE_NH@Z`. `VoiceSet` remains a compatibility
+typedef and the stable function directory remains `play_voice_set`. Focused
+matching stays exact at 43/43 instructions with three clean operands.

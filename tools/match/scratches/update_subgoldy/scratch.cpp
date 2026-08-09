@@ -323,7 +323,7 @@ steering_stored:
                     .segment_slots[definition - 1]
                     .message_sample_id
                 != -1)
-                g_voice_manager.play_voice_manager(
+                g_voice_manager.Play(
                     VOICE_SET_TUTORIAL, VOICE_PLAY_INTERRUPT,
                     voice_game
                         ->level_definition
@@ -341,7 +341,7 @@ steering_stored:
             follow_state.begin_track_attachment_follow_state(
                 source_cell, p_position, this);
             if (follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM)
-                g_voice_manager.play_voice_manager(
+                g_voice_manager.Play(
                     VOICE_SET_WORM_TUNNEL, VOICE_PLAY_IF_IDLE, -1);
         }
     }
@@ -747,7 +747,7 @@ steering_stored:
                     window = speed;
             }
             velocity.z = window;
-            g_voice_manager.reset_voice_manager();
+            g_voice_manager.ReSet();
             sub_hover.End();
             presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING;
             g_sound_effect_manager.play_sound_effect(0);
@@ -772,7 +772,7 @@ steering_stored:
         display_game->subgame_rebuild_selector = 2;
         if (completion_handoff_timer > 2.0f && !completion_handoff_voice_gate) {
             completion_handoff_voice_gate = 1;
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_VICTORY, VOICE_PLAY_INTERRUPT, -1);
         }
         if (completion_handoff_timer > 2.0f) {
@@ -960,7 +960,7 @@ steering_stored:
         float advanced = attachment_exit_progress_step + attachment_exit_progress;
         attachment_exit_progress = advanced;
         if (advanced > 0.69999999f && !attachment_exit_gate_a) {
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_FALL, VOICE_PLAY_IF_IDLE, -1);
             unsigned char slug_fall_snapshot = slug_fall_active;
             attachment_exit_gate_a = 1;
@@ -969,7 +969,7 @@ steering_stored:
                     5, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
         }
         if (transform.position.y < -7.0f && !attachment_exit_gate_b) {
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_DYING, VOICE_PLAY_INTERRUPT, -1);
             attachment_exit_gate_b = 1;
             attachment_exit_gate_a = 1;
@@ -980,7 +980,7 @@ steering_stored:
         float advanced = startup_voice_step + startup_voice_timer;
         startup_voice_timer = advanced;
         if (advanced > 1.0f) {
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_START, VOICE_PLAY_INTERRUPT, -1);
             startup_voice_timer = 0.0f;
         }
@@ -998,7 +998,7 @@ steering_stored:
         slow_commentary_timer = advanced;
         if (advanced > 1.0f) {
             slow_commentary_timer = 0.0f;
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_SLOW, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
         }
     }

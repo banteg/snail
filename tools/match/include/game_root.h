@@ -116,7 +116,7 @@ public:
     // every boundary through the exit prompt without padding.
     Intro intro; // +0x4f2dc, exact Windows cRIntro owner
     MainMenu main_menu; // +0x4f324
-    StarManager star_manager; // +0x4f33c, exact authored cRStarManager owner
+    cRStarManager star_manager; // +0x4f33c, exact authored owner
     Options options; // +0x4f388, exact authored cROptions owner
     Exit exit_controller; // +0x4f3ac, exact authored cRExit owner
     // Windows and Android construct this as a standalone cRBod immediately

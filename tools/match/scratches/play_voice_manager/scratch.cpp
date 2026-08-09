@@ -3,14 +3,14 @@
 #include "audio_system.h"
 #include "voice_manager.h"
 
-bool VoiceManager::play_voice_manager(
+bool cRVoiceManager::Play(
     int set_id, unsigned int mode, int sample_override)
 {
     bool played;
     if (mode != VOICE_PLAY_IF_IDLE) {
         if (mode != VOICE_PLAY_AFTER_GLOBAL_COOLDOWN) {
             if (mode == VOICE_PLAY_INTERRUPT) {
-                int playing_sample = is_voice_playing();
+                int playing_sample = IsPlaying();
                 if (playing_sample != -1) {
                     g_audio_backend.stop_registered_sound_sample(playing_sample);
                 }
@@ -21,7 +21,7 @@ bool VoiceManager::play_voice_manager(
     goto check_current_voice;
 
 play_selected_voice:
-    played = sets[set_id].play_voice_set(sample_override);
+    played = sets[set_id].Play(sample_override);
     if (played == true
             && (mode == VOICE_PLAY_AFTER_GLOBAL_COOLDOWN
                 || mode == VOICE_PLAY_INTERRUPT)) {
@@ -30,7 +30,7 @@ play_selected_voice:
     return played;
 
 check_current_voice:
-    if (is_voice_playing() != -1) {
+    if (IsPlaying() != -1) {
         return false;
     }
     if (mode == VOICE_PLAY_AFTER_GLOBAL_COOLDOWN

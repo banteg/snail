@@ -2,12 +2,12 @@
 
 #include "voice_manager.h"
 
-void VoiceManager::update_voice_manager()
+void cRVoiceManager::AI()
 {
-    VoiceSet* set = sets;
+    cRVoiceSet* set = sets;
     int count = VOICE_SET_COUNT;
     do {
-        set->update_voice_set();
+        set->AI();
         ++set;
         --count;
     } while (count != 0);

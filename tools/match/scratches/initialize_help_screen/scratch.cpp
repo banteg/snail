@@ -19,7 +19,7 @@ void Help::initialize_help_screen()
 
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index = g_game->subgame.landscape_manager
-                           .load_landscape_script_by_name(g_help_script_path);
+                           .Import(g_help_script_path);
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
     g_game->border_manager.set_border_justify_centre(0.0f);

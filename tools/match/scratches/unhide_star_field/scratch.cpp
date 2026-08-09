@@ -1,8 +1,8 @@
-// unhide_star_field @ 0x4346b0 (thiscall)
+// cRStarManager::UnHide @ 0x4346b0 (thiscall)
 
 #include "star_manager.h"
 
-void StarManager::unhide_star_field()
+void cRStarManager::UnHide()
 {
     int result = state;
     if (result != 0) {

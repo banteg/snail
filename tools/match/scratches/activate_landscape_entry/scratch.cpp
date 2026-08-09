@@ -1,4 +1,4 @@
-// activate_landscape_entry @ 0x418870 (thiscall, ret 0x4)
+// cRLandscapeManager::Init @ 0x418870 (thiscall, ret 0x4)
 // Activates the ten repeated landscape slices for the selected script record.
 
 #include "landscape_manager.h"
@@ -11,7 +11,7 @@
 int next_math_random_value(); // @ 0x44c900
 int report_errorf(char* format, ...);
 
-void LandscapeManager::activate_landscape_entry(int script_index)
+void cRLandscapeManager::Init(int script_index)
 {
     char flip;
     int mode = g_game->subgame.level_mode;

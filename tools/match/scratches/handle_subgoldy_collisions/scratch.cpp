@@ -201,7 +201,7 @@ void cRSubGoldy::Collision()
                 if (parcel_delta.z < 1.0f
                     && normalize_vector(&probe_rings) < 1.24f) {
                     ScoreAdd(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
-                    g_voice_manager.play_voice_manager(
+                    g_voice_manager.Play(
                         VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
                     g_sound_effect_manager.play_sound_effect(27);
                     game->parcel_manager.slots[n].state =
@@ -328,7 +328,7 @@ void cRSubGoldy::Collision()
                                     != 0
                                 && ladder_game->level_mode != 3)
                                 lives = current_lives + 1;
-                            g_voice_manager.play_voice_manager(
+                            g_voice_manager.Play(
                                 VOICE_SET_POWER_UP,
                                 VOICE_PLAY_AFTER_GLOBAL_COOLDOWN,
                                 -1);

@@ -1,4 +1,4 @@
-// load_landscape_script_by_name @ 0x4182f0 (thiscall, ret 0x4)
+// cRLandscapeManager::Import @ 0x4182f0 (thiscall, ret 0x4)
 
 #include "game_root.h"
 #include "landscape_manager.h"
@@ -12,7 +12,7 @@ int report_errorf(char* format, ...);
 char archive_or_file_exists(char* path, char force_filesystem);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
-int LandscapeManager::load_landscape_script_by_name(char* script_name)
+int cRLandscapeManager::Import(char* script_name)
 {
     char* cursor;
     char* loaded_name;

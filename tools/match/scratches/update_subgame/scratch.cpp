@@ -99,7 +99,7 @@ void cRSubGame::AI()
         }
 
         selected_level_record_active = 0;
-        g_game->star_manager.hide_star_field();
+        g_game->star_manager.Hide();
     }
         // Fresh state-zero setup enters the same front-end dispatch as state one.
     case 1: {

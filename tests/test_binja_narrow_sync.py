@@ -907,8 +907,13 @@ def test_voice_manager_replay_keeps_exact_owners_and_void_mutator_abis() -> None
     assert '("0x751498", "VoiceManager")' in binja_sync
     assert "VoiceSet sets[16];" in analysis_header
     assert "extern VoiceManager g_voice_manager;" in analysis_header
-    assert "void initialize_voice_set(int count);" in matcher_header
-    assert "void shuffle_voice_set();" in matcher_header
+    assert "class cRVoiceSet" in matcher_header
+    assert "typedef cRVoiceSet VoiceSet;" in matcher_header
+    assert "void Init(int count);" in matcher_header
+    assert "void Shuffle();" in matcher_header
+    assert "class cRVoiceManager" in matcher_header
+    assert "typedef cRVoiceManager VoiceManager;" in matcher_header
+    assert "extern cRVoiceManager g_voice_manager;" in matcher_header
     assert '"size": "0x188"' in references
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/voice_manager_types.h"' in ida_runner
     assert "apply_user_var_updates" in binja_sync
@@ -3450,9 +3455,14 @@ def test_star_manager_sync_selectively_repairs_sprite_prerequisites() -> None:
     ):
         assert f"void __thiscall {function_name}(StarManager* manager)" in source
         assert f"void __thiscall {function_name}(StarManager *manager);" in ida_source
-        assert f"void {function_name}();" in matcher_header
-        assert f"int {function_name}();" not in matcher_header
-    assert "virtual void update_star_field_callback();" in matcher_header
+    assert "class cRStarManager" in matcher_header
+    assert "typedef cRStarManager StarManager;" in matcher_header
+    for method_name in ("UnInit", "Init", "Hide", "UnHide"):
+        assert f"void {method_name}();" in matcher_header
+    assert "void Open(int star_count);" in matcher_header
+    assert "void UpdateStars(float fade);" in matcher_header
+    assert "virtual void AI();" in matcher_header
+    assert "update_star_field_callback" not in matcher_header
     assert "noncanonical_star_manager_header" in ida_source
     assert "EXPECTED_OWNER_SIZES" in ida_source
     assert "owner_size_mismatch" in ida_source

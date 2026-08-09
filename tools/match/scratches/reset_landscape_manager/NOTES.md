@@ -1,4 +1,4 @@
-# reset_landscape_manager @ 0x4182e0
+# reset_landscape_manager / cRLandscapeManager::Open() @ 0x4182e0
 
 Clears `LandscapeManager::script_count` at receiver `+0x5a0`.
 
@@ -44,3 +44,11 @@ the three scripts present in the desktop build.
 This transfers the authored class and method name without claiming identical
 platform bodies. The exact 2/2 Windows scratch remains the complete desktop
 `Open()` projection.
+
+## 2026-08-09 primary matcher owner
+
+The matcher now spells the proved owner and lifecycle method directly as
+`cRLandscapeManager::Open()`. `LandscapeManager` remains a compatibility
+typedef for stable shared and analysis vocabulary. VC6 emits the exact symbol
+`?Open@cRLandscapeManager@@QAEXXZ`; the stable scratch directory and
+`FUNCTION=reset_landscape_manager` manifest route remain unchanged.

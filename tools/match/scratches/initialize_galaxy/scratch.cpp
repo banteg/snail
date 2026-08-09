@@ -20,11 +20,11 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 
 void cRGalaxy::Init()
 {
-    g_game->star_manager.hide_star_field();
+    g_game->star_manager.Hide();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
 
     int landscape_index = g_game->subgame.landscape_manager
-                              .load_landscape_script_by_name("StarMap.txt");
+                              .Import("StarMap.txt");
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[landscape_index], 0);
 

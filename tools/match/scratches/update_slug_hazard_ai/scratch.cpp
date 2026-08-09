@@ -89,7 +89,7 @@ active_state_tail:
         if (engagement_voice_gate == 1
             && owner_player->transform.position.z + 16.0f > transform.position.z) {
             engagement_voice_gate = 0;
-            g_voice_manager.play_voice_manager(
+            g_voice_manager.Play(
                 VOICE_SET_ENEMIES, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
         }
 

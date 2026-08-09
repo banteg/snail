@@ -1,8 +1,8 @@
-// hide_star_field @ 0x434670 (thiscall)
+// cRStarManager::Hide @ 0x434670 (thiscall)
 
 #include "star_manager.h"
 
-void StarManager::hide_star_field()
+void cRStarManager::Hide()
 {
     int result = state;
     if (result != 0) {

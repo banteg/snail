@@ -166,7 +166,7 @@ void SubTracks::load_level_definition_file(char* filename)
     *background_out++ = 't';
     *background_out = 0;
     landscape_script_index = g_game->subgame.landscape_manager
-        .load_landscape_script_by_name(background_name);
+        .Import(background_name);
 
     cursor = find_case_insensitive_substring("Fringe:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {

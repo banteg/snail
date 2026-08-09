@@ -109,3 +109,11 @@ Source-shape details retained:
   forcing, or any semantic change.
 - The focused match is now proof-grade: 100.00% (`269/269`, prefix `269/269`)
   with all 62 masked operands clean and no unresolved or mismatched operands.
+
+## 2026-08-09 authored source promotion
+
+The exact body now carries its primary `cRVoiceManager::Init()` spelling and
+binds `?Init@cRVoiceManager@@QAEXXZ`. Its inline set initialization and final
+reset use `cRVoiceSet::Init` and `cRVoiceManager::ReSet`; shared semantic
+aliases keep both call references auditable. The stable function directory
+remains `initialize_voice_manager`, and the body remains exact at 269/269.

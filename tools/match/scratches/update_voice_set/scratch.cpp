@@ -2,7 +2,7 @@
 
 #include "voice_manager.h"
 
-void VoiceSet::update_voice_set()
+void cRVoiceSet::AI()
 {
     if (cooldown > 0.0f) {
         float next_progress = cooldown_step + cooldown;

@@ -19,19 +19,18 @@ public:
 typedef char StarManagerEntry_must_be_0x2c[
     (sizeof(StarManagerEntry) == 0x2c) ? 1 : -1];
 
-class StarManager {
+class cRStarManager {
 public:
-    virtual void update_star_field_callback(); // vtable slot 0, points to update_star_field
-    void destroy_star_field(); // @ 0x434270, cRStarManager::UnInit
-    void open_star_field(int star_count); // @ 0x4342c0, cRStarManager::Open
-    void initialize_star_field(); // @ 0x434310, cRStarManager::Init
-    void hide_star_field(); // @ 0x434670, cRStarManager::Hide
-    void unhide_star_field(); // @ 0x4346b0, cRStarManager::UnHide
-    void update_star_field(); // @ 0x4346f0, cRStarManager::AI
-    void update_star_positions(float fade); // @ 0x434800, cRStarManager::UpdateStars
+    virtual void AI(); // vtable slot 0, @ 0x4346f0
+    void UnInit(); // @ 0x434270
+    void Open(int star_count); // @ 0x4342c0
+    void Init(); // @ 0x434310
+    void Hide(); // @ 0x434670
+    void UnHide(); // @ 0x4346b0
+    void UpdateStars(float fade); // @ 0x434800
 
-    // +0x00..+0x37 is the constructed BodBase prefix. The virtual callback
-    // declaration models its callback-table word, so only the inherited tail
+    // +0x00..+0x37 is the constructed BodBase prefix. The virtual AI
+    // declaration models its vtable word, so only the inherited tail
     // remains explicit here instead of adding a second synthetic vptr.
     char bod_base_tail[0x38 - 0x04];
     int state; // +0x38, star-manager lifecycle state
@@ -41,6 +40,10 @@ public:
     float fade_step; // +0x48
 };
 
+typedef cRStarManager StarManager;
+
+typedef char cRStarManager_must_be_0x4c[
+    (sizeof(cRStarManager) == 0x4c) ? 1 : -1];
 typedef char StarManager_must_be_0x4c[
     (sizeof(StarManager) == 0x4c) ? 1 : -1];
 

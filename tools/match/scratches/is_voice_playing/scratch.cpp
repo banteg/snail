@@ -3,7 +3,7 @@
 #include "audio_system.h"
 #include "voice_manager.h"
 
-int VoiceManager::is_voice_playing()
+int cRVoiceManager::IsPlaying()
 {
     int set_index = 0;
     int* set = (int*)this;

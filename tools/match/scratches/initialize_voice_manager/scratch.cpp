@@ -14,7 +14,7 @@ int report_errorf(char* format, ...);
 
 extern char g_tutorial_text[]; // 0x4a38e4
 
-void VoiceManager::initialize_voice_manager()
+void cRVoiceManager::Init()
 {
     char set_tag[256];
     char voice_path[256];
@@ -97,8 +97,8 @@ void VoiceManager::initialize_voice_manager()
             count_cursor = advance_to_next_crlf_line(count_cursor);
         }
 
-        VoiceSet* set = &sets[set_index];
-        set->initialize_voice_set(entry_count);
+        cRVoiceSet* set = &sets[set_index];
+        set->Init(entry_count);
 
         int entry_index = 0;
         while (entry_index < entry_count) {
@@ -145,5 +145,5 @@ void VoiceManager::initialize_voice_manager()
     cursor = find_case_insensitive_substring(":", cursor);
     global_frequency_seconds = parse_next_float32(&cursor);
 
-    reset_voice_manager();
+    ReSet();
 }
