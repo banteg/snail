@@ -691,3 +691,34 @@ config/mode interleaving as the missing Windows lifetime. No matching source
 change is retained: the focused frontier remains 79.94%, 1036/1033
 instructions, prefix 9/1033, with 129 clean references and no unresolved,
 mismatched, or unaudited operands.
+
+## 2026-08-09 authored-ring argument-lifetime boundary
+
+The Windows tile-35 path keeps the four authored kinds as distinct branches.
+After the row flags load at `0x439565`, the native tests normal, power-up,
+explode, and slow at `0x439587`, `0x4395af`, `0x4395d7`, and `0x4395ff`.
+Each arm independently forms `runtime_rows[cell_index].ring_speed`, borrows
+the embedded Player, and publishes its kind before jumping to the single
+cell-argument tail at `0x43983d`. That tail forms `&cell_slot->cell`, calls the
+exact `spawn_track_ring_or_special_effect` at `0x439846`, reloads the cell Z at
+`0x43984b`, and stores `player.last_ring_spawn_z` at `0x439851`.
+
+The exact 100.00%, 347/347 callee at `0x43df10` independently closes the ABI as
+`(cRSubLoc* cell, int kind, Player* player, float ring_speed)`. This makes the
+four native branch inputs real short borrows, not an inferred shared argument
+pack or a long-lived row owner.
+
+Two recorded five-variant sweeps bound the natural C++ lifetime spellings.
+Branch-local `cRSubLoc*` and `Player*` aliases are byte-identical to the
+retained source at 79.94%. Hoisting a cell pointer/reference across the ladder
+falls to 72.31%, hoisting the Player falls to 72.23%, and pairing the two falls
+to 74.47%. Branch-local ring-speed values fall to 71.95%; the common call-only
+cell pointer also reaches only 71.95%. Every regressive form loses at least one
+clean reference pairing or creates unaudited sites.
+
+The source therefore already expresses the correct authored lifetimes:
+distinct branch-local arguments whose identical call suffix VC6 partially
+tail-merges. No source change is retained, and no shared kind, common owner,
+float spill, or register hint is justified. Focused output remains 79.94%,
+1036/1033 instructions, prefix 9/1033, with all 129 references clean. Canonical
+source SHA-256: `8829bbf7f6800ae3c0172c02d0c5a488a29733843358f626ff20ee6f6cabd7a0`.
