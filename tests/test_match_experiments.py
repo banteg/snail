@@ -9,6 +9,7 @@ import pytest
 from snail.cli import main
 from snail.match import load_scratch_config, scratch_dependency_sha256
 from snail.match_experiments import summarize_experiments
+from snail.match_mutation import load_mutation_spec
 
 
 def _result(
@@ -84,6 +85,24 @@ def _write_jsonl(path: Path, records: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         "".join(json.dumps(record) + "\n" for record in records),
+        encoding="utf-8",
+    )
+
+
+def _write_mutation_spec(path: Path, *, find: str) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "schema": 1,
+                "sites": [
+                    {
+                        "name": path.stem,
+                        "find": find,
+                        "replacements": [{"name": "alternative", "text": "alt"}],
+                    }
+                ],
+            }
+        ),
         encoding="utf-8",
     )
 
@@ -311,3 +330,76 @@ def test_experiment_summary_check_rejects_malformed_logs(
     assert payload["summary"]["stalled_scratches"] == 1
     assert payload["summary"]["errors"] == 1
     assert payload["rows"][0]["flags"] == ["stalled", "malformed"]
+
+
+def test_experiment_spec_check_ignores_historical_and_rejects_stale_active(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    scratch = tmp_path / "scratches" / "foo"
+    scratch.mkdir(parents=True)
+    (scratch / "scratch.cpp").write_text("needle\n", encoding="utf-8")
+    historical = scratch / "historical-mutations.json"
+    runnable = scratch / "runnable-mutations.json"
+    stale = scratch / "stale-mutations.json"
+    _write_mutation_spec(historical, find="retired anchor")
+    _write_mutation_spec(runnable, find="needle")
+    _write_mutation_spec(stale, find="missing anchor")
+    _write_jsonl(
+        scratch / "experiments.jsonl",
+        [
+            _sweep(
+                load_mutation_spec(historical).sha256,
+                [_result("variant-a", 0)],
+            )
+        ],
+    )
+
+    exit_code = main(
+        [
+            "match",
+            "experiments",
+            "--match-root",
+            str(tmp_path),
+            "--check-specs",
+            "--json",
+        ]
+    )
+
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert captured.err == ""
+    payload = json.loads(captured.out)
+    assert payload["mutation_specs"] == {
+        "files": 3,
+        "historical": 1,
+        "active": 2,
+        "runnable": 1,
+        "stale": 1,
+        "errors": [
+            (
+                "scratches/foo/stale-mutations.json: mutation site "
+                "'stale-mutations' must match exactly once; found 0 "
+                "(set occurrence to select one)"
+            )
+        ],
+        "rows": [
+            {
+                "spec": "scratches/foo/runnable-mutations.json",
+                "scratch": "scratches/foo",
+                "sha256": load_mutation_spec(runnable).sha256,
+                "state": "runnable",
+                "error": None,
+            },
+            {
+                "spec": "scratches/foo/stale-mutations.json",
+                "scratch": "scratches/foo",
+                "sha256": load_mutation_spec(stale).sha256,
+                "state": "stale",
+                "error": (
+                    "mutation site 'stale-mutations' must match exactly once; "
+                    "found 0 (set occurrence to select one)"
+                ),
+            },
+        ],
+    }

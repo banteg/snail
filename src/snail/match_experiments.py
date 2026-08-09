@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from collections import Counter
@@ -9,6 +10,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from . import match as matchlib
+from . import match_mutation
 
 EXPERIMENT_FILE = "experiments.jsonl"
 EXPERIMENT_SCHEMA = 1
@@ -22,6 +24,13 @@ EXPERIMENT_SORTS = frozenset(
         "variants",
     },
 )
+
+
+def _relative_path(path: Path, root: Path) -> str:
+    try:
+        return path.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return str(path.resolve())
 
 
 def _experiment_kind(record: dict[str, Any]) -> str:
@@ -95,6 +104,101 @@ def find_experiment_logs(
             raise FileNotFoundError(f"experiment log not found: {path}")
         paths.add(path)
     return sorted(paths)
+
+
+def _mutation_spec_paths(
+    match_root: Path,
+    scratches: Collection[str],
+) -> list[Path]:
+    root = match_root.resolve()
+    if not scratches:
+        return sorted(root.glob("scratches/*/*mutations.json"))
+    return sorted(
+        {
+            spec.resolve()
+            for log in find_experiment_logs(root, scratches)
+            for spec in log.parent.glob("*mutations.json")
+        }
+    )
+
+
+def audit_mutation_specs(
+    match_root: Path,
+    *,
+    scratches: Collection[str] = (),
+) -> dict[str, Any]:
+    """Check only mutation specs whose current digest has no ledger receipt."""
+
+    root = match_root.resolve()
+    paths = _mutation_spec_paths(root, scratches)
+    recorded_by_scratch: dict[Path, set[str]] = {}
+    source_cache: dict[Path, str] = {}
+    historical = 0
+    rows: list[dict[str, Any]] = []
+    errors: list[str] = []
+
+    for path in paths:
+        scratch = path.parent.resolve()
+        recorded = recorded_by_scratch.get(scratch)
+        if recorded is None:
+            recorded = set()
+            log = scratch / EXPERIMENT_FILE
+            if log.is_file():
+                records, _ = load_experiment_log(log)
+                recorded.update(
+                    digest
+                    for record in records
+                    if isinstance(
+                        digest := record.get("spec_sha256"),
+                        str,
+                    )
+                    and SHA256_RE.fullmatch(digest)
+                )
+            recorded_by_scratch[scratch] = recorded
+
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        if digest in recorded:
+            historical += 1
+            continue
+
+        relative = _relative_path(path, root)
+        row: dict[str, Any] = {
+            "spec": relative,
+            "scratch": _relative_path(scratch, root),
+            "sha256": digest,
+            "state": "runnable",
+            "error": None,
+        }
+        try:
+            spec = match_mutation.load_mutation_spec(path)
+            source_text = source_cache.get(scratch)
+            if source_text is None:
+                source_text = (scratch / "scratch.cpp").read_text(
+                    encoding="utf-8"
+                )
+                source_cache[scratch] = source_text
+            match_mutation.generate_mutation_variants(
+                source_text,
+                spec,
+                max_variants=1,
+            )
+        except (OSError, TypeError, ValueError) as error:
+            detail = str(error).splitlines()[0]
+            row["state"] = "stale"
+            row["error"] = detail
+            errors.append(f"{relative}: {detail}")
+        rows.append(row)
+
+    stale = sum(row["state"] == "stale" for row in rows)
+    return {
+        "files": len(paths),
+        "historical": historical,
+        "active": len(rows),
+        "runnable": len(rows) - stale,
+        "stale": stale,
+        "errors": errors,
+        "rows": rows,
+    }
 
 
 def _relative_scratch(path: Path, match_root: Path) -> str:

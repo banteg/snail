@@ -890,6 +890,14 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Exit non-zero when any log record is malformed.",
     )
+    match_experiments_parser.add_argument(
+        "--check-specs",
+        action="store_true",
+        help=(
+            "Check unreceipted mutation specs against their current scratch; "
+            "recorded spec digests are historical."
+        ),
+    )
 
     match_diff_parser = match_subparsers.add_parser(
         "diff",
@@ -1597,6 +1605,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                 scratches=args.scratch,
                 sort_by=args.sort,
             )
+            mutation_specs = (
+                match_experiments.audit_mutation_specs(
+                    args.match_root,
+                    scratches=args.scratch,
+                )
+                if args.check_specs
+                else None
+            )
         except (OSError, ValueError) as error:
             print(
                 f"experiment summary failed: "
@@ -1608,13 +1624,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.limit is not None:
             payload["rows"] = payload["rows"][: args.limit]
         payload["selected_rows"] = len(payload["rows"])
+        if mutation_specs is not None:
+            payload["mutation_specs"] = mutation_specs
         if args.json:
             print(json.dumps(payload, indent=2, sort_keys=True))
         else:
             print(match_experiments.render_experiment_summary(payload))
             for error in payload["errors"]:
                 print(str(error), file=sys.stderr)
+            if mutation_specs is not None:
+                print(
+                    "mutation-specs "
+                    f"files={mutation_specs['files']} "
+                    f"historical={mutation_specs['historical']} "
+                    f"active={mutation_specs['active']} "
+                    f"runnable={mutation_specs['runnable']} "
+                    f"stale={mutation_specs['stale']}"
+                )
+                for error in mutation_specs["errors"]:
+                    print(str(error), file=sys.stderr)
         if args.check and payload["errors"]:
+            return 1
+        if mutation_specs is not None and mutation_specs["errors"]:
             return 1
         return 0
 
