@@ -8971,7 +8971,12 @@ def test_sub_loc_flag_ownership_stays_aligned_across_replay_lanes() -> None:
     for header in (analysis_header, matcher_header):
         assert "SUBLOC_OPEN_PREVIOUS_ROW = 0x01" in header
         assert "SUBLOC_OPEN_NEXT_ROW = 0x02" in header
-        assert "SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED = 0x0018" in header
+        assert (
+            "SUBLOC_FLAG_RANDOM_HAZARD_BLOCKED =\n"
+            "        SUBLOC_FLAG_SUPPRESS_SALT_SPAWN | "
+            "SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN"
+            in header
+        )
         assert "SUBLOC_FLAG_WARNING_CACHE_FAMILY = 0x0020" in header
         assert "SUBLOC_FLAG_CACHE_FAMILY_SWAPPED = 0x0040" in header
         assert "SUBLOC_MERGED_RUN_WIDTH_MASK = 0x0f00" in header
