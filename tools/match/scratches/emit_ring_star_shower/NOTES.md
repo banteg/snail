@@ -1,7 +1,7 @@
 # emit_ring_star_shower @ 0x43e690
 
 Live source map for the star burst emitted by
-`update_ring_or_special_effect_particle` when the parent cadence counter is
+`cRSubRingStar::AI()` when the parent cadence counter is
 zero.
 
 Current match: 100.00%, 65 candidate instructions versus 65 target
@@ -134,3 +134,12 @@ Binary Ninja and IDA now persist the same `SubRingStar*` receiver, borrowed
 This retires IDA's stale float-array/raw-owner shell; strict paired export has
 no mismatches. The scratch remains exact at 65/65 instructions with nine clean
 operands.
+
+## 2026-08-09 primary cRSubRingStar Shower ownership
+
+The matcher now emits this exact body as
+`cRSubRingStar::Shower(cRSubGoldy*)` and selects the VC6 symbol
+`?Shower@cRSubRingStar@@QAEXPAVcRSubGoldy@@@Z`. Android and the recovered iOS
+v1.9 binary retain the same authored signature. Windows raw xrefs isolate its
+only call at the end of `cRSubRingStar::AI()`. The ownership-only rename keeps
+the proof-grade 65/65 instruction stream and all nine operands clean.

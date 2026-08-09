@@ -3,19 +3,19 @@
   "sites": [
     {
       "name": "slot-offset",
-      "find": "    DWORD* slot_base =\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;",
+      "find": "    DWORD* slot_base =\n        game_words + sizeof(cRSubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;",
       "replacements": [
         {
           "name": "named-word-offset",
-          "text": "    int slot_word_offset =\n        sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    DWORD* slot_base = game_words + slot_word_offset;\n    cRSubGame* slot = (cRSubGame*)slot_base;"
+          "text": "    int slot_word_offset =\n        sizeof(cRSubHealth) / sizeof(DWORD) * slot_index;\n    DWORD* slot_base = game_words + slot_word_offset;\n    cRSubGame* slot = (cRSubGame*)slot_base;"
         },
         {
           "name": "split-base-increment",
-          "text": "    DWORD* slot_base = game_words;\n    slot_base += sizeof(SubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;"
+          "text": "    DWORD* slot_base = game_words;\n    slot_base += sizeof(cRSubHealth) / sizeof(DWORD) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;"
         },
         {
           "name": "commuted-stride-product",
-          "text": "    DWORD* slot_base =\n        game_words + slot_index * (sizeof(SubHealth) / sizeof(DWORD));\n    cRSubGame* slot = (cRSubGame*)slot_base;"
+          "text": "    DWORD* slot_base =\n        game_words + slot_index * (sizeof(cRSubHealth) / sizeof(DWORD));\n    cRSubGame* slot = (cRSubGame*)slot_base;"
         },
         {
           "name": "factored-seven-times-four",
@@ -27,11 +27,11 @@
         },
         {
           "name": "combined-slot-declaration",
-          "text": "    cRSubGame* slot = (cRSubGame*)(\n        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index);"
+          "text": "    cRSubGame* slot = (cRSubGame*)(\n        game_words + sizeof(cRSubHealth) / sizeof(DWORD) * slot_index);"
         },
         {
           "name": "byte-offset",
-          "text": "    char* slot_base =\n        (char*)game_words + sizeof(SubHealth) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;"
+          "text": "    char* slot_base =\n        (char*)game_words + sizeof(cRSubHealth) * slot_index;\n    cRSubGame* slot = (cRSubGame*)slot_base;"
         }
       ]
     }

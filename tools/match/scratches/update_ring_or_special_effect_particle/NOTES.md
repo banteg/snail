@@ -14,7 +14,7 @@ Semantics:
 Match status: 96.36%, pinned.
 
 Cross-port owner: iOS preserves this helper as `cRSubRingStar::AI()`. The
-shared source now defines it on `SubRingStar` with a borrowed `SubRing*` parent;
+shared source now defines it on `cRSubRingStar` with a borrowed `cRSubRing*` parent;
 the historical combined-effect type names remain compatibility aliases.
 Focused matching remains 96.36%, 55/55 instructions, with five clean operands.
 
@@ -214,3 +214,14 @@ for X immediately before advancing that same register to the inherited
 position base used by Y/Z; tested C++ source spellings cannot express that
 single-register materialization lifetime without disrupting otherwise exact
 code generation.
+
+## 2026-08-09 primary cRSubRingStar AI ownership
+
+The matcher now emits this child callback as `cRSubRingStar::AI()` and selects
+the VC6 symbol `?AI@cRSubRingStar@@QAEXXZ`. Android and iOS preserve that exact
+owner; Windows raw xrefs recover the call from `cRSubRing::Init(int)` and the
+three parent-state dispatch loops, followed by the conditional
+`cRSubRingStar::Shower(cRSubGoldy*)` call. The rename preserves the honest
+96.36%, 55/55-instruction, prefix-28 baseline. The formally exhausted
+position-materialization sweep remains closed; no source-shape retry is part
+of this ownership slice.

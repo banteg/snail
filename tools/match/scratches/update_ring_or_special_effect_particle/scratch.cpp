@@ -1,4 +1,5 @@
 // update_ring_or_special_effect_particle @ 0x43e780 (thiscall)
+// Authored owner: cRSubRingStar::AI().
 
 #include "player.h"
 #include "ring_special_effect_types.h"
@@ -7,9 +8,9 @@
 float sine(float radians);
 float cosine(float radians);
 
-void SubRingStar::update_ring_or_special_effect_particle()
+void cRSubRingStar::AI()
 {
-    SubRing* source_parent = parent;
+    cRSubRing* source_parent = parent;
     if (source_parent->kind != SUB_RING_KIND_SLOW_DEFAULT)
         phase += phase_step;
 
@@ -19,7 +20,7 @@ void SubRingStar::update_ring_or_special_effect_particle()
     Vector3 staged_position;
     float orbit_y = cosine(phase) * radius;
     float orbit_x = sine(phase);
-    SubRing* live_parent = parent;
+    cRSubRing* live_parent = parent;
     cRSprite* live_sprite = sprite;
     Vector3* parent_position = &live_parent->transform.position;
     Vector3* sprite_position = &live_sprite->position;
@@ -30,7 +31,7 @@ void SubRingStar::update_ring_or_special_effect_particle()
 
     *sprite_position = staged_position;
 
-    SubRing* result_parent = parent;
+    cRSubRing* result_parent = parent;
     if (result_parent->star_shower_counter == 0)
-        emit_ring_star_shower(result_parent->owner_player);
+        Shower(result_parent->owner_player);
 }

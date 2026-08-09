@@ -657,6 +657,69 @@
       "description": "Exact authored cRHighScore::Exit() member."
     },
     {
+      "address": "0x408510",
+      "name": "initialize_track_health_pickup_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRSubHealth@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSubHealth constructor."
+    },
+    {
+      "address": "0x43ecc0",
+      "name": "update_track_health_pickup",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubHealth@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubHealth::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x408570",
+      "name": "initialize_track_ring_or_special_effect_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRSubRing@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSubRing constructor."
+    },
+    {
+      "address": "0x43e470",
+      "name": "initialize_ring_or_special_effect_particles",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSubRing@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRSubRing::Init(int) member."
+    },
+    {
+      "address": "0x43e690",
+      "name": "emit_ring_star_shower",
+      "kind": "function",
+      "aliases": [
+        "?Shower@cRSubRingStar@@QAEXPAVcRSubGoldy@@@Z"
+      ],
+      "description": "Exact authored cRSubRingStar::Shower(cRSubGoldy*) member."
+    },
+    {
+      "address": "0x43e780",
+      "name": "update_ring_or_special_effect_particle",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubRingStar@@QAEXXZ"
+      ],
+      "description": "Authored cRSubRingStar::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x43e830",
+      "name": "update_ring_or_special_effect_parent",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubRing@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubRing::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",
@@ -1787,9 +1850,10 @@
       "name": "health_collect_particles",
       "kind": "function",
       "aliases": [
-        "?HealthCollect@cRSubGoldy@@QAEXPAVSubHealth@@@Z"
+        "?HealthCollect@cRSubGoldy@@QAEXPAVSubHealth@@@Z",
+        "?HealthCollect@cRSubGoldy@@QAEXPAVcRSubHealth@@@Z"
       ],
-      "description": "Exact Windows cRSubGoldy::HealthCollect(SubHealth*) entry; the decorated alias keeps candidate relocations owner-specific."
+      "description": "Exact Windows cRSubGoldy::HealthCollect(cRSubHealth*) entry; the authored and legacy compatibility aliases resolve to one owner-specific target."
     },
     {
       "address": "0x43a2d4",

@@ -35,7 +35,8 @@
 #include "warning.h"
 
 class cRSubGame;
-class SubHealth;
+class cRSubHealth;
+typedef cRSubHealth SubHealth;
 
 class Snail;
 
@@ -152,7 +153,7 @@ public:
     void ScoreStatsInit();   // @ 0x4403a0
     void ScoreStatsDisplay();            // @ 0x4403c0
     void Collision();      // @ 0x444cf0
-    void HealthCollect(SubHealth* pickup); // @ 0x43a010
+    void HealthCollect(cRSubHealth* pickup); // @ 0x43a010
     // Authored cRSubGoldy::SpeedUpCollect() folds into the shared one-byte
     // noop_runtime_ai body at 0x407b50; the collision callsite still passes
     // this cRSubGoldy receiver in ecx.

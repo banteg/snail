@@ -14,6 +14,8 @@ public:
     RuntimeSlot* initialize_active_bod();
     RuntimeSlot* initialize_track_speedup_runtime();
     RuntimeSlot* initialize_track_jetpack_pickup_runtime();
+    // Neutral constructor-adapter views used by the still-descriptive
+    // cRSubGame pool loop; the concrete leaf definitions are true constructors.
     RuntimeSlot* initialize_track_health_pickup_runtime();
     RuntimeSlot* initialize_slug_hazard_runtime();
     RuntimeSlot* initialize_sub_lazer_runtime();

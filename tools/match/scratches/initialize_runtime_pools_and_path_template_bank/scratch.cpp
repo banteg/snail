@@ -80,10 +80,10 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
     speedup_pickup.initialize_track_speedup_runtime();
     jetpack_pickup.initialize_track_jetpack_pickup_runtime();
 
-    SubHealth* health_pickup = health_pickups;
+    cRSubHealth* health_pickup = health_pickups;
     int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
     do {
-        health_pickup->initialize_track_health_pickup_runtime();
+        ((RuntimeSlot*)health_pickup)->initialize_track_health_pickup_runtime();
         ++health_pickup;
         --health_count;
     } while (health_count);
@@ -126,11 +126,11 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         --garbage_count;
     } while (garbage_count);
 
-    SubRing* ring = ring_effects.slots;
+    cRSubRing* ring = ring_effects.slots;
     int ring_count =
         sizeof(ring_effects.slots) / sizeof(ring_effects.slots[0]);
     do {
-        ring->initialize_track_ring_or_special_effect_runtime();
+        ((RuntimeSlot*)ring)->initialize_track_ring_or_special_effect_runtime();
         ++ring;
         --ring_count;
     } while (ring_count);

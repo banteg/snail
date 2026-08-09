@@ -16,7 +16,7 @@ void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot_index = 0;
     DWORD* game_words = (DWORD*)this;
-    SubHealth* scan = health_pickups;
+    cRSubHealth* scan = health_pickups;
     while (slot_index < 8
         && scan->state != TRACK_PICKUP_STATE_INACTIVE) {
         ++slot_index;
@@ -26,7 +26,7 @@ void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
     }
 
     DWORD* slot_base =
-        game_words + sizeof(SubHealth) / sizeof(DWORD) * slot_index;
+        game_words + sizeof(cRSubHealth) / sizeof(DWORD) * slot_index;
     cRSubGame* slot = (cRSubGame*)slot_base;
     slot->health_pickups[0].state = TRACK_PICKUP_STATE_ACTIVE;
     slot->health_pickups[0].owner = player;
@@ -39,7 +39,7 @@ void cRSubGame::AddHealth(cRSubLoc* cell, cRSubGoldy* player)
     BodNode* node = &slot->health_pickups[0];
     g_game->active_bod_list.add_bod(node);
 
-    // The cRSubGame slot owns the inline SubHealth actor and its BOD/lifecycle.
+    // The cRSubGame slot owns the inline cRSubHealth actor and its BOD/lifecycle.
     // SpriteManager owns the visual; the slot retains a borrowed pointer.
     cRSprite* pickup_sprite =
         g_sprite_manager.New(player->player_slot, 57, -1, -1);

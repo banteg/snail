@@ -1,4 +1,5 @@
 // update_ring_or_special_effect_parent @ 0x43e830 (thiscall, void)
+// Authored owner: cRSubRing::AI().
 
 #include "game_root.h"
 #include "player.h"
@@ -10,7 +11,7 @@
 int report_errorf(const char* format, ...);
 float sine(float radians);
 
-void SubRing::update_ring_or_special_effect_parent()
+void cRSubRing::AI()
 {
     cRSubGame* rate = rate_source;
     if (rate->subgame_pause_gate != 0)
@@ -41,10 +42,10 @@ void SubRing::update_ring_or_special_effect_parent()
         }
 
         {
-        SubRingStar* particle = particles;
+        cRSubRingStar* particle = particles;
         int count = SUB_RING_PARTICLE_COUNT;
         do {
-            particle->update_ring_or_special_effect_particle();
+            particle->AI();
             particle++;
             count--;
         } while (count != 0);
@@ -54,7 +55,7 @@ void SubRing::update_ring_or_special_effect_parent()
             state = SUB_RING_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
 
-            SubRingStar* particle =
+            cRSubRingStar* particle =
                 particles;
             int count = SUB_RING_PARTICLE_COUNT;
             do {
@@ -78,10 +79,10 @@ void SubRing::update_ring_or_special_effect_parent()
 
     case SUB_RING_STATE_COLLECTING:
         {
-        SubRingStar* particle = particles;
+        cRSubRingStar* particle = particles;
         int count = SUB_RING_PARTICLE_COUNT;
         do {
-            particle->update_ring_or_special_effect_particle();
+            particle->AI();
             particle++;
             count--;
         } while (count != 0);
@@ -92,7 +93,7 @@ void SubRing::update_ring_or_special_effect_parent()
             state = SUB_RING_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
 
-            SubRingStar* particle =
+            cRSubRingStar* particle =
                 particles;
             int count = SUB_RING_PARTICLE_COUNT;
             do {
@@ -138,10 +139,10 @@ void SubRing::update_ring_or_special_effect_parent()
 
     case SUB_RING_STATE_EXPANDING:
         {
-        SubRingStar* particle = particles;
+        cRSubRingStar* particle = particles;
         int count = SUB_RING_PARTICLE_COUNT;
         do {
-            particle->update_ring_or_special_effect_particle();
+            particle->AI();
             particle++;
             count--;
         } while (count != 0);
@@ -152,7 +153,7 @@ void SubRing::update_ring_or_special_effect_parent()
             state = SUB_RING_STATE_INACTIVE;
             g_game->active_bod_list.remove_bod(this);
 
-            SubRingStar* particle =
+            cRSubRingStar* particle =
                 particles;
             int count = SUB_RING_PARTICLE_COUNT;
             do {

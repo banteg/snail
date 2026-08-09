@@ -11,7 +11,7 @@ extern "C" void* memcpy(void* dest, const void* src, unsigned int count);
 void cRSubGame::ReSet()
 {
     int health_count = sizeof(health_pickups) / sizeof(health_pickups[0]);
-    SubHealth* health = health_pickups;
+    cRSubHealth* health = health_pickups;
     do {
         health->state = TRACK_PICKUP_STATE_INACTIVE;
         health->owner_game = this;

@@ -10,9 +10,9 @@
 int report_errorf(char* format, ...);
 float sine(float radians);
 
-void SubHealth::update_track_health_pickup()
+void cRSubHealth::AI()
 {
-    // This SubHealth carries the pickup BOD/state. Its sprite member is the
+    // This cRSubHealth carries the pickup BOD/state. Its sprite member is the
     // borrowed SpriteManager visual, not a particle-BOD owner.
     int zero = 0;
 

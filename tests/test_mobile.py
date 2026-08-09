@@ -2249,7 +2249,7 @@ def test_mobile_subgoldy_methods_recover_authored_surface() -> None:
             "health_collect_particles",
             "HealthCollect",
             "cRSubGoldy::HealthCollect(cRSubHealth*)",
-            "?HealthCollect@cRSubGoldy@@QAEXPAVSubHealth@@@Z",
+            "?HealthCollect@cRSubGoldy@@QAEXPAVcRSubHealth@@@Z",
         ),
         (
             "initialize_subgoldy",
@@ -2830,6 +2830,161 @@ def test_mobile_gameplay_controllers_recover_authored_owners() -> None:
         )
         assert "completion.Init" in spec
         assert "initialize_completion_screen" not in spec
+
+
+def test_mobile_ring_and_health_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    health_header = (include_root / "track_health_pickup.h").read_text(
+        encoding="utf-8"
+    )
+    ring_header = (include_root / "ring_special_effect_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRSubHealth : public BodBase {" in health_header
+    assert "typedef cRSubHealth SubHealth;" in health_header
+    assert "class SubHealth :" not in health_header
+    assert "cRSubHealth();" in health_header
+    assert "void AI();" in health_header
+    assert "class cRSubRingStar {" in ring_header
+    assert "class cRSubRing : public RenderableBod {" in ring_header
+    assert "typedef cRSubRingStar SubRingStar;" in ring_header
+    assert "typedef cRSubRing SubRing;" in ring_header
+    assert "class SubRingStar {" not in ring_header
+    assert "class SubRing :" not in ring_header
+    for declaration in (
+        "cRSubRing();",
+        "void Init(int unused_lives_snapshot);",
+        "void AI();",
+        "void Shower(cRSubGoldy* owner);",
+    ):
+        assert declaration in ring_header
+
+    player_header = (include_root / "player.h").read_text(encoding="utf-8")
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    assert "void HealthCollect(cRSubHealth* pickup);" in player_header
+    assert "cRSubHealth health_pickups[8];" in subgame_header
+    assert "cRSubRing slots[SUB_RING_POOL_CAPACITY];" in ring_header
+
+    expected_methods = (
+        (
+            "initialize_track_health_pickup_runtime",
+            "cRSubHealth_ctor",
+            "cRSubHealth::cRSubHealth()",
+            "??0cRSubHealth@@QAE@XZ",
+        ),
+        (
+            "health_collect_particles",
+            "cRSubGoldy_HealthCollect",
+            "void cRSubGoldy::HealthCollect(cRSubHealth* pickup)",
+            "?HealthCollect@cRSubGoldy@@QAEXPAVcRSubHealth@@@Z",
+        ),
+        (
+            "update_track_health_pickup",
+            "cRSubHealth_AI",
+            "void cRSubHealth::AI()",
+            "?AI@cRSubHealth@@QAEXXZ",
+        ),
+        (
+            "initialize_track_ring_or_special_effect_runtime",
+            "cRSubRing_ctor",
+            "cRSubRing::cRSubRing()",
+            "??0cRSubRing@@QAE@XZ",
+        ),
+        (
+            "initialize_ring_or_special_effect_particles",
+            "cRSubRing_Init",
+            "void cRSubRing::Init(int)",
+            "?Init@cRSubRing@@QAEXH@Z",
+        ),
+        (
+            "emit_ring_star_shower",
+            "cRSubRingStar_Shower",
+            "void cRSubRingStar::Shower(cRSubGoldy* owner)",
+            "?Shower@cRSubRingStar@@QAEXPAVcRSubGoldy@@@Z",
+        ),
+        (
+            "update_ring_or_special_effect_particle",
+            "cRSubRingStar_AI",
+            "void cRSubRingStar::AI()",
+            "?AI@cRSubRingStar@@QAEXXZ",
+        ),
+        (
+            "update_ring_or_special_effect_parent",
+            "cRSubRing_AI",
+            "void cRSubRing::AI()",
+            "?AI@cRSubRing@@QAEXXZ",
+        ),
+    )
+    for windows_name, alias, definition, object_symbol in expected_methods:
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    for windows_name in (
+        "health_collect_particles",
+        "update_track_health_pickup",
+        "initialize_ring_or_special_effect_particles",
+        "emit_ring_star_shower",
+        "update_ring_or_special_effect_particle",
+        "update_ring_or_special_effect_parent",
+    ):
+        assert entries[windows_name]["status"] == "verified"
+        assert entries[windows_name]["confidence"] == "high"
+
+    health_collect_aliases = references_by_name[
+        "health_collect_particles"
+    ]["aliases"]
+    assert "?HealthCollect@cRSubGoldy@@QAEXPAVSubHealth@@@Z" in (
+        health_collect_aliases
+    )
+    assert "?HealthCollect@cRSubGoldy@@QAEXPAVcRSubHealth@@@Z" in (
+        health_collect_aliases
+    )
+
+    constructor_source = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRSubHealth* health_pickup = health_pickups;" in constructor_source
+    assert (
+        "((RuntimeSlot*)health_pickup)->initialize_track_health_pickup_runtime();"
+        in constructor_source
+    )
+    assert "cRSubRing* ring = ring_effects.slots;" in constructor_source
+    assert (
+        "((RuntimeSlot*)ring)->initialize_track_ring_or_special_effect_runtime();"
+        in constructor_source
+    )
+    assert "new (health_pickup)" not in constructor_source
+    assert "new (ring)" not in constructor_source
+    ring_spawn = (
+        scratch_root / "spawn_track_ring_or_special_effect/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "slot->Init(player->lives);" in ring_spawn
 
 
 def test_mobile_warning_recovers_authored_owner() -> None:

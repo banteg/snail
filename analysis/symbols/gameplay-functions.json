@@ -565,6 +565,9 @@
     {
       "address": "0x408510",
       "name": "initialize_track_health_pickup_runtime",
+      "aliases": [
+        "cRSubHealth_ctor"
+      ],
       "description": "Exact Windows constructor for one authored `SubHealth` (`cRSubHealth` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_health_pickup`. `cRSubGame` owns eight inline 0x74-byte records whose 0x3a0 extent exactly matches the native `Size of cRSubHealth` ledger."
     },
     {
@@ -580,6 +583,9 @@
     {
       "address": "0x408570",
       "name": "initialize_track_ring_or_special_effect_runtime",
+      "aliases": [
+        "cRSubRing_ctor"
+      ],
       "description": "Exact Windows constructor wrapper for one authored `SubRing` (`cRSubRing` cross-port): constructs the inherited RenderableBod, installs the table whose entry is update_ring_or_special_effect_parent, and returns the receiver. cRSubGame owns two 0x1f8-byte records whose 0x3f0 total matches the native cRSubRing size ledger."
     },
     {
@@ -3059,26 +3065,41 @@
     {
       "address": "0x43e470",
       "name": "initialize_ring_or_special_effect_particles",
+      "aliases": [
+        "cRSubRing_Init"
+      ],
       "description": "Windows `void cRSubRing::Init(int)`: arms one SubRing and initializes its ten inline 0x20-byte SubRingStar children, mapping authored effect kinds onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families. Android and iOS preserve the void contract; the function is exact at 153 instructions."
     },
     {
       "address": "0x43e690",
       "name": "emit_ring_star_shower",
+      "aliases": [
+        "cRSubRingStar_Shower"
+      ],
       "description": "Exact `cRSubRingStar::Shower(cRSubGoldy*)`: emits a managed star sprite from one inline SubRingStar child when a SubRing collection resolves. Cross-port iOS v1.9 preserves the authored signature."
     },
     {
       "address": "0x43e780",
       "name": "update_ring_or_special_effect_particle",
+      "aliases": [
+        "cRSubRingStar_AI"
+      ],
       "description": "Windows `cRSubRingStar::AI()`: advances one inline SubRingStar child around its borrowed SubRing parent, updates the child sprite position, and optionally dispatches Shower. Cross-port iOS preserves the authored owner and method."
     },
     {
       "address": "0x43e830",
       "name": "update_ring_or_special_effect_parent",
+      "aliases": [
+        "cRSubRing_AI"
+      ],
       "description": "Windows `cRSubRing::AI()`: advances a cRSubGame-owned SubRing and its ten inline SubRingStar children, handles collect/miss transitions, unlinks inactive parents from GameRoot's active BOD list, and returns child sprites to the sprite manager. The constructor table at 0x49732c points directly here."
     },
     {
       "address": "0x43ecc0",
       "name": "update_track_health_pickup",
+      "aliases": [
+        "cRSubHealth_AI"
+      ],
       "description": "Exact `cRSubHealth::AI()`: runs one live `SubHealth` through bobbing and teardown states, inlining the shared `cLinkedList<cRBod>::Remove` operation in both removal arms. The Windows constructor table at 0x497320 points directly here, while Android and iOS retain the authored member."
     },
     {

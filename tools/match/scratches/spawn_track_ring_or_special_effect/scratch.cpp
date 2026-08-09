@@ -185,7 +185,7 @@ void cRSubGame::AddRing(
                 slot->list_flags |= BOD_FLAG_LINKED;
             }
 
-            slot->initialize_ring_or_special_effect_particles(player->lives);
+            slot->Init(player->lives);
             ((BodAiDispatch*)slot)->update_bod_ai();
         }
         return;

@@ -1,11 +1,12 @@
 // initialize_ring_or_special_effect_particles @ 0x43e470 (thiscall, void, ret 0x4)
+// Authored owner: cRSubRing::Init(int).
 
 #include "player.h"
 #include "ring_special_effect_types.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-void SubRing::initialize_ring_or_special_effect_particles(int)
+void cRSubRing::Init(int)
 {
     int i = 0;
     state = SUB_RING_STATE_ACTIVE;
@@ -13,7 +14,7 @@ void SubRing::initialize_ring_or_special_effect_particles(int)
 
     Vector3* parent_position = &transform.position;
     do {
-        SubRingStar* particle = &particles[i];
+        cRSubRingStar* particle = &particles[i];
         particle->phase = (float)i * 0.628318548f;
         float* phase_step = &particle->phase_step;
         *phase_step = rate_source->subgame_rate * 0.104719758f;
@@ -74,7 +75,7 @@ void SubRing::initialize_ring_or_special_effect_particles(int)
         else
             particle->sprite->facing_angle_step = -particle->phase_step;
 
-        particle->update_ring_or_special_effect_particle();
+        particle->AI();
         i++;
     } while (i < SUB_RING_PARTICLE_COUNT);
 

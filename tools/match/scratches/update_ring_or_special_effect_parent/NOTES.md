@@ -14,7 +14,7 @@ Current match:
 
 Cross-port owner: iOS preserves this callback as `cRSubRing::AI()`, and the
 Windows constructor table at `0x49732c` points directly here. The shared source
-defines it on `SubRing` and its children as `SubRingStar`; focused matching is
+defines it on `cRSubRing` and its children as `cRSubRingStar`; focused matching is
 now proof-grade exact at 100.00%, 336/336 instructions, with 38 clean operands.
 
 Evidence:
@@ -306,3 +306,13 @@ mismatched, or unaudited operands. The three recorded sweeps cover 19 unique
 variants: one exact improvement, 13 neutral, and five regressions, with no
 errors or repeats. The retained change is semantic aggregate ordering, not
 register shaping or byte-layout fakematching.
+
+## 2026-08-09 primary cRSubRing AI ownership
+
+The matcher now emits this callback as `cRSubRing::AI()` and selects the VC6
+symbol `?AI@cRSubRing@@QAEXXZ`. Android and iOS retain that exact authored
+surface. On Windows, the constructor table at `0x49732c` is the direct data
+xref to `0x43e830`, and raw disassembly preserves all three ten-child dispatch
+loops into `cRSubRingStar::AI()`. The ownership rename is code-neutral: the
+candidate remains exact at 336/336 instructions with a full prefix and the
+same 38 reference operands.

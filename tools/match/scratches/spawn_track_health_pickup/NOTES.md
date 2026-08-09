@@ -304,3 +304,16 @@ The local source name is now `pickup_sprite` to keep that visual distinct
 from the eight collection particles. This is byte-neutral at 99.18%, 122/122
 instructions, prefix 16, with all seven references clean. The bounded
 spawner ledger remains formally stalled; no source-shape sweep was reopened.
+
+## 2026-08-09 primary `cRSubHealth` pool ownership
+
+The bounded scan and stride arithmetic now name the primary
+`cRSubHealth` record directly. `cRSubGame::AddHealth(cRSubLoc*,
+cRSubGoldy*)` and its decorated Windows ABI are unchanged, as are the owned
+eight-slot array and the optimizer-sensitive shifted `cRSubGame*` cursor.
+Focused matching remains 99.18%, 122/122 instructions, prefix 16/122, with
+all seven references clean. The exhausted slot-offset/cell-load schedule was
+not retried. The obsolete `free-slot-loop-mutations.json` input was removed:
+its accepted bounded-loop winner is already preserved in the append-only
+experiment receipt, while its pre-winner search anchor no longer matches the
+current source.

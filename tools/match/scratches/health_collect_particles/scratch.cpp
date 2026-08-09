@@ -9,7 +9,7 @@
 float sine(float radians);
 float cosine(float radians);
 
-void cRSubGoldy::HealthCollect(SubHealth* pickup)
+void cRSubGoldy::HealthCollect(cRSubHealth* pickup)
 {
     char render_flags = (char)g_runtime_config.render_flags;
     if ((render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) != 0) {

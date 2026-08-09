@@ -155,3 +155,14 @@ The source now calls each new record `particle` and the borrowed input
 with all 13 references clean. Any remaining request to recover a dedicated
 health-particle BOD owner is therefore stale; the real owner boundary is the
 generic sprite manager plus the separate inline `SubHealth` actor.
+
+## 2026-08-09 primary `cRSubHealth` argument ownership
+
+Both verified mobile ports export
+`cRSubGoldy::HealthCollect(cRSubHealth*)`. The exact Windows scratch now uses
+that authored argument owner and selects
+`?HealthCollect@cRSubGoldy@@QAEXPAVcRSubHealth@@@Z`; the existing
+`?HealthCollect@cRSubGoldy@@QAEXPAVSubHealth@@@Z` spelling remains an explicit
+owner-qualified compatibility alias for older matcher callers. No parameter
+width, cleanup convention, or source operation changes, so the body remains
+exact at 104/104 instructions with all 13 references clean.

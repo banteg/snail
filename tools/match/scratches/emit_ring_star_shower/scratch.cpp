@@ -1,4 +1,5 @@
 // emit_ring_star_shower @ 0x43e690 (thiscall)
+// Authored owner: cRSubRingStar::Shower(cRSubGoldy*).
 
 #include "player.h"
 #include "ring_special_effect_types.h"
@@ -9,7 +10,7 @@ float sine(float radians);
 float cosine(float radians);
 
 
-void SubRingStar::emit_ring_star_shower(cRSubGoldy* owner)
+void cRSubRingStar::Shower(cRSubGoldy* owner)
 {
     if ((g_runtime_config.render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) != 0) {
         Vector3 velocity;

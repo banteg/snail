@@ -17,3 +17,12 @@ Exact initializer for one authored `SubHealth` (`cRSubHealth` cross-port).
 `BodBase`; its live `+0x10` position is inherited `BodBase::position`, and its
 first authored field remains `state +0x38`. The constructor is still exact at
 7/7 instructions with both masked operands clean.
+
+## 2026-08-09 primary `cRSubHealth` ownership
+
+The matcher now emits this exact seven-instruction wrapper as the authored
+`cRSubHealth::cRSubHealth()` constructor and selects the owner-qualified VC6
+symbol `??0cRSubHealth@@QAE@XZ`. `SubHealth` and `TrackHealthPickup` remain
+compatibility typedefs; they do not create a second runtime record. The
+constructor still returns its receiver through the native constructor ABI and
+remains exact at 7/7 instructions with both references clean.

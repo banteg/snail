@@ -1,6 +1,6 @@
 # initialize_ring_or_special_effect_particles @ 0x43e470
 
-Live source map for the ten child halo sprites attached to a `SubRing`.
+Live source map for the ten child halo sprites attached to a `cRSubRing`.
 
 Current match: 100.00%, 153/153 instructions, with 10 clean masked operands.
 
@@ -8,7 +8,7 @@ Evidence:
 
 - Parent `+0x80` is the state word cleared or set by the spawner, initializer,
   and updater.
-- Parent `+0x90` starts an inline array of ten `SubRingStar` entries with
+- Parent `+0x90` starts an inline array of ten `cRSubRingStar` entries with
   stride `0x20`.
 - The child layout matches the updater and emitter scratches:
   `sprite +0x00`, `parent +0x04`, `base_position +0x08`, `phase +0x14`,
@@ -166,3 +166,13 @@ the synthetic loop-count return from the Windows scratch is byte-identical:
 the native EAX residue comes from the terminal child update, not an authored
 integer return. The corrected method remains exact at 153/153 instructions
 with ten clean operands.
+
+## 2026-08-09 primary cRSubRing Init ownership
+
+The matcher now emits this function as `cRSubRing::Init(int)` and selects the
+VC6 symbol `?Init@cRSubRing@@QAEXH@Z`. Android and both recovered iOS releases
+retain the same authored method name; Windows has one direct xref from
+`spawn_track_ring_or_special_effect` and calls `cRSubRingStar::AI()` once per
+owned child. Renaming the receiver, children, and call target preserves the
+exact 153/153 instruction stream and the established Windows-only ten-child
+extent. `SubRing` and `SubRingStar` remain compatibility typedefs.

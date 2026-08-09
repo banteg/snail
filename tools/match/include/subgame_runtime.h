@@ -200,7 +200,7 @@ public:
     Time active_level_timer; // +0x355d98, embedded cRTime display snapshot
     SubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
     JetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
-    SubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
+    cRSubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
     SlugPool slug_hazards; // +0x3563a0, eight owned cRSlug slots
     SubLazerManager sub_lazers; // +0x356b00, 20 owned cRSubLazer slots
     SaltManager salt_hazards; // +0x3578c0, 40 owned cRSalt slots

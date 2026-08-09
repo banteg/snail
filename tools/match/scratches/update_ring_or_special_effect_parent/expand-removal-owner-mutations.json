@@ -3,7 +3,7 @@
   "sites": [
     {
       "name": "expand-removal-owner",
-      "find": "            state = SUB_RING_STATE_INACTIVE;\n            g_game->active_bod_list.remove_bod(this);\n\n            SubRingStar* particle =",
+      "find": "            state = SUB_RING_STATE_INACTIVE;\n            g_game->active_bod_list.remove_bod(this);\n\n            cRSubRingStar* particle =",
       "occurrence": 3,
       "replacements": [
         {

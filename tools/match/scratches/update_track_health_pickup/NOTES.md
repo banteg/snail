@@ -163,3 +163,12 @@ generic SpriteManager records, not a second BOD-backed health actor family.
 
 The clarifying source comment is codegen-neutral: focused matching remains
 exact at 128/128 with all 21 references clean.
+
+## 2026-08-09 primary `cRSubHealth::AI` ownership
+
+Android and iOS independently export `cRSubHealth::AI()`, and the exact
+Windows constructor table points directly to this body. The scratch now emits
+the owner-qualified VC6 member `?AI@cRSubHealth@@QAEXXZ` while keeping the
+stable `update_track_health_pickup` matcher ID. `SubHealth` remains only a
+compatibility typedef. The body is unchanged and remains exact at 128/128
+instructions with all 21 references clean.

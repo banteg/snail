@@ -15,10 +15,10 @@
 
 class cRSubGame;
 
-class SubHealth : public BodBase {
+class cRSubHealth : public BodBase {
 public:
-    SubHealth* initialize_track_health_pickup_runtime(); // @ 0x408510
-    void update_track_health_pickup(); // @ 0x43ecc0
+    cRSubHealth(); // @ 0x408510
+    void AI(); // @ 0x43ecc0
 
     TrackPickupState state; // +0x38
     cRSubGoldy* owner; // +0x3c
@@ -33,8 +33,11 @@ public:
     float bob_phase_step; // +0x70
 };
 
-typedef SubHealth TrackHealthPickup;
+typedef cRSubHealth SubHealth;
+typedef cRSubHealth TrackHealthPickup;
 
+typedef char cRSubHealth_must_be_0x74[
+    (sizeof(cRSubHealth) == 0x74) ? 1 : -1];
 typedef char SubHealth_must_be_0x74[(sizeof(SubHealth) == 0x74) ? 1 : -1];
 
 #endif

@@ -54,10 +54,10 @@ void cRSubGame::RemoveBods()
     do {
         if ((BOD_NEXT_LINK_FLAGS(health_next) & BOD_FLAG_LINKED) != 0) {
             REMOVE_BOD_NODE_FROM_NEXT_LINK(health_next);
-            ((SubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state =
+            ((cRSubHealth*)BOD_NODE_FROM_NEXT_LINK(health_next))->state =
                 TRACK_PICKUP_STATE_INACTIVE;
         }
-        health_next = (BodNode**)((char*)health_next + sizeof(SubHealth));
+        health_next = (BodNode**)((char*)health_next + sizeof(cRSubHealth));
         --health_count;
     } while (health_count != 0);
 
