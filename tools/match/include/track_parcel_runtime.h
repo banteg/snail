@@ -22,10 +22,10 @@ enum ParcelState {
     PARCEL_STATE_DELIVERING = 7,
 };
 
-class Parcel : public BodBase {
+class cRParcel : public BodBase {
 public:
-    Parcel* initialize_track_parcel_runtime(); // @ 0x408860
-    void update_track_parcel();
+    cRParcel(); // @ 0x408860
+    void AI(); // @ 0x4431d0
 
     ParcelState state; // +0x38
     cRSubGame* owner_subgame; // +0x3c, borrowed backlink
@@ -42,16 +42,25 @@ public:
     Vector3 delivery_offset; // +0x80
 };
 
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRParcel Parcel;
+
+typedef char cRParcel_must_be_0x8c[(sizeof(cRParcel) == 0x8c) ? 1 : -1];
 typedef char Parcel_must_be_0x8c[(sizeof(Parcel) == 0x8c) ? 1 : -1];
 
-struct ParcelManager {
-    Parcel* allocate_track_parcel_slot();
-    void initialize_track_parcel_slots();
-    void update_track_parcels();
+class cRParcelManager {
+public:
+    cRParcel* New(); // @ 0x443190
+    void Init(); // @ 0x443160
+    void AI(); // @ 0x443130
 
-    Parcel slots[50]; // fixed storage owned by cRSubGame
+    cRParcel slots[50]; // fixed storage owned by cRSubGame
 };
 
+typedef cRParcelManager ParcelManager;
+
+typedef char cRParcelManager_must_be_0x1b58[
+    (sizeof(cRParcelManager) == 0x1b58) ? 1 : -1];
 typedef char ParcelManager_must_be_0x1b58[
     (sizeof(ParcelManager) == 0x1b58) ? 1 : -1];
 

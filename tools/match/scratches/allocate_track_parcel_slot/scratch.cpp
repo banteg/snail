@@ -4,10 +4,10 @@
 
 int report_errorf(char* format, ...);
 
-Parcel* ParcelManager::allocate_track_parcel_slot()
+cRParcel* cRParcelManager::New()
 {
     int index = 0;
-    Parcel* scan = slots;
+    cRParcel* scan = slots;
 
     while (index < 50 && scan->state != PARCEL_STATE_INACTIVE) {
         ++index;

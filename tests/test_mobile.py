@@ -744,20 +744,20 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
     assert parcel["android_body_count"] == 1
     assert parcel["ios_body_count"] == 1
     assert "AddParcel" in functions_by_name["spawn_track_parcel"]["aliases"]
-    assert "Parcel* AddParcel(" in matcher_header
+    assert "cRParcel* AddParcel(" in matcher_header
 
     parcel_root = repo_root / "tools/match/scratches/spawn_track_parcel"
     parcel_source = (parcel_root / "scratch.cpp").read_text(
         encoding="utf-8"
     )
-    assert "Parcel* cRSubGame::AddParcel(" in parcel_source
+    assert "cRParcel* cRSubGame::AddParcel(" in parcel_source
     assert "cRSubGoldy*)" in parcel_source
     parcel_config = (parcel_root / "scratch.conf").read_text(
         encoding="utf-8"
     )
     assert "FUNCTION=spawn_track_parcel\n" in parcel_config
     assert (
-        "SYMBOL=?AddParcel@cRSubGame@@QAEPAVParcel@@"
+        "SYMBOL=?AddParcel@cRSubGame@@QAEPAVcRParcel@@"
         "PAUtVector@@PAVcRSubGoldy@@@Z\n"
         in parcel_config
     )
@@ -3308,6 +3308,293 @@ def test_mobile_slug_family_recovers_authored_owners() -> None:
         "((RuntimeSlot*)slug)->initialize_slug_hazard_runtime();" in constructor
     )
     assert "new (slug)" not in constructor
+
+
+def test_mobile_click_start_recovers_authored_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "click_start.h").read_text(encoding="utf-8")
+    player_header = (include_root / "player.h").read_text(encoding="utf-8")
+
+    assert "class cRClickStart : public RenderableBod" in header
+    assert "typedef cRClickStart ClickStart;" in header
+    assert "class ClickStart :" not in header
+    assert "cRClickStart();" in header
+    assert "void Init(cRSubGoldy* player);" in header
+    assert "void AI();" in header
+    assert "cRClickStart click_start;" in player_header
+
+    expected_methods = (
+        (
+            "initialize_click_start_controller_runtime",
+            "cRClickStart_ctor",
+            "cRClickStart::cRClickStart()",
+            "??0cRClickStart@@QAE@XZ",
+            False,
+        ),
+        (
+            "initialize_click_start",
+            "cRClickStart_Init",
+            "void cRClickStart::Init(cRSubGoldy* new_player)",
+            "?Init@cRClickStart@@QAEXPAVcRSubGoldy@@@Z",
+            True,
+        ),
+        (
+            "update_click_start",
+            "cRClickStart_AI",
+            "void cRClickStart::AI()",
+            "?AI@cRClickStart@@QAEXXZ",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["status"] == "verified"
+            assert entries[windows_name]["confidence"] == "high"
+
+    subgoldy_init = (
+        scratch_root / "initialize_subgoldy/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "click_start.Init(this);" in subgoldy_init
+
+    constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "((RuntimeSlot*)&subgoldy->click_start)" in constructor
+    assert "->initialize_click_start_controller_runtime();" in constructor
+
+
+def test_mobile_subgarbage_recovers_authored_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "garbage_hazard_slot.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRSubGarbage : public RenderableBod" in header
+    assert "typedef cRSubGarbage SubGarbage;" in header
+    assert "class SubGarbage :" not in header
+    assert "cRSubGarbage();" in header
+    assert "void Smoke(" in header
+    assert "cRSubGarbage* Kill();" in header
+    assert "void AI();" in header
+    assert "cRSubGarbage* active_head;" in header
+    assert "cRSubGarbage slots[SUB_GARBAGE_SLOT_CAPACITY]" in header
+
+    expected_methods = (
+        (
+            "initialize_garbage_hazard",
+            "cRSubGarbage_ctor",
+            "cRSubGarbage::cRSubGarbage()",
+            "??0cRSubGarbage@@QAE@XZ",
+            False,
+        ),
+        (
+            "spawn_garbage_smoke_particle",
+            "cRSubGarbage_Smoke",
+            "void cRSubGarbage::Smoke(",
+            "?Smoke@cRSubGarbage@@QAEXAAUtVector@@0PAVcRSubGoldy@@@Z",
+            True,
+        ),
+        (
+            "destroy_garbage_hazard",
+            "cRSubGarbage_Kill",
+            "cRSubGarbage* cRSubGarbage::Kill()",
+            "?Kill@cRSubGarbage@@QAEPAV1@XZ",
+            True,
+        ),
+        (
+            "update_garbage_hazard",
+            "cRSubGarbage_AI",
+            "void cRSubGarbage::AI()",
+            "?AI@cRSubGarbage@@QAEXXZ",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["status"] == "verified"
+            assert entries[windows_name]["confidence"] == "high"
+
+    constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRSubGarbage* garbage = garbage_hazards.slots;" in constructor
+    assert "((RuntimeSlot*)garbage)->initialize_garbage_hazard();" in constructor
+
+    add_garbage = (
+        scratch_root / "spawn_track_garbage_hazard/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRSubGarbage* scan = garbage_hazards.slots;" in add_garbage
+    assert "void cRSubGame::AddGarbage(" in add_garbage
+
+
+def test_mobile_parcel_family_recovers_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "track_parcel_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRParcel : public BodBase" in header
+    assert "typedef cRParcel Parcel;" in header
+    assert "class Parcel :" not in header
+    assert "cRParcel();" in header
+    assert "void AI();" in header
+    assert "class cRParcelManager" in header
+    assert "typedef cRParcelManager ParcelManager;" in header
+    assert "cRParcel* New();" in header
+    assert "void Init();" in header
+    assert "cRParcel slots[50];" in header
+    assert "cRParcel* AddParcel(" in subgame_header
+    assert "cRParcelManager parcel_manager;" in subgame_header
+
+    expected_methods = (
+        (
+            "initialize_track_parcel_runtime",
+            "cRParcel_ctor",
+            "cRParcel::cRParcel()",
+            "??0cRParcel@@QAE@XZ",
+            False,
+        ),
+        (
+            "update_track_parcels",
+            "cRParcelManager_AI",
+            "void cRParcelManager::AI()",
+            "?AI@cRParcelManager@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_track_parcel_slots",
+            "cRParcelManager_Init",
+            "void cRParcelManager::Init()",
+            "?Init@cRParcelManager@@QAEXXZ",
+            True,
+        ),
+        (
+            "allocate_track_parcel_slot",
+            "cRParcelManager_New",
+            "cRParcel* cRParcelManager::New()",
+            "?New@cRParcelManager@@QAEPAVcRParcel@@XZ",
+            True,
+        ),
+        (
+            "update_track_parcel",
+            "cRParcel_AI",
+            "void cRParcel::AI()",
+            "?AI@cRParcel@@QAEXXZ",
+            True,
+        ),
+        (
+            "spawn_track_parcel",
+            "AddParcel",
+            "cRParcel* cRSubGame::AddParcel(",
+            "?AddParcel@cRSubGame@@QAEPAVcRParcel@@PAUtVector@@PAVcRSubGoldy@@@Z",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["status"] == "verified"
+            assert entries[windows_name]["confidence"] == "high"
+
+    build = (scratch_root / "build_subgame_level/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    update = (scratch_root / "update_subgoldy/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "parcel_manager.Init();" in build
+    assert "parcel_manager.AI();" in update
+    assert "sizeof(cRParcel)," in constructor
+    assert "&RuntimeSlot::initialize_track_parcel_runtime" in constructor
 
 
 def test_mobile_warning_recovers_authored_owner() -> None:

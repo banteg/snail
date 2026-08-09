@@ -1,9 +1,10 @@
 # Exact match
 
-`ParcelManager::update_track_parcels` walks its 50 fixed `Parcel` records and
+`cRParcelManager::AI()` walks its 50 fixed `cRParcel` records and
 makes the native vtable call for every nonzero state. The manager owns slot
 storage; individual parcels only borrow the subgame, Player, and sprite
-handles. Android and iOS retain this owner as `cRParcelManager::AI()`. The
+handles. Android and iOS independently retain this exact owner. The stable
+matcher key binds `?AI@cRParcelManager@@QAEXXZ`. The
 shared typed version remains 100% (16/16) with the common 4-byte
 `BodAiDispatch` overlay used only to express the native slot-zero call without
 adding a second C++ vptr to the explicit `BodNode` layout. This retires the
@@ -11,7 +12,7 @@ former parcel-local virtual shell and shares the same ABI fact with SubRing,
 cRSubLoc, LogoLetter, GolbShot, and Player consumers.
 
 The 2026-07-14 extent pass derives the update bound from
-`ParcelManager::slots`. Its normalized listing remains byte-identical
+`cRParcelManager::slots`. Its normalized listing remains byte-identical
 (`068d76a8897514e58d677a360937f96f428a740632fd7ce8ec6919de7d0e62ca`)
 and exact at 16/16 instructions.
 
@@ -25,7 +26,8 @@ unproduced state values. Focused matching remains exact at 16/16 instructions.
 
 The sole native caller is `update_subgoldy`, which borrows the embedded
 `cRSubGame::parcel_manager`; it does not pass an individual parcel or
-transfer slot storage. Both analyzer replays now pin the manager member name
-and `void __thiscall(ParcelManager*)` ABI, gate the 50-slot owner at 0x1b58
+transfer slot storage. Both analyzer replays retain the compatibility manager
+name and `void __thiscall(ParcelManager*)` ABI, while the matcher uses the
+primary `cRParcelManager`; both gate the 50-slot owner at 0x1b58
 bytes, and reanalyze the update/spawn/collision consumers together. Matching
 remains exact at 16/16 instructions.

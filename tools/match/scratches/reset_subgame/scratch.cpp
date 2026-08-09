@@ -24,7 +24,7 @@ void cRSubGame::ReSet()
     jetpack_pickup.state = TRACK_PICKUP_STATE_INACTIVE;
     jetpack_pickup.owner_game = this;
 
-    SubGarbage* garbage = garbage_hazards.slots;
+    cRSubGarbage* garbage = garbage_hazards.slots;
     int garbage_count =
         sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {

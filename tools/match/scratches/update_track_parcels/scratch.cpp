@@ -3,9 +3,9 @@
 #include "bod_ai_dispatch.h"
 #include "track_parcel_runtime.h"
 
-void ParcelManager::update_track_parcels()
+void cRParcelManager::AI()
 {
-    Parcel* slot = slots;
+    cRParcel* slot = slots;
     int count = sizeof(slots) / sizeof(slots[0]);
     do {
         if (slot->state != PARCEL_STATE_INACTIVE) {

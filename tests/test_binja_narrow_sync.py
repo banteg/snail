@@ -7491,7 +7491,8 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     ):
         assert function_name in path_header
 
-    assert "class ClickStart : public RenderableBod" in click_matcher
+    assert "class cRClickStart : public RenderableBod" in click_matcher
+    assert "typedef cRClickStart ClickStart;" in click_matcher
     assert "cRSubGoldy* owner_player" in click_matcher
     assert "class ActiveLandscapeEntry : public RenderableBod" in landscape_matcher
     assert "RenderableBod* reference_bod" in landscape_matcher
@@ -11309,6 +11310,12 @@ def test_parcel_manager_replay_owns_fixed_pool_lifecycle_and_consumers() -> None
         assert "Parcel_must_be_0x8c" in header
         assert "ParcelManager_must_be_0x1b58" in header
 
+    assert "class cRParcel : public BodBase" in matcher_header
+    assert "typedef cRParcel Parcel;" in matcher_header
+    assert "class cRParcelManager" in matcher_header
+    assert "typedef cRParcelManager ParcelManager;" in matcher_header
+    assert "cRParcel slots[50]" in matcher_header
+
     assert "current_struct_size" in binja_sync
     assert '"Parcel": 0x8C' in binja_sync
     assert '"ParcelManager": 0x1B58' in binja_sync
@@ -13131,7 +13138,9 @@ def test_sub_garbage_owner_replays_stay_aligned() -> None:
     assert '"SubGarbageCollisionSide",' in path_sync
     assert '"SubGarbageSlotCursor",' in path_sync
 
-    assert "class SubGarbage : public RenderableBod" in matcher_header
+    assert "class cRSubGarbage : public RenderableBod" in matcher_header
+    assert "typedef cRSubGarbage SubGarbage;" in matcher_header
+    assert "cRSubGarbage slots[SUB_GARBAGE_SLOT_CAPACITY]" in matcher_header
     assert "SubGarbageState state;" in matcher_header
     assert "SubGarbageCollisionSide collision_side;" in matcher_header
     assert "int state;" not in matcher_header

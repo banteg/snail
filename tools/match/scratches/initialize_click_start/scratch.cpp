@@ -6,7 +6,7 @@
 
 int report_errorf(char* format, ...);
 
-void ClickStart::initialize_click_start(cRSubGoldy* new_player)
+void cRClickStart::Init(cRSubGoldy* new_player)
 {
     prompt = g_game->border_manager.allocate_border();
     tColour color;

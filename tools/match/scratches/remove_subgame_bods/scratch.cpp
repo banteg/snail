@@ -78,11 +78,11 @@ void cRSubGame::RemoveBods()
         sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {
         if ((BOD_NEXT_LINK_FLAGS(garbage_next) & BOD_FLAG_LINKED) != 0) {
-            ((SubGarbage*)BOD_NODE_FROM_NEXT_LINK(garbage_next))->state =
+            ((cRSubGarbage*)BOD_NODE_FROM_NEXT_LINK(garbage_next))->state =
                 SUB_GARBAGE_STATE_INACTIVE;
             REMOVE_BOD_NODE_FROM_NEXT_LINK(garbage_next);
         }
-        garbage_next = (BodNode**)((char*)garbage_next + sizeof(SubGarbage));
+        garbage_next = (BodNode**)((char*)garbage_next + sizeof(cRSubGarbage));
         --garbage_count;
     } while (garbage_count != 0);
 

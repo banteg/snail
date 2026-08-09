@@ -1066,6 +1066,8 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x43E470, "initialize_ring_or_special_effect_particles", "?Init@cRSubRing@@QAEXH@Z"),
             (0x441540, "initialize_salt_hazard_pool", "?Init@cRSaltManager@@QAEXXZ"),
             (0x441650, "initialize_sub_lazer_pool", "?Init@cRSubLazerManager@@QAEXXZ"),
+            (0x442170, "initialize_click_start", "?Init@cRClickStart@@QAEXPAVcRSubGoldy@@@Z"),
+            (0x443160, "initialize_track_parcel_slots", "?Init@cRParcelManager@@QAEXXZ"),
             (0x43F5C0, "initialize_slug_voice_manager", "?Init@cRSlugVoiceManager@@QAEXXZ"),
             (0x444AE0, "start_invincible_shell", "?Start@cRInvincible@@QAEXXZ"),
             (0x446F30, "start_warning", "?Start@cRWarning@@QAEXXZ"),
@@ -1079,6 +1081,10 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x43E830, "update_ring_or_special_effect_parent", "?AI@cRSubRing@@QAEXXZ"),
             (0x441C10, "update_salt_hazard", "?AI@cRSalt@@QAEXXZ"),
             (0x4417D0, "update_sub_lazer_projectile", "?AI@cRSubLazer@@QAEXXZ"),
+            (0x442290, "update_click_start", "?AI@cRClickStart@@QAEXXZ"),
+            (0x443130, "update_track_parcels", "?AI@cRParcelManager@@QAEXXZ"),
+            (0x4431D0, "update_track_parcel", "?AI@cRParcel@@QAEXXZ"),
+            (0x43F200, "update_garbage_hazard", "?AI@cRSubGarbage@@QAEXXZ"),
             (0x43F5E0, "update_slug_voice_manager", "?AI@cRSlugVoiceManager@@QAEXXZ"),
             (0x43F930, "update_slug_hazard_ai", "?AI@cRSlug@@QAEXXZ"),
         )
@@ -1123,6 +1129,41 @@ def test_sub_lazer_shoot_aliases_preserve_actor_and_manager_owners() -> None:
         _reference_symbol_for_symbol_name(
             manifest,
             "?Shoot@cRUnknown@@QAEXPAUtVector@@PBU2@@Z",
+        )
+        is None
+    )
+
+
+def test_parcel_and_sprite_new_aliases_preserve_manager_owners() -> None:
+    parcel_new = ReferenceSymbol(
+        address=0x443190,
+        name="allocate_track_parcel_slot",
+        kind="function",
+        aliases=("?New@cRParcelManager@@QAEPAVcRParcel@@XZ",),
+    )
+    sprite_new = ReferenceSymbol(
+        address=0x44E2A0,
+        name="allocate_sprite",
+        kind="function",
+        aliases=("?New@cRSpriteManager@@QAEPAVcRSprite@@HHHH@Z",),
+    )
+    manifest = ReferenceSymbolManifest(
+        name="test references",
+        symbols=(parcel_new, sprite_new),
+    )
+
+    assert (
+        _reference_symbol_for_symbol_name(manifest, parcel_new.aliases[0])
+        is parcel_new
+    )
+    assert (
+        _reference_symbol_for_symbol_name(manifest, sprite_new.aliases[0])
+        is sprite_new
+    )
+    assert (
+        _reference_symbol_for_symbol_name(
+            manifest,
+            "?New@cRUnknownManager@@QAEPAXXZ",
         )
         is None
     )

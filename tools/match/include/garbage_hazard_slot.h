@@ -28,15 +28,15 @@ enum {
     SUB_GARBAGE_SLOT_CAPACITY = 50,
 };
 
-class SubGarbage : public RenderableBod {
+class cRSubGarbage : public RenderableBod {
 public:
-    SubGarbage* initialize_garbage_hazard();
-    void update_garbage_hazard();
-    SubGarbage* destroy_garbage_hazard();
-    void spawn_garbage_smoke_particle(
-        Vector3* position, Vector3* velocity, cRSubGoldy* owner_player);
+    cRSubGarbage(); // @ 0x408550
+    void Smoke(
+        tVector& position, tVector& velocity, cRSubGoldy* owner_player); // @ 0x43d5a0
+    cRSubGarbage* Kill(); // @ 0x43f130; Windows preserves the pointer result
+    void AI(); // @ 0x43f200
 
-    SubGarbage* next_active; // +0x80, borrowed link within the owning pool
+    cRSubGarbage* next_active; // +0x80, borrowed link within the owning pool
     SubGarbageState state; // +0x84
     SubGarbageCollisionSide collision_side; // +0x88
     cRSubGame* owner_game; // +0x8c, borrowed containing subgame
@@ -53,15 +53,20 @@ public:
     char unknown_bd[0xc0 - 0xbd];
     cRSubGoldy* owner_player; // +0xc0, borrowed embedded cRSubGoldy
 };
-typedef SubGarbage GarbageHazardSlot;
 
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRSubGarbage SubGarbage;
+typedef cRSubGarbage GarbageHazardSlot;
+
+typedef char cRSubGarbage_must_be_0xc4[
+    (sizeof(cRSubGarbage) == 0xc4) ? 1 : -1];
 typedef char SubGarbage_must_be_0xc4[
     (sizeof(SubGarbage) == 0xc4) ? 1 : -1];
 
 class SubGarbagePool {
 public:
-    SubGarbage* active_head; // +0x00, borrowed pointer into slots
-    SubGarbage slots[SUB_GARBAGE_SLOT_CAPACITY]; // +0x04, owned storage
+    cRSubGarbage* active_head; // +0x00, borrowed pointer into slots
+    cRSubGarbage slots[SUB_GARBAGE_SLOT_CAPACITY]; // +0x04, owned storage
 };
 
 typedef SubGarbagePool GarbageHazardPool;

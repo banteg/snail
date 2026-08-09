@@ -333,3 +333,14 @@ independently consumed as `smoke_timer/smoke_timer_step`.
 The names therefore capture only the proved state-local pair and do not claim
 an active effect or a shared base class. Focused matching remains genuinely
 exact at 217/217 instructions with all 22 masked operands clean.
+
+## 2026-08-09 authored AI promotion
+
+The exact callback is now defined as `cRSubGarbage::AI()` and exports
+`?AI@cRSubGarbage@@QAEXXZ`; its two internal authored calls are expressed as
+`Kill()` and `Smoke(tVector&, tVector&, cRSubGoldy*)`. The unread
+`burst_progress` pair, smoke cadence, state transitions, and integration order
+remain unchanged. Byte matching stays exact at 217/217 instructions and full
+prefix. The shared reference manifest maps `Kill` to
+`destroy_garbage_hazard` and `Smoke` to
+`spawn_garbage_smoke_particle`, leaving all 22 masked operands clean.

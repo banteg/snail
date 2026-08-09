@@ -39,3 +39,11 @@ offsets.
 `Player::replay_start_cursor`. The later click-start, completion, reset, and
 Time Trial ghost paths close that identity; the mobile initializers corroborate
 the clear but do not supply the Windows offset. The exact match is unchanged.
+
+## 2026-08-09 primary cRClickStart ownership
+
+This exact leaf now emits `cRClickStart::Init(cRSubGoldy*)` with
+`?Init@cRClickStart@@QAEXPAVcRSubGoldy@@@Z`. Its sole native caller at
+`0x43ad45` passes the embedded child at `cRSubGoldy +0xa0` and that same
+Goldy as the borrowed parent. Android and iOS independently retain the exact
+authored member. Matching remains 79/79 with all 13 operands clean.

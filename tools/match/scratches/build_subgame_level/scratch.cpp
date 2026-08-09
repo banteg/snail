@@ -124,7 +124,7 @@ void cRSubGame::StartLevel(int level_index)
         }
     }
 
-    parcel_manager.initialize_track_parcel_slots();
+    parcel_manager.Init();
     if (g_game->intro.hide_for_replay_latch == 1) {
         top_score_widget->hide_border_init();
         bottom_score_widget->hide_border_init();

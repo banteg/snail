@@ -15,11 +15,11 @@ enum ClickStartState {
     CLICK_START_STATE_TEARDOWN = 4,
 };
 
-class ClickStart : public RenderableBod {
+class cRClickStart : public RenderableBod {
 public:
-    ClickStart* initialize_click_start_controller_runtime(); // @ 0x408670, constructor
-    void initialize_click_start(cRSubGoldy* player); // @ 0x442170, cRClickStart::Init
-    void update_click_start();                   // @ 0x442290, cRClickStart::AI
+    cRClickStart(); // @ 0x408670
+    void Init(cRSubGoldy* player); // @ 0x442170
+    void AI(); // @ 0x442290
 
     ClickStartState state;      // +0x80
     FrontendWidget* prompt;     // +0x84
@@ -31,6 +31,11 @@ public:
     unsigned char hide_prompt;  // +0xa8
 };
 
+// Compatibility vocabulary retained for existing Windows-analysis callers.
+typedef cRClickStart ClickStart;
+
+typedef char cRClickStart_must_be_0xac[
+    (sizeof(cRClickStart) == 0xac) ? 1 : -1];
 typedef char ClickStart_must_be_0xac[(sizeof(ClickStart) == 0xac) ? 1 : -1];
 
 #endif

@@ -173,3 +173,12 @@ Focused matching rises from 85.14% (72/76 instructions, prefix 5) to
 **100.00%** (76/76 instructions and prefix), with all nine masked operands
 clean. This is the same semantic owner pattern as the independently exact Golb
 smoke emitter rather than a copied instruction schedule.
+
+## 2026-08-09 authored Smoke promotion
+
+The exact Windows emitter now uses the retained mobile signature
+`cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)` and exports
+`?Smoke@cRSubGarbage@@QAEXAAUtVector@@0PAVcRSubGoldy@@@Z`. The borrowed vector
+references preserve the original pointer ABI and the same aggregate velocity
+and position copies. Focused matching remains 100%, 76/76 instructions and
+prefix, with all nine masked operands clean.

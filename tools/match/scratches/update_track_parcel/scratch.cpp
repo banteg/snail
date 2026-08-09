@@ -6,7 +6,7 @@
 float sine(float radians);
 int next_math_random_value();
 
-void Parcel::update_track_parcel()
+void cRParcel::AI()
 {
     cRSubGame* subgame = owner_subgame;
     Vector3 delta;

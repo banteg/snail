@@ -106,7 +106,7 @@ void cRSubGoldy::Collision()
                 }
             }
         }
-        for (SubGarbage* garbage = game->garbage_hazards.active_head;
+        for (cRSubGarbage* garbage = game->garbage_hazards.active_head;
              garbage;
              garbage = garbage->next_active) {
             if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {

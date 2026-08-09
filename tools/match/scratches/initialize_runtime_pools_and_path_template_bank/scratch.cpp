@@ -117,11 +117,11 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         --banner_count;
     } while (banner_count);
 
-    SubGarbage* garbage = garbage_hazards.slots;
+    cRSubGarbage* garbage = garbage_hazards.slots;
     int garbage_count =
         sizeof(garbage_hazards.slots) / sizeof(garbage_hazards.slots[0]);
     do {
-        garbage->initialize_garbage_hazard();
+        ((RuntimeSlot*)garbage)->initialize_garbage_hazard();
         ++garbage;
         --garbage_count;
     } while (garbage_count);
@@ -143,7 +143,8 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
 
     cRSubGoldy* subgoldy = &player;
     subgoldy->initialize_renderable_bod();
-    subgoldy->click_start.initialize_click_start_controller_runtime();
+    ((RuntimeSlot*)&subgoldy->click_start)
+        ->initialize_click_start_controller_runtime();
     subgoldy->cameraman.noop_runtime_slot_constructor();
     subgoldy->follow_state.noop_runtime_slot_constructor();
     initialize_array_with_constructor(
@@ -208,7 +209,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         &RuntimeSlot::noop_runtime_slot_constructor);
     initialize_array_with_constructor(
         (RuntimeSlot*)parcel_manager.slots,
-        sizeof(Parcel),
+        sizeof(cRParcel),
         sizeof(parcel_manager.slots) / sizeof(parcel_manager.slots[0]),
         &RuntimeSlot::initialize_track_parcel_runtime);
     initialize_array_with_constructor(

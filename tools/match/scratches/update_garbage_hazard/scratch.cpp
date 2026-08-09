@@ -8,7 +8,7 @@
 #include "subgame_runtime.h"
 
 
-void SubGarbage::update_garbage_hazard()
+void cRSubGarbage::AI()
 {
     cRSubGame* pause_game = owner_game;
     if (!pause_game->subgame_pause_gate) {
@@ -25,7 +25,7 @@ void SubGarbage::update_garbage_hazard()
             cRSubGoldy* owner = owner_player;
             if (transform.position.z < owner->active_window_min_z)
             {
-                destroy_garbage_hazard();
+                Kill();
                 return;
             }
 
@@ -117,7 +117,7 @@ side_adjustment_complete:
 
             if (transform.position.y < -10.0f
                 || transform.position.z < owner_player->active_window_min_z) {
-                destroy_garbage_hazard();
+                Kill();
                 return;
             }
 
@@ -126,7 +126,7 @@ side_adjustment_complete:
             smoke_timer = next_smoke_timer;
             if (next_smoke_timer > 1.0f) {
                 smoke_timer = 0.0f;
-                spawn_garbage_smoke_particle(&transform.position, &velocity, owner);
+                Smoke(transform.position, velocity, owner);
             }
             break;
         }

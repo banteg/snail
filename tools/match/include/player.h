@@ -180,7 +180,7 @@ public:
     // sprite slots are updated each tick by set_subgoldy_ghost_z.
     cRSprite* ghost_sprite_a;                // +0x98
     cRSprite* ghost_sprite_b;                // +0x9c
-    ClickStart click_start;                // +0xa0, exact authored cRClickStart
+    cRClickStart click_start;              // +0xa0, exact authored cRClickStart
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[0x150 - 0x14d];
     Nuke nuke;                            // +0x150, authored cRNuke owner

@@ -30,7 +30,7 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
 {
     int slot_index = 0;
     DWORD* self_words = (DWORD*)this;
-    SubGarbage* scan = garbage_hazards.slots;
+    cRSubGarbage* scan = garbage_hazards.slots;
     while (1) {
         if (scan->state == SUB_GARBAGE_STATE_INACTIVE)
             break;
@@ -106,7 +106,7 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
     result[0] = *(DWORD*)&live_position->x;
     result[1] = *(DWORD*)&live_position->y;
     result[2] = *(DWORD*)&live_position->z;
-    SubGarbage* slot_view = &garbage_hazards.slots[slot_index];
+    cRSubGarbage* slot_view = &garbage_hazards.slots[slot_index];
     slot_view->source_cell = cell;
     slot_view->hidden = 0;
 }

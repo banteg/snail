@@ -139,3 +139,12 @@ Completion later persists the Player lane, reset restores it, and ghost
 playback consumes the delta. Android and iOS `cRClickStart::AI()` preserve the
 same dual write, so the former startup/source-tail names are retired without
 borrowing either mobile layout. The exact 138/138 result is unchanged.
+
+## 2026-08-09 primary cRClickStart ownership
+
+The matcher now emits this callback as `cRClickStart::AI()` with
+`?AI@cRClickStart@@QAEXXZ`. Live Windows xrefs show no direct caller and the
+sole data reference at the constructor-installed table `0x497348`; Android
+and iOS retain the same authored AI owner. State `1` remains deliberately
+`CLICK_START_STATE_UNKNOWN_1` because no recovered writer justifies a role.
+Matching remains exact at 138/138 instructions with all 24 operands clean.

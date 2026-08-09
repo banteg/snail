@@ -4,7 +4,7 @@ Structured scratch for `update_track_parcel` @ `0x4431d0`.
 
 Recovered relationships:
 
-- `Parcel::owner_subgame` is a borrowed subgame-base pointer
+- `cRParcel::owner_subgame` is a borrowed subgame-base pointer
   (`g_game_base + 0x74618`), not the root game base. Its `+0x09` byte is the
   `subgame_pause_gate` checked at entry.
 - State `1` is the live bobbing pickup state. It culls behind
@@ -22,9 +22,9 @@ Recovered relationships:
   `cRCompletion::widget_world` vector at `subgame+0x12727d8`, then
   calls `cRCompletion::RegisterParcel()`.
 
-The shared parcel header now models the primary authored `Parcel : BodBase`;
+The shared parcel header now models the primary authored `cRParcel : BodBase`;
 the exact initializer and table entry join it to Android/iOS `cRParcel::AI()`.
-The fixed `ParcelManager` proves 50 owned inline records. A parcel itself only
+The fixed `cRParcelManager` proves 50 owned inline records. A parcel itself only
 borrows its `cRSubGame`, embedded `Player`, and SpriteManager sprite
 handles. The tail remains named as `progress`, `progress_step`,
 `target_distance`, `travel_dir`, and `delivery_offset`.
@@ -98,7 +98,8 @@ the player's home anchor, and `DELIVERY_PENDING -> DELIVERING` owns the later
 flight into `cRCompletion::widget_world`. All terminal paths return the slot to
 `INACTIVE`. Values `2` and `3` remain explicitly unknown because this updater
 only preserves them as inert states and no recovered live producer writes
-either one. Focused matching remains exact at 312/312 instructions with all 35
+either one; `UNKNOWN_2` / `UNKNOWN_3` are numeric compatibility labels, not
+authored state names. Focused matching remains exact at 312/312 instructions with all 35
 operands clean.
 
 ## 2026-07-18 analysis ownership catch-up
@@ -132,3 +133,7 @@ offsets as signed unit draws: X uses the normalized value directly, while Y
 uses `signed_unit * 1.5f + 1.0f`. The Windows source now carries that authored
 Y range instead of the folded `0.000091552734f` scale. It remains exactly
 312/312 with all 35 operands clean.
+
+The stable matcher key binds the authored VC6 spelling
+`?AI@cRParcel@@QAEXXZ`; analyzer replays retain `Parcel` as compatibility
+vocabulary.

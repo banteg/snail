@@ -90,3 +90,12 @@ Both decompilers now render the first store as
 root-BOD removal and pool-chain unlink. Narrow and broad replay lanes agree on
 the typed field and exact `0xc4`/`0x264c` owner sizes; matching remains 62/62
 with all six operands clean.
+
+## 2026-08-09 authored Kill promotion
+
+The matcher now spells the body as the pointer-returning Windows contract
+`cRSubGarbage* cRSubGarbage::Kill()` and exports
+`?Kill@cRSubGarbage@@QAEPAV1@XZ`. The raw intrusive-BOD removal and borrowed
+pool active-chain cursor are unchanged, including every early and final pointer
+return. Focused matching remains exact at 62/62 instructions and prefix, with
+all six masked operands clean.

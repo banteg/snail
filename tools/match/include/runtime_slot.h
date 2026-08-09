@@ -23,6 +23,7 @@ public:
     RuntimeSlot* initialize_garbage_hazard();
     RuntimeSlot* initialize_track_ring_or_special_effect_runtime();
     RuntimeSlot* initialize_fringe_object();
+    RuntimeSlot* initialize_click_start_controller_runtime();
     RuntimeSlot* initialize_golb_shot();
     RuntimeSlot* initialize_sub_loc();
     RuntimeSlot* initialize_track_row_runtime();

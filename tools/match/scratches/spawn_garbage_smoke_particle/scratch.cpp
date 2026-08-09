@@ -6,9 +6,9 @@
 #include "subgame_runtime.h"
 
 
-void SubGarbage::spawn_garbage_smoke_particle(
-    Vector3* position,
-    Vector3* velocity,
+void cRSubGarbage::Smoke(
+    tVector& position,
+    tVector& velocity,
     cRSubGoldy* owner_player)
 {
     char result = (char)g_runtime_config.render_flags;
@@ -32,9 +32,9 @@ void SubGarbage::spawn_garbage_smoke_particle(
         sprite_words[24] = 0.30000001f;
         sprite_words[25] = 1.3f;
 
-        Vector3 smoke_velocity = *velocity * 0.2f;
+        tVector smoke_velocity = velocity * 0.2f;
         sprite->velocity = smoke_velocity;
         sprite->gravity_step = 0.0f;
-        sprite->position = *position;
+        sprite->position = position;
     }
 }

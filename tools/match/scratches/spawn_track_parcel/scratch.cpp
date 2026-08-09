@@ -2,9 +2,9 @@
 
 #include "subgame_runtime.h"
 
-Parcel* cRSubGame::AddParcel(Vector3* world_position, cRSubGoldy*)
+cRParcel* cRSubGame::AddParcel(Vector3* world_position, cRSubGoldy*)
 {
-    Parcel* parcel = parcel_manager.allocate_track_parcel_slot();
+    cRParcel* parcel = parcel_manager.New();
     if (parcel != 0) {
         parcel->state = PARCEL_STATE_TRACK_ACTIVE;
         parcel->position = *world_position;

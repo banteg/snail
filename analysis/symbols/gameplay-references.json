@@ -891,6 +891,114 @@
       "description": "Exact authored cRSlug::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x408670",
+      "name": "initialize_click_start_controller_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRClickStart@@QAE@XZ"
+      ],
+      "description": "Exact authored cRClickStart constructor."
+    },
+    {
+      "address": "0x442170",
+      "name": "initialize_click_start",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRClickStart@@QAEXPAVcRSubGoldy@@@Z"
+      ],
+      "description": "Exact authored cRClickStart::Init(cRSubGoldy*) member."
+    },
+    {
+      "address": "0x442290",
+      "name": "update_click_start",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRClickStart@@QAEXXZ"
+      ],
+      "description": "Exact authored cRClickStart::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x408550",
+      "name": "initialize_garbage_hazard",
+      "kind": "function",
+      "aliases": [
+        "??0cRSubGarbage@@QAE@XZ"
+      ],
+      "description": "Exact authored cRSubGarbage constructor."
+    },
+    {
+      "address": "0x43d5a0",
+      "name": "spawn_garbage_smoke_particle",
+      "kind": "function",
+      "aliases": [
+        "?Smoke@cRSubGarbage@@QAEXAAUtVector@@0PAVcRSubGoldy@@@Z"
+      ],
+      "description": "Exact authored cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*) member."
+    },
+    {
+      "address": "0x43f130",
+      "name": "destroy_garbage_hazard",
+      "kind": "function",
+      "aliases": [
+        "?Kill@cRSubGarbage@@QAEPAV1@XZ"
+      ],
+      "description": "Exact pointer-returning cRSubGarbage::Kill() member."
+    },
+    {
+      "address": "0x43f200",
+      "name": "update_garbage_hazard",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubGarbage@@QAEXXZ"
+      ],
+      "description": "Exact authored cRSubGarbage::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x408860",
+      "name": "initialize_track_parcel_runtime",
+      "kind": "function",
+      "aliases": [
+        "??0cRParcel@@QAE@XZ"
+      ],
+      "description": "Exact authored cRParcel constructor."
+    },
+    {
+      "address": "0x443130",
+      "name": "update_track_parcels",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRParcelManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRParcelManager::AI() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x443160",
+      "name": "initialize_track_parcel_slots",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRParcelManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRParcelManager::Init() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x443190",
+      "name": "allocate_track_parcel_slot",
+      "kind": "function",
+      "aliases": [
+        "?New@cRParcelManager@@QAEPAVcRParcel@@XZ"
+      ],
+      "description": "Exact authored cRParcelManager::New() member with an owner-qualified generic method alias."
+    },
+    {
+      "address": "0x4431d0",
+      "name": "update_track_parcel",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRParcel@@QAEXXZ"
+      ],
+      "description": "Exact authored cRParcel::AI() member with an owner-qualified generic method alias."
+    },
+    {
       "address": "0x402484",
       "name": "initialize_frontend_widget_type_jump_table",
       "kind": "jump_table",
@@ -2381,7 +2489,8 @@
       "name": "spawn_track_parcel",
       "kind": "function",
       "aliases": [
-        "?AddParcel@cRSubGame@@QAEPAVParcel@@PAUtVector@@PAVcRSubGoldy@@@Z"
+        "?AddParcel@cRSubGame@@QAEPAVParcel@@PAUtVector@@PAVcRSubGoldy@@@Z",
+        "?AddParcel@cRSubGame@@QAEPAVcRParcel@@PAUtVector@@PAVcRSubGoldy@@@Z"
       ],
       "description": "Exact Windows cRSubGame::AddParcel(tVector*, cRSubGoldy*) entry."
     },

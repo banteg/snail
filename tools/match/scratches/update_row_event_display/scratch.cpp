@@ -49,7 +49,7 @@ void cRCompletion::AI()
                 ++staged_parcel_count;
                 controller->staged_parcel_count = staged_parcel_count;
                 GameRoot* game = g_game;
-                Parcel* parcel =
+                cRParcel* parcel =
                     game->subgame.AddParcel(
                         game->subgame.parcel_home_anchor(),
                         &game->subgame.player);

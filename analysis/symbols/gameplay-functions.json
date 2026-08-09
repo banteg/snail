@@ -581,7 +581,10 @@
     {
       "address": "0x408550",
       "name": "initialize_garbage_hazard",
-      "description": "Exact Windows constructor for one authored `SubGarbage` (`cRSubGarbage` cross-port): constructs the inherited renderable BOD and installs the table whose entry is `update_garbage_hazard`. `initialize_runtime_pools_and_path_template_bank` walks 50 inline 0xc4-byte records, and the resulting 0x2648 extent exactly matches the native `Size of cRSubGarbage` ledger; reset and teardown independently seed `SUB_GARBAGE_STATE_INACTIVE`."
+      "description": "Exact Windows constructor for one authored `cRSubGarbage`: constructs the inherited renderable BOD and installs the table whose entry is `update_garbage_hazard`. `initialize_runtime_pools_and_path_template_bank` walks 50 inline 0xc4-byte records, and the resulting 0x2648 extent exactly matches the native `Size of cRSubGarbage` ledger; reset and teardown independently seed `SUB_GARBAGE_STATE_INACTIVE`.",
+      "aliases": [
+        "cRSubGarbage_ctor"
+      ]
     },
     {
       "address": "0x408570",
@@ -655,7 +658,10 @@
     {
       "address": "0x408670",
       "name": "initialize_click_start_controller_runtime",
-      "description": "Exact Windows constructor for the 0xac-byte authored `ClickStart` (`cRClickStart`) child: constructs its RenderableBod base and installs the callback table whose first entry is `update_click_start`."
+      "description": "Exact Windows constructor for the 0xac-byte authored `cRClickStart` child: constructs its RenderableBod base and installs the callback table whose first entry is `update_click_start`.",
+      "aliases": [
+        "cRClickStart_ctor"
+      ]
     },
     {
       "address": "0x408690",
@@ -680,7 +686,10 @@
     {
       "address": "0x408860",
       "name": "initialize_track_parcel_runtime",
-      "description": "Exact Windows constructor for one authored `Parcel` (`cRParcel` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_parcel`. `ParcelManager` owns 50 inline 0x8c-byte records whose 0x1b58 extent exactly matches the native manager ledger."
+      "description": "Exact Windows constructor for one authored `cRParcel`: constructs the inherited BOD and installs the table whose entry is `update_track_parcel`. `cRParcelManager` owns 50 inline 0x8c-byte records whose 0x1b58 extent exactly matches the native manager ledger.",
+      "aliases": [
+        "cRParcel_ctor"
+      ]
     },
     {
       "address": "0x408880",
@@ -3019,7 +3028,10 @@
     {
       "address": "0x43d5a0",
       "name": "spawn_garbage_smoke_particle",
-      "description": "Emits the garbage impact smoke owned by `SubGarbage`; Android retains the corresponding authored member as `cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)`. The source-shaped Windows reconstruction is 85.14% with nine clean masked operands."
+      "description": "Exact `cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)` emitter for garbage impact smoke; Android retains the same authored owner and borrowed-vector contract.",
+      "aliases": [
+        "cRSubGarbage_Smoke"
+      ]
     },
     {
       "address": "0x43d6c0",
@@ -3124,12 +3136,18 @@
     {
       "address": "0x43f130",
       "name": "destroy_garbage_hazard",
-      "description": "Exact `SubGarbage` teardown: writes `SUB_GARBAGE_STATE_INACTIVE`, removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the authored member as `cRSubGarbage::Kill()`."
+      "description": "Exact pointer-returning `cRSubGarbage::Kill()` teardown: writes `SUB_GARBAGE_STATE_INACTIVE`, removes the inherited BOD from the live lists, kills its sprite, and unlinks it from the pool's borrowed active-chain head after collision or expiry. Android retains the same authored member.",
+      "aliases": [
+        "cRSubGarbage_Kill"
+      ]
     },
     {
       "address": "0x43f200",
       "name": "update_garbage_hazard",
-      "description": "Void `cRSubGarbage::AI()` callback advancing one owned pool slot through the typed `SubGarbageState` lifecycle (`INACTIVE`, `ACTIVE`, `BURST_PENDING`, `BURST`) and orienting its burst through `SubGarbageCollisionSide` (`RIGHT` or `LEFT`) before teardown. The exact Windows constructor table at 0x497328 points directly here, and the active-BOD dispatcher invokes slot zero through a virtual void method; Android and iOS retain the same authored member."
+      "description": "Exact `cRSubGarbage::AI()` callback advancing one owned pool slot through the typed `SubGarbageState` lifecycle (`INACTIVE`, `ACTIVE`, `BURST_PENDING`, `BURST`) and orienting its burst through `SubGarbageCollisionSide` (`RIGHT` or `LEFT`) before teardown. The exact Windows constructor table at 0x497328 points directly here, and Android and iOS retain the same authored member.",
+      "aliases": [
+        "cRSubGarbage_AI"
+      ]
     },
     {
       "address": "0x43f520",
@@ -3433,12 +3451,18 @@
     {
       "address": "0x442170",
       "name": "initialize_click_start",
-      "description": "Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at cRSubGoldy +0xa0, stores its borrowed cRSubGoldy backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `cRSubGame::replay_launch_active` as the initial hide gate."
+      "description": "Exact Windows `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at cRSubGoldy +0xa0, stores its borrowed cRSubGoldy backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `cRSubGame::replay_launch_active` as the initial hide gate.",
+      "aliases": [
+        "cRClickStart_Init"
+      ]
     },
     {
       "address": "0x442290",
       "name": "update_click_start",
-      "description": "Windows `ClickStart::update_click_start`, authored as `cRClickStart::AI`: advances the prompt hide gate and selected-replay or player-confirm handoff through `cRSubGame`'s replay record/cursor fields, updates the working `SubSolution` run flags and parent startup index, recenters both pointers, plays SFX 8, and recycles the embedded RenderableBod child through `GameRoot::active_bod_list`."
+      "description": "Exact Windows `cRClickStart::AI()`: advances the prompt hide gate and selected-replay or player-confirm handoff through `cRSubGame`'s replay record/cursor fields, updates the working `SubSolution` run flags and parent startup index, recenters both pointers, plays SFX 8, and recycles the embedded RenderableBod child through `GameRoot::active_bod_list`.",
+      "aliases": [
+        "cRClickStart_AI"
+      ]
     },
     {
       "address": "0x442500",
@@ -3481,22 +3505,34 @@
     {
       "address": "0x443130",
       "name": "update_track_parcels",
-      "description": "Exact `ParcelManager` update: walks the 50 owned records and dispatches each active Parcel through its installed table. Android and iOS v1.9 retain `cRParcelManager::AI()`."
+      "description": "Exact `cRParcelManager::AI()` update: walks the 50 owned cRParcel records and dispatches each active slot through its installed table. Android and iOS v1.9 retain the same authored owner.",
+      "aliases": [
+        "cRParcelManager_AI"
+      ]
     },
     {
       "address": "0x443160",
       "name": "initialize_track_parcel_slots",
-      "description": "Exact `ParcelManager` initializer: clears all 50 Parcel states and seeds each borrowed cRSubGame backlink. Android retains the authored member as `cRParcelManager::Init()`."
+      "description": "Exact `cRParcelManager::Init()` initializer: clears all 50 cRParcel states and seeds each borrowed cRSubGame backlink. Android retains the same authored member.",
+      "aliases": [
+        "cRParcelManager_Init"
+      ]
     },
     {
       "address": "0x443190",
       "name": "allocate_track_parcel_slot",
-      "description": "Exact `ParcelManager` allocator: returns the first inactive Parcel or logs `Too Many Parcels increase RPARCEL_MAXIMUM` and returns null. Android retains `cRParcelManager::New()`."
+      "description": "Exact `cRParcelManager::New()` allocator: returns the first inactive cRParcel or logs `Too Many Parcels increase RPARCEL_MAXIMUM` and returns null. Android retains the same authored member.",
+      "aliases": [
+        "cRParcelManager_New"
+      ]
     },
     {
       "address": "0x4431d0",
       "name": "update_track_parcel",
-      "description": "Runs one live `Parcel` through bobbing, homing, and final delivery-arc states, consuming the owned `Completion::widget_world` vector before registering delivery and tearing down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain `cRParcel::AI()`."
+      "description": "Exact `cRParcel::AI()` callback: runs one live slot through bobbing, homing, and final delivery-arc states, consumes the owned cRCompletion::widget_world vector, registers delivery, and tears down its sprite. The exact Windows constructor table at 0x497364 points directly here, while Android and iOS retain the same authored member.",
+      "aliases": [
+        "cRParcel_AI"
+      ]
     },
     {
       "address": "0x443650",
@@ -3509,7 +3545,7 @@
       "aliases": [
         "AddParcel"
       ],
-      "description": "Exact `cRSubGame` allocator/initializer for one live Parcel from the owned `ParcelManager`. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument."
+      "description": "Exact `cRSubGame::AddParcel` allocator/initializer for one live cRParcel from the owned cRParcelManager. Android explicitly returns the allocated `cRParcel*` or null, confirming the Windows return contract; iOS v1.9 adds the source `cRSubRow*` argument."
     },
     {
       "address": "0x443860",

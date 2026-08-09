@@ -9,7 +9,7 @@
 
 int report_errorf(char* format, ...);
 
-SubGarbage* SubGarbage::destroy_garbage_hazard()
+cRSubGarbage* cRSubGarbage::Kill()
 {
     state = SUB_GARBAGE_STATE_INACTIVE;
 
@@ -21,11 +21,11 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
         if ((flags & BOD_FLAG_NEXT_UPDATE_GUARD) != 0) {
             report_errorf("List remove NEXTBOD");
         } else {
-            SubGarbage* next = (SubGarbage*)list_next;
+            cRSubGarbage* next = (cRSubGarbage*)list_next;
             if (next)
                 next->list_prev = (BodNode*)list_prev;
 
-            SubGarbage* prev = (SubGarbage*)list_prev;
+            cRSubGarbage* prev = (cRSubGarbage*)list_prev;
             if (prev)
                 prev->list_next = (BodNode*)list_next;
             else
@@ -42,7 +42,7 @@ SubGarbage* SubGarbage::destroy_garbage_hazard()
 
     sprite->Kill();
 
-    SubGarbage* cursor = owner_game->garbage_hazards.active_head;
+    cRSubGarbage* cursor = owner_game->garbage_hazards.active_head;
     if (cursor == this) {
         cursor = next_active;
         owner_game->garbage_hazards.active_head = cursor;

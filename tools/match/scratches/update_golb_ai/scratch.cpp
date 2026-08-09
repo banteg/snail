@@ -175,7 +175,7 @@ void GolbShot::update_golb_ai()
         cRSubGoldy* bounds_player = player;
         if (flight_transform.position.z >= bounds_player->active_window_min_z
             && bounds_player->transform.position.z + 46.0f >= flight_transform.position.z) {
-            SubGarbage* garbage = game->garbage_hazards.active_head;
+            cRSubGarbage* garbage = game->garbage_hazards.active_head;
             while (garbage) {
                 if (garbage->state == SUB_GARBAGE_STATE_ACTIVE) {
                     Vec3 collision_delta;
@@ -272,7 +272,7 @@ garbage_hit:
             kill_golb();
             spawn_golb_impact_sprite(new_output);
             if (kind == 2) {
-                for (SubGarbage* splash = game->garbage_hazards.active_head;
+                for (cRSubGarbage* splash = game->garbage_hazards.active_head;
                     splash;
                     splash = splash->next_active) {
                     if (splash->state == SUB_GARBAGE_STATE_ACTIVE) {

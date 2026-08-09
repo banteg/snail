@@ -19,3 +19,12 @@ That retires the decompiler-only `ClickStartController` and
 `ClickStartPlayer` views in favor of the exact 0xac-byte `ClickStart` and its
 borrowed `Player* owner_player`. The constructor remains 7/7 exact; no matcher
 source or operand mask changed.
+
+## 2026-08-09 primary cRClickStart ownership
+
+The matcher now emits the exact constructor as `cRClickStart::cRClickStart()`
+with `??0cRClickStart@@QAE@XZ`. Live Windows xrefs give the constructor one
+caller at `0x408290`, where the child is constructed inline at
+`cRSubGoldy +0xa0`; its installed table at `0x497348` points to the exact
+`cRClickStart::AI()` leaf. `ClickStart` remains only a compatibility typedef.
+The constructor stays exact at 7/7 instructions with both operands clean.

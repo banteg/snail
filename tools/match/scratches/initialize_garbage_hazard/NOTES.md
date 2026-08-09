@@ -22,7 +22,7 @@ gate. The slot has list links at `+0x08/+0x0c` and a renderable transform at
   records. Their `0x2648` extent is exactly the Windows
   `Size of cRSubGarbage` ledger value.
 - `GarbageHazardSlot` remains only a compatibility alias for older scratch
-  vocabulary. The primary shared owner is now `SubGarbage`.
+  vocabulary. The primary shared owner is now `cRSubGarbage`.
 
 ## 2026-07-14 renderable inheritance closure
 
@@ -46,3 +46,11 @@ now share a real `SubGarbageState` owner rather than an integer field. The live
 Binary Ninja and IDA replays preserve `sizeof(SubGarbage) == 0xc4` and
 `sizeof(SubGarbagePool) == 0x264c`; this exact 7/7 constructor remains the
 independent zero-offset `RenderableBod` proof.
+
+## 2026-08-09 authored constructor promotion
+
+The matcher now spells the exact body as `cRSubGarbage::cRSubGarbage()` and
+exports `??0cRSubGarbage@@QAE@XZ`. `SubGarbage` remains a compatibility typedef
+for Windows analysis and shared callers. The constructor still matches all
+7/7 instructions with both masked operands clean, so the authored ownership
+promotion changes neither the zero-offset base construction nor vtable store.

@@ -163,7 +163,7 @@ void cRSubGoldy::Init(int player_slot)
     this->presentation.cached_cutscene_matrix.Identity();
     this->presentation.previous_live_matrix.Identity();
     this->parcels_collected = zero;
-    click_start.initialize_click_start(this);
+    click_start.Init(this);
     cameraman.initialize_cameraman();
     GhostInit(this->player_slot);
 

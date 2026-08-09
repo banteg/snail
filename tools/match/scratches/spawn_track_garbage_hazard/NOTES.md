@@ -299,3 +299,11 @@ uses a different sprite base and its native subtraction-of-a-negative
 spelling, so only the independently corroborated four-choice factor is
 transferred. Replacing the folded decimal with `(1.0f / 32768.0f) * -4.0f`
 keeps the Windows function exactly 143/143 with all 16 operands clean.
+
+## 2026-08-09 primary slot ownership
+
+`AddGarbage` remains authored by `cRSubGame`; only its free-slot cursor and
+selected-slot view now use the primary `cRSubGarbage` spelling. The Windows
+`SubGarbagePool` wrapper and its short raw word-based active-chain splice stay
+intact. Focused matching remains exact at 143/143 instructions and prefix,
+with all 16 masked operands clean.

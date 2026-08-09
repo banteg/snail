@@ -1,17 +1,17 @@
 # Exact match
 
-`ParcelManager::initialize_track_parcel_slots` initializes all 50 inline
-`Parcel` records owned by the manager. Each inactive slot borrows the enclosing
+`cRParcelManager::Init()` initializes all 50 inline `cRParcel` records owned by
+the manager. Each inactive slot borrows the enclosing
 `GameRoot::subgame`; no slot owns or allocates that backlink. Android
-independently retains this member as
-`cRParcelManager::Init()`. The shared typed version remains 100% (13/13, one
+independently retains this member, and the stable matcher key binds
+`?Init@cRParcelManager@@QAEXXZ`. The shared typed version remains 100% (13/13, one
 clean operand).
 
 The 2026-07-14 canonical root path is codegen-identical at the same exact
 13/13 baseline.
 
 The 2026-07-14 extent pass derives the loop bound from
-`ParcelManager::slots`. Its normalized listing remains byte-identical
+`cRParcelManager::slots`. Its normalized listing remains byte-identical
 (`764ab79c9a5d43f9013f4ec2996b4c288e80374c3d7d455e45359d914adc70ac`)
 and exact at 13/13 instructions with one clean operand.
 
@@ -25,8 +25,8 @@ operand.
 ## 2026-07-18 analyzer lifecycle replay
 
 The sole native caller is `build_subgame_level`, which resets the embedded
-manager before authored parcel placement. The durable BN/IDA replay now owns
-this function by address, verifies `Parcel == 0x8c` and
-`ParcelManager == 0x1b58`, and preserves each slot's borrowed backlink to the
-root-owned `cRSubGame`. Matching remains exact at 13/13 instructions with
-one clean operand.
+manager before authored parcel placement. The durable BN/IDA replay keeps the
+stable `Parcel` / `ParcelManager` analysis vocabulary, while the matcher uses
+primary `cRParcel` / `cRParcelManager`. Both preserve each slot's borrowed
+backlink to the root-owned `cRSubGame`. Matching remains exact at 13/13
+instructions with one clean operand.

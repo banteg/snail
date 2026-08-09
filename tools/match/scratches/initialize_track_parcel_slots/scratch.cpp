@@ -4,9 +4,9 @@
 #include "track_parcel_runtime.h"
 
 
-void ParcelManager::initialize_track_parcel_slots()
+void cRParcelManager::Init()
 {
-    Parcel* slot = slots;
+    cRParcel* slot = slots;
     int count = sizeof(slots) / sizeof(slots[0]);
     do {
         slot->state = PARCEL_STATE_INACTIVE;
