@@ -217,7 +217,7 @@ public:
     FrontendWidget* life_stock_widgets[9]; // +0x35bb98
     // Fixed visual pool owned by cRSubGame. cRSubLoc fringe fields
     // only borrow handles into this storage while a built track is live.
-    FringeManager fringe_manager; // +0x35bbbc, count at +0x3bb6fc
+    cRFringeManager fringe_manager; // +0x35bbbc, count at +0x3bb6fc
     // Shared cadence source used by the embedded slug pool. Startup fills the
     // samples once; each blink advances the single wrapping cursor.
     int blink_random_index; // +0x3bb700
@@ -283,7 +283,7 @@ public:
     GUI gui; // +0x125ffe0
     Help help; // +0x1260008, exact authored cRHelp owner
     ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller
-    Galaxy galaxy; // +0x1260020, authored cRGalaxy owner through +0x1270fc8
+    cRGalaxy galaxy; // +0x1260020, authored cRGalaxy owner through +0x1270fc8
     int subgame_rebuild_selector; // +0x1270fc8
     float next_slug_voice_trigger_z; // +0x1270fcc, advances when a spawned slug is marked to speak
     float slug_voice_trigger_spacing_z; // +0x1270fd0

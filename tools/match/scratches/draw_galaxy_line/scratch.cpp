@@ -4,14 +4,14 @@
 #include "galaxy_route_types.h"
 #include "vector3.h"
 
-void Galaxy::draw_galaxy_line(
+void cRGalaxy::Line(
     int texture_id,
     float x0,
     float y0,
     float x1,
     float y1,
     float width,
-    tColour* color)
+    tColour& color)
 {
     Vector3 normal;
     normal.x = x1 - x0;
@@ -35,7 +35,7 @@ void Galaxy::draw_galaxy_line(
         0,
         0,
         0x1000000,
-        color,
+        &color,
         0.0f,
         0.0f,
         1.0f,

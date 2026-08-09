@@ -12,7 +12,7 @@ char* load_file_bytes_from_archive_or_fs(char* path, char* out_buffer, void* out
 int report_errorf(char* format, ...);
 
 
-void Galaxy::load_galaxy_layout()
+void cRGalaxy::Open()
 {
     float* first_point_cursor = &g_galaxy_route_points[0].y;
 

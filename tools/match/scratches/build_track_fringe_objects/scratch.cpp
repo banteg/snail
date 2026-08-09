@@ -18,7 +18,7 @@ extern char g_used_fringe_bods_format[]; // "Used %i fringe bods\n"
 
 void cRSubGame::FringeEdgeTrack()
 {
-    g_game->subgame.fringe_manager.initialize_fringe_manager();
+    g_game->subgame.fringe_manager.Init();
 
     int edge_a = 0;
     int row = 0;
@@ -86,7 +86,7 @@ void cRSubGame::FringeEdgeTrack()
                         // render-cache pass consumes and clears it after this
                         // builder completes.
                         Fringe* front_fringe =
-                            g_game->subgame.fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.GetFringe();
                         cell->fringe_front = front_fringe;
                         front_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_FRONT, family, edge_a, edge_b));
@@ -110,7 +110,7 @@ void cRSubGame::FringeEdgeTrack()
                             edge_b = (TestLoc(cell, 0, 1) != 1) + 1;
 
                         Fringe* right_fringe =
-                            g_game->subgame.fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.GetFringe();
                         cell->fringe_right = right_fringe;
                         right_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_RIGHT, family, edge_a, edge_b));
@@ -134,7 +134,7 @@ void cRSubGame::FringeEdgeTrack()
                             edge_b = (TestLoc(cell, 0, -1) != 1) + 1;
 
                         Fringe* left_fringe =
-                            g_game->subgame.fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.GetFringe();
                         cell->fringe_left = left_fringe;
                         left_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_LEFT, family, edge_a, edge_b));
@@ -158,7 +158,7 @@ void cRSubGame::FringeEdgeTrack()
                             edge_b = (TestLoc(cell, 1, 0) != 1) + 1;
 
                         Fringe* back_fringe =
-                            g_game->subgame.fringe_manager.allocate_fringe_object();
+                            g_game->subgame.fringe_manager.GetFringe();
                         cell->fringe_back = back_fringe;
                         back_fringe->SetObject(
                             FRINGE_BOD(TRACK_FRINGE_BACK, family, edge_a, edge_b));

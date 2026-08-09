@@ -260,3 +260,15 @@ parser-tail layout. The checked ledger now contains six sweeps and 16 unique
 variants, with 0 improving, 10 neutral, and 6 degrading results. The retained
 frontier remains **88.27%**, 236/233 instructions, prefix 62/233, and 42 clean
 references.
+
+## 2026-08-09 primary cRGalaxy ownership
+
+The matcher now emits the Windows bootstrap as the no-argument
+`cRGalaxy::Open()` and binds `?Open@cRGalaxy@@QAEXXZ`. Binary Ninja confirms
+the void thiscall receiver and sole Windows call at `0x40aef7` from root asset
+initialization. Android and iOS retain the encompassing authored member as
+`cRGalaxy::Open(int)` in `Galaxy.o`; their extra port selector does not alter
+the Windows ABI. This naming-only promotion keeps the frozen frontier at
+88.27%, 236/233 instructions, prefix 62/233, with all 42 operands clean. The
+formally stalled mutation plans and their historical receipts remain
+byte-identical rather than being reactivated for owner spelling.

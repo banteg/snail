@@ -1,9 +1,9 @@
-// update_intro_logo_renderable @ 0x419a90 (thiscall)
+// cRLogoLetter::AI @ 0x419a90 (thiscall)
 
 #include "intro_screen_runtime.h"
 #include "object_render_types.h"
 
-void LogoLetter::update_intro_logo_renderable()
+void cRLogoLetter::AI()
 {
     transform.position += velocity;
     Vector3* position = &transform.position;

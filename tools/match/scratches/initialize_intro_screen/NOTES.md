@@ -200,3 +200,12 @@ The two residual instructions are therefore bounded to whole-function stack
 cleanup and register allocation. The retained source is the clearest authored
 form supported by the Windows and mobile bodies; no alias-only owner, volatile
 qualifier, dummy dependency, or raw cursor projection is kept.
+
+## 2026-08-09 authored owner promotion
+
+The primary matcher method is `cRLogo::Init(char*)`, symbol
+`?Init@cRLogo@@QAEXPAD@Z`. The stable `initialize_intro_screen` harness name and
+the existing `LogoLetter` compatibility spellings inside the frozen body are
+retained so all three historical mutation anchors remain byte-identical. No
+shape search was reopened. Focused matching is unchanged at **88.89%**,
+`523/521`, prefix `88/521`, with all 66 references clean.

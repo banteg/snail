@@ -56,3 +56,10 @@ Windows result and all seven clean operands.
 frame, and `render_object` consumes the persistent bit by copying that current
 tint into the grouped diffuse stream on every translucent draw. The symbolic
 substitution remains exact at 42/42.
+
+## 2026-08-09 authored owner promotion
+
+The primary matcher method is `cRLogoLetter::AI()`, symbol
+`?AI@cRLogoLetter@@QAEXXZ`; `update_intro_logo_renderable` remains the stable
+harness name. The authored spelling is codegen-neutral at 100.00%, 42/42,
+prefix 42/42, with all seven references clean.

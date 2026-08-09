@@ -39,6 +39,15 @@
       "description": "Exact cRBodPos-owned Windows initializer adapter for passive positioned bodies. It preserves the receiver-returning Windows contract and then installs the shared no-op callback table; no direct mobile equivalent is claimed."
     },
     {
+      "address": "0x408490",
+      "name": "initialize_intro_logo_renderable",
+      "kind": "function",
+      "aliases": [
+        "??0cRLogoLetter@@QAE@XZ"
+      ],
+      "description": "Exact authored cRLogoLetter constructor wrapper."
+    },
+    {
       "address": "0x408600",
       "name": "noop_runtime_slot_constructor",
       "kind": "function",
@@ -47,6 +56,15 @@
         "initialize_runtime_slot"
       ],
       "description": "No-op thiscall constructor callback (`mov eax, ecx; ret`) shared by POD-like runtime slot arrays, parcel buckets, and opaque Snail presentation-channel subobjects. The body proves trivial construction only; it does not establish an iostream owner."
+    },
+    {
+      "address": "0x408650",
+      "name": "initialize_fringe_object",
+      "kind": "function",
+      "aliases": [
+        "??0cRFringe@@QAE@XZ"
+      ],
+      "description": "Exact authored cRFringe constructor wrapper."
     },
     {
       "address": "0x408880",
@@ -59,14 +77,87 @@
       "description": "Constructs one GalaxyRouteNameRecord by running the no-op tColour constructor on its color field at +0x84 and returning the record."
     },
     {
+      "address": "0x4088e0",
+      "name": "load_galaxy_layout",
+      "kind": "function",
+      "aliases": [
+        "?Open@cRGalaxy@@QAEXXZ"
+      ],
+      "description": "Windows cRGalaxy::Open() bootstrap and route parser."
+    },
+    {
+      "address": "0x408c10",
+      "name": "destroy_galaxy",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRGalaxy@@QAEXXZ"
+      ],
+      "description": "Exact authored cRGalaxy::UnInit() member."
+    },
+    {
+      "address": "0x408cf0",
+      "name": "initialize_galaxy",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRGalaxy@@QAEXXZ"
+      ],
+      "description": "Exact authored cRGalaxy::Init() member."
+    },
+    {
+      "address": "0x4092f0",
+      "name": "update_galaxy",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRGalaxy@@QAEHXZ"
+      ],
+      "description": "Windows cRGalaxy::AI() state machine and render phase."
+    },
+    {
+      "address": "0x409b00",
+      "name": "draw_galaxy_line",
+      "kind": "function",
+      "aliases": [
+        "?Line@cRGalaxy@@QAEXHMMMMMAAUtColour@@@Z"
+      ],
+      "description": "Exact authored cRGalaxy::Line member."
+    },
+    {
       "address": "0x409bd0",
       "name": "update_galaxy_route_record",
       "kind": "function",
       "aliases": [
         "sub_409bd0",
-        "cRGalaxyStar_AI"
+        "cRGalaxyStar_AI",
+        "?AI@cRGalaxyStar@@QAEXXZ"
       ],
       "description": "Exact cRGalaxyStar::AI thiscall helper on a 0x2a0-byte GalaxyStar child that interpolates route_tint_alpha +0x18 toward highlight_target +0x1c by 0.1 each tick."
+    },
+    {
+      "address": "0x409bf0",
+      "name": "close_galaxy_route",
+      "kind": "function",
+      "aliases": [
+        "?BoxOff@cRGalaxy@@QAEXXZ"
+      ],
+      "description": "Exact authored cRGalaxy::BoxOff() member."
+    },
+    {
+      "address": "0x409c50",
+      "name": "open_galaxy_route",
+      "kind": "function",
+      "aliases": [
+        "?BoxOn@cRGalaxy@@QAEXH@Z"
+      ],
+      "description": "Exact authored cRGalaxy::BoxOn(int) member."
+    },
+    {
+      "address": "0x40a0c0",
+      "name": "galaxy_border_bound",
+      "kind": "function",
+      "aliases": [
+        "?BorderBound@cRGalaxy@@QAEXAAM000PAVFrontendWidget@@@Z"
+      ],
+      "description": "Exact cRGalaxy::BorderBound member; VC6 emits the current cRBorder compatibility typedef as FrontendWidget."
     },
     {
       "address": "0x410710",
@@ -105,6 +196,51 @@
         "sub_410f40"
       ],
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member."
+    },
+    {
+      "address": "0x419110",
+      "name": "open_logo",
+      "kind": "function",
+      "aliases": [
+        "?Open@cRLogo@@QAEXXZ"
+      ],
+      "description": "Exact authored cRLogo::Open() member."
+    },
+    {
+      "address": "0x4191e0",
+      "name": "initialize_intro_screen",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRLogo@@QAEXPAD@Z"
+      ],
+      "description": "Authored cRLogo::Init(char*) intro-script loader."
+    },
+    {
+      "address": "0x419920",
+      "name": "destroy_intro_screen",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRLogo@@QAEXXZ"
+      ],
+      "description": "Exact authored cRLogo::UnInit() member."
+    },
+    {
+      "address": "0x4199e0",
+      "name": "update_intro_screen",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRLogo@@QAEXXZ"
+      ],
+      "description": "Exact authored cRLogo::AI() member."
+    },
+    {
+      "address": "0x419a90",
+      "name": "update_intro_logo_renderable",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRLogoLetter@@QAEXXZ"
+      ],
+      "description": "Exact authored cRLogoLetter::AI() member."
     },
     {
       "address": "0x419f50",
@@ -2297,6 +2433,15 @@
       "description": "Exact Windows bool cRSubLoc::IsSlide() entry with its authored decorated relocation name."
     },
     {
+      "address": "0x439b00",
+      "name": "refresh_fringe_object_draw_list",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRFringe@@QAEXXZ"
+      ],
+      "description": "Exact authored cRFringe::AI() member."
+    },
+    {
       "address": "0x439bc0",
       "name": "remove_sub_loc",
       "kind": "function",
@@ -2806,6 +2951,24 @@
         "?Yi@cRSubLoc@@QAEHXZ"
       ],
       "description": "Exact Windows int cRSubLoc::Yi() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x447090",
+      "name": "initialize_fringe_manager",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRFringeManager@@QAEXXZ"
+      ],
+      "description": "Exact authored cRFringeManager::Init() member."
+    },
+    {
+      "address": "0x4470a0",
+      "name": "allocate_fringe_object",
+      "kind": "function",
+      "aliases": [
+        "?GetFringe@cRFringeManager@@QAEPAVcRFringe@@XZ"
+      ],
+      "description": "Exact authored cRFringeManager::GetFringe() member."
     },
     {
       "address": "0x4489e0",

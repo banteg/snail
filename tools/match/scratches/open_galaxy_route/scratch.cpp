@@ -5,7 +5,7 @@
 #include "rstring.h"
 #include "subgame_runtime.h"
 
-void Galaxy::open_galaxy_route(int selected_level_index)
+void cRGalaxy::BoxOn(int selected_level_index)
 {
     route_state = 1;
     selected_index = selected_level_index;
@@ -56,10 +56,10 @@ void Galaxy::open_galaxy_route(int selected_level_index)
         float min_y = 1000.0f;
         float max_y = -1000.0f;
 
-        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, title_widget);
-        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, detail_widget);
-        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, description_widget);
-        galaxy_border_bound(&min_x, &max_x, &min_y, &max_y, back_widget);
+        BorderBound(min_x, max_x, min_y, max_y, title_widget);
+        BorderBound(min_x, max_x, min_y, max_y, detail_widget);
+        BorderBound(min_x, max_x, min_y, max_y, description_widget);
+        BorderBound(min_x, max_x, min_y, max_y, back_widget);
 
         max_y += 8.0f;
         min_x -= 8.0f;

@@ -552,7 +552,10 @@
     {
       "address": "0x408490",
       "name": "initialize_intro_logo_renderable",
-      "description": "Constructs one 0x90-byte Windows LogoLetter by running the shared renderable-BOD constructor and installing the callback table whose first entry is `update_intro_logo_renderable`. `construct_game_runtime` seeds both the cRLogo owner's 1024-entry crawl bank and 32-entry image-donor bank with this constructor."
+      "description": "Constructs one 0x90-byte Windows cRLogoLetter by running the shared renderable-BOD constructor and installing the callback table whose first entry is `update_intro_logo_renderable`. `construct_game_runtime` seeds both of the cRLogo owner's fixed child banks with this constructor.",
+      "aliases": [
+        "cRLogoLetter_ctor"
+      ]
     },
     {
       "address": "0x4084b0",
@@ -664,7 +667,10 @@
     {
       "address": "0x408650",
       "name": "initialize_fringe_object",
-      "description": "Exact constructor wrapper for one authored `Fringe` (`cRFringe` cross-port): runs the shared body constructor, installs the Windows fringe vtable whose callback is 0x439b00, and returns the receiver. The runtime-pool constructor invokes it over the 7000-entry inline cRFringeManager array."
+      "description": "Exact constructor wrapper for one authored cRFringe: runs the shared body constructor, installs the Windows fringe vtable whose callback is 0x439b00, and returns the receiver. The runtime-pool constructor invokes it over the 7000-entry inline cRFringeManager array.",
+      "aliases": [
+        "cRFringe_ctor"
+      ]
     },
     {
       "address": "0x408670",
@@ -721,22 +727,34 @@
     {
       "address": "0x4088e0",
       "name": "load_galaxy_layout",
-      "description": "Recovered void Galaxy bootstrap: loads `Galaxy/_Galaxy.txt`, rescales the authored point tables, populates the embedded route/star bank, and binds its borrowed cRSubGame backlink. Android and iOS retain this parser inside `cRGalaxy::Open(int)`."
+      "description": "Recovered void cRGalaxy bootstrap: loads `Galaxy/_Galaxy.txt`, rescales the authored point tables, populates the embedded route/star bank, and binds its borrowed cRSubGame backlink. Android and iOS retain this parser inside the authored Open family.",
+      "aliases": [
+        "cRGalaxy_Open"
+      ]
     },
     {
       "address": "0x408c10",
       "name": "destroy_galaxy",
-      "description": "Exact Windows `Galaxy::destroy_galaxy`: tears down the active Star Map widgets before replay launch, route handoff, or return. Android preserves `cRGalaxy::UnInit()`."
+      "description": "Exact Windows `cRGalaxy::UnInit()`: tears down the active Star Map widgets before replay launch, route handoff, or return. Android preserves the same authored member.",
+      "aliases": [
+        "cRGalaxy_UnInit"
+      ]
     },
     {
       "address": "0x408cf0",
       "name": "initialize_galaxy",
-      "description": "Exact void Windows `Galaxy::initialize_galaxy`: builds the Star Map, seeds its selected route from SnailMail.cfg, and wires Deliver/Play, replay, and back controls. Android and iOS preserve `cRGalaxy::Init()`."
+      "description": "Exact void Windows `cRGalaxy::Init()`: builds the Star Map, seeds its selected route from SnailMail.cfg, and wires Deliver/Play, replay, and back controls. Android and iOS preserve the same authored member.",
+      "aliases": [
+        "cRGalaxy_Init"
+      ]
     },
     {
       "address": "0x4092f0",
       "name": "update_galaxy",
-      "description": "Runs the embedded `Galaxy` Star Map state machine, including route selection, replay launch, Deliver/Play handoff, and the route/icon render pass. Android and iOS split the same ownership between `cRGalaxy::AI()` and `cRGalaxy::Render()`; their trivial `AIControl()` exposes the result state that Windows returns directly."
+      "description": "Runs the embedded cRGalaxy Star Map state machine, including route selection, replay launch, Deliver/Play handoff, and the route/icon render pass. Android and iOS split the same ownership between `cRGalaxy::AI()` and `cRGalaxy::Render()`; their trivial `AIControl()` exposes the result state that Windows returns directly.",
+      "aliases": [
+        "cRGalaxy_AI"
+      ]
     },
     {
       "address": "0x409b00",
@@ -757,17 +775,26 @@
     {
       "address": "0x409bf0",
       "name": "close_galaxy_route",
-      "description": "Exact Windows `Galaxy::close_galaxy_route`: closes the active Star Map route card and clears its replay/play controls. Android and iOS preserve `cRGalaxy::BoxOff()`."
+      "description": "Exact Windows `cRGalaxy::BoxOff()`: closes the active Star Map route card and clears its replay/play controls. Android and iOS preserve the same authored member.",
+      "aliases": [
+        "cRGalaxy_BoxOff"
+      ]
     },
     {
       "address": "0x409c50",
       "name": "open_galaxy_route",
-      "description": "Exact void Windows `Galaxy::open_galaxy_route`: opens a selected Star Map route card, loads its preview label and widget stack, and toggles replay controls. Android and iOS preserve this member as `cRGalaxy::BoxOn(int)`."
+      "description": "Exact void Windows `cRGalaxy::BoxOn(int)`: opens a selected Star Map route card, loads its preview label and widget stack, and toggles replay controls. Android and iOS preserve the same authored member.",
+      "aliases": [
+        "cRGalaxy_BoxOn"
+      ]
     },
     {
       "address": "0x40a0c0",
       "name": "galaxy_border_bound",
-      "description": "Exact Windows `Galaxy::galaxy_border_bound`, matching Android `cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`."
+      "description": "Exact Windows `cRGalaxy::BorderBound`, matching Android `cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`.",
+      "aliases": [
+        "cRGalaxy_BorderBound"
+      ]
     },
     {
       "address": "0x40a1b0",
@@ -1530,28 +1557,41 @@
     {
       "address": "0x419110",
       "name": "open_logo",
-      "description": "Implements `cRLogo::Open()`: initializes the 32-image-donor tail of the root-owned Logo and preloads every Intro/*.tga texture. The donor bank starts at Logo +0x24018 after the 1024-entry LogoLetter crawl bank."
+      "description": "Implements `cRLogo::Open()`: initializes the 32-image-donor tail of the root-owned cRLogo and preloads every Intro/*.tga texture. The donor bank starts at cRLogo +0x24018 after the 1024-entry cRLogoLetter crawl bank.",
+      "aliases": [
+        "cRLogo_Open"
+      ]
     },
     {
       "address": "0x4191e0",
       "name": "initialize_intro_screen",
-      "description": "Void Windows `cRLogo::Init(char*)`: loads SpaceRed plus INTROTEXT.OGG, parses an intro or credits script into the root-owned 1024-entry LogoLetter bank, borrows sequential preloaded image objects, derives each velocity from Duration, and releases the script through void `RShellMemoryFree`."
+      "description": "Void Windows `cRLogo::Init(char*)`: loads SpaceRed plus INTROTEXT.OGG, parses an intro or credits script into the root-owned 1024-entry cRLogoLetter bank, borrows sequential preloaded image objects, derives each velocity from Duration, and releases the script through void `RShellMemoryFree`.",
+      "aliases": [
+        "cRLogo_Init"
+      ]
     },
     {
       "address": "0x419920",
       "name": "destroy_intro_screen",
-      "description": "Exact void Windows cRLogo::UnInit(): unlinks each active LogoLetter from the BOD lists and returns it to the shared free list. Its sole caller discards the loop count left in EAX."
+      "description": "Exact void Windows cRLogo::UnInit(): unlinks each active cRLogoLetter from the BOD lists and returns it to the shared free list. Its sole caller discards the loop count left in EAX.",
+      "aliases": [
+        "cRLogo_UnInit"
+      ]
     },
     {
       "address": "0x4199e0",
       "name": "update_intro_screen",
-      "description": "Exact Windows `cRLogo::AI()`: advances the normalized intro or credits crawl, tears down its LogoLetters once scrolling completes, and exits early on skip input."
+      "description": "Exact Windows `cRLogo::AI()`: advances the normalized intro or credits crawl, tears down its cRLogoLetter children once scrolling completes, and exits early on skip input.",
+      "aliases": [
+        "cRLogo_AI"
+      ]
     },
     {
       "address": "0x419a90",
       "name": "update_intro_logo_renderable",
       "aliases": [
-        "update_logo_row"
+        "update_logo_row",
+        "cRLogoLetter_AI"
       ],
       "description": "Exact Windows `cRLogoLetter::AI()`: advances one LogoLetter by applying its velocity to the shared BOD position, fades alpha across the z-window, marks the backing object dirty, and toggles visibility. The stable harness alias `update_logo_row` predates the recovered authored owner."
     },
@@ -2873,7 +2913,10 @@
     {
       "address": "0x439b00",
       "name": "refresh_fringe_object_draw_list",
-      "description": "Windows cRFringe callback: copies the current track skirt tint into one authored Fringe and, once its world-z falls behind the live fringe threshold, unlinks it from the active list and requeues it onto the shared draw-list bucket. The constructor table points directly here; Android preserves `cRFringe::AI()` but implements it as a no-op."
+      "description": "Windows cRFringe::AI callback: copies the current track skirt tint into one authored cRFringe and, once its world-z falls behind the live fringe threshold, unlinks it from the active list and requeues it onto the shared draw-list bucket. The constructor table points directly here; Android preserves the authored member but implements it as a no-op.",
+      "aliases": [
+        "cRFringe_AI"
+      ]
     },
     {
       "address": "0x439bc0",
@@ -3908,12 +3951,18 @@
     {
       "address": "0x447090",
       "name": "initialize_fringe_manager",
-      "description": "Resets the shared fringe-manager pool counter at `data_4df904 + 0x3d01d4` before one track rebuild emits directional fringe objects. Cross-port Android symbols match this helper to `cRFringeManager::Init()`."
+      "description": "Resets the shared cRFringeManager pool counter at `data_4df904 + 0x3d01d4` before one track rebuild emits directional fringe objects. Cross-port Android symbols preserve `cRFringeManager::Init()`.",
+      "aliases": [
+        "cRFringeManager_Init"
+      ]
     },
     {
       "address": "0x4470a0",
       "name": "allocate_fringe_object",
-      "description": "Allocates the next 0x38-byte object from the shared 7000-entry fringe-manager pool, or raises the `Too many Fringes` error if the pool overflows. Cross-port Android symbols match this helper to `cRFringeManager::GetFringe()`."
+      "description": "Lends the next 0x38-byte cRFringe from the shared 7000-entry cRFringeManager pool, or raises the `Too many Fringes` error if the pool overflows. Cross-port Android symbols preserve `cRFringeManager::GetFringe()`.",
+      "aliases": [
+        "cRFringeManager_GetFringe"
+      ]
     },
     {
       "address": "0x4470e0",

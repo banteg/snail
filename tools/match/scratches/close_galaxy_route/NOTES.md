@@ -25,3 +25,10 @@ Android/iOS retain this exact 18/18 member as `cRGalaxy::BoxOff()`.
 Live readback now records `void __thiscall close_galaxy_route(Galaxy*)` and
 the focused export retains all six named widget owners. Matching remains exact
 at 18/18 with six clean operands.
+
+## 2026-08-09 primary cRGalaxy ownership
+
+The matcher now emits `cRGalaxy::BoxOff()` and binds
+`?BoxOff@cRGalaxy@@QAEXXZ`; both mobile ports preserve that member in
+`Galaxy.o`. The ownership-only spelling remains exact at 18/18 instructions
+with all six operands clean.

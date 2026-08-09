@@ -27,23 +27,23 @@ void GamePlayer::update_frontend_state_machine()
         case 12:
         {
             GameRoot* owner = g_game;
-            owner->logo.initialize_intro_screen(aIntroIntroTxt);
+            owner->logo.Init(aIntroIntroTxt);
             frontend_state = 13;
             break;
         }
         case 13:
-            g_game->logo.update_intro_screen();
+            g_game->logo.AI();
             break;
         case 14:
         {
             GameRoot* owner = g_game;
-            owner->logo.initialize_intro_screen(aIntroCreditsTx);
+            owner->logo.Init(aIntroCreditsTx);
             frontend_state = 15;
             break;
         }
         case 15: {
             GameRoot* owner = g_game;
-            owner->logo.update_intro_screen();
+            owner->logo.AI();
             break;
         }
         case 1:

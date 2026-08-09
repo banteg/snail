@@ -8,7 +8,7 @@
 int report_errorf(char* format, ...);
 
 
-void Fringe::refresh_fringe_object_draw_list()
+void cRFringe::AI()
 {
     tColour color;
     tColour* resolved =

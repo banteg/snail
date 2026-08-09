@@ -1069,11 +1069,16 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x442170, "initialize_click_start", "?Init@cRClickStart@@QAEXPAVcRSubGoldy@@@Z"),
             (0x440660, "initialize_pause_menu", "?Init@cRSubPause@@QAEXXZ"),
             (0x443160, "initialize_track_parcel_slots", "?Init@cRParcelManager@@QAEXXZ"),
+            (0x447090, "initialize_fringe_manager", "?Init@cRFringeManager@@QAEXXZ"),
+            (0x408CF0, "initialize_galaxy", "?Init@cRGalaxy@@QAEXXZ"),
+            (0x4191E0, "initialize_intro_screen", "?Init@cRLogo@@QAEXPAD@Z"),
             (0x442500, "initialize_vapour", "?Init@cRVapour@@QAEXPAUcRObject@@M@Z"),
             (0x43F5C0, "initialize_slug_voice_manager", "?Init@cRSlugVoiceManager@@QAEXXZ"),
             (0x40A240, "initialize_overlay", "?Init@cROverlay@@QAEXXZ"),
             (0x40AB00, "initialize_frontend_overlay_color_lerp", "?Init@cRFlash@@QAEXH@Z"),
             (0x440600, "uninit_pause_menu", "?UnInit@cRSubPause@@QAEXXZ"),
+            (0x408C10, "destroy_galaxy", "?UnInit@cRGalaxy@@QAEXXZ"),
+            (0x419920, "destroy_intro_screen", "?UnInit@cRLogo@@QAEXXZ"),
             (0x444AE0, "start_invincible_shell", "?Start@cRInvincible@@QAEXXZ"),
             (0x446F30, "start_warning", "?Start@cRWarning@@QAEXXZ"),
             (0x404CF0, "update_row_event_display", "?AI@cRCompletion@@QAEXXZ"),
@@ -1100,6 +1105,11 @@ def test_owner_qualified_controller_aliases_do_not_collide() -> None:
             (0x40ABF0, "update_frontend_transition_overlay", "?AI@cRFade@@QAEXXZ"),
             (0x43EFB0, "update_track_jetpack_pickup", "?AI@cRJetPack@@QAEXXZ"),
             (0x443070, "update_row_model", "?AI@cRRowModel@@QAEXXZ"),
+            (0x4092F0, "update_galaxy", "?AI@cRGalaxy@@QAEHXZ"),
+            (0x409BD0, "update_galaxy_route_record", "?AI@cRGalaxyStar@@QAEXXZ"),
+            (0x4199E0, "update_intro_screen", "?AI@cRLogo@@QAEXXZ"),
+            (0x419A90, "update_intro_logo_renderable", "?AI@cRLogoLetter@@QAEXXZ"),
+            (0x439B00, "refresh_fringe_object_draw_list", "?AI@cRFringe@@QAEXXZ"),
         )
     )
     manifest = ReferenceSymbolManifest(name="test references", symbols=symbols)

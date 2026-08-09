@@ -4,7 +4,7 @@
 
 int report_errorf(char* format, ...);
 
-Fringe* FringeManager::allocate_fringe_object()
+cRFringe* cRFringeManager::GetFringe()
 {
     if (count == 7000) {
         report_errorf("Too many Fringes increase RFRINGEMANAGER_NUMBER");

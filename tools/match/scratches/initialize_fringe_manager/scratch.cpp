@@ -2,7 +2,7 @@
 
 #include "fringe_object.h"
 
-void FringeManager::initialize_fringe_manager()
+void cRFringeManager::Init()
 {
     count = 0;
 }

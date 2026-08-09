@@ -82,3 +82,12 @@ focused export retains the enclosing `cRSubGame*` backlink, all nine
 widget owners, and the final typed `open_galaxy_route(galaxy,
 galaxy->selected_index)` handoff. Matching remains exact at 338/338 with 74
 clean operands.
+
+## 2026-08-09 primary cRGalaxy ownership
+
+The matcher now emits `cRGalaxy::Init()` and its final `BoxOn(selected_index)`
+handoff, binding `?Init@cRGalaxy@@QAEXXZ`. Android and iOS retain the same
+owner in `Galaxy.o`; live Windows has one direct caller at `0x437a62` from
+subgame initialization. The instruction stream remains exact at 338/338; the
+shared reference alias maps the owner-qualified `BoxOn` relocation to
+`open_galaxy_route`, retaining all 74 operands clean.

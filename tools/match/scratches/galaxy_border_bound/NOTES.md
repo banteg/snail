@@ -33,3 +33,15 @@ parent rename is codegen-neutral.
 Live readback now preserves the true `Galaxy*` receiver, four float in/out
 bounds, and the `FrontendWidget*` client. Matching remains exact at 63/63 with
 two clean operands.
+
+## 2026-08-09 primary cRGalaxy ownership
+
+The source surface now matches Android's
+`cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`; references
+are pointer-identical at the Windows ABI and preserve the exact body. Because
+the current Windows matcher still defines `cRBorder` as a compatibility typedef
+of `FrontendWidget`, VC6 emits the honest symbol
+`?BorderBound@cRGalaxy@@QAEXAAM000PAVFrontendWidget@@@Z`. A future atomic
+cRBorder-primary promotion may narrow that parameter spelling; this slice does
+not forge it locally. Focused output remains exact at 63/63 with both operands
+clean.

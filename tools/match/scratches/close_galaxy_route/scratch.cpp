@@ -3,7 +3,7 @@
 #include "frontend_widget.h"
 #include "galaxy_route_types.h"
 
-void Galaxy::close_galaxy_route()
+void cRGalaxy::BoxOff()
 {
     route_state = 0;
     selected_index = -1;

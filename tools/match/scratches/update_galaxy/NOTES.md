@@ -278,3 +278,20 @@ on opcode, masked operand position/kind, and canonical identity. Focused
 matching remains 71.01%, 569/566 instructions, and prefix 48/566, while the
 audit improves from 52 clean plus 6 unaudited entries to 55 clean with no
 unresolved, mismatched, or unaudited operands.
+
+## 2026-08-09 primary Galaxy owner surface
+
+The matcher now emits this Windows-combined state machine as
+`int cRGalaxy::AI()` and binds `?AI@cRGalaxy@@QAEHXZ`. Its child tick is the
+authored `cRGalaxyStar::AI()`, and the internal helper calls now use
+`Line`, `UnInit`, `BoxOff`, and `BoxOn`. Binary Ninja confirms the integer
+thiscall contract and the three external Windows calls at `0x406893`,
+`0x438ce3`, and `0x438d3e`. Mobile splits the render pass and exposes
+`AIControl()` separately, while Windows returns that state directly.
+
+The naming-only change leaves the formally stalled frontier frozen at 71.01%,
+569/566 instructions and prefix 48/566. Before shared alias integration the
+ten renamed internal call relocations report as expected operand mismatches;
+registering the exact owner-qualified aliases restores the established 55
+clean operands. The three receipted mutation plans and experiments ledger are
+intentionally byte-identical and remain historical rather than active work.

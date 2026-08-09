@@ -113,7 +113,7 @@ void cRSubGame::AI()
         int result;
         switch (level_mode) {
         case 0:
-            result = galaxy.update_galaxy();
+            result = galaxy.AI();
             if (result == one) {
                 subgame_rebuild_selector = 3;
                 g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;
@@ -133,7 +133,7 @@ void cRSubGame::AI()
             return;
 
         case 4:
-            result = galaxy.update_galaxy();
+            result = galaxy.AI();
             if (result == one) {
                 subgame_rebuild_selector = 2;
                 g_runtime_config.landscape_backdrop_variant_selector = level_mode_arg;

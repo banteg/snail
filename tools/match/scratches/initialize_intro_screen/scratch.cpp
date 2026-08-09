@@ -1,4 +1,4 @@
-// initialize_intro_screen @ 0x4191e0 (thiscall, ret 0x4)
+// cRLogo::Init @ 0x4191e0 (thiscall, ret 0x4)
 
 #include "backdrop.h"
 #include "bod_ai_dispatch.h"
@@ -31,7 +31,7 @@ static __forceinline void add_intro_renderable_to_active_list(LogoLetter* bod)
     g_game->active_bod_list.add_bod(bod);
 }
 
-void Logo::initialize_intro_screen(char* file_name)
+void cRLogo::Init(char* file_name)
 {
     cache_music_file((char*)"music/introtext.ogg", 0, g_blank_text);
     int script_index = g_game->subgame.landscape_manager

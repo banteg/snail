@@ -36,7 +36,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRSaltManager %i\n", sizeof(cRSaltManager)); \
     debug_report_stub("   Size of cRSubGarbage %i\n", sizeof(((cRSubGame*)0)->garbage_hazards.slots)); \
     debug_report_stub("   Size of cRSubRing %i\n", sizeof(SubRingPool)); \
-    debug_report_stub("   Size of cRFringeManager %i\n", sizeof(FringeManager)); \
+    debug_report_stub("   Size of cRFringeManager %i\n", sizeof(cRFringeManager)); \
     debug_report_stub("   Size of cRSubGoldy %i\n", sizeof(cRSubGoldy)); \
     debug_report_stub("   Size of cRSubLoc %i\n", sizeof(((cRSubGame*)0)->runtime_cells)); \
     debug_report_stub("   Size of cRSubRow %i\n", sizeof(((cRSubGame*)0)->runtime_rows)); \
@@ -160,12 +160,12 @@ __forceinline GameRootAllocation::GameRootAllocation()
 
         initialize_array_with_constructor(
             (RuntimeSlot*)&root->logo.letters[0],
-            sizeof(LogoLetter),
+            sizeof(cRLogoLetter),
             LOGO_LETTER_CAPACITY,
             &RuntimeSlot::initialize_intro_logo_renderable);
         initialize_array_with_constructor(
             (RuntimeSlot*)&root->logo.image_donors[0],
-            sizeof(LogoLetter),
+            sizeof(cRLogoLetter),
             LOGO_IMAGE_DONOR_CAPACITY,
             &RuntimeSlot::initialize_intro_logo_renderable);
 

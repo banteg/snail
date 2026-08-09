@@ -18,7 +18,7 @@ extern char g_back_text[]; // data_4a20ec
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-void Galaxy::initialize_galaxy()
+void cRGalaxy::Init()
 {
     g_game->star_manager.hide_star_field();
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
@@ -117,7 +117,7 @@ void Galaxy::initialize_galaxy()
             clear_cursor[-1] = 0;
             clear_cursor[0] = 0;
             ++index;
-            clear_cursor += sizeof(GalaxyStar) / sizeof(int);
+            clear_cursor += sizeof(cRGalaxyStar) / sizeof(int);
         } while (index < record_count);
     }
 
@@ -251,5 +251,5 @@ void Galaxy::initialize_galaxy()
         replay_widget->idle_padding = 8.0f;
     }
 
-    open_galaxy_route(selected_index);
+    BoxOn(selected_index);
 }

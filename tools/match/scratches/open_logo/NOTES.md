@@ -92,3 +92,11 @@ record-base cursor while preserving the typed `Logo`/`LogoLetter` ownership.
 Focused Wibo is now **100.00%**, `60/60`, prefix `60/60`, with all 13 masked
 operands clean. Together with the exact constructor, updater, teardown, and
 letter updater, `cRLogo::Open` now closes the complete shared Logo lifecycle.
+
+## 2026-08-09 authored owner promotion
+
+The primary matcher surface is the mobile-preserved `void cRLogo::Open()` with
+MSVC symbol `?Open@cRLogo@@QAEXXZ`. Android declares the method void, and the
+sole Windows call at `0x40af0d` immediately pushes an unrelated string without
+reading EAX. Removing the synthetic integer return is codegen-neutral: focused
+matching remains 100.00%, 60/60, prefix 60/60, with all 13 references clean.

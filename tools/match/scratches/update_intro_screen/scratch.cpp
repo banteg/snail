@@ -1,4 +1,4 @@
-// update_intro_screen @ 0x4199e0 (thiscall)
+// cRLogo::AI @ 0x4199e0 (thiscall)
 
 #include "game_root.h"
 #include "intro_screen_runtime.h"
@@ -6,7 +6,7 @@
 
 char read_pressed_text_input_key_code();
 
-void Logo::update_intro_screen()
+void cRLogo::AI()
 {
     GameRoot* game = g_game;
     if (game->fade.state == 0) {
@@ -18,7 +18,7 @@ void Logo::update_intro_screen()
     }
 
     if (g_game->fade.state == 4) {
-        destroy_intro_screen();
+        UnInit();
     }
 
     switch (state) {

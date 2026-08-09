@@ -3976,6 +3976,248 @@ def test_mobile_frontend_jetpack_and_row_owners_stay_authored() -> None:
     assert "JetPack* scan = &jetpack_pickup;" in add_jetpack
 
 
+def test_mobile_fringe_logo_and_galaxy_recover_authored_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {entry["windows_name"]: entry for entry in crosswalk["entries"]}
+    functions = load_json(repo_root / "analysis/symbols/gameplay-functions.json")
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+
+    fringe_header = (include_root / "fringe_object.h").read_text(
+        encoding="utf-8"
+    ) + (include_root / "fringe_fwd.h").read_text(encoding="utf-8")
+    logo_header = (include_root / "intro_screen_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    galaxy_header = (include_root / "galaxy_route_types.h").read_text(
+        encoding="utf-8"
+    )
+    subgame_header = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    game_root_header = (include_root / "game_root.h").read_text(
+        encoding="utf-8"
+    )
+
+    for primary, compatibility, header in (
+        ("cRFringe", "Fringe", fringe_header),
+        ("cRFringeManager", "FringeManager", fringe_header),
+        ("cRLogo", "Logo", logo_header),
+        ("cRLogoLetter", "LogoLetter", logo_header),
+        ("cRGalaxy", "Galaxy", galaxy_header),
+        ("cRGalaxyStar", "GalaxyStar", galaxy_header),
+    ):
+        assert f"class {primary}" in header
+        assert f"typedef {primary} {compatibility};" in header
+
+    assert "cRFringeManager fringe_manager;" in subgame_header
+    assert "cRGalaxy galaxy;" in subgame_header
+    assert "cRLogo logo;" in game_root_header
+
+    expected_methods = (
+        (
+            "initialize_fringe_object",
+            "cRFringe_ctor",
+            "cRFringe::cRFringe()",
+            "??0cRFringe@@QAE@XZ",
+            False,
+        ),
+        (
+            "refresh_fringe_object_draw_list",
+            "cRFringe_AI",
+            "void cRFringe::AI()",
+            "?AI@cRFringe@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_fringe_manager",
+            "cRFringeManager_Init",
+            "void cRFringeManager::Init()",
+            "?Init@cRFringeManager@@QAEXXZ",
+            True,
+        ),
+        (
+            "allocate_fringe_object",
+            "cRFringeManager_GetFringe",
+            "cRFringe* cRFringeManager::GetFringe()",
+            "?GetFringe@cRFringeManager@@QAEPAVcRFringe@@XZ",
+            True,
+        ),
+        (
+            "initialize_intro_logo_renderable",
+            "cRLogoLetter_ctor",
+            "cRLogoLetter::cRLogoLetter()",
+            "??0cRLogoLetter@@QAE@XZ",
+            False,
+        ),
+        (
+            "open_logo",
+            "cRLogo_Open",
+            "void cRLogo::Open()",
+            "?Open@cRLogo@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_intro_screen",
+            "cRLogo_Init",
+            "void cRLogo::Init(char* file_name)",
+            "?Init@cRLogo@@QAEXPAD@Z",
+            True,
+        ),
+        (
+            "destroy_intro_screen",
+            "cRLogo_UnInit",
+            "void cRLogo::UnInit()",
+            "?UnInit@cRLogo@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_intro_screen",
+            "cRLogo_AI",
+            "void cRLogo::AI()",
+            "?AI@cRLogo@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_intro_logo_renderable",
+            "cRLogoLetter_AI",
+            "void cRLogoLetter::AI()",
+            "?AI@cRLogoLetter@@QAEXXZ",
+            True,
+        ),
+        (
+            "load_galaxy_layout",
+            "cRGalaxy_Open",
+            "void cRGalaxy::Open()",
+            "?Open@cRGalaxy@@QAEXXZ",
+            True,
+        ),
+        (
+            "destroy_galaxy",
+            "cRGalaxy_UnInit",
+            "void cRGalaxy::UnInit()",
+            "?UnInit@cRGalaxy@@QAEXXZ",
+            True,
+        ),
+        (
+            "initialize_galaxy",
+            "cRGalaxy_Init",
+            "void cRGalaxy::Init()",
+            "?Init@cRGalaxy@@QAEXXZ",
+            True,
+        ),
+        (
+            "update_galaxy",
+            "cRGalaxy_AI",
+            "int cRGalaxy::AI()",
+            "?AI@cRGalaxy@@QAEHXZ",
+            True,
+        ),
+        (
+            "draw_galaxy_line",
+            "cRGalaxy_Line",
+            "void cRGalaxy::Line(",
+            "?Line@cRGalaxy@@QAEXHMMMMMAAUtColour@@@Z",
+            True,
+        ),
+        (
+            "update_galaxy_route_record",
+            "cRGalaxyStar_AI",
+            "void cRGalaxyStar::AI()",
+            "?AI@cRGalaxyStar@@QAEXXZ",
+            True,
+        ),
+        (
+            "close_galaxy_route",
+            "cRGalaxy_BoxOff",
+            "void cRGalaxy::BoxOff()",
+            "?BoxOff@cRGalaxy@@QAEXXZ",
+            True,
+        ),
+        (
+            "open_galaxy_route",
+            "cRGalaxy_BoxOn",
+            "void cRGalaxy::BoxOn(int selected_level_index)",
+            "?BoxOn@cRGalaxy@@QAEXH@Z",
+            True,
+        ),
+        (
+            "galaxy_border_bound",
+            "cRGalaxy_BorderBound",
+            "void cRGalaxy::BorderBound(",
+            "?BorderBound@cRGalaxy@@QAEXAAM000PAVFrontendWidget@@@Z",
+            True,
+        ),
+    )
+    for windows_name, alias, definition, object_symbol, has_crosswalk in (
+        expected_methods
+    ):
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"FUNCTION={windows_name}\n" in config
+        assert f"SYMBOL={object_symbol}\n" in config
+        if has_crosswalk:
+            assert entries[windows_name]["confidence"] == "high"
+
+    constructor = (
+        scratch_root
+        / "initialize_runtime_pools_and_path_template_bank/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    size_ledger = (
+        scratch_root / "construct_game_runtime/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    fringe_builder = (
+        scratch_root / "build_track_fringe_objects/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assets = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    frontend = (
+        scratch_root / "update_frontend_state_machine/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    completion = (
+        scratch_root / "update_completion_screen/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    initialize_subgame = (
+        scratch_root / "initialize_subgame/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    update_subgame = (
+        scratch_root / "update_subgame/scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    assert "sizeof(cRFringe)," in constructor
+    assert "sizeof(cRGalaxyStar)," in constructor
+    assert "sizeof(cRLogoLetter)," in size_ledger
+    assert "sizeof(cRFringeManager)" in size_ledger
+    assert "fringe_manager.Init();" in fringe_builder
+    assert fringe_builder.count("fringe_manager.GetFringe();") == 4
+    assert "subgame.galaxy.Open();" in assets
+    assert "logo.Open();" in assets
+    assert frontend.count("logo.Init(") == 2
+    assert frontend.count("logo.AI();") == 2
+    assert "subgame.galaxy.AI();" in completion
+    assert "subgame.galaxy.UnInit();" in completion
+    assert "galaxy.Init();" in initialize_subgame
+    assert update_subgame.count("galaxy.AI();") == 2
+
+
 def test_mobile_warning_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

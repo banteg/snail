@@ -39,3 +39,11 @@ therefore recovers the authored contract without changing its exact 67/67
 instruction body or four clean operands. The nested Windows queue helper still
 has its own platform-specific integer queue-offset ABI; the value merely
 survives incidentally through this void member.
+
+## 2026-08-09 primary cRGalaxy ownership
+
+The matcher now emits the exact Android-authored surface
+`cRGalaxy::Line(int, float, float, float, float, float, tColour&)` and binds
+`?Line@cRGalaxy@@QAEXHMMMMMAAUtColour@@@Z`. The reference is the same pointer
+ABI already proven in the Windows body and both Windows receiver-bearing
+callsites. Focused output remains exact at 67/67 with all four operands clean.

@@ -33,3 +33,11 @@ Windows. This promotes the former structural `GalaxyRouteSlot` label to the
 authored `GalaxyStar` class without assigning meaning to the still-unknown
 leading dword. The Windows helper remains exact at 6/6; no source coercion was
 needed.
+
+## 2026-08-09 primary cRGalaxyStar ownership
+
+The matcher now emits `cRGalaxyStar::AI()` and binds
+`?AI@cRGalaxyStar@@QAEXXZ`; `GalaxyStar` and `GalaxyRouteSlot` remain
+compatibility typedefs. Live Windows has the sole direct call at `0x40931d`
+from the parent Galaxy AI, while Android independently retains the named leaf.
+Focused output remains exact at 6/6 with its one operand clean.

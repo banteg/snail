@@ -52,3 +52,12 @@ Live readback now records
 The focused export retains route-slot/name ownership, the borrowed subgame
 backlink, every route-card widget, and the typed bounds-helper calls. Matching
 remains exact at 266/266 with 41 clean operands.
+
+## 2026-08-09 primary cRGalaxy ownership
+
+The matcher now emits `cRGalaxy::BoxOn(int)` and binds
+`?BoxOn@cRGalaxy@@QAEXH@Z`. Android and iOS independently preserve the same
+member in `Galaxy.o`; live Windows calls it once from Init and twice from AI.
+The four bounds calls now use the authored `BorderBound` reference surface.
+The instruction stream remains exact at 266/266; its temporary four relocation
+mismatches return to all 41 operands clean after shared alias registration.

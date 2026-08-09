@@ -56,14 +56,18 @@ typedef char GalaxyRouteRecord_must_be_0x29c[
 // Android preserves this exact child owner as cRGalaxyStar. Its AI member
 // advances the +0x18 tint toward the +0x1c target, and both mobile Galaxy
 // owners traverse the children at the same 0x2a0 stride as Windows.
-class GalaxyStar {
+class cRGalaxyStar {
 public:
-    void update_galaxy_route_record(); // @ 0x409bd0
+    void AI(); // @ 0x409bd0
 
     int unknown_000; // +0x00
     GalaxyRouteRecord record; // +0x04
 };
 
+typedef cRGalaxyStar GalaxyStar;
+
+typedef char cRGalaxyStar_must_be_0x2a0[
+    (sizeof(cRGalaxyStar) == 0x2a0) ? 1 : -1];
 typedef char GalaxyStar_must_be_0x2a0[
     (sizeof(GalaxyStar) == 0x2a0) ? 1 : -1];
 
@@ -107,28 +111,28 @@ public:
 typedef char GalaxyRouteNameRecord_must_be_0xa0[
     (sizeof(GalaxyRouteNameRecord) == 0xa0) ? 1 : -1];
 
-class Galaxy {
+class cRGalaxy {
 public:
-    void load_galaxy_layout(); // @ 0x4088e0, bootstrap portion of cRGalaxy::Open
-    void initialize_galaxy(); // @ 0x408cf0, cRGalaxy::Init
-    void destroy_galaxy(); // @ 0x408c10
-    int update_galaxy(); // @ 0x4092f0
-    void close_galaxy_route(); // @ 0x409bf0
-    void open_galaxy_route(int selected_level_index); // @ 0x409c50, cRGalaxy::BoxOn
-    void draw_galaxy_line(
+    void Open(); // @ 0x4088e0, Windows no-argument bootstrap
+    void UnInit(); // @ 0x408c10
+    void Init(); // @ 0x408cf0
+    int AI(); // @ 0x4092f0, includes the Windows render phase
+    void BoxOff(); // @ 0x409bf0
+    void BoxOn(int selected_level_index); // @ 0x409c50
+    void Line(
         int texture_id,
         float x0,
         float y0,
         float x1,
         float y1,
         float width,
-        tColour* color); // @ 0x409b00
-    void galaxy_border_bound(
-        float* min_x,
-        float* max_x,
-        float* min_y,
-        float* max_y,
-        FrontendWidget* widget); // @ 0x40a0c0
+        tColour& color); // @ 0x409b00
+    void BorderBound(
+        float& min_x,
+        float& max_x,
+        float& min_y,
+        float& max_y,
+        cRBorder* widget); // @ 0x40a0c0
 
     char active; // +0x00
     char unknown_001[0x04 - 0x01];
@@ -137,7 +141,7 @@ public:
     int record_count; // +0x0c
     // Constructor-built slot array. Each slot has a four-byte tick prefix and
     // a 0x29c-byte authored/display record.
-    GalaxyStar route_slots[101]; // +0x10, ends at +0x10930
+    cRGalaxyStar route_slots[101]; // +0x10, ends at +0x10930
     GalaxyRouteNameRecord route_names[10]; // +0x10930
     cRSubGame* level_progress_base; // +0x10f70, borrowed enclosing subgame
     union {
@@ -173,6 +177,10 @@ public:
     int unknown_10fa4; // +0x10fa4, unresolved cRGalaxy tail
 };
 
+typedef cRGalaxy Galaxy;
+
+typedef char cRGalaxy_must_be_0x10fa8[
+    (sizeof(cRGalaxy) == 0x10fa8) ? 1 : -1];
 typedef char Galaxy_must_be_0x10fa8[
     (sizeof(Galaxy) == 0x10fa8) ? 1 : -1];
 

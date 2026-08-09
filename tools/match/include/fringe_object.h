@@ -5,25 +5,31 @@
 #include "bod_types.h"
 #include "fringe_fwd.h"
 
-class Fringe : public BodBase {
+class cRFringe : public BodBase {
 public:
-    Fringe* initialize_fringe_object(); // @ 0x408650
-    void refresh_fringe_object_draw_list();   // @ 0x439b00
+    cRFringe(); // @ 0x408650
+    void AI(); // @ 0x439b00
 };
 
+typedef char cRFringe_must_be_0x38[
+    (sizeof(cRFringe) == 0x38) ? 1 : -1];
 typedef char Fringe_must_be_0x38[(sizeof(Fringe) == 0x38) ? 1 : -1];
 
-class FringeManager {
+class cRFringeManager {
 public:
-    void initialize_fringe_manager(); // @ 0x447090
-    Fringe* allocate_fringe_object(); // @ 0x4470a0
+    void Init(); // @ 0x447090
+    cRFringe* GetFringe(); // @ 0x4470a0
 
-    // Fixed storage embedded in cRSubGame. initialize_fringe_manager()
-    // rewinds the cursor; allocation never transfers object ownership.
-    Fringe objects[7000];       // +0x00000
-    int count;                  // +0x5fb40
+    // Fixed storage embedded in cRSubGame. Init() rewinds the cursor;
+    // GetFringe() lends the next object without transferring ownership.
+    cRFringe objects[7000]; // +0x00000
+    int count;              // +0x5fb40
 };
 
+typedef cRFringeManager FringeManager;
+
+typedef char cRFringeManager_must_be_0x5fb44[
+    (sizeof(cRFringeManager) == 0x5fb44) ? 1 : -1];
 typedef char FringeManager_must_be_0x5fb44[
     (sizeof(FringeManager) == 0x5fb44) ? 1 : -1];
 

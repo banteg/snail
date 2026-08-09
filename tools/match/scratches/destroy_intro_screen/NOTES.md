@@ -54,3 +54,10 @@ now the canonical `BodNode` cursor helpers shared by every recovered teardown
 loop. The logo destructor remains exact at 61/61 instructions with all seven
 operands clean, proving that its embedded letters borrow the same root-list
 linkage contract as the subgame and track-cache pools.
+
+## 2026-08-09 authored owner promotion
+
+The matcher now exposes `void cRLogo::UnInit()` with exact MSVC symbol
+`?UnInit@cRLogo@@QAEXXZ`; `destroy_intro_screen` remains only the stable harness
+name. The promotion is codegen-neutral at 100.00%, 61/61, prefix 61/61, with
+all seven references clean.

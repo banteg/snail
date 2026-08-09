@@ -34,7 +34,7 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int blend_mode,
     float rotation); // @ 0x44a9b0
-int Galaxy::update_galaxy()
+int cRGalaxy::AI()
 {
     tColour color;
     // Windows folds the mobile cRGalaxy::Render() phase into this update.
@@ -46,9 +46,9 @@ int Galaxy::update_galaxy()
 
         int tick_index = 0;
         if (g_runtime_config.highest_galaxy_route_index >= 0) {
-            GalaxyStar* tick_record = route_slots;
+            cRGalaxyStar* tick_record = route_slots;
             do {
-                tick_record->update_galaxy_route_record();
+                tick_record->AI();
                 ++tick_index;
                 ++tick_record;
             } while (tick_index <= g_runtime_config.highest_galaxy_route_index);
@@ -60,23 +60,23 @@ int Galaxy::update_galaxy()
             color.store_color4f(1.0f, 1.0f, 1.0f, 0.999000013f);
             GalaxyRouteIndexedSlotView* selected_record =
                 (GalaxyRouteIndexedSlotView*)((char*)this +
-                                              selected_index * sizeof(GalaxyStar));
+                                              selected_index * sizeof(cRGalaxyStar));
             FrontendWidget* card = bounds_frame_widget;
 
             if (card->frame_x > selected_record->map_x) {
-                draw_galaxy_line(153, selected_record->map_x + 16.0f, selected_record->map_y,
-                                 card->frame_x - 6.0f, selected_record->map_y, 4.0f, &color);
+                Line(153, selected_record->map_x + 16.0f, selected_record->map_y,
+                     card->frame_x - 6.0f, selected_record->map_y, 4.0f, color);
             } else {
-                draw_galaxy_line(153, selected_record->map_x - 16.0f, selected_record->map_y,
-                                 card->frame_width + card->frame_x + 6.0f, selected_record->map_y,
-                                 4.0f, &color);
+                Line(153, selected_record->map_x - 16.0f, selected_record->map_y,
+                     card->frame_width + card->frame_x + 6.0f, selected_record->map_y,
+                     4.0f, color);
             }
         }
 
         int route_index = 1;
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
             do {
-                int record_offset = route_index * sizeof(GalaxyStar);
+                int record_offset = route_index * sizeof(cRGalaxyStar);
                 GalaxyRouteIndexedSlotView* record =
                     (GalaxyRouteIndexedSlotView*)((char*)this + record_offset);
                 color = route_names[record->route_name_index].color;
@@ -115,19 +115,19 @@ int Galaxy::update_galaxy()
         color.a = 0.200000003f;
         int line_index = 1;
         if (g_runtime_config.highest_galaxy_route_index > 1) {
-            GalaxyStar* next_record = &route_slots[2];
+            cRGalaxyStar* next_record = &route_slots[2];
             do {
                 if (line_index < selected_index) {
                     color.a = 0.800000012f;
-                    draw_galaxy_line(154, next_record[-1].record.map_x,
-                                     next_record[-1].record.map_y, next_record->record.map_x,
-                                     next_record->record.map_y, 4.0f, &color);
+                    Line(154, next_record[-1].record.map_x,
+                         next_record[-1].record.map_y, next_record->record.map_x,
+                         next_record->record.map_y, 4.0f, color);
                 } else {
                     if (route_mode != 1) {
                         color.a = 0.200000003f;
-                        draw_galaxy_line(154, next_record[-1].record.map_x,
-                                         next_record[-1].record.map_y, next_record->record.map_x,
-                                         next_record->record.map_y, 4.0f, &color);
+                        Line(154, next_record[-1].record.map_x,
+                             next_record[-1].record.map_y, next_record->record.map_x,
+                             next_record->record.map_y, 4.0f, color);
                     }
                 }
                 ++line_index;
@@ -190,7 +190,7 @@ int Galaxy::update_galaxy()
         }
 
         if (g_runtime_config.highest_galaxy_route_index >= 1) {
-            GalaxyStar* probe_slot = &route_slots[1];
+            cRGalaxyStar* probe_slot = &route_slots[1];
             do {
                 Vector3 probe = subtract_screen_xy(
                     *(Vector3*)&probe_slot->record.map_x, mouse_x, mouse_y);
@@ -226,7 +226,7 @@ int Galaxy::update_galaxy()
             return 0;
         }
 
-        destroy_galaxy();
+        UnInit();
         return 3;
     }
 
@@ -236,7 +236,7 @@ int Galaxy::update_galaxy()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             play_or_deliver_widget->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_galaxy();
+            UnInit();
             level_progress_base->level_mode_arg = selected_index;
             level_progress_base->level_definition
                 .load_frontend_level_by_mode_and_index(
@@ -254,7 +254,7 @@ int Galaxy::update_galaxy()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         replay_widget->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_galaxy();
+        UnInit();
         level_progress_base->level_mode_arg = selected_index;
         level_progress_base->level_definition.load_frontend_level_by_mode_and_index(
             level_progress_base->level_mode,
@@ -274,11 +274,11 @@ int Galaxy::update_galaxy()
                 && (mouse_flags & INPUT_BUTTON_PRIMARY) != 0) {
                 if (hovered_route_index != selected_index) {
                     if (state == 1) {
-                        close_galaxy_route();
-                        open_galaxy_route(hovered_route_index);
+                        BoxOff();
+                        BoxOn(hovered_route_index);
                         g_sound_effect_manager.play_sound_effect(8);
                     } else if (state == 0) {
-                        open_galaxy_route(hovered_route_index);
+                        BoxOn(hovered_route_index);
                         g_sound_effect_manager.play_sound_effect(8);
                     }
                 }
@@ -289,7 +289,7 @@ int Galaxy::update_galaxy()
                 && (mouse_flags & INPUT_BUTTON_PRIMARY) != 0
                 && state == 1
                 && g_runtime_config.highest_galaxy_route_index > 1) {
-                close_galaxy_route();
+                BoxOff();
                 g_sound_effect_manager.play_sound_effect(8);
                 return 0;
             }

@@ -36,13 +36,13 @@ void Exit::update_completion_screen()
         break;
 
     case 11:
-        g_game->subgame.galaxy.update_galaxy();
+        g_game->subgame.galaxy.AI();
         button = yes_button;
         flags = button->widget_flags;
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            g_game->subgame.galaxy.destroy_galaxy();
+            g_game->subgame.galaxy.UnInit();
             g_game->subgame.Complete(1);
             if (g_game->players[0].high_score_entry_pending == 1) {
                 previous_frontend_state = g_game->players[0].frontend_state;

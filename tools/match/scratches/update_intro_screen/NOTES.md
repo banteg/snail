@@ -29,3 +29,12 @@ exact 51/51 Windows body and all 11 clean operands.
 `GameRoot::players[0].game_input->input.pressed_buttons`. This resolves both
 root +0x24 and the pointer at root +0x28c without disturbing the exact 51/51
 body or its 11 clean operands.
+
+## 2026-08-09 authored owner promotion
+
+The primary matcher surface is `void cRLogo::AI()`, symbol
+`?AI@cRLogo@@QAEXXZ`; its teardown edge is now written as the authored
+`UnInit()` call. Instruction matching remains exact at 100.00%, 51/51, prefix
+51/51. The shared reference manifest maps the owner-qualified `UnInit`
+relocation to `destroy_intro_screen` at `0x419920`, restoring all 11 references
+clean with no unresolved or mismatched operands.

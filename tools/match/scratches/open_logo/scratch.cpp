@@ -1,4 +1,4 @@
-// open_logo @ 0x419110 (thiscall)
+// cRLogo::Open @ 0x419110 (thiscall)
 
 #include "bod_types.h"
 #include "intro_screen_runtime.h"
@@ -13,7 +13,7 @@ void enumerate_matching_archive_or_fs_entries(
     char* out_names); // @ 0x431740
 int sprintf(char* buffer, char* format, ...);
 
-int Logo::open_logo()
+void cRLogo::Open()
 {
     for (int logo_index = 0;
          logo_index < LOGO_IMAGE_DONOR_CAPACITY;
@@ -44,5 +44,4 @@ int Logo::open_logo()
             name += 0x80;
         } while (index < result);
     }
-    return result;
 }

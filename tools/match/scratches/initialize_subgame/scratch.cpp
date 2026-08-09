@@ -253,7 +253,7 @@ void cRSubGame::Init()
                 }
                 // Native mode 0 continues into the galaxy setup path.
             case 4:
-                galaxy.initialize_galaxy();
+                galaxy.Init();
                 ReSet();
                 return;
             case 1:

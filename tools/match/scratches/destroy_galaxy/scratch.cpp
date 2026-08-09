@@ -5,7 +5,7 @@
 #include "game_root.h"
 
 
-void Galaxy::destroy_galaxy()
+void cRGalaxy::UnInit()
 {
     g_game->border_manager.kill_border(pre_route_borders[1]);
     g_game->border_manager.kill_border(pre_route_borders[2]);

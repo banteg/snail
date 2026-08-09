@@ -171,8 +171,12 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
 
     assert "extern GalaxyPoint g_galaxy_group_points[10];" in matcher_header
     assert "extern GalaxyPoint g_galaxy_route_points[101];" in matcher_header
-    assert "void draw_galaxy_line(" in matcher_header
-    assert "int draw_galaxy_line(" not in matcher_header
+    assert "class cRGalaxyStar" in matcher_header
+    assert "typedef cRGalaxyStar GalaxyStar;" in matcher_header
+    assert "class cRGalaxy" in matcher_header
+    assert "typedef cRGalaxy Galaxy;" in matcher_header
+    assert "void Line(" in matcher_header
+    assert "int AI();" in matcher_header
 
 
 def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() -> None:
@@ -229,15 +233,18 @@ def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() 
     galaxy_header = (
         repo_root / "tools/match/include/galaxy_route_types.h"
     ).read_text(encoding="utf-8")
-    assert "class GalaxyStar" in galaxy_header
+    assert "class cRGalaxyStar" in galaxy_header
+    assert "typedef cRGalaxyStar GalaxyStar;" in galaxy_header
     assert "typedef GalaxyStar GalaxyRouteSlot;" in galaxy_header
+    assert "class cRGalaxy" in galaxy_header
+    assert "typedef cRGalaxy Galaxy;" in galaxy_header
     backdrop_header = (repo_root / "tools/match/include/backdrop.h").read_text(
         encoding="utf-8"
     )
     font_header = (repo_root / "tools/match/include/font_system.h").read_text(
         encoding="utf-8"
     )
-    assert "void draw_galaxy_line(" in galaxy_header
+    assert "void Line(" in galaxy_header
     assert "int update_backdrop();" in backdrop_header
     assert "int draw_split_backdrop();" in backdrop_header
     assert "int queue_axis_aligned_textured_quad(" in font_header
@@ -6501,6 +6508,51 @@ def test_matcher_authored_frontend_pickup_and_row_owners_preserve_analysis_vocab
     assert "typedef struct SubRow {" in path_analysis
 
 
+def test_matcher_fringe_logo_and_galaxy_owners_preserve_analysis_vocabulary() -> None:
+    repo_root = Path(__file__).parents[1]
+    fringe_matcher = (
+        repo_root / "tools/match/include/fringe_object.h"
+    ).read_text(encoding="utf-8")
+    fringe_fwd = (repo_root / "tools/match/include/fringe_fwd.h").read_text(
+        encoding="utf-8"
+    )
+    logo_matcher = (
+        repo_root / "tools/match/include/intro_screen_runtime.h"
+    ).read_text(encoding="utf-8")
+    galaxy_matcher = (
+        repo_root / "tools/match/include/galaxy_route_types.h"
+    ).read_text(encoding="utf-8")
+    path_analysis = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    logo_analysis = (HEADER_DIR / "bn_logo_types.h").read_text(
+        encoding="utf-8"
+    )
+    galaxy_analysis = (HEADER_DIR / "bn_subgame_runtime_types.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRFringe" in fringe_matcher
+    assert "class cRFringeManager" in fringe_matcher
+    assert "typedef cRFringe Fringe;" in fringe_fwd
+    assert "typedef cRFringeManager FringeManager;" in fringe_matcher
+    assert "class cRLogo" in logo_matcher
+    assert "class cRLogoLetter" in logo_matcher
+    assert "typedef cRLogo Logo;" in logo_matcher
+    assert "typedef cRLogoLetter LogoLetter;" in logo_matcher
+    assert "class cRGalaxy" in galaxy_matcher
+    assert "class cRGalaxyStar" in galaxy_matcher
+    assert "typedef cRGalaxy Galaxy;" in galaxy_matcher
+    assert "typedef cRGalaxyStar GalaxyStar;" in galaxy_matcher
+
+    assert "typedef struct Fringe {" in path_analysis
+    assert "typedef struct FringeManager {" in path_analysis
+    assert "typedef struct Logo {" in logo_analysis
+    assert "typedef struct LogoLetter {" in logo_analysis
+    assert "typedef struct Galaxy {" in galaxy_analysis
+    assert "typedef struct GalaxyStar {" in galaxy_analysis
+
+
 def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> None:
     repo_root = Path(__file__).parents[1]
     matcher_header = (repo_root / "tools/match/include/viewport.h").read_text(
@@ -7434,8 +7486,11 @@ def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:
     for address in ("0x408650", "0x434BE0", "0x439B00", "0x447090", "0x4470A0"):
         assert address in ida_sync
 
-    assert "class Fringe : public BodBase" in fringe_header
-    assert "Fringe objects[7000];" in fringe_header
+    assert "class cRFringe : public BodBase" in fringe_header
+    assert "typedef cRFringe Fringe;" in fringe_fwd
+    assert "class cRFringeManager" in fringe_header
+    assert "typedef cRFringeManager FringeManager;" in fringe_header
+    assert "cRFringe objects[7000];" in fringe_header
     assert "FringeObject" not in fringe_fwd
     for canonical_text in (path_sync, ida_sync, path_header):
         assert "FringeObject" not in canonical_text

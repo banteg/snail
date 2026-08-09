@@ -140,9 +140,9 @@ char GameRoot::initialize_game_assets_and_world()
     subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
     ((SubgameOwnerLink*)&subgame.gui)->bind_subgame_owner();
     ((SubgameOwnerLink*)&subgame.thanks_screen)->bind_subgame_owner();
-    subgame.galaxy.load_galaxy_layout();
+    subgame.galaxy.Open();
     subgame.player.cameraman.initialize_cameraman();
-    logo.open_logo();
+    logo.Open();
     g_sound_effect_manager.initialize_sound_bank(g_sound_bank_entries);
     g_voice_manager.initialize_voice_manager();
     options.apply_audio_config_volumes();

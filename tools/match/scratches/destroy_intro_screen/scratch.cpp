@@ -1,4 +1,4 @@
-// destroy_intro_screen @ 0x419920 (thiscall)
+// cRLogo::UnInit @ 0x419920 (thiscall)
 
 #include "game_root.h"
 #include "intro_screen_runtime.h"
@@ -7,7 +7,7 @@
 
 int report_errorf(char* format, ...);
 
-void Logo::destroy_intro_screen()
+void cRLogo::UnInit()
 {
     g_runtime_config.render_flags = saved_render_flags;
 
