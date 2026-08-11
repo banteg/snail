@@ -174,3 +174,20 @@ then setting exactly those two bits is equivalent to the Windows OR and pins
 `SUBLOC_FLAG_SUPPRESS_SALT_SPAWN | SUBLOC_FLAG_SUPPRESS_GARBAGE_SPAWN`, not a
 separate bit. The source-shaped scratch already uses that combined semantic
 name, so no local rewrite or further reload-order experiment is warranted.
+
+## 2026-08-11 VC6 profile closure
+
+The new recovery triage ranked this as a 2.54-byte fuzzy gap with verified
+Android provenance, so the remaining reload-order residual was replayed under
+all locally preserved VC6 game-code profiles. `msvc6.0`, canonical `msvc6.5`,
+`msvc6.5pp`, and `msvc6.6`, each with `/O2 /G5 /W3`, emit the same 99
+instructions, 98.99% score, 79-instruction prefix, and mismatch at candidate
+offset `0xc7`: the saved-row load still precedes the independent cell-cursor
+load.
+
+The three noncanonical probes are recorded in `experiments.jsonl`. This rules
+out the known VC6 service-pack and Processor Pack variants as the source of the
+tie-breaking difference. Combined with the exhausted ordinary source shapes
+and exact cross-port behavior above, the scratch is now explicitly classified
+`RECOVERY=semantic-complete` with `RESIDUAL=compiler`; further source mutation
+would be byte coercion without a new semantic hypothesis.

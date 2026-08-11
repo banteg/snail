@@ -89,7 +89,7 @@ Useful analysis helpers:
 - `uv run snail match triage --state wip --sort unexplored` joins every
   port-relevant manifest function by native address to its best scratch,
   recorded probe/mutation history, and verified Android/iOS mapping. Use
-  `--sort fuzzy-gap` for the nearest byte-proof opportunities; combine
+  `--sort fuzzy-gap` for the largest remaining fuzzy-byte gaps; combine
   `--recovery`, `--residual`, `--mobile`, `--min-bytes`, and `--limit` to
   select a work queue. `--json` exposes the same rows and aggregate exact,
   fuzzy, candidate, recovery, and mobile coverage for automation.
