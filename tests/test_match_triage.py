@@ -118,7 +118,7 @@ def test_triage_joins_by_address_and_surfaces_search_and_mobile_evidence(
         "unique_variants": 18,
         "unique_specs": 3,
         "no_improvement_streak": 3,
-        "flags": ["stalled"],
+        "flags": [],
     }
     monkeypatch.setattr("snail.match.load_image", lambda *_args: image)
     monkeypatch.setattr(
@@ -157,7 +157,7 @@ def test_triage_joins_by_address_and_surfaces_search_and_mobile_evidence(
         unique_variants=18,
         unique_specs=3,
         no_improvement_streak=3,
-        flags=("stalled",),
+        flags=(),
     )
     assert foo.mobile == TriageMobileEvidence(
         status="verified",
@@ -171,7 +171,9 @@ def test_triage_joins_by_address_and_surfaces_search_and_mobile_evidence(
     assert bar.target_size == 16
 
 
-def test_exact_status_overrides_configured_recovery_and_residuals(tmp_path: Path) -> None:
+def test_exact_status_overrides_configured_recovery_and_residuals(
+    tmp_path: Path,
+) -> None:
     status = _status(_config(tmp_path), ratio=1.0)
 
     payload = scratch_status_payload(status)
@@ -200,7 +202,7 @@ def test_triage_cli_filters_and_emits_json(
             records=3,
             unique_variants=10,
             no_improvement_streak=3,
-            flags=("stalled",),
+            flags=(),
         ),
         mobile=TriageMobileEvidence(
             status="verified",
@@ -208,9 +210,15 @@ def test_triage_cli_filters_and_emits_json(
             confidence="high",
         ),
     )
-    monkeypatch.setattr("snail.cli.load_function_symbol_manifest", lambda *_args: _manifest())
-    monkeypatch.setattr("snail.cli.collect_scratch_statuses", lambda *_args, **_kwargs: [status])
-    monkeypatch.setattr("snail.cli.collect_triage_rows", lambda *_args, **_kwargs: [row])
+    monkeypatch.setattr(
+        "snail.cli.load_function_symbol_manifest", lambda *_args: _manifest()
+    )
+    monkeypatch.setattr(
+        "snail.cli.collect_scratch_statuses", lambda *_args, **_kwargs: [status]
+    )
+    monkeypatch.setattr(
+        "snail.cli.collect_triage_rows", lambda *_args, **_kwargs: [row]
+    )
     monkeypatch.setattr("snail.cli.load_json", lambda *_args: {"entries": []})
 
     exit_code = main(
@@ -236,5 +244,5 @@ def test_triage_cli_filters_and_emits_json(
     assert payload["summary"]["row_count"] == 1
     assert payload["rows"][0]["function"] == "foo"
     assert payload["rows"][0]["recovery"] == "semantic-complete"
-    assert payload["rows"][0]["experiments"]["flags"] == ["stalled"]
+    assert payload["rows"][0]["experiments"]["flags"] == []
     assert payload["rows"][0]["mobile"]["verified"] is True

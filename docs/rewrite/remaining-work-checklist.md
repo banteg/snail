@@ -354,20 +354,20 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ## Decompile Targets By Priority
 
-Every score-residual/non-proof scratch ledger remains formally stalled. Do not
-restart a fuzzy-score sweep without a new producer, consumer, field xref, or
-original-source clue. The next work is authored-owner promotion over exact
-core leaves, in this evidence order:
+Experiment ledgers are search history, not closure. Reopen a score-residual or
+non-proof scratch whenever the native/mobile evidence or an untested plausible
+source shape warrants it; a run count alone is not a stopping condition. Use
+authored-owner promotion over exact core leaves as one evidence-rich queue:
 
 1. Promote primary `cRFringe` / `cRFringeManager` across the exact constructor,
    callback AI, manager `Init`, and `GetFringe` leaves. The Windows pool is
-   exactly `7000 * 0x38` plus its count. Keep `build_track_fringe_objects`, both
-   fringe-mesh builders, and tile promotion frozen at their bounded partial
-   frontiers.
+   exactly `7000 * 0x38` plus its count. Treat `build_track_fringe_objects`, both
+   fringe-mesh builders, and tile promotion as honest partials, and use the exact
+   leaves as controls when revisiting them.
 2. Promote primary `cRLogo` / `cRLogoLetter` across the exact child constructor,
    `Open`, `UnInit`, parent `AI`, and child `AI` leaves. Integrate the authored
-   `cRLogo::Init(char*)` name without reopening its frozen `88.89%`, `523/521`,
-   prefix-`88` residual.
+   `cRLogo::Init(char*)` name while keeping its current `88.89%`, `523/521`,
+   prefix-`88` residual visible for later source-shape review.
 3. Promote primary `cRGalaxy` / `cRGalaxyStar` across the seven exact lifecycle,
    route-box, line, child-AI, and border-bound leaves. Keep the layout loader at
    `88.27%` and the outer AI at `71.01%`; this is owner routing, not another
@@ -390,7 +390,8 @@ random-hazard suppression, `active_window_min_z`, the live firing input chain,
 health-particle ownership, and write-only SpriteExtend state are closed. The
 hotspot/cutscene spill, attachment-exit clears, follow update, outer replay
 bridge, fringe receiver swaps, Golb allocator schedules, and collision stack
-coloring are bounded compiler residuals. Sprite `+0x20/+0x24` is dormant ABI
+coloring remain documented partials; compiler-residual attribution is a
+hypothesis until independently revalidated. Sprite `+0x20/+0x24` is dormant ABI
 documentation debt: every Windows allocator call passes `-1/-1` and no shipped
 renderer consumes it, so do not invent semantics or mutate exact Sprite code.
 

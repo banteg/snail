@@ -133,9 +133,9 @@ Useful analysis helpers:
   `experiments.jsonl` ledgers created by recorded probes and mutation sweeps.
   It reports improving/neutral/degrading variants, repeated source/compiler
   combinations and specs, metric tradeoffs, exact winners, and each scratch's
-  trailing no-improvement streak. Three consecutive non-improving mutation
-  sweeps flag a scratch as `stalled`, making it easier to stop repeating an
-  exhausted source-shape hypothesis. Use `--sort no-improvement`,
+  trailing no-improvement streak. The streak is descriptive history, not a
+  stopping rule: no number of recorded sweeps closes or reclassifies a scratch.
+  Use `--sort no-improvement` to review prior search before choosing new work,
   repeat `--scratch <name>` to restrict the report, or run
   `uv run snail match experiments --check --check-specs` for repository-wide
   validation. `--check` rejects malformed ledger records. `--check-specs`
@@ -145,6 +145,8 @@ Useful analysis helpers:
   `scratch.cpp`. Run the combined gate after changing scratch sources or
   mutation plans, and before committing matcher slices that rename owners or
   otherwise rewrite source anchors.
+  Historical scratch notes that call a lane `stalled`, `exhausted`, or
+  `frozen` record an earlier search judgment only; they do not close the lane.
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image
@@ -262,7 +264,9 @@ ignored. For a reviewed non-exact scratch, set
 `RECOVERY=incomplete|semantic-complete`; exact matches report `exact`
 automatically. Set `RESIDUAL` to a comma-separated subset of
 `analysis,compiler,references` so behavioral recovery remains distinct from
-source-shape, toolchain, and masked-reference debt.
+source-shape, toolchain, and masked-reference debt. Recovery metadata is a
+manual evidence-review result, never an inference from experiment count, and
+must not be used as a stopping rule for a non-exact scratch.
 
 ## No fakematching
 

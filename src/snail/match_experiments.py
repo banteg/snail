@@ -173,9 +173,7 @@ def audit_mutation_specs(
             spec = match_mutation.load_mutation_spec(path)
             source_text = source_cache.get(scratch)
             if source_text is None:
-                source_text = (scratch / "scratch.cpp").read_text(
-                    encoding="utf-8"
-                )
+                source_text = (scratch / "scratch.cpp").read_text(encoding="utf-8")
                 source_cache[scratch] = source_text
             match_mutation.generate_mutation_variants(
                 source_text,
@@ -485,8 +483,6 @@ def summarize_experiment_log(
         flags.append("repeated-variants")
     if repeated_spec_runs:
         flags.append("repeated-specs")
-    if no_improvement_streak >= 3:
-        flags.append("stalled")
     if tradeoff_variants:
         flags.append("metric-tradeoffs")
     if dependency_receipts["stale"]:
@@ -595,7 +591,6 @@ def summarize_experiments(
             "improving_sweeps": sum(int(row["improving_sweeps"]) for row in rows),
             "improving_probes": sum(int(row["improving_probes"]) for row in rows),
             "exact_winners": sum(int(row["exact_winners"]) for row in rows),
-            "stalled_scratches": sum("stalled" in row["flags"] for row in rows),
             "dependency_receipts": {
                 state: sum(int(row["dependency_receipts"][state]) for row in rows)
                 for state in ("historical", "current", "stale", "invalid")
@@ -669,7 +664,6 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
         f"tradeoffs={summary['tradeoff_variants']} "
         f"sweep-wins={summary['improving_sweeps']} "
         f"exact={summary['exact_winners']} "
-        f"stalled={summary['stalled_scratches']} "
         f"deps-h/c/s/i="
         + "/".join(
             str(summary["dependency_receipts"][state])

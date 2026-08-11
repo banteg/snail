@@ -107,7 +107,7 @@ def _write_mutation_spec(path: Path, *, find: str) -> None:
     )
 
 
-def test_experiment_summary_surfaces_repeats_stalls_and_tradeoffs(
+def test_experiment_summary_surfaces_repeats_and_tradeoffs(
     tmp_path: Path,
 ) -> None:
     log = tmp_path / "scratches" / "foo" / "experiments.jsonl"
@@ -151,7 +151,6 @@ def test_experiment_summary_surfaces_repeats_stalls_and_tradeoffs(
         "improving_sweeps": 1,
         "improving_probes": 1,
         "exact_winners": 1,
-        "stalled_scratches": 0,
         "dependency_receipts": {
             "historical": 4,
             "current": 0,
@@ -292,11 +291,11 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
     capsys.readouterr()
 
 
-def test_experiment_summary_check_rejects_malformed_logs(
+def test_experiment_summary_keeps_non_improvement_descriptive(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    log = tmp_path / "scratches" / "stalled" / "experiments.jsonl"
+    log = tmp_path / "scratches" / "non-improving" / "experiments.jsonl"
     _write_jsonl(
         log,
         [
@@ -327,9 +326,9 @@ def test_experiment_summary_check_rejects_malformed_logs(
     captured = capsys.readouterr()
     assert captured.err == ""
     payload = json.loads(captured.out)
-    assert payload["summary"]["stalled_scratches"] == 1
     assert payload["summary"]["errors"] == 1
-    assert payload["rows"][0]["flags"] == ["stalled", "malformed"]
+    assert payload["rows"][0]["no_improvement_streak"] == 3
+    assert payload["rows"][0]["flags"] == ["malformed"]
 
 
 def test_experiment_spec_check_ignores_historical_and_rejects_stale_active(
