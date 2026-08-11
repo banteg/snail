@@ -47,7 +47,10 @@ def test_default_function_symbol_manifest_loads() -> None:
     assert summary["mobile_candidate_rejection_count"] >= 1
     assert summary["address_range"]["start"] == f"0x{min_address:x}"
     by_name = {function.name: function for function in manifest.functions}
-    assert by_name["update_intro_logo_renderable"].aliases == ("update_logo_row",)
+    assert by_name["update_intro_logo_renderable"].aliases == (
+        "update_logo_row",
+        "cRLogoLetter_AI",
+    )
     assert by_name["initialize_translation_matrix"].port_scope == "third-party"
     assert by_name["game_window_proc"].port_scope == "replaceable-platform"
     game_init = by_name["initialize_game_assets_and_world"]
