@@ -172,3 +172,15 @@ at **99.16%** (`119/119`, prefix 28, one clean reference). The only difference
 remains the independent `bounding_radius = 0` store on opposite sides of the
 counter spill/min-z completion/count test. Further work needs original compiler
 provenance, not another zero chain, integer width, or aggregate owner spelling.
+
+## 2026-08-11 aliasing-profile proof
+
+The residual was a compiler-mode difference, not a missing source dependency.
+VC6's `/Ow` cross-function-aliasing mode keeps the independent
+`bounding_radius` store ahead of the count test. The retained source then
+matches exactly: **100%**, `119/119` instructions, prefix `119`, and one clean
+masked reference.
+
+The result reproduces with the RTM, SP3, and canonical VC6 backends, isolating
+the change to `/Ow`; no source scheduling dependency or volatile fake-match is
+needed. `scratch.conf` now records that function's proved compiler mode.
