@@ -256,9 +256,8 @@ spill, container-of view, or platform offset is retained.
 
 Five additional mutation sweeps extend the ledger to 22 unique variants. No
 variant improves the 502/617 fuzzy-byte baseline: six are byte-neutral and 16
-regress. Three consecutive non-improving sweeps now mark this scratch stalled,
-with no compile failures or repeated source/compiler variants. Focused Wibo
-therefore remains 81.40%, 173 candidate instructions versus 171 target
+regress. That history records the explored source shapes but is not a stop
+condition. Focused Wibo remains 81.40%, 173 candidate instructions versus 171 target
 instructions, with 33 clean operands and the same two unaudited row-base
 references.
 
@@ -284,3 +283,18 @@ Finally, moving the later EDI-owned `placed` declaration before the row scan,
 including a `register` spelling, is byte-neutral in three orderings and
 regresses in the fourth. This rules out a simple old-C declaration-order cause
 for the scan's extra parcel-set load.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. Both verified mobile bodies and the live
+Windows decompile agree on the `cRSubGame` owner, quota calculation, zero-bank
+count-lane reset, global survival-row bank, candidate collection and
+compaction, row flag/position updates, and the final kind-42 or ordinary Path
+projection. The Windows decompile also retains every borrowed owner through
+the projection tail.
+
+The remaining two instructions and two unaudited row-base references arise
+from the typed candidate-row cursor and the compiler's source-cell spill. They
+do not leave a behavior or storage owner unresolved. This classification is
+based on the complete owner graph and cross-port agreement, not on the prior
+experiment streak.

@@ -175,3 +175,18 @@ native `jl` versus candidate `jge` plus `jmp` is therefore bounded to VC6 cold
 return-block placement. Previously rejected found-label, break, `for`, `while`,
 raw-offset, and shared-flipped-V forms were not repeated, and no control-flow
 or lifetime nudge is retained.
+
+## 2026-08-12 recovery classification
+
+Fresh Windows matching and live Binary Ninja readback retain the borrowed
+`Object`, source vertex, dynamic/static de-duplication keys, vertex-colour
+policy, builder-owned grouped-vertex workspace, append cursor, and complete
+seven-dword output record. All 18 references are clean. Android's authored
+`AddVertexUV` independently confirms the helper boundary and borrowed
+search-or-append lifecycle; the wider Windows record fields remain directly
+proved by its native stores and sole builder caller.
+
+The 128/127-instruction difference is the one cold found-return block jump
+visible in both Windows decompilers. It does not hide another owner or behavior
+path. Recovery is `semantic-complete` with compiler residue; the prior sweep
+count is not part of this decision.

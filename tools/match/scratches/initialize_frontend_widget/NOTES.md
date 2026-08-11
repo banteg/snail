@@ -207,6 +207,23 @@ Five declaration-order permutations are byte-identical and cannot pin the
 two physical slots. Replacing the early receiver with either an anonymous
 compiler temporary or a one-statement scoped object produces the same 96.74%
 global shift. No exact or metric-tradeoff result exists, and the three
-post-improvement sweeps are non-improving, so this scratch is stalled at the
-retained 99.53%, 429/429, 50-reference result. No array overlay, volatile
+post-improvement sweeps are non-improving. The retained result is 99.53%,
+429/429, with 50 clean references. No array overlay, volatile
 barrier, or other explicit stack-slot shaping is introduced.
+
+The sweep history above records the temporary-slot experiments; it is not a
+completion or stop rule.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and both mobile
+`cRBorder::Init` bodies establish the complete widget owner, list insertion,
+tooltip and flag state, all four style presets, text and layout state,
+highlighting, and the three owned slider children. The Windows-specific
+backing record and all 429 native instructions are represented, with all 50
+references clean.
+
+The only two differing instructions exchange anonymous `tColour` temporary
+stack slots. That is compiler allocation with no observable semantic or
+ownership effect, so the residual is classified as compiler-only regardless
+of the number of previous variants.

@@ -355,8 +355,8 @@ variants. Four mobile-derived index/count forms were neutral or worse; a
 named receiver spanning the cache and Player tail was neutral; and nine
 countdown declaration/initialization forms all reproduced the prior 70.58%
 allocation. The ledger records one better, six neutral, and twelve worse
-variants with no repeats or tradeoffs. Three consecutive non-improving sweeps
-mark the region stalled.
+variants with no repeats or tradeoffs. That history is descriptive evidence,
+not a stop condition.
 
 Native still assigns the cell cursor to EDI and the eight-cell countdown to
 EBX, then reloads `this` into EBX after the cache call. The candidate assigns
@@ -364,3 +364,17 @@ the cell cursor to EBX and the row-end pointer to EDI, then uses EBX for a
 hoisted `0x200` linked flag. Further work requires new evidence about that
 opening lifetime; byte casts, register forcing, padding, and dummy locals are
 not acceptable substitutes.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. Both verified mobile bodies, the typed
+Windows decompile, and the 70/0/0/0 reference audit agree on the full teardown
+owner graph: runtime rows and cells, render cache, pickups and hazards, Player
+presentation channels, projectile bank, ClickStart, and sprite-manager purge.
+Every state transition remains scoped to its native lifecycle guard.
+
+The remaining 71.77% delta starts with the compiler's opening EDI/EBX cursor
+allocation and propagates through equivalent intrusive-list unlink scheduling.
+It does not identify an unrepresented owner or behavior. This classification
+rests on the native and cross-port evidence above; the historical experiment
+count neither establishes nor limits completeness.

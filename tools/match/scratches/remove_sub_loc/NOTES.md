@@ -251,3 +251,16 @@ source shape for this local schedule. The honest result remains 91.19%,
 130/131 instructions, prefix 87/131, with 17 clean references and the two
 unpaired `g_game` operands inside this divergent region. Do not force the
 reload with `volatile`, a fake alias, or a dummy clobber.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. Android verifies the authored
+`cRSubLoc::Remove()` lifecycle, and the live Windows decompile retains the
+complete owner graph for the runtime-row attachment body, the cell's inherited
+active-list node, the shared `GameRoot::active_bod_list`, and all four owned
+fringe pointers. The current reference audit is fully clean at 18/0/0/0.
+
+The remaining 91.19% delta is one Windows-only fringe flag reload and its
+associated compiler common-subexpression/register schedule. It does not imply
+a missing owner or teardown step, and no experiment-count rule is used to
+classify it.

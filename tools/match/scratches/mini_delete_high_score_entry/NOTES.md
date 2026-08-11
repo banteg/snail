@@ -110,5 +110,20 @@ spellings are byte-identical and the other fifteen regress. The most literal
 decompiler-shaped typed cursor does recover the native `+0x17c108` source
 displacement, but repeats the known 81.82% register schedule; typed destination
 indexing and alternate loop control fall much farther. The ledger now marks
-this target stalled. Keep the byte post-increment scratch until new Windows
-source/type evidence explains the native independent EAX/EBX cursor schedule.
+the explored variants; it does not impose a stop condition. Keep the byte
+post-increment scratch unless new Windows source/type evidence explains the
+native independent EAX/EBX cursor schedule.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile retains the
+typed `SubHighScore` receiver, borrowed active bank, aliased survival source,
+row and byte-offset cursors, full-record copy, and rewritten rank. All 33
+native instructions are represented. Android and iOS independently verify the
+authored `cRSubHighScore::MiniDelete(int)` owner while documenting their
+intentional, platform-specific storage behavior.
+
+The remaining 84.85% delta is the compiler's choice of independent source and
+destination address registers around `rep movsd`; it does not conceal a
+Windows behavior or owner. This conclusion follows from the native body and
+cross-port ownership evidence, not the number of historical probes.

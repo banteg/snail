@@ -183,11 +183,10 @@ No matcher source changed. The focused result remains honestly at 67.50%,
 
 ## 2026-07-29 current-cell induction boundary
 
-Three recorded mutation sweeps now bound the remaining current-cell and
+Three recorded mutation sweeps document the remaining current-cell and
 continuation-cleanup source shapes. They evaluate 31 variants (29 unique):
 zero improve the retained source, seven are byte-identical, and 24 regress.
-The ledger therefore marks this scratch stalled after three consecutive
-non-improving sweeps.
+This history is evidence about those spellings, not a stop condition.
 
 The first sweep replays the native slide owner as a `lane_and_flags` cursor.
 That does recover the native `mov edi, ebx` induction base, but still preserves
@@ -248,3 +247,17 @@ combination. The retained source SHA-256 is
 `7118dc2bffc93af621f2d8b592aafc71f1805e6d8d22b0201173d16c54f6cd03`;
 focused matching remains **67.50%**, `284/276` instructions, prefix `0/276`,
 with 12 clean and no unresolved, mismatched, or unaudited references.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and both mobile
+implementations agree on the `cRSubGame::CondenseTrack()` owner, the opening
+AI/uncached seed, floor/slide/wall run predicates, wider root-catalog objects,
+backward continuation cleanup, empty/ring fallback, merged-width publication,
+and row-suppression lifecycle. Producer and consumer xrefs also close the
+meaning of every participating flag lane.
+
+All 12 references are clean. The 67.50% residual is the compiler's extra
+current-cell induction variable, stack-slot allocation, and byte-versus-dword
+store scheduling; it does not leave a branch, flag, or storage owner missing.
+This conclusion is independent of the historical sweep count.

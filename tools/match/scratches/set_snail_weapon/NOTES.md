@@ -124,7 +124,7 @@ The Android and iOS bodies still independently confirm the state map, all three
 ordinary changed-state guards, channel order, and shared sound tail. Focused
 Windows remains 73.02% (`245/248`) with all 23 runtime references clean. The
 sole masked mismatch is still the candidate's compiler-local jump-table label;
-the three-sweep no-improvement streak is therefore treated as a bounded VC6
+the native/candidate comparison identifies it as a bounded VC6
 register-allocation and private-label residual, not a semantic mismatch.
 
 ## 2026-07-30 translated jump-table proof
@@ -140,3 +140,17 @@ The seven movement-dispatch entries are exactly such a table: native offsets
 `38, 52, 69, 82, 109, 95, 126`, uniformly translated by two bytes. The retained
 source stays at 73.02% (`245/248`), but the former private-label mismatch is now
 content-proved. All 24 masked operands are audited and clean.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and both mobile
+bodies agree on the authored `cRSnail::SetWeapon(int)` owner, the complete
+shoot-flag map, three embedded `Weapon` channels, outgoing and incoming
+animation modes, selected-state publication, and sound-25 policy. The
+deliberately undefined channel-2 default is also preserved rather than filled
+with an invented value.
+
+All 24 references are clean. The 73.02% residual is the compiler's rotation of
+three target states, receiver, and transition-flag lifetimes across equivalent
+channel blocks; it does not represent missing behavior or ownership. Probe
+counts play no role in this classification.

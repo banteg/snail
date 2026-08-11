@@ -103,3 +103,17 @@ instructions, prefix `5`, with twelve clean references and the duplicated call
 left unaudited. The four-instruction excess is bounded to VC6's native
 cross-format `sprintf` tail sharing. No label, synthetic dispatcher, or other
 control-flow scaffolding is retained to force that optimizer layout.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows switch and both verified
+mobile symbols agree on the `cRSubTracks::Load(int, int)` owner. Every Windows
+mode, filename, boundary case, and the intentional fallthrough to
+`load_level_definition_file` is represented, including the native undefined
+buffer contents for unsupported inputs.
+
+The remaining four candidate instructions and one unaudited `sprintf` call are
+caused by native cross-case tail sharing that the clean source does not
+reproduce. This is compiler/reference layout, not an omitted mode, filename,
+or receiver relationship, and its classification does not depend on the prior
+probe count.

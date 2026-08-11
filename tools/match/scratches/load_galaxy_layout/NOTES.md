@@ -268,7 +268,23 @@ The matcher now emits the Windows bootstrap as the no-argument
 the void thiscall receiver and sole Windows call at `0x40aef7` from root asset
 initialization. Android and iOS retain the encompassing authored member as
 `cRGalaxy::Open(int)` in `Galaxy.o`; their extra port selector does not alter
-the Windows ABI. This naming-only promotion keeps the frozen frontier at
+the Windows ABI. This naming-only promotion keeps the current result at
 88.27%, 236/233 instructions, prefix 62/233, with all 42 operands clean. The
-formally stalled mutation plans and their historical receipts remain
+recorded mutation plans and their historical receipts remain
 byte-identical rather than being reactivated for owner spelling.
+
+## 2026-08-12 recovery classification
+
+The current canonical match, both verified mobile `cRGalaxy::Open(int)`
+bodies, and live Binary Ninja readback close the authored Windows bootstrap.
+The `Galaxy` receiver, two complete point banks, their interior y-lane cursors,
+borrowed `cRSubGame` backlink, archive text, route-name records, route slots,
+parser exits, and route-zero finalization are all represented. The focused
+audit has 42 clean references with no unresolved, mismatched, or unaudited
+operand.
+
+The 236/233-instruction residual begins at the marker result compare/spill and
+continues through register and terminal-block allocation choices already
+bounded by worse source-real alternatives. It does not imply a missing field,
+owner, or control-flow lane. Recovery is therefore `semantic-complete` with
+compiler residue.

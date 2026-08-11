@@ -89,7 +89,7 @@ Signed and unsigned 32-bit selected-index spellings are likewise neutral. The
 import a Windows typedef header; it contributes no match result. Across the 25
 compilable variants, none improve: 20 are byte-identical and 5 regress.
 
-The experiment ledger therefore formally stalls this lane at **76.19%**
+The experiment ledger records this lane at **76.19%**
 (`41/43`, prefix 0, six clean references). Both unaudited operands are the same
 jump-table relationship displaced by the opening register schedule: native
 indexes it through `eax`, while the candidate indexes its candidate-local table
@@ -114,6 +114,20 @@ Here the `eax` and `edi` dispatches both remain at `+0xd`, but the table is
 correctly rejected. Five entries are identical; native's default entry lands
 at `+0x45` to reload the parameter into `edi`, while the candidate entry lands
 at `+0x43` because that value is already live. The former two one-sided entries
-are now one explicit jump-table mismatch. Source, score, and the formally
-stalled lifetime boundary remain unchanged at 76.19%, 41/43 instructions, and
+are now one explicit jump-table mismatch. Source, score, and the measured
+lifetime boundary remain unchanged at 76.19%, 41/43 instructions, and
 prefix 0/43.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and both
+verified mobile bodies agree on the `cRTrack::Change(int)` owner, selector
+dispatch, random-selection case, current-set guard, texture replacement, and
+state update. The Windows-specific four-bank layout and selector value remain
+grounded in its native body rather than borrowed from the seven-bank ports.
+
+The sole reference mismatch is the local jump table's default destination:
+native reloads the parameter after dispatch, while VC6 coalesces the same value
+into the switch register in the candidate. That is a compiler/reference-layout
+residual, not a missing case or owner. The prior sweep count is not used as a
+completion rule.

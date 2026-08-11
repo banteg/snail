@@ -172,7 +172,20 @@ family and regress to 69.88%. Together with the earlier expression and loop
 exit sweeps, the ledger now contains 36 unique variants across three
 non-improving sweeps and two evidence probes, with no repeats or errors.
 
-This target is therefore formally stalled at 95.78%, 199/204 instructions,
+The native/candidate comparison remains at 95.78%, 199/204 instructions,
 prefix 16, and 47 clean operands. The remaining five-instruction delta is
 bounded to compiler scheduling and tail duplication; forcing it would not
-recover additional behavior, ownership, ABI, or data layout.
+recover additional behavior, ownership, ABI, or data layout. The historical
+experiment count is not a stop condition.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile, caller gates,
+and both mobile `cRPath::Search` bodies close the reverse sample scan, local
+space bounds, swept hit test, embedded `cRPathFollowGoldy` handoff, Player
+velocity/Squidge state, source cell, installed row heading, and final follow
+update. The Windows split ABI and every embedded offset remain native-derived.
+
+All 47 references are clean. The sole arithmetic delta is a commuted x87
+addition, and the five missing candidate instructions are a duplicated native
+miss epilogue. These are compiler residuals, not omitted behavior or ownership.

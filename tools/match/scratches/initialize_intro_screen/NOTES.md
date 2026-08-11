@@ -209,3 +209,18 @@ the existing `LogoLetter` compatibility spellings inside the frozen body are
 retained so all three historical mutation anchors remain byte-identical. No
 shape search was reopened. Focused matching is unchanged at **88.89%**,
 `523/521`, prefix `88/521`, with all 66 references clean.
+
+## 2026-08-12 recovery classification
+
+The current Windows match, verified Android/iOS `cRLogo::Init(char*)` bodies,
+and live Binary Ninja readback account for the complete lifecycle: root scene
+setup, script ownership, text/image parsing, separate image-donor and glyph
+construction paths, active-list insertion, object/vertex ownership, duration
+scaling, the sequential `LogoLetter` velocity pass, and the final free. The
+`Logo` receiver and all 66 audited references are clean in the current
+artifacts.
+
+The two excess candidate instructions are the already-isolated parser argument
+cleanup and final script-buffer reload. They are allocator residue, not missing
+authored behavior or ownership. Recovery is `semantic-complete` with compiler
+residue.

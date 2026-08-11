@@ -282,7 +282,7 @@ borrowed `this` owners are byte-neutral; root/subgame locals lose one or
 fifteen bytes. Four function-scope `family` lifetimes are also neutral.
 
 Across 24 unique variants, none improve, seven are byte-identical, and
-seventeen regress. The experiment ledger formally stalls this lane at 60.39%,
+seventeen regress. The experiment ledger records this lane at 60.39%,
 492/495 instructions, prefix 3/495, with 49 clean references and four
 target-only singleton loads. No global receiver or register-shaped family
 lifetime is retained merely to reduce the audit count.
@@ -290,7 +290,7 @@ lifetime is retained merely to reduce the audit count.
 ## 2026-08-09 full-image consumer closure
 
 The native xref graph closes the topology-to-cache handoff without reopening
-the stalled receiver lane:
+the previously measured receiver schedule:
 
 - `BuildLevel()` clears `cRSubLoc::open_edge_mask @ +0x3d` at `0x436133`;
   `select_track_tile_edge_variants @ 0x435a80` is its sole non-reset topology
@@ -344,3 +344,20 @@ documents the transient slot handoff. This is semantic-only: focused matching
 remains at the honest 60.39%, 492/495 instructions, prefix 3, with 49 clean
 and four unaudited singleton-load references. No receiver, register, or cursor
 variant was retried.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete despite the low byte score. The live Windows
+decompile and both verified mobile bodies close the whole topology-to-cache
+contract: runtime row/cell traversal, edge and tile classification, all four
+neighbor tests, pooled `Fringe` allocation, root-catalog selection, position
+and skirt-color copies, suppression, and transient cell handles. Producer and
+consumer xrefs independently establish the row flags, edge mask, tile id,
+manager ownership, and cache handoff.
+
+The four unaudited references are the native singleton reloads used only to
+call `GetSkirtColour`; the candidate invokes the identical subgame owner
+through its already-live receiver. The rest of the 60.39% delta is a repeated
+saved-register and temporary-lifetime permutation across four equivalent
+direction blocks. These are compiler/reference-layout residuals, not missing
+decompilation, and no experiment streak is used as a completion criterion.

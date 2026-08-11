@@ -558,6 +558,22 @@ mismatched, and zero unaudited. The residual is stack-slot coloring plus the
 already-documented final projection evaluation order. No volatile barrier,
 synthetic dependency, stack padding, or register forcing is present.
 
+## 2026-08-12 recovery classification
+
+A fresh canonical match, both verified mobile bodies, and live Binary Ninja
+readback agree that every authored lane is represented: mode dispatch, both
+global scratch-bank constructors and scans, per-segment set accounting, the two
+claim/compaction loops, quota correction, runtime-row ownership, and both final
+attachment projection paths. The live database retains the `cRSubGame`
+receiver, field-first segment scan, borrowed candidate cursors, three owned-row
+anchors, and sequential `SubRow` projection cursor. All 98 references remain
+clean, with no unresolved, mismatched, or unaudited operand.
+
+The 637/639-instruction candidate still differs in stack-slot coloring and the
+evaluation order of the final projection arguments, but those differences do
+not hide a behavior or ownership lane. Recovery is therefore
+`semantic-complete` with compiler residue; no source-shape coercion is justified.
+
 ## Bounded receiver/segment stack coloring (2026-07-30)
 
 The dominant remaining catalog-and-claim diff swaps two long-lived stack
@@ -578,8 +594,8 @@ interference order:
 
 Across 14 unique variants, ten compiled byte-identically and four incomplete
 interactions failed to compile; none improved or regressed a valid build. The
-ledger therefore has three consecutive non-improving sweeps and marks this
-scratch stalled at 87.77%, 637/639 instructions, with all 98 references clean.
+ledger records those shapes at 87.77%, 637/639 instructions, with all 98
+references clean; the sweep streak is not a stop condition.
 Retain the natural scoped source. Recovering the slot permutation would now
 require artificial lifetime or stack forcing rather than additional ownership
 evidence.

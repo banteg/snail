@@ -137,3 +137,17 @@ The short verified `OSDPrintUV` sibling emits the sequential tail naturally
 from the same direct field assignments, so no missing queue field or invented
 setter is justified here. The long overload remains at its honest frontier
 without a barrier, volatile carrier, fake helper, or ABI distortion.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and both mobile
+symbols agree on the full long `OSDPrintUV` ABI, including the two unused float
+slots. The Windows body accounts for the queue gate and limit, every corner,
+UV, color, blend, rotation, texture, flag, width/height, count-publication, and
+incidental queue-offset result. All 69 native instructions and all 24
+references are represented.
+
+The remaining 89.86% delta is only aggregate-color/count publication and
+argument-load scheduling. It does not leave a queue field, formal, or caller
+contract unresolved, and the historical mutation count is not used to decide
+completeness.

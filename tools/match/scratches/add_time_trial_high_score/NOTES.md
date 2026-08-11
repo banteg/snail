@@ -131,7 +131,22 @@ remaining region:
 None improves the 89.80%, 49/49 baseline: nine compile identically and nine
 regress. In particular, the ordinary early-return and named-new-time forms are
 neutral, while every persistent pointer owner falls back to the older
-84.85%/83.67% schedules or worse. The experiment ledger therefore marks this
-target stalled. A future retry needs new source provenance or a compiler/TU
+84.85%/83.67% schedules or worse. The experiment ledger records those source
+shapes. A future retry needs new source provenance or a compiler/TU
 relationship that explains destructive owner-base mutation; more equivalent
 pointer or offset spellings are not useful.
+
+## 2026-08-12 recovery classification
+
+The focused match is instruction-count exact at 49/49, its only audited
+reference is clean, and the current Binary Ninja/IDA outputs retain the
+`SubHighScore`, working `SubSolution`, current-result record, and selected
+time-trial route-record cursor owners. Android and iOS independently confirm
+the route/active contract, zero-on-inactive behavior, and replace-only-if-better
+or-empty policy.
+
+The remaining native `add ebp, ecx` versus candidate folded indexed address is
+only an equivalent owner-base materialization choice; it does not conceal a
+record field or branch. Recovery is `semantic-complete` with compiler residue.
+The historical mutation ledger remains evidence about that residue, not a stop
+condition for future ownership work.

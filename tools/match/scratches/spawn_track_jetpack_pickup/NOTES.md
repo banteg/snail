@@ -236,6 +236,20 @@ The ledger now contains 36 evaluations (31 unique), with 3 better, 17 neutral,
 and 16 worse variants, one earlier sweep win, three trailing non-improving
 sweeps, and no compile errors. Five repeated variants are the intentional
 overlap between the earlier lane-only sweep and the scan/lane interaction
-matrix. The scratch is therefore formally stalled on this backend register
-schedule. No volatile local, fake global, or dummy use is justified, and the
+matrix. That history documents this backend register schedule but does not
+define a stopping rule. No volatile local, fake global, or dummy use is justified, and the
 stronger bounded-singleton source remains unchanged.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and both mobile
+bodies establish the `cRSubGame::AddJetPack` owner, singleton availability,
+embedded `JetPack` lifecycle, source cell and lane-neighbor correction, active
+BOD membership, sprite allocation and initialization, position handoff, and
+bob-phase parity. All nine references are clean.
+
+The three extra candidate instructions are confined to materializing wall tile
+14 twice instead of keeping it once in `cl`; the later bob-tail difference is
+equivalent floating-point scheduling. Neither hides a field, branch, or owner.
+The completion judgment follows the native/mobile contract, not the old
+experiment streak.
