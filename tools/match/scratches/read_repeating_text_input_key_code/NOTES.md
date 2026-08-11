@@ -161,3 +161,16 @@ then global-code fold order, but neither source family reproduces the Windows
 DL lifetime. The retained byte-shaped comparison therefore remains the best
 whole-function transcription; no volatile barrier, fake dependency, helper
 inline, or global-state mutation is introduced to force the last schedule.
+
+## 2026-08-11 VC6 profile boundary
+
+The canonical `msvc6.5` build remains the proof-bearing `99.32%`,
+`440/440`-instruction result with prefix 408 and all 74 references clean.
+Profile probes recorded in `experiments.jsonl` reproduce that exact residual
+under `msvc6.0` and `msvc6.6`; `msvc6.5pp` regresses to `97.61%`, 439
+instructions, and prefix 386 while retaining the same clean references.
+
+The 44 exhausted source forms and independent Android/iOS control-flow
+confirmation leave no semantic ambiguity. This scratch is classified
+`RECOVERY=semantic-complete` with `RESIDUAL=compiler`; the remaining fold-call
+schedule is not forced with an artificial dependency.
