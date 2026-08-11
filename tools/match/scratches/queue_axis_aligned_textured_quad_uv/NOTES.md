@@ -126,3 +126,23 @@ remain clean. The source already has the cross-port-proved `Font.o` owner and
 no missing file-local callee or data definition, so same-TU placement cannot
 explain the independent global-store scheduling. No barrier or TU cluster is
 introduced.
+
+## 2026-08-11 VC6 profile boundary
+
+Recovery triage surfaced both `Font.o` quad appenders among the closest
+unclassified matches. The explicit-UV source was therefore replayed under all
+preserved VC6 game-code profiles after the 24 ordinary publication/color-owner
+variants above had failed to move the count store.
+
+`msvc6.0`, canonical `msvc6.5`, and `msvc6.6` all retain the 98.48% result,
+66/66 instructions, 42-instruction prefix, and first mismatch at candidate
+offset `0x95`. `msvc6.5pp` instead regresses to 93.94%, keeps 66/66
+instructions, shortens the prefix to 13, and first differs at candidate offset
+`0x35`. The three noncanonical results are recorded in `experiments.jsonl`.
+
+Processor Pack code generation is therefore positively excluded for this
+authored `Font.o` helper, while the other preserved VC6 builds share the same
+independent queue-count publication schedule. Cross-port ownership, full field
+layout, return behavior, exact instruction count, and all 20 references are
+already closed, so this scratch is classified `RECOVERY=semantic-complete`
+with `RESIDUAL=compiler`.
