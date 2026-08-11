@@ -941,11 +941,11 @@ smallest loss is 21 fuzzy bytes for a shared field pointer/reference; broader
 owners lose 46 to 121 bytes by perturbing the surrounding register schedule.
 Most variants clear the audit entry, but none are a net match improvement.
 
-The experiment ledger therefore formally stalls this lane. The retained
-source remains 82.75%, 2,087/2,087 instructions, prefix 12/2,087, with 315
-clean references and one explicitly unaudited duplicated `g_game` load. No
-longer-lived root owner or conditional-store rewrite is kept merely to make
-the audit count look cleaner.
+The experiment ledger records those particular forms as unsuccessful; it does
+not close the lane. The retained source remains 82.75%, 2,087/2,087
+instructions, prefix 12/2,087, with 315 clean references and one explicitly
+unaudited duplicated `g_game` load. No longer-lived root owner or
+conditional-store rewrite is kept merely to make the audit count look cleaner.
 
 ## 2026-08-09 attachment-exit retirement closure
 
@@ -1051,3 +1051,25 @@ No source-shape retry was made: this closes provenance around an already
 recovered partial. The focused result remains honestly 82.75%, 2,087/2,087
 instructions, with 315 clean masked operands and the one documented duplicated
 `g_game` load.
+
+## 2026-08-11 replay-record owner reopening
+
+Live Windows disassembly gives the record block three distinct owner
+lifetimes. The lateral write at `0x43b521` uses the existing `esi` owner. At
+`0x43b546` native reloads `game` into `edx`, copies it to `esi`, and preserves
+that `esi` owner across the fixed-point conversion calls for both z writes.
+The z reads at `0x43b579` and `0x43b5c6` independently reload `game` into
+`ecx`. The retained source mirrors those roles with a lateral `record_game`, a
+fresh `record_game_z`, and direct `game` reads.
+
+Four recorded sweeps cover declaration order, gate/cursor snapshots, split
+roles, and the complete one- through four-site base/index owner matrix. The
+combined matrix evaluates all 191 variants. Its apparent 84.95% leaders are
+not faithful local recoveries: they keep source aliases where native reloads
+`game`, steal `edi` from the native `0x4000` input-mask lifetime, and improve
+later zero-register scheduling. Smaller split-role forms gain only eight
+weighted bytes outside the record block while leaving the native reload
+sequence wrong. Those score-only aliases are rejected; the scratch remains
+82.75%, 2,087/2,087 with 315 clean references and one visible unaudited load.
+The lane remains open to a source form that reproduces the observed owners
+without trading away surrounding native lifetimes.

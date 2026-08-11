@@ -30,7 +30,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
 {
     int png_channels;
     u8* png_pixels;
-    char* output_record_cursor;
+    int* output_data_offset;
     char* rebuilt;
     int png_height;
     unsigned int* dam_words;
@@ -72,7 +72,8 @@ void __cdecl rebuild_game_archive_if_needed(void)
     if (source_index->count > 0) {
         source_byte_count = (unsigned int*)&source_entries[0].byte_count;
         source_to_output_delta = rebuilt - (char*)dam_words;
-        output_record_cursor = rebuilt + 8;
+        output_data_offset =
+            &((SerializedArchiveIndex*)rebuilt)->entries[0].data_offset;
 
         do {
             entry_path = rebuilt + source_byte_count[-2];
@@ -81,7 +82,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
                 ARCHIVE_ENTRY_EXTENSION_TGA) {
                 char* payload_end;
                 memcpy(payload_cursor, (char*)dam_words + source_byte_count[-1], *source_byte_count);
-                *(int*)output_record_cursor = payload_cursor - rebuilt;
+                *output_data_offset = payload_cursor - rebuilt;
                 payload_end = payload_cursor + *source_byte_count;
                 *(int*)((char*)source_byte_count + source_to_output_delta) = *source_byte_count;
                 {
@@ -111,7 +112,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
                     (u8*)&background_rgb,
                     0);
 
-                *(int*)output_record_cursor = payload_cursor - rebuilt;
+                *output_data_offset = payload_cursor - rebuilt;
                 tga->color_map_spec[4] = 0;
                 tga->color_map_spec[3] = 0;
                 tga->color_map_spec[2] = 0;
@@ -161,7 +162,7 @@ void __cdecl rebuild_game_archive_if_needed(void)
                 printf("extracting %s\n", entry_path);
             }
 
-            output_record_cursor += sizeof(ArchiveEntry);
+            output_data_offset += sizeof(SerializedArchiveEntry) / sizeof(int);
             source_byte_count += 3;
             ++entry_index;
         } while (entry_index < source_index->count);

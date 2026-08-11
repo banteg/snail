@@ -56,7 +56,51 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
                 }
 
                 if (*archive_cursor == 0 && *request_cursor == 0) {
-                    goto found_archive_entry;
+                    if (out_size != 0) {
+                        *out_size =
+                            g_archive_index_records->entries[entry_index].byte_count;
+                    }
+
+                    if (buffer == (char*)-1) {
+                        return (char*)g_archive_index_records
+                            ->entries[entry_index]
+                            .data_offset;
+                    }
+
+                    if (buffer == 0) {
+                        allocated = (char*)allocate_tracked_memory(
+                            g_archive_index_records->entries[entry_index].byte_count,
+                            requested_path);
+                        int current_offset = ftell(g_archive_file);
+                        fseek(g_archive_file,
+                            g_archive_index_records->entries[entry_index].data_offset
+                                - current_offset,
+                            SEEK_CUR);
+                        fread(allocated,
+                            1,
+                            g_archive_index_records->entries[entry_index].byte_count,
+                            g_archive_file);
+                        xor_archive_bytes_in_place(
+                            g_archive_index_records->entries[entry_index].data_offset,
+                            allocated,
+                            g_archive_index_records->entries[entry_index].byte_count);
+                        return allocated;
+                    } else {
+                        int current_offset = ftell(g_archive_file);
+                        fseek(g_archive_file,
+                            g_archive_index_records->entries[entry_index].data_offset
+                                - current_offset,
+                            SEEK_CUR);
+                        fread(buffer,
+                            1,
+                            g_archive_index_records->entries[entry_index].byte_count,
+                            g_archive_file);
+                        xor_archive_bytes_in_place(
+                            g_archive_index_records->entries[entry_index].data_offset,
+                            buffer,
+                            g_archive_index_records->entries[entry_index].byte_count);
+                        return buffer;
+                    }
                 }
 
                 ++entry_index;
@@ -72,51 +116,6 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
             requested_path, current_directory);
         return 0;
     }
-    goto filesystem_success;
-
-found_archive_entry:
-    if (out_size != 0) {
-        *out_size = g_archive_index_records->entries[entry_index].byte_count;
-    }
-
-    if (buffer == (char*)-1) {
-        return (char*)g_archive_index_records->entries[entry_index].data_offset;
-    }
-
-    if (buffer == 0) {
-        allocated = (char*)allocate_tracked_memory(
-            g_archive_index_records->entries[entry_index].byte_count,
-            requested_path);
-        int current_offset = ftell(g_archive_file);
-        fseek(g_archive_file,
-            g_archive_index_records->entries[entry_index].data_offset - current_offset,
-            SEEK_CUR);
-        fread(allocated,
-            1,
-            g_archive_index_records->entries[entry_index].byte_count,
-            g_archive_file);
-        xor_archive_bytes_in_place(
-            g_archive_index_records->entries[entry_index].data_offset,
-            allocated,
-            g_archive_index_records->entries[entry_index].byte_count);
-        return allocated;
-    } else {
-        int current_offset = ftell(g_archive_file);
-        fseek(g_archive_file,
-            g_archive_index_records->entries[entry_index].data_offset - current_offset,
-            SEEK_CUR);
-        fread(buffer,
-            1,
-            g_archive_index_records->entries[entry_index].byte_count,
-            g_archive_file);
-        xor_archive_bytes_in_place(
-            g_archive_index_records->entries[entry_index].data_offset,
-            buffer,
-            g_archive_index_records->entries[entry_index].byte_count);
-        return buffer;
-    }
-
-filesystem_success:
     byte_count = get_stream_length_preserve_position(file);
     result = buffer;
     if (result == 0 || result == (char*)-1) {

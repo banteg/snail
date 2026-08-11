@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "record-z-owner-and-gate",
+      "find": "        cRSubGame* record_game_z = game;\n        if (!game->replay_update_cursor) {",
+      "replacements": [
+        {
+          "name": "owner-gates-cursor",
+          "text": "        cRSubGame* record_game_z = game;\n        if (!record_game_z->replay_update_cursor) {"
+        },
+        {
+          "name": "split-assignment-direct-gate",
+          "text": "        cRSubGame* record_game_z;\n        record_game_z = game;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "split-assignment-owner-gate",
+          "text": "        cRSubGame* record_game_z;\n        record_game_z = game;\n        if (!record_game_z->replay_update_cursor) {"
+        },
+        {
+          "name": "assignment-expression",
+          "text": "        cRSubGame* record_game_z;\n        if (!(record_game_z = game)->replay_update_cursor) {"
+        },
+        {
+          "name": "named-cursor-direct-gate",
+          "text": "        cRSubGame* record_game_z = game;\n        int record_cursor = game->replay_update_cursor;\n        if (!record_cursor) {"
+        },
+        {
+          "name": "named-cursor-owner-gate",
+          "text": "        cRSubGame* record_game_z = game;\n        int record_cursor = record_game_z->replay_update_cursor;\n        if (!record_cursor) {"
+        },
+        {
+          "name": "split-owner-and-cursor",
+          "text": "        cRSubGame* record_game_z;\n        int record_cursor;\n        record_game_z = game;\n        record_cursor = record_game_z->replay_update_cursor;\n        if (!record_cursor) {"
+        },
+        {
+          "name": "nested-owner-scope",
+          "text": "        cRSubGame* record_game_z;\n        {\n            record_game_z = game;\n        }\n        if (!record_game_z->replay_update_cursor) {"
+        }
+      ]
+    }
+  ]
+}

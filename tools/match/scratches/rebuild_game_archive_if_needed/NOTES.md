@@ -80,3 +80,21 @@ The focused object remains honestly codegen-neutral at 66.38%, 232/232
 instructions, a five-instruction prefix, and 22 clean masked operands. The
 remaining output-cursor register allocation was not coerced with spills,
 aliases, or other fakematching.
+
+## 2026-08-11 destination record cursor recovery
+
+The destination cursor is now typed to the field it actually owns:
+`SerializedArchiveEntry::data_offset`. It starts at the first output record's
+`data_offset`, writes the rebuilt payload displacement directly, and advances
+by one 12-byte `SerializedArchiveEntry`. This replaces an anonymous `char*`
+plus casts without changing generated code: focused matching remains 66.38%,
+232/232, with 22 clean references.
+
+iOS `DatBuild() @ 0x0000986c` independently preserves the same two-cursor
+contract. It writes the payload displacement at destination record `+8`, then
+advances the source record by three words and the destination record by
+`0x0c`. That is direct cross-port evidence for the distinct typed destination
+cursor, while Windows remains authoritative for layout and code generation.
+A source `switch` for the extension class was also tested because native
+decrements the classifier result before its branch; VC6 regressed to 55.41%,
+so the semantic TGA comparison remains.

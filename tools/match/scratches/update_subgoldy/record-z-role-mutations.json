@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "record-z-gate-and-preserved-owner",
+      "find": "        cRSubGame* record_game_z = game;\n        if (!game->replay_update_cursor) {",
+      "replacements": [
+        {
+          "name": "gate-then-preserved-from-gate",
+          "text": "        cRSubGame* record_gate_game = game;\n        cRSubGame* record_game_z = record_gate_game;\n        if (!record_gate_game->replay_update_cursor) {"
+        },
+        {
+          "name": "gate-then-preserved-from-game",
+          "text": "        cRSubGame* record_gate_game = game;\n        cRSubGame* record_game_z = game;\n        if (!record_gate_game->replay_update_cursor) {"
+        },
+        {
+          "name": "preserved-then-gate-from-preserved",
+          "text": "        cRSubGame* record_game_z = game;\n        cRSubGame* record_gate_game = record_game_z;\n        if (!record_gate_game->replay_update_cursor) {"
+        },
+        {
+          "name": "preserved-then-gate-from-game",
+          "text": "        cRSubGame* record_game_z = game;\n        cRSubGame* record_gate_game = game;\n        if (!record_gate_game->replay_update_cursor) {"
+        },
+        {
+          "name": "split-gate-then-preserved",
+          "text": "        cRSubGame* record_gate_game;\n        cRSubGame* record_game_z;\n        record_gate_game = game;\n        record_game_z = record_gate_game;\n        if (!record_gate_game->replay_update_cursor) {"
+        },
+        {
+          "name": "const-preserved-owner",
+          "text": "        cRSubGame* const record_game_z = game;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "explicit-member-owner",
+          "text": "        cRSubGame* record_game_z = this->game;\n        if (!game->replay_update_cursor) {"
+        }
+      ]
+    }
+  ]
+}

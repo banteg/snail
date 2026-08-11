@@ -97,3 +97,12 @@ extent.
   clean masked operands and the one known resolution jump-table destination
   mismatch. No source was changed to imitate the remaining constant-hoist or
   switch-layout differences.
+
+## 2026-08-11 color-depth lifetime replay
+
+Seven scoped mask, render-flag snapshot, assignment, and reversed-test forms
+were compiled after reopening the lane. Six are byte-identical at 92.48%; the
+boolean-offset form slightly regresses to 92.45%. None reproduces native's
+reuse of the hoisted `0x400` in `ebp` for both the render-depth test and the
+1024-pixel width case, so the remaining difference stays classified as a VC6
+lifetime/allocation residual rather than an exhausted semantic lead.

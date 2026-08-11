@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "right-button-up-zero-result",
+      "find": "            case 0x205:\n                g_right_mouse_button_latch[0] = 0;\n                g_right_mouse_button_state[0] = 0;\n                return 0;",
+      "replacements": [
+        {
+          "name": "chained-stores",
+          "text": "            case 0x205:\n                g_right_mouse_button_state[0] =\n                    g_right_mouse_button_latch[0] = 0;\n                return 0;"
+        },
+        {
+          "name": "return-chained-stores",
+          "text": "            case 0x205:\n                return g_right_mouse_button_state[0] =\n                    g_right_mouse_button_latch[0] = 0;"
+        },
+        {
+          "name": "return-second-store",
+          "text": "            case 0x205:\n                g_right_mouse_button_latch[0] = 0;\n                return g_right_mouse_button_state[0] = 0;"
+        },
+        {
+          "name": "assignment-result-local",
+          "text": "            case 0x205: {\n                LRESULT result = (g_right_mouse_button_latch[0] = 0);\n                g_right_mouse_button_state[0] = 0;\n                return result;\n            }"
+        },
+        {
+          "name": "return-stored-state",
+          "text": "            case 0x205:\n                g_right_mouse_button_latch[0] = 0;\n                g_right_mouse_button_state[0] = 0;\n                return g_right_mouse_button_state[0];"
+        },
+        {
+          "name": "explicit-case-result",
+          "text": "            case 0x205: {\n                LRESULT result = 0;\n                g_right_mouse_button_latch[0] = (unsigned char)result;\n                g_right_mouse_button_state[0] = (unsigned char)result;\n                return result;\n            }"
+        }
+      ]
+    }
+  ]
+}

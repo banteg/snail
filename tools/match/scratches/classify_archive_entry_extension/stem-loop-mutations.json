@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "stem-copy-loop",
+      "find": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    while (1) {\n        if (value == 0)\n            break;\n        if (value == '.')\n            break;\n        ++path;\n        *output = value;\n        ++output;\n        value = *path;\n    }",
+      "replacements": [
+        {
+          "name": "guarded-do-explicit",
+          "text": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    if (value != 0) {\n        do {\n            if (value == '.')\n                break;\n            ++path;\n            *output = value;\n            ++output;\n            value = *path;\n        } while (value != 0);\n    }"
+        },
+        {
+          "name": "guarded-do-preincrement-load",
+          "text": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    if (value != 0) {\n        do {\n            if (value == '.')\n                break;\n            ++path;\n            *output = value;\n            ++output;\n            value = *path;\n        } while (value);\n    }"
+        },
+        {
+          "name": "guarded-do-combined-increments",
+          "text": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    if (value != 0) {\n        do {\n            if (value == '.')\n                break;\n            *output++ = value;\n            value = *++path;\n        } while (value != 0);\n    }"
+        },
+        {
+          "name": "top-tested-value",
+          "text": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    while (value != 0) {\n        if (value == '.')\n            break;\n        ++path;\n        *output = value;\n        ++output;\n        value = *path;\n    }"
+        },
+        {
+          "name": "compound-condition",
+          "text": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    while (value != 0 && value != '.') {\n        ++path;\n        *output = value;\n        ++output;\n        value = *path;\n    }"
+        },
+        {
+          "name": "native-label-shape",
+          "text": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    if (value == 0)\n        goto stem_done;\nstem_copy:\n    if (value == '.')\n        goto stem_done;\n    ++path;\n    *output = value;\n    ++output;\n    value = *path;\n    if (value != 0)\n        goto stem_copy;\nstem_done:"
+        },
+        {
+          "name": "guarded-for",
+          "text": "    unsigned char value;\n    value = *path;\n    unsigned char* output = stem_out;\n    if (value != 0) {\n        for (;;) {\n            if (value == '.')\n                break;\n            ++path;\n            *output = value;\n            ++output;\n            value = *path;\n            if (value == 0)\n                break;\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}

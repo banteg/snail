@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "color-depth-lifetime",
+      "find": "    int bits_per_pixel =\n        ((g_runtime_config.render_flags & RUNTIME_RENDER_32_BIT_COLOR) != 0) ? 32 : 16;",
+      "replacements": [
+        {
+          "name": "masked-flags-local",
+          "text": "    unsigned int color_depth_flag =\n        g_runtime_config.render_flags & RUNTIME_RENDER_32_BIT_COLOR;\n    int bits_per_pixel = color_depth_flag != 0 ? 32 : 16;"
+        },
+        {
+          "name": "render-flags-snapshot",
+          "text": "    unsigned int render_flags = g_runtime_config.render_flags;\n    int bits_per_pixel =\n        (render_flags & RUNTIME_RENDER_32_BIT_COLOR) != 0 ? 32 : 16;"
+        },
+        {
+          "name": "signed-render-flags-snapshot",
+          "text": "    int render_flags = (int)g_runtime_config.render_flags;\n    int bits_per_pixel =\n        (render_flags & RUNTIME_RENDER_32_BIT_COLOR) != 0 ? 32 : 16;"
+        },
+        {
+          "name": "split-bits-assignment",
+          "text": "    int bits_per_pixel;\n    bits_per_pixel = g_runtime_config.render_flags;\n    bits_per_pixel =\n        (bits_per_pixel & RUNTIME_RENDER_32_BIT_COLOR) != 0 ? 32 : 16;"
+        },
+        {
+          "name": "reversed-zero-test",
+          "text": "    int bits_per_pixel =\n        (g_runtime_config.render_flags & RUNTIME_RENDER_32_BIT_COLOR) == 0 ? 16 : 32;"
+        },
+        {
+          "name": "boolean-offset",
+          "text": "    int bits_per_pixel = 16\n        + (((g_runtime_config.render_flags & RUNTIME_RENDER_32_BIT_COLOR) != 0)\n            ? 16\n            : 0);"
+        },
+        {
+          "name": "scoped-mask-lifetime",
+          "text": "    int bits_per_pixel;\n    {\n        unsigned int color_depth_flag =\n            g_runtime_config.render_flags & RUNTIME_RENDER_32_BIT_COLOR;\n        bits_per_pixel = color_depth_flag != 0 ? 32 : 16;\n    }"
+        }
+      ]
+    }
+  ]
+}

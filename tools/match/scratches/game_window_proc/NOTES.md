@@ -60,3 +60,13 @@ late `xor eax, eax` as scheduler debt.
 two-slot wheel delta now come from the shared Win32/DirectInput mouse owner.
 The procedure remains honestly partial at 94.33%, 141/141 instructions, with
 37 clean operands and only the two documented jump-table mismatches.
+
+## 2026-08-11 mouse-button return replay
+
+Native gives each button-up arm its own zero-result sequence, while VC6 delays
+the right-button arm's `xor eax, eax` until after its two byte stores. Six
+chained-assignment, stored-result, and assignment-return spellings all compile
+byte-identically at 94.33%, 141/141. The four-byte destination displacement
+therefore remains a scheduler residual that propagates into the two audited
+jump-table operands; the volatile spill that scores higher remains rejected as
+non-native code.

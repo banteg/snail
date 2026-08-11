@@ -26,8 +26,9 @@ Known residuals after the current ownership pass:
 2026-07-09 sibling-transfer campaign: fixed-size `while (*archive_cursor)`
 compare still regresses this helper to 61.39%. Goto-scan loop packaging is
 codegen-neutral at 65.71%. Inlining the found-entry body like the fixed-size
-scratch (no `goto found`) collapses to 33.84%. Keep the goto-split archive vs
-filesystem topology.
+scratch (no `goto found`) collapsed to 33.84% under the ownership model used
+at that time. The 2026-08-11 replay below supersedes that source-shape
+conclusion after the archive-entry and stream-position lifetimes were fixed.
 
 2026-07-12 archive-entry and stream-position ownership:
 
@@ -78,3 +79,21 @@ operands and the same control-layout, lowercase-fold, and cleanup residuals.
   retaining stale pre-prototype register names.
 - Focused matching remains 79.23%, 208/206 instructions, 10/206 prefix, and
   31 clean masked operands. No source-shape probe or fake match was introduced.
+
+## 2026-08-11 archive-hit control-flow replay
+
+The old inline-body rejection was stale. Replaying it after the 2026-07-12
+entry and stream-position ownership fixes produces byte-identical code at
+79.23%, with the same 208/206 instruction counts and the current 36 clean
+masked operands. The retained source therefore handles the archive hit
+directly inside the scan and lets filesystem fallback follow scan exhaustion,
+removing the two decompiler-shaped `found_archive_entry` and
+`filesystem_success` labels.
+
+iOS `RShellLoadFile(char*, void*, int*) @ 0x0000d090` independently keeps the
+size/sentinel/read handling inside its matching archive-entry branch and falls
+through to filesystem loading only after the scan. Android delegates the scan
+to `RShellDatFind`, so it corroborates the same service boundary without
+constraining the Windows loop shape. The remaining Windows difference is still
+compiler block placement plus the lowercase and `_getcwd` cleanup encodings;
+the cleanup is semantic, not a score-only rewrite.

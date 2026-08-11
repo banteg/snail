@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "record-owner-declarations",
+      "find": "        cRSubGame* record_game = game;\n        record_game\n            ->current_high_score_record\n            .run_records[record_game->replay_update_cursor]\n            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        cRSubGame* record_game_z = game;\n        if (!game->replay_update_cursor) {",
+      "replacements": [
+        {
+          "name": "declare-z-before-record-owner",
+          "text": "        cRSubGame* record_game_z;\n        cRSubGame* record_game = game;\n        record_game\n            ->current_high_score_record\n            .run_records[record_game->replay_update_cursor]\n            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        record_game_z = game;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "declare-record-before-z-owner",
+          "text": "        cRSubGame* record_game;\n        cRSubGame* record_game_z;\n        record_game = game;\n        record_game\n            ->current_high_score_record\n            .run_records[record_game->replay_update_cursor]\n            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        record_game_z = game;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "declare-z-before-record-split",
+          "text": "        cRSubGame* record_game_z;\n        cRSubGame* record_game;\n        record_game = game;\n        record_game\n            ->current_high_score_record\n            .run_records[record_game->replay_update_cursor]\n            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        record_game_z = game;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "transient-z-source-owner",
+          "text": "        cRSubGame* record_game = game;\n        record_game\n            ->current_high_score_record\n            .run_records[record_game->replay_update_cursor]\n            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        cRSubGame* record_game_z_source = game;\n        cRSubGame* record_game_z = record_game_z_source;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "split-transient-z-source-owner",
+          "text": "        cRSubGame* record_game = game;\n        record_game\n            ->current_high_score_record\n            .run_records[record_game->replay_update_cursor]\n            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        cRSubGame* record_game_z_source;\n        cRSubGame* record_game_z;\n        record_game_z_source = game;\n        record_game_z = record_game_z_source;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "scoped-lateral-owner",
+          "text": "        {\n            cRSubGame* record_game = game;\n            record_game\n                ->current_high_score_record\n                .run_records[record_game->replay_update_cursor]\n                .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        }\n        cRSubGame* record_game_z = game;\n        if (!game->replay_update_cursor) {"
+        },
+        {
+          "name": "scoped-z-initialization",
+          "text": "        cRSubGame* record_game = game;\n        record_game\n            ->current_high_score_record\n            .run_records[record_game->replay_update_cursor]\n            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);\n        cRSubGame* record_game_z;\n        {\n            record_game_z = game;\n        }\n        if (!game->replay_update_cursor) {"
+        }
+      ]
+    }
+  ]
+}

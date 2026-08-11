@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "record-z-owner-initialization",
+      "find": "        cRSubGame* record_game_z = game;",
+      "replacements": [
+        {
+          "name": "lateral-record-owner",
+          "text": "        cRSubGame* record_game_z = record_game;"
+        },
+        {
+          "name": "split-assignment",
+          "text": "        cRSubGame* record_game_z;\n        record_game_z = record_game;"
+        },
+        {
+          "name": "direct-game-split-assignment",
+          "text": "        cRSubGame* record_game_z;\n        record_game_z = game;"
+        }
+      ]
+    },
+    {
+      "name": "record-cursor-gate-owner",
+      "find": "        if (!game->replay_update_cursor) {",
+      "replacements": [
+        {
+          "name": "record-game",
+          "text": "        if (!record_game->replay_update_cursor) {"
+        },
+        {
+          "name": "record-game-z",
+          "text": "        if (!record_game_z->replay_update_cursor) {"
+        }
+      ]
+    },
+    {
+      "name": "initial-record-read-owner",
+      "find": "                game\n                    ->current_high_score_record\n                    .run_records[game->replay_update_cursor]\n                    .delta_z,",
+      "replacements": [
+        {
+          "name": "record-game",
+          "text": "                record_game\n                    ->current_high_score_record\n                    .run_records[record_game->replay_update_cursor]\n                    .delta_z,"
+        },
+        {
+          "name": "record-game-z",
+          "text": "                record_game_z\n                    ->current_high_score_record\n                    .run_records[record_game_z->replay_update_cursor]\n                    .delta_z,"
+        },
+        {
+          "name": "split-base-and-index",
+          "text": "                record_game_z\n                    ->current_high_score_record\n                    .run_records[record_game->replay_update_cursor]\n                    .delta_z,"
+        }
+      ]
+    },
+    {
+      "name": "delta-record-read-owner",
+      "find": "                    game\n                        ->current_high_score_record\n                        .run_records[game->replay_update_cursor]\n                        .delta_z,",
+      "replacements": [
+        {
+          "name": "record-game",
+          "text": "                    record_game\n                        ->current_high_score_record\n                        .run_records[record_game->replay_update_cursor]\n                        .delta_z,"
+        },
+        {
+          "name": "record-game-z",
+          "text": "                    record_game_z\n                        ->current_high_score_record\n                        .run_records[record_game_z->replay_update_cursor]\n                        .delta_z,"
+        },
+        {
+          "name": "split-base-and-index",
+          "text": "                    record_game_z\n                        ->current_high_score_record\n                        .run_records[record_game->replay_update_cursor]\n                        .delta_z,"
+        }
+      ]
+    }
+  ]
+}
