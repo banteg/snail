@@ -139,7 +139,20 @@ the x87 value but eliminate the stack owner.
 
 The complete ledger contains 48 unique variants: three improve an earlier
 baseline, 13 are neutral, and 32 regress, with one retained sweep win and three
-trailing non-improving sweeps. `update_backdrop` is formally stalled at 89.71%,
-69/67 instructions, prefix 17, and seven clean references. No volatile access,
+trailing non-improving sweeps. The retained result is 89.71%, 69/67
+instructions, prefix 17, and seven clean references; the streak is not a stop
+condition. No volatile access,
 opaque helper, or dummy address escape is justified to force the final
 `fst`/`fstp` pair.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows body and both mobile
+`cRBackdrop::AI()` bodies establish the queued-change lifecycle, owned 8x8
+distortion grid, column/row cursor geometry, phase wrap, sine/cosine offsets,
+texture/render gates, and Windows folded split/single render dispatch. All
+seven references are clean.
+
+The two extra candidate instructions materialize the phase spill through
+integer copies instead of native's x87 `fst`/`fstp` pair. That is compiler
+temporary scheduling, not a missing cell field, gate, render path, or owner.

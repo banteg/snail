@@ -103,7 +103,7 @@ residue rather than an unresolved dominant-diagonal rule.
 
 ## 2026-07-29 complete dispatch-owner closure
 
-Two further sweeps turn that bounded audit into a formal stall. Six complete
+Two further sweeps extend that bounded audit. Six complete
 five-comparison trees cover the exact mobile nesting, flattened and explicit
 `else` forms, complemented outer tests, and named less/not-less dispatch
 labels. Every complete tree makes VC6 reorder the fallback bodies and regresses
@@ -123,3 +123,15 @@ instructions, the same three exact radicand/output bodies, and 23 clean
 references. Only the physical placement of the two dominant-diagonal dispatch
 continuations differs, so the direct-label source is retained without
 compiler-layout shaping.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows body and all three
+verified mobile constructor bodies agree on the `tQuaternian` destination,
+const `tMatrix` source, positive-trace formula, dominant X/Y/Z rules, negative
+radicand diagnostics and clamps, and every output component. The target and
+candidate both contain 186 instructions and all 23 references are clean.
+
+The 92.47% residual is solely physical placement of equivalent diagonal-test
+continuations. It does not leave a tie rule, formula, field, or owner
+unresolved; prior sweep counts are descriptive only.

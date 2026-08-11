@@ -114,5 +114,17 @@ and produces only 54/55 instructions. That structural tradeoff is rejected.
 An inline `AnimManager` queue helper was also codegen-neutral. The retained
 94.55%, 55/55 source is still exact through instruction 48 and preserves the
 native reload; only the three-instruction EAX/EDX ownership swap remains.
-Three consecutive no-improvement sweeps mark this setter stalled. The paired
-Weapon setter independently reproduces every result.
+The sweep history is descriptive, not a stop rule. The paired Weapon setter
+independently reproduces every result.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows body and verified Android
+`cRSnail::SetAnimation(int, bool, int)` body establish the Snail owner, ten
+owned animation slots, selected Object and ObjectAnimation, mode handling,
+forward/reverse progress, target-model visibility, queue reset, and deferred
+queue append. All 55 instructions and all three references are represented.
+
+Only the deferred tail exchanges EAX and EDX for the queue index and animation
+id while preserving the same store and count reload. That is compiler register
+allocation, not missing ownership or behavior.

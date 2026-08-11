@@ -129,9 +129,22 @@ Writing that word back before advancing is neutral. Advancing before writeback
 regresses to 86.82%, while reference and pointer owners fall below 64%; none
 selects native's four-instruction schedule.
 
-The ledger is now formally stalled after three complete sweeps and 82 unique
-variants: zero improvements, 77 neutral results, and five regressions, with no
-errors, repeats, or tradeoffs. The retained source remains the shortest typed
-form. Native's EDX flag word and delayed EAX `3.0f` materialization are bounded
-VC6 register/scheduler choices rather than evidence for a different sprite,
-slot, flag, or loop owner.
+The ledger records three complete sweeps and 82 unique variants: zero
+improvements, 77 neutral results, and five regressions, with no errors,
+repeats, or tradeoffs. The retained source remains the shortest typed form.
+Native's EDX flag word and delayed EAX `3.0f` materialization are bounded VC6
+register/scheduler choices rather than evidence for a different sprite, slot,
+flag, or loop owner.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows body and verified Android
+`cRNuke::Init()` establish the exact 0x7c Nuke owner, inactive/active lifecycle,
+borrowed Player, SubGame rate, orbit fields, complete 25-slot sprite bank,
+allocator arguments, and every sprite initialization lane. All 64 instructions
+and all five references are represented.
+
+The remaining four-instruction region only rotates the sprite flag word between
+EDX/ECX and swaps the adjacent `3.0f` materialization with a slot reload. That
+is compiler register/scheduling residue, not a different sprite, slot, flag,
+loop, or owner.

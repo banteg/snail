@@ -149,5 +149,19 @@ supplies that authored spelling.
 
 The type/symbol promotion is codegen-neutral: all six exact siblings remain
 exact, while `AI` remains at 94.66%, 131/131 instructions, with all 34 masked
-operands clean. None of the 47 exhausted state, threshold, completion-owner,
+operands clean. None of the 47 recorded state, threshold, completion-owner,
 or wobble-lifetime variants was reopened.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and both mobile
+`cRSubHover::AI()` bodies establish the complete lifecycle: active-state gate,
+progress and finish thresholds, Player/SubGame borrows, row-controlled jetpack
+shutoff, warning curve, wobble outputs, presentation/particle teardown, and
+final hover callback. All 131 instructions and all 34 references are
+represented.
+
+The remaining 94.66% delta is one equivalent `sub`/`cmp` flag source and a
+rotation of the game, player, and threshold registers. It leaves no lifecycle
+state, field, or owner unresolved, and experiment history does not limit the
+classification.

@@ -119,5 +119,17 @@ The tradeoff reaches 95.41% but compiles to 54/55 instructions by replacing
 the native post-store `queue_count` reload with the already-live index. The
 retained 94.55%, 55/55 source keeps that structural reload and differs only in
 the three queued-store EAX/EDX owners. An inline `AnimManager` queue helper is
-codegen-neutral. Three consecutive no-improvement sweeps mark this setter
-stalled, independently matching the Snail audit.
+codegen-neutral. The sweep history is descriptive only; the paired Snail audit
+independently matches the same compiler residual.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows body and verified Android
+`cRWeapon::SetAnimation(int, bool, int)` body establish the Weapon owner, five
+owned animation slots, selected Object and ObjectAnimation, mode handling,
+forward/reverse progress, target-model visibility, queue reset, and deferred
+queue append. All 55 instructions and all three references are represented.
+
+The only delta is the same EAX/EDX queue-index/animation-id swap as the paired
+Snail setter. It is compiler register allocation with identical stores and
+count publication, not an ownership or semantic gap.

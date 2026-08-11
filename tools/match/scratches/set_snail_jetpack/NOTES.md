@@ -83,6 +83,19 @@ native-only instruction gap:
 
 None improved the canonical 86.18% result: 21 variants were neutral and 30
 regressed. The native load-before-save prologue and default-path reload remain
-unexplained by ordinary source spelling. Mark this scratch stalled; another
-syntax sweep is not justified without new evidence about the source type,
-translation-unit context, or compiler relationship.
+unexplained by ordinary source spelling. That history records the tested source
+shapes without limiting future evidence about the source type, translation-unit
+context, or compiler relationship.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows decompile and verified
+Android/iOS `cRSnail::SetJetPack(int)` bodies establish the Snail owner,
+embedded jetpack Weapon, input-to-channel state map, outgoing and incoming
+animations, transition immediacy, both sound effects, hide path, and shared
+selected-state publication. All eight references are clean.
+
+The single missing candidate instruction is the native load of `state` before
+saved-register setup; the candidate reloads the same default value after the
+switch. The wider 86.18% delta is the resulting register allocation, not a
+missing branch, field, or owner.
