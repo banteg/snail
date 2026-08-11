@@ -517,18 +517,6 @@ one-byte class with alignment before cRWarning, matching both the unused
 receiver and mobile no-op lifecycle. Focused Wibo remains 72.51%, 2067/2087
 instructions, with 290 clean masked operands and one jump-table mismatch.
 
-## Zig port residuals (carried from the pre-scratch dossier, still open)
-
-1. native resets the live-matrix rotation to identity in the grounded
-   snap; the port only clears the airborne flag (presentation-level).
-2. the trampoline envelope uses a shipped-tile floor-height proxy for the
-   cell anchor y (the checklist correction stands).
-3. +0x41c boost lane is DEAD CODE in the shipped binary (only ever
-   written 0) — the port correctly omits it.
-4. NEW (this scratch): the per-tick 16-bit lateral quantization and the
-   replay z-delta accumulator are not modeled in the port — audit
-   `stepActivePhase`/the oracle harness for codec parity on x.
-
 ## 2026-07-14 cell and follow ownership consolidation
 
 - The scratch-local runtime-cell shell is gone. Grid lookup, row-event,

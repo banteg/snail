@@ -18,10 +18,6 @@ Semantics complete and they REFINE the harvested hit-flash plan:
 - collision callers feed -0.5 health, +0.04 garbage, +0.15 salt,
   +1.0 slug, +0.02 sub-lazer with force = 0
 
-The Zig hit-flash wiring (checklist Phase 4 harvest) should be verified
-against the corrected nesting: the anim dispatches belong inside the
-voice-failure branch, not parallel to it.
-
 2026-06-13 pin audit: focused matcher verified 58.20%, 95/94 insns.
 Keep pinned; the remaining diff is register/materialization golf, while the
 damage gates, fill clamp, voice fallback, and animation nesting are recovered.

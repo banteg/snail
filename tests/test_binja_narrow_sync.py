@@ -2710,9 +2710,6 @@ def test_path_template_kind_replay_tracks_paired_mobile_owners() -> None:
     health_checks = (
         repo_root / "analysis/decompile/health_checks.json"
     ).read_text(encoding="utf-8")
-    runtime_notes = (
-        repo_root / "analysis/runtime/path-template-typing-2026-03-26.md"
-    ).read_text(encoding="utf-8")
     crosswalk = json.loads(
         (
             repo_root / "analysis/symbols/windows-mobile-gameplay-crosswalk.json"
@@ -2762,7 +2759,6 @@ def test_path_template_kind_replay_tracks_paired_mobile_owners() -> None:
         assert f"{name} = {header_value}" in header
         assert f'("{name}", {replay_value})' in replay
         assert f"self->kind = {name}" in health_checks
-        assert name in runtime_notes
 
     proven_consumers = {
         "update_sub_loc": "PATH_TEMPLATE_KIND_WORM",

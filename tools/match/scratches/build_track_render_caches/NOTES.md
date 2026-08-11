@@ -93,8 +93,7 @@ candidate encoding, so no unnatural pointer trick was retained.
 - Binary Ninja and IDA exports for `00433220-build_track_render_caches`;
 - exact neighboring scratches for initialization, row updates, removal,
   color construction, tile-family classification, and the exact caller;
-- `docs/re/track-runtime.md`, `docs/re/track-quad-tables.md`, and
-  `analysis/runtime/track-render-cache-typing-2026-03-27.md`; and
+- `docs/re/track-runtime.md` and `docs/re/track-quad-tables.md`; and
 - the supplied target dump and regional matcher reports.
 
 ## Ownership closure (2026-07-10)

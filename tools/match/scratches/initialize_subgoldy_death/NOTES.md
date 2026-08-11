@@ -31,8 +31,3 @@
   `cRSubGoldy::DeathInit()` independently keeps the same Postal life test,
   Challenge/Time Trial final-loss cases, tutorial respawn case, and calls to
   `RessurectInit(int)`.
-- The Zig runner mirrors the recovered selector in `deathUsesFinalLoss`:
-  Postal is final only at zero visible lives, Challenge and Time Trial are
-  always final, and tutorial remains respawnable. Focused tests cover Postal
-  respawn, Challenge final loss, and the distinct floor-controller delay, so
-  another Windows selector trace is not required.

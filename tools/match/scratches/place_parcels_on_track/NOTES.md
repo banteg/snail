@@ -41,9 +41,7 @@ offsets onto generated track rows" pass.
 - candidate bank: 2048 entries of 131 dwords at fixed VAs (unk_6489E8
   count lane, unk_6487EC payload lane, unk_6489F0 segment-bank index),
   reset loop zeroes count + a float lane per entry
-- selection: `entry = 131 * (int)random_float_below(candidate_count)` —
-  the truncated random pick the June-10 Zig fix modeled ("select seeded
-  parcel placements")
+- selection: `entry = 131 * (int)random_float_below(candidate_count)`
 - placement writes go through the per-row record table (244-byte stride,
   the same row records as the follow milestones) with flag byte 0x10 =
   occupied (duplicate triggers report_errorf "Duplicate Parcel Request
@@ -52,13 +50,8 @@ offsets onto generated track rows" pass.
 - allocation shortage warns "Parcel Allocation could fail in %s. Add
   more 0 parcels"
 
-Verify: the Zig grid builder consumes randoms per kept parcel (the
-challenge test pins one draw per parcel); a deeper diff of the
-candidate-bank reset and the row-record accumulator lanes against
-buildRuntimeParcelPlacementGrid is the next verify step now that the
-`game+0x5ccac8` row-record table is typed. The separate `game+0x641184`
-table is the follow-runtime row-slot table used by
-`update_track_attachment_follow_state`, not this parcel row table.
+The separate `game+0x641184` table is the follow-runtime row-slot table used
+by `update_track_attachment_follow_state`, not this parcel row table.
 
 ## WIP scratch — 23.40%, 643/639 insns (2026-06-13)
 

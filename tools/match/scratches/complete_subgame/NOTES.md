@@ -16,8 +16,7 @@ complete_subgame @ 0x438700 = cRSubGame::Complete(bool). Semantics:
   live downstream of these calls
 
 Matched exactly after the replay flag-word recovery and a cross-port recovery
-of the authored snapshot order. The field map above is also what the Zig
-bridge lanes need for verification.
+of the authored snapshot order.
 
 ## Scratch status
 

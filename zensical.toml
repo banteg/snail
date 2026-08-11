@@ -1,6 +1,6 @@
 [project]
 site_name = "Snail Mail"
-site_description = "Docs for the original game, the rewrite, and deeper reverse-engineering notes."
+site_description = "Docs for the original game and its reverse engineering."
 site_author = "banteg"
 nav = [
     { "Index" = "index.md" },
@@ -14,11 +14,6 @@ nav = [
         { "Segment format" = "original/segment-format.md" },
         { "Level format" = "original/level-format.md" },
     ] },
-    { "Rewrite" = [
-        { "Overview" = "rewrite/index.md" },
-        { "Port status" = "rewrite/port-status.md" },
-        { "Subsystem status" = "rewrite/subsystem-status.md" },
-    ] },
     { "RE" = [
         { "Overview" = "re/index.md" },
         { "Path system overview" = "re/path-system.md" },
@@ -26,10 +21,10 @@ nav = [
         { "Track runtime" = "re/track-runtime.md" },
         { "Attachment follow state" = "re/attachment-follow.md" },
         { "Runtime structures" = "re/runtime-structures.md" },
+        { "Object runtime" = "re/object-runtime.md" },
         { "Symbol workflow" = "re/symbols.md" },
         { "Reflexive wrapper" = "re/reflexive-wrapper.md" },
         { "Frida runtime trace" = "re/frida-runtime-trace.md" },
-        { "Windows Frida handoff" = "re/windows-frida-handoff.md" },
     ] },
 ]
 copyright = """

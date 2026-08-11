@@ -96,7 +96,6 @@ The current high-confidence model is:
 - contact damage and hover countdown are separate authored owners in Windows: the live collision deltas feed `cRDamageGuage` at Player `+0x3c4`, while `cRSubHover::{Init,AI}` own the jetpack warning or auto-shutoff logic at Player `+0x2750`
 - the Windows bank is exactly 63 primary/secondary pairs: public slots `0..50`, then 12 auxiliary transition pairs for public slots `0..7`, `25..27`, and `41`
 - public `HALFPIPE` slot `42` is built directly by `initialize_halfpipe_path_template_pair`; public `WARP` slot `30` is only generically initialized and remains unbuilt in this executable
-- the Zig port mirrors the public `Path=` table in `attachment_builders.zig`, but still needs to adopt the exact embedded pair/transition behavior where parity matters
 
 The remaining unknowns are mostly constructor-local geometry semantics, whether
 primary/secondary deserves a stronger universal name, and the last details of

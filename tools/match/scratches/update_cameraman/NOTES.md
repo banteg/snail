@@ -13,8 +13,7 @@ needs sequential assignments to stop VC6 folding -8*0.01745*0.17.
 - the exit roll while `attachment_exit_pending` reads player+0x42c — the
   ORIENTATION-B carryover (begin_post_follow_carryover writes
   `follow_state.orientation_b` there; the heading carryover at +0x430 still has
-  no known consumer). player.h renamed semantically; the Zig camera
-  already consumes the right lane (carryover_a = orientation_b phase).
+  no known consumer). `player.h` is named accordingly.
 - orientation_a at player+0x39c, orientation_b at +0x3a0 — third
   independent confirmation of the unified follow-struct slot order.
 - lift-envelope kind table: {8, 9, 10, 0xe, 0x10, 0x24, 0x2b, 0x2d};
@@ -39,8 +38,7 @@ From the IDA export head (full read pending next session):
   `cameraman->desired_matrix`
 - `player->cached_camera_target_world.x * 0.4` feeds the m30 lane
 - the audited subgame-rate blend (`rate * 0.3`) and the
-  `fld [eax+0x2964]` player read are in the body (see
-  analysis/runtime/port-parity-audit-2026-06-10.md)
+  `fld [eax+0x2964]` player read are in the body
 - helpers to declare: initialize_matrix_from_values (returns ptr,
   many float args), matrix blend/lerp helpers — several are already
   matched (set_matrix_identity family)
@@ -77,8 +75,7 @@ target.x * -8 * 0.017449999 * 0.17 world-z.
   (110 + 50 * cos envelope, debug stub call inside) and the 0.3 FOV
   smoothing
 - final: linear_interpolate_matrix(live, previous_desired, desired,
-  subgame_rate * 0.3) — the audited blend, now mirrored in
-  native/matrix_math.zig — then previous_desired = desired
+  subgame_rate * 0.3), then previous_desired = desired
 
 ## Type consolidation note (2026-06-15)
 
@@ -95,17 +92,6 @@ mismatch.
 
 Scratch next: structure is linear with two matrix locals; the matched
 matrix helpers cover every call.
-
-## Verify pass (2026-06-12): Zig camera confirmed against the pipeline
-
-gameplay/camera.zig already carries the full recorded pipeline: base
-rows, pitch formula with the +/-1.22149992 clamp, z-deadzone [1.7, 3.0],
-FOV 110 + 50*envelope WORM lane with 0.3 blend, lateral roll
--8*0.0174499992*0.17, orientation_a (local z) then orientation_b
-(world z) sequence, and the player+0x42c post-follow exit roll. The camera
-model is sound; the full match is proof-polish and drops in priority
-like collisions. The orientation_a SOURCE remains the basis-derived
-proxy (builder rotation scalars still unstored — checklist item).
 
 ## Player header consolidation (2026-06-16)
 

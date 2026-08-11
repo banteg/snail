@@ -4,8 +4,8 @@ Function-level matching decompilation against the original image, in the style
 of isledecomp/decomp.me: write candidate C++ for a contested function, compile
 it with the original-era compiler, and diff normalized asm against the function
 in `artifacts/bin/SnailMail_unwrapped.exe`. A 100% match is proof-grade ground
-truth for porting — it ends ownership/semantics debates that decompile reading
-cannot settle.
+truth for reconstruction — it ends ownership/semantics debates that decompile
+reading cannot settle.
 
 ## Toolchain provenance
 
@@ -202,15 +202,16 @@ Useful analysis helpers:
   scratch configs, function extents, and masked call operands without creating
   another function or changing cluster totals; duplicate names are rejected.
 - Every function has a `port_scope`:
-  - `"core"` (the default) is authored portable behavior that the native mirror
-    must recover.
+  - `"core"` (the default) is authored portable behavior that a future
+    implementation must preserve.
   - `"boundary"` is an authored content, input, audio, or rendering contract
-    whose behavior still matters across the modern-engine seam.
+    whose behavior still matters across the eventual platform seam.
   - `"replaceable-platform"` is a concrete Win32, Direct3D, DirectInput, BASS,
-    or legacy RShell/file/archive backend implementation that the port replaces.
+    or legacy RShell/file/archive backend implementation that future platform
+    glue replaces.
   - `"third-party"` is a proven library body that should be linked or replaced,
     not decompiled.
-  Status counts `core` and `boundary` functions in port-relevant totals and
+  Status counts `core` and `boundary` functions in reconstruction-relevant totals and
   keeps the last two scopes visible in separate excluded sections for call,
   semantic, and extent context. Scope by implementation ownership and
   cross-platform evidence, never by match difficulty; uncertain authored code
@@ -296,5 +297,5 @@ and is worth less than an honest 60%:
 - x87-heavy functions are the hardest to match; near-misses that differ only
   in fld/fstp scheduling are still strong evidence — record the residual diff
   in the scratch directory rather than forcing source contortions.
-- A matched scratch is the porting reference for the Zig side; link it from
-  the function's PORT comment and the relevant analysis note.
+- A matched scratch is the implementation reference for that behavior; link it
+  from the relevant analysis note.

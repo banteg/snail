@@ -1,16 +1,17 @@
 # Frida Runtime Trace
 
-This page describes the Frida harness for capturing the runtime evidence we still need from the original Windows game.
+This page describes the Frida harness for collecting targeted runtime evidence
+from the original Windows game when static analysis is insufficient.
 
 The broad runtime script lives at [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js).
 
-For the narrower remaining path-family questions, use the focused oracle at [tools/frida/snailmail-path-oracle.js](../../tools/frida/snailmail-path-oracle.js).
-
-The Windows-side operational handoff lives at [windows-frida-handoff.md](windows-frida-handoff.md).
+For path-family questions, use the focused collector at
+[tools/frida/snailmail-path-oracle.js](../../tools/frida/snailmail-path-oracle.js).
 
 ## Goal
 
-The remaining static RE gap is no longer basic file formats. It is runtime behavior:
+Use runtime tracing for questions that cannot be settled from callsites,
+decompiles, or matching alone, such as:
 
 - when named `Path=` rows become live attachment probes and follow states
 - how the player state evolves while those attachments stay active

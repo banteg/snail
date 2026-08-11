@@ -147,8 +147,7 @@ mobile-width ABI.
 This authored-name change is codegen-neutral: focused matching remains 84.42%,
 154/154 instructions, prefix 19, with all 27 currently audited references
 clean. None of the 66 exhausted source-shape variants was reopened. This closes
-the matcher owner spelling only; the rewrite's Zig Tip payload/controller gap
-remains separate work.
+the matcher owner spelling.
 
 ## 2026-08-09 stale mutation-plan retirement
 

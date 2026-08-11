@@ -6,8 +6,8 @@ them (zero-jump hot path). Three-insn layout-only residual; every compare,
 threshold, and store matches.
 
 Semantics pinned: the new mirror state is strictly
-`random_float_below(1.0f, "Mirror") > 0.5f` (confirms the 06-10
-strict-threshold Zig fix), `track_mirror_repeat_count` at +0x04 increments on
+`random_float_below(1.0f, "Mirror") > 0.5f`,
+`track_mirror_repeat_count` at +0x04 increments on
 repeat and resets on alternation, four repeats force an inversion
 (`mirror_enabled = !mirror_enabled`) with the repeat count reset, and
 `track_mirror_enabled` persists at +0x02. `populate_runtime_track_cells_from_segments`

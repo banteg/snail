@@ -1,9 +1,8 @@
 # Track quad tables (BOD banks) and the post-build render passes
 
 Recovered 2026-06-10 from `initialize_game_assets_and_world` @ 0x40acf0 plus the
-four post-build passes. This unblocks the three deliberately-empty port lanes in
-`zig/src/track.zig` / `track_render.zig` (fringe promotion, seam harmonize,
-corner edge variants).
+four post-build passes. This closes the native ownership of fringe promotion,
+seam harmonization, and corner edge variants.
 
 ## Root-owned BOD catalog
 
@@ -97,9 +96,7 @@ Runs only on rows where `row % 8 == 3` (look ahead one row) or `row % 8 == 5`
 - slide-family cell next to a floor-family neighbor: the mirror swap
   (Slide0 → Track0), with the same cache-family-swap flag.
 
-This is the seam-alignment pass the port stubbed out in
-`buildRenderCacheSurfaceSwapGrid`; the "two recovered replacement tables"
-are the Track0 and Slide0 corner banks.
+The two replacement tables are the Track0 and Slide0 corner banks.
 
 ## Pass 3: merge_track_tile_runs @ 0x435180
 
@@ -117,13 +114,11 @@ the universe-hole object.
 For every cell whose **next-row** cell is open-neighbor family: if the cell
 quad equals Track0 slice i or Slide0 slice i (any i in 0..7), replace it with
 **TrackWarn slice i** and set `SUBLOC_FLAG_WARNING_CACHE_FAMILY`. This is the striped gap-warning
-floor; it only fires on cells still carrying a plain floor/slide quad, which
-is the eligibility predicate the port was missing
-(`buildRenderCacheWarnSurfaceGrid`).
+floor; it only fires on cells still carrying a plain floor/slide quad.
 
-## Port consequences
+## Recovered Data Model
 
-- The port can model the whole system without BOD pointers: track a per-cell
+- The whole system can be described without raw BOD pointers: track a per-cell
   `(bank, kind, index)` triple (bank ∈ {floor, warn, slide}, kind ∈
   {slice, corner}, index 0..7 / 0..3) seeded by glyph family, then run the
   four passes in the native `rebuild_track_runtime_from_segments` order
@@ -136,5 +131,4 @@ is the eligibility predicate the port was missing
   cache family, `0x40` records a floor/slide cache-family swap, `0x8000` marks
   a corner object, and the old combined `0x6000` literal is the independent
   AI-enabled plus uncached-body pair.
-- `TrackWarn.tga` (and its per-world siblings) is the texture for the
-  promoted quads; the port already loads per-world texture sets.
+- `TrackWarn.tga` and its per-world siblings are the textures for promoted quads.

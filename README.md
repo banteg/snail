@@ -3,10 +3,10 @@
 Reverse-engineering workspace for Snail Mail and the original Windows artifacts
 in [`artifacts/bin`](artifacts/bin).
 
-This is not a finished playable port yet. The active focus is matching
-decompilation against the original gameplay executable: recover plausible C/C++
-source shapes, prove them against the native bytes, and use those matches as
-the foundation for an eventual Zig rewrite/port.
+The active focus is matching decompilation against the original gameplay
+executable: recover plausible C/C++ source shapes, prove them against the
+native bytes, and make the portable game core understandable before writing a
+new runtime. There is no active port implementation in this repository.
 
 ## Current Focus
 
@@ -15,8 +15,8 @@ the foundation for an eventual Zig rewrite/port.
   harness under [`tools/match`](tools/match).
 - Keep recovered names, types, decompiles, and runtime notes synchronized under
   [`analysis`](analysis) and [`docs/re`](docs/re).
-- Treat the Zig runtime under [`zig/src`](zig/src) as a porting scaffold and
-  parity probe, not the final product.
+- Defer new runtime work until the matching decompilation is substantially
+  complete. The eventual platform layer should stay small and explicit.
 - Preserve honest partials. A near match with clear notes is more useful than
   byte-shaped source that cannot explain the original program.
 
@@ -27,9 +27,8 @@ the foundation for an eventual Zig rewrite/port.
 - [tools/match/README.md](tools/match/README.md) - matching decompilation
   harness, toolchain setup, and no-fakematching rules
 - [tools/match/STATUS.md](tools/match/STATUS.md) - generated matching dashboard
-- [docs/index.md](docs/index.md) - documentation index
-- [docs/rewrite/index.md](docs/rewrite/index.md) - rewrite notes and current
-  parity backlog
+- [docs/index.md](docs/index.md) - original-format and reverse-engineering
+  documentation index
 
 ## Important Artifacts
 
@@ -40,7 +39,7 @@ the foundation for an eventual Zig rewrite/port.
 - [`artifacts/bin/SnailMail.exe`](artifacts/bin/SnailMail.exe) is the Reflexive
   launcher/wrapper layer.
 - [`artifacts/bin/SnailMail.dat`](artifacts/bin/SnailMail.dat) is the original
-  asset archive loaded by both the tools and the Zig runtime scaffold.
+  asset archive consumed by the inspection tools.
 
 ## Quick Commands
 
@@ -48,8 +47,6 @@ the foundation for an eventual Zig rewrite/port.
 uv run snail match status --write tools/match/STATUS.md
 tools/match/match.sh tools/match/scratches/<function>
 uv run pytest
-zig build test
 ```
 
-Use [DEVELOPING.md](DEVELOPING.md) for the fuller workflow before starting new
-matching or rewrite work.
+Use [DEVELOPING.md](DEVELOPING.md) for the fuller matching workflow.

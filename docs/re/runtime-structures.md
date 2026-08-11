@@ -2,7 +2,9 @@
 
 This page collects the high-confidence runtime layouts that currently matter most for the movement, attachment, and row-event work.
 
-The goal is not to freeze a final class hierarchy. It is to keep the recovered offsets in one place so Binary Ninja typing, Frida captures, and the Zig rewrite can all refer to the same names.
+The goal is not to freeze a final class hierarchy. It is to keep the recovered
+offsets in one place so analyzer typing, matching headers, and runtime captures
+can all refer to the same names.
 
 ## Player
 
@@ -23,7 +25,6 @@ The current high-confidence `Player` fields are:
     `UNKNOWN_1 (1)`, `WAITING_FOR_START (2)`, `START_PENDING (3)`, and
     `TEARDOWN (4)`
   - `WAITING_FOR_START` is the suspended-drive/start-gate state consumed by both `update_subgoldy` and `update_subgame`: it leaves the player actor active, but suppresses selected-record replay sample application, lateral steering interpolation, forward velocity, movement-fire/slow-commentary gates, timer advance, and generated garbage/salt hazard spawns
-  - the current Zig port maps this shape to the post-attachment launch envelope (`LaunchState.active`) rather than treating it as a standalone hazard flag
   - child `+0x84`: prompt widget
   - child `+0x88/+0x8c`: teardown progress and step
   - child `+0x98`: borrowed containing `Player*`
@@ -373,7 +374,7 @@ Two `update_subgoldy` corrections from the latest static audit:
     state and progress; neither shipped AI consumes it, so the amplitude
     ownership is recovered without inventing an active effect
   - `update_cameraman` consumes `lane_lean_amplitude`, `lane_lean_progress`, and `heading_roll` directly when building the live camera roll
-  - `update_track_attachment_follow_state` also accumulates `installed_heading_delta` into `heading_roll`, matching the same live lane the port already mirrors
+  - `update_track_attachment_follow_state` also accumulates `installed_heading_delta` into `heading_roll`
 
 Important caveat:
 
@@ -505,10 +506,8 @@ Current practical read:
 - `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, shuts off the `JETPACKTHRUST` visual lane once the warning band begins, and forces shutoff when the current runtime cell carries flag `0x80`
 - `initialize_jet_particles`, `update_jet_particles`, and `uninit_jet_particles` operate on the same controller; the `+0x20` block is a fixed `30`-entry sprite-slot bank used by the hover thrust particles
   - cross-port authored names are `cRSubHover::JetInit`, `Jets`, and `JetUnInit`
-  - the Zig port now mirrors this as a persistent `15 x 2` nozzle bank instead of respawning generic smoke every frame
   - `update_jet_particles` rolls `random_back_seed = next_math_random_value() * 0.0000015258789 + 0.40000001` and `random_width_seed = next_math_random_value() * 0.0000015258789 + 0.12` once per bank update
   - at trail index `14`, each side rolls `next_math_random_value() * 0.000030517578 > 0.89999998`; success allocates one detached smoke sprite at that trail-tip position, size `0.1 x 0.3`, carrying `Player.velocity * 0.85` and the sprite `+0x78` lane `0.001`
-  - the Zig port maps that detached smoke sprite into the generic effect pool, so the native sprite-manager lifetime is still approximated rather than owned by a literal sprite slot
 - `update_subgoldy` also reads `state` from `player + 0x275c`; when that lane is `1`, the late `0x43ce23 -> 0x43ce75` branch retires `attachment_exit_pending` before the `attachment_exit_progress` / gate-A block
 - `update_subgoldy` consumes the wobble outputs and active state from this controller immediately after the per-frame update
 - the final no-op call from `update_jetpack_gauge` uses the same Windows address
@@ -568,7 +567,10 @@ Practical interpretation:
   - `4` = active thrust presentation
   - activation uses `set_weapon_animation(..., 1, ..., 4)` followed by a queued `0`
   - deactivation at the `0.94` warning edge uses `set_weapon_animation(..., 1, 1, 8)` followed by a queued `-1`
-- the recovered asset family for that controller is `JETPACKTHRUST`; the separate `cRSubHover::Jets` nozzle-particle owner is now represented in Zig as the persistent bank above, including native-scaled width/back-offset jitter and the recovered trail-tip detached puff allocation branch
+- the recovered asset family for that controller is `JETPACKTHRUST`; the
+  separate `cRSubHover::Jets` owner controls the persistent nozzle-particle
+  bank, including width/back-offset jitter and the trail-tip detached puff
+  allocation branch
 
 ## Frontend Transition And Overlay Owners
 
@@ -587,8 +589,7 @@ The matcher now uses the authored primary frontend owners directly:
   own the embedded camera and final rotation step; `Overlay` remains a
   compatibility typedef.
 
-These primary-name promotions close matcher ownership only. They do not erase
-the remaining Zig widget polish or outer frontend-return gaps.
+These primary-name promotions close matcher ownership only.
 
 ## cRSubGame
 
@@ -832,9 +833,6 @@ Current practical read:
     - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are also statically identifiable
     - the `0x43ce75` late clear is now narrowed too: it sits behind `sub_hover.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
     - the common post-swept-re-entry retirement path among those late clears still needs runtime confirmation
-  - Zig now follows that narrowing more honestly:
-    - the old `attachment_exit_progress >= 1.0` timeout clear is gone
-    - active-phase retirement only uses the confirmed jetpack clear plus a conservative grounded/trampoline settle proxy until the missing carryover owner is recovered
 - `update_subgoldy` also owns a separate completion handoff block:
   - once the player reaches the course-end threshold at `game + 0x58` and no attachment-exit handoff is pending, it arms `completion_handoff_active = 1`
   - it seeds `completion_handoff_timer = 0`, `completion_handoff_timer_step = 1/60`, and `completion_handoff_voice_gate = 0`
@@ -863,12 +861,10 @@ Current practical read:
   - `update_frontend_state_machine` state `0x1b` then destroys and reinitializes subgame, and `initialize_subgame` consumes that nonzero continuation selector by mode:
     - `level_mode == 1` rebuilds the challenge-setup owner through `initialize_challenge_setup_screen`
     - `level_mode == 4` rebuilds the Time Trial galaxy owner through `initialize_galaxy`
-    - the current port now rebuilds that `level_mode == 1` lane into a literal challenge-setup controller instead of collapsing it onto `New Game -> Challenge Mode`
   - current best read for `game + 0x1270fc8` / app dword `+0x12e55e0` is now narrower than "not replay-only":
     - selector `1` is the postal post-completion rebuild lane
       - ordinary non-final completion writes `game + 0x1270fc8 = 1`
       - `initialize_subgame` then treats postal mode specially under selector `1`: increments the visible route progression lane, saves `SnailMail.cfg`, opens the postal galaxy owner, and resets subgame
-      - this matches the current Zig `RouteMapScreenMode.post_completion_exit` lane rather than a generic route-map reopen
     - selector `2` is the ordinary rebuild/start lane used by other front-end owners
       - `update_subgoldy_resurrect` writes `game + 0x1270fc8 = 2` before ordinary final-loss teardown
       - `update_new_game_menu` direct `Postal Mode` also writes app `+0x12e55e0 = 2` before frontend state `10`
@@ -887,7 +883,6 @@ Current practical read:
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
   - the challenge setup `Watch Replay` pointer targets the game-local mirror at `game + 0xfb3050`, not the visible challenge score table
-  - the port now mirrors that split directly: challenge-setup `Watch Replay` launches stay on a transient selected-record source backed by that separate mirror and rebuild back into the same challenge-setup owner on return
 - a second replay-launch lane now has stronger static shape on the app side:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec` with a replay-bearing record pointer, set app bytes `+0x1066be8` / `+0x1066be9` to `1`, and populate `app + 0x1066bf0` with the later saved replay return owner (`0x12` from high-score rows, `2` from the menu replay path)
   - `update_frontend_state_machine` initializes subgame at `data_4df904 + 0x74618`, so those app offsets alias the subgame-local selected-record fields exactly:
@@ -972,15 +967,14 @@ Current practical read:
 - native `replay_update_cursor` is the per-update cursor advanced by `update_subgoldy`
 - the same cursor also drives selected replay-sample reads and the Time Trial terminal threshold
 - native `runtime_track_index` at `+0xff25e4` is separate and still names the rendered/current row index
-- the Zig runner keeps the replay lane as `replay_sample_index` because its `runtime_track_index`
-  name is already used for the rendered row index consumed by track sampling
 - the dword at `+0xff25d8` remains separate from `selected_level_record`, `replay_update_cursor`, and `runtime_track_index`
   - current best read: it is the saved replay return owner seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
-  - the Zig bridge now mirrors that lane more literally too: persistent selected-replay context stores the raw saved owner-state separately and only derives a higher-level target from it when it needs to rebuild an owner shell
   - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
 - the remaining New Game replay-attract gap is now narrower too:
   - the persistent replay scratch, bank rotation, saved replay return-owner writes, startup clear, and click-start suppressor are confirmed statically
-  - BN static inspection now shows `data_4df904 + 0x4f2dc + 0x14` starts as zero and has no direct absolute xrefs outside the `update_new_game_menu` read, so the port keeps the replay-attract branch modeled but dormant instead of inventing a timer
+  - BN static inspection shows `data_4df904 + 0x4f2dc + 0x14` starts as zero
+    and has no direct absolute xrefs outside the `update_new_game_menu` read;
+    treat the replay-attract branch as dormant unless a producer is recovered
   - the hide-release lane is now modeled as the recovered `+0x8` accumulator and `+0xc = 1/3600` step reset after each probe pass; the remaining static gap is the dormant launch-step producer at `+0x14`
 - the former single-slot pickup-like window around `game + 0x355e08` lies
   inside the exact `0xb4`-byte `SubSpeedUp` owner at `+0x355db0`; it is not a
@@ -1453,7 +1447,9 @@ Current practical read:
   - the default ramp family uses `EXPLODE_RAMP` (`2`), randomized `SLOW_DEFAULT` (`3`), or `NORMAL_DEFAULT` (`4`) and the shared base-rate path instead:
     - `phase_step = 1 / ((2 - base_subgame_rate * 0.3) * 60) * shooting_tier * 0.125 * track_center_x * tau`
   - values `0` and `1` remain explicit `UNKNOWN_0`/`UNKNOWN_1` tokens because no live Windows producer is recovered; the spawner still preserves their distinct placement/RNG paths and the collision consumer preserves kind `1`'s score + `PW1` behavior
-  - after a `NORMAL_DEFAULT` (`4`) ramp spawn, `update_subgame` advances the spacing cursor to the source row during early startup movement modes, otherwise to `source + 35`; the live Zig scanner mirrors the non-startup `source + 35` branch
+  - after a `NORMAL_DEFAULT` (`4`) ramp spawn, `update_subgame` advances the
+    spacing cursor to the source row during early startup movement modes,
+    otherwise to `source + 35`
   - the active slot position is the mutable vector at `+0x68/+0x6c/+0x70`
   - default ramp families `0/1/2/3/4` randomize `x` directly into that live slot vector at spawn
   - child particles orbit around the same live slot vector instead of around an independent hidden anchor
@@ -1467,9 +1463,8 @@ Current practical read:
 - on hit, the slot does not die immediately: `handle_subgoldy_collisions` moves `ACTIVE -> COLLECT_PENDING`, and the slot's `update_ring_or_special_effect_parent` vtable advances `COLLECT_PENDING -> COLLECTING` before teardown
 - the collect transition (`2 -> 3`) and expand transition (`4 -> 5`) seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
 - the same vtable owns the `EXPAND_PENDING -> EXPANDING` teardown lane keyed
-  from `owner_lives_snapshot`; the older Zig-only
-  `movement_flag_selector_snapshot` label was a false ownership read, and the
-  runtime mirror now snapshots `visible_life_stock` instead
+  from `owner_lives_snapshot`; the older `movement_flag_selector_snapshot`
+  label was a false ownership read
 - the collision switch owns the ring-kind ladder:
   - `UNKNOWN_1` (`1`) -> score + `PW1`
   - `EXPLODE_RAMP`/`EXPLODE_AUTHORED` (`2/6`) -> score + `EXPLODERING` + `initialize_nuke`
@@ -1479,8 +1474,6 @@ Current practical read:
 - the same pre-ladder collision block writes the live forward-motion lane:
   - `SLOW_DEFAULT`/`SLOW_AUTHORED`: `velocity.z = -0.1`
   - other live ring-effect kinds: `velocity.z = track_center_x * 0.5`
-- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, seeds the native presentation anchor for the ring slot, carries the recovered `base_subgame_rate` lane into the default-family `0/1/2/3/4` phase-step formula, seeds the post-hit progress step from `track_center_x` instead of from runner speed, and writes both the negative and positive live-ring `velocity.z` impulses into the runner motion lane
-- the remaining Zig gap is that collisions still use the older lower proxy anchor while the player-height parity gap remains open, and the active `+0x1dc` oscillation gate is still conservative because its writer is still unresolved
 
 ## cRSubGarbage Runtime
 
@@ -1534,7 +1527,6 @@ Current practical read:
     `burst_progress_step` pair to `0` and `subgame_rate * 1/120`; neither
     retained build reads the pair, so the names record only its typed
     burst-state ownership and do not assign an unobserved effect
-  - the Zig port now emits the smoke through a native-shaped burst event (`SMOKE.TGA`, position from the live garbage slot, `velocity * 0.2`, size `0.3 x 1.3`, and an ~8-tick lifetime) instead of hand-placing two collision puffs
 - `destroy_garbage_hazard` matches Android `cRSubGarbage::Kill()` and unlinks
   the same `next_active` chain rooted at
   `owner_game->garbage_hazards.active_head`
@@ -1836,30 +1828,6 @@ This matches the recovered follow-state update behavior:
 - the current sample `delta_length` scales the per-tick path factor
 - `position` and `delta_dir_to_next` feed the interpolated output pose
 - `special_scalar` is the field consumed by the special nonlinear kind-`42` branch
-
-## Current Zig Port Attachment Types
-
-The Zig port now has its own attachment-side types that are worth keeping distinct from the Windows layouts above.
-
-These are implementation shapes, not recovered Windows structs:
-
-- [`attachment_builders.TemplateSample`](../../zig/src/attachment_builders.zig)
-  - Zig-side sampled point record used by the builder scaffold
-- [`attachment_builders.Template`](../../zig/src/attachment_builders.zig)
-  - Zig-side public-family template with width, sample count, exit-tail extra, and the sample array
-- [`attachment_builders.BuiltAttachment`](../../zig/src/attachment_builders.zig)
-  - one authored row plus its built Zig-side template
-- [`attachment_builders.Scaffold`](../../zig/src/attachment_builders.zig)
-  - current preview-owned authored-row registry, built templates, and first installed-row map
-- `AttachmentFollowState` in [`gameplay.zig`](../../zig/src/gameplay.zig)
-  - current gameplay-side follow state carrying source row, progress, exit overshoot, lateral offset, cached output lane center, vertical offset, and cached output position
-- `LaunchState` in [`gameplay.zig`](../../zig/src/gameplay.zig)
-  - current gameplay-side post-attachment launch state used by `SUPERTRAMP` and elevated exits
-
-Current practical split:
-
-- the RE docs above describe the Windows runtime structures
-- the Zig types above describe the current port-side scaffold that now builds, renders, and follows public attachment families without yet claiming the exact Windows installed-bank layout
 
 ## Binary Ninja Note
 

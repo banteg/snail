@@ -537,8 +537,7 @@ Recovered this pass (full field map in scratch.cpp):
 
 # Dossier — scratch not yet written (700 insns, 2656 bytes)
 
-update_golb_ai @ 0x414820. target.asm committed. Focus: the path-follow
-lane the Zig port lacks (checklist Phase 4 item).
+update_golb_ai @ 0x414820. target.asm committed. Focus: the path-follow lane.
 
 ## Path-follow entry (IDA export lines ~180-198)
 
@@ -563,15 +562,6 @@ Velocity triple at +600/604/608, position at +684/688/692, live matrix
 at +636 (0x40 copy), path-follow state at +700 (the matched
 GolbPathFollowState layout), owner game ptr at +624.
 
-## Zig gap
-
-The port has the level band + gravity + despawn (checklist) but not the
-tile-30 path-follow entry, the per-state trail dispatch offsets, or the
-adjacent-row second entry. The matched search_path_for_golb (100%) and
-initialize_path_follow_golb (100%) make the mirror transcription of the
-entry lane mechanical once the in-follow stepping region of this
-function is read (next session).
-
 ## In-follow stepping + rocket homing (lines 94-175)
 
 - following (state byte +700 == 1): `traverse_path_follow_golb(state, step
@@ -583,7 +573,6 @@ function is read (next session).
   its NOTES for path-follow residuals.
 - not following: position += velocity, then per state:
   - 0 (laser): outside the y band [0, 0.49], vy -= subgame_rate * 0.017
-    (the lane the port already has)
   - 2 (rocket) with a live target (+408): homing — blend (+428)
     accumulates by step (+432) capped 1.0; impact sprite + despawn when
     distance to target < 0.4; velocity = renormalize(blend*to_target +
@@ -592,9 +581,9 @@ function is read (next session).
 - exit: the follow byte clears at line ~368 (read the surrounding block
   for the exit conditions next).
 
-Mirror plan: entry + homing + trails are transcribable now; riding waits
-on traverse_path_follow_golb. Spawn-side setup now has a structure-complete
-create_golb scratch; use its NOTES for movement-flag spawn semantics.
+Entry, homing, and trails are semantically recoverable now; riding depends on
+`traverse_path_follow_golb`. Spawn-side setup has a structure-complete
+`create_golb` scratch; use its notes for movement-flag spawn semantics.
 
 ## traverse_path_follow_golb @ 0x4217b0 (read 2026-06-12)
 
@@ -608,9 +597,7 @@ progress +0x10, vertical +0x14, output +0x18). The mode codes 0-3 it
 returns are what update_golb_ai switches on. The original clearly
 stamped one template-follow routine into both call sites — a future
 scratch should be derived from the boss scratch's source, and any boss
-golf wins transfer here. For the Zig mirror, the existing
-updateTrackAttachmentFollowState transcription covers this function's
-semantics modulo the state struct binding.
+source-shape wins transfer here.
 
 2026-06-18 vector alias cleanup: the scratch-local x/y/z `Vec3` view now aliases
 the shared `Vector3` type. Focused Wibo remains `49.85%`, `646/694`, with

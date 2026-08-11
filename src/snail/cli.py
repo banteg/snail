@@ -529,7 +529,7 @@ def build_parser() -> argparse.ArgumentParser:
     screenshots_compare_parser.add_argument(
         "render",
         type=Path,
-        help="Path to the current port screenshot.",
+        help="Path to the candidate screenshot.",
     )
     screenshots_compare_parser.add_argument(
         "reference",

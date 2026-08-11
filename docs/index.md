@@ -1,32 +1,33 @@
 # Index
 
-Snail Mail is a reverse-engineering and rewrite project for the original Windows game. The repo has three goals that feed each other:
+Snail Mail is a reverse-engineering project for the original Windows game. The
+repo has two current goals:
 
 - decompile and document how Snail Mail's original artifacts work
-- preserve the original content formats and runtime behavior closely enough to reproduce them
-- build toward a Zig rewrite/port with a native runtime that can load the original assets directly
+- preserve the original content formats and runtime behavior as primary evidence
 
-This is not a texture rip or asset-conversion project. The long-term target is a clean-room Zig port that understands the shipped archive, scripts, meshes, textures, and audio without requiring a Python conversion pipeline at runtime.
+Matching decompilation comes first. A future implementation can consume the
+recovered core behind a deliberately small platform boundary, but no port is an
+active source of truth today.
 
 ## Project Tracks
 
 - [Original](original/index.md): verified facts about the shipped files, archive layout, and authored content formats
-- [Rewrite](rewrite/index.md): the architecture and fidelity rules for the Zig port
 - [RE](re/index.md): deeper notes on the executable, runtime systems, path behavior, Binary Ninja workflow, and trace collection
 
 ## Current Shape
 
-Today the repo is split roughly into two implementation tracks:
+Today the repo is split roughly into two evidence tracks:
 
 - Python tooling for archive parsing, text-format inspection, wrapper unwrap, trace summarization, and symbol-manifest validation
-- Zig runtime work for the rewrite scaffold, with direct support for `SnailMail.dat`, `.tga`, `.ogg`, `.txt`, and `.x2`
+- C/C++ matching scratches, analyzer databases, decompile exports, and runtime captures for the original executable
 
 The workflow is intentionally iterative:
 
 1. recover behavior from the original executable and content
 2. document the findings here
-3. reimplement the same behavior in Zig
-4. use the original assets to verify that the port still matches the game
+3. prove source shapes against the shipped executable
+4. defer implementation until the recovered core has stable boundaries
 
 ## Local Preview
 

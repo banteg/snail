@@ -314,16 +314,6 @@ arithmetic here is source-shape preservation, not an unresolved owner.
 - tile 31 anchor.x *= c (497434).
 - 4 sub-object slots at cell+0x4c..: position row copied, vec zeroed.
 
-## Verify targets for the port (next pass)
-
-1. the '(' trampoline cadence (8th visible / 15th reset) vs the port's
-   track build;
-2. the prior-row-3 retag chain ({,>,} -> 8/9/10 with prior 11/12/13);
-3. digits -> tile 15 (slide) on non-attachment rows;
-4. rows < 4 start-platform anchor y;
-5. the mode-1 random segment pick + visited byte (+8) semantics vs
-   the port's challenge build.
-
 ## Replay record analysis ownership (2026-07-13)
 
 The path-template analysis header formerly called the borrowed runtime pointer

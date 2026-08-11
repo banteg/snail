@@ -18,7 +18,7 @@ Recommended workflow:
    - `uv run python tools/binja/sync_symbols.py apply`
 5. Apply the same manifest onto the colocated IDA database when you want the Windows names available there too:
    - `uv run python tools/ida/sync_symbols.py`
-6. Refresh the tracked Binary Ninja and IDA decompile snapshots under [`analysis/decompile`](../../analysis/decompile/README.md) when you want version-controlled pseudocode diffs for every curated symbol:
+6. Refresh the tracked Binary Ninja and IDA decompile snapshots under `analysis/decompile` when you want version-controlled pseudocode diffs for every curated symbol:
    - `uv run python tools/export_tracked_decompiles.py --sync-ida-symbols`
 7. Export targeted IDA pseudocode artifacts when a single function needs a second-opinion decompile view:
    - `uv run tools/ida/export_function.py update_subgoldy`

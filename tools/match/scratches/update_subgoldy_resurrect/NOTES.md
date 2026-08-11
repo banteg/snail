@@ -46,7 +46,5 @@ Exact match.
   `3 -> 2` write; a later zero-life final-loss pass instead reached
   `complete_subgame(game, 1)` without decrementing again.
 - Android `cRSubGoldy::RessurectAI()` independently retains the same gated
-  Postal decrement and final-loss split. Zig likewise selects the outcome
-  after its death controller finishes, decrements only a Postal respawn, and
-  has focused tests for the Postal `3 -> 2` handoff, Challenge final loss, and
-  the floor resurrect delay. No additional Windows writer trace is needed.
+  Postal decrement and final-loss split. No additional Windows writer trace
+  is needed.

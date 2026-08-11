@@ -1,6 +1,6 @@
 # Original
 
-These pages track the shipped game as it exists today: archive layout, decoded asset families, and format constraints that the rewrite has to preserve.
+These pages track the shipped game as it exists today: archive layout, decoded asset families, and format constraints that any future implementation has to preserve.
 
 The point of this section is to separate stable facts about the shipped files from deeper executable analysis. If a page is mainly about what is on disk, it belongs here. If it is mainly about how the runtime interprets or transforms those files, it belongs under [RE](../re/index.md).
 

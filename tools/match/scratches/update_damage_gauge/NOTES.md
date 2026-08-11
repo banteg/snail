@@ -10,17 +10,10 @@ owned by `GameRoot::subgame` and its embedded `Player`:
 - `Game+0x42fde8 == 0.49f` is
   inherited `Player::transform.position.y == rest height`, so the
   transition into state 2 is grounded-player behavior.
-- state-2 drain refreshes change_snail_skin(1, 0.2) per tick (matches
-  the Zig controller's state-2 skin refresh)
+- state-2 drain refreshes change_snail_skin(1, 0.2) per tick
 - The three non-fill exits are `Player::completion_handoff_timer` at `+0x444`,
   `Player::resurrect_progress` at `+0x8c`, and
   `Player::presentation.cutscene.state` at presentation `+0x1964`.
-
-Zig verify: gameplay/damage.zig models these as opaque UpdateContext
-bools (warning_start_blocked, accelerated_drain_gate, suspended) — the
-correct seam shape; they can now be WIRED to their real sources
-(attachment exit, completion handoff, grounded/resurrection/cutscene state)
-when cluster-5 routes.
 
 ## Scratch status
 

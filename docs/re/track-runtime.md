@@ -9,9 +9,8 @@ Verified parser behavior:
 - segment files are enumerated from `SEGMENTS/*.TXT`
 - hard cap: `150` segment files
 - each row keeps `8` interior cell characters between the leading and trailing `@` guards
-- the Zig text parser currently retains the two guard columns for editor/debug
-  visibility, but the runtime builder mirrors native by treating them as parser
-  fences: they map to empty cells and do not advance `switch_track_mirror`
+- the leading and trailing guard columns are parser fences: they map to empty
+  cells and do not advance `switch_track_mirror`
 - `switch_track_mirror` increments its latch counter when the random mirror
   decision repeats the current state; the fourth repeat flips the decision and
   clears the counter
@@ -29,10 +28,6 @@ Observed field offsets from the segment slot base in `load_segment_definitions`:
 - velocity: `+0x8b0`, `+0x8b4`, `+0x8b8`
 - path index: `+0x8bc`
 - ring speed: `+0x8c0`
-
-Current Zig port note:
-
-- the segment parser and preview pipeline now preserve per-row `RingSpeed` metadata as a first-class row/runtime field instead of dropping it during text import
 
 `AuthoredSegmentRowFlag` owns the packed row-flags dword at `+0x88c`:
 
@@ -103,23 +98,27 @@ Current high-confidence render-normalization read:
   - each emitted fringe object takes its RGBA skirt colour from `get_track_skirt_color`
 - void `build_track_render_caches` consumes the resulting ownership/flag state into the Floor/Slide/Warn/Ramp/Fringe caches; its final debug-report value is incidental, just as the initializer's final allocation pointer is incidental
 
-Current Zig port status for this slice:
+Additional recovered constraints:
 
-- static asset-init recovery confirms the promoted floor and promoted slide replacement tables both route into the shared `TRACKWARN` asset family, but native only promotes after matching the current BOD object against those tables; the port no longer guesses from open-below runtime tiles alone
-- `harmonize_center_lane_floor_slide_variants` is likewise table-driven: row phase and neighbour families are only candidate filters, so the port no longer guesses center-seam floor/slide flips from tile ids alone
-- the horizontal ownership lane now also follows the recovered floor-vs-slide split more closely: floor condensation uses the native subset (`0x01/0x15/0x1b/0x21/0x22`, excluding floor-family tile `0x14`), the separate slide-family path uses `IsSlide`, and warn-promoted or corner-marked heads no longer collapse into a single quad
-- the runtime edge-mask lane now also carries the native corner bit on `5/6/9/10` masks
-- the simple fringe renderer now honors two recovered `build_track_fringe_objects` suppressors: marked rows and explicit runtime warn tile `0x20`
-- the simple fringe renderer now uses the recovered `is_neighbor_cell_solid` predicate directly for fringe-neighbour solidity; render-backed marker cells like `0x0e`, `0x1d`, and `0x23` remain open, while attachment-entry tile `0x1e` is solid as a neighbour but does not emit its own fringe because `select_track_tile_edge_variants` excludes it from edge-mask assignment
-- the simple fringe renderer now also uses the recovered shared skirt tint shape from `get_track_skirt_color`: white RGB with fixed `0.4` alpha
-- the runtime preview and debug path now also mirror the recovered `mark_track_warning_zones` footprint grid
-- the warning-footprint lane is now closed as gameplay spawn policy: its two
-  bits independently suppress generic ambient garbage and salt fallback spawns
-  on `0x01/0x15/0x0f` cells, and no render/cache consumer exists
-- `mark_track_warning_zones` operates on the native 8 playable lanes. In Zig's
-  retained 10-column parser grid, the first and last `@` guard columns are not
-  eligible warning seed or footprint lanes.
-- the remaining static gap is exact BOD-table matching for `promote_track_tiles_to_fringe_variants` and `harmonize_center_lane_floor_slide_variants`, broader directional-fringe rendering/cache routing, and the last marked-row / low-bit ownership details in `merge_track_tile_runs`
+- promoted floor and slide replacements route through the shared `TRACKWARN`
+  asset family, but only after the current BOD object matches the relevant
+  replacement table
+- `harmonize_center_lane_floor_slide_variants` is table-driven; row phase and
+  neighbouring families are candidate filters rather than sufficient selectors
+- floor condensation uses tile kinds `0x01/0x15/0x1b/0x21/0x22`, excluding
+  floor-family tile `0x14`; the slide-family path remains separate
+- the edge-mask lane carries the native corner bit on masks `5/6/9/10`
+- `build_track_fringe_objects` suppresses marked rows and runtime warning tile
+  `0x20`, and uses `is_neighbor_cell_solid` for neighbour solidity
+- render-backed markers `0x0e`, `0x1d`, and `0x23` remain open; attachment-entry
+  tile `0x1e` is solid as a neighbour but does not emit its own fringe
+- `get_track_skirt_color` supplies white RGB with fixed `0.4` alpha
+- warning-footprint bits independently suppress ambient garbage and salt
+  fallback spawns on `0x01/0x15/0x0f`; no render/cache consumer exists
+- `mark_track_warning_zones` operates on the native eight playable lanes
+- the remaining matching gap is exact BOD-table shape, broader directional
+  fringe cache routing, and the last marked-row/low-bit ownership details in
+  `merge_track_tile_runs`
 
 Related shared color helper:
 
@@ -472,7 +471,7 @@ Recovered helper predicates:
 - open-neighbor family:
   - `0x00`, `0x0e`, `0x1c`, `0x1d`, `0x23`
 
-These helpers feed both the render-cache passes and the movement code, so they are a better porting boundary than the raw authored glyphs.
+These helpers feed both the render-cache passes and the movement code, so they are a better future platform boundary than the raw authored glyphs.
 
 Recovered gameplay entity-population tile semantics from `update_subgame`:
 

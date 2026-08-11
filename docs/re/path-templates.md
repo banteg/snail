@@ -175,7 +175,7 @@ That dynamic shape is useful because it tells us the constructor output is stabl
 
 - the live runtime is not mutating the sample count or subdivision count per use-site
 - the follow-state code is consuming family-shaped records, not ad hoc per-row blobs
-- the remaining rewrite problem is therefore constructor semantics and sampled-point reconstruction, not discovering whether path templates are dynamically resized at runtime
+- the remaining recovery problem is therefore constructor semantics and sampled-point reconstruction, not discovering whether path templates are dynamically resized at runtime
 
 ## Recovered Record Shape
 
@@ -317,7 +317,7 @@ The March 10 Windows attachment package independently corroborated a few of thes
 ## Matching Disposition
 
 The broad path-constructor matching campaign is retired. Its aggregate score
-table duplicated generated [`tools/match/STATUS.md`](../../tools/match/STATUS.md),
+table duplicated generated `tools/match/STATUS.md`,
 and its source-shape experiment log duplicated the `NOTES.md` files beside the
 individual scratches. Those scratches remain the matching evidence; this page
 and the checked-in path-template type lane remain the durable semantic model.
@@ -343,22 +343,3 @@ questions above answerable.
 The concrete constructor xrefs converge on `initialize_game_assets_and_world`.
 If the public-name or pair-bank mapping is reopened, audit those caller islands
 first instead of polishing every constructor body in parallel.
-
-## Current Zig Port Scaffold
-
-The current Zig port now mirrors the public authored family set directly:
-
-- [`attachment_builders.zig`](../../zig/src/attachment_builders.zig) carries the full `51`-name public path registry
-- every public name now builds a Zig-side template through one of the recovered builder families
-- the segment viewer renders all public families from those built templates
-- gameplay now also uses those built templates for live attachment progression and camera basis
-
-What this does **not** mean:
-
-- the Zig port does **not** yet mirror the exact Windows embedded `63`-pair bank
-- it does **not** yet model the 12 auxiliary transition pairs or entry-cell mesh swaps
-- it should treat Windows `WARP` as an unbuilt public placeholder unless a deliberate port extension is desired
-
-So the current Zig scaffold remains a useful public-family layer, while the
-newly recovered Windows bank and transition ownership are concrete follow-up
-implementation work rather than open RE questions.

@@ -1,23 +1,23 @@
 # Developing
 
 This repo is evidence-first. The current goal is to recover the original game
-well enough to make a future rewrite boring: matching decompilation establishes
-proof-grade behavior, runtime captures fill gaps, and the Zig code follows only
-where the evidence is strong.
+through matching decompilation. Runtime captures may fill specific evidence
+gaps, but implementation work waits until the portable game core is understood;
+the later platform glue should be small enough to audit directly.
 
 ## Ground Rules
 
 - The primary work surface is matching decompilation against
   `artifacts/bin/SnailMail_unwrapped.exe`.
-- A 100% scratch with a clean masked-operand audit is the strongest porting
-  reference. Link or cite it when moving behavior into Zig.
+- A 100% scratch with a clean masked-operand audit is the strongest behavioral
+  reference. Link or cite it when documenting recovered ownership or semantics.
 - Do not fakematch: no inline asm, dummy externs, flag shopping, or
   byte-shaped source that does not read like plausible original code.
 - Keep partials visible. Record residual diffs and hypotheses in the scratch
   `NOTES.md` instead of hiding mismatch debt.
-- Prefer generated status and primary evidence over old narrative docs. When
-  `analysis/runtime/*.md`, decompile exports, or `tools/match/STATUS.md`
-  contradict older prose, update the stale prose after the fix lands.
+- Prefer generated status and primary evidence over narrative docs. When
+  decompile exports, analyzer state, or `tools/match/STATUS.md` contradict
+  older prose, update or remove the stale prose after the fix lands.
 - Treat `tools/match/STATUS.md` as the sole aggregate matching board. Keep
   target-specific experiments and residuals in each scratch's `NOTES.md`
   instead of maintaining a parallel TODO or campaign ledger.
@@ -35,14 +35,6 @@ uv run pytest
 The matching harness also needs `wibo` and the decomp.me MSVC bundles. Follow
 the setup in [tools/match/README.md](tools/match/README.md); the compiler and
 scratch build outputs are local tooling artifacts and should stay untracked.
-
-Zig is used for the native rewrite scaffold and parity probes:
-
-```sh
-zig build
-zig build test
-zig build run -- smoke
-```
 
 Docs can be previewed locally with:
 
@@ -64,7 +56,7 @@ zensical serve
    - `analysis/symbols/gameplay-functions.json`
    - `analysis/symbols/gameplay-references.json`
    - `tools/match/include/*.h`
-   - relevant `docs/re/*.md` and `analysis/runtime/*.md`
+   - relevant `docs/re/*.md` and scratch-local `NOTES.md`
 
 3. Create or update `tools/match/scratches/<function>/`:
    - `scratch.cpp` for the candidate source
@@ -160,35 +152,6 @@ When synchronizing tool databases, prefer the documented paths in
 [docs/re/symbols.md](docs/re/symbols.md). Keep new rename work in the canonical
 unwrapped gameplay target and avoid wholesale generated churn when a narrow
 manifest or decompile export is enough.
-
-## Rewrite And Port Work
-
-The Zig runtime is currently a validation surface, not the product. It should
-consume original assets directly and move toward native gameplay only when the
-matching, decompile, or runtime-trace evidence is strong enough.
-
-Current rewrite references:
-
-- [docs/rewrite/remaining-work-checklist.md](docs/rewrite/remaining-work-checklist.md)
-  for active parity work and blind spots
-- [docs/rewrite/native-mirror-campaign.md](docs/rewrite/native-mirror-campaign.md)
-  for the native-mirror strategy
-- [docs/rewrite/subsystem-status.md](docs/rewrite/subsystem-status.md) for
-  subsystem notes
-- `analysis/runtime/*.md` for dated parity audits and runtime captures
-
-Useful runtime probes:
-
-```sh
-zig build run -- smoke
-zig build run -- debug
-zig build run -- --start-phase main_menu
-zig build run -- --hidden-window --timeout-seconds 10 --screenshot-at intro:120
-```
-
-If a porting change is driven by a matched scratch, cite the scratch in the Zig
-comment or adjacent note. If it is driven by runtime observation instead, cite
-the capture or dated analysis note and keep the uncertainty explicit.
 
 ## Other Repo Tools
 

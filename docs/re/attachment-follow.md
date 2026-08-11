@@ -94,14 +94,6 @@ Current best static read of those five clear sites:
 - `0x43c06d` is another floor-snap clear in a separate runtime-flag-gated branch
 - `0x43ce75` is not a generic timeout clear: BN plus the checked-in IDA export show it is only reached from the `player + 0x275c == 1` (`sub_hover.state`) late branch at `0x43ce23`, before the `attachment_exit_progress` / gate-A block begins
 
-Current Zig consequence after this pass:
-
-- the port no longer clears `attachment_exit_pending` when `attachment_exit_progress >= 1.0`
-- active jetpack still uses the confirmed `0x43ce75` late clear
-- active-phase non-fall exits now retire only on the native-shaped settle lanes the current port can actually represent: grounded snap and trampoline landing
-- the full airborne carryover and the unresolved `0x43bcb3` owner are still missing, so the common post-swept-re-entry retirement path remains open instead of being hidden behind a fake timeout
-- current-row attachment begin also no longer fabricates a generic source-row follow when the live row lacks an installed owner record; the port now leaves those orphaned rows inert instead of claiming a native direct-begin fallback that the Windows helper chain does not show
-
 What remains unknown:
 
 - which of those later `update_subgoldy` clears is the common post-swept-re-entry retirement path, now that `0x43bcb3` is at least tied to a specific floor-cache/slide motion block and `0x43ce75` is tied to jetpack
@@ -223,13 +215,14 @@ Additional static detail from `update_track_attachment_follow_state`:
 - special-case movement branches still exist for attachment kinds `0x1f` and `0x2a`
 - the special branch reaches the installed primary entry cell through runtime-row `+0xa4`, follows cell `+0x38` to its template, and copies template `+0xa0/+0xa4` into the cell's `BodBase.object`
 
-Newer raw BN plus IDA reconciliation narrows one tempting audio port too:
+Newer raw BN plus IDA reconciliation narrows one tempting audio interpretation:
 
 - `begin_track_attachment_follow_state` seeds `follow_state->sample_index = 0`
 - the raw `update_track_attachment_follow_state` overflow block increments that same dword by `1`, then compares it against `template + 0x44 << 1` before the `voice 4` call at `0x420d30`
 - later in the same helper, the live follow still terminates once `follow_state->sample_index == template + 0x44`
 - under the current typed read of `follow_state + 0xc` as the live sample index and `template + 0x44` as the template sample count, that `voice 4` branch is contradictory and looks unreachable
-- practical consequence: do not add a Zig `voice 4` milestone hook yet; either the relevant counter typing is still wrong or the callsite is stale/dead, so this needs live tracing or stronger type recovery before it becomes a real port target
+- practical consequence: keep the `voice 4` callsite classified as contradictory
+  or unreachable until live tracing or stronger type recovery proves otherwise
 
 The newer Windows-only package also tightened two family reads:
 
@@ -299,7 +292,9 @@ Representative live rows from that run:
 The same run also confirmed a useful live split in vertical behavior:
 
 - many families begin with `offset_y = 0` and an output `y` close to the ordinary player ride height
-- kinds `34`, `35`, `39`, and `45` clearly start with positive `offset_y` and elevated output `y`, which makes them good first targets when reconstructing vertical path motion in Zig
+- kinds `34`, `35`, `39`, and `45` clearly start with positive `offset_y` and
+  elevated output `y`, which makes them strong targets for recovering vertical
+  path motion
 
 Operational caveat:
 
@@ -413,40 +408,3 @@ Still missing:
 - the detailed semantics of each path-template constructor beyond the current family grouping
 - the exact tile-id semantics around attachment entry, exit, and special-case movement reactions
 - the remaining overlap/exit behavior after the now-typed runtime-row-to-entry-cell chain
-
-## Practical Impact On The Rewrite
-
-What the rewrite can already do confidently:
-
-- parse `SEGMENTS/*.TXT` and `LEVELS/*.TXT`
-- mirror the text metadata fields and row flags
-- build a sequential blockout from segment rows
-- attach semantic markers such as parcels, rings, models, and no-fall rows
-
-What still needs more RE before the Zig runtime can match the original course shape:
-
-- how each named `Path=` row maps onto the hardcoded template-pair tables
-- how the original runtime samples those templates for player movement, object placement, and camera behavior
-- which tile ids and row markers trigger attachment entry and exit versus ordinary floor-following
-
-## Current Zig Port State
-
-The current Zig port now goes materially farther than the old “row hint only” fallback:
-
-- [`attachment_builders.zig`](../../zig/src/attachment_builders.zig) mirrors the public `51`-name `Path=` table and builds Zig-side templates for every public family
-- the `Segments` view renders those built families directly, including the current nonlinear kind-`42` branch
-- gameplay now consumes built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and the dedicated `SUPERTRAMP` launch exit
-- the current shared nonlinear kind-`42` path in both gameplay and the segment viewer now uses a decompile-backed local transform model derived from `compute_kind42_attachment_transform`, instead of the older circle-height approximation
-- the recovered kind-`42` halfpipe scalar curve now mirrors `initialize_halfpipe_path_template_pair`: entry samples use `(step / 16 * pi) + pi/2`, exit samples use `((1 - step / 16) * pi) + pi/2`, and sample `+0xa0` stores `((depth * depth) + 16) / (depth * 2)`
-- entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, current-row gameplay begin now stays on the direct `29/30` cell path, and swept installed re-entry only probes the live current row while `attachment_exit_pending` is set, using the live `0x40` slot first and `0x80` second instead of any installed span
-- current-row and visited-row attachment-entry handling no longer fall back to a synthetic generic begin when the installed-owner map is empty; if the live row has no installed owner, the port now leaves it untouched instead of inventing a source-row path
-- immediate swept-entry success no longer looks like an early-clear lane: the native caller re-tests `attachment_exit_pending` right after the first helper call, and the helper itself does not show a direct clear, so overlapping rows still leave the `0x80` probe reachable in the same tick
-
-That is still not the full Windows model.
-
-Current Zig gaps that remain clearly open:
-
-- the later controller that finally retires `attachment_exit_pending` after swept re-entry, plus live confirmation of what happens when two geometrically valid overlapping probes both succeed
-- the exact family-specific semantics inside the nonlinear kind-`42` family
-- adopting the exact 63-pair bank and 12 auxiliary entry-mesh transitions
-- deciding whether the port should preserve Windows' unbuilt `WARP` placeholder or intentionally implement it
