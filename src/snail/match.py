@@ -10,24 +10,24 @@ the exact common instruction prefix before the first normalized mismatch.
 
 from __future__ import annotations
 
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from dataclasses import dataclass, field, replace
 import difflib
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import struct
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from dataclasses import dataclass, field, replace
+from pathlib import Path
 from threading import Lock
 
 import capstone
 
 from .symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    REPO_ROOT,
     FunctionSymbol,
     FunctionSymbolManifest,
-    REPO_ROOT,
     load_function_symbol_manifest,
 )
 
@@ -308,8 +308,8 @@ class MatchResult:
     prefix_instructions: int
     target_lines: tuple[str, ...]
     candidate_lines: tuple[str, ...]
-    target_disassembly: tuple["DisassemblyLine", ...] = ()
-    candidate_disassembly: tuple["DisassemblyLine", ...] = ()
+    target_disassembly: tuple[DisassemblyLine, ...] = ()
+    candidate_disassembly: tuple[DisassemblyLine, ...] = ()
     masked_operand_audit: MaskedOperandAudit = field(default_factory=MaskedOperandAudit)
 
     @property
@@ -1402,17 +1402,16 @@ def disassemble_normalized_function(
                     relocation_offsets=local_relocation_offsets,
                     address_range=address_range,
                 )
-        if reference is not None:
-            if (
-                reference_symbol is not None
-                and reference_symbol.kind in CONTENT_AUDITED_REFERENCE_KINDS
-                and reference_symbol.size is not None
-            ):
-                audited_bytes = _read_object_reference_bytes(
-                    data,
-                    reference,
-                    reference_symbol.size,
-                )
+        if reference is not None and (
+            reference_symbol is not None
+            and reference_symbol.kind in CONTENT_AUDITED_REFERENCE_KINDS
+            and reference_symbol.size is not None
+        ):
+            audited_bytes = _read_object_reference_bytes(
+                data,
+                reference,
+                reference_symbol.size,
+            )
         if reference is None:
             return MaskedReference(
                 operand_index=operand_index,
@@ -2535,6 +2534,19 @@ def run_match_dump(
 DEFAULT_MATCH_ROOT = Path(__file__).resolve().parents[2] / "tools/match"
 DEFAULT_SCRATCH_COMPILER = "msvc6.5"
 DEFAULT_SCRATCH_CFLAGS = "/O2 /G5 /W3"
+RECOVERY_VALUES = frozenset(("incomplete", "semantic-complete"))
+RESIDUAL_VALUES = frozenset(("analysis", "compiler", "references"))
+SCRATCH_CONFIG_KEYS = frozenset(
+    (
+        "CFLAGS",
+        "COMPILER",
+        "END",
+        "FUNCTION",
+        "RECOVERY",
+        "RESIDUAL",
+        "SYMBOL",
+    )
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -2545,6 +2557,8 @@ class ScratchConfig:
     cflags: str
     end_va: int | None
     symbol: str | None
+    recovery: str | None = None
+    residuals: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -2588,6 +2602,74 @@ class ScratchStatus:
         return max(0.0, self.target_size - self.fuzzy_weighted_bytes)
 
 
+def scratch_recovery(status: ScratchStatus) -> str:
+    if status.state == "match":
+        return "exact"
+    return status.config.recovery or "unspecified"
+
+
+@dataclass(frozen=True, slots=True)
+class TriageExperimentEvidence:
+    records: int = 0
+    mutation_sweeps: int = 0
+    probes: int = 0
+    evaluated_variants: int = 0
+    unique_variants: int = 0
+    unique_specs: int = 0
+    no_improvement_streak: int = 0
+    flags: tuple[str, ...] = ()
+    errors: int = 0
+
+
+@dataclass(frozen=True, slots=True)
+class TriageMobileEvidence:
+    status: str = "missing"
+    android_bodies: int = 0
+    ios_bodies: int = 0
+    confidence: str | None = None
+    source_object: str | None = None
+
+    @property
+    def verified(self) -> bool:
+        return (
+            self.status == "verified"
+            and (self.android_bodies > 0 or self.ios_bodies > 0)
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class TriageRow:
+    function: str
+    address: int
+    target_size: int
+    state: str
+    exact_bytes: int
+    fuzzy_weighted_bytes: float
+    candidate_bytes: int
+    scratch_count: int
+    best_status: ScratchStatus | None = None
+    experiments: TriageExperimentEvidence = TriageExperimentEvidence()
+    mobile: TriageMobileEvidence = TriageMobileEvidence()
+
+    @property
+    def fuzzy_gap_bytes(self) -> float:
+        return max(0.0, self.target_size - self.fuzzy_weighted_bytes)
+
+    @property
+    def recovery(self) -> str:
+        if self.best_status is None:
+            return "missing"
+        return scratch_recovery(self.best_status)
+
+    @property
+    def residuals(self) -> tuple[str, ...]:
+        if self.best_status is None or self.state == "match":
+            return ()
+        return self.best_status.config.residuals
+
+
+
+
 @dataclass(frozen=True, slots=True)
 class ProbeResult:
     baseline: ScratchStatus
@@ -2627,17 +2709,57 @@ class ScratchAuditFailure:
 def load_scratch_config(directory: Path) -> ScratchConfig:
     import shlex
 
+    config_path = directory / "scratch.conf"
     values: dict[str, str] = {}
-    for token in shlex.split((directory / "scratch.conf").read_text()):
-        key, _, value = token.partition("=")
+    seen: set[str] = set()
+    for token in shlex.split(
+        config_path.read_text(encoding="utf-8"),
+        comments=True,
+    ):
+        key, separator, value = token.partition("=")
+        if not separator or not key:
+            raise ValueError(
+                f"{config_path} has invalid assignment {token!r}"
+            )
+        if key == "MATCH_ARGS":
+            raise ValueError(
+                f"{config_path} MATCH_ARGS is not supported; "
+                "use END=... and SYMBOL=..."
+            )
+        if key not in SCRATCH_CONFIG_KEYS:
+            allowed = ", ".join(sorted(SCRATCH_CONFIG_KEYS))
+            raise ValueError(
+                f"{config_path} has unknown field {key!r}; use {allowed}"
+            )
+        if key in seen:
+            raise ValueError(f"{config_path} assigns {key} more than once")
+        seen.add(key)
         if value:
             values[key] = value
     if "FUNCTION" not in values:
-        raise ValueError(f"{directory}/scratch.conf must set FUNCTION")
-    if "MATCH_ARGS" in values:
+        raise ValueError(f"{config_path} must set FUNCTION")
+
+    recovery = values.get("RECOVERY")
+    if recovery is not None and recovery not in RECOVERY_VALUES:
+        allowed = ", ".join(sorted(RECOVERY_VALUES))
         raise ValueError(
-            f"{directory}/scratch.conf MATCH_ARGS is not supported; use END=... and SYMBOL=..."
+            f"{config_path} has invalid RECOVERY={recovery!r}; use {allowed}"
         )
+    residuals = tuple(
+        dict.fromkeys(
+            value.strip()
+            for value in values.get("RESIDUAL", "").split(",")
+            if value.strip()
+        )
+    )
+    unknown_residuals = set(residuals) - RESIDUAL_VALUES
+    if unknown_residuals:
+        allowed = ", ".join(sorted(RESIDUAL_VALUES))
+        unknown = ", ".join(sorted(unknown_residuals))
+        raise ValueError(
+            f"{config_path} has invalid RESIDUAL values {unknown}; use {allowed}"
+        )
+
     return ScratchConfig(
         directory=directory,
         function=values["FUNCTION"],
@@ -2645,6 +2767,8 @@ def load_scratch_config(directory: Path) -> ScratchConfig:
         cflags=values.get("CFLAGS", DEFAULT_SCRATCH_CFLAGS),
         end_va=int(values["END"], 0) if "END" in values else None,
         symbol=values.get("SYMBOL"),
+        recovery=recovery,
+        residuals=residuals,
     )
 
 
@@ -3140,6 +3264,12 @@ def scratch_status_payload(status: ScratchStatus) -> dict:
         },
         "compiler": status.config.compiler,
         "cflags": status.config.cflags,
+        "recovery": scratch_recovery(status),
+        "residuals": (
+            list(status.config.residuals)
+            if status.state != "match"
+            else []
+        ),
         "scratch": str(status.config.directory),
         "error": status.error,
     }
@@ -4148,6 +4278,420 @@ def collect_scratch_statuses(
     return [statuses_by_directory[config.directory] for config, _ in ordered]
 
 
+TRIAGE_STATES = frozenset(("match", "audit", "wip", "error", "missing"))
+TRIAGE_SORTS = frozenset(("address", "fuzzy-gap", "size", "fuzzy", "unexplored"))
+
+
+def _triage_status_rank(status: ScratchStatus) -> tuple[int, float, int, int, int]:
+    state_rank = {"error": 0, "wip": 1, "audit": 2, "match": 3}[status.state]
+    reference_debt = (
+        status.masked_unresolved
+        + status.masked_mismatches
+        + status.masked_unaudited
+    )
+    instruction_gap = abs(
+        status.candidate_instructions - status.target_instructions
+    )
+    return (
+        state_rank,
+        status.fuzzy_weighted_bytes,
+        -reference_debt,
+        status.prefix_instructions,
+        -instruction_gap,
+    )
+
+
+def triage_experiment_evidence(
+    status: ScratchStatus | None,
+) -> TriageExperimentEvidence:
+    if status is None:
+        return TriageExperimentEvidence()
+    path = status.config.directory / "experiments.jsonl"
+    if not path.is_file():
+        return TriageExperimentEvidence()
+
+    from . import match_experiments
+
+    row, errors = match_experiments.summarize_experiment_log(
+        path,
+        match_root=status.config.directory.parent.parent,
+    )
+    return TriageExperimentEvidence(
+        records=int(row["records"]),
+        mutation_sweeps=int(row["mutation_sweeps"]),
+        probes=int(row["probes"]),
+        evaluated_variants=int(row["evaluated_variants"]),
+        unique_variants=int(row["unique_variants"]),
+        unique_specs=int(row["unique_specs"]),
+        no_improvement_streak=int(row["no_improvement_streak"]),
+        flags=tuple(str(flag) for flag in row["flags"]),
+        errors=len(errors),
+    )
+
+
+def _triage_mobile_evidence(
+    function: str,
+    entries_by_name: dict[str, dict],
+) -> TriageMobileEvidence:
+    entry = entries_by_name.get(function)
+    if entry is None:
+        return TriageMobileEvidence()
+    return TriageMobileEvidence(
+        status=str(entry.get("status") or "missing"),
+        android_bodies=int(entry.get("android_body_count", 0) or 0),
+        ios_bodies=int(entry.get("ios_body_count", 0) or 0),
+        confidence=entry.get("confidence"),
+        source_object=entry.get("source_object"),
+    )
+
+
+def _manifest_target_sizes(
+    manifest: FunctionSymbolManifest,
+    image_path: Path,
+) -> dict[int, int]:
+    image = load_image(image_path, manifest.image_base)
+    functions = sorted(manifest.functions, key=lambda symbol: symbol.address)
+    sizes: dict[int, int] = {}
+    for index, symbol in enumerate(functions):
+        if index + 1 < len(functions):
+            end = functions[index + 1].address
+        else:
+            padding_index = image.mapped.find(
+                b"\xcc",
+                symbol.address - image.image_base,
+            )
+            end = (
+                image.image_base + padding_index
+                if padding_index != -1
+                else image.image_base + image.size_of_image
+            )
+        sizes[symbol.address] = len(image.function_bytes(symbol.address, end))
+    return sizes
+
+
+def collect_triage_rows(
+    manifest: FunctionSymbolManifest,
+    image_path: Path,
+    statuses: list[ScratchStatus],
+    *,
+    mobile_crosswalk: dict | None = None,
+    port_relevant_only: bool = True,
+) -> list[TriageRow]:
+    """Join scratch, experiment, and mobile evidence by native address."""
+
+    statuses_by_address: dict[int, list[ScratchStatus]] = {}
+    for status in statuses:
+        if status.address:
+            statuses_by_address.setdefault(status.address, []).append(status)
+
+    entries_by_name = {
+        str(entry["windows_name"]): entry
+        for entry in (mobile_crosswalk or {}).get("entries", ())
+    }
+    target_sizes = _manifest_target_sizes(manifest, image_path)
+    rows: list[TriageRow] = []
+    for function in sorted(manifest.functions, key=lambda symbol: symbol.address):
+        if port_relevant_only and not function.is_port_relevant:
+            continue
+        function_statuses = statuses_by_address.get(function.address, [])
+        usable = [
+            status for status in function_statuses if status.ratio is not None
+        ]
+        best_status = (
+            max(function_statuses, key=_triage_status_rank)
+            if function_statuses
+            else None
+        )
+        states = {status.state for status in function_statuses}
+        if "match" in states:
+            state = "match"
+        elif "audit" in states:
+            state = "audit"
+        elif usable:
+            state = "wip"
+        elif function_statuses:
+            state = "error"
+        else:
+            state = "missing"
+
+        target_size = (
+            best_status.target_size
+            if best_status is not None and best_status.target_size
+            else target_sizes[function.address]
+        )
+        rows.append(
+            TriageRow(
+                function=function.name,
+                address=function.address,
+                target_size=target_size,
+                state=state,
+                exact_bytes=max(
+                    (
+                        status.target_size
+                        for status in function_statuses
+                        if status.state == "match"
+                    ),
+                    default=0,
+                ),
+                fuzzy_weighted_bytes=max(
+                    (
+                        status.fuzzy_weighted_bytes
+                        for status in usable
+                    ),
+                    default=0.0,
+                ),
+                candidate_bytes=max(
+                    (status.target_size for status in usable),
+                    default=0,
+                ),
+                scratch_count=len(function_statuses),
+                best_status=best_status,
+                experiments=triage_experiment_evidence(best_status),
+                mobile=_triage_mobile_evidence(
+                    function.name,
+                    entries_by_name,
+                ),
+            )
+        )
+    return rows
+
+
+def sort_triage_rows(
+    rows: list[TriageRow],
+    *,
+    sort_by: str = "address",
+) -> list[TriageRow]:
+    if sort_by not in TRIAGE_SORTS:
+        raise ValueError(f"unknown triage sort {sort_by!r}")
+
+    def key(row: TriageRow) -> tuple:
+        if sort_by == "address":
+            return (row.address, row.function)
+        if sort_by == "fuzzy-gap":
+            return (
+                row.fuzzy_gap_bytes,
+                row.target_size,
+                -row.fuzzy_weighted_bytes,
+            )
+        if sort_by == "size":
+            return (row.target_size, row.fuzzy_gap_bytes)
+        if sort_by == "unexplored":
+            return (
+                row.experiments.unique_variants,
+                row.experiments.records,
+                -row.fuzzy_gap_bytes,
+                -row.target_size,
+                row.address,
+            )
+        return (row.fuzzy_weighted_bytes, row.target_size)
+
+    return sorted(
+        rows,
+        key=key,
+        reverse=sort_by not in {"address", "unexplored"},
+    )
+
+
+def triage_summary_payload(rows: list[TriageRow]) -> dict:
+    return {
+        "row_count": len(rows),
+        "target_bytes": sum(row.target_size for row in rows),
+        "exact_bytes": sum(row.exact_bytes for row in rows),
+        "fuzzy_weighted_bytes": sum(
+            row.fuzzy_weighted_bytes for row in rows
+        ),
+        "candidate_bytes": sum(row.candidate_bytes for row in rows),
+        "verified_mobile": sum(row.mobile.verified for row in rows),
+        "states": {
+            state: sum(row.state == state for row in rows)
+            for state in ("match", "audit", "wip", "error", "missing")
+        },
+        "recoveries": {
+            recovery: sum(row.recovery == recovery for row in rows)
+            for recovery in (
+                "exact",
+                "semantic-complete",
+                "incomplete",
+                "unspecified",
+                "missing",
+            )
+        },
+    }
+
+
+def triage_row_payload(row: TriageRow) -> dict:
+    return {
+        "state": row.state,
+        "function": row.function,
+        "address": row.address,
+        "target_bytes": row.target_size,
+        "exact_bytes": row.exact_bytes,
+        "fuzzy_weighted_bytes": row.fuzzy_weighted_bytes,
+        "fuzzy_gap_bytes": row.fuzzy_gap_bytes,
+        "candidate_bytes": row.candidate_bytes,
+        "scratch_count": row.scratch_count,
+        "recovery": row.recovery,
+        "residuals": list(row.residuals),
+        "experiments": {
+            "records": row.experiments.records,
+            "mutation_sweeps": row.experiments.mutation_sweeps,
+            "probes": row.experiments.probes,
+            "evaluated_variants": row.experiments.evaluated_variants,
+            "unique_variants": row.experiments.unique_variants,
+            "unique_specs": row.experiments.unique_specs,
+            "no_improvement_streak": (
+                row.experiments.no_improvement_streak
+            ),
+            "flags": list(row.experiments.flags),
+            "errors": row.experiments.errors,
+        },
+        "mobile": {
+            "status": row.mobile.status,
+            "verified": row.mobile.verified,
+            "android_bodies": row.mobile.android_bodies,
+            "ios_bodies": row.mobile.ios_bodies,
+            "confidence": row.mobile.confidence,
+            "source_object": row.mobile.source_object,
+        },
+        "best_scratch": (
+            scratch_status_payload(row.best_status)
+            if row.best_status is not None
+            else None
+        ),
+    }
+
+
+def _triage_mobile_text(evidence: TriageMobileEvidence) -> str:
+    if not evidence.verified:
+        return evidence.status if evidence.status != "missing" else "-"
+    bodies = "/".join(
+        part
+        for count, part in (
+            (evidence.android_bodies, f"A{evidence.android_bodies}"),
+            (evidence.ios_bodies, f"I{evidence.ios_bodies}"),
+        )
+        if count
+    )
+    if evidence.confidence:
+        return f"{bodies} {evidence.confidence}"
+    return bodies
+
+
+TRIAGE_HEADER = (
+    "state",
+    "function",
+    "address",
+    "bytes",
+    "exact",
+    "fuzzy",
+    "gap",
+    "match",
+    "prefix",
+    "refs",
+    "recovery",
+    "residual",
+    "mobile",
+    "mobile source",
+    "search",
+    "streak",
+    "flags",
+)
+
+
+def render_triage_rows(
+    rows: list[TriageRow],
+    *,
+    sort_by: str = "address",
+) -> list[tuple[str, ...]]:
+    rendered: list[tuple[str, ...]] = []
+    for row in sort_triage_rows(rows, sort_by=sort_by):
+        best = row.best_status
+        rendered.append(
+            (
+                row.state,
+                row.function,
+                f"0x{row.address:08x}",
+                str(row.target_size),
+                f"{row.exact_bytes}/{row.target_size}",
+                f"{row.fuzzy_weighted_bytes:.0f}/{row.target_size}",
+                f"{row.fuzzy_gap_bytes:.0f}",
+                (
+                    f"{best.ratio:.2%}"
+                    if best is not None and best.ratio is not None
+                    else "-"
+                ),
+                (
+                    f"{best.prefix_instructions}/{best.target_instructions}"
+                    if best is not None and best.ratio is not None
+                    else "-"
+                ),
+                (
+                    f"{best.masked_ok}/{best.masked_unresolved}/"
+                    f"{best.masked_mismatches}/{best.masked_unaudited}"
+                    if best is not None and best.ratio is not None
+                    else "-"
+                ),
+                row.recovery,
+                ",".join(row.residuals) or "-",
+                _triage_mobile_text(row.mobile),
+                row.mobile.source_object or "-",
+                (f"{row.experiments.records}/"
+                f"{row.experiments.unique_variants}"),
+                str(row.experiments.no_improvement_streak),
+                ",".join(row.experiments.flags) or "-",
+            )
+        )
+    return rendered
+
+
+def render_triage_summary(rows: list[TriageRow]) -> str:
+    summary = triage_summary_payload(rows)
+    target_bytes = summary["target_bytes"]
+    exact_bytes = summary["exact_bytes"]
+    fuzzy_bytes = summary["fuzzy_weighted_bytes"]
+    candidate_bytes = summary["candidate_bytes"]
+
+    def percentage(value: float) -> float:
+        return value / target_bytes if target_bytes else 0.0
+
+    states = summary["states"]
+    return (
+        f"rows={summary['row_count']} states="
+        + "/".join(
+            f"{state}:{count}" for state, count in states.items()
+        )
+        + f"; exact={exact_bytes}/{target_bytes} "
+        f"({percentage(exact_bytes):.1%}); "
+        f"fuzzy={fuzzy_bytes:.0f}/{target_bytes} "
+        f"({percentage(fuzzy_bytes):.1%}); "
+        f"candidate={candidate_bytes}/{target_bytes} "
+        f"({percentage(candidate_bytes):.1%}); "
+        f"verified-mobile={summary['verified_mobile']}"
+    )
+
+
+def render_triage_table(
+    rows: list[TriageRow],
+    *,
+    sort_by: str = "address",
+) -> str:
+    rendered = [TRIAGE_HEADER, *render_triage_rows(rows, sort_by=sort_by)]
+    widths = [
+        max(len(row[column]) for row in rendered)
+        for column in range(len(TRIAGE_HEADER))
+    ]
+    lines = [
+        "  ".join(
+            cell.ljust(width)
+            for cell, width in zip(row, widths, strict=True)
+        ).rstrip()
+        for row in rendered
+    ]
+    lines.append("")
+    lines.append(render_triage_summary(rows))
+    return "\n".join(lines)
+
+
 def _summarize_error(error: Exception) -> str:
     """One-line error summary, preferring the first line that names an error."""
     lines = [line.strip() for line in str(error).splitlines() if line.strip()]
@@ -4759,7 +5303,7 @@ class TypeDefinition:
     name: str
     path: Path
     signature: str
-    layout_fields: tuple["TypeLayoutField", ...]
+    layout_fields: tuple[TypeLayoutField, ...]
     method_signatures: tuple[str, ...]
     is_header: bool
 
@@ -5515,10 +6059,10 @@ def render_type_consolidation_markdown(
     lines = [
         "## Type Consolidation",
         "",
-        "This is generated as part of `uv run snail match status --write "
+        ("This is generated as part of `uv run snail match status --write "
         "tools/match/STATUS.md`. Keep types scratch-local until multiple "
         "scratches agree, then promote deliberately; divergent or conflicting "
-        "names are semantic debt, not merge candidates.",
+        "names are semantic debt, not merge candidates."),
         "Run `uv run snail match types --paths` for the full path-level report.",
         "",
     ]
@@ -5584,7 +6128,7 @@ class ExternLintFinding:
 _EXTERN_DECL_PATTERN = re.compile(
     r"^extern\s+([^;=\n(]+?)\s*\b(g_\w+)\s*(\[\w*\])?\s*;"
     r"\s*//.*?\b(?:data|byte|word|dword|unk)_([0-9a-fA-F]{6,8})\b",
-    re.M,
+    re.MULTILINE,
 )
 
 

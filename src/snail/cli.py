@@ -19,8 +19,13 @@ from .match import (
     DEFAULT_MATCH_ROOT,
     IDIOM_CASES,
     IDIOM_CASES_BY_NAME,
+    RECOVERY_VALUES,
+    RESIDUAL_VALUES,
+    TRIAGE_SORTS,
+    TRIAGE_STATES,
     collect_masked_operand_issues,
     collect_scratch_statuses,
+    collect_triage_rows,
     compile_idiom_case,
     diff_regions,
     evaluate_source_probe,
@@ -31,10 +36,15 @@ from .match import (
     render_probe_result,
     render_status_markdown,
     render_status_table,
+    render_triage_summary,
+    render_triage_table,
     run_match,
     run_match_dump,
     run_scratch_match,
     scratch_dependency_sha256,
+    sort_triage_rows,
+    triage_row_payload,
+    triage_summary_payload,
     type_consolidation_findings,
 )
 from .mobile import (
@@ -192,6 +202,20 @@ def _positive_int(value: str) -> int:
     if parsed < 1:
         raise argparse.ArgumentTypeError("must be a positive integer")
     return parsed
+
+
+def _non_negative_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 0:
+        raise argparse.ArgumentTypeError("must be a non-negative integer")
+    return parsed
+
+
+def _parse_csv(value: str | None) -> set[str] | None:
+    if value is None:
+        return None
+    parsed = {part.strip() for part in value.split(",") if part.strip()}
+    return parsed or None
 
 
 def _display_repo_path(path: Path) -> str:
@@ -642,6 +666,103 @@ def build_parser() -> argparse.ArgumentParser:
             "Maximum concurrent scratch jobs needed by --pending "
             f"(default: {DEFAULT_MATCH_JOBS})."
         ),
+    )
+
+    match_triage_parser = match_subparsers.add_parser(
+        "triage",
+        help=(
+            "Rank native functions by address-keyed match, experiment, "
+            "and mobile evidence."
+        ),
+    )
+    match_triage_parser.add_argument(
+        "--image",
+        type=Path,
+        help="Path to the original image (default: the manifest primary target).",
+    )
+    match_triage_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    match_triage_parser.add_argument(
+        "--crosswalk",
+        type=Path,
+        default=DEFAULT_MOBILE_CROSSWALK_PATH,
+        help="Path to the generated complete mobile crosswalk.",
+    )
+    match_triage_parser.add_argument(
+        "--match-root",
+        type=Path,
+        default=DEFAULT_MATCH_ROOT,
+        help="Path to the tools/match root.",
+    )
+    match_triage_parser.add_argument(
+        "--scope",
+        choices=("port", "all"),
+        default="port",
+        help="Function ownership scope (default: port).",
+    )
+    match_triage_parser.add_argument(
+        "--state",
+        help="Comma-separated states: match,audit,wip,error,missing.",
+    )
+    match_triage_parser.add_argument(
+        "--recovery",
+        help=(
+            "Comma-separated recovery states: exact, semantic-complete, "
+            "incomplete, unspecified,missing."
+        ),
+    )
+    match_triage_parser.add_argument(
+        "--residual",
+        help="Comma-separated residual kinds: analysis,compiler,references.",
+    )
+    match_triage_parser.add_argument(
+        "--mobile",
+        choices=("any", "verified", "without-verified"),
+        default="any",
+        help="Filter by verified mobile-source evidence (default: any).",
+    )
+    match_triage_parser.add_argument(
+        "--min-bytes",
+        type=_non_negative_int,
+        default=0,
+        help="Minimum native function size (default: 0).",
+    )
+    match_triage_parser.add_argument(
+        "--sort",
+        choices=tuple(sorted(TRIAGE_SORTS)),
+        default="fuzzy-gap",
+        help="Row ordering (default: fuzzy-gap).",
+    )
+    match_triage_parser.add_argument(
+        "--limit",
+        type=_positive_int,
+        help="Maximum rows to show.",
+    )
+    match_triage_parser.add_argument(
+        "--summary-only",
+        action="store_true",
+        help="Print aggregate coverage only.",
+    )
+    match_triage_parser.add_argument(
+        "--json",
+        action="store_true",
+        help="Print machine-readable JSON.",
+    )
+    match_triage_parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit non-zero if any scratch fails to evaluate.",
+    )
+    match_triage_parser.add_argument(
+        "-j",
+        "--jobs",
+        type=_positive_int,
+        default=DEFAULT_MATCH_JOBS,
+        help=f"Maximum concurrent scratch jobs (default: {DEFAULT_MATCH_JOBS}).",
     )
 
     match_scratch_parser = match_subparsers.add_parser(
@@ -1415,6 +1536,98 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
 
         return 1 if missing_verified_body else 0
+
+
+    if args.command == "match" and args.match_command == "triage":
+        manifest = load_function_symbol_manifest(args.manifest)
+        image_path = args.image or REPO_ROOT / manifest.primary_target
+        statuses = collect_scratch_statuses(
+            manifest,
+            image_path,
+            args.match_root,
+            jobs=args.jobs,
+        )
+        rows = collect_triage_rows(
+            manifest,
+            image_path,
+            statuses,
+            mobile_crosswalk=load_json(args.crosswalk),
+            port_relevant_only=args.scope == "port",
+        )
+
+        states = _parse_csv(args.state)
+        if states is not None:
+            unknown_states = states - TRIAGE_STATES
+            if unknown_states:
+                parser.error(
+                    "match triage --state has unknown values: "
+                    + ", ".join(sorted(unknown_states))
+                )
+            rows = [row for row in rows if row.state in states]
+
+        recoveries = _parse_csv(args.recovery)
+        if recoveries is not None:
+            allowed_recoveries = set(RECOVERY_VALUES) | {
+                "exact",
+                "missing",
+                "unspecified",
+            }
+            unknown_recoveries = recoveries - allowed_recoveries
+            if unknown_recoveries:
+                parser.error(
+                    "match triage --recovery has unknown values: "
+                    + ", ".join(sorted(unknown_recoveries))
+                )
+            rows = [row for row in rows if row.recovery in recoveries]
+
+        residuals = _parse_csv(args.residual)
+        if residuals is not None:
+            unknown_residuals = residuals - RESIDUAL_VALUES
+            if unknown_residuals:
+                parser.error(
+                    "match triage --residual has unknown values: "
+                    + ", ".join(sorted(unknown_residuals))
+                )
+            rows = [
+                row
+                for row in rows
+                if residuals.intersection(row.residuals)
+            ]
+
+        if args.mobile == "verified":
+            rows = [row for row in rows if row.mobile.verified]
+        elif args.mobile == "without-verified":
+            rows = [row for row in rows if not row.mobile.verified]
+        rows = [row for row in rows if row.target_size >= args.min_bytes]
+        rows = sort_triage_rows(rows, sort_by=args.sort)
+        if args.limit is not None:
+            rows = rows[: args.limit]
+
+        if args.json:
+            print(
+                json.dumps(
+                    {
+                        "scope": args.scope,
+                        "sort": args.sort,
+                        "summary": triage_summary_payload(rows),
+                        "rows": (
+                            []
+                            if args.summary_only
+                            else [triage_row_payload(row) for row in rows]
+                        ),
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+        elif args.summary_only:
+            print(render_triage_summary(rows))
+        else:
+            print(render_triage_table(rows, sort_by=args.sort))
+
+        if args.check and any(status.state == "error" for status in statuses):
+            return 1
+        return 0
 
     if args.command == "match" and args.match_command == "probe":
         try:

@@ -24,9 +24,11 @@ build environment:
 Established empirically — 147+ functions across every subsystem match at 100%
 with exactly this configuration and nothing has required another one.
 `scratch.conf` therefore only needs `FUNCTION` (plus `END`/`SYMBOL` when the
-extent or symbol needs overriding); `COMPILER`/`CFLAGS` overrides still work
-but are for experiments only, and the STATUS build column stays empty unless
-a scratch deviates. When a function refuses to match, change the source shape,
+extent or symbol needs overriding). `RECOVERY` and `RESIDUAL` record reviewed
+non-exact recovery state without affecting compilation. `COMPILER`/`CFLAGS`
+overrides still work but are for experiments only, and the STATUS build column
+stays empty unless a scratch deviates.
+When a function refuses to match, change the source shape,
 not the flags — every flag-looking pattern so far (dual-slot float temps,
 tail duplication, register pinning) turned out to be a source idiom.
 
@@ -65,7 +67,7 @@ tail duplication, register pinning) turned out to be a source idiom.
    - `scratch.cpp` — candidate implementation; use a class member function to
      get thiscall, mirror struct layouts at native offsets
    - `scratch.conf` — `FUNCTION=<manifest name>`, optional `END`, `SYMBOL`,
-     `COMPILER`, `CFLAGS`
+     `COMPILER`, `CFLAGS`, `RECOVERY`, `RESIDUAL`
 2. Run `tools/match/match.sh scratches/<function>` (append `--full` for a
    side-by-side listing instead of a unified diff). The script is a thin
    wrapper around `uv run snail match scratch <directory>`, so focused work
@@ -84,6 +86,13 @@ Useful analysis helpers:
   785-function coverage file and exact cross-port name transfers with
   `uv run tools/sync_mobile_crosswalk.py`; `--check` verifies that both tracked
   crosswalk files are current.
+- `uv run snail match triage --state wip --sort unexplored` joins every
+  port-relevant manifest function by native address to its best scratch,
+  recorded probe/mutation history, and verified Android/iOS mapping. Use
+  `--sort fuzzy-gap` for the nearest byte-proof opportunities; combine
+  `--recovery`, `--residual`, `--mobile`, `--min-bytes`, and `--limit` to
+  select a work queue. `--json` exposes the same rows and aggregate exact,
+  fuzzy, candidate, recovery, and mobile coverage for automation.
 - `uv run snail match diff <obj> <function> --regions` prints localized
   mismatch regions before the normal diff, so large functions can be worked by
   block instead of by the whole SequenceMatcher score.
@@ -246,6 +255,14 @@ function symbol differs from `FUNCTION`, set `SYMBOL=<object symbol>` there too.
 Do not use `MATCH_ARGS` in `scratch.conf`; the shell wrapper and Python status
 path both consume explicit config keys so status generation and one-off diffs
 stay in sync.
+
+`scratch.conf` parsing is strict: unknown fields, malformed or duplicate
+assignments, and unsupported recovery metadata fail rather than being silently
+ignored. For a reviewed non-exact scratch, set
+`RECOVERY=incomplete|semantic-complete`; exact matches report `exact`
+automatically. Set `RESIDUAL` to a comma-separated subset of
+`analysis,compiler,references` so behavioral recovery remains distinct from
+source-shape, toolchain, and masked-reference debt.
 
 ## No fakematching
 
