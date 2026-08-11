@@ -112,7 +112,7 @@
 00402c78        queue_frontend_widget_flag_after_delay(&game_base_1->border_manager, widget, 0x20)
 00402c65        widget_flags_5.b |= 0x20
 00402c67        widget->widget_flags = widget_flags_5
-00402c87        if ((widget->widget_flags & &data_800000) == 0)
+00402c87        if ((widget->widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) == 0)
 00402c90        play_sound_effect(&g_sound_effect_manager, 8)
 00402c9c        if ((widget->tooltip.mode_flags.b & 0x20) == 0)
 00402ca4        reset_tooltip(&widget->tooltip)

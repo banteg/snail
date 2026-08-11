@@ -5,14 +5,14 @@
 
 00445d50        struct Snail* snail_1 = snail
 00445d53        struct Object* hotspot_model = snail->snail_hotspot_body.bod.object
-00445d5f        char** hotspot_name_cursor = &data_4a4aa0
+00445d5f        char** hotspot_name_cursor = &g_snail_hotspot_texture_names
 00445d64        struct SnailHotspotLocalZCursorView* hotspot_local_z_cursor = &snail->snail_hotspots_local[0].z
 00445d76        *hotspot_local_z_cursor = struct SnailHotspotLocalZCursorView {
     .z = 0
     .y = 0
     .x = 0
 }
-00445d7e        struct TextureRef* j = get_or_create_texture_ref(&g_texture_refs, *hotspot_name_cursor, nullptr, 0)
+00445d7e        cRTexture* j = get_or_create_texture_ref(&g_texture_refs, *hotspot_name_cursor, nullptr, 0)
 00445d83        int32_t facequad_count = hotspot_model->facequad_count
 00445d86        int32_t ecx = 0
 00445d8a        if (facequad_count s<= 0)

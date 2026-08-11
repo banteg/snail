@@ -98,6 +98,55 @@ def test_reference_sync_defaults_to_functions_scope(monkeypatch) -> None:
     args = SYNC_REFERENCES.parse_args()
 
     assert args.scope == "functions"
+    assert args.only == []
+
+
+def test_select_references_accepts_name_address_and_alias() -> None:
+    symbols = [
+        {
+            "address": 0x401000,
+            "name": "first_function",
+            "kind": "function",
+            "bn_kind": "function",
+            "aliases": ["legacy_first"],
+            "description": None,
+        },
+        {
+            "address": 0x401010,
+            "name": "second_function",
+            "kind": "function",
+            "bn_kind": "function",
+            "aliases": [],
+            "description": None,
+        },
+    ]
+
+    selected = SYNC_REFERENCES._select_references(
+        symbols,
+        ["LEGACY_FIRST", "0x401010"],
+    )
+
+    assert selected == symbols
+
+
+def test_select_references_rejects_unknown_selector() -> None:
+    symbols = [
+        {
+            "address": 0x401000,
+            "name": "first_function",
+            "kind": "function",
+            "bn_kind": "function",
+            "aliases": [],
+            "description": None,
+        }
+    ]
+
+    try:
+        SYNC_REFERENCES._select_references(symbols, ["missing_function"])
+    except ValueError as exc:
+        assert str(exc) == "unknown reference selector(s): missing_function"
+    else:
+        raise AssertionError("unknown selector should be rejected")
 
 
 def test_load_live_data_symbols_uses_one_read_only_bn_query(monkeypatch) -> None:
@@ -142,6 +191,7 @@ def test_load_live_data_symbols_uses_one_read_only_bn_query(monkeypatch) -> None
     assert "4203652" in calls[0][5]
     assert "5110020" in calls[0][5]
     assert "4198400" not in calls[0][5]
+    assert "getattr(symbol.type, 'name', str(symbol.type))" in calls[0][5]
 
 
 def test_sync_table_reference_uses_data_symbol_and_address_comment(monkeypatch) -> None:

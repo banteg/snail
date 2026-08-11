@@ -39,7 +39,7 @@
 00412273        eax_1, x87control_1 = ftol(x87control, float.t(animation->generated_frame_count) * fconvert.t(animation->progress))
 00412280        object_1->vertices = animation->frames[eax_1]->vertices
 0041229d        object_1->facequad_normals = animation->frames[ftol(x87control_1, float.t(animation->generated_frame_count) * fconvert.t(animation->progress))]->facequad_normals
-004122a0        if ((flags & &data_800000) != 0)
+004122a0        if ((flags & 0x800000) != 0)
 004122a9        apply_distort_to_object(&object_1->distort, object_1)
 004122b6        struct ObjectVertexBuffer* vertex_buffer = object_1->render_buffers->vertex_buffer
 004122d0        vertex_buffer->vtbl->Lock(vertex_buffer, 0, object_1->grouped_vertex_count * 0x18, &object, 0)

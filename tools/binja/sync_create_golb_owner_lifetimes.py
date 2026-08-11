@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_split_user_var_update,
@@ -15,7 +15,6 @@ from _narrow_sync import (
     emit_summary,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -83,6 +82,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x0248: ("render_sprite", "Sprite*"),
         0x024C: ("velocity", "Vec3"),
         0x0270: ("game", "cRSubGame*"),
+        0x0274: ("shot_slot_index", "int32_t"),
         0x0278: ("owner_player", "Player*"),
     },
     "Player": {

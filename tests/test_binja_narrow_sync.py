@@ -5,7 +5,6 @@ from types import SimpleNamespace
 
 import pytest
 
-
 BINJA_DIR = Path(__file__).parents[1] / "tools/binja"
 IDA_DIR = Path(__file__).parents[1] / "tools/ida"
 HEADER_DIR = Path(__file__).parents[1] / "analysis/headers"
@@ -1333,7 +1332,17 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
         in ida_sync
     )
     assert "INITIALIZE_SUBGOLDY_USER_VAR_UPDATES" in broad_binja_sync
-    assert "MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES" in broad_binja_sync
+    assert "GOLB_SHOT_CURSOR_USER_VAR_UPDATES" in broad_binja_sync
+    assert "SHOOT_SUBGOLDY_LVAR_SPECS" in broad_ida_sync
+    for name, declaration, definition_address in (
+        ("spawn_selector", "int32_t spawn_selector;", "0x43A31D"),
+        ("shot_slot_index", "int32_t shot_slot_index;", "0x43A330"),
+        ("golb_shot_cursor", "GolbShot *golb_shot_cursor;", "0x43A332"),
+    ):
+        assert (
+            f'("{name}", "{declaration}", {definition_address}, None)'
+            in broad_ida_sync
+        )
     assert (
         "WORLD_INITIALIZER_GOLB_ASSET_CURSOR_USER_VAR_UPDATES"
         in broad_binja_sync
@@ -4230,7 +4239,7 @@ def test_path_sync_owns_core_subgame_receiver_abis() -> None:
         assert declaration in ida_source
 
 
-def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
+def test_golb_replays_preserve_real_lifecycle_and_shot_bank_abis() -> None:
     binja_source = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -4242,7 +4251,7 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
         "GolbShot* __thiscall initialize_golb_shot(GolbShot* shot)",
         "void __thiscall kill_golb(GolbShot* shot)",
         "void __thiscall update_golb_ai(GolbShot* shot)",
-        "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
+        "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t shot_slot_index)",
         "void __thiscall shoot_subgoldy(Player* owner, Player* shoot_source)",
         "Sprite* __thiscall spawn_golb_trail_sprite(GolbShot* shot, Vec3* position)",
         "void __thiscall spawn_golb_smoke(GolbShot* shot, Vec3* position)",
@@ -4253,6 +4262,7 @@ def test_golb_replays_preserve_real_lifecycle_and_emitter_abis() -> None:
         assert f'"{declaration};"' in ida_source
 
     assert "no-argument auto prototype" not in binja_source
+    assert "emitter_index" not in binja_source
 
 
 def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None:
@@ -4299,6 +4309,7 @@ def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None
         '("0x080", "vapour", "Vapour")',
         '("0x114", "vapour_owner_shot", "GolbShot*")',
         '("0x118", "tertiary_body", "cRGolbRocket")',
+        '("0x274", "shot_slot_index", "int32_t")',
     ):
         assert update in binja_sync
     assert '("0x000", "primary_body", "RenderableBod")' not in binja_sync
@@ -4347,12 +4358,12 @@ def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None
         assert "add_vapour_point(&shot->vapour" in artifacts["update"]
         assert "shot->tertiary_body.transform" in artifacts["update"]
         assert "shot->vapour_owner_shot = shot" in artifacts["create"]
-        if lane == "ida":
-            assert "shot->body.bod.bod" in artifacts["create"]
-        else:
-            assert "shot->bod.bod" in artifacts["create"]
+        assert "shot->bod.bod" in artifacts["create"]
         assert "shot->vapour.body" in artifacts["create"]
         assert "shot->tertiary_body" in artifacts["create"]
+        assert "shot->shot_slot_index = shot_slot_index" in artifacts["create"]
+        assert "emitter_index" not in artifacts["create"]
+        assert "shot->object_ref" not in artifacts["create"]
 
 
 def test_runtime_pool_constructor_replay_preserves_nested_owners() -> None:
@@ -4837,7 +4848,7 @@ def test_snail_hotspot_replay_preserves_local_and_world_borrows() -> None:
         "hotspot_world_cursor = &hotspot_world_cursor[1]",
         "hotspot_world_slot->x = vector.x",
         "struct Object* hotspot_model = snail->snail_hotspot_body.bod.object",
-        "char** hotspot_name_cursor = &data_4a4aa0",
+        "char** hotspot_name_cursor = &g_snail_hotspot_texture_names",
         "struct SnailHotspotLocalZCursorView* hotspot_local_z_cursor",
         "struct ObjectFaceQuadTextureCursorView* hotspot_face_texture_cursor",
         "hotspot_face_texture_cursor->texture_ref",
@@ -14929,7 +14940,8 @@ def test_previewed_batch_can_transactionally_set_a_user_variable() -> None:
     assert "parsed_type_cache = {}" in code
     assert "expected_type, _ = parse_type_once(operation[\"variable_type\"])" in code
     assert '"user_defined": bool(function.is_var_user_defined(variable))' in code
-    assert 'str(variable.source_type).split(".")[-1] == expected_source' in code
+    assert "source_type_name(variable.source_type) == expected_source" in code
+    assert 'getattr(value, "name", str(value).split(".")[-1])' in code
     assert 'entry["verified"] = observed == entry["expected"]' in code
     assert "user_var_reanalysis_identifiers.append" in code
     assert (
@@ -23914,7 +23926,6 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
     ).read_text(encoding="utf-8")
     assert "FIREWORK_SHOOT_LVAR_SPECS" in ida_replay
     for name, declaration, definition_address, stack_offset in (
-        ("sprite", "Sprite *sprite;", "0x441E0F", "None"),
         ("flags", "SpriteFlag flags;", "0x441E17", "None"),
         ("duration_random", "double duration_random;", "0x441E37", "None"),
         ("green", "float green;", "0x441E86", "8"),
@@ -23932,6 +23943,13 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
     assert '"int32_t velocity_x_random;"' in ida_replay
     assert "0x441EE2" in ida_replay
     assert "def _sync_firework_shoot_lvars" in ida_replay
+    assert (
+        '        "firework_shoot",\n'
+        '        "sprite",\n'
+        "        0x441E0F,\n"
+        "        None,"
+    ) in ida_replay
+    assert '"reason": "no_saved_override"' in ida_replay
     assert '"firework_shoot_lvars": firework_shoot_lvars' in ida_replay
 
     health_checks = json.loads(
@@ -23953,6 +23971,9 @@ def test_sprite_effect_replay_preserves_shared_sprite_owners() -> None:
         "bn_firework_sprite_and_stack_slot_owners"
     ]["required_substrings"]
     assert "sprite->position = *position;" in health_by_name[
+        "ida_firework_sprite_and_stack_slot_owners"
+    ]["required_substrings"]
+    assert "cRSprite *sprite;" in health_by_name[
         "ida_firework_sprite_and_stack_slot_owners"
     ]["required_substrings"]
 
@@ -24012,6 +24033,7 @@ def test_create_golb_replay_splits_real_pointer_owners() -> None:
     assert 'variable_name="target_entry"' in replay
     assert 'variable_type="ContactTargetEntry*"' in replay
     assert '0x0248: ("render_sprite", "Sprite*")' in replay
+    assert '0x0274: ("shot_slot_index", "int32_t")' in replay
     assert '0x17B0: ("snail_hotspots_world", "Vec3[19]")' in replay
     assert '0x1270FD4: ("enemy_manager", "EnemyManager")' in replay
 
@@ -24027,6 +24049,17 @@ def test_create_golb_replay_splits_real_pointer_owners() -> None:
     for text in (analysis_header, match_header, catalog_replay):
         assert "render_body_owner" not in text
         assert "render_sprite" in text
+        assert "shot_slot_index" in text
+
+    for lane in ("binja", "ida"):
+        trail_artifact = (
+            repo_root
+            / "analysis/decompile"
+            / lane
+            / "functions/00415bb0-spawn_golb_trail_sprite.c"
+        ).read_text(encoding="utf-8")
+        assert "shot->shot_slot_index" in trail_artifact
+        assert "shot->object_ref" not in trail_artifact
 
 
 def test_time_trial_replays_inline_course_record_ownership() -> None:

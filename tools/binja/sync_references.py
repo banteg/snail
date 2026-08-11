@@ -132,7 +132,8 @@ def _load_live_data_symbols(
         f"addresses = {addresses!r}; "
         "result = [{'address': hex(address), "
         "'name': symbol.name if symbol else None, "
-        "'symbol_type': str(symbol.type) if symbol else None} "
+        "'symbol_type': getattr(symbol.type, 'name', str(symbol.type)) "
+        "if symbol else None} "
         "for address in addresses for symbol in [bv.get_symbol_at(address)]]"
     )
     payload = _run_bn_json(
@@ -151,6 +152,32 @@ def _load_live_data_symbols(
             continue
         live[int(address, 0)] = row
     return live
+
+
+def _select_references(
+    symbols: list[dict[str, Any]], selectors: list[str]
+) -> list[dict[str, Any]]:
+    if not selectors:
+        return symbols
+
+    requested = {selector.lower() for selector in selectors}
+    matched: set[str] = set()
+    selected: list[dict[str, Any]] = []
+    for symbol in symbols:
+        tokens = {
+            str(symbol["name"]).lower(),
+            f"0x{int(symbol['address']):x}",
+            *(str(alias).lower() for alias in symbol["aliases"]),
+        }
+        matching = requested & tokens
+        if matching:
+            selected.append(symbol)
+            matched.update(matching)
+
+    missing = sorted(requested - matched)
+    if missing:
+        raise ValueError(f"unknown reference selector(s): {', '.join(missing)}")
+    return selected
 
 
 def _is_auto_reference_name(symbol: dict[str, Any], current_name: str) -> bool:
@@ -284,6 +311,16 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        metavar="NAME_OR_ADDRESS",
+        help=(
+            "Synchronize only the named/addressed reference. Repeat for a bounded "
+            "batch; names and aliases are matched case-insensitively."
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Report planned reference renames/comments without changing Binary Ninja.",
@@ -318,6 +355,7 @@ def main() -> int:
         symbols = [
             symbol for symbol in symbols if symbol["kind"] in TABLE_REFERENCE_KINDS
         ]
+    symbols = _select_references(symbols, list(args.only))
     live_functions = (
         _load_live_functions(args.target)
         if any(symbol["kind"] == "function" for symbol in symbols)
@@ -411,6 +449,7 @@ def main() -> int:
         "manifest": str(manifest_path),
         "target": args.target,
         "scope": args.scope,
+        "selectors": list(args.only),
         "reference_count": len(symbols),
         "function_reference_count": sum(
             symbol["kind"] == "function" for symbol in symbols

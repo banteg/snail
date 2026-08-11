@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_split_user_var_update,
@@ -15,7 +15,6 @@ from _narrow_sync import (
     remove_user_var_updates,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -63,7 +62,7 @@ EXPECTED_STRUCT_FIELDS = {
     "GolbShot": {
         0x24C: ("velocity", "Vec3"),
         0x270: ("game", "cRSubGame*"),
-        0x274: ("object_ref", "void*"),
+        0x274: ("shot_slot_index", "int32_t"),
         0x278: ("owner_player", "Player*"),
     },
     "Player": {

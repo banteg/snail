@@ -49,7 +49,7 @@
 00405ed0        clean_duplicate_vertices(&loader->duplicate_vertices, loop_keyframe_count)
 00405ee6        load_x_mesh(loader, &data_4b2f50, object, 0)
 00405eed        request_object_vertices_copy(object)
-00405f01        object->flags |= &data_800000
+00405f01        object->flags |= OBJECT_FLAG_DISTORT_ENABLED
 00405f09        char animation_tag[0x80]
 00405f09        sprintf(&animation_tag, "Anim:%s", mesh_name_1)
 00405f1b        char* animation_block = find_case_insensitive_substring(&animation_tag, loader->animation_bytes)

@@ -35,35 +35,45 @@
       ]
     },
     {
-      "name": "bn_player_shoot_emitter_cursor_owner",
+      "name": "bn_player_shoot_bank_cursor_owner",
       "artifact": "analysis/decompile/binja/functions/0043a300-shoot_subgoldy.c",
       "required_substrings": [
         "struct GolbShot* golb_shot_cursor",
+        "int32_t shot_slot_index = 0",
         "&owner->golb_shots",
         "golb_shot_cursor->state",
-        "create_golb(golb_shot_cursor, owner",
+        "create_golb(golb_shot_cursor, owner, spawn_selector, shot_slot_index)",
+        "do while (shot_slot_index s< 0xc)",
         "shoot_source->shoot_flags"
       ],
       "forbidden_substrings": [
         "(*)[0xc]",
         "(shot - 0x450)",
+        "emitter_index",
         "arg1",
         "arg2"
       ]
     },
     {
-      "name": "ida_player_shoot_emitter_cursor_owner",
+      "name": "ida_player_shoot_bank_cursor_owner",
       "artifact": "analysis/decompile/ida/functions/0043a300-shoot_subgoldy.c",
       "required_substrings": [
         "void __thiscall shoot_subgoldy(Player *owner, Player *shoot_source)",
         "shoot_source->shoot_flags",
-        "golb_shots = owner->golb_shots",
-        "golb_shots->state",
-        "create_golb(golb_shots, owner"
+        "int32_t spawn_selector;",
+        "int32_t shot_slot_index;",
+        "GolbShot *golb_shot_cursor;",
+        "golb_shot_cursor = owner->golb_shots",
+        "golb_shot_cursor->state",
+        "create_golb(golb_shot_cursor, owner, spawn_selector--, shot_slot_index)",
+        "while ( shot_slot_index < 12 )"
       ],
       "forbidden_substrings": [
         "void __thiscall sub_43A300",
         "owner + 0x450",
+        "int32_t v4",
+        "int32_t v5",
+        "GolbShot *golb_shots",
         "int this"
       ]
     },
@@ -3277,6 +3287,7 @@
         "struct tColour color_1",
         "struct tColour* hot_text_color_source",
         "struct tColour* slider_less_color",
+        "FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND",
         "widget->slider_more_widget = allocate_border(&g_game_base->border_manager)",
         "layout_frontend_widget(widget)",
         "0040247f        return"
@@ -3288,6 +3299,7 @@
         "eax->bod_base",
         "g_game_base[0xb4c]",
         "unknown_000b48",
+        "&data_800000",
         "return layout_frontend_widget",
         "arg1->",
         "unimplemented",
@@ -3395,12 +3407,14 @@
         "border_input_text(widget)",
         "update_twinkle_manager(&widget->twinkle_manager)",
         "draw_frontend_widget(widget)",
+        "widget->widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND",
         "widget->slider_value_widget->current_text_color"
       ],
       "forbidden_substrings": [
         "*(widget +",
         "arg1",
         "data_4df904",
+        "&data_800000",
         "__offset(",
         "unimplemented"
       ]
@@ -5054,6 +5068,7 @@
         "game->root_bod_catalog.trampoline.object->blend_mode = 6",
         "game->root_bod_catalog.trampoline.object->facequads->texture_ref",
         "game->intro.hide_for_replay_latch = 0",
+        "&g_builtin_segment_definitions",
         "apply_audio_config_volumes(&game->options)",
         "open_logo(&game->logo)",
         "add_bod_to_front(&g_game_base->active_bod_list, &game->star_manager)",
@@ -5095,6 +5110,7 @@
         ".object + 0x14",
         ".object + 0x5c",
         "game->texture_set_selector",
+        "data_4a63d0",
         "->unknown_a0 = 2",
         "0x3cd698",
         "0x3cd6b0",
@@ -7534,6 +7550,8 @@
         "game->player.click_start.state",
         "game->runtime_rows",
         "game->runtime_cells",
+        "game->player.active_window_min_z",
+        "game->runtime_flags & 0x800000",
         "struct RuntimeRowStrideAnchor* runtime_row_anchor",
         "runtime_row_anchor->row.row_model",
         "runtime_row_anchor->row.parcel_spawn_position",
@@ -7573,6 +7591,8 @@
         "__offset(Game",
         "arg1->",
         "data_5cc",
+        "interaction_max_z",
+        "&data_800000",
         "edi_1 + 0x5cc",
         "edi_3 + 0x3bf",
         "void* eax_98 = game->level_mode_arg * 0x1fac0 + game",
@@ -9749,6 +9769,7 @@
         "life_stock_widget_cursor = &life_stock_widget_cursor[1]",
         "game->top_score_widget",
         "game->player.game = game",
+        "&g_builtin_segment_definitions",
         "struct tColour color",
         "initialize_challenge_setup_screen(&game->gui)",
         "initialize_galaxy(&game->galaxy)",
@@ -9760,6 +9781,7 @@
         "struct Game*",
         "arg1->",
         "unknown_000000",
+        "data_4a63d0",
         "0x106c7bc",
         "Color4f",
         "struct SubSolution (*",
@@ -10434,7 +10456,8 @@
         "struct ContactTargetEntry* target_entry = search_path_for_golb",
         "struct ContactTargetObject* object = target_entry->object",
         "target_entry->kind == 0",
-        "shot->homing_target.z = target_entry->position.z"
+        "shot->homing_target.z = target_entry->position.z",
+        "shot->shot_slot_index = shot_slot_index"
       ],
       "forbidden_substrings": [
         "render_body_owner",
@@ -10444,6 +10467,8 @@
         "*(shot->game i+ 0x38)",
         "float eax_29 = search_path_for_golb",
         "eax_29 i+",
+        "emitter_index",
+        "shot->object_ref",
         "__offset"
       ]
     },
@@ -10452,19 +10477,23 @@
       "artifact": "analysis/decompile/ida/functions/00415280-create_golb.c",
       "required_substrings": [
         "BodNode **p_first",
-        "first->list_prev = &shot->body.bod.bod;",
+        "first->list_prev = &shot->bod.bod;",
         "(*p_first)->list_prev->list_next = *p_first;",
         "BodNode **v40",
         "v41->list_prev = &p_tertiary_body->bod.bod;",
         "*v40 = &p_tertiary_body->bod.bod;",
         "shot->vapour_owner_shot = shot;",
-        "shot->vapour.body.bod.bod.list_flags"
+        "shot->vapour.body.bod.bod.list_flags",
+        "void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_selector, int32_t shot_slot_index)",
+        "shot->shot_slot_index = shot_slot_index;"
       ],
       "forbidden_substrings": [
         "FrameBodBase",
         "(FrameBodBase *)",
         "primary_body",
         "secondary_body",
+        "emitter_index",
+        "shot->object_ref",
         "shot->live_matrix"
       ]
     },
@@ -10474,7 +10503,8 @@
       "required_substrings": [
         "typedef struct __base(RenderableBod, 0x00) GolbShot {\n    __inherited RenderableBod body;\n    Vapour vapour;\n    struct GolbShot* vapour_owner_shot;\n    cRGolbRocket tertiary_body;",
         "typedef GolbShot cRSubGolb;",
-        "Sprite* render_sprite;"
+        "Sprite* render_sprite;",
+        "int32_t shot_slot_index;"
       ],
       "forbidden_substrings": [
         "RenderableBod primary_body",
@@ -10613,13 +10643,27 @@
         "trail_sprite->progress_step = 0.555555582f",
         "__builtin_memset(&trail_sprite->velocity, 0, 0xc)",
         "trail_sprite->position.x = position->x",
-        "trail_sprite->object_ref = shot->object_ref",
+        "trail_sprite->object_ref = shot->shot_slot_index",
         "return trail_sprite"
       ],
       "forbidden_substrings": [
         "void** result",
         "result[",
         "__offset"
+      ]
+    },
+    {
+      "name": "ida_spawn_golb_trail_sprite_owner",
+      "artifact": "analysis/decompile/ida/functions/00415bb0-spawn_golb_trail_sprite.c",
+      "required_substrings": [
+        "Sprite *__thiscall spawn_golb_trail_sprite(GolbShot *shot, Vec3 *position)",
+        "result->position = *position;",
+        "result->object_ref = (void *)shot->shot_slot_index;",
+        "return result;"
+      ],
+      "forbidden_substrings": [
+        "shot->object_ref",
+        "emitter_index"
       ]
     },
     {
@@ -10704,7 +10748,7 @@
       "artifact": "analysis/decompile/ida/functions/00441dd0-firework_shoot.c",
       "required_substrings": [
         "void __thiscall firework_shoot(FireWork *firework, Vec3 *position, int32_t owner, int32_t texture_id, int32_t count)",
-        "Sprite *sprite;",
+        "cRSprite *sprite;",
         "SpriteFlag flags;",
         "double duration_random;",
         "float green;",
@@ -10730,7 +10774,9 @@
         "texture_ida",
         "counta",
         "countb",
-        "sub_44DBD0"
+        "sub_44DBD0",
+        "sprite = (Sprite *)((char *)sprite + 72)",
+        "LODWORD(position->x)"
       ]
     },
     {
@@ -14733,6 +14779,7 @@
         "object_1->animation",
         "object_1->vertices = animation->frames",
         "object_1->facequad_normals = animation->frames",
+        "flags & 0x800000",
         "apply_distort_to_object(&object_1->distort, object_1)",
         "object_1->render_buffers->vertex_buffer",
         "object_1->grouped_vertex_count",
@@ -14758,6 +14805,7 @@
         "int32_t* edx_9",
         "void* ecx_9",
         "void* ebx_1",
+        "&data_800000",
         "int32_t edx_4 = 0",
         "int32_t edi_4 = 0",
         "unimplemented"
@@ -16402,6 +16450,9 @@
       "artifact": "analysis/decompile/binja/functions/00418b50-initialize_loading_screen.c",
       "required_substrings": [
         "begin_overlay_render_state()",
+        "D3DXCreateTextureFromFileInMemoryEx",
+        "D3DXCreateTextureFromFileExA",
+        "D3DXCreateTextureFromFileA",
         "&g_loading_background_texture)",
         "&g_loading_bar_on_texture)",
         "g_loading_background_vertex_buffer->vertex_buffer",
@@ -16420,6 +16471,9 @@
         "data_5032a4",
         "__offset(0x14)",
         "int32_t result = begin_overlay_render_state()",
+        "sub_4533c4",
+        "sub_453404",
+        "sub_453467",
         "arg1",
         "unimplemented"
       ]
@@ -21031,7 +21085,7 @@
       "required_substrings": [
         "struct Snail* snail_1 = snail",
         "struct Object* hotspot_model = snail->snail_hotspot_body.bod.object",
-        "char** hotspot_name_cursor = &data_4a4aa0",
+        "char** hotspot_name_cursor = &g_snail_hotspot_texture_names",
         "struct SnailHotspotLocalZCursorView* hotspot_local_z_cursor = &snail->snail_hotspots_local[0].z",
         "struct ObjectFaceQuadTextureCursorView* hotspot_face_texture_cursor = &hotspot_model->facequads->texture_ref",
         "hotspot_face_texture_cursor->texture_ref",
@@ -21044,6 +21098,7 @@
         "PlayerPresentationController",
         "_pad_1644",
         "presentation->",
+        "data_4a4aa0",
         "void* ebp",
         "int32_t* edi_2"
       ]
@@ -22405,6 +22460,7 @@
         "int32_t loop_keyframe_count = keyframe_count",
         "int32_t keyframe_index = 0",
         "loader->duplicate_vertices.active_count = 0",
+        "object->flags |= OBJECT_FLAG_DISTORT_ENABLED",
         "char* mesh_path = &data_4b2f50",
         "int32_t* frame_number_cursor = &allocated_keyframes->frame_number",
         "char animation_tag[0x80]",
@@ -22421,6 +22477,7 @@
         "char* eax_13",
         "char* eax_14",
         "int32_t flags",
+        "&data_800000",
         "arg1",
         "sub_48b32c",
         "unimplemented"

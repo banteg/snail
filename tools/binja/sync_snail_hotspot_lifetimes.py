@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
+    apply_data_var_updates,
+    apply_symbol_updates,
     apply_user_var_updates,
     current_header_type_equivalence,
     current_struct_fields_batch,
@@ -15,7 +17,6 @@ from _narrow_sync import (
     types_declare_missing_only,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -156,6 +157,14 @@ HOTSPOT_ANALYSIS_VIEWS = (
     "ObjectFaceQuadTextureCursorView",
 )
 
+SNAIL_HOTSPOT_DATA_SYMBOL_UPDATES = (
+    ("0x4a4aa0", "g_snail_hotspot_texture_names"),
+)
+
+SNAIL_HOTSPOT_DATA_VAR_UPDATES = (
+    ("0x4a4aa0", "char*[19]"),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -171,6 +180,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_HEADER_PATH,
         help="Header documenting the canonical Snail hotspot owners.",
+    )
+    parser.add_argument(
+        "--texture-table-only",
+        action="store_true",
+        help="Replay only the recovered 19-entry hotspot texture-name table.",
     )
     return parser.parse_args()
 
@@ -252,12 +266,43 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    if args.texture_table_only:
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=[
+                *apply_symbol_updates(
+                    REPO_ROOT,
+                    target=args.target,
+                    updates=SNAIL_HOTSPOT_DATA_SYMBOL_UPDATES,
+                    kind="data",
+                ),
+                *apply_data_var_updates(
+                    REPO_ROOT,
+                    target=args.target,
+                    updates=SNAIL_HOTSPOT_DATA_VAR_UPDATES,
+                ),
+            ],
+        )
+
     operations = [
         ensure_hotspot_analysis_views(
             target=args.target,
             header_path=header_path,
         ),
         verify_snail_hotspot_owner_layout(args.target),
+        *apply_symbol_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SNAIL_HOTSPOT_DATA_SYMBOL_UPDATES,
+            kind="data",
+        ),
+        *apply_data_var_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=SNAIL_HOTSPOT_DATA_VAR_UPDATES,
+        ),
         *apply_user_var_updates(
             REPO_ROOT,
             target=args.target,

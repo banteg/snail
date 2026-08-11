@@ -193,3 +193,13 @@ This closes the house-style check without a new source experiment: no repeated
 authored idiom supports spelling the unique native tail as a second hotspot
 publication. It remains bounded as VC6 residue, while the one register-only
 error-call difference and the honest 91.55% source stay unchanged.
+
+## 2026-08-12 ownership closure
+
+The canonical Binary Ninja database now types `g_snail_hotspot_texture_names`
+at `0x4a4aa0` as the complete 19-entry pointer table and replays that ownership
+through a byte-guarded focused sync. Together with the already recovered
+receiver, model, face/vertex banks, destination bank, loop bound, mobile body,
+and clean reference audit, this leaves no known semantic or ownership gap.
+The scratch is therefore `semantic-complete`; the unique redundant vector
+self-copy and error-call register choice remain classified as compiler residue.

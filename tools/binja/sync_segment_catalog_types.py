@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -34,11 +35,13 @@ EXPECTED_OWNER_SIZES = {
 }
 
 DATA_SYMBOL_UPDATES = (
+    ("0x4a63d0", "g_builtin_segment_definitions"),
     ("0x74ec74", "g_current_level_definition_name"),
     ("0x74ec78", "g_level_file_text_buffer"),
 )
 
 DATA_VAR_UPDATES = (
+    ("0x4a63d0", "SubSegmentRaw*[32]"),
     ("0x74ec74", "char*"),
     ("0x74ec78", "LevelFileTextBuffer"),
 )
@@ -664,7 +667,41 @@ PROTO_UPDATES = (
 )
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Replay the recovered segment-catalog ownership slice."
+    )
+    parser.add_argument(
+        "--builtin-definitions-only",
+        action="store_true",
+        help="Replay only the recovered 32-entry built-in segment table.",
+    )
+    return parser.parse_args()
+
+
 def main() -> int:
+    args = parse_args()
+    if args.builtin_definitions_only:
+        operations = [
+            *apply_symbol_updates(
+                REPO_ROOT,
+                target=TARGET,
+                updates=(DATA_SYMBOL_UPDATES[0],),
+                kind="data",
+            ),
+            *apply_data_var_updates(
+                REPO_ROOT,
+                target=TARGET,
+                updates=(DATA_VAR_UPDATES[0],),
+            ),
+        ]
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=TARGET,
+            header_path=HEADER_PATH,
+            operations=operations,
+        )
+
     operations: list[dict[str, object]] = [
         types_declare_if_changed(
             REPO_ROOT,
@@ -705,6 +742,7 @@ def main() -> int:
                 REPO_ROOT,
                 target=TARGET,
                 updates=DATA_SYMBOL_UPDATES,
+                kind="data",
             ),
             *apply_data_var_updates(
                 REPO_ROOT,

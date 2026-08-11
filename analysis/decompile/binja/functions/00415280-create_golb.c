@@ -231,7 +231,7 @@
 00415a89        render_position->z = shot->flight_transform.position.z
 00415aab        shot->render_sprite->facing_angle = fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f))
 00415ac7        shot->render_sprite->facing_angle_step = fconvert.s(fconvert.t(shot->game->subgame_rate) * fconvert.t(0.58177644f))
-00415acd        shot->object_ref = emitter_index
+00415acd        shot->shot_slot_index = shot_slot_index
 004157f5        if (kind == 1)
 00415900        struct cRSubGame* game_1 = shot->game
 00415906        shot->lifetime = 0f
@@ -250,7 +250,7 @@
 00415944        report_errorf("List ADDafter")
 0041596e        reset_vapour(&shot->vapour, spawn_selector)
 0041598d        store_color4f(&shot->vapour.body.bod.color, 1f, 1f, 1f, 0.99000001f)
-0041599c        shot->object_ref = emitter_index
+0041599c        shot->shot_slot_index = shot_slot_index
 004159a5        add_vapour_point(&shot->vapour, &shot->flight_transform)
 004159af        (*shot->vapour.body.bod.bod.vtable)()
 004157fc        if (kind == 2)
@@ -279,7 +279,7 @@
 00415890        list_flags:1.b |= 2
 00415893        shot->tertiary_body.bod.bod.list_flags = list_flags
 0041584c        report_errorf("List ADD")
-004158a7        shot->object_ref = emitter_index
+004158a7        shot->shot_slot_index = shot_slot_index
 004158ad        struct ContactTargetEntry* target_entry = search_path_for_golb(&shot->game->enemy_manager, &shot->flight_transform.position)
 004158b4        if (target_entry != 0)
 004158ba        struct ContactTargetObject* object = target_entry->object

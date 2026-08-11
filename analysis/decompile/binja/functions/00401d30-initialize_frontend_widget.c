@@ -192,14 +192,14 @@
 0040233c        int32_t ecx_43
 0040233c        color_14, ecx_43 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 0040234c        int32_t var_128_1 = ecx_43
-00402377        initialize_frontend_sprite_button(widget->slider_more_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x2a, fconvert.s(fconvert.t(g_game_base->border_manager.justify_centre) + fconvert.t(458f)), y_1, color_14, 0f, 4)
+00402377        initialize_frontend_sprite_button(widget->slider_more_widget, (widget->widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) | 0x20400814, 0x2a, fconvert.s(fconvert.t(g_game_base->border_manager.justify_centre) + fconvert.t(458f)), y_1, color_14, 0f, 4)
 00402389        border_sprite_extend(widget->slider_more_widget, 0x2c, 0x2b, 0x2d, 1)
 004023ba        widget->slider_less_widget = allocate_border(&g_game_base->border_manager)
 004023c0        struct tColour* slider_less_color
 004023c0        int32_t ecx_51
 004023c0        slider_less_color, ecx_51 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 004023cc        int32_t var_128_3 = ecx_51
-004023f7        initialize_frontend_sprite_button(widget->slider_less_widget, (widget->widget_flags & &data_800000) | 0x20400814, 0x26, fconvert.s(fconvert.t(g_game_base->border_manager.justify_centre) + fconvert.t(118f)), y_1, slider_less_color, 0f, 4)
+004023f7        initialize_frontend_sprite_button(widget->slider_less_widget, (widget->widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) | 0x20400814, 0x26, fconvert.s(fconvert.t(g_game_base->border_manager.justify_centre) + fconvert.t(118f)), y_1, slider_less_color, 0f, 4)
 00402409        border_sprite_extend(widget->slider_less_widget, 0x28, 0x27, 0x29, 0)
 0040243a        widget->slider_value_widget = allocate_border(&g_game_base->border_manager)
 00402440        struct tColour* color_15

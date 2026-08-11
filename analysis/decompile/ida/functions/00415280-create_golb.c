@@ -2,8 +2,8 @@
 /* function: create_golb @ 0x415280 */
 /* selector: create_golb */
 
-// Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current `shoot_flags` family at +0x338 and emitter slot, choosing the matching spawn anchor, velocity lane, primary sprite, embedded `Vapour`, or tertiary rocket owner and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and independent iOS body establish no result contract.
-void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_selector, int32_t emitter_index)
+// Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current `shoot_flags` family at +0x338 and its index in the player's 12-slot shot bank, choosing the matching spawn anchor, velocity lane, primary sprite, embedded `Vapour`, or tertiary rocket owner and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and independent iOS body establish no result contract.
+void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_selector, int32_t shot_slot_index)
 {
   BodNode **p_first; // eax
   BodNode *first; // ecx
@@ -57,7 +57,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
   struct BodNode *list_next; // eax
   cRSubGame *v55; // ecx
   Player *v56; // edx
-  Sprite *sprite; // eax
+  cRSprite *sprite; // eax
   Vec3 *v58; // eax
   Player *v59; // ecx
   float v60; // eax
@@ -69,7 +69,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
 
   shot->skip_one_tick = 0;
   shot->slug_bounce_armed = 0;
-  if ( (shot->body.bod.bod.list_flags & 0x200) != 0 )
+  if ( (shot->bod.bod.list_flags & 0x200) != 0 )
   {
     report_errorf(aListAdd);
   }
@@ -79,7 +79,7 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
     first = g_game_base->active_bod_list.first;
     if ( first != nullptr )
     {
-      first->list_prev = &shot->body.bod.bod;
+      first->list_prev = &shot->bod.bod;
       (*p_first)->list_prev->list_next = *p_first;
       list_prev = (*p_first)->list_prev;
       *p_first = list_prev;
@@ -87,11 +87,11 @@ void __thiscall create_golb(GolbShot *shot, Player *player, int32_t spawn_select
     }
     else
     {
-      *p_first = &shot->body.bod.bod;
-      shot->body.bod.bod.list_prev = nullptr;
+      *p_first = &shot->bod.bod;
+      shot->bod.bod.list_prev = nullptr;
       (*p_first)->list_next = nullptr;
     }
-    shot->body.bod.bod.list_flags |= 0x200u;
+    shot->bod.bod.list_flags |= 0x200u;
   }
   shot->owner_player = player;
   shoot_flags = player->shoot_flags;
@@ -357,7 +357,7 @@ LABEL_51:
           shot->tertiary_body.bod.bod.list_flags = list_flags;
         }
         p_enemy_manager = &shot->game->enemy_manager;
-        shot->object_ref = (void *)emitter_index;
+        shot->shot_slot_index = shot_slot_index;
         v45 = search_path_for_golb(p_enemy_manager, &shot->flight_transform.position);
         if ( v45 != nullptr )
         {
@@ -404,7 +404,7 @@ LABEL_51:
       }
       reset_vapour(&shot->vapour, (float *)spawn_selector);
       store_color4f(&shot->vapour.body.bod.color, 1.0, 1.0, 1.0, 0.99000001);
-      shot->object_ref = (void *)emitter_index;
+      shot->shot_slot_index = shot_slot_index;
       add_vapour_point(&shot->vapour, &shot->flight_transform);
       (*(void (__thiscall **)(Vapour *))p_vapour->body.bod.bod.vtable)(&shot->vapour);
     }
@@ -430,7 +430,7 @@ LABEL_51:
     v58->z = shot->flight_transform.position.z;
     shot->render_sprite->facing_angle = ((double)next_math_random_value() - 16384.0) * 0.0001917476;
     shot->render_sprite->facing_angle_step = shot->game->subgame_rate * 0.58177644;
-    shot->object_ref = (void *)emitter_index;
+    shot->shot_slot_index = shot_slot_index;
   }
   v59 = shot->owner_player;
   if ( v59->follow_state.active == 1 && v59->follow_state.vertical_offset < 0.5 )
@@ -461,5 +461,5 @@ LABEL_51:
   v64 = shot->flight_transform.position.z;
   shot->previous_flight_transform.position.y = y;
   shot->previous_flight_transform.position.z = v64;
-  (*(void (__thiscall **)(GolbShot *))shot->body.bod.bod.vtable)(shot);
+  (*(void (__thiscall **)(GolbShot *))shot->bod.bod.vtable)(shot);
 }

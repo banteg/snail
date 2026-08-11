@@ -2950,9 +2950,7 @@
       "address": "0x43a300",
       "name": "shoot_subgoldy",
       "artifact": "analysis/decompile/ida/functions/0043a300-shoot_subgoldy.c",
-      "removed_stale_artifacts": [
-        "analysis/decompile/ida/functions/0043a300-update_movement_flag_emitters.c"
-      ]
+      "removed_stale_artifacts": []
     },
     {
       "selector": "end_jetpack_hover",

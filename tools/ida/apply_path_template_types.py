@@ -17,7 +17,6 @@ if str(SCRIPT_ROOT) not in sys.path:
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 
-
 REPLAY_START_CURSOR_FIELD_SPECS = (
     ("Player", 0x4364, 0x304, ("startup_track_index", "replay_start_cursor")),
     ("SubSolution", 0x1FAC0, 0x24, ("source_tail", "replay_start_cursor")),
@@ -1023,6 +1022,12 @@ INITIALIZE_SUBGOLDY_LVAR_SPECS = (
     ),
 )
 
+SHOOT_SUBGOLDY_LVAR_SPECS = (
+    ("spawn_selector", "int32_t spawn_selector;", 0x43A31D, None),
+    ("shot_slot_index", "int32_t shot_slot_index;", 0x43A330, None),
+    ("golb_shot_cursor", "GolbShot *golb_shot_cursor;", 0x43A332, None),
+)
+
 WORLD_INITIALIZER_GOLB_ASSET_LVAR_SPECS = (
     (
         "golb_shot_vapour_object_cursor",
@@ -1164,7 +1169,6 @@ SPAWN_TRACK_JETPACK_LVAR_SPECS = (
 )
 
 FIREWORK_SHOOT_LVAR_SPECS = (
-    ("sprite", "Sprite *sprite;", 0x441E0F, None),
     ("flags", "SpriteFlag flags;", 0x441E17, None),
     ("duration_random", "double duration_random;", 0x441E37, None),
     ("green", "float green;", 0x441E86, 8),
@@ -2117,7 +2121,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "create_golb",
-        "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index);",
+        "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t shot_slot_index);",
     ),
     (
         "shoot_subgoldy",
@@ -3894,7 +3898,7 @@ def _clear_exact_lvar_override(
     selector: str,
     expected_name: str,
     definition_address: int,
-    stack_offset: int,
+    stack_offset: int | None,
 ) -> dict[str, object]:
     address = idc.get_name_ea_simple(selector)
     if address == idc.BADADDR:
@@ -3907,8 +3911,14 @@ def _clear_exact_lvar_override(
         if not lvar.is_arg_var
         and lvar.name == expected_name
         and lvar.defea == definition_address
-        and lvar.is_stk_var()
-        and lvar.get_stkoff() == stack_offset
+        and (
+            (stack_offset is None and not lvar.is_stk_var())
+            or (
+                stack_offset is not None
+                and lvar.is_stk_var()
+                and lvar.get_stkoff() == stack_offset
+            )
+        )
     ]
     if not candidates:
         return {
@@ -3938,7 +3948,15 @@ def _clear_exact_lvar_override(
         }
 
     saved_info = settings.find_info(locator)
-    if saved_info is None or saved_info.name != expected_name:
+    if saved_info is None:
+        return {
+            "status": "unchanged",
+            "name": expected_name,
+            "definition_address": hex(definition_address),
+            "stack_offset": stack_offset,
+            "reason": "no_saved_override",
+        }
+    if saved_info.name != expected_name:
         return {
             "status": "failed",
             "reason": "saved_lvar_override_mismatch",
@@ -4224,6 +4242,13 @@ def _sync_initialize_subgoldy_lvars() -> dict[str, object]:
     )
 
 
+def _sync_shoot_subgoldy_lvars() -> dict[str, object]:
+    return _sync_exact_lvars(
+        "shoot_subgoldy",
+        SHOOT_SUBGOLDY_LVAR_SPECS,
+    )
+
+
 def _sync_world_initializer_golb_asset_lvars() -> dict[str, object]:
     return _sync_exact_lvars(
         "initialize_game_assets_and_world",
@@ -4287,10 +4312,46 @@ def _sync_spawn_track_jetpack_lvars() -> dict[str, object]:
 
 
 def _sync_firework_shoot_lvars() -> dict[str, object]:
-    return _sync_exact_lvars(
+    # A persisted type override on the ESI result of allocate_sprite became
+    # harmful once the canonical Sprite/cRSprite alias was installed: Hex-Rays
+    # stopped folding the final three stores back into `sprite->position`.
+    # Keep the automatic pointer owner and replay only the genuinely split
+    # scalar lifetimes.
+    cleared_sprite_override = _clear_exact_lvar_override(
+        "firework_shoot",
+        "sprite",
+        0x441E0F,
+        None,
+    )
+    if cleared_sprite_override.get("status") == "failed":
+        return {
+            "status": "failed",
+            "selector": "firework_shoot",
+            "cleared_sprite_override": cleared_sprite_override,
+        }
+
+    lvars = _sync_exact_lvars(
         "firework_shoot",
         FIREWORK_SHOOT_LVAR_SPECS,
     )
+    if lvars.get("status") == "failed":
+        return {
+            "status": "failed",
+            "selector": "firework_shoot",
+            "cleared_sprite_override": cleared_sprite_override,
+            "lvars": lvars,
+        }
+    return {
+        "status": (
+            "applied"
+            if "applied"
+            in {cleared_sprite_override.get("status"), lvars.get("status")}
+            else "unchanged"
+        ),
+        "selector": "firework_shoot",
+        "cleared_sprite_override": cleared_sprite_override,
+        "lvars": lvars,
+    }
 
 
 def _sync_spawn_salt_hazard_lvars() -> dict[str, object]:
@@ -5848,6 +5909,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "ownership_lvars": initialize_subgoldy_lvars,
             }
         )
+    shoot_subgoldy_lvars = _sync_shoot_subgoldy_lvars()
+    if shoot_subgoldy_lvars.get("status") == "failed":
+        failed.append(
+            {
+                "selector": "shoot_subgoldy",
+                "ownership_lvars": shoot_subgoldy_lvars,
+            }
+        )
     world_initializer_golb_asset_lvars = (
         _sync_world_initializer_golb_asset_lvars()
     )
@@ -6114,6 +6183,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "update_subgame_runtime_lvars": update_subgame_runtime_lvars,
                 "update_subgoldy_lvars": update_subgoldy_lvars,
                 "initialize_subgoldy_lvars": initialize_subgoldy_lvars,
+                "shoot_subgoldy_lvars": shoot_subgoldy_lvars,
                 "world_initializer_golb_asset_lvars": (
                     world_initializer_golb_asset_lvars
                 ),

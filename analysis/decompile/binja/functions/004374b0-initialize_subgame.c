@@ -121,7 +121,7 @@
 00437964        return
 0043796a        game_base_2->players[0].high_score_entry_pending = 0
 00437980        g_game_base->players[0].selected_high_score_rank = 0
-00437986        load_builtin_segment_definitions(&game->level_definition_scratch, &data_4a63d0)
+00437986        load_builtin_segment_definitions(&game->level_definition_scratch, &g_builtin_segment_definitions)
 00437991        set_matrix_identity(&game->player.body.transform)
 004379a2        game->player.movement_mode_selector = 0
 004379a8        game->player.game = game

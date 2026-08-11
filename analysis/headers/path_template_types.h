@@ -2442,7 +2442,7 @@ typedef struct __base(RenderableBod, 0x00) GolbShot {
     float lifetime;
     float lifetime_step;
     cRSubGame* game;
-    void* object_ref;
+    int32_t shot_slot_index;
     Player* owner_player;
     TransformMatrix source_matrix;
     GolbPathFollowState path_follow;

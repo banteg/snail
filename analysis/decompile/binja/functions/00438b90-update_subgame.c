@@ -104,7 +104,7 @@
 00438ece        if (game->resume_requested == 1)
 00438ed6        game->subgame_pause_gate = 0
 00438eda        game->resume_requested = 0
-00438ede        set_sprite_manager_paused(&g_sprite_manager, 0)
+00438ede        set_sprite_manager_paused(&g_sprite_manager, false)
 00438ee3        int16_t eax_12
 00438ee3        eax_12.b = game->selected_level_record_active
 00438ee9        struct GameRoot* game_base_1 = g_game_base
@@ -115,7 +115,7 @@
 00438f3d        if ((read_pressed_text_input_key_code().b == 0xb || g_window_deactivated == 1) && g_game_base->fade.state == 0)
 00438f3f        game->subgame_pause_gate = 1
 00438f4a        game->subgame_state = 3
-00438f4d        set_sprite_manager_paused(&g_sprite_manager, 1)
+00438f4d        set_sprite_manager_paused(&g_sprite_manager, true)
 00438f58        if (game->player.click_start.state != CLICK_START_STATE_WAITING_FOR_START)
 00439906        return
 00438f64        hide_border_init(game->player.click_start.prompt)
@@ -175,7 +175,7 @@
 00439099        list_flags:1.b |= 2
 0043909c        runtime_row_anchor->row.row_model.body.bod.bod.list_flags = list_flags
 00439053        report_errorf("List ADD")
-004390af        if ((runtime_row_anchor->row.flags.b & 0x10) != 0 && (game->runtime_flags & &data_800000) != 0)
+004390af        if ((runtime_row_anchor->row.flags.b & 0x10) != 0 && (game->runtime_flags & 0x800000) != 0)
 004390c1        spawn_track_parcel(game, &runtime_row_anchor->row.parcel_spawn_position, &game->player)
 004390c6        float var_3c_1 = 0f
 00439863        bool cond:5_1

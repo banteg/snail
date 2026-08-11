@@ -23,5 +23,5 @@
 00415c35        trail_sprite->position.x = position->x
 00415c3b        trail_sprite->position.y = position->y
 00415c42        trail_sprite->position.z = position->z
-00415c4b        trail_sprite->object_ref = shot->object_ref
+00415c4b        trail_sprite->object_ref = shot->shot_slot_index
 00415c4e        return trail_sprite

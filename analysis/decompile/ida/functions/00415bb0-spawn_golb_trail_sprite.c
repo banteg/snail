@@ -9,7 +9,7 @@ Sprite *__thiscall spawn_golb_trail_sprite(GolbShot *shot, Vec3 *position)
   SpriteFlag flags; // ecx
   uint32_t shoot_flags; // ecx
 
-  result = (Sprite *)allocate_sprite(g_sprite_manager, shot->owner_player->player_slot, 33, -1, -1);
+  result = allocate_sprite(&g_sprite_manager, shot->owner_player->player_slot, 33, -1, -1);
   flags = result->flags;
   BYTE1(flags) |= 8u;
   result->progress = 0.0;
@@ -33,6 +33,6 @@ Sprite *__thiscall spawn_golb_trail_sprite(GolbShot *shot, Vec3 *position)
   result->velocity.x = 0.0;
   result->gravity_step = 0.0;
   result->position = *position;
-  result->object_ref = shot->object_ref;
+  result->object_ref = (void *)shot->shot_slot_index;
   return result;
 }

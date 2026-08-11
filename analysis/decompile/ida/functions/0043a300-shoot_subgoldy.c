@@ -6,37 +6,37 @@
 void __thiscall shoot_subgoldy(Player *owner, Player *shoot_source)
 {
   uint32_t shoot_flags; // eax
-  int32_t v4; // ebx
-  int32_t v5; // esi
-  GolbShot *golb_shots; // edi
+  int32_t spawn_selector; // ebx
+  int32_t shot_slot_index; // esi
+  GolbShot *golb_shot_cursor; // edi
 
   shoot_flags = shoot_source->shoot_flags;
   if ( (shoot_flags & 0x69) != 0 )
   {
-    v4 = 1;
+    spawn_selector = 1;
   }
   else if ( (shoot_flags & 0x12) != 0 )
   {
-    v4 = 2;
+    spawn_selector = 2;
   }
   else
   {
     if ( (shoot_flags & 4) == 0 )
       return;
-    v4 = 3;
+    spawn_selector = 3;
   }
-  v5 = 0;
-  golb_shots = owner->golb_shots;
+  shot_slot_index = 0;
+  golb_shot_cursor = owner->golb_shots;
   do
   {
-    if ( golb_shots->state == 0 )
+    if ( golb_shot_cursor->state == 0 )
     {
-      create_golb(golb_shots, owner, v4--, v5);
-      if ( v4 == 0 )
+      create_golb(golb_shot_cursor, owner, spawn_selector--, shot_slot_index);
+      if ( spawn_selector == 0 )
         break;
     }
-    ++v5;
-    ++golb_shots;
+    ++shot_slot_index;
+    ++golb_shot_cursor;
   }
-  while ( v5 < 12 );
+  while ( shot_slot_index < 12 );
 }

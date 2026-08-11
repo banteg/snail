@@ -3,17 +3,17 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
-    apply_instruction_comment_updates,
     apply_data_var_updates,
+    apply_instruction_comment_updates,
+    apply_int_display_updates,
     apply_proto_updates,
+    apply_split_user_var_update,
     apply_struct_and_proto_updates,
     apply_struct_field_updates,
-    apply_split_user_var_update,
     apply_symbol_updates,
     apply_user_var_updates,
     current_header_type_equivalence,
@@ -28,6 +28,7 @@ from _narrow_sync import (
     types_declare_if_missing,
     types_declare_missing_only,
 )
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -417,7 +418,7 @@ GOLB_SHOT_FIELD_UPDATES = (
     ("0x268", "lifetime", "float"),
     ("0x26c", "lifetime_step", "float"),
     ("0x270", "game", "cRSubGame*"),
-    ("0x274", "object_ref", "void*"),
+    ("0x274", "shot_slot_index", "int32_t"),
     ("0x278", "owner_player", "Player*"),
     ("0x27c", "source_matrix", "TransformMatrix"),
     ("0x2bc", "path_follow", "GolbPathFollowState"),
@@ -1090,10 +1091,10 @@ INITIALIZE_SUBGOLDY_USER_VAR_UPDATES = (
     ),
 )
 
-# The emitter search borrows one GolbShot at a time from Player.golb_shots.
+# The shot-bank scan borrows one GolbShot at a time from Player.golb_shots.
 # Fixing the exact EDI lifetime prevents HLIL from widening it to a pointer to
 # the entire 12-element array and inventing a compensating owner subtraction.
-MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES = (
+GOLB_SHOT_CURSOR_USER_VAR_UPDATES = (
     (
         "shoot_subgoldy",
         "RegisterVariableSourceType",
@@ -1800,6 +1801,19 @@ UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES = (
         66,
         "time_trial_route_cursor",
         "TimeTrialRouteRecordCursor*",
+    ),
+)
+
+UPDATE_SUBGAME_RUNTIME_FLAG_INT_DISPLAY_UPDATES = (
+    (
+        "update_subgame",
+        "0x4390a8",
+        "f7 46 4c 00 00 80 00",
+        0x00800000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "0x800000",
+        "&data_800000",
     ),
 )
 
@@ -3627,7 +3641,7 @@ GOLB_PROTO_UPDATES = (
     ),
     (
         "create_golb",
-        "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t emitter_index)",
+        "void __thiscall create_golb(GolbShot* shot, Player* player, int32_t spawn_selector, int32_t shot_slot_index)",
     ),
     (
         "shoot_subgoldy",
@@ -5162,6 +5176,11 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     focused_group.add_argument(
+        "--update-subgame-flag-only",
+        action="store_true",
+        help="Replay only update_subgame's guarded runtime-flag immediate.",
+    )
+    focused_group.add_argument(
         "--build-subgame-only",
         action="store_true",
         help=(
@@ -5678,6 +5697,21 @@ def main() -> int:
             operations=operations,
         )
 
+    if args.update_subgame_flag_only:
+        operations.extend(
+            apply_int_display_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=UPDATE_SUBGAME_RUNTIME_FLAG_INT_DISPLAY_UPDATES,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if args.update_subgame_only:
         operations.append(
             types_declare_if_missing(
@@ -5699,6 +5733,14 @@ def main() -> int:
         operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(verify_authored_row_cursor_sizes(target=args.target))
         operations.extend(
+            apply_struct_field_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_name="Player",
+                updates=(("0x2980", "active_window_min_z", "float"),),
+            )
+        )
+        operations.extend(
             apply_split_user_var_update(
                 REPO_ROOT,
                 target=args.target,
@@ -5714,6 +5756,13 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 updates=UPDATE_SUBGAME_RUNTIME_USER_VAR_UPDATES,
+            )
+        )
+        operations.extend(
+            apply_int_display_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=UPDATE_SUBGAME_RUNTIME_FLAG_INT_DISPLAY_UPDATES,
             )
         )
         operations.extend(
@@ -6245,7 +6294,7 @@ def main() -> int:
                 *UPDATE_SUBGOLDY_USER_VAR_UPDATES,
                 *UPDATE_SUBGOLDY_REPLAY_USER_VAR_UPDATES,
                 *INITIALIZE_SUBGOLDY_USER_VAR_UPDATES,
-                *MOVEMENT_FLAG_EMITTER_USER_VAR_UPDATES,
+                *GOLB_SHOT_CURSOR_USER_VAR_UPDATES,
                 *UPDATE_BANNER_USER_VAR_UPDATES,
                 *BANNER_INITIALIZER_USER_VAR_UPDATES,
                 *PRESENTATION_ANIMATION_CURSOR_USER_VAR_UPDATES,
@@ -6283,6 +6332,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             updates=UPDATE_SUBGAME_RING_SPEED_COMMENT_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_int_display_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=UPDATE_SUBGAME_RUNTIME_FLAG_INT_DISPLAY_UPDATES,
         )
     )
     operations.extend(

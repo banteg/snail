@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_direct_proto_update,
-    apply_symbol_removals,
+    apply_int_display_updates,
     apply_struct_and_proto_updates,
+    apply_symbol_removals,
     apply_symbol_updates,
     apply_type_renames,
     apply_user_var_updates,
@@ -20,7 +20,7 @@ from _narrow_sync import (
     emit_summary,
     types_declare_if_changed,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
@@ -247,6 +247,29 @@ DATA_VAR_UPDATES = (
     ("0x503260", "uint8_t"),
     ("0x503300", "ObjectToonEdge*"),
     ("0x503318", "int32_t"),
+)
+
+OBJECT_FLAG_INT_DISPLAY_UPDATES = (
+    (
+        "load_x_animation_clip",
+        "0x405ef6",
+        "81 c9 00 00 80 00",
+        0x00800000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "OBJECT_FLAG_DISTORT_ENABLED",
+        "&data_800000",
+    ),
+    (
+        "refresh_object_vertex_buffer",
+        "0x412291",
+        "f7 c3 00 00 80 00",
+        0x00800000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "0x800000",
+        "&data_800000",
+    ),
 )
 
 PROTO_UPDATES = (
@@ -521,6 +544,11 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--target", default=DEFAULT_TARGET, help="Binary Ninja target selector.")
     parser.add_argument("--header", type=Path, default=DEFAULT_HEADER_PATH, help="Narrow Binary Ninja type header.")
+    parser.add_argument(
+        "--flag-immediates-only",
+        action="store_true",
+        help="Replay only the guarded ObjectFlag immediate displays.",
+    )
     return parser.parse_args()
 
 
@@ -641,6 +669,18 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    if args.flag_immediates_only:
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=apply_int_display_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=OBJECT_FLAG_INT_DISPLAY_UPDATES,
+            ),
+        )
+
     operations: list[dict[str, object]] = apply_type_renames(
         REPO_ROOT,
         target=args.target,
@@ -720,6 +760,13 @@ def main() -> int:
         )
     )
     operations.extend(apply_data_var_updates(REPO_ROOT, target=args.target, updates=DATA_VAR_UPDATES))
+    operations.extend(
+        apply_int_display_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=OBJECT_FLAG_INT_DISPLAY_UPDATES,
+        )
+    )
     return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
 

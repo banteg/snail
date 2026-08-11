@@ -7,13 +7,13 @@
 00418b69        int32_t out_size
 00418b69        int32_t eax_2
 00418b69        if (is_archive_index_loaded() == 0)
-00418bd9        eax_2 = sub_453404(g_direct3d_renderer.device, "Sprites/Loading.tga", 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_background_texture)
+00418bd9        eax_2 = D3DXCreateTextureFromFileExA(g_direct3d_renderer.device, "Sprites/Loading.tga", 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_background_texture)
 00418b6b        void* buffer = get_archive_data_base()
 00418b7d        load_file_bytes_from_archive_or_fs("Sprites/Loading.tga", buffer, &out_size)
-00418bac        eax_2 = sub_4533c4(g_direct3d_renderer.device, buffer, out_size, 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_background_texture)
+00418bac        eax_2 = D3DXCreateTextureFromFileInMemoryEx(g_direct3d_renderer.device, buffer, out_size, 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_background_texture)
 00418be0        if (eax_2 s< 0)
 00418be7        report_errorf("Failed to Create DirectX Texture Sprites/Loading.tga")
-00418c00        sub_453467(g_direct3d_renderer.device, "Sprites/Debug.tga", &g_loading_background_texture)
+00418c00        D3DXCreateTextureFromFileA(g_direct3d_renderer.device, "Sprites/Debug.tga", &g_loading_background_texture)
 00418c05        struct Direct3DDevice8* device = g_direct3d_renderer.device
 00418c15        device->vtbl->SetTexture(device, 0, g_loading_background_texture)
 00418c1b        struct Direct3DDevice8* device_1 = g_direct3d_renderer.device
@@ -26,13 +26,13 @@
 00418c61        device_4->vtbl->SetTextureStageState(device_4, 0, 0xe, 3)
 00418c6e        int32_t eax_6
 00418c6e        if (is_archive_index_loaded() == 0)
-00418cda        eax_6 = sub_453404(g_direct3d_renderer.device, "Sprites/LoadingBarOn.tga", 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_bar_on_texture)
+00418cda        eax_6 = D3DXCreateTextureFromFileExA(g_direct3d_renderer.device, "Sprites/LoadingBarOn.tga", 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_bar_on_texture)
 00418c70        void* buffer_1 = get_archive_data_base()
 00418c82        load_file_bytes_from_archive_or_fs("Sprites/LoadingBarOn.tga", buffer_1, &out_size)
-00418caf        eax_6 = sub_4533c4(g_direct3d_renderer.device, buffer_1, out_size, 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_bar_on_texture)
+00418caf        eax_6 = D3DXCreateTextureFromFileInMemoryEx(g_direct3d_renderer.device, buffer_1, out_size, 0, 0, 1, 0, 0x15, 1, 3, 3, 0xff00ff00, 0, 0, &g_loading_bar_on_texture)
 00418ce1        if (eax_6 s< 0)
 00418ce8        report_errorf("Failed to Create DirectX Texture Sprites/LoadingBarOn.tga")
-00418d01        sub_453467(g_direct3d_renderer.device, "Sprites/Debug.tga", &g_loading_bar_on_texture)
+00418d01        D3DXCreateTextureFromFileA(g_direct3d_renderer.device, "Sprites/Debug.tga", &g_loading_bar_on_texture)
 00418d06        struct Direct3DDevice8* device_5 = g_direct3d_renderer.device
 00418d16        device_5->vtbl->SetTexture(device_5, 0, g_loading_bar_on_texture)
 00418d1c        struct Direct3DDevice8* device_6 = g_direct3d_renderer.device

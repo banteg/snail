@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
+    apply_int_display_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
     apply_user_var_updates,
@@ -14,7 +14,7 @@ from _narrow_sync import (
     emit_summary,
     types_declare_missing_only,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_widget_types.h"
@@ -231,6 +231,14 @@ USER_VAR_UPDATES = (
     (
         "initialize_frontend_widget",
         "RegisterVariableSourceType",
+        602,
+        66,
+        "eax_11",
+        "tColour*",
+    ),
+    (
+        "initialize_frontend_widget",
+        "RegisterVariableSourceType",
         851,
         66,
         "hot_text_color_source",
@@ -266,6 +274,39 @@ SYMBOL_UPDATES = (
     ("0x433050", "launch_alpha72_url"),
 )
 
+FRONTEND_WIDGET_FLAG_INT_DISPLAY_UPDATES = (
+    (
+        "initialize_frontend_widget",
+        "0x40235f",
+        "81 e1 00 00 80 00",
+        0x00800000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND",
+        "&data_800000",
+    ),
+    (
+        "initialize_frontend_widget",
+        "0x4023df",
+        "81 e1 00 00 80 00",
+        0x00800000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND",
+        "&data_800000",
+    ),
+    (
+        "update_frontend_widget_interaction",
+        "0x402c7d",
+        "f7 86 a0 01 00 00 00 00 80 00",
+        0x00800000,
+        0xFFFFFFFF,
+        "UnsignedHexadecimalDisplayType",
+        "FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND",
+        "&data_800000",
+    ),
+)
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -277,6 +318,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_HEADER_PATH,
         help="Narrow Binary Ninja type header.",
+    )
+    parser.add_argument(
+        "--flag-immediates-only",
+        action="store_true",
+        help="Replay only the guarded FrontendWidget flag-immediate displays.",
     )
     return parser.parse_args()
 
@@ -307,6 +353,35 @@ def main() -> int:
         if observed_flag_members == EXPECTED_FLAG_MEMBERS
         else ("FrontendWidgetFlag",)
     )
+    if args.flag_immediates_only:
+        if stale_flag_types:
+            type_operation = types_declare_missing_only(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+                replace_types=stale_flag_types,
+                include_types=stale_flag_types,
+            )
+        else:
+            type_operation = {
+                "op": "types_declare_missing_only",
+                "status": "skipped",
+                "reason": "FrontendWidgetFlag members already current",
+                "header": str(header_path),
+            }
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=[
+                type_operation,
+                *apply_int_display_updates(
+                    REPO_ROOT,
+                    target=args.target,
+                    updates=FRONTEND_WIDGET_FLAG_INT_DISPLAY_UPDATES,
+                ),
+            ],
+        )
     replay_types = (*mismatched_types, *stale_flag_types)
     if replay_types:
         type_operation = types_declare_missing_only(
@@ -354,6 +429,11 @@ def main() -> int:
             target=args.target,
             updates=SYMBOL_UPDATES,
             kind="function",
+        ),
+        *apply_int_display_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=FRONTEND_WIDGET_FLAG_INT_DISPLAY_UPDATES,
         ),
     ]
     return emit_summary(

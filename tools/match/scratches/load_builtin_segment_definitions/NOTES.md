@@ -140,3 +140,13 @@ model EAX as a one-byte element index are canonicalized by VC6 to the
 candidate encoding. The clear indexed source remains canonical rather than
 introducing inline assembly or a false dependency for one commutative ModRM
 choice.
+
+## 2026-08-12 ownership closure
+
+The canonical analysis now also names and types the caller-owned
+`g_builtin_segment_definitions` object as the full 32-entry
+`SubSegmentRaw*` table. The function's `SubTracks` receiver, inline destination
+slots, raw-record layout, row grid, source metadata, count, and `random_length`
+field are all recovered and guarded in both decompiler lanes. The sole byte
+difference is still the equivalent scale-one SIB base/index encoding described
+above, so this scratch is `semantic-complete` with compiler residue.

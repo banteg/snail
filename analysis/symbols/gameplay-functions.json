@@ -1355,7 +1355,7 @@
     {
       "address": "0x415280",
       "name": "create_golb",
-      "description": "Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current `shoot_flags` family at +0x338 and emitter slot, choosing the matching spawn anchor, velocity lane, primary sprite, embedded `Vapour`, or tertiary rocket owner and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and independent iOS body establish no result contract."
+      "description": "Void Windows `cRSubGolb::Create(cRSubGoldy*, int, int)`: initializes one Golb shot actor from the player's current `shoot_flags` family at +0x338 and its index in the player's 12-slot shot bank, choosing the matching spawn anchor, velocity lane, primary sprite, embedded `Vapour`, or tertiary rocket owner and any path-follow state before dispatching the actor's slot-zero AI callback. The sole Windows caller and independent iOS body establish no result contract."
     },
     {
       "address": "0x415bb0",

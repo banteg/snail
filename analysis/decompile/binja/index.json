@@ -1,13 +1,13 @@
 {
   "tool": "binary_ninja",
   "target": {
-    "active": false,
+    "active": true,
     "basename": "SnailMail_unwrapped.exe.bndb",
     "filename": "/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb",
     "selector": "SnailMail_unwrapped.exe.bndb",
-    "session_id": "13293967879814200966",
-    "target_id": "3023:1:13293967879814200966",
-    "view_id": "1",
+    "session_id": "14592244272452359912",
+    "target_id": "17701:3:14592244272452359912",
+    "view_id": "3",
     "view_name": "PE"
   },
   "manifest": "analysis/symbols/gameplay-functions.json",

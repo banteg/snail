@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import Iterable
-
 
 SPILL_PATH_RE = re.compile(r"^path:\s+(?P<path>.+)$", re.MULTILINE)
 STRUCT_FIELD_RE = re.compile(
@@ -194,6 +193,10 @@ def find_member(type_obj, offset):
     return None
 
 
+def source_type_name(value):
+    return getattr(value, "name", str(value).split(".")[-1])
+
+
 def function_variables(function):
     by_identity = {}
     variable_sources = [function.vars]
@@ -206,7 +209,7 @@ def function_variables(function):
     for variables in variable_sources:
         for variable in variables:
             identity = (
-                str(variable.source_type).split(".")[-1],
+                source_type_name(variable.source_type),
                 int(variable.index),
                 int(variable.storage),
             )
@@ -215,13 +218,13 @@ def function_variables(function):
 
 
 def find_variable(function, operation):
-    expected_source = str(operation["source_type"]).split(".")[-1]
+    expected_source = source_type_name(operation["source_type"])
     expected_index = int(operation["index"])
     expected_storage = int(operation["storage"])
     candidates = [
         variable
         for variable in function_variables(function)
-        if str(variable.source_type).split(".")[-1] == expected_source
+        if source_type_name(variable.source_type) == expected_source
         and int(variable.index) == expected_index
         and int(variable.storage) == expected_storage
     ]
@@ -2604,6 +2607,10 @@ def find_function(identifier):
     return function
 
 
+def source_type_name(value):
+    return getattr(value, "name", str(value).split(".")[-1])
+
+
 def function_variables(function):
     by_identity = {}
     variable_sources = [function.vars]
@@ -2616,7 +2623,7 @@ def function_variables(function):
     for variables in variable_sources:
         for variable in variables:
             identity = (
-                str(variable.source_type).split(".")[-1],
+                source_type_name(variable.source_type),
                 int(variable.index),
                 int(variable.storage),
             )
@@ -2625,13 +2632,13 @@ def function_variables(function):
 
 
 def find_variable(function, operation, *, allow_missing=False):
-    expected_source = str(operation["source_type"]).split(".")[-1]
+    expected_source = source_type_name(operation["source_type"])
     expected_index = int(operation["index"])
     expected_storage = int(operation["storage"])
     candidates = [
         variable
         for variable in function_variables(function)
-        if str(variable.source_type).split(".")[-1] == expected_source
+        if source_type_name(variable.source_type) == expected_source
         and int(variable.index) == expected_index
         and int(variable.storage) == expected_storage
     ]
@@ -2997,7 +3004,8 @@ def find_function(identifier):
 
 
 def source_type_name(variable):
-    return str(variable.source_type).split(".")[-1]
+    source_type = variable.source_type
+    return getattr(source_type, "name", str(source_type).split(".")[-1])
 
 
 def variable_key(variable):

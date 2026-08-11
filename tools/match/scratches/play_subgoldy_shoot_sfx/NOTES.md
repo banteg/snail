@@ -189,3 +189,12 @@ ownership and the consumer relationship, not the desktop mouse ABI.
 No clamp/tail source was retried. Focused matching remains the honest 89.13%,
 96/88-instruction result, prefix 26/88, with 19 clean and two candidate-only
 unaudited references.
+
+## 2026-08-12 recovery classification
+
+A fresh focused diff confirms that the two unaudited references are both in
+the candidate-only duplicate of the already aligned scaled-playback tail; the
+native image has no unknown call or data target there. With the ABI, clamp,
+sound families, attenuation owners, and direct/scaled paths independently
+closed above, the function is `semantic-complete`. The extra call tail remains
+honest compiler and reference-alignment residue rather than a semantic gap.

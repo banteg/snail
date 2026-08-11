@@ -52,7 +52,7 @@ focused matching remains 36.08%, 460/582 instructions, with all 35 operands
 clean.
 
 create_golb @ 0x415280 initializes one live Golb projectile slot from Goldy's
-movement-flag family and emitter slot.
+movement-flag family and the slot's index in Goldy's 12-entry shot bank.
 
 Recovered semantics covered by this scratch:
 
@@ -198,8 +198,9 @@ Residuals:
   `reset_vapour` remains exact at `7/7` instructions.
 - The remaining stable `GolbShot` owners are now used directly for kind/state,
   source matrix, flight/previous-flight transforms, direction, lifetime, game,
-  sprite body, emitter identity, and path factor. `+0x274` is explicitly a union of
-  the sprite-facing `object_ref` and the caller-facing integer emitter index.
+  sprite body, shot-bank identity, and path factor. Later caller/mobile
+  evidence closes `+0x274` as the integer shot-bank index; only the downstream
+  trail Sprite stores it through that separate owner's opaque `object_ref` ABI.
   This promotion is also codegen-neutral at `36.08%`, so no byte-shaping was
   introduced to obtain it.
 - Rejected 2026-07-10 neighbors: narrowing only the player pointer regressed to
@@ -433,13 +434,26 @@ and `kill_golb` releases that target reservation without consulting `+0x274`.
 `update_golb_ai` reaches the word only through its kind-0 trail path:
 `spawn_golb_trail_sprite` forwards `+0x274` to each trail Sprite as an opaque
 `object_ref`. The scratch definition therefore names the incoming control
-value `shot_slot_index`; the shared `object_ref`/integer overlay is retained
-for the downstream sprite ABI.
+value `shot_slot_index`; the distinct Sprite owner retains its own opaque
+`object_ref` field for the downstream ABI.
 
 The recorded `shot-pool-slot-identity` probe is byte-neutral at the honest
 77.98% frontier: 549/582 instructions, prefix 81/582, 47 clean references,
 and the one documented unaudited constant. A second
-`shot-pool-slot-field-identity` receipt covers the shared-union rename; its
+`shot-pool-slot-field-identity` receipt covers the field rename; its
 source SHA-256 is
 `a1a05fd8a45a612f747f20b963872d176a34d7d1df047d500a2b48f40054ee80`.
 No launch-vector lifetime or source-shape coercion was retried.
+
+## 2026-08-12 recovery classification
+
+Live Binary Ninja and IDA readback now carry `shot_slot_index` continuously
+from `shoot_subgoldy`'s 12-entry bank scan, through the `create_golb`
+argument, into `GolbShot +0x274`, and finally into the trail Sprite's separate
+opaque `object_ref` field. Windows and both mobile bodies account for every
+authored creation branch and owned child. The lone unaudited target constant
+is the native-only duplicate default launch constructor documented above;
+the remaining 33-instruction delta is compiler allocation and factoring, not
+an unrepresented behavior lane. Recovery is therefore semantic-complete,
+with compiler/reference residuals retained explicitly rather than hidden by
+source-shape coercion.
