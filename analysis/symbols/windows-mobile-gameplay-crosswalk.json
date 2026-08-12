@@ -23263,6 +23263,8 @@
       "windows_name": "initialize_global_identity_matrix_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRFringeManager::Init()",
@@ -23333,6 +23335,8 @@
       "windows_name": "initialize_global_identity_matrix",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRFringeManager::Init()",

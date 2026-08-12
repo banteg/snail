@@ -6059,6 +6059,14 @@ def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
             "RSprite.o",
             "gSpriteDummy",
         ),
+        "initialize_global_identity_matrix_thunk": (
+            "RMaths.o",
+            "gUnitMatrix",
+        ),
+        "initialize_global_identity_matrix": (
+            "RMaths.o",
+            "gUnitMatrix",
+        ),
     }
 
     for windows_name, (source_object, global_name) in expected.items():

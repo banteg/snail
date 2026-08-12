@@ -72,6 +72,8 @@ def test_default_function_symbol_manifest_loads() -> None:
         "initialize_global_sprite_pool_colors": "RSprite.o",
         "initialize_global_sprite_sentinel_color_thunk": "RSprite.o",
         "initialize_global_sprite_sentinel_color": "RSprite.o",
+        "initialize_global_identity_matrix_thunk": "RMaths.o",
+        "initialize_global_identity_matrix": "RMaths.o",
     }.items():
         assert by_name[name].source_object == source_object
         assert (

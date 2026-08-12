@@ -4682,12 +4682,16 @@
     {
       "address": "0x44c870",
       "name": "initialize_global_identity_matrix_thunk",
-      "description": "VC6 local `_$E2` CRT registration thunk emitted by the authored `g_identity_matrix(1.0f)` definition; it tail-forwards to the adjacent local dynamic initializer."
+      "description": "VC6 local `_$E2` CRT registration thunk emitted by the authored `g_identity_matrix(1.0f)` definition; it tail-forwards to the adjacent local dynamic initializer.",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x44c880",
       "name": "initialize_global_identity_matrix",
-      "description": "VC6 local `_$E1` dynamic initializer emitted by the authored `g_identity_matrix(1.0f)` definition. It directly calls the single-float matrix constructor and is only reached through the CRT registration thunk."
+      "description": "VC6 local `_$E1` dynamic initializer emitted by the authored `g_identity_matrix(1.0f)` definition. It directly calls the single-float matrix constructor and is only reached through the CRT registration thunk.",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x44c890",
