@@ -100,6 +100,17 @@ def test_default_function_symbol_manifest_loads() -> None:
         function.source_object_evidence == "ios-global-source-object"
         for function in track_colour_initializers
     )
+    for name in (
+        "initialize_global_font3d_bods_thunk",
+        "initialize_global_font3d_bods",
+        "initialize_global_font_queue_colors_thunk",
+        "initialize_global_font_queue_colors",
+    ):
+        assert by_name[name].source_object == "Font.o"
+        assert (
+            by_name[name].source_object_evidence
+            == "android-global-constructor-source-file"
+        )
     assert {
         rejection.symbol
         for rejection in game_init.mobile_candidate_rejections

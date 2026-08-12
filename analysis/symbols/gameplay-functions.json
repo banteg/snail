@@ -4402,22 +4402,30 @@
     {
       "address": "0x449c10",
       "name": "initialize_global_font3d_bods_thunk",
-      "description": "CRT constructor-table thunk that tail-forwards to the fixed-array initializer for g_font3d_bods."
+      "description": "CRT constructor-table thunk that tail-forwards to the fixed-array initializer for g_font3d_bods. Android preserves the paired bank initializer as `_GLOBAL__I_Font.cpp`, directly recovering its Font.o source unit.",
+      "source_object": "Font.o",
+      "source_object_evidence": "android-global-constructor-source-file"
     },
     {
       "address": "0x449c20",
       "name": "initialize_global_font3d_bods",
-      "description": "Runs the BodBase constructor over all 128 entries of the global 3D-font BOD pool at a 0x38-byte stride."
+      "description": "Runs the BodBase constructor over all 128 entries of the global 3D-font BOD pool at a 0x38-byte stride. Android preserves the corresponding RFont3D loop inside `_GLOBAL__I_Font.cpp`, directly recovering its Font.o source unit.",
+      "source_object": "Font.o",
+      "source_object_evidence": "android-global-constructor-source-file"
     },
     {
       "address": "0x449c40",
       "name": "initialize_global_font_queue_colors_thunk",
-      "description": "CRT constructor-table thunk that tail-forwards to the cFontPrintBuffer color-subobject initializer."
+      "description": "CRT constructor-table thunk that tail-forwards to the cFontPrintBuffer color-subobject initializer. Android preserves the paired bank initializer as `_GLOBAL__I_Font.cpp`, directly recovering its Font.o source unit.",
+      "source_object": "Font.o",
+      "source_object_evidence": "android-global-constructor-source-file"
     },
     {
       "address": "0x449c50",
       "name": "initialize_global_font_queue_colors",
-      "description": "Runs the folded trivial tColour constructor over the +0x6c color member of all 1024 global cFontPrintBuffer entries at a 0x84-byte stride. Android independently preserves the authored cFontPrintBuffer class name, identical stride, and color-member offset."
+      "description": "Runs the folded trivial tColour constructor over the +0x6c color member of all 1024 global cFontPrintBuffer entries at a 0x84-byte stride. Android preserves the corresponding FontPrintBuffer loop inside `_GLOBAL__I_Font.cpp`, directly recovering its Font.o source unit while independently confirming the authored record name, stride, and color-member offset.",
+      "source_object": "Font.o",
+      "source_object_evidence": "android-global-constructor-source-file"
     },
     {
       "address": "0x449c70",

@@ -6117,6 +6117,41 @@ def test_ios_track_colour_globals_recover_windows_initializer_units() -> None:
     assert all(global_objects[name] == {"SubGame.o"} for name in mobile_globals)
 
 
+def test_android_global_constructor_recovers_font_initializer_unit() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    by_name = {entry["windows_name"]: entry for entry in complete["entries"]}
+    android_decompile = (
+        repo_root
+        / "artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi/libsnailmail.so.c"
+    ).read_text(encoding="utf-8")
+    ios_names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    ios_font_symbols = dict(ios_names["source_objects"])["Font.o"]
+
+    assert "`global constructor keyed to'Font.cpp()" in android_decompile
+    assert "v0 = (cRBod *)&RFont3D;" in android_decompile
+    assert "v2 = FontPrintBuffer;" in android_decompile
+    assert "while ( v2 != &FontPrintBufferIndex );" in android_decompile
+    assert "FontInit()" in ios_font_symbols
+    assert "FontMake3D(short)" in ios_font_symbols
+
+    for name in (
+        "initialize_global_font3d_bods_thunk",
+        "initialize_global_font3d_bods",
+        "initialize_global_font_queue_colors_thunk",
+        "initialize_global_font_queue_colors",
+    ):
+        entry = by_name[name]
+        assert entry["status"] == "unverified"
+        assert entry["source_object"] == "Font.o"
+        assert (
+            entry["source_object_evidence"]
+            == "android-global-constructor-source-file"
+        )
+
+
 def test_subgame_leaf_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
