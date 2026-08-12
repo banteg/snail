@@ -1,8 +1,8 @@
-// hide_border_init @ 0x4010e0 (thiscall, ret)
+// cRBorder::HideInit @ 0x4010e0 (thiscall)
 
 #include "frontend_widget.h"
 
-void cRBorder::hide_border_init()
+void cRBorder::HideInit()
 {
     int result = widget_flags;
     if ((result & FRONTEND_WIDGET_FLAG_HIDDEN) != 0)

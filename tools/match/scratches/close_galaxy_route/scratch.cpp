@@ -7,10 +7,10 @@ void cRGalaxy::BoxOff()
 {
     route_state = 0;
     selected_index = -1;
-    borders[0]->hide_border_init();
-    borders[1]->hide_border_init();
-    borders[2]->hide_border_init();
-    borders[3]->hide_border_init();
-    borders[4]->hide_border_init();
-    borders[5]->hide_border_init();
+    borders[0]->HideInit();
+    borders[1]->HideInit();
+    borders[2]->HideInit();
+    borders[3]->HideInit();
+    borders[4]->HideInit();
+    borders[5]->HideInit();
 }

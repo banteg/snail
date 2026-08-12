@@ -90,7 +90,7 @@ void cRBorder::update_frontend_widget_interaction()
         widget_flags &= 0xffdfffff;
         if (((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
             && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {
-            unhighlight_border();
+            UnHighlight();
         }
         text_effect_target = 0.0f;
         if ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)
@@ -150,7 +150,7 @@ void cRBorder::update_frontend_widget_interaction()
 update_after_input:
     if ((widget_flags & FRONTEND_WIDGET_FLAG_DISABLED) != 0) {
         widget_flags &= 0xffdfffff;
-        unhighlight_border();
+        UnHighlight();
     }
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) != 0) {
         widget_flags &= ~FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE;

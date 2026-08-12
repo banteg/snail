@@ -1,12 +1,12 @@
-// border_sprite_extend @ 0x404540 (thiscall, ret 0x10)
+// cRBorder::SpriteExtend @ 0x404540 (thiscall)
 
 #include "frontend_widget.h"
 
-void cRBorder::border_sprite_extend(
+void cRBorder::SpriteExtend(
     int hot_texture_id,
     int retained_state,
     int hit_mask_texture_id,
-    char wobble_positive)
+    bool wobble_positive)
 {
     sprite_hot_texture_id = hot_texture_id;
     sprite_hit_mask_texture_id = hit_mask_texture_id;

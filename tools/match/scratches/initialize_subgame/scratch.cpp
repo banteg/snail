@@ -118,7 +118,7 @@ void cRSubGame::Init()
             ((tColour*)scratch)->Set(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
-        lives_icon_widget->hide_border_init();
+        lives_icon_widget->HideInit();
         lives_icon_widget->sprite_shadow_offset = 0.0f;
 
         lives_text_widget = g_game->border_manager.GetBorder();
@@ -131,7 +131,7 @@ void cRSubGame::Init()
             ((tColour*)scratch)->Set(1.0f, 1.0f, 1.0f, 0.0299999993f),
             0,
             0.0f);
-        lives_text_widget->hide_border_init();
+        lives_text_widget->HideInit();
         lives_text_widget->font_scale = 0.699999988f;
 
         int icon_index = 0;
@@ -148,7 +148,7 @@ void cRSubGame::Init()
                 0.0f,
                 4);
             (*icon_slot)->sprite_shadow_offset = 0.0f;
-            (*icon_slot)->hide_border_init();
+            (*icon_slot)->HideInit();
             ++icon_index;
             ++icon_slot;
         } while (icon_index
@@ -163,7 +163,7 @@ void cRSubGame::Init()
                     &sub_high_score.current_result_record.timer);
             rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
         } else {
-            top_score_widget->border_add_text_number(
+            top_score_widget->AddTextNumber(
                 sub_high_score.current_result_record.score);
         }
     } else {
@@ -174,7 +174,7 @@ void cRSubGame::Init()
                     (Time*)scratch);
             rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
         } else {
-            top_score_widget->border_add_text_number(0);
+            top_score_widget->AddTextNumber(0);
         }
     }
 
@@ -194,10 +194,10 @@ void cRSubGame::Init()
 
     switch (this->level_mode) {
     case 0:
-        bottom_score_widget->border_add_text_number(active_level_score);
+        bottom_score_widget->AddTextNumber(active_level_score);
         break;
     case 1:
-        bottom_score_widget->border_add_text_number(active_level_score);
+        bottom_score_widget->AddTextNumber(active_level_score);
         break;
     case 4: {
         char* text =
@@ -207,16 +207,16 @@ void cRSubGame::Init()
     }
     case 2:
     case 3:
-        bottom_score_widget->hide_border_init();
-        top_score_widget->hide_border_init();
+        bottom_score_widget->HideInit();
+        top_score_widget->HideInit();
         break;
     default:
         break;
     }
 
     if (g_game->intro.hide_for_replay_latch != 0 || this->level_mode == 7) {
-        bottom_score_widget->hide_border_init();
-        top_score_widget->hide_border_init();
+        bottom_score_widget->HideInit();
+        top_score_widget->HideInit();
     }
 
     if (g_game->players[0].high_score_entry_pending != 0)

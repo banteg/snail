@@ -55,7 +55,7 @@ void cRIntro::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    postal_button->stack_widget_below(tutorial_button);
+    postal_button->SetBelow(tutorial_button);
 
     time_trial_button = g_game->border_manager.GetBorder();
     time_trial_button->initialize_frontend_widget(
@@ -69,7 +69,7 @@ void cRIntro::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    time_trial_button->stack_widget_below(postal_button);
+    time_trial_button->SetBelow(postal_button);
 
     challenge_button = g_game->border_manager.GetBorder();
     challenge_button->initialize_frontend_widget(
@@ -82,7 +82,7 @@ void cRIntro::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    challenge_button->stack_widget_below(time_trial_button);
+    challenge_button->SetBelow(time_trial_button);
 
     help_button = g_game->border_manager.GetBorder();
     help_button->initialize_frontend_widget(
@@ -108,7 +108,7 @@ void cRIntro::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    back_button->stack_widget_below(challenge_button);
+    back_button->SetBelow(challenge_button);
 
     if (g_runtime_config.new_game_tutorial_started == 0) {
         postal_button->widget_flags |= FRONTEND_WIDGET_FLAG_DISABLED;

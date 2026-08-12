@@ -80,7 +80,7 @@ void cRExit::Init()
             color_13.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
-        yes_button->stack_widget_below(prompt_title);
+        yes_button->SetBelow(prompt_title);
 
         no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
@@ -93,7 +93,7 @@ void cRExit::Init()
             color_7.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        no_button->stack_widget_below(prompt_title);
+        no_button->SetBelow(prompt_title);
         return;
 
     case 9:
@@ -120,7 +120,7 @@ void cRExit::Init()
             color_9.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
-        yes_button->stack_widget_below(prompt_title);
+        yes_button->SetBelow(prompt_title);
 
         no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
@@ -133,7 +133,7 @@ void cRExit::Init()
             color_15.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        no_button->stack_widget_below(prompt_title);
+        no_button->SetBelow(prompt_title);
         return;
 
     case 0:
@@ -161,7 +161,7 @@ void cRExit::Init()
             color_2.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
-        yes_button->stack_widget_below(prompt_title);
+        yes_button->SetBelow(prompt_title);
 
         no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
@@ -174,7 +174,7 @@ void cRExit::Init()
             color_4.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        no_button->stack_widget_below(prompt_title);
+        no_button->SetBelow(prompt_title);
         return;
 
     case 1:
@@ -201,7 +201,7 @@ void cRExit::Init()
             color_8.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
-        yes_button->stack_widget_below(prompt_title);
+        yes_button->SetBelow(prompt_title);
 
         no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
@@ -214,7 +214,7 @@ void cRExit::Init()
             color_10.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        no_button->stack_widget_below(prompt_title);
+        no_button->SetBelow(prompt_title);
         return;
 
     case 2:
@@ -241,7 +241,7 @@ void cRExit::Init()
             color_14.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             -80.0f);
-        yes_button->stack_widget_below(prompt_title);
+        yes_button->SetBelow(prompt_title);
 
         no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
@@ -254,7 +254,7 @@ void cRExit::Init()
             color_16.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             80.0f);
-        no_button->stack_widget_below(prompt_title);
+        no_button->SetBelow(prompt_title);
         return;
 
     case 3:

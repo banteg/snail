@@ -16,9 +16,9 @@ void cRClickStart::AI()
 
     FrontendWidget* widget = prompt;
     if (hide_prompt != 0)
-        widget->hide_border_init();
+        widget->HideInit();
     else
-        widget->unhide_border_init();
+        widget->UnHideInit();
 
     ClickStartState current_state = state;
     switch (current_state) {

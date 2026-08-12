@@ -10,7 +10,7 @@ void cRGalaxy::BoxOn(int selected_level_index)
     route_state = 1;
     selected_index = selected_level_index;
 
-    title_widget->unhide_border_init();
+    title_widget->UnHideInit();
     rstrcpy_checked_ascii(
         title_widget->text_buffer,
         route_names[route_slots[selected_index].record.route_name_index].name);
@@ -20,36 +20,36 @@ void cRGalaxy::BoxOn(int selected_level_index)
     while (1) {
         title_widget->layout_frontend_widget();
 
-        detail_widget->unhide_border_init();
+        detail_widget->UnHideInit();
         rstrcpy_checked_ascii(
             detail_widget->text_buffer,
             route_slots[selected_index].record.detail_text);
-        detail_widget->stack_widget_below(title_widget);
+        detail_widget->SetBelow(title_widget);
 
-        description_widget->unhide_border_init();
+        description_widget->UnHideInit();
         rstrcpy_checked_ascii(
             description_widget->text_buffer,
             route_slots[selected_index].record.description_text);
-        description_widget->stack_widget_below(detail_widget);
+        description_widget->SetBelow(detail_widget);
 
-        back_widget->unhide_border_init();
+        back_widget->UnHideInit();
         back_widget->layout_center_x =
             title_widget->layout_width * 0.5f + title_widget->layout_x - 320.0f;
-        back_widget->stack_widget_below(description_widget);
+        back_widget->SetBelow(description_widget);
 
         if (level_progress_base->sub_high_score
                     .time_trial_route_records[selected_index].active == 1
             && route_mode == 2) {
-            continue_widget->unhide_border_init();
+            continue_widget->UnHideInit();
             continue_widget->layout_center_x =
                 title_widget->layout_width * 0.5f + title_widget->layout_x - 320.0f;
-            continue_widget->stack_widget_below(description_widget);
-            back_widget->stack_widget_below(continue_widget);
+            continue_widget->SetBelow(description_widget);
+            back_widget->SetBelow(continue_widget);
         } else {
-            continue_widget->hide_border_init();
+            continue_widget->HideInit();
         }
 
-        bounds_frame_widget->unhide_border_init();
+        bounds_frame_widget->UnHideInit();
 
         float min_x = 1000.0f;
         float max_x = -1000.0f;

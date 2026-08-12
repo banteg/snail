@@ -1,8 +1,8 @@
-// unhide_border_init @ 0x401110 (thiscall, ret)
+// cRBorder::UnHideInit @ 0x401110 (thiscall)
 
 #include "frontend_widget.h"
 
-void cRBorder::unhide_border_init()
+void cRBorder::UnHideInit()
 {
     int result = widget_flags;
     hide_blend = 1.0f;

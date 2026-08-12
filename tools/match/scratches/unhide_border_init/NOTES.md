@@ -1,16 +1,10 @@
-# unhide_border_init @ 0x401110
+# cRBorder::UnHideInit @ 0x401110
 
-Exact authored `cRBorder::UnHideInit()` transition on the shared
-`FrontendWidget` owner.
+Exact match: 100.00%, 5/5 instructions, with no masked operands.
 
-Android preserves the same two state updates: restore `hide_blend` to one and
-clear `FRONTEND_WIDGET_FLAG_HIDDEN`. Every Windows caller discards EAX, so the
-updated flags word left in the register is incidental. Correcting the member to
-`void` preserves the exact 5/5 instruction stream.
+The method restores `hide_blend` to one and clears the hidden-transition flag.
+Android and iOS `Border.o` preserve the authored owner and stores. Live
+Windows analysis confirms a void thiscall and 32 native callsites.
 
-## 2026-07-15 persisted member ABI
-
-The rollback-safe Binary Ninja replay now applies and independently verifies
-the authored `void cRBorder::UnHideInit()` contract on a typed
-`FrontendWidget*` receiver. IDA carries the same name and prototype. The exact
-5/5 scratch is unchanged.
+The stable matcher identity remains `unhide_border_init`; source and
+relocations use the authored member name.

@@ -49,23 +49,23 @@ enum FrontendWidgetFlag {
 class cRBorder : public BodBase {
 public:
     void draw_frontend_widget(); // @ 0x401130, iOS/Android cRBorder::Draw()
-    void hide_border_init(); // @ 0x4010e0, Android cRBorder::HideInit()
-    void unhide_border_init(); // @ 0x401110, Android cRBorder::UnHideInit()
-    void highlight_border(); // @ 0x402800, Android cRBorder::Highlight()
-    void unhighlight_border(); // @ 0x4027e0, Android cRBorder::UnHighlight()
-    void stack_widget_below(cRBorder* previous_widget); // @ 0x4027b0,
+    void HideInit(); // @ 0x4010e0, Android cRBorder::HideInit()
+    void UnHideInit(); // @ 0x401110, Android cRBorder::UnHideInit()
+    void Highlight(); // @ 0x402800, Android cRBorder::Highlight()
+    void UnHighlight(); // @ 0x4027e0, Android cRBorder::UnHighlight()
+    void SetBelow(cRBorder* previous_widget); // @ 0x4027b0,
         // Android cRBorder::SetBelow(cRBorder*)
     void layout_frontend_widget(); // @ 0x4024a0,
         // Android cRBorder::RePosition()
-    void set_frontend_widget_shortcut_key(int shortcut_key_code); // @ 0x402790,
+    void SetKeyLeft(int shortcut_key_code); // @ 0x402790,
         // Android cRBorder::SetKeyLeft(int)
-    void border_input_text_init(int capacity, char* text, int flags); // @ 0x403410,
+    void InputTextInit(int capacity, char* text, int flags); // @ 0x403410,
         // Android cRBorder::InputTextInit(int, char*, int)
     void border_input_text(); // @ 0x4035b0, iOS/Android cRBorder::InputText()
-    void border_add_text_number(int value); // @ 0x401030,
+    void AddTextNumber(int value); // @ 0x401030,
         // iOS/Android cRBorder::AddTextNumber(int)
-    void border_sprite_extend(int hot_texture_id, int retained_state,
-        int hit_mask_texture_id, char wobble_positive); // @ 0x404540,
+    void SpriteExtend(int hot_texture_id, int retained_state,
+        int hit_mask_texture_id, bool wobble_positive); // @ 0x404540,
         // Android cRBorder::SpriteExtend(int, int, int, bool)
     unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
     void update_frontend_widget_interaction(); // @ 0x402820,

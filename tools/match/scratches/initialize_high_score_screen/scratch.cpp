@@ -113,7 +113,7 @@ void cRHighScore::Init(int mode_, int rank)
                     postal_rank_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
-                rank_row_widgets[row_index]->border_add_text_number(row_index + 1);
+                rank_row_widgets[row_index]->AddTextNumber(row_index + 1);
                 rank_row_widgets[row_index]->layout_frontend_widget();
 
                 name_row_widgets[row_index] =
@@ -127,7 +127,7 @@ void cRHighScore::Init(int mode_, int rank)
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
-                    name_row_widgets[row_index]->border_input_text_init(
+                    name_row_widgets[row_index]->InputTextInit(
                         16, g_runtime_config.last_entered_player_name, 16);
                     name_row_widgets[row_index]->widget_flags |=
                         FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
@@ -141,7 +141,7 @@ void cRHighScore::Init(int mode_, int rank)
                     postal_score_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     3, 160.0f);
-                score_row_widgets[row_index]->border_add_text_number(
+                score_row_widgets[row_index]->AddTextNumber(
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->score);
                 score_row_widgets[row_index]->layout_frontend_widget();
@@ -156,7 +156,7 @@ void cRHighScore::Init(int mode_, int rank)
                     postal_replay_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     2, 125.0f);
-                replay_row_widgets[row_index]->hide_border_init();
+                replay_row_widgets[row_index]->HideInit();
                 break;
             }
 
@@ -185,7 +185,7 @@ void cRHighScore::Init(int mode_, int rank)
                     challenge_heading_rank_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
-                rank_row_widgets[row_index]->border_add_text_number(row_index + 1);
+                rank_row_widgets[row_index]->AddTextNumber(row_index + 1);
                 rank_row_widgets[row_index]->layout_frontend_widget();
 
                 name_row_widgets[row_index] =
@@ -199,7 +199,7 @@ void cRHighScore::Init(int mode_, int rank)
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
-                    name_row_widgets[row_index]->border_input_text_init(
+                    name_row_widgets[row_index]->InputTextInit(
                         16, g_runtime_config.last_entered_player_name, 16);
                     name_row_widgets[row_index]->widget_flags |=
                         FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
@@ -213,7 +213,7 @@ void cRHighScore::Init(int mode_, int rank)
                     challenge_score_color.Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     3, 125.0f);
-                score_row_widgets[row_index]->border_add_text_number(
+                score_row_widgets[row_index]->AddTextNumber(
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->score);
                 score_row_widgets[row_index]->layout_frontend_widget();
@@ -229,7 +229,7 @@ void cRHighScore::Init(int mode_, int rank)
                         1.0f, 1.0f, 1.0f, 1.0f),
                     2, 170.0f);
                 if (entering_name != 0)
-                    replay_row_widgets[row_index]->hide_border_init();
+                    replay_row_widgets[row_index]->HideInit();
                 break;
             }
             }
@@ -258,7 +258,7 @@ void cRHighScore::Init(int mode_, int rank)
             (char*)"Cancel", 23, 0.0f, y,
             shared_action_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
-        cancel_name_button->set_frontend_widget_shortcut_key(11);
+        cancel_name_button->SetKeyLeft(11);
 
         submit_name_button = g_game->border_manager.GetBorder();
         submit_name_button->initialize_frontend_widget(
@@ -268,7 +268,7 @@ void cRHighScore::Init(int mode_, int rank)
             (char*)"Submit", 23, 0.0f, y,
             shared_action_color.Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
-        submit_name_button->set_frontend_widget_shortcut_key(5);
+        submit_name_button->SetKeyLeft(5);
         return;
     }
 

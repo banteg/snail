@@ -96,10 +96,10 @@ void cRCompletion::Init(
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "LEVEL COMPLETE!>", 20, 0.0f, 302.0f,
             tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
-        bonus_summary_widget->border_add_text_number(bonus_score);
+        bonus_summary_widget->AddTextNumber(bonus_score);
         strcat(bonus_summary_widget->text_buffer, " Bonus Points");
     }
-    bonus_summary_widget->hide_border_init();
+    bonus_summary_widget->HideInit();
     bonus_progress = 0.0f;
     bonus_progress_step = 0.041666668f;
 
@@ -117,7 +117,7 @@ void cRCompletion::Init(
             g_click_to_continue_text, 20, 0.0f, 320.0f,
             tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     }
-    continue_widget->hide_border_init();
+    continue_widget->HideInit();
 
     delivered_count_progress = 0;
     delivered_count_display = 0;

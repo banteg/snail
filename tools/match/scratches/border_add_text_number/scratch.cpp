@@ -1,8 +1,8 @@
-// cRBorder::AddTextNumber(int) / border_add_text_number @ 0x401030
+// cRBorder::AddTextNumber @ 0x401030 (thiscall)
 
 #include "frontend_widget.h"
 
-void cRBorder::border_add_text_number(int value)
+void cRBorder::AddTextNumber(int value)
 {
     char* out = text_buffer;
     while (*out != 0)

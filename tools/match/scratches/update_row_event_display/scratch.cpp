@@ -21,19 +21,19 @@ void cRCompletion::AI()
     char pause_gate = g_game->subgame.subgame_pause_gate;
     if (pause_gate != 0) {
         FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
-        delivered_count_widget->hide_border_init();
-        controller->title_widget->hide_border_init();
-        controller->bonus_icon_widget->hide_border_init();
-        controller->bonus_summary_widget->hide_border_init();
-        controller->continue_widget->hide_border_init();
+        delivered_count_widget->HideInit();
+        controller->title_widget->HideInit();
+        controller->bonus_icon_widget->HideInit();
+        controller->bonus_summary_widget->HideInit();
+        controller->continue_widget->HideInit();
         return;
     }
 
     FrontendWidget* delivered_count_widget = controller->delivered_count_widget;
-    delivered_count_widget->unhide_border_init();
-    controller->title_widget->unhide_border_init();
-    controller->bonus_icon_widget->unhide_border_init();
-    controller->continue_widget->unhide_border_init();
+    delivered_count_widget->UnHideInit();
+    controller->title_widget->UnHideInit();
+    controller->bonus_icon_widget->UnHideInit();
+    controller->continue_widget->UnHideInit();
 
     switch (controller->state) {
     case COMPLETION_STATE_INACTIVE:
@@ -82,12 +82,12 @@ void cRCompletion::AI()
         break;
     }
     case COMPLETION_STATE_SUMMARY_PENDING: {
-        controller->continue_widget->unhide_border_init();
+        controller->continue_widget->UnHideInit();
         int bonus_enabled = controller->bonus_enabled;
         controller->fast_forward_enabled = 0;
         controller->state = COMPLETION_STATE_SUMMARY_ACTIVE;
         if (bonus_enabled != 0) {
-            controller->bonus_summary_widget->unhide_border_init();
+            controller->bonus_summary_widget->UnHideInit();
             if (controller->parcel_target_count == 0) {
                 GameRoot* game = g_game;
                 if (game->subgame.level_mode == 1) {
@@ -110,9 +110,9 @@ void cRCompletion::AI()
                 if ((bonus_summary_widget->widget_flags
                         & FRONTEND_WIDGET_FLAG_HIDDEN)
                     != 0)
-                    bonus_summary_widget->unhide_border_init();
+                    bonus_summary_widget->UnHideInit();
                 else
-                    bonus_summary_widget->hide_border_init();
+                    bonus_summary_widget->HideInit();
             }
             game = g_game;
         }

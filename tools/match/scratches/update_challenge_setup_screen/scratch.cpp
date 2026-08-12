@@ -71,11 +71,11 @@ int cRGUI::AI()
             .time_trial_route_records[game->level_mode_arg]
             .active;
         if (replay_active != 1) {
-            replay_button->hide_border_init();
-            back_button->stack_widget_below(play_button);
+            replay_button->HideInit();
+            back_button->SetBelow(play_button);
         } else {
-            replay_button->unhide_border_init();
-            back_button->stack_widget_below(replay_button);
+            replay_button->UnHideInit();
+            back_button->SetBelow(replay_button);
         }
 
         flags = back_button->widget_flags;

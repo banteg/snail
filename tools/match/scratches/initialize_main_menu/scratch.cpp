@@ -52,7 +52,7 @@ void cRMainMenu::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    high_scores_widget->stack_widget_below(new_game_widget);
+    high_scores_widget->SetBelow(new_game_widget);
 
     options_widget = g_game->border_manager.GetBorder();
     options_widget->initialize_frontend_widget(
@@ -65,7 +65,7 @@ void cRMainMenu::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    options_widget->stack_widget_below(high_scores_widget);
+    options_widget->SetBelow(high_scores_widget);
 
     options_widget = g_game->border_manager.GetBorder();
     options_widget->initialize_frontend_widget(
@@ -78,7 +78,7 @@ void cRMainMenu::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    options_widget->stack_widget_below(high_scores_widget);
+    options_widget->SetBelow(high_scores_widget);
 
     credits_widget = g_game->border_manager.GetBorder();
     credits_widget->initialize_frontend_widget(
@@ -92,7 +92,7 @@ void cRMainMenu::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    credits_widget->stack_widget_below(options_widget);
+    credits_widget->SetBelow(options_widget);
 
     exit_widget = g_game->border_manager.GetBorder();
     exit_widget->initialize_frontend_widget(
@@ -105,5 +105,5 @@ void cRMainMenu::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    exit_widget->stack_widget_below(credits_widget);
+    exit_widget->SetBelow(credits_widget);
 }

@@ -4,6 +4,6 @@
 
 void cRSubGame::UnHideScores()
 {
-    bottom_score_widget->unhide_border_init();
-    top_score_widget->unhide_border_init();
+    bottom_score_widget->UnHideInit();
+    top_score_widget->UnHideInit();
 }

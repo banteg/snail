@@ -9,11 +9,11 @@
 void cRTip::AI()
 {
     if (g_game->subgame.subgame_pause_gate != 0) {
-        widget_main->hide_border_init();
+        widget_main->HideInit();
         return;
     }
 
-    widget_main->unhide_border_init();
+    widget_main->UnHideInit();
 
     FrontendWidget* button = widget_ok;
     unsigned int flags;

@@ -214,7 +214,7 @@ void cRSubGame::AI()
             subgame_state = three;
             g_sprite_manager.Pause((char)one);
             if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)
-                player.click_start.prompt->hide_border_init();
+                player.click_start.prompt->HideInit();
             return;
         }
 
@@ -224,7 +224,7 @@ void cRSubGame::AI()
             if (fade > 1.0f)
                 pause_fade = 0.0f;
             if (player.click_start.state == CLICK_START_STATE_WAITING_FOR_START)
-                player.click_start.prompt->unhide_border_init();
+                player.click_start.prompt->UnHideInit();
         }
 
         if (scan_reset != zero) {
@@ -604,17 +604,17 @@ after_authored_ring:
                 rstrcpy_checked_ascii(bottom_score_widget->text_buffer, text);
                 break;
             }
-            bottom_score_widget->hide_border_init();
+            bottom_score_widget->HideInit();
             update_subgame_camera();
             return;
         }
 
         top_score_widget->text_buffer[0] = (char)zero;
-        top_score_widget->border_add_text_number(player.total_score);
+        top_score_widget->AddTextNumber(player.total_score);
         if (player.total_score > active_level_score) {
             active_level_score = player.total_score;
             bottom_score_widget->text_buffer[0] = (char)zero;
-            bottom_score_widget->border_add_text_number(active_level_score);
+            bottom_score_widget->AddTextNumber(active_level_score);
             update_subgame_camera();
             return;
         }

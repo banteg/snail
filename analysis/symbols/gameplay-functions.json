@@ -13,16 +13,25 @@
     {
       "address": "0x401030",
       "name": "border_add_text_number",
+      "aliases": [
+        "cRBorder_AddTextNumber"
+      ],
       "description": "Exact authored `cRBorder::AddTextNumber(int)` member: appends a positive decimal value to the border's text buffer, inserts comma separators at the million and thousand boundaries, and handles zero as `0`. Android and iOS preserve the owner and algorithm while using their own cRBorder layout."
     },
     {
       "address": "0x4010e0",
       "name": "hide_border_init",
+      "aliases": [
+        "cRBorder_HideInit"
+      ],
       "description": "Stable Windows harness identity for the authored void cRBorder::HideInit() member. It starts the 0x1000 hide transition once, clears hide_blend, and tail-calls the owned cRToolTip reset."
     },
     {
       "address": "0x401110",
       "name": "unhide_border_init",
+      "aliases": [
+        "cRBorder_UnHideInit"
+      ],
       "description": "Stable Windows harness identity for the authored void cRBorder::UnHideInit() member. It restores hide_blend to one and clears the 0x1000 hide-transition flag."
     },
     {
@@ -51,21 +60,33 @@
     {
       "address": "0x402790",
       "name": "set_frontend_widget_shortcut_key",
+      "aliases": [
+        "cRBorder_SetKeyLeft"
+      ],
       "description": "Exact void `cRBorder::SetKeyLeft(int)`: stores one keyboard shortcut code and enables the matching dispatch flag. All five Windows callers discard the updated flags left incidentally in EAX."
     },
     {
       "address": "0x4027b0",
       "name": "stack_widget_below",
+      "aliases": [
+        "cRBorder_SetBelow"
+      ],
       "description": "Exact void `cRBorder::SetBelow(cRBorder*)`: chains one shell-font widget below another, then tail-calls `RePosition()`. All 36 Windows callers discard EAX."
     },
     {
       "address": "0x4027e0",
       "name": "unhighlight_border",
+      "aliases": [
+        "cRBorder_UnHighlight"
+      ],
       "description": "Stable Windows harness identity for the authored void cRBorder::UnHighlight() member. It clears the hover blend target and restores idle padding; the copied float bits left in EAX are incidental."
     },
     {
       "address": "0x402800",
       "name": "highlight_border",
+      "aliases": [
+        "cRBorder_Highlight"
+      ],
       "description": "Stable Windows harness identity for the authored void cRBorder::Highlight() member. It raises the hover blend target and selects hot padding; the copied float bits left in EAX are incidental."
     },
     {
@@ -121,6 +142,9 @@
     {
       "address": "0x403410",
       "name": "border_input_text_init",
+      "aliases": [
+        "cRBorder_InputTextInit"
+      ],
       "description": "Stable Windows harness identity for the authored void cRBorder::InputTextInit(int, char*, int) member. It initializes the complete inline editor tail through input_capacity at +0x714, relayouts the border, and optionally initializes its embedded cRInputOK overlay."
     },
     {
@@ -221,6 +245,9 @@
     {
       "address": "0x404540",
       "name": "border_sprite_extend",
+      "aliases": [
+        "cRBorder_SpriteExtend"
+      ],
       "description": "Stable Windows harness identity for the authored void cRBorder::SpriteExtend(int, int, int, bool) member. It owns the three-texture contextual sprite lane, wobble direction, and zeroed padding targets."
     },
     {

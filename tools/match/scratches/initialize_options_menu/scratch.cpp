@@ -43,7 +43,7 @@ void cROptions::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    sound_volume_widget->stack_widget_below(fullscreen_widget);
+    sound_volume_widget->SetBelow(fullscreen_widget);
     sound_volume_widget->slider_value = g_runtime_config.sample_volume;
     sound_volume_widget->slider_target_value = g_runtime_config.sample_volume;
     ((FrontendWidgetVirtualLayout*)sound_volume_widget)->layout_frontend_widget();
@@ -60,7 +60,7 @@ void cROptions::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    music_volume_widget->stack_widget_below(sound_volume_widget);
+    music_volume_widget->SetBelow(sound_volume_widget);
     music_volume_widget->slider_value = g_runtime_config.stream_volume;
     music_volume_widget->slider_target_value = g_runtime_config.stream_volume;
     ((FrontendWidgetVirtualLayout*)music_volume_widget)->layout_frontend_widget();
@@ -77,6 +77,6 @@ void cROptions::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    back_widget->stack_widget_below(music_volume_widget);
+    back_widget->SetBelow(music_volume_widget);
     previous_sample_volume = g_runtime_config.sample_volume;
 }

@@ -9845,7 +9845,16 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
     include_root = repo_root / "tools/match/include"
     scratch_root = repo_root / "tools/match/scratches"
     method_names = {
+        "border_add_text_number": "AddTextNumber",
+        "hide_border_init": "HideInit",
+        "unhide_border_init": "UnHideInit",
         "initialize_frontend_sprite_button": "Init",
+        "set_frontend_widget_shortcut_key": "SetKeyLeft",
+        "stack_widget_below": "SetBelow",
+        "unhighlight_border": "UnHighlight",
+        "highlight_border": "Highlight",
+        "border_input_text_init": "InputTextInit",
+        "border_sprite_extend": "SpriteExtend",
         "apply_all_border_visibility_mode": "Perform",
         "allocate_border": "GetBorder",
         "activate_all_borders": "ActivateBorders",
@@ -9969,6 +9978,86 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
             repo_root / "analysis/symbols/gameplay-references.json"
         )["symbols"]
     }
+    border_methods = {
+        "border_add_text_number": (
+            "cRBorder::AddTextNumber(int)",
+            "?AddTextNumber@cRBorder@@QAEXH@Z",
+            True,
+        ),
+        "hide_border_init": (
+            "cRBorder::HideInit()",
+            "?HideInit@cRBorder@@QAEXXZ",
+            True,
+        ),
+        "unhide_border_init": (
+            "cRBorder::UnHideInit()",
+            "?UnHideInit@cRBorder@@QAEXXZ",
+            True,
+        ),
+        "set_frontend_widget_shortcut_key": (
+            "cRBorder::SetKeyLeft(int)",
+            "?SetKeyLeft@cRBorder@@QAEXH@Z",
+            True,
+        ),
+        "stack_widget_below": (
+            "cRBorder::SetBelow(cRBorder*)",
+            "?SetBelow@cRBorder@@QAEXPAV1@@Z",
+            True,
+        ),
+        "unhighlight_border": (
+            "cRBorder::UnHighlight()",
+            "?UnHighlight@cRBorder@@QAEXXZ",
+            False,
+        ),
+        "highlight_border": (
+            "cRBorder::Highlight()",
+            "?Highlight@cRBorder@@QAEXXZ",
+            False,
+        ),
+        "border_input_text_init": (
+            "cRBorder::InputTextInit(int, char*, int)",
+            "?InputTextInit@cRBorder@@QAEXHPADH@Z",
+            True,
+        ),
+        "border_sprite_extend": (
+            "cRBorder::SpriteExtend(int, int, int, bool)",
+            "?SpriteExtend@cRBorder@@QAEXHHH_N@Z",
+            False,
+        ),
+    }
+    for function, (mobile_symbol, object_symbol, has_ios) in (
+        border_methods.items()
+    ):
+        method = mobile_symbol.split("::", 1)[1].split("(", 1)[0]
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Border.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if has_ios:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        else:
+            assert entry.get("ios_symbol") is None
+        assert functions_by_name[function]["aliases"] == [
+            f"cRBorder_{method}"
+        ]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert f"void {method}(" in frontend
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.glob("*/scratch.cpp")
+    )
+    for stable_name in border_methods:
+        assert f"{stable_name}(" not in all_sources
+    assert "int hit_mask_texture_id, bool wobble_positive);" in frontend
+
     owned_methods = {
         "reset_tooltip": ("cRToolTip", "ReSet", "tooltip_state.h", False),
         "update_tooltip": ("cRToolTip", "AI", "tooltip_state.h", True),

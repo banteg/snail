@@ -61,7 +61,7 @@ void cRGUI::Init()
     speed_slider->slider_value =
         (float)g_runtime_config.challenge_speed_percent * 0.0099999998f;
     speed_slider->slider_target_value = speed_slider->slider_value;
-    speed_slider->stack_widget_below(difficulty_slider);
+    speed_slider->SetBelow(difficulty_slider);
     ((FrontendWidgetVirtualLayout*)speed_slider)->layout_frontend_widget();
 
     float play_anchor_x = 0.0f;
@@ -81,7 +81,7 @@ void cRGUI::Init()
         play_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         play_anchor_x);
-    play_button->stack_widget_below(speed_slider);
+    play_button->SetBelow(speed_slider);
 
     replay_button = g_game->border_manager.GetBorder();
     replay_button->initialize_frontend_widget(
@@ -96,9 +96,9 @@ void cRGUI::Init()
         replay_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         -100.0f);
-    replay_button->stack_widget_below(speed_slider);
+    replay_button->SetBelow(speed_slider);
     if (game->sub_high_score.survival_pending_record.active != 1)
-        replay_button->hide_border_init();
+        replay_button->HideInit();
 
     back_button = g_game->border_manager.GetBorder();
     back_button->initialize_frontend_widget(
@@ -112,5 +112,5 @@ void cRGUI::Init()
         back_color.Set(1.0f, 1.0f, 1.0f, 1.0f),
         2,
         0.0f);
-    back_button->stack_widget_below(replay_button);
+    back_button->SetBelow(replay_button);
 }

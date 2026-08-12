@@ -126,8 +126,8 @@ void cRSubGame::StartLevel(int level_index)
 
     parcel_manager.Init();
     if (g_game->intro.hide_for_replay_latch == 1) {
-        top_score_widget->hide_border_init();
-        bottom_score_widget->hide_border_init();
+        top_score_widget->HideInit();
+        bottom_score_widget->HideInit();
     }
 
     GenerateLevel(level_index);
@@ -254,8 +254,8 @@ void cRSubGame::StartLevel(int level_index)
     if (level_mode == zero) {
         sprintf(lives_text_widget->text_buffer,
             "0/%i", level_definition.parcel_count);
-        lives_icon_widget->unhide_border_init();
-        lives_text_widget->unhide_border_init();
+        lives_icon_widget->UnHideInit();
+        lives_text_widget->UnHideInit();
     }
 
     set_input_controller_pointer_authored_xy(0, 320.0f, 240.0f);

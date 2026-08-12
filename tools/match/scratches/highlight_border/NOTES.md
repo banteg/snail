@@ -1,18 +1,11 @@
-# highlight_border
+# cRBorder::Highlight @ 0x402800
 
-Small front-end widget mutator at 0x402800. Both BN and IDA decompiles show it
-setting hover_blend_target to 1.0 and copying hot_padding into target_padding.
+Exact match: 100.00%, 4/4 instructions, with no masked operands.
 
-Android preserves the authored owner as `cRBorder::Highlight()` with the same
-two stores. Windows callsites discard EAX, so the copied padding bits merely
-left in that register are not an authored result. Correcting the member to
-`void` remains byte-exact.
+The method raises the hover blend target and selects hot padding. Android
+`Border.o` preserves the authored owner and stores. Live Windows analysis
+confirms a void thiscall and one native callsite; the padding bits left in EAX
+are incidental. No iOS export survives.
 
-Exact match: 100.00%, 4/4 instructions, no masked operands.
-
-## 2026-07-15 persisted member ABI
-
-The rollback-safe Binary Ninja replay now applies and independently verifies
-the authored `void cRBorder::Highlight()` contract. IDA carries the same typed
-receiver and void result. The exact 4/4 scratch is unchanged; the copied
-hot-padding bits remain incidental EAX state.
+The stable matcher identity remains `highlight_border`; source and relocations
+use the authored member name.

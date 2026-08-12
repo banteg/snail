@@ -5,5 +5,5 @@
 void cRWarning::Stop()
 {
     state = WARNING_STATE_INACTIVE;
-    border->hide_border_init();
+    border->HideInit();
 }

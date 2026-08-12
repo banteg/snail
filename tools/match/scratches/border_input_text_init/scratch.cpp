@@ -1,10 +1,10 @@
-// border_input_text_init @ 0x403410 (thiscall, ret 0xc)
+// cRBorder::InputTextInit @ 0x403410 (thiscall)
 
 #include "frontend_widget.h"
 #include "input_ok_state.h"
 #include "rstring.h"
 
-void cRBorder::border_input_text_init(int capacity, char* text, int flags)
+void cRBorder::InputTextInit(int capacity, char* text, int flags)
 {
     input_flags = flags;
     rstrcpy_checked_ascii(text_buffer + 0x400, text);

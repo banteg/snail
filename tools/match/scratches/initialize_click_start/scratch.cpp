@@ -14,7 +14,7 @@ void cRClickStart::Init(cRSubGoldy* new_player)
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "Click to Start", 0x14, 0.0f,
         200.0f, color.Set(1.0f, 1.0f, 1.0f, 0.0299999993f), 2, 0.0f);
-    prompt->hide_border_init();
+    prompt->HideInit();
 
     int flags = list_flags;
     hide_prompt = 1;
@@ -46,7 +46,7 @@ void cRClickStart::Init(cRSubGoldy* new_player)
     render_arg_20 = 0.0f;
 
     if (g_game->subgame.replay_launch_active != 0)
-        prompt->hide_border_init();
+        prompt->HideInit();
     else
-        prompt->unhide_border_init();
+        prompt->UnHideInit();
 }

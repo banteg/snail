@@ -14,12 +14,12 @@ void cRIntro::AI()
             != 0) {
         replay_probe_progress = 0.0f;
         if (hide_for_replay_latch == 1) {
-            postal_button->unhide_border_init();
-            tutorial_button->unhide_border_init();
-            time_trial_button->unhide_border_init();
-            challenge_button->unhide_border_init();
-            help_button->unhide_border_init();
-            back_button->unhide_border_init();
+            postal_button->UnHideInit();
+            tutorial_button->UnHideInit();
+            time_trial_button->UnHideInit();
+            challenge_button->UnHideInit();
+            help_button->UnHideInit();
+            back_button->UnHideInit();
             g_game->players[0].mouse_cursor.SetActive();
             hide_for_replay_latch = 0;
         }

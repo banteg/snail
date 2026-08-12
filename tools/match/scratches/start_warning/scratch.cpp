@@ -6,5 +6,5 @@ void cRWarning::Start()
 {
     phase = 1.0f;
     state = WARNING_STATE_FADING;
-    border->unhide_border_init();
+    border->UnHideInit();
 }

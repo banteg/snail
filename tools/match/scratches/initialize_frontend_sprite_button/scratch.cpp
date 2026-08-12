@@ -48,7 +48,7 @@ void cRBorder::Init(
     stack_gap = 20.0f;
     border_edge = 0.0f;
     *(int*)(self + 0x38) = 1;
-    unhide_border_init();
+    UnHideInit();
 
     int widget_flags = flags | FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE
         | FRONTEND_WIDGET_FLAG_SPRITE_MODE | 1;

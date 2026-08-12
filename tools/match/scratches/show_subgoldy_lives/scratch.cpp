@@ -11,10 +11,10 @@ void cRSubGoldy::ShowLives()
          offset += sizeof(FrontendWidget*)) {
         if (live_index < visible_life_stock) {
             FrontendWidget* widget = *(FrontendWidget**)((char*)game + offset);
-            widget->unhide_border_init();
+            widget->UnHideInit();
         } else {
             FrontendWidget* widget = *(FrontendWidget**)((char*)game + offset);
-            widget->hide_border_init();
+            widget->HideInit();
         }
         live_index++;
     }

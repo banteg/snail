@@ -140,7 +140,7 @@ void cRGalaxy::Init()
             1.0f,
             1.0f,
             1.0f);
-        bounds_frame_widget->hide_border_init();
+        bounds_frame_widget->HideInit();
         bounds_frame_widget->border_texture_id = 152;
         bounds_frame_widget->frame_x = 320.0f;
         bounds_frame_widget->frame_y = 240.0f;
@@ -159,7 +159,7 @@ void cRGalaxy::Init()
             color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
-        selected_title_widget->hide_border_init();
+        selected_title_widget->HideInit();
         selected_title_widget->font_scale = 0.9f;
         selected_title_widget->stack_gap = 0.0f;
 
@@ -175,7 +175,7 @@ void cRGalaxy::Init()
             color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
-        selected_detail_widget->hide_border_init();
+        selected_detail_widget->HideInit();
         selected_detail_widget->font_scale = 0.9f;
         selected_detail_widget->stack_gap = 0.0f;
 
@@ -191,7 +191,7 @@ void cRGalaxy::Init()
             color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0,
             0.0f);
-        selected_description_widget->hide_border_init();
+        selected_description_widget->HideInit();
         selected_description_widget->font_scale = 0.7f;
         selected_description_widget->stack_gap = 0.0f;
     }
@@ -226,7 +226,7 @@ void cRGalaxy::Init()
             2,
             100.0f);
     }
-    play_or_deliver_widget->hide_border_init();
+    play_or_deliver_widget->HideInit();
     play_or_deliver_widget->stack_gap = 20.0f;
 
     {
@@ -244,7 +244,7 @@ void cRGalaxy::Init()
             color.Set(1.0f, 1.0f, 1.0f, 1.0f),
             2,
             0.0f);
-        replay_widget->hide_border_init();
+        replay_widget->HideInit();
         replay_widget->stack_gap = 10.0f;
         replay_widget->font_scale = 0.8f;
         replay_widget->idle_padding = 4.0f;

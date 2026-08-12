@@ -15,7 +15,7 @@ void cRWarning::Init()
         0x5e, 288.0f, 64.0f,
         color.Set(1.0f, 1.0f, 1.0f, 0.999000013f), 0.0f, 4);
     border->sprite_shadow_offset = 0.0f;
-    border->hide_border_init();
+    border->HideInit();
     phase_step = 0.0833333358f;
     phase = 0.0f;
     state = WARNING_STATE_INACTIVE;

@@ -122,16 +122,16 @@ void cRBorder::initialize_frontend_widget(
     slider_position_target = 0.5f;
     slider_position_current = 0.5f;
     *(int*)(self + 0x38) = 1;
-    unhide_border_init();
+    UnHideInit();
     rstrcpy_checked_ascii(text_buffer, text);
     layout_anchor_x = x;
     layout_anchor_y = y;
     hover_blend_target = 1.0f;
 
     if (((unsigned char)widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0)
-        highlight_border();
+        Highlight();
     else
-        unhighlight_border();
+        UnHighlight();
 
     hover_blend_current = hover_blend_target;
     current_padding = target_padding = idle_padding;
@@ -159,7 +159,7 @@ void cRBorder::initialize_frontend_widget(
             tmp0.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
-        slider_more_widget->border_sprite_extend(44, 43, 45, 1);
+        slider_more_widget->SpriteExtend(44, 43, 45, 1);
 
         slider_less_widget = g_game->border_manager.GetBorder();
         slider_less_widget->Init(
@@ -175,7 +175,7 @@ void cRBorder::initialize_frontend_widget(
             tmp0.Set(1.0f, 1.0f, 1.0f, 1.0f),
             0.0f,
             4);
-        slider_less_widget->border_sprite_extend(40, 39, 41, 0);
+        slider_less_widget->SpriteExtend(40, 39, 41, 0);
 
         slider_value_widget = g_game->border_manager.GetBorder();
         slider_value_widget->initialize_frontend_widget(

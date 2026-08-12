@@ -1,21 +1,11 @@
-# stack_widget_below
+# cRBorder::SetBelow @ 0x4027b0
 
-Small front-end widget layout helper at 0x4027b0. Both BN and IDA decompiles
-show it copying the previous widget's x anchor, stacking this widget below the
-previous widget's y anchor plus this widget's gap and previous widget height,
-and then relayouting this widget.
+Exact match: 100.00%, 9/9 instructions, with its call operand clean.
 
-Exact match: 100.00%, 9/9 instructions, with the layout_frontend_widget call
-operand resolved.
+The method copies the previous border's x anchor, stacks below its y extent,
+and relayouts the receiver. Android and iOS `Border.o` preserve the authored
+owner and operation. Live Windows analysis confirms a void thiscall and 36
+native callsites.
 
-2026-07-14 return-contract audit: Android `cRBorder::SetBelow(cRBorder*)`
-performs the same anchor stores and tail-calls the void `RePosition()` member.
-All 36 Windows callers discard EAX. Modeling both members as `void` preserves
-the exact 9/9 result and removes the false pointer/scalar return ownership.
-
-## 2026-07-15 persisted member ABI
-
-The rollback-safe Binary Ninja replay now applies and independently verifies
-`void cRBorder::SetBelow(cRBorder*)` with typed current and previous
-`FrontendWidget*` owners. IDA carries the same contract. The exact 9/9 scratch
-is unchanged; its tail call remains the authored void `RePosition()` member.
+The stable matcher identity remains `stack_widget_below`; source and
+relocations use the authored member name.
