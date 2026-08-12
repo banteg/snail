@@ -6,7 +6,7 @@ This helper dispatches Golb creation from the player emitter bank:
 
 - classifies `player+0x338` movement flags into a spawn budget of 1, 2, or 3;
 - scans 12 emitter slots at `this+0x450` with stride `0x2e8`;
-- calls `create_golb(owner, spawn_count, slot_index)` only for inactive slots;
+- calls `cRSubGolb::Create(owner, spawn_count, slot_index)` only for inactive slots;
   and
 - stops once the spawn budget is exhausted, or after all slots are scanned.
 

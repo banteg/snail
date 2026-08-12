@@ -28,7 +28,7 @@ spawn:
     cRSubGolb* slot = golb_shots;
     do {
         if (slot->state == 0) {
-            slot->create_golb(owner, spawn_count, index);
+            slot->Create(owner, spawn_count, index);
             --spawn_count;
             if (spawn_count == 0)
                 break;

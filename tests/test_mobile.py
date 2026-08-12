@@ -11669,8 +11669,8 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
     methods = {
         "initialize_golb_shot": "initialize_golb_shot",
         "kill_golb": "Kill",
-        "update_golb_ai": "update_golb_ai",
-        "create_golb": "create_golb",
+        "update_golb_ai": "AI",
+        "create_golb": "Create",
         "spawn_golb_trail_sprite": "Jet",
         "spawn_golb_smoke": "Smoke",
         "spawn_golb_impact_sprite": "Explode",
@@ -11689,6 +11689,60 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
             encoding="utf-8"
         )
         assert f"cRPathFollowGolb::{method}" in source
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    lifecycle = {
+        "update_golb_ai": (
+            "cRSubGolb::AI()",
+            "cRSubGolb_AI",
+            "?AI@cRSubGolb@@QAEXXZ",
+        ),
+        "create_golb": (
+            "cRSubGolb::Create(cRSubGoldy*, int, int)",
+            "cRSubGolb_Create",
+            "?Create@cRSubGolb@@QAEXPAVcRSubGoldy@@HH@Z",
+        ),
+    }
+    for function, (mobile_symbol, alias, object_symbol) in lifecycle.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Golb.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    assert "void AI(); // @ 0x414820" in header
+    assert "void Create(cRSubGoldy* player," in header
+    assert "void update_golb_ai();" not in header
+    assert "void create_golb(" not in header
+    shooter = (scratch_root / "shoot_subgoldy/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert shooter.count("slot->Create(owner, spawn_count, index);") == 1
+    assert "slot->create_golb(" not in shooter
 
     folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
         encoding="utf-8"

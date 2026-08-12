@@ -2422,6 +2422,15 @@
       "description": "Exact Windows cRSubGolb::Kill() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x414820",
+      "name": "update_golb_ai",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSubGolb@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGolb::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x5031bc",
       "name": "g_object_grouped_vertex_cursor",
       "kind": "global",
@@ -2641,6 +2650,15 @@
       ],
       "size": "0x10",
       "description": "Compiler-emitted switch jump table used by update_golb_ai."
+    },
+    {
+      "address": "0x415280",
+      "name": "create_golb",
+      "kind": "function",
+      "aliases": [
+        "?Create@cRSubGolb@@QAEXPAVcRSubGoldy@@HH@Z"
+      ],
+      "description": "Exact Windows cRSubGolb::Create(cRSubGoldy*, int, int) entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x415bb0",

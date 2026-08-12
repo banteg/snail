@@ -18,7 +18,7 @@ typedef Vector3 Vec3;
 int report_errorf(char* format, ...);
 int gRMathRand2();
 
-void cRSubGolb::create_golb(cRSubGoldy* player_, int spawn_selector, int shot_slot_index)
+void cRSubGolb::Create(cRSubGoldy* player_, int spawn_selector, int shot_slot_index)
 {
     skip_one_tick = 0;
     slug_bounce_armed = 0;
