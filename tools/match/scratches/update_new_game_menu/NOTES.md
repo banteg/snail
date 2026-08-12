@@ -95,3 +95,12 @@ unit-random draw scaled by the actual bank counts: four postal records, four
 survival records, or 51 time-trial route records. The Windows source now names
 those three cardinalities instead of the folded `4/32768` and `51/32768`
 constants. VC6 emits the same exact 273/273 body with all 62 operands clean.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRIntro::AI()` and exports
+`?AI@cRIntro@@QAEXXZ`. Its two live Windows callers pass the embedded Intro at
+`GameRoot + 0x4f2dc`; Android and iOS retain the same symbol and one body each.
+All seven teardown paths now call the authored `UnInit()` member, whose body is
+linker-folded with `cRMainMenu::UnInit()`. Matching remains exact at 273/273
+with all 62 operands clean.

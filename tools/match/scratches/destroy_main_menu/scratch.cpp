@@ -1,10 +1,10 @@
-// MainMenu::destroy_main_menu @ 0x419b30
+// cRMainMenu::UnInit @ 0x419b30
 
 #include "game_root.h"
 #include "sprite.h"
 
 
-void cRMainMenu::destroy_main_menu()
+void cRMainMenu::UnInit()
 {
     g_game->border_manager.kill_all_borders();
     g_sprite_manager.KillGame();

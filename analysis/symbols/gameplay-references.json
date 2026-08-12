@@ -279,6 +279,34 @@
       "description": "Exact authored cRLogoLetter::AI() member."
     },
     {
+      "address": "0x419b30",
+      "name": "destroy_main_menu",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRMainMenu@@QAEXXZ",
+        "?UnInit@cRIntro@@QAEXXZ"
+      ],
+      "description": "Exact Windows entry shared by linker-folded cRMainMenu::UnInit() and cRIntro::UnInit(), with both owner-qualified decorated relocation names."
+    },
+    {
+      "address": "0x419b50",
+      "name": "initialize_main_menu",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRMainMenu@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRMainMenu::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x419e00",
+      "name": "update_main_menu",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRMainMenu@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRMainMenu::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x419f50",
       "name": "initialize_duplicate_vertices",
       "kind": "function",
@@ -854,6 +882,24 @@
         "?Exit@cRHighScore@@QAEXXZ"
       ],
       "description": "Exact authored cRHighScore::Exit() member."
+    },
+    {
+      "address": "0x417bc0",
+      "name": "initialize_new_game_menu",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRIntro@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRIntro::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x417eb0",
+      "name": "update_new_game_menu",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRIntro@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRIntro::AI() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x408510",

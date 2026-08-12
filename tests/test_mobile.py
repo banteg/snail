@@ -8530,6 +8530,189 @@ def test_help_uses_authored_lifecycle_surface() -> None:
     assert "subgame.help.AI()" in all_sources
 
 
+def test_intro_uses_authored_lifecycle_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/new_game_menu.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "initialize_new_game_menu": {
+            "method": "Init",
+            "symbol": "?Init@cRIntro@@QAEXXZ",
+            "mobile": "cRIntro::Init()",
+            "alias": "cRIntro_Init",
+        },
+        "update_new_game_menu": {
+            "method": "AI",
+            "symbol": "?AI@cRIntro@@QAEXXZ",
+            "mobile": "cRIntro::AI()",
+            "alias": "cRIntro_AI",
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Intro.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["ios_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRIntro::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    folded_aliases = functions["destroy_main_menu"]["aliases"]
+    assert folded_aliases == [
+        "destroy_new_game_menu",
+        "cRMainMenu_UnInit",
+        "cRIntro_UnInit",
+    ]
+    assert "?UnInit@cRIntro@@QAEXXZ" in references
+    android_uninit = (
+        repo_root
+        / "analysis/decompile/android/functions/"
+        "00067a78-_ZN7cRIntro6UnInitEv.c"
+    ).read_text(encoding="utf-8")
+    assert "cRIntro::UnInit(void)" in android_uninit
+
+    assert "void Init();" in header
+    assert "void AI();" in header
+    assert "void UnInit();" in header
+    ai_source = (scratch_root / "update_new_game_menu/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert sum(
+        line.strip() == "UnInit();" for line in ai_source.splitlines()
+    ) == 7
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".initialize_new_game_menu(",
+        ".update_new_game_menu(",
+        "destroy_new_game_menu();",
+    ):
+        assert stale_method not in all_sources
+    assert "intro.Init()" in all_sources
+    assert "intro.AI()" in all_sources
+
+
+def test_main_menu_uses_authored_lifecycle_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/main_menu.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "destroy_main_menu": {
+            "method": "UnInit",
+            "symbol": "?UnInit@cRMainMenu@@QAEXXZ",
+            "mobile": "cRMainMenu::UnInit()",
+            "aliases": [
+                "destroy_new_game_menu",
+                "cRMainMenu_UnInit",
+                "cRIntro_UnInit",
+            ],
+        },
+        "initialize_main_menu": {
+            "method": "Init",
+            "symbol": "?Init@cRMainMenu@@QAEXXZ",
+            "mobile": "cRMainMenu::Init()",
+            "aliases": ["cRMainMenu_Init"],
+        },
+        "update_main_menu": {
+            "method": "AI",
+            "symbol": "?AI@cRMainMenu@@QAEXXZ",
+            "mobile": "cRMainMenu::AI()",
+            "aliases": ["cRMainMenu_AI"],
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "MainMenu.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["ios_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions[windows_name]["aliases"] == recovered["aliases"]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRMainMenu::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void UnInit();" in header
+    assert "void Init();" in header
+    assert "void AI();" in header
+    ai_source = (scratch_root / "update_main_menu/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert sum(
+        line.strip() == "UnInit();" for line in ai_source.splitlines()
+    ) == 3
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".destroy_main_menu(",
+        ".initialize_main_menu(",
+        ".update_main_menu(",
+    ):
+        assert stale_method not in all_sources
+    assert "main_menu.Init()" in all_sources
+    assert "main_menu.AI()" in all_sources
+    assert "main_menu.UnInit()" in all_sources
+
+
 def test_screen_controller_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
@@ -8627,6 +8810,11 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         "initialize_help_screen": "Init",
         "destroy_help_screen": "UnInit",
         "update_help_screen": "AI",
+        "initialize_new_game_menu": "Init",
+        "update_new_game_menu": "AI",
+        "destroy_main_menu": "UnInit",
+        "initialize_main_menu": "Init",
+        "update_main_menu": "AI",
         "destroy_completion_screen": "UnInit",
         "initialize_exit_prompt": "Init",
         "update_completion_screen": "AI",

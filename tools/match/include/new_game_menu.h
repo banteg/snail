@@ -10,9 +10,9 @@
 
 class cRIntro {
 public:
-    void initialize_new_game_menu(); // @ 0x417bc0, cRIntro::Init
-    void update_new_game_menu(); // @ 0x417eb0, cRIntro::AI
-    void destroy_new_game_menu(); // @ 0x419b30, cRIntro::UnInit, folded body
+    void Init();   // @ 0x417bc0
+    void AI();     // @ 0x417eb0
+    void UnInit(); // @ 0x419b30, folded with cRMainMenu::UnInit
 
     int replay_attract_bank_cursor; // +0x00, cycles 0..4
     unsigned char hide_for_replay_latch; // +0x04

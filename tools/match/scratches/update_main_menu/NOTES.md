@@ -28,3 +28,12 @@ clean.
 `MainMenu` receiver and the adjacent `Options`/`Exit` root fields. The tracked
 artifact therefore preserves the authored menu receiver while naming both
 outbound state owners, with no raw root offsets or synthetic cross-owner view.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRMainMenu::AI()` and exports
+`?AI@cRMainMenu@@QAEXXZ`. Its two external Windows callers pass the embedded
+MainMenu at `GameRoot + 0x4f324`; Android and iOS retain the same symbol and one
+body each. Its three teardown branches now call the canonical `UnInit()` member
+while preserving the linker-folded Intro compatibility alias. Matching remains
+exact at 68/68 with all 16 operands clean.

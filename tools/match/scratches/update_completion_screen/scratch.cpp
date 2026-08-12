@@ -22,14 +22,14 @@ void cRExit::AI()
         break;
 
     case 10:
-        g_game->main_menu.update_main_menu();
+        g_game->main_menu.AI();
         button = yes_button;
         flags = button->widget_flags;
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             UnInit();
-            g_game->main_menu.destroy_main_menu();
+            g_game->main_menu.UnInit();
             if (g_game->frontend_quit_mode == 0)
                 g_game->frontend_quit_mode = 1;
         }
@@ -129,7 +129,7 @@ void cRExit::AI()
         break;
 
     case 8:
-        g_game->intro.update_new_game_menu();
+        g_game->intro.AI();
         button = yes_button;
         flags = button->widget_flags;
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {

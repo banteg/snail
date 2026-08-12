@@ -25,3 +25,11 @@ The repeatable StarManager sync now installs the exact 0x4c-byte owner at
 offset receiver with `g_game_base->star_manager` and preserves the already
 recovered backdrop, border-manager, and render-skip ownership. Matcher source
 and its exact 172/172 result are unchanged.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRMainMenu::Init()` and exports
+`?Init@cRMainMenu@@QAEXXZ`. Both live Windows callsites pass the 0x18-byte
+MainMenu owner at `GameRoot + 0x4f324`; Android and iOS independently retain
+the same symbol and one body each. Matching remains exact at 172/172 with all
+48 operands clean.

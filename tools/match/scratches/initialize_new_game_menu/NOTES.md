@@ -38,3 +38,11 @@ The live database now carries both exact root owners used by this method:
 the star-field hide through the root and all six widget allocations through
 the method's `Intro*` receiver, with no raw root arithmetic or synthetic
 `NewGameMenu` owner. The exact matcher body remains unchanged.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRIntro::Init()` and exports
+`?Init@cRIntro@@QAEXXZ`. Both live Windows front-end branches pass the
+0x48-byte Intro at `GameRoot + 0x4f2dc`; Android and iOS independently retain
+the same symbol and one body each. Matching remains exact at 182/182 with all
+48 operands clean.

@@ -52,7 +52,7 @@ void cRPlayer::update_frontend_state_machine()
             g_game->intro.replay_attract_bank_cursor = 0;
         {
             GameRoot* owner = g_game;
-            owner->intro.initialize_new_game_menu();
+            owner->intro.Init();
             break;
         }
         case 2:
@@ -60,17 +60,17 @@ void cRPlayer::update_frontend_state_machine()
             mouse_cursor.SetActive();
         {
             GameRoot* owner = g_game;
-            owner->intro.initialize_new_game_menu();
+            owner->intro.Init();
         }
         case 0:
-            g_game->intro.update_new_game_menu();
+            g_game->intro.AI();
             break;
         case 3:
             frontend_state = 5;
             mouse_cursor.SetActive();
         {
             GameRoot* owner = g_game;
-            owner->main_menu.initialize_main_menu();
+            owner->main_menu.Init();
             break;
         }
         case 4:
@@ -78,10 +78,10 @@ void cRPlayer::update_frontend_state_machine()
             mouse_cursor.SetActive();
         {
             GameRoot* owner = g_game;
-            owner->main_menu.initialize_main_menu();
+            owner->main_menu.Init();
         }
         case 5:
-            g_game->main_menu.update_main_menu();
+            g_game->main_menu.AI();
             break;
         case 6:
             frontend_state = 7;

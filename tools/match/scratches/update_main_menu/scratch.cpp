@@ -3,13 +3,13 @@
 #include "game_root.h"
 
 
-void cRMainMenu::update_main_menu()
+void cRMainMenu::AI()
 {
     unsigned int flags = new_game_widget->widget_flags;
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         new_game_widget->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_main_menu();
+        UnInit();
         g_game->players[0].frontend_state = 2;
         g_game->players[0].redispatch_requested = 1;
         return;
@@ -20,7 +20,7 @@ void cRMainMenu::update_main_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         credits->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_main_menu();
+        UnInit();
         g_game->players[0].frontend_state = 14;
         g_game->players[0].redispatch_requested = 1;
         return;
@@ -58,7 +58,7 @@ void cRMainMenu::update_main_menu()
     if ((result & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         high_scores->widget_flags =
             result & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_main_menu();
+        UnInit();
         g_game->players[0].frontend_state = 18;
         g_game->high_score.mode = 0;
     }

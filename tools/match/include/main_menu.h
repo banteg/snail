@@ -6,9 +6,9 @@
 
 class cRMainMenu {
 public:
-    void destroy_main_menu(); // @ 0x419b30, cRMainMenu::UnInit, folded body
-    void initialize_main_menu(); // @ 0x419b50
-    void update_main_menu(); // @ 0x419e00
+    void UnInit(); // @ 0x419b30, folded with cRIntro::UnInit
+    void Init();   // @ 0x419b50
+    void AI();     // @ 0x419e00
 
     cRBorder* new_game_widget; // +0x00
     cRBorder* high_scores_widget; // +0x04

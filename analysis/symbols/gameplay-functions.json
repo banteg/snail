@@ -1620,11 +1620,17 @@
     {
       "address": "0x417bc0",
       "name": "initialize_new_game_menu",
+      "aliases": [
+        "cRIntro_Init"
+      ],
       "description": "Exact Windows `cRIntro::Init()`: builds the New Game mode submenu with Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back after reloading the shared menu backdrop and shell-font scene. The root-owned 0x48-byte Intro at `data_4df904 + 0x4f2dc` retains its replay-attract controller across initialization."
     },
     {
       "address": "0x417eb0",
       "name": "update_new_game_menu",
+      "aliases": [
+        "cRIntro_AI"
+      ],
       "description": "Exact Windows `cRIntro::AI()`: dispatches Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine, then drives the Intro-owned replay-attract lane. It rotates cursor `0..4`, probes replay banks `0/1/3`, gives up after 1000 attempts, and seeds the replay-launch handoff with return state `2`."
     },
     {
@@ -1726,18 +1732,26 @@
       "address": "0x419b30",
       "name": "destroy_main_menu",
       "aliases": [
-        "destroy_new_game_menu"
+        "destroy_new_game_menu",
+        "cRMainMenu_UnInit",
+        "cRIntro_UnInit"
       ],
-      "description": "Exact body shared by linker-folded `MainMenu::destroy_main_menu` and `Intro::destroy_new_game_menu`: both clear the global border and game-sprite scene. Windows callers pass the distinct embedded owners, while Android retains separate byte-identical `cRMainMenu::UnInit()` and `cRIntro::UnInit()` methods."
+      "description": "Exact body shared by linker-folded `cRMainMenu::UnInit()` and `cRIntro::UnInit()`: both clear the global border and game-sprite scene. Windows callers pass the distinct embedded owners, while Android retains separate byte-identical authored methods. The stable `destroy_new_game_menu` alias preserves the folded Intro call surface."
     },
     {
       "address": "0x419b50",
       "name": "initialize_main_menu",
+      "aliases": [
+        "cRMainMenu_Init"
+      ],
       "description": "Starts MAINMENU.OGG, loads Menubg.txt into the shared backdrop renderer, seeds the front-end state to menu mode, and allocates the New Game, High Scores, Options, Credits, and Exit widgets. Cross-port Android and iOS symbols match this helper to `cRMainMenu::Init()`."
     },
     {
       "address": "0x419e00",
       "name": "update_main_menu",
+      "aliases": [
+        "cRMainMenu_AI"
+      ],
       "description": "Handles main-menu selection, front-end screen transitions, and the tutorial launch handoff. Cross-port Android and iOS symbols match this helper to `cRMainMenu::AI()`."
     },
     {

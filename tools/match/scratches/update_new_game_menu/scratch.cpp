@@ -4,7 +4,7 @@
 #include "new_game_menu.h"
 
 
-void cRIntro::update_new_game_menu()
+void cRIntro::AI()
 {
     unsigned int flags;
 
@@ -29,7 +29,7 @@ void cRIntro::update_new_game_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         postal_button->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_new_game_menu();
+        UnInit();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 0;
@@ -41,7 +41,7 @@ void cRIntro::update_new_game_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         time_trial_button->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_new_game_menu();
+        UnInit();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 4;
@@ -52,7 +52,7 @@ void cRIntro::update_new_game_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         tutorial_button->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_new_game_menu();
+        UnInit();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 7;
@@ -65,7 +65,7 @@ void cRIntro::update_new_game_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         challenge_button->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_new_game_menu();
+        UnInit();
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 1;
@@ -76,7 +76,7 @@ void cRIntro::update_new_game_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         back_button->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_new_game_menu();
+        UnInit();
         g_game->players[0].frontend_state = 4;
         g_game->players[0].redispatch_requested = 1;
     } else {
@@ -84,7 +84,7 @@ void cRIntro::update_new_game_menu()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             help_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_new_game_menu();
+            UnInit();
             g_game->players[0].frontend_state = 31;
             g_game->players[0].redispatch_requested = 1;
         }
@@ -153,7 +153,7 @@ void cRIntro::update_new_game_menu()
         g_game->subgame.replay_launch_from_frontend = 1;
         attract_reset_progress = 0.0f;
         attract_reset_step = 0.000277777784f;
-        destroy_new_game_menu();
+        UnInit();
         return;
     }
 
