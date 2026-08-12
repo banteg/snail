@@ -250,6 +250,15 @@
       "description": "Stable Windows harness identity for the authored cRTrack::Change(int) member preserved by iOS and Android."
     },
     {
+      "address": "0x4107d0",
+      "name": "update_frontend_state_machine",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRPlayer@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRPlayer::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x410c30",
       "name": "set_backdrop_zoom",
       "kind": "function",

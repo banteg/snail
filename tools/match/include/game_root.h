@@ -37,7 +37,7 @@ enum {
 class cRPlayer : public RenderableBod {
 public:
     cRPlayer* initialize_game_player(); // @ 0x408000, cRPlayer constructor helper
-    void update_frontend_state_machine(); // @ 0x4107d0, cRPlayer::AI()
+    void AI(); // @ 0x4107d0
 
     char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE]; // +0x80
     int frontend_state; // +0x94

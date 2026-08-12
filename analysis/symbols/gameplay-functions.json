@@ -1049,6 +1049,9 @@
     {
       "address": "0x4107d0",
       "name": "update_frontend_state_machine",
+      "aliases": [
+        "cRPlayer_AI"
+      ],
       "description": "Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded cRMouse saved position from the active camera anchor."
     },
     {

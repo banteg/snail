@@ -9787,11 +9787,51 @@ def test_root_presentation_types_use_authored_primary_owners() -> None:
     assert "sizeof(cRPlayer)" in game_root
     assert "cRPlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]" in game_root
     assert "cRCamera camera" in game_root
-    for function in ("initialize_game_player", "update_frontend_state_machine"):
-        source = (scratch_root / function / "scratch.cpp").read_text(
-            encoding="utf-8"
-        )
-        assert f"cRPlayer::{function}" in source
+    constructor = (
+        scratch_root / "initialize_game_player/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    player_ai = (
+        scratch_root / "update_frontend_state_machine/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRPlayer::initialize_game_player" in constructor
+    assert "void cRPlayer::AI()" in player_ai
+    assert "void AI(); // @ 0x4107d0" in game_root
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    entry = crosswalk["update_frontend_state_machine"]
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "Game.o"
+    assert entry["android_symbol"] == "cRPlayer::AI()"
+    assert entry["ios_symbol"] == entry["android_symbol"]
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+    assert functions_by_name["update_frontend_state_machine"]["aliases"] == [
+        "cRPlayer_AI"
+    ]
+    object_symbol = "?AI@cRPlayer@@QAEXXZ"
+    assert references_by_name["update_frontend_state_machine"][
+        "aliases"
+    ] == [object_symbol]
+    config = (
+        scratch_root / "update_frontend_state_machine/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={object_symbol}\n" in config
 
     assert "class cRCamera : public RenderableBod" in viewport
     assert "typedef cRCamera RenderCamera;" in viewport
