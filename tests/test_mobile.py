@@ -6017,6 +6017,8 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
         "spawn_golb_trail_sprite": "Golb.o",
         "search_path_for_golb": "Golb.o",
         "load_high_scores_from_file": "HighScore.o",
+        "refresh_object_vertex_buffer": "GL.o",
+        "initialize_object_constructor_thunk": "RObject.o",
         "calc_object_bounding_box": "RObject.o",
         "calc_object_facequad_normals_simple": "RObject.o",
         "begin_post_follow_carryover": "SubGame.o",
@@ -6057,6 +6059,21 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     )
     assert previous_verified["source_object"] == "Game.o"
     assert next_verified["source_object"] == "Game.o"
+
+    zero_vector = by_name["zero_vector3"]
+    assert zero_vector["status"] == "unverified"
+    assert zero_vector["source_object"] == "Game.o"
+    assert (
+        zero_vector["source_object_evidence"]
+        == "windows-contiguous-source-run"
+    )
+    zero_index = entries.index(zero_vector)
+    assert entries[zero_index - 1]["windows_name"] == (
+        "initialize_game_assets_and_world"
+    )
+    assert entries[zero_index - 1]["source_object"] == "Game.o"
+    assert entries[zero_index + 1]["windows_name"] == "initialize_game_last"
+    assert entries[zero_index + 1]["source_object"] == "Game.o"
 
     color_initializers = [
         by_name["initialize_global_color4f_bank_32_thunk"],

@@ -934,7 +934,9 @@
     {
       "address": "0x410710",
       "name": "zero_vector3",
-      "description": "Zeroes the x, y, and z components of one 12-byte tVector. The authored method name remains unverified. All five known callsites target embedded BodBase position vectors: four path/fringe positions in auxiliary loopout pair 60 and the shared barrier position."
+      "description": "Zeroes the x, y, and z components of one 12-byte tVector. The authored method name remains unverified. All five known callsites target embedded BodBase position vectors: four path/fringe positions in auxiliary loopout pair 60 and the shared barrier position.",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x410720",
@@ -1140,6 +1142,8 @@
       "name": "refresh_object_vertex_buffer",
       "port_scope": "boundary",
       "description": "Refreshes one built object's grouped Direct3D vertex buffer from the current animated or distorted vertex source, preserving the authored UV lanes for the grouped draw path. Android and iOS keep the animation-frame active-view selection inside G0RenderObject(), then bind OpenGL arrays or VBOs directly, so the mobile render bodies are interior ownership provenance rather than a standalone function mapping.",
+      "source_object": "GL.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRObject::ReGLVBO()",
@@ -2017,7 +2021,9 @@
     {
       "address": "0x42f6e0",
       "name": "initialize_object_constructor_thunk",
-      "description": "Object constructor thunk that calls the recovered object initializer and returns the original receiver."
+      "description": "Object constructor thunk that calls the recovered object initializer and returns the original receiver.",
+      "source_object": "RObject.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x42f6f0",

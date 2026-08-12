@@ -177,3 +177,13 @@ form. Focused Wibo stays `90.58%`, `137/139`, prefix `7`, with four clean
 references. The two residual instructions are bounded to allocator/register
 address formation, and no synthetic byte cursor is retained to manufacture
 them.
+
+## 2026-08-12 Windows GL.o source-unit closure
+
+Live Windows analysis shows a closed linker run: the curated `G0RenderCamera`
+extent reaches this private helper, this helper's curated extent reaches
+`G0RenderToon`, and the only xref is the following `G0RenderObject` body. All
+three surrounding functions are independently mapped to `GL.o` in both mobile
+ports. The helper therefore belongs to Windows `GL.o` even though Direct3D's
+lock-and-copy path has no standalone OpenGL counterpart; its mapping correctly
+remains unverified rather than being forced onto `G0RenderObject`.

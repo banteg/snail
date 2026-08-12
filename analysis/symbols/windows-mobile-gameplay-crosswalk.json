@@ -6433,6 +6433,8 @@
       "windows_name": "zero_vector3",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "tVector::tVector(float*)",
@@ -8046,6 +8048,8 @@
       "windows_name": "refresh_object_vertex_buffer",
       "windows_size": 400,
       "status": "unverified",
+      "source_object": "GL.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRObject::ReGLVBO()",
@@ -11422,6 +11426,8 @@
       "windows_name": "initialize_object_constructor_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RObject.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "ObjectProcNull(cRObject*)",
