@@ -1,5 +1,13 @@
 # update_galaxy @ 0x4092f0
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRGalaxy::AI()` and `Render()` bodies, their `AIControl()` state getter, and
+the live Windows Galaxy method establish the combined route tick, icon/line
+rendering, hit testing, card controls, level launch, replay selection, and
+frontend handoff. All 55 references are clean; the 569/566 candidate's
+remaining deltas are equivalent stack-slot and register colouring across the
+connector, route-icon, and input-tail lanes.
+
 Relationship-first scratch for the Star Map update/render controller. It now
 uses the shared `Galaxy` and route-record layouts recovered across
 `load_galaxy_layout`, `initialize_galaxy`, `open_galaxy_route`, and
@@ -57,8 +65,8 @@ selected-level/replay launch handoff back to the subgame state machine.
 ## Match state
 
 Current result: 71.01%, 566 target instructions, 569 candidate instructions,
-a 48-instruction exact prefix, and 52 clean / 0 unresolved / 0 mismatched
-masked operands.
+a 48-instruction exact prefix, and 55 clean / 0 unresolved / 0 mismatched /
+0 unaudited masked operands.
 
 The first residual is the selected-card connector's saved `map_y` temporary:
 native reuses `[esp+0x10]`, while the candidate uses the later cursor-y slot at
@@ -267,9 +275,9 @@ the fuzzy match or exact prefix. In particular, naming the connector ordinate
 moves the first mismatch earlier, direct `active_padding` reloads shrink the
 frame and lose the complete prefix, delayed route-record owners lose at least
 four weighted bytes, and the source-equivalent vector declaration/assignment
-forms compile identically. The function is therefore formally stalled on its
-documented stack-slot and register-coloring residuals until new source or
-compiler evidence appears.
+forms compile identically. This is descriptive evidence, not a stopping rule;
+the current residual is bounded to documented stack-slot and register
+colouring until new source or compiler evidence appears.
 
 The same pass exposed six formerly unaudited global references where target
 and candidate used the same manifest identity but different destination
@@ -289,8 +297,8 @@ thiscall contract and the three external Windows calls at `0x406893`,
 `0x438ce3`, and `0x438d3e`. Mobile splits the render pass and exposes
 `AIControl()` separately, while Windows returns that state directly.
 
-The naming-only change leaves the formally stalled frontier frozen at 71.01%,
-569/566 instructions and prefix 48/566. Before shared alias integration the
+The naming-only change leaves the current frontier at 71.01%, 569/566
+instructions and prefix 48/566. Before shared alias integration the
 ten renamed internal call relocations report as expected operand mismatches;
 registering the exact owner-qualified aliases restores the established 55
 clean operands. The three receipted mutation plans and experiments ledger are
