@@ -1,5 +1,12 @@
 # calc_object_facequad_normals
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRObject::CalcFaceQuadNormals` bodies and the live Windows `Object` method
+establish the complete face-pair construction, weighted vertex accumulation,
+validation, normalization, inversion, and temporary-tally lifetime. All 22
+references are clean; the four-instruction deficit is bounded VC6 tally/x87
+and scale-one SIB allocation.
+
 Ownership-recovered scratch for `calc_object_facequad_normals @ 0x42fcb0`.
 
 This is the full object normal rebuild used by object build and animation

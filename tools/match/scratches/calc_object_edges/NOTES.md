@@ -1,5 +1,11 @@
 # calc_object_edges
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRObject::CalcEdges` bodies establish the authored build/compact/transfer
+lifecycle, while Windows proves its 0x30-byte face topology and 0x24-byte toon
+edge records. All 17 references are clean; the one-instruction delta is the
+documented one-slot versus two-slot VC6 cleanup-loop allocation.
+
 First source-shaped scratch for the toon edge builder.
 
 Semantics:
@@ -153,8 +159,8 @@ repeated source/compiler variants. The tested space includes explicit
 working/saved offsets, separate outer/shift offsets, typed and raw flag views,
 setup declaration orders, `register` hints, live-zero comparisons, copy and
 publication schedules, and structured `do`, `while`, and `for` controls. The
-single winning schedule is retained. Three subsequent non-improving sweeps
-leave this scratch formally stalled.
+single winning schedule is retained; three trailing non-improving sweeps
+document the tested frontier without closing it.
 
 The remaining allocator residual is now narrower rather than hidden. Native
 keeps `build_edges` in EDI and the outer edge index in EAX, spilling only the
