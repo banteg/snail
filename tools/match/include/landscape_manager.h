@@ -21,7 +21,7 @@ public:
 
     ActiveLandscapeEntry active_entries[LANDSCAPE_ACTIVE_ENTRY_COUNT]; // +0x0000
     int script_count; // +0x05a0
-    LandscapeScriptRecord scripts[LANDSCAPE_SCRIPT_CAPACITY]; // +0x05a4
+    cRLandscape scripts[LANDSCAPE_SCRIPT_CAPACITY]; // +0x05a4
 };
 
 typedef cRLandscapeManager LandscapeManager;

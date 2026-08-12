@@ -34,7 +34,7 @@ int cRLandscapeManager::Import(char* script_name)
         if (strings_equal_case_insensitive_path(loaded_name, script_name) != 0)
             goto found_existing;
         ++index;
-        loaded_name += sizeof(LandscapeScriptRecord);
+        loaded_name += sizeof(cRLandscape);
     }
     goto load_script;
 

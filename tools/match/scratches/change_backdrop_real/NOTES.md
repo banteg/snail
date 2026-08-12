@@ -1,23 +1,10 @@
-# change_backdrop_real @ 0x410dc0
+# cRBackdrop::ChangeReal @ 0x410dc0
 
-Exact match: 30/30 instructions, clean masks.
+Exact Windows member: 30/30 instructions with its masked call operand clean.
+Android and iOS independently preserve `cRBackdrop::ChangeReal()` and the same
+state transition.
 
-Commits the pending backdrop state staged by `change_backdrop`.
-
-Recovered `Backdrop` fields:
-
-- `pending_primary_texture_id +0x40` is the zero/non-zero gate.
-- `active_primary_texture_id +0x3c` and `active_secondary_texture_id +0x44`
-  are updated when the pending primary texture changes.
-- `zoom +0x6c8` resets before rebuilding distortion; symbol-preserving iOS
-  builds name its setter `cRBackdrop::SetZoom(float)`.
-- `active_flip +0x55` and `active_split_backdrop_pair +0x38` mirror the
-  pending fields after every call.
-
-## 2026-07-26 authored backdrop owner
-
-Both mobile corpora preserve `cRBackdrop::ChangeReal()`. Their implementations
-commit the staged texture pair, refresh distortion when the primary texture
-changes, and publish the staged flip/split flags through the same owner. The
-exact 30/30 Windows body and void lifecycle contract now carry that authored
-identity explicitly.
+The method commits the pending primary and optional secondary textures, resets
+zoom and calls `SetDistort` when the primary texture changes, then publishes
+the pending flip and split-pair flags. `cRBackdrop::AI`, installed as the first
+callback-table entry at construction, calls it when a change is queued.

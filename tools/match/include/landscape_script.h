@@ -5,8 +5,9 @@
 
 #include "sprite.h"
 
-struct LandscapeScriptRecord {
-    LandscapeScriptRecord* initialize_landscape_script_record(); // @ 0x408840
+class cRLandscape {
+public:
+    cRLandscape* initialize_landscape_script_record(); // @ 0x408840
 
     int id; // +0x00, parsed from "ID:"
     char name[0x84 - 0x04]; // +0x04
@@ -17,7 +18,8 @@ struct LandscapeScriptRecord {
     tColour fog_color; // +0x110, RGB parsed from "Fog:"; copied as 16 bytes
     float distort; // +0x120, parsed from "Distort:"
 };
-typedef char LandscapeScriptRecord_must_be_0x124[
-    (sizeof(LandscapeScriptRecord) == 0x124) ? 1 : -1];
+typedef cRLandscape LandscapeScriptRecord;
+typedef char cRLandscape_must_be_0x124[
+    (sizeof(cRLandscape) == 0x124) ? 1 : -1];
 
 #endif

@@ -3,7 +3,7 @@
 
 #include "backdrop.h"
 
-void cRBackdrop::set_backdrop_world(int world)
+void cRBackdrop::SetWorld(int world)
 {
     primary_world_blend.blend = 1.0f - primary_world_blend.blend;
     primary_world_blend.previous_world = primary_world_blend.current_world;

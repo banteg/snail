@@ -2,7 +2,7 @@
 
 #include "landscape_script.h"
 
-LandscapeScriptRecord* LandscapeScriptRecord::initialize_landscape_script_record()
+cRLandscape* cRLandscape::initialize_landscape_script_record()
 {
     fog_color.noop_this_constructor();
     return this;

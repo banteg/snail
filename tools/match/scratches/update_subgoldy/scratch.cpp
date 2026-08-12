@@ -936,7 +936,7 @@ steering_stored:
     }
 
     float backdrop_zoom = transform.position.z / (float)game->runtime_row_count;
-    g_game->backdrop.set_backdrop_zoom(backdrop_zoom);
+    g_game->backdrop.SetZoom(backdrop_zoom);
 
     cRSubGame* horizon_game = game;
     // This is the trailing/lower edge of the shared active track window;

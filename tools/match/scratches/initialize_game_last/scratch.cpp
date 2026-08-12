@@ -5,5 +5,5 @@
 
 void cRGame::initialize_game_last()
 {
-    backdrop.initialize_backdrop(1);
+    backdrop.Init(1);
 }

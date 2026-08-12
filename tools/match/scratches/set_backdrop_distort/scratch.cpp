@@ -5,7 +5,7 @@
 
 int next_math_random_value(); // @ 0x44c900
 
-void cRBackdrop::set_backdrop_distort(float distort)
+void cRBackdrop::SetDistort(float distort)
 {
     enum {
         GRID_ROW_COUNT = sizeof(distort_grid) / sizeof(distort_grid[0]),

@@ -25,7 +25,7 @@ void cRIntro::Init()
     cache_music_file(g_main_menu_music_path, 0, g_blank_text);
     int script_index = g_game->subgame.landscape_manager
                            .Import(g_menu_background_script_path);
-    g_game->backdrop.change_backdrop(
+    g_game->backdrop.Change(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
     g_game->border_manager.SetJustifyCentre(25.0f);
     g_game->render_skip_countdown = 2;

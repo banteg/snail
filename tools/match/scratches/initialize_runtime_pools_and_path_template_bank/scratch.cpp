@@ -193,7 +193,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         sizeof(landscape_manager.active_entries) + sizeof(landscape_manager.script_count));
     initialize_array_with_constructor(
         landscape,
-        sizeof(LandscapeScriptRecord),
+        sizeof(cRLandscape),
         sizeof(landscape_manager.scripts) / sizeof(landscape_manager.scripts[0]),
         &RuntimeSlot::initialize_landscape_script_record);
 

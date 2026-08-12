@@ -4,7 +4,7 @@
 #include "runtime_config.h"
 
 
-void cRBackdrop::initialize_backdrop(int last_mode)
+void cRBackdrop::Init(int last_mode)
 {
     corner_index_buffer_handle = 1;
     unknown_660 = 0;
@@ -15,7 +15,7 @@ void cRBackdrop::initialize_backdrop(int last_mode)
     unknown_6bc = 0.0f;
     unknown_6c0 = 0.003333333414f;
 
-    set_backdrop_world(5);
+    SetWorld(5);
 
     unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
     if ((render_flags & 1) != 0) {
@@ -41,8 +41,8 @@ void cRBackdrop::initialize_backdrop(int last_mode)
         unknown_678 = -0.003490658710f;
         break;
     default:
-        set_backdrop_world(0);
-        set_backdrop_distort(0.0f);
+        SetWorld(0);
+        SetDistort(0.0f);
         return;
     }
 
@@ -55,6 +55,6 @@ void cRBackdrop::initialize_backdrop(int last_mode)
     secondary_world_blend.blend = 1.0f;
     secondary_world_blend.blend_step = 0.004166666884f;
 
-    set_backdrop_world(0);
-    set_backdrop_distort(0.0f);
+    SetWorld(0);
+    SetDistort(0.0f);
 }

@@ -1,7 +1,10 @@
-# Exact match
+# initialize_landscape_script_record @ 0x408840
 
-`initialize_landscape_script_record` @ 0x408840 constructs one
-0x124-byte `LandscapeScriptRecord` in `LandscapeManager::scripts[128]` at
-subgame `+0xff81a4` (manager `+0x5a4`). The only emitted work is the no-op
-`tColour` constructor for the parsed fog color at `+0x110`, which matches the
-shared record layout in `landscape_script.h`.
+Exact Windows constructor helper: 7/7 instructions with its masked tColour
+constructor operand clean. It constructs the parsed fog color at
+`cRLandscape +0x110` and returns the 0x124-byte record.
+
+The helper itself has no verified mobile counterpart, so its descriptive name
+is retained. The primary `cRLandscape` owner is instead proven at the exact
+`cRBackdrop::Change(cRLandscape*, bool)` boundary preserved by Android and iOS;
+`LandscapeScriptRecord` remains a compatibility typedef for analysis prose.

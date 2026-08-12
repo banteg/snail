@@ -16,7 +16,7 @@ int cRBackdrop::update_backdrop()
     int phase_bits;
 
     if (backdrop_change_queued != 0) {
-        change_backdrop_real();
+        ChangeReal();
         backdrop_change_queued = 0;
     }
 

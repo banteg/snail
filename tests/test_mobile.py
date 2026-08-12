@@ -9513,7 +9513,12 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         ),
     }
     member_names = {
-        "set_backdrop_texture_target": "set_backdrop_world",
+        "set_backdrop_zoom": "SetZoom",
+        "set_backdrop_distort": "SetDistort",
+        "change_backdrop": "Change",
+        "change_backdrop_real": "ChangeReal",
+        "initialize_backdrop": "Init",
+        "set_backdrop_texture_target": "SetWorld",
         "initialize_enemy_manager": "Init",
         "search_path_for_golb": "Find",
         "append_subgame_contact_target": "Register",
@@ -9532,6 +9537,124 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
 
     game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
     assert "cRBackdrop backdrop" in game_root
+    landscape = (include_root / "landscape_script.h").read_text(
+        encoding="utf-8"
+    )
+    assert "class cRLandscape" in landscape
+    assert "typedef cRLandscape LandscapeScriptRecord;" in landscape
+    assert "sizeof(cRLandscape)" in landscape
+    landscape_manager = (
+        include_root / "landscape_manager.h"
+    ).read_text(encoding="utf-8")
+    assert "cRLandscape scripts[LANDSCAPE_SCRIPT_CAPACITY]" in landscape_manager
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    backdrop_methods = {
+        "set_backdrop_zoom": (
+            "cRBackdrop::SetZoom(float)",
+            "?SetZoom@cRBackdrop@@QAEXM@Z",
+            "cRBackdrop_SetZoom",
+            True,
+        ),
+        "set_backdrop_distort": (
+            "cRBackdrop::SetDistort(float)",
+            "?SetDistort@cRBackdrop@@QAEXM@Z",
+            "cRBackdrop_SetDistort",
+            True,
+        ),
+        "change_backdrop": (
+            "cRBackdrop::Change(cRLandscape*, bool)",
+            "?Change@cRBackdrop@@QAEXPAVcRLandscape@@_N@Z",
+            "cRBackdrop_Change",
+            True,
+        ),
+        "change_backdrop_real": (
+            "cRBackdrop::ChangeReal()",
+            "?ChangeReal@cRBackdrop@@QAEXXZ",
+            "cRBackdrop_ChangeReal",
+            True,
+        ),
+        "initialize_backdrop": (
+            "cRBackdrop::Init(int)",
+            "?Init@cRBackdrop@@QAEXH@Z",
+            "cRBackdrop_Init",
+            False,
+        ),
+        "set_backdrop_texture_target": (
+            "cRBackdrop::SetWorld(int)",
+            "?SetWorld@cRBackdrop@@QAEXH@Z",
+            "cRBackdrop_SetWorld",
+            False,
+        ),
+    }
+    for function, (
+        mobile_symbol,
+        object_symbol,
+        alias,
+        has_ios,
+    ) in backdrop_methods.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Game.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if has_ios:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        assert alias in functions_by_name[function]["aliases"]
+        assert object_symbol in references_by_name[function]["aliases"]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    backdrop = (include_root / "backdrop.h").read_text(encoding="utf-8")
+    assert "void Change(cRLandscape* landscape, bool flip);" in backdrop
+    for old_member in (
+        "set_backdrop_zoom",
+        "set_backdrop_distort",
+        "change_backdrop",
+        "change_backdrop_real",
+        "initialize_backdrop",
+        "set_backdrop_world",
+    ):
+        assert f" {old_member}(" not in backdrop
+
+    landscape_initializer = (
+        scratch_root / "initialize_landscape_script_record/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRLandscape* cRLandscape::initialize_landscape_script_record()" in (
+        landscape_initializer
+    )
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("scratch.cpp")
+        if "build" not in path.parts
+    )
+    assert all_sources.count("backdrop.Change(") == 9
+    assert all_sources.count("backdrop.Init(") == 1
+    assert all_sources.count("backdrop.SetZoom(") == 1
+    assert ".change_backdrop(" not in all_sources
+    assert ".initialize_backdrop(" not in all_sources
+    assert ".set_backdrop_zoom(" not in all_sources
+
     player = (include_root / "player.h").read_text(encoding="utf-8")
     for field_type in (
         "cRWeapon weapon_channels[3]",

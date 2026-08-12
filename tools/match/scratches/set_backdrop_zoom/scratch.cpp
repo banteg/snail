@@ -3,7 +3,7 @@
 
 #include "backdrop.h"
 
-void cRBackdrop::set_backdrop_zoom(float value)
+void cRBackdrop::SetZoom(float value)
 {
     zoom = value;
 }

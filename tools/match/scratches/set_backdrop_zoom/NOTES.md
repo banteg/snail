@@ -1,13 +1,11 @@
-# set_backdrop_zoom @ 0x410c30
+# cRBackdrop::SetZoom @ 0x410c30
 
-Exact match: 100.00%, 3/3 instructions.
+Exact Windows member: 3/3 instructions with no masked operands.
 
-The former Windows harness name described its only known Windows input: a
-normalized route-progress fraction stored at backdrop offset `+0x6c8`.
-`update_subgoldy` drives the setter from the active track-row payload ratio.
+Android and iOS independently preserve `cRBackdrop::SetZoom(float)`. The sole
+Windows caller, `update_subgoldy`, passes a normalized track-row payload ratio
+to the root-owned `cRBackdrop` at `GameRoot +0x4ec10`; the method stores it at
+backdrop `+0x6c8`.
 
-Android and iOS independently name the corresponding authored member
-`cRBackdrop::SetZoom(float)`. The Windows receiver is the owned `Backdrop`, and
-the exact scratch already uses `Backdrop::set_backdrop_zoom` over its `zoom`
-field. The canonical manifest, scratch directory, and live databases now use
-`set_backdrop_zoom`; `set_backdrop_progress_fraction` remains an alias only.
+The stable matcher identity remains `set_backdrop_zoom`, with the authored VC6
+decorated symbol selected by `scratch.conf`.

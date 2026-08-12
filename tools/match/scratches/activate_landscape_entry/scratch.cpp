@@ -13,7 +13,7 @@ int report_errorf(char* format, ...);
 
 void cRLandscapeManager::Init(int script_index)
 {
-    char flip;
+    bool flip;
     int mode = g_game->subgame.level_mode;
     if (mode == 7) {
         flip = 0;
@@ -67,7 +67,7 @@ void cRLandscapeManager::Init(int script_index)
         staged_index = index;
     } while (index < LANDSCAPE_ACTIVE_ENTRY_COUNT);
 
-    g_game->backdrop.change_backdrop(&scripts[script_index], flip);
+    g_game->backdrop.Change(&scripts[script_index], flip);
     g_game->border_manager.SetJustifyCentre(0.0f);
 
     tColour* source = &scripts[script_index].fog_color;

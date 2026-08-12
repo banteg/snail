@@ -354,9 +354,46 @@
       "kind": "function",
       "aliases": [
         "set_backdrop_progress_fraction",
-        "sub_410c30"
+        "sub_410c30",
+        "?SetZoom@cRBackdrop@@QAEXM@Z"
       ],
       "description": "Canonical Windows identity for the authored cRBackdrop::SetZoom(float) member preserved by Android and iOS."
+    },
+    {
+      "address": "0x410c40",
+      "name": "set_backdrop_distort",
+      "kind": "function",
+      "aliases": [
+        "?SetDistort@cRBackdrop@@QAEXM@Z"
+      ],
+      "description": "Exact Windows cRBackdrop::SetDistort(float) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x410d50",
+      "name": "change_backdrop",
+      "kind": "function",
+      "aliases": [
+        "?Change@cRBackdrop@@QAEXPAVcRLandscape@@_N@Z"
+      ],
+      "description": "Exact Windows cRBackdrop::Change(cRLandscape*, bool) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x410dc0",
+      "name": "change_backdrop_real",
+      "kind": "function",
+      "aliases": [
+        "?ChangeReal@cRBackdrop@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBackdrop::ChangeReal() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x410e20",
+      "name": "initialize_backdrop",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRBackdrop@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRBackdrop::Init(int) entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x410f40",
@@ -364,7 +401,8 @@
       "kind": "function",
       "aliases": [
         "set_backdrop_world",
-        "sub_410f40"
+        "sub_410f40",
+        "?SetWorld@cRBackdrop@@QAEXH@Z"
       ],
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member."
     },

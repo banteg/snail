@@ -1102,13 +1102,17 @@
       "address": "0x410c30",
       "name": "set_backdrop_zoom",
       "aliases": [
-        "set_backdrop_progress_fraction"
+        "set_backdrop_progress_fraction",
+        "cRBackdrop_SetZoom"
       ],
       "description": "Exact `cRBackdrop::SetZoom(float)`: stores the active backdrop zoom at +0x6c8. Windows `update_subgoldy` drives it from the normalized current track-row payload ratio, while Android and iOS independently preserve the authored owner and signature."
     },
     {
       "address": "0x410c40",
       "name": "set_backdrop_distort",
+      "aliases": [
+        "cRBackdrop_SetDistort"
+      ],
       "description": "Seeds the shared backdrop distortion grid and its per-cell phase, speed, and amplitude terms from the script-side Distort scalar. Cross-port Android and iOS symbols match this helper to `cRBackdrop::SetDistort(float)`."
     },
     {
@@ -1138,6 +1142,9 @@
     {
       "address": "0x410f40",
       "name": "set_backdrop_texture_target",
+      "aliases": [
+        "cRBackdrop_SetWorld"
+      ],
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member. It flips both owned world-blend fractions, shifts each current world into its previous slot, and installs the new world in both 0x20-byte BackdropWorldBlend records."
     },
     {

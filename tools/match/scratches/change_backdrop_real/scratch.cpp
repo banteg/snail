@@ -3,7 +3,7 @@
 
 #include "backdrop.h"
 
-void cRBackdrop::change_backdrop_real()
+void cRBackdrop::ChangeReal()
 {
     int texture_id = pending_primary_texture_id;
 
@@ -14,7 +14,7 @@ void cRBackdrop::change_backdrop_real()
         }
 
         zoom = 0.0f;
-        set_backdrop_distort(pending_distort);
+        SetDistort(pending_distort);
         backdrop_render_enabled = 1;
     } else {
         backdrop_render_enabled = 0;
