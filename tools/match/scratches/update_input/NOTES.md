@@ -1,5 +1,12 @@
 # update_input
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android
+`cRInput::Update()`, the live Windows InputState method, and the exact Windows
+`cRGameInput::AI()` bridge establish the complete pressed/released edge
+algebra, previous and inverse masks, current clear, and void ABI. There are no
+masked references; the 15/19 candidate differs only in Windows' extra saved
+EDI and released-mask lifetime.
+
 Partial `InputState` edge updater at `0x40aa80`.
 
 The function folds `current_buttons` and `previous_buttons` into per-frame
@@ -86,8 +93,9 @@ verified Windows/Android edge semantics:
   Android `cRInput::Update()`.
 
 No variant improves the clear 52.94%, 15/19 baseline. Seventeen are
-byte-identical and the other 175 regress, so the experiment ledger now marks
-this target stalled. The native-only `push edi` and released-mask lifetime are
-not explained by ordinary update order, signedness, named temporaries, or the
-cross-port algebra. Keep the semantic source pinned; a future retry needs a
-new type/owner/source relationship rather than another statement permutation.
+byte-identical and the other 175 regress. This is descriptive experiment
+evidence, not a stopping rule. The native-only `push edi` and released-mask
+lifetime are not explained by ordinary update order, signedness, named
+temporaries, or the cross-port algebra. Keep the semantic source; a future
+retry needs a new type/owner/source relationship rather than another statement
+permutation.

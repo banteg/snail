@@ -1,5 +1,14 @@
 # render_game_frame
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRGame::Render()` bodies and the live Windows GameRoot method establish the
+complete viewport ordering, BOD/animation synchronization, first and
+post-sprite render passes, Sprite filtering/projection/depth buckets, font
+queue, and frame-tail callback. All 34 references are clean; the 431/439
+candidate's remaining deltas are Windows camera-loop, register, and transient
+workspace scheduling. Direct3D state helpers remain separate replaceable
+platform implementations.
+
 Relationship-first scratch for the frame renderer at `0x40a490`.
 
 Current Wibo result after the depth-node and replay-copy ownership replay:
@@ -320,10 +329,10 @@ None improves the clean 56.16% baseline. All five sentinel spellings are
 byte-identical; the best explicit cursor form loses eight weighted bytes, the
 earlier count lifetimes lose thirteen, and the mobile insertion exits lose
 between 28 and 146. The append-only `experiments.jsonl` therefore reports
-`0/5/27` better/same/worse variants and a three-sweep stalled streak. The
-mobile control flow remains valuable provenance, but forcing it into the
-Windows scratch destabilizes the broader VC6 allocation and is not an honest
-match improvement.
+`0/5/27` better/same/worse variants and three trailing non-improving sweeps.
+That history is descriptive, not a stopping rule. The mobile control flow
+remains valuable provenance, but forcing it into the Windows scratch
+destabilizes the broader VC6 allocation and is not an honest match improvement.
 
 ## 2026-07-31 depth-node and replay-copy ownership
 
@@ -404,6 +413,7 @@ references and none improves:
 The native six-instruction camera-exit residual and replay-branch reload
 therefore do not transfer as isolated source owners even after the accepted
 frame change. The ledger now contains 18 sweeps and 103 unique variants:
-12 improve, 34 are neutral, and 57 regress. Five consecutive non-improving
-sweeps formally stall the function at **68.28%**, 431/439 instructions,
-prefix 6/439, and 34 clean masked operands.
+12 improve, 34 are neutral, and 57 regress. The last five sweeps were
+non-improving; this is descriptive evidence, not a stopping rule. The current
+function remains at **68.28%**, 431/439 instructions, prefix 6/439, and 34
+clean masked operands.
