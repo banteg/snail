@@ -14594,6 +14594,8 @@
       "windows_name": "initialize_track_colour_bank_a_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -14664,6 +14666,8 @@
       "windows_name": "initialize_track_colour_bank_a",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -14734,6 +14738,8 @@
       "windows_name": "initialize_track_colour_banks_b_c_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -14804,6 +14810,8 @@
       "windows_name": "initialize_track_colour_banks_b_c",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -14874,6 +14882,8 @@
       "windows_name": "initialize_track_colour_bank_d_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -14944,6 +14954,8 @@
       "windows_name": "initialize_track_colour_bank_d",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -15014,6 +15026,8 @@
       "windows_name": "initialize_track_colour_bank_e_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -15084,6 +15098,8 @@
       "windows_name": "initialize_track_colour_bank_e",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -15154,6 +15170,8 @@
       "windows_name": "initialize_track_colour_bank_f_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -15224,6 +15242,8 @@
       "windows_name": "initialize_track_colour_bank_f",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -15294,6 +15314,8 @@
       "windows_name": "initialize_track_colour_bank_g_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -15364,6 +15386,8 @@
       "windows_name": "initialize_track_colour_bank_g",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -15434,6 +15458,8 @@
       "windows_name": "initialize_track_colour_bank_h_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -15504,6 +15530,8 @@
       "windows_name": "initialize_track_colour_bank_h",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -15574,6 +15602,8 @@
       "windows_name": "initialize_track_colour_bank_i_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -15644,6 +15674,8 @@
       "windows_name": "initialize_track_colour_bank_i",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -15714,6 +15746,8 @@
       "windows_name": "initialize_track_colour_bank_j_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -15784,6 +15818,8 @@
       "windows_name": "initialize_track_colour_bank_j",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -15854,6 +15890,8 @@
       "windows_name": "initialize_track_colour_bank_k_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -15924,6 +15962,8 @@
       "windows_name": "initialize_track_colour_bank_k",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",

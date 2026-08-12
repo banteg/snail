@@ -2654,102 +2654,142 @@
     {
       "address": "0x434980",
       "name": "initialize_track_colour_bank_a_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupCheckBlack counterpart. The stable A suffix records constructor-table order; cross-port symbols recover the owned bank name."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupCheckBlack counterpart. The stable A suffix records constructor-table order; cross-port symbols recover the owned bank name.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434990",
       "name": "initialize_track_colour_bank_a",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupCheckBlack counterpart before build_track_colours seeds authored white values."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupCheckBlack counterpart before build_track_colours seeds authored white values.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x4349b0",
       "name": "initialize_track_colour_banks_b_c_thunk",
-      "description": "CRT initializer-table thunk for the contiguous Windows Floor/Slide-0 colour owner. The stable B/C suffix records the two physical 51-entry views."
+      "description": "CRT initializer-table thunk for the contiguous Windows Floor/Slide-0 colour owner. The stable B/C suffix records the two physical 51-entry views.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x4349c0",
       "name": "initialize_track_colour_banks_b_c",
-      "description": "Runs the folded no-op tColour constructor across the contiguous 102-entry Windows owner holding gLocColourLookupFloor followed by the first Slide view."
+      "description": "Runs the folded no-op tColour constructor across the contiguous 102-entry Windows owner holding gLocColourLookupFloor followed by the first Slide view.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x4349e0",
       "name": "initialize_track_colour_bank_d_thunk",
-      "description": "CRT initializer-table thunk for the second physical Windows Slide colour bank."
+      "description": "CRT initializer-table thunk for the second physical Windows Slide colour bank.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x4349f0",
       "name": "initialize_track_colour_bank_d",
-      "description": "Runs the folded no-op tColour constructor across the second 51-entry Windows Slide bank; mobile BuildColours aliases both Slide calls to one gLocColourLookupSlide owner."
+      "description": "Runs the folded no-op tColour constructor across the second 51-entry Windows Slide bank; mobile BuildColours aliases both Slide calls to one gLocColourLookupSlide owner.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434a10",
       "name": "initialize_track_colour_bank_e_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupWall counterpart."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupWall counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434a20",
       "name": "initialize_track_colour_bank_e",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupWall counterpart."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupWall counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434a40",
       "name": "initialize_track_colour_bank_f_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupTrampoline counterpart."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupTrampoline counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434a50",
       "name": "initialize_track_colour_bank_f",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupTrampoline counterpart."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupTrampoline counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434a70",
       "name": "initialize_track_colour_bank_g_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupRamp counterpart."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupRamp counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434a80",
       "name": "initialize_track_colour_bank_g",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupRamp counterpart."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupRamp counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434aa0",
       "name": "initialize_track_colour_bank_h_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupEmpty counterpart."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupEmpty counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434ab0",
       "name": "initialize_track_colour_bank_h",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupEmpty counterpart."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupEmpty counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434ad0",
       "name": "initialize_track_colour_bank_i_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPath counterpart."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPath counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434ae0",
       "name": "initialize_track_colour_bank_i",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPath counterpart."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPath counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434b00",
       "name": "initialize_track_colour_bank_j_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPathWorm counterpart."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPathWorm counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434b10",
       "name": "initialize_track_colour_bank_j",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPathWorm counterpart, which BuildColours intentionally visits twice."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPathWorm counterpart, which BuildColours intentionally visits twice.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434b30",
       "name": "initialize_track_colour_bank_k_thunk",
-      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPathWarp counterpart."
+      "description": "CRT initializer-table thunk for the Windows gLocColourLookupPathWarp counterpart.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434b40",
       "name": "initialize_track_colour_bank_k",
-      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPathWarp counterpart, which BuildColours intentionally visits twice."
+      "description": "Runs the folded no-op tColour constructor across the 51-entry Windows gLocColourLookupPathWarp counterpart, which BuildColours intentionally visits twice.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x434b60",

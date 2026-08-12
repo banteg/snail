@@ -6053,6 +6053,44 @@ def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
         assert global_objects[global_name] == {source_object}
 
 
+def test_ios_track_colour_globals_recover_windows_initializer_units() -> None:
+    repo_root = Path(__file__).parents[1]
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    global_objects = {
+        symbol: set(source_objects)
+        for symbol, _, _, source_objects in names["symbols"]
+    }
+    mobile_globals = {
+        "gLocColourLookupCheckBlack",
+        "gLocColourLookupEmpty",
+        "gLocColourLookupFloor",
+        "gLocColourLookupPath",
+        "gLocColourLookupPathWarp",
+        "gLocColourLookupPathWorm",
+        "gLocColourLookupRamp",
+        "gLocColourLookupSlide",
+        "gLocColourLookupTrampoline",
+        "gLocColourLookupWall",
+    }
+    entries = [
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"].startswith("initialize_track_colour_bank")
+    ]
+
+    assert len(entries) == 20
+    assert all(entry["status"] == "unverified" for entry in entries)
+    assert all(entry["source_object"] == "SubGame.o" for entry in entries)
+    assert all(
+        entry["source_object_evidence"] == "ios-global-source-object"
+        for entry in entries
+    )
+    assert all(global_objects[name] == {"SubGame.o"} for name in mobile_globals)
+
+
 def test_subgame_leaf_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"

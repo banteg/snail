@@ -62,3 +62,13 @@ clean.
 replaced with the ownership mapping above. All ten CRT constructor bodies remain
 exact at 12/12 instructions, and this member remains exact at 37/37 with all 24
 masked operands clean.
+
+## 2026-08-12 constructor source-unit provenance
+
+The symbol-preserving iOS inventory assigns every exact
+`gLocColourLookup*` global above to `SubGame.o`. Live Windows xrefs reduce each
+physical bank to its exact constructor and this verified
+`cRSubGame::BuildColours()` consumer, while each constructor's adjacent thunk
+has one `.CRT$XCU` reference and one direct tail edge. This recovers
+`SubGame.o` for all ten constructor bodies and thunks without treating the
+Windows-only startup helpers as mobile function mappings.

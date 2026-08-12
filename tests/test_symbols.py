@@ -74,6 +74,20 @@ def test_default_function_symbol_manifest_loads() -> None:
             by_name[name].source_object_evidence
             == "ios-global-source-object"
         )
+    track_colour_initializers = [
+        function
+        for function in manifest.functions
+        if function.name.startswith("initialize_track_colour_bank")
+    ]
+    assert len(track_colour_initializers) == 20
+    assert all(
+        function.source_object == "SubGame.o"
+        for function in track_colour_initializers
+    )
+    assert all(
+        function.source_object_evidence == "ios-global-source-object"
+        for function in track_colour_initializers
+    )
     assert {
         rejection.symbol
         for rejection in game_init.mobile_candidate_rejections
