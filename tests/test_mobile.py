@@ -9883,17 +9883,44 @@ def test_root_presentation_types_use_authored_primary_owners() -> None:
     assert "typedef cRViewport Viewport;" in viewport
     assert "sizeof(cRViewport)" in viewport
     assert "cRViewport viewports[5]" in game_root
-    for function in (
-        "initialize_render_camera_slot",
-        "attach_render_camera_source",
-    ):
+    viewport_methods = {
+        "initialize_render_camera_slot": "initialize_render_camera_slot",
+        "attach_render_camera_source": "SetCamera",
+    }
+    for function, method in viewport_methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRViewport::{function}" in source
+        assert f"cRViewport::{method}" in source
     assert "cRCamera* camera_" in (
         scratch_root / "attach_render_camera_source" / "scratch.cpp"
     ).read_text(encoding="utf-8")
+    viewport_set_camera = crosswalk["attach_render_camera_source"]
+    assert viewport_set_camera["status"] == "verified"
+    assert viewport_set_camera["confidence"] == "high"
+    assert viewport_set_camera["android_symbol"] == (
+        "cRViewport::SetCamera(cRCamera*)"
+    )
+    assert viewport_set_camera["ios_symbol"] == (
+        viewport_set_camera["android_symbol"]
+    )
+    assert viewport_set_camera["android_body_count"] == 1
+    assert viewport_set_camera["ios_body_count"] == 1
+    assert functions_by_name["attach_render_camera_source"]["aliases"] == [
+        "cRViewport_SetCamera"
+    ]
+    viewport_set_camera_symbol = "?SetCamera@cRViewport@@QAEHPAVcRCamera@@@Z"
+    assert references_by_name["attach_render_camera_source"]["aliases"] == [
+        viewport_set_camera_symbol
+    ]
+    viewport_set_camera_config = (
+        scratch_root / "attach_render_camera_source/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={viewport_set_camera_symbol}\n" in viewport_set_camera_config
+    asset_initializer = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert asset_initializer.count(".SetCamera(") == 2
 
     folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
         encoding="utf-8"

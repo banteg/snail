@@ -2,7 +2,7 @@
 
 #include "viewport.h"
 
-int cRViewport::attach_render_camera_source(cRCamera* camera_)
+int cRViewport::SetCamera(cRCamera* camera_)
 {
     camera = camera_;
     int result = flags;

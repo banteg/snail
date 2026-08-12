@@ -154,12 +154,12 @@ char cRGame::initialize_game_assets_and_world()
 
     viewports[1].sort_key = 1;
     viewports[1].flags = RENDER_SCENE_PLAYER_0 | 1;
-    viewports[1].attach_render_camera_source(&players[0].camera);
+    viewports[1].SetCamera(&players[0].camera);
     players[0].camera.render_mask = RENDER_SCENE_PLAYER_0;
 
     viewports[4].sort_key = 1;
     viewports[4].flags = RENDER_SCENE_PLAYER_1 | 3;
-    viewports[4].attach_render_camera_source(&players[1].camera);
+    viewports[4].SetCamera(&players[1].camera);
     players[1].camera.render_mask = RENDER_SCENE_PLAYER_1;
 
     viewports[3].sort_key = 3;

@@ -26,8 +26,8 @@ typedef cRCamera RenderCamera;
 // Windows constructs five consecutive records at GameRoot +0x5b4.
 class cRViewport {
 public:
-    cRViewport* initialize_render_camera_slot(); // @ 0x44e920, cRViewport::cRViewport
-    int attach_render_camera_source(cRCamera* camera); // @ 0x44e900, SetCamera
+    cRViewport* initialize_render_camera_slot(); // @ 0x44e920, constructor helper
+    int SetCamera(cRCamera* camera); // @ 0x44e900
 
     int unknown_00;          // +0x00, left to the owning runtime constructor
     int sort_key;            // +0x04, used by render_game_frame ordering

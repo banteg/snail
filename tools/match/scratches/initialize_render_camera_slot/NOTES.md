@@ -28,11 +28,9 @@ The scratch uses `END=0x44e944` because the manifest gap after this helper
 contains uncurated renderer/math thunks before `initialize_translation_matrix`;
 counting the whole gap as this constructor would overstate matched bytes.
 
-## 2026-07-24 original viewport owner replay
-
-The Windows record is now named `Viewport`, matching the retained Android and
-iOS `cRViewport` constructor symbol. The exact constructor ABI returns its
-receiver in `EAX`; the replay therefore uses `Viewport*` rather than the
-previous generic `void*`/fastcall analysis shape. The `unknown_1c` scalar and
-untouched `unknown_00` dword remain conservative because neither platform
-provides a consumer-derived meaning.
+The body also matches an authored `cRViewport::cRViewport()` in isolation, but
+declaring the shared type non-POD changes code generation in root consumers.
+Placement construction adds a native-absent null guard. The stable helper is
+therefore retained until an authored constructor spelling preserves every
+affected caller; this is a source-shape constraint, not contrary ownership
+evidence.
