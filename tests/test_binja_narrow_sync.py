@@ -24827,6 +24827,10 @@ def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
         repo_root
         / "tools/match/scratches/find_segment_path_index_by_name/scratch.conf"
     ).read_text(encoding="utf-8")
+    segment_loader = (
+        repo_root
+        / "tools/match/scratches/load_segment_definitions/scratch.cpp"
+    ).read_text(encoding="utf-8")
     analysis_header = (
         repo_root / "analysis/headers/path_template_types.h"
     ).read_text(encoding="utf-8")
@@ -24841,14 +24845,13 @@ def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
     assert "typedef cRPathManager PathManager;" in matcher_header
     assert "cRPathManager_must_be_1" in matcher_header
     assert "cRPathManager path_manager; // +0xff2910" in matcher_runtime
-    assert (
-        "int cRPathManager::find_segment_path_index_by_name(char* name)"
-        in scratch
-    )
-    assert (
-        "SYMBOL=?find_segment_path_index_by_name@cRPathManager@@QAEHPAD@Z"
-        in scratch_config
-    )
+    assert "int NameCode(char* name); // @ 0x429ae0" in matcher_header
+    assert "find_segment_path_index_by_name(" not in matcher_header
+    assert "int cRPathManager::NameCode(char* name)" in scratch
+    object_symbol = "?NameCode@cRPathManager@@QAEHPAD@Z"
+    assert f"SYMBOL={object_symbol}\n" in scratch_config
+    assert ".path_manager.NameCode(path_name)" in segment_loader
+    assert ".find_segment_path_index_by_name(" not in segment_loader
 
     assert "typedef struct cRPathManager {" in analysis_header
     assert (
@@ -24880,12 +24883,25 @@ def test_c_r_path_manager_primary_ownership_stays_aligned() -> None:
         for entry in gameplay_functions["functions"]
         if int(entry["address"], 0) == 0x429AE0
     )
+    assert path_manager_entry["aliases"] == ["cRPathManager_NameCode"]
     assert "Android and iOS preserve the exact authored class" in (
         path_manager_entry["description"]
     )
     assert "Windows independently proves the empty one-byte owner" in (
         path_manager_entry["description"]
     )
+
+    gameplay_references = json.loads(
+        (repo_root / "analysis/symbols/gameplay-references.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    path_manager_reference = next(
+        entry
+        for entry in gameplay_references["symbols"]
+        if int(entry["address"], 0) == 0x429AE0
+    )
+    assert path_manager_reference["aliases"] == [object_symbol]
 
     for mobile_body in (
         "analysis/decompile/android/functions/0004c744-_ZN13cRPathManager8NameCodeEPc.c",

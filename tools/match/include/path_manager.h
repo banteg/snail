@@ -6,7 +6,7 @@
 
 class cRPathManager {
 public:
-    int find_segment_path_index_by_name(char* name); // @ 0x429ae0, cRPathManager::NameCode
+    int NameCode(char* name); // @ 0x429ae0
 };
 
 typedef cRPathManager PathManager;

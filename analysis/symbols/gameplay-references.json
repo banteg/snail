@@ -822,6 +822,15 @@
       "description": "Exact Windows cRPath::Mirror(cRPath*) entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x429ae0",
+      "name": "find_segment_path_index_by_name",
+      "kind": "function",
+      "aliases": [
+        "?NameCode@cRPathManager@@QAEHPAD@Z"
+      ],
+      "description": "Exact Windows cRPathManager::NameCode(char*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x42b9c0",
       "name": "get_path_position_at_node",
       "kind": "function",
@@ -5999,7 +6008,7 @@
         "off_4a3d6c",
         "data_4a3d6c"
       ],
-      "description": "First pointer in the hardcoded segment Path= name table searched by find_segment_path_index_by_name."
+      "description": "First pointer in the hardcoded segment Path= name storage searched by cRPathManager::NameCode; 51 names are populated before a 12-slot zero tail."
     },
     {
       "address": "0x4a3e68",
@@ -6008,7 +6017,7 @@
       "aliases": [
         "aToadpair1"
       ],
-      "description": "Sentinel address used as the end comparison for the segment Path= name pointer table; it is also the TOADPAIR1 string address."
+      "description": "Exclusive address bound used by cRPathManager::NameCode across 63 pointer slots; it is also the TOADPAIR1 string address. Only the first 51 slots are populated."
     },
     {
       "address": "0x4a4c78",

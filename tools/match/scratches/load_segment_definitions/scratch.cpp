@@ -195,8 +195,7 @@ void cRSMTracks::Import()
                 }
                 *path_out = 0;
                 row->path_template_index =
-                    g_game->subgame.path_manager
-                        .find_segment_path_index_by_name(path_name);
+                    g_game->subgame.path_manager.NameCode(path_name);
                 if (row->path_template_index == -1)
                     report_errorf("Unknown path %s in %s", path_name, segment_file_name);
                 else

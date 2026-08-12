@@ -2,7 +2,11 @@
 
 `Path=<name>` in `SEGMENTS/*.TXT` does not resolve through an archive file.
 
-Instead, `find_segment_path_index_by_name` linearly searches a hardcoded string-pointer table at `g_segment_path_name_table` (`0x4a3d6c`) and returns the matching index or `-1`.
+Instead, `cRPathManager::NameCode` linearly searches hardcoded string-pointer
+storage at `0x4a3d6c`. The 51 populated names return indices 0 through 50.
+Windows reserves 63 slots up to the exclusive `0x4a3e68` bound, leaving a
+12-slot zero tail; an unknown name therefore reaches a null pointer and faults
+inside the comparator before the nominal `-1` exit.
 
 ## Hardcoded Path Table
 
@@ -63,6 +67,8 @@ Instead, `find_segment_path_index_by_name` linearly searches a hardcoded string-
 Important corrections:
 
 - the shipped table has `51` names, not `47`
+- the Windows search bound covers `63` slots, but slots `51..62` are zero;
+  shipped content stays within the populated prefix
 - shipped authored content does reference `WARP` by name via [`SEGMENTS/WARP.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/WARP.TXT)
 - shipped authored content also references `HALFPIPE` by name via [`SEGMENTS/HALFPIPE.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/HALFPIPE.TXT), [`SEGMENTS/HALFPIPE2.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/HALFPIPE2.TXT), and [`SEGMENTS/HALFPIPE3.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/HALFPIPE3.TXT)
 - path-table index `42` is still the authored name `HALFPIPE`

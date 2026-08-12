@@ -2165,7 +2165,10 @@
     {
       "address": "0x429ae0",
       "name": "find_segment_path_index_by_name",
-      "description": "Implements `cRPathManager::NameCode(char*)`: Android and iOS preserve the exact authored class and member name, while Windows independently proves the empty one-byte owner at `cRSubGame +0xff2910`, the thiscall ABI, and the linear search over the hardcoded 51-entry Path= table. `PathManager` is retained only as a compatibility alias."
+      "aliases": [
+        "cRPathManager_NameCode"
+      ],
+      "description": "Implements `cRPathManager::NameCode(char*)`: Android and iOS preserve the exact authored class and member name, while Windows independently proves the empty one-byte owner at `cRSubGame +0xff2910`, the thiscall ABI, and the linear search over 51 populated Path= names. The Windows bound spans 63 pointer slots; its 12-slot zero tail makes an unknown name fault in the comparator before the nominal -1 exit. `PathManager` is retained only as a compatibility alias."
     },
     {
       "address": "0x429b20",

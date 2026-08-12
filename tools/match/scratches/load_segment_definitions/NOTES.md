@@ -94,10 +94,8 @@ Call-shape notes:
 
 - `load_or_reuse_cached_x_mesh` is called on the root-owned `DirectXLoader`
   with `ecx = game+0x48e00`; the loader owns the complete fixed cache bank.
-- `find_segment_path_index_by_name` is also called through a path-table owner
-  at `game+0x1066f28` in this caller. Cross-port symbols prove that one-byte
-  owner is `cRPathManager`, and the exact callee remains byte-identical when
-  expressed as its unused-receiver thiscall method.
+- `cRPathManager::NameCode` is called through the one-byte path-table owner at
+  `game+0x1066f28`; the owner-qualified call remains byte-identical.
 - Windows' unexplained extra push before `sprintf("Segments/%s", ...)` is an
   authored extra vararg, not padding: the symbol-rich iOS `cRSMTracks::Import`
   independently loads its segment-text buffer into `r3` for the same format.
