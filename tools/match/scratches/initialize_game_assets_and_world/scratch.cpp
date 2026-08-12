@@ -2615,7 +2615,7 @@ char cRGame::initialize_game_assets_and_world()
         (char*)"TurboHotSpots.x",
         subgame.player.presentation.snail_hotspot_body.object,
         2);
-    subgame.player.presentation.extract_snail_local_hotspots();
+    subgame.player.presentation.ExtractHotSpots();
 
     int animation_count =
         sizeof(subgame.player.presentation.cutscene_animation_slots)

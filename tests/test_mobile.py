@@ -10871,7 +10871,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
         "set_snail_jetpack": "SetJetPack",
         "set_snail_weapon": "SetWeapon",
         "build_snail_world_hotspots": "BuildHotSpots",
-        "extract_snail_local_hotspots": "extract_snail_local_hotspots",
+        "extract_snail_local_hotspots": "ExtractHotSpots",
     }
     for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
@@ -10934,6 +10934,37 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
     assert "void BuildHotSpots();" in player
     assert "BuildHotSpots();" in hotspot_update
     assert "build_snail_world_hotspots();" not in hotspot_update
+
+    hotspot_extractor = entries["extract_snail_local_hotspots"]
+    assert hotspot_extractor["status"] == "verified"
+    assert hotspot_extractor["confidence"] == "high"
+    assert hotspot_extractor["source_object"] == "SubGame.o"
+    assert hotspot_extractor["android_symbol"] == (
+        "cRSnail::ExtractHotSpots()"
+    )
+    assert hotspot_extractor["ios_symbol"] == (
+        hotspot_extractor["android_symbol"]
+    )
+    assert hotspot_extractor["android_body_count"] == 1
+    assert hotspot_extractor["ios_body_count"] == 1
+    assert functions_by_name["extract_snail_local_hotspots"]["aliases"] == [
+        "cRSnail_ExtractHotSpots"
+    ]
+    extractor_symbol = "?ExtractHotSpots@cRSnail@@QAEXXZ"
+    assert references_by_name["extract_snail_local_hotspots"]["aliases"] == [
+        extractor_symbol
+    ]
+    extractor_config = (
+        scratch_root / "extract_snail_local_hotspots/scratch.conf"
+    ).read_text(encoding="utf-8")
+    game_init = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={extractor_symbol}\n" in extractor_config
+    assert "void ExtractHotSpots();" in player
+    assert "void extract_snail_local_hotspots();" not in player
+    assert game_init.count("presentation.ExtractHotSpots();") == 1
+    assert ".extract_snail_local_hotspots(" not in game_init
 
     snail_skin = (include_root / "snail_skin.h").read_text(encoding="utf-8")
     cut_scene = (include_root / "cut_scene.h").read_text(encoding="utf-8")

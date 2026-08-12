@@ -4318,9 +4318,9 @@
       "address": "0x445d50",
       "name": "extract_snail_local_hotspots",
       "aliases": [
-        "build_snail_hotspots"
+        "cRSnail_ExtractHotSpots"
       ],
-      "description": "Authored `cRSnail::ExtractHotSpots()`, preserved by Android and iOS: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk. The historical `build_snail_hotspots` label remains an alias."
+      "description": "Authored `cRSnail::ExtractHotSpots()`, preserved by Android and iOS: fills the exact Snail's 19-entry local hotspot bank from named model textures, including CameraSkidStop, CameraSlugDeath, and CameraIntroTalk."
     },
     {
       "address": "0x445e20",

@@ -96,7 +96,7 @@ public:
     void AIGoldy();                      // @ 0x4428d0
     void SetAnimation(int animation, bool immediate, int mode_flags); // @ 0x444600
     void BuildHotSpots();                   // @ 0x445cd0
-    void extract_snail_local_hotspots();    // @ 0x445d50
+    void ExtractHotSpots();                 // @ 0x445d50
 
     // build_subgame_level links this inherited renderable BOD; the intrusive
     // list only borrows the embedded presentation object.

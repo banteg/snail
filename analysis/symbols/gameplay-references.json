@@ -4113,6 +4113,15 @@
       "description": "Exact Windows cRSnail::BuildHotSpots() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x445d50",
+      "name": "extract_snail_local_hotspots",
+      "kind": "function",
+      "aliases": [
+        "?ExtractHotSpots@cRSnail@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSnail::ExtractHotSpots() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x445e20",
       "name": "update_times_up",
       "kind": "function",
