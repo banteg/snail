@@ -3,27 +3,27 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_struct_fields_batch,
     current_type_widths,
     emit_summary,
     types_declare_if_changed,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_loading_bar_types.h"
 
 EXPECTED_TYPE_WIDTHS = {
-    "LoadingBar": 0x0C,
+    "cRLoadingBar": 0x0C,
     "LoadingVertex": 0x14,
     "LoadingQuadVertexView": 0x50,
     "ObjectRenderBuffers": 0x0C,
@@ -34,7 +34,7 @@ EXPECTED_TYPE_WIDTHS = {
 }
 
 EXPECTED_STRUCT_FIELDS = {
-    "LoadingBar": {
+    "cRLoadingBar": {
         0x00: ("active", "int32_t"),
         0x04: ("previous_percent", "int32_t"),
         0x08: ("last_loading_budget", "int32_t"),
@@ -85,22 +85,22 @@ DATA_VAR_UPDATES = (
     ("0x503280", "Direct3DTexture8*"),
     ("0x503284", "ObjectRenderBuffers*"),
     ("0x503288", "Direct3DTexture8*"),
-    ("0x503290", "LoadingBar"),
+    ("0x503290", "cRLoadingBar"),
     ("0x5032a4", "ObjectRenderBuffers*"),
 )
 
 PROTO_UPDATES = (
     (
         "initialize_loading_screen",
-        "void __thiscall initialize_loading_screen(LoadingBar* loading_bar)",
+        "void __thiscall initialize_loading_screen(cRLoadingBar* loading_bar)",
     ),
     (
         "destroy_loading_screen",
-        "void __thiscall destroy_loading_screen(LoadingBar* loading_bar)",
+        "void __thiscall destroy_loading_screen(cRLoadingBar* loading_bar)",
     ),
     (
         "update_loading_screen",
-        "void __thiscall update_loading_screen(LoadingBar* loading_bar)",
+        "void __thiscall update_loading_screen(cRLoadingBar* loading_bar)",
     ),
 )
 
@@ -176,36 +176,43 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
-    operations: list[dict[str, object]] = [
-        types_declare_if_changed(
-            REPO_ROOT,
-            target=args.target,
-            header_path=header_path,
-        ),
-        verify_owner_layouts(args.target),
-        *apply_symbol_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=DATA_SYMBOL_UPDATES,
-            kind="data",
-        ),
-        *apply_data_var_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=DATA_VAR_UPDATES,
-        ),
-        *apply_struct_and_proto_updates(
-            REPO_ROOT,
-            target=args.target,
-            struct_updates=(),
-            proto_updates=PROTO_UPDATES,
-        ),
-        *apply_user_var_updates(
-            REPO_ROOT,
-            target=args.target,
-            updates=LOADING_SCREEN_USER_VAR_UPDATES,
-        ),
-    ]
+    operations: list[dict[str, object]] = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=(("LoadingBar", "cRLoadingBar"),),
+    )
+    operations.extend(
+        [
+            types_declare_if_changed(
+                REPO_ROOT,
+                target=args.target,
+                header_path=header_path,
+            ),
+            verify_owner_layouts(args.target),
+            *apply_symbol_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=DATA_SYMBOL_UPDATES,
+                kind="data",
+            ),
+            *apply_data_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=DATA_VAR_UPDATES,
+            ),
+            *apply_struct_and_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_updates=(),
+                proto_updates=PROTO_UPDATES,
+            ),
+            *apply_user_var_updates(
+                REPO_ROOT,
+                target=args.target,
+                updates=LOADING_SCREEN_USER_VAR_UPDATES,
+            ),
+        ]
+    )
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

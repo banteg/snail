@@ -1,4 +1,4 @@
-# initialize_loading_screen @ 0x418b50
+# cRLoadingBar::Init @ 0x418b50
 
 Verified cross-port owner: `cRLoadingBar::Init()` in `LoadingBar.o`. Windows
 startup loads `ECX = 0x503290` before the call and ignores EAX, proving the
@@ -16,7 +16,8 @@ VC6 assigns `EDI = this` and `EBX = archive_base`, while native assigns the
 opposite pair. Bounded receiver, archive-owner, declaration-order, renderer
 owner, and calling-convention probes either emitted identical bytes or
 regressed. This is a compiler-scheduling residual, not ownership or ABI
-uncertainty, so only this non-exact `Init` keeps the descriptive matcher name.
+uncertainty; the matcher therefore uses the authored `Init` name without
+claiming an exact body.
 
 The three linked D3DX 8 texture wrappers have independently verified
 `__stdcall` cleanup: `d3dx_create_texture_from_file_in_memory_ex` returns with

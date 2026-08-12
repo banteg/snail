@@ -794,6 +794,12 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
         entry["name"]: entry
         for entry in functions["functions"]
     }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_address = {
+        entry["address"]: entry for entry in references["symbols"]
+    }
     matcher_header = (
         repo_root / "tools/match/include/subgame_runtime.h"
     ).read_text(encoding="utf-8")
@@ -860,6 +866,8 @@ def test_mobile_subgame_factories_recover_crsubgoldy_surface() -> None:
         assert entry["android_body_count"] == 1
         assert entry["ios_body_count"] == ios_body_count
         assert authored_name in functions_by_name[windows_name]["aliases"]
+        function_address = functions_by_name[windows_name]["address"]
+        assert object_symbol in references_by_address[function_address]["aliases"]
         assert f"void {authored_name}(" in matcher_header
 
         scratch_root = repo_root / "tools/match/scratches" / windows_name
@@ -9983,6 +9991,7 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         "update_help_screen": "AI",
         "initialize_new_game_menu": "Init",
         "update_new_game_menu": "AI",
+        "initialize_loading_screen": "Init",
         "destroy_loading_screen": "UnInit",
         "update_loading_screen": "AI",
         "initialize_cheat": "Init",
@@ -10051,9 +10060,10 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
     assert "cRSubSolutionHeader* compact" in solution
 
     loading = (include_root / "loading_bar.h").read_text(encoding="utf-8")
-    assert "void initialize_loading_screen();" in loading
+    assert "void Init();" in loading
     assert "void UnInit();" in loading
     assert "void AI();" in loading
+    assert "void initialize_loading_screen();" not in loading
     assert "void destroy_loading_screen();" not in loading
     assert "void update_loading_screen();" not in loading
 
@@ -10074,6 +10084,12 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         )["symbols"]
     }
     loading_methods = {
+        "initialize_loading_screen": (
+            "cRLoadingBar::Init()",
+            "?Init@cRLoadingBar@@QAEXXZ",
+            "cRLoadingBar_Init",
+            True,
+        ),
         "destroy_loading_screen": (
             "cRLoadingBar::UnInit()",
             "?UnInit@cRLoadingBar@@QAEXXZ",
@@ -10116,6 +10132,8 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
     )
     assert "g_loading_bar.UnInit();" in all_sources
     assert all_sources.count("g_loading_bar.AI();") == 3
+    assert "g_loading_bar.Init();" in all_sources
+    assert ".initialize_loading_screen(" not in all_sources
     assert ".destroy_loading_screen(" not in all_sources
     assert ".update_loading_screen(" not in all_sources
 

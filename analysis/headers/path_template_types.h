@@ -512,11 +512,12 @@ typedef struct Options {
 } Options;
 
 /* Exact 0x0c-byte global cRLoadingBar lifecycle owner. */
-typedef struct LoadingBar {
+typedef struct cRLoadingBar {
     int32_t active;
     int32_t previous_percent;
     int32_t last_loading_budget;
-} LoadingBar;
+} cRLoadingBar;
+typedef cRLoadingBar LoadingBar;
 
 /* Exact mapped screen-space vertex used by both loading-screen quads. */
 typedef struct LoadingVertex {
@@ -3394,11 +3395,11 @@ void __thiscall initialize_help_screen(Help* help);
 void __thiscall destroy_help_screen(Help* help);
 void __thiscall update_help_screen(Help* help);
 
-void __thiscall initialize_loading_screen(LoadingBar* loading_bar);
+void __thiscall initialize_loading_screen(cRLoadingBar* loading_bar);
 
-void __thiscall destroy_loading_screen(LoadingBar* loading_bar);
+void __thiscall destroy_loading_screen(cRLoadingBar* loading_bar);
 
-void __thiscall update_loading_screen(LoadingBar* loading_bar);
+void __thiscall update_loading_screen(cRLoadingBar* loading_bar);
 
 void __thiscall destroy_options_menu(Options* options);
 

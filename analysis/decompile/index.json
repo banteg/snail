@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,32 +18,20 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "load_x_mesh",
-      "address": "0x405640"
+      "name": "game_startup_and_main_loop",
+      "address": "0x406dc0"
     },
     {
-      "name": "initialize_directx_loader",
-      "address": "0x405c90"
+      "name": "initialize_loading_screen",
+      "address": "0x418b50"
     },
     {
-      "name": "load_or_reuse_cached_x_mesh",
-      "address": "0x405cc0"
+      "name": "destroy_loading_screen",
+      "address": "0x418e50"
     },
     {
-      "name": "load_x_animation_clip",
-      "address": "0x405d60"
-    },
-    {
-      "name": "initialize_game_assets_and_world",
-      "address": "0x40acf0"
-    },
-    {
-      "name": "load_landscape_script_by_name",
-      "address": "0x4182f0"
-    },
-    {
-      "name": "load_segment_definitions",
-      "address": "0x448160"
+      "name": "update_loading_screen",
+      "address": "0x418e80"
     }
   ],
   "health_check_count": 1158,

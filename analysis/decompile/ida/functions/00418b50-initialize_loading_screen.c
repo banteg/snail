@@ -3,7 +3,7 @@
 /* selector: initialize_loading_screen */
 
 // Void cRLoadingBar::Init(): loads the loading-screen textures, seeds the full-screen and progress quads, and resets the loader counters. Startup discards EAX; the remaining 83.00% source shape is honest register scheduling, not return uncertainty.
-void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
+void __thiscall initialize_loading_screen(cRLoadingBar *loading_bar)
 {
   void *archive_data_base; // edi
   int32_t texture_from_file_in_memory; // eax
@@ -13,7 +13,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
   int out_size; // [esp+90h] [ebp-4h] BYREF
 
   g_runtime_config.last_loading_budget = 1276;
-  if ( is_archive_index_loaded() )
+  if ( is_archive_index_loaded() != 0 )
   {
     archive_data_base = get_archive_data_base();
     load_file_bytes_from_archive_or_fs((char *)WideCharStr, archive_data_base, &out_size);
@@ -65,7 +65,7 @@ void __thiscall initialize_loading_screen(LoadingBar *loading_bar)
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 17, 3);
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 13, 3);
   g_direct3d_renderer.device->vtbl->SetTextureStageState(g_direct3d_renderer.device, 0, 14, 3);
-  if ( is_archive_index_loaded() )
+  if ( is_archive_index_loaded() != 0 )
   {
     v4 = get_archive_data_base();
     load_file_bytes_from_archive_or_fs((char *)aSpritesLoading_0, v4, &out_size);

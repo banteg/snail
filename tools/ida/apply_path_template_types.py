@@ -211,7 +211,7 @@ TRUSTED_DATA_DECLARATIONS = [
         "g_loading_background_texture",
         "Direct3DTexture8 *g_loading_background_texture;",
     ),
-    (0x503290, "g_loading_bar", "LoadingBar g_loading_bar;"),
+    (0x503290, "g_loading_bar", "cRLoadingBar g_loading_bar;"),
     (
         0x5032A4,
         "g_loading_bar_vertex_buffer",
@@ -2173,15 +2173,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_loading_screen",
-        "void __thiscall initialize_loading_screen(LoadingBar* loading_bar);",
+        "void __thiscall initialize_loading_screen(cRLoadingBar* loading_bar);",
     ),
     (
         "destroy_loading_screen",
-        "void __thiscall destroy_loading_screen(LoadingBar* loading_bar);",
+        "void __thiscall destroy_loading_screen(cRLoadingBar* loading_bar);",
     ),
     (
         "update_loading_screen",
-        "void __thiscall update_loading_screen(LoadingBar* loading_bar);",
+        "void __thiscall update_loading_screen(cRLoadingBar* loading_bar);",
     ),
     (
         "destroy_options_menu",

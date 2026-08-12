@@ -16505,7 +16505,7 @@
         "background_quad->vertices[1].x",
         "background_quad->vertices[3].v",
         "g_loading_bar_vertex_buffer->vertex_buffer",
-        "*loading_bar = struct LoadingBar {",
+        "*loading_bar = struct cRLoadingBar {",
         ".last_loading_budget = 0",
         ".previous_percent = 0",
         ".active = 1"
@@ -16526,7 +16526,7 @@
       "name": "ida_loading_bar_init_void_owner",
       "artifact": "analysis/decompile/ida/functions/00418b50-initialize_loading_screen.c",
       "required_substrings": [
-        "void __thiscall initialize_loading_screen(LoadingBar *loading_bar)",
+        "void __thiscall initialize_loading_screen(cRLoadingBar *loading_bar)",
         "d3dx_create_texture_from_file_in_memory_ex",
         "d3dx_create_texture_from_file_ex",
         "d3dx_create_texture_from_file(",
@@ -16571,7 +16571,7 @@
       "name": "ida_loading_bar_uninit_void_owner",
       "artifact": "analysis/decompile/ida/functions/00418e50-destroy_loading_screen.c",
       "required_substrings": [
-        "void __thiscall destroy_loading_screen(LoadingBar *loading_bar)",
+        "void __thiscall destroy_loading_screen(cRLoadingBar *loading_bar)",
         "g_runtime_config.last_loading_budget = loading_bar->last_loading_budget;",
         "g_loading_background_texture->vtbl->Release(g_loading_background_texture);",
         "g_loading_bar_on_texture->vtbl->Release(g_loading_bar_on_texture);",
@@ -16609,8 +16609,8 @@
       "name": "ida_loading_bar_ai_void_owner",
       "artifact": "analysis/decompile/ida/functions/00418e80-update_loading_screen.c",
       "required_substrings": [
-        "void __thiscall update_loading_screen(LoadingBar *loading_bar)",
-        "if ( !loading_bar->active )",
+        "void __thiscall update_loading_screen(cRLoadingBar *loading_bar)",
+        "if ( loading_bar->active == 0 )",
         "++loading_bar->last_loading_budget;",
         "g_loading_background_vertex_buffer->vertex_buffer",
         "g_loading_bar_vertex_buffer->vertex_buffer->vtbl->Lock",

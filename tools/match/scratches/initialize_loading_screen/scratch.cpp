@@ -1,4 +1,4 @@
-// initialize_loading_screen @ 0x418b50 (thiscall)
+// cRLoadingBar::Init @ 0x418b50 (thiscall)
 
 #include "direct3d_device8_view.h"
 #include "direct3d_renderer.h"
@@ -25,7 +25,7 @@ char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out
 int report_errorf(char* format, ...);
 int begin_overlay_render_state();
 
-void cRLoadingBar::initialize_loading_screen()
+void cRLoadingBar::Init()
 {
     g_runtime_config.last_loading_budget = 1276;
 

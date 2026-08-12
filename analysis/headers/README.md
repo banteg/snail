@@ -150,7 +150,10 @@ intentional.
 - `uv run python tools/binja/sync_loading_bar_types.py`
   - Width-gates the exact 0x0c-byte global cRLoadingBar owner, names its
     `g_loading_bar` instance, and replays the caller-proven void Init, UnInit,
-    and AI contracts without importing unrelated renderer state.
+    and AI contracts without importing unrelated renderer state. The replay
+    migrates the older analysis-only `LoadingBar` record to canonical
+    `cRLoadingBar` while retaining the former spelling as a compatibility
+    typedef.
 - `parcel_bucket_types.h`
 - `uv run python tools/binja/sync_parcel_bucket_types.py --target SnailMail_unwrapped.exe.bndb`
   - Uses the same shared header as IDA to recover both constructor-bounded
@@ -501,9 +504,9 @@ prototype.
 The canonical IDA `path_template_types.h` lane remains useful beyond path
 templates because it is the single accumulated `cRSubGame` and gameplay
 owner graph. The front-end lifecycle slice reuses it for exact `Help`,
-`Options`, and `LoadingBar` records instead of creating another broad GameRoot
+`Options`, and `cRLoadingBar` records instead of creating another broad GameRoot
 header. Its narrow trusted declarations now preserve void Help/Options teardown
-and the complete void LoadingBar lifecycle, while the frame-root lane owns the
+and the complete void cRLoadingBar lifecycle, while the frame-root lane owns the
 separate exact-sized BorderManager projection and `KillBorders` contract.
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and

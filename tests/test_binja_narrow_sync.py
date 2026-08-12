@@ -2651,6 +2651,7 @@ def test_current_type_alias_targets_batches_readback(monkeypatch) -> None:
     }
     assert len(calls) == 1
     assert calls[0][:2] == ("py", "exec")
+    assert "import binaryninja" in calls[0][calls[0].index("--code") + 1]
     assert "NamedTypeReferenceClass" in calls[0][calls[0].index("--code") + 1]
 
 
@@ -19448,9 +19449,9 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert 'IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_logo_types.py"' in ida_logo_runner
 
     for prototype in (
-        "void __thiscall initialize_loading_screen(LoadingBar* loading_bar)",
-        "void __thiscall destroy_loading_screen(LoadingBar* loading_bar)",
-        "void __thiscall update_loading_screen(LoadingBar* loading_bar)",
+        "void __thiscall initialize_loading_screen(cRLoadingBar* loading_bar)",
+        "void __thiscall destroy_loading_screen(cRLoadingBar* loading_bar)",
+        "void __thiscall update_loading_screen(cRLoadingBar* loading_bar)",
     ):
         assert prototype in loading_sync
         assert prototype + ";" in ida_path_sync
@@ -19469,20 +19470,23 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert '("0x503280", "Direct3DTexture8*")' in loading_sync
     assert '("0x503284", "ObjectRenderBuffers*")' in loading_sync
     assert '("0x503288", "Direct3DTexture8*")' in loading_sync
-    assert '("0x503290", "LoadingBar")' in loading_sync
+    assert '("LoadingBar", "cRLoadingBar")' in loading_sync
+    assert '("0x503290", "cRLoadingBar")' in loading_sync
     assert '("0x5032a4", "ObjectRenderBuffers*")' in loading_sync
     assert '"background_quad"' in loading_sync
     assert '"LoadingQuadVertexView*"' in loading_sync
-    assert "typedef struct LoadingBar" in loading_header
+    assert "typedef struct cRLoadingBar" in loading_header
+    assert "typedef cRLoadingBar LoadingBar;" in loading_header
     assert "typedef struct LoadingVertex" in loading_header
     assert "typedef struct LoadingQuadVertexView" in loading_header
-    assert "typedef struct LoadingBar" in path_header
+    assert "typedef struct cRLoadingBar" in path_header
+    assert "typedef cRLoadingBar LoadingBar;" in path_header
     assert "typedef struct LoadingVertex" in path_header
     assert "typedef struct LoadingQuadVertexView" in path_header
     assert "def _sync_loading_quad_lvars()" in ida_path_sync
     assert '"loading_quad_lvars"' in ida_path_sync
     assert "typedef struct Options" in path_header
-    assert "LoadingBar g_loading_bar;" in ida_path_sync
+    assert "cRLoadingBar g_loading_bar;" in ida_path_sync
     for resource_declaration in (
         "Direct3DTexture8 *g_loading_bar_on_texture;",
         "ObjectRenderBuffers *g_loading_background_vertex_buffer;",

@@ -3,7 +3,7 @@
 /* selector: update_loading_screen */
 
 // Exact void cRLoadingBar::AI(): advances the normalized percentage, draws the loading background, and clips the fill quad into the recovered 192x289 to 448x321 window. All three Windows callers discard EAX.
-void __thiscall update_loading_screen(LoadingBar *loading_bar)
+void __thiscall update_loading_screen(cRLoadingBar *loading_bar)
 {
   int32_t last_loading_budget; // ecx
   int32_t v3; // edi
@@ -14,11 +14,11 @@ void __thiscall update_loading_screen(LoadingBar *loading_bar)
   int v8; // [esp+88h] [ebp-8h] BYREF
   float v9; // [esp+8Ch] [ebp-4h]
 
-  if ( !loading_bar->active )
+  if ( loading_bar->active == 0 )
     return;
   ++loading_bar->last_loading_budget;
   last_loading_budget = g_runtime_config.last_loading_budget;
-  if ( !g_runtime_config.last_loading_budget )
+  if ( g_runtime_config.last_loading_budget == 0 )
   {
     last_loading_budget = 1;
     g_runtime_config.last_loading_budget = 1;

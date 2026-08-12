@@ -108,7 +108,7 @@ int __stdcall game_startup_and_main_loop(
             noop_runtime_ai();
             set_fullscreen_mode(g_runtime_config.fullscreen_enabled);
             initialize_main_loop_display_state();
-            g_loading_bar.initialize_loading_screen();
+            g_loading_bar.Init();
 
             int warmup_count = (int)timeGetTime() % 1000;
             if (warmup_count > 0) {

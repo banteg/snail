@@ -1664,11 +1664,17 @@ def current_type_alias_targets(
     if not names:
         return {}
     code = f"""
+import binaryninja
+
 names = {json.dumps(names)}
 result = {{}}
 for name in names:
     current = bv.get_type_by_name(name)
-    if current is None or not str(current.type_class).endswith("NamedTypeReferenceClass"):
+    if (
+        current is None
+        or current.type_class
+        != binaryninja.TypeClass.NamedTypeReferenceClass
+    ):
         result[name] = None
         continue
     try:

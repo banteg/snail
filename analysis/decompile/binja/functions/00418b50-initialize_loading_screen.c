@@ -67,7 +67,7 @@
 00418e25        struct ObjectVertexBuffer* vertex_buffer_1 = g_loading_bar_vertex_buffer->vertex_buffer
 00418e2b        vertex_buffer_1->vtbl->Unlock(vertex_buffer_1)
 00418e2e        begin_overlay_render_state()
-00418e3a        *loading_bar = struct LoadingBar {
+00418e3a        *loading_bar = struct cRLoadingBar {
     .last_loading_budget = 0
     .previous_percent = 0
     .active = 1

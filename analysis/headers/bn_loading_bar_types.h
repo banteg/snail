@@ -4,11 +4,12 @@
 typedef int int32_t;
 
 /* Exact 0x0c-byte global cRLoadingBar lifecycle owner. */
-typedef struct LoadingBar {
+typedef struct cRLoadingBar {
     int32_t active;
     int32_t previous_percent;
     int32_t last_loading_budget;
-} LoadingBar;
+} cRLoadingBar;
+typedef cRLoadingBar LoadingBar;
 
 /* Exact mapped screen-space vertex used by both loading-screen quads. */
 typedef struct LoadingVertex {

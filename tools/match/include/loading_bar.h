@@ -1,6 +1,5 @@
 // Authored cRLoadingBar global owner. Windows keeps the exact 0x0c-byte
-// controller at data_503290. Init retains its descriptive matcher name until
-// its remaining compiler-scheduling residual is recovered.
+// controller at data_503290.
 #ifndef LOADING_BAR_H
 #define LOADING_BAR_H
 
@@ -8,9 +7,9 @@ class Direct3DTexture8;
 struct ObjectRenderBuffers;
 
 struct cRLoadingBar {
-    void initialize_loading_screen(); // @ 0x418b50, cRLoadingBar::Init
-    void UnInit();                     // @ 0x418e50
-    void AI();                         // @ 0x418e80
+    void Init();   // @ 0x418b50
+    void UnInit(); // @ 0x418e50
+    void AI();     // @ 0x418e80
 
     int active;              // +0x00
     int previous_percent;    // +0x04

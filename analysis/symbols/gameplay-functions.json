@@ -1844,6 +1844,9 @@
     {
       "address": "0x418b50",
       "name": "initialize_loading_screen",
+      "aliases": [
+        "cRLoadingBar_Init"
+      ],
       "description": "Void cRLoadingBar::Init(): loads the loading-screen textures, seeds the full-screen and progress quads, and resets the loader counters. Startup discards EAX; the remaining 83.00% source shape is honest register scheduling, not return uncertainty."
     },
     {
