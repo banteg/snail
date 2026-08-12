@@ -6634,6 +6634,49 @@ def test_tutorial_uses_authored_primary_owner() -> None:
     assert 'sizeof(cRTutorial)' in constructor
 
 
+def test_timing_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    time_header = (include_root / "game_time.h").read_text(encoding="utf-8")
+    trial_header = (include_root / "time_trial.h").read_text(encoding="utf-8")
+    subgame = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRTime" in time_header
+    assert "typedef cRTime Time;" in time_header
+    assert "sizeof(cRTime)" in time_header
+    assert "class cRTimeTrial" in trial_header
+    assert "typedef cRTimeTrial TimeTrial;" in trial_header
+    assert "sizeof(cRTimeTrial)" in trial_header
+    assert "cRTime* timer" in trial_header
+    assert "cRTime active_level_timer" in subgame
+    assert "cRTimeTrial time_trial" in subgame
+
+    for owner, function in (
+        ("cRTime", "zero_timer_counters"),
+        ("cRTime", "advance_timer_counters"),
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        member = "Zero" if function == "zero_timer_counters" else "Add"
+        assert f"{owner}::{member}" in source
+
+    assert "SYMBOL=?Zero@cRTime@@QAEXXZ" in (
+        scratch_root / "zero_timer_counters" / "scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert "SYMBOL=?Add@cRTime@@QAEXM@Z" in (
+        scratch_root / "advance_timer_counters" / "scratch.conf"
+    ).read_text(encoding="utf-8")
+    formatter = (
+        scratch_root / "format_time_trial_string" / "scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "char* cRTimeTrial::" not in formatter
+    assert "__stdcall format_time_trial_string" in formatter
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

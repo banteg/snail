@@ -35,7 +35,7 @@ struct cRSubSolutionHeader {
     union {
         char score_payload[0x18]; // +0x08
         ScoreBucketBlock stats; // +0x08
-        Time timer; // +0x08, authored cRTime value
+        cRTime timer; // +0x08, authored cRTime value
     };
     int score_tail; // +0x20
     // Replay cursor captured when the live run starts. Reset restores this
@@ -114,7 +114,7 @@ public:
     union {
         float total_seconds; // +0x08, time-trial ordering key
         ScoreBucketBlock stats; // +0x08
-        Time timer; // +0x08, authored cRTime value
+        cRTime timer; // +0x08, authored cRTime value
     };
     int score_tail; // +0x20
     // Replay cursor captured when the live run starts. Reset restores this

@@ -2851,7 +2851,7 @@
       "name": "zero_timer_counters",
       "kind": "function",
       "aliases": [
-        "?Zero@Time@@QAEXXZ"
+        "?Zero@cRTime@@QAEXXZ"
       ],
       "description": "Exact Windows cRTime::Zero entry; the decorated alias preserves the authored method owner in candidate relocations."
     },
@@ -2860,7 +2860,7 @@
       "name": "advance_timer_counters",
       "kind": "function",
       "aliases": [
-        "?Add@Time@@QAEXM@Z"
+        "?Add@cRTime@@QAEXM@Z"
       ],
       "description": "Exact Windows cRTime::Add(float) entry; the decorated alias preserves the authored method owner in candidate relocations."
     },

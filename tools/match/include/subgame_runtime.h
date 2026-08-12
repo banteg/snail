@@ -197,7 +197,7 @@ public:
     BodBase golb_vapour_list_head; // +0x355d24, Golb embedded vapour bodies
     BodBase unknown_bod_355d5c; // +0x355d5c
     int active_level_score; // +0x355d94, copied from the selected bank record
-    Time active_level_timer; // +0x355d98, embedded cRTime display snapshot
+    cRTime active_level_timer; // +0x355d98, embedded cRTime display snapshot
     cRSubSpeedUp speedup_pickup; // +0x355db0, owned cRSubSpeedUp singleton
     cRJetPack jetpack_pickup; // +0x355e64, owned cRJetPack singleton
     cRSubHealth health_pickups[8]; // +0x356000, eight owned cRSubHealth slots
@@ -256,7 +256,7 @@ public:
         int replay_launch_return_state; // front-end state restored after replay
     };
     int replay_update_cursor; // +0xff25dc
-    TimeTrial time_trial; // +0xff25e0, exact authored cRTimeTrial owner
+    cRTimeTrial time_trial; // +0xff25e0, exact authored cRTimeTrial owner
     cRPathManager path_manager; // +0xff2910, empty authored owner
     char unknown_ff2911[0xff2914 - 0xff2911];
     // Startup constructs 126 authored cRPath records here as 63 adjacent

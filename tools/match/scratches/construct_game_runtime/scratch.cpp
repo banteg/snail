@@ -42,7 +42,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("   Size of cRSubRow %i\n", sizeof(((cRSubGame*)0)->runtime_rows)); \
     debug_report_stub("   Size of cRSubHighScore %i\n", sizeof(SubHighScore)); \
     debug_report_stub("   Size of cRSubSolution %i\n", sizeof(SubSolution)); \
-    debug_report_stub("   Size of cRTimeTrial %i\n", sizeof(TimeTrial)); \
+    debug_report_stub("   Size of cRTimeTrial %i\n", sizeof(cRTimeTrial)); \
     debug_report_stub("   Size of cRPathManager %i\n", sizeof(cRPathManager)); \
     debug_report_stub("   Size of cRPath %i\n", sizeof(((cRSubGame*)0)->path_pairs)); \
     debug_report_stub("   Size of cRLandscapeManager %i\n", sizeof(cRLandscapeManager)); \

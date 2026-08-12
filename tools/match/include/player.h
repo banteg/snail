@@ -198,7 +198,7 @@ public:
     float cutscene_pitch_cycle_step;        // +0x2e0
     // cRSubGoldy-owned run score producer and completion snapshot window.
     int total_score;                        // +0x2e4
-    Time stopwatch;                         // +0x2e8, authored cRTime value
+    cRTime stopwatch;                       // +0x2e8, authored cRTime value
     // Only confirmed consumer copies this value into SubSolution::score_tail.
     int score_tail;                         // +0x300
     // Click-start captures the replay cursor; completion persists it and

@@ -2,7 +2,7 @@
 #ifndef GAME_TIME_H
 #define GAME_TIME_H
 
-class Time {
+class cRTime {
 public:
     void Zero(); // @ 0x441b70, cRTime::Zero()
     void Add(float delta_ticks); // @ 0x441b90, cRTime::Add(float)
@@ -15,7 +15,8 @@ public:
     float second_fraction;      // +0x14
 };
 
+typedef cRTime Time;
 typedef char Time_must_be_0x18[
-    (sizeof(Time) == 0x18) ? 1 : -1];
+    (sizeof(cRTime) == 0x18) ? 1 : -1];
 
 #endif

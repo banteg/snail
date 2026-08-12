@@ -2,7 +2,7 @@
 
 #include "game_time.h"
 
-void Time::Zero()
+void cRTime::Zero()
 {
     total_seconds = 0.0f;
     minutes = 0;

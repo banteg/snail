@@ -2,7 +2,7 @@
 
 #include "game_time.h"
 
-void Time::Add(float delta_ticks)
+void cRTime::Add(float delta_ticks)
 {
     float delta_seconds = delta_ticks * 0.0166666675f;
     total_seconds += delta_seconds;

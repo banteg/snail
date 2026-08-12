@@ -21,16 +21,17 @@ struct TimeTrialCourseRecord {
 typedef char TimeTrialCourseRecord_must_be_0x10[
     (sizeof(TimeTrialCourseRecord) == 0x10) ? 1 : -1];
 
-class TimeTrial {
+class cRTimeTrial {
 public:
     char* format_time_trial_string(
-        Time* timer); // @ 0x448960, cRTimeTrial::TimeString(cRTime&)
+        cRTime* timer); // @ 0x448960, cRTimeTrial::TimeString(cRTime&)
 
     TimeTrialCourseRecord course_records[
         TIME_TRIAL_COURSE_RECORD_COUNT];
 };
 
+typedef cRTimeTrial TimeTrial;
 typedef char TimeTrial_must_be_0x330[
-    (sizeof(TimeTrial) == 0x330) ? 1 : -1];
+    (sizeof(cRTimeTrial) == 0x330) ? 1 : -1];
 
 #endif
