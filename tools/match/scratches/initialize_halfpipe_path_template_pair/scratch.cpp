@@ -27,7 +27,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = 66;
     segment_count_f = 66.0f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     int lead_index = 0;
@@ -283,5 +283,5 @@ void cRPath::initialize_halfpipe_path_template_pair(
         }
     }
 
-    calc_path_length_z();
+    CalcLengthZ();
 }

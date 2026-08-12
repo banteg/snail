@@ -24,7 +24,7 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
     width_or_scale = 4.0f;
     segment_count = 24;
     segment_count_f = 96.0f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     int entrance_index = 0;
@@ -309,5 +309,5 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
         } while (mesh_column < segment_count);
     }
 
-    calc_path_length_z();
+    CalcLengthZ();
 }

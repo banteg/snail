@@ -148,7 +148,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = 70;
     segment_count_f = 70.0f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     int i;
@@ -296,7 +296,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
     build_strip_mesh(this, texture_a, texture_b);
-    calc_path_length_z();
+    CalcLengthZ();
     (void)curve_segments;
     (void)side_exit;
     (void)cap_texture;

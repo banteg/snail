@@ -233,7 +233,7 @@ void cRPath::initialize_slalombig_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = total_segments;
     segment_count_f = (float)total_segments;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     int i;
@@ -447,7 +447,7 @@ void cRPath::initialize_slalombig_path_template_pair(
 
     compute_terminal_deltas(this);
     build_extrapolated_strip_mesh(this, texture_a, texture_b);
-    calc_path_length_z();
+    CalcLengthZ();
     (void)side_exit;
     (void)cap_texture;
 }

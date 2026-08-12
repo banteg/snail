@@ -143,7 +143,7 @@ void cRPath::initialize_start_path_template_pair(
     segment_count_f = (float)last_segment_index;
     float curve_segments_f = (float)curve_segments;
     length = curve_segments_f * 0.31830987f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
     segment_count = segment_count - 1;
 
@@ -300,7 +300,7 @@ void cRPath::initialize_start_path_template_pair(
         } while (delta_index < segment_count);
     }
     build_direct_strip_mesh(this, texture_a);
-    calc_path_length_z();
+    CalcLengthZ();
     (void)side_exit;
     (void)texture_b;
     (void)cap_texture;

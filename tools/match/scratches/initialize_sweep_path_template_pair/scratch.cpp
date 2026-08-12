@@ -156,7 +156,7 @@ void cRPath::initialize_sweep_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = 30;
     segment_count_f = 30.0f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     int i;
@@ -321,7 +321,7 @@ void cRPath::initialize_sweep_path_template_pair(
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
     build_strip_mesh(this, texture_a, texture_b);
-    calc_path_length_z();
+    CalcLengthZ();
     (void)scale_arg;
     (void)side_exit;
     (void)cap_texture;

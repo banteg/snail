@@ -42,7 +42,7 @@ void cRPath::initialize_loopbow_path_template_pair(
     float curve_segment_count_f = (float)curve_segment_count;
     curve_scale = curve_segment_count_f * 0.15915494f;
 
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 1;
 
     int i = 0;

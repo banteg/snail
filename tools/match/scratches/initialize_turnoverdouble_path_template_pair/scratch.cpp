@@ -230,7 +230,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
     segment_count_f = (float)(curve_segments + 8);
     float curve_segments_f = (float)curve_segments;
     length = curve_segments_f * 0.079577468f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     int i = 0;
@@ -371,7 +371,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
 
     compute_terminal_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
-    calc_path_length_z();
+    CalcLengthZ();
     (void)side_exit;
     (void)cap_texture;
 }

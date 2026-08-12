@@ -1,144 +1,20 @@
-# calc_path_length_z
+# cRPath::CalcLengthZ @ 0x42c600
 
-## 2026-07-26 mobile owner correction
+Exact match: 100.00%, 113/113 instructions, with all nine masked operands
+clean. Android and iOS `Path.o` independently export the same authored
+`cRPath::CalcLengthZ()` owner and no-argument method.
 
-Exact exported symbols and matching bodies from both Android and iOS identify
-`0x42c600` as `cRPath::CalcLengthZ()`. The historical Windows
-`calc_path_length_z` label had been attached to the unrelated
-`cRPathFollowGolb::Traverse` method at `0x4217b0`; that false assignment is now
-retired. This function is the real owner, and `finalize_path_template` remains
-only as a manifest compatibility alias.
+The function recomputes `row_span_count`, inverts both owned sample-transform
+banks, derives and clamps each primary sample's lateral source, clears the
+terminal sample, and normalizes the nested strip-mesh flags. Indexed inverse
+loops and direct adjacent-sample expressions recover the native source shape;
+the lateral-source loop retains its one real byte-offset induction variable.
 
-The mobile body also confirms the existing Windows ownership model: one
-`cRPath` owns the primary and secondary `0xa8`-byte sample banks, the derived
-row span, the mirrored-path flag, and the nested strip mesh. Spelling the
-secondary inverse-loop sample as the mobile-shaped `base + offset` expression
-is byte-identical. Focused matching therefore remains honestly partial at
-**81.78%** (112/113 candidate/target instructions), with a 24-instruction
-exact prefix and nine clean masked operands.
+Live Windows analysis confirms a void fastcall receiver and 30 path-builder or
+mirror callers. Twenty-nine ordinary callsites now use the member directly.
+`initialize_loopbow_path_template_pair` deliberately keeps a free fastcall ABI
+view because that caller propagates incidental EAX state; this does not imply a
+meaningful return contract for the authored method.
 
-First tracked scratch for `calc_path_length_z @ 0x42c600`.
-
-Recovered behavior:
-
-- scans secondary sample positions and stores the maximum `(int)(z + 1.0f)` in
-  `Path::row_span_count`;
-- builds inverse transforms for both primary and secondary sample arrays at
-  sample `+0x40`;
-- computes each segment's lateral source from the cross product of adjacent
-  forward vectors dotted against the current right vector;
-- mirrors and clamps the lateral source into the native `[-0.1, 0]` range;
-- clears the terminal sample's lateral source;
-- enables the strip mesh texture transform and clears
-  `OBJECT_FLAG_DISABLE_CULLING` so the finalized path uses the normal culled
-  render path.
-
-This promotes `Path +0x24` as `strip_mesh` and widens
-`AttachmentSample::inverse_matrix` to the full 16-float transform window. Its
-flag writes now use the shared `ObjectFlag` owner at `Object +0x10` rather than
-path-local producer names.
-
-2026-06-20 follow-up: `AttachmentSample::inverse_matrix` now uses the shared
-`TransformMatrix` type directly. The source can call
-`sample->inverse_matrix.invert_matrix_from_source(sample->transform)` without
-the old cast, and the matcher stays at the existing 69.41% baseline.
-
-2026-06-21 segment-loop pass: keeping the dot source as a `Vector3* right`
-while spelling the lateral-source writes as repeated sample-offset lvalues
-raises the scratch from 69.41% to 74.67%. This recovers the native `edi`
-byte-offset lifetime through the mirror/clamp reloads and the `fstp` dot-result
-store, without changing the real `Vector3` member-call ABI. A tempting free
-`__fastcall` declaration for `cross_vectors`/`dot_vector` scored 75.34% and
-cleared the masked mismatch, but it is rejected because native cross-vector
-calls pass the output in `ecx` and push both vector arguments.
-
-The remaining mismatch is compiler shape in the cross/dot segment loop:
-native schedules `cross_vectors` by pushing both arguments before loading the
-local cross-product `this` pointer, while VC6 still materializes the local
-address before the pushes for the member-call spelling. Secondary inverse-loop
-base-local probes were codegen-neutral, and segment-limit locals regressed.
-
-2026-06-21 adjacent-sample typing pass: spelling the cross-product inputs as a
-typed `primary`/`next` sample pair while keeping the lateral-source writes as
-raw repeated lvalues raises the scratch from 74.67% to 75.34% and clears the
-masked call mismatch without changing the `Vector3::cross_vectors` thiscall
-ABI. The key is keeping `primary` live for the subsequent dot call; scoped
-typed arguments or raw-right recomputation regress to 71.11%, inline casts fall
-back to the old 74.67% masked mismatch, and explicit segment-limit locals
-reshape the prologue down near 60%.
-
-2026-07-13 ownership pass: iOS exports the corresponding no-argument method as
-`cRPath::CalcLengthZ()`, and Windows reproduces its native register allocation
-when the semantic Windows name is declared as a `__fastcall Path` member.
-Twenty-nine constructor/mirror callsites now call that shared member directly
-instead of repeating a scratch-local free-function declaration. Focused
-constructor probes remain byte-for-byte score-neutral after the ownership
-change. `initialize_loopbow_path_template_pair` is the one deliberate ABI-view
-exception: it tail-returns the finalizer's stale mesh-flags value, so its local
-non-void call declaration remains explicit rather than pretending the member
-has a meaningful return contract.
-
-Passing the current right vector directly to `cross.dot_vector(...)` ends the
-temporary `primary` sample pointer's live range after `cross_vectors`. That
-restores the native segment-count/0xa8-byte-offset ownership through the
-cross/dot/clamp loop and raises the focused result from 75.34% to 81.78%
-(`112/113` candidate/target instructions, 24-instruction exact prefix, nine
-clean masked operands). Full typed-array indexing regresses to 63.01% by
-retaining a current-sample pointer across the calls; explicit base-pointer
-locals regress to 71.11%, and indexing the dot source separately by
-`segment_index` adds a second strength-reduced induction variable at 81.06%.
-Those variants are rejected rather than retained as matching scaffolding.
-
-## 2026-07-14 lateral-source member ownership
-
-The cross/dot/clamp loop retains its compiler-critical byte-offset induction
-variable, but every terminal `+0xa4` access now derives from
-`offsetof(AttachmentSample, lateral_source)`. This ties the scalar back to the
-owned primary-sample array without extending a typed sample pointer's live
-range. Focused output is byte-identical at 81.78%, 112/113 instructions,
-prefix 24/113, with all nine operands clean.
-
-The current-right dot operand now uses the recovered const-reference member
-surface directly. The compiler-critical byte-offset lifetime is unchanged:
-focused output remains 81.78%, 112/113 instructions, prefix 24/113, with all
-nine operands clean.
-
-## 2026-07-16 analysis replay ownership
-
-The durable analysis type now names sample `+0xa4` as the same `float
-lateral_source` already proved by the matcher. `calc_path_length_z` is its
-eight-reference producer: it stores the cross/dot result, mirrors it for an
-x-mirrored path, clamps it to `[-0.1, 0]`, and clears the terminal sample.
-Both analysis replay lanes now update the field explicitly so the checked-in
-decompiles cannot fall back to a four-byte padding view. This is an ownership
-replay only; focused matching remains 81.78%, 112/113 instructions, prefix
-24/113, with nine clean operands.
-
-## 2026-07-17 Path ABI closure
-
-The live Binary Ninja function is now guarded as `void __fastcall Path*`,
-matching `cRPath::CalcLengthZ()`, the authored member surface, and every
-ordinary caller that discards the tail `EAX` state. The previous `int32_t
-PathTemplate*` declaration combined a partial owner with a decompiler-inferred
-return. Replay metadata now records the real owner and void contract without
-changing the focused source or its 81.78% result.
-
-## 2026-07-27 mobile-authored sample induction
-
-The exact Android and iOS `cRPath::CalcLengthZ()` bodies independently show
-that both inverse transforms are indexed through the owned primary and
-secondary sample arrays. Expressing those two operations directly as
-`samples[i]` removes the synthetic byte-offset induction variable from the
-inverse loop and reproduces the native Windows register allocation.
-
-The adjacent-forward-vector cross product likewise has no need to retain
-temporary `primary` and `next` owners: direct byte-offset expressions preserve
-the already-proved `AttachmentSample` stride while letting the compiler issue
-both adjacent arguments in the native order. The lateral-source loop remains
-owned by its one real byte-offset induction variable because replacing that
-with a second array index measurably changes the generated loop.
-
-Together these source-shape corrections raise the focused result from 81.78%
-to **100.00%**: 113/113 instructions, a 113-instruction exact prefix, and all
-nine masked operands clean. No artificial control flow, volatile qualifier,
-register coercion, or dead expression is involved.
+The stable matcher identity remains `calc_path_length_z`; the exact body and
+ordinary native relocations now use the authored member name.

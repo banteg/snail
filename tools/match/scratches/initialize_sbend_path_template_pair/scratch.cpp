@@ -207,7 +207,7 @@ void cRPath::initialize_sbend_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = steps + 1;
     segment_count_f = (float)(steps + 1);
-    get_path_nodes();
+    GetNodes();
 
     has_entry_mesh_transition = 0;
     if (centered)
@@ -298,5 +298,5 @@ void cRPath::initialize_sbend_path_template_pair(
 
     compute_path_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
-    calc_path_length_z();
+    CalcLengthZ();
 }

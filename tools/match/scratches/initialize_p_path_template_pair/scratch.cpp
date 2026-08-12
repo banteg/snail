@@ -147,7 +147,7 @@ void cRPath::initialize_p_path_template_pair(
     else
         scale_arg = half_distance;
 
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     primary_samples[0].center_x = start_x;
@@ -300,6 +300,6 @@ void cRPath::initialize_p_path_template_pair(
     secondary_samples[segment_count - 1].delta_length = 1.0f;
 
     build_strip_mesh(this, texture_a, texture_b);
-    calc_path_length_z();
+    CalcLengthZ();
     (void)cap_texture;
 }

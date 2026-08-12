@@ -185,7 +185,7 @@ void cRPath::initialize_toad_path_template_pair(
     width_or_scale = 1.0f;
     segment_count = lead_count + tail_count + 26;
     segment_count_f = (float)segment_count;
-    get_path_nodes();
+    GetNodes();
 
     has_entry_mesh_transition = 0;
     for (i = 0; i < lead_count; ++i) {
@@ -336,5 +336,5 @@ void cRPath::initialize_toad_path_template_pair(
 
     compute_path_deltas(this);
     build_strip_mesh(this, texture_a, texture_b);
-    calc_path_length_z();
+    CalcLengthZ();
 }

@@ -122,7 +122,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(curve_count + 14);
     float curve_count_f = (float)curve_count;
     float loop_radius = curve_count_f * 0.15915494f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 1;
 
     for (i = 0; i < 7; ++i) {
@@ -208,7 +208,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(curve_count + 14);
     float curve_count_f = (float)curve_count;
     float loop_radius = curve_count_f * 0.15915494f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 1;
 
     for (i = 0; i < 10; ++i) {
@@ -299,7 +299,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(curve_count + 14);
     float curve_count_f = (float)curve_count;
     float hump_radius = curve_count_f * 0.095492966f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     for (i = 0; i < 7; ++i) {
@@ -359,7 +359,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     segment_count_f = (float)(curve_count + 2);
     float curve_count_f = (float)curve_count;
     float dip_radius = curve_count_f * 0.047746483f;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     initialize_sample_pair(
@@ -409,7 +409,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     kind = PATH_TEMPLATE_KIND_SCREW;
     segment_count = curve_count + 8;
     segment_count_f = (float)(curve_count + 8);
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     for (i = 0; i < 3; ++i) {
@@ -485,7 +485,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
     width_or_scale = 1.0f;
     segment_count = total_segments;
     segment_count_f = (float)total_segments;
-    get_path_nodes();
+    GetNodes();
     has_entry_mesh_transition = 0;
 
     for (i = 0; i < 4; ++i) {
@@ -754,7 +754,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         }
     }
 
-    calc_path_length_z();
+    CalcLengthZ();
     (void)side_exit;
     (void)cap_texture;
 }

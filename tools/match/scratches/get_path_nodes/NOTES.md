@@ -1,44 +1,18 @@
-# get_path_nodes @ 0x41b0a0
+# cRPath::GetNodes @ 0x41b0a0
 
 Exact match: 100.00%, 23/23 instructions.
 
-This helper allocates the primary and secondary `PathTemplateSample` arrays for
-one authored `cRPath` using the native `0xa8` sample stride. It pins
-`segment_count` at `Path +0x44`, `primary_samples` at `+0x58`, and
-`secondary_samples` at `+0x5c`, with the native allocation labels
-`Path Tile Nodes` and `Path Ball nodes`.
+This authored lifecycle member allocates the two `0xa8`-stride sample banks
+owned by one `cRPath`: `primary_samples` at `Path +0x58` and
+`secondary_samples` at `Path +0x5c`, using the native labels
+`Path Tile Nodes` and `Path Ball nodes`. The allocation count comes from
+`segment_count` at `Path +0x44`.
 
-2026-06-16 layout assertion pass: the shared `AttachmentSample` now asserts
-`sizeof(AttachmentSample) == 0xa8`. This allocation helper pins the native
-array stride, and the swept-entry, projection, path-length, and follow-state
-consumers index the same sample shape.
+Live Windows xrefs show 30 path-builder and mirror callsites using this
+receiver. Android `Path.o` independently exports `cRPath::GetNodes()` and
+preserves the paired allocations. Its body additionally seeds sample defaults;
+iOS inlines that broader mobile lifecycle form, so no exact iOS body is
+claimed for the narrower Windows allocator.
 
-2026-07-10 lifetime audit: these allocations occur inside
-`initialize_game_assets_and_world`, after the main loop records its tracked
-allocation mark. `destroy_subgame` does not free them between levels; shutdown
-unwinds all post-mark allocations with `free_tracked_allocations_to_mark`
-before deleting the root game object. The sample pointers are therefore
-borrowed game-runtime-lifetime storage from the tracked allocator.
-
-2026-07-11 cRPath ownership: symbol-preserving ports identify this exact
-`0xa8` receiver as `cRPath`. Windows owns 126 such receivers in 63 adjacent
-`PathPair` records; this exact 23/23 helper proves the per-owner allocation
-fields rather than a synthetic aggregate owner.
-
-## 2026-07-17 analysis owner closure
-
-The guarded Binary Ninja replay now replaces the stale `PathTemplate*`
-receiver identity with the full `Path*` owner. The shared header and both
-analysis lanes agree with the already exact matcher declaration. This is an
-analysis-only ownership repair; the focused source remains 100.00%, 23/23
-instructions.
-
-## 2026-07-26 cross-port authored owner
-
-Android exports this lifecycle member as `cRPath::GetNodes()`. Its body uses
-the same `0xa8` stride, exact `Path Tile Nodes` / `Path Ball nodes` allocation
-labels, paired Path fields, and corresponding constructor call neighborhood.
-Android then initializes primary-sample defaults; iOS inlines those same
-allocations and defaults in its Path constructors. Windows retains the
-narrower allocation-only member, so this recovers the authored owner and name
-without claiming an exact cross-port body.
+The stable matcher identity remains `get_path_nodes`; the scratch and native
+relocations now use the authored member name.

@@ -1970,7 +1970,8 @@
       "name": "get_path_nodes",
       "aliases": [
         "allocate_path_template_samples",
-        "GetNodes"
+        "GetNodes",
+        "cRPath_GetNodes"
       ],
       "description": "Windows `cRPath::GetNodes()`: allocates the primary and secondary `PathTemplateSample` arrays for one cRPath and stores both pointers on the owner. Android exports the authored name and preserves the same two labeled allocations at the corresponding constructor lifecycle edge, then additionally seeds primary-sample defaults; iOS inlines that broader mobile form. The Windows member is therefore the narrower allocator-only implementation, not an exact-body port match."
     },
@@ -2162,7 +2163,8 @@
       "name": "calc_path_length_z",
       "aliases": [
         "finalize_path_template",
-        "CalcLengthZ"
+        "CalcLengthZ",
+        "cRPath_CalcLengthZ"
       ],
       "description": "Windows `cRPath::CalcLengthZ()`: recomputes one built path's derived row span and per-sample lateral length scalars, inverts both sample-transform banks, and normalizes the nested strip-mesh flags. Android and iOS Path.o independently preserve the exact authored owner and name. The former `finalize_path_template` label remains only as a compatibility alias."
     },

@@ -660,6 +660,15 @@
       "description": "Exact Windows cROptions::AI() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x41b0a0",
+      "name": "get_path_nodes",
+      "kind": "function",
+      "aliases": [
+        "?GetNodes@cRPath@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRPath::GetNodes() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x421dc0",
       "name": "mirror_path",
       "kind": "function",
@@ -676,6 +685,15 @@
         "?GetPos@cRPath@@QAEXAAUtVector@@HH0@Z"
       ],
       "description": "Exact Windows cRPath::GetPos(tVector&, int, int, tVector&) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x42c600",
+      "name": "calc_path_length_z",
+      "kind": "function",
+      "aliases": [
+        "?CalcLengthZ@cRPath@@QAIXXZ"
+      ],
+      "description": "Exact Windows fastcall cRPath::CalcLengthZ() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x42ca90",

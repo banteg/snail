@@ -28,7 +28,7 @@ void cRPath::Mirror(cRPath* source)
     segment_count_f = source->segment_count_f;
     width_or_scale = source->width_or_scale;
     width_cells = source->width_cells;
-    get_path_nodes();
+    GetNodes();
 
     has_entry_mesh_transition = source->has_entry_mesh_transition;
     strip_mesh->flags = source->strip_mesh->flags;
@@ -152,5 +152,5 @@ void cRPath::Mirror(cRPath* source)
         } while (segment < segment_count);
     }
 
-    calc_path_length_z();
+    CalcLengthZ();
 }

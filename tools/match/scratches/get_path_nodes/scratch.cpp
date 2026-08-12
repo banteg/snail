@@ -3,7 +3,7 @@
 
 void* allocate_tracked_memory(int size, char* name);
 
-void cRPath::get_path_nodes()
+void cRPath::GetNodes()
 {
     AttachmentSample* primary = (AttachmentSample*)allocate_tracked_memory(
         segment_count * sizeof(AttachmentSample), "Path Tile Nodes");

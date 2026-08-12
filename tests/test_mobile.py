@@ -11056,6 +11056,104 @@ def test_mobile_path_queries_recover_authored_methods() -> None:
     assert "->is_point_inside_track_attachment(" not in all_sources
 
 
+def test_mobile_path_lifecycle_recovers_authored_methods() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entries = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+
+    get_nodes = entries["get_path_nodes"]
+    assert get_nodes["status"] == "verified"
+    assert get_nodes["confidence"] == "high"
+    assert get_nodes["source_object"] == "Path.o"
+    assert get_nodes["android_symbol"] == "cRPath::GetNodes()"
+    assert get_nodes["android_body_count"] == 1
+    assert get_nodes.get("ios_symbol") is None
+    assert functions_by_name["get_path_nodes"]["aliases"] == [
+        "allocate_path_template_samples",
+        "GetNodes",
+        "cRPath_GetNodes",
+    ]
+    assert references_by_name["get_path_nodes"]["aliases"] == [
+        "?GetNodes@cRPath@@QAEXXZ"
+    ]
+
+    calc_length = entries["calc_path_length_z"]
+    assert calc_length["status"] == "verified"
+    assert calc_length["confidence"] == "high"
+    assert calc_length["source_object"] == "Path.o"
+    assert calc_length["android_symbol"] == "cRPath::CalcLengthZ()"
+    assert calc_length["ios_symbol"] == "cRPath::CalcLengthZ()"
+    assert calc_length["android_body_count"] == 1
+    assert calc_length["ios_body_count"] == 1
+    assert functions_by_name["calc_path_length_z"]["aliases"] == [
+        "finalize_path_template",
+        "CalcLengthZ",
+        "cRPath_CalcLengthZ",
+    ]
+    assert references_by_name["calc_path_length_z"]["aliases"] == [
+        "?CalcLengthZ@cRPath@@QAIXXZ"
+    ]
+
+    get_nodes_source = (
+        scratch_root / "get_path_nodes/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    get_nodes_config = (
+        scratch_root / "get_path_nodes/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert "void cRPath::GetNodes()" in get_nodes_source
+    assert "SYMBOL=?GetNodes@cRPath@@QAEXXZ\n" in get_nodes_config
+
+    calc_source = (
+        scratch_root / "calc_path_length_z/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    calc_config = (
+        scratch_root / "calc_path_length_z/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert "void __fastcall cRPath::CalcLengthZ()" in calc_source
+    assert "SYMBOL=?CalcLengthZ@cRPath@@QAIXXZ\n" in calc_config
+
+    header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    assert "void GetNodes(); // @ 0x41b0a0" in header
+    assert "void __fastcall CalcLengthZ(); // @ 0x42c600" in header
+    assert "void get_path_nodes();" not in header
+    assert "void __fastcall calc_path_length_z();" not in header
+
+    loopbow_path = (
+        scratch_root / "initialize_loopbow_path_template_pair/scratch.cpp"
+    )
+    loopbow_source = loopbow_path.read_text(encoding="utf-8")
+    assert loopbow_source.count("calc_path_length_z(") == 2
+    assert "void __fastcall calc_path_length_z(Path* path);" in loopbow_source
+    assert "::calc_path_length_z(this);" in loopbow_source
+
+    non_loopbow_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("scratch.cpp")
+        if "build" not in path.parts and path != loopbow_path
+    )
+    assert "get_path_nodes(" not in non_loopbow_sources
+    assert "calc_path_length_z(" not in non_loopbow_sources
+    assert "GetNodes();" in non_loopbow_sources
+    assert "CalcLengthZ();" in non_loopbow_sources
+
+
 def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
