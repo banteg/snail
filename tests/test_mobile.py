@@ -6514,6 +6514,26 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
         assert f"cRSound::{function}" in source
 
 
+def test_input_ok_overlay_uses_authored_primary_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "input_ok_state.h").read_text(encoding="utf-8")
+    forward = (include_root / "input_ok_fwd.h").read_text(encoding="utf-8")
+    border = (include_root / "frontend_widget.h").read_text(encoding="utf-8")
+
+    assert "class cRInputOK" in header
+    assert "sizeof(cRInputOK)" in header
+    assert "typedef cRInputOK InputOkState;" in forward
+    assert "cRInputOK* input_ok_state()" in border
+    for function in ("update_input_ok", "initialize_input_ok"):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRInputOK::{function}" in source
+        assert "FrontendWidget*" not in source
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

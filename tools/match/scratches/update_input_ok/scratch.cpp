@@ -2,11 +2,11 @@
 
 #include "input_ok_state.h"
 
-void InputOkState::update_input_ok()
+void cRInputOK::update_input_ok()
 {
-    FrontendWidget* source = source_widget;
+    cRBorder* source = source_widget;
     unsigned int flags = source->input_flags;
-    FrontendWidget* ok;
+    cRBorder* ok;
     float x;
 
     if ((flags & 4) != 0) {

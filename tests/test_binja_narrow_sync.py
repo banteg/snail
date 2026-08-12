@@ -19646,7 +19646,11 @@ def test_input_ok_overlay_and_void_abis_are_persisted() -> None:
     assert '(0x403560, "initialize_input_ok")' in ida_frontend_sync
     assert "void update_input_ok(); // @ 0x4034d0, Android cRInputOK::AI()" in matcher_header
     assert "void initialize_input_ok();" in matcher_header
-    assert "typedef InputOkState cRInputOK;" in matcher_header
+    matcher_fwd = (
+        repo_root / "tools/match/include/input_ok_fwd.h"
+    ).read_text(encoding="utf-8")
+    assert "class cRInputOK" in matcher_header
+    assert "typedef cRInputOK InputOkState;" in matcher_fwd
 
     for stale in (
         "FrontendWidget* update_input_ok()",

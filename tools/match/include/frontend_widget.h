@@ -6,11 +6,10 @@
 
 #include "border_fwd.h"
 #include "bod_types.h"
+#include "input_ok_fwd.h"
 #include "sprite.h"
 #include "tooltip_state.h"
 #include "twinkle_manager.h"
-
-class InputOkState;
 
 // Shared cRBorder state word. Only bits with independent producer/consumer
 // evidence are named; the remaining interaction/style bits stay numeric.
@@ -75,7 +74,7 @@ public:
         float x, float y, tColour* color, int alignment, float anchor_x);
     void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
         tColour* color, float z, int layer);
-    InputOkState* input_ok_state();
+    cRInputOK* input_ok_state();
 
     char unknown_038[0x44 - 0x38];
     float hide_blend; // +0x44
@@ -216,11 +215,11 @@ public:
 typedef char FrontendWidget_must_be_0x724[
     (sizeof(cRBorder) == 0x724) ? 1 : -1];
 
-inline InputOkState* cRBorder::input_ok_state()
+inline cRInputOK* cRBorder::input_ok_state()
 {
     // Text-input widgets reuse the tooltip tail as an InputOkState. Its
     // source/OK pointers land at the tooltip's final two pointer lanes.
-    return (InputOkState*)((char*)&tooltip + 0x1c);
+    return (cRInputOK*)((char*)&tooltip + 0x1c);
 }
 
 #endif

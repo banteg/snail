@@ -5,11 +5,11 @@
 #include "input_ok_state.h"
 
 
-void InputOkState::initialize_input_ok()
+void cRInputOK::initialize_input_ok()
 {
-    FrontendWidget* widget =
+    cRBorder* widget =
         g_game->border_manager.allocate_border();
-    FrontendWidget* source = source_widget;
+    cRBorder* source = source_widget;
     ok_widget = widget;
     widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
