@@ -400,6 +400,7 @@ def build_complete_mobile_crosswalk(
                 "source_object",
                 "source_object_evidence",
                 "confidence",
+                "mapping_scope",
             ):
                 if key in verified:
                     entry[key] = verified[key]
@@ -466,6 +467,7 @@ def build_complete_mobile_crosswalk(
             "windows_size is the distance to the next curated manifest start and can include gaps.",
             "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
             "source_object on an unverified entry is independent Windows compilation-unit provenance and does not turn a candidate into a mobile mapping.",
+            "mapping_scope set to interior-region means the verified mobile symbol corroborates a bounded region inside the Windows function, not the Windows entry's outer symbol or ABI.",
             "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
             "source_object_evidence set to windows-constructor-support-run means a compiler-emitted helper belongs to a bounded constructor support block with a direct source-object anchor and a closed native caller graph; shared folded and cross-cutting helpers are excluded.",
             "source_object_evidence set to dual-mobile-inline-source-object means Android and iOS inline the complete Windows operation inside the same authored enclosing method, both ports independently assign that method to the named source unit, and the Windows call graph agrees; this is source provenance, not a whole-function mobile mapping.",

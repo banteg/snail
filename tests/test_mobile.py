@@ -233,6 +233,14 @@ def test_complete_crosswalk_covers_manifest_once() -> None:
 
     assert len(names) == len(set(names))
     assert set(names) == {function.name for function in manifest.functions}
+    root_constructor = next(
+        entry
+        for entry in crosswalk["entries"]
+        if entry["windows_name"] == "construct_game_runtime"
+    )
+    assert root_constructor["status"] == "verified"
+    assert root_constructor["android_symbol"] == "cRGame::cRGame()"
+    assert root_constructor["mapping_scope"] == "interior-region"
     game_init = next(
         entry
         for entry in crosswalk["entries"]
@@ -10292,7 +10300,7 @@ def test_game_root_uses_authored_primary_owner() -> None:
     methods = {
         "run_frame_update": "AI",
         "render_game_frame": "render_game_frame",
-        "initialize_game_last": "initialize_game_last",
+        "initialize_game_last": "InitLast",
         "initialize_game_assets_and_world": "initialize_game_assets_and_world",
     }
     for function, method in methods.items():
@@ -10342,6 +10350,29 @@ def test_game_root_uses_authored_primary_owner() -> None:
     assert "int AI();" in header
     assert "g_game->AI();" in main_loop
     assert "run_frame_update();" not in main_loop
+
+    finalizer = crosswalk["initialize_game_last"]
+    assert finalizer["status"] == "verified"
+    assert finalizer["confidence"] == "high"
+    assert finalizer["source_object"] == "Game.o"
+    assert finalizer["android_symbol"] == "cRGame::InitLast()"
+    assert finalizer["ios_symbol"] == finalizer["android_symbol"]
+    assert finalizer["android_body_count"] == 1
+    assert finalizer["ios_body_count"] == 1
+    assert functions_by_name["initialize_game_last"]["aliases"] == [
+        "cRGame_InitLast"
+    ]
+    finalizer_symbol = "?InitLast@cRGame@@QAEXXZ"
+    assert references_by_name["initialize_game_last"]["aliases"] == [
+        finalizer_symbol
+    ]
+    finalizer_config = (
+        scratch_root / "initialize_game_last/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={finalizer_symbol}\n" in finalizer_config
+    assert "void InitLast();" in header
+    assert "g_game->InitLast();" in main_loop
+    assert "g_game->initialize_game_last();" not in main_loop
 
     constructor = (
         scratch_root / "construct_game_runtime" / "scratch.cpp"

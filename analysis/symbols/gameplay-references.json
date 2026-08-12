@@ -448,6 +448,15 @@
       "description": "Exact tVector-owned zeroing helper; the authored method name remains unverified."
     },
     {
+      "address": "0x410720",
+      "name": "initialize_game_last",
+      "kind": "function",
+      "aliases": [
+        "?InitLast@cRGame@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRGame::InitLast() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x410730",
       "name": "select_level_track_texture_set",
       "kind": "function",

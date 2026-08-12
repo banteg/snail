@@ -127,7 +127,7 @@ int __stdcall game_startup_and_main_loop(
                 quit_requested = 1;
 
             load_registered_texture_refs(1);
-            g_game->initialize_game_last();
+            g_game->InitLast();
             g_game_initialization_pending = 0;
             g_frame_render_requested = 0;
             g_loading_bar.UnInit();

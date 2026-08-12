@@ -1,9 +1,9 @@
-// initialize_game_last @ 0x410720 (thiscall, ret)
+// cRGame::InitLast @ 0x410720 (thiscall)
 
 #include "backdrop.h"
 #include "game_root.h"
 
-void cRGame::initialize_game_last()
+void cRGame::InitLast()
 {
     backdrop.Init(1);
 }

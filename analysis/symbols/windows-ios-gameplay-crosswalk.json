@@ -5421,6 +5421,7 @@
     {
       "address": "0x407b60",
       "windows_name": "construct_game_runtime",
+      "mapping_scope": "interior-region",
       "android_symbol": "cRGame::cRGame()",
       "source_object": "Game.o",
       "source_object_evidence": "unique-ios-class-object",

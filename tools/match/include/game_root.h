@@ -133,7 +133,7 @@ public:
     int AI();                        // @ 0x40a2a0
     void LevelInit(int level);       // @ 0x40a290, authored virtual no-op
     char initialize_game_assets_and_world(); // @ 0x40acf0
-    void initialize_game_last();     // @ 0x410720, cRGame::InitLast
+    void InitLast();                 // @ 0x410720, iOS/Android cRGame::InitLast()
     int noop_runtime_ai();           // shared empty lifecycle hook @ 0x407b50
     void render_game_frame();        // @ 0x40a490, iOS cRGame::Render()
     TrackFringeBodCatalog* track_fringe_bod_catalog();

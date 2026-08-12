@@ -400,6 +400,7 @@ def test_android_root_constructor_recovers_inlined_game_owner() -> None:
 
     root_constructor = crosswalk_by_address["0x407b60"]
     assert root_constructor["android_symbol"] == "cRGame::cRGame()"
+    assert root_constructor["mapping_scope"] == "interior-region"
     assert "ios_symbol" not in root_constructor
     assert root_constructor["source_object"] == "Game.o"
     assert root_constructor[
