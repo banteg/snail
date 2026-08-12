@@ -25,3 +25,10 @@ authored `void cRHelp::Init()` ABI and exact four-byte `Help` owner. The
 tracked output reaches `help->back_button` directly instead of treating the
 owner as a loose `FrontendWidget**`; the replay rejects any `Help` size other
 than `0x04`.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRHelp::Init()` and exports
+`?Init@cRHelp@@QAEXXZ`. Its sole live Windows caller passes the four-byte Help
+owner at `cRSubGame + 0x1260008`; Android and iOS independently retain the same
+symbol and body. Matching stays exact at 47/47 with all 15 operands clean.

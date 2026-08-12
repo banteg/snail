@@ -25,3 +25,10 @@ cross-decompiler `Help*` ABI set. The shared replay reanalyzes all three
 functions together and verifies the exact `0x04` owner before applying any
 prototype, preventing this unused-`this` tailcall from drifting back to a free
 helper.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRHelp::UnInit()` and exports
+`?UnInit@cRHelp@@QAEXXZ`. Its sole live Windows caller is the Back-action arm of
+the adjacent `cRHelp::AI()` member. Android independently retains the symbol and
+body. Matching stays exact at 3/3 with both operands clean.

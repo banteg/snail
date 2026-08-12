@@ -6,9 +6,9 @@
 
 class cRHelp {
 public:
-    void initialize_help_screen(); // @ 0x416800, cRHelp::Init
-    void destroy_help_screen(); // @ 0x4168c0, cRHelp::UnInit
-    void update_help_screen(); // @ 0x4168d0, cRHelp::AI
+    void Init();   // @ 0x416800
+    void UnInit(); // @ 0x4168c0
+    void AI();     // @ 0x4168d0
 
     cRBorder* back_button; // +0x00
 };

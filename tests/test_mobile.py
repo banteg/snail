@@ -8441,6 +8441,95 @@ def test_exit_uses_authored_lifecycle_surface() -> None:
     assert "exit_controller.AI()" in all_sources
 
 
+def test_help_uses_authored_lifecycle_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/help.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "initialize_help_screen": {
+            "method": "Init",
+            "symbol": "?Init@cRHelp@@QAEXXZ",
+            "mobile": "cRHelp::Init()",
+            "alias": "cRHelp_Init",
+            "ios": True,
+        },
+        "destroy_help_screen": {
+            "method": "UnInit",
+            "symbol": "?UnInit@cRHelp@@QAEXXZ",
+            "mobile": "cRHelp::UnInit()",
+            "alias": "cRHelp_UnInit",
+            "ios": False,
+        },
+        "update_help_screen": {
+            "method": "AI",
+            "symbol": "?AI@cRHelp@@QAEXXZ",
+            "mobile": "cRHelp::AI()",
+            "alias": "cRHelp_AI",
+            "ios": True,
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Help.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        if recovered["ios"]:
+            assert entry["ios_symbol"] == recovered["mobile"]
+            assert entry["ios_body_count"] == 1
+        else:
+            assert "ios_symbol" not in entry
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRHelp::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void Init();" in header
+    assert "void UnInit();" in header
+    assert "void AI();" in header
+    ai_source = (scratch_root / "update_help_screen/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "UnInit();" in ai_source
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".initialize_help_screen(",
+        ".destroy_help_screen(",
+        ".update_help_screen(",
+    ):
+        assert stale_method not in all_sources
+    assert "subgame.help.Init()" in all_sources
+    assert "subgame.help.AI()" in all_sources
+
+
 def test_screen_controller_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
@@ -8535,6 +8624,9 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         ),
     }
     member_names = {
+        "initialize_help_screen": "Init",
+        "destroy_help_screen": "UnInit",
+        "update_help_screen": "AI",
         "destroy_completion_screen": "UnInit",
         "initialize_exit_prompt": "Init",
         "update_completion_screen": "AI",

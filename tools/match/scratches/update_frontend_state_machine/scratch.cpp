@@ -168,10 +168,10 @@ void cRPlayer::update_frontend_state_machine()
         }
         case 31:
             frontend_state = 32;
-            g_game->subgame.help.initialize_help_screen();
+            g_game->subgame.help.Init();
         case 32: {
             GameRoot* owner = g_game;
-            owner->subgame.help.update_help_screen();
+            owner->subgame.help.AI();
             break;
         }
         default:

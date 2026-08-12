@@ -26,3 +26,11 @@ four-byte owner as `Help*`, borrow `help->back_button`, retain
 `destroy_help_screen(help)`, and route through typed
 `GameRoot::players[0]` fields. Strict tracked canaries reject the former
 `void*`/raw-root output in either lane.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRHelp::AI()` and exports
+`?AI@cRHelp@@QAEXXZ`. Its sole live Windows caller passes the same four-byte
+owner immediately after `Init()`, and the Back arm now calls authored
+`UnInit()` directly. Android and iOS independently retain the same symbol and
+body. Matching stays exact at 12/12 with all three operands clean.

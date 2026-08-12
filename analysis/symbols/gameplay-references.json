@@ -793,6 +793,33 @@
       "description": "Exact authored cRWarning::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x416800",
+      "name": "initialize_help_screen",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRHelp@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRHelp::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4168c0",
+      "name": "destroy_help_screen",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRHelp@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRHelp::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4168d0",
+      "name": "update_help_screen",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRHelp@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRHelp::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x416910",
       "name": "initialize_high_score_screen",
       "kind": "function",
