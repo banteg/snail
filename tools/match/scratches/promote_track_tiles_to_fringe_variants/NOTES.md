@@ -1,5 +1,14 @@
 # promote_track_tiles_to_fringe_variants
 
+Current recovery: semantic-complete (`compiler` residual). The exact Android
+`cRSubGame::WarnTrack()` body, the live Windows SubGame method, its sole caller,
+catalog producer, and downstream cache consumer establish the complete
+row/lane bounds, empty-neighbor gate, two index-preserving replacement scans,
+and warning-bit lifecycle. All six references are clean and both sides contain
+75 instructions; the remaining uniform `+0x24` displacement is the measured
+typed-cell versus object-slot CSE/register-allocation boundary. No iOS
+WarnTrack body was exported.
+
 - Promotes runtime track-cell BOD objects to fringe variants when the same-lane
   cell in the next row is open.
 - Current retained shape is 81.33%: same instruction count as native, same
@@ -136,10 +145,11 @@ all `BodBase*` interactions optimize back to the retained cell-base cursor.
 Keeping the object slot live across both scans forces a different schedule and
 falls to 39.22%; it does not preserve the native `ebx = 0x20` flag owner.
 
-The append-only ledger therefore has three consecutive non-improving sweeps
-and marks this scratch stalled. Retain the typed `cRSubLoc*` induction: the
-remaining uniform `+0x24` displacement is bounded compiler scheduling, not
-missing ownership or an unresolved reference.
+The last three append-only ledger sweeps are non-improving; this is descriptive
+evidence, not a stopping rule. Retain the typed `cRSubLoc*` induction until a
+fresh source hypothesis improves it: the remaining uniform `+0x24`
+displacement is bounded compiler scheduling, not missing ownership or an
+unresolved reference.
 
 ## 2026-08-09 physical bank-index contract
 
@@ -159,9 +169,9 @@ countdown as full-width unsigned owners, matching the Windows dword
 
 One complete 15-variant sweep covers each ownership change alone and in every
 combination; all variants are byte-identical and the sweep is untruncated. The
-typed semantic form is retained despite the neutral score. It does not reopen
-the exhausted object-slot cursor lane: the remaining `+0x24` displacement is
-still the measured VC6 CSE boundary.
+typed semantic form is retained despite the neutral score. It does not revisit
+the previously tested object-slot cursor lane: the remaining `+0x24`
+displacement is still the measured VC6 CSE boundary.
 
 The behavioral boundary is now explicit. WarnTrack visits rows
 `[0, runtime_row_count - 1)`, clears `SUBLOC_FLAG_WARNING_CACHE_FAMILY` before
@@ -219,5 +229,5 @@ typed short-lived `Object*` borrows. The latter exact pair was already covered
 by the closed 2026-07-30 sweep (`source_sha256`
 `c926aed627057b11c0ec4e9ec75125f6fe60792c2427cb8ab5415a69a31bd5d5`) and was
 byte-identical at 81.33%, 75/75, prefix 11/75, with all six references clean;
-it was adopted without rerunning any exhausted cursor/register/store variant.
-The remaining displacement-only cursor residual is unchanged.
+it was adopted without rerunning the previously tested cursor/register/store
+variants. The remaining displacement-only cursor residual is unchanged.

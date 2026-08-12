@@ -1,5 +1,12 @@
 # release_snail_weapons @ 0x442e40
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRSnail::ReleaseWeapons()` bodies and the live Windows Snail method establish
+the one-shot gate, all four random/forward release vectors, their channel
+destinations, and the hover shutdown. All 33 references are clean and both
+sides contain 125 instructions; the remaining deltas are equivalent temporary
+stack slots and owner-load/publication scheduling.
+
 Authored `cRSnail::ReleaseWeapons()` helper that arms the Snail weapon and
 jetpack channel release steps once, then marks the Snail-owned
 `channel_release_steps_active` gate.
@@ -89,6 +96,7 @@ No variant improved the fuzzy score: 122 were neutral and 21 regressed. Named
 or in-place vectors, component stores, pointer/reference destinations,
 owner aliases, declaration reorderings, and moving reused locals outside the
 one-shot branch do not recover the native first-`random_x` stack slot or the
-third-channel publication schedule. Three consecutive no-improvement sweeps
-now mark this scratch stalled. Do not revisit ordinary lifetime or publication
-syntax without new translation-unit or compiler evidence.
+third-channel publication schedule. The last three recorded sweeps were
+non-improving; this is descriptive evidence, not a stopping rule. Ordinary
+lifetime or publication syntax currently has no evidence-backed improvement,
+but remains open to fresh translation-unit or compiler evidence.
