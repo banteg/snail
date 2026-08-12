@@ -76,12 +76,18 @@
     {
       "address": "0x4032a0",
       "name": "allocate_border",
-      "description": "Exact cRBorderManager allocator: scans the fixed 150-record pool for the first inactive cRBorder-sized slot, stamps GameRoot::frame_counter, and returns that backing record through the authored cRBorder view. Android and iOS cRBorderManager::GetBorder() independently preserve the same flags-scan, frame-stamp-before-return lifecycle over their platform layout."
+      "description": "Exact cRBorderManager allocator: scans the fixed 150-record pool for the first inactive cRBorder-sized slot, stamps GameRoot::frame_counter, and returns that backing record through the authored cRBorder view. Android and iOS cRBorderManager::GetBorder() independently preserve the same flags-scan, frame-stamp-before-return lifecycle over their platform layout.",
+      "aliases": [
+        "cRBorderManager_GetBorder"
+      ]
     },
     {
       "address": "0x403300",
       "name": "activate_all_borders",
-      "description": "Exact authored `cRBorderManager::ActivateBorders()` member: walks the fixed 150-record pool, restores each border's pre-deactivation disabled state, clears the saved-state bit, resets both padding lanes to idle, and clears the hover target. Android confirms the owner and lifecycle over its platform layout."
+      "description": "Exact authored `cRBorderManager::ActivateBorders()` member: walks the fixed 150-record pool, restores each border's pre-deactivation disabled state, clears the saved-state bit, resets both padding lanes to idle, and clears the hover target. Android confirms the owner and lifecycle over its platform layout.",
+      "aliases": [
+        "cRBorderManager_ActivateBorders"
+      ]
     },
     {
       "address": "0x403360",
@@ -91,17 +97,26 @@
     {
       "address": "0x4033c0",
       "name": "kill_all_borders",
-      "description": "Exact void cRBorderManager::KillBorders() pool teardown. All three Windows callers discard EAX, proving the final per-record flags value is loop residue rather than an API result."
+      "description": "Exact void cRBorderManager::KillBorders() pool teardown. All three Windows callers discard EAX, proving the final per-record flags value is loop residue rather than an API result.",
+      "aliases": [
+        "cRBorderManager_KillBorders"
+      ]
     },
     {
       "address": "0x4033f0",
       "name": "hide_all_borders",
-      "description": "Exact void `cRBorderManager::HideBorders()` wrapper that pushes a nested hidden-state transition through the embedded `cRBorderStack`. Android calls `Perform(0)` directly; iOS inlines the same operation over its pointer-backed border pool."
+      "description": "Exact void `cRBorderManager::HideBorders()` wrapper that pushes a nested hidden-state transition through the embedded `cRBorderStack`. Android calls `Perform(0)` directly; iOS inlines the same operation over its pointer-backed border pool.",
+      "aliases": [
+        "cRBorderManager_HideBorders"
+      ]
     },
     {
       "address": "0x403400",
       "name": "unhide_all_borders",
-      "description": "Exact void `cRBorderManager::UnHideBorders()` wrapper that unwinds the newest hidden-state transition through the embedded `cRBorderStack`, restoring idle padding and hover state. Android calls `Perform(1)` directly; iOS inlines the same operation."
+      "description": "Exact void `cRBorderManager::UnHideBorders()` wrapper that unwinds the newest hidden-state transition through the embedded `cRBorderStack`, restoring idle padding and hover state. Android calls `Perform(1)` directly; iOS inlines the same operation.",
+      "aliases": [
+        "cRBorderManager_UnHideBorders"
+      ]
     },
     {
       "address": "0x403410",
@@ -153,7 +168,10 @@
     {
       "address": "0x403fc0",
       "name": "update_border_manager",
-      "description": "Exact authored `cRBorderManager::AI()` member: advances the delayed-widget transition, clamps it after one normalized interval, waits for root fade state 4 when required, applies the queued flags to the borrowed cRBorder, and clears the active lane. Android and iOS confirm the owner and field order without transferring platform offsets."
+      "description": "Exact authored `cRBorderManager::AI()` member: advances the delayed-widget transition, clamps it after one normalized interval, waits for root fade state 4 when required, applies the queued flags to the borrowed cRBorder, and clears the active lane. Android and iOS confirm the owner and field order without transferring platform offsets.",
+      "aliases": [
+        "cRBorderManager_AI"
+      ]
     },
     {
       "address": "0x404030",
@@ -207,7 +225,10 @@
     {
       "address": "0x404730",
       "name": "set_border_justify_centre",
-      "description": "Exact void cRBorderManager::SetJustifyCentre(float): stores the authored float at the manager's final +0x435b0 field. All ten Windows callers discard EAX and pass either 0.0f or 25.0f, proving the apparent returned argument is compiler residue rather than an owned result."
+      "description": "Exact void cRBorderManager::SetJustifyCentre(float): stores the authored float at the manager's final +0x435b0 field. All ten Windows callers discard EAX and pass either 0.0f or 25.0f, proving the apparent returned argument is compiler residue rather than an owned result.",
+      "aliases": [
+        "cRBorderManager_SetJustifyCentre"
+      ]
     },
     {
       "address": "0x404740",

@@ -172,7 +172,7 @@ update_after_input:
         && g_game->players[0].mouse_cursor.IsActive() != 0) {
         border_input_text();
         if ((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
-            g_game->border_manager.activate_all_borders();
+            g_game->border_manager.ActivateBorders();
     }
 
     twinkle_manager.AI();

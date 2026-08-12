@@ -43,23 +43,18 @@ class cRBorderManager : public BodBase {
 public:
     // The backing storage is BorderRecord-sized, but frontend callers use the
     // returned record through the cRBorder view.
-    cRBorder* allocate_border(); // @ 0x4032a0
-    void activate_all_borders(); // @ 0x403300,
-        // Android cRBorderManager::ActivateBorders()
-    void kill_all_borders(); // @ 0x4033c0, cRBorderManager::KillBorders
-    void hide_all_borders(); // @ 0x4033f0,
-        // iOS/Android cRBorderManager::HideBorders()
-    void unhide_all_borders(); // @ 0x403400,
-        // iOS/Android cRBorderManager::UnHideBorders()
+    cRBorder* GetBorder(); // @ 0x4032a0
+    void ActivateBorders(); // @ 0x403300
+    void KillBorders(); // @ 0x4033c0
+    void HideBorders(); // @ 0x4033f0
+    void UnHideBorders(); // @ 0x403400
     int kill_border(cRBorder* border);
     void queue_frontend_widget_flag_after_delay(
         cRBorder* widget,
         int queued_flags); // @ 0x403f60,
         // Android cRBorderManager::DelayClick(cRBorder*, int)
-    void update_border_manager(); // @ 0x403fc0,
-        // iOS/Android cRBorderManager::AI()
-    void set_border_justify_centre(
-        float justify_centre); // @ 0x404730, cRBorderManager::SetJustifyCentre
+    void AI(); // @ 0x403fc0
+    void SetJustifyCentre(float justify_centre); // @ 0x404730
 
     cRBorderStack border_stack; // +0x38, exact cRBorderStack owner/link history
     BorderRecord borders[BORDER_RECORD_COUNT]; // +0x684

@@ -9484,6 +9484,13 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
     include_root = repo_root / "tools/match/include"
     scratch_root = repo_root / "tools/match/scratches"
     method_names = {
+        "allocate_border": "GetBorder",
+        "activate_all_borders": "ActivateBorders",
+        "kill_all_borders": "KillBorders",
+        "hide_all_borders": "HideBorders",
+        "unhide_all_borders": "UnHideBorders",
+        "update_border_manager": "AI",
+        "set_border_justify_centre": "SetJustifyCentre",
         "reset_tooltip": "ReSet",
         "update_tooltip": "AI",
         "update_twinkle_manager": "AI",
@@ -9635,6 +9642,81 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         header = (include_root / header_name).read_text(encoding="utf-8")
         assert f"SYMBOL={object_symbol}\n" in config
         assert f"void {method}();" in header
+
+    manager_methods = {
+        "allocate_border": (
+            "cRBorderManager::GetBorder()",
+            "?GetBorder@cRBorderManager@@QAEPAVcRBorder@@XZ",
+            "cRBorderManager_GetBorder",
+            "cRBorder* GetBorder();",
+            True,
+        ),
+        "activate_all_borders": (
+            "cRBorderManager::ActivateBorders()",
+            "?ActivateBorders@cRBorderManager@@QAEXXZ",
+            "cRBorderManager_ActivateBorders",
+            "void ActivateBorders();",
+            False,
+        ),
+        "kill_all_borders": (
+            "cRBorderManager::KillBorders()",
+            "?KillBorders@cRBorderManager@@QAEXXZ",
+            "cRBorderManager_KillBorders",
+            "void KillBorders();",
+            True,
+        ),
+        "hide_all_borders": (
+            "cRBorderManager::HideBorders()",
+            "?HideBorders@cRBorderManager@@QAEXXZ",
+            "cRBorderManager_HideBorders",
+            "void HideBorders();",
+            True,
+        ),
+        "unhide_all_borders": (
+            "cRBorderManager::UnHideBorders()",
+            "?UnHideBorders@cRBorderManager@@QAEXXZ",
+            "cRBorderManager_UnHideBorders",
+            "void UnHideBorders();",
+            True,
+        ),
+        "update_border_manager": (
+            "cRBorderManager::AI()",
+            "?AI@cRBorderManager@@QAEXXZ",
+            "cRBorderManager_AI",
+            "void AI();",
+            True,
+        ),
+        "set_border_justify_centre": (
+            "cRBorderManager::SetJustifyCentre(float)",
+            "?SetJustifyCentre@cRBorderManager@@QAEXM@Z",
+            "cRBorderManager_SetJustifyCentre",
+            "void SetJustifyCentre(float justify_centre);",
+            True,
+        ),
+    }
+    for function, (
+        mobile_symbol,
+        object_symbol,
+        alias,
+        declaration,
+        has_ios,
+    ) in manager_methods.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Border.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if has_ios:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert declaration in manager
 
     frontend_update = (
         scratch_root / "update_frontend_widget_interaction/scratch.cpp"

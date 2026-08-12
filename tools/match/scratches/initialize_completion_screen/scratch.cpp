@@ -52,7 +52,7 @@ void cRCompletion::Init(
     total_score = g_game->subgame.player.total_score
         + new_delivered_count * 100 + bonus;
 
-    title_widget = g_game->border_manager.allocate_border();
+    title_widget = g_game->border_manager.GetBorder();
     title_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
@@ -60,7 +60,7 @@ void cRCompletion::Init(
         20, 0.0f, 80.0f,
         tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
 
-    delivered_count_widget = g_game->border_manager.allocate_border();
+    delivered_count_widget = g_game->border_manager.GetBorder();
     if (delivered_count == 1) {
         delivered_count_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
@@ -75,14 +75,14 @@ void cRCompletion::Init(
             tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     }
 
-    bonus_icon_widget = g_game->border_manager.allocate_border();
+    bonus_icon_widget = g_game->border_manager.GetBorder();
     bonus_icon_widget->initialize_frontend_sprite_button(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE, 122,
         100.0f, 146.0f,
         tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 4);
     bonus_icon_widget->sprite_shadow_offset = 0.0f;
 
-    bonus_summary_widget = g_game->border_manager.allocate_border();
+    bonus_summary_widget = g_game->border_manager.GetBorder();
     mode = g_game->subgame.level_mode;
     if (mode == 0) {
         bonus_summary_widget->initialize_frontend_widget(
@@ -103,7 +103,7 @@ void cRCompletion::Init(
     bonus_progress = 0.0f;
     bonus_progress_step = 0.041666668f;
 
-    continue_widget = g_game->border_manager.allocate_border();
+    continue_widget = g_game->border_manager.GetBorder();
     if (perfect_delivery != 0) {
         continue_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS

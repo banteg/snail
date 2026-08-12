@@ -16,7 +16,7 @@ void cRTip::Init(cRTipData* definition_, int hide_disable_button)
         definition = &g_default_tip_message;
 
     FrontendWidget*& main_widget = widget_main;
-    main_widget = g_game->border_manager.allocate_border();
+    main_widget = g_game->border_manager.GetBorder();
     int definition_flags = definition->flags;
     unsigned int alignment = (int)(char)~definition_flags;
     alignment &= 4;
@@ -39,7 +39,7 @@ void cRTip::Init(cRTipData* definition_, int hide_disable_button)
     }
 
     if ((live_flags & 1) != 0) {
-        widget_ok = g_game->border_manager.allocate_border();
+        widget_ok = g_game->border_manager.GetBorder();
         if (hide_disable_button == 0) {
             widget_ok->initialize_frontend_widget(
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -52,7 +52,7 @@ void cRTip::Init(cRTipData* definition_, int hide_disable_button)
                 2,
                 definition->anchor_x + 40.0f);
 
-            widget_disable = g_game->border_manager.allocate_border();
+            widget_disable = g_game->border_manager.GetBorder();
             widget_disable->initialize_frontend_widget(
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                     | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

@@ -1,4 +1,4 @@
-// allocate_border @ 0x4032a0 (thiscall, ret)
+// allocate_border / cRBorderManager::GetBorder @ 0x4032a0 (thiscall, ret)
 
 #include "border_manager.h"
 #include "game_root.h"
@@ -6,7 +6,7 @@
 
 int report_errorf(char* format, ...);
 
-cRBorder* cRBorderManager::allocate_border()
+cRBorder* cRBorderManager::GetBorder()
 {
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
         if (borders[i].flags == 0) {

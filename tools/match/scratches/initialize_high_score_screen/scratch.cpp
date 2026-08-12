@@ -39,10 +39,10 @@ void cRHighScore::Init(int mode_, int rank)
                            .Import(g_menu_background_script_path);
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(25.0f);
+    g_game->border_manager.SetJustifyCentre(25.0f);
     g_game->players[0].mouse_cursor.SetActive();
 
-    title_widget = g_game->border_manager.allocate_border();
+    title_widget = g_game->border_manager.GetBorder();
     float y;
     int record_offset;
     float row_step;
@@ -95,7 +95,7 @@ void cRHighScore::Init(int mode_, int rank)
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 row_background_widgets[row_index]->initialize_frontend_widget(
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                               ",
@@ -105,7 +105,7 @@ void cRHighScore::Init(int mode_, int rank)
                     1, -228.0f);
 
                 rank_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 int row_flags = highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
@@ -117,7 +117,7 @@ void cRHighScore::Init(int mode_, int rank)
                 rank_row_widgets[row_index]->layout_frontend_widget();
 
                 name_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 name_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags,
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
@@ -135,7 +135,7 @@ void cRHighScore::Init(int mode_, int rank)
                 name_row_widgets[row_index]->layout_frontend_widget();
 
                 score_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
                     postal_score_color.Set(
@@ -147,7 +147,7 @@ void cRHighScore::Init(int mode_, int rank)
                 score_row_widgets[row_index]->layout_frontend_widget();
 
                 replay_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 replay_row_widgets[row_index]->initialize_frontend_widget(
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -167,7 +167,7 @@ void cRHighScore::Init(int mode_, int rank)
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 row_background_widgets[row_index]->initialize_frontend_widget(
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                           ",
@@ -177,7 +177,7 @@ void cRHighScore::Init(int mode_, int rank)
                     1, -228.0f);
 
                 rank_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 int row_flags = highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->initialize_frontend_widget(
@@ -189,7 +189,7 @@ void cRHighScore::Init(int mode_, int rank)
                 rank_row_widgets[row_index]->layout_frontend_widget();
 
                 name_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 name_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags,
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
@@ -207,7 +207,7 @@ void cRHighScore::Init(int mode_, int rank)
                 name_row_widgets[row_index]->layout_frontend_widget();
 
                 score_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 score_row_widgets[row_index]->initialize_frontend_widget(
                     row_flags, g_blank_text, 22, 0.0f, y,
                     challenge_score_color.Set(
@@ -219,7 +219,7 @@ void cRHighScore::Init(int mode_, int rank)
                 score_row_widgets[row_index]->layout_frontend_widget();
 
                 replay_row_widgets[row_index] =
-                    g_game->border_manager.allocate_border();
+                    g_game->border_manager.GetBorder();
                 replay_row_widgets[row_index]->initialize_frontend_widget(
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -250,7 +250,7 @@ void cRHighScore::Init(int mode_, int rank)
 
     y = row_step * (float)SUB_HIGH_SCORE_TOP_TEN_COUNT + 111.0f;
     if (entering_name != 0) {
-        cancel_name_button = g_game->border_manager.allocate_border();
+        cancel_name_button = g_game->border_manager.GetBorder();
         cancel_name_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -260,7 +260,7 @@ void cRHighScore::Init(int mode_, int rank)
                 1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
         cancel_name_button->set_frontend_widget_shortcut_key(11);
 
-        submit_name_button = g_game->border_manager.allocate_border();
+        submit_name_button = g_game->border_manager.GetBorder();
         submit_name_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -272,7 +272,7 @@ void cRHighScore::Init(int mode_, int rank)
         return;
     }
 
-    back_button = g_game->border_manager.allocate_border();
+    back_button = g_game->border_manager.GetBorder();
     back_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -281,7 +281,7 @@ void cRHighScore::Init(int mode_, int rank)
         shared_action_color.Set(
             1.0f, 1.0f, 1.0f, 1.0f), 2, -132.0f);
 
-    bank_toggle_button = g_game->border_manager.allocate_border();
+    bank_toggle_button = g_game->border_manager.GetBorder();
     switch (selected_bank) {
     case 0:
         bank_toggle_button->initialize_frontend_widget(

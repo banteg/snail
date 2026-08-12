@@ -8,7 +8,7 @@ int report_errorf(char* format, ...);
 
 void cRClickStart::Init(cRSubGoldy* new_player)
 {
-    prompt = g_game->border_manager.allocate_border();
+    prompt = g_game->border_manager.GetBorder();
     tColour color;
     prompt->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,

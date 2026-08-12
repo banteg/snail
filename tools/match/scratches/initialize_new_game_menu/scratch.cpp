@@ -27,10 +27,10 @@ void cRIntro::Init()
                            .Import(g_menu_background_script_path);
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(25.0f);
+    g_game->border_manager.SetJustifyCentre(25.0f);
     g_game->render_skip_countdown = 2;
 
-    tutorial_button = g_game->border_manager.allocate_border();
+    tutorial_button = g_game->border_manager.GetBorder();
     tutorial_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -43,7 +43,7 @@ void cRIntro::Init()
         2,
         0.0f);
 
-    postal_button = g_game->border_manager.allocate_border();
+    postal_button = g_game->border_manager.GetBorder();
     postal_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -57,7 +57,7 @@ void cRIntro::Init()
         0.0f);
     postal_button->stack_widget_below(tutorial_button);
 
-    time_trial_button = g_game->border_manager.allocate_border();
+    time_trial_button = g_game->border_manager.GetBorder();
     time_trial_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -71,7 +71,7 @@ void cRIntro::Init()
         0.0f);
     time_trial_button->stack_widget_below(postal_button);
 
-    challenge_button = g_game->border_manager.allocate_border();
+    challenge_button = g_game->border_manager.GetBorder();
     challenge_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -84,7 +84,7 @@ void cRIntro::Init()
         0.0f);
     challenge_button->stack_widget_below(time_trial_button);
 
-    help_button = g_game->border_manager.allocate_border();
+    help_button = g_game->border_manager.GetBorder();
     help_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -97,7 +97,7 @@ void cRIntro::Init()
         2,
         -220.0f);
 
-    back_button = g_game->border_manager.allocate_border();
+    back_button = g_game->border_manager.GetBorder();
     back_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

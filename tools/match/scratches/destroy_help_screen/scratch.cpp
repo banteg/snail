@@ -6,5 +6,5 @@
 
 void cRHelp::UnInit()
 {
-    g_game->border_manager.kill_all_borders();
+    g_game->border_manager.KillBorders();
 }

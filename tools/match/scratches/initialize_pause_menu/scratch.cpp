@@ -13,7 +13,7 @@ void cRSubPause::Init()
 {
     tColour color;
 
-    end_game_widget = g_game->border_manager.allocate_border();
+    end_game_widget = g_game->border_manager.GetBorder();
     end_game_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -21,7 +21,7 @@ void cRSubPause::Init()
         color.Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     end_game_widget->set_frontend_widget_shortcut_key(11);
 
-    options_widget = g_game->border_manager.allocate_border();
+    options_widget = g_game->border_manager.GetBorder();
     options_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -31,7 +31,7 @@ void cRSubPause::Init()
     options_widget->layout_frontend_widget();
     options_widget->stack_widget_below(end_game_widget);
 
-    resume_widget = g_game->border_manager.allocate_border();
+    resume_widget = g_game->border_manager.GetBorder();
     resume_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

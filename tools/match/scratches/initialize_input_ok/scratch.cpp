@@ -8,7 +8,7 @@
 void cRInputOK::initialize_input_ok()
 {
     cRBorder* widget =
-        g_game->border_manager.allocate_border();
+        g_game->border_manager.GetBorder();
     cRBorder* source = source_widget;
     ok_widget = widget;
     widget->initialize_frontend_widget(

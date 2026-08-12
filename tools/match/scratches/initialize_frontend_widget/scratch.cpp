@@ -144,7 +144,7 @@ void cRBorder::initialize_frontend_widget(
     mouse_history_warmup_frames = 1;
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
-        slider_more_widget = g_game->border_manager.allocate_border();
+        slider_more_widget = g_game->border_manager.GetBorder();
         float slider_y = y + 40.0f;
         slider_more_widget->initialize_frontend_sprite_button(
             (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND)
@@ -161,7 +161,7 @@ void cRBorder::initialize_frontend_widget(
             4);
         slider_more_widget->border_sprite_extend(44, 43, 45, 1);
 
-        slider_less_widget = g_game->border_manager.allocate_border();
+        slider_less_widget = g_game->border_manager.GetBorder();
         slider_less_widget->initialize_frontend_sprite_button(
             (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND)
                 | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
@@ -177,7 +177,7 @@ void cRBorder::initialize_frontend_widget(
             4);
         slider_less_widget->border_sprite_extend(40, 39, 41, 0);
 
-        slider_value_widget = g_game->border_manager.allocate_border();
+        slider_value_widget = g_game->border_manager.GetBorder();
         slider_value_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS,
             (char*)"00%",

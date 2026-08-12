@@ -1,36 +1,13 @@
-# update_border_manager @ 0x403fc0
+# update_border_manager
 
-Consumes the delayed frontend-widget flag lane armed by
-`queue_frontend_widget_flag_after_delay`. While active, it advances the progress
-timer by the fixed step, clamps progress to `1.0f` after expiry, and ORs the
-queued flag mask into the target widget once either the widget does not carry
-`FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION` or the root-owned
-`GameRoot::fade.state` has
-reached state `4`.
+The exact Windows body is the dual-mobile-authored
+`void cRBorderManager::AI()`. Windows constructs the manager at
+`cRGame +0xb4c`, initializes its inline border pool, and installs callback
+table `0x4972e8`; the table's first pointer is this function at `0x403fc0`.
+Android and iOS retain the same owner, method name, delayed-border transition,
+and one body each.
 
-Focused match: 100%, 28/28 instructions, with two clean masked operands.
-
-2026-07-12 ownership closure: the former sparse delayed-lane view is absorbed
-into `BorderManager`. This exact member and its exact arming helper jointly
-prove the post-pool tail through `+0x435af`; the following center-justify
-scalar closes the manager at `+0x435b4`.
-
-2026-07-14 root-client consolidation: the transition gate now names
-`GameRoot::fade.state` instead of reconstructing the root +0x24 owner. Focused
-matching remains exact at 28/28 instructions with two clean operands.
-
-2026-07-15 canonical manager replay: BN and IDA now preserve every delayed
-transition field and the borrowed widget's `widget_flags` through their real
-owners. The source remains exact at 28/28 with two clean operands.
-
-## 2026-07-26 cross-port AI owner
-
-Android and iOS both retain `cRBorderManager::AI()` with the same delayed
-transition lane as Windows. Each body advances and clamps the normalized
-progress, checks the target border's `FADE_BEFORE_ACTION` bit, waits for root
-fade state 4 only when necessary, ORs the queued flags into the borrowed
-border, and clears the active byte.
-
-The mobile manager and cRBorder offsets differ, but the field order and
-borrowed lifetime agree. The exact Windows owner remains 28/28 instructions
-with two clean operands.
+The method advances and clamps the normalized progress, waits for root fade
+state 4 only when the borrowed border requests it, applies the queued flags,
+and clears the active byte. Focused Wibo result: 100.00%, 28/28 instructions,
+two clean masked operands.

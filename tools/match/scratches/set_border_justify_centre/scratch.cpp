@@ -1,8 +1,8 @@
-// set_border_justify_centre @ 0x404730 (thiscall, ret 0x4)
+// set_border_justify_centre / cRBorderManager::SetJustifyCentre @ 0x404730
 
 #include "border_manager.h"
 
-void cRBorderManager::set_border_justify_centre(float justify_centre_)
+void cRBorderManager::SetJustifyCentre(float justify_centre_)
 {
     justify_centre = justify_centre_;
 }

@@ -9,7 +9,7 @@ void cRTimesUp::Init()
     if (state == TIMES_UP_STATE_INACTIVE) {
         tColour color;
 
-        border = g_game->border_manager.allocate_border();
+        border = g_game->border_manager.GetBorder();
         border->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Time's Up", 0x14, 0.0f, 200.0f,

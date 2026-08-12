@@ -26,10 +26,10 @@ void cRMainMenu::Init()
                            .Import(g_menu_background_script_path);
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(25.0f);
+    g_game->border_manager.SetJustifyCentre(25.0f);
     g_game->render_skip_countdown = 2;
 
-    new_game_widget = g_game->border_manager.allocate_border();
+    new_game_widget = g_game->border_manager.GetBorder();
     new_game_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -41,7 +41,7 @@ void cRMainMenu::Init()
         2,
         0.0f);
 
-    high_scores_widget = g_game->border_manager.allocate_border();
+    high_scores_widget = g_game->border_manager.GetBorder();
     high_scores_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -54,7 +54,7 @@ void cRMainMenu::Init()
         0.0f);
     high_scores_widget->stack_widget_below(new_game_widget);
 
-    options_widget = g_game->border_manager.allocate_border();
+    options_widget = g_game->border_manager.GetBorder();
     options_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -67,7 +67,7 @@ void cRMainMenu::Init()
         0.0f);
     options_widget->stack_widget_below(high_scores_widget);
 
-    options_widget = g_game->border_manager.allocate_border();
+    options_widget = g_game->border_manager.GetBorder();
     options_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -80,7 +80,7 @@ void cRMainMenu::Init()
         0.0f);
     options_widget->stack_widget_below(high_scores_widget);
 
-    credits_widget = g_game->border_manager.allocate_border();
+    credits_widget = g_game->border_manager.GetBorder();
     credits_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -94,7 +94,7 @@ void cRMainMenu::Init()
         0.0f);
     credits_widget->stack_widget_below(options_widget);
 
-    exit_widget = g_game->border_manager.allocate_border();
+    exit_widget = g_game->border_manager.GetBorder();
     exit_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

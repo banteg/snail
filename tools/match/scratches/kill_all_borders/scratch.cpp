@@ -1,8 +1,8 @@
-// kill_all_borders @ 0x4033c0 (thiscall)
+// kill_all_borders / cRBorderManager::KillBorders @ 0x4033c0 (thiscall)
 
 #include "border_manager.h"
 
-void cRBorderManager::kill_all_borders()
+void cRBorderManager::KillBorders()
 {
     int result = 0;
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {

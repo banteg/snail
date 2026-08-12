@@ -57,7 +57,7 @@ void cRSubGame::Init()
         g_game->backdrop.change_backdrop(
                 &g_game->subgame.landscape_manager.scripts[script_index],
                 0);
-        g_game->border_manager.set_border_justify_centre(25.0f);
+        g_game->border_manager.SetJustifyCentre(25.0f);
     }
 
     int level_mode = this->level_mode;
@@ -94,7 +94,7 @@ void cRSubGame::Init()
     subgame_state = 0;
     times_up.state = TIMES_UP_STATE_INACTIVE;
 
-    top_score_widget = g_game->border_manager.allocate_border();
+    top_score_widget = g_game->border_manager.GetBorder();
     top_score_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "0",
@@ -109,7 +109,7 @@ void cRSubGame::Init()
     top_score_widget->text_buffer[0] = 0;
 
     if (this->level_mode == 0) {
-        lives_icon_widget = g_game->border_manager.allocate_border();
+        lives_icon_widget = g_game->border_manager.GetBorder();
         lives_icon_widget->initialize_frontend_sprite_button(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE,
             122,
@@ -121,7 +121,7 @@ void cRSubGame::Init()
         lives_icon_widget->hide_border_init();
         lives_icon_widget->sprite_shadow_offset = 0.0f;
 
-        lives_text_widget = g_game->border_manager.allocate_border();
+        lives_text_widget = g_game->border_manager.GetBorder();
         lives_text_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "0",
@@ -137,7 +137,7 @@ void cRSubGame::Init()
         int icon_index = 0;
         FrontendWidget** icon_slot = life_stock_widgets;
         do {
-            *icon_slot = g_game->border_manager.allocate_border();
+            *icon_slot = g_game->border_manager.GetBorder();
             (*icon_slot)->initialize_frontend_sprite_button(
                 FRONTEND_WIDGET_FLAG_FRAMELESS
                     | FRONTEND_WIDGET_FLAG_SPRITE_MODE,
@@ -178,7 +178,7 @@ void cRSubGame::Init()
         }
     }
 
-    bottom_score_widget = g_game->border_manager.allocate_border();
+    bottom_score_widget = g_game->border_manager.GetBorder();
     bottom_score_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "0",

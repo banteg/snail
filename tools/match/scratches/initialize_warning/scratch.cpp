@@ -8,7 +8,7 @@ void cRWarning::Init()
 {
     tColour color;
 
-    border = g_game->border_manager.allocate_border();
+    border = g_game->border_manager.GetBorder();
     border->initialize_frontend_sprite_button(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,

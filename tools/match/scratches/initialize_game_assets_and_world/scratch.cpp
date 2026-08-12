@@ -3086,7 +3086,7 @@ char cRGame::initialize_game_assets_and_world()
     border_manager.border_stack.initialize_border_stack();
     border_manager.border_stack.owner = &border_manager;
     border_manager.delayed_widget_active = 0;
-    border_manager.set_border_justify_centre(25.0f);
+    border_manager.SetJustifyCentre(25.0f);
 
     BorderRecord* border = &border_manager.borders[0];
     int border_count = BORDER_RECORD_COUNT;

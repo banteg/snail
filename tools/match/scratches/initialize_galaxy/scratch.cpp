@@ -28,7 +28,7 @@ void cRGalaxy::Init()
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[landscape_index], 0);
 
-    g_game->border_manager.set_border_justify_centre(0.0f);
+    g_game->border_manager.SetJustifyCentre(0.0f);
     g_game->players[0].mouse_cursor.SetActive();
     g_game->render_skip_countdown = 2;
 
@@ -54,7 +54,7 @@ void cRGalaxy::Init()
 
     {
         tColour color;
-        route_title_widget = g_game->border_manager.allocate_border();
+        route_title_widget = g_game->border_manager.GetBorder();
         route_title_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS,
             "Intergalactic Delivery Route",
@@ -66,7 +66,7 @@ void cRGalaxy::Init()
             0.0f);
         route_title_widget->font_scale = 0.83f;
 
-        route_icon_widget = g_game->border_manager.allocate_border();
+        route_icon_widget = g_game->border_manager.GetBorder();
         route_icon_widget->initialize_frontend_sprite_button(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
@@ -80,7 +80,7 @@ void cRGalaxy::Init()
             4);
     }
 
-    exit_or_back_widget = g_game->border_manager.allocate_border();
+    exit_or_back_widget = g_game->border_manager.GetBorder();
     if (route_mode == 1) {
         tColour color;
         exit_or_back_widget->initialize_frontend_widget(
@@ -123,7 +123,7 @@ void cRGalaxy::Init()
 
     {
         tColour color;
-        bounds_frame_widget = g_game->border_manager.allocate_border();
+        bounds_frame_widget = g_game->border_manager.GetBorder();
         bounds_frame_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT
@@ -147,7 +147,7 @@ void cRGalaxy::Init()
         bounds_frame_widget->frame_width = 200.0f;
         bounds_frame_widget->frame_height = 100.0f;
 
-        selected_title_widget = g_game->border_manager.allocate_border();
+        selected_title_widget = g_game->border_manager.GetBorder();
         selected_title_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
@@ -163,7 +163,7 @@ void cRGalaxy::Init()
         selected_title_widget->font_scale = 0.9f;
         selected_title_widget->stack_gap = 0.0f;
 
-        selected_detail_widget = g_game->border_manager.allocate_border();
+        selected_detail_widget = g_game->border_manager.GetBorder();
         selected_detail_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
@@ -179,7 +179,7 @@ void cRGalaxy::Init()
         selected_detail_widget->font_scale = 0.9f;
         selected_detail_widget->stack_gap = 0.0f;
 
-        selected_description_widget = g_game->border_manager.allocate_border();
+        selected_description_widget = g_game->border_manager.GetBorder();
         selected_description_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
@@ -196,7 +196,7 @@ void cRGalaxy::Init()
         selected_description_widget->stack_gap = 0.0f;
     }
 
-    play_or_deliver_widget = g_game->border_manager.allocate_border();
+    play_or_deliver_widget = g_game->border_manager.GetBorder();
     if (level_progress_base->level_mode == 0) {
         tColour color;
         play_or_deliver_widget->initialize_frontend_widget(
@@ -231,7 +231,7 @@ void cRGalaxy::Init()
 
     {
         tColour color;
-        replay_widget = g_game->border_manager.allocate_border();
+        replay_widget = g_game->border_manager.GetBorder();
         replay_widget->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION

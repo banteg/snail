@@ -19527,7 +19527,7 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     # The matcher keeps an intentional result-shaped VC6 harness, while the
     # analysis databases persist the independently evidenced semantic void ABI.
     assert "int kill_border(cRBorder* border);" in matcher_border_header
-    assert "void set_border_justify_centre(" in matcher_border_header
+    assert "void SetJustifyCentre(" in matcher_border_header
     assert "float justify_centre);" in matcher_border_header
     assert "int set_border_justify_centre" not in matcher_border_header
     assert "justify_centre_bits" not in matcher_border_header

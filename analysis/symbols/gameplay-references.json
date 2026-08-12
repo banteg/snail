@@ -30,6 +30,51 @@
       "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
     },
     {
+      "address": "0x4032a0",
+      "name": "allocate_border",
+      "kind": "function",
+      "aliases": [
+        "?GetBorder@cRBorderManager@@QAEPAVcRBorder@@XZ"
+      ],
+      "description": "Exact Windows cRBorderManager::GetBorder() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x403300",
+      "name": "activate_all_borders",
+      "kind": "function",
+      "aliases": [
+        "?ActivateBorders@cRBorderManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorderManager::ActivateBorders() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4033c0",
+      "name": "kill_all_borders",
+      "kind": "function",
+      "aliases": [
+        "?KillBorders@cRBorderManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorderManager::KillBorders() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4033f0",
+      "name": "hide_all_borders",
+      "kind": "function",
+      "aliases": [
+        "?HideBorders@cRBorderManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorderManager::HideBorders() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x403400",
+      "name": "unhide_all_borders",
+      "kind": "function",
+      "aliases": [
+        "?UnHideBorders@cRBorderManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorderManager::UnHideBorders() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x403be0",
       "name": "reset_tooltip",
       "kind": "function",
@@ -46,6 +91,15 @@
         "?AI@cRToolTip@@QAEXXZ"
       ],
       "description": "Exact Windows cRToolTip::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x403fc0",
+      "name": "update_border_manager",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRBorderManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorderManager::AI() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x404030",
@@ -73,6 +127,15 @@
         "?AI@cRTwinkle@@QAEXXZ"
       ],
       "description": "Exact Windows cRTwinkle::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x404730",
+      "name": "set_border_justify_centre",
+      "kind": "function",
+      "aliases": [
+        "?SetJustifyCentre@cRBorderManager@@QAEXM@Z"
+      ],
+      "description": "Exact Windows cRBorderManager::SetJustifyCentre(float) entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x404740",

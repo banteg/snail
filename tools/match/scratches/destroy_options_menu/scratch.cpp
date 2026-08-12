@@ -8,7 +8,7 @@ extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
 void cROptions::UnInit()
 {
-    g_game->border_manager.unhide_all_borders();
+    g_game->border_manager.UnHideBorders();
     g_game->border_manager.kill_border(back_widget);
     g_game->border_manager.kill_border(music_volume_widget);
     g_game->border_manager.kill_border(sound_volume_widget);

@@ -22,9 +22,9 @@ void cRHelp::Init()
                            .Import(g_help_script_path);
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
-    g_game->border_manager.set_border_justify_centre(0.0f);
+    g_game->border_manager.SetJustifyCentre(0.0f);
 
-    back_button = g_game->border_manager.allocate_border();
+    back_button = g_game->border_manager.GetBorder();
     back_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED

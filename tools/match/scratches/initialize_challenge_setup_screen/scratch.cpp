@@ -31,7 +31,7 @@ void cRGUI::Init()
     tColour replay_color;
     tColour back_color;
 
-    difficulty_slider = g_game->border_manager.allocate_border();
+    difficulty_slider = g_game->border_manager.GetBorder();
     difficulty_slider->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_SLIDER
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
@@ -47,7 +47,7 @@ void cRGUI::Init()
     difficulty_slider->slider_target_value = difficulty_slider->slider_value;
     ((FrontendWidgetVirtualLayout*)difficulty_slider)->layout_frontend_widget();
 
-    speed_slider = g_game->border_manager.allocate_border();
+    speed_slider = g_game->border_manager.GetBorder();
     speed_slider->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_SLIDER
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
@@ -68,7 +68,7 @@ void cRGUI::Init()
     if (game->sub_high_score.survival_pending_record.active == 1)
         play_anchor_x = 100.0f;
 
-    play_button = g_game->border_manager.allocate_border();
+    play_button = g_game->border_manager.GetBorder();
     play_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED
@@ -83,7 +83,7 @@ void cRGUI::Init()
         play_anchor_x);
     play_button->stack_widget_below(speed_slider);
 
-    replay_button = g_game->border_manager.allocate_border();
+    replay_button = g_game->border_manager.GetBorder();
     replay_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED
@@ -100,7 +100,7 @@ void cRGUI::Init()
     if (game->sub_high_score.survival_pending_record.active != 1)
         replay_button->hide_border_init();
 
-    back_button = g_game->border_manager.allocate_border();
+    back_button = g_game->border_manager.GetBorder();
     back_button->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HIGHLIGHTED
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED

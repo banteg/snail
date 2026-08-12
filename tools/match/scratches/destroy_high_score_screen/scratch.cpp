@@ -8,7 +8,7 @@
 void cRHighScore::UnInit()
 {
     g_runtime_config.high_score_selected_bank = selected_bank;
-    g_game->border_manager.kill_all_borders();
+    g_game->border_manager.KillBorders();
     g_game->players[0].high_score_entry_pending = 0;
     g_game->players[0].high_score_entry_rank = 0;
 }

@@ -1,8 +1,8 @@
-// cRBorderManager::ActivateBorders() / activate_all_borders @ 0x403300
+// activate_all_borders / cRBorderManager::ActivateBorders @ 0x403300
 
 #include "border_manager.h"
 
-void cRBorderManager::activate_all_borders()
+void cRBorderManager::ActivateBorders()
 {
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
         int flags = borders[i].flags;

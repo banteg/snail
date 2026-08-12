@@ -68,7 +68,7 @@ void cRLandscapeManager::Init(int script_index)
     } while (index < LANDSCAPE_ACTIVE_ENTRY_COUNT);
 
     g_game->backdrop.change_backdrop(&scripts[script_index], flip);
-    g_game->border_manager.set_border_justify_centre(0.0f);
+    g_game->border_manager.SetJustifyCentre(0.0f);
 
     tColour* source = &scripts[script_index].fog_color;
     tColour* destination = &g_game->fog_color;

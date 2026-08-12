@@ -26,7 +26,7 @@ void cRTip::AI()
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->players[0].frontend_state = previous_outer_owner;
             UnInit();
-            g_game->border_manager.unhide_all_borders();
+            g_game->border_manager.UnHideBorders();
             active = 0;
             return;
         }
@@ -42,7 +42,7 @@ void cRTip::AI()
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             g_game->players[0].frontend_state = previous_outer_owner;
             UnInit();
-            g_game->border_manager.unhide_all_borders();
+            g_game->border_manager.UnHideBorders();
             active = 0;
             return;
         }

@@ -47,7 +47,7 @@ void cRToolTip::AI()
             if (tooltip_widget != 0)
                 report_errorf("Tool tip overload");
             else
-                tooltip_widget = g_game->border_manager.allocate_border();
+                tooltip_widget = g_game->border_manager.GetBorder();
 
             flags = mode_flags;
             if ((flags & 1) != 0) {

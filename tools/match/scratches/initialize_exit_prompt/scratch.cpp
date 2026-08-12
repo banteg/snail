@@ -27,11 +27,11 @@ void cRExit::Init()
     tColour color_19;
     tColour color_20;
 
-    g_game->border_manager.hide_all_borders();
+    g_game->border_manager.HideBorders();
 
     switch (state - 2) {
     case 7:
-        yes_button = g_game->border_manager.allocate_border();
+        yes_button = g_game->border_manager.GetBorder();
         yes_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -43,7 +43,7 @@ void cRExit::Init()
             2,
             140.0f);
 
-        no_button = g_game->border_manager.allocate_border();
+        no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -57,7 +57,7 @@ void cRExit::Init()
         return;
 
     case 8:
-        prompt_title = g_game->border_manager.allocate_border();
+        prompt_title = g_game->border_manager.GetBorder();
         prompt_title->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
@@ -68,7 +68,7 @@ void cRExit::Init()
             2,
             0.0f);
 
-        yes_button = g_game->border_manager.allocate_border();
+        yes_button = g_game->border_manager.GetBorder();
         yes_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
@@ -82,7 +82,7 @@ void cRExit::Init()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = g_game->border_manager.allocate_border();
+        no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -97,7 +97,7 @@ void cRExit::Init()
         return;
 
     case 9:
-        prompt_title = g_game->border_manager.allocate_border();
+        prompt_title = g_game->border_manager.GetBorder();
         prompt_title->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
@@ -108,7 +108,7 @@ void cRExit::Init()
             2,
             0.0f);
 
-        yes_button = g_game->border_manager.allocate_border();
+        yes_button = g_game->border_manager.GetBorder();
         yes_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
@@ -122,7 +122,7 @@ void cRExit::Init()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = g_game->border_manager.allocate_border();
+        no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -138,7 +138,7 @@ void cRExit::Init()
 
     case 0:
     case 5:
-        prompt_title = g_game->border_manager.allocate_border();
+        prompt_title = g_game->border_manager.GetBorder();
         prompt_title->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
@@ -149,7 +149,7 @@ void cRExit::Init()
             2,
             0.0f);
 
-        yes_button = g_game->border_manager.allocate_border();
+        yes_button = g_game->border_manager.GetBorder();
         yes_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
@@ -163,7 +163,7 @@ void cRExit::Init()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = g_game->border_manager.allocate_border();
+        no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -178,7 +178,7 @@ void cRExit::Init()
         return;
 
     case 1:
-        prompt_title = g_game->border_manager.allocate_border();
+        prompt_title = g_game->border_manager.GetBorder();
         prompt_title->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
@@ -189,7 +189,7 @@ void cRExit::Init()
             2,
             0.0f);
 
-        yes_button = g_game->border_manager.allocate_border();
+        yes_button = g_game->border_manager.GetBorder();
         yes_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
@@ -203,7 +203,7 @@ void cRExit::Init()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = g_game->border_manager.allocate_border();
+        no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -218,7 +218,7 @@ void cRExit::Init()
         return;
 
     case 2:
-        prompt_title = g_game->border_manager.allocate_border();
+        prompt_title = g_game->border_manager.GetBorder();
         prompt_title->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "Do you really want to quit?",
@@ -229,7 +229,7 @@ void cRExit::Init()
             2,
             0.0f);
 
-        yes_button = g_game->border_manager.allocate_border();
+        yes_button = g_game->border_manager.GetBorder();
         yes_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION |
                 FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
@@ -243,7 +243,7 @@ void cRExit::Init()
             -80.0f);
         yes_button->stack_widget_below(prompt_title);
 
-        no_button = g_game->border_manager.allocate_border();
+        no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -258,7 +258,7 @@ void cRExit::Init()
         return;
 
     case 3:
-        yes_button = g_game->border_manager.allocate_border();
+        yes_button = g_game->border_manager.GetBorder();
         yes_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -270,7 +270,7 @@ void cRExit::Init()
             0,
             0.0f);
 
-        no_button = g_game->border_manager.allocate_border();
+        no_button = g_game->border_manager.GetBorder();
         no_button->initialize_frontend_widget(
             FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED |
                 FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

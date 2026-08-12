@@ -13,11 +13,11 @@ void cROptions::Init()
 {
     tColour color;
 
-    g_game->border_manager.hide_all_borders();
+    g_game->border_manager.HideBorders();
     g_game->frontend_link_latch = 1;
 
     fullscreen_widget =
-        g_game->border_manager.allocate_border();
+        g_game->border_manager.GetBorder();
     fullscreen_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -31,7 +31,7 @@ void cROptions::Init()
     fullscreen_widget->layout_anchor_y += 8.0f;
 
     sound_volume_widget =
-        g_game->border_manager.allocate_border();
+        g_game->border_manager.GetBorder();
     sound_volume_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND
             | FRONTEND_WIDGET_FLAG_SLIDER
@@ -49,7 +49,7 @@ void cROptions::Init()
     ((FrontendWidgetVirtualLayout*)sound_volume_widget)->layout_frontend_widget();
 
     music_volume_widget =
-        g_game->border_manager.allocate_border();
+        g_game->border_manager.GetBorder();
     music_volume_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_SLIDER
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
@@ -66,7 +66,7 @@ void cROptions::Init()
     ((FrontendWidgetVirtualLayout*)music_volume_widget)->layout_frontend_widget();
 
     back_widget =
-        g_game->border_manager.allocate_border();
+        g_game->border_manager.GetBorder();
     back_widget->initialize_frontend_widget(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

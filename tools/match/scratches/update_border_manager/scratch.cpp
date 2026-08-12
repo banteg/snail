@@ -1,10 +1,10 @@
-// cRBorderManager::AI() / update_border_manager @ 0x403fc0
+// update_border_manager / cRBorderManager::AI @ 0x403fc0
 
 #include "border_manager.h"
 #include "game_root.h"
 
 
-void cRBorderManager::update_border_manager()
+void cRBorderManager::AI()
 {
     if (delayed_widget_active != 0) {
         float progress = delayed_widget_progress_step + delayed_widget_progress;

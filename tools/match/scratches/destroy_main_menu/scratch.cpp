@@ -6,6 +6,6 @@
 
 void cRMainMenu::UnInit()
 {
-    g_game->border_manager.kill_all_borders();
+    g_game->border_manager.KillBorders();
     g_sprite_manager.KillGame();
 }
