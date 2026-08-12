@@ -61,6 +61,12 @@ def test_default_function_symbol_manifest_loads() -> None:
     game_init = by_name["initialize_game_assets_and_world"]
     assert game_init.source_object == "Game.o"
     assert game_init.source_object_evidence == "windows-contiguous-source-run"
+    for name in ("j_rand", "destroy_cross_vectors_static_result"):
+        assert by_name[name].source_object == "RMaths.o"
+        assert (
+            by_name[name].source_object_evidence
+            == "windows-contiguous-source-run"
+        )
     for name, source_object in {
         "initialize_global_temp_colour_thunk": "RObject.o",
         "initialize_global_temp_colour": "RObject.o",

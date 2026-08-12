@@ -4719,7 +4719,9 @@
     {
       "address": "0x44c920",
       "name": "j_rand",
-      "description": "Game-code jump thunk to the statically linked CRT rand body, shared by the signed and unsigned random-float scaling helpers."
+      "description": "Game-code jump thunk to the statically linked CRT rand body, shared by the signed and unsigned random-float scaling helpers.",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x44c930",
@@ -4834,7 +4836,9 @@
     {
       "address": "0x44cdd0",
       "name": "destroy_cross_vectors_static_result",
-      "description": "Compiler-generated empty destruction callback registered for Cross' function-local static tVector result."
+      "description": "Compiler-generated empty destruction callback registered for Cross' function-local static tVector result.",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x44cde0",

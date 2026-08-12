@@ -23485,6 +23485,8 @@
       "windows_name": "j_rand",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "RAND(float, char*)",
@@ -23807,6 +23809,8 @@
       "windows_name": "destroy_cross_vectors_static_result",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RMaths.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "tVector::tVector(float*)",

@@ -5960,6 +5960,8 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
         "calc_object_bounding_box": "RObject.o",
         "calc_object_facequad_normals_simple": "RObject.o",
         "begin_post_follow_carryover": "SubGame.o",
+        "j_rand": "RMaths.o",
+        "destroy_cross_vectors_static_result": "RMaths.o",
     }
 
     for windows_name, source_object in expected.items():
