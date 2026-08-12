@@ -1,5 +1,11 @@
 # PINNED — 92.86%, 322/322 insns exact (2026-07-29)
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRCameraman::AI` bodies and the live Windows Cameraman method establish the
+complete desired-camera, follow/orientation, lift, FOV, and final blend
+pipeline. Candidate and target are both 322 instructions with all 76
+references clean; the remaining regions are register and x87 scheduling.
+
 Structure-exact; the second ramp lift product now follows the native
 left-associated multiplication order. Every remaining diff line is register
 allocation (eax/edx/ecx swaps), one faddp vs fadd+fstp pair from upstream
@@ -201,7 +207,7 @@ load. The ledger contains 17 improving, 118 neutral, and 161 degrading
 variants. The only post-ramp fuzzy gain reaches 93.02% by adding a 323rd
 instruction in the orientation block; it is rejected as an
 instruction-count tradeoff against the exact native shape. Three consecutive
-non-improving sweeps now mark this scratch stalled.
+non-improving sweeps document the tested frontier without closing it.
 
 The remaining four localized regions are bounded:
 

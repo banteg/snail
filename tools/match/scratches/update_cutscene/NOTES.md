@@ -1,5 +1,11 @@
 # update_cutscene @ 0x4466d0
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRCutScene::AI` bodies and the live Windows CutScene method establish every
+intro, completion, and death transition plus the complete camera/completion
+owner graph. All 58 references are clean; the two-instruction deficit is the
+mode-0 perfect-delivery comparison-byte spill and resulting branch layout.
+
 Structural recovery for authored `cRCutScene::AI` on the exact 0x5c-byte
 `cRCutScene` embedded at `Snail +0x1958`.
 
@@ -227,8 +233,8 @@ Seven recorded sweeps cover 84 variants (83 unique): completion matrix
 ownership, byte type/publication forms, function/case/nested flag scopes,
 default-one lifetimes, shared-call joins, matrix/vector declaration order, and
 function-versus-block staging scope. Three matrix-owner variants improve the
-old baseline; 62 variants are neutral and 19 degrade. Six consecutive
-non-improving sweeps leave the scratch formally stalled at 97.62%. In
+old baseline; 62 variants are neutral and 19 degrade. Six trailing
+non-improving sweeps document the 97.62% frontier. In
 particular, the mobile-named `cRCompletion::Init(int, bool)` spelling is
 ABI-compatible but codegen-neutral here, and genuinely shared call joins
 regress to at most 91.18%. No volatile qualifier, aliasing trick, dummy local,
@@ -243,5 +249,5 @@ call at `0x442df2`, while Android and iOS independently preserve
 `cRCutScene::AI()` in `SubGame.o`. This authored-name change is codegen-neutral:
 the focused result remains 97.62%, 503/505 instructions, prefix 10/505, with
 all 58 masked operands clean. The final two-instruction comparison-byte spill
-remains the documented compiler-allocation frontier; none of the 84 exhausted
+remains the documented compiler-allocation frontier; none of the 84 tested
 spill, join, scope, or matrix-lifetime variants was reopened.
