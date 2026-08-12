@@ -623,7 +623,7 @@ def test_dual_mobile_texture_loaders_preserve_renderer_boundaries() -> None:
         entry = crosswalk_by_address[address]
         assert entry["android_symbol"] == symbol
         assert entry["ios_symbol"] == symbol
-        assert entry["source_object"] is None
+        assert entry["source_object"] == "GL.o"
         assert entry["confidence"] == "high"
 
     set_load_notes = crosswalk_by_address["0x412a00"]["notes"]

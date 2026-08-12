@@ -490,7 +490,7 @@
       "windows_name": "update_overlay",
       "ios_symbol": "cROverlay::AI()",
       "android_symbol": "cROverlay::AI()",
-      "source_object": null,
+      "source_object": "Game.o",
       "confidence": "high",
       "notes": "Both mobile bodies preserve the authored void cROverlay owner, angular wrap, local-Z transform rebuild, owned camera transform copy, and inverse-view update found in the exact Windows member. Platform object offsets differ but the nested transform and camera ownership agree.",
       "android_symbol_evidence": "exact-demangled-symbol"
@@ -805,7 +805,7 @@
       "address": "0x434be0",
       "windows_name": "build_track_fringe_objects",
       "ios_symbol": "cRSubGame::FringeEdgeTrack()",
-      "source_object": null,
+      "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "Android and iOS preserve the void cRSubGame::FringeEdgeTrack() owner; both walk runtime cells and allocate directional cRFringe records from cRFringeManager. Windows GenerateLevel discards the diagnostic call's final EAX residue, so the authored member is void.",
       "android_symbol": "cRSubGame::FringeEdgeTrack()",
@@ -870,7 +870,7 @@
       "windows_name": "update_progress_bar",
       "ios_symbol": "cRProgressBar::AI()",
       "android_symbol": "cRProgressBar::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "All ports ignore the receiver and render progress from containing-game state. Windows embeds the authored empty class at Player +0x3f0; cRWarning alignment accounts for the following three bytes."
     },
@@ -1591,7 +1591,7 @@
       "address": "0x413030",
       "windows_name": "draw_textured_quad_immediate",
       "android_symbol": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "Both build and submit one immediate textured UI quad from explicit corners, axis-aligned dimensions, or a rotation angle. All three Windows callsites discard EAX, and the 98.34% Windows reconstruction already has a void body.",
       "ios_symbol": "G0RenderFont(cRTexture*, float, float, float, float, float, float, float, float, float, float, float, float, float, float, tColour&, int, float)",
@@ -1629,7 +1629,7 @@
       "windows_name": "render_camera",
       "ios_symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
       "android_symbol": "G0RenderCamera(float, float, float, float, float, tMatrix*, tMatrix*, bool, bool, float, float)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "All ports configure the viewport, projection and view transforms, depth and fog state, then publish G0Camera, G0CameraInv, G0AfterSprites, and gBindTextureRefLast. The mobile OpenGL ABI adds roll and projection-shift floats after the shared camera flags; Windows remains independently proved as a nine-argument Direct3D ABI. Both Windows callers overwrite or ignore EAX, and the natural void transcription remains exact at 180/180 instructions."
     },
@@ -1638,7 +1638,7 @@
       "windows_name": "render_object_toon",
       "ios_symbol": "G0RenderToon(cRObject*, tMatrix*)",
       "android_symbol": "G0RenderToon(cRObject*, tMatrix*)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "All ports borrow one cRObject and world matrix, subtract G0Camera, invert and rotate into object space, classify boundary or silhouette edges from paired face normals with the 0.01 dot-product threshold, and submit line indices through the platform renderer. The sole Windows caller discards EAX, and the natural void transcription remains exact at 219/219 instructions."
     },
@@ -1647,7 +1647,7 @@
       "windows_name": "render_object",
       "ios_symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
       "android_symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "All ports share the cRObject/world-matrix owner, float texture offsets, G0AfterSprites split, render-disabled and empty-object gates, cull and tint policy, texture binding, indexed submission, and optional G0RenderToon tail. Mobile passes a packed tColourSmall pointer where Windows passes its float tColour pointer, so this is a semantic owner mapping rather than a claim of ABI-identical tint storage. Both Windows callers discard EAX, and the natural void transcription remains exact at 196/196 instructions."
     },
@@ -1656,7 +1656,7 @@
       "windows_name": "load_registered_texture_refs",
       "android_symbol": "G0TextureSetLoad(int)",
       "ios_symbol": "G0TextureSetLoad(int)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "All three allocate a renderer-owned four-byte slot for each cRTextures entry, reset G0VRamCount, walk the full live count through G0TextureLoad(index, legacy_mode), and report the signed byte estimate divided by 1024. Mobile additionally allocates an OpenGL residency bank and initializes GL texture names/state; Windows allocates only its Direct3D texture-pointer bank.",
       "android_symbol_evidence": "exact-demangled-symbol"
@@ -1666,7 +1666,7 @@
       "windows_name": "load_registered_texture_ref",
       "android_symbol": "G0TextureLoad(int, int)",
       "ios_symbol": "G0TextureLoad(int, int)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "All three index the same 0xa4-byte cRTexture record, gate on flag 0x8000, load the path at +0x0c, optionally retain a cTgaHeader payload at +0x98 under flag 0x20, publish width/height at +0x04/+0x08, and add width times height times four to G0VRamCount. The legacy second argument is unread in every body. Windows uses Direct3D creation, alpha/color-key state, and Debug.tga fallback; mobile uploads through OpenGL and errors on a missing texture.",
       "android_symbol_evidence": "exact-demangled-symbol"
@@ -1676,7 +1676,7 @@
       "windows_name": "bind_texture_ref",
       "ios_symbol": "G0BindTexture(int)",
       "android_symbol": "G0BindTexture(int)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "All ports skip the cached gBindTextureRefLast value, increment gBindCount, bind the selected platform texture, and choose wrap versus clamp from flag 0x1000. Mobile passes a texture-list index while Windows passes a TextureRef pointer, so the stable Windows prototype is intentionally retained. Every implementation is void."
     },
@@ -1685,7 +1685,7 @@
       "windows_name": "set_blend_mode",
       "ios_symbol": "G0SetBlend(int)",
       "android_symbol": "G0SetBlend(int)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "Windows splits the cross-port G0SetBlend responsibility into object and immediate-quad Direct3D variants. This object variant is called only by render_object; the caller discards EAX, and recovering the void contract is codegen-neutral at 92.39%."
     },
@@ -1694,7 +1694,7 @@
       "windows_name": "set_immediate_blend_mode",
       "ios_symbol": "G0SetBlend(int)",
       "android_symbol": "G0SetBlend(int)",
-      "source_object": null,
+      "source_object": "GL.o",
       "confidence": "high",
       "notes": "Windows splits the cross-port G0SetBlend responsibility into object and immediate-quad Direct3D variants. This immediate variant is called only by G0RenderFont; the caller discards EAX, and recovering the void contract is codegen-neutral at 85.50%."
     },
@@ -2038,7 +2038,7 @@
       "windows_name": "start_squidge_y",
       "ios_symbol": "cRSquidge::StartY(float)",
       "android_symbol": "cRSquidge::StartY(float)",
-      "source_object": null,
+      "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "The Windows and Android bodies reset the Y phase and seed Y velocity on the same six-float owner; iOS exports the matching method, and Windows callsites pass Player +0x4344."
     },
@@ -2265,7 +2265,7 @@
       "windows_name": "spawn_salt_hazard",
       "ios_symbol": "cRSaltManager::Add(tVector&, cRSubGoldy*)",
       "android_symbol": "cRSaltManager::Add(tVector&)",
-      "source_object": null,
+      "source_object": "SubGame.o",
       "confidence": "high",
       "notes": "Windows and Android share the vector-only manager body; iOS v1.9 adds the owning Goldy argument. Android's full-pool and successful exits leave a slot state and list-insertion residue in R0; iOS independently leaves this, a matrix-call residue, or an error-call residue. Those incompatible residues prove the authored manager method is void and no slot-index result exists."
     },
