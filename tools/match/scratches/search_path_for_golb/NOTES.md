@@ -43,3 +43,21 @@ field-first float scan and single-entry result. The guarded replay verifies the
 complete `EnemyManager`, `ContactTargetEntry`, and `Vec3` layouts before
 applying either borrow. No matcher source changes: 63/63 instructions and all
 three operands remain clean.
+
+## 2026-08-12 authored method recovery
+
+Android exports this complete operation as
+`cREnemyManager::Find(tVector&)`. Its body preserves the 0x18-byte record
+stride, position at entry +0x04, strict positive-z and 30-unit gates, 1e9
+initial best distance, full vector magnitude, first-best tie rule, and borrowed
+entry return. The Android decompiler invents a `cREnemyManager*` return because
+the Itanium symbol does not encode return types; Windows `create_golb` reads the
+returned record's kind, owner, and position fields, proving the
+`ContactTargetEntry*` contract already used by the exact scratch.
+
+iOS does not retain `Find`, but its only STABS-marked `cREnemyManager` methods,
+`Init` and `Register`, both belong to `Golb.o`. That unique class owner agrees
+with the bounded Windows run. The stable matcher name remains in source while
+the manifest carries the authored alias; no mobile layout offset is imposed on
+Windows. Focused matching remains exact at 63/63 instructions with all three
+operands clean.

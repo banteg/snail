@@ -765,6 +765,15 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x415e30",
+      "windows_name": "search_path_for_golb",
+      "android_symbol": "cREnemyManager::Find(tVector&)",
+      "source_object": "Golb.o",
+      "source_object_evidence": "unique-ios-class-object",
+      "confidence": "high",
+      "notes": "Windows and Android walk the same 0x18-byte EnemyManager entries, subtract the query position, require a strict 0 < dz < 30 window, compare full tVector magnitude against a 1e9 seed, retain the first equal-distance entry, and return the matching record or null. Android preserves the authored Find(tVector&) name; the exact result type is recovered from the Windows caller because C++ mangling omits return types."
+    },
+    {
       "address": "0x415ef0",
       "windows_name": "append_subgame_contact_target",
       "ios_symbol": "cREnemyManager::Register(tVector&, float, int, cRBodPos*)",

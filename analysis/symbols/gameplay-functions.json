@@ -1465,7 +1465,10 @@
     {
       "address": "0x415e30",
       "name": "search_path_for_golb",
-      "description": "Exact Windows `EnemyManager::search_path_for_golb`: scans the manager's per-frame entries for the nearest target strictly ahead by less than 30 units, returning the owned ContactTargetEntry or null.",
+      "aliases": [
+        "cREnemyManager_Find"
+      ],
+      "description": "Exact Windows `cREnemyManager::Find(tVector&)`: scans the manager's per-frame entries for the nearest target strictly ahead by less than 30 units, returning the borrowed ContactTargetEntry or null. Android preserves the authored method, record stride, gates, distance comparison, and first-best tie behavior.",
       "source_object": "Golb.o",
       "source_object_evidence": "windows-contiguous-source-run"
     },

@@ -6640,7 +6640,6 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     expected = {
         "draw_split_backdrop": "Game.o",
         "spawn_golb_trail_sprite": "Golb.o",
-        "search_path_for_golb": "Golb.o",
         "load_high_scores_from_file": "HighScore.o",
         "refresh_object_vertex_buffer": "GL.o",
         "initialize_object_constructor_thunk": "RObject.o",
@@ -6732,6 +6731,70 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     assert "mapping: unverified" in output
     assert "source object: HighScore.o" in output
     assert "source object evidence: windows-contiguous-source-run" in output
+
+
+def test_android_enemy_manager_find_recovers_golb_search_method() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"] == "search_path_for_golb"
+    )
+    mobile_symbol = "cREnemyManager::Find(tVector&)"
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["android_symbol"] == mobile_symbol
+    assert entry["android_body_count"] == 1
+    assert "ios_symbol" not in entry
+    assert entry["source_object"] == "Golb.o"
+    assert entry["source_object_evidence"] == "unique-ios-class-object"
+
+    android = resolve_corpus_symbol(
+        load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json"),
+        mobile_symbol,
+    )
+    assert android is not None
+    body = corpus_function_path(
+        DEFAULT_ANDROID_CORPUS_ROOT, android
+    ).read_text(encoding="utf-8")
+    for evidence in (
+        "pcVar3 = pcVar3 + 0x18;",
+        "local_2c <= 0.0",
+        "30.0 <= local_2c",
+        "tVector::Magnitude",
+        "fVar7 <= fVar1",
+        "this + iVar4 * 0x18 + 4",
+    ):
+        assert evidence in body
+
+    ios_names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    enemy_manager_owners = {
+        source_object
+        for source_object, symbols in ios_names["source_objects"]
+        if any(symbol.startswith("cREnemyManager::") for symbol in symbols)
+    }
+    assert enemy_manager_owners == {"Golb.o"}
+
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in manifest["functions"]
+        if function["name"] == "search_path_for_golb"
+    )
+    assert function["aliases"] == ["cREnemyManager_Find"]
+    assert "borrowed ContactTargetEntry" in function["description"]
+
+    notes = (
+        repo_root / "tools/match/scratches/search_path_for_golb/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "authored method recovery" in notes
+    assert "63/63 instructions" in notes
 
 
 def test_windows_isolated_class_source_run_preserves_cache_owner() -> None:
