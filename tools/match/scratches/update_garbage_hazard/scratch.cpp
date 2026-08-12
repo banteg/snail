@@ -39,8 +39,8 @@ void cRSubGarbage::AI()
                 owner->ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
             }
 
-            owner_game->enemy_manager.append_subgame_contact_target(
-                &transform.position,
+            owner_game->enemy_manager.Register(
+                transform.position,
                 radius,
                 0,
                 this);

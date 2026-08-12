@@ -102,11 +102,11 @@ active_state_tail:
         }
         if (owner_player->nuke_effect_progress > 0.0f)
             Kill();
-        owner_game->enemy_manager.append_subgame_contact_target(
-            &transform.position,
+        owner_game->enemy_manager.Register(
+            transform.position,
             2.0f,
             1,
-            (ContactTargetObject*)this);
+            this);
         goto update_tail;
 
 update_tail:

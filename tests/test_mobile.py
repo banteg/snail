@@ -7384,6 +7384,95 @@ def test_android_enemy_manager_find_recovers_golb_search_method() -> None:
     assert "63/63 instructions" in notes
 
 
+def test_enemy_manager_uses_authored_method_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (
+        repo_root / "tools/match/include/contact_target.h"
+    ).read_text(encoding="utf-8")
+    expected = {
+        "initialize_enemy_manager": {
+            "method": "Init",
+            "symbol": "?Init@cREnemyManager@@QAEXXZ",
+            "mobile": "cREnemyManager::Init()",
+            "aliases": ["cREnemyManager_Init"],
+        },
+        "search_path_for_golb": {
+            "method": "Find",
+            "symbol": (
+                "?Find@cREnemyManager@@QAEPAUContactTargetEntry@@"
+                "AAUtVector@@@Z"
+            ),
+            "mobile": "cREnemyManager::Find(tVector&)",
+            "aliases": ["cREnemyManager_Find"],
+        },
+        "append_subgame_contact_target": {
+            "method": "Register",
+            "symbol": (
+                "?Register@cREnemyManager@@QAEXAAUtVector@@MHPAVcRBodPos@@@Z"
+            ),
+            "mobile": (
+                "cREnemyManager::Register(tVector&, float, int, cRBodPos*)"
+            ),
+            "aliases": ["cREnemyManager_Register"],
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Golb.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        if windows_name != "search_path_for_golb":
+            assert entry["ios_symbol"] == recovered["mobile"]
+            assert entry["ios_body_count"] == 1
+        assert functions[windows_name]["aliases"] == recovered["aliases"]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cREnemyManager::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void Init();" in header
+    assert "ContactTargetEntry* Find(tVector& position);" in header
+    assert "void Register(" in header
+    assert "cRBodPos* object" in header
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.glob("*/scratch.cpp")
+    )
+    for stale_method in (
+        ".initialize_enemy_manager(",
+        ".search_path_for_golb(",
+        ".append_subgame_contact_target(",
+    ):
+        assert stale_method not in all_sources
+    assert all_sources.count("enemy_manager.Init()") == 2
+    assert "enemy_manager.Find(*position)" in all_sources
+    assert all_sources.count("enemy_manager.Register(") == 2
+
+
 def test_windows_isolated_class_source_run_preserves_cache_owner() -> None:
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = complete["entries"]
@@ -7849,6 +7938,9 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
     }
     member_names = {
         "set_backdrop_texture_target": "set_backdrop_world",
+        "initialize_enemy_manager": "Init",
+        "search_path_for_golb": "Find",
+        "append_subgame_contact_target": "Register",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")

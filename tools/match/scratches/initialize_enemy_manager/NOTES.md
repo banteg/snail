@@ -17,3 +17,12 @@ on the tracked-allocation stack at `0x5108c0` to this address. The reference
 manifest records `initialize_tracked_allocation_stack` as an audited alias, and
 that caller uses its own `TrackedAllocationStack` owner rather than pretending
 the global allocation records are contact targets.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain the exact `cREnemyManager::Init()` symbol
+and one-store body. The matcher definition plus the two gameplay-owned callers
+now use `Init`, emitting `?Init@cREnemyManager@@QAEXXZ`; the reference manifest
+keeps that decorated edge distinct from the unrelated folded archive-startup
+initializer. The stable function ID remains `initialize_enemy_manager`, and
+the Windows body remains exact at 2/2.

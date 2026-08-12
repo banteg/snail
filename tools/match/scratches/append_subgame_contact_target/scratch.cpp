@@ -1,22 +1,23 @@
-// append_subgame_contact_target @ 0x415ef0 (thiscall, ret 0x10)
+// cREnemyManager::Register @ 0x415ef0 (thiscall, ret 0x10)
 // Appends one `{kind, position, radius, object}` entry to the per-frame
 // subgame contact registry unless the target suppresses contact registration.
 
 #include "contact_target.h"
 
-void cREnemyManager::append_subgame_contact_target(
-    const Vector3* position,
+void cREnemyManager::Register(
+    tVector& position,
     float radius,
     int kind,
-    ContactTargetObject* object
+    cRBodPos* object
 )
 {
-    if ((object->list_flags & BOD_FLAG_SUPPRESS_CONTACT) != 0)
+    ContactTargetObject* target = (ContactTargetObject*)object;
+    if ((target->list_flags & BOD_FLAG_SUPPRESS_CONTACT) != 0)
         return;
 
     entries[count].kind = kind;
-    entries[count].position = *position;
+    entries[count].position = position;
     entries[count].radius = radius;
-    entries[count].object = object;
+    entries[count].object = target;
     ++count;
 }

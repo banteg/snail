@@ -57,7 +57,9 @@ returned record's kind, owner, and position fields, proving the
 
 iOS does not retain `Find`, but its only STABS-marked `cREnemyManager` methods,
 `Init` and `Register`, both belong to `Golb.o`. That unique class owner agrees
-with the bounded Windows run. The stable matcher name remains in source while
-the manifest carries the authored alias; no mobile layout offset is imposed on
-Windows. Focused matching remains exact at 63/63 instructions with all three
-operands clean.
+with the bounded Windows run. The stable matcher ID remains
+`search_path_for_golb`, while the source-facing definition and caller now use
+`Find(tVector&)` and the matcher selects the recovered
+`?Find@cREnemyManager@@QAEPAUContactTargetEntry@@AAUtVector@@@Z` symbol. No
+mobile layout offset is imposed on Windows. Focused matching remains exact at
+63/63 instructions with all three operands clean.

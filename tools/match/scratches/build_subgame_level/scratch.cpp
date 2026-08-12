@@ -56,7 +56,7 @@ void cRSubGame::StartLevel(int level_index)
 
     next_slug_voice_trigger_z = 50.0f;
     slug_voice_trigger_spacing_z = 100.0f;
-    enemy_manager.initialize_enemy_manager();
+    enemy_manager.Init();
     player.damage_gauge.Init();
     player.progress_bar.noop_runtime_ai();
     sub_lazers.Init();

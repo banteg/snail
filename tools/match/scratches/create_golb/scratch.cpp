@@ -212,7 +212,7 @@ after_shoot_flag_source:
 
             this->shot_slot_index = shot_slot_index;
             ContactTargetEntry* found =
-                game->enemy_manager.search_path_for_golb(position);
+                game->enemy_manager.Find(*position);
             if (found) {
                 ContactTargetObject* object = found->object;
                 homing_target_object = object;

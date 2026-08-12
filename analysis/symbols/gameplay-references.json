@@ -1861,9 +1861,28 @@
       "name": "initialize_enemy_manager",
       "kind": "function_alias",
       "aliases": [
-        "initialize_tracked_allocation_stack"
+        "initialize_tracked_allocation_stack",
+        "?Init@cREnemyManager@@QAEXXZ"
       ],
       "description": "Audited identical-code-folding alias: the native cREnemyManager count reset and the unrelated tracked-allocation stack depth reset share this one-store body."
+    },
+    {
+      "address": "0x415e30",
+      "name": "search_path_for_golb",
+      "kind": "function",
+      "aliases": [
+        "?Find@cREnemyManager@@QAEPAUContactTargetEntry@@AAUtVector@@@Z"
+      ],
+      "description": "Exact Windows cREnemyManager::Find(tVector&) entry with the recovered borrowed ContactTargetEntry pointer return encoded in its decorated matcher symbol."
+    },
+    {
+      "address": "0x415ef0",
+      "name": "append_subgame_contact_target",
+      "kind": "function",
+      "aliases": [
+        "?Register@cREnemyManager@@QAEXAAUtVector@@MHPAVcRBodPos@@@Z"
+      ],
+      "description": "Exact Windows cREnemyManager::Register(tVector&, float, int, cRBodPos*) entry with its fully decorated relocation name."
     },
     {
       "address": "0x41a9fc",

@@ -50,3 +50,14 @@ Residuals:
   its selected target, and this exact registry helper consumes it before any
   count or entry write. The producer/consumer relationship remains honest and
   codegen-neutral; this helper stays exact at 34/34 instructions.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain
+`cREnemyManager::Register(tVector&, float, int, cRBodPos*)` with the same
+suppression guard and 0x18-byte append. The matcher now uses those authored
+argument owners directly, casting the borrowed `cRBodPos*` only to the proven
+Windows contact prefix for the flag read and stored pointer. The definition
+emits `?Register@cREnemyManager@@QAEXAAUtVector@@MHPAVcRBodPos@@@Z`; the stable
+function ID remains `append_subgame_contact_target`, and the exact 34/34 body
+and both gameplay callers remain unchanged.

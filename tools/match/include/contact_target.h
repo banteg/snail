@@ -7,6 +7,8 @@
 
 const int CONTACT_TARGET_CAPACITY = 256;
 
+class cRBodPos;
+
 struct ContactTargetObject {
     void* vtable;            // +0x00, renderable/contact objects share this prefix
     int list_flags;          // +0x04, BodFlag word
@@ -23,14 +25,13 @@ typedef char ContactTargetEntry_must_be_0x18[
 
 class cREnemyManager {
 public:
-    void initialize_enemy_manager(); // @ 0x415e20, iOS cREnemyManager::Init()
-    ContactTargetEntry* search_path_for_golb(
-        const Vector3* position); // @ 0x415e30
-    void append_subgame_contact_target(
-        const Vector3* position,
+    void Init(); // @ 0x415e20
+    ContactTargetEntry* Find(tVector& position); // @ 0x415e30
+    void Register(
+        tVector& position,
         float radius,
         int kind,
-        ContactTargetObject* object); // @ 0x415ef0
+        cRBodPos* object); // @ 0x415ef0
 
     int count;                    // +0x00
     ContactTargetEntry entries[CONTACT_TARGET_CAPACITY]; // +0x04, embedded frame storage
