@@ -9,7 +9,7 @@ void cRWarning::Init()
     tColour color;
 
     border = g_game->border_manager.GetBorder();
-    border->initialize_frontend_sprite_button(
+    border->Init(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         0x5e, 288.0f, 64.0f,

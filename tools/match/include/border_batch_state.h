@@ -22,7 +22,7 @@ class cRBorderStack {
 public:
     // Windows folds this trivial initializer with FrontendFade::initialize.
     void initialize_border_stack(); // @ 0x404350, iOS cRBorderStack::Init()
-    void apply_all_border_visibility_mode(int mode); // @ 0x404360,
+    void Perform(int mode); // @ 0x404360,
         // Android cRBorderStack::Perform(int)
 
     int generation; // +0x00

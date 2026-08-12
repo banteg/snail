@@ -76,7 +76,7 @@ void cRCompletion::Init(
     }
 
     bonus_icon_widget = g_game->border_manager.GetBorder();
-    bonus_icon_widget->initialize_frontend_sprite_button(
+    bonus_icon_widget->Init(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE, 122,
         100.0f, 146.0f,
         tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 0.0f, 4);

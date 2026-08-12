@@ -146,7 +146,7 @@ void cRBorder::initialize_frontend_widget(
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
         slider_more_widget = g_game->border_manager.GetBorder();
         float slider_y = y + 40.0f;
-        slider_more_widget->initialize_frontend_sprite_button(
+        slider_more_widget->Init(
             (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND)
                 | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
@@ -162,7 +162,7 @@ void cRBorder::initialize_frontend_widget(
         slider_more_widget->border_sprite_extend(44, 43, 45, 1);
 
         slider_less_widget = g_game->border_manager.GetBorder();
-        slider_less_widget->initialize_frontend_sprite_button(
+        slider_less_widget->Init(
             (widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND)
                 | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS

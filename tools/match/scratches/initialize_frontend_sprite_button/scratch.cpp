@@ -1,4 +1,4 @@
-// initialize_frontend_sprite_button @ 0x401a70 (thiscall, ret 0x1c)
+// cRBorder::Init @ 0x401a70 (thiscall, ret 0x1c)
 
 #include "border_manager.h"
 #include "frontend_widget.h"
@@ -6,7 +6,7 @@
 
 int report_errorf(char* format, ...);
 
-void cRBorder::initialize_frontend_sprite_button(
+void cRBorder::Init(
     int flags,
     int sprite,
     float x,

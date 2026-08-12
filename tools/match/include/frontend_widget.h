@@ -72,7 +72,7 @@ public:
         // iOS/Android cRBorder::AI()
     void initialize_frontend_widget(int flags, char* text, int widget_type,
         float x, float y, tColour* color, int alignment, float anchor_x);
-    void initialize_frontend_sprite_button(int flags, int sprite, float x, float y,
+    void Init(int flags, int sprite, float x, float y,
         tColour* color, float z, int layer);
     cRInputOK* input_ok_state();
 

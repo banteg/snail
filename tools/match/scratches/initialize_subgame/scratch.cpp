@@ -110,7 +110,7 @@ void cRSubGame::Init()
 
     if (this->level_mode == 0) {
         lives_icon_widget = g_game->border_manager.GetBorder();
-        lives_icon_widget->initialize_frontend_sprite_button(
+        lives_icon_widget->Init(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_SPRITE_MODE,
             122,
             0.0f,
@@ -138,7 +138,7 @@ void cRSubGame::Init()
         FrontendWidget** icon_slot = life_stock_widgets;
         do {
             *icon_slot = g_game->border_manager.GetBorder();
-            (*icon_slot)->initialize_frontend_sprite_button(
+            (*icon_slot)->Init(
                 FRONTEND_WIDGET_FLAG_FRAMELESS
                     | FRONTEND_WIDGET_FLAG_SPRITE_MODE,
                 123,

@@ -67,7 +67,7 @@ void cRGalaxy::Init()
         route_title_widget->font_scale = 0.83f;
 
         route_icon_widget = g_game->border_manager.GetBorder();
-        route_icon_widget->initialize_frontend_sprite_button(
+        route_icon_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_SPRITE_MODE

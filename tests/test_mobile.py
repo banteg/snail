@@ -5416,6 +5416,104 @@ def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
     assert "typedef cRBorder FrontendWidget;" in border_fwd
 
 
+def test_mobile_border_exact_methods_use_authored_names() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entries = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+
+    border_init = entries["initialize_frontend_sprite_button"]
+    mobile_init = (
+        "cRBorder::Init(int, int, float, float, tColour, float, int)"
+    )
+    assert border_init["status"] == "verified"
+    assert border_init["confidence"] == "high"
+    assert border_init["source_object"] == "Border.o"
+    assert border_init["android_symbol"] == mobile_init
+    assert border_init["ios_symbol"] == mobile_init
+    assert border_init["android_body_count"] == 1
+    assert border_init["ios_body_count"] == 1
+    assert functions_by_name["initialize_frontend_sprite_button"][
+        "aliases"
+    ] == ["cRBorder_InitSprite"]
+    init_object_symbol = "?Init@cRBorder@@QAEXHHMMPAUtColour@@MH@Z"
+    assert references_by_name["initialize_frontend_sprite_button"][
+        "aliases"
+    ] == [init_object_symbol]
+
+    perform = entries["apply_all_border_visibility_mode"]
+    assert perform["status"] == "verified"
+    assert perform["confidence"] == "high"
+    assert perform["source_object"] == "Border.o"
+    assert perform["android_symbol"] == "cRBorderStack::Perform(int)"
+    assert perform["android_body_count"] == 1
+    assert perform.get("ios_symbol") is None
+    assert functions_by_name["apply_all_border_visibility_mode"][
+        "aliases"
+    ] == ["cRBorderStack_Perform"]
+    perform_object_symbol = "?Perform@cRBorderStack@@QAEXH@Z"
+    assert references_by_name["apply_all_border_visibility_mode"][
+        "aliases"
+    ] == [perform_object_symbol]
+
+    init_source = (
+        scratch_root / "initialize_frontend_sprite_button/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    init_config = (
+        scratch_root / "initialize_frontend_sprite_button/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert "void cRBorder::Init(" in init_source
+    assert f"SYMBOL={init_object_symbol}\n" in init_config
+
+    perform_source = (
+        scratch_root / "apply_all_border_visibility_mode/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    perform_config = (
+        scratch_root / "apply_all_border_visibility_mode/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert "void cRBorderStack::Perform(int mode)" in perform_source
+    assert f"SYMBOL={perform_object_symbol}\n" in perform_config
+
+    frontend_header = (
+        repo_root / "tools/match/include/frontend_widget.h"
+    ).read_text(encoding="utf-8")
+    stack_header = (
+        repo_root / "tools/match/include/border_batch_state.h"
+    ).read_text(encoding="utf-8")
+    assert "void Init(int flags, int sprite, float x, float y," in frontend_header
+    assert "void Perform(int mode); // @ 0x404360" in stack_header
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("scratch.cpp")
+        if "build" not in path.parts
+    )
+    assert "initialize_frontend_sprite_button(" not in all_sources
+    assert "apply_all_border_visibility_mode(" not in all_sources
+    assert all_sources.count(".Perform(") == 2
+    assert "slider_more_widget->Init(" in all_sources
+    assert "slider_less_widget->Init(" in all_sources
+    assert "bonus_icon_widget->Init(" in all_sources
+    assert "route_icon_widget->Init(" in all_sources
+    assert "lives_icon_widget->Init(" in all_sources
+    assert "(*icon_slot)->Init(" in all_sources
+    assert "border->Init(" in all_sources
+
+
 def test_mobile_delay_click_recovers_border_manager_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
@@ -9678,6 +9776,8 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
     include_root = repo_root / "tools/match/include"
     scratch_root = repo_root / "tools/match/scratches"
     method_names = {
+        "initialize_frontend_sprite_button": "Init",
+        "apply_all_border_visibility_mode": "Perform",
         "allocate_border": "GetBorder",
         "activate_all_borders": "ActivateBorders",
         "kill_all_borders": "KillBorders",

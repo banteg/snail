@@ -210,6 +210,9 @@
     {
       "address": "0x404360",
       "name": "apply_all_border_visibility_mode",
+      "aliases": [
+        "cRBorderStack_Perform"
+      ],
       "description": "Exact authored `cRBorderStack::Perform(int)` member: applies one of four nested hidden/disabled transitions to the BorderManager-owned 150-record pool, recording borrowed cRBorder handles by generation so only the newest batch is unwound. Android confirms the owner, four-mode contract, and non-owning handle stack."
     },
     {

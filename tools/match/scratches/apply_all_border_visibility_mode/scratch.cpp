@@ -1,8 +1,8 @@
-// cRBorderStack::Perform(int) / apply_all_border_visibility_mode @ 0x404360
+// cRBorderStack::Perform(int) @ 0x404360
 
 #include "border_manager.h"
 
-void cRBorderStack::apply_all_border_visibility_mode(int mode)
+void cRBorderStack::Perform(int mode)
 {
     switch (mode) {
     case 0: {

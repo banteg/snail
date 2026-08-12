@@ -20,14 +20,23 @@
       "name": "k_completion_bonus_sprite_button_flags",
       "kind": "constant",
       "aliases": [],
-      "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button for the completion-screen bonus icon."
+      "description": "Frontend sprite-button flag word passed to cRBorder::Init for the completion-screen bonus icon."
     },
     {
       "address": "0x400802",
       "name": "k_frontend_sprite_button_flags",
       "kind": "constant",
       "aliases": [],
-      "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
+      "description": "Frontend sprite-button flag word passed to cRBorder::Init by initialize_warning."
+    },
+    {
+      "address": "0x401a70",
+      "name": "initialize_frontend_sprite_button",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRBorder@@QAEXHHMMPAUtColour@@MH@Z"
+      ],
+      "description": "Exact Windows cRBorder::Init(int, int, float, float, tColour*, float, int) overload with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x4032a0",
@@ -127,6 +136,15 @@
         "?AI@cRTwinkle@@QAEXXZ"
       ],
       "description": "Exact Windows cRTwinkle::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x404360",
+      "name": "apply_all_border_visibility_mode",
+      "kind": "function",
+      "aliases": [
+        "?Perform@cRBorderStack@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRBorderStack::Perform(int) entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x404730",

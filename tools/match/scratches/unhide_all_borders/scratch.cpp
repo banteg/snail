@@ -4,5 +4,5 @@
 
 void cRBorderManager::UnHideBorders()
 {
-    border_stack.apply_all_border_visibility_mode(1);
+    border_stack.Perform(1);
 }
