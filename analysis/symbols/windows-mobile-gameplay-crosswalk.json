@@ -10265,7 +10265,7 @@
       "status": "verified",
       "android_symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
       "ios_symbol": "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
-      "source_object": null,
+      "source_object": "ObjectProc.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -21986,7 +21986,7 @@
       "android_symbol": "FontInit()",
       "ios_symbol": "FontInit()",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -21999,7 +21999,7 @@
       "android_symbol": "FontAI()",
       "ios_symbol": "FontAI()",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22012,7 +22012,7 @@
       "android_symbol": "FontASCIIRemap(char)",
       "ios_symbol": "FontASCIIRemap(char)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22067,7 +22067,7 @@
       "android_symbol": "FontLoad(char*, int, float, float)",
       "ios_symbol": "FontLoad(char*, int, float, float)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22080,7 +22080,7 @@
       "android_symbol": "FontPrintReal(cFontPrintBuffer*)",
       "ios_symbol": "FontPrintReal(cFontPrintBuffer*)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22135,7 +22135,7 @@
       "android_symbol": "FontPrintRender(int)",
       "ios_symbol": "FontPrintRender(int)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22226,7 +22226,7 @@
       "android_symbol": "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
       "ios_symbol": "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22239,7 +22239,7 @@
       "android_symbol": "FontMake3D(short)",
       "ios_symbol": "FontMake3D(short)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Font.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22671,7 +22671,7 @@
       "status": "verified",
       "android_symbol": "KeyboardInit()",
       "ios_symbol": "KeyboardInit()",
-      "source_object": null,
+      "source_object": "Keyboard.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22683,7 +22683,7 @@
       "status": "verified",
       "android_symbol": "KeyboardAI()",
       "ios_symbol": "KeyboardAI()",
-      "source_object": null,
+      "source_object": "Keyboard.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22695,7 +22695,7 @@
       "status": "verified",
       "android_symbol": "KeyPress(unsigned char)",
       "ios_symbol": "KeyPress(unsigned char)",
-      "source_object": null,
+      "source_object": "Keyboard.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22707,7 +22707,7 @@
       "status": "verified",
       "android_symbol": "KeyOn(unsigned char)",
       "ios_symbol": "KeyOn(unsigned char)",
-      "source_object": null,
+      "source_object": "Keyboard.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22845,7 +22845,7 @@
       "status": "verified",
       "android_symbol": "MouseCalcScale(float)",
       "ios_symbol": "MouseCalcScale(float)",
-      "source_object": null,
+      "source_object": "Mouse.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22899,7 +22899,7 @@
       "status": "verified",
       "android_symbol": "HideWindowMouse(bool)",
       "ios_symbol": "HideWindowMouse(bool)",
-      "source_object": null,
+      "source_object": "Mouse.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -22911,7 +22911,7 @@
       "status": "verified",
       "android_symbol": "MouseSet(int, int, int)",
       "ios_symbol": "MouseSet(int, int, int)",
-      "source_object": null,
+      "source_object": "Mouse.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -24347,7 +24347,7 @@
       "android_symbol": "tColourSmall::operator=(tColour const&)",
       "ios_symbol": "tColourSmall::operator=(tColour const&)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "RMaths.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1

@@ -5808,6 +5808,38 @@ def test_unique_ios_class_owner_provenance_is_sound(capsys) -> None:
             "source_object_evidence"
         ] == "unique-ios-nonconstructor-method-object"
 
+    expected_exact_units = {
+        "initialize_font_wave_state": "Font.o",
+        "update_font_wave_state": "Font.o",
+        "font_slot_index_for_char": "Font.o",
+        "register_font_texture_sheet": "Font.o",
+        "draw_font_text_instance": "Font.o",
+        "draw_font_text_queue": "Font.o",
+        "layout_and_queue_wrapped_font_text": "Font.o",
+        "initialize_font3d_objects": "Font.o",
+        "pack_color_rgba_u8": "RMaths.o",
+        "initialize_keyboard_input": "Keyboard.o",
+        "update_keyboard_input": "Keyboard.o",
+        "is_key_pressed_edge": "Keyboard.o",
+        "is_key_down": "Keyboard.o",
+        "resolve_uncaptured_cursor_sensitivity_scale": "Mouse.o",
+        "set_hide_system_cursor_flag": "Mouse.o",
+        "click_mouse_screen": "Mouse.o",
+        "sample_smtrack_heightmap": "ObjectProc.o",
+    }
+    verified_by_name = {
+        entry["windows_name"]: entry for entry in verified["entries"]
+    }
+    for windows_name, source_object in expected_exact_units.items():
+        entry = verified_by_name[windows_name]
+        symbol = entry.get("ios_symbol") or entry["android_symbol"]
+        assert exact_objects_by_symbol[symbol] == {source_object}
+        assert entry["source_object"] == source_object
+        assert "source_object_evidence" not in entry
+        assert complete_by_name[windows_name]["source_object"] == (
+            source_object
+        )
+
     constructor = next(
         entry
         for entry in verified["entries"]

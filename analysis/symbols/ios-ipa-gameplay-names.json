@@ -18,8 +18,8 @@
   },
   "counts": {
     "objc_classes": 12,
-    "source_objects_with_symbols": 50,
-    "symbols": 1037,
+    "source_objects_with_symbols": 52,
+    "symbols": 1054,
     "type_strings": 82
   },
   "description": "Deduped iOS IPA gameplay names/classes for Windows decomp shape mining. ARM/iOS addresses and per-slice ordinals are intentionally omitted.",
@@ -538,6 +538,19 @@
       ]
     ],
     [
+      "Font.o",
+      [
+        "FontAI()",
+        "FontASCIIRemap(char)",
+        "FontInit()",
+        "FontLoad(char*, int, float, float)",
+        "FontMake3D(short)",
+        "FontPrintReal(cFontPrintBuffer*)",
+        "FontPrintRender(int)",
+        "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)"
+      ]
+    ],
+    [
       "GL.o",
       [
         "G0AfterSprites",
@@ -704,6 +717,15 @@
       ]
     ],
     [
+      "Keyboard.o",
+      [
+        "KeyOn(unsigned char)",
+        "KeyPress(unsigned char)",
+        "KeyboardAI()",
+        "KeyboardInit()"
+      ]
+    ],
+    [
       "Landscape.o",
       [
         "cRLandscapeManager::Import(char*)",
@@ -847,6 +869,9 @@
     [
       "Mouse.o",
       [
+        "HideWindowMouse(bool)",
+        "MouseCalcScale(float)",
+        "MouseSet(int, int, int)",
         "cRMouse::AI()",
         "cRMouse::ClickOff()",
         "cRMouse::ClickOn()",
@@ -864,6 +889,7 @@
     [
       "ObjectProc.o",
       [
+        "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
         "cRDistort::BuildMatrix(tMatrix*, tMatrix*)",
         "cRDistort::Init()",
         "cRDuplicateVertices::Init(int)"
@@ -949,6 +975,7 @@
         "gRMathRand2Index",
         "gRMathRand2Table",
         "gUnitMatrix",
+        "tColourSmall::operator=(tColour const&)",
         "tMatrix::Identity()",
         "tMatrix::Interpolate(float)",
         "tMatrix::Invert()",
@@ -1580,6 +1607,102 @@
       ]
     ],
     [
+      "FontAI()",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "FontASCIIRemap(char)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "FontInit()",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "FontLoad(char*, int, float, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "FontMake3D(short)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "FontPrintReal(cFontPrintBuffer*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "FontPrintRender(int)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
       "G0AfterSprites",
       [
         "authored_c_symbol",
@@ -2067,6 +2190,66 @@
       ],
       [
         "Mac.o"
+      ]
+    ],
+    [
+      "HideWindowMouse(bool)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Mouse.o"
+      ]
+    ],
+    [
+      "KeyOn(unsigned char)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Keyboard.o"
+      ]
+    ],
+    [
+      "KeyPress(unsigned char)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Keyboard.o"
+      ]
+    ],
+    [
+      "KeyboardAI()",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Keyboard.o"
+      ]
+    ],
+    [
+      "KeyboardInit()",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Keyboard.o"
       ]
     ],
     [
@@ -3001,6 +3184,42 @@
       ],
       [
         "Mac.o"
+      ]
+    ],
+    [
+      "MouseCalcScale(float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Mouse.o"
+      ]
+    ],
+    [
+      "MouseSet(int, int, int)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "Mouse.o"
+      ]
+    ],
+    [
+      "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "ObjectProc.o"
       ]
     ],
     [
@@ -7378,6 +7597,19 @@
       ],
       [
         "Mouse.o"
+      ]
+    ],
+    [
+      "tColourSmall::operator=(tColour const&)",
+      [
+        "authored_cpp_symbol",
+        "cpp_game_class"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
       ]
     ],
     [
