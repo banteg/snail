@@ -9,7 +9,7 @@ class cRSubGame;
 
 class cRBanner : public BodBase {
 public:
-    void update_banner(); // @ 0x441d40, cRBanner::AI
+    void AI(); // @ 0x441d40
 
     // Android preserves this same tail immediately after its platform BodBase.
     int visibility_mode; // +0x38, 0 start row; 1 completion row

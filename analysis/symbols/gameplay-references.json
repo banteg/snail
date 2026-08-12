@@ -2893,6 +2893,15 @@
       "description": "Exact Windows cRTime::Add(float) entry; the decorated alias preserves the authored method owner in candidate relocations."
     },
     {
+      "address": "0x441d40",
+      "name": "update_banner",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRBanner@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBanner::AI() entry installed through the authored Banner callback table."
+    },
+    {
       "address": "0x441fa0",
       "name": "initialize_subgoldy_resurrect",
       "kind": "function",

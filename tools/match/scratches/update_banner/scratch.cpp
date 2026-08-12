@@ -5,7 +5,7 @@
 
 float sine(float angle); // @ 0x44c9d0
 
-void cRBanner::update_banner()
+void cRBanner::AI()
 {
     switch (visibility_mode) {
     case 0:

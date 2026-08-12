@@ -7740,6 +7740,7 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
         "uninit_times_up": "UnInit",
         "show_times_up_message": "Init",
         "update_progress_bar": "AI",
+        "update_banner": "AI",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
@@ -8242,6 +8243,58 @@ def test_progress_bar_uses_authored_ai_surface() -> None:
     )
     assert ".update_progress_bar(" not in all_sources
     assert "progress_bar.AI()" in all_sources
+
+
+def test_banner_uses_authored_ai_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"] == "update_banner"
+    )
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in manifest["functions"]
+        if function["name"] == "update_banner"
+    )
+    symbol = "?AI@cRBanner@@QAEXXZ"
+    source = (scratch_root / "update_banner/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    config = (scratch_root / "update_banner/scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    header = (repo_root / "tools/match/include/banner.h").read_text(
+        encoding="utf-8"
+    )
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "SubGame.o"
+    assert entry["android_symbol"] == "cRBanner::AI()"
+    assert entry["ios_symbol"] == "cRBanner::AI()"
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+    assert function["aliases"] == ["cRBanner_AI"]
+    assert "void cRBanner::AI()" in source
+    assert f"SYMBOL={symbol}" in config
+    assert symbol in references
+    assert "void AI();" in header
+    assert "g_banner_callback_table" in references
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    assert ".update_banner(" not in all_sources
 
 
 def test_screen_controller_types_use_authored_primary_owners() -> None:

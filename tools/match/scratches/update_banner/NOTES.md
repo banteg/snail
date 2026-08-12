@@ -61,3 +61,11 @@ implementation and its seven clean operands are unchanged.
   Both visibility branches now read
   `banner->owner_player->body.transform.position.z`, matching IDA and the exact
   `Banner`/`Player` layouts without changing the 44/44 machine-code match.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact callback as `cRBanner::AI()` and exports
+`?AI@cRBanner@@QAEXXZ`. Live Windows references place it at the sole entry of
+`g_banner_callback_table`, installed on both fixed `cRSubGame::banners` slots by
+the exact runtime-pool initializer. Android and iOS independently retain the
+same symbol and body. Matching stays exact at 44/44 with seven clean operands.
