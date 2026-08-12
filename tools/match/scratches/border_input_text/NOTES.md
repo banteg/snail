@@ -1,5 +1,12 @@
 # border_input_text @ 0x4035b0
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRBorder::InputText` bodies and the live Windows `FrontendWidget` method
+establish the complete autorepeat dispatch, inline editing and cursor moves,
+filters, blink/layout refresh, completion publication, and optional InputOK
+teardown. All eight references are clean; remaining differences are register
+rotation and duplicated shift-loop scheduling.
+
 Starter scratch for front-end inline text editing.
 
 Models the recovered autorepeat key codes, cursor marker movement, insertion,
@@ -193,8 +200,8 @@ byte-identical to the retained source. The complete ledger now covers 154
 unique variants across eight sweeps: 26 better, 110 identical, and 18 worse,
 with four retained sweep wins and three consecutive non-improving sweeps.
 
-This lane is formally stalled at **74.80%** (`439/446`, prefix 6, all eight
+The retained lane remains at **74.80%** (`439/446`, prefix 6, all eight
 references clean). The remaining carry-byte register rotation is not
-controlled by any evidence-backed scalar spelling tested here. Revisiting it
-requires new native or paired-port provenance, not more source-shape
-permutations.
+controlled by any evidence-backed scalar spelling tested here. The trailing
+sweeps document those source-shape permutations without limiting future
+native- or paired-port-backed work.

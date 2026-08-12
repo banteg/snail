@@ -1,5 +1,11 @@
 # draw_frontend_widget @ 0x401130
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRBorder::Draw` bodies and the live Windows `FrontendWidget` method establish
+the complete blend gate, slider, sprite, nine-slice, shadow, and delayed-glow
+renderer. All 68 references are clean; the five-instruction deficit is bounded
+blend/color lifetime and x87 argument scheduling.
+
 Recovered scratch for the front-end border/widget renderer.
 
 Models the recovered render gate, slider track quads, sprite/icon branch,
@@ -188,5 +194,5 @@ Four bounded mutation sweeps tested the source shapes supported by those facts:
 The retained source therefore remains at 85.13%, 707/712 instructions, prefix
 16/712, with all 68 masked operands clean. The ledger now contains 40 unique
 variants, zero improvements, two equivalent results, 38 regressions, and four
-consecutive no-improvement sweeps. This scratch is formally stalled until new
-source or binary evidence identifies a different authored lifetime.
+trailing no-improvement sweeps that document the tested lifetime forms without
+closing the scratch.

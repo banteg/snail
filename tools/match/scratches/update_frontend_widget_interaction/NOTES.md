@@ -1,5 +1,12 @@
 # update_frontend_widget_interaction @ 0x402820
 
+Current recovery: semantic-complete (`compiler,references` residual). Exact
+Android/iOS `cRBorder::AI` bodies and the live Windows slot-zero void method
+establish the complete flag/list, input, tooltip/twinkle, text, draw, and
+slider-child state machine. No reference is unresolved or mismatched. The two
+unaudited operands are known candidate-only `1.0f` and `0.0f` clamp loads from
+VC6's alternate endpoint-store schedule.
+
 Starter scratch for the per-frame front-end widget state machine.
 
 Models flag snapshot/teardown, hover hit testing, shortcut dispatch, delayed
