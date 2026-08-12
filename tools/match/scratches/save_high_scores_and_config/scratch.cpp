@@ -11,7 +11,7 @@ extern char* xor_decode_buffer_with_index(char* bytes, int byte_count);
 extern int write_file_bytes(char* file_name, void* bytes, int byte_count);
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
-void SubHighScore::save_high_scores_and_config(unsigned char save_mask)
+void cRSubHighScore::save_high_scores_and_config(unsigned char save_mask)
 {
     char* bytes = allocate_tracked_memory(
         HIGH_SCORE_SAVE_BUFFER_SIZE,

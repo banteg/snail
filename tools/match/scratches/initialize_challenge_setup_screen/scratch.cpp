@@ -11,7 +11,7 @@
 
 extern char g_back_text[]; // 0x4a20ec
 
-void GUI::initialize_challenge_setup_screen()
+void cRGUI::initialize_challenge_setup_screen()
 {
     g_game->players[0].mouse_cursor.capture_mouse_cursor();
     game->level_definition.load_frontend_level_by_mode_and_index(

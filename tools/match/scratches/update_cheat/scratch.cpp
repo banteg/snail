@@ -2,7 +2,7 @@
 
 #include "cheat_state.h"
 
-void CheatState::update_cheat()
+void cRCheat::update_cheat()
 {
     char key = read_pressed_text_input_key_code();
     if (key >= 'a' && key <= 'z') {

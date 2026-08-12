@@ -4,7 +4,7 @@
 #include "game_root.h"
 
 
-void Exit::destroy_completion_screen()
+void cRExit::destroy_completion_screen()
 {
     g_game->border_manager.kill_border(prompt_title);
     g_game->border_manager.kill_border(yes_button);

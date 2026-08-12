@@ -13,7 +13,7 @@ extern char g_back_text[]; // 0x4a20ec
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-void Help::initialize_help_screen()
+void cRHelp::initialize_help_screen()
 {
     tColour color;
 

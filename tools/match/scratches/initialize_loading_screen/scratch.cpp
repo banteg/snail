@@ -25,7 +25,7 @@ char* load_file_bytes_from_archive_or_fs(char* file_name, char* buffer, int* out
 int report_errorf(char* format, ...);
 int begin_overlay_render_state();
 
-void LoadingBar::initialize_loading_screen()
+void cRLoadingBar::initialize_loading_screen()
 {
     g_runtime_config.last_loading_budget = 1276;
 

@@ -4,7 +4,7 @@
 #include "options.h"
 #include "runtime_config.h"
 
-void Options::apply_audio_config_volumes()
+void cROptions::apply_audio_config_volumes()
 {
     g_audio_backend.set_global_sample_volume_config(g_runtime_config.sample_volume);
     g_audio_backend.set_global_stream_volume_config(

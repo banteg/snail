@@ -4,7 +4,7 @@
 #include "help.h"
 
 
-void Help::update_help_screen()
+void cRHelp::update_help_screen()
 {
     FrontendWidget* button = back_button;
     unsigned int flags = button->widget_flags;

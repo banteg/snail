@@ -6,7 +6,7 @@ extern unsigned char archive_or_file_exists(char* file_name, int include_archive
 extern char* load_file_bytes(char* file_name, int* out_size);
 extern char* xor_decode_buffer_with_index(char* bytes, int byte_count);
 
-void SubHighScore::load_high_scores_from_file(char* file_name)
+void cRSubHighScore::load_high_scores_from_file(char* file_name)
 {
     if (archive_or_file_exists(file_name, 1)) {
         int byte_count;

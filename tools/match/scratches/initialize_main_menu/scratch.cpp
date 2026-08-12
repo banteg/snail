@@ -16,7 +16,7 @@ extern char g_credits_text[]; // 0x4a3b58
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-void MainMenu::initialize_main_menu()
+void cRMainMenu::initialize_main_menu()
 {
     tColour color;
 

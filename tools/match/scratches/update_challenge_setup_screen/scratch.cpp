@@ -9,7 +9,7 @@
 #include "game_time.h"
 #include "time_trial.h"
 
-int GUI::update_challenge_setup_screen()
+int cRGUI::update_challenge_setup_screen()
 {
     game->HideScores();
 

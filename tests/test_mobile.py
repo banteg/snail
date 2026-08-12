@@ -6032,6 +6032,139 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
     ).read_text(encoding="utf-8")
 
 
+def test_screen_controller_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    owners = {
+        "help.h": (
+            "cRHelp",
+            "Help",
+            (
+                "initialize_help_screen",
+                "destroy_help_screen",
+                "update_help_screen",
+            ),
+        ),
+        "new_game_menu.h": (
+            "cRIntro",
+            "Intro",
+            ("initialize_new_game_menu", "update_new_game_menu"),
+        ),
+        "loading_bar.h": (
+            "cRLoadingBar",
+            "LoadingBar",
+            (
+                "initialize_loading_screen",
+                "destroy_loading_screen",
+                "update_loading_screen",
+            ),
+        ),
+        "main_menu.h": (
+            "cRMainMenu",
+            "MainMenu",
+            (
+                "destroy_main_menu",
+                "initialize_main_menu",
+                "update_main_menu",
+            ),
+        ),
+        "options.h": (
+            "cROptions",
+            "Options",
+            (
+                "initialize_options_menu",
+                "destroy_options_menu",
+                "update_options_menu",
+                "apply_audio_config_volumes",
+            ),
+        ),
+        "gui.h": (
+            "cRGUI",
+            "GUI",
+            (
+                "initialize_challenge_setup_screen",
+                "destroy_challenge_setup_screen",
+                "update_challenge_setup_screen",
+            ),
+        ),
+        "cheat_state.h": (
+            "cRCheat",
+            "CheatState",
+            ("initialize_cheat", "update_cheat", "match_cheat_text"),
+        ),
+        "exit.h": (
+            "cRExit",
+            "Exit",
+            (
+                "destroy_completion_screen",
+                "initialize_exit_prompt",
+                "update_completion_screen",
+            ),
+        ),
+        "sub_high_score.h": (
+            "cRSubHighScore",
+            "SubHighScore",
+            (
+                "initialize_high_score_tables",
+                "load_high_scores_from_file",
+                "add_arcade_high_score",
+                "add_survival_high_score",
+                "add_time_trial_high_score",
+                "mini_delete_high_score_entry",
+                "save_high_scores_and_config",
+            ),
+        ),
+        "sub_solution.h": (
+            "cRSubSolution",
+            "SubSolution",
+            (
+                "initialize_high_score_entry",
+                "deserialize_compact_high_score_record",
+                "serialize_compact_high_score_record",
+            ),
+        ),
+    }
+    for header_name, (authored, compatibility, functions) in owners.items():
+        header = (include_root / header_name).read_text(encoding="utf-8")
+        assert (
+            f"class {authored}" in header
+            or f"struct {authored}" in header
+        )
+        assert f"typedef {authored} {compatibility};" in header
+        assert f"sizeof({authored})" in header
+        for function in functions:
+            source = (
+                scratch_root / function / "scratch.cpp"
+            ).read_text(encoding="utf-8")
+            assert f"{authored}::{function}" in source
+
+    game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
+    for field_type in (
+        "cRIntro intro",
+        "cRMainMenu main_menu",
+        "cROptions options",
+        "cRExit exit_controller",
+    ):
+        assert field_type in game_root
+    subgame = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    for field_type in (
+        "cRSubHighScore sub_high_score",
+        "cRSubSolution current_high_score_record",
+        "cRGUI gui",
+        "cRHelp help",
+    ):
+        assert field_type in subgame
+    solution = (include_root / "sub_solution.h").read_text(
+        encoding="utf-8"
+    )
+    assert "struct cRSubSolutionHeader" in solution
+    assert "typedef cRSubSolutionHeader SubSolutionHeader;" in solution
+    assert "cRSubSolutionHeader* compact" in solution
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

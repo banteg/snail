@@ -17,7 +17,7 @@ extern char g_back_text[]; // 0x4a20ec
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-void Intro::initialize_new_game_menu()
+void cRIntro::initialize_new_game_menu()
 {
     tColour color;
 

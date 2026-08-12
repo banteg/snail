@@ -4,7 +4,7 @@
 
 #include "frontend_widget.h"
 
-class Help {
+class cRHelp {
 public:
     void initialize_help_screen(); // @ 0x416800, cRHelp::Init
     void destroy_help_screen(); // @ 0x4168c0, cRHelp::UnInit
@@ -13,6 +13,7 @@ public:
     FrontendWidget* back_button; // +0x00
 };
 
-typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
+typedef cRHelp Help;
+typedef char Help_must_be_0x04[(sizeof(cRHelp) == 0x04) ? 1 : -1];
 
 #endif

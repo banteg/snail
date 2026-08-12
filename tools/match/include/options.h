@@ -4,7 +4,7 @@
 
 #include "frontend_widget.h"
 
-class Options {
+class cROptions {
 public:
     void initialize_options_menu(); // @ 0x41ace0, cROptions::Init
     void destroy_options_menu(); // @ 0x41aee0, cROptions::UnInit
@@ -21,7 +21,8 @@ public:
     float previous_sample_volume; // +0x20
 };
 
+typedef cROptions Options;
 typedef char Options_must_be_0x24[
-    (sizeof(Options) == 0x24) ? 1 : -1];
+    (sizeof(cROptions) == 0x24) ? 1 : -1];
 
 #endif

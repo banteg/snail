@@ -7,7 +7,7 @@ enum CheatStateFlag {
     CHEAT_STATE_FLAG_SHEEP = 0x04,
 };
 
-class CheatState {
+class cRCheat {
 public:
     void initialize_cheat();
     void update_cheat();
@@ -24,10 +24,11 @@ public:
     };
 };
 
+typedef cRCheat CheatState;
 typedef char CheatState_must_be_0x10[
-    (sizeof(CheatState) == 0x10) ? 1 : -1];
+    (sizeof(cRCheat) == 0x10) ? 1 : -1];
 
-extern CheatState g_cheat_state; // data_4b2f40
+extern cRCheat g_cheat_state; // data_4b2f40
 
 char read_pressed_text_input_key_code(); // @ 0x432440
 

@@ -3,8 +3,8 @@
 #include "sub_solution.h"
 #include "high_score.h"
 
-unsigned char SubSolution::deserialize_compact_high_score_record(
-    SubSolutionHeader* compact)
+unsigned char cRSubSolution::deserialize_compact_high_score_record(
+    cRSubSolutionHeader* compact)
 {
     int score_value = compact->score;
     if (compact->checksum != ((score_value * score_value) ^ SUB_SOLUTION_CHECKSUM_MASK)) {

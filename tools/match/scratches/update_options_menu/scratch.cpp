@@ -11,7 +11,7 @@ extern char g_fullscreen_off_text[]; // 0x4a3d4c
 
 void set_fullscreen_mode(char enabled);
 
-void Options::update_options_menu()
+void cROptions::update_options_menu()
 {
     g_runtime_config.stream_volume = music_volume_widget->slider_value;
     g_runtime_config.sample_volume = sound_volume_widget->slider_value;

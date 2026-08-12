@@ -6,7 +6,7 @@
 
 int report_errorf(char* format, ...);
 
-bool CheatState::match_cheat_text(char* text)
+bool cRCheat::match_cheat_text(char* text)
 {
     unsigned int text_size = strlen(text) + 1;
     int length = text_size - 1;

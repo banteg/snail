@@ -2,7 +2,7 @@
 
 #include "sub_high_score.h"
 
-void SubHighScore::initialize_high_score_tables()
+void cRSubHighScore::initialize_high_score_tables()
 {
     int route_or_rank_index = 0;
     SubSolution* record = postal_records;

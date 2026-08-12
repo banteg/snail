@@ -8,7 +8,7 @@
 #include "input_state.h"
 #include "mouse_cursor_state.h"
 
-class Intro {
+class cRIntro {
 public:
     void initialize_new_game_menu(); // @ 0x417bc0, cRIntro::Init
     void update_new_game_menu(); // @ 0x417eb0, cRIntro::AI
@@ -29,8 +29,9 @@ public:
     FrontendWidget* help_button; // +0x40
     FrontendWidget* back_button; // +0x44
 };
-typedef Intro NewGameMenu;
-typedef char Intro_must_be_0x48[(sizeof(Intro) == 0x48) ? 1 : -1];
+typedef cRIntro Intro;
+typedef cRIntro NewGameMenu;
+typedef char Intro_must_be_0x48[(sizeof(cRIntro) == 0x48) ? 1 : -1];
 
 
 char read_pressed_text_input_key_code(); // @ 0x432440

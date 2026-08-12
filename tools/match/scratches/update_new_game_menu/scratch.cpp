@@ -4,7 +4,7 @@
 #include "new_game_menu.h"
 
 
-void Intro::update_new_game_menu()
+void cRIntro::update_new_game_menu()
 {
     unsigned int flags;
 

@@ -4,7 +4,7 @@
 
 #include "frontend_widget.h"
 
-class MainMenu {
+class cRMainMenu {
 public:
     void destroy_main_menu(); // @ 0x419b30, cRMainMenu::UnInit, folded body
     void initialize_main_menu(); // @ 0x419b50
@@ -18,6 +18,8 @@ public:
     FrontendWidget* exit_widget; // +0x14
 };
 
-typedef char MainMenu_must_be_0x18[(sizeof(MainMenu) == 0x18) ? 1 : -1];
+typedef cRMainMenu MainMenu;
+typedef char MainMenu_must_be_0x18[
+    (sizeof(cRMainMenu) == 0x18) ? 1 : -1];
 
 #endif

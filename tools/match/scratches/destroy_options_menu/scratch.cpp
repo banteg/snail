@@ -6,7 +6,7 @@
 
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
-void Options::destroy_options_menu()
+void cROptions::destroy_options_menu()
 {
     g_game->border_manager.unhide_all_borders();
     g_game->border_manager.kill_border(back_widget);

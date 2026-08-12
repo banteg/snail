@@ -4,7 +4,7 @@
 #include "help.h"
 
 
-void Help::destroy_help_screen()
+void cRHelp::destroy_help_screen()
 {
     g_game->border_manager.kill_all_borders();
 }

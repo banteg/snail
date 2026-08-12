@@ -4,7 +4,7 @@
 #include "sprite.h"
 
 
-void MainMenu::destroy_main_menu()
+void cRMainMenu::destroy_main_menu()
 {
     g_game->border_manager.kill_all_borders();
     g_sprite_manager.KillGame();

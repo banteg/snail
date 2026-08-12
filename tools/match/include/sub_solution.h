@@ -29,7 +29,7 @@ const int SUB_SOLUTION_RUN_RECORD_COUNT = 21600;
 const int SUB_SOLUTION_RUN_RECORD_BYTES =
     SUB_SOLUTION_RUN_RECORD_COUNT * sizeof(ReplayRunRecord);
 
-struct SubSolutionHeader {
+struct cRSubSolutionHeader {
     int byte_count; // +0x00
     int score; // +0x04
     union {
@@ -93,7 +93,9 @@ struct SubSolutionHeader {
     }
 };
 
-class SubSolution {
+typedef cRSubSolutionHeader SubSolutionHeader;
+
+class cRSubSolution {
 public:
     void initialize_high_score_entry(
         int runtime_build_seed,
@@ -103,9 +105,9 @@ public:
         int high_score_mode_tag,
         int route_or_rank_index); // @ 0x417a70, cRSubSolution::ReSet
     unsigned char deserialize_compact_high_score_record(
-        SubSolutionHeader* compact); // @ 0x440020, cRSubSolution::Load
+        cRSubSolutionHeader* compact); // @ 0x440020, cRSubSolution::Load
     int serialize_compact_high_score_record(
-        SubSolutionHeader* compact); // @ 0x440170, cRSubSolution::Save
+        cRSubSolutionHeader* compact); // @ 0x440170, cRSubSolution::Save
 
     int active; // +0x00
     int score; // +0x04
@@ -151,7 +153,8 @@ public:
     int opaque_persistence_word_1; // +0x1fabc
 };
 
+typedef cRSubSolution SubSolution;
 typedef char SubSolution_must_be_0x1fac0[
-    (sizeof(SubSolution) == SUB_SOLUTION_STRIDE) ? 1 : -1];
+    (sizeof(cRSubSolution) == SUB_SOLUTION_STRIDE) ? 1 : -1];
 
 #endif

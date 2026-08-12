@@ -4,7 +4,7 @@
 #include "game_root.h"
 
 
-void Exit::update_completion_screen()
+void cRExit::update_completion_screen()
 {
     FrontendWidget* button;
     unsigned int flags;

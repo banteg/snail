@@ -114,11 +114,11 @@ public:
     Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer
     // Contiguous front-end owner block. The exact component extents prove
     // every boundary through the exit prompt without padding.
-    Intro intro; // +0x4f2dc, exact Windows cRIntro owner
-    MainMenu main_menu; // +0x4f324
+    cRIntro intro; // +0x4f2dc, exact Windows cRIntro owner
+    cRMainMenu main_menu; // +0x4f324
     cRStarManager star_manager; // +0x4f33c, exact authored owner
-    Options options; // +0x4f388, exact authored cROptions owner
-    Exit exit_controller; // +0x4f3ac, exact authored cRExit owner
+    cROptions options; // +0x4f388, exact authored cROptions owner
+    cRExit exit_controller; // +0x4f3ac, exact authored cRExit owner
     // Windows and Android construct this as a standalone cRBod immediately
     // before cRLogo; its concrete gameplay role is not yet established.
     BodBase root_bod_4f3c8; // +0x4f3c8

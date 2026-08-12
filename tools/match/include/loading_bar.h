@@ -6,7 +6,7 @@
 class Direct3DTexture8;
 struct ObjectRenderBuffers;
 
-struct LoadingBar {
+struct cRLoadingBar {
     void initialize_loading_screen(); // @ 0x418b50, cRLoadingBar::Init
     void destroy_loading_screen();    // @ 0x418e50, cRLoadingBar::UnInit
     void update_loading_screen();     // @ 0x418e80, cRLoadingBar::AI
@@ -16,10 +16,11 @@ struct LoadingBar {
     int last_loading_budget; // +0x08
 };
 
+typedef cRLoadingBar LoadingBar;
 typedef char LoadingBar_must_be_0x0c[
-    (sizeof(LoadingBar) == 0x0c) ? 1 : -1];
+    (sizeof(cRLoadingBar) == 0x0c) ? 1 : -1];
 
-extern LoadingBar g_loading_bar; // data_503290, cross-port gLoadingBar
+extern cRLoadingBar g_loading_bar; // data_503290, cross-port gLoadingBar
 extern Direct3DTexture8* g_loading_bar_on_texture; // data_503280
 extern ObjectRenderBuffers* g_loading_background_vertex_buffer; // data_503284
 extern Direct3DTexture8* g_loading_background_texture; // data_503288

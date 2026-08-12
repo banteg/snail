@@ -8,7 +8,7 @@
 
 class cRSubGame;
 
-class GUI {
+class cRGUI {
 public:
     void initialize_challenge_setup_screen(); // @ 0x415f50, cRGUI::Init
     void destroy_challenge_setup_screen(); // @ 0x4161f0, cRGUI::UnInit
@@ -26,6 +26,7 @@ public:
     FrontendWidget* replay_button; // +0x24
 };
 
-typedef char GUI_must_be_0x28[(sizeof(GUI) == 0x28) ? 1 : -1];
+typedef cRGUI GUI;
+typedef char GUI_must_be_0x28[(sizeof(cRGUI) == 0x28) ? 1 : -1];
 
 #endif

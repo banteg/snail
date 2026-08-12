@@ -236,8 +236,8 @@ public:
     // Both objects are embedded in cRSubGame. complete_subgame snapshots
     // into current_high_score_record, then lends that record to sub_high_score
     // for in-place normalization and value-copy persistence.
-    SubHighScore sub_high_score; // +0x68b4c8, owns persistent record arrays
-    SubSolution current_high_score_record; // +0xfd2b10, working run snapshot
+    cRSubHighScore sub_high_score; // +0x68b4c8, owns persistent record arrays
+    cRSubSolution current_high_score_record; // +0xfd2b10, working run snapshot
     union {
         unsigned char selected_level_record_active; // +0xff25d0
         unsigned char replay_launch_active; // front-end replay handoff alias
@@ -248,8 +248,8 @@ public:
     };
     char unknown_ff25d2[0xff25d4 - 0xff25d2];
     union {
-        SubSolution* selected_level_record; // +0xff25d4
-        SubSolution* replay_launch_record; // front-end replay handoff alias
+        cRSubSolution* selected_level_record; // +0xff25d4
+        cRSubSolution* replay_launch_record; // front-end replay handoff alias
     };
     union {
         int selected_level_record_cursor; // +0xff25d8, replay/update cursor window
@@ -280,8 +280,8 @@ public:
         float salt_frequency; // +0x125ffdc, normalized Salt: spawn control
         int salt_frequency_bits;
     };
-    GUI gui; // +0x125ffe0
-    Help help; // +0x1260008, exact authored cRHelp owner
+    cRGUI gui; // +0x125ffe0
+    cRHelp help; // +0x1260008, exact authored cRHelp owner
     ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller
     cRGalaxy galaxy; // +0x1260020, authored cRGalaxy owner through +0x1270fc8
     int subgame_rebuild_selector; // +0x1270fc8

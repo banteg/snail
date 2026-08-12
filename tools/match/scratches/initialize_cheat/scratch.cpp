@@ -2,7 +2,7 @@
 
 #include "cheat_state.h"
 
-void CheatState::initialize_cheat()
+void cRCheat::initialize_cheat()
 {
     recent_text_0 = 0;
     recent_text_4 = 0;

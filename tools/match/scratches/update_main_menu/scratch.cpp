@@ -3,7 +3,7 @@
 #include "game_root.h"
 
 
-void MainMenu::update_main_menu()
+void cRMainMenu::update_main_menu()
 {
     unsigned int flags = new_game_widget->widget_flags;
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
