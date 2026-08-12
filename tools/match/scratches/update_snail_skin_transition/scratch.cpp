@@ -2,7 +2,7 @@
 #include "object_render_types.h"
 #include "player.h"
 
-void cRSnailSkin::update_snail_skin_transition()
+void cRSnailSkin::AI()
 {
     owner_snail->object->flags |= OBJECT_FLAG_USE_OVERRIDE_TEXTURE;
     owner_snail->object->override_texture_ref = material_overrides[selected_slot];

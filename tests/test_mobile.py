@@ -7731,6 +7731,9 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
         "start_squidge_y": "StartY",
         "start_squidge_z": "StartZ",
         "update_squidge": "AI",
+        "initialize_snail_skin": "Init",
+        "update_snail_skin_transition": "AI",
+        "change_snail_skin": "Change",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
@@ -7922,6 +7925,7 @@ def test_squidge_uses_authored_method_surface() -> None:
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
         for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
     )
     for stale_method in (
         ".initialize_squidge(",
@@ -7934,6 +7938,92 @@ def test_squidge_uses_authored_method_surface() -> None:
     assert "squidge.StartY(" in all_sources
     assert "squidge.StartZ(" in all_sources
     assert "squidge.AI()" in all_sources
+
+
+def test_snail_skin_uses_authored_method_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/snail_skin.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "initialize_snail_skin": {
+            "method": "Init",
+            "symbol": "?Init@cRSnailSkin@@QAEXXZ",
+            "android": "cRSnailSkin::Init()",
+            "ios": "cRSnailSkin::Init(cRSnail*)",
+            "alias": "cRSnailSkin_Init",
+        },
+        "update_snail_skin_transition": {
+            "method": "AI",
+            "symbol": "?AI@cRSnailSkin@@QAEXXZ",
+            "android": "cRSnailSkin::AI()",
+            "ios": None,
+            "alias": "cRSnailSkin_AI",
+        },
+        "change_snail_skin": {
+            "method": "Change",
+            "symbol": "?Change@cRSnailSkin@@QAEXHM@Z",
+            "android": "cRSnailSkin::Change(int, float)",
+            "ios": None,
+            "alias": "cRSnailSkin_Change",
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "SubGame.o"
+        assert entry["android_symbol"] == recovered["android"]
+        assert entry["android_body_count"] == 1
+        if recovered["ios"] is None:
+            assert "ios_symbol" not in entry
+        else:
+            assert entry["ios_symbol"] == recovered["ios"]
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSnailSkin::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void Init();" in header
+    assert "void AI();" in header
+    assert "void Change(int slot_id, float duration_seconds);" in header
+    assert "Init(cRSnail*" not in header
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".initialize_snail_skin(",
+        ".update_snail_skin_transition(",
+        ".change_snail_skin(",
+    ):
+        assert stale_method not in all_sources
+    assert "snail_skin.Init()" in all_sources
+    assert "snail_skin.AI()" in all_sources
+    assert "snail_skin.Change(" in all_sources
 
 
 def test_screen_controller_types_use_authored_primary_owners() -> None:

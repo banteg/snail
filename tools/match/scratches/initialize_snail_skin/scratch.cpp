@@ -3,7 +3,7 @@
 #include "player.h"
 
 
-void cRSnailSkin::initialize_snail_skin()
+void cRSnailSkin::Init()
 {
     cRSnail* owner = &g_game->subgame.embedded_player()->presentation;
     selected_slot = SNAIL_SKIN_SLOT_DEFAULT;

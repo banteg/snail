@@ -19,3 +19,11 @@ tracked decompiles expose the selected material slot, active/progress state,
 and the exact 60 Hz duration formula under `SnailSkin`; strict health checks
 reject the stale synthetic state name and raw field accesses. Focused matching
 remains exact at 19/19 with all three operands clean.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRSnailSkin::Change(int, float)`
+and exports `?Change@cRSnailSkin@@QAEXHM@Z`. Live Windows callsite recovery
+finds the same inline SnailSkin receiver in both damage paths and all three
+invincible-shell transitions. Android independently preserves the signature and
+body. The source promotion keeps the exact 19/19 match and three clean operands.

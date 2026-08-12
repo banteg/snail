@@ -3051,6 +3051,33 @@
       "description": "Compiler-emitted byte lookup table mapping movement flags 1..192 to set_snail_weapon switch case indexes."
     },
     {
+      "address": "0x445f60",
+      "name": "initialize_snail_skin",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSnailSkin@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSnailSkin::Init() entry; Windows retains the no-argument member ABI."
+    },
+    {
+      "address": "0x445f80",
+      "name": "update_snail_skin_transition",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSnailSkin@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSnailSkin::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x445fd0",
+      "name": "change_snail_skin",
+      "kind": "function",
+      "aliases": [
+        "?Change@cRSnailSkin@@QAEXHM@Z"
+      ],
+      "description": "Exact Windows cRSnailSkin::Change(int, float) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x446130",
       "name": "initialize_cutscene_ai",
       "kind": "function",

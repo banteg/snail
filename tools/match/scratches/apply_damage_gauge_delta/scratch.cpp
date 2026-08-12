@@ -19,7 +19,7 @@ void cRDamageGuage::Take(float delta, bool force)
             || g_game->subgame.embedded_player()->trampoline_bounce_active != 1)) {
         if (hit_flash_progress == 0.0f && delta > 0.0f) {
             g_game->subgame.embedded_player()->presentation.snail_skin
-                .change_snail_skin(SNAIL_SKIN_SLOT_DAMAGE, 0.2f);
+                .Change(SNAIL_SKIN_SLOT_DAMAGE, 0.2f);
             if (!g_voice_manager.Play(
                     VOICE_SET_DAMAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1)) {
                 if (g_voice_manager.Play(

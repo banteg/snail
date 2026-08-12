@@ -25,3 +25,11 @@ override texture, three borrowed `TextureRef*` slots, and timed reset fields.
 Strict health checks reject the old `owner_render_state`, `slot_ids`, raw
 object offsets, and synthetic transition owner. Focused matching remains exact
 at 25/25 with its operand clean.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRSnailSkin::AI()` and exports
+`?AI@cRSnailSkin@@QAEXXZ`. Its sole live Windows caller passes the inline
+`Snail + 0x1938` child immediately before the rest of Snail presentation AI;
+Android independently retains the class-qualified symbol and body. The rename
+preserves the exact 25/25 instruction match and clean relocation audit.

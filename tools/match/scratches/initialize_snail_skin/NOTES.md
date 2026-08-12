@@ -37,3 +37,12 @@ tracked decompiles expose the root-owned `Snail` parent at
 transition-state owner and raw root displacement. Strict health checks preserve
 that borrowed parent relationship. Focused matching remains exact at 6/6 with
 both operands clean.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the Windows member as `cRSnailSkin::Init()` and exports
+`?Init@cRSnailSkin@@QAEXXZ`. The sole live Windows call passes only the inline
+child at `cRSubGoldy + 0x42bc`; the function derives and stores the root-owned
+Snail backlink itself. That confirms the no-argument Windows ABI shared by
+Android, while the explicit `cRSnail*` parameter remains an iOS-only variation.
+The promotion preserves the exact 6/6 instruction match and both clean operands.

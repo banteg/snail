@@ -11,7 +11,7 @@ void cRSnail::update_snail_presentation()
     if (g_game->subgame.subgame_pause_gate != 0)
         return;
 
-    snail_skin.update_snail_skin_transition();
+    snail_skin.AI();
 
     TransformMatrix scratch_matrix;
     TransformMatrix source_matrix;

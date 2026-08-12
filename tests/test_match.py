@@ -3425,6 +3425,7 @@ def test_resolve_function_extent_uses_next_curated_function() -> None:
 
 
 SCRATCH_OBJ = REPO_ROOT / "tools/match/scratches/change_snail_skin/build/scratch.obj"
+SCRATCH_SYMBOL = "?Change@cRSnailSkin@@QAEXHM@Z"
 IMAGE_AVAILABLE = MANIFEST_AVAILABLE and (
     REPO_ROOT / "artifacts/bin/SnailMail_unwrapped.exe"
 ).exists()
@@ -3437,7 +3438,7 @@ IMAGE_AVAILABLE = MANIFEST_AVAILABLE and (
 def test_change_snail_skin_scratch_matches_image() -> None:
     manifest = load_function_symbol_manifest(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
     obj = parse_coff_object(SCRATCH_OBJ.read_bytes())
-    candidate = extract_object_function(obj, "change_snail_skin")
+    candidate = extract_object_function(obj, SCRATCH_SYMBOL)
     start, end = resolve_function_extent(manifest, "change_snail_skin")
     image = load_image(REPO_ROOT / Path(manifest.primary_target), manifest.image_base)
     result = match_function(

@@ -154,7 +154,7 @@ void cRSubGoldy::Init(int player_slot)
         this->presentation.weapon_channels[2].anim_manager.state = zero;
     }
 
-    this->presentation.snail_skin.initialize_snail_skin();
+    this->presentation.snail_skin.Init();
     this->presentation.cutscene.Init();
     if (this->game->selected_level_record_active == 0)
         this->presentation.cutscene.state = CUT_SCENE_STATE_INTRO_PENDING;

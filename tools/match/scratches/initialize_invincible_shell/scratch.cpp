@@ -8,5 +8,5 @@ void cRInvincible::Init()
 {
     state = INVINCIBLE_STATE_INACTIVE;
     g_game->subgame.embedded_player()->presentation.snail_skin
-        .change_snail_skin(SNAIL_SKIN_SLOT_DEFAULT, 0.0f);
+        .Change(SNAIL_SKIN_SLOT_DEFAULT, 0.0f);
 }

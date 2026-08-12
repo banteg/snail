@@ -41,7 +41,7 @@ void cRInvincible::AI()
         if (fade_progress < 0.0f) {
             fade_progress = 0.0f;
             state = INVINCIBLE_STATE_INACTIVE;
-            g_game->subgame.player.presentation.snail_skin.change_snail_skin(
+            g_game->subgame.player.presentation.snail_skin.Change(
                 SNAIL_SKIN_SLOT_DEFAULT, 0.0f);
             return;
         }
@@ -55,7 +55,7 @@ void cRInvincible::AI()
     if (spin_phase > 1.0f)
         spin_phase -= 1.0f;
 
-    g_game->subgame.player.presentation.snail_skin.change_snail_skin(
+    g_game->subgame.player.presentation.snail_skin.Change(
         SNAIL_SKIN_SLOT_INVINCIBLE, 0.0f);
     color.White();
     color.a = fade_progress * 0.80000001f;

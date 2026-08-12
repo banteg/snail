@@ -72,7 +72,7 @@ void cRDamageGuage::AI()
         case DAMAGE_GUAGE_STATE_DRAINING: {
             GameRoot* skin_game = g_game;
             skin_game->subgame.embedded_player()
-                ->presentation.snail_skin.change_snail_skin(
+                ->presentation.snail_skin.Change(
                     SNAIL_SKIN_SLOT_DAMAGE, 0.2f);
             Take(-0.0016666667f, 1);
             skin_hold_ticks = 5;

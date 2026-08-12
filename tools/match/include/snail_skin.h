@@ -14,9 +14,9 @@ enum {
 
 class cRSnailSkin {
 public:
-    void initialize_snail_skin(); // @ 0x445f60, cRSnailSkin::Init
-    void update_snail_skin_transition(); // @ 0x445f80, cRSnailSkin::AI
-    void change_snail_skin(int slot_id, float duration_seconds); // @ 0x445fd0, Change
+    void Init(); // @ 0x445f60
+    void AI(); // @ 0x445f80
+    void Change(int slot_id, float duration_seconds); // @ 0x445fd0
 
     int selected_slot;             // +0x00
     cRTexture* material_overrides[SNAIL_SKIN_SLOT_COUNT]; // +0x04
