@@ -4445,7 +4445,7 @@
       "android_symbol": "cRStarManager::Init()",
       "source_object": "Star.o",
       "confidence": "high",
-      "notes": "All ports initialize the same root-owned cRStarManager and its 0x2c-byte streak entries. Both direct Windows callers ignore a result and its callback target is the void AI member, proving a void ABI. The near-exact Windows source retains four honest scheduling residuals."
+      "notes": "All ports initialize the same root-owned cRStarManager and its 0x2c-byte streak entries. Both direct Windows callers ignore a result and its callback target is the void AI member, proving a void ABI. The near-exact Windows source retains six scheduling differences in two bounded regions."
     },
     {
       "address": "0x434670",

@@ -1,5 +1,12 @@
 # build_sprite_tail
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRSprite::BuildTail(tMatrix*)` bodies and the live Windows Sprite method
+establish both facing-refresh branches, position-delta rotation, angle update,
+and throttled progress wrap. All eight references are clean and both sides
+contain 86 instructions; the only delta is the dead returned-`z` spill slot in
+the two rotate-call branches.
+
 Near-match for Windows `cRSprite::BuildTail(tMatrix*)` at `0x44e410`.
 
 - `SPRITE_FLAG_THROTTLE_FACING_REFRESH` enables throttled facing refresh

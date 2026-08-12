@@ -1,5 +1,12 @@
 # initialize_star_field
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRStarManager::Init()` bodies and the live Windows StarManager method establish
+the complete entry allocation, camera-relative position, randomized direction,
+speed/travel, Sprite setup, and virtual `AI()` handoff. All 26 references are
+clean and both sides contain 247 instructions; the remaining six differences
+are scheduling in the travel/color and corner-scale windows.
+
 - Source-shaped initializer for the `cRStarManager` entries and backing
   `Sprite` objects. Windows owns the manager at `GameRoot +0x4f33c`; its first
   `0x38` bytes are the constructed `BodBase` prefix and the manager-specific
@@ -32,7 +39,7 @@
 
 Current focused result after the shared vector-operator consolidation: 97.57%,
 247/247 candidate/target instructions, a 126-instruction prefix, and 25 masked
-operands clean. The six residual instruction-order differences are VC6
+operands clean at that stage. The six residual instruction-order differences are VC6
 scheduling around the random travel store/color arguments and the corner-scale
 sprite dereference; the candidate otherwise has the exact instruction count
 and semantics. A retained tail-entry pointer probe regressed to 66.80% by
@@ -159,12 +166,13 @@ from the first vector-expression region. None recovers either remaining
 scheduler window.
 
 The ledger now contains 93 unique variants: 49 neutral, 41 degrading, and
-three fuzzy improvements that retain documented metric tradeoffs. After three
-consecutive non-improving sweeps the canonical lane is formally stalled at
-**97.57%** (`247/247`, prefix 126, 26 clean references). The retained source
-keeps the shared, independently proven vector operator and exact instruction
-and reference counts; the remaining travel/color and corner-scale reorderings
-are bounded VC6 scheduling debt.
+three fuzzy improvements that retain documented metric tradeoffs. The last
+three recorded sweeps were non-improving; this is descriptive evidence, not a
+stopping rule. The canonical lane remains at **97.57%** (`247/247`, prefix 126,
+26 clean references). The retained source keeps the shared, independently
+proven vector operator and exact instruction and reference counts; the
+remaining travel/color and corner-scale reorderings are bounded VC6 scheduling
+debt.
 
 ## 2026-08-09 primary cRStarManager::Init promotion
 
