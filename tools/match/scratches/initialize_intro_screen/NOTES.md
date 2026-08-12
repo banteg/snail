@@ -205,9 +205,10 @@ qualifier, dummy dependency, or raw cursor projection is kept.
 
 The primary matcher method is `cRLogo::Init(char*)`, symbol
 `?Init@cRLogo@@QAEXPAD@Z`. The stable `initialize_intro_screen` harness name and
-the existing `LogoLetter` compatibility spellings inside the frozen body are
+the existing `LogoLetter` compatibility spellings inside the retained body are
 retained so all three historical mutation anchors remain byte-identical. No
-shape search was reopened. Focused matching is unchanged at **88.89%**,
+shape search was needed for that ownership-only change. Focused matching is
+unchanged at **88.89%**,
 `523/521`, prefix `88/521`, with all 66 references clean.
 
 ## 2026-08-12 recovery classification

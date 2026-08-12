@@ -323,7 +323,7 @@ The retained gain is 139.41 weighted bytes and six fewer candidate
 instructions, with no reference debt. The terminal scale boundary regresses
 after the ordinary arm is retained, the ordinary position-add boundary is
 byte-neutral, and every face-parity orientation is byte-neutral. Those three
-consecutive non-improving sweeps bound this source-shape frontier.
+non-improving sweeps record negative evidence for those specific shapes.
 
 The experiment ledger contains 11 sweeps and 27 unique evaluated variants:
 12 improve, nine are neutral, seven degrade, and three are metric tradeoffs.
@@ -331,6 +331,9 @@ The scale spec was intentionally rerun after the branch-order change because
 that register-allocation result is baseline-dependent. Its terminal-only
 closure reaches the same final source as the earlier coupled probe, accounting
 for the single repeated variant; it is not treated as independent evidence.
+These records bound only the source shapes they actually test. Neither the
+three non-improving sweeps nor the total experiment count closes the lane to a
+fresh native-backed ownership or source hypothesis.
 
 ## 2026-07-30 copied face-index ownership bound
 

@@ -2554,7 +2554,7 @@
       "aliases": [
         "?Init@cRStarManager@@QAEXXZ"
       ],
-      "description": "Authored cRStarManager::Init() member; the retained source is frozen at its proven compiler residual."
+      "description": "Authored cRStarManager::Init() member; the retained source records a visible compiler-scheduling residual without treating historical probe count as a stop condition."
     },
     {
       "address": "0x434670",
