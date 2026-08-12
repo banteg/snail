@@ -19,7 +19,7 @@
   "counts": {
     "objc_classes": 12,
     "source_objects_with_symbols": 54,
-    "symbols": 1057,
+    "symbols": 1074,
     "type_strings": 82
   },
   "description": "Deduped iOS IPA gameplay names/classes for Windows decomp shape mining. ARM/iOS addresses and per-slice ordinals are intentionally omitted.",
@@ -980,14 +980,30 @@
     [
       "RMaths.o",
       [
+        "ACos(float)",
+        "ATan(float, float)",
+        "Cos(float)",
+        "MathType16to32(short, float)",
+        "MathType32to16(float, float)",
         "RAND(float, char*)",
         "RMathCos",
         "RMathInit()",
         "RMathSin",
         "RandSeed(int)",
+        "SRAND(float, char*)",
+        "Sin(float)",
+        "Sqrt(float)",
+        "gRMathRand2()",
         "gRMathRand2Index",
         "gRMathRand2Table",
         "gUnitMatrix",
+        "tAxis::operator=(tQuaternian const&)",
+        "tColour::Black()",
+        "tColour::Grey(float)",
+        "tColour::Set(float, float, float)",
+        "tColour::Set(float, float, float, float)",
+        "tColour::White()",
+        "tColour::tColour(float, float, float, float)",
         "tColourSmall::operator=(tColour const&)",
         "tMatrix::Identity()",
         "tMatrix::Interpolate(float)",
@@ -1005,6 +1021,7 @@
         "tMatrix::SetZDir(tVector const&)",
         "tMatrix::operator*=(tMatrix const&)",
         "tMatrix::tMatrix(float, float, float, float, float, float, float, float, float, float, float, float, float, float, float, float)",
+        "tQuaternian::tQuaternian(tMatrix const&)",
         "tVector::Cross(tVector const&, tVector const&)",
         "tVector::Cross(tVector const&, tVector const&)::T",
         "tVector::Dot(tVector const&)",
@@ -1605,6 +1622,42 @@
         "ios-phone-v1.9.0-4pda"
       ],
       []
+    ],
+    [
+      "ACos(float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "ATan(float, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "Cos(float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
     ],
     [
       "DatBuild()",
@@ -3200,6 +3253,30 @@
       ]
     ],
     [
+      "MathType16to32(short, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "MathType32to16(float, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
       "MouseCalcScale(float)",
       [
         "authored_cpp_symbol"
@@ -4156,6 +4233,18 @@
       ]
     ],
     [
+      "SRAND(float, char*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
       "SaveFile(char*, void*, int, bool)",
       [
         "authored_cpp_symbol"
@@ -4166,6 +4255,30 @@
       ],
       [
         "DatBuild.o"
+      ]
+    ],
+    [
+      "Sin(float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "Sqrt(float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
       ]
     ],
     [
@@ -12602,6 +12715,18 @@
       ]
     ],
     [
+      "gRMathRand2()",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
       "gRMathRand2Index",
       [
         "game_or_engine_global"
@@ -13152,6 +13277,97 @@
       ]
     ],
     [
+      "tAxis::operator=(tQuaternian const&)",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "tColour::Black()",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "tColour::Grey(float)",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "tColour::Set(float, float, float)",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "tColour::Set(float, float, float, float)",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "tColour::White()",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "tColour::tColour(float, float, float, float)",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
       "tMatrix::Identity()",
       [
         "authored_cpp_symbol",
@@ -13370,6 +13586,19 @@
       [
         "ios-phone-v1.5.0",
         "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "RMaths.o"
+      ]
+    ],
+    [
+      "tQuaternian::tQuaternian(tMatrix const&)",
+      [
+        "authored_cpp_symbol",
+        "engine_math"
+      ],
+      [
+        "ios-phone-v1.5.0"
       ],
       [
         "RMaths.o"

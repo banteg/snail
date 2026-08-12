@@ -5513,6 +5513,53 @@ def test_mobile_rng_pair_recovers_authored_contract() -> None:
     assert "void __cdecl initialize_trigonometry_tables();" in random_header
 
 
+def test_ios_rmath_stabs_catalog_covers_verified_windows_symbols() -> None:
+    repo_root = Path(__file__).parents[1]
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    expected = {
+        "ACos(float)",
+        "ATan(float, float)",
+        "Cos(float)",
+        "MathType16to32(short, float)",
+        "MathType32to16(float, float)",
+        "SRAND(float, char*)",
+        "Sin(float)",
+        "Sqrt(float)",
+        "gRMathRand2()",
+        "tAxis::operator=(tQuaternian const&)",
+        "tColour::Black()",
+        "tColour::Grey(float)",
+        "tColour::Set(float, float, float)",
+        "tColour::Set(float, float, float, float)",
+        "tColour::White()",
+        "tColour::tColour(float, float, float, float)",
+        "tQuaternian::tQuaternian(tMatrix const&)",
+    }
+
+    assert expected <= set(dict(names["source_objects"])["RMaths.o"])
+    symbols = {row[0]: row for row in names["symbols"]}
+    for symbol in expected:
+        assert symbols[symbol][2] == ["ios-phone-v1.5.0"]
+        assert symbols[symbol][3] == ["RMaths.o"]
+
+    crosswalk = load_json(
+        repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    mapped = {
+        entry["ios_symbol"]: entry
+        for entry in crosswalk["entries"]
+        if entry.get("ios_symbol") in expected
+    }
+    assert set(mapped) == expected
+    assert all(
+        entry["confidence"] == "high"
+        and entry["source_object"] == "RMaths.o"
+        for entry in mapped.values()
+    )
+
+
 def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
