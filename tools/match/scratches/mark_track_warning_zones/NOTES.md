@@ -139,7 +139,7 @@ Three are neutral. The two saved-row-dependent forms disturb the opening
 register/frame ownership and regress to 88.44% and 67.01%.
 
 The ledger contains 16 unique variants: 0 improve, 11 are byte-identical, and
-5 regress. Three consecutive non-improving sweeps formally stall this lane at
+5 regress. The tested forms leave this lane at
 **98.99%** (`99/99`, prefix 79, no masked operands). The only difference is
 still native's cell-cursor reload before the saved-row reload versus VC6's
 opposite scheduling of those independent hazard-path loads. Further work needs
@@ -187,7 +187,7 @@ load.
 
 The three noncanonical probes are recorded in `experiments.jsonl`. This rules
 out the known VC6 service-pack and Processor Pack variants as the source of the
-tie-breaking difference. Combined with the exhausted ordinary source shapes
+tie-breaking difference. Combined with the recorded ordinary source shapes
 and exact cross-port behavior above, the scratch is now explicitly classified
 `RECOVERY=semantic-complete` with `RESIDUAL=compiler`; further source mutation
 would be byte coercion without a new semantic hypothesis.

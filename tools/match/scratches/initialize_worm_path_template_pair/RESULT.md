@@ -77,9 +77,9 @@ right-radius/right-component temporaries are byte-identical to the retained
 source; component, copied-position, in-place, and shared-angle forms regress.
 Five sibling-backed 16-bit face-index spellings are also byte-identical.
 
-The experiment ledger therefore closes 18 unique variants at zero better, six
-neutral, and twelve worse, with no repeats or tradeoffs. Three consecutive
-non-improving sweeps mark the mesh-tail region stalled.
+The experiment ledger records 18 unique variants at zero better, six neutral,
+and twelve worse, with no repeats or tradeoffs. The trailing streak describes
+the tested mesh-tail forms without closing the region.
 
 ## Remaining dependency
 
@@ -102,5 +102,4 @@ row counter across the two mesh phases, raising the retained frontier to
 operator-provenance sweep confirms that Worm already uses the constructor-return
 scalar-left helper shape from the exact `get_path_position_at_node` caller.
 Reversed multiply operands are neutral and member-operator delegation
-regresses. With three consecutive non-improving sweeps, the function is
-formally stalled pending genuinely new source evidence.
+regresses. The current source remains open to genuinely new evidence.

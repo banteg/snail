@@ -99,5 +99,5 @@ additional natural loop spellings were compiled and recorded, including
 guarded `for`/`do` forms and the native-looking label shape. Every variant
 regresses to 25.53%-34.04% and loses the retained four-instruction prefix.
 That bounds this particular loop-shape family, but does not mark the scratch
-exhausted; the remaining missing bottom `test cl, cl` is still compiler-shape
+tested; the remaining missing bottom `test cl, cl` is still compiler-shape
 debt rather than a reason to add a fake dependency.

@@ -116,7 +116,8 @@ const, register, split-assignment, `void*`, and unsigned-byte pointer owners.
 Every variant is byte-identical to the 83.00% baseline and preserves the same
 EBX archive cursor. Together with the earlier shared-lifetime sweep and ABI
 probe, the ledger covers 85 unique variants: zero improvements, 70 neutral
-results, and 15 regressions, with no repeats or errors. It is formally stalled.
+results, and 15 regressions, with no repeats or errors. This is descriptive
+search history, not a stopping condition.
 
 The eight unaudited operands are bounded alignment debt rather than unknown
 symbols: four target-only entries are the already named background texture and

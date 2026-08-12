@@ -154,7 +154,7 @@ correctly rejects it, so it supplies no missing source form.
 
 The complete ledger now covers 20 unique variants: none improve, eight are
 byte-identical, and twelve regress or fail to compile. Three consecutive
-non-improving sweeps formally stall the scratch. The retained attachment-first
+non-improving sweeps describe the explored forms. The retained attachment-first
 control flow preserves the stronger 299/335 fuzzy-byte result, 26-instruction
 prefix, and all 19 aligned references. The lower-clamp call duplication remains
 visible rather than being forced with an invalid jump or artificial side

@@ -85,8 +85,8 @@ reference audit.
 - Branch-local pickup owners, initialized salt/garbage/slug deltas, component
   salt assignments, and five mobile-shaped direct firework expressions all
   regress. Removing the superseded function-scope pickup declaration is
-  byte-identical. These four consecutive non-improving follow-ups formally
-  stall the vector/color lane after 100 unique variants.
+  byte-identical. These four consecutive non-improving follow-ups record 100
+  unique vector/color variants without closing the lane.
 
 ## Remaining region
 

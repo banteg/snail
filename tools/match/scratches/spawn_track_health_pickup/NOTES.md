@@ -278,8 +278,8 @@ The final ten-variant sweep rechecks that corrected owner at the current
 assignment, object references, and a borrowed position pointer are all
 byte-identical. Copying the position into another vector or using compound
 addition instead selects a different temporary family and regresses to
-45.24%–50.00%. The three-sweep non-improvement streak formally stalls the
-target at 122/122 instructions with all seven references clean. Do not force
+45.24%–50.00%. The recorded variants leave the target at 122/122 instructions
+with all seven references clean. Do not force
 the last swap with a dummy dependency or raw register-shaped alias.
 
 ## 2026-08-09 pickup actor / sprite boundary
@@ -302,8 +302,8 @@ separate particle BOD or particle pool.
 
 The local source name is now `pickup_sprite` to keep that visual distinct
 from the eight collection particles. This is byte-neutral at 99.18%, 122/122
-instructions, prefix 16, with all seven references clean. The bounded
-spawner ledger remains formally stalled; no source-shape sweep was reopened.
+instructions, prefix 16, with all seven references clean. This ownership slice
+did not reopen the bounded source-shape sweep.
 
 ## 2026-08-09 primary `cRSubHealth` pool ownership
 
@@ -312,8 +312,8 @@ The bounded scan and stride arithmetic now name the primary
 cRSubGoldy*)` and its decorated Windows ABI are unchanged, as are the owned
 eight-slot array and the optimizer-sensitive shifted `cRSubGame*` cursor.
 Focused matching remains 99.18%, 122/122 instructions, prefix 16/122, with
-all seven references clean. The exhausted slot-offset/cell-load schedule was
-not retried. The obsolete `free-slot-loop-mutations.json` input was removed:
+all seven references clean. The previously explored slot-offset/cell-load
+schedule was not retried. The obsolete `free-slot-loop-mutations.json` input was removed:
 its accepted bounded-loop winner is already preserved in the append-only
 experiment receipt, while its pre-winner search anchor no longer matches the
 current source.

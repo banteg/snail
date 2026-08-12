@@ -47,8 +47,8 @@ debt.
   candidate's EBX cell cursor and EDI lane control.
 
 The experiment ledger contains 19 unique variants: one better, six neutral,
-and twelve worse, with no repeats or metric-only tradeoffs. Three consecutive
-non-improving sweeps mark this source region stalled.
+and twelve worse, with no repeats or metric-only tradeoffs. The trailing
+non-improvement streak records search history rather than closing the region.
 
 ## Remaining region
 

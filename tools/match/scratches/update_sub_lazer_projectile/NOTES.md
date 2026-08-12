@@ -291,8 +291,8 @@ owner and method, while Windows callback table `0x49733c` points directly to
 this body. The internal exit dispatch now names `cRSubLazer::Kill()`; stable
 manifest aliases keep that relocation tied to the descriptive Windows target.
 The candidate remains at the honest 99.08%, 218/218-instruction, prefix-86
-baseline with all 24 references clean. The six formally stalled add-order
-mutation plans and their receipts remain byte-identical and are not rerun.
+baseline with all 24 references clean. The six recorded add-order mutation
+plans and their receipts remain byte-identical and are not rerun in this slice.
 
 ## 2026-08-11 VC6 profile boundary
 
@@ -302,7 +302,7 @@ Profile probes recorded in `experiments.jsonl` show the same sole commutative
 y-lane x87 ordering under `msvc6.0` and `msvc6.6`; `msvc6.5pp` regresses to
 `90.57%`, 217 instructions, prefix 9, and two unaudited references.
 
-Together with the 82 exhausted source variants and independent Android/iOS
+Together with the 82 recorded source variants and independent Android/iOS
 algorithm confirmation, this closes semantic recovery. The scratch is
 classified `RECOVERY=semantic-complete` with `RESIDUAL=compiler`; forcing the
 remaining operand order would add no recovered behavior.

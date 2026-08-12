@@ -146,7 +146,7 @@ untouched; mobile supplies source provenance rather than replacement constants.
 
 ## 2026-07-29 owner/x87 scheduling boundary
 
-Three recorded mutation sweeps exhaust the credible source-level ways to move
+Three recorded mutation sweeps cover the credible source-level ways to move
 the up-seed conversion, owner load, and scaled-vector expression without
 inventing a dependency. Across 50 evaluated variants (41 unique), none improve:
 13 are score-neutral and 37 regress. The owner/seed sweep contributes 9

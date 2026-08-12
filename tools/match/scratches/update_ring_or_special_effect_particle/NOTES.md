@@ -222,6 +222,5 @@ the VC6 symbol `?AI@cRSubRingStar@@QAEXXZ`. Android and iOS preserve that exact
 owner; Windows raw xrefs recover the call from `cRSubRing::Init(int)` and the
 three parent-state dispatch loops, followed by the conditional
 `cRSubRingStar::Shower(cRSubGoldy*)` call. The rename preserves the honest
-96.36%, 55/55-instruction, prefix-28 baseline. The formally exhausted
-position-materialization sweep remains closed; no source-shape retry is part
-of this ownership slice.
+96.36%, 55/55-instruction, prefix-28 baseline. This ownership slice does not
+retry the previously explored position-materialization forms.

@@ -164,7 +164,7 @@ residuals.
 
 ## 2026-07-29 upload cursor closure
 
-Three bounded mutation sweeps exhausted the source-plausible spellings for the
+Three bounded mutation sweeps covered the source-plausible spellings for the
 two missing address-formation moves. Explicit integer byte offsets regress the
 animated loop to `86.23%`, the dynamic loop to `69.75%`, and both together to
 `65.48%`. Separate typed source/destination indices, whether declared before

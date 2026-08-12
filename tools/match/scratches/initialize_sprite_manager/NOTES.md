@@ -15,7 +15,7 @@ offsets:
 
 The key source-shape correction was replacing the earlier decompiler-shaped
 `memset` with the bounded `active_heads` loop. The `memset` form materialized a
-temporary bucket pointer and stalled at 50.55%; the owner-aware loop produces
+temporary bucket pointer and reached 50.55%; the owner-aware loop produces
 the native unrolled stores and register schedule. Using typed `sprites[index]`
 accesses for initialization and list linking remains exact, including the
 native last-node store order. No scheduling-only or assembly-shaped constructs

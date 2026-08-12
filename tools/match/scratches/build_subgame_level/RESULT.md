@@ -73,12 +73,13 @@ are resolved to the neighboring
 - Retesting player-node and membership-flag register hints on the improved row
   setup was still codegen-neutral or worse.
 
-## Frontier status
+## Current residual
 
-This function is stalled at an honest compiler boundary. The random-landscape
+The random-landscape
 default reload now has a complete ordinary-lifetime sweep plus an exact sibling
 with the same irreducible VC6 topology. The completion pre-mask schedule is
 unchanged by the dual-mobile cross-row Player lifetime, while all short
 completion-position owners regress. The active-list tail's owner and inline
-call spellings were already exhaustively bounded. Do not retry these regions
-without new original-source or compiler-provenance evidence.
+call spellings were already bounded. Do not retry these regions without new
+original-source or compiler-provenance evidence; the prior sweep count does
+not close the function.

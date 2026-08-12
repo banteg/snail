@@ -16,7 +16,7 @@ symbol instead of relying on the descriptive Windows scratch name.
 | `arm_jetpack_gauge` | `cRSubHover::On()` | 100.00%, 18/18 | 4 clean |
 
 The `AI` score is intentionally unchanged. Its six recorded sweeps still cover
-47 variants, end in a three-sweep no-improvement streak, and validate cleanly.
+47 variants and validate cleanly; the trailing streak is descriptive only.
 This ownership slice did not reopen state-ladder, threshold, completion-owner,
 or wobble-lifetime hypotheses.
 

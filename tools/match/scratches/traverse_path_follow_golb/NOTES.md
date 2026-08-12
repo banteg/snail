@@ -198,8 +198,8 @@ the `0xf4`/`0xe0` frame gap, overflow-loop placement, scalar lerp stack slots,
 and matrix-copy layout. Hoisting the `center_x`/`lateral_scale`/`special_scalar`
 declarations without changing evaluation order emitted identical 40.58% code.
 Hoisting the ordinary-path `base_x`/`base_y`/`base_z` locals with explicit
-assignments also emitted identical 40.58% code. Treat scalar/base local
-declaration order as exhausted; the next useful move needs stronger evidence
+assignments also emitted identical 40.58% code. The tested scalar/base local
+declaration orders are recorded; the next useful move needs stronger evidence
 around overflow placement or the matrix-copy block rather than more local
 slot-shuffling.
 

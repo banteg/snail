@@ -227,7 +227,7 @@ the gain; five function, row, and iteration node scopes are byte-identical;
 and all 23 signed, unsigned, register, comparison, and commuted linked-mask
 forms are byte-identical or fail only when the dependent declaration is absent.
 
-The ledger now contains 11 sweeps and 358 unique variants. Its four-sweep
-non-improvement streak formally stalls the remaining ESI/EBX cursor and
-full-width `0x200` mask allocation at the proof-clean **71.79%** frontier. No
+The ledger now contains 11 sweeps and 358 unique variants. The tested forms
+leave the remaining ESI/EBX cursor and full-width `0x200` mask allocation at
+the proof-clean **71.79%** frontier. No
 synthetic dependency, volatile qualifier, or register-shaped local is retained.

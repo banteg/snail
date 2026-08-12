@@ -171,8 +171,8 @@ creates reference-alignment debt. Combining the neutral error-name spellings
 with every viable vector-publication spelling also produces no improvement.
 
 Four recorded sweeps cover 39 variants (30 unique): 0 improve, 17 are neutral,
-and 22 degrade. The trailing no-improvement streak is four, so the scratch is
-formally stalled at 91.55%, 68/74 instructions, prefix 31, with all seven
+and 22 degrade. Those tested forms leave the scratch at 91.55%, 68/74
+instructions, prefix 31, with all seven
 references clean. The residual remains one register-only error argument and a
 literal six-instruction self-copy; further work needs a new original-source
 idiom rather than another explicit redundant store.

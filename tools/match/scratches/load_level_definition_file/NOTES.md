@@ -245,7 +245,7 @@ twelve. Ordinary `!cursor` guards are byte-neutral; inverted success/else
 forms fall to 71.90-75.15%.
 
 Across 12 unique variants, none improve, three are byte-identical, and nine
-regress or fail. The experiment ledger formally stalls this cold-tail lane.
+regress or fail. The experiment ledger records this cold-tail search.
 The retained parser remains 84.63%, 941/926 instructions, prefix 20/926, with
 183 clean references and the two candidate-only diagnostic entries. No wrong
 path owner or explicit goto scaffold is kept to force tail sharing.

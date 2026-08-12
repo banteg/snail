@@ -85,7 +85,7 @@ applying one side falls to 46.26-47.97% and can increase reference debt. This
 current recorded evidence supersedes the older manual device-local note.
 
 Across 12 unique variants, none improve, nine are byte-identical, and three
-regress. The experiment ledger formally stalls the lane at 85.50%, 126/136
+regress. The experiment ledger records the lane at 85.50%, 126/136
 candidate/target instructions, prefix 2/136, with 20 clean references, two
 target-only device loads, and the explicit nonuniform jump-table mismatch. No
 selector dependency, duplicate receiver lifetime, or goto is retained solely

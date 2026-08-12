@@ -274,7 +274,7 @@ before each `GetSkirtColour` call. The source invokes the same member through
 its borrowed `cRSubGame* this`, which preserves the stronger surrounding
 register schedule.
 
-Three recorded sweeps exhaust the plausible owner boundary. All 15 subsets of
+Three recorded sweeps cover the plausible owner boundary. All 15 subsets of
 front/right/left/back singleton receivers reduce the audit debt but regress
 fuzzy matching: one reload loses 15-21 bytes, two lose 161-169, three lose
 176-184, and all four reproduce the known 42.25% frame change. Explicit or

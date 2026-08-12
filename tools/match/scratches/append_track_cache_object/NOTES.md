@@ -113,7 +113,7 @@ combinations produce three more neutral builds; the two unsigned-count forms
 again regress to 98.20% by changing comparison polarity.
 
 The ledger contains 16 unique variants: 0 improve, 12 are byte-identical, and
-4 regress. Three consecutive non-improving sweeps formally stall this lane at
+4 regress. The tested forms leave this lane at
 **98.80%** (`167/167`, prefix 155, all six references clean). Native loads
 `max_indices` into `edx` before loading `*index_count` into `eax`; VC6 loads
 the count first and carries the same limit in `ecx`. Further work needs

@@ -222,7 +222,7 @@ Consequently the old request for another Frida run to identify the `+0x440`
 writer is stale for this gauge contract. Runtime tracing may still answer
 broader completion-screen timing questions, but it cannot improve this field
 identity or the source-shaped accelerated-drain branch. The remaining matcher
-debt stays confined to the formally stalled render-local stack allocation;
+debt stays confined to the render-local stack allocation;
 none of those mutation grids should be replayed without new compiler
 provenance.
 
@@ -235,6 +235,6 @@ calls. Focused output remains the honest 94.03%, 268/268-instruction result
 with prefix 122 and all 65 masked operands clean.
 
 The three recorded render-local mutation grids still account for the same 16
-exhausted variants. Only the method-signature anchor in the hoist grid was
+recorded variants. Only the method-signature anchor in the hoist grid was
 mechanically updated for the authored owner; no variant was reopened or added,
 and the historical ledger remains untouched.

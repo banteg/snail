@@ -100,7 +100,7 @@ volatile or address-forcing fakematches:
 - Declaring the coordinate calculations as `right_y`, `left_x`, `right_x`,
   then `left_y` in both branches raises the result to 92.99% and makes the
   entire normal branch exact through instruction 102. All 24 declaration
-  orders for the flipped branch were exhausted; none improved that residual.
+  orders for the flipped branch were tested; none improved that residual.
 - Giving the four coordinate objects one lifetime across both branches makes
   the flipped branch use the same native stack slots as the normal branch.
   This raises the result to 99.22%, extends the exact prefix to 174/192, and
@@ -116,8 +116,8 @@ sweeps cover direct `column`/`next_column` condition owners, declaration scope,
 assignment expressions, coordinated condition hoisting, and explicit
 pre-branch `next_column` ownership. Across 36 variants, 12 are byte-neutral,
 10 regress, and 14 are unavailable lexical-scope combinations. With no
-improvement, the experiment ledger marks this one-instruction tail stalled;
-the evidence-backed 99.22% source remains.
+improvement, the experiment ledger records this one-instruction tail;
+the evidence-backed 99.22% source remains open to genuinely new evidence.
 
 ## 2026-07-30 compare-reference proof
 
@@ -130,4 +130,4 @@ That closes the two one-sided `7.0f` entries without normalizing away the real
 stack-scheduling difference. The retained source remains 99.22%, 193/192
 candidate/target instructions, and prefix 174/192; all 29 aligned references
 are now clean. The extra reload plus popping compare remain the intentionally
-visible, formally stalled byte residual.
+visible byte residual.

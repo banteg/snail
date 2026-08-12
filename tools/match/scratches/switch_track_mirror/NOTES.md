@@ -94,8 +94,8 @@ Three ordinary bool/float lifetime forms are neutral. The narrower or wider
 scalar owners and reversed comparison regress to 87.10% or below, with the
 reversed comparison also introducing two unaudited references.
 
-The ledger is now formally stalled after three complete sweeps and 21 unique
-variants: zero improvements, 11 neutral results, and ten regressions, with no
+The ledger records three complete sweeps and 21 unique variants: zero
+improvements, 11 neutral results, and ten regressions, with no
 errors, repeats, or tradeoffs. The retained void source remains the
 mobile-authored semantic form. Recovering the native duplicated hot return
 would require defeating VC6's tail merge rather than expressing a missing

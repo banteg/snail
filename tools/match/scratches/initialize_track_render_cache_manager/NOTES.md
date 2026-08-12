@@ -183,8 +183,8 @@ forms then cover enum, literal, inclusive, inequality, signed-size, and
 pre/post-increment bounds. Four are neutral and three regress.
 
 The ledger therefore contains 24 unique variants: 0 improve, 20 are
-byte-identical, and 4 regress. With three consecutive non-improving sweeps,
-this lane is formally stalled at **99.18%** (`122/122`, prefix 29, 18 clean
-references). Native and candidate differ only in the scale-1 SIB base/index
+byte-identical, and 4 regress. Those tested forms leave this lane at **99.18%**
+(`122/122`, prefix 29, 18 clean references). Native and candidate differ only
+in the scale-1 SIB base/index
 encoding of `slot_base + i`; further work would require compiler provenance,
 not another equivalent owner, declaration, or loop spelling.

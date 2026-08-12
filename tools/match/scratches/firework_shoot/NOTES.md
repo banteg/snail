@@ -159,7 +159,7 @@ change the entry guard and collapse the match to roughly 55%, contradicting
 the native positive-count gate.
 
 The ledger contains 17 unique variants: 0 improve, 14 are byte-identical, and
-3 regress. Three consecutive non-improving sweeps formally stall this lane at
+3 regress. The tested forms leave this lane at
 **94.17%** (`103/103`, prefix 78, all 21 references clean). Native and
 candidate differ only in scheduling the final x multiply, aggregate velocity
 stores, sprite-to-position base advance, position copy, and loop decrement.

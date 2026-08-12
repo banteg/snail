@@ -178,8 +178,8 @@ signed and unsigned widths, pointer/reference borrows, and a complete
 `offset + 0x0c` owner; all are neutral.
 
 The ledger contains 24 unique variants: 0 improve, 23 are byte-identical, and
-1 regresses. With three consecutive non-improving sweeps, this lane is
-formally stalled at **98.18%** (`55/55`, prefix 18, one clean reference).
+1 regresses. Those tested forms leave this lane at **98.18%** (`55/55`, prefix
+18, one clean reference).
 Native and candidate differ only in the scale-1 SIB base/index encoding for
 the active texture reload. Both mobile ports corroborate the reload and field
 owner, so further work needs compiler provenance rather than another pointer,

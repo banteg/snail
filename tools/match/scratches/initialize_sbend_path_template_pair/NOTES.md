@@ -206,8 +206,8 @@ owner alternatives; the closest named-scalar form still loses 19.04 weighted
 bytes. All 24 one- and two-site parity orientations are byte-neutral.
 
 The checked ledger contains eleven sweeps and 52 unique variants: seven
-improving, 26 neutral, and 19 degrading. Its three-sweep non-improvement streak
-bounds the currently evidenced SBend source-shape frontier.
+improving, 26 neutral, and 19 degrading. That history describes the currently
+evidenced SBend source-shape frontier without closing it.
 
 ## 2026-07-30 mesh arithmetic ownership
 

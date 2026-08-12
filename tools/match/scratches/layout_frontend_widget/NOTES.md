@@ -159,6 +159,6 @@ into EAX rather than native EDX, then swaps the two clamp temporaries and all
 three recursive-child publication temporaries later in the function. Delaying
 the load gives VC6 the native EDX owner and leaves only the single adjacent
 load/store transposition. The retained source therefore remains the honest
-99.44%, 177/177, 20-reference transcription, and the scratch is now stalled
-pending new ownership or control-flow evidence rather than another spelling
-permutation.
+99.44%, 177/177, 20-reference transcription. Further work should start from
+new ownership or control-flow evidence rather than another spelling
+permutation, but the recorded sweep is not a stopping rule.

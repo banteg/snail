@@ -144,7 +144,7 @@ Three recorded sweeps now cover 44 unique, compiling source forms around the
 last fold comparison: 16 direct expression shapes, 16 explicit-local
 lifetimes, and 12 assignment-inside-condition forms. None improves the
 99.32%, 440/440 baseline; one negated-inequality spelling is byte-identical
-and the other 43 regress, so the scratch is stalled.
+and the other 43 regress. This history does not close the scratch.
 
 The result cleanly separates the two available schedules. Direct equality,
 casts, XOR/subtraction comparisons, and operand commutation retain native
@@ -170,7 +170,7 @@ Profile probes recorded in `experiments.jsonl` reproduce that exact residual
 under `msvc6.0` and `msvc6.6`; `msvc6.5pp` regresses to `97.61%`, 439
 instructions, and prefix 386 while retaining the same clean references.
 
-The 44 exhausted source forms and independent Android/iOS control-flow
+The 44 recorded source forms and independent Android/iOS control-flow
 confirmation leave no semantic ambiguity. This scratch is classified
 `RECOVERY=semantic-complete` with `RESIDUAL=compiler`; the remaining fold-call
 schedule is not forced with an artificial dependency.

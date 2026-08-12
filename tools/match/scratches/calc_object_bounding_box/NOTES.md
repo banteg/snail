@@ -167,8 +167,8 @@ is invalid because the recovered max/min pointers intentionally rebind during
 the component updates.
 
 Across 29 compilable unique variants, none improve: 16 are byte-identical and
-13 regress. The three-sweep non-improvement streak formally stalls this lane
-at **99.16%** (`119/119`, prefix 28, one clean reference). The only difference
+13 regress. The tested forms leave this lane at **99.16%** (`119/119`, prefix
+28, one clean reference). The only difference
 remains the independent `bounding_radius = 0` store on opposite sides of the
 counter spill/min-z completion/count test. Further work needs original compiler
 provenance, not another zero chain, integer width, or aggregate owner spelling.

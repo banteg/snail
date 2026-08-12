@@ -75,7 +75,7 @@ rename leaves the honest 76.19% machine-code score unchanged.
 
 ## 2026-07-29 selector/default lifetime boundary
 
-Three recorded sweeps exhaust the ordinary source shapes that could keep the
+Three recorded sweeps cover the ordinary source shapes that could keep the
 signed parameter selector distinct from the selected texture-bank index.
 Zero, minus-one, and parameter initializers are byte-identical to the baseline.
 Separate signed, unsigned, and const selector locals in both declaration orders

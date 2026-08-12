@@ -145,8 +145,9 @@ Useful analysis helpers:
   `scratch.cpp`. Run the combined gate after changing scratch sources or
   mutation plans, and before committing matcher slices that rename owners or
   otherwise rewrite source anchors.
-  Historical scratch notes that call a lane `stalled`, `exhausted`, or
-  `frozen` record an earlier search judgment only; they do not close the lane.
+  Do not label a lane `stalled`, `exhausted`, or `frozen` from an experiment
+  count. Record the tested forms and technical residual instead; rewrite old
+  stopping claims when encountered.
 - `snail match diff` also prints a masked-operand audit. Normalized `ADDR`
   operands still keep linker noise out of the score, but the audit compares
   target resolved references (function names, imports, strings, or raw image

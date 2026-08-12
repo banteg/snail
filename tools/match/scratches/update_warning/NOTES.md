@@ -129,6 +129,6 @@ owner-qualified VC6 symbol `?AI@cRWarning@@QAEXXZ`; `Warning` remains a
 compatibility typedef. The live Windows view confirms the void `thiscall`
 receiver and two direct calls at `0x43b165` and `0x43c403`, both from Goldy AI.
 Android and iOS independently retain the same authored method and lifecycle
-owner. The promotion does not reopen the exhausted state-dispatch sweeps and
+owner. The promotion does not replay the recorded state-dispatch sweeps and
 is codegen-neutral: focused matching remains exact at 52/52 instructions,
 full prefix, with all seven masked operands clean.
