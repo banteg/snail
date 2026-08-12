@@ -19,11 +19,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 582,
-    "unverified_entries": 203,
-    "verified_android_symbols": 576,
+    "verified_entries": 583,
+    "unverified_entries": 202,
+    "verified_android_symbols": 577,
     "verified_ios_symbols": 464,
-    "available_android_mappings": 576,
+    "available_android_mappings": 577,
     "available_ios_mappings": 428
   },
   "entries": [
@@ -25154,69 +25154,42 @@
       "address": "0x44e780",
       "windows_name": "sample_tga_pixel_rgb",
       "windows_size": 128,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRVoiceManager::FindSample(char*)",
-          "score": 0.6431,
-          "name_score": 0.4444,
-          "size_score": 0.9412
-        },
-        {
-          "symbol": "JAVALoadSample(char*)",
-          "score": 0.6416,
-          "name_score": 0.4444,
-          "size_score": 0.9375
-        },
-        {
-          "symbol": "cRTime::Add(float)",
-          "score": 0.6256,
-          "name_score": 0.45,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "gluPerspective(float, float, float, float, float)",
-          "score": 0.6201,
-          "name_score": 0.3871,
-          "size_score": 0.9697
-        },
-        {
-          "symbol": "RShellFindSample(char*)",
-          "score": 0.6182,
-          "name_score": 0.3636,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "GetTgaColour(cTgaHeader*, int, int)",
+      "source_object": "RTexture.o",
+      "source_object_evidence": "android-contiguous-source-run",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
-          "symbol": "cRObjects::Add()",
-          "score": 0.6357,
-          "name_score": 0.45,
-          "size_score": 0.9143
-        },
-        {
-          "symbol": "tMatrix::Invert()",
-          "score": 0.6069,
-          "name_score": 0.384,
+          "symbol": "OFSqlQuery::getInt(char const*)",
+          "score": 0.7005,
+          "name_score": 0.54,
           "size_score": 0.9412
         },
         {
-          "symbol": "MacOFAddParcelDelivered()",
-          "score": 0.5946,
-          "name_score": 0.3243,
-          "size_score": 1.0
+          "symbol": "cRBod::cRBod()",
+          "score": 0.6725,
+          "name_score": 0.6,
+          "size_score": 0.7812
         },
         {
-          "symbol": "OFDelegate::OFDelegate(NSObject*, objc_selector*, OFDelegate const&)",
-          "score": 0.5847,
-          "name_score": 0.3704,
-          "size_score": 0.9062
+          "symbol": "cRBod::cRBod()",
+          "score": 0.6725,
+          "name_score": 0.6,
+          "size_score": 0.7812
         },
         {
-          "symbol": "RShellFindSample(char*)",
-          "score": 0.5807,
-          "name_score": 0.3636,
-          "size_score": 0.9062
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.6575,
+          "name_score": 0.45,
+          "size_score": 0.9688
+        },
+        {
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.6575,
+          "name_score": 0.45,
+          "size_score": 0.9688
         }
       ]
     },

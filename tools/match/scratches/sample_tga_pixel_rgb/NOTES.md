@@ -56,3 +56,19 @@ Both xrefs are the two atlas-marker probes inside
 `register_font_texture_sheet`. This analysis-only ownership recovery leaves the
 exact matcher source untouched and preserves 100.00%, 49/49 instructions, a
 49/49 prefix, and no masked operands.
+
+## 2026-08-12 authored helper and source-unit recovery
+
+Android retains the exact exported helper
+`GetTgaColour(cTgaHeader*, int, int)`. Its body reproduces every material
+operation in the Windows scratch: the bottom-up row calculation, byte stride
+from bits-per-pixel, 8-bit grayscale expansion, and the first three 24-bit
+bytes packed as `0xRRGGBB`.
+
+The Android helper begins the compact `RTexture.o` linker run. It is followed
+by the texture-name and TGA-loop helpers and then by the independently
+STABS-sourced `cRTextures::Add` and `cRTextures::Init`, before the next cRBod
+unit. Windows independently places this exact helper immediately before its
+verified `RTexture.o` Init/Add pair. The crosswalk therefore records the
+authored Android-only symbol and `RTexture.o` provenance; iOS has no retained
+body, and no mobile field offsets are copied into the Windows layout.

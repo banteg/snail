@@ -9,6 +9,13 @@
   ],
   "runs": [
     {
+      "source_object": "RTexture.o",
+      "start": "0x2c254",
+      "end": "0x2cb84",
+      "first_symbol": "GetTgaColour(cTgaHeader*, int, int)",
+      "last_symbol": "cRTextures::Init(int)"
+    },
+    {
       "source_object": "Keyboard.o",
       "start": "0x30b00",
       "end": "0x30c78",

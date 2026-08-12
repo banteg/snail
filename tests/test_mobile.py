@@ -5741,6 +5741,52 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
     assert "rather than claiming a false owner" in galaxy_notes
 
 
+def test_mobile_tga_sampler_recovers_authored_rtexture_helper() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in crosswalk["entries"]
+        if entry["windows_name"] == "sample_tga_pixel_rgb"
+    )
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in functions["functions"]
+        if function["name"] == "sample_tga_pixel_rgb"
+    )
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["android_symbol"] == (
+        "GetTgaColour(cTgaHeader*, int, int)"
+    )
+    assert entry["android_body_count"] == 1
+    assert "ios_symbol" not in entry
+    assert entry["source_object"] == "RTexture.o"
+    assert (
+        entry["source_object_evidence"]
+        == "android-contiguous-source-run"
+    )
+    assert "GetTgaColour" in function["aliases"]
+
+    source_runs = load_json(
+        repo_root / "analysis/symbols/android-gameplay-source-runs.json"
+    )["runs"]
+    texture_run = next(
+        run for run in source_runs if run["source_object"] == "RTexture.o"
+    )
+    assert texture_run == {
+        "source_object": "RTexture.o",
+        "start": "0x2c254",
+        "end": "0x2cb84",
+        "first_symbol": "GetTgaColour(cTgaHeader*, int, int)",
+        "last_symbol": "cRTextures::Init(int)",
+    }
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [
@@ -5968,8 +6014,9 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         if entry.get("source_object_evidence")
         == "android-contiguous-source-run"
     ]
-    assert len(inferred) == 38
+    assert len(inferred) == 39
     assert Counter(entry["source_object"] for entry in inferred) == {
+        "RTexture.o": 1,
         "Font.o": 3,
         "GL.o": 2,
         "Galaxy.o": 1,
@@ -6003,7 +6050,7 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         entry.get("source_object_evidence")
         == "android-contiguous-source-run"
         for entry in complete_verified
-    ) == 38
+    ) == 39
 
 
 def test_unverified_windows_source_runs_preserve_owner_provenance(
