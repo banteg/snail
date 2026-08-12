@@ -9,5 +9,5 @@ void cRSubPause::UnInit()
     g_game->border_manager.kill_border(options_widget);
     g_game->border_manager.kill_border(end_game_widget);
     g_game->border_manager.kill_border(resume_widget);
-    g_game->players[0].mouse_cursor.release_mouse_cursor();
+    g_game->players[0].mouse_cursor.SetInActive();
 }

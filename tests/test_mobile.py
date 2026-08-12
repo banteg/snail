@@ -5191,6 +5191,106 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
     assert "cRBodPos::cRBodPos()" not in positioned_initializer
 
 
+def test_mobile_crmouse_methods_use_authored_primary_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    expected = {
+        "is_mouse_captured": {
+            "method": "IsActive",
+            "symbol": "?IsActive@cRMouse@@QAEEXZ",
+        },
+        "capture_mouse_cursor": {
+            "method": "SetActive",
+            "symbol": "?SetActive@cRMouse@@QAEXXZ",
+        },
+        "release_mouse_cursor": {
+            "method": "SetInActive",
+            "symbol": "?SetInActive@cRMouse@@QAEXXZ",
+        },
+    }
+    scratch_root = repo_root / "tools/match/scratches"
+    ios_index = load_json(DEFAULT_IOS_CORPUS_ROOT / "index.json")
+    android_index = load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json")
+
+    for windows_name, recovered in expected.items():
+        mobile_symbol = f"cRMouse::{recovered['method']}()"
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Mouse.o"
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_body_count"] == 1
+        assert entry["android_body_count"] == 1
+
+        assert functions[windows_name]["aliases"] == [
+            f"cRMouse_{recovered['method']}",
+            recovered["method"],
+        ]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRMouse::{recovered['method']}()" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+
+        for corpus_root, index in (
+            (DEFAULT_IOS_CORPUS_ROOT, ios_index),
+            (DEFAULT_ANDROID_CORPUS_ROOT, android_index),
+        ):
+            mobile = resolve_corpus_symbol(index, mobile_symbol)
+            assert mobile is not None
+            body = corpus_function_path(corpus_root, mobile).read_text(
+                encoding="utf-8"
+            )
+            assert f"cRMouse::{recovered['method']}" in body
+            assert "*this" in body
+
+    header = (
+        repo_root / "tools/match/include/mouse_cursor_state.h"
+    ).read_text(encoding="utf-8")
+    game_root = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    assert "class cRMouse" in header
+    assert "typedef cRMouse MouseCursorState;" in header
+    assert "cRMouse_must_be_0x18" in header
+    assert "cRMouse mouse_cursor;" in game_root
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.glob("*/scratch.cpp")
+    )
+    for stale_method in (
+        "is_mouse_captured()",
+        "capture_mouse_cursor()",
+        "release_mouse_cursor()",
+    ):
+        assert stale_method not in all_sources
+    assert all_sources.count(".IsActive()") >= 10
+    assert all_sources.count(".SetActive()") >= 8
+    assert all_sources.count(".SetInActive()") >= 3
+
+    mutation_plan = (
+        scratch_root
+        / "update_frontend_widget_interaction"
+        / "zero-predicate-mutations.json"
+    ).read_text(encoding="utf-8")
+    assert "mouse_cursor.IsActive()" in mutation_plan
+    assert "mouse_cursor.is_mouse_captured()" not in mutation_plan
+
+
 def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

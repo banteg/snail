@@ -1,10 +1,10 @@
-// capture_mouse_cursor @ 0x44c3c0 (thiscall, ret)
+// cRMouse::SetActive @ 0x44c3c0 (thiscall, ret)
 
 #include "mouse_cursor_state.h"
 
 void* click_mouse_screen(int slot, int x, int y);
 
-void MouseCursorState::capture_mouse_cursor()
+void cRMouse::SetActive()
 {
     if (captured == 0) {
         float x = live_x;

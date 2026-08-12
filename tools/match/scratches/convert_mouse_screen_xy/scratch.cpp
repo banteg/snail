@@ -19,7 +19,7 @@ void convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
     int result;
 
     if (!g_fullscreen_active
-        && g_game->players[0].mouse_cursor.is_mouse_captured()) {
+        && g_game->players[0].mouse_cursor.IsActive()) {
         result = GetCursorPos(&point);
         if (result) {
             *x = (float)point.x;
@@ -30,7 +30,7 @@ void convert_mouse_screen_xy(int sensitivity_slot, float* x, float* y)
         return;
     }
 
-    if (!g_game->players[0].mouse_cursor.is_mouse_captured()) {
+    if (!g_game->players[0].mouse_cursor.IsActive()) {
         if (GetCursorPos(&point)) {
             *x += ((float)point.x - g_authored_view_width * 0.5f)
                 * resolve_uncaptured_cursor_sensitivity_scale(

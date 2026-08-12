@@ -20,7 +20,7 @@ void cRIntro::update_new_game_menu()
             challenge_button->unhide_border_init();
             help_button->unhide_border_init();
             back_button->unhide_border_init();
-            g_game->players[0].mouse_cursor.capture_mouse_cursor();
+            g_game->players[0].mouse_cursor.SetActive();
             hide_for_replay_latch = 0;
         }
     }

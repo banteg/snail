@@ -74,7 +74,7 @@ void cRBorder::update_frontend_widget_interaction()
     }
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED) != 0
-        && g_game->players[0].mouse_cursor.is_mouse_captured()
+        && g_game->players[0].mouse_cursor.IsActive()
         && read_pressed_text_input_key_code() == shortcut_key_code) {
         tooltip.reset_tooltip();
         if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
@@ -85,7 +85,7 @@ void cRBorder::update_frontend_widget_interaction()
                     this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
     }
 
-    if (g_game->players[0].mouse_cursor.is_mouse_captured() == 0
+    if (g_game->players[0].mouse_cursor.IsActive() == 0
         || border_mouse_test() == 0) {
         widget_flags &= 0xffdfffff;
         if (((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
@@ -169,7 +169,7 @@ update_after_input:
     }
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) != 0
-        && g_game->players[0].mouse_cursor.is_mouse_captured() != 0) {
+        && g_game->players[0].mouse_cursor.IsActive() != 0) {
         border_input_text();
         if ((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
             g_game->border_manager.activate_all_borders();

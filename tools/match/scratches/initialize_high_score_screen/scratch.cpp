@@ -40,7 +40,7 @@ void cRHighScore::Init(int mode_, int rank)
     g_game->backdrop.change_backdrop(
         &g_game->subgame.landscape_manager.scripts[script_index], 0);
     g_game->border_manager.set_border_justify_centre(25.0f);
-    g_game->players[0].mouse_cursor.capture_mouse_cursor();
+    g_game->players[0].mouse_cursor.SetActive();
 
     title_widget = g_game->border_manager.allocate_border();
     float y;

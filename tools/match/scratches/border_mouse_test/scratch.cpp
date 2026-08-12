@@ -8,7 +8,7 @@ extern cRSpriteManager g_sprite_manager; // data_790f30
 
 unsigned char cRBorder::border_mouse_test()
 {
-    MouseCursorState* mouse = &g_game->players[0].mouse_cursor;
+    cRMouse* mouse = &g_game->players[0].mouse_cursor;
 
     if (texture_hit_test_enabled) {
         float texture_right = texture_hit_width;

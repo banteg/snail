@@ -49,7 +49,7 @@ int update_mouse(HWND hwnd)
     }
 
     if (g_fullscreen_active
-        || !g_game->players[0].mouse_cursor.is_mouse_captured()) {
+        || !g_game->players[0].mouse_cursor.IsActive()) {
         g_mouse_live_x[0] = (float)state.x + g_mouse_live_x[0];
         g_mouse_live_y[0] = (float)state.y + g_mouse_live_y[0];
 
@@ -69,9 +69,9 @@ int update_mouse(HWND hwnd)
     }
 
     if (g_fullscreen_active
-        || !g_game->players[0].mouse_cursor.is_mouse_captured()) {
+        || !g_game->players[0].mouse_cursor.IsActive()) {
         ClipCursor(0);
-        if (!g_game->players[0].mouse_cursor.is_mouse_captured()) {
+        if (!g_game->players[0].mouse_cursor.IsActive()) {
             clip_rect.left =
                 window_rect.left + client_rect.left - g_mouse_uncaptured_clip_rect.left;
             clip_rect.right =
@@ -94,7 +94,7 @@ int update_mouse(HWND hwnd)
                 read_left_mouse_button_state(0),
                 read_right_mouse_button_state(0),
                 0,
-                g_game->players[0].mouse_cursor.is_mouse_captured(),
+                g_game->players[0].mouse_cursor.IsActive(),
                 g_fullscreen_active);
             goto maybe_hide_cursor;
         }
@@ -111,10 +111,10 @@ int update_mouse(HWND hwnd)
             read_left_mouse_button_state(0),
             read_right_mouse_button_state(0),
             0,
-            g_game->players[0].mouse_cursor.is_mouse_captured(),
+            g_game->players[0].mouse_cursor.IsActive(),
             g_fullscreen_active);
     } else {
-        if (!g_game->players[0].mouse_cursor.is_mouse_captured()) {
+        if (!g_game->players[0].mouse_cursor.IsActive()) {
             clip_rect.left =
                 window_rect.left + client_rect.left - g_mouse_uncaptured_clip_rect.left;
             clip_rect.right =
@@ -140,7 +140,7 @@ int update_mouse(HWND hwnd)
             read_left_mouse_button_state(0),
             read_right_mouse_button_state(0),
             0,
-            g_game->players[0].mouse_cursor.is_mouse_captured(),
+            g_game->players[0].mouse_cursor.IsActive(),
             g_fullscreen_active);
     }
 

@@ -206,7 +206,7 @@ void cRSubGame::StartLevel(int level_index)
 
     int one = 1;
     g_game->render_skip_count = one;
-    g_game->players[0].mouse_cursor.release_mouse_cursor();
+    g_game->players[0].mouse_cursor.SetInActive();
     player.movement_mode_selector = one;
     player.steering_mode_selector = zero;
     player_owner->Init(one);

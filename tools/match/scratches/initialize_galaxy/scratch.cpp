@@ -29,7 +29,7 @@ void cRGalaxy::Init()
         &g_game->subgame.landscape_manager.scripts[landscape_index], 0);
 
     g_game->border_manager.set_border_justify_centre(0.0f);
-    g_game->players[0].mouse_cursor.capture_mouse_cursor();
+    g_game->players[0].mouse_cursor.SetActive();
     g_game->render_skip_countdown = 2;
 
     cRSubGame* progress = level_progress_base;

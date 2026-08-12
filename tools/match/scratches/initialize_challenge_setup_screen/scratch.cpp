@@ -13,7 +13,7 @@ extern char g_back_text[]; // 0x4a20ec
 
 void cRGUI::initialize_challenge_setup_screen()
 {
-    g_game->players[0].mouse_cursor.capture_mouse_cursor();
+    g_game->players[0].mouse_cursor.SetActive();
     game->level_definition.load_frontend_level_by_mode_and_index(
         game->level_mode,
         game->level_mode_arg);

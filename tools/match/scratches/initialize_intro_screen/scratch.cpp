@@ -54,7 +54,7 @@ void cRLogo::Init(char* file_name)
     g_game->players[0].camera.fov_degrees = 100.0f;
     progress = 0.0f;
     progress_step = 1.0f / 600.0f;
-    g_game->players[0].mouse_cursor.release_mouse_cursor();
+    g_game->players[0].mouse_cursor.SetInActive();
     state = 0;
 
     float crawl_y = 0.2f;

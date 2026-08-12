@@ -3,11 +3,11 @@
 #ifndef MOUSE_CURSOR_STATE_H
 #define MOUSE_CURSOR_STATE_H
 
-class MouseCursorState {
+class cRMouse {
 public:
-    unsigned char is_mouse_captured(); // @ 0x44c3b0, cRMouse::IsActive()
-    void capture_mouse_cursor(); // @ 0x44c3c0, cRMouse::SetActive()
-    void release_mouse_cursor(); // @ 0x44c400, cRMouse::SetInActive()
+    unsigned char IsActive(); // @ 0x44c3b0
+    void SetActive();          // @ 0x44c3c0
+    void SetInActive();        // @ 0x44c400
 
     unsigned char captured; // +0x00
     char pad_01[3];
@@ -17,6 +17,9 @@ public:
     float saved_y; // +0x10
     unsigned char suppress_next_draw; // +0x14
 };
+
+typedef cRMouse MouseCursorState;
+typedef char cRMouse_must_be_0x18[(sizeof(cRMouse) == 0x18) ? 1 : -1];
 
 // Authored MouseRead global. Windows uses it as the cursor-position bridge when
 // the OS cursor owns the live coordinates; Android retains the same three

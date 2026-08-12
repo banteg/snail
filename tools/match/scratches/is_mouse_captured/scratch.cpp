@@ -1,8 +1,8 @@
-// is_mouse_captured @ 0x44c3b0 (thiscall, ret)
+// cRMouse::IsActive @ 0x44c3b0 (thiscall, ret)
 
 #include "mouse_cursor_state.h"
 
-unsigned char MouseCursorState::is_mouse_captured()
+unsigned char cRMouse::IsActive()
 {
     return captured;
 }

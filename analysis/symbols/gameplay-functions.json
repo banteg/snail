@@ -1016,7 +1016,7 @@
     {
       "address": "0x4107d0",
       "name": "update_frontend_state_machine",
-      "description": "Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded MouseCursorState saved position from the active camera anchor."
+      "description": "Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded cRMouse saved position from the active camera anchor."
     },
     {
       "address": "0x410c00",
@@ -4801,20 +4801,32 @@
     {
       "address": "0x44c3b0",
       "name": "is_mouse_captured",
+      "aliases": [
+        "cRMouse_IsActive",
+        "IsActive"
+      ],
       "port_scope": "boundary",
-      "description": "Returns the active byte at the head of the player-owned cRMouse-compatible subobject stored at GameRoot +0x290; iOS names the same method cRMouse::IsActive()."
+      "description": "Exact Windows `cRMouse::IsActive()` member: returns the active byte at the head of the player-owned cRMouse subobject. Android and iOS preserve the exact authored method and byte-zero owner."
     },
     {
       "address": "0x44c3c0",
       "name": "capture_mouse_cursor",
+      "aliases": [
+        "cRMouse_SetActive",
+        "SetActive"
+      ],
       "port_scope": "boundary",
-      "description": "Implements the Windows cRMouse::SetActive() lane at GameRoot +0x290: snapshots live x/y, warps controller zero through click_mouse_screen, marks the one-frame draw suppression latch, and enables the active byte."
+      "description": "Exact Windows `cRMouse::SetActive()` member: snapshots live x/y, warps controller zero through click_mouse_screen, marks the one-frame draw-suppression latch, and enables the active byte. Android and iOS preserve the authored method and shared state prefix around their platform cursor bridges."
     },
     {
       "address": "0x44c400",
       "name": "release_mouse_cursor",
+      "aliases": [
+        "cRMouse_SetInActive",
+        "SetInActive"
+      ],
       "port_scope": "boundary",
-      "description": "Implements cRMouse::SetInActive() for the player-owned mouse subobject by restoring saved x/y into the live lanes when active and clearing byte zero."
+      "description": "Exact void Windows `cRMouse::SetInActive()` member: restores saved x/y into the live lanes when active and clears byte zero. Android and iOS preserve the exact authored method and state transition."
     },
     {
       "address": "0x44c420",

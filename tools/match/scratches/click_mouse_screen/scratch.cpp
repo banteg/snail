@@ -12,7 +12,7 @@ extern "C" __declspec(dllimport) int __stdcall SetCursorPos(int x, int y);
 void click_mouse_screen(int slot, int x, int y)
 {
     if (!g_fullscreen_active
-        && g_game->players[0].mouse_cursor.is_mouse_captured() == 1
+        && g_game->players[0].mouse_cursor.IsActive() == 1
         && slot == 0
         && !g_window_deactivated
         && GetActiveWindow() == g_main_window) {

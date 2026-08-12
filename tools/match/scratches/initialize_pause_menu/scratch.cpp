@@ -40,5 +40,5 @@ void cRSubPause::Init()
     resume_widget->set_frontend_widget_shortcut_key(5);
     resume_widget->stack_widget_below(options_widget);
 
-    g_game->players[0].mouse_cursor.capture_mouse_cursor();
+    g_game->players[0].mouse_cursor.SetActive();
 }

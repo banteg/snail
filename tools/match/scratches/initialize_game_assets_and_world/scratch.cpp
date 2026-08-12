@@ -3053,7 +3053,7 @@ char cRGame::initialize_game_assets_and_world()
                 -8.62666702f, 3.11352801f, 4.47740698f, 1.0f);
             players[player_index].frontend_overlay.Init(
                 0x1000000);
-            players[player_index].mouse_cursor.release_mouse_cursor();
+            players[player_index].mouse_cursor.SetInActive();
             players[player_index].mouse_cursor.suppress_next_draw = 0;
             if (player_index == 0)
                 players[0].frontend_state = 12;

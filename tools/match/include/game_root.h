@@ -45,7 +45,7 @@ public:
     char unknown_09c[0xa0 - 0x9c];
     cRCamera camera; // +0xa0, owned cRCamera subobject
     cRGameInput* game_input; // +0x168, borrows the matching root input owner
-    MouseCursorState mouse_cursor; // +0x16c, root player 0 cursor state
+    cRMouse mouse_cursor; // +0x16c, root player 0 cursor state
     cRFlash frontend_overlay; // +0x184, root player 0 overlay
     // During the gameplay completion handoff, update_subgoldy snapshots the
     // inherited transform here and lowers the copied Y position by one unit.

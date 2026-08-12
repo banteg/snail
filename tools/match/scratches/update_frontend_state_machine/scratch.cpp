@@ -48,7 +48,7 @@ void cRPlayer::update_frontend_state_machine()
         }
         case 1:
             frontend_state = 0;
-            mouse_cursor.capture_mouse_cursor();
+            mouse_cursor.SetActive();
             g_game->intro.replay_attract_bank_cursor = 0;
         {
             GameRoot* owner = g_game;
@@ -57,7 +57,7 @@ void cRPlayer::update_frontend_state_machine()
         }
         case 2:
             frontend_state = 0;
-            mouse_cursor.capture_mouse_cursor();
+            mouse_cursor.SetActive();
         {
             GameRoot* owner = g_game;
             owner->intro.initialize_new_game_menu();
@@ -67,7 +67,7 @@ void cRPlayer::update_frontend_state_machine()
             break;
         case 3:
             frontend_state = 5;
-            mouse_cursor.capture_mouse_cursor();
+            mouse_cursor.SetActive();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();
@@ -75,7 +75,7 @@ void cRPlayer::update_frontend_state_machine()
         }
         case 4:
             frontend_state = 5;
-            mouse_cursor.capture_mouse_cursor();
+            mouse_cursor.SetActive();
         {
             GameRoot* owner = g_game;
             owner->main_menu.initialize_main_menu();

@@ -27,7 +27,7 @@ int cRGame::run_frame_update()
 
     int sprite_update_count = 0;
     int next_frame_counter = frame_counter + 1;
-    MouseCursorState* mouse = &players[0].mouse_cursor;
+    cRMouse* mouse = &players[0].mouse_cursor;
     frontend_quit_requested = 0;
     fixed_update_accumulator += 1.0f;
     fixed_update_count = 1;
@@ -35,7 +35,7 @@ int cRGame::run_frame_update()
     input_sampling_gate = 1;
 
     int bod_update_count = 0;
-    if (mouse->is_mouse_captured()) {
+    if (mouse->IsActive()) {
         if (players[0].mouse_cursor.suppress_next_draw != 0) {
             players[0].mouse_cursor.suppress_next_draw = 0;
         } else {

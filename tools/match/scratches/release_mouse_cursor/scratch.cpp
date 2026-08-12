@@ -1,8 +1,8 @@
-// release_mouse_cursor @ 0x44c400 (thiscall, ret)
+// cRMouse::SetInActive @ 0x44c400 (thiscall, ret)
 
 #include "mouse_cursor_state.h"
 
-void MouseCursorState::release_mouse_cursor()
+void cRMouse::SetInActive()
 {
     if (captured == 1) {
         live_x = saved_x;
