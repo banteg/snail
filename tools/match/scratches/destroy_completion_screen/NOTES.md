@@ -26,3 +26,11 @@ reload spelling preserves the exact 25/25 stream and all nine clean operands.
 incidental result of the preceding border-stack call. Modeling both methods as
 `void` preserves the exact instruction stream without assigning ownership to
 that register accident.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRExit::UnInit()` and exports
+`?UnInit@cRExit@@QAEXXZ`. Eleven source teardown arms in `cRExit::AI()`
+coalesce to ten live Windows calls, all passing the same 0x1c-byte root prompt receiver.
+Android independently retains the authored symbol and body. Matching stays
+exact at 25/25 with all nine operands clean.

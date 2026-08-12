@@ -66,3 +66,11 @@ front-end offsets remain.
 2026-07-15 root-prefix replay: both teardown exits retain the exact
 `frontend_link_latch` owner in BN and IDA. The analysis-only improvement leaves
 the source exact at 207/207 with all 69 operands clean.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRExit::AI()` and exports
+`?AI@cRExit@@QAEXXZ`. Its sole external Windows caller passes the same root
+prompt immediately after `Init()`, and all teardown arms now call the authored
+`UnInit()` sibling directly. Android and iOS independently retain the exact
+symbol and body. Matching stays exact at 207/207 with all 69 operands clean.

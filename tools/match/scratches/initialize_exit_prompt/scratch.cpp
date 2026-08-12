@@ -5,7 +5,7 @@
 #include "game_root.h"
 
 
-void cRExit::initialize_exit_prompt()
+void cRExit::Init()
 {
     tColour color_2;
     tColour color_3;

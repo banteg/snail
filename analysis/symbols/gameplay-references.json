@@ -1391,12 +1391,39 @@
       "description": "Compiler-emitted state switch jump table used by update_row_event_display."
     },
     {
+      "address": "0x406060",
+      "name": "destroy_completion_screen",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRExit@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRExit::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4060d0",
+      "name": "initialize_exit_prompt",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRExit@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRExit::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4067b4",
       "name": "initialize_exit_prompt_jump_table",
       "kind": "jump_table",
       "aliases": [],
       "size": "0x28",
       "description": "Compiler-emitted prompt-state switch jump table used by initialize_exit_prompt."
+    },
+    {
+      "address": "0x4067e0",
+      "name": "update_completion_screen",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRExit@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRExit::AI() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x406b90",

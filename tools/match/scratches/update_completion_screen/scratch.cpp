@@ -4,7 +4,7 @@
 #include "game_root.h"
 
 
-void cRExit::update_completion_screen()
+void cRExit::AI()
 {
     FrontendWidget* button;
     unsigned int flags;
@@ -16,7 +16,7 @@ void cRExit::update_completion_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_completion_screen();
+            UnInit();
             g_game->frontend_quit_mode = 3;
         }
         break;
@@ -28,7 +28,7 @@ void cRExit::update_completion_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_completion_screen();
+            UnInit();
             g_game->main_menu.destroy_main_menu();
             if (g_game->frontend_quit_mode == 0)
                 g_game->frontend_quit_mode = 1;
@@ -46,10 +46,10 @@ void cRExit::update_completion_screen()
             g_game->subgame.Complete(1);
             if (g_game->players[0].high_score_entry_pending == 1) {
                 previous_frontend_state = g_game->players[0].frontend_state;
-                destroy_completion_screen();
+                UnInit();
                 g_game->subgame.UnInit();
             } else {
-                destroy_completion_screen();
+                UnInit();
                 g_game->subgame.UnInit();
                 g_game->players[0].frontend_state = 2;
             }
@@ -65,13 +65,13 @@ void cRExit::update_completion_screen()
             g_game->subgame.Complete(1);
             if (g_game->players[0].high_score_entry_pending == 1) {
                 previous_frontend_state = g_game->players[0].frontend_state;
-                destroy_completion_screen();
+                UnInit();
                 g_game->subgame.sub_pause.UnInit();
                 g_game->subgame.subgame_pause_gate = 0;
                 g_sprite_manager.Pause(0);
                 g_game->subgame.UnInit();
             } else {
-                destroy_completion_screen();
+                UnInit();
                 g_game->subgame.sub_pause.UnInit();
                 g_game->subgame.subgame_pause_gate = 0;
                 g_sprite_manager.Pause(0);
@@ -91,7 +91,7 @@ void cRExit::update_completion_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_completion_screen();
+            UnInit();
             g_game->subgame.sub_pause.UnInit();
             g_game->subgame.subgame_pause_gate = 0;
             g_sprite_manager.Pause(0);
@@ -106,7 +106,7 @@ void cRExit::update_completion_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_completion_screen();
+            UnInit();
             g_game->subgame.sub_pause.UnInit();
             g_game->subgame.subgame_pause_gate = 0;
             g_sprite_manager.Pause(0);
@@ -122,7 +122,7 @@ void cRExit::update_completion_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_completion_screen();
+            UnInit();
             g_game->subgame.UnInit();
             g_game->players[0].frontend_state = 2;
         }
@@ -138,7 +138,7 @@ void cRExit::update_completion_screen()
             launch_alpha72_url("Alpha72.url");
             g_game->players[0].frontend_state = 0;
             g_game->frontend_link_latch = 0;
-            destroy_completion_screen();
+            UnInit();
         }
         break;
     }
@@ -150,7 +150,7 @@ void cRExit::update_completion_screen()
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         g_game->players[0].frontend_state = previous_frontend_state;
         g_game->frontend_link_latch = 0;
-        destroy_completion_screen();
+        UnInit();
         return;
     }
 }

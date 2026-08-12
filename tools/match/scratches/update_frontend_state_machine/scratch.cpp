@@ -96,11 +96,11 @@ void cRPlayer::update_frontend_state_machine()
             break;
         }
         case 8:
-            g_game->exit_controller.initialize_exit_prompt();
+            g_game->exit_controller.Init();
             frontend_state = 9;
         case 9: {
             GameRoot* owner = g_game;
-            owner->exit_controller.update_completion_screen();
+            owner->exit_controller.AI();
             break;
         }
         case 18:

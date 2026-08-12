@@ -6,9 +6,9 @@
 
 class cRExit {
 public:
-    void destroy_completion_screen(); // @ 0x406060, cRExit::UnInit
-    void initialize_exit_prompt(); // @ 0x4060d0, cRExit::Init
-    void update_completion_screen(); // @ 0x4067e0, cRExit::AI
+    void UnInit(); // @ 0x406060
+    void Init();   // @ 0x4060d0
+    void AI();     // @ 0x4067e0
 
     int state; // +0x00
     char unknown_04[0x08 - 0x04];

@@ -8350,6 +8350,97 @@ def test_barrier_uses_authored_ai_surface() -> None:
     assert ".update_barrier_ai(" not in all_sources
 
 
+def test_exit_uses_authored_lifecycle_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/exit.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "destroy_completion_screen": {
+            "method": "UnInit",
+            "symbol": "?UnInit@cRExit@@QAEXXZ",
+            "mobile": "cRExit::UnInit()",
+            "alias": "cRExit_UnInit",
+            "ios": False,
+        },
+        "initialize_exit_prompt": {
+            "method": "Init",
+            "symbol": "?Init@cRExit@@QAEXXZ",
+            "mobile": "cRExit::Init()",
+            "alias": "cRExit_Init",
+            "ios": True,
+        },
+        "update_completion_screen": {
+            "method": "AI",
+            "symbol": "?AI@cRExit@@QAEXXZ",
+            "mobile": "cRExit::AI()",
+            "alias": "cRExit_AI",
+            "ios": True,
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Exit.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        if recovered["ios"]:
+            assert entry["ios_symbol"] == recovered["mobile"]
+            assert entry["ios_body_count"] == 1
+        else:
+            assert "ios_symbol" not in entry
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRExit::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void UnInit();" in header
+    assert "void Init();" in header
+    assert "void AI();" in header
+    ai_source = (
+        scratch_root / "update_completion_screen/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert sum(
+        line.strip() == "UnInit();" for line in ai_source.splitlines()
+    ) == 11
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".destroy_completion_screen(",
+        ".initialize_exit_prompt(",
+        ".update_completion_screen(",
+    ):
+        assert stale_method not in all_sources
+    assert "exit_controller.Init()" in all_sources
+    assert "exit_controller.AI()" in all_sources
+
+
 def test_screen_controller_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
@@ -8443,6 +8534,11 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
             ),
         ),
     }
+    member_names = {
+        "destroy_completion_screen": "UnInit",
+        "initialize_exit_prompt": "Init",
+        "update_completion_screen": "AI",
+    }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
         assert (
@@ -8455,7 +8551,8 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
             source = (
                 scratch_root / function / "scratch.cpp"
             ).read_text(encoding="utf-8")
-            assert f"{authored}::{function}" in source
+            member = member_names.get(function, function)
+            assert f"{authored}::{member}" in source
 
     game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
     for field_type in (

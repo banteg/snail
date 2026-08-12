@@ -330,16 +330,25 @@
     {
       "address": "0x406060",
       "name": "destroy_completion_screen",
+      "aliases": [
+        "cRExit_UnInit"
+      ],
       "description": "Exact void Windows `Exit::destroy_completion_screen`: tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains this member as `cRExit::UnInit()`; it is distinct from the embedded subgame `cRCompletion::UnInit()`."
     },
     {
       "address": "0x4060d0",
       "name": "initialize_exit_prompt",
+      "aliases": [
+        "cRExit_Init"
+      ],
       "description": "Exact void Windows `Exit::initialize_exit_prompt`: builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain the side-effect-only `cRExit::Init()`, and the sole Windows caller discards EAX."
     },
     {
       "address": "0x4067e0",
       "name": "update_completion_screen",
+      "aliases": [
+        "cRExit_AI"
+      ],
       "description": "Exact void Windows `Exit::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
     },
     {

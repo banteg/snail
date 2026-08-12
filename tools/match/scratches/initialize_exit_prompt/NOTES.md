@@ -53,3 +53,11 @@
   `Exit*` member across restart and readback, so it now travels through the
   ordinary previewed direct-prototype lane rather than the obsolete deferred
   list. The exact 441/441 matching body is unchanged.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRExit::Init()` and exports
+`?Init@cRExit@@QAEXXZ`. Its sole live Windows caller passes
+`GameRoot::exit_controller` at `+0x4f3ac`; Android and iOS independently retain
+the same symbol and body. Matching stays exact at 441/441 with all 109 operands
+clean.
