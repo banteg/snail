@@ -16,7 +16,8 @@
 #include "vector3.h"
 #include "vector_types.h"
 
-struct SubSegment;
+struct cRSubSegment;
+typedef cRSubSegment SubSegment;
 
 // Windows-native cRPath template discriminants. Android/iOS constructor
 // symbols corroborate the authored identities, but their numeric values are

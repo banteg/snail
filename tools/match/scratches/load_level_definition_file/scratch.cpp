@@ -280,7 +280,7 @@ void cRSubTracks::load_level_definition_file(char* filename)
             *segment_out++ = 'x';
             *segment_out++ = 't';
             *segment_out = 0;
-            copy_segment_definition_to_level_slot(segment_name, &segment_slots[slot_index]);
+            ImportSegment(segment_name, &segment_slots[slot_index]);
 
             line_cursor = cursor + 3;
             char* options_out = line_options;
@@ -383,7 +383,7 @@ void cRSubTracks::load_level_definition_file(char* filename)
     *special_out++ = 'x';
     *special_out++ = 't';
     *special_out = 0;
-    copy_segment_definition_to_level_slot(segment_name, &first_segment);
+    ImportSegment(segment_name, &first_segment);
 
     cursor = find_case_insensitive_substring("Last:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
@@ -408,7 +408,7 @@ void cRSubTracks::load_level_definition_file(char* filename)
     *special_out++ = 'x';
     *special_out++ = 't';
     *special_out = 0;
-    copy_segment_definition_to_level_slot(segment_name, &last_segment);
+    ImportSegment(segment_name, &last_segment);
 
 #undef background_name
 #undef segment_name

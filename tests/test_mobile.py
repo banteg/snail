@@ -9620,6 +9620,7 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         "initialize_enemy_manager": "Init",
         "search_path_for_golb": "Find",
         "append_subgame_contact_target": "Register",
+        "copy_segment_definition_to_level_slot": "ImportSegment",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
@@ -9769,6 +9770,74 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         "cREnemyManager enemy_manager",
     ):
         assert field_type in subgame
+
+
+def test_mobile_subtracks_import_recovers_authored_method_and_type() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    function = "copy_segment_definition_to_level_slot"
+    entry = next(
+        entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+        if entry["windows_name"] == function
+    )
+    mobile_symbol = (
+        "cRSubTracks::ImportSegment(char*, cRSubSegment*)"
+    )
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "Subtrack.o"
+    assert entry["android_symbol"] == mobile_symbol
+    assert entry["ios_symbol"] == mobile_symbol
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    assert functions_by_name[function]["aliases"] == [
+        "cRSubTracks_ImportSegment"
+    ]
+    object_symbol = (
+        "?ImportSegment@cRSubTracks@@QAEXPADPAUcRSubSegment@@@Z"
+    )
+    assert references_by_name[function]["aliases"] == [object_symbol]
+
+    source = (scratch_root / function / "scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    config = (scratch_root / function / "scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    segment_header = (
+        repo_root / "tools/match/include/segment_catalog_types.h"
+    ).read_text(encoding="utf-8")
+    tracks_header = (
+        repo_root / "tools/match/include/sub_tracks.h"
+    ).read_text(encoding="utf-8")
+    assert "struct cRSubSegment {" in segment_header
+    assert "typedef cRSubSegment SubSegment;" in segment_header
+    assert "sizeof(cRSubSegment) == 0x4220" in segment_header
+    assert "void cRSubTracks::ImportSegment(" in source
+    assert "cRSubSegment* slot" in source
+    assert "void ImportSegment(" in tracks_header
+    assert "cRSubSegment* segment" in tracks_header
+    assert f"SYMBOL={object_symbol}\n" in config
+
+    caller = (
+        scratch_root / "load_level_definition_file/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert caller.count("ImportSegment(") == 3
+    assert "copy_segment_definition_to_level_slot(" not in caller
 
 
 def test_border_presentation_types_use_authored_primary_owners() -> None:

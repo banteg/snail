@@ -3827,6 +3827,15 @@
       "description": "Exact Windows cRNuke::AI() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x447300",
+      "name": "copy_segment_definition_to_level_slot",
+      "kind": "function",
+      "aliases": [
+        "?ImportSegment@cRSubTracks@@QAEXPADPAUcRSubSegment@@@Z"
+      ],
+      "description": "Exact Windows cRSubTracks::ImportSegment(char*, cRSubSegment*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4489e0",
       "name": "kill_tip_widgets",
       "kind": "function",

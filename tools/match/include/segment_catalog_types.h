@@ -76,7 +76,7 @@ typedef char cRSMTracks_must_be_0x25cfb4[
 
 // Windows cRSubSegment layout. Unlike later iOS ports, Windows owns its glyph
 // and authored-row storage inline.
-struct SubSegment {
+struct cRSubSegment {
     int row_base;                  // +0x00
     int row_count;                 // +0x04
     unsigned char visited;         // +0x08, random-segment selection latch
@@ -91,8 +91,9 @@ struct SubSegment {
     int message_sample_id;         // +0x421c, optional Sample=
 };
 
+typedef cRSubSegment SubSegment;
 typedef char SubSegment_must_be_0x4220[
-    (sizeof(SubSegment) == 0x4220) ? 1 : -1];
+    (sizeof(cRSubSegment) == 0x4220) ? 1 : -1];
 
 // Borrowed field-first cursor used by PlaceParcels' Windows segment scan.
 // The cursor starts at SubSegment::row_count and advances by the complete

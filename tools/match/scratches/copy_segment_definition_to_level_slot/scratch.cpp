@@ -1,4 +1,4 @@
-// copy_segment_definition_to_level_slot @ 0x447300 (thiscall, ret 0x8)
+// cRSubTracks::ImportSegment @ 0x447300 (thiscall, ret 0x8)
 
 #include "game_root.h"
 #include "rstring.h"
@@ -7,9 +7,9 @@ extern char* g_current_level_definition_name; // data_74ec74
 
 int report_errorf(char* format, ...);
 
-void cRSubTracks::copy_segment_definition_to_level_slot(
+void cRSubTracks::ImportSegment(
     char* segment_name,
-    SubSegment* slot)
+    cRSubSegment* slot)
 {
     cRSMTracks* catalog = &g_game->subgame.sm_tracks;
     int index = 0;

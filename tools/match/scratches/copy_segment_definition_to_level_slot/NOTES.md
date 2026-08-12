@@ -1,181 +1,22 @@
-# copy_segment_definition_to_level_slot @ 0x447300
+# cRSubTracks::ImportSegment @ 0x447300
 
-Initial target:
+Exact match: 100.00%, 125/125 instructions, with all five masked operands
+clean.
 
-- Copies one named segment from the runtime segment catalog at
-  `game+0x1075ae4` into a level slot.
-- Searches segment filenames with `strings_equal_case_insensitive_path`.
-- Transposes the source glyph grid from catalog column-major storage into the
-  level slot's eight 0x100-byte row lanes.
-- Copies the per-row authored metadata records with the 0x38-byte row stride
-  already seen in `populate_runtime_track_cells_from_segments`.
+This authored member finds a root-owned `cRSMTracks` catalog entry by filename,
+transposes its column-major eight-lane glyph grid into one caller-selected
+`cRSubSegment`, and copies the per-row flags, object metadata, position and
+velocity vectors, parcel id, local position, path template, and ring speed.
+The Windows destination is a 0x4220-byte inline record; only `source_name`
+borrows storage from the catalog.
 
-Status:
+Android and iOS `Subtrack.o` independently export
+`cRSubTracks::ImportSegment(char*, cRSubSegment*)` and preserve the copy
+sequence. Live Windows analysis confirms a void two-argument thiscall. Its
+otherwise-unused receiver is established by all three calls, which import an
+ordinary slot, `first_segment`, or `last_segment`.
 
-- 2026-06-18: 54.10%, 119/125 candidate/target instructions, prefix 42/125,
-  5 masked operands ok.
-- 2026-06-18: Promoted the shared authored segment catalog and
-  `SubSegment` layouts to `include/segment_catalog_types.h`; focused
-  Wibo score stayed 54.10%.
-- 2026-07-11: Recovered the constructor-proven leading count and moved the
-  record fields to their true entry-relative offsets. Direct indexing through
-  `catalog->entries[index]` lets VC6 fold the four-byte array offset into the
-  native field displacements, preserving 54.10%, the 42-instruction prefix,
-  and all five clean masked operands.
-- 2026-07-11: The symbol-preserving iOS signature
-  `void cRSubTracks::ImportSegment(char*, cRSubSegment*)` proves both the
-  destination boundary and the return contract. Promoting the Windows inline
-  0x4220-byte destination to `SubSegment`, removing a synthetic result
-  lifetime, and expressing each parsed position/velocity triple as a real
-  `Vector3` raises the match from 54.10% to 85.60%: 125/125 instructions,
-  prefix 74/125, and all five masked operands clean.
-
-Corrections from the first pass:
-
-- The catalog count is at `game+0x1075ae4`; the first entry begins four bytes
-  later and its segment filename lives at entry `+0x40` (absolute catalog
-  `+0x44`). Constructor iteration proves this header rather than an overlapping
-  entry-0 alias.
-- `load_segment_definitions` proves the internal `Name:'...'` display string is
-  separate and starts at entry `+0x00` (absolute catalog `+0x04`).
-- `load_segment_definitions` also corrects authored row names:
-  `+0x24..+0x2c` are `Velocity=`, `+0x30` is `Path=`, and `+0x34` is
-  `RingSpeed=` float bits.
-- `load_level_definition_file` proves the level slot tail is not generic
-  runtime state: `+0x4014` is `Angle=` radians, `+0x4018` starts optional
-  `Message=` text, `+0x4218` is `Duration=`, and `+0x421c` is `Sample=`.
-- `data_74ec74` is a `char*` current level-definition name.
-  `load_level_definition_file` writes its input there before segment-copy
-  diagnostics consume it.
-
-Residuals after the ownership recovery:
-
-- The remaining normalized differences are register and pointer-anchor
-  scheduling within the metadata copy. The layout, instruction count, vector
-  grouping, and masked addresses now agree, so contorting the source around
-  those commutative scheduling differences would be fakematching.
-- A plain whole-row struct assignment still regresses into `rep movsd`; the
-  field-and-vector assignments preserve the native scalar copy family.
-
-Rejected probes:
-
-- Hoisting `row_count` into a local regressed to 39.00% and moved the argument
-  owner back out of `ebx`; the baseline reads `source->row_count` at use sites.
-- 2026-06-21 selected-entry owner probe: carrying the search cursor forward as
-  `source = scan` or scanning with an explicit filename cursor regresses to the
-  mid-30% range by disturbing the prologue/search-loop ownership. Removing the
-  separate `entries` local is codegen-neutral at 54.10%. Keep the recomputed
-  `&entries[index]` source until a form preserves the 42-instruction prefix and
-  still lets native own the selected entry in `edx`.
-
-## 2026-07-13 receiver ABI and ownership
-
-- The three Windows caller sites at `0x447c19`, `0x447f9e`, and `0x44804d`
-  each load the owning `SubTracks*` into `ecx` immediately before the call and
-  push only the segment name and destination. Together with callee `ret 8` and
-  the iOS `cRSubTracks::ImportSegment(char*, cRSubSegment*)` symbol, this proves
-  a two-argument `thiscall`; the receiver is unused by the Windows body but is
-  not absent.
-- The scratch and shared declaration now model the real member ABI instead of
-  a global `__stdcall` function. This is byte-neutral for the callee and keeps
-  `load_level_definition_file` at its established `82.27%` caller shape.
-- The bridge reads the root-owned `SMTracks` catalog through typed `g_game`.
-  Glyphs and metadata are copied into the explicit caller-owned `SubSegment`;
-  only `source_name` remains as a borrowed pointer into the stable catalog
-  entry. The receiver can pass an ordinary slot, `first_segment`, or
-  `last_segment`, matching the three callsite families.
-
-## 2026-07-15 durable IDA ownership
-
-The live IDA prototype already carried the recovered member ABI, but its
-checked-in decompile still showed the old global `__stdcall` returning an
-incidental `_DWORD*`. A focused strict refresh now exposes the unused
-`SubTracks*` receiver, root-owned `SMTracks`, caller-owned `SubSegment`, inline
-glyph rows, authored row bank, and void error path. A health check rejects the
-stale raw global form so later narrow exports cannot silently lose this owner
-graph. Matcher source remains unchanged at the honest 85.60% frontier: all
-125 instructions and five masked operands agree, while the remaining register
-schedule is not being reshaped for score.
-
-## 2026-07-16 selected-entry stride anchor ownership
-
-- Native computes its EDX catalog cursor by adding `index * 0x4088` to the
-  `SMTracks` base, not to `entries[0]`. The register therefore remains four
-  bytes before the selected `SegmentCatalogEntry`: its prefix is
-  `SMTracks::count` for index zero and the previous entry's final word for
-  later indices.
-- A direct `SegmentCatalogEntry*` local probe was rejected because it shifted
-  every field by four bytes: the decompiler rendered `row_count` as glyph
-  bytes, `id` as `row_count`, and `filename` as `filename[4]`. That would have
-  been a false ownership claim even though the register points near the entry.
-- The analysis headers now carry the exact `SegmentCatalogEntryAnchor` view:
-  one neutral `stride_prefix_word` followed by the real entry. Binary Ninja's
-  proven EDX SSA identity (`RegisterVariableSourceType`, index 113, storage
-  68) and IDA's corresponding register local (definition EA `0x447372`) both
-  replay as
-  `selected_entry_anchor`. Both exports now expose the selected entry's
-  `row_count`, `filename`, `id`, column-major glyph grid, and authored row bank
-  through `selected_entry_anchor->entry`.
-- Both replays are idempotent: Binary Ninja verifies all 12 header types and
-  skips the already-current local owner, while IDA reports the same local and
-  all six catalog prototypes unchanged. Health checks reject both the old raw
-  byte-pointer form and the four-byte-shifted direct-entry form.
-- Matcher source remains unchanged at the honest 85.60% frontier: 125/125
-  instructions, prefix 74/125, and five clean masked operands. The remaining
-  metadata-copy differences are register scheduling, so no source was
-  contorted to improve the score.
-
-## 2026-07-25 borrowed row-copy cursors
-
-The metadata loop does not carry either `AuthoredSegmentRow*` at its base.
-Native carries the `object_id` field at `+0x14`, copies fields on both sides of
-that interior address, and advances the two registers by the exact `0x38` row
-stride. Treating those registers as ordinary `int32_t*` hid the surrounding
-row owners; rebasing them to `AuthoredSegmentRow*` would be four fields early
-and therefore false.
-
-The analysis header now gives that borrow an offset-pointer view while
-retaining `SegmentCatalogEntry::rows` and `SubSegment::rows` as the sole
-owners. IDA's shifted source and destination cursors consequently expose
-flags, object id, object position and velocity, parcel set, and local position
-as named fields. The native early cursor increment leaves the final
-path-template and ring-speed words as two explicit backward scalar accesses;
-a broader pointee probe was rejected because it falsely relabeled those words.
-
-The same replay also separates the dead `segment_name` argument slot from its
-later `glyph_lane_remaining` lifetime and names the source/destination glyph
-cursors. No matcher source, masks, or control flow changed: focused matching
-remains honestly at 85.60%, 125/125 instructions, prefix 74/125, with all five
-masked operands clean.
-
-Binary Ninja independently recovers the stack-slot reuse from the native
-initialization, loop phi, and decrement definitions at `0x447364`, `0x44737d`,
-and `0x4473aa`. Its two `object_id`-relative register cursors expose the same
-surrounding metadata fields as IDA while retaining the final two post-increment
-copies as explicit negative offsets. Both guarded replays are idempotent, and
-the paired focused export passes all 1039 strict decompile-health checks with
-no selector mismatch.
-
-## 2026-07-27 direct authored-row subscripts
-
-The verified Android and iOS `cRSubTracks::ImportSegment(char*,
-cRSubSegment*)` bodies retain the same authored copy sequence despite packing
-their destination rows: flags, object id, object position, parcel id, local
-position, and path template. This independently supports the Windows field
-order and rules out changing the metadata layout merely to influence register
-allocation.
-
-The Windows source now spells those copies directly through
-`slot->rows[metadata_row]` and
-`catalog->entries[index].rows[metadata_row]`, instead of introducing two
-one-iteration row-pointer aliases. This is ordinary per-element container
-source shape and leaves every owner and field unchanged. VC6 consequently
-selects the native `object_id`-relative source and destination cursors on its
-own, including the early `0x38` stride advance and the two trailing negative
-offset reads.
-
-Focused matching rises from 85.60% to an audited 100.00%: all 125 target
-instructions match, the exact prefix is 125/125, and all five masked operands
-resolve cleanly with no unresolved, mismatched, or unaudited references. This
-also supersedes the earlier conclusion that the metadata residual was
-irreducible scheduling noise; it was a recoverable source-expression lifetime.
+Direct authored-row subscripts recover the native interior cursor scheduling;
+whole-row assignment would instead emit `rep movsd`. The stable matcher
+identity remains `copy_segment_definition_to_level_slot`; source and
+relocations now use the authored method and destination type.
