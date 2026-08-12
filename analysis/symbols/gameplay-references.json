@@ -1069,18 +1069,19 @@
       "name": "initialize_bod_base",
       "kind": "function",
       "aliases": [
-        "?initialize_bod_base@cRBod@@QAEPAV1@XZ"
+        "??0cRBod@@QAE@XZ"
       ],
-      "description": "Exact receiver-returning Windows cRBod initializer. The Android and iOS cRBod constructors independently prove the owner and initialized layout, but the Windows scratch deliberately retains its observed return contract."
+      "description": "Exact Windows cRBod constructor. Android and iOS preserve the same owner, default state, and constructor identity."
     },
     {
       "address": "0x42f650",
       "name": "initialize_renderable_bod",
       "kind": "function",
       "aliases": [
-        "?initialize_renderable_bod@cRBodPos@@QAEPAV1@XZ"
+        "??0cRBodPos@@QAE@XZ",
+        "?initialize_renderable_bod@RuntimeSlot@@QAEPAU1@XZ"
       ],
-      "description": "Exact receiver-returning Windows cRBodPos initializer. Android and iOS constructors prove the positioned-body owner and layout without overriding the Windows ABI."
+      "description": "Exact Windows cRBodPos constructor. The RuntimeSlot alias is limited to three pointer-to-constructor operands in the presentation aggregate because C++ cannot take a constructor address."
     },
     {
       "address": "0x42f680",
@@ -6329,7 +6330,7 @@
         "data_4974fc",
         "g_cRBod_vtable"
       ],
-      "description": "Shared BOD base vtable installed by initialize_bod_base; its sole entry points to folded noop_runtime_ai and mobile independently names the authored method cRBod::AI()."
+      "description": "Shared cRBod vtable installed by the exact constructor at 0x42f5f0; its sole entry points to folded noop_runtime_ai and mobile independently names the authored method cRBod::AI()."
     },
     {
       "address": "0x497500",
@@ -6340,7 +6341,7 @@
         "data_497500",
         "g_cRBodPos_vtable"
       ],
-      "description": "Renderable cRBodPos vtable installed by initialize_renderable_bod; its sole entry inherits the same folded cRBod::AI() body as the base table, matching both mobile class vtables."
+      "description": "cRBodPos vtable installed by the exact constructor at 0x42f650; its sole entry inherits the same folded cRBod::AI() body as the base table, matching both mobile class vtables."
     },
     {
       "address": "0x49aff0",
@@ -7919,7 +7920,7 @@
       "aliases": [
         "data_50331c"
       ],
-      "description": "BOD-base constructor counter incremented by initialize_bod_base."
+      "description": "BOD-base constructor counter incremented by cRBod::cRBod() at 0x42f5f0."
     },
     {
       "address": "0x503320",

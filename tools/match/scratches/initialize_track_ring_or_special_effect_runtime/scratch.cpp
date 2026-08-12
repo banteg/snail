@@ -8,6 +8,5 @@ extern void* g_sub_ring_vtable; // off_49732c / data_49732c
 
 cRSubRing::cRSubRing()
 {
-    initialize_renderable_bod();
     vtable = &g_sub_ring_vtable;
 }

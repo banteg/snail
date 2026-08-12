@@ -7,7 +7,7 @@ extern int g_sub_loc_count;    // unk_4dfadc / data_4dfadc
 
 cRSubLoc* cRSubLoc::initialize_sub_loc()
 {
-    initialize_bod_base();
+    this->cRBod::cRBod();
     vtable = &g_sub_loc_vtable;
     ++g_sub_loc_count;
     return this;

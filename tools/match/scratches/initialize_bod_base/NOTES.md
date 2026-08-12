@@ -1,75 +1,16 @@
 # initialize_bod_base @ 0x42f5f0
 
-Exact match: 100.00%, 27/27 instructions.
+Exact authored `cRBod::cRBod()` constructor: 27/27 instructions with five
+clean masked operands.
 
-Initializes the shared BOD base vtable, default flags, color lane, constructor
-counter, and zeroed render/list fields. The first call targets the no-op `this`
-constructor thunk at `0x44db50` (`mov eax, ecx; ret`) before the same storage is
-written as a `tColour`.
+Windows initializes the shared BOD vtable, default render/list flags, position,
+render arguments, color, object pointer, constructor counter, and remaining
+zeroed lifecycle fields in native store order. The inherited `BodNode` prefix
+owns the intrusive links and flags; `cRBod` ends exactly at `0x38`.
 
-`BodBase` now inherits the already-proven `BodNode`/`ContactTargetObject`
-prefix, so the default flag store writes inherited `list_flags +0x04` rather
-than a duplicate local field.
-
-The exact store order now names the shared prefix also consumed by
-`render_game_frame`: `position.z`, `position.y`, `position.x`, render-object
-argument `+0x1c`, and render-object argument `+0x20`. The `+0x08/+0x0c`
-intrusive links are not explicitly cleared here but are shared with the BOD list
-views.
-
-## 2026-07-14 shared BOD flag ownership
-
-The default `0x02000020` store is now the named combination
-`RENDER_SCENE_PLAYER_0 | BOD_FLAG_RENDER_ENABLED`. The render traversal proves
-the high byte is intersected with `viewports[1].flags`, while banner,
-landscape, animation, and subgame lifecycles independently toggle the low
-visibility bit. `RenderableBod` adds `BOD_FLAG_USE_TRANSFORM`, matching the
-renderer branch that selects its embedded matrix instead of the position-only
-base path. Both constructors remain exact.
-
-2026-07-14 folded-constructor ownership: the opening identity call now targets
-the embedded `tColour` directly. The previous `NoopAiCallback` cast represented
-no object, field, or vtable boundary; it existed only to give the folded helper
-a local constructor-shaped symbol. The shared color call preserves the exact
-27/27 instruction stream and all five audited operands, so the synthetic
-callback alias has been removed from the reference manifest.
-
-## 2026-07-16 lifecycle-state ownership
-
-The base and renderable vtable slots, the shared no-op AI table, and the
-constructor counter now live with the common `BodBase`/`RenderableBod` owner in
-`bod_types.h`. This removes six scratch-local views of the same lifecycle state
-without inventing a wider class: the callback table remains shared by startup,
-player-camera, overlay-camera, and passive root bodies. Both BOD constructors
-remain exact.
-
-## 2026-07-18 fail-closed owner sizes
-
-The shared analyzer replay now verifies `BodNode` `0x10`, `BodList` `0x0c`,
-`BodBase` `0x38`, and `RenderableBod` `0x80` before applying any lifecycle
-method ABI. This prevents a stale prefix from silently contaminating callers.
-
-## 2026-07-27 authored cRBod identity
-
-Binary Ninja reads the sole entries of `g_bod_base_vtable @ 0x4974fc` and
-`g_renderable_bod_vtable @ 0x497500` as `noop_runtime_ai @ 0x407b50`.
-Android and iOS independently retain the four-byte `cRBod::AI()` body, and the
-iOS `cRBodPos` vtable inherits that same entry. The shared headers now expose
-`cRBod` and `cRBodPos` as authored aliases of the already-proven Windows
-`BodBase` and `RenderableBod` layouts. This recovers vocabulary and virtual
-ownership without widening either exact Windows object.
-
-## 2026-07-29 primary cRBod ownership
-
-The new Android and iOS `RObject.o` evidence closes more than vocabulary:
-both ports independently retain `cRBod::IsAfterSprites()`,
-`cRBod::SetObject(cRObject*)`, `cRBod::ApplyPos(tMatrix&)`,
-`cRBod::cRBod()`, and `cRBodPos::cRBodPos()`. The matcher therefore now uses
-`cRBod` and `cRBodPos` as the primary C++ tags, with `BodBase` and
-`RenderableBod` retained only as compatibility names for the analyzer replay.
-
-All six focused Windows bodies remain exact after the owner promotion,
-including their audited operands. The two Windows initializer scratches remain
-explicit receiver-returning methods: mobile constructor names prove the owner
-and initialized layout, but they do not authorize replacing the observed
-Windows return contracts with constructor syntax.
+Android and iOS independently preserve `cRBod::cRBod()` in `RObject.o`, along
+with `cRBod::AI()`, `IsAfterSprites()`, `SetObject(cRObject*)`, and
+`ApplyPos(tMatrix&)`. The matcher therefore emits constructor syntax and the
+exact VC6 symbol `??0cRBod@@QAE@XZ`. Analyzer decompiles may still show the
+constructor's receiver in `eax` as a pointer return; that is the low-level
+constructor ABI, not a separate receiver-returning method.

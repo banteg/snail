@@ -2335,12 +2335,12 @@
     {
       "address": "0x42f5f0",
       "name": "initialize_bod_base",
-      "description": "Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment. iOS RObject.o names this base constructor `cRBod::cRBod()`."
+      "description": "Exact Windows `cRBod::cRBod()` constructor: installs the base callback table and default flags, initializes the white color block, clears position/render state, and increments the global bod count. Android and iOS independently preserve the authored owner and constructor."
     },
     {
       "address": "0x42f650",
       "name": "initialize_renderable_bod",
-      "description": "Builds the shared renderable bod shell on top of the base bod header, seeding its object-oriented vtable, default render flags, and identity local transform. iOS RObject.o names this positioned-body constructor `cRBodPos::cRBodPos()`."
+      "description": "Exact Windows `cRBodPos::cRBodPos()` constructor: invokes `cRBod::cRBod()`, installs the positioned-body callback table and transform flag, and initializes the local matrix to identity. Android and iOS preserve the same authored constructor chain."
     },
     {
       "address": "0x42f680",

@@ -66,16 +66,16 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         &RuntimeSlot::noop_runtime_slot_constructor);
 
     level_definition_scratch.fringe_color.noop_this_constructor();
-    fringe_attachment_list_head.initialize_bod_base();
-    track_body_list_head.initialize_bod_base();
-    barrier_sub_lazer_list_head.initialize_bod_base();
-    salt_hazard_list_head.initialize_bod_base();
-    landscape_slice_list_head.initialize_bod_base();
-    unknown_bod_355c7c.initialize_bod_base();
-    special_track_cell_list_head.initialize_bod_base();
-    unknown_bod_355cec.initialize_bod_base();
-    golb_vapour_list_head.initialize_bod_base();
-    unknown_bod_355d5c.initialize_bod_base();
+    fringe_attachment_list_head.cRBod::cRBod();
+    track_body_list_head.cRBod::cRBod();
+    barrier_sub_lazer_list_head.cRBod::cRBod();
+    salt_hazard_list_head.cRBod::cRBod();
+    landscape_slice_list_head.cRBod::cRBod();
+    unknown_bod_355c7c.cRBod::cRBod();
+    special_track_cell_list_head.cRBod::cRBod();
+    unknown_bod_355cec.cRBod::cRBod();
+    golb_vapour_list_head.cRBod::cRBod();
+    unknown_bod_355d5c.cRBod::cRBod();
     ((RuntimeSlot*)&speedup_pickup)->initialize_track_speedup_runtime();
     ((RuntimeSlot*)&jetpack_pickup)->initialize_track_jetpack_pickup_runtime();
 
@@ -110,7 +110,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
     Banner* banner = banners.slots;
     int banner_count = sizeof(banners.slots) / sizeof(banners.slots[0]);
     do {
-        banner->initialize_bod_base();
+        banner->cRBod::cRBod();
         banner->vtable = &g_banner_callback_table;
         ++banner;
         --banner_count;
@@ -141,7 +141,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         &RuntimeSlot::initialize_fringe_object);
 
     cRSubGoldy* subgoldy = &player;
-    subgoldy->initialize_renderable_bod();
+    subgoldy->cRBodPos::cRBodPos();
     ((RuntimeSlot*)&subgoldy->click_start)
         ->initialize_click_start_controller_runtime();
     subgoldy->cameraman.noop_runtime_slot_constructor();
@@ -178,7 +178,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         --path_template_count;
     } while (path_template_count);
 
-    barrier.initialize_bod_base();
+    barrier.cRBod::cRBod();
     barrier.vtable = &g_barrier_actor_callback_table;
 
     RuntimeSlot* landscape = (RuntimeSlot*)landscape_manager.active_entries;
@@ -197,7 +197,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
         &RuntimeSlot::initialize_landscape_script_record);
 
     Face* face = &smtrack_heightfield;
-    face->initialize_bod_base();
+    face->cRBod::cRBod();
     face->movie.cRObject::cRObject();
     face->vtable = &g_face_callback_table;
 

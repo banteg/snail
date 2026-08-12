@@ -5,9 +5,11 @@
 
 extern void* g_row_model_vtable; // off_497330 / data_497330
 
+inline cRRowModel::cRRowModel()
+{
+    vtable = &g_row_model_vtable;
+}
+
 cRSubRow::cRSubRow()
 {
-    row_model.initialize_renderable_bod();
-    row_model.vtable = &g_row_model_vtable;
-    attachment_body.initialize_bod_base();
 }

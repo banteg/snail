@@ -382,6 +382,7 @@ typedef char cRSubLoc_must_be_0x54[(sizeof(cRSubLoc) == 0x54) ? 1 : -1];
 // preserve the class and callback as cRRowModel::AI().
 class cRRowModel : public RenderableBod {
 public:
+    cRRowModel(); // inlined by cRSubRow::cRSubRow()
     void AI(); // @ 0x443070
 
     Vector3 velocity; // +0x80, outer cRSubRow +0x84

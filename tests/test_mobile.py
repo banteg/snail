@@ -5184,7 +5184,7 @@ def test_mobile_animation_keyframes_recover_crbodpos_tail_lane() -> None:
     assert "unknown_7c" not in analysis_header
 
 
-def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
+def test_mobile_crbod_owners_use_authored_constructors() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = {
@@ -5232,9 +5232,9 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
     exact_symbols = {
         "is_bod_after_sprites": "?IsAfterSprites@cRBod@@QAE_NXZ",
         "set_bod_object": "?SetObject@cRBod@@QAEHPAUcRObject@@@Z",
-        "initialize_bod_base": "?initialize_bod_base@cRBod@@QAEPAV1@XZ",
+        "initialize_bod_base": "??0cRBod@@QAE@XZ",
         "initialize_renderable_bod": (
-            "?initialize_renderable_bod@cRBodPos@@QAEPAV1@XZ"
+            "??0cRBodPos@@QAE@XZ"
         ),
         "apply_bod_position": (
             "?ApplyPos@cRBod@@QAEXAAUtMatrix@@@Z"
@@ -5267,8 +5267,8 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
         repo_root
         / "tools/match/scratches/initialize_renderable_bod/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "cRBod* cRBod::initialize_bod_base()" in base_initializer
-    assert "cRBodPos* cRBodPos::initialize_renderable_bod()" in (
+    assert "cRBod::cRBod()" in base_initializer
+    assert "cRBodPos::cRBodPos()" in (
         positioned_initializer
     )
     assert "bool cRBod::IsAfterSprites()" in (
@@ -5283,8 +5283,8 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
         repo_root
         / "tools/match/scratches/apply_bod_position/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "cRBod::cRBod()" not in base_initializer
-    assert "cRBodPos::cRBodPos()" not in positioned_initializer
+    assert "initialize_bod_base" not in base_initializer
+    assert "initialize_renderable_bod" not in positioned_initializer
 
 
 def test_mobile_crmouse_methods_use_authored_primary_owner() -> None:

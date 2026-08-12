@@ -6,12 +6,12 @@
 extern void* g_jet_pack_vtable;             // off_497318 / data_497318
 extern void* g_vapour_vtable;               // off_49731c / data_49731c
 
+inline cRVapour::cRVapour()
+{
+    vtable = &g_vapour_vtable;
+}
+
 cRJetPack::cRJetPack()
 {
-    initialize_bod_base();
-    vapour_a.initialize_renderable_bod();
-    vapour_a.vtable = &g_vapour_vtable;
-    vapour_b.initialize_renderable_bod();
-    vapour_b.vtable = &g_vapour_vtable;
     vtable = &g_jet_pack_vtable;
 }

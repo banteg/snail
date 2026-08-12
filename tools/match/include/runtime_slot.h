@@ -5,7 +5,6 @@
 
 class RuntimeSlot {
 public:
-    RuntimeSlot* initialize_bod_base();
     RuntimeSlot* initialize_renderable_bod();
     RuntimeSlot* noop_runtime_slot_constructor();
     RuntimeSlot* initialize_border_record();

@@ -365,8 +365,8 @@ the complete Windows boundary and this constructor's exact machine code.
 
 ## 2026-07-14 Player RenderableBod inheritance
 
-The constructor now keeps `subgoldy` as the actual embedded `Player*` and
-calls inherited `RenderableBod::initialize_renderable_bod()` directly. The
+The constructor now keeps `subgoldy` as the actual embedded `Player*`; its
+inherited `cRBodPos` constructor runs implicitly before the body. The
 base owns the vtable slot, intrusive node, position, render arguments,
 borrowed `Object*`, color, transform, conditional manager lane, and unknown
 tail through `+0x7f`; Player's first derived storage remains at `+0x80`, and

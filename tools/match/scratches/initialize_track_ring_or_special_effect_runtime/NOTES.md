@@ -25,7 +25,7 @@ The matcher now emits this wrapper as the authored `cRSubRing::cRSubRing()`
 constructor and selects the VC6 symbol `??0cRSubRing@@QAE@XZ`, while the
 stable manifest function remains `initialize_track_ring_or_special_effect_runtime`.
 Windows raw disassembly shows the complete constructor shape: carry `this` in
-ESI, call the inherited renderable initializer, install the table at
+ESI, construct inherited `cRBodPos`, install the table at
 `0x49732c`, and return the receiver. Its sole code xref is the two-slot
 `cRSubGame` pool constructor. The source remains exact at 7/7 instructions
 with both operands clean; `SubRing` remains a compatibility typedef.

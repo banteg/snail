@@ -7,6 +7,5 @@ extern void* g_parcel_vtable; // off_497364 / data_497364
 
 cRParcel::cRParcel()
 {
-    initialize_bod_base();
     vtable = &g_parcel_vtable;
 }

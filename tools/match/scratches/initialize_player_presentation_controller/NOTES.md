@@ -40,8 +40,8 @@ and 27 clean masked operands.
 
 ## 2026-07-14 RenderableBod inheritance closure
 
-The exact constructor now calls the inherited
-`RenderableBod::initialize_renderable_bod()` directly. `Snail` no longer
+The exact constructor now invokes inherited `cRBodPos::cRBodPos()` through
+normal base construction. `Snail` no longer
 duplicates the vtable, list flags, `Object*`, color, transform, or conditional
 animation-manager lane in its own declaration; its first Snail-specific field
 is `previous_live_matrix +0x80`, and the complete object remains exactly

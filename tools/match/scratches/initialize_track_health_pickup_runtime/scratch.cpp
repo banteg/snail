@@ -7,6 +7,5 @@ extern void* g_sub_health_vtable; // off_497320 / data_497320
 
 cRSubHealth::cRSubHealth()
 {
-    initialize_bod_base();
     vtable = &g_sub_health_vtable;
 }

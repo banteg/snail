@@ -8,7 +8,7 @@ void initialize_global_font3d_bods()
     for (int count = (int)(sizeof(g_font3d_bods) / sizeof(g_font3d_bods[0]));
          count != 0;
          --count) {
-        bod->initialize_bod_base();
+        bod->cRBod::cRBod();
         ++bod;
     }
 }

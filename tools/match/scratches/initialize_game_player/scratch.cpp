@@ -6,8 +6,8 @@ extern void* g_game_player_callback_table;  // data_4972f4
 
 cRPlayer* cRPlayer::initialize_game_player()
 {
-    initialize_renderable_bod();
-    camera.initialize_renderable_bod();
+    this->cRBodPos::cRBodPos();
+    camera.cRBodPos::cRBodPos();
     camera.vtable = &g_noop_runtime_callback_table;
     frontend_overlay.target.noop_this_constructor();
     frontend_overlay.current.noop_this_constructor();

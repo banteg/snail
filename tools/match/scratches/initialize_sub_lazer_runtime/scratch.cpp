@@ -8,6 +8,5 @@ extern void* g_sub_lazer_vtable; // off_49733c / data_49733c
 
 cRSubLazer::cRSubLazer()
 {
-    initialize_renderable_bod();
     vtable = &g_sub_lazer_vtable;
 }

@@ -21,7 +21,7 @@ extern int g_bod_base_init_count;            // data_50331c
 
 class cRBod : public BodNode {
 public:
-    cRBod* initialize_bod_base();         // @ 0x42f5f0
+    cRBod();                            // @ 0x42f5f0
     void noop_runtime_ai();               // folded @ 0x407b50; cRBod::AI()
     bool IsAfterSprites();                // @ 0x42f5c0
     int SetObject(Object* object);        // @ 0x42f5d0
@@ -42,7 +42,7 @@ typedef char BodBase_must_be_0x38[(sizeof(BodBase) == 0x38) ? 1 : -1];
 
 class cRBodPos : public cRBod {
 public:
-    cRBodPos* initialize_renderable_bod(); // @ 0x42f650
+    cRBodPos();                          // @ 0x42f650
     cRBodPos* initialize_noop_renderable_bod(); // @ 0x408040
 
     TransformMatrix transform; // +0x38

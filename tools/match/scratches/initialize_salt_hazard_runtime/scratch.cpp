@@ -8,6 +8,5 @@ extern void* g_salt_vtable; // off_497340 / data_497340
 
 cRSalt::cRSalt()
 {
-    initialize_renderable_bod();
     vtable = &g_salt_vtable;
 }

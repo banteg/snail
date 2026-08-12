@@ -7,6 +7,5 @@ extern void* g_click_start_controller_vtable; // off_497348 / data_497348
 
 cRClickStart::cRClickStart()
 {
-    initialize_renderable_bod();
     vtable = &g_click_start_controller_vtable;
 }

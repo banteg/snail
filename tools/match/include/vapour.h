@@ -7,6 +7,7 @@
 
 class cRVapour : public RenderableBod {
 public:
+    cRVapour(); // inlined where embedded vapour owners are constructed
     void Init(cRObject* unused, float half_width); // @ 0x442500
     void ReSet(float* z_floor); // @ 0x442540, authored capitalization
     void Add(tMatrix& point); // @ 0x442560

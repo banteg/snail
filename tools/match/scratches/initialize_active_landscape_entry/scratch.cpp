@@ -6,7 +6,7 @@ extern void* g_active_landscape_entry_vtable; // off_497360 / data_497360
 
 ActiveLandscapeEntry* ActiveLandscapeEntry::initialize_active_landscape_entry()
 {
-    initialize_renderable_bod();
+    this->cRBodPos::cRBodPos();
     vtable = &g_active_landscape_entry_vtable;
     return this;
 }

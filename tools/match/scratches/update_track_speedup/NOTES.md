@@ -33,8 +33,8 @@ manifest and this exact scratch.
 2026-06-16 renderable-prefix consolidation: the shared
 `TrackSpeedupRuntime` header began recording the renderable transform rows at
 `+0x38..+0x77`, with `world_position +0x68` as
-`RenderableBod::transform.position`. The initializer calls
-`initialize_renderable_bod()`, this exact updater consumes `world_position.z`,
+`RenderableBod::transform.position`. The pickup constructor initializes the
+inherited `cRBodPos`; this exact updater consumes `world_position.z`,
 and `handle_subgoldy_collisions` consumes the full x/y/z vector. It was kept as
 a field-by-field `BodNode` view at that stage.
 

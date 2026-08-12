@@ -7368,13 +7368,13 @@ def test_bod_object_ownership_replay_uses_canonical_object_type() -> None:
     assert renderable_constructor in path_sync
     assert renderable_constructor + ";" in path_header
     assert renderable_constructor + ";" in ida_path_sync
-    assert "cRBodPos* initialize_renderable_bod();" in matcher_header
+    assert "cRBodPos();" in matcher_header
     assert "0x42F650" in ida_path_sync
     bod_constructor = "BodBase* __thiscall initialize_bod_base(BodBase* bod)"
     assert bod_constructor in path_sync
     assert bod_constructor + ";" in path_header
     assert bod_constructor + ";" in ida_path_sync
-    assert "cRBod* initialize_bod_base();" in matcher_header
+    assert "cRBod();" in matcher_header
     for owner_name in (
         "g_bod_base_vtable",
         "g_renderable_bod_vtable",
@@ -20948,7 +20948,7 @@ def test_track_fringe_mesh_cursor_views_stay_borrowed_and_replayable() -> None:
         assert "p_vertex_0" in check["forbidden_substrings"]
 
 
-def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
+def test_vapour_and_embedded_bod_owners_are_replayed() -> None:
     repo_root = Path(__file__).parents[1]
     analysis_header = (HEADER_DIR / "path_template_types.h").read_text(
         encoding="utf-8"
@@ -20959,12 +20959,19 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     matcher_header = (repo_root / "tools/match/include/vapour.h").read_text(
         encoding="utf-8"
     )
+    track_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
     jetpack_scratch = (
         repo_root
         / "tools/match/scratches/initialize_track_jetpack_pickup_runtime/scratch.cpp"
     ).read_text(encoding="utf-8")
     vapour_scratch = (
         repo_root / "tools/match/scratches/update_vapour/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    row_scratch = (
+        repo_root
+        / "tools/match/scratches/initialize_track_row_runtime/scratch.cpp"
     ).read_text(encoding="utf-8")
     binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
@@ -20977,6 +20984,7 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     )
 
     assert "class cRVapour : public RenderableBod" in matcher_header
+    assert "cRVapour();" in matcher_header
     assert "typedef cRVapour Vapour;" in matcher_header
     assert "class Vapour :" not in matcher_header
     assert "virtual void update_vapour" not in matcher_header
@@ -20991,9 +20999,15 @@ def test_vapour_and_track_pickup_base_owners_are_replayed() -> None:
     ):
         assert declaration in analysis_header
 
-    assert "vapour_a.initialize_renderable_bod()" in jetpack_scratch
-    assert "vapour_b.initialize_renderable_bod()" in jetpack_scratch
+    assert "inline cRVapour::cRVapour()" in jetpack_scratch
+    assert "vtable = &g_vapour_vtable;" in jetpack_scratch
+    assert "vapour_a.cRBodPos::cRBodPos()" not in jetpack_scratch
+    assert "vapour_b.cRBodPos::cRBodPos()" not in jetpack_scratch
     assert "RenderableBod* vapour" not in jetpack_scratch
+    assert "cRRowModel();" in track_header
+    assert "inline cRRowModel::cRRowModel()" in row_scratch
+    assert "row_model.cRBodPos::cRBodPos()" not in row_scratch
+    assert "attachment_body.cRBod::cRBod()" not in row_scratch
     assert "object->vertex_count" in vapour_scratch
     assert "owner->" not in vapour_scratch
 

@@ -2,7 +2,7 @@
 /* function: initialize_bod_base @ 0x42f5f0 */
 /* selector: initialize_bod_base */
 
-// Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment. iOS RObject.o names this base constructor `cRBod::cRBod()`.
+// Exact Windows `cRBod::cRBod()` constructor: installs the base callback table and default flags, initializes the white color block, clears position/render state, and increments the global bod count. Android and iOS independently preserve the authored owner and constructor.
 BodBase *__thiscall initialize_bod_base(BodBase *bod)
 {
   tColour *p_color; // edi

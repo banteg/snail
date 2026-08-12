@@ -77,7 +77,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
         int game_input_count =
             sizeof(root->game_inputs) / sizeof(root->game_inputs[0]);
         do {
-            game_input->initialize_bod_base();
+            game_input->cRBod::cRBod();
             game_input->vtable = &g_game_input_callback_table;
             ++game_input;
             --game_input_count;
@@ -91,7 +91,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
             --player_count;
         } while (player_count);
 
-        root->inactive_bod_sentinel.initialize_bod_base();
+        root->inactive_bod_sentinel.cRBod::cRBod();
 
         cRViewport* viewport = &root->viewports[0];
         int viewport_count =
@@ -103,28 +103,28 @@ __forceinline GameRootAllocation::GameRootAllocation()
         } while (viewport_count);
 
         cROverlay* overlay = &root->overlay_0;
-        overlay->initialize_renderable_bod();
+        overlay->cRBodPos::cRBodPos();
         overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
         overlay = &root->overlay_1;
-        overlay->initialize_renderable_bod();
+        overlay->cRBodPos::cRBodPos();
         overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
         overlay = &root->overlay_2;
-        overlay->initialize_renderable_bod();
+        overlay->cRBodPos::cRBodPos();
         overlay->camera.initialize_noop_renderable_bod();
         overlay->vtable = &g_overlay_callback_table;
 
         RenderableBod* passive_renderable = &root->root_noop_renderable;
-        passive_renderable->initialize_renderable_bod();
+        passive_renderable->cRBodPos::cRBodPos();
         ((RuntimeSlot*)((char*)passive_renderable + sizeof(RenderableBod)))
             ->noop_runtime_slot_constructor();
         passive_renderable->vtable = &g_noop_runtime_callback_table;
 
         BorderManager* border_manager = &root->border_manager;
-        border_manager->initialize_bod_base();
+        border_manager->cRBod::cRBod();
         initialize_array_with_constructor(
             (RuntimeSlot*)&border_manager->borders[0],
             sizeof(border_manager->borders[0]),
@@ -135,7 +135,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
         BodBase* bod = &root->root_bod_catalog.universe_hole;
         int bod_count = GAME_ROOT_BOD_COUNT;
         do {
-            bod->initialize_bod_base();
+            bod->cRBod::cRBod();
             ++bod;
             --bod_count;
         } while (bod_count);
@@ -147,16 +147,16 @@ __forceinline GameRootAllocation::GameRootAllocation()
             &RuntimeSlot::initialize_cached_x_mesh_slot);
 
         Backdrop* backdrop = &root->backdrop;
-        backdrop->initialize_bod_base();
+        backdrop->cRBod::cRBod();
         backdrop->primary_world_blend.color.noop_this_constructor();
         backdrop->secondary_world_blend.color.noop_this_constructor();
         backdrop->vtable = &g_backdrop_callback_table;
 
         cRStarManager* star_manager = &root->star_manager;
-        ((BodBase*)star_manager)->initialize_bod_base();
+        ((BodBase*)star_manager)->cRBod::cRBod();
         ((BodBase*)star_manager)->vtable = &g_star_field_callback_table;
 
-        root->root_bod_4f3c8.initialize_bod_base();
+        root->root_bod_4f3c8.cRBod::cRBod();
 
         initialize_array_with_constructor(
             (RuntimeSlot*)&root->logo.letters[0],
@@ -172,7 +172,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
         root->subgame.initialize_runtime_pools_and_path_template_bank();
 
         cRTipManager* tip_manager = &root->tip_manager;
-        tip_manager->initialize_bod_base();
+        tip_manager->cRBod::cRBod();
         tip_manager->vtable = &g_tip_manager_callback_table;
 
         root->vtable = &g_game_level_init_callback_table;

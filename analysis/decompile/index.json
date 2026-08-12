@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 3,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 3,
-  "ida_exported": 3,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,16 +18,12 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "apply_bod_position",
-      "address": "0x42f680"
+      "name": "initialize_bod_base",
+      "address": "0x42f5f0"
     },
     {
-      "name": "initialize_object_constructor_thunk",
-      "address": "0x42f6e0"
-    },
-    {
-      "name": "initialize_object",
-      "address": "0x42f6f0"
+      "name": "initialize_renderable_bod",
+      "address": "0x42f650"
     }
   ],
   "health_check_count": 1158,

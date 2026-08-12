@@ -3,8 +3,8 @@
 `initialize_garbage_hazard` @ 0x408550 is exact and now uses the authored
 `SubGarbage` view instead of a one-off local `GarbageHazardRuntime` shell.
 
-The initializer calls the shared renderable-BOD initializer on the same zero
-offset object, then installs the garbage vtable. This cross-confirms that
+The constructor implicitly initializes inherited `cRBodPos` on the same
+zero-offset object, then installs the garbage vtable. This cross-confirms that
 `SubGarbage` inherits `RenderableBod`, whose zero-offset `BodNode` in turn
 inherits the `ContactTargetObject` prefix. The same object can therefore
 participate in the active/free BOD list and be passed to

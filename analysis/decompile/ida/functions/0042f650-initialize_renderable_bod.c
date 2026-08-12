@@ -2,7 +2,7 @@
 /* function: initialize_renderable_bod @ 0x42f650 */
 /* selector: initialize_renderable_bod */
 
-// Builds the shared renderable bod shell on top of the base bod header, seeding its object-oriented vtable, default render flags, and identity local transform. iOS RObject.o names this positioned-body constructor `cRBodPos::cRBodPos()`.
+// Exact Windows `cRBodPos::cRBodPos()` constructor: invokes `cRBod::cRBod()`, installs the positioned-body callback table and transform flag, and initializes the local matrix to identity. Android and iOS preserve the same authored constructor chain.
 RenderableBod *__thiscall initialize_renderable_bod(RenderableBod *body)
 {
   initialize_bod_base(&body->bod);

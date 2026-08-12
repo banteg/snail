@@ -7,6 +7,5 @@ extern void* g_sub_speed_up_vtable; // off_497314 / data_497314
 
 cRSubSpeedUp::cRSubSpeedUp()
 {
-    initialize_renderable_bod();
     vtable = &g_sub_speed_up_vtable;
 }

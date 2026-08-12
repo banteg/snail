@@ -22,9 +22,8 @@ on the same runtime row shape.
 
 2026-06-18 analysis/BN sync: runtime row `+0xb0` is now named as a
 `BodBase attachment_body` in the analysis headers and BN sync script. The
-`initialize_track_row_runtime` scratch proves that tail by calling
-`initialize_bod_base()` at `this + 0xb0`; the runtime row now embeds that owner
-directly.
+`initialize_track_row_runtime` proves that tail by constructing `cRBod` at
+`this + 0xb0`; the runtime row now embeds that owner directly.
 
 2026-06-21 subgame-header consolidation: the accessor is now declared on
 `cRSubGame` and returns the shared runtime-row pointer directly.

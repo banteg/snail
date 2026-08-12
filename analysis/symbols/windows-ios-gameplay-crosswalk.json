@@ -3213,7 +3213,8 @@
       "source_object": "RObject.o",
       "confidence": "high",
       "android_symbol": "cRBod::cRBod()",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile ports preserve the authored constructor and the same base-state initialization. The natural VC6 constructor definition is exact at 27/27 instructions; its EAX receiver is the standard constructor ABI, not an authored pointer result."
     },
     {
       "address": "0x42f650",
@@ -3222,7 +3223,8 @@
       "source_object": "RObject.o",
       "confidence": "high",
       "android_symbol": "cRBodPos::cRBodPos()",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Android preserves an explicit cRBod constructor edge while iOS inlines the same base initialization. All three ports then install positioned-body state and an identity matrix. The natural VC6 derived constructor is exact at 10/10 instructions."
     },
     {
       "address": "0x42f680",

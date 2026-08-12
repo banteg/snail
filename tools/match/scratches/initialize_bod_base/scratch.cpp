@@ -1,8 +1,8 @@
-// initialize_bod_base @ 0x42f5f0 (thiscall, ret)
+// cRBod::cRBod @ 0x42f5f0
 
 #include "bod_types.h"
 
-cRBod* cRBod::initialize_bod_base()
+cRBod::cRBod()
 {
     color.noop_this_constructor();
     vtable = &g_bod_base_vtable;
@@ -14,5 +14,4 @@ cRBod* cRBod::initialize_bod_base()
     position.x = 0.0f;
     render_arg_1c = 0;
     render_arg_20 = 0.0f;
-    return this;
 }

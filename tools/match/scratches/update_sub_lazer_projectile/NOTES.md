@@ -40,7 +40,7 @@ own inlined removal body.
 2026-06-16 renderable-prefix consolidation: `SubLazerSlot` now exposes the
 same renderable transform rows as the garbage and ring/special-effect runtimes,
 with `position` as `RenderableBod::transform.position` at `+0x68`.
-`initialize_sub_lazer_runtime` calls `initialize_renderable_bod()`, while spawn,
+`cRSubLazer::cRSubLazer()` initializes inherited `cRBodPos`, while spawn,
 update, collision, and the wall emitter all consume the matrix position and
 velocity lanes. The type deliberately still inherits `BodNode`: the first
 `0x10` bytes are also the intrusive list overlay used by spawn/deactivate and

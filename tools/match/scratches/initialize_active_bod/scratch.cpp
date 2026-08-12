@@ -6,7 +6,7 @@ extern void* g_active_bod_vtable; // off_497338 / data_497338
 
 TrackRenderCacheSlot* TrackRenderCacheSlot::initialize_active_bod()
 {
-    initialize_bod_base();
+    this->cRBod::cRBod();
     vtable = &g_active_bod_vtable;
     return this;
 }

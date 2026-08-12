@@ -32,7 +32,7 @@ while the collision-latch store and list-link semantics are recovered.
 shared `BodNode` prefix, aliases the free-list anchor to `BodList`, and exposes
 the renderable/BodBase fields used by salt. This spawn path proves the
 zero-offset live-list overlay and writes the matrix position row at `+0x68`;
-`initialize_salt_hazard_runtime` calls `initialize_renderable_bod()`, and the
+`cRSalt::cRSalt()` initializes inherited `cRBodPos`, and the
 updater drives `color +0x28`. Focused Wibo remains `74.07%`, with `8` masked
 operands OK. Later collision evidence names the `+0x94` byte
 `collision_armed`.

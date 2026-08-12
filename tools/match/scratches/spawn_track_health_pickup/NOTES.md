@@ -17,8 +17,8 @@ Current match:
 Evidence:
 
 - `initialize_track_health_pickup_runtime` now uses this same promoted
-  `TrackHealthPickup` type and calls its inherited `BodBase` initializer
-  directly. That confirms the shared first `0x38` bytes are the real BOD base;
+  `TrackHealthPickup` type and implicitly constructs its inherited `cRBod`.
+  That confirms the shared first `0x38` bytes are the real BOD base;
   this allocator writes its inherited `position` payload.
 - Scans eight health pickup slots at `subgame +0x356000`, stride `0x74`. The
   source keeps the native slot-base arithmetic by viewing the shifted slot base

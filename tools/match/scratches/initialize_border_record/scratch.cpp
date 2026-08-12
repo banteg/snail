@@ -6,7 +6,7 @@ extern void* g_frontend_widget_vtable; // off_497308 / data_497308
 
 BorderRecord* BorderRecord::initialize_border_record()
 {
-    initialize_bod_base();
+    this->cRBod::cRBod();
     color_06c.noop_this_constructor();
     color_1ac.noop_this_constructor();
     color_1bc.noop_this_constructor();

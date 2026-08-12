@@ -8,10 +8,10 @@ extern void* g_golb_noop_body_vtable;  // off_497350 / data_497350
 
 cRSubGolb* cRSubGolb::initialize_golb_shot()
 {
-    initialize_renderable_bod();
-    vapour.initialize_renderable_bod();
+    this->cRBodPos::cRBodPos();
+    vapour.cRBodPos::cRBodPos();
     vapour.vtable = &g_vapour_vtable;
-    tertiary_body.initialize_renderable_bod();
+    tertiary_body.cRBodPos::cRBodPos();
     tertiary_body.vtable = &g_golb_noop_body_vtable;
     vtable = &g_golb_shot_vtable;
     return this;

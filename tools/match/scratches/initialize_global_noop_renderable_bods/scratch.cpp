@@ -12,10 +12,10 @@ extern StartupNoopRenderableBod g_startup_noop_renderable_bods[3]; // data_4b6fb
 
 void initialize_global_noop_renderable_bods()
 {
-    g_startup_noop_renderable_bods[0].initialize_renderable_bod();
+    g_startup_noop_renderable_bods[0].cRBodPos::cRBodPos();
     g_startup_noop_renderable_bods[0].vtable = &g_noop_runtime_callback_table;
-    g_startup_noop_renderable_bods[1].initialize_renderable_bod();
+    g_startup_noop_renderable_bods[1].cRBodPos::cRBodPos();
     g_startup_noop_renderable_bods[1].vtable = &g_noop_runtime_callback_table;
-    g_startup_noop_renderable_bods[2].initialize_renderable_bod();
+    g_startup_noop_renderable_bods[2].cRBodPos::cRBodPos();
     g_startup_noop_renderable_bods[2].vtable = &g_noop_runtime_callback_table;
 }

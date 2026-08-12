@@ -7,6 +7,5 @@ extern void* g_sub_garbage_vtable; // off_497328 / data_497328
 
 cRSubGarbage::cRSubGarbage()
 {
-    initialize_renderable_bod();
     vtable = &g_sub_garbage_vtable;
 }
