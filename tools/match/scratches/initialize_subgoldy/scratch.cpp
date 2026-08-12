@@ -49,7 +49,7 @@ void cRSubGoldy::Init(int player_slot)
     this->presentation.cutscene_roll_step = 0.0166666675f;
     this->slow_commentary_timer = 0.0f;
     this->slow_commentary_step = 0.0166666675f;
-    this->squidge.initialize_squidge();
+    this->squidge.Init();
     this->presentation.invincible_shell.Init();
     this->startup_voice_step = 0.0555555522f;
     this->startup_voice_timer = 0.0555555522f;

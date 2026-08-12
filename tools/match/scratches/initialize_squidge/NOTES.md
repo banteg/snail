@@ -31,3 +31,11 @@ receiver at `Player + 0x4344`, this makes `initialize_squidge` canonical.
 The newly imported mobile ScoreStatsInit bodies also prove that the distinct
 authored score initializer maps to exact Windows helper 0x4403a0, so the old
 compatibility alias can move to its real owner.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRSquidge::Init()` and exports the
+MSVC6 relocation name `?Init@cRSquidge@@QAEXXZ`. Live Windows callsite recovery
+confirms its sole receiver is `cRSubGoldy + 0x4344`; Android and iOS independently
+retain `cRSquidge::Init()`. The source-only promotion preserves the exact 8/8
+instruction match and gives callers the authored API without compatibility glue.

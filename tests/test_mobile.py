@@ -7727,6 +7727,10 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
         "initialize_nuke": "Init",
         "update_nuke": "AI",
         "uninit_nuke": "UnInit",
+        "initialize_squidge": "Init",
+        "start_squidge_y": "StartY",
+        "start_squidge_z": "StartZ",
+        "update_squidge": "AI",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
@@ -7840,6 +7844,96 @@ def test_nuke_lifecycle_uses_authored_method_surface() -> None:
     assert "nuke.Init()" in all_sources
     assert "nuke.AI()" in all_sources
     assert "nuke.UnInit()" in all_sources
+
+
+def test_squidge_uses_authored_method_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/squidge.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "initialize_squidge": {
+            "method": "Init",
+            "symbol": "?Init@cRSquidge@@QAEXXZ",
+            "mobile": "cRSquidge::Init()",
+            "alias": "cRSquidge_Init",
+        },
+        "start_squidge_y": {
+            "method": "StartY",
+            "symbol": "?StartY@cRSquidge@@QAEXM@Z",
+            "mobile": "cRSquidge::StartY(float)",
+            "alias": "cRSquidge_StartY",
+        },
+        "start_squidge_z": {
+            "method": "StartZ",
+            "symbol": "?StartZ@cRSquidge@@QAEXM@Z",
+            "mobile": "cRSquidge::StartZ(float)",
+            "alias": "cRSquidge_StartZ",
+        },
+        "update_squidge": {
+            "method": "AI",
+            "symbol": "?AI@cRSquidge@@QAEXXZ",
+            "mobile": "cRSquidge::AI()",
+            "alias": "cRSquidge_AI",
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "SubGame.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["ios_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSquidge::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    for declaration in (
+        "void Init();",
+        "void StartY(float amount);",
+        "void StartZ(float amount);",
+        "void AI();",
+    ):
+        assert declaration in header
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+    )
+    for stale_method in (
+        ".initialize_squidge(",
+        ".start_squidge_y(",
+        ".start_squidge_z(",
+        ".update_squidge(",
+    ):
+        assert stale_method not in all_sources
+    assert "squidge.Init()" in all_sources
+    assert "squidge.StartY(" in all_sources
+    assert "squidge.StartZ(" in all_sources
+    assert "squidge.AI()" in all_sources
 
 
 def test_screen_controller_types_use_authored_primary_owners() -> None:

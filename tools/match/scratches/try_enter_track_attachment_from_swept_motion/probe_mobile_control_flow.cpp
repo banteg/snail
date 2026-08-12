@@ -47,7 +47,7 @@ void cRPath::try_enter_track_attachment_from_swept_motion(
                         probe.Rotate(hit->inverse_matrix);
                         if (probe.y <= 0.001f) {
                             PLAYER->attachment_exit_pending = 0;
-                            PLAYER->squidge.start_squidge_y(PLAYER->velocity.y);
+                            PLAYER->squidge.StartY(PLAYER->velocity.y);
                             PLAYER->follow_state.active = 1;
                             PLAYER->follow_state.template_record = this;
                             PLAYER->follow_state.source_cell = cell;

@@ -3959,16 +3959,25 @@
     {
       "address": "0x444980",
       "name": "start_squidge_y",
+      "aliases": [
+        "cRSquidge_StartY"
+      ],
       "description": "Authored `cRSquidge::StartY(float)`: resets the Y spring phase and seeds its velocity on the inline `cRSubGoldy + 0x4344` Squidge owner."
     },
     {
       "address": "0x4449a0",
       "name": "start_squidge_z",
+      "aliases": [
+        "cRSquidge_StartZ"
+      ],
       "description": "Authored `cRSquidge::StartZ(float)`: seeds the Z spring phase and velocity on the inline `cRSubGoldy + 0x4344` Squidge owner."
     },
     {
       "address": "0x4449c0",
       "name": "update_squidge",
+      "aliases": [
+        "cRSquidge_AI"
+      ],
       "description": "Authored `cRSquidge::AI()`: advances and damps the inline owner's independent Y/Z spring oscillators and publishes their output lanes."
     },
     {

@@ -4,10 +4,10 @@
 
 class cRSquidge {
 public:
-    void initialize_squidge(); // @ 0x444960, cRSquidge::Init
-    void start_squidge_y(float amount); // @ 0x444980, cRSquidge::StartY
-    void start_squidge_z(float amount); // @ 0x4449a0, cRSquidge::StartZ
-    void update_squidge(); // @ 0x4449c0, cRSquidge::AI
+    void Init();               // @ 0x444960
+    void StartY(float amount); // @ 0x444980
+    void StartZ(float amount); // @ 0x4449a0
+    void AI();                 // @ 0x4449c0
 
     float y_output; // +0x00
     float y_velocity; // +0x04

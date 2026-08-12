@@ -59,7 +59,7 @@ seed:
     // The follow child is embedded at player+0x384; velocity and exit state
     // are adjacent cRSubGoldy fields, not cRPathFollowGoldy tail fields.
     PLAYER->attachment_exit_pending = 0;
-    PLAYER->squidge.start_squidge_y(PLAYER->velocity.y);
+    PLAYER->squidge.StartY(PLAYER->velocity.y);
     PLAYER->follow_state.active = 1;
     PLAYER->follow_state.template_record = this;
     PLAYER->follow_state.source_cell = cell;

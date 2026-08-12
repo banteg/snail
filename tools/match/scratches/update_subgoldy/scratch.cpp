@@ -108,7 +108,7 @@ void cRSubGoldy::AI()
             + presentation.object->distort.z_wave;
     }
 
-    squidge.update_squidge();
+    squidge.AI();
     presentation.object->distort.y_squash = squidge.y_output;
     presentation.object->distort.xyz_scale = squidge.z_output;
     if (!game->level_mode)
@@ -512,7 +512,7 @@ steering_stored:
                     trampoline_bounce_active = 0;
                     if (velocity.y < -0.029999999f) {
                         float squidge_amount = velocity.y - 0.029999999f;
-                        squidge.start_squidge_y(squidge_amount);
+                        squidge.StartY(squidge_amount);
                     }
                     if (velocity.y <= 0.0f) {
                         transform.position.y = 0.49000001f;
@@ -543,7 +543,7 @@ steering_stored:
                 if (((game->runtime_flags & SUBGAME_RUNTIME_FLAG_ALLOW_FALLING) == 0
                         || (g_cheat_state.flags & 2) != 0)
                     && transform.position.y < 0.49000001f) {
-                    squidge.start_squidge_y(velocity.y);
+                    squidge.StartY(velocity.y);
                     trampoline_bounce_active = 0;
                     velocity.y = 0.0f;
                     attachment_exit_pending = 0;
@@ -631,7 +631,7 @@ steering_stored:
             if (trampoline_cell->tile_id == SUBLOC_TILE_TRAMPOLINE
                 && trampoline_cell->position.y + 0.49000001f > transform.position.y
                 && trampoline_cell->position.y - 0.49000001f < transform.position.y) {
-                squidge.start_squidge_y(velocity.y);
+                squidge.StartY(velocity.y);
                 velocity.y = game->subgame_rate * 0.30000001f;
                 transform.position.y = trampoline_cell->position.y + 0.49000001f;
                 attachment_exit_pending = 0;
@@ -659,7 +659,7 @@ steering_stored:
             transform.position.z = (float)(int)(transform.position.z + 0.49000001f) - 0.5f;
             if (squidge.z_output == 0.0f)
                 g_sound_effect_manager.Play(47);
-            squidge.start_squidge_z(-0.33000001f);
+            squidge.StartZ(-0.33000001f);
             float advanced = barrier_hold_step + barrier_hold_progress;
             barrier_hold_progress = advanced;
             if (advanced > 1.0f) {

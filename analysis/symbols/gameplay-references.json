@@ -2967,6 +2967,42 @@
       "description": "Exact Windows cRSubGame::CalcRealPos(tVector*, float*) entry; Windows pointer ABI remains authoritative."
     },
     {
+      "address": "0x444960",
+      "name": "initialize_squidge",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSquidge@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSquidge::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x444980",
+      "name": "start_squidge_y",
+      "kind": "function",
+      "aliases": [
+        "?StartY@cRSquidge@@QAEXM@Z"
+      ],
+      "description": "Exact Windows cRSquidge::StartY(float) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4449a0",
+      "name": "start_squidge_z",
+      "kind": "function",
+      "aliases": [
+        "?StartZ@cRSquidge@@QAEXM@Z"
+      ],
+      "description": "Exact Windows cRSquidge::StartZ(float) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4449c0",
+      "name": "update_squidge",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSquidge@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSquidge::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x444ce0",
       "name": "update_invincible_shell_jump_table",
       "kind": "jump_table",

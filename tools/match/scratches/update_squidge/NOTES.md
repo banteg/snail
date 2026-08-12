@@ -34,3 +34,11 @@ The four-function `cRSquidge` family now exports through the canonical
 initializer and all Y/Z spring fields; IDA retires the port-side
 `SquidgeState` compatibility name and the raw `sub_444960(_DWORD *this)` view.
 The tracked owner checks cover the initializer, both start methods, and AI.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRSquidge::AI()` and exports the
+MSVC6 relocation name `?AI@cRSquidge@@QAEXXZ`. Its sole live Windows caller
+passes `cRSubGoldy + 0x4344`, then immediately consumes the Y and Z output lanes.
+Android and iOS independently retain `cRSquidge::AI()`. The promotion preserves
+the exact 80/80 instruction match and all 14 clean masked operands.
