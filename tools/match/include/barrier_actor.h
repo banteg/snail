@@ -7,7 +7,7 @@
 
 class cRBarrier : public BodBase {
 public:
-    void update_barrier_ai(); // @ 0x440f80, cRBarrier::AI
+    void AI(); // @ 0x440f80
 
     cRSubGoldy* owner_player; // +0x38, borrowed live-position source
 };

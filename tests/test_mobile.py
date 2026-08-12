@@ -7741,6 +7741,7 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
         "show_times_up_message": "Init",
         "update_progress_bar": "AI",
         "update_banner": "AI",
+        "update_barrier_ai": "AI",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
@@ -8295,6 +8296,58 @@ def test_banner_uses_authored_ai_surface() -> None:
         if "build" not in path.parts
     )
     assert ".update_banner(" not in all_sources
+
+
+def test_barrier_uses_authored_ai_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"] == "update_barrier_ai"
+    )
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in manifest["functions"]
+        if function["name"] == "update_barrier_ai"
+    )
+    symbol = "?AI@cRBarrier@@QAEXXZ"
+    source = (scratch_root / "update_barrier_ai/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    config = (scratch_root / "update_barrier_ai/scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    header = (repo_root / "tools/match/include/barrier_actor.h").read_text(
+        encoding="utf-8"
+    )
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "SubGame.o"
+    assert entry["android_symbol"] == "cRBarrier::AI()"
+    assert entry["ios_symbol"] == "cRBarrier::AI()"
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+    assert function["aliases"] == ["cRBarrier_AI"]
+    assert "void cRBarrier::AI()" in source
+    assert f"SYMBOL={symbol}" in config
+    assert symbol in references
+    assert "void AI();" in header
+    assert "g_barrier_actor_callback_table" in references
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    assert ".update_barrier_ai(" not in all_sources
 
 
 def test_screen_controller_types_use_authored_primary_owners() -> None:

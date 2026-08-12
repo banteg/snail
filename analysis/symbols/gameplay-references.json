@@ -2875,6 +2875,15 @@
       "description": "Exact Windows cRSubGame::BlinkRandInit() entry with its authored decorated relocation name."
     },
     {
+      "address": "0x440f80",
+      "name": "update_barrier_ai",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRBarrier@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBarrier::AI() entry installed through the authored Barrier callback table."
+    },
+    {
       "address": "0x441b70",
       "name": "zero_timer_counters",
       "kind": "function",

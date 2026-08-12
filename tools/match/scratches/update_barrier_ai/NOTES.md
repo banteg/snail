@@ -20,3 +20,11 @@ reverts; focused matching remains exact at 5/5 instructions.
 sole slot in `g_barrier_actor_callback_table` at `0x4972fc`. The natural `void`
 member remains exact at 5/5 instructions. EAX only retains `owner_player` from
 the final field read; it is not an authored result.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact callback as `cRBarrier::AI()` and exports
+`?AI@cRBarrier@@QAEXXZ`. Live Windows references confirm that it is the sole
+entry in `g_barrier_actor_callback_table`, installed on the exact embedded
+`cRSubGame::barrier` owner. Android and iOS independently retain the same symbol
+and body. Matching stays exact at 5/5 instructions.

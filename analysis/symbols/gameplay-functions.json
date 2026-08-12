@@ -3623,6 +3623,9 @@
     {
       "address": "0x440f80",
       "name": "update_barrier_ai",
+      "aliases": [
+        "cRBarrier_AI"
+      ],
       "description": "Exact void cRBarrier::AI() callback for the embedded 0x3c-byte BarrierActor at cRSubGame +0xff7bc4. It borrows cRSubGoldy* at +0x38, follows the player's live z position, and is installed in g_barrier_actor_callback_table; the residual EAX value is not an authored return."
     },
     {
