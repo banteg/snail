@@ -6605,6 +6605,35 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
     assert "cRGolbRocket::" not in folded
 
 
+def test_tutorial_uses_authored_primary_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "tutorial.h").read_text(encoding="utf-8")
+    subgame = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRTutorial" in header
+    assert "typedef cRTutorial Tutorial;" in header
+    assert "sizeof(cRTutorial)" in header
+    assert "cRTutorial tutorial" in subgame
+    for function in (
+        "initialize_tutorial",
+        "uninit_tutorial",
+        "update_tutorial",
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRTutorial::{function}" in source
+
+    constructor = (
+        scratch_root / "construct_game_runtime" / "scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert 'sizeof(cRTutorial)' in constructor
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

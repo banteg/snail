@@ -174,7 +174,7 @@ public:
     SegmentCache segment_cache; // +0x5c, ends at +0xa854
     unsigned char track_state_latch; // +0xa854, row-event / movement-emitter handoff
     char unknown_00a855[0xa858 - 0xa855];
-    Tutorial tutorial; // +0xa858, authored cRTutorial owner through +0xa874
+    cRTutorial tutorial; // +0xa858, authored cRTutorial owner through +0xa874
     // Embedded level-definition owner. Its exact extent accounts for the
     // authored segment slots and all parsed level metadata through parcel_quota.
     cRSubTracks level_definition; // +0xa874, ends at +0x1b01ec

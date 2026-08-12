@@ -26,7 +26,7 @@ extern void* g_game_input_callback_table;       // data_4972f0
     debug_report_stub("Size of cRGame %i\n", sizeof(cRGame)); \
     debug_report_stub("Size of cRSubGame %i\n", sizeof(cRSubGame)); \
     debug_report_stub("   Size of cRSegmentCache %i\n", sizeof(SegmentCache)); \
-    debug_report_stub("   Size of cRTutorial\t%i\n", sizeof(Tutorial)); \
+    debug_report_stub("   Size of cRTutorial\t%i\n", sizeof(cRTutorial)); \
     debug_report_stub("   Size of cRSubTracks %i\n", sizeof(SubTracks)); \
     debug_report_stub("   Size of cRSubSpeedUp %i\n", sizeof(cRSubSpeedUp)); \
     debug_report_stub("   Size of cRJetPack %i\n", sizeof(cRJetPack)); \

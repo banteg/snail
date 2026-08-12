@@ -4,7 +4,7 @@
 
 class cRSubGame;
 
-class Tutorial {
+class cRTutorial {
 public:
     void initialize_tutorial(); // @ 0x448da0, cRTutorial::Init
     void uninit_tutorial(); // @ 0x448dd0, cRTutorial::UnInit
@@ -16,7 +16,8 @@ public:
     char unknown_10[0x1c - 0x10];
 };
 
+typedef cRTutorial Tutorial;
 typedef char Tutorial_must_be_0x1c[
-    (sizeof(Tutorial) == 0x1c) ? 1 : -1];
+    (sizeof(cRTutorial) == 0x1c) ? 1 : -1];
 
 #endif
