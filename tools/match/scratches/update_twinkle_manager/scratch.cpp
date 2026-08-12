@@ -2,7 +2,7 @@
 
 #include "twinkle_manager.h"
 
-void cRTwinkleManager::update_twinkle_manager()
+void cRTwinkleManager::AI()
 {
     int result = active_state;
     --result;
@@ -11,7 +11,7 @@ void cRTwinkleManager::update_twinkle_manager()
         if (twinkle_count > 0) {
             cRTwinkle* twinkle = twinkles;
             do {
-                twinkle->update_twinkle();
+                twinkle->AI();
                 ++index;
                 ++twinkle;
             } while (index < twinkle_count);

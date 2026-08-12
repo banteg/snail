@@ -9,8 +9,8 @@
 
 class cRToolTip {
 public:
-    void reset_tooltip(); // @ 0x403be0
-    void update_tooltip(); // @ 0x403c20
+    void ReSet(); // @ 0x403be0
+    void AI(); // @ 0x403c20
 
     int field_00; // +0x00
     int state; // +0x04

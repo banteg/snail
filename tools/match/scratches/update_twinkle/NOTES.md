@@ -1,38 +1,15 @@
-# `update_twinkle` notes
+# update_twinkle @ 0x404080
 
-- Twinkle records are 0x30 bytes, matching `update_twinkle_manager`.
-- The borrowed owner is the containing `FrontendWidget`/authored `cRBorder`:
-  `widget_flags` at +0x1a0, layout position at +0x238/+0x23c, and layout size
-  at +0x248/+0x24c.
-- Twinkles advance only while the owner is highlighted and does not carry
-  `FRONTEND_WIDGET_FLAG_DISABLED`, matching the interaction update's dimmed,
-  non-interactive disabled state.
-- The function is modeled as `void`; native exits leave state-dependent scratch
-  registers in `eax`.
-- 2026-06-20 ABI cleanup: the `Twinkle` record now lives in
-  `include/twinkle.h` with the exact 0x30 layout, `void update_twinkle()`, and
-  the member `draw_twinkle()` call shape needed by this scratch. Focused matcher
-  stayed exact at 181/181 instructions with 48 clean masked operands.
+Stable scratch identity for the authored `void cRTwinkle::AI()` member.
+`cRTwinkleManager::AI()` passes each live inline stride-0x30 record in `ECX`,
+and both internal draw callsites preserve that receiver for
+`cRTwinkle::Draw()`.
 
-- 2026-07-14 draw-owner closure: the exact callee now defines
-  `Twinkle::draw_twinkle()` directly. Android independently retains
-  `cRTwinkle::Draw()`, confirming that the unused receiver is still an authored
-  member rather than a free temporary-color helper.
+The method wraps the angle, advances the delay/fade state machine, samples the
+owner's widget flags and layout rectangle, and randomizes the next position,
+size, and spin. Android `cRTwinkleManager::Init(cRBorder*)` proves that the
+record's pointer at +0x2c borrows the containing authored `cRBorder`; Android
+and iOS both preserve the exact `cRTwinkle::AI()` body.
 
-## 2026-07-14 border owner recovery
-
-The scratch-local `TwinkleOwner` shadow is retired. Its four observed field
-groups already coincide exactly with the recovered 0x724-byte
-`FrontendWidget`, and Android supplies the missing nominal evidence:
-`cRTwinkleManager::Init(cRBorder*)` stores its `cRBorder*` argument into every
-0x30-byte twinkle at `+0x2c`. `Twinkle::owner_widget` is therefore a borrowed
-widget pointer, not an independent owner class. The typed member accesses keep
-the Windows function exact at 181/181 instructions.
-
-## 2026-07-28 dual-mobile twinkle ranges
-
-Android and iOS `cRTwinkle::AI()` both preserve the initialization ranges as
-`signed_unit * pi` for angle and `signed_unit * 12.0f + 25.0f` for size. The
-Windows scratch now expresses those authored factors instead of their folded
-`0.0001917476f` and `0.00073242188f` products. VC6 still emits the exact
-181/181 body with all 48 operands clean.
+The Windows source selects `?AI@cRTwinkle@@QAEXXZ` and matches exactly at
+181/181 instructions with all 48 masked operands clean.

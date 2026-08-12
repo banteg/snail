@@ -9483,6 +9483,13 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
     scratch_root = repo_root / "tools/match/scratches"
+    method_names = {
+        "reset_tooltip": "ReSet",
+        "update_tooltip": "AI",
+        "update_twinkle_manager": "AI",
+        "draw_twinkle": "Draw",
+        "update_twinkle": "AI",
+    }
     owners = {
         "frontend_widget.h": (
             "cRBorder",
@@ -9544,7 +9551,8 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
             source = (
                 scratch_root / function / "scratch.cpp"
             ).read_text(encoding="utf-8")
-            assert f"{authored}::{function}" in source
+            method = method_names.get(function, function)
+            assert f"{authored}::{method}" in source
 
     aliases = (include_root / "border_fwd.h").read_text(encoding="utf-8")
     assert "typedef cRBorder FrontendWidget;" in aliases
@@ -9574,6 +9582,81 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
     assert "cRBorder* delayed_widget" in manager
     game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
     assert "cRBorderManager border_manager" in game_root
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    owned_methods = {
+        "reset_tooltip": ("cRToolTip", "ReSet", "tooltip_state.h", False),
+        "update_tooltip": ("cRToolTip", "AI", "tooltip_state.h", True),
+        "update_twinkle_manager": (
+            "cRTwinkleManager",
+            "AI",
+            "twinkle_manager.h",
+            False,
+        ),
+        "draw_twinkle": ("cRTwinkle", "Draw", "twinkle.h", False),
+        "update_twinkle": ("cRTwinkle", "AI", "twinkle.h", True),
+    }
+    for function, (owner, method, header_name, has_ios) in (
+        owned_methods.items()
+    ):
+        entry = crosswalk[function]
+        mobile_symbol = f"{owner}::{method}()"
+        object_symbol = f"?{method}@{owner}@@QAEXXZ"
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Border.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if has_ios:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [
+            f"{owner}_{method}"
+        ]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        header = (include_root / header_name).read_text(encoding="utf-8")
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert f"void {method}();" in header
+
+    frontend_update = (
+        scratch_root / "update_frontend_widget_interaction/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "tooltip.ReSet();" in frontend_update
+    assert "twinkle_manager.AI();" in frontend_update
+    assert "tooltip.AI();" in frontend_update
+    assert ".reset_tooltip(" not in frontend_update
+    assert ".update_tooltip(" not in frontend_update
+    assert ".update_twinkle_manager(" not in frontend_update
+    manager_update = (
+        scratch_root / "update_twinkle_manager/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    twinkle_update = (
+        scratch_root / "update_twinkle/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    hide_init = (scratch_root / "hide_border_init/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "twinkle->AI();" in manager_update
+    assert "Draw();" in twinkle_update
+    assert "tooltip.ReSet();" in hide_init
 
 
 def test_snail_presentation_uses_authored_primary_owner() -> None:

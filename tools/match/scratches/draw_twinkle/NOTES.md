@@ -1,6 +1,10 @@
-# Twinkle::draw_twinkle @ 0x404070
+# draw_twinkle @ 0x404070
 
-Exact five-instruction `cRTwinkle::Draw()` body. Windows update callsites carry
-the live `Twinkle*` in `ECX`, and Android independently preserves both the
-authored method symbol and the same body: it constructs a temporary color while
-otherwise leaving the receiver unused.
+Stable scratch identity for the authored `void cRTwinkle::Draw()` member.
+Both Windows callsites preserve the live `cRTwinkle*` receiver in `ECX`, while
+Android independently retains the symbol and same body. The function only
+constructs a temporary color because its receiver-dependent rendering was
+compiled away.
+
+The Windows source selects `?Draw@cRTwinkle@@QAEXXZ` and matches exactly at
+5/5 instructions with its masked operand clean.

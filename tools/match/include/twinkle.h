@@ -18,8 +18,8 @@ public:
     float size; // +0x28
     cRBorder* owner_widget; // +0x2c, borrowed authored cRBorder
 
-    void draw_twinkle();
-    void update_twinkle(); // @ 0x404080
+    void Draw(); // @ 0x404070
+    void AI(); // @ 0x404080
 };
 
 typedef cRTwinkle Twinkle;

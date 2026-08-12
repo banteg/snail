@@ -4,7 +4,7 @@
 
 int next_math_random_value();
 
-void cRTwinkle::update_twinkle()
+void cRTwinkle::AI()
 {
     float wrapped_angle = angle + angle_step;
     angle = wrapped_angle;
@@ -88,13 +88,13 @@ void cRTwinkle::update_twinkle()
             target_alpha = 0.0f;
             state = 4;
         }
-        draw_twinkle();
+        Draw();
         break;
     }
 
     case 4: {
         alpha = (target_alpha - alpha) * 0.100000001f + alpha;
-        draw_twinkle();
+        Draw();
         float remaining = target_alpha - alpha;
         if (remaining < 0.0f) {
             remaining = -remaining;

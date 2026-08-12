@@ -5,7 +5,7 @@
 
 class cRTwinkleManager {
 public:
-    void update_twinkle_manager(); // @ 0x404030, Android cRTwinkleManager::AI()
+    void AI(); // @ 0x404030
 
     cRTwinkle twinkles[5]; // +0x00, five stride-0x30 records
     int active_state;    // +0xf0

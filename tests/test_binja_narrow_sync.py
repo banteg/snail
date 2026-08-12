@@ -19738,8 +19738,8 @@ def test_twinkle_array_ownership_and_void_abis_are_persisted() -> None:
         assert address_name in ida_frontend_sync
         assert address_name in ida_path_sync
 
-    assert "void update_twinkle_manager();" in matcher_manager_header
-    assert "int update_twinkle_manager();" not in matcher_manager_header
+    assert "void AI();" in matcher_manager_header
+    assert "update_twinkle_manager();" not in matcher_manager_header
 
 
 def test_path_sample_tail_and_follow_gate_ownership_stay_aligned() -> None:

@@ -11,5 +11,5 @@ void cRBorder::hide_border_init()
     result |= FRONTEND_WIDGET_FLAG_HIDDEN;
     hide_blend = 0.0f;
     widget_flags = result;
-    tooltip.reset_tooltip();
+    tooltip.ReSet();
 }

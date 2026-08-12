@@ -1,15 +1,11 @@
 # reset_tooltip @ 0x403be0
 
-The exact embedded tooltip reset releases its borrowed widget through the
-root-owned `GameRoot::border_manager`, clears the handle, and returns to state
-1. The root-owner spelling remains exact at 16/16 instructions with two clean
-operands.
+Stable scratch identity for the authored `void cRToolTip::ReSet()` member.
+All seven Windows callsites load `ECX = cRBorder + 0x28c`, proving that the
+receiver is the embedded 0x40-byte tooltip controller. State 3 releases the
+manager-owned tooltip widget and falls through to the state-2 idle reset;
+other states return unchanged.
 
-## 2026-07-15 authored void switch and persisted ABI
-
-Android preserves this owner as `cRToolTip::ReSet()` with the same state-2
-idle reset and state-3 manager release. All Windows continuations discard EAX.
-Expressing those two states as the natural authored switch recovers the real
-void contract while remaining exact at 16/16 instructions with both operands
-clean. The rollback-safe Binary Ninja replay and IDA now carry the typed
-`FrontendWidgetTooltip*` member ABI directly.
+Android preserves `cRToolTip::ReSet()` and the same state machine. The Windows
+source selects `?ReSet@cRToolTip@@QAEXXZ` and matches exactly at 16/16
+instructions with both masked operands clean.

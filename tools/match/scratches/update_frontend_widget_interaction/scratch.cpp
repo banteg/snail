@@ -32,13 +32,13 @@ void cRBorder::update_frontend_widget_interaction()
     unsigned int flags = widget_flags;
     if (flags == 0) {
         g_game->active_bod_list.remove_bod(this);
-        tooltip.reset_tooltip();
+        tooltip.ReSet();
         return;
     }
     if ((flags & FRONTEND_WIDGET_FLAG_KILL_PENDING) != 0) {
         widget_flags = flags & ~FRONTEND_WIDGET_FLAG_KILL_PENDING;
         g_game->active_bod_list.remove_bod(this);
-        tooltip.reset_tooltip();
+        tooltip.ReSet();
         widget_flags = 0;
         return;
     }
@@ -47,7 +47,7 @@ void cRBorder::update_frontend_widget_interaction()
         teardown_progress = teardown_progress_step + teardown_progress;
         if (teardown_progress > 1.0f) {
             g_game->active_bod_list.remove_bod(this);
-            tooltip.reset_tooltip();
+            tooltip.ReSet();
             widget_flags = 0;
             return;
         }
@@ -76,7 +76,7 @@ void cRBorder::update_frontend_widget_interaction()
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SHORTCUT_KEY_ENABLED) != 0
         && g_game->players[0].mouse_cursor.IsActive()
         && read_pressed_text_input_key_code() == shortcut_key_code) {
-        tooltip.reset_tooltip();
+        tooltip.ReSet();
         if ((widget_flags & FRONTEND_WIDGET_FLAG_IMMEDIATE_ACTION) != 0)
             widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         else
@@ -126,7 +126,7 @@ void cRBorder::update_frontend_widget_interaction()
             if ((widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) == 0)
                 g_sound_effect_manager.Play(8);
             if ((tooltip.mode_flags & 0x20) == 0)
-                tooltip.reset_tooltip();
+                tooltip.ReSet();
         }
     }
 
@@ -143,7 +143,7 @@ void cRBorder::update_frontend_widget_interaction()
                     .queue_frontend_widget_flag_after_delay(
                         this, FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED);
             g_sound_effect_manager.Play(8);
-            tooltip.reset_tooltip();
+            tooltip.ReSet();
         }
     }
 
@@ -175,8 +175,8 @@ update_after_input:
             g_game->border_manager.activate_all_borders();
     }
 
-    twinkle_manager.update_twinkle_manager();
-    tooltip.update_tooltip();
+    twinkle_manager.AI();
+    tooltip.AI();
     char render_hot_text = (char)((widget_flags >> 8) & 1);
     layout_frontend_widget();
 

@@ -30,6 +30,51 @@
       "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
     },
     {
+      "address": "0x403be0",
+      "name": "reset_tooltip",
+      "kind": "function",
+      "aliases": [
+        "?ReSet@cRToolTip@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRToolTip::ReSet() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x403c20",
+      "name": "update_tooltip",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRToolTip@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRToolTip::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x404030",
+      "name": "update_twinkle_manager",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRTwinkleManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTwinkleManager::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x404070",
+      "name": "draw_twinkle",
+      "kind": "function",
+      "aliases": [
+        "?Draw@cRTwinkle@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTwinkle::Draw() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x404080",
+      "name": "update_twinkle",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRTwinkle@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTwinkle::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x404740",
       "name": "initialize_cheat",
       "kind": "function",

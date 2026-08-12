@@ -4,7 +4,7 @@
 #include "game_root.h"
 
 
-void cRToolTip::reset_tooltip()
+void cRToolTip::ReSet()
 {
     switch (state) {
     case 3:

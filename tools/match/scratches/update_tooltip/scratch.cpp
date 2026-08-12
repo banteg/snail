@@ -5,7 +5,7 @@
 
 int report_errorf(char* format, ...);
 
-void cRToolTip::update_tooltip()
+void cRToolTip::AI()
 {
     tColour color;
     tColour color_above;
