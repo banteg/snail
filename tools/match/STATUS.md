@@ -243,7 +243,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | copy_active_input_controller_state | 0x4320f0 | 198 | 52/52 | 100.00% | 52/52 | 16 ok |  | boundary |
 | ✅ | set_input_controller_pointer_authored_xy | 0x4323a0 | 152 | 40/40 | 100.00% | 40/40 | 11 ok |  | boundary |
 | ✅ | read_pressed_text_input_key_code | 0x432440 | 915 | 338/338 | 100.00% | 338/338 | 55 ok |  | boundary |
-| ✅ | register_font_texture_sheet_wrapper | 0x432d20 | 29 | 11/11 | 100.00% | 11/11 | 1 ok |  | core |
+| ✅ | register_font_texture_sheet_wrapper | 0x432d20 | 29 | 11/11 | 100.00% | 11/11 | 1 ok |  | boundary |
 | ✅ | reset_registered_sound_sample_count | 0x432d40 | 11 | 2/2 | 100.00% | 2/2 | 1 ok |  | boundary |
 | ✅ | cache_music_file | 0x432d50 | 118 | 42/42 | 100.00% | 42/42 | 11 ok |  | boundary |
 | ✅ | play_registered_warning_sample | 0x432dd0 | 16 | 5/5 | 100.00% | 5/5 | 2 ok |  | boundary |
@@ -252,7 +252,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | play_voice_backend | 0x432e80 | 136 | 42/42 | 100.00% | 42/42 | 11 ok |  | boundary |
 | ✅ | register_sound_sample | 0x432f10 | 171 | 51/51 | 100.00% | 51/51 | 19 ok |  | boundary |
 | ✅ | find_registered_sound_sample_id_by_name | 0x432fc0 | 79 | 34/34 | 100.00% | 34/34 | 6 ok |  | boundary |
-| ✅ | xor_decode_buffer_with_index | 0x433010 | 29 | 15/15 | 100.00% | 15/15 | - |  | core |
+| ✅ | xor_decode_buffer_with_index | 0x433010 | 29 | 15/15 | 100.00% | 15/15 | - |  | boundary |
 | ✅ | get_authored_view_width | 0x433030 | 7 | 2/2 | 100.00% | 2/2 | 1 ok |  | core |
 | ✅ | get_authored_view_height | 0x433040 | 7 | 2/2 | 100.00% | 2/2 | 1 ok |  | core |
 | ✅ | add_track_cache_vertex | 0x433830 | 299 | 103/103 | 100.00% | 103/103 | 7 ok |  | core |
@@ -681,7 +681,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | remove_track_render_cache_bods | 0x433f20 | 156 | 59/58 | 71.79% | 5/58 | 5 ok |  | core |
 | 🚧 | build_track_fringe_objects | 0x434be0 | 1428 | 492/495 | 60.39% | 3/495 | 4 unaudited, 49 ok |  | core |
 | 🚧 | merge_track_tile_runs | 0x435180 | 873 | 284/276 | 67.50% | 0/276 | 12 ok |  | core |
-| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1253/1245 | 75.74% | 76/1245 | 4 unaudited, 163 ok |  | core |
+| 🚧 | populate_runtime_track_cells_from_segments | 0x435eb0 | 5042 | 1254/1245 | 75.79% | 76/1245 | 4 unaudited, 163 ok |  | core |
 | 🚧 | update_subgame | 0x438b90 | 3748 | 1036/1033 | 79.94% | 9/1033 | 129 ok |  | core |
 | 🚧 | remove_subgame_bods | 0x440910 | 1644 | 505/501 | 71.77% | 6/501 | 70 ok |  | core |
 | 🚧 | set_snail_weapon | 0x445920 | 940 | 245/248 | 73.02% | 1/248 | 24 ok |  | core |
@@ -818,7 +818,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
 | 📚 | initialize_translation_matrix | 0x44fd90 | 92 | 23/34 | 7.02% | 1/34 | - |  | third-party |
-| 📚 | build_perspective_projection_matrix | 0x450314 | 6085 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 | third-party |
+| 📚 | build_perspective_projection_matrix | 0x450314 | 148 | 38/54 | 26.09% | 2/54 | 1 ok | msvc6.5 /O2 /Oy- /G5 /W3 | third-party |
 | 📚 | build_camera_view_matrix | 0x451ad9 | 328 | 119/130 | 28.11% | 0/130 | 2 ok |  | third-party |
 
 ## Type Consolidation
