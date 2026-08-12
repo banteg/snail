@@ -50,7 +50,7 @@ void cRGame::render_game_frame()
     camera_order[3] = -1;
     camera_order[CAMERA_LAST_INDEX] = -1;
 
-    Viewport* slots = viewports;
+    cRViewport* slots = viewports;
     {
         for (int active_index = 0;
              active_index < CAMERA_SLOT_COUNT;

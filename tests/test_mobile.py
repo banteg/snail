@@ -6415,6 +6415,49 @@ def test_game_root_uses_authored_primary_owner() -> None:
     assert "GameRoot::" not in constructor
 
 
+def test_root_presentation_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
+    viewport = (include_root / "viewport.h").read_text(encoding="utf-8")
+
+    assert "class cRPlayer : public RenderableBod" in game_root
+    assert "typedef cRPlayer GamePlayer;" in game_root
+    assert "sizeof(cRPlayer)" in game_root
+    assert "cRPlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]" in game_root
+    assert "cRCamera camera" in game_root
+    for function in ("initialize_game_player", "update_frontend_state_machine"):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRPlayer::{function}" in source
+
+    assert "class cRCamera : public RenderableBod" in viewport
+    assert "typedef cRCamera RenderCamera;" in viewport
+    assert "sizeof(cRCamera)" in viewport
+    assert "class cRViewport" in viewport
+    assert "typedef cRViewport Viewport;" in viewport
+    assert "sizeof(cRViewport)" in viewport
+    assert "cRViewport viewports[5]" in game_root
+    for function in (
+        "initialize_render_camera_slot",
+        "attach_render_camera_source",
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRViewport::{function}" in source
+    assert "cRCamera* camera_" in (
+        scratch_root / "attach_render_camera_source" / "scratch.cpp"
+    ).read_text(encoding="utf-8")
+
+    folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "cRCamera::" not in folded
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

@@ -7,7 +7,7 @@
 extern char aIntroIntroTxt[];
 extern char aIntroCreditsTx[];
 
-void GamePlayer::update_frontend_state_machine()
+void cRPlayer::update_frontend_state_machine()
 {
     redispatch_requested = 1;
     do {

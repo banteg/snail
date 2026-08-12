@@ -4,7 +4,7 @@
 
 extern void* g_game_player_callback_table;  // data_4972f4
 
-GamePlayer* GamePlayer::initialize_game_player()
+cRPlayer* cRPlayer::initialize_game_player()
 {
     initialize_renderable_bod();
     camera.initialize_renderable_bod();

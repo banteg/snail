@@ -11,7 +11,7 @@ public:
 
     // Viewport slots 0, 2, and 3 borrow the camera subobjects from the three
     // root-owned cROverlay instances. The parent transform drives its camera.
-    RenderCamera camera; // +0x80, ends at +0x148
+    cRCamera camera; // +0x80, ends at +0x148
     float rotation_step; // +0x148
 };
 

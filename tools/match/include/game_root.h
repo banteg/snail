@@ -34,16 +34,16 @@ enum {
 // Windows cRPlayer owns the front-end state machine and an embedded cRCamera.
 // GameRoot constructs two consecutive 0x1f8-byte players at +0x124; viewport
 // viewports only borrow their camera subobjects at player +0xa0.
-class GamePlayer : public RenderableBod {
+class cRPlayer : public RenderableBod {
 public:
-    GamePlayer* initialize_game_player(); // @ 0x408000, cRPlayer constructor helper
+    cRPlayer* initialize_game_player(); // @ 0x408000, cRPlayer constructor helper
     void update_frontend_state_machine(); // @ 0x4107d0, cRPlayer::AI()
 
     char player_name[SUB_SOLUTION_PLAYER_NAME_SIZE]; // +0x80
     int frontend_state; // +0x94
     int saved_frontend_state; // +0x98
     char unknown_09c[0xa0 - 0x9c];
-    RenderCamera camera; // +0xa0, owned cRCamera subobject
+    cRCamera camera; // +0xa0, owned cRCamera subobject
     GameInput* game_input; // +0x168, borrows the matching root input owner
     MouseCursorState mouse_cursor; // +0x16c, root player 0 cursor state
     cRFlash frontend_overlay; // +0x184, root player 0 overlay
@@ -64,8 +64,9 @@ public:
     char unknown_1f4[0x1f8 - 0x1f4];
 };
 
+typedef cRPlayer GamePlayer;
 typedef char GamePlayer_must_be_0x1f8[
-    (sizeof(GamePlayer) == 0x1f8) ? 1 : -1];
+    (sizeof(cRPlayer) == 0x1f8) ? 1 : -1];
 
 class cRGame {
 public:
@@ -84,7 +85,7 @@ public:
     int fixed_update_count;      // +0x3c
     int player_count; // +0x40, controls the two-player initialization loop
     GameInput game_inputs[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x44, paired input owners
-    GamePlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x124, owned cRPlayer array
+    cRPlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x124, owned cRPlayer array
     int unknown_000514; // +0x514, startup-only dword storage
     float fixed_update_accumulator; // +0x518, consumed in unit fixed steps
     int frame_counter; // +0x51c, creation timestamp for front-end borders
@@ -98,7 +99,7 @@ public:
     };
     BodBase inactive_bod_sentinel; // +0x570, constructed root free-list sentinel
     BodList active_bod_list; // +0x5a8, root-owned active/free intrusive BOD anchor
-    Viewport viewports[5]; // +0x5b4, owned fixed cRViewport array
+    cRViewport viewports[5]; // +0x5b4, owned fixed cRViewport array
     cROverlay overlay_0; // +0x67c, lends camera at +0x6fc to viewport 0
     cROverlay overlay_1; // +0x7c8, lends camera at +0x848 to viewport 2
     cROverlay overlay_2; // +0x914, lends camera at +0x994 to viewport 3

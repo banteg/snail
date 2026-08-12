@@ -2,7 +2,7 @@
 
 #include "viewport.h"
 
-Viewport* Viewport::initialize_render_camera_slot()
+cRViewport* cRViewport::initialize_render_camera_slot()
 {
     flags = 0;
     viewport_x = 0.0f;

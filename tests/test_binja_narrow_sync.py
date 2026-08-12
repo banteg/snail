@@ -6132,7 +6132,8 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
     assert "class RenderableBod" not in bod_header
     assert "typedef cRBod BodBase;" in bod_forward_header
     assert "typedef cRBodPos RenderableBod;" in bod_forward_header
-    assert "typedef RenderCamera cRCamera;" in viewport_header
+    assert "class cRCamera : public RenderableBod" in viewport_header
+    assert "typedef cRCamera RenderCamera;" in viewport_header
     assert "typedef GolbRocket cRGolbRocket;" in golb_header
     assert "GolbRocket tertiary_body;" in golb_header
     player_fwd_header = (
@@ -6600,11 +6601,14 @@ def test_viewport_owner_and_borrowed_camera_are_replayed_cross_decompiler() -> N
         encoding="utf-8"
     )
 
-    assert "class Viewport" in matcher_header
-    assert "RenderCamera* camera;" in matcher_header
+    assert "class cRViewport" in matcher_header
+    assert "typedef cRViewport Viewport;" in matcher_header
+    assert "class cRCamera : public RenderableBod" in matcher_header
+    assert "typedef cRCamera RenderCamera;" in matcher_header
+    assert "cRCamera* camera;" in matcher_header
     assert "int unknown_00;" in matcher_header
     assert "float unknown_1c;" in matcher_header
-    assert "Viewport viewports[5];" in game_root_header
+    assert "cRViewport viewports[5];" in game_root_header
 
     for header in analysis_headers:
         assert "typedef struct Viewport {" in header
@@ -12838,7 +12842,7 @@ def test_game_player_initializer_stride_view_is_borrowed_and_fail_closed() -> No
 
     assert "GamePlayerInitStrideView" not in matcher_header
     assert (
-        "GamePlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x124"
+        "cRPlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x124"
         in matcher_header
     )
     for header in headers:

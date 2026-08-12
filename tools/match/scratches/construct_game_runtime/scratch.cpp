@@ -83,7 +83,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
             --game_input_count;
         } while (game_input_count);
 
-        GamePlayer* player = &root->players[0];
+        cRPlayer* player = &root->players[0];
         int player_count = sizeof(root->players) / sizeof(root->players[0]);
         do {
             player->initialize_game_player();
@@ -93,7 +93,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
 
         root->inactive_bod_sentinel.initialize_bod_base();
 
-        Viewport* viewport = &root->viewports[0];
+        cRViewport* viewport = &root->viewports[0];
         int viewport_count =
             sizeof(root->viewports) / sizeof(root->viewports[0]);
         do {
