@@ -5,6 +5,6 @@
 
 void cRWarning::StopSample()
 {
-    int handle = g_sound_effect_manager.play_warning_sample_backend(0x32);
-    g_sound_effect_manager.stop_warning_sample_handle(handle);
+    int handle = g_sound_effect_manager.PlayLooped(0x32);
+    g_sound_effect_manager.StopLooped(handle);
 }

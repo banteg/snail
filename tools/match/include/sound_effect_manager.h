@@ -26,8 +26,8 @@ public:
     void play_sound_effect_scaled(int sound_id, float gain); // @ 0x44de00
     void play_sound_effect_at_position(
         int sound_id, Vector3& position); // @ 0x44dce0
-    int play_warning_sample_backend(int sample_id);
-    void stop_warning_sample_handle(int handle);
+    int PlayLooped(int sample_id); // @ 0x44de20
+    void StopLooped(int handle);   // @ 0x44de30
 };
 
 typedef cRSound SoundEffectManager;

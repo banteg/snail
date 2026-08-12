@@ -8037,13 +8037,104 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
         "play_sound_effect_at_position",
         "play_sound_effect",
         "play_sound_effect_scaled",
-        "play_warning_sample_backend",
-        "stop_warning_sample_handle",
     ):
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
         assert f"cRSound::{function}" in source
+
+    authored_loop_methods = {
+        "play_warning_sample_backend": "PlayLooped",
+        "stop_warning_sample_handle": "StopLooped",
+    }
+    for function, authored_name in authored_loop_methods.items():
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSound::{authored_name}" in source
+        assert f"cRSound::{function}" not in source
+        assert f"{authored_name}(int" in header
+
+    warning = (
+        scratch_root / "stop_warning_sample" / "scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "g_sound_effect_manager.PlayLooped(0x32)" in warning
+    assert "g_sound_effect_manager.StopLooped(handle)" in warning
+
+
+def test_mobile_sound_loop_methods_recover_authored_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    expected = {
+        "play_warning_sample_backend": {
+            "ios_symbol": "cRSound::PlayLooped(int)",
+            "aliases": ["cRSound_PlayLooped", "PlayLooped"],
+            "symbol": "?PlayLooped@cRSound@@QAEHH@Z",
+        },
+        "stop_warning_sample_handle": {
+            "ios_symbol": "cRSound::StopLooped(int)",
+            "android_symbol": "cRSound::StopLooped(int)",
+            "aliases": ["cRSound_StopLooped", "StopLooped"],
+            "symbol": "?StopLooped@cRSound@@QAEXH@Z",
+        },
+    }
+
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    ios_index = load_json(DEFAULT_IOS_CORPUS_ROOT / "index.json")
+    android_index = load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json")
+    scratch_root = repo_root / "tools/match/scratches"
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "RSound.o"
+        assert entry["ios_symbol"] == recovered["ios_symbol"]
+        assert entry["ios_body_count"] == 1
+        assert entry.get("android_symbol") == recovered.get(
+            "android_symbol"
+        )
+        if "android_symbol" in recovered:
+            assert entry["android_body_count"] == 1
+
+        function = functions[windows_name]
+        assert function["aliases"] == recovered["aliases"]
+        assert "`cRSound::" in function["description"]
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={recovered['symbol']}" in config
+
+        ios = resolve_corpus_symbol(ios_index, recovered["ios_symbol"])
+        assert ios is not None
+        ios_body = corpus_function_path(
+            DEFAULT_IOS_CORPUS_ROOT, ios
+        ).read_text(encoding="utf-8")
+        assert "RShellSound" in ios_body
+
+    stop = resolve_corpus_symbol(
+        android_index, "cRSound::StopLooped(int)"
+    )
+    assert stop is not None
+    stop_body = corpus_function_path(
+        DEFAULT_ANDROID_CORPUS_ROOT, stop
+    ).read_text(encoding="utf-8")
+    assert "RShellSoundStopLooped(param_1);" in stop_body
+
+    damage_gauge = (
+        DEFAULT_IOS_CORPUS_ROOT
+        / "functions/00024904-_ZN13cRDamageGuage2AIEv.c"
+    ).read_text(encoding="utf-8")
+    assert "iVar2 = cRSound::PlayLooped" in damage_gauge
+    assert "cRSound::StopLooped((cRSound *)puVar1,iVar2);" in damage_gauge
 
 
 def test_input_ok_overlay_uses_authored_primary_owner() -> None:

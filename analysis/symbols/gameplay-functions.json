@@ -5275,14 +5275,22 @@
     {
       "address": "0x44de20",
       "name": "play_warning_sample_backend",
+      "aliases": [
+        "cRSound_PlayLooped",
+        "PlayLooped"
+      ],
       "port_scope": "boundary",
-      "description": "Exact SoundEffectManager warning wrapper that plays one sample id through the shared registered-sample backend and returns the live sample handle."
+      "description": "Exact Windows `cRSound::PlayLooped(int)` member: forwards one registered warning sample id through `RShellSoundPlayLooped` and returns the live playback handle. iOS preserves the exact authored method and consumes its returned handle immediately in cRDamageGuage::AI, despite the decompiler's stale void prototype."
     },
     {
       "address": "0x44de30",
       "name": "stop_warning_sample_handle",
+      "aliases": [
+        "cRSound_StopLooped",
+        "StopLooped"
+      ],
       "port_scope": "boundary",
-      "description": "Exact SoundEffectManager warning wrapper that stops one live warning-sample handle through the shared registered-sample backend."
+      "description": "Exact void Windows `cRSound::StopLooped(int)` member: forwards one live warning-sample handle through `RShellSoundStopLooped`. Android and iOS preserve the exact authored method and handle contract."
     },
     {
       "address": "0x44de40",

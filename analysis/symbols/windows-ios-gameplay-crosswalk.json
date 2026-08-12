@@ -4251,6 +4251,26 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x44de20",
+      "windows_name": "play_warning_sample_backend",
+      "ios_symbol": "cRSound::PlayLooped(int)",
+      "source_object": "RSound.o",
+      "confidence": "high",
+      "notes": "Windows and iOS preserve the exact cRSound member around RShellSoundPlayLooped. Both pass one registered warning id and return the live playback handle consumed immediately by the damage-gauge warning lane; the iOS decompiler's void prototype is contradicted by its own cRDamageGuage::AI callsite assigning R0.",
+      "ios_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
+      "address": "0x44de30",
+      "windows_name": "stop_warning_sample_handle",
+      "ios_symbol": "cRSound::StopLooped(int)",
+      "android_symbol": "cRSound::StopLooped(int)",
+      "source_object": "RSound.o",
+      "confidence": "high",
+      "notes": "All three ports preserve the exact void cRSound member and forward one live playback handle through RShellSoundStopLooped. Windows and iOS pair it directly with the handle returned by PlayLooped; Android retains the same authored wrapper over its JNI backend.",
+      "ios_symbol_evidence": "exact-demangled-symbol",
+      "android_symbol_evidence": "exact-demangled-symbol"
+    },
+    {
       "address": "0x44de90",
       "windows_name": "initialize_sprite",
       "android_symbol": "cRSprite::Init()",
