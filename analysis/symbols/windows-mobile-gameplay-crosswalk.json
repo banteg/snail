@@ -2042,6 +2042,8 @@
       "windows_name": "initialize_global_trivial_object_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRObject::GLVBO()",
@@ -2112,6 +2114,8 @@
       "windows_name": "initialize_global_trivial_object",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRObject::GLVBO()",
@@ -2322,6 +2326,8 @@
       "windows_name": "initialize_main_loop_timing_state",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRSpriteManager::GetTextureRef(int)",

@@ -6261,6 +6261,83 @@ def test_mobile_game_level_init_recovers_authored_virtual_owner() -> None:
     ) in ida_sync
 
 
+def test_windows_mac_startup_run_recovers_core_helper_ownership() -> None:
+    repo_root = Path(__file__).parents[1]
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    functions = {
+        entry["name"]: entry for entry in manifest["functions"]
+    }
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+
+    recovered = (
+        "initialize_global_trivial_object_thunk",
+        "initialize_global_trivial_object",
+        "initialize_main_loop_timing_state",
+    )
+    for name in recovered:
+        function = functions[name]
+        entry = entries[name]
+        assert function["source_object"] == "Mac.o"
+        assert (
+            function["source_object_evidence"]
+            == "windows-contiguous-source-run"
+        )
+        assert entry["status"] == "unverified"
+        assert entry["source_object"] == "Mac.o"
+        assert (
+            entry["source_object_evidence"]
+            == "windows-contiguous-source-run"
+        )
+        assert "android_symbol" not in entry
+        assert "ios_symbol" not in entry
+
+    config_thunk = functions["initialize_default_runtime_config_thunk"]
+    config_body = functions["initialize_default_runtime_config"]
+    assert config_thunk["address"] == "0x406c10"
+    assert config_body["address"] == "0x406c20"
+    assert config_thunk["source_object"] == "Mac.o"
+    assert config_body["source_object"] == "Mac.o"
+    assert config_thunk["source_object_evidence"] == (
+        "ios-global-source-object"
+    )
+    assert config_body["source_object_evidence"] == (
+        "ios-global-source-object"
+    )
+    assert functions["initialize_global_trivial_object_thunk"][
+        "address"
+    ] == "0x406d10"
+    assert functions["initialize_global_trivial_object"]["address"] == (
+        "0x406d20"
+    )
+    assert functions["initialize_main_loop_timing_state"]["address"] == (
+        "0x406da0"
+    )
+
+    ios_names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    mac_symbols = dict(ios_names["source_objects"])["Mac.o"]
+    assert "gConfig" in mac_symbols
+
+    trivial_notes = (
+        repo_root
+        / "tools/match/scratches/initialize_global_trivial_object/NOTES.md"
+    ).read_text(encoding="utf-8")
+    timing_notes = (
+        repo_root
+        / "tools/match/scratches/initialize_main_loop_timing_state/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "second dynamic initializer" in trivial_notes
+    assert "does not invent a class" in trivial_notes
+    assert "normal helper in the Windows Mac startup run" in timing_notes
+    assert "different timer architecture" in timing_notes
+
+
 def test_mobile_bod_list_tail_splice_recovers_game_source_object() -> None:
     repo_root = Path(__file__).parents[1]
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

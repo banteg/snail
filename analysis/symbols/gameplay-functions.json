@@ -369,12 +369,16 @@
     {
       "address": "0x406d10",
       "name": "initialize_global_trivial_object_thunk",
-      "description": "CRT initializer-table thunk for the otherwise-unreferenced 16-byte global object at 0x4df848."
+      "description": "CRT initializer-table thunk for the otherwise-unreferenced 16-byte global object at 0x4df848.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x406d20",
       "name": "initialize_global_trivial_object",
-      "description": "Invokes the folded no-op default constructor for the otherwise-unreferenced 16-byte global object at 0x4df848; no surviving consumer distinguishes its original class."
+      "description": "Invokes the folded no-op default constructor for the otherwise-unreferenced 16-byte global object at 0x4df848; no surviving consumer distinguishes its original class.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x406d30",
@@ -390,7 +394,9 @@
     {
       "address": "0x406da0",
       "name": "initialize_main_loop_timing_state",
-      "description": "Seeds the mean update-step count, current-frame update-step count, and rendered-frame count to 1.0 before the active frame loop begins."
+      "description": "Seeds the mean update-step count, current-frame update-step count, and rendered-frame count to 1.0 before the active frame loop begins.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x406dc0",

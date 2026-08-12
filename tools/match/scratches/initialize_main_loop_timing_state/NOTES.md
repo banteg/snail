@@ -11,3 +11,17 @@ directly. Keeping the two routines separate recovers the native tail-call
 ownership and excludes linker/compiler alignment padding from both extents.
 The three assignments compile to the native 4/4 instructions exactly, with all
 3 masked operands resolved.
+
+## 2026-08-12 Mac source-unit closure
+
+This is a normal helper in the Windows Mac startup run, not a fourth CRT
+initializer. The initializer table contains `0x406bc0`, `0x406c10`, and
+`0x406d10`; the sole edge into this aligned body is instead the tail call from
+`initialize_main_loop_display_state`, and all three globals are consumed only
+by the immediately following WinMain-style frame loop.
+
+The run begins at the directly sourced `Mac.o` `gConfig` initializer at
+`0x406c10` and continues through the window/main-loop block into the separately
+recorded Mac constructor-support run. This establishes `Mac.o` provenance for
+the timing helper while deliberately making no mobile whole-function mapping:
+the iOS app delegate owns a different timer architecture.
