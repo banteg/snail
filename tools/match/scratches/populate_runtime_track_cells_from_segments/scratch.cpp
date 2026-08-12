@@ -44,7 +44,7 @@ void cRSubGame::BuildLevel()
     int mode = level_mode;
     switch (mode) {
     case 0:
-        current_high_score_record.initialize_high_score_entry(
+        current_high_score_record.ReSet(
             runtime_build_seed,
             level_mode_arg,
             level_arg_tail,
@@ -53,7 +53,7 @@ void cRSubGame::BuildLevel()
             level_mode_arg);
         break;
     case 1:
-        current_high_score_record.initialize_high_score_entry(
+        current_high_score_record.ReSet(
             runtime_build_seed,
             level_mode_arg,
             level_arg_tail,
@@ -62,7 +62,7 @@ void cRSubGame::BuildLevel()
             level_mode_arg);
         break;
     case 4:
-        current_high_score_record.initialize_high_score_entry(
+        current_high_score_record.ReSet(
             runtime_build_seed,
             level_mode_arg,
             level_arg_tail,

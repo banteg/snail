@@ -150,3 +150,12 @@ only an equivalent owner-base materialization choice; it does not conceal a
 record field or branch. Recovery is `semantic-complete` with compiler residue.
 The historical mutation ledger remains evidence about that residue, not a stop
 condition for future ownership work.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain `cRSubHighScore::AddTimeTrial(int,
+bool)`. The live Windows caller proves the wider explicit
+`cRSubSolution*, int, unsigned char` ABI and ignores the result. The source is
+now `AddTimeTrial` with exact VC6 relocation
+`?AddTimeTrial@cRSubHighScore@@QAEXPAVcRSubSolution@@HE@Z`; the honest 49/49
+semantic-complete compiler residual is unchanged.

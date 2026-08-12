@@ -225,6 +225,69 @@
       "description": "Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member."
     },
     {
+      "address": "0x417540",
+      "name": "initialize_high_score_tables",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSubHighScore@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubHighScore::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4176a0",
+      "name": "add_arcade_high_score",
+      "kind": "function",
+      "aliases": [
+        "?AddArcade@cRSubHighScore@@QAEXPAVcRSubSolution@@H@Z"
+      ],
+      "description": "Exact Windows cRSubHighScore::AddArcade(cRSubSolution*, int) entry; mobile preserves the owner and method name with a narrower current-solution ABI."
+    },
+    {
+      "address": "0x417780",
+      "name": "add_survival_high_score",
+      "kind": "function",
+      "aliases": [
+        "?AddSurvival@cRSubHighScore@@QAEXPAVcRSubSolution@@@Z"
+      ],
+      "description": "Exact Windows cRSubHighScore::AddSurvival(cRSubSolution*) entry; mobile preserves the owner and method name while sourcing the current solution internally."
+    },
+    {
+      "address": "0x4178b0",
+      "name": "add_time_trial_high_score",
+      "kind": "function",
+      "aliases": [
+        "?AddTimeTrial@cRSubHighScore@@QAEXPAVcRSubSolution@@HE@Z"
+      ],
+      "description": "Windows cRSubHighScore::AddTimeTrial(cRSubSolution*, int, unsigned char) entry with its exact decorated relocation name and retained compiler residual."
+    },
+    {
+      "address": "0x417940",
+      "name": "save_high_scores_and_config",
+      "kind": "function",
+      "aliases": [
+        "?MiniSave@cRSubHighScore@@QAEXE@Z"
+      ],
+      "description": "Exact Windows cRSubHighScore::MiniSave(unsigned char) entry; mobile preserves the owner and method name with an int mask ABI."
+    },
+    {
+      "address": "0x417a70",
+      "name": "initialize_high_score_entry",
+      "kind": "function",
+      "aliases": [
+        "?ReSet@cRSubSolution@@QAEXHHHIHH@Z"
+      ],
+      "description": "Exact Windows cRSubSolution::ReSet entry retaining the raw integer lane used for the mobile float argument."
+    },
+    {
+      "address": "0x417af0",
+      "name": "mini_delete_high_score_entry",
+      "kind": "function",
+      "aliases": [
+        "?MiniDelete@cRSubHighScore@@QAEXH@Z"
+      ],
+      "description": "Windows cRSubHighScore::MiniDelete(int) entry with its exact decorated relocation name and retained compiler residual."
+    },
+    {
       "address": "0x4182e0",
       "name": "reset_landscape_manager",
       "kind": "function",
@@ -2981,6 +3044,24 @@
       ],
       "size": "0x14",
       "description": "Compiler-emitted state switch jump table used by update_slug_hazard_ai."
+    },
+    {
+      "address": "0x440020",
+      "name": "deserialize_compact_high_score_record",
+      "kind": "function",
+      "aliases": [
+        "?Load@cRSubSolution@@QAEEPAUcRSubSolutionHeader@@@Z"
+      ],
+      "description": "Exact Windows cRSubSolution::Load(cRSubSolutionHeader*) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x440170",
+      "name": "serialize_compact_high_score_record",
+      "kind": "function",
+      "aliases": [
+        "?Save@cRSubSolution@@QAEHPAUcRSubSolutionHeader@@@Z"
+      ],
+      "description": "Exact Windows cRSubSolution::Save(cRSubSolutionHeader*) entry; mobile preserves the method name with an unsigned-char buffer ABI."
     },
     {
       "address": "0x4402c0",

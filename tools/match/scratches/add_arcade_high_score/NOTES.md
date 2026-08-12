@@ -73,3 +73,11 @@ and entry bank). The owner promotion is byte-neutral at the exact 70/70 anchor.
   `record` instead of raw `+0x8/+0x48` offsets.
 - Matching source is unchanged. The function remains honestly byte-exact at
   70/70 instructions with four clean masked operands.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain `cRSubHighScore::AddArcade(int)`. The
+live Windows caller proves its platform-specific explicit `cRSubSolution*`
+argument and ignores the result. The source is now `AddArcade` with exact VC6
+relocation `?AddArcade@cRSubHighScore@@QAEXPAVcRSubSolution@@H@Z`; the body
+remains 70/70.

@@ -4,7 +4,7 @@
 #include "sub_high_score.h"
 
 
-void cRSubHighScore::add_survival_high_score(cRSubSolution* record)
+void cRSubHighScore::AddSurvival(cRSubSolution* record)
 {
     int shift_rank;
     SubHighScore* bank = this;

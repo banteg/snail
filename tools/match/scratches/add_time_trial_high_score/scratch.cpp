@@ -3,7 +3,7 @@
 #include "sub_high_score.h"
 #include <stddef.h>
 
-void cRSubHighScore::add_time_trial_high_score(
+void cRSubHighScore::AddTimeTrial(
     cRSubSolution* record,
     int route_index,
     unsigned char route_active)

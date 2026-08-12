@@ -48,3 +48,11 @@ Recovered layout corrections:
 - The exact three-word clearing loop initializes `lateral_x`, `delta_z`, and
   the complete 16-bit `flags` owner. It independently agrees with the compact
   loader's widened store and keeps the exact 40/40 result unchanged.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain `cRSubSolution::ReSet(int, int, float,
+int, int, int)`. Live Windows calls on embedded 0x1fac0-byte records prove the
+same boundary while carrying the float lane as raw integer bits. The source is
+now `ReSet` with exact VC6 relocation
+`?ReSet@cRSubSolution@@QAEXHHHIHH@Z`; matching remains 40/40.

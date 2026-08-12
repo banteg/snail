@@ -192,3 +192,11 @@ hand-carried cursor. Both `while` and equivalent `do` spellings compile
 identically. The clearer guarded `while` form is retained, promoting
 `add_survival_high_score` to proof grade at **100.00%**, `84/84`
 instructions, full prefix, and all six masked operands clean.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain `cRSubHighScore::AddSurvival()`. The
+live Windows caller proves its platform-specific explicit `cRSubSolution*`
+argument and ignores the result. The source is now `AddSurvival` with exact
+VC6 relocation `?AddSurvival@cRSubHighScore@@QAEXPAVcRSubSolution@@@Z`; the
+body remains 84/84.

@@ -81,3 +81,11 @@ matching native register ownership while keeping the `int16[]`, `int16[]`,
   while Android `cRSubSolution::Save` independently persists the same lane.
 - This is a field-only clarification. The serializer remains exact at 109/109
   instructions with its masked operand clean.
+
+## 2026-08-12 authored method surface
+
+Android retains `cRSubSolution::Save(unsigned char*)`; the live Windows
+serializer calls the same owner method with `cRSubSolutionHeader*` and adds
+its integer result to the output byte count. The source is now `Save` with
+exact VC6 relocation `?Save@cRSubSolution@@QAEHPAUcRSubSolutionHeader@@@Z`;
+matching remains 109/109.

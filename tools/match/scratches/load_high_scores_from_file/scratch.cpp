@@ -19,15 +19,15 @@ void cRSubHighScore::load_high_scores_from_file(char* file_name)
             switch (compact->bank_selector) {
             case 0:
                 postal_records[compact->entry_index]
-                    .deserialize_compact_high_score_record(compact);
+                    .Load(compact);
                 break;
             case 1:
                 survival_records[compact->entry_index]
-                    .deserialize_compact_high_score_record(compact);
+                    .Load(compact);
                 break;
             case 2:
                 time_trial_route_records[compact->entry_index]
-                    .deserialize_compact_high_score_record(compact);
+                    .Load(compact);
                 break;
             }
             cursor += compact->byte_count;

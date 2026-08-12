@@ -8980,6 +8980,182 @@ def test_options_uses_authored_lifecycle_surface() -> None:
     assert "options.AI()" in all_sources
 
 
+def test_high_score_storage_uses_authored_method_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entries = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions = {
+        function["name"]: function
+        for function in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    expected = {
+        "initialize_high_score_tables": {
+            "owner": "cRSubHighScore",
+            "method": "Init",
+            "symbol": "?Init@cRSubHighScore@@QAEXXZ",
+            "mobile": "cRSubHighScore::Init()",
+            "alias": "cRSubHighScore_Init",
+            "ios": True,
+        },
+        "add_arcade_high_score": {
+            "owner": "cRSubHighScore",
+            "method": "AddArcade",
+            "symbol": (
+                "?AddArcade@cRSubHighScore@@"
+                "QAEXPAVcRSubSolution@@H@Z"
+            ),
+            "mobile": "cRSubHighScore::AddArcade(int)",
+            "alias": "cRSubHighScore_AddArcade",
+            "ios": True,
+        },
+        "add_survival_high_score": {
+            "owner": "cRSubHighScore",
+            "method": "AddSurvival",
+            "symbol": (
+                "?AddSurvival@cRSubHighScore@@"
+                "QAEXPAVcRSubSolution@@@Z"
+            ),
+            "mobile": "cRSubHighScore::AddSurvival()",
+            "alias": "cRSubHighScore_AddSurvival",
+            "ios": True,
+        },
+        "add_time_trial_high_score": {
+            "owner": "cRSubHighScore",
+            "method": "AddTimeTrial",
+            "symbol": (
+                "?AddTimeTrial@cRSubHighScore@@"
+                "QAEXPAVcRSubSolution@@HE@Z"
+            ),
+            "mobile": "cRSubHighScore::AddTimeTrial(int, bool)",
+            "alias": "cRSubHighScore_AddTimeTrial",
+            "ios": True,
+        },
+        "save_high_scores_and_config": {
+            "owner": "cRSubHighScore",
+            "method": "MiniSave",
+            "symbol": "?MiniSave@cRSubHighScore@@QAEXE@Z",
+            "mobile": "cRSubHighScore::MiniSave(int)",
+            "alias": "cRSubHighScore_MiniSave",
+            "ios": True,
+        },
+        "mini_delete_high_score_entry": {
+            "owner": "cRSubHighScore",
+            "method": "MiniDelete",
+            "symbol": "?MiniDelete@cRSubHighScore@@QAEXH@Z",
+            "mobile": "cRSubHighScore::MiniDelete(int)",
+            "alias": "cRSubHighScore_MiniDelete",
+            "ios": True,
+        },
+        "initialize_high_score_entry": {
+            "owner": "cRSubSolution",
+            "method": "ReSet",
+            "symbol": "?ReSet@cRSubSolution@@QAEXHHHIHH@Z",
+            "mobile": (
+                "cRSubSolution::ReSet(int, int, float, int, int, int)"
+            ),
+            "alias": "cRSubSolution_ReSet",
+            "ios": True,
+        },
+        "deserialize_compact_high_score_record": {
+            "owner": "cRSubSolution",
+            "method": "Load",
+            "symbol": (
+                "?Load@cRSubSolution@@"
+                "QAEEPAUcRSubSolutionHeader@@@Z"
+            ),
+            "mobile": "cRSubSolution::Load(cRSubSolutionHeader*)",
+            "alias": "cRSubSolution_Load",
+            "ios": False,
+        },
+        "serialize_compact_high_score_record": {
+            "owner": "cRSubSolution",
+            "method": "Save",
+            "symbol": (
+                "?Save@cRSubSolution@@"
+                "QAEHPAUcRSubSolutionHeader@@@Z"
+            ),
+            "mobile": "cRSubSolution::Save(unsigned char*)",
+            "alias": "cRSubSolution_Save",
+            "ios": False,
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "HighScore.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        if recovered["ios"]:
+            assert entry["ios_symbol"] == recovered["mobile"]
+            assert entry["ios_body_count"] == 1
+        else:
+            assert "ios_symbol" not in entry
+            assert "ios_body_count" not in entry
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert (
+            f"{recovered['owner']}::{recovered['method']}" in source
+        )
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    loader = entries["load_high_scores_from_file"]
+    assert loader["status"] == "unverified"
+    assert loader["source_object"] == "HighScore.o"
+    assert "aliases" not in functions["load_high_scores_from_file"]
+    loader_header = (
+        repo_root / "tools/match/include/sub_high_score.h"
+    ).read_text(encoding="utf-8")
+    assert "void load_high_scores_from_file(char* file_name);" in loader_header
+    loader_config = (
+        scratch_root / "load_high_scores_from_file/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert "SYMBOL=" not in loader_config
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".initialize_high_score_tables(",
+        ".add_arcade_high_score(",
+        ".add_survival_high_score(",
+        ".add_time_trial_high_score(",
+        ".save_high_scores_and_config(",
+        ".mini_delete_high_score_entry(",
+        ".initialize_high_score_entry(",
+        ".deserialize_compact_high_score_record(",
+        ".serialize_compact_high_score_record(",
+    ):
+        assert stale_method not in all_sources
+    assert "sub_high_score.Init()" in all_sources
+    assert "sub_high_score.AddArcade(" in all_sources
+    assert "sub_high_score.AddSurvival(" in all_sources
+    assert "sub_high_score.AddTimeTrial(" in all_sources
+    assert "sub_high_score.MiniSave(" in all_sources
+    assert "sub_high_score.MiniDelete(" in all_sources
+    assert "current_high_score_record.ReSet(" in all_sources
+    assert ".Load(compact)" in all_sources
+    assert "record->Save(" in all_sources
+
+
 def test_screen_controller_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
@@ -9094,6 +9270,15 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         "destroy_completion_screen": "UnInit",
         "initialize_exit_prompt": "Init",
         "update_completion_screen": "AI",
+        "initialize_high_score_tables": "Init",
+        "add_arcade_high_score": "AddArcade",
+        "add_survival_high_score": "AddSurvival",
+        "add_time_trial_high_score": "AddTimeTrial",
+        "mini_delete_high_score_entry": "MiniDelete",
+        "save_high_scores_and_config": "MiniSave",
+        "initialize_high_score_entry": "ReSet",
+        "deserialize_compact_high_score_record": "Load",
+        "serialize_compact_high_score_record": "Save",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")

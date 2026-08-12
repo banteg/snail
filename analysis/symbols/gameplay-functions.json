@@ -1600,31 +1600,49 @@
     {
       "address": "0x4176a0",
       "name": "add_arcade_high_score",
+      "aliases": [
+        "cRSubHighScore_AddArcade"
+      ],
       "description": "Void `SubHighScore` member that attempts to insert one completed postal or arcade run into the ordered top-10 bank, then arms the high-score entry screen when the run places. Its sole `complete_subgame` caller consumes no result; the no-place rank and inserted-path root pointer left in EAX are unrelated residues. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddArcade(int)`."
     },
     {
       "address": "0x417780",
       "name": "add_survival_high_score",
+      "aliases": [
+        "cRSubHighScore_AddSurvival"
+      ],
       "description": "Void `SubHighScore` member that attempts to insert one completed challenge or survival run into the ordered top-10 bank, mirrors the pending entry into the challenge bank overlay, and arms the high-score entry screen when the run places. Its sole `complete_subgame` caller consumes no result; the no-place rank and inserted-path root pointer left in EAX are unrelated residues. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddSurvival()`."
     },
     {
       "address": "0x4178b0",
       "name": "add_time_trial_high_score",
+      "aliases": [
+        "cRSubHighScore_AddTimeTrial"
+      ],
       "description": "Records one per-route time-trial result into the completion bank, replacing the stored entry only when the new time beats the existing route record. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddTimeTrial(int, bool)`."
     },
     {
       "address": "0x417940",
       "name": "save_high_scores_and_config",
+      "aliases": [
+        "cRSubHighScore_MiniSave"
+      ],
       "description": "Void `cRSubHighScore::MiniSave(int)`: serializes the owner\u2019s active postal, survival, and time-trial cRSubSolution entries into ScoreA.dat, ScoreB.dat, and ScoreC.dat according to the save mask, then writes the shared SnailMail.cfg blob. All five Windows callers discard EAX; the final `save_config_file` result is incidental tail residue."
     },
     {
       "address": "0x417a70",
       "name": "initialize_high_score_entry",
+      "aliases": [
+        "cRSubSolution_ReSet"
+      ],
       "description": "Resets one embedded cRSubSolution replay/high-score entry, seeds its score-mode metadata, copies the current player name, and clears all 21,600 run samples. Cross-port symbols identify this exact owner method as `cRSubSolution::ReSet(int,int,float,int,int,int)`."
     },
     {
       "address": "0x417af0",
       "name": "mini_delete_high_score_entry",
+      "aliases": [
+        "cRSubHighScore_MiniDelete"
+      ],
       "description": "Windows `cRSubHighScore::MiniDelete(int)` deletes a canceled pending top-ten row by shifting later 0x1fac0-byte `SubSolution` records upward through the active bank. Android and iOS retain the exact class and method name but delete a per-entry file and clear a compact platform record instead, so they establish the owner vocabulary rather than the Windows storage algorithm."
     },
     {
@@ -3583,11 +3601,17 @@
     {
       "address": "0x440020",
       "name": "deserialize_compact_high_score_record",
+      "aliases": [
+        "cRSubSolution_Load"
+      ],
       "description": "Validates one compact ScoreA/B/C cRSubSolutionHeader checksum, copies its scalar fields, name, and replay samples into the expanded cRSubSolution entry, and marks the entry active. Android preserves this owner method as `cRSubSolution::Load(cRSubSolutionHeader*)`."
     },
     {
       "address": "0x440170",
       "name": "serialize_compact_high_score_record",
+      "aliases": [
+        "cRSubSolution_Save"
+      ],
       "description": "Compacts one active cRSubSolution into the ScoreA/B/C on-disk record format, including checksum, name, and variable replay payload arrays. Android preserves this owner method as `cRSubSolution::Save(unsigned char*)`."
     },
     {

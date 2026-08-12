@@ -127,3 +127,11 @@ The remaining 84.85% delta is the compiler's choice of independent source and
 destination address registers around `rep movsd`; it does not conceal a
 Windows behavior or owner. This conclusion follows from the native body and
 cross-port ownership evidence, not the number of historical probes.
+
+## 2026-08-12 authored method surface
+
+The exact Android and iOS `cRSubHighScore::MiniDelete(int)` symbols and the
+single live Windows cancel-path call close the authored name and ABI. The
+source is now `MiniDelete` with exact VC6 relocation
+`?MiniDelete@cRSubHighScore@@QAEXH@Z`; the honest 33/33 semantic-complete
+compiler residual remains visible.

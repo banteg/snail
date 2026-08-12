@@ -83,3 +83,11 @@ Evidence from the paired serializer:
   Android `cRSubSolution::Load` independently preserves the same lane.
 - This semantic clarification leaves the exact 114/114 result and clean
   masked operand unchanged.
+
+## 2026-08-12 authored method surface
+
+Android retains `cRSubSolution::Load(cRSubSolutionHeader*)`, and the live
+Windows loader calls the same method on one selected embedded solution. The
+source is now `Load` with exact VC6 relocation
+`?Load@cRSubSolution@@QAEEPAUcRSubSolutionHeader@@@Z`; matching remains
+114/114.

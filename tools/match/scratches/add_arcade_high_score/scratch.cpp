@@ -4,7 +4,7 @@
 #include "sub_high_score.h"
 
 
-void cRSubHighScore::add_arcade_high_score(cRSubSolution* record, int level_arg)
+void cRSubHighScore::AddArcade(cRSubSolution* record, int level_arg)
 {
     SubHighScore* bank = this;
     int rank = 0;

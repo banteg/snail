@@ -216,11 +216,11 @@ update_game:
 
     g_audio_backend.stop_audio_backend();
     shutdown_bass_audio_window();
-    g_game->subgame.sub_high_score.save_high_scores_and_config(1);
-    g_game->subgame.sub_high_score.save_high_scores_and_config(2);
-    g_game->subgame.sub_high_score.save_high_scores_and_config(4);
-    g_game->subgame.sub_high_score.save_high_scores_and_config(8);
-    g_game->subgame.sub_high_score.save_high_scores_and_config(16);
+    g_game->subgame.sub_high_score.MiniSave(1);
+    g_game->subgame.sub_high_score.MiniSave(2);
+    g_game->subgame.sub_high_score.MiniSave(4);
+    g_game->subgame.sub_high_score.MiniSave(8);
+    g_game->subgame.sub_high_score.MiniSave(16);
     g_game->noop_runtime_ai();
     free_tracked_allocations_to_mark();
     scalar_delete(g_game);

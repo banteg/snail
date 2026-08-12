@@ -13,19 +13,18 @@ const int SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT = 51;
 
 class cRSubHighScore {
 public:
-    void initialize_high_score_tables(); // @ 0x417540, cRSubHighScore::Init
+    void Init(); // @ 0x417540
     void load_high_scores_from_file(char* file_name); // @ 0x4175e0
-    void add_arcade_high_score(
+    void AddArcade(
         cRSubSolution* record,
-        int level_arg); // @ 0x4176a0, cRSubHighScore::AddArcade
-    void add_survival_high_score(
-        cRSubSolution* record); // @ 0x417780, cRSubHighScore::AddSurvival
-    void add_time_trial_high_score(
+        int level_arg); // @ 0x4176a0
+    void AddSurvival(cRSubSolution* record); // @ 0x417780
+    void AddTimeTrial(
         cRSubSolution* record,
         int route_index,
-        unsigned char route_active); // @ 0x4178b0, cRSubHighScore::AddTimeTrial
-    void mini_delete_high_score_entry(int rank); // @ 0x417af0, cRSubHighScore::MiniDelete
-    void save_high_scores_and_config(unsigned char save_mask); // @ 0x417940
+        unsigned char route_active); // @ 0x4178b0
+    void MiniDelete(int rank); // @ 0x417af0
+    void MiniSave(unsigned char save_mask); // @ 0x417940
     void noop_runtime_ai(); // shared empty lifecycle hook @ 0x407b50
 
     // The add helpers borrow their caller-owned record for the duration of the

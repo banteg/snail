@@ -3,7 +3,7 @@
 #include "sub_solution.h"
 #include "high_score.h"
 
-int cRSubSolution::serialize_compact_high_score_record(
+int cRSubSolution::Save(
     cRSubSolutionHeader* compact)
 {
     int sample_count = replay_sample_count;

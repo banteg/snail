@@ -66,3 +66,10 @@ desktop bank overlays are loaded. `MiniInit()` and the Windows
 `load_high_scores_from_file` helper are therefore explicitly not cross-mapped;
 the evidence recovers the common `Init()` owner and phase, not a false shared
 record layout or function boundary.
+
+## 2026-08-12 authored method surface
+
+The retained Android and iOS `cRSubHighScore::Init()` symbols, their unique
+`HighScore.o` bodies, and the live Windows call on the embedded owner at
+`cRSubGame + 0x68b4c8` now promote the matching source to `Init()`. The exact
+VC6 relocation is `?Init@cRSubHighScore@@QAEXXZ`; matching remains 58/58.

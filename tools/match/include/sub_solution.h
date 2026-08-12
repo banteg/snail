@@ -97,17 +97,15 @@ typedef cRSubSolutionHeader SubSolutionHeader;
 
 class cRSubSolution {
 public:
-    void initialize_high_score_entry(
+    void ReSet(
         int runtime_build_seed,
         int replay_level_index,
         int replay_speed_scalar_bits,
         unsigned int runtime_build_flags,
         int high_score_mode_tag,
-        int route_or_rank_index); // @ 0x417a70, cRSubSolution::ReSet
-    unsigned char deserialize_compact_high_score_record(
-        cRSubSolutionHeader* compact); // @ 0x440020, cRSubSolution::Load
-    int serialize_compact_high_score_record(
-        cRSubSolutionHeader* compact); // @ 0x440170, cRSubSolution::Save
+        int route_or_rank_index); // @ 0x417a70
+    unsigned char Load(cRSubSolutionHeader* compact); // @ 0x440020
+    int Save(cRSubSolutionHeader* compact); // @ 0x440170
 
     int active; // +0x00
     int score; // +0x04

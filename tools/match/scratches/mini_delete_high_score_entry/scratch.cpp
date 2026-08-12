@@ -2,7 +2,7 @@
 
 #include "sub_high_score.h"
 
-void cRSubHighScore::mini_delete_high_score_entry(int rank)
+void cRSubHighScore::MiniDelete(int rank)
 {
     if (rank < SUB_HIGH_SCORE_TOP_TEN_COUNT) {
         int row = rank;

@@ -11,7 +11,7 @@ extern void xor_decode_buffer_with_index(void* buffer, int byte_count);
 extern int write_file_bytes(char* file_name, void* bytes, int byte_count);
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 
-void cRSubHighScore::save_high_scores_and_config(unsigned char save_mask)
+void cRSubHighScore::MiniSave(unsigned char save_mask)
 {
     char* bytes = allocate_tracked_memory(
         HIGH_SCORE_SAVE_BUFFER_SIZE,
@@ -24,7 +24,7 @@ void cRSubHighScore::save_high_scores_and_config(unsigned char save_mask)
         int count = SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
         do {
             if (record->active == 1) {
-                bytes_used += record->serialize_compact_high_score_record(
+                bytes_used += record->Save(
                     (SubSolutionHeader*)out);
                 out = bytes + bytes_used;
             }
@@ -42,7 +42,7 @@ void cRSubHighScore::save_high_scores_and_config(unsigned char save_mask)
         int count = SUB_HIGH_SCORE_TOP_TEN_STORAGE_COUNT;
         do {
             if (record->active == 1) {
-                bytes_used += record->serialize_compact_high_score_record(
+                bytes_used += record->Save(
                     (SubSolutionHeader*)out);
                 out = bytes + bytes_used;
             }
@@ -60,7 +60,7 @@ void cRSubHighScore::save_high_scores_and_config(unsigned char save_mask)
         int count = SUB_HIGH_SCORE_TIME_TRIAL_ROUTE_COUNT;
         do {
             if (record->active == 1) {
-                bytes_used += record->serialize_compact_high_score_record(
+                bytes_used += record->Save(
                     (SubSolutionHeader*)out);
                 out = bytes + bytes_used;
             }

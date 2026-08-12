@@ -50,7 +50,7 @@ void cRHighScore::AI()
 
             UnInit();
             g_sprite_manager.KillGame();
-            g_game->subgame.sub_high_score.mini_delete_high_score_entry(
+            g_game->subgame.sub_high_score.MiniDelete(
                 selected_rank);
             Exit();
             return;

@@ -3066,7 +3066,7 @@ char cRGame::initialize_game_assets_and_world()
         } while (player_index < player_count);
     }
 
-    subgame.sub_high_score.initialize_high_score_tables();
+    subgame.sub_high_score.Init();
     subgame.sub_high_score.load_high_scores_from_file((char*)"ScoreA.dat");
     subgame.sub_high_score.load_high_scores_from_file((char*)"ScoreB.dat");
     subgame.sub_high_score.load_high_scores_from_file((char*)"ScoreC.dat");

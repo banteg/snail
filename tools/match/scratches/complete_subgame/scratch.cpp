@@ -34,13 +34,13 @@ void cRSubGame::Complete(unsigned char completed)
             && completed == 1) {
             switch (level_mode) {
             case 0:
-                sub_high_score.add_arcade_high_score(record, level_mode_arg);
+                sub_high_score.AddArcade(record, level_mode_arg);
                 break;
             case 1:
-                sub_high_score.add_survival_high_score(record);
+                sub_high_score.AddSurvival(record);
                 break;
             case 4:
-                sub_high_score.add_time_trial_high_score(
+                sub_high_score.AddTimeTrial(
                     record,
                     level_mode_arg,
                     player.completion_handoff_active);

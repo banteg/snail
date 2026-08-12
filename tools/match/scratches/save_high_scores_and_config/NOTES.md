@@ -52,3 +52,10 @@ the scalar size and infers no texture-list ownership.
 The focused replay verifies all three enclosing owner sizes before applying
 the borrows. Matching source is unchanged and remains exact at 101/101
 instructions with all 19 masked operands clean.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain `cRSubHighScore::MiniSave(int)`. All
+five live Windows callers supply one mask byte and discard EAX, proving the
+platform-specific `void MiniSave(unsigned char)` contract. The exact VC6
+relocation is `?MiniSave@cRSubHighScore@@QAEXE@Z`; matching remains 101/101.

@@ -4,7 +4,7 @@
 #include "high_score.h"
 
 
-void cRSubSolution::initialize_high_score_entry(
+void cRSubSolution::ReSet(
     int runtime_build_seed_value,
     int replay_level_index_value,
     int replay_speed_scalar_bits_value,

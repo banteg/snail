@@ -3,7 +3,7 @@
 #include "sub_solution.h"
 #include "high_score.h"
 
-unsigned char cRSubSolution::deserialize_compact_high_score_record(
+unsigned char cRSubSolution::Load(
     cRSubSolutionHeader* compact)
 {
     int score_value = compact->score;
