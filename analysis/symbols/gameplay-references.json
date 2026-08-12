@@ -304,6 +304,24 @@
       "description": "Exact Windows int cRGame::AI() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x40aa50",
+      "name": "initialize_input",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRInput@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRInput::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x40aab0",
+      "name": "update_game_input",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRGameInput@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRGameInput::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x410710",
       "name": "zero_vector3",
       "kind": "function",
@@ -5014,7 +5032,7 @@
         "off_4972f0",
         "data_4972f0"
       ],
-      "description": "One-entry cRGameInput callback table installed on the two root-owned GameInput records at +0x44 during construct_game_runtime; its entry is update_game_input (cRGameInput::AI())."
+      "description": "One-entry cRGameInput callback table installed on the two root-owned GameInput records at +0x44 during construct_game_runtime; its entry is the exact cRGameInput::AI() body retained under the update_game_input scratch ID."
     },
     {
       "address": "0x4972f4",

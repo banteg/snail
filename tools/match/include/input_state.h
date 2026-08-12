@@ -6,8 +6,10 @@
 
 class cRInput {
 public:
-    void initialize_input();
-    void update_input();
+    void Init(); // @ 0x40aa50
+    // Verified cRInput::Update(); the descriptive matcher name remains until
+    // its saved-register lifetime matches naturally.
+    void update_input(); // @ 0x40aa80
 
     int controller_slot;          // +0x00
     union {
@@ -40,7 +42,7 @@ typedef char InputState_must_be_0x38[(sizeof(cRInput) == 0x38) ? 1 : -1];
 // Windows owner corresponding to the portable cRGameInput class.
 class cRGameInput : public BodBase {
 public:
-    void update_game_input();
+    void AI(); // @ 0x40aab0
 
     cRInput input; // +0x38
 };

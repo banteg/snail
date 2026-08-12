@@ -1,100 +1,13 @@
-# update_input
+# update_input @ 0x40aa80
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android
-`cRInput::Update()`, the live Windows InputState method, and the exact Windows
-`cRGameInput::AI()` bridge establish the complete pressed/released edge
-algebra, previous and inverse masks, current clear, and void ABI. There are no
-masked references; the 15/19 candidate differs only in Windows' extra saved
-EDI and released-mask lifetime.
+Verified Android owner and semantics: `cRInput::Update()` derives pressed and
+released edges, advances the previous mask, stores the inverse current mask,
+and clears the current word. The exact Windows `cRGameInput::AI()` caller
+ignores EAX, proving the member is void.
 
-Partial `InputState` edge updater at `0x40aa80`.
-
-The function folds `current_buttons` and `previous_buttons` into per-frame
-`pressed_buttons` and `released_buttons`, stores `~current_buttons` at
-`inverse_current_buttons`, and clears `current_buttons` for the next input
-sampling pass.
-
-Current Wibo result is 51.43%. Storing `previous_buttons` and
-`pressed_buttons` before mutating the local result into the inverse recovers the
-native opening allocation (`current` in `eax`, `changed` in `edx`, then save
-`esi`) and moves the scratch out of early progress. The remaining residual is
-the tail lifetime: native keeps the original `eax`, saves `edi`, materializes
-the inverse in `esi`, and writes `released_buttons` through `edi`; this source
-shrinks the tail and reloads `previous_buttons` for the return value.
-
-2026-06-20 larger-chunk audit: rewriting the body in one direct IDA statement order
-(`previous`, `pressed`, then inverse/released) regresses to 34.29% by removing
-the saved `edi` lifetime and shrinking the candidate to 16 instructions.
-Adding a `register` hint to `changed` is codegen-neutral at 37.84% and does not
-move the xor before `push esi`.
-
-2026-06-20 larger residual audit: staging `changed`, `pressed`, `inverse`, and
-`released` as mutable locals is codegen-neutral at 37.84%; VC6 still saves
-`esi` before loading `previous_buttons`. Snapshotting `previous_buttons` before
-`current_buttons` and typing the bit-mask locals as `unsigned int` are also
-neutral. These probes preserve the edge semantics but do not explain native's
-early `edx = previous ^ current` allocation.
-
-2026-06-20 shape update: the direct store/invert order verifies at 51.43% with
-5/19 native prefix and no masked operands. A local `void update_input()` probe
-reaches 52.94% by avoiding the explicit reload return, but the shared
-`InputState` header and `update_game_input` owner bridge still model the return
-value, so do not apply a leaf-only signature split without reconciling that
-callsite.
-
-2026-06-21 bridge-signature reconciliation: `update_game_input` ignores the
-edge updater's source-level return and just falls through with the incidental
-`eax` left by the call. Promoting `InputState::update_input()` to `void`
-coherently with the owner bridge exact-matches `update_game_input` and keeps the
-leaf at the known 52.94% shape. The remaining leaf residual is still the native
-`edi` lifetime for `released_buttons`, not evidence for a real return value.
-
-2026-06-21 leaf-lifetime retry: IDA-style mutable locals for `current`,
-`changed`, `pressed`, `inverse`, and `released`, plus a `register released`
-hint, are codegen-neutral at 52.94% and still do not force native's saved `edi`
-tail. A `volatile released` local grows the body to 19 instructions but loses
-the native prefix and drops to 47.37%. Keep the compact void body.
-
-## 2026-07-16 cross-port cRInput ownership
-
-Android independently names this member `cRInput::Update()` and computes the
-same down-edge `current & ~previous`, up-edge `~current & (current ^ previous)`,
-previous-button, inverse-button, and current-clear state. Its decompiler leaves
-the receiver in the return register, whereas Windows leaves an unrelated mask;
-the Windows `cRGameInput::AI()` bridge consumes neither. This confirms the
-shared `InputState` as the portable cRInput owner and its `void` update ABI.
-
-Natural five-local and statement-scoped variants derived from the Android
-algebra were tested at 37.84% and 52.94%; neither recreated Windows' extra EDI
-lifetime. They were rejected and the existing clear 52.94% source retained.
-No volatile barrier or duplicated tail was introduced.
-
-## 2026-07-26 analyzer replay closure
-
-The focused input replay now names and prototypes `initialize_input`,
-`update_input`, and `update_game_input` directly instead of relying on a prior
-broad campaign. Both analyzer headers document the `void cRInput::Update()`
-contract, and Binary Ninja/IDA health checks preserve the five exact
-`InputState` button-mask fields.
-
-Focused matching remains honestly unchanged at 52.94%, 15/19 instructions,
-with the same extra native EDI lifetime and no masked operands.
-
-## 2026-07-29 bounded edge-lifetime audit
-
-Three recorded sweeps evaluated 192 source-shaped variants grounded in the
-verified Windows/Android edge semantics:
-
-- twelve named pressed/inverse/released, member-read, read-modify-write,
-  signedness, and direct-edge formulations;
-- all 60 valid orderings of the five field updates while keeping a distinct
-  inverse local before its release use; and
-- all 120 orderings of the equivalent old/current edge formulas preserved by
-  Android `cRInput::Update()`.
-
-No variant improves the clear 52.94%, 15/19 baseline. Seventeen are
-byte-identical and the other 175 regress. The native-only `push edi` and released-mask
-lifetime are not explained by ordinary update order, signedness, named
-temporaries, or the cross-port algebra. Keep the semantic source; a future
-retry needs a new type/owner/source relationship rather than another statement
-permutation.
+The honest Windows source remains 52.94%, 15/19 instructions, with no masked
+references. Native alone saves EDI for the released-mask tail. Three recorded
+sweeps cover 192 ordinary statement-order, signedness, and temporary-lifetime
+variants: 17 are byte-identical and 175 regress. That history bounds the known
+compiler residual but is not a stopping rule; the descriptive matcher name
+remains until a new evidence-backed source relationship reproduces it.

@@ -2,7 +2,7 @@
 
 #include "input_state.h"
 
-void cRInput::initialize_input()
+void cRInput::Init()
 {
     inverse_current_buttons = -1;
     current_buttons = 0;

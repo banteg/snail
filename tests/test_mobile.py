@@ -10100,15 +10100,78 @@ def test_root_input_types_use_authored_primary_owners() -> None:
     assert "cRGameInput game_inputs[GAME_ROOT_PLAYER_SLOT_COUNT]" in game_root
     assert "cRGameInput* game_input" in game_root
 
-    for owner, function in (
-        ("cRInput", "initialize_input"),
-        ("cRInput", "update_input"),
-        ("cRGameInput", "update_game_input"),
+    for owner, function, member in (
+        ("cRInput", "initialize_input", "Init"),
+        ("cRInput", "update_input", "update_input"),
+        ("cRGameInput", "update_game_input", "AI"),
     ):
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"{owner}::{function}" in source
+        assert f"{owner}::{member}" in source
+
+    assert "void Init();" in input_header
+    assert "void AI();" in input_header
+    assert "void initialize_input();" not in input_header
+    assert "void update_game_input();" not in input_header
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    exact_methods = {
+        "initialize_input": (
+            "cRInput::Init()",
+            "?Init@cRInput@@QAEXXZ",
+            "cRInput_Init",
+            False,
+        ),
+        "update_game_input": (
+            "cRGameInput::AI()",
+            "?AI@cRGameInput@@QAEXXZ",
+            "cRGameInput_AI",
+            True,
+        ),
+    }
+    for function, (
+        mobile_symbol,
+        object_symbol,
+        alias,
+        has_ios,
+    ) in exact_methods.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Game.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if has_ios:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    asset_initializer = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "game_input->input.Init();" in asset_initializer
+    assert ".initialize_input(" not in asset_initializer
 
 
 def test_sound_facade_uses_authored_primary_owner() -> None:

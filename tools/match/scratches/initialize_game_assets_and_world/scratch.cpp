@@ -3033,7 +3033,7 @@ char cRGame::initialize_game_assets_and_world()
     do {
         active_bods->add_bod_to_front(game_input);
         game_input->input.controller_slot = input_index;
-        game_input->input.initialize_input();
+        game_input->input.Init();
         ++input_index;
         ++game_input;
     } while (input_index < GAME_ROOT_PLAYER_SLOT_COUNT);

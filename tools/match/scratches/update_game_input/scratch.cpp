@@ -15,7 +15,7 @@ void copy_active_input_controller_state(
     float* pointer_x,
     float* pointer_y);
 
-void cRGameInput::update_game_input()
+void cRGameInput::AI()
 {
     if (g_game->input_sampling_gate != 0) {
         copy_active_input_controller_state(
