@@ -1,5 +1,16 @@
 # register_font_texture_sheet
 
+Current recovery: semantic-complete (`compiler` residual). The live Windows
+function, its sole startup caller, the exact TGA pixel sampler, and every
+native font consumer establish the complete Windows marker-atlas registrar,
+including the split-page path, 128 glyph lanes, scaling, shadow displacement,
+and returned font index. Android/iOS `FontLoad(char*, int, float, float)`
+bodies corroborate the parameter and single-font ownership model but use a
+metadata file rather than Windows' marker scan, so they are not claimed as
+implementation-identical. All 57 Windows references are clean; the 275/274
+candidate's remaining delta is equivalent glyph-slot versus split-coordinate
+stack/register allocation.
+
 Initial relationship scratch for the font atlas registration helper at
 `0x449f50`.
 
@@ -203,10 +214,12 @@ regressed focused agreement to 73.95%. A synthetic common glyph-lane cursor is
 also rejected: native computes the shared byte offset as an optimizer result,
 and no producer or consumer exposes such an authored object.
 
-No source change is retained. The proof-grade frontier remains **75.41%**
-(`275/274`, 54 accepted operands, one mismatch, and four unaudited operands).
-Further work requires new Windows provenance for a genuinely memory-resident
-glyph index; declaration reshuffling and invented cursor state are now closed.
+No source change is retained. At this snapshot the proof-grade frontier was
+**75.41%** (`275/274`, 54 accepted operands, one mismatch, and four unaudited
+operands); the current matcher now accepts all 57 references as recorded at
+the top. Further source-shape work needs Windows provenance for a genuinely
+memory-resident glyph index; the recorded declaration and cursor probes do
+not supply one.
 
 ## 2026-07-29 entry split-lifetime boundary
 
@@ -219,9 +232,9 @@ exact prefix from zero to one instruction but regresses weighted agreement by
 mismatch, and four unaudited operands, so none resolves the glyph-slot owner
 swap.
 
-The ledger now contains 65 unique variants across three sweeps: 0 improve, 15
-are byte-identical, and 50 regress. With three consecutive non-improving
-sweeps, this lane is formally stalled at the retained 75.41% frontier. The
-remaining work is contingent on new Windows source provenance; the in-repo
-declaration, increment, publication, snapshot, lexical-scope, and entry-order
-families are exhausted.
+The ledger contains 65 unique variants across three sweeps: 0 improve, 15 are
+byte-identical, and 50 regress. This bounds the tested declaration, increment,
+publication, snapshot, lexical-scope, and entry-order families without making
+their non-improving streak a stopping rule. The retained frontier is 75.41%; a
+useful future probe needs new Windows provenance or a genuinely different
+glyph-index ownership model.

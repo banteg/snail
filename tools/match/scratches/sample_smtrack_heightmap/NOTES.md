@@ -1,5 +1,13 @@
 # sample_smtrack_heightmap @ 0x41a360
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)` bodies,
+the live Windows function, and the sole `cRFace::AI()` caller establish the
+inclusive sample grid, bottom-up retained-TGA lookup, RGB normalization,
+optional cubic curve, and vertex-y write. All 13 references are clean; the
+113/109 candidate's remaining delta is equivalent frame size and vertex-cursor
+versus texel-offset register allocation.
+
 First tracked scratch for the SMTrack replacement-heightmap sampler.
 
 Recovered behavior:

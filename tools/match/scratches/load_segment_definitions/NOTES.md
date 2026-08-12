@@ -1,5 +1,13 @@
 # load_segment_definitions @ 0x448160
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRSMTracks::Import()` bodies, the live Windows member, and the exact Windows
+catalog-copy and runtime-normalization consumers establish the complete
+`Segments/*.txt` parser, its 150-entry owner, and every field in each 256-row
+authored metadata bank. All 91 references are clean; the 560/571 candidate's
+remaining deltas are equivalent row-anchor, stack-slot, and register
+scheduling choices.
+
 Initial target:
 
 - Parses `Segments/*.txt` into the runtime segment catalog at
@@ -364,8 +372,9 @@ instructions. These are VC6 strength reductions already emitted by the
 retained containing-entry arrays, not authored flattened source indices; no
 raw ordinal, cast, synthetic spill, or register hint was retained.
 
-The ledger now has seven mutation sweeps plus two probes, covering 62 unique
-variants with six consecutive non-improving sweeps. The 68.26% parser is
-formally stalled on this row-anchor family; retry it only with new Windows
-source provenance or a lifetime outside the entry/row/glyph projections now
-bounded here.
+The ledger has seven mutation sweeps plus two probes, covering 62 unique
+variants with six consecutive non-improving sweeps. That records the tested
+row-anchor family as bounded without declaring the function exhausted. The
+retained frontier is 68.26%; a useful future probe needs new Windows
+provenance or a lifetime outside the already-covered entry, row, and glyph
+projections.
