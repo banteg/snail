@@ -6320,6 +6320,8 @@
       "windows_name": "initialize_game_assets_and_world",
       "windows_size": 23072,
       "status": "unverified",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRGame::cRGame()",

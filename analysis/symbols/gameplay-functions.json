@@ -890,6 +890,8 @@
       "address": "0x40acf0",
       "name": "initialize_game_assets_and_world",
       "description": "Monolithic Windows cRGame bootstrap for the shared app world, front-end managers, score tables, star field, and embedded 63-pair path-template bank. Android and iOS split the equivalent ordered responsibilities across cRGame::Init0() through Init5(), with cRGame::LoadPaths() only an interior path-building phase called by Init0(), so no one-to-one mobile function mapping is currently verified. Public Path= slots 0..50 are constructed in place at GameRoot+0x1066f2c; slots 51..62 own transition meshes for flagged loop/invert families, HALFPIPE is the direct slot-42 constructor call, and WARP slot 30 remains unbuilt.",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRGame::cRGame()",

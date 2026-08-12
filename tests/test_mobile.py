@@ -5975,6 +5975,27 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
             assert neighbor["status"] == "verified"
             assert neighbor["source_object"] == source_object
 
+    initializer = by_name["initialize_game_assets_and_world"]
+    assert initializer["status"] == "unverified"
+    assert initializer["source_object"] == "Game.o"
+    assert (
+        initializer["source_object_evidence"]
+        == "windows-contiguous-source-run"
+    )
+    initializer_index = entries.index(initializer)
+    previous_verified = next(
+        entry
+        for entry in reversed(entries[:initializer_index])
+        if entry["status"] == "verified"
+    )
+    next_verified = next(
+        entry
+        for entry in entries[initializer_index + 1 :]
+        if entry["status"] == "verified"
+    )
+    assert previous_verified["source_object"] == "Game.o"
+    assert next_verified["source_object"] == "Game.o"
+
     result = main(
         [
             "match",

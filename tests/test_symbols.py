@@ -59,6 +59,8 @@ def test_default_function_symbol_manifest_loads() -> None:
         == "windows-contiguous-source-run"
     )
     game_init = by_name["initialize_game_assets_and_world"]
+    assert game_init.source_object == "Game.o"
+    assert game_init.source_object_evidence == "windows-contiguous-source-run"
     assert {
         rejection.symbol
         for rejection in game_init.mobile_candidate_rejections
