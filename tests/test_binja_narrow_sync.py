@@ -8226,7 +8226,7 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
 
     assert "int get_or_append_object_texture_group_vertex(" in matcher_header
     assert (
-        "void sort_object_faces_by_texture_group(cRObject* object);"
+        "void ObjectProcJoinTextures(cRObject* object);"
         in matcher_header
     )
     assert "extern int g_object_grouped_vertex_cursor;" in matcher_header

@@ -1,23 +1,10 @@
-# initialize_duplicate_vertices @ 0x419f50
+# cRDuplicateVertices::Init
 
-The iOS symbol table preserves this exact owner and method as
-`cRDuplicateVertices::Init(int)` in `ObjectProc.o`. Windows initializes the
-same 8-byte embedded owner: `active_count` at `+0x00` and a pointer to
-10-byte `DuplicateVertexRecord` entries at `+0x04`. `DirectXLoader::Init()`
-passes 2000 and retains the owner at loader `+0x5e08`.
+`0x419f50` is the authored `cRDuplicateVertices::Init(int)` method from
+`ObjectProc.o`. Android and iOS preserve the owner and signature; Windows
+additionally proves the allocation-pointer return through its live caller.
 
-Focused match: 100%, 13/13 instructions, with both masked operands clean. The
-Windows body leaves the allocation pointer in `eax`, stores it in `records`,
-and returns it. The cross-port C++ symbol does not encode a return type, and
-the sole caller ignoring `eax` is insufficient to prove `void`, so the exact
-Windows pointer result is retained rather than normalized speculatively.
-
-## 2026-07-29 primary cRDuplicateVertices ownership
-
-The matcher now uses the shared authored `cRDuplicateVertices` owner directly
-and emits this body as pointer-returning Windows
-`cRDuplicateVertices::Init(int)`. `DuplicateVertices` remains a compatibility
-typedef for repeatable analyzer replays. Binary Ninja confirms the sole caller
-forms the receiver as `DirectXLoader +0x5e08`, passes 2000, and ignores the
-pointer result; the primary-name change stays exact at 13/13 instructions with
-both relocations clean.
+- VC6 symbol: `?Init@cRDuplicateVertices@@QAEPAXH@Z`
+- exact Windows match: 13/13 instructions
+- masked operands: 2/2 audited
+- owner callsite: `initialize_directx_loader`

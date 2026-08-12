@@ -1,4 +1,4 @@
-// initialize_object_distort @ 0x41aa30 (thiscall)
+// cRDistort::Init() @ 0x41aa30 (thiscall)
 
 #include "object_render_types.h"
 

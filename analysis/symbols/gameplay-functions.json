@@ -1896,11 +1896,17 @@
     {
       "address": "0x419f50",
       "name": "initialize_duplicate_vertices",
+      "aliases": [
+        "cRDuplicateVertices_Init"
+      ],
       "description": "Exact Windows `cRDuplicateVertices::Init(int)` for the embedded 8-byte duplicate-vertex workspace retained at DirectXLoader +0x5e08. Android and iOS preserve the authored owner and method; Windows' observed allocation-pointer result remains authoritative because C++ symbols do not encode return types."
     },
     {
       "address": "0x419f80",
       "name": "clean_duplicate_vertices",
+      "aliases": [
+        "cRDuplicateVertices_Clean"
+      ],
       "description": "Exact void Windows `cRDuplicateVertices::Clean(int)`: scans the owner's 10-byte records and clears later live flags for duplicate vertex pairs while retaining the otherwise-unused stack argument proven by `retn 4`. Android preserves the owner and algorithm; its incompatible empty and populated R0 residues prove the result is incidental."
     },
     {
@@ -1970,11 +1976,17 @@
     {
       "address": "0x41aa30",
       "name": "initialize_object_distort",
+      "aliases": [
+        "cRDistort_Init"
+      ],
       "description": "Exact `cRDistort::Init()` member: initializes the five-float cRDistort subobject embedded at cRObject +0x80. Android and iOS independently preserve the owner and name, and Android calls it from cRSubGoldy::Init on the same presentation object."
     },
     {
       "address": "0x41aa50",
       "name": "apply_distort_to_object",
+      "aliases": [
+        "cRDistort_Build"
+      ],
       "description": "Authored `cRDistort::Build(cRObject*)` member: applies the embedded cRDistort subobject's optional Z-wave, Y-squash, and XYZ-scale passes to a cRObject's copied vertex array, chaining active passes through that copy before redirecting the live vertex view and refreshing simple face normals. Android confirms the owner, argument, control order, and copy-buffer lifecycle while retaining platform-specific bounds and render-tail behavior; Android and iOS leave the final two floats without recovered consumers, so they remain unnamed."
     },
     {

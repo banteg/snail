@@ -15,7 +15,7 @@ void cRObjects::BuildObjects()
 
             if (((Object*)((char*)objects + object_offset))->vertex_count != 0) {
                 ((Object*)((char*)objects + object_offset))->calc_object_bounding_box();
-                sort_object_faces_by_texture_group((Object*)((char*)objects + object_offset));
+                ObjectProcJoinTextures((Object*)((char*)objects + object_offset));
                 ((Object*)((char*)objects + object_offset))->CalcTextureGroups();
 
                 if ((((Object*)((char*)objects + object_offset))->flags

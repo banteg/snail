@@ -1,4 +1,4 @@
-// clean_duplicate_vertices @ 0x419f80 (thiscall)
+// cRDuplicateVertices::Clean(int) @ 0x419f80 (thiscall)
 
 #include "duplicate_vertices.h"
 

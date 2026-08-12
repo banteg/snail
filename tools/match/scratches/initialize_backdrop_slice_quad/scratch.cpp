@@ -1,9 +1,9 @@
-// initialize_backdrop_slice_quad @ 0x41a1c0 (cdecl)
+// ObjectProcTileFloorFast @ 0x41a1c0 (cdecl)
 
 #include "object_render_types.h"
 #include "sprite.h"
 
-void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset)
+void ObjectProcTileFloorFast(Object* object, char* texture_path, float x_offset)
 {
     object->RequestVertices(4);
     object->RequestFaceQuads(1);

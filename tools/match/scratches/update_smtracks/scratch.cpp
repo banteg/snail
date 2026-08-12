@@ -6,7 +6,7 @@ void cRFace::AI()
 {
     movie.AI();
     object->facequads[0].texture_ref = movie.current_texture_ref;
-    sample_smtrack_heightmap(
+    ObjectProcLandScapeUpdate(
         object,
         0.0f,
         5.0f,

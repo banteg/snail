@@ -35,17 +35,17 @@ void register_font_texture_sheet_wrapper(
     int shadow_offset_pixels,
     float width_scale,
     float height_scale); // @ 0x432d20
-void initialize_backdrop_slice_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0, ObjectProcTileFloorFast
-void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset); // @ 0x41a0b0, ObjectProcTileFast
-void raise_backdrop_quad_edge_pair(int edge_pair, Object* object); // @ 0x41a170, ObjectProcTileFastRamp
-void initialize_backdrop_corner_quad(int corner, Object* object, char* texture_path); // @ 0x41a290, ObjectProcTileFloorCornerFast
-void initialize_backdrop_tile_quad(
+void ObjectProcTileFloorFast(Object* object, char* texture_path, float x_offset); // @ 0x41a1c0
+void ObjectProcTileFast(Object* object, char* texture_path, float x_offset); // @ 0x41a0b0
+void ObjectProcTileFastRamp(int edge_pair, Object* object); // @ 0x41a170
+void ObjectProcTileFloorCornerFast(int corner, Object* object, char* texture_path); // @ 0x41a290
+void ObjectProcFringe(
     Object* object,
     int edge_selector,
     int orientation,
     int row_selector,
     int column_selector,
-    char* texture_path); // @ 0x41a4d0, ObjectProcFringe
+    char* texture_path); // @ 0x41a4d0
 void set_object_color(Object* object, tColour color); // @ 0x4141d0
 void set_input_controller_pointer_authored_xy(
     int controller,
@@ -256,17 +256,17 @@ char cRGame::initialize_game_assets_and_world()
         int storage_index = (int)slice_index;
         BodBase* floor_slice = &root_bod_catalog.floor_slices.storage[storage_index];
         floor_slice->SetObject(g_object_list.Add());
-        initialize_backdrop_slice_quad(
+        ObjectProcTileFloorFast(
             floor_slice->object, (char*)"Objects/World00/Track0.tga", slice_index);
 
         BodBase* warning_slice = &root_bod_catalog.warning_slices.storage[storage_index];
         warning_slice->SetObject(g_object_list.Add());
-        initialize_backdrop_slice_quad(
+        ObjectProcTileFloorFast(
             warning_slice->object, (char*)"Objects/World00/TrackWarn.tga", slice_index);
 
         BodBase* slide_slice = &root_bod_catalog.slide_slices.storage[storage_index];
         slide_slice->SetObject(g_object_list.Add());
-        initialize_backdrop_slice_quad(
+        ObjectProcTileFloorFast(
             slide_slice->object, (char*)"Objects/World00/Slide0.tga", slice_index);
         slice_index += 1.0f;
     } while (slice_index < 8.0f);
@@ -324,71 +324,71 @@ char cRGame::initialize_game_assets_and_world()
 
     BodBase* ramp_edge = &root_bod_catalog.ramp_edges[0];
     ramp_edge->SetObject(g_object_list.Add());
-    initialize_textured_backdrop_quad(
+    ObjectProcTileFast(
         ramp_edge->object, (char*)"Objects/Universe/Ramp.tga", 0.0f);
-    raise_backdrop_quad_edge_pair(-1, ramp_edge->object);
+    ObjectProcTileFastRamp(-1, ramp_edge->object);
 
     ramp_edge = &root_bod_catalog.ramp_edges[1];
     ramp_edge->SetObject(g_object_list.Add());
-    initialize_textured_backdrop_quad(
+    ObjectProcTileFast(
         ramp_edge->object, (char*)"Objects/Universe/Ramp.tga", 0.0f);
-    raise_backdrop_quad_edge_pair(0, ramp_edge->object);
+    ObjectProcTileFastRamp(0, ramp_edge->object);
 
     ramp_edge = &root_bod_catalog.ramp_edges[2];
     ramp_edge->SetObject(g_object_list.Add());
-    initialize_textured_backdrop_quad(
+    ObjectProcTileFast(
         ramp_edge->object, (char*)"Objects/Universe/Ramp.tga", 0.0f);
-    raise_backdrop_quad_edge_pair(1, ramp_edge->object);
+    ObjectProcTileFastRamp(1, ramp_edge->object);
 
     BodBase* corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_0_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         0, corner->object, (char*)"Objects/World00/Track0.tga");
     corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_1_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         1, corner->object, (char*)"Objects/World00/Track0.tga");
     corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_2_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         2, corner->object, (char*)"Objects/World00/Track0.tga");
     corner = &root_bod_catalog.floor_corners.storage[TRACK_CORNER_3_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         3, corner->object, (char*)"Objects/World00/Track0.tga");
 
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_0_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         0, corner->object, (char*)"Objects/World00/TrackWarn.tga");
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_1_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         1, corner->object, (char*)"Objects/World00/TrackWarn.tga");
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_2_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         2, corner->object, (char*)"Objects/World00/TrackWarn.tga");
     corner = &root_bod_catalog.warning_corners.storage[TRACK_CORNER_3_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         3, corner->object, (char*)"Objects/World00/TrackWarn.tga");
 
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_0_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         0, corner->object, (char*)"Objects/World00/Slide0.tga");
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_1_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         1, corner->object, (char*)"Objects/World00/Slide0.tga");
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_2_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         2, corner->object, (char*)"Objects/World00/Slide0.tga");
     corner = &root_bod_catalog.slide_corners.storage[TRACK_CORNER_3_STORAGE_INDEX];
     corner->SetObject(g_object_list.Add());
-    initialize_backdrop_corner_quad(
+    ObjectProcTileFloorCornerFast(
         3, corner->object, (char*)"Objects/World00/Slide0.tga");
 
     BodBase* trampoline = &root_bod_catalog.trampoline;
@@ -399,7 +399,7 @@ char cRGame::initialize_game_assets_and_world()
 
     BodBase* universe_hole = &root_bod_catalog.universe_hole;
     universe_hole->SetObject(g_object_list.Add());
-    initialize_textured_backdrop_quad(
+    ObjectProcTileFast(
         universe_hole->object, (char*)"Objects/Universe/Hole.tga", 0.0f);
     universe_hole->object->blend_mode = 5;
     universe_hole->object->facequads[0].texture_ref->flags |= 4;
@@ -1741,11 +1741,11 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[24].primary.fringe_mesh_bod.SetObject(
         g_object_list.Add());
-    disable_object_rendering(
+    ObjectProcNull(
         subgame.path_pairs[24].primary.fringe_mesh_bod.object);
     subgame.path_pairs[24].secondary.fringe_mesh_bod.SetObject(
         g_object_list.Add());
-    disable_object_rendering(
+    ObjectProcNull(
         subgame.path_pairs[24].secondary.fringe_mesh_bod.object);
     subgame.path_pairs[24].primary.object->blend_mode = 8;
     subgame.path_pairs[24].secondary.object->blend_mode = 8;
@@ -3005,7 +3005,7 @@ char cRGame::initialize_game_assets_and_world()
                 do {
                     fringe_bod->SetObject(
                         g_object_list.Add());
-                    initialize_backdrop_tile_quad(
+                    ObjectProcFringe(
                         fringe_bod->object,
                         fringe_family,
                         fringe_direction,

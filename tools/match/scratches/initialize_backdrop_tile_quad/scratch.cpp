@@ -1,4 +1,4 @@
-// initialize_backdrop_tile_quad @ 0x41a4d0 (cdecl)
+// ObjectProcFringe @ 0x41a4d0 (cdecl)
 
 #include "object_render_types.h"
 #include "sprite.h"
@@ -19,7 +19,7 @@
         *component = *component - (float)sign * 0.2f;       \
     } while (0)
 
-void initialize_backdrop_tile_quad(
+void ObjectProcFringe(
     Object* object,
     int edge_selector,
     int orientation,

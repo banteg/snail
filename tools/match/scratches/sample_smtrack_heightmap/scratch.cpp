@@ -1,9 +1,9 @@
-// sample_smtrack_heightmap @ 0x41a360 (cdecl)
+// ObjectProcLandScapeUpdate @ 0x41a360 (cdecl)
 
 #include "smtracks.h"
 #include "tga_image_view.h"
 
-void __cdecl sample_smtrack_heightmap(
+void __cdecl ObjectProcLandScapeUpdate(
     Object* source,
     float base,
     float scale,

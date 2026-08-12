@@ -1,8 +1,8 @@
-// disable_object_rendering @ 0x41a0a0 (cdecl)
+// ObjectProcNull @ 0x41a0a0 (cdecl)
 
 #include "object_render_types.h"
 
-void disable_object_rendering(Object* object)
+void ObjectProcNull(Object* object)
 {
     object->flags |= OBJECT_FLAG_RENDER_DISABLED;
 }

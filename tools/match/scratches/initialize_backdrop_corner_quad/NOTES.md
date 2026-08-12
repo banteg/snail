@@ -1,27 +1,11 @@
-# initialize_backdrop_corner_quad @ 0x41a290
+# ObjectProcTileFloorCornerFast
 
-Builds a sliced backdrop quad, then picks one corner through the four-entry
-corner selector table at `0x4a3ce0`, with values `{3, 2, 0, 1}`. The selected
-vertex's x and z components are normalized to `-0.3`, `0.0`, or `0.3`,
-preserving only the sign of the base slice geometry.
+`0x41a290` is the authored free function
+`ObjectProcTileFloorCornerFast(int, cRObject*, char*)` from `ObjectProc.o`,
+retained by Android and iOS. It builds a sliced floor tile, selects a corner
+through the shared `{3, 2, 0, 1}` table, and clamps its x/z magnitudes to 0.3.
 
-Focused match: 100%, 55/55 instructions, with ten clean masked operands. The
-x component needs an explicit `Vector3*` value/pointer split while the z
-component needs direct `vertices[index].z` addressing; both are source-level
-forms that produce the native x87 scheduling.
-
-## 2026-07-17 corner-table and object ownership
-
-The helper now reads back as `void __cdecl(int32_t, Object*, char*)` in both
-databases. The four-entry table at `0x4a3ce0` is replayed as the typed
-`g_backdrop_corner_vertex_indices[4]`, allowing both decompilers to express the
-selected `Object::vertices` element directly. The matcher stays exact.
-
-## 2026-07-27 mobile authored identity
-
-Android and iOS preserve this helper as
-`ObjectProcTileFloorCornerFast(int, cRObject*, char*)` in `ObjectProc.o`. Every
-port first invokes its floor-tile helper at offset zero, selects through the
-same `{3, 2, 0, 1}` table, and clamps the chosen vertex's x/z components to
-signed `0.3`. The mobile `cRGame::Init3` call order mirrors Windows across the
-corresponding corner banks.
+- VC6 symbol: `?ObjectProcTileFloorCornerFast@@YAXHPAUcRObject@@PAD@Z`
+- exact Windows match: 55/55 instructions
+- masked operands: 10/10 audited
+- live callers: twelve ordered world-bank sites

@@ -1,4 +1,4 @@
-// initialize_duplicate_vertices @ 0x419f50 (thiscall, ret 0x4)
+// cRDuplicateVertices::Init(int) @ 0x419f50 (thiscall, ret 0x4)
 
 #include "duplicate_vertices.h"
 

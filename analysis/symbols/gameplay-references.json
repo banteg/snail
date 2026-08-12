@@ -750,6 +750,78 @@
       "description": "Exact void cRDuplicateVertices::Clean(int) body and 10-byte record walk retained by Android."
     },
     {
+      "address": "0x419fd0",
+      "name": "sort_object_faces_by_texture_group",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcJoinTextures@@YAXPAUcRObject@@@Z"
+      ],
+      "description": "Exact authored ObjectProcJoinTextures(cRObject*) free function retained by Android and iOS."
+    },
+    {
+      "address": "0x41a0a0",
+      "name": "disable_object_rendering",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcNull@@YAXPAUcRObject@@@Z"
+      ],
+      "description": "Exact authored ObjectProcNull(cRObject*) free function retained by Android and iOS."
+    },
+    {
+      "address": "0x41a0b0",
+      "name": "initialize_textured_backdrop_quad",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcTileFast@@YAXPAUcRObject@@PADM@Z"
+      ],
+      "description": "Exact authored ObjectProcTileFast(cRObject*, char*, float) free function retained by Android and iOS."
+    },
+    {
+      "address": "0x41a170",
+      "name": "raise_backdrop_quad_edge_pair",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcTileFastRamp@@YAXHPAUcRObject@@@Z"
+      ],
+      "description": "Exact authored ObjectProcTileFastRamp(int, cRObject*) free function retained by Android and iOS."
+    },
+    {
+      "address": "0x41a1c0",
+      "name": "initialize_backdrop_slice_quad",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcTileFloorFast@@YAXPAUcRObject@@PADM@Z"
+      ],
+      "description": "Exact authored ObjectProcTileFloorFast(cRObject*, char*, float) free function retained by Android and iOS."
+    },
+    {
+      "address": "0x41a290",
+      "name": "initialize_backdrop_corner_quad",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcTileFloorCornerFast@@YAXHPAUcRObject@@PAD@Z"
+      ],
+      "description": "Exact authored ObjectProcTileFloorCornerFast(int, cRObject*, char*) free function retained by Android and iOS."
+    },
+    {
+      "address": "0x41a360",
+      "name": "sample_smtrack_heightmap",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcLandScapeUpdate@@YAXPAUcRObject@@MMPAUcRTexture@@_N@Z"
+      ],
+      "description": "Authored ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool) free function; the remaining Windows delta is compiler-shaped."
+    },
+    {
+      "address": "0x41a4d0",
+      "name": "initialize_backdrop_tile_quad",
+      "kind": "function",
+      "aliases": [
+        "?ObjectProcFringe@@YAXPAUcRObject@@HHHHPAD@Z"
+      ],
+      "description": "Exact authored ObjectProcFringe(cRObject*, int, int, int, int, char*) free function retained by Android and iOS."
+    },
+    {
       "address": "0x41aa30",
       "name": "initialize_object_distort",
       "kind": "function",

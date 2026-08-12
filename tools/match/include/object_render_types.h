@@ -133,7 +133,7 @@ typedef char ObjectToonEdge_must_be_0x24[
 struct ObjectIndexBufferResource;
 
 // Authored ObjectProcNull(cRObject*) free function in Android and iOS.
-void disable_object_rendering(cRObject* object); // @ 0x41a0a0
+void ObjectProcNull(cRObject* object); // @ 0x41a0a0
 
 // Android and iOS preserve this exact owner as cRDistort. Windows embeds the
 // same five-float record at cRObject +0x80; only the first three controls have
@@ -260,7 +260,7 @@ int get_or_append_object_texture_group_vertex(
     cRObject* object, int vertex_index, float u, float v); // @ 0x413bb0
 void build_object_texture_group_buffers(cRObject* object); // @ 0x413d50
 // Authored ObjectProcJoinTextures(cRObject*) free function.
-void sort_object_faces_by_texture_group(cRObject* object); // @ 0x419fd0
+void ObjectProcJoinTextures(cRObject* object); // @ 0x419fd0
 void refresh_object_vertex_buffer(cRObject* object); // @ 0x412250
 void render_object(cRObject* object, TransformMatrix* matrix, float texture_u,
     float texture_v, tColour* color, char after_sprites); // @ 0x4126c0, G0RenderObject

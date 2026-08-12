@@ -11808,9 +11808,8 @@ def test_mobile_object_texture_join_recovers_authored_free_function() -> None:
         / "NOTES.md"
     ).read_text(encoding="utf-8")
     assert "`ObjectProcJoinTextures(cRObject*)`" in notes
-    assert "authored alias" in notes
-    assert "does not turn the" in notes
-    assert "operation into a `cRObject` member" in notes
+    assert notes.startswith("# ObjectProcJoinTextures\n")
+    assert "exact Windows match: 75/75 instructions" in notes
 
 
 def test_mobile_object_null_recovers_authored_free_function() -> None:
@@ -11847,8 +11846,8 @@ def test_mobile_object_null_recovers_authored_free_function() -> None:
         / "NOTES.md"
     ).read_text(encoding="utf-8")
     assert "`ObjectProcNull(cRObject*)`" in notes
-    assert "same pair of newly bound path objects" in notes
-    assert "without importing a false field" in notes
+    assert notes.startswith("# ObjectProcNull\n")
+    assert "exact Windows match: 3/3 instructions" in notes
 
 
 def test_mobile_object_tile_helpers_recover_authored_free_functions() -> None:
@@ -11907,6 +11906,118 @@ def test_mobile_object_tile_helpers_recover_authored_free_functions() -> None:
         ).read_text(encoding="utf-8")
         assert f"`{mobile_symbol}`" in notes
         assert "ObjectProc.o" in notes
+
+
+def test_mobile_objectproc_surface_is_authored_consistently() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    expected = {
+        "initialize_duplicate_vertices": (
+            "cRDuplicateVertices_Init",
+            "cRDuplicateVertices::Init(",
+            "?Init@cRDuplicateVertices@@QAEPAXH@Z",
+        ),
+        "clean_duplicate_vertices": (
+            "cRDuplicateVertices_Clean",
+            "cRDuplicateVertices::Clean(",
+            "?Clean@cRDuplicateVertices@@QAEXH@Z",
+        ),
+        "sort_object_faces_by_texture_group": (
+            "ObjectProcJoinTextures",
+            "ObjectProcJoinTextures(",
+            "?ObjectProcJoinTextures@@YAXPAUcRObject@@@Z",
+        ),
+        "disable_object_rendering": (
+            "ObjectProcNull",
+            "ObjectProcNull(",
+            "?ObjectProcNull@@YAXPAUcRObject@@@Z",
+        ),
+        "initialize_textured_backdrop_quad": (
+            "ObjectProcTileFast",
+            "ObjectProcTileFast(",
+            "?ObjectProcTileFast@@YAXPAUcRObject@@PADM@Z",
+        ),
+        "raise_backdrop_quad_edge_pair": (
+            "ObjectProcTileFastRamp",
+            "ObjectProcTileFastRamp(",
+            "?ObjectProcTileFastRamp@@YAXHPAUcRObject@@@Z",
+        ),
+        "initialize_backdrop_slice_quad": (
+            "ObjectProcTileFloorFast",
+            "ObjectProcTileFloorFast(",
+            "?ObjectProcTileFloorFast@@YAXPAUcRObject@@PADM@Z",
+        ),
+        "initialize_backdrop_corner_quad": (
+            "ObjectProcTileFloorCornerFast",
+            "ObjectProcTileFloorCornerFast(",
+            "?ObjectProcTileFloorCornerFast@@YAXHPAUcRObject@@PAD@Z",
+        ),
+        "sample_smtrack_heightmap": (
+            "ObjectProcLandScapeUpdate",
+            "ObjectProcLandScapeUpdate(",
+            (
+                "?ObjectProcLandScapeUpdate@@YAXPAUcRObject@@"
+                "MMPAUcRTexture@@_N@Z"
+            ),
+        ),
+        "initialize_backdrop_tile_quad": (
+            "ObjectProcFringe",
+            "ObjectProcFringe(",
+            "?ObjectProcFringe@@YAXPAUcRObject@@HHHHPAD@Z",
+        ),
+        "initialize_object_distort": (
+            "cRDistort_Init",
+            "cRDistort::Init(",
+            "?Init@cRDistort@@QAEXXZ",
+        ),
+        "apply_distort_to_object": (
+            "cRDistort_Build",
+            "cRDistort::Build(",
+            "?Build@cRDistort@@QAEXPAUcRObject@@@Z",
+        ),
+    }
+
+    scratch_root = repo_root / "tools/match/scratches"
+    for windows_name, (alias, source_spelling, symbol) in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "ObjectProc.o"
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert references_by_name[windows_name]["aliases"] == [symbol]
+
+        unit_root = scratch_root / windows_name
+        source = (unit_root / "scratch.cpp").read_text(encoding="utf-8")
+        config = (unit_root / "scratch.conf").read_text(encoding="utf-8")
+        notes = (unit_root / "NOTES.md").read_text(encoding="utf-8")
+        assert source_spelling in source
+        assert f"SYMBOL={symbol}\n" in config
+        assert source_spelling.removesuffix("(") in notes
+
+    matcher_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for root in (repo_root / "tools/match/include", scratch_root)
+        for pattern in ("*.h", "scratch.cpp")
+        for path in root.rglob(pattern)
+        if "build" not in path.parts
+    )
+    for windows_name in expected:
+        assert windows_name not in matcher_sources
 
 
 def test_mobile_path_mirror_recovers_authored_method() -> None:

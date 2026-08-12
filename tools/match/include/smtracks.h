@@ -7,12 +7,12 @@
 #include "bod_types.h"
 #include "movie.h"
 
-void __cdecl sample_smtrack_heightmap(
+void __cdecl ObjectProcLandScapeUpdate(
     Object* source,
     float base,
     float scale,
     cRTexture* replacement,
-    bool cubic); // @ 0x41a360; mobile ObjectProcLandScapeUpdate
+    bool cubic); // @ 0x41a360
 
 // Windows layout of the authored cross-port cRFace owner. This is the animated
 // landscape-height face, not an ObjectFaceQuad.

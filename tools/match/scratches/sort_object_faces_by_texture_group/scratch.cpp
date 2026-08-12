@@ -1,9 +1,8 @@
-// sort_object_faces_by_texture_group @ 0x419fd0 (cdecl)
-// Authored name: ObjectProcJoinTextures(cRObject*)
+// ObjectProcJoinTextures @ 0x419fd0 (cdecl)
 
 #include "object_render_types.h"
 
-void sort_object_faces_by_texture_group(Object* object)
+void ObjectProcJoinTextures(Object* object)
 {
     int base_index = 0;
     int grouped_swaps = 0;

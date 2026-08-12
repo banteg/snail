@@ -1,9 +1,9 @@
-// initialize_textured_backdrop_quad @ 0x41a0b0 (cdecl)
+// ObjectProcTileFast @ 0x41a0b0 (cdecl)
 
 #include "object_render_types.h"
 #include "sprite.h"
 
-void initialize_textured_backdrop_quad(Object* object, char* texture_path, float x_offset)
+void ObjectProcTileFast(Object* object, char* texture_path, float x_offset)
 {
     object->RequestVertices(4);
     object->RequestFaceQuads(1);

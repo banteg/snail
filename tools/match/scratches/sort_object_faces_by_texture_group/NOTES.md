@@ -1,75 +1,10 @@
-# `sort_object_faces_by_texture_group` recovery notes
+# ObjectProcJoinTextures
 
-Target: `sort_object_faces_by_texture_group @ 0x419fd0` (`cdecl`).
+`0x419fd0` is the authored free function
+`ObjectProcJoinTextures(cRObject*)` from `ObjectProc.o`, retained under the
+same name and owner by Android and iOS. It groups whole face-quad records by
+texture for the cumulative texture-run builder.
 
-This scratch recovers the source-level grouping pass used before
-`calc_object_texture_groups`: for each base face, later faces with the same
-`ObjectFaceQuad::texture_ref` are pulled forward by swapping with the current
-insert slot. The native loop advances the base index whenever a matching face
-is absorbed into the current group, which is why the decompiler shows `ebp`
-increments inside the inner loop as well as at the outer loop tail.
-
-`ObjectFaceQuad` assignment compiles to the expected three 12-dword
-`rep movsd` block copies.
-
-2026-07-10 cursor ownership closure:
-
-- The scan cursor begins at `facequads[scan_index]`, while the insertion cursor
-  independently begins at `facequads[base_index + 1]`. Although both indices
-  have the same initial value, they have different owners and advance under
-  different conditions once matching faces are absorbed.
-- Modeling both cursors from `scan_index` let VC6 collapse one address
-  calculation and assigned the object/base/scan registers incorrectly, leaving
-  the old scratch at 41.61% with 74/75 instructions.
-- Preserving the distinct insertion anchor reproduces the native object in
-  `esi`, base index in `ebp`, scan index in `ebx`, both 0x30-byte cursor walks,
-  and the exact swap frame. Focused Wibo is now 100.00%, 75/75 instructions,
-  prefix 75/75, with no masked operands.
-
-Rejected probes retained from the earlier allocator audit: C mode, `register`
-hints, return-type changes, and guard/compare rewrites did not recover the
-missing relationship. No padding or dead work is present in the exact source.
-
-## 2026-07-18 Object-owner ABI replay
-
-The sole callsite in `build_all_objects` passes one object and discards `eax`;
-the exact scratch likewise has a natural `void (Object*)` source signature.
-The integer return shown by both raw decompilers was only the final
-`facequad_count` load. The shared headers and repeatable Binary Ninja/IDA
-syncs now preserve the borrowed `Object*` owner and `void` ABI. Matcher source
-is unchanged at 100.00%, 75/75 instructions, with no masked operands.
-
-## 2026-07-23 face-bank cursor lifetime replay
-
-The guarded object texture-group replay now also preserves the sort pass's
-borrowed lifetimes in Binary Ninja:
-
-- `Object::facequads` remains the owning array member, while `scan_face` and
-  `insert_face` are independent borrowed `ObjectFaceQuad*` cursors;
-- the grouping key and its stack spill are `TextureRef*`, not integers;
-- the native `* 3`, `<< 4` address-strength-reduction values remain integer
-  indices and byte offsets rather than being promoted into fake pointers;
-- the 0x30-byte stack temporary is a by-value `ObjectFaceQuad swap_face`, and
-  the three `rep movsd` copies retain typed face sources and destinations.
-
-The replay verifies the canonical `TextureRef` (0xa4), `ObjectFaceQuad` (0x30),
-and `Object` (0xdc) layouts before mutation, saves and reads back every
-annotation, and is fully idempotent on a second run. The exact matcher source
-is intentionally unchanged at 100.00%, 75/75 instructions, prefix 75/75, with
-no masked operands.
-
-## 2026-07-27 authored ObjectProc identity
-
-The expanded Android and iOS corpora retain this exact algorithm as the free
-function `ObjectProcJoinTextures(cRObject*)`. Both bodies walk the object-owned
-face bank, use each base face's `TextureRef*` as the grouping key, advance
-independent scan and insertion cursors, and swap the complete 0x30-byte face
-records when a matching texture is out of place.
-
-That cross-port agreement replaces the merely semantic Windows label with an
-authored alias and pins the function to `ObjectProc.o`; it does not turn the
-operation into a `cRObject` member. The stable Windows harness name remains in
-the matcher and analysis database, while the original source identity is
-recorded in the symbol manifest and mobile crosswalk. Matcher source remains
-instruction-exact at 100.00%, 75/75 instructions, full prefix, with no masked
-operands.
+- VC6 symbol: `?ObjectProcJoinTextures@@YAXPAUcRObject@@@Z`
+- exact Windows match: 75/75 instructions
+- live caller: `build_all_objects`
