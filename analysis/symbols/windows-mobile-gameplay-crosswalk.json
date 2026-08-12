@@ -13,6 +13,7 @@
     "source_object on an unverified entry is independent Windows compilation-unit provenance and does not turn a candidate into a mobile mapping.",
     "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
     "source_object_evidence set to windows-constructor-support-run means a compiler-emitted helper belongs to a bounded constructor support block with a direct source-object anchor and a closed native caller graph; shared folded and cross-cutting helpers are excluded.",
+    "source_object_evidence set to dual-mobile-inline-source-object means Android and iOS inline the complete Windows operation inside the same authored enclosing method, both ports independently assign that method to the named source unit, and the Windows call graph agrees; this is source provenance, not a whole-function mobile mapping.",
     "source_object_evidence set to windows-isolated-class-source-run means a closed Windows method family forms its own linker run between independently identified source units, and the exact native class name fixes that run's object filename.",
     "source_object_evidence set to ios-global-source-object means the Windows function initializes, or is the direct CRT thunk for, a cross-port global whose exact iOS symbol is assigned to that source object.",
     "source_object_evidence set to android-global-constructor-source-file means an exact Android `_GLOBAL__I_<source>.cpp` symbol constructs the corresponding cross-port globals, and the canonical iOS source catalog assigns that source file to the named object unit.",
@@ -6952,68 +6953,76 @@
       "windows_name": "append_bod_to_end",
       "windows_size": 144,
       "status": "unverified",
+      "source_object": "Game.o",
+      "source_object_evidence": "dual-mobile-inline-source-object",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRGame::Init4()",
+          "reason": "Both mobile Init4 bodies inline this exact List ADDend tail splice, but each contains the much larger player, score, tip, star, backdrop, border, and root-list initialization phase; the evidence recovers Game.o provenance, not a whole-function mapping."
+        }
+      ],
       "android_candidates": [
         {
           "symbol": "cRBod::cRBod()",
-          "score": 0.6476,
-          "name_score": 0.5053,
+          "score": 0.8844,
+          "name_score": 0.9,
           "size_score": 0.8611
         },
         {
           "symbol": "cRBod::cRBod()",
-          "score": 0.6476,
-          "name_score": 0.5053,
+          "score": 0.8844,
+          "name_score": 0.9,
           "size_score": 0.8611
         },
         {
-          "symbol": "cROptions::UnInit()",
-          "score": 0.6296,
-          "name_score": 0.4178,
-          "size_score": 0.9474
+          "symbol": "cRGame::InitLast()",
+          "score": 0.7112,
+          "name_score": 0.6,
+          "size_score": 0.878
         },
         {
-          "symbol": "cRBorderManager::Kill(cRBorder*)",
-          "score": 0.6289,
-          "name_score": 0.4,
-          "size_score": 0.9722
+          "symbol": "RMathInit()",
+          "score": 0.6949,
+          "name_score": 0.6,
+          "size_score": 0.8372
         },
         {
-          "symbol": "cRSubSolution::ReSet(int, int, float, int, int, int)",
-          "score": 0.6164,
-          "name_score": 0.4273,
-          "size_score": 0.9
+          "symbol": "cLinkedList<cRBod>::Remove(cRBod*)",
+          "score": 0.66,
+          "name_score": 0.6,
+          "size_score": 0.75
         }
       ],
       "ios_candidates": [
         {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.8178,
+          "name_score": 0.9,
+          "size_score": 0.6944
+        },
+        {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.8178,
+          "name_score": 0.9,
+          "size_score": 0.6944
+        },
+        {
           "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.6521,
-          "name_score": 0.5127,
+          "score": 0.7494,
+          "name_score": 0.675,
           "size_score": 0.8611
         },
         {
           "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.6521,
-          "name_score": 0.5127,
+          "score": 0.7494,
+          "name_score": 0.675,
           "size_score": 0.8611
         },
         {
-          "symbol": "cRFade::StartOn()",
-          "score": 0.6444,
-          "name_score": 0.4444,
-          "size_score": 0.9444
-        },
-        {
-          "symbol": "G0FontRenderEnd()",
-          "score": 0.6429,
-          "name_score": 0.5,
-          "size_score": 0.8571
-        },
-        {
-          "symbol": "OFSqlQuery::bind(char const*, NSString*)",
-          "score": 0.6067,
-          "name_score": 0.4,
-          "size_score": 0.9167
+          "symbol": "cRGame::Init5()",
+          "score": 0.6711,
+          "name_score": 0.6,
+          "size_score": 0.7778
         }
       ]
     },

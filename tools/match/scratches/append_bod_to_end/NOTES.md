@@ -23,3 +23,20 @@ extent. Focused output remains exact.
 The canonical analyzer ABI is now `void __thiscall(BodList*, BodNode*)`, shared
 with the front insertion helper rather than a synthetic tail view. The replay
 fails closed unless the complete list and intrusive-node sizes remain exact.
+
+## 2026-08-12 dual-mobile inline provenance
+
+Android and iOS independently inline this complete tail insertion inside
+`cRGame::Init4()`. Both bodies test linked bit `0x200`, use the root list head,
+walk `list_next` until null, install the new node's backward link, clear its
+forward link, set ownership, and report the distinctive `List ADDend` error.
+The iOS symbol is directly assigned to `Game.o`; the Android body lies inside
+the independently bounded Game.o symbol run.
+
+Live Windows xrefs show one call, from `initialize_game_assets_and_world`, on
+the same root cRGame list. The helper also ends immediately before the desktop
+Direct3D allocation block. Together these facts recover its Windows `Game.o`
+emission unit. They do not justify mapping the helper to the much larger
+mobile Init4 body or guessing an unexported template method name, so the
+crosswalk remains unverified and records only
+`dual-mobile-inline-source-object` provenance.

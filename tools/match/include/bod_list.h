@@ -51,6 +51,8 @@ public:
     // Authored cLinkedList<cRBod>::Add(cRBod&); the reference has the same
     // pointer ABI as this Windows projection.
     void add_bod_to_front(BodNode* node); // @ 0x4113b0
+    // Exact tail splice inlined by cRGame::Init4 on Android/iOS. The mobile
+    // binaries preserve List ADDend but do not export a method name for it.
     void append_bod_to_end(BodNode* node); // @ 0x411420
     void recycle_bod_to_free_list(BodNode* node); // @ 0x447290
 

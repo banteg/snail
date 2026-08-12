@@ -5914,6 +5914,93 @@ def test_mobile_game_level_init_recovers_authored_virtual_owner() -> None:
     ) in ida_sync
 
 
+def test_mobile_bod_list_tail_splice_recovers_game_source_object() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"] == "append_bod_to_end"
+    )
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in manifest["functions"]
+        if function["name"] == "append_bod_to_end"
+    )
+
+    assert entry["status"] == "unverified"
+    assert "android_symbol" not in entry
+    assert "ios_symbol" not in entry
+    assert entry["source_object"] == "Game.o"
+    assert (
+        entry["source_object_evidence"]
+        == "dual-mobile-inline-source-object"
+    )
+    assert function["mobile_candidate_rejections"] == [
+        {
+            "symbol": "cRGame::Init4()",
+            "reason": (
+                "Both mobile Init4 bodies inline this exact List ADDend "
+                "tail splice, but each contains the much larger player, "
+                "score, tip, star, backdrop, border, and root-list "
+                "initialization phase; the evidence recovers Game.o "
+                "provenance, not a whole-function mapping."
+            ),
+        }
+    ]
+
+    ios_names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    ios_objects = {
+        source_object
+        for source_object, symbols in ios_names["source_objects"]
+        if "cRGame::Init4()" in symbols
+    }
+    assert ios_objects == {"Game.o"}
+
+    for corpus_root in (
+        DEFAULT_ANDROID_CORPUS_ROOT,
+        DEFAULT_IOS_CORPUS_ROOT,
+    ):
+        index = load_json(corpus_root / "index.json")
+        init4 = resolve_corpus_symbols(index, "cRGame::Init4()")
+        assert len(init4) == 1
+        body = corpus_function_path(corpus_root, init4[0]).read_text(
+            encoding="utf-8"
+        )
+        assert body.count('"List ADDend"') == 1
+        assert "0x200" in body
+
+    android_runs = load_json(
+        repo_root / "analysis/symbols/android-gameplay-source-runs.json"
+    )["runs"]
+    game_run = next(
+        run for run in android_runs if run["source_object"] == "Game.o"
+    )
+    android_init4 = resolve_corpus_symbols(
+        load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json"),
+        "cRGame::Init4()",
+    )[0]
+    assert int(game_run["start"], 0) <= int(
+        android_init4["address"], 16
+    ) < int(game_run["end"], 0)
+
+    notes = (
+        repo_root
+        / "tools/match/scratches/append_bod_to_end/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "dual-mobile-inline-source-object" in notes
+    assert "guessing an unexported template method name" in notes
+    assert any(
+        "dual-mobile-inline-source-object" in note
+        for note in complete["notes"]
+    )
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [

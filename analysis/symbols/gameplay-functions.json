@@ -1099,7 +1099,15 @@
     {
       "address": "0x411420",
       "name": "append_bod_to_end",
-      "description": "Intrusive BodList member that walks to the tail and appends an unlinked BodNode, setting its linked flag or reporting an error for duplicate ownership."
+      "description": "Exact tail insertion on the root cRGame intrusive BOD list: walks list_next to the opposite end, links an unowned node, and reports `List ADDend` on duplicate ownership. Android and iOS inline the complete operation inside cRGame::Init4(); no standalone mobile export proves an authored method spelling, so the Windows helper remains deliberately unverified as a one-to-one mapping.",
+      "source_object": "Game.o",
+      "source_object_evidence": "dual-mobile-inline-source-object",
+      "mobile_candidate_rejections": [
+        {
+          "symbol": "cRGame::Init4()",
+          "reason": "Both mobile Init4 bodies inline this exact List ADDend tail splice, but each contains the much larger player, score, tip, star, backdrop, border, and root-list initialization phase; the evidence recovers Game.o provenance, not a whole-function mapping."
+        }
+      ]
     },
     {
       "address": "0x4114b0",
