@@ -338,7 +338,7 @@ def test_mobile_finalizer_high_score_and_tip_lifecycles_are_persisted() -> None:
             "cRSubHighScore::Init()",
             "HighScore.o",
         ),
-        ("0x4489e0", "cRTip_UnInit", "cRTip::UnInit()", None),
+        ("0x4489e0", "cRTip_UnInit", "cRTip::UnInit()", "Tips.o"),
     ):
         assert alias in functions_by_address[address]["aliases"]
         assert crosswalk_by_address[address]["android_symbol"] == symbol
@@ -354,6 +354,9 @@ def test_mobile_finalizer_high_score_and_tip_lifecycles_are_persisted() -> None:
         == "cRSubHighScore::Init()"
     )
     assert "ios_symbol" not in crosswalk_by_address["0x4489e0"]
+    assert crosswalk_by_address["0x4489e0"][
+        "source_object_evidence"
+    ] == "unique-ios-class-object"
     assert "deliberately not mapped" in (
         crosswalk_by_address["0x417540"]["notes"]
     )
@@ -398,7 +401,10 @@ def test_android_root_constructor_recovers_inlined_game_owner() -> None:
     root_constructor = crosswalk_by_address["0x407b60"]
     assert root_constructor["android_symbol"] == "cRGame::cRGame()"
     assert "ios_symbol" not in root_constructor
-    assert root_constructor["source_object"] is None
+    assert root_constructor["source_object"] == "Game.o"
+    assert root_constructor[
+        "source_object_evidence"
+    ] == "unique-ios-class-object"
     assert root_constructor["confidence"] == "high"
     assert "inlined cRGame constructor region" in root_constructor["notes"]
     assert "not to the wrapper's outer authored name" in (

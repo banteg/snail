@@ -3749,7 +3749,8 @@
       "windows_size": 1184,
       "status": "verified",
       "android_symbol": "cRGame::cRGame()",
-      "source_object": null,
+      "source_object": "Game.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -5763,7 +5764,8 @@
       "windows_size": 208,
       "status": "verified",
       "android_symbol": "cRGalaxy::Line(int, float, float, float, float, float, tColour&)",
-      "source_object": null,
+      "source_object": "Galaxy.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -5871,7 +5873,8 @@
       "windows_size": 240,
       "status": "verified",
       "android_symbol": "cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)",
-      "source_object": null,
+      "source_object": "Galaxy.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -5927,7 +5930,8 @@
       "status": "verified",
       "android_symbol": "cROverlay::Init()",
       "android_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "Game.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -6711,7 +6715,8 @@
       "windows_size": 288,
       "status": "verified",
       "android_symbol": "cRBackdrop::Init(int)",
-      "source_object": null,
+      "source_object": "Game.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -6753,7 +6758,8 @@
       "windows_size": 80,
       "status": "verified",
       "android_symbol": "cRBackdrop::SetWorld(int)",
-      "source_object": null,
+      "source_object": "Game.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -10056,7 +10062,8 @@
       "android_symbol": "cRLogo::UnInit()",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRLogo::UnInit()",
-      "source_object": null,
+      "source_object": "Logo.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -16438,7 +16445,8 @@
       "android_symbol": "cRSubLoc::IsFloor()",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRSubLoc::IsFloor()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -16451,7 +16459,8 @@
       "android_symbol": "cRSubLoc::IsRamp()",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRSubLoc::IsRamp()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -16464,7 +16473,8 @@
       "android_symbol": "cRSubLoc::IsEmpty()",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRSubLoc::IsEmpty()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -16475,7 +16485,8 @@
       "windows_size": 48,
       "status": "verified",
       "android_symbol": "cRSubLoc::IsSlide()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16559,7 +16570,8 @@
       "windows_size": 400,
       "status": "verified",
       "android_symbol": "cRSubLoc::Remove()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16626,7 +16638,8 @@
       "windows_size": 352,
       "status": "verified",
       "android_symbol": "cRSubGoldy::SetShootFlags()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16668,7 +16681,8 @@
       "windows_size": 112,
       "status": "verified",
       "android_symbol": "cRSubGoldy::Shoot(cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16711,7 +16725,8 @@
       "status": "verified",
       "android_symbol": "cRSubHover::End()",
       "ios_symbol": "cRSubHover::End()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -16734,7 +16749,8 @@
       "windows_size": 48,
       "status": "verified",
       "android_symbol": "cRSubHover::JetUnInit()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16776,7 +16792,8 @@
       "windows_size": 224,
       "status": "verified",
       "android_symbol": "cRSubHover::JetInit()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16831,7 +16848,8 @@
       "status": "verified",
       "android_symbol": "cRSubHover::Init(int)",
       "ios_symbol": "cRSubHover::Init(cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -16842,7 +16860,8 @@
       "windows_size": 64,
       "status": "verified",
       "android_symbol": "cRSubHover::On()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16896,7 +16915,8 @@
       "windows_size": 80,
       "status": "verified",
       "android_symbol": "cRSubGoldy::ShowLives()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17051,7 +17071,8 @@
       "windows_size": 64,
       "status": "verified",
       "android_symbol": "cRSubGoldy::GhostDraw(float)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17160,7 +17181,8 @@
       "windows_size": 288,
       "status": "verified",
       "android_symbol": "cRSubGarbage::Smoke(tVector&, tVector&, cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17288,7 +17310,8 @@
       "status": "verified",
       "android_symbol": "cRSubRingStar::Shower(cRSubGoldy*)",
       "ios_symbol": "cRSubRingStar::Shower(cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -17359,7 +17382,8 @@
       "windows_size": 208,
       "status": "verified",
       "android_symbol": "cRSubGarbage::Kill()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17413,7 +17437,8 @@
       "windows_size": 64,
       "status": "verified",
       "android_symbol": "cRSlug::VoiceAI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17455,7 +17480,8 @@
       "windows_size": 96,
       "status": "verified",
       "android_symbol": "cRSlug::VoicePlay(int)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17629,7 +17655,8 @@
       "windows_size": 336,
       "status": "verified",
       "android_symbol": "cRSubSolution::Load(cRSubSolutionHeader*)",
-      "source_object": null,
+      "source_object": "HighScore.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17671,7 +17698,8 @@
       "windows_size": 336,
       "status": "verified",
       "android_symbol": "cRSubSolution::Save(unsigned char*)",
-      "source_object": null,
+      "source_object": "HighScore.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17958,7 +17986,8 @@
       "windows_size": 32,
       "status": "verified",
       "android_symbol": "cRSaltManager::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -18012,7 +18041,8 @@
       "windows_size": 32,
       "status": "verified",
       "android_symbol": "cRSubLazerManager::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -18055,7 +18085,8 @@
       "status": "verified",
       "android_symbol": "cRSubLazer::Shoot(tVector, tVector)",
       "ios_symbol": "cRSubLazer::Shoot(cRSubGoldy*, tVector, tVector)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18066,7 +18097,8 @@
       "windows_size": 144,
       "status": "verified",
       "android_symbol": "cRSubLazer::Kill()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -18207,7 +18239,8 @@
       "android_symbol": "cRSubGoldy::RessurectInit(int)",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRSubGoldy::RessurectInit(int)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18220,7 +18253,8 @@
       "android_symbol": "cRSubGoldy::RessurectAI()",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRSubGoldy::RessurectAI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18803,7 +18837,8 @@
       "status": "verified",
       "android_symbol": "cRSnail::SetAnimation(int, bool, int)",
       "ios_symbol": "cRSnail::SetAnimation(int, bool, int)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18881,7 +18916,8 @@
       "status": "verified",
       "android_symbol": "cRSquidge::Init()",
       "ios_symbol": "cRSquidge::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18905,7 +18941,8 @@
       "status": "verified",
       "android_symbol": "cRSquidge::StartZ(float)",
       "ios_symbol": "cRSquidge::StartZ(float)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18917,7 +18954,8 @@
       "status": "verified",
       "android_symbol": "cRSquidge::AI()",
       "ios_symbol": "cRSquidge::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18929,7 +18967,8 @@
       "status": "verified",
       "android_symbol": "cRInvincible::Init()",
       "ios_symbol": "cRInvincible::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -18940,7 +18979,8 @@
       "windows_size": 112,
       "status": "verified",
       "android_symbol": "cRInvincible::Start()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -19007,7 +19047,8 @@
       "windows_size": 32,
       "status": "verified",
       "android_symbol": "cRSubGoldy::Kill()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -19073,7 +19114,8 @@
       "windows_size": 128,
       "status": "verified",
       "android_symbol": "cRSnail::BuildHotSpots()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -19357,7 +19399,8 @@
       "status": "verified",
       "android_symbol": "cRCutScene::Init()",
       "ios_symbol": "cRCutScene::Init(cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -19406,7 +19449,8 @@
       "android_symbol": "cRSubGoldy::DeathInit()",
       "android_symbol_evidence": "exact-demangled-symbol",
       "ios_symbol": "cRSubGoldy::DeathInit()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -19831,7 +19875,8 @@
       "windows_size": 96,
       "status": "verified",
       "android_symbol": "cRTip::UnInit()",
-      "source_object": null,
+      "source_object": "Tips.o",
+      "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [

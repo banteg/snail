@@ -5698,6 +5698,79 @@ def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     assert "ios: verified" in output
 
 
+def test_unique_ios_class_owner_provenance_is_sound(capsys) -> None:
+    repo_root = Path(__file__).parents[1]
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    verified = load_json(
+        repo_root
+        / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+
+    objects_by_class: dict[str, set[str]] = {}
+    exact_object_symbols: set[str] = set()
+    for source_object, symbols in names["source_objects"]:
+        exact_object_symbols.update(symbols)
+        for symbol in symbols:
+            match = re.match(r"([^:(]+)::", symbol)
+            if match:
+                objects_by_class.setdefault(match.group(1), set()).add(
+                    source_object
+                )
+
+    inferred = {
+        entry["windows_name"]: entry
+        for entry in verified["entries"]
+        if entry.get("source_object_evidence")
+        == "unique-ios-class-object"
+    }
+    assert len(inferred) >= 45
+    for entry in inferred.values():
+        symbol = entry.get("ios_symbol") or entry["android_symbol"]
+        match = re.match(r"([^:(]+)::", symbol)
+        assert match is not None
+        assert symbol not in exact_object_symbols
+        assert objects_by_class[match.group(1)] == {
+            entry["source_object"]
+        }
+
+    expected = {
+        "draw_galaxy_line": "Galaxy.o",
+        "construct_game_runtime": "Game.o",
+        "destroy_intro_screen": "Logo.o",
+        "serialize_compact_high_score_record": "HighScore.o",
+        "shoot_subgoldy": "SubGame.o",
+    }
+    complete_by_name = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    for windows_name, source_object in expected.items():
+        assert inferred[windows_name]["source_object"] == source_object
+        assert complete_by_name[windows_name]["source_object"] == (
+            source_object
+        )
+        assert complete_by_name[windows_name][
+            "source_object_evidence"
+        ] == "unique-ios-class-object"
+
+    result = main(
+        [
+            "match",
+            "mobile",
+            "draw_galaxy_line",
+            "--windows-tool",
+            "none",
+            "--paths-only",
+        ]
+    )
+    output = capsys.readouterr().out
+    assert result == 0
+    assert "source object: Galaxy.o" in output
+    assert "source object evidence: unique-ios-class-object" in output
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

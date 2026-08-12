@@ -2628,6 +2628,7 @@ class TriageMobileEvidence:
     ios_bodies: int = 0
     confidence: str | None = None
     source_object: str | None = None
+    source_object_evidence: str | None = None
 
     @property
     def verified(self) -> bool:
@@ -4342,6 +4343,7 @@ def _triage_mobile_evidence(
         ios_bodies=int(entry.get("ios_body_count", 0) or 0),
         confidence=entry.get("confidence"),
         source_object=entry.get("source_object"),
+        source_object_evidence=entry.get("source_object_evidence"),
     )
 
 
@@ -4552,6 +4554,9 @@ def triage_row_payload(row: TriageRow) -> dict:
             "ios_bodies": row.mobile.ios_bodies,
             "confidence": row.mobile.confidence,
             "source_object": row.mobile.source_object,
+            "source_object_evidence": (
+                row.mobile.source_object_evidence
+            ),
         },
         "best_scratch": (
             scratch_status_payload(row.best_status)

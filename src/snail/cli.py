@@ -1453,6 +1453,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"mapping: {entry['status']}")
         if entry.get("confidence"):
             print(f"confidence: {entry['confidence']}")
+        if entry.get("source_object"):
+            print(f"source object: {entry['source_object']}")
+        if entry.get("source_object_evidence"):
+            print(
+                "source object evidence: "
+                f"{entry['source_object_evidence']}"
+            )
 
         if args.windows_tool != "none":
             print()

@@ -139,6 +139,7 @@ def test_triage_joins_by_address_and_surfaces_search_and_mobile_evidence(
                     "ios_body_count": 2,
                     "confidence": "high",
                     "source_object": "Game.o",
+                    "source_object_evidence": "unique-ios-class-object",
                 }
             ]
         },
@@ -165,6 +166,7 @@ def test_triage_joins_by_address_and_surfaces_search_and_mobile_evidence(
         ios_bodies=2,
         confidence="high",
         source_object="Game.o",
+        source_object_evidence="unique-ios-class-object",
     )
     assert foo.mobile.verified
     assert bar.state == "missing"

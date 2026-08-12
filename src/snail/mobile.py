@@ -395,6 +395,7 @@ def build_complete_mobile_crosswalk(
                 "ios_symbol",
                 "ios_symbol_evidence",
                 "source_object",
+                "source_object_evidence",
                 "confidence",
             ):
                 if key in verified:
