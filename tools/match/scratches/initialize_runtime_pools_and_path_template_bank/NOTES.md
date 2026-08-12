@@ -56,6 +56,27 @@ the three xref-free Windows records still do not acquire speculative names.
 This is provenance and ownership recovery only. The exact Windows constructor
 remains byte-identical at 227/227 instructions with all 72 operands clean.
 
+## 2026-08-12 Mac.o constructor-support run
+
+The exact v1.5 iOS `cRSubGame::cRSubGame()` symbol is STABS-marked in `Mac.o`.
+Live Windows xrefs close the surrounding helper block in both directions:
+five helpers are called only by the outer `construct_game_runtime` wrapper,
+and twenty more are called only by this cRSubGame constructor. The wrapper
+ends at `0x407ff1`, the support block begins at the next 16-byte boundary
+`0x408000`, and verified `Galaxy.o` code begins at `load_galaxy_layout @
+0x4088e0`.
+
+This recovers the Windows emission unit, not a new semantic class owner. Two
+physical neighbors remain deliberately unowned: folded
+`noop_runtime_slot_constructor` has later callers in the SubGame.o global
+constructor run, while `abort_startup_with_3d_error` is cross-cutting platform
+glue used by startup, audio, D3D, and input/window code. Binary Ninja's apparent
+`0x4088bf` xref into `initialize_sub_loc` is only the last alignment NOP after
+the process-termination call; the constructor's real call at `0x4082e1`
+retains `initialize_sub_loc` inside the Mac.o support run. The full membership
+and exclusions are recorded in
+`analysis/symbols/windows-constructor-support-runs.json`.
+
 ## 2026-07-17 enclosing cRSubGame ABI
 
 The exact 227-instruction constructor, its sole `GameRoot::subgame` caller,

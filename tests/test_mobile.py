@@ -6096,6 +6096,142 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
     ) == 40
 
 
+def test_windows_constructor_support_run_recovers_mac_object(capsys) -> None:
+    repo_root = Path(__file__).parents[1]
+    provenance = load_json(
+        repo_root
+        / "analysis/symbols/windows-constructor-support-runs.json"
+    )
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    verified = load_json(
+        repo_root
+        / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+
+    assert len(provenance["runs"]) == 1
+    run = provenance["runs"][0]
+    assert run["source_object"] == "Mac.o"
+    assert run["evidence"] == "windows-constructor-support-run"
+    assert run["start"] == "0x408000"
+    assert run["end"] == "0x4088e0"
+
+    included = tuple(
+        name
+        for group in run["caller_groups"]
+        for name in group["functions"]
+    )
+    assert included == (
+        "initialize_game_player",
+        "initialize_noop_renderable_bod",
+        "initialize_border_record",
+        "initialize_cached_x_mesh_slot",
+        "initialize_intro_logo_renderable",
+        "initialize_track_speedup_runtime",
+        "initialize_track_jetpack_pickup_runtime",
+        "initialize_track_health_pickup_runtime",
+        "initialize_slug_hazard_runtime",
+        "initialize_garbage_hazard",
+        "initialize_track_ring_or_special_effect_runtime",
+        "initialize_track_row_runtime",
+        "initialize_path_template_record_pair",
+        "initialize_active_bod",
+        "initialize_sub_lazer_runtime",
+        "initialize_salt_hazard_runtime",
+        "initialize_fringe_object",
+        "initialize_click_start_controller_runtime",
+        "initialize_golb_shot",
+        "initialize_player_presentation_controller",
+        "initialize_active_landscape_entry",
+        "initialize_landscape_script_record",
+        "initialize_track_parcel_runtime",
+        "initialize_galaxy_route_name_record",
+        "initialize_sub_loc",
+    )
+    assert len(set(included)) == 25
+
+    manifest_by_name = {
+        entry["name"]: entry for entry in manifest["functions"]
+    }
+    complete_by_name = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    for name in included:
+        function = manifest_by_name[name]
+        entry = complete_by_name[name]
+        assert run["start"] <= function["address"] < run["end"]
+        assert function["source_object"] == "Mac.o"
+        assert (
+            function["source_object_evidence"]
+            == "windows-constructor-support-run"
+        )
+        assert entry["status"] == "unverified"
+        assert entry["source_object"] == "Mac.o"
+        assert (
+            entry["source_object_evidence"]
+            == "windows-constructor-support-run"
+        )
+
+    anchor_name = run["source_anchor"]["windows_name"]
+    excluded = tuple(
+        entry["windows_name"] for entry in run["excluded_functions"]
+    )
+    functions_in_range = {
+        entry["name"]
+        for entry in manifest["functions"]
+        if run["start"] <= entry["address"] < run["end"]
+    }
+    assert functions_in_range == set(included) | {anchor_name, *excluded}
+    for name in excluded:
+        assert "source_object" not in manifest_by_name[name]
+        assert "source_object_evidence" not in complete_by_name[name]
+
+    verified_by_name = {
+        entry["windows_name"]: entry for entry in verified["entries"]
+    }
+    anchor = verified_by_name[anchor_name]
+    assert anchor["source_object"] == "Mac.o"
+    assert anchor["ios_symbol"] == "cRSubGame::cRSubGame()"
+    boundary = verified_by_name[
+        run["next_source_boundary"]["windows_name"]
+    ]
+    assert boundary["address"] == run["end"]
+    assert boundary["source_object"] == "Galaxy.o"
+
+    wrapper = run["root_wrapper"]
+    wrapper_end = int(wrapper["address"], 0) + wrapper["size"]
+    assert wrapper_end == int(wrapper["end"], 0)
+    assert (wrapper_end + 0xF) & ~0xF == int(run["start"], 0)
+    fallthrough = run["ignored_analyzer_fallthrough"]
+    assert fallthrough["address"] == "0x4088bf"
+    assert "alignment NOP" in fallthrough["reason"]
+    assert any(
+        "windows-constructor-support-run" in note
+        for note in complete["notes"]
+    )
+
+    result = main(
+        [
+            "match",
+            "mobile",
+            "initialize_golb_shot",
+            "--windows-tool",
+            "none",
+            "--paths-only",
+        ]
+    )
+    output = capsys.readouterr().out
+    assert result == 0
+    assert "mapping: unverified" in output
+    assert "source object: Mac.o" in output
+    assert (
+        "source object evidence: windows-constructor-support-run"
+        in output
+    )
+
+
 def test_unverified_windows_source_runs_preserve_owner_provenance(
     capsys,
 ) -> None:

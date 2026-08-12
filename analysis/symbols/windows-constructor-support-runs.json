@@ -1,0 +1,90 @@
+{
+  "name": "Snail Mail Windows constructor-support source runs",
+  "notes": [
+    "These records recover Windows emission-unit provenance for compiler-emitted constructor helpers; they do not replace each helper's authored semantic owner.",
+    "windows-constructor-support-run requires a direct source-object anchor inside the run, a closed native caller graph rooted at the constructors compiled there, and a verified different source object at the next run boundary.",
+    "Shared folded helpers and cross-cutting platform helpers are excluded even when their bodies lie physically inside the interval."
+  ],
+  "runs": [
+    {
+      "source_object": "Mac.o",
+      "evidence": "windows-constructor-support-run",
+      "start": "0x408000",
+      "end": "0x4088e0",
+      "root_wrapper": {
+        "windows_name": "construct_game_runtime",
+        "address": "0x407b60",
+        "size": 1169,
+        "end": "0x407ff1",
+        "notes": "The wrapper's outer allocation, size-reporting, and global-publication work is Mac startup code; its verified cRGame mapping transfers semantic constructor ownership from Game.o only to the inlined constructor region. The first support helper begins at the next 16-byte boundary."
+      },
+      "source_anchor": {
+        "windows_name": "initialize_runtime_pools_and_path_template_bank",
+        "address": "0x408060",
+        "mobile_symbol": "cRSubGame::cRSubGame()",
+        "mobile_source_object": "Mac.o",
+        "notes": "The exact v1.5 iOS constructor symbol is STABS-marked in Mac.o and the Windows helper is its verified desktop projection."
+      },
+      "next_source_boundary": {
+        "windows_name": "load_galaxy_layout",
+        "address": "0x4088e0",
+        "source_object": "Galaxy.o"
+      },
+      "caller_groups": [
+        {
+          "caller": "construct_game_runtime",
+          "functions": [
+            "initialize_game_player",
+            "initialize_noop_renderable_bod",
+            "initialize_border_record",
+            "initialize_cached_x_mesh_slot",
+            "initialize_intro_logo_renderable"
+          ]
+        },
+        {
+          "caller": "initialize_runtime_pools_and_path_template_bank",
+          "functions": [
+            "initialize_track_speedup_runtime",
+            "initialize_track_jetpack_pickup_runtime",
+            "initialize_track_health_pickup_runtime",
+            "initialize_slug_hazard_runtime",
+            "initialize_garbage_hazard",
+            "initialize_track_ring_or_special_effect_runtime",
+            "initialize_track_row_runtime",
+            "initialize_path_template_record_pair",
+            "initialize_active_bod",
+            "initialize_sub_lazer_runtime",
+            "initialize_salt_hazard_runtime",
+            "initialize_fringe_object",
+            "initialize_click_start_controller_runtime",
+            "initialize_golb_shot",
+            "initialize_player_presentation_controller",
+            "initialize_active_landscape_entry",
+            "initialize_landscape_script_record",
+            "initialize_track_parcel_runtime",
+            "initialize_galaxy_route_name_record",
+            "initialize_sub_loc"
+          ]
+        }
+      ],
+      "ignored_analyzer_fallthrough": {
+        "address": "0x4088bf",
+        "from": "abort_startup_with_3d_error",
+        "to": "initialize_sub_loc",
+        "reason": "The address is the fifth alignment NOP after the process-termination call, not a callsite; Binary Ninja retains a fallthrough edge because that imported termination target is not marked noreturn."
+      },
+      "excluded_functions": [
+        {
+          "address": "0x408600",
+          "windows_name": "noop_runtime_slot_constructor",
+          "reason": "The mov-eax-ecx constructor is folded across this run and the later SubGame.o global parcel constructors, so one physical body cannot prove a unique source object."
+        },
+        {
+          "address": "0x4088a0",
+          "windows_name": "abort_startup_with_3d_error",
+          "reason": "The fatal platform helper is called by startup, audio, D3D, and input/window code outside both enclosing constructors; physical adjacency is insufficient and platform glue is outside this recovery."
+        }
+      ]
+    }
+  ]
+}

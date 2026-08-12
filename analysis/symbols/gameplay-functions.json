@@ -525,12 +525,16 @@
     {
       "address": "0x408000",
       "name": "initialize_game_player",
-      "description": "Constructs one 0x1f8-byte Windows cRPlayer record: initializes its inherited renderable body, constructs the owned cRCamera subobject at +0xa0, constructs the target/current colors of the owned FrontendOverlayColorLerp at +0x184, and installs the cRPlayer::AI callback."
+      "description": "Constructs one 0x1f8-byte Windows cRPlayer record: initializes its inherited renderable body, constructs the owned cRCamera subobject at +0xa0, constructs the target/current colors of the owned FrontendOverlayColorLerp at +0x184, and installs the cRPlayer::AI callback.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408040",
       "name": "initialize_noop_renderable_bod",
-      "description": "Constructs one RenderableBod and replaces its callback with the shared noop_runtime_ai slot; construct_game_runtime uses it for the three passive overlay child bodies."
+      "description": "Constructs one RenderableBod and replaces its callback with the shared noop_runtime_ai slot; construct_game_runtime uses it for the three passive overlay child bodies.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408060",
@@ -541,6 +545,8 @@
       "address": "0x408410",
       "name": "initialize_border_record",
       "description": "Constructs one 0x724-byte front-end border/widget pool record by seeding the shared BOD header, no-op-constructing the constructor-proven color/style blocks, and installing the front-end widget callback table. `construct_game_runtime` uses it for the 150-entry `BorderManager::borders` pool at `game + 0x11d0`.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRBorder::X0()",
@@ -551,7 +557,9 @@
     {
       "address": "0x408470",
       "name": "initialize_cached_x_mesh_slot",
-      "description": "Constructs one 0xbc-byte cached X-mesh object slot by seeding the shared BOD header and installing the cache-slot callback table. The root DirectX loader owns 128 slots starting at `game + 0x48e08`; names live at slot `+0x3c` and object BOD refs at slot `+0x24`."
+      "description": "Constructs one 0xbc-byte cached X-mesh object slot by seeding the shared BOD header and installing the cache-slot callback table. The root DirectX loader owns 128 slots starting at `game + 0x48e08`; names live at slot `+0x3c` and object BOD refs at slot `+0x24`.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408490",
@@ -559,7 +567,9 @@
       "description": "Constructs one 0x90-byte Windows cRLogoLetter by running the shared renderable-BOD constructor and installing the callback table whose first entry is `update_intro_logo_renderable`. `construct_game_runtime` seeds both of the cRLogo owner's fixed child banks with this constructor.",
       "aliases": [
         "cRLogoLetter_ctor"
-      ]
+      ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x4084b0",
@@ -567,7 +577,9 @@
       "aliases": [
         "cRSubSpeedUp_ctor"
       ],
-      "description": "Exact Windows constructor for the primary authored `cRSubSpeedUp` singleton: constructs the inherited renderable BOD and installs the table whose entry is the exact `cRSubSpeedUp::AI()`. Its 0xb4 extent exactly matches the native size ledger; `SubSpeedUp` remains compatibility vocabulary."
+      "description": "Exact Windows constructor for the primary authored `cRSubSpeedUp` singleton: constructs the inherited renderable BOD and installs the table whose entry is the exact `cRSubSpeedUp::AI()`. Its 0xb4 extent exactly matches the native size ledger; `SubSpeedUp` remains compatibility vocabulary.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x4084d0",
@@ -575,7 +587,9 @@
       "aliases": [
         "cRJetPack_ctor"
       ],
-      "description": "Exact Windows constructor for the primary authored `cRJetPack` singleton: constructs its inherited BOD, constructs two complete embedded 0x94-byte `cRVapour` children, and installs the table whose entry is `cRJetPack::AI()`. The complete 0x19c extent exactly matches the native size ledger; `JetPack` remains compatibility vocabulary."
+      "description": "Exact Windows constructor for the primary authored `cRJetPack` singleton: constructs its inherited BOD, constructs two complete embedded 0x94-byte `cRVapour` children, and installs the table whose entry is `cRJetPack::AI()`. The complete 0x19c extent exactly matches the native size ledger; `JetPack` remains compatibility vocabulary.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408510",
@@ -583,7 +597,9 @@
       "aliases": [
         "cRSubHealth_ctor"
       ],
-      "description": "Exact Windows constructor for one authored `SubHealth` (`cRSubHealth` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_health_pickup`. `cRSubGame` owns eight inline 0x74-byte records whose 0x3a0 extent exactly matches the native `Size of cRSubHealth` ledger."
+      "description": "Exact Windows constructor for one authored `SubHealth` (`cRSubHealth` cross-port): constructs the inherited BOD and installs the table whose entry is `update_track_health_pickup`. `cRSubGame` owns eight inline 0x74-byte records whose 0x3a0 extent exactly matches the native `Size of cRSubHealth` ledger.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408530",
@@ -591,7 +607,9 @@
       "description": "Exact Windows constructor for one authored `cRSlug`: constructs the inherited renderable BOD and installs the table whose entry is `update_slug_hazard_ai`. `initialize_runtime_pools_and_path_template_bank` walks eight inline 0xec-byte records whose 0x760 extent exactly matches the native `Size of cRSlug` ledger; reset seeds each slot's typed `SubSlugState` to `INACTIVE`.",
       "aliases": [
         "cRSlug_ctor"
-      ]
+      ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408550",
@@ -599,7 +617,9 @@
       "description": "Exact Windows constructor for one authored `cRSubGarbage`: constructs the inherited renderable BOD and installs the table whose entry is `update_garbage_hazard`. `initialize_runtime_pools_and_path_template_bank` walks 50 inline 0xc4-byte records, and the resulting 0x2648 extent exactly matches the native `Size of cRSubGarbage` ledger; reset and teardown independently seed `SUB_GARBAGE_STATE_INACTIVE`.",
       "aliases": [
         "cRSubGarbage_ctor"
-      ]
+      ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408570",
@@ -607,7 +627,9 @@
       "aliases": [
         "cRSubRing_ctor"
       ],
-      "description": "Exact Windows constructor wrapper for one authored `SubRing` (`cRSubRing` cross-port): constructs the inherited RenderableBod, installs the table whose entry is update_ring_or_special_effect_parent, and returns the receiver. cRSubGame owns two 0x1f8-byte records whose 0x3f0 total matches the native cRSubRing size ledger."
+      "description": "Exact Windows constructor wrapper for one authored `SubRing` (`cRSubRing` cross-port): constructs the inherited RenderableBod, installs the table whose entry is update_ring_or_special_effect_parent, and returns the receiver. cRSubGame owns two 0x1f8-byte records whose 0x3f0 total matches the native cRSubRing size ledger.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408590",
@@ -615,17 +637,23 @@
       "aliases": [
         "cRSubRow_ctor"
       ],
-      "description": "Exact constructor for one primary authored `cRSubRow`: constructs its embedded `cRRowModel` base at +0x04, installs the cRRowModel table whose entry is exact `AI()`, and constructs its separate attachment `BodBase` at +0xb0. `initialize_runtime_pools_and_path_template_bank` invokes it over the owned 3200-entry, 0xf4-stride row slab."
+      "description": "Exact constructor for one primary authored `cRSubRow`: constructs its embedded `cRRowModel` base at +0x04, installs the cRRowModel table whose entry is exact `AI()`, and constructs its separate attachment `BodBase` at +0xb0. `initialize_runtime_pools_and_path_template_bank` invokes it over the owned 3200-entry, 0xf4-stride row slab.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x4085c0",
       "name": "initialize_path_template_record_pair",
-      "description": "Constructs one 0xa8-byte path-template record by initializing its leading BodBase and embedded fringe BodBase at +0x60, then installs the shared callback table. The retained historical name says pair, but the primary/secondary path pair consists of two adjacent calls/records."
+      "description": "Constructs one 0xa8-byte path-template record by initializing its leading BodBase and embedded fringe BodBase at +0x60, then installs the shared callback table. The retained historical name says pair, but the primary/secondary path pair consists of two adjacent calls/records.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x4085e0",
       "name": "initialize_active_bod",
-      "description": "Exact constructor for one 0x3c-byte TrackRenderCacheSlot: calls the inherited BodBase constructor and installs the callback table at `data_497338`. Its sole array-constructor use covers the complete 143x5 SegmentCache grid with stride 0x3c; the iOS cRSegTrack RTTI name independently supports this concrete track-cache owner."
+      "description": "Exact constructor for one 0x3c-byte TrackRenderCacheSlot: calls the inherited BodBase constructor and installs the callback table at `data_497338`. Its sole array-constructor use covers the complete 143x5 SegmentCache grid with stride 0x3c; the iOS cRSegTrack RTTI name independently supports this concrete track-cache owner.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408600",
@@ -643,6 +671,8 @@
       "aliases": [
         "cRSubLazer_ctor"
       ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRSubLazerManager::Init()",
@@ -657,6 +687,8 @@
       "aliases": [
         "cRSalt_ctor"
       ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRSaltManager::Init()",
@@ -674,7 +706,9 @@
       "description": "Exact constructor wrapper for one authored cRFringe: runs the shared body constructor, installs the Windows fringe vtable whose callback is 0x439b00, and returns the receiver. The runtime-pool constructor invokes it over the 7000-entry inline cRFringeManager array.",
       "aliases": [
         "cRFringe_ctor"
-      ]
+      ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408670",
@@ -682,27 +716,37 @@
       "description": "Exact Windows constructor for the 0xac-byte authored `cRClickStart` child: constructs its RenderableBod base and installs the callback table whose first entry is `update_click_start`.",
       "aliases": [
         "cRClickStart_ctor"
-      ]
+      ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408690",
       "name": "initialize_golb_shot",
-      "description": "Constructs one 0x2e8-byte Windows `cRSubGolb` slot by seeding its inherited zero-offset `RenderableBod`/`cRBodPos` base, complete embedded `Vapour`, and tertiary `cRGolbRocket`, then installing the `update_golb_ai`, vapour, and no-op child callback tables. The Android `cRSubGoldy` constructor independently constructs `cRBodPos` at each `cRSubGolb` slot start before installing its vtable. `initialize_runtime_pools_and_path_template_bank` uses the Windows helper for the 12-shot bank later driven by `create_golb`."
+      "description": "Constructs one 0x2e8-byte Windows `cRSubGolb` slot by seeding its inherited zero-offset `RenderableBod`/`cRBodPos` base, complete embedded `Vapour`, and tertiary `cRGolbRocket`, then installing the `update_golb_ai`, vapour, and no-op child callback tables. The Android `cRSubGoldy` constructor independently constructs `cRBodPos` at each `cRSubGolb` slot start before installing its vtable. `initialize_runtime_pools_and_path_template_bank` uses the Windows helper for the 12-shot bank later driven by `create_golb`.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x4086d0",
       "name": "initialize_player_presentation_controller",
-      "description": "Constructs the exact 0x19b4-byte authored `cRSnail` embedded at `cRSubGoldy +0x2984`: initializes its renderable prefix, ten visual slots, four animation channels, two hotspot sources, and cRInvincible child before installing their callback tables."
+      "description": "Constructs the exact 0x19b4-byte authored `cRSnail` embedded at `cRSubGoldy +0x2984`: initializes its renderable prefix, ten visual slots, four animation channels, two hotspot sources, and cRInvincible child before installing their callback tables.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408820",
       "name": "initialize_active_landscape_entry",
-      "description": "Constructs one active landscape-entry runtime record by clearing its shared body-list links and installing the landscape-entry update selector. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 10-slot pool later driven by `activate_landscape_entry`."
+      "description": "Constructs one active landscape-entry runtime record by clearing its shared body-list links and installing the landscape-entry update selector. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 10-slot pool later driven by `activate_landscape_entry`.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408840",
       "name": "initialize_landscape_script_record",
-      "description": "Constructs one 0x124-byte parsed landscape-script record by running the no-op `tColour` constructor for its `fog_color` field at `+0x110`; used for `LandscapeManager::scripts[128]` at subgame `+0xff81a4` (manager `+0x5a4`)."
+      "description": "Constructs one 0x124-byte parsed landscape-script record by running the no-op `tColour` constructor for its `fog_color` field at `+0x110`; used for `LandscapeManager::scripts[128]` at subgame `+0xff81a4` (manager `+0x5a4`).",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408860",
@@ -710,12 +754,16 @@
       "description": "Exact Windows constructor for one authored `cRParcel`: constructs the inherited BOD and installs the table whose entry is `update_track_parcel`. `cRParcelManager` owns 50 inline 0x8c-byte records whose 0x1b58 extent exactly matches the native manager ledger.",
       "aliases": [
         "cRParcel_ctor"
-      ]
+      ],
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x408880",
       "name": "initialize_galaxy_route_name_record",
-      "description": "Constructs one 0xa0-byte GalaxyRouteNameRecord by running the no-op tColour constructor on its color field at +0x84."
+      "description": "Constructs one 0xa0-byte GalaxyRouteNameRecord by running the no-op tColour constructor on its color field at +0x84.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x4088a0",
@@ -726,7 +774,9 @@
     {
       "address": "0x4088c0",
       "name": "initialize_sub_loc",
-      "description": "Exact Windows `cRSubLoc` constructor wrapper: runs the shared `cRBod` base constructor, installs the cell-specific vtable, increments the global `LocCount`, and returns the receiver. The runtime-pool constructor calls it 25,600 times at a 0x54 stride over the complete cRSubLoc grid."
+      "description": "Exact Windows `cRSubLoc` constructor wrapper: runs the shared `cRBod` base constructor, installs the cell-specific vtable, increments the global `LocCount`, and returns the receiver. The runtime-pool constructor calls it 25,600 times at a 0x54 stride over the complete cRSubLoc grid.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "windows-constructor-support-run"
     },
     {
       "address": "0x4088e0",
