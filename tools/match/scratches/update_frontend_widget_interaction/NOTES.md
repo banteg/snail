@@ -349,6 +349,11 @@ instructions against the 647-instruction target, with `96 ok / 0 unresolved /
 0 mismatch / 2 unaudited` references. The two unaudited references are the
 local clamp assignments' `1.0f` and `0.0f` loads.
 
+The obsolete `slider-pointer-lifetime-mutations.json` input is removed after
+the owner rewrite. Its complete 5-variant and 31-variant sweeps remain in the
+append-only experiment ledger; the old `FrontendWidget*` anchors no longer
+describe the primary `cRBorder*` source and should not be replayed.
+
 The remaining differences are now three bounded scheduling families:
 
 - target initializes the long-lived `0x2000` flag in `edi` immediately before
