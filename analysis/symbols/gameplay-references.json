@@ -4255,13 +4255,14 @@
     },
     {
       "address": "0x4972d8",
-      "name": "g_root_runtime_callback_table",
+      "name": "g_game_level_init_callback_table",
       "kind": "vtable",
       "aliases": [
+        "g_root_runtime_callback_table",
         "off_4972d8",
         "data_4972d8"
       ],
-      "description": "Root runtime BOD callback table installed at the `construct_game_runtime` object prefix; first entry is the shared no-op update callback."
+      "description": "One-entry cRGame virtual table installed at the `construct_game_runtime` object prefix. Its sole slot points to exact Windows `cRGame::LevelInit(int)` at 0x40a290; Android and iOS preserve the same vtable owner and authored method."
     },
     {
       "address": "0x4972dc",

@@ -212,6 +212,10 @@ PROTO_UPDATES = (
         "int32_t __thiscall run_frame_update(GameRoot* game)",
     ),
     (
+        "noop_runtime_callback",
+        "void __thiscall noop_runtime_callback(GameRoot* game, int32_t level)",
+    ),
+    (
         "render_game_frame",
         "void __thiscall render_game_frame(GameRoot* game)",
     ),
@@ -265,6 +269,7 @@ MOUSE_INPUT_OWNER_REANALYSIS_FUNCTIONS = (
 
 FRAME_RENDERER_REANALYSIS_FUNCTIONS = (
     "construct_game_runtime",
+    "noop_runtime_callback",
     "initialize_game_assets_and_world",
     "initialize_frontend_overlay_color_lerp",
     "draw_frontend_overlay_color_lerp",

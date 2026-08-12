@@ -20,12 +20,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 584,
-    "unverified_entries": 201,
-    "verified_android_symbols": 578,
-    "verified_ios_symbols": 464,
-    "available_android_mappings": 578,
-    "available_ios_mappings": 428
+    "verified_entries": 585,
+    "unverified_entries": 200,
+    "verified_android_symbols": 579,
+    "verified_ios_symbols": 465,
+    "available_android_mappings": 579,
+    "available_ios_mappings": 429
   },
   "entries": [
     {
@@ -6032,71 +6032,13 @@
       "address": "0x40a290",
       "windows_name": "noop_runtime_callback",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "tColourSmall::Set(unsigned char, unsigned char, unsigned char)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.6003,
-          "name_score": 0.3339,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRTutorial::AI()",
-          "score": 0.59,
-          "name_score": 0.45,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "ObjectProcWorldReset(cRObject*)",
-          "score": 0.5778,
-          "name_score": 0.2963,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRWarning::Stop()",
-          "score": 0.5502,
-          "name_score": 0.2504,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.6003,
-          "name_score": 0.3339,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellMemoryMalloc(int, char*)",
-          "score": 0.6,
-          "name_score": 0.3333,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ACos(float)",
-          "score": 0.55,
-          "name_score": 0.25,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellMemoryBookmark()",
-          "score": 0.55,
-          "name_score": 0.25,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellMemoryScratch2()",
-          "score": 0.55,
-          "name_score": 0.25,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "cRGame::LevelInit(int)",
+      "ios_symbol": "cRGame::LevelInit(int)",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x40a2a0",

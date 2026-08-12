@@ -1,5 +1,8 @@
-// noop_runtime_callback @ 0x40a290 (stdcall, ret 0x4)
+// noop_runtime_callback @ 0x40a290
+// Authored owner: void cRGame::LevelInit(int) (thiscall, ret 0x4).
 
-void __stdcall noop_runtime_callback(int)
+#include "game_root.h"
+
+void cRGame::LevelInit(int)
 {
 }

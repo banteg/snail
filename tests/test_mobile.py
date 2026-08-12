@@ -5830,6 +5830,90 @@ def test_mobile_bod_list_add_recovers_authored_template_owner() -> None:
     assert "`append_bod_to_end` remains separate" in notes
 
 
+def test_mobile_game_level_init_recovers_authored_virtual_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in crosswalk["entries"]
+        if entry["windows_name"] == "noop_runtime_callback"
+    )
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in functions["functions"]
+        if function["name"] == "noop_runtime_callback"
+    )
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    callback_table = next(
+        reference
+        for reference in references["symbols"]
+        if reference["address"] == "0x4972d8"
+    )
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["android_symbol"] == "cRGame::LevelInit(int)"
+    assert entry["ios_symbol"] == entry["android_symbol"]
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+    assert entry["source_object"] == "Game.o"
+    assert "source_object_evidence" not in entry
+    assert "cRGame_LevelInit" in function["aliases"]
+
+    assert callback_table["name"] == (
+        "g_game_level_init_callback_table"
+    )
+    assert "g_root_runtime_callback_table" in callback_table["aliases"]
+    assert callback_table["kind"] == "vtable"
+
+    header = (repo_root / "tools/match/include/game_root.h").read_text(
+        encoding="utf-8"
+    )
+    scratch = (
+        repo_root
+        / "tools/match/scratches/noop_runtime_callback/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    config = (
+        repo_root
+        / "tools/match/scratches/noop_runtime_callback/scratch.conf"
+    ).read_text(encoding="utf-8")
+    constructor = (
+        repo_root
+        / "tools/match/scratches/construct_game_runtime/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    notes = (
+        repo_root
+        / "tools/match/scratches/noop_runtime_callback/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "void LevelInit(int level);" in header
+    assert "void cRGame::LevelInit(int)" in scratch
+    assert "SYMBOL=?LevelInit@cRGame@@QAEXH@Z" in config
+    assert "g_game_level_init_callback_table" in constructor
+    assert "g_root_runtime_callback_table" not in constructor
+    assert "one data reference" in notes
+    assert "incompatible" in notes
+
+    binja_sync = (
+        repo_root / "tools/binja/sync_frame_renderer_types.py"
+    ).read_text(encoding="utf-8")
+    ida_sync = (
+        repo_root / "tools/ida/apply_frame_renderer_types.py"
+    ).read_text(encoding="utf-8")
+    assert (
+        "void __thiscall noop_runtime_callback(GameRoot* game, "
+        "int32_t level)"
+    ) in binja_sync
+    assert (
+        "void __thiscall noop_runtime_callback(GameRoot *game, "
+        "int32_t level);"
+    ) in ida_sync
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [

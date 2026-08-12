@@ -70,7 +70,7 @@ typedef char GamePlayer_must_be_0x1f8[
 
 class cRGame {
 public:
-    void* vtable; // +0x00, root runtime callback table
+    void* vtable; // +0x00, one-slot cRGame::LevelInit callback table
     unsigned char fog_enabled; // +0x04
     char unknown_000005[0x08 - 0x05];
     float fog_start; // +0x08, D3DRS_FOGSTART
@@ -131,6 +131,7 @@ public:
     char unknown_12e6ff0[0x12e6ff4 - 0x12e6ff0];
 
     int run_frame_update();          // @ 0x40a2a0
+    void LevelInit(int level);       // @ 0x40a290, authored virtual no-op
     char initialize_game_assets_and_world(); // @ 0x40acf0
     void initialize_game_last();     // @ 0x410720, cRGame::InitLast
     int noop_runtime_ai();           // shared empty lifecycle hook @ 0x407b50

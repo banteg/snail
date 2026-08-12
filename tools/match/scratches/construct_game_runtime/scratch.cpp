@@ -14,7 +14,7 @@ int debug_report_stub(char* format, int value); // @ 0x449c00, stripped in relea
 extern int g_sub_loc_count;       // data_4dfadc
 extern int g_loc_mirror_count;    // data_4dfae0
 
-extern void* g_root_runtime_callback_table;     // data_4972d8
+extern void* g_game_level_init_callback_table;  // data_4972d8
 extern void* g_tip_manager_callback_table;      // data_4972dc
 extern void* g_star_field_callback_table;       // data_4972e0
 extern void* g_backdrop_callback_table;         // data_4972e4
@@ -175,7 +175,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
         tip_manager->initialize_bod_base();
         tip_manager->vtable = &g_tip_manager_callback_table;
 
-        root->vtable = &g_root_runtime_callback_table;
+        root->vtable = &g_game_level_init_callback_table;
     }
 }
 

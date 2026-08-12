@@ -512,6 +512,15 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x40a290",
+      "windows_name": "noop_runtime_callback",
+      "android_symbol": "cRGame::LevelInit(int)",
+      "ios_symbol": "cRGame::LevelInit(int)",
+      "source_object": "Game.o",
+      "confidence": "high",
+      "notes": "The Windows root constructor installs the one-entry table at 0x4972d8 on cRGame, and that slot's sole target is this ret-4 body. The Android cRGame constructor installs its vtable at the same lifecycle point, with the first callable slot labeled LevelInit; both mobile ports export one four-byte cRGame::LevelInit(int) body. ARM returns with the receiver still in R0 while Windows never establishes EAX, so the common contract is void. The integer argument accounts for Windows ret 4 and the mobile R1 input; no layout offset is transferred."
+    },
+    {
       "address": "0x40a2a0",
       "windows_name": "run_frame_update",
       "ios_symbol": "cRGame::AI()",

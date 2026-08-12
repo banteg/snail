@@ -258,6 +258,10 @@ TRUSTED_FUNCTION_DECLARATIONS = [
         "int __thiscall run_frame_update(GameRoot *game);",
     ),
     (
+        "noop_runtime_callback",
+        "void __thiscall noop_runtime_callback(GameRoot *game, int32_t level);",
+    ),
+    (
         "render_game_frame",
         "void __thiscall render_game_frame(GameRoot *game);",
     ),
