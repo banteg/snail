@@ -1,4 +1,12 @@
-# WIP scratch — 91.56%, 693/694 insns (2026-07-30)
+# update_golb_ai @ 0x414820
+
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRSubGolb::AI()` bodies and the live Windows GolbShot callback establish the
+complete pause/live gates, straight/path-follow/homing motion, three trail
+families, lifetime and bounds teardown, garbage/slug collision tree, bounce,
+splash, and wall impact. All 71 references are clean; the 693/694 candidate's
+remaining deltas are equivalent register ownership, branch layout, and
+collision-temporary scheduling.
 
 ## 2026-07-30 collision-z lifetimes and path-copy closure
 
@@ -27,14 +35,13 @@ reinitializes the value at the loop head, inside the active-state gate, or at
 the loop latch compiles back to the retained baseline. The apparent gain is
 therefore register-allocation evidence, not recoverable source.
 
-The recorded ledger now contains 16 bounded sweeps and 130 variants. Four
-consecutive post-win sweeps covering straight-flight expression order,
-per-iteration collision-side owners, slug-slot base formation, and reflected-z
-product order found no further improvement, so this source-shape frontier is
-marked stalled. Named side/state constants, loop-local owners, alternate
-probe-copy schedules, and pointer/reference path-copy forms were also neutral
-or worse; no volatile, padding, register pinning, or other fakematch was
-retained.
+The recorded ledger now contains 16 bounded sweeps and 130 variants. The last
+four post-win sweeps covering straight-flight expression order, per-iteration
+collision-side owners, slug-slot base formation, and reflected-z product order
+found no further improvement; this is descriptive evidence, not a stopping
+rule. Named side/state constants, loop-local owners, alternate probe-copy
+schedules, and pointer/reference path-copy forms were also neutral or worse;
+no volatile, padding, register pinning, or other fakematch was retained.
 
 ## 2026-07-27 destination-first flight integration
 
@@ -535,7 +542,7 @@ Recovered this pass (full field map in scratch.cpp):
   re-sweeps the list at radius 3.0
 - wall tile 14: impact sprite at z - 1.0 then retire
 
-# Dossier — scratch not yet written (700 insns, 2656 bytes)
+## Initial path-follow dossier (historical 700-insn baseline)
 
 update_golb_ai @ 0x414820. target.asm committed. Focus: the path-follow lane.
 
@@ -731,6 +738,6 @@ the same trail-versus-impact ownership distinction. Consequently no direct
 No source or mask changed here. Focused Windows output remains at the current
 91.56%, 693/694-instruction frontier, prefix 9, with 71 clean references and
 no unresolved, mismatched, or unaudited operands. The VFX ownership target is
-closed; reopen this scratch only for a genuinely new Windows lifetime in the
-remaining collision/register regions, not for another launch-vector,
-collision-side, helper-receiver, or shot-slot spelling.
+closed; further byte recovery should begin with genuinely new Windows lifetime
+evidence in the remaining collision/register regions, not another
+launch-vector, collision-side, helper-receiver, or shot-slot spelling.

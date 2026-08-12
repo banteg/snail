@@ -1,5 +1,13 @@
 # spawn_golb_impact_sprite @ 0x415d80
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android
+`cRSubGolb::Explode(tVector)`, the inlined iOS impact lanes, the live Windows
+GolbShot helper, and all five Windows callers establish the effect gate,
+player-slot allocation, Sprite flags, velocity, progress/lifetime, size,
+gravity, and copied position. All three references are clean; the 43/45
+candidate differs only in allocator argument scheduling and the saved-`esi`
+local-velocity publication. Windows' pointer argument remains authoritative.
+
 Current match: 63.64%, 43/45 candidate instructions, 3/45 prefix.
 
 This scratch maps the short-lived Golb impact sprite producer used by terminal
@@ -82,8 +90,8 @@ Rejected source-shaped probes:
   current real local-vector spelling; the remaining residual is still saved-ESI
   allocation plus split stack-vector scheduling, not field layout.
 
-Keep this as a structure-first map unless a stronger source idiom explains the
-native saved-`esi` velocity-copy schedule.
+The current semantic source remains canonical; further byte recovery needs a
+stronger source idiom for the native saved-`esi` velocity-copy schedule.
 
 ## 2026-07-16 analysis receiver and ABI replay
 
@@ -192,8 +200,9 @@ The original 183-result prefix sweep is a verified strict subset of the later
 historical receipts remain intact. With the new targeted result, the ledger
 honestly reports 711 evaluations across four non-improving sweeps: 528 unique
 variants, 183 repeats, 315 neutral evaluations, and 396 degrading evaluations.
-The lane remains formally stalled. Future interaction-only extensions can use
-the mutation runner's `--min-changes` bound (for example,
+The four recorded sweeps are non-improving; this is descriptive evidence, not
+a stopping rule. Future interaction-only extensions can use the mutation
+runner's `--min-changes` bound (for example,
 `--min-changes 3 --max-changes 3`) to avoid rescheduling the one- and two-site
 prefix without rewriting recorded history. The current source model is not
 stale; its remaining residual is still the Windows VC6 saved-ESI/local-vector
