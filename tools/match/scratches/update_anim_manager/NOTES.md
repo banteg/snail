@@ -106,3 +106,11 @@ code shape and all 13 clean operands are unchanged.
   so the second register is an `Object** slot_object`. This makes the retained
   `Object::animation` read and the target-model backlink explicit without
   changing the already exact 134/134 machine-code match.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRAnimManager::AI()` and exports
+`?AI@cRAnimManager@@QAEXXZ`. Live Windows recovery finds five calls in
+`cRSubGoldy::AI`, covering the Snail manager, jetpack channel, and three weapon
+channels. Android and iOS independently retain the same authored symbol. The
+source promotion preserves the exact 134/134 match and 13 clean operands.

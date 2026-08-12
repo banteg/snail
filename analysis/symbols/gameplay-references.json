@@ -2967,6 +2967,24 @@
       "description": "Exact Windows cRSubGame::CalcRealPos(tVector*, float*) entry; Windows pointer ABI remains authoritative."
     },
     {
+      "address": "0x4447c0",
+      "name": "initialize_anim_manager",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRAnimManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRAnimManager::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4447d0",
+      "name": "update_anim_manager",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRAnimManager@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRAnimManager::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x444960",
       "name": "initialize_squidge",
       "kind": "function",

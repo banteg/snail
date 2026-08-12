@@ -17,3 +17,11 @@ Initial scratch for the tiny animation-manager reset helper.
 - The Windows declaration is therefore void. Its EAX zero is a shared store
   source, not a semantic result; removing the invented return remains exact at
   6/6 and leaves every `cRSubGoldy::Init` caller exact.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRAnimManager::Init()` and exports
+`?Init@cRAnimManager@@QAEXXZ`. Live Windows recovery finds ten calls in
+`cRSubGoldy::Init`, each with a receiver at the start of an inline presentation
+manager. Android and iOS independently retain the authored class-qualified
+symbol. The promotion preserves the exact 6/6 instruction match.

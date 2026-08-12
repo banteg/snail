@@ -60,14 +60,14 @@ void cRSubGoldy::Init(int player_slot)
         this->presentation.list_flags |= BOD_FLAG_SYNC_ANIMATION;
         this->presentation.render_animation_manager =
             &this->presentation.anim_manager;
-        this->presentation.anim_manager.initialize_anim_manager();
+        this->presentation.anim_manager.Init();
         this->presentation.anim_manager.state = 1;
         this->presentation.anim_manager.target_model = &this->presentation;
         this->presentation.anim_manager.animation_slots =
             this->presentation.cutscene_animation_slots;
         this->presentation.anim_manager.queue_count = zero;
     } else {
-        this->presentation.anim_manager.initialize_anim_manager();
+        this->presentation.anim_manager.Init();
         this->presentation.anim_manager.state = zero;
     }
 
@@ -79,7 +79,7 @@ void cRSubGoldy::Init(int player_slot)
         this->presentation.jetpack_channel.selected_state = zero;
         this->presentation.jetpack_channel.render_animation_manager =
             &this->presentation.jetpack_channel.anim_manager;
-        this->presentation.jetpack_channel.anim_manager.initialize_anim_manager();
+        this->presentation.jetpack_channel.anim_manager.Init();
         this->presentation.jetpack_channel.anim_manager.state = 1;
         this->presentation.jetpack_channel.anim_manager.target_model =
             &this->presentation.jetpack_channel;
@@ -87,7 +87,7 @@ void cRSubGoldy::Init(int player_slot)
             this->presentation.jetpack_channel.animation_slots;
         this->presentation.jetpack_channel.anim_manager.queue_count = zero;
     } else {
-        this->presentation.jetpack_channel.anim_manager.initialize_anim_manager();
+        this->presentation.jetpack_channel.anim_manager.Init();
         this->presentation.jetpack_channel.anim_manager.state = zero;
     }
 
@@ -100,7 +100,7 @@ void cRSubGoldy::Init(int player_slot)
         this->presentation.weapon_channels[0].selected_state = zero;
         this->presentation.weapon_channels[0].render_animation_manager =
             &this->presentation.weapon_channels[0].anim_manager;
-        this->presentation.weapon_channels[0].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[0].anim_manager.Init();
         this->presentation.weapon_channels[0].anim_manager.state = 1;
         this->presentation.weapon_channels[0].anim_manager.target_model =
             &this->presentation.weapon_channels[0];
@@ -108,7 +108,7 @@ void cRSubGoldy::Init(int player_slot)
             this->presentation.weapon_channels[0].animation_slots;
         this->presentation.weapon_channels[0].anim_manager.queue_count = zero;
     } else {
-        this->presentation.weapon_channels[0].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[0].anim_manager.Init();
         this->presentation.weapon_channels[0].anim_manager.state = zero;
     }
 
@@ -121,7 +121,7 @@ void cRSubGoldy::Init(int player_slot)
         this->presentation.weapon_channels[1].selected_state = zero;
         this->presentation.weapon_channels[1].render_animation_manager =
             &this->presentation.weapon_channels[1].anim_manager;
-        this->presentation.weapon_channels[1].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[1].anim_manager.Init();
         this->presentation.weapon_channels[1].anim_manager.state = 1;
         this->presentation.weapon_channels[1].anim_manager.target_model =
             &this->presentation.weapon_channels[1];
@@ -129,7 +129,7 @@ void cRSubGoldy::Init(int player_slot)
             this->presentation.weapon_channels[1].animation_slots;
         this->presentation.weapon_channels[1].anim_manager.queue_count = zero;
     } else {
-        this->presentation.weapon_channels[1].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[1].anim_manager.Init();
         this->presentation.weapon_channels[1].anim_manager.state = zero;
     }
 
@@ -142,7 +142,7 @@ void cRSubGoldy::Init(int player_slot)
         this->presentation.weapon_channels[2].selected_state = zero;
         this->presentation.weapon_channels[2].render_animation_manager =
             &this->presentation.weapon_channels[2].anim_manager;
-        this->presentation.weapon_channels[2].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[2].anim_manager.Init();
         this->presentation.weapon_channels[2].anim_manager.state = 1;
         this->presentation.weapon_channels[2].anim_manager.target_model =
             &this->presentation.weapon_channels[2];
@@ -150,7 +150,7 @@ void cRSubGoldy::Init(int player_slot)
             this->presentation.weapon_channels[2].animation_slots;
         this->presentation.weapon_channels[2].anim_manager.queue_count = zero;
     } else {
-        this->presentation.weapon_channels[2].anim_manager.initialize_anim_manager();
+        this->presentation.weapon_channels[2].anim_manager.Init();
         this->presentation.weapon_channels[2].anim_manager.state = zero;
     }
 

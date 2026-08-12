@@ -15,8 +15,8 @@ enum {
 
 class cRAnimManager {
 public:
-    void initialize_anim_manager(); // @ 0x4447c0, cRAnimManager::Init
-    void update_anim_manager();     // @ 0x4447d0, cRAnimManager::AI
+    void Init(); // @ 0x4447c0
+    void AI();   // @ 0x4447d0
 
     int state;              // +0x00
     float progress;         // +0x04

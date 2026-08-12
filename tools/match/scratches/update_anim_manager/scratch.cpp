@@ -7,7 +7,7 @@
 #include "weapon.h"
 
 
-void cRAnimManager::update_anim_manager()
+void cRAnimManager::AI()
 {
     completed = false;
     switch (state) {

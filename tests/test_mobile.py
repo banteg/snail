@@ -7734,6 +7734,8 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
         "initialize_snail_skin": "Init",
         "update_snail_skin_transition": "AI",
         "change_snail_skin": "Change",
+        "initialize_anim_manager": "Init",
+        "update_anim_manager": "AI",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
@@ -8024,6 +8026,76 @@ def test_snail_skin_uses_authored_method_surface() -> None:
     assert "snail_skin.Init()" in all_sources
     assert "snail_skin.AI()" in all_sources
     assert "snail_skin.Change(" in all_sources
+
+
+def test_anim_manager_uses_authored_method_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/anim_manager.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "initialize_anim_manager": {
+            "method": "Init",
+            "symbol": "?Init@cRAnimManager@@QAEXXZ",
+            "mobile": "cRAnimManager::Init()",
+            "alias": "cRAnimManager_Init",
+        },
+        "update_anim_manager": {
+            "method": "AI",
+            "symbol": "?AI@cRAnimManager@@QAEXXZ",
+            "mobile": "cRAnimManager::AI()",
+            "alias": "cRAnimManager_AI",
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "SubGame.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["ios_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRAnimManager::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void Init();" in header
+    assert "void AI();" in header
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".initialize_anim_manager(",
+        ".update_anim_manager(",
+    ):
+        assert stale_method not in all_sources
+    assert ".anim_manager.Init()" in all_sources
+    assert ".anim_manager.AI()" in all_sources
 
 
 def test_screen_controller_types_use_authored_primary_owners() -> None:

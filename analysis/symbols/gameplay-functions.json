@@ -3941,11 +3941,17 @@
     {
       "address": "0x4447c0",
       "name": "initialize_anim_manager",
+      "aliases": [
+        "cRAnimManager_Init"
+      ],
       "description": "Exact void `cRAnimManager::Init()`: clears the state, progress, progress step, and completion latch of the authored 0x48-byte queued animation owner. Android preserves the same offsets and void contract."
     },
     {
       "address": "0x4447d0",
       "name": "update_anim_manager",
+      "aliases": [
+        "cRAnimManager_AI"
+      ],
       "description": "Exact Windows `cRAnimManager::AI()`: advances the authored 0x48-byte queue owner, applies loop, bounce, or clamp flags, then installs the next owned RenderableBod slot's Object and ObjectAnimation on its borrowed Snail or animation-channel target. Android independently preserves the same ownership chain with port-specific slot layout."
     },
     {

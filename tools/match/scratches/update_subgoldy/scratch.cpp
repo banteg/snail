@@ -1004,11 +1004,11 @@ steering_stored:
     }
 
     Collision();
-    presentation.anim_manager.update_anim_manager();
-    presentation.jetpack_channel.anim_manager.update_anim_manager();
-    presentation.weapon_channels[0].anim_manager.update_anim_manager();
-    presentation.weapon_channels[1].anim_manager.update_anim_manager();
-    presentation.weapon_channels[2].anim_manager.update_anim_manager();
+    presentation.anim_manager.AI();
+    presentation.jetpack_channel.anim_manager.AI();
+    presentation.weapon_channels[0].anim_manager.AI();
+    presentation.weapon_channels[1].anim_manager.AI();
+    presentation.weapon_channels[2].anim_manager.AI();
     game->parcel_manager.AI();
     presentation.update_snail_presentation();
     SetShootFlags();
