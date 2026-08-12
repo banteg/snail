@@ -1,5 +1,10 @@
 # `initialize_halfpipe_path_template_pair` reconstruction notes
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 ## Recovered behavior
 
 This is an honest starter reconstruction for the public `HALFPIPE` attachment
@@ -488,8 +493,8 @@ expected, and close no additional source shape. The retained baseline remains
 **66.67%**, 688/707 instructions, prefix 18/707, with all 55 references clean.
 
 The ledger now contains 19 records, 18 mutation sweeps, one probe, and 71
-evaluated variants (64 unique). Six consecutive non-improving sweeps leave
-this local ownership frontier stalled.
+evaluated variants (64 unique). Six consecutive non-improving sweeps document
+the tested local ownership frontier.
 
 ## 2026-07-31 post-face ordinary addition bound
 

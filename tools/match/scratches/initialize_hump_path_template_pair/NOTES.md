@@ -1,5 +1,10 @@
 # `initialize_hump_path_template_pair` starter
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 This is an honest semantic starter for the path-template initializer at
 `0x41d030`.
 
@@ -385,8 +390,8 @@ The experiment ledger now contains 19 sweeps and 62 unique evaluated variants:
 13 improve, 29 are neutral, 20 degrade, and three are metric tradeoffs. The
 operator-scale spec was intentionally rerun once after the double-lifetime
 change because its result is baseline-dependent; no variant source hash was
-repeated. Three consecutive non-improving sweeps mark this frontier stalled
-until new native evidence appears.
+repeated. Three consecutive non-improving sweeps document the tested frontier;
+their count does not limit future native-backed work.
 
 ## 2026-07-30 copied face-index ownership bound
 

@@ -1,5 +1,10 @@
 # initialize_twister_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Starter reconstruction for `initialize_twister_path_template_pair @ 0x42a540`.
 
 Models the 34-sample twister template with handedness-dependent phase, sinusoidal
@@ -284,7 +289,7 @@ the fully direct interior owner after the delta cleanup still regresses to
 identical, and 32 worse, with four sweep wins and three consecutive
 non-improving sweeps.
 
-This paired lane is formally stalled at the retained 67.60% frontier. Further
+This paired lane remains at the retained 67.60% frontier. Further
 work needs new provenance for the remaining interior allocation and mesh
 row/vertex scheduling, not another spelling of the sample cursors already
 tested here.
@@ -309,7 +314,7 @@ the complete four-site combination is best. It raises both siblings by another
 without a tradeoff warning.
 
 The ledger now contains 58 variants across twelve sweeps. The paired,
-independently reproduced result replaces the prior stalled frontier; remaining
+independently reproduced result replaces the prior frontier; remaining
 work is concentrated in the interior sample allocation and face-record
 scheduling rather than mesh row induction, destination ownership, or vector
 subtraction spelling.
@@ -411,6 +416,6 @@ loses **74.76 weighted bytes** and falls from **77.85%** to **74.91%** without
 changing the 682/677 instruction count, 123-instruction prefix, or 49 clean
 references. Twister2 independently reproduces every result exactly.
 
-No source change is retained. Three consecutive non-improving sweeps formally
-stall the paired Twister frontier at **77.85%**, 682/677 instructions, prefix
+No source change is retained. Three consecutive non-improving sweeps record
+the paired Twister frontier at **77.85%**, 682/677 instructions, prefix
 123/677, with all 49 references clean.

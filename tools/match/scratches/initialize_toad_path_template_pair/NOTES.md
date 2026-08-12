@@ -1,5 +1,10 @@
 # initialize_toad_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Starter reconstruction for `initialize_toad_path_template_pair @ 0x42cbf0`.
 
 Captures the branch-dependent lead/exit counts, fixed width `4`, 26-sample turn
@@ -557,5 +562,5 @@ Keeping both expressions independent is closest, but still loses 2.49 to
 
 The ledger now contains 58 records, 55 mutation sweeps, 3 probes, and 240
 unique variants. Three consecutive bounded sweeps fail to improve the
-retained 66.21% source, so this tail neighborhood is formally stalled rather
-than widened with unsupported aliasing or volatile qualifiers.
+retained 66.21% source. The tail neighborhood remains unchanged instead of
+being widened with unsupported aliasing or volatile qualifiers.

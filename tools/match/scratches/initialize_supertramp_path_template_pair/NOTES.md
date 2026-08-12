@@ -1,5 +1,10 @@
 # initialize_supertramp_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Ownership reconstruction for
 `initialize_supertramp_path_template_pair @ 0x423f10`.
 
@@ -369,15 +374,15 @@ Every variant preserves 545/552 instructions, prefix 16/552, and all 36 clean
 references except the scoped-row forms, which retain the same instruction
 count and audit while losing the four weighted bytes.
 
-No source edit is retained. These results raise the experiment ledger's
-trailing non-improvement streak to four and formally stall the local lifetime
-frontier at **68.00%**. Resolving either stack-home swap now requires a new
+No source edit is retained. The experiment ledger records four trailing
+non-improvements at the local **68.00%** lifetime frontier. Resolving either
+stack-home swap now requires a new
 semantic owner or source provenance, not declaration shuffling, volatility,
 padding, or forced allocation.
 
 ## 2026-07-31 direct face-offset record ownership
 
-The local-lifetime stall above did not cover direct indexed record writes.
+The local-lifetime sweep above did not cover direct indexed record writes.
 Hoisting the semantic face offset before the front/back selection and
 addressing every field as `facequads[face_offset]` raises focused matching from
 **68.00%** to **77.37%**. Candidate size moves from 545 to 544 instructions

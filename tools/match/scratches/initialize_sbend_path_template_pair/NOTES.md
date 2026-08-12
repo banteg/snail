@@ -1,5 +1,10 @@
 # initialize_sbend_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Starter reconstruction for `initialize_sbend_path_template_pair @ 0x42df00`.
 
 Captures the family-10 S-bend setup: `height * pi` sample count, centered option,

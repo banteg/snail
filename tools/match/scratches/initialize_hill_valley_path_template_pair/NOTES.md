@@ -1,5 +1,10 @@
 # initialize_hill_valley_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Starter reconstruction for `initialize_hill_valley_path_template_pair @ 0x42d570`.
 
 Models the family-10 hill/valley initializer: length-derived sample count,

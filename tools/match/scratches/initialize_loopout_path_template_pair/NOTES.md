@@ -1,5 +1,10 @@
 # `initialize_loopout_path_template_pair` starter
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 This is an honest semantic starter for the path-template initializer at
 `0x41c5f0`.
 
@@ -262,4 +267,4 @@ weighted bytes, and reusing only the column loses 18. The retained distinct
 Focused matching stays **67.87%**, 723/718 instructions, prefix 0/718, with
 all 52 references clean. The ledger now contains 17 records, 13 mutation
 sweeps, four probes, and 77 unique variants. Four consecutive non-improving
-sweeps keep this frontier stalled.
+sweeps simply record the tested frontier.

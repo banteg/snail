@@ -1,5 +1,10 @@
 # `initialize_dip_path_template_pair` starter
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 This is an honest semantic starter for the path-template initializer at
 `0x41e440`.
 

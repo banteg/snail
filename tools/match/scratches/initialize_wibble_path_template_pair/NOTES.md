@@ -1,5 +1,10 @@
 # initialize_wibble_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Ownership reconstruction for `initialize_wibble_path_template_pair @ 0x4289a0`.
 
 Captures the fixed 32-sample wibble template: endpoint samples, sinusoidal

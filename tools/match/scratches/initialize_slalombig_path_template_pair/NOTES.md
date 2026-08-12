@@ -1,5 +1,10 @@
 # initialize_slalombig_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Honest starter scratch for `initialize_slalombig_path_template_pair @ 0x4221f0`.
 
 Recovered from the IDA/Binja decompiles and the constructor callsite in
@@ -217,7 +222,7 @@ pair-level guard audits all 40 references, but the best form loses 27 weighted
 bytes and falls from 33.80% to 32.77%. Pair helpers reach at most 32.62%.
 
 The append-only ledger contains 17 variants: 2 are byte-identical and 15
-regress. Three consecutive non-improving sweeps formally stall the target at
+regress. Three consecutive non-improving sweeps record the target at
 the retained 33.80%, 653/696-instruction frontier. Recovering the adjacency now
 requires a broader loop-lifetime change, not another local guard or helper
 spelling.
@@ -225,7 +230,7 @@ spelling.
 ## 2026-07-30 terminal-delta expression ownership
 
 The exact terminal-delta helper shape shared with Twister provides a new
-independent owner boundary outside the stalled identity-call schedule.
+independent owner boundary outside the recorded identity-call schedule.
 Replacing the four loop-wide sample pointers with direct primary and secondary
 array ownership raises focused matching from 33.80% to **36.61%**, adds 71.85
 weighted bytes, and moves the candidate from 653 to 659 instructions against
@@ -523,7 +528,7 @@ reaches 64.79%; separating both also reaches 64.79%. The native-looking
 independent UV-column owner is byte-identical, so VC6 already emits that
 physical lifetime from the clearer shared column.
 
-No source change is retained. Three consecutive non-improving sweeps formally
-stall SlalomBig at **66.23%**, 693/696 instructions, prefix 48/696, with all 40
+No source change is retained. Three consecutive non-improving sweeps record
+SlalomBig at **66.23%**, 693/696 instructions, prefix 48/696, with all 40
 references clean. The remaining load and counter identities are bounded
 compiler-allocation residuals rather than untested source owners.

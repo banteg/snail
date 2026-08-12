@@ -1,5 +1,10 @@
 # initialize_sweep_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Honest starter scratch for `initialize_sweep_path_template_pair @ 0x422c00`.
 
 The constructor callsite passes six stack arguments and the native tail is
@@ -442,6 +447,6 @@ while a distinct face-row owner loses 56 weighted bytes and falls to
 `column` across mesh and face emission is therefore independently measured,
 not inferred from decompiler variable names.
 
-No acquisition or counter edit is retained. With three consecutive complete
-grids producing no improvement, the experiment log now formally marks this
-83.10% frontier stalled.
+No acquisition or counter edit is retained. The experiment log records three
+consecutive complete grids producing no improvement at this 83.10% frontier;
+the streak carries no stop status.

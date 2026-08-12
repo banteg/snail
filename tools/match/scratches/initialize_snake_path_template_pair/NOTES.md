@@ -1,5 +1,10 @@
 # initialize_snake_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Honest starter scratch for `initialize_snake_path_template_pair @ 0x423580`.
 
 The callsite passes six stack arguments and the native epilogue is `ret 0x18`.

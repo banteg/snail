@@ -1,5 +1,10 @@
 # initialize_invert_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Ownership reconstruction for `initialize_invert_path_template_pair @ 0x429250`.
 
 Models the fixed 34-sample invert template with `0x29` kind, runtime flag `+0x9c`
@@ -286,8 +291,8 @@ vertex-base sweep is also neutral in every valid declaration-plus-consumer
 form, including both branches together; incomplete consumers correctly fail
 without the saved owner.
 
-No source change is retained. These three consecutive non-improving sweeps
-formally stall Invert at **75.68%**, 605/600 instructions, prefix 109/600,
+No source change is retained. The ledger records three consecutive
+non-improving sweeps at **75.68%**, 605/600 instructions, prefix 109/600,
 with all 35 references clean. The native acquisition and saved-base shapes are
 already compiler-produced from the clearer source, while the separate face
 row remains a measured allocation regression.

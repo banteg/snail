@@ -1,5 +1,10 @@
 # initialize_start_path_template_pair
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 Ownership reconstruction for `initialize_start_path_template_pair @ 0x426400`.
 
 The callsite passes six stack arguments and the native tail is `ret 0x18`.
@@ -402,6 +407,6 @@ The updated frontier is bounded again. All four vertices/facequads declaration
 and load orders are byte-identical. The member scale operator is also neutral.
 Split-float lateral arithmetic is neutral, while double and volatile forms
 lose 15–55 weighted bytes and the double expression adds reference debt.
-Three consecutive post-win non-improving sweeps formally stall Start at
+The ledger records three post-win non-improving sweeps at
 **76.86%**, 613/610 instructions, prefix 122/610, with all 35 references
 clean.

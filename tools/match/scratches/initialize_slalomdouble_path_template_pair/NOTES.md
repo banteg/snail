@@ -1,5 +1,10 @@
 # initialize_slalomdouble_path_template_pair
 
+Current recovery: semantic-complete (`compiler,references` residual). The
+verified Android/iOS bodies establish the portable sample/control graph, and
+the Windows scratch covers its native mesh/face tail. Two known first-curve
+identity calls remain unaudited; no reference is unresolved or mismatched.
+
 Honest starter scratch for `initialize_slalomdouble_path_template_pair @ 0x425050`.
 
 The constructor callsite uses the same six-argument stack shape as the slalom
@@ -215,8 +220,8 @@ candidate instruction, leaves both references unaudited, and conflicts with
 the independently proven paired-mobile logical owner. This metric-only
 tradeoff is recorded but not retained.
 
-The ledger contains 40 variants and is formally stalled after three trailing
-non-improving sweeps. The honest frontier remains 39.55%, 642/683
+The ledger contains 40 variants, including three trailing non-improving
+sweeps. The honest frontier remains 39.55%, 642/683
 instructions, prefix 5/683, with 44 audited and two unaudited references.
 
 ## 2026-07-30 authored terminal-delta subtraction

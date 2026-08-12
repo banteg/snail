@@ -1,5 +1,10 @@
 # `initialize_screw_path_template_pair` starter
 
+Current recovery: semantic-complete (`compiler,references` residual). The
+verified Android/iOS bodies establish the portable sample/control graph, and
+the Windows scratch covers its native mesh/face tail. Two known per-lane trig
+calls remain unaudited; no reference is unresolved or mismatched.
+
 This is an honest semantic starter for the path-template initializer at
 `0x41eda0`.
 
@@ -161,8 +166,8 @@ normalize/cross tail. Per-lane helper forms audit all 40 references but regress
 to 37.26%; the best exact-reference split reaches only 40.24%. The strongest
 non-exact explicit form reaches 44.03%, still below the retained 48.53%.
 
-No source variant improves the canonical metric, and the append-only ledger is
-formally stalled after three consecutive non-improving sweeps. The semantic
+No source variant improves the canonical metric, and the append-only ledger
+records three consecutive non-improving sweeps. The semantic
 per-lane recomputation remains recorded from both ports, but recovering it in
 matcher source now requires a broader neighboring-loop lifetime change rather
 than another local trig spelling.
@@ -170,7 +175,7 @@ than another local trig spelling.
 ## 2026-07-30 authored terminal-delta subtraction
 
 The independent terminal-delta block is exact across the constructor family
-despite the stalled trig schedule. Replacing both component constructors with
+despite the recorded trig schedule. Replacing both component constructors with
 `Vector3::operator-` adds 7.50 weighted bytes and raises focused matching from
 48.53% to **48.84%**. Candidate and target counts remain 646/685, prefix stays
 6/685, and the receipt remains 38 clean plus 2 unaudited references.
@@ -333,5 +338,5 @@ pair and records the two native calls as explicit unaudited debt rather than
 accepting a five-point whole-function regression.
 
 The ledger now contains 37 records, 34 mutation sweeps, three probes, and 153
-evaluated variants (147 unique). Four consecutive non-improving sweeps stall
-this post-counter call-schedule frontier.
+evaluated variants (147 unique). Four consecutive non-improving sweeps
+document this post-counter call-schedule frontier.

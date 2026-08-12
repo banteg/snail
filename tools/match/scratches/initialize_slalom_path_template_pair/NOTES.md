@@ -1,5 +1,10 @@
 # `initialize_slalom_path_template_pair` starter
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 This is an honest semantic starter for the path-template initializer at
 `0x41f760`.
 
@@ -225,8 +230,8 @@ the prefix or audit. The retained frontier is therefore **32.42%**,
 **655/696** instructions, prefix **1/696**, with 38 audited and four unaudited
 references.
 
-Nine recorded sweeps cover 46 variants. After retaining the signed guard, three
-consecutive non-improving sweeps formally stall the remaining stride/call
+Nine recorded sweeps cover 46 variants. After retaining the signed guard, the
+ledger records three non-improving sweeps around the remaining stride/call
 alignment. Further work needs a broader recovered curve-loop lifetime, not raw
 byte arithmetic or another local initializer/guard spelling.
 
@@ -522,6 +527,6 @@ restored to the simpler declaration because the initializer has no emitted or
 interaction effect.
 
 The ledger now contains 45 records, 36 mutation sweeps, nine probes, and 182
-evaluated variants (173 unique). Three consecutive complete non-improving
-sweeps formally stall this lane at **64.20%**, 684/696 instructions, prefix
+evaluated variants (173 unique). Three trailing complete non-improving sweeps
+record this lane at **64.20%**, 684/696 instructions, prefix
 6/696, with all 40 references clean.

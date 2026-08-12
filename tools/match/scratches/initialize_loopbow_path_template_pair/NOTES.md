@@ -1,5 +1,10 @@
 # Reconstruction notes
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 ## Scope
 
 Target: `initialize_loopbow_path_template_pair` at `0x42ba80`, compiled with
@@ -275,8 +280,8 @@ Together with the earlier parity sweep, this bounds the obvious remaining
 mesh/face ownership spellings.
 
 The ledger now contains six checked mutation sweeps covering 45 unique
-variants: three improving, 31 neutral, and 11 degrading. Three consecutive
-non-improving sweeps mark this scratch stalled at **71.88%** (801/796
+variants: three improving, 31 neutral, and 11 degrading. Its recorded frontier
+is **71.88%** (801/796
 candidate/target instructions), with the exact `0x9c` frame, a ten-instruction
 prefix, and all 63 references clean.
 - The synthetic endpoint value is scoped to the terminal-row branch. This is
@@ -323,7 +328,7 @@ The retained result is **72.49%**, up 17.71 weighted bytes from 71.88%, with
 exactly 796/796 candidate/target instructions, prefix 10/796, the native
 `0x9c` frame, and all 63 masked references clean. The expanded ledger now
 validates as eight sweeps covering 84 unique variants with no malformed or
-repeated records; this evidence supersedes the prior stalled marker.
+repeated records; this evidence supersedes the prior frontier.
 
 ## 2026-07-30 scalar stack-coloring boundary
 

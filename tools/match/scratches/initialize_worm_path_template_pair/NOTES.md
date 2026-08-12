@@ -1,5 +1,10 @@
 # initialize_worm_path_template_pair @ 0x420170
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 This scratch reconstructs the worm attachment-path constructor and its generated
 strip mesh using the shared native `AttachmentSample`, `Path`, and
 `ObjectFaceQuad` owners.
@@ -263,7 +268,7 @@ byte-identical at 72.81%.
 
 The new ledger contains 18 unique variants: zero better, six neutral, and
 twelve worse, with no repeats or tradeoffs. Three consecutive non-improving
-sweeps mark this region stalled. The next justified attempt must recover the
+sweeps document this region. A future exact attempt should recover the
 native `0x80` vector/x87 lifetime first and then combine it with the proven
 checkerboard branch; padding or branch-only byte shaping would be
 fakematching.
@@ -367,6 +372,6 @@ instructions.
 No alternative recovers the native `0x80` frame. Worm remains **73.09%**,
 728/736 instructions, prefix 0/736, with all 37 references clean. The ledger
 now contains nine records, eight mutation sweeps, one probe, 90 evaluated
-variants, and 86 unique variants. Three consecutive non-improving sweeps mark
-the whole function formally stalled; resume only if new source or symbol
-provenance identifies a genuinely different authored vector operation.
+variants, and 86 unique variants. Three consecutive non-improving sweeps
+document the whole-function frontier. Future exact work needs source or symbol
+provenance identifying a genuinely different authored vector operation.

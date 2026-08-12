@@ -1,5 +1,10 @@
 # `initialize_cage2_path_template_pair` reconstruction notes
 
+Current recovery: semantic-complete (`compiler` residual). The verified
+Android/iOS builder bodies establish the portable sample/control graph; the
+live Windows body and scratch additionally cover the native mesh/face tail.
+All references are clean, and the remaining differences are code layout.
+
 ## Recovered behavior
 
 The scratch now reconstructs the complete cage-2 path-template initializer rather
@@ -351,8 +356,8 @@ weighted bytes, and explicit interior sample-base aliases lose at least 387.
 
 The checked ledger now contains twelve mutation sweeps and 72 unique variants:
 14 improving, 30 neutral, and 28 degrading, including eight metric tradeoffs.
-Five consecutive non-improving sweeps mark the current Cage2 frontier stalled
-at the clean **68.20%** result.
+Five consecutive non-improving sweeps document the current Cage2 frontier at
+the clean **68.20%** result.
 
 ## 2026-07-31 direct face-offset transfer rejected
 
