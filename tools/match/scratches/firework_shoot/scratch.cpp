@@ -8,7 +8,7 @@
 
 int next_math_random_value();
 
-void FireWork::firework_shoot(
+void cRFireWork::firework_shoot(
     Vector3* position, int owner, int texture_id, int count)
 {
     if ((g_runtime_config.render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) == 0

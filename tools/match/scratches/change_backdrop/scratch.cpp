@@ -3,7 +3,7 @@
 
 #include "backdrop.h"
 
-void Backdrop::change_backdrop(LandscapeScriptRecord* record, char flip)
+void cRBackdrop::change_backdrop(LandscapeScriptRecord* record, char flip)
 {
     int render_enabled = 0;
     unsigned char split_pair = record->split_backdrop_texture_pair;

@@ -4,7 +4,7 @@
 #include "runtime_config.h"
 
 
-void Backdrop::initialize_backdrop(int last_mode)
+void cRBackdrop::initialize_backdrop(int last_mode)
 {
     corner_index_buffer_handle = 1;
     unknown_660 = 0;

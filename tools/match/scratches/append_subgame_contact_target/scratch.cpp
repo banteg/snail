@@ -4,7 +4,7 @@
 
 #include "contact_target.h"
 
-void EnemyManager::append_subgame_contact_target(
+void cREnemyManager::append_subgame_contact_target(
     const Vector3* position,
     float radius,
     int kind,

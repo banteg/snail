@@ -111,9 +111,9 @@ public:
     PresentationAnimationSlot cutscene_animation_slots[10]; // +0x14c, owned slots
     // Authored order: left blaster/laser, right blaster/laser, top
     // blaster/rocket launcher. Each channel owns its five animation slots.
-    Weapon weapon_channels[3]; // +0x64c, authored cRWeapon owners
+    cRWeapon weapon_channels[3]; // +0x64c, authored cRWeapon owners
     // Owns the jetpack base/draw slots in animation_slots[0..1].
-    Weapon jetpack_channel;     // +0x11e0, authored cRWeapon owner
+    cRWeapon jetpack_channel;   // +0x11e0, authored cRWeapon owner
     PresentationWobbleController wobble; // +0x15bc through +0x15cb
     // Camera/body hotspot source. Only its inherited transform is consumed,
     // but the exact constructor initializes the complete renderable owner.
@@ -185,7 +185,7 @@ public:
     char unknown_14d[0x150 - 0x14d];
     cRNuke nuke;                          // +0x150, authored cRNuke owner
     int shoot_sfx_variant_sample;           // +0x1cc, cached PlayShootSfx variant
-    FireWork firework;                      // +0x1d0, empty authored cRFireWork child
+    cRFireWork firework;                    // +0x1d0, empty authored cRFireWork child
     char unknown_1d1[0x1d4 - 0x1d1];
     float damage_retrigger_timer;           // +0x1d4
     float damage_retrigger_step;            // +0x1d8

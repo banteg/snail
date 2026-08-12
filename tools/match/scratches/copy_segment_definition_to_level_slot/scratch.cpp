@@ -7,7 +7,7 @@ extern char* g_current_level_definition_name; // data_74ec74
 
 int report_errorf(char* format, ...);
 
-void SubTracks::copy_segment_definition_to_level_slot(
+void cRSubTracks::copy_segment_definition_to_level_slot(
     char* segment_name,
     SubSegment* slot)
 {

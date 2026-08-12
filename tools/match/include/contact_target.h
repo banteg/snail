@@ -21,7 +21,7 @@ struct ContactTargetEntry {
 typedef char ContactTargetEntry_must_be_0x18[
     (sizeof(ContactTargetEntry) == 0x18) ? 1 : -1];
 
-class EnemyManager {
+class cREnemyManager {
 public:
     void initialize_enemy_manager(); // @ 0x415e20, iOS cREnemyManager::Init()
     ContactTargetEntry* search_path_for_golb(
@@ -36,7 +36,8 @@ public:
     ContactTargetEntry entries[CONTACT_TARGET_CAPACITY]; // +0x04, embedded frame storage
 };
 
+typedef cREnemyManager EnemyManager;
 typedef char EnemyManager_must_be_0x1804[
-    (sizeof(EnemyManager) == 0x1804) ? 1 : -1];
+    (sizeof(cREnemyManager) == 0x1804) ? 1 : -1];
 
 #endif

@@ -111,7 +111,7 @@ public:
     BorderManager border_manager; // +0xb4c, ends exactly at +0x44100
     RootBodCatalog root_bod_catalog; // +0x44100, fixed 352-entry cRBod bank
     DirectXLoader directx_loader; // +0x48e00, owns 128 cached X-mesh slots
-    Backdrop backdrop; // +0x4ec10, owned cRBackdrop-compatible renderer
+    cRBackdrop backdrop; // +0x4ec10, owned cRBackdrop renderer
     // Contiguous front-end owner block. The exact component extents prove
     // every boundary through the exit prompt without padding.
     cRIntro intro; // +0x4f2dc, exact Windows cRIntro owner

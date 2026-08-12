@@ -2,7 +2,7 @@
 
 #include "sub_tracks.h"
 
-void SubTracks::load_builtin_segment_definitions(
+void cRSubTracks::load_builtin_segment_definitions(
     SubSegmentRaw** raw_segments)
 {
     SubSegment* slots = segment_slots;

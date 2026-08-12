@@ -177,11 +177,11 @@ public:
     Tutorial tutorial; // +0xa858, authored cRTutorial owner through +0xa874
     // Embedded level-definition owner. Its exact extent accounts for the
     // authored segment slots and all parsed level metadata through parcel_quota.
-    SubTracks level_definition; // +0xa874, ends at +0x1b01ec
+    cRSubTracks level_definition; // +0xa874, ends at +0x1b01ec
     // A second complete cRSubTracks-shaped owner. Startup reuses it while
     // enumerating every Levels/*.txt file, then reseeds its slot storage from
     // the built-in segment table; it is storage, not a borrowed loader view.
-    SubTracks level_definition_scratch; // +0x1b01ec, ends at +0x355b64
+    cRSubTracks level_definition_scratch; // +0x1b01ec, ends at +0x355b64
     // Ten consecutive constructed BodBase records close this entire 0x230-byte
     // interval. Startup links nine into the root active list; +0x355d5c stays
     // unlinked there. Roles without a direct native consumer stay offset-named
@@ -287,7 +287,7 @@ public:
     int subgame_rebuild_selector; // +0x1270fc8
     float next_slug_voice_trigger_z; // +0x1270fcc, advances when a spawned slug is marked to speak
     float slug_voice_trigger_spacing_z; // +0x1270fd0
-    EnemyManager enemy_manager; // +0x1270fd4, authored cREnemyManager owner
+    cREnemyManager enemy_manager; // +0x1270fd4, authored cREnemyManager owner
     cRCompletion completion; // +0x12727d8, embedded cRCompletion owner
     cRTimesUp times_up; // +0x1272828, authored cRTimesUp owner
 };

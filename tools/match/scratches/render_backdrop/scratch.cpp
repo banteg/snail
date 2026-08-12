@@ -5,7 +5,7 @@
 #include "backdrop.h"
 #include "font_system.h"
 
-void Backdrop::render_backdrop()
+void cRBackdrop::render_backdrop()
 {
     enum {
         GRID_COLUMN_COUNT = sizeof(distort_grid[0]) / sizeof(distort_grid[0][0]),

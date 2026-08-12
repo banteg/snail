@@ -3,7 +3,7 @@
 
 #include "backdrop.h"
 
-void Backdrop::change_backdrop_real()
+void cRBackdrop::change_backdrop_real()
 {
     int texture_id = pending_primary_texture_id;
 

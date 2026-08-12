@@ -19,7 +19,7 @@ int queue_axis_aligned_textured_quad_uv(
     int blend_mode,
     float rotation);
 
-int Backdrop::draw_split_backdrop()
+int cRBackdrop::draw_split_backdrop()
 {
     tColour color;
     queue_axis_aligned_textured_quad_uv(

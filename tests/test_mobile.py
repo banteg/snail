@@ -6165,6 +6165,91 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
     assert "cRSubSolutionHeader* compact" in solution
 
 
+def test_core_gameplay_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    owners = {
+        "backdrop.h": (
+            "cRBackdrop",
+            "Backdrop",
+            (
+                "set_backdrop_zoom",
+                "set_backdrop_distort",
+                "change_backdrop",
+                "change_backdrop_real",
+                "initialize_backdrop",
+                "set_backdrop_texture_target",
+                "draw_split_backdrop",
+                "render_backdrop",
+                "update_backdrop",
+            ),
+        ),
+        "contact_target.h": (
+            "cREnemyManager",
+            "EnemyManager",
+            (
+                "initialize_enemy_manager",
+                "search_path_for_golb",
+                "append_subgame_contact_target",
+            ),
+        ),
+        "firework.h": (
+            "cRFireWork",
+            "FireWork",
+            ("firework_shoot",),
+        ),
+        "weapon.h": (
+            "cRWeapon",
+            "Weapon",
+            ("set_weapon_animation",),
+        ),
+        "sub_tracks.h": (
+            "cRSubTracks",
+            "SubTracks",
+            (
+                "load_frontend_level_by_mode_and_index",
+                "copy_segment_definition_to_level_slot",
+                "load_level_definition_file",
+                "load_builtin_segment_definitions",
+            ),
+        ),
+    }
+    member_names = {
+        "set_backdrop_texture_target": "set_backdrop_world",
+    }
+    for header_name, (authored, compatibility, functions) in owners.items():
+        header = (include_root / header_name).read_text(encoding="utf-8")
+        assert f"class {authored}" in header
+        assert f"typedef {authored} {compatibility};" in header
+        assert f"sizeof({authored})" in header
+        for function in functions:
+            source = (
+                scratch_root / function / "scratch.cpp"
+            ).read_text(encoding="utf-8")
+            member = member_names.get(function, function)
+            assert f"{authored}::{member}" in source
+
+    game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
+    assert "cRBackdrop backdrop" in game_root
+    player = (include_root / "player.h").read_text(encoding="utf-8")
+    for field_type in (
+        "cRWeapon weapon_channels[3]",
+        "cRWeapon jetpack_channel",
+        "cRFireWork firework",
+    ):
+        assert field_type in player
+    subgame = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    for field_type in (
+        "cRSubTracks level_definition",
+        "cRSubTracks level_definition_scratch",
+        "cREnemyManager enemy_manager",
+    ):
+        assert field_type in subgame
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

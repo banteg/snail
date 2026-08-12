@@ -26,7 +26,7 @@ struct BackdropWorldBlend {
 typedef char BackdropWorldBlend_must_be_0x20[
     (sizeof(BackdropWorldBlend) == 0x20) ? 1 : -1];
 
-class Backdrop : public BodBase {
+class cRBackdrop : public BodBase {
 public:
     void set_backdrop_zoom(float zoom); // @ 0x410c30, iOS cRBackdrop::SetZoom(float)
     void set_backdrop_distort(float distort); // @ 0x410c40, iOS/Android cRBackdrop::SetDistort(float)
@@ -86,6 +86,8 @@ public:
     float zoom; // +0x6c8, normalized track progress on Windows
 };
 
-typedef char Backdrop_must_cover_0x6cc[(sizeof(Backdrop) == 0x6cc) ? 1 : -1];
+typedef cRBackdrop Backdrop;
+typedef char Backdrop_must_cover_0x6cc[
+    (sizeof(cRBackdrop) == 0x6cc) ? 1 : -1];
 
 #endif

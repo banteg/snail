@@ -28,7 +28,7 @@ struct LevelDefinitionParseBuffers {
     char background_name[512];
 };
 
-void SubTracks::load_level_definition_file(char* filename)
+void cRSubTracks::load_level_definition_file(char* filename)
 {
     char* cursor;
     char* line_cursor;

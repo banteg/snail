@@ -5,7 +5,7 @@
 float sine(float radians); // @ 0x44c9d0
 float cosine(float radians); // @ 0x44c980
 
-int Backdrop::update_backdrop()
+int cRBackdrop::update_backdrop()
 {
     enum {
         GRID_ROW_COUNT = sizeof(distort_grid) / sizeof(distort_grid[0]),

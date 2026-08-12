@@ -14,7 +14,7 @@ typedef char PresentationAnimationSlot_must_be_0x80[
 
 // Authored cRWeapon. Snail owns three weapon instances and one additional
 // instance for the jetpack presentation channel.
-class Weapon : public RenderableBod {
+class cRWeapon : public RenderableBod {
 public:
     void set_weapon_animation(int animation_id, bool immediate, int mode_flags);
 
@@ -32,6 +32,7 @@ public:
     Vector3 release_step; // +0x3d0, additive offset when release flag is active
 };
 
-typedef char Weapon_must_be_0x3dc[(sizeof(Weapon) == 0x3dc) ? 1 : -1];
+typedef cRWeapon Weapon;
+typedef char Weapon_must_be_0x3dc[(sizeof(cRWeapon) == 0x3dc) ? 1 : -1];
 
 #endif

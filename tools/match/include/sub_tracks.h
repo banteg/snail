@@ -6,7 +6,7 @@
 #include "segment_catalog_types.h"
 #include "sprite.h"
 
-class SubTracks {
+class cRSubTracks {
 public:
     void load_frontend_level_by_mode_and_index(int mode, int level_index); // @ 0x443650
     void load_level_definition_file(char* path); // @ 0x447480
@@ -36,7 +36,8 @@ public:
     int parcel_quota;                    // +0x1a5974
 };
 
+typedef cRSubTracks SubTracks;
 typedef char SubTracks_must_be_0x1a5978[
-    (sizeof(SubTracks) == 0x1a5978) ? 1 : -1];
+    (sizeof(cRSubTracks) == 0x1a5978) ? 1 : -1];
 
 #endif
