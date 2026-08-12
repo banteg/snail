@@ -14,7 +14,7 @@ enum NukeState {
     NUKE_STATE_ACTIVE = 1,
 };
 
-class Nuke {
+class cRNuke {
 public:
     void initialize_nuke(); // @ 0x447110, cRNuke::Init
     void update_nuke(); // @ 0x4471e0, cRNuke::AI
@@ -29,6 +29,7 @@ public:
     cRSprite* sprite_slots[NUKE_SPRITE_SLOT_COUNT]; // +0x18
 };
 
-typedef char Nuke_must_be_0x7c[(sizeof(Nuke) == 0x7c) ? 1 : -1];
+typedef cRNuke Nuke;
+typedef char Nuke_must_be_0x7c[(sizeof(cRNuke) == 0x7c) ? 1 : -1];
 
 #endif

@@ -6,7 +6,7 @@
 #include "subgame_runtime.h"
 
 
-void Nuke::initialize_nuke()
+void cRNuke::initialize_nuke()
 {
     int zero = NUKE_STATE_INACTIVE;
     if (state == zero) {

@@ -2,7 +2,7 @@
 
 #include "anim_manager.h"
 
-void AnimManager::initialize_anim_manager()
+void cRAnimManager::initialize_anim_manager()
 {
     progress = 0.0f;
     progress_step = 0.0f;

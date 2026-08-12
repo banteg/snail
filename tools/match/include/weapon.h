@@ -27,7 +27,7 @@ public:
     // consumer yet proves the concrete types of those Weapon-owned lanes.
     char unknown_080[0x104 - 0x80];
     int selected_state; // +0x104
-    AnimManager anim_manager; // +0x108
+    cRAnimManager anim_manager; // +0x108
     PresentationAnimationSlot animation_slots[5]; // +0x150, owned renderable slots
     Vector3 release_step; // +0x3d0, additive offset when release flag is active
 };

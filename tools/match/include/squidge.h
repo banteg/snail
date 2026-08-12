@@ -2,7 +2,7 @@
 #ifndef SQUIDGE_H
 #define SQUIDGE_H
 
-class Squidge {
+class cRSquidge {
 public:
     void initialize_squidge(); // @ 0x444960, cRSquidge::Init
     void start_squidge_y(float amount); // @ 0x444980, cRSquidge::StartY
@@ -17,6 +17,8 @@ public:
     float z_phase; // +0x14
 };
 
-typedef char Squidge_must_be_0x18[(sizeof(Squidge) == 0x18) ? 1 : -1];
+typedef cRSquidge Squidge;
+typedef char Squidge_must_be_0x18[
+    (sizeof(cRSquidge) == 0x18) ? 1 : -1];
 
 #endif

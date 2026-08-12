@@ -10,7 +10,7 @@ enum TimesUpState {
     TIMES_UP_STATE_EXPIRED = 2,
 };
 
-class TimesUp {
+class cRTimesUp {
 public:
     void update_times_up(); // @ 0x445e20, cRTimesUp::AI
     void uninit_times_up(); // @ 0x445e70, cRTimesUp::UnInit
@@ -22,7 +22,8 @@ public:
     float progress_step; // +0x0c
 };
 
+typedef cRTimesUp TimesUp;
 typedef char TimesUp_must_be_0x10[
-    (sizeof(TimesUp) == 0x10) ? 1 : -1];
+    (sizeof(cRTimesUp) == 0x10) ? 1 : -1];
 
 #endif

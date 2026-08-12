@@ -263,7 +263,7 @@ public:
     // primary/secondary pairs; public `Path=` indices occupy 0..50 and
     // transition-only auxiliary pairs occupy 51..62.
     PathPair path_pairs[PATH_PAIR_COUNT]; // +0xff2914, ends +0xff7bc4
-    BarrierActor barrier; // +0xff7bc4, embedded tutorial barrier actor
+    cRBarrier barrier; // +0xff7bc4, embedded tutorial barrier actor
     // Exact cRLandscapeManager owner: ten active render entries followed by
     // the script count and 128 parsed 0x124-byte records.
     cRLandscapeManager landscape_manager; // +0xff7c00, ends at +0x10013a4
@@ -289,7 +289,7 @@ public:
     float slug_voice_trigger_spacing_z; // +0x1270fd0
     EnemyManager enemy_manager; // +0x1270fd4, authored cREnemyManager owner
     cRCompletion completion; // +0x12727d8, embedded cRCompletion owner
-    TimesUp times_up; // +0x1272828, authored cRTimesUp owner
+    cRTimesUp times_up; // +0x1272828, authored cRTimesUp owner
 };
 
 // GameRoot embeds cRSubGame at +0x74618. Its exact extent reaches the root

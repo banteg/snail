@@ -5,9 +5,9 @@
 float sine(float radians);
 float cosine(float radians);
 
-void Nuke::update_nuke()
+void cRNuke::update_nuke()
 {
-    Nuke* self = this;
+    cRNuke* self = this;
     int result = self->state;
     switch (result) {
     case NUKE_STATE_INACTIVE:

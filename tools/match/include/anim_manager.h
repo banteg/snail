@@ -13,7 +13,7 @@ enum {
     ANIM_MANAGER_HIDE_ANIMATION_ID = -1,
 };
 
-class AnimManager {
+class cRAnimManager {
 public:
     void initialize_anim_manager(); // @ 0x4447c0, cRAnimManager::Init
     void update_anim_manager();     // @ 0x4447d0, cRAnimManager::AI
@@ -30,7 +30,8 @@ public:
     PresentationAnimationSlot* animation_slots; // +0x44, borrowed inline slot bank
 };
 
+typedef cRAnimManager AnimManager;
 typedef char AnimManager_must_be_0x48[
-    (sizeof(AnimManager) == 0x48) ? 1 : -1];
+    (sizeof(cRAnimManager) == 0x48) ? 1 : -1];
 
 #endif

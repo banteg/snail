@@ -5947,6 +5947,91 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
     ) == 38
 
 
+def test_subgame_leaf_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    owners = {
+        "anim_manager.h": (
+            "cRAnimManager",
+            "AnimManager",
+            ("initialize_anim_manager", "update_anim_manager"),
+        ),
+        "banner.h": ("cRBanner", "Banner", ("update_banner",)),
+        "barrier_actor.h": (
+            "cRBarrier",
+            "BarrierActor",
+            ("update_barrier_ai",),
+        ),
+        "nuke.h": (
+            "cRNuke",
+            "Nuke",
+            ("initialize_nuke", "update_nuke", "uninit_nuke"),
+        ),
+        "progress_bar.h": (
+            "cRProgressBar",
+            "ProgressBar",
+            ("update_progress_bar",),
+        ),
+        "snail_skin.h": (
+            "cRSnailSkin",
+            "SnailSkin",
+            (
+                "initialize_snail_skin",
+                "update_snail_skin_transition",
+                "change_snail_skin",
+            ),
+        ),
+        "squidge.h": (
+            "cRSquidge",
+            "Squidge",
+            (
+                "initialize_squidge",
+                "start_squidge_y",
+                "start_squidge_z",
+                "update_squidge",
+            ),
+        ),
+        "times_up.h": (
+            "cRTimesUp",
+            "TimesUp",
+            (
+                "update_times_up",
+                "uninit_times_up",
+                "show_times_up_message",
+            ),
+        ),
+    }
+    for header_name, (authored, compatibility, functions) in owners.items():
+        header = (include_root / header_name).read_text(encoding="utf-8")
+        assert f"class {authored}" in header
+        assert f"typedef {authored} {compatibility};" in header
+        assert f"sizeof({authored})" in header
+        for function in functions:
+            source = (
+                scratch_root / function / "scratch.cpp"
+            ).read_text(encoding="utf-8")
+            assert f"{authored}::{function}" in source
+
+    player = (include_root / "player.h").read_text(encoding="utf-8")
+    for field_type in (
+        "cRAnimManager anim_manager",
+        "cRSnailSkin snail_skin",
+        "cRNuke nuke",
+        "cRProgressBar progress_bar",
+        "cRSquidge squidge",
+    ):
+        assert field_type in player
+    subgame = (include_root / "subgame_runtime.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRBarrier barrier" in subgame
+    assert "cRTimesUp times_up" in subgame
+    assert "cRBanner slots[2]" in (
+        include_root / "banner.h"
+    ).read_text(encoding="utf-8")
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

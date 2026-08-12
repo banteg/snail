@@ -2,7 +2,7 @@
 
 #include "barrier_actor.h"
 
-void BarrierActor::update_barrier_ai()
+void cRBarrier::update_barrier_ai()
 {
     cRSubGoldy* owner = owner_player;
     position.z = owner->transform.position.z;

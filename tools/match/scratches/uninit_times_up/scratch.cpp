@@ -4,7 +4,7 @@
 #include "times_up.h"
 
 
-void TimesUp::uninit_times_up()
+void cRTimesUp::uninit_times_up()
 {
     if (state != TIMES_UP_STATE_INACTIVE) {
         g_game->border_manager.kill_border(border);

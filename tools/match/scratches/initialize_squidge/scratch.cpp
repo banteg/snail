@@ -2,7 +2,7 @@
 
 #include "squidge.h"
 
-void Squidge::initialize_squidge()
+void cRSquidge::initialize_squidge()
 {
     y_velocity = 0.0f;
     y_phase = 0.0f;

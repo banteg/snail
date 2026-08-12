@@ -7,7 +7,7 @@
 
 class cRSubGame;
 
-class Banner : public BodBase {
+class cRBanner : public BodBase {
 public:
     void update_banner(); // @ 0x441d40, cRBanner::AI
 
@@ -21,13 +21,14 @@ public:
     float phase_step; // +0x5c
 };
 
-typedef char Banner_must_be_0x60[(sizeof(Banner) == 0x60) ? 1 : -1];
+typedef cRBanner Banner;
+typedef char Banner_must_be_0x60[(sizeof(cRBanner) == 0x60) ? 1 : -1];
 
 class BannerPool {
 public:
     // Fixed start/completion storage owned by cRSubGame. The global BOD
     // list only links these objects while the subgame is live.
-    Banner slots[2];
+    cRBanner slots[2];
 };
 
 typedef char BannerPool_must_be_0xc0[

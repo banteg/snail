@@ -2,7 +2,7 @@
 
 #include "nuke.h"
 
-void Nuke::uninit_nuke()
+void cRNuke::uninit_nuke()
 {
     if (state == NUKE_STATE_ACTIVE) {
         for (int i = 0; i < NUKE_SPRITE_SLOT_COUNT; i++) {

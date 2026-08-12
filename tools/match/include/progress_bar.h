@@ -1,7 +1,7 @@
 #ifndef PROGRESS_BAR_H
 #define PROGRESS_BAR_H
 
-class ProgressBar {
+class cRProgressBar {
 public:
     // cRProgressBar::Init folds into the shared one-byte stub at 0x407b50.
     void noop_runtime_ai();
@@ -11,6 +11,8 @@ public:
     unsigned char _empty;
 };
 
-typedef char ProgressBar_must_be_0x1[(sizeof(ProgressBar) == 0x1) ? 1 : -1];
+typedef cRProgressBar ProgressBar;
+typedef char ProgressBar_must_be_0x1[
+    (sizeof(cRProgressBar) == 0x1) ? 1 : -1];
 
 #endif

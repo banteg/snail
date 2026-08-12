@@ -13,7 +13,7 @@ enum {
     SNAIL_SKIN_SLOT_COUNT = 3,
 };
 
-class SnailSkin {
+class cRSnailSkin {
 public:
     void initialize_snail_skin(); // @ 0x445f60, cRSnailSkin::Init
     void update_snail_skin_transition(); // @ 0x445f80, cRSnailSkin::AI
@@ -27,6 +27,8 @@ public:
     float progress_step;           // +0x1c
 };
 
-typedef char SnailSkin_must_be_0x20[(sizeof(SnailSkin) == 0x20) ? 1 : -1];
+typedef cRSnailSkin SnailSkin;
+typedef char SnailSkin_must_be_0x20[
+    (sizeof(cRSnailSkin) == 0x20) ? 1 : -1];
 
 #endif

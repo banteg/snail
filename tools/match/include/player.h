@@ -107,7 +107,7 @@ public:
     TransformMatrix previous_live_matrix;   // +0x80
     TransformMatrix cached_cutscene_matrix; // +0xc0
     cRSubGoldy* owner_player;                   // +0x100, non-owning backlink to containing cRSubGoldy
-    AnimManager anim_manager;               // +0x104
+    cRAnimManager anim_manager;             // +0x104
     PresentationAnimationSlot cutscene_animation_slots[10]; // +0x14c, owned slots
     // Authored order: left blaster/laser, right blaster/laser, top
     // blaster/rocket launcher. Each channel owns its five animation slots.
@@ -129,7 +129,7 @@ public:
     float cutscene_roll_step;                    // +0x1930
     unsigned char channel_release_steps_active;  // +0x1934
     char unknown_1935[0x1938 - 0x1935];
-    SnailSkin snail_skin;                       // +0x1938, authored cRSnailSkin
+    cRSnailSkin snail_skin;                     // +0x1938, authored cRSnailSkin
     cRCutScene cutscene;                        // +0x1958, authored cRCutScene
 };
 typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
@@ -183,7 +183,7 @@ public:
     cRClickStart click_start;              // +0xa0, exact authored cRClickStart
     unsigned char row_event_cutscene_started; // +0x14c
     char unknown_14d[0x150 - 0x14d];
-    Nuke nuke;                            // +0x150, authored cRNuke owner
+    cRNuke nuke;                          // +0x150, authored cRNuke owner
     int shoot_sfx_variant_sample;           // +0x1cc, cached PlayShootSfx variant
     FireWork firework;                      // +0x1d0, empty authored cRFireWork child
     char unknown_1d1[0x1d4 - 0x1d1];
@@ -239,7 +239,7 @@ public:
     // player is 0x430100, previously mistaken for an independent global.
     cRPathFollowGoldy follow_state;         // +0x384
     cRDamageGuage damage_gauge;   // +0x3c4
-    ProgressBar progress_bar;               // +0x3f0, empty authored cRProgressBar
+    cRProgressBar progress_bar;             // +0x3f0, empty authored cRProgressBar
     char unknown_3f1[0x3f4 - 0x3f1];
     cRWarning warning;                     // +0x3f4, authored cRWarning owner
     int lives;                            // +0x404
@@ -293,7 +293,7 @@ public:
     int parcels_collected;                 // +0x4338
     char unknown_433c[0x4340 - 0x433c];
     int visible_life_stock;                // +0x4340
-    Squidge squidge;                       // +0x4344, authored cRSquidge
+    cRSquidge squidge;                     // +0x4344, authored cRSquidge
     float slow_commentary_timer;            // +0x435c
     float slow_commentary_step;             // +0x4360
 };

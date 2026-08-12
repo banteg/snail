@@ -5,14 +5,15 @@
 #include "bod_types.h"
 #include "player.h"
 
-class BarrierActor : public BodBase {
+class cRBarrier : public BodBase {
 public:
     void update_barrier_ai(); // @ 0x440f80, cRBarrier::AI
 
     cRSubGoldy* owner_player; // +0x38, borrowed live-position source
 };
 
+typedef cRBarrier BarrierActor;
 typedef char BarrierActor_must_be_0x3c[
-    (sizeof(BarrierActor) == 0x3c) ? 1 : -1];
+    (sizeof(cRBarrier) == 0x3c) ? 1 : -1];
 
 #endif

@@ -2,7 +2,7 @@
 
 #include "squidge.h"
 
-void Squidge::start_squidge_z(float value)
+void cRSquidge::start_squidge_z(float value)
 {
     z_phase = value;
     z_velocity = value * -0.00300000003f;

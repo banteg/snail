@@ -5,7 +5,7 @@
 #include "times_up.h"
 
 
-void TimesUp::update_times_up()
+void cRTimesUp::update_times_up()
 {
     switch (state) {
         case TIMES_UP_STATE_INACTIVE:

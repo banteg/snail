@@ -2,7 +2,7 @@
 
 #include "squidge.h"
 
-void Squidge::update_squidge()
+void cRSquidge::update_squidge()
 {
     if (y_velocity != 0.0f) {
         y_phase = y_phase + y_velocity;

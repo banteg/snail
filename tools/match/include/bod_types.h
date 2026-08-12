@@ -9,7 +9,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-class AnimManager;
+class cRAnimManager;
+typedef cRAnimManager AnimManager;
 
 // Shared lifecycle state for the cRBod/cRBodPos family. The callback table is
 // installed on renderable bodies whose AI entry is the native no-op stub.
@@ -47,7 +48,7 @@ public:
     TransformMatrix transform; // +0x38
     // Only valid with BOD_FLAG_SYNC_ANIMATION: cRGame::Render borrows this
     // manager's progress for Object::animation immediately before drawing.
-    AnimManager* render_animation_manager; // +0x78
+    cRAnimManager* render_animation_manager; // +0x78
     // LoadAnim reuses raw cRBodPos records as animation keyframes and stores
     // their authored frame number in the final positioned-body lane.
     int frame_number; // +0x7c
