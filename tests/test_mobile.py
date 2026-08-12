@@ -5710,15 +5710,26 @@ def test_unique_ios_class_owner_provenance_is_sound(capsys) -> None:
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
 
     objects_by_class: dict[str, set[str]] = {}
-    exact_object_symbols: set[str] = set()
+    nonconstructor_objects_by_class: dict[str, set[str]] = {}
+    exact_objects_by_symbol: dict[str, set[str]] = {}
     for source_object, symbols in names["source_objects"]:
-        exact_object_symbols.update(symbols)
         for symbol in symbols:
+            exact_objects_by_symbol.setdefault(symbol, set()).add(
+                source_object
+            )
             match = re.match(r"([^:(]+)::", symbol)
             if match:
                 objects_by_class.setdefault(match.group(1), set()).add(
                     source_object
                 )
+            method_match = re.match(r"([^:(]+)::([^(:]+)", symbol)
+            if method_match and method_match.group(2) not in {
+                method_match.group(1),
+                f"~{method_match.group(1)}",
+            }:
+                nonconstructor_objects_by_class.setdefault(
+                    method_match.group(1), set()
+                ).add(source_object)
 
     inferred = {
         entry["windows_name"]: entry
@@ -5731,10 +5742,35 @@ def test_unique_ios_class_owner_provenance_is_sound(capsys) -> None:
         symbol = entry.get("ios_symbol") or entry["android_symbol"]
         match = re.match(r"([^:(]+)::", symbol)
         assert match is not None
-        assert symbol not in exact_object_symbols
+        assert symbol not in exact_objects_by_symbol
         assert objects_by_class[match.group(1)] == {
             entry["source_object"]
         }
+
+    inferred_methods = {
+        entry["windows_name"]: entry
+        for entry in verified["entries"]
+        if entry.get("source_object_evidence")
+        == "unique-ios-nonconstructor-method-object"
+    }
+    assert len(inferred_methods) >= 10
+    for entry in inferred_methods.values():
+        symbol = entry.get("ios_symbol") or entry["android_symbol"]
+        match = re.match(r"([^:(]+)::", symbol)
+        assert match is not None
+        assert symbol not in exact_objects_by_symbol
+        assert nonconstructor_objects_by_class[match.group(1)] == {
+            entry["source_object"]
+        }
+
+    for entry in verified["entries"]:
+        exact_objects: set[str] = set()
+        for key in ("ios_symbol", "android_symbol"):
+            exact_objects.update(
+                exact_objects_by_symbol.get(entry.get(key, ""), ())
+            )
+        if exact_objects:
+            assert entry.get("source_object") in exact_objects
 
     expected = {
         "draw_galaxy_line": "Galaxy.o",
@@ -5754,6 +5790,32 @@ def test_unique_ios_class_owner_provenance_is_sound(capsys) -> None:
         assert complete_by_name[windows_name][
             "source_object_evidence"
         ] == "unique-ios-class-object"
+
+    expected_methods = {
+        "is_neighbor_cell_solid": "SubGame.o",
+        "reset_subgame": "SubGame.o",
+        "sample_track_floor_height_at_position": "SubGame.o",
+        "unhide_gameplay_scores": "SubGame.o",
+    }
+    for windows_name, source_object in expected_methods.items():
+        assert inferred_methods[windows_name]["source_object"] == (
+            source_object
+        )
+        assert complete_by_name[windows_name]["source_object"] == (
+            source_object
+        )
+        assert complete_by_name[windows_name][
+            "source_object_evidence"
+        ] == "unique-ios-nonconstructor-method-object"
+
+    constructor = next(
+        entry
+        for entry in verified["entries"]
+        if entry["windows_name"]
+        == "initialize_runtime_pools_and_path_template_bank"
+    )
+    assert constructor["source_object"] == "Mac.o"
+    assert "semantic owner" in constructor["notes"]
 
     result = main(
         [

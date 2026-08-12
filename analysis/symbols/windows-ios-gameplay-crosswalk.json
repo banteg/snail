@@ -7,6 +7,7 @@
     "The Windows function names remain the stable match harness identifiers.",
     "source_object is from the v1.5 iPhone STABS-style object markers when available; v1.9-only symbols often lack an object file.",
     "source_object_evidence set to unique-ios-class-object means the mapped symbol belongs to an authored C++ class whose v1.5 STABS-marked methods occur in exactly one object file; this is class-level compilation-unit provenance, not a direct marker on that symbol.",
+    "source_object_evidence set to unique-ios-nonconstructor-method-object means all v1.5 STABS-marked non-constructor methods of the mapped symbol class occur in one object file after excluding constructor or destructor emissions from other units.",
     "Android-only mappings use android_symbol instead of ios_symbol; their notes identify whether the body or only the exported name was compared.",
     "android_symbol_evidence or ios_symbol_evidence set to exact-demangled-symbol means the other verified port name was found verbatim in that corpus; it is a name transfer, not a new semantic mapping."
   ],
@@ -803,7 +804,8 @@
       "address": "0x434b60",
       "windows_name": "is_neighbor_cell_solid",
       "android_symbol": "cRSubGame::TestLoc(cRSubLoc*, int, int)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "Android preserves the full body: Yi row recovery, lane and row bounds, identical eight-lane indexing, IsEmpty call, and the same final tile exclusions 35/0/22/28."
     },
@@ -867,7 +869,8 @@
       "address": "0x437b10",
       "windows_name": "reset_subgame",
       "android_symbol": "cRSubGame::ReSet()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "Windows and Android clear the same authored families of inline health, speed-up, jetpack, garbage, slug, and ring actors while reinstalling borrowed cRSubGame backlinks. Both then select between restoring the saved score-and-time snapshot and clearing live score/time state, arm the two leading scan/camera bytes, clear replay launch state, and empty the active garbage head. Android cRSubGame::Init() ends in ReSet(this); all five Windows exits from initialize_subgame likewise reload the same receiver and call 0x437b10. Record strides, pool capacities, and field offsets are platform-specific and are deliberately not transferred. No exported iOS ReSet body was found."
     },
@@ -1100,7 +1103,8 @@
       "windows_name": "spawn_track_health_pickup",
       "ios_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
       "android_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "The iOS signature is v1.9-only. Android scans the fixed health array, initializes one slot, and branches to its epilogue without establishing a return value, supporting the side-effect-only method contract."
     },
@@ -1118,7 +1122,8 @@
       "windows_name": "spawn_track_speedup",
       "ios_symbol": "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
       "android_symbol": "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "The iOS signature is v1.9-only. Windows and Android both retain a literal no-op AddSpeedUp body. The same Windows address is also called with a cRSubHover receiver, Vector3 pointer, and float; Android's separate literal no-op cRSubHover::Hover(tVector&, float) proves that folded alias."
     },
@@ -1922,7 +1927,8 @@
       "address": "0x437e80",
       "windows_name": "calc_slider_to_rate",
       "android_symbol": "cRSubGame::CalcSliderToRate(float)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "The Windows and Android bodies have the same cRSubGame receiver, exact x == 1.0 special case, 1.1 result, and x * 0.90000004 + 0.2 fallback. No iOS symbol was found."
     },
@@ -1957,7 +1963,8 @@
       "address": "0x43d480",
       "windows_name": "get_track_runtime_cell_at_world_z",
       "android_symbol": "cRSubGame::RowFromPos(tVector)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "Windows and Android clamp world z to the port's runtime-row capacity and return the owned cRSubRow at the corresponding port-specific stride. No iOS symbol was found."
     },
@@ -1967,7 +1974,8 @@
       "ios_symbol": "cRSubGame::GetY(tVector)",
       "ios_symbol_evidence": "exact-demangled-symbol",
       "android_symbol": "cRSubGame::GetY(tVector)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "Windows and Android call LocFromPos and preserve the same flat, ramp, raised-ramp, stored-height, and -100 sentinel ladder with exact 0.4 and 0.5 constants. iOS independently preserves the exact demangled method name."
     },
@@ -1984,7 +1992,8 @@
       "address": "0x4404d0",
       "windows_name": "calc_subgame_rate",
       "android_symbol": "cRSubGame::CalcRate()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "Both void methods select base versus active rate, clamp track progress, apply mode-dependent ramps, then add the Goldy damage-gauge envelope and hover lane. Layout and some coefficients vary by port; the owner and control graph agree. No iOS symbol was found."
     },
@@ -1992,7 +2001,8 @@
       "address": "0x4408a0",
       "windows_name": "advance_blink_random",
       "android_symbol": "cRSubGame::BlinkRand()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "Both methods advance an owned cursor modulo 24, store it, and return the selected float from the adjacent blink-cadence sample bank. No iOS symbol was found."
     },
@@ -2027,7 +2037,8 @@
       "address": "0x445f40",
       "windows_name": "unhide_gameplay_scores",
       "android_symbol": "cRSubGame::UnHideScores()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "notes": "Windows and Android unhide the same two cRSubGame-owned score widgets in order. No iOS symbol was found."
     },
@@ -5129,9 +5140,9 @@
       "windows_name": "initialize_runtime_pools_and_path_template_bank",
       "android_symbol": "cRSubGame::cRSubGame()",
       "ios_symbol": "cRSubGame::cRSubGame()",
-      "source_object": "SubGame.o",
+      "source_object": "Mac.o",
       "confidence": "high",
-      "notes": "The sole Windows caller constructs the embedded cRSubGame and the exact helper returns that receiver after building every owned pool. Android and iOS preserve the authored cRSubGame constructor and the same owner families, but use smaller Bod prefixes, different pool capacities, and thirteen list heads rather than Windows ten; only ownership and lifecycle transfer across ports."
+      "notes": "The sole Windows caller constructs the embedded cRSubGame and the exact helper returns that receiver after building every owned pool. Android and iOS preserve the authored cRSubGame constructor and the same owner families, but use smaller Bod prefixes, different pool capacities, and thirteen list heads rather than Windows ten; only ownership and lifecycle transfer across ports. The exact v1.5 iOS symbol is STABS-marked in Mac.o; that compilation-unit provenance does not override the authored cRSubGame semantic owner."
     },
     {
       "address": "0x407b50",

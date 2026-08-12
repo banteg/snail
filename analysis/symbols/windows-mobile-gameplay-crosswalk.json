@@ -3933,7 +3933,7 @@
       "status": "verified",
       "android_symbol": "cRSubGame::cRSubGame()",
       "ios_symbol": "cRSubGame::cRSubGame()",
-      "source_object": "SubGame.o",
+      "source_object": "Mac.o",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 1
@@ -15969,7 +15969,8 @@
       "windows_size": 128,
       "status": "verified",
       "android_symbol": "cRSubGame::TestLoc(cRSubLoc*, int, int)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16285,7 +16286,8 @@
       "windows_size": 304,
       "status": "verified",
       "android_symbol": "cRSubGame::ReSet()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -16351,7 +16353,8 @@
       "windows_size": 48,
       "status": "verified",
       "android_symbol": "cRSubGame::CalcSliderToRate(float)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17126,7 +17129,8 @@
       "windows_size": 80,
       "status": "verified",
       "android_symbol": "cRSubGame::RowFromPos(tVector)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17170,7 +17174,8 @@
       "android_symbol": "cRSubGame::GetY(tVector)",
       "ios_symbol": "cRSubGame::GetY(tVector)",
       "ios_symbol_evidence": "exact-demangled-symbol",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -17225,7 +17230,8 @@
       "status": "verified",
       "android_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
       "ios_symbol": "cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -17237,7 +17243,8 @@
       "status": "verified",
       "android_symbol": "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
       "ios_symbol": "cRSubGame::AddSpeedUp(cRSubLoc*, cRSubGoldy*)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_body_count": 0
@@ -17792,7 +17799,8 @@
       "windows_size": 304,
       "status": "verified",
       "android_symbol": "cRSubGame::CalcRate()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -17870,7 +17878,8 @@
       "windows_size": 32,
       "status": "verified",
       "android_symbol": "cRSubGame::BlinkRand()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
@@ -19247,7 +19256,8 @@
       "windows_size": 32,
       "status": "verified",
       "android_symbol": "cRSubGame::UnHideScores()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "high",
       "android_body_count": 1,
       "ios_candidates": [
