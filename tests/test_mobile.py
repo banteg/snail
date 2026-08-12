@@ -9755,16 +9755,59 @@ def test_game_root_uses_authored_primary_owner() -> None:
     assert "typedef cRGame GameRoot;" in header
     assert "sizeof(cRGame)" in header
     assert "extern cRGame* g_game;" in header
-    for function in (
-        "run_frame_update",
-        "render_game_frame",
-        "initialize_game_last",
-        "initialize_game_assets_and_world",
-    ):
+    methods = {
+        "run_frame_update": "AI",
+        "render_game_frame": "render_game_frame",
+        "initialize_game_last": "initialize_game_last",
+        "initialize_game_assets_and_world": "initialize_game_assets_and_world",
+    }
+    for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRGame::{function}" in source
+        assert f"cRGame::{method}" in source
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    entry = crosswalk["run_frame_update"]
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "Game.o"
+    assert entry["android_symbol"] == "cRGame::AI()"
+    assert entry["ios_symbol"] == entry["android_symbol"]
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+    assert functions_by_name["run_frame_update"]["aliases"] == [
+        "cRGame_AI"
+    ]
+    object_symbol = "?AI@cRGame@@QAEHXZ"
+    assert references_by_name["run_frame_update"]["aliases"] == [
+        object_symbol
+    ]
+    config = (scratch_root / "run_frame_update/scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    main_loop = (
+        scratch_root / "game_startup_and_main_loop/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={object_symbol}\n" in config
+    assert "int AI();" in header
+    assert "g_game->AI();" in main_loop
+    assert "run_frame_update();" not in main_loop
 
     constructor = (
         scratch_root / "construct_game_runtime" / "scratch.cpp"

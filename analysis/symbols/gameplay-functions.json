@@ -919,6 +919,9 @@
     {
       "address": "0x40a2a0",
       "name": "run_frame_update",
+      "aliases": [
+        "cRGame_AI"
+      ],
       "description": "Runs one cRGame::AI frame: advances root fade/audio/cheat/voice state, seeds the fixed-step accumulator and input-sampling gate, draws the captured cursor from player zero's saved cursor position, updates the root BOD list and both cRPlayer callbacks, advances every sprite bucket, resets the subgame contact registry, and returns the root quit request."
     },
     {

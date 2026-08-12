@@ -232,6 +232,15 @@
       "description": "Exact cRGalaxy::BorderBound member with the authored cRBorder pointer owner."
     },
     {
+      "address": "0x40a2a0",
+      "name": "run_frame_update",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRGame@@QAEHXZ"
+      ],
+      "description": "Exact Windows int cRGame::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x410710",
       "name": "zero_vector3",
       "kind": "function",

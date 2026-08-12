@@ -130,7 +130,7 @@ public:
     cRTipManager tip_manager; // +0x12e6f58, owned root tutorial-message manager
     char unknown_12e6ff0[0x12e6ff4 - 0x12e6ff0];
 
-    int run_frame_update();          // @ 0x40a2a0
+    int AI();                        // @ 0x40a2a0
     void LevelInit(int level);       // @ 0x40a290, authored virtual no-op
     char initialize_game_assets_and_world(); // @ 0x40acf0
     void initialize_game_last();     // @ 0x410720, cRGame::InitLast
