@@ -527,6 +527,6 @@ restored to the simpler declaration because the initializer has no emitted or
 interaction effect.
 
 The ledger now contains 45 records, 36 mutation sweeps, nine probes, and 182
-evaluated variants (173 unique). Three trailing complete non-improving sweeps
-record this lane at **64.20%**, 684/696 instructions, prefix
+evaluated variants (173 unique). This lane remains at **64.20%**, 684/696
+instructions, prefix
 6/696, with all 40 references clean.

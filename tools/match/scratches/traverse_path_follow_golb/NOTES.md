@@ -357,8 +357,8 @@ mismatched, or unaudited references.
 The append-only ledger covers 12 complete mutation sweeps and 214 unique
 variants: 34 improve their sweep baseline, 41 are identical, 139 regress,
 six sweeps produce retained winners, and no variants repeat or fail. Eleven
-metric tradeoffs are recorded. Three trailing non-improving sweeps after the
-final owner-lifetime win document the tested frontier without closing it.
+metric tradeoffs are recorded. The later sweeps document the tested frontier
+after the final owner-lifetime win.
 
 The remaining four-instruction deficit is localized and bounded. The target
 spills the y/z components of `anchor + terminal.position` before adding the

@@ -447,6 +447,5 @@ while a distinct face-row owner loses 56 weighted bytes and falls to
 `column` across mesh and face emission is therefore independently measured,
 not inferred from decompiler variable names.
 
-No acquisition or counter edit is retained. The experiment log records three
-consecutive complete grids producing no improvement at this 83.10% frontier;
-the streak carries no stop status.
+No acquisition or counter edit is retained. The complete recorded grids produce
+no improvement at this 83.10% frontier.

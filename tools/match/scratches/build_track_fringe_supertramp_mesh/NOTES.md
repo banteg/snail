@@ -154,8 +154,8 @@ prefix-69 baseline: 27 variants were byte-identical and 14 degraded.
   Scalar aliases are neutral; materializing corner or aggregate owners changes
   instruction count and regresses.
 
-The ledger records three trailing non-improving sweeps. The canonical direct
-indexing and scalar UV publication remain the strongest source-backed forms,
+The canonical direct indexing and scalar UV publication remain the strongest
+source-backed forms,
 consistent with the authored mobile builder. The residuals are bounded VC6
 scheduling differences rather than missing geometry, ownership, or control
 flow.

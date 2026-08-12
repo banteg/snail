@@ -356,8 +356,7 @@ weighted bytes, and explicit interior sample-base aliases lose at least 387.
 
 The checked ledger now contains twelve mutation sweeps and 72 unique variants:
 14 improving, 30 neutral, and 28 degrading, including eight metric tradeoffs.
-Five consecutive non-improving sweeps document the current Cage2 frontier at
-the clean **68.20%** result.
+The current Cage2 frontier is the clean **68.20%** result.
 
 ## 2026-07-31 direct face-offset transfer rejected
 

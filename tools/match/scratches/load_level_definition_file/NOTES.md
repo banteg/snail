@@ -307,8 +307,7 @@ transitive Windows `int` declaration, is also byte-identical; the return type
 does not explain VC6's cleanup boundary. Those two non-improving sweeps bound
 the early cleanup hypothesis without retaining declaration shielding or
 source-grouping scaffolds. The ledger now contains 11 sweeps and 81 unique
-variants, with four improving sweeps and a trailing no-improvement streak of
-two.
+variants, with four improving sweeps.
 
 ## 2026-07-31 CRT declaration cleanup bound
 
@@ -324,7 +323,7 @@ byte-identical at **88.12%**, 942/926 instructions, prefix 20/926, 183 clean
 references, and the same two bounded unaudited EOF diagnostics. The standard
 const-qualified declaration is retained as source truth, but it does not move
 the cleanup boundary. The ledger now contains 12 sweeps, 86 evaluated and 85
-unique variants. That history bounds the tested declaration and grouping
-forms without making the three-sweep no-improvement streak a stopping rule. A
+unique variants. That history records the tested declaration and grouping
+forms. A
 future cleanup-schedule probe needs a genuinely new source-lifetime or
 original-source hypothesis.

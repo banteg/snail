@@ -296,5 +296,4 @@ the projection tail.
 The remaining two instructions and two unaudited row-base references arise
 from the typed candidate-row cursor and the compiler's source-cell spill. They
 do not leave a behavior or storage owner unresolved. This classification is
-based on the complete owner graph and cross-port agreement, not on the prior
-experiment streak.
+based on the complete owner graph and cross-port agreement.

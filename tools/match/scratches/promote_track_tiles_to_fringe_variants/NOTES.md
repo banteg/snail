@@ -145,9 +145,8 @@ all `BodBase*` interactions optimize back to the retained cell-base cursor.
 Keeping the object slot live across both scans forces a different schedule and
 falls to 39.22%; it does not preserve the native `ebx = 0x20` flag owner.
 
-The last three append-only ledger sweeps are non-improving; this is descriptive
-evidence, not a stopping rule. Retain the typed `cRSubLoc*` induction until a
-fresh source hypothesis improves it: the remaining uniform `+0x24`
+Retain the typed `cRSubLoc*` induction until a fresh source hypothesis improves
+it: the remaining uniform `+0x24`
 displacement is bounded compiler scheduling, not missing ownership or an
 unresolved reference.
 

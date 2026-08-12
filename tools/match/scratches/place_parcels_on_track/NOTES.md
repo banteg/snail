@@ -595,7 +595,7 @@ interference order:
 Across 14 unique variants, ten compiled byte-identically and four incomplete
 interactions failed to compile; none improved or regressed a valid build. The
 ledger records those shapes at 87.77%, 637/639 instructions, with all 98
-references clean; the sweep streak is not a stop condition.
+references clean.
 Retain the natural scoped source. Recovering the slot permutation would now
 require artificial lifetime or stack forcing rather than additional ownership
 evidence.

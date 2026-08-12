@@ -143,8 +143,8 @@ prefix-58 baseline: 31 variants were byte-identical and 12 degraded.
   branch opcode, while stronger lifetime/control rewrites disturb otherwise
   exact scheduling.
 
-The experiment ledger records three consecutive non-improving sweeps. Native
-and candidate still differ only where scale-one x86 SIB permits
+The recorded sweeps leave native and candidate differing only where scale-one
+x86 SIB permits
 the same two registers to exchange base and index roles. All surrounding
 instructions, effective addresses, control flow, and 26 masked operands agree.
 Changing the honest direct indexed stores would therefore add source
@@ -160,5 +160,4 @@ and candidate both contain 197 instructions and all 26 references are clean.
 
 The nine differing instructions only exchange base and index registers in
 scale-one SIB encodings with identical effective addresses. They do not change
-data flow, behavior, or ownership, so the residual is compiler-only and the
-old sweep streak has no classification force.
+data flow, behavior, or ownership, so the residual is compiler-only.

@@ -561,6 +561,6 @@ Keeping both expressions independent is closest, but still loses 2.49 to
 6.34 weighted bytes.
 
 The ledger now contains 58 records, 55 mutation sweeps, 3 probes, and 240
-unique variants. Three consecutive bounded sweeps fail to improve the
-retained 66.21% source. The tail neighborhood remains unchanged instead of
+unique variants. The tested forms fail to improve the retained 66.21% source.
+The tail neighborhood remains unchanged instead of
 being widened with unsupported aliasing or volatile qualifiers.

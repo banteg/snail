@@ -291,8 +291,8 @@ vertex-base sweep is also neutral in every valid declaration-plus-consumer
 form, including both branches together; incomplete consumers correctly fail
 without the saved owner.
 
-No source change is retained. The ledger records three consecutive
-non-improving sweeps at **75.68%**, 605/600 instructions, prefix 109/600,
+No source change is retained. The recorded result is **75.68%**, 605/600
+instructions, prefix 109/600,
 with all 35 references clean. The native acquisition and saved-base shapes are
 already compiler-produced from the clearer source, while the separate face
 row remains a measured allocation regression.

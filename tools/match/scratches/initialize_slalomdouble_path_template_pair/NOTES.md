@@ -220,8 +220,7 @@ candidate instruction, leaves both references unaudited, and conflicts with
 the independently proven paired-mobile logical owner. This metric-only
 tradeoff is recorded but not retained.
 
-The ledger contains 40 variants, including three trailing non-improving
-sweeps. The honest frontier remains 39.55%, 642/683
+The ledger contains 40 variants. The honest frontier remains 39.55%, 642/683
 instructions, prefix 5/683, with 44 audited and two unaudited references.
 
 ## 2026-07-30 authored terminal-delta subtraction

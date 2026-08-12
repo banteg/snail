@@ -109,8 +109,8 @@ No variant improves the retained 84.85%, 33/33 result: four destination-base
 spellings are byte-identical and the other fifteen regress. The most literal
 decompiler-shaped typed cursor does recover the native `+0x17c108` source
 displacement, but repeats the known 81.82% register schedule; typed destination
-indexing and alternate loop control fall much farther. The ledger now marks
-the explored variants; it does not impose a stop condition. Keep the byte
+indexing and alternate loop control fall much farther. The ledger records the
+explored variants. Keep the byte
 post-increment scratch unless new Windows source/type evidence explains the
 native independent EAX/EBX cursor schedule.
 

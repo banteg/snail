@@ -267,8 +267,7 @@ the family’s `(unsigned short)width_cells` multiplication vocabulary, are
 byte-identical at 72.81%.
 
 The new ledger contains 18 unique variants: zero better, six neutral, and
-twelve worse, with no repeats or tradeoffs. Three consecutive non-improving
-sweeps document this region. A future exact attempt should recover the
+twelve worse, with no repeats or tradeoffs. A future exact attempt should recover the
 native `0x80` vector/x87 lifetime first and then combine it with the proven
 checkerboard branch; padding or branch-only byte shaping would be
 fakematching.
@@ -372,6 +371,5 @@ instructions.
 No alternative recovers the native `0x80` frame. Worm remains **73.09%**,
 728/736 instructions, prefix 0/736, with all 37 references clean. The ledger
 now contains nine records, eight mutation sweeps, one probe, 90 evaluated
-variants, and 86 unique variants. Three consecutive non-improving sweeps
-document the whole-function frontier. Future exact work needs source or symbol
+variants, and 86 unique variants. Future exact work needs source or symbol
 provenance identifying a genuinely different authored vector operation.

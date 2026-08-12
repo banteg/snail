@@ -394,5 +394,4 @@ Delaying the departure index loses 32.58 weighted bytes and contracts the
 prefix from 20 to 15 instructions.
 
 The ledger now contains 22 records, 19 mutation sweeps, 3 probes, and 55
-unique variants. Three consecutive non-improving sweeps bound the updated
-Dump frontier.
+unique variants. Those results document the updated Dump frontier.

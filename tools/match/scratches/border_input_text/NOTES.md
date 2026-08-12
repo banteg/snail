@@ -198,7 +198,7 @@ split initialization, `register`, signed and unsigned character types, and an
 explicit character literal. All 35 one- and two-site variants are
 byte-identical to the retained source. The complete ledger now covers 154
 unique variants across eight sweeps: 26 better, 110 identical, and 18 worse,
-with four retained sweep wins and three consecutive non-improving sweeps.
+with four retained sweep wins.
 
 The retained lane remains at **74.80%** (`439/446`, prefix 6, all eight
 references clean). The remaining carry-byte register rotation is not

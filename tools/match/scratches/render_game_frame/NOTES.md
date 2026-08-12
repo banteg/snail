@@ -329,8 +329,7 @@ None improves the clean 56.16% baseline. All five sentinel spellings are
 byte-identical; the best explicit cursor form loses eight weighted bytes, the
 earlier count lifetimes lose thirteen, and the mobile insertion exits lose
 between 28 and 146. The append-only `experiments.jsonl` therefore reports
-`0/5/27` better/same/worse variants and three trailing non-improving sweeps.
-That history is descriptive, not a stopping rule. The mobile control flow
+`0/5/27` better/same/worse variants. The mobile control flow
 remains valuable provenance, but forcing it into the Windows scratch
 destabilizes the broader VC6 allocation and is not an honest match improvement.
 
@@ -392,8 +391,8 @@ A final two-variant probe wrapped the non-empty depth bucket in a redundant
 inner cursor guard to explain native's repeated null test. VC6 removes both
 ordinary spellings and emits the current bytes, so no volatile owner or
 duplicated condition is retained. The complete ledger now contains 14 sweeps
-and 68 unique variants: 12 improve, 26 are neutral, 30 regress, and the
-trailing no-improvement streak is one. The focused candidate is 431/439
+and 68 unique variants: 12 improve, 26 are neutral, and 30 regress. The focused
+candidate is 431/439
 instructions, prefix 6, with all 34 masked operands clean.
 
 ## 2026-07-31 post-reset dependency replay bounded
@@ -413,7 +412,6 @@ references and none improves:
 The native six-instruction camera-exit residual and replay-branch reload
 therefore do not transfer as isolated source owners even after the accepted
 frame change. The ledger now contains 18 sweeps and 103 unique variants:
-12 improve, 34 are neutral, and 57 regress. The last five sweeps were
-non-improving; this is descriptive evidence, not a stopping rule. The current
+12 improve, 34 are neutral, and 57 regress. The current
 function remains at **68.28%**, 431/439 instructions, prefix 6/439, and 34
 clean masked operands.

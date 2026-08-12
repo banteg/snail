@@ -186,7 +186,6 @@ No matcher source changed. The focused result remains honestly at 67.50%,
 Three recorded mutation sweeps document the remaining current-cell and
 continuation-cleanup source shapes. They evaluate 31 variants (29 unique):
 zero improve the retained source, seven are byte-identical, and 24 regress.
-This history is evidence about those spellings, not a stop condition.
 
 The first sweep replays the native slide owner as a `lane_and_flags` cursor.
 That does recover the native `mov edi, ebx` induction base, but still preserves

@@ -94,8 +94,7 @@ rejected rather than forcing the missing test with a fake dependency.
 
 ## 2026-08-11 reopened stem-loop sweep
 
-The lane was reopened without an experiment-count stopping rule. Seven
-additional natural loop spellings were compiled and recorded, including
+Seven additional natural loop spellings were compiled and recorded, including
 guarded `for`/`do` forms and the native-looking label shape. Every variant
 regresses to 25.53%-34.04% and loses the retained four-instruction prefix.
 That bounds this particular loop-shape family, but does not mark the scratch

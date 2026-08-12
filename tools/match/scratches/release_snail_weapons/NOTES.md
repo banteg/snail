@@ -96,7 +96,6 @@ No variant improved the fuzzy score: 122 were neutral and 21 regressed. Named
 or in-place vectors, component stores, pointer/reference destinations,
 owner aliases, declaration reorderings, and moving reused locals outside the
 one-shot branch do not recover the native first-`random_x` stack slot or the
-third-channel publication schedule. The last three recorded sweeps were
-non-improving; this is descriptive evidence, not a stopping rule. Ordinary
-lifetime or publication syntax currently has no evidence-backed improvement,
+third-channel publication schedule. Ordinary lifetime or publication syntax
+currently has no evidence-backed improvement,
 but remains open to fresh translation-unit or compiler evidence.

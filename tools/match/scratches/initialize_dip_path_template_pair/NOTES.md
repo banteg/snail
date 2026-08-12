@@ -383,5 +383,4 @@ forms and all three orientation-subtraction combinations are also neutral or
 regressive.
 
 The ledger now contains 45 records, 42 mutation sweeps, 3 probes, and 250
-unique variants. Three consecutive dependency-complete non-improving sweeps
-bound the current Dip frontier.
+unique variants. Those results document the current Dip frontier.

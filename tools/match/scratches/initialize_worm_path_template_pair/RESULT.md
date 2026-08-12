@@ -78,8 +78,7 @@ source; component, copied-position, in-place, and shared-angle forms regress.
 Five sibling-backed 16-bit face-index spellings are also byte-identical.
 
 The experiment ledger records 18 unique variants at zero better, six neutral,
-and twelve worse, with no repeats or tradeoffs. The trailing streak describes
-the tested mesh-tail forms without closing the region.
+and twelve worse, with no repeats or tradeoffs.
 
 ## Remaining dependency
 

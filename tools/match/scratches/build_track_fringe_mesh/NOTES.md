@@ -177,8 +177,8 @@ remaining mismatch region. None improves the 92.77%, exact
   four neutral index forms with neutral first- and second-face UV forms; all
   index/UV interactions are also neutral.
 
-The ledger records six trailing non-improving sweeps. The retained direct
-indices and scalar UV assignments agree with the verified mobile
+The retained direct indices and scalar UV assignments agree with the verified
+mobile
 `cRPath::BuildFringe` geometry and remain the strongest source-backed form.
 The residual is bounded to VC6 store scheduling, not missing geometry,
 ownership, reference identity, or control flow; no synthetic aggregate,

@@ -189,8 +189,8 @@ neutral and pointer/index owners regress to 74.61%–80.35%. Six read/modify/
 publish spellings for the final global count all canonicalize to the same
 in-memory decrement.
 
-Four trailing non-improving sweeps document the residual. The remaining
-Windows-only filter differs in saved-register allocation, early epilogue
+The recorded sweeps document the residual. The remaining Windows-only filter
+differs in saved-register allocation, early epilogue
 restoration on the new-edge path, and the final count-decrement schedule. No
 mobile layout or compact-record behavior is imported, and no register hint,
 volatile barrier, dummy dependency, or synthetic owner is used to force those

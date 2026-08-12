@@ -175,8 +175,7 @@ non-improving sweeps and two evidence probes, with no repeats or errors.
 The native/candidate comparison remains at 95.78%, 199/204 instructions,
 prefix 16, and 47 clean operands. The remaining five-instruction delta is
 bounded to compiler scheduling and tail duplication; forcing it would not
-recover additional behavior, ownership, ABI, or data layout. The historical
-experiment count is not a stop condition.
+recover additional behavior, ownership, ABI, or data layout.
 
 ## 2026-08-12 recovery classification
 

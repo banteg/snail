@@ -360,4 +360,4 @@ call `GetSkirtColour`; the candidate invokes the identical subgame owner
 through its already-live receiver. The rest of the 60.39% delta is a repeated
 saved-register and temporary-lifetime permutation across four equivalent
 direction blocks. These are compiler/reference-layout residuals, not missing
-decompilation, and no experiment streak is used as a completion criterion.
+decompilation.

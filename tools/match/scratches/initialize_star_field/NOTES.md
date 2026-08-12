@@ -166,9 +166,8 @@ from the first vector-expression region. None recovers either remaining
 scheduler window.
 
 The ledger now contains 93 unique variants: 49 neutral, 41 degrading, and
-three fuzzy improvements that retain documented metric tradeoffs. The last
-three recorded sweeps were non-improving; this is descriptive evidence, not a
-stopping rule. The canonical lane remains at **97.57%** (`247/247`, prefix 126,
+three fuzzy improvements that retain documented metric tradeoffs. The canonical
+lane remains at **97.57%** (`247/247`, prefix 126,
 26 clean references). The retained source keeps the shared, independently
 proven vector operator and exact instruction and reference counts; the
 remaining travel/color and corner-scale reorderings are bounded VC6 scheduling

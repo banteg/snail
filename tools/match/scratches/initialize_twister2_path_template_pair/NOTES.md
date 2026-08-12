@@ -282,8 +282,7 @@ to 66.86% alone and 66.13% when used as the borrow owner. Direct mesh sample
 arrays regress to 66.67%, while branch-local borrows fall to 54.10%. Retesting
 the fully direct interior owner after the delta cleanup still regresses to
 62.30%. The ledger now contains 42 variants across ten sweeps: 6 better, 4
-identical, and 32 worse, with four sweep wins and three consecutive
-non-improving sweeps.
+identical, and 32 worse, with four sweep wins.
 
 This paired lane remains at the retained 67.60% frontier. Further
 work needs new provenance for the remaining interior allocation and mesh
@@ -426,6 +425,6 @@ loses **74.76 weighted bytes** and falls from **77.85%** to **74.91%** without
 changing the 682/677 instruction count, 123-instruction prefix, or 49 clean
 references. Twister independently reproduces every result exactly.
 
-No source change is retained. Three consecutive non-improving sweeps record
-the paired Twister frontier at **77.85%**, 682/677 instructions, prefix
+No source change is retained. The paired Twister frontier is **77.85%**,
+682/677 instructions, prefix
 123/677, with all 49 references clean.

@@ -166,8 +166,7 @@ normalize/cross tail. Per-lane helper forms audit all 40 references but regress
 to 37.26%; the best exact-reference split reaches only 40.24%. The strongest
 non-exact explicit form reaches 44.03%, still below the retained 48.53%.
 
-No source variant improves the canonical metric, and the append-only ledger
-records three consecutive non-improving sweeps. The semantic
+No source variant improves the canonical metric. The semantic
 per-lane recomputation remains recorded from both ports, but recovering it in
 matcher source now requires a broader neighboring-loop lifetime change rather
 than another local trig spelling.
@@ -338,5 +337,5 @@ pair and records the two native calls as explicit unaudited debt rather than
 accepting a five-point whole-function regression.
 
 The ledger now contains 37 records, 34 mutation sweeps, three probes, and 153
-evaluated variants (147 unique). Four consecutive non-improving sweeps
-document this post-counter call-schedule frontier.
+evaluated variants (147 unique). Those results document this post-counter
+call-schedule frontier.

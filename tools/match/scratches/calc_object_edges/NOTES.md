@@ -159,8 +159,8 @@ repeated source/compiler variants. The tested space includes explicit
 working/saved offsets, separate outer/shift offsets, typed and raw flag views,
 setup declaration orders, `register` hints, live-zero comparisons, copy and
 publication schedules, and structured `do`, `while`, and `for` controls. The
-single winning schedule is retained; three trailing non-improving sweeps
-document the tested frontier without closing it.
+single winning schedule is retained; the later sweeps document the tested
+frontier.
 
 The remaining allocator residual is now narrower rather than hidden. Native
 keeps `build_edges` in EDI and the outer edge index in EAX, spilling only the

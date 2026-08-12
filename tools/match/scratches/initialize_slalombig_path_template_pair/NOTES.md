@@ -222,7 +222,7 @@ pair-level guard audits all 40 references, but the best form loses 27 weighted
 bytes and falls from 33.80% to 32.77%. Pair helpers reach at most 32.62%.
 
 The append-only ledger contains 17 variants: 2 are byte-identical and 15
-regress. Three consecutive non-improving sweeps record the target at
+regress. The tested forms leave the target at
 the retained 33.80%, 653/696-instruction frontier. Recovering the adjacency now
 requires a broader loop-lifetime change, not another local guard or helper
 spelling.
@@ -528,7 +528,7 @@ reaches 64.79%; separating both also reaches 64.79%. The native-looking
 independent UV-column owner is byte-identical, so VC6 already emits that
 physical lifetime from the clearer shared column.
 
-No source change is retained. Three consecutive non-improving sweeps record
-SlalomBig at **66.23%**, 693/696 instructions, prefix 48/696, with all 40
+No source change is retained. SlalomBig remains at **66.23%**, 693/696
+instructions, prefix 48/696, with all 40
 references clean. The remaining load and counter identities are bounded
 compiler-allocation residuals rather than untested source owners.

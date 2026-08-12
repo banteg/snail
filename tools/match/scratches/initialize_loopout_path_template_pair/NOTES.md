@@ -218,8 +218,8 @@ bytes, the guarded outer mesh `do`/`while` is byte-neutral, and five cursor
 type/stride spellings are byte-identical.
 
 The ledger now contains 12 sweeps and 74 unique variants: 12 improve, 21 are
-neutral, 41 degrade, and three carry metric tradeoffs. Three consecutive
-non-improving sweeps close this source-shape frontier.
+neutral, 41 degrade, and three carry metric tradeoffs. Those results document
+this source-shape frontier.
 
 ## 2026-07-30 copied face-index ownership bound
 
@@ -266,5 +266,4 @@ weighted bytes, and reusing only the column loses 18. The retained distinct
 
 Focused matching stays **67.87%**, 723/718 instructions, prefix 0/718, with
 all 52 references clean. The ledger now contains 17 records, 13 mutation
-sweeps, four probes, and 77 unique variants. Four consecutive non-improving
-sweeps simply record the tested frontier.
+sweeps, four probes, and 77 unique variants.

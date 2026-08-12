@@ -293,8 +293,7 @@ direct match while preserving the useful owner and lifecycle evidence.
 Three recorded mutation sweeps evaluate 37 distinct source forms around the
 sole mismatch. Every one is byte-identical to the retained candidate:
 99.79%, exact `475/475` instruction parity, prefix 90, and all 20 references
-clean. The three consecutive non-improving sweeps record the tested forms; they
-do not close the scratch.
+clean. The recorded sweeps preserve the tested forms for future work.
 
 The first sweep covers pointer addition order, grouped and ungrouped owner
 offsets, integer owner arithmetic, and three typed `cRSubLoc` formations. The

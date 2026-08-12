@@ -206,8 +206,8 @@ owners, individual orientation argument staging, and the initial game-owner
 load. The ledger contains 17 improving, 118 neutral, and 161 degrading
 variants. The only post-ramp fuzzy gain reaches 93.02% by adding a 323rd
 instruction in the orientation block; it is rejected as an
-instruction-count tradeoff against the exact native shape. Three consecutive
-non-improving sweeps document the tested frontier without closing it.
+instruction-count tradeoff against the exact native shape. The recorded sweeps
+document the tested frontier.
 
 The remaining four localized regions are bounded:
 

@@ -200,8 +200,7 @@ The original 183-result prefix sweep is a verified strict subset of the later
 historical receipts remain intact. With the new targeted result, the ledger
 honestly reports 711 evaluations across four non-improving sweeps: 528 unique
 variants, 183 repeats, 315 neutral evaluations, and 396 degrading evaluations.
-The four recorded sweeps are non-improving; this is descriptive evidence, not
-a stopping rule. Future interaction-only extensions can use the mutation
+Future interaction-only extensions can use the mutation
 runner's `--min-changes` bound (for example,
 `--min-changes 3 --max-changes 3`) to avoid rescheduling the one- and two-site
 prefix without rewriting recorded history. The current source model is not

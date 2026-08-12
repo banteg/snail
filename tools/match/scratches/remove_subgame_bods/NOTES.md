@@ -355,8 +355,7 @@ variants. Four mobile-derived index/count forms were neutral or worse; a
 named receiver spanning the cache and Player tail was neutral; and nine
 countdown declaration/initialization forms all reproduced the prior 70.58%
 allocation. The ledger records one better, six neutral, and twelve worse
-variants with no repeats or tradeoffs. That history is descriptive evidence,
-not a stop condition.
+variants with no repeats or tradeoffs.
 
 Native still assigns the cell cursor to EDI and the eight-cell countdown to
 EBX, then reloads `this` into EBX after the cache call. The candidate assigns

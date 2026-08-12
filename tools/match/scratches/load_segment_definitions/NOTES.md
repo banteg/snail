@@ -373,8 +373,7 @@ retained containing-entry arrays, not authored flattened source indices; no
 raw ordinal, cast, synthetic spill, or register hint was retained.
 
 The ledger has seven mutation sweeps plus two probes, covering 62 unique
-variants with six consecutive non-improving sweeps. That records the tested
-row-anchor family as bounded without declaring the function exhausted. The
+variants. That records the tested row-anchor family. The
 retained frontier is 68.26%; a useful future probe needs new Windows
 provenance or a lifetime outside the already-covered entry, row, and glyph
 projections.

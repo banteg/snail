@@ -283,8 +283,7 @@ falls to 66.83%, and direct array components fall to 58.61%.
 This closes the earlier direct-component lead: it does not survive the current
 dependency state, while the cross-port-backed vector owner remains the best
 Windows spelling. The ledger now contains 47 unique variants across thirteen
-sweeps, with two consecutive non-improving sweeps. No source change is
-retained.
+sweeps. No source change is retained.
 
 ## 2026-07-30 mesh arithmetic ownership
 

@@ -406,7 +406,6 @@ row/column pair reset between phases.
 The updated frontier is bounded again. All four vertices/facequads declaration
 and load orders are byte-identical. The member scale operator is also neutral.
 Split-float lateral arithmetic is neutral, while double and volatile forms
-lose 15–55 weighted bytes and the double expression adds reference debt.
-The ledger records three post-win non-improving sweeps at
-**76.86%**, 613/610 instructions, prefix 122/610, with all 35 references
-clean.
+lose 15–55 weighted bytes and the double expression adds reference debt. The
+retained result is **76.86%**, 613/610 instructions, prefix 122/610, with all
+35 references clean.

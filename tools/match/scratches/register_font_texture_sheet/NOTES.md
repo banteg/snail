@@ -233,8 +233,8 @@ mismatch, and four unaudited operands, so none resolves the glyph-slot owner
 swap.
 
 The ledger contains 65 unique variants across three sweeps: 0 improve, 15 are
-byte-identical, and 50 regress. This bounds the tested declaration, increment,
-publication, snapshot, lexical-scope, and entry-order families without making
-their non-improving streak a stopping rule. The retained frontier is 75.41%; a
+byte-identical, and 50 regress. This records the tested declaration, increment,
+publication, snapshot, lexical-scope, and entry-order families. The retained
+frontier is 75.41%; a
 useful future probe needs new Windows provenance or a genuinely different
 glyph-index ownership model.

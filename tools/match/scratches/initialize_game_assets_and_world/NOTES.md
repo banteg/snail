@@ -1439,7 +1439,7 @@ rocket-subowner forms fall as low as 70.75%. The raw analysis cursor remains
 excluded from matcher source.
 
 The append-only ledger contains five bounded sweeps and 28 variants:
-2 improve, 5 are identical, and 21 regress. This bounds the tested owner/index
-forms without turning their non-improving streak into a stopping rule. The
+2 improve, 5 are identical, and 21 regress. This records the tested owner/index
+forms. The
 retained frontier is 81.34%; a useful future probe needs new original-source
 evidence or a neighboring lifetime change.

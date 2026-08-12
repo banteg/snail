@@ -138,10 +138,9 @@ the stack lifetime but materializes integer copies; honest float aliases keep
 the x87 value but eliminate the stack owner.
 
 The complete ledger contains 48 unique variants: three improve an earlier
-baseline, 13 are neutral, and 32 regress, with one retained sweep win and three
-trailing non-improving sweeps. The retained result is 89.71%, 69/67
-instructions, prefix 17, and seven clean references; the streak is not a stop
-condition. No volatile access,
+baseline, 13 are neutral, and 32 regress, with one retained sweep win. The
+retained result is 89.71%, 69/67 instructions, prefix 17, and seven clean
+references. No volatile access,
 opaque helper, or dummy address escape is justified to force the final
 `fst`/`fstp` pair.
 

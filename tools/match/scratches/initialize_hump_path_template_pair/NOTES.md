@@ -390,8 +390,7 @@ The experiment ledger now contains 19 sweeps and 62 unique evaluated variants:
 13 improve, 29 are neutral, 20 degrade, and three are metric tradeoffs. The
 operator-scale spec was intentionally rerun once after the double-lifetime
 change because its result is baseline-dependent; no variant source hash was
-repeated. Three consecutive non-improving sweeps document the tested frontier;
-their count does not limit future native-backed work.
+repeated. The recorded sweeps document the tested frontier.
 
 ## 2026-07-30 copied face-index ownership bound
 
@@ -446,5 +445,4 @@ counter declaration placements, while all three facequads-first orders lose
 and contracts the exact prefix from 20 to 15 instructions.
 
 The ledger now contains 26 records, 23 mutation sweeps, 3 probes, and 80
-unique variants. Three consecutive non-improving sweeps bound the updated
-Hump frontier.
+unique variants. Those results document the updated Hump frontier.

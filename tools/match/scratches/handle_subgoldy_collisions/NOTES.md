@@ -758,8 +758,7 @@ Four current-state follow-up sweeps bound the adjacent allocation:
   shorter mobile expression.
 
 The complete ledger now contains 100 unique variants across fourteen sweeps,
-with five sweep wins; the last four follow-ups were non-improving. This is
-descriptive evidence, not a stopping rule. The current lane remains at 85.88%;
+with five sweep wins. The current lane remains at 85.88%;
 the early stack-color differences need new source provenance, while the final
 two ring-kind differences are only equivalent scale-one SIB base/index
 encodings.

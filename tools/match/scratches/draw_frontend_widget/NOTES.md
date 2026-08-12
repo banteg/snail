@@ -193,6 +193,5 @@ Four bounded mutation sweeps tested the source shapes supported by those facts:
 
 The retained source therefore remains at 85.13%, 707/712 instructions, prefix
 16/712, with all 68 masked operands clean. The ledger now contains 40 unique
-variants, zero improvements, two equivalent results, 38 regressions, and four
-trailing no-improvement sweeps that document the tested lifetime forms without
-closing the scratch.
+variants, zero improvements, two equivalent results, and 38 regressions. Those
+results document the tested lifetime forms.

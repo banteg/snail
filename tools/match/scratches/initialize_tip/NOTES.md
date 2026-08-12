@@ -129,8 +129,8 @@ borrowing the anchor or staging only text perturbs the prologue and falls to
 root/border-manager load alignment.
 
 The complete ledger now covers 66 unique variants: two improve an earlier
-baseline, seven are neutral, and 57 regress, with one retained sweep win. This
-is descriptive evidence, not a stopping rule. The current result is 84.42%,
+baseline, seven are neutral, and 57 regress, with one retained sweep win. The
+current result is 84.42%,
 154/154 instructions, prefix 19, with all 27 references clean. The member
 reference remains the strongest honest source; no volatile reload, dummy use,
 or raw owner view is reintroduced.

@@ -275,8 +275,7 @@ the fuzzy match or exact prefix. In particular, naming the connector ordinate
 moves the first mismatch earlier, direct `active_padding` reloads shrink the
 frame and lose the complete prefix, delayed route-record owners lose at least
 four weighted bytes, and the source-equivalent vector declaration/assignment
-forms compile identically. This is descriptive evidence, not a stopping rule;
-the current residual is bounded to documented stack-slot and register
+forms compile identically. The current residual is bounded to documented stack-slot and register
 colouring until new source or compiler evidence appears.
 
 The same pass exposed six formerly unaudited global references where target

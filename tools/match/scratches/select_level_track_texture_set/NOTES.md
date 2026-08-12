@@ -129,5 +129,4 @@ grounded in its native body rather than borrowed from the seven-bank ports.
 The sole reference mismatch is the local jump table's default destination:
 native reloads the parameter after dispatch, while VC6 coalesces the same value
 into the switch register in the candidate. That is a compiler/reference-layout
-residual, not a missing case or owner. The prior sweep count is not used as a
-completion rule.
+residual, not a missing case or owner.

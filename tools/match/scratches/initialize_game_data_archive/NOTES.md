@@ -127,8 +127,7 @@ falls to 80.85%. The existing buttons-relative byte or integer cursor remains
 94.74%, 48/47 instructions, prefix 27/47, with 19 clean references and the two
 one-sided derived-address entries.
 
-The experiment ledger records three consecutive no-improvement sweeps. Native
-materializes `g_input_slot0_axis_y` after the
+The recorded sweeps leave native materializing `g_input_slot0_axis_y` after the
 allocator cleanup; VC6 materializes `g_input_slot0_buttons` before cleanup and
 subtracts four. No volatile, address-forcing helper, or false contiguous-record
 owner is introduced to coerce that scheduling choice.

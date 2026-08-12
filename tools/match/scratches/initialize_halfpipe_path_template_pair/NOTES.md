@@ -493,8 +493,8 @@ expected, and close no additional source shape. The retained baseline remains
 **66.67%**, 688/707 instructions, prefix 18/707, with all 55 references clean.
 
 The ledger now contains 19 records, 18 mutation sweeps, one probe, and 71
-evaluated variants (64 unique). Six consecutive non-improving sweeps document
-the tested local ownership frontier.
+evaluated variants (64 unique). Those results document the tested local
+ownership frontier.
 
 ## 2026-07-31 post-face ordinary addition bound
 

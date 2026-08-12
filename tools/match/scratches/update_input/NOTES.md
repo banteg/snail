@@ -93,8 +93,7 @@ verified Windows/Android edge semantics:
   Android `cRInput::Update()`.
 
 No variant improves the clear 52.94%, 15/19 baseline. Seventeen are
-byte-identical and the other 175 regress. This is descriptive experiment
-evidence, not a stopping rule. The native-only `push edi` and released-mask
+byte-identical and the other 175 regress. The native-only `push edi` and released-mask
 lifetime are not explained by ordinary update order, signedness, named
 temporaries, or the cross-port algebra. Keep the semantic source; a future
 retry needs a new type/owner/source relationship rather than another statement
