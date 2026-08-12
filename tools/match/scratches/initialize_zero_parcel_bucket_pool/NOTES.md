@@ -16,3 +16,11 @@ matching native's `esi` bucket pointer and `edi` counter.
 candidate count now come from `PARCEL_BUCKET_CAPACITY`,
 `sizeof(ParcelCandidate)`, and `PARCEL_CANDIDATE_CAPACITY`. The constructor
 remains exact at 15/15 instructions with all three operands clean.
+
+## 2026-08-12 source-unit provenance
+
+The symbol-preserving iOS inventory assigns the exact cross-port `gGroup0`
+global to `SubGame.o`. Live Windows xrefs restrict this pool to this constructor
+and the verified `cRSubGame::PlaceParcels()` body; the constructor is also
+physically bracketed by verified `SubGame.o` functions. This recovers its
+Windows source object while leaving the absent mobile constructor unmapped.

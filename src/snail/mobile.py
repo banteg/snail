@@ -467,6 +467,7 @@ def build_complete_mobile_crosswalk(
             "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
             "source_object on an unverified entry is independent Windows compilation-unit provenance and does not turn a candidate into a mobile mapping.",
             "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
+            "source_object_evidence set to ios-global-source-object means the Windows function initializes, or is the direct CRT thunk for, a cross-port global whose exact iOS symbol is assigned to that source object.",
             "mobile_candidate_rejections preserve audited negative evidence and exclude only the exact demangled symbols listed by the Windows manifest.",
         ],
         "counts": {

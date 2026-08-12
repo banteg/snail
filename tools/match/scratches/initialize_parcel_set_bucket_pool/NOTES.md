@@ -21,3 +21,11 @@ An indexed `for` loop compiled to a pointer-end compare instead of native's
 pool count and nested candidate geometry from the shared capacities and
 `sizeof(ParcelCandidate)`. The constructor remains exact at 15/15 instructions
 with all three operands clean.
+
+## 2026-08-12 source-unit provenance
+
+The symbol-preserving iOS inventory assigns the exact cross-port `gGroup`
+global to `SubGame.o`. Live Windows xrefs restrict this pool to this constructor
+and the verified `cRSubGame::PlaceParcels()` body; the constructor is also
+physically bracketed by verified `SubGame.o` functions. This recovers its
+Windows source object while leaving the absent mobile constructor unmapped.

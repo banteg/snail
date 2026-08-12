@@ -12,3 +12,11 @@ inventing a more specific role.
 
 The source matches the native 2/2 instructions exactly, with both the global
 owner and folded constructor operands resolved.
+
+## 2026-08-12 source-unit provenance
+
+The symbol-preserving iOS inventory assigns the exact `GTempColour` global to
+`RObject.o`. Live Windows xrefs show that this constructor is the sole code
+reference to the corresponding 16-byte global at `0x503308`, and neighboring
+verified Windows functions are also from `RObject.o`. This recovers the
+Windows constructor's source object without claiming a mobile function map.

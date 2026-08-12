@@ -6013,6 +6013,46 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     assert "source object evidence: windows-contiguous-source-run" in output
 
 
+def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
+    repo_root = Path(__file__).parents[1]
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    by_name = {entry["windows_name"]: entry for entry in complete["entries"]}
+    global_objects = {
+        symbol: set(source_objects)
+        for symbol, _, _, source_objects in names["symbols"]
+    }
+    expected = {
+        "initialize_global_temp_colour_thunk": (
+            "RObject.o",
+            "GTempColour",
+        ),
+        "initialize_global_temp_colour": ("RObject.o", "GTempColour"),
+        "initialize_parcel_set_bucket_pool_thunk": (
+            "SubGame.o",
+            "gGroup",
+        ),
+        "initialize_parcel_set_bucket_pool": ("SubGame.o", "gGroup"),
+        "initialize_zero_parcel_bucket_pool_thunk": (
+            "SubGame.o",
+            "gGroup0",
+        ),
+        "initialize_zero_parcel_bucket_pool": (
+            "SubGame.o",
+            "gGroup0",
+        ),
+    }
+
+    for windows_name, (source_object, global_name) in expected.items():
+        entry = by_name[windows_name]
+        assert entry["status"] == "unverified"
+        assert entry["source_object"] == source_object
+        assert entry["source_object_evidence"] == "ios-global-source-object"
+        assert global_objects[global_name] == {source_object}
+
+
 def test_subgame_leaf_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"

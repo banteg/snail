@@ -12,6 +12,7 @@
     "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
     "source_object on an unverified entry is independent Windows compilation-unit provenance and does not turn a candidate into a mobile mapping.",
     "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
+    "source_object_evidence set to ios-global-source-object means the Windows function initializes, or is the direct CRT thunk for, a cross-port global whose exact iOS symbol is assigned to that source object.",
     "mobile_candidate_rejections preserve audited negative evidence and exclude only the exact demangled symbols listed by the Windows manifest."
   ],
   "counts": {
@@ -11649,6 +11650,8 @@
       "windows_name": "initialize_global_temp_colour_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RObject.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::Set(float, float, float)",
@@ -11719,6 +11722,8 @@
       "windows_name": "initialize_global_temp_colour",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RObject.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -18557,6 +18562,8 @@
       "windows_name": "initialize_parcel_set_bucket_pool_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cAccelerometer::Input(float, float, float)",
@@ -18627,6 +18634,8 @@
       "windows_name": "initialize_parcel_set_bucket_pool",
       "windows_size": 48,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "PfmAudioUnPauseMusic()",
@@ -18697,6 +18706,8 @@
       "windows_name": "initialize_zero_parcel_bucket_pool_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRFade::Init()",
@@ -18767,6 +18778,8 @@
       "windows_name": "initialize_zero_parcel_bucket_pool",
       "windows_size": 48,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRBackdrop::MakeVBO()",

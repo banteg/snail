@@ -2044,12 +2044,16 @@
     {
       "address": "0x42f8a0",
       "name": "initialize_global_temp_colour_thunk",
-      "description": "CRT startup thunk for the adjacent `GTempColour` constructor body; `.CRT$XCU` entry 0x4a1028 points here."
+      "description": "CRT startup thunk for the adjacent `GTempColour` constructor body; `.CRT$XCU` entry 0x4a1028 points here.",
+      "source_object": "RObject.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x42f8b0",
       "name": "initialize_global_temp_colour",
-      "description": "Runs the folded no-op tColour constructor for the 16-byte global at `data_503308`. The matching symbol-preserving iOS owner is `GTempColour`, also exactly 16 bytes before its next global."
+      "description": "Runs the folded no-op tColour constructor for the 16-byte global at `data_503308`. The matching symbol-preserving iOS owner is `GTempColour`, also exactly 16 bytes before its next global.",
+      "source_object": "RObject.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x42f8c0",
@@ -3692,22 +3696,30 @@
     {
       "address": "0x443860",
       "name": "initialize_parcel_set_bucket_pool_thunk",
-      "description": "CRT startup thunk for `initialize_parcel_set_bucket_pool`; `.CRT$XCU` entry 0x4a1058 points here and the function tail-jumps directly to the recovered parcel-set bucket constructor."
+      "description": "CRT startup thunk for `initialize_parcel_set_bucket_pool`; `.CRT$XCU` entry 0x4a1058 points here and the function tail-jumps directly to the recovered parcel-set bucket constructor.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x443870",
       "name": "initialize_parcel_set_bucket_pool",
-      "description": "Initializes the 0x800-entry positive-count parcel-set bucket pool at `data_6487e8`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` fills it from authored parcel requests."
+      "description": "Initializes the 0x800-entry positive-count parcel-set bucket pool at `data_6487e8`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` fills it from authored parcel requests.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x4438a0",
       "name": "initialize_zero_parcel_bucket_pool_thunk",
-      "description": "CRT startup thunk for `initialize_zero_parcel_bucket_pool`; `.CRT$XCU` entry 0x4a105c points here and the function tail-jumps directly to the recovered zero-parcel bucket constructor."
+      "description": "CRT startup thunk for `initialize_zero_parcel_bucket_pool`; `.CRT$XCU` entry 0x4a105c points here and the function tail-jumps directly to the recovered zero-parcel bucket constructor.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x4438b0",
       "name": "initialize_zero_parcel_bucket_pool",
-      "description": "Initializes the 0x800-entry zero-parcel fallback bucket pool at `data_53d190`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` uses it for `0`-parcel filler rows."
+      "description": "Initializes the 0x800-entry zero-parcel fallback bucket pool at `data_53d190`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` uses it for `0`-parcel filler rows.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x4438e0",
