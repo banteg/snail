@@ -117,7 +117,6 @@ def test_triage_joins_by_address_and_surfaces_search_and_mobile_evidence(
         "evaluated_variants": 20,
         "unique_variants": 18,
         "unique_specs": 3,
-        "no_improvement_streak": 3,
         "flags": [],
     }
     monkeypatch.setattr("snail.match.load_image", lambda *_args: image)
@@ -157,7 +156,6 @@ def test_triage_joins_by_address_and_surfaces_search_and_mobile_evidence(
         evaluated_variants=20,
         unique_variants=18,
         unique_specs=3,
-        no_improvement_streak=3,
         flags=(),
     )
     assert foo.mobile == TriageMobileEvidence(
@@ -203,7 +201,6 @@ def test_triage_cli_filters_and_emits_json(
         experiments=TriageExperimentEvidence(
             records=3,
             unique_variants=10,
-            no_improvement_streak=3,
             flags=(),
         ),
         mobile=TriageMobileEvidence(

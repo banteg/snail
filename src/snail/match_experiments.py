@@ -17,7 +17,6 @@ EXPERIMENT_SCHEMA = 1
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 EXPERIMENT_SORTS = frozenset(
     {
-        "no-improvement",
         "records",
         "repeats",
         "scratch",
@@ -471,11 +470,6 @@ def summarize_experiment_log(
             )
             improving_probes += fuzzy_delta is not None and fuzzy_delta > 0
 
-    no_improvement_streak = 0
-    for improved in reversed(mutation_improvements):
-        if improved:
-            break
-        no_improvement_streak += 1
     repeated_variants = sum(count - 1 for count in variant_keys.values())
     repeated_spec_runs = sum(count - 1 for count in spec_shas.values())
     flags: list[str] = []
@@ -510,7 +504,6 @@ def summarize_experiment_log(
             "improving_probes": improving_probes,
             "exact_winners": exact_winners,
             "no_improvement_sweeps": (len(mutation_improvements) - improving_sweeps),
-            "no_improvement_streak": no_improvement_streak,
             "unique_specs": len(spec_shas),
             "repeated_spec_runs": repeated_spec_runs,
             "latest_recorded_at": latest_recorded_at,
@@ -535,10 +528,6 @@ def sort_experiment_rows(
     if sort_by == "scratch":
         return sorted(rows, key=lambda row: str(row["scratch"]))
     fields = {
-        "no-improvement": (
-            "no_improvement_streak",
-            "no_improvement_sweeps",
-        ),
         "records": ("records", "evaluated_variants"),
         "repeats": ("repeated_variants", "repeated_spec_runs"),
         "variants": ("evaluated_variants", "records"),
@@ -614,7 +603,6 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
             "repeats",
             "wins",
             "exact",
-            "streak",
             "deps h/c/s/i",
             "flags",
         ),
@@ -635,7 +623,6 @@ def render_experiment_summary(payload: dict[str, Any]) -> str:
                 str(row["repeated_variants"]),
                 str(row["improving_sweeps"]),
                 str(row["exact_winners"]),
-                str(row["no_improvement_streak"]),
                 "/".join(
                     str(row["dependency_receipts"][state])
                     for state in ("historical", "current", "stale", "invalid")

@@ -132,11 +132,9 @@ Useful analysis helpers:
 - `uv run snail match experiments` summarizes the append-only
   `experiments.jsonl` ledgers created by recorded probes and mutation sweeps.
   It reports improving/neutral/degrading variants, repeated source/compiler
-  combinations and specs, metric tradeoffs, exact winners, and each scratch's
-  trailing no-improvement streak. The streak is descriptive history, not a
-  stopping rule: no number of recorded sweeps closes or reclassifies a scratch.
-  Use `--sort no-improvement` to review prior search before choosing new work,
-  repeat `--scratch <name>` to restrict the report, or run
+  combinations and specs, metric tradeoffs, and exact winners. Experiment
+  counts never close or reclassify a scratch. Repeat `--scratch <name>` to
+  restrict the report, or run
   `uv run snail match experiments --check --check-specs` for repository-wide
   validation. `--check` rejects malformed ledger records. `--check-specs`
   treats a mutation plan whose exact current digest already appears in that

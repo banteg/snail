@@ -2616,7 +2616,6 @@ class TriageExperimentEvidence:
     evaluated_variants: int = 0
     unique_variants: int = 0
     unique_specs: int = 0
-    no_improvement_streak: int = 0
     flags: tuple[str, ...] = ()
     errors: int = 0
 
@@ -4324,7 +4323,6 @@ def triage_experiment_evidence(
         evaluated_variants=int(row["evaluated_variants"]),
         unique_variants=int(row["unique_variants"]),
         unique_specs=int(row["unique_specs"]),
-        no_improvement_streak=int(row["no_improvement_streak"]),
         flags=tuple(str(flag) for flag in row["flags"]),
         errors=len(errors),
     )
@@ -4541,9 +4539,6 @@ def triage_row_payload(row: TriageRow) -> dict:
             "evaluated_variants": row.experiments.evaluated_variants,
             "unique_variants": row.experiments.unique_variants,
             "unique_specs": row.experiments.unique_specs,
-            "no_improvement_streak": (
-                row.experiments.no_improvement_streak
-            ),
             "flags": list(row.experiments.flags),
             "errors": row.experiments.errors,
         },
@@ -4598,7 +4593,6 @@ TRIAGE_HEADER = (
     "mobile",
     "mobile source",
     "search",
-    "streak",
     "flags",
 )
 
@@ -4642,7 +4636,6 @@ def render_triage_rows(
                 row.mobile.source_object or "-",
                 (f"{row.experiments.records}/"
                 f"{row.experiments.unique_variants}"),
-                str(row.experiments.no_improvement_streak),
                 ",".join(row.experiments.flags) or "-",
             )
         )

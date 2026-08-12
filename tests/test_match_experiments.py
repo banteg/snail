@@ -162,7 +162,6 @@ def test_experiment_summary_surfaces_repeats_and_tradeoffs(
     row = payload["rows"][0]
     assert row["scratch"] == "scratches/foo"
     assert row["repeated_spec_runs"] == 1
-    assert row["no_improvement_streak"] == 0
     assert row["flags"] == [
         "repeated-variants",
         "repeated-specs",
@@ -291,7 +290,7 @@ def test_experiment_dependency_receipts_distinguish_history_from_drift(
     capsys.readouterr()
 
 
-def test_experiment_summary_keeps_non_improvement_descriptive(
+def test_experiment_summary_does_not_surface_streaks(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
@@ -316,7 +315,7 @@ def test_experiment_summary_keeps_non_improvement_descriptive(
             "--match-root",
             str(tmp_path),
             "--sort",
-            "no-improvement",
+            "records",
             "--check",
             "--json",
         ]
@@ -327,7 +326,7 @@ def test_experiment_summary_keeps_non_improvement_descriptive(
     assert captured.err == ""
     payload = json.loads(captured.out)
     assert payload["summary"]["errors"] == 1
-    assert payload["rows"][0]["no_improvement_streak"] == 3
+    assert "no_improvement_streak" not in payload["rows"][0]
     assert payload["rows"][0]["flags"] == ["malformed"]
 
 
