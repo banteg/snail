@@ -3,7 +3,7 @@
 #include "audio_system.h"
 #include "player.h"
 
-void cRSnail::set_snail_weapon(int shoot_flags)
+void cRSnail::SetWeapon(int shoot_flags)
 {
     bool any_channel_changed;
     int target_channel_0_state;
@@ -60,12 +60,12 @@ void cRSnail::set_snail_weapon(int shoot_flags)
         Weapon& channel = weapon_channels[0];
         switch (selected_state) {
         case 1:
-            weapon_channels[0].set_weapon_animation(
+            weapon_channels[0].SetAnimation(
                 1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             transition_immediate = 0;
             break;
         case 2:
-            weapon_channels[0].set_weapon_animation(
+            weapon_channels[0].SetAnimation(
                 4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             transition_immediate = 0;
             break;
@@ -73,21 +73,21 @@ void cRSnail::set_snail_weapon(int shoot_flags)
 
         switch (target_channel_0_state) {
         case 0:
-            channel.set_weapon_animation(
+            channel.SetAnimation(
                 ANIM_MANAGER_HIDE_ANIMATION_ID,
                 0,
                 OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 1:
-            channel.set_weapon_animation(
+            channel.SetAnimation(
                 1, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            channel.set_weapon_animation(
+            channel.SetAnimation(
                 0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 2:
-            channel.set_weapon_animation(
+            channel.SetAnimation(
                 4, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            channel.set_weapon_animation(
+            channel.SetAnimation(
                 3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         }
@@ -101,12 +101,12 @@ void cRSnail::set_snail_weapon(int shoot_flags)
     if (selected_state != target_channel_1_state) {
         switch (selected_state) {
         case 1:
-            weapon_channels[1].set_weapon_animation(
+            weapon_channels[1].SetAnimation(
                 1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             transition_immediate = 0;
             break;
         case 2:
-            weapon_channels[1].set_weapon_animation(
+            weapon_channels[1].SetAnimation(
                 4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             transition_immediate = 0;
             break;
@@ -114,21 +114,21 @@ void cRSnail::set_snail_weapon(int shoot_flags)
 
         switch (target_channel_1_state) {
         case 0:
-            weapon_channels[1].set_weapon_animation(
+            weapon_channels[1].SetAnimation(
                 ANIM_MANAGER_HIDE_ANIMATION_ID,
                 0,
                 OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 1:
-            weapon_channels[1].set_weapon_animation(
+            weapon_channels[1].SetAnimation(
                 1, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            weapon_channels[1].set_weapon_animation(
+            weapon_channels[1].SetAnimation(
                 0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 2:
-            weapon_channels[1].set_weapon_animation(
+            weapon_channels[1].SetAnimation(
                 4, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            weapon_channels[1].set_weapon_animation(
+            weapon_channels[1].SetAnimation(
                 3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         }
@@ -142,35 +142,35 @@ void cRSnail::set_snail_weapon(int shoot_flags)
     if (selected_state != target_channel_2_state) {
         switch (selected_state) {
         case 1:
-            weapon_channels[2].set_weapon_animation(
+            weapon_channels[2].SetAnimation(
                 1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             transition_immediate = 0;
             break;
         case 3:
-            weapon_channels[2].set_weapon_animation(
+            weapon_channels[2].SetAnimation(
                 4, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             transition_immediate = 0;
         }
 
         switch (target_channel_2_state) {
         case 0:
-            weapon_channels[2].set_weapon_animation(
+            weapon_channels[2].SetAnimation(
                 ANIM_MANAGER_HIDE_ANIMATION_ID,
                 0,
                 OBJECT_ANIMATION_MODE_UNCHANGED);
             break;
         case 1:
-            weapon_channels[2].set_weapon_animation(
+            weapon_channels[2].SetAnimation(
                 1, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            weapon_channels[2].set_weapon_animation(
+            weapon_channels[2].SetAnimation(
                 0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             weapon_channels[2].selected_state = target_channel_2_state;
             g_sound_effect_manager.Play(25);
             return;
         case 3:
-            weapon_channels[2].set_weapon_animation(
+            weapon_channels[2].SetAnimation(
                 4, transition_immediate, OBJECT_ANIMATION_MODE_ONCE);
-            weapon_channels[2].set_weapon_animation(
+            weapon_channels[2].SetAnimation(
                 3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             weapon_channels[2].selected_state = target_channel_2_state;
             g_sound_effect_manager.Play(25);

@@ -4,9 +4,9 @@
 #include "object_render_types.h"
 #include "player.h"
 
-void cRSnail::dispatch_cutscene_animation(
+void cRSnail::SetAnimation(
     int animation_id,
-    unsigned char immediate,
+    bool immediate,
     int mode_flags)
 {
     if (immediate != 0) {

@@ -10069,6 +10069,8 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         "initialize_enemy_manager": "Init",
         "search_path_for_golb": "Find",
         "append_subgame_contact_target": "Register",
+        "firework_shoot": "Shoot",
+        "set_weapon_animation": "SetAnimation",
         "copy_segment_definition_to_level_slot": "ImportSegment",
         "load_level_definition_file": "Init",
         "load_builtin_segment_definitions": "Init",
@@ -10864,10 +10866,10 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
             "initialize_player_presentation_controller"
         ),
         "update_snail_presentation": "AIGoldy",
-        "release_snail_weapons": "release_snail_weapons",
-        "dispatch_cutscene_animation": "dispatch_cutscene_animation",
-        "set_snail_jetpack": "set_snail_jetpack",
-        "set_snail_weapon": "set_snail_weapon",
+        "release_snail_weapons": "ReleaseWeapons",
+        "dispatch_cutscene_animation": "SetAnimation",
+        "set_snail_jetpack": "SetJetPack",
+        "set_snail_weapon": "SetWeapon",
         "build_snail_world_hotspots": "BuildHotSpots",
         "extract_snail_local_hotspots": "extract_snail_local_hotspots",
     }
@@ -11825,6 +11827,145 @@ def test_timing_types_use_authored_primary_owners() -> None:
     ).read_text(encoding="utf-8")
     assert "char* cRTimeTrial::" not in formatter
     assert "__stdcall format_time_trial_string" in formatter
+
+
+def test_subgame_helper_methods_use_authored_names() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    methods = {
+        "zero_timer_counters": (
+            "cRTime",
+            "Zero",
+            "cRTime::Zero()",
+            "?Zero@cRTime@@QAEXXZ",
+            "cRTime_Zero",
+            1,
+        ),
+        "advance_timer_counters": (
+            "cRTime",
+            "Add",
+            "cRTime::Add(float)",
+            "?Add@cRTime@@QAEXM@Z",
+            "cRTime_Add",
+            0,
+        ),
+        "firework_shoot": (
+            "cRFireWork",
+            "Shoot",
+            "cRFireWork::Shoot(tVector, int, int, int)",
+            "?Shoot@cRFireWork@@QAEXPAUtVector@@HHH@Z",
+            "cRFireWork_Shoot",
+            1,
+        ),
+        "release_snail_weapons": (
+            "cRSnail",
+            "ReleaseWeapons",
+            "cRSnail::ReleaseWeapons()",
+            "?ReleaseWeapons@cRSnail@@QAEXXZ",
+            "cRSnail_ReleaseWeapons",
+            1,
+        ),
+        "dispatch_cutscene_animation": (
+            "cRSnail",
+            "SetAnimation",
+            "cRSnail::SetAnimation(int, bool, int)",
+            "?SetAnimation@cRSnail@@QAEXH_NH@Z",
+            "cRSnail_SetAnimation",
+            0,
+        ),
+        "set_weapon_animation": (
+            "cRWeapon",
+            "SetAnimation",
+            "cRWeapon::SetAnimation(int, bool, int)",
+            "?SetAnimation@cRWeapon@@QAEXH_NH@Z",
+            "cRWeapon_SetAnimation",
+            None,
+        ),
+        "set_snail_jetpack": (
+            "cRSnail",
+            "SetJetPack",
+            "cRSnail::SetJetPack(int)",
+            "?SetJetPack@cRSnail@@QAEXH@Z",
+            "cRSnail_SetJetPack",
+            1,
+        ),
+        "set_snail_weapon": (
+            "cRSnail",
+            "SetWeapon",
+            "cRSnail::SetWeapon(int)",
+            "?SetWeapon@cRSnail@@QAEXH@Z",
+            "cRSnail_SetWeapon",
+            1,
+        ),
+    }
+    for function, (
+        owner,
+        method,
+        mobile_symbol,
+        object_symbol,
+        alias,
+        ios_body_count,
+    ) in methods.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "SubGame.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if ios_body_count is None:
+            assert entry.get("ios_symbol") is None
+        else:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == ios_body_count
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"void {owner}::{method}(" in source
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    player = (repo_root / "tools/match/include/player.h").read_text(
+        encoding="utf-8"
+    )
+    weapon = (repo_root / "tools/match/include/weapon.h").read_text(
+        encoding="utf-8"
+    )
+    assert "SetAnimation(int animation, bool immediate," in player
+    assert "SetAnimation(int animation_id, bool immediate," in weapon
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.glob("*/scratch.cpp")
+    )
+    for old_name in (
+        "firework_shoot",
+        "release_snail_weapons",
+        "dispatch_cutscene_animation",
+        "set_weapon_animation",
+        "set_snail_jetpack",
+        "set_snail_weapon",
+    ):
+        assert f"{old_name}(" not in all_sources
 
 
 def test_mobile_cli_ranks_pending_verified_bodies(

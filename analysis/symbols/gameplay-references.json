@@ -3856,6 +3856,15 @@
       "description": "Exact Windows cRBanner::AI() entry installed through the authored Banner callback table."
     },
     {
+      "address": "0x441dd0",
+      "name": "firework_shoot",
+      "kind": "function",
+      "aliases": [
+        "?Shoot@cRFireWork@@QAEXPAUtVector@@HHH@Z"
+      ],
+      "description": "Exact Windows cRFireWork::Shoot(tVector*, int, int, int) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x441f60",
       "name": "update_smtracks",
       "kind": "function",
@@ -3898,6 +3907,15 @@
       "aliases": [],
       "size": "0x14",
       "description": "Compiler-emitted five-entry state switch table used by update_click_start."
+    },
+    {
+      "address": "0x442e40",
+      "name": "release_snail_weapons",
+      "kind": "function",
+      "aliases": [
+        "?ReleaseWeapons@cRSnail@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSnail::ReleaseWeapons() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x44362c",
@@ -3946,6 +3964,24 @@
         "?CalcRealPos@cRSubGame@@QAEXPAUtVector@@PAM@Z"
       ],
       "description": "Exact Windows cRSubGame::CalcRealPos(tVector*, float*) entry; Windows pointer ABI remains authoritative."
+    },
+    {
+      "address": "0x444600",
+      "name": "dispatch_cutscene_animation",
+      "kind": "function",
+      "aliases": [
+        "?SetAnimation@cRSnail@@QAEXH_NH@Z"
+      ],
+      "description": "Exact Windows cRSnail::SetAnimation(int, bool, int) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4446e0",
+      "name": "set_weapon_animation",
+      "kind": "function",
+      "aliases": [
+        "?SetAnimation@cRWeapon@@QAEXH_NH@Z"
+      ],
+      "description": "Exact Windows cRWeapon::SetAnimation(int, bool, int) entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x4447c0",
@@ -4028,6 +4064,24 @@
         "?Kill@cRSubGoldy@@QAEXXZ"
       ],
       "description": "Exact Windows cRSubGoldy::Kill() entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x445860",
+      "name": "set_snail_jetpack",
+      "kind": "function",
+      "aliases": [
+        "?SetJetPack@cRSnail@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRSnail::SetJetPack(int) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x445920",
+      "name": "set_snail_weapon",
+      "kind": "function",
+      "aliases": [
+        "?SetWeapon@cRSnail@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRSnail::SetWeapon(int) entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x445bf0",

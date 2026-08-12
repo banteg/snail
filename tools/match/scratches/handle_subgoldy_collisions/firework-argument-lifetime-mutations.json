@@ -3,11 +3,11 @@
   "sites": [
     {
       "name": "firework-player-slot",
-      "find": "                                burst_position.x = probe_salt.x;\n                                int slot_id = player_slot;\n                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;\n                                burst_position.y = probe_salt.y;\n                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;\n                                burst_position.z = probe_salt.z;\n                                firework.firework_shoot(\n                                    &burst_position, slot_id, 92, 80);",
+      "find": "                                burst_position.x = probe_salt.x;\n                                int slot_id = player_slot;\n                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;\n                                burst_position.y = probe_salt.y;\n                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;\n                                burst_position.z = probe_salt.z;\n                                firework.Shoot(\n                                    &burst_position, slot_id, 92, 80);",
       "replacements": [
         {
           "name": "direct-member-argument",
-          "text": "                                burst_position.x = probe_salt.x;\n                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;\n                                burst_position.y = probe_salt.y;\n                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;\n                                burst_position.z = probe_salt.z;\n                                firework.firework_shoot(\n                                    &burst_position, player_slot, 92, 80);"
+          "text": "                                burst_position.x = probe_salt.x;\n                                probe_salt.y = burst_offset.y + cached_camera_target_world.y;\n                                burst_position.y = probe_salt.y;\n                                probe_salt.z = burst_offset.z + cached_camera_target_world.z;\n                                burst_position.z = probe_salt.z;\n                                firework.Shoot(\n                                    &burst_position, player_slot, 92, 80);"
         }
       ]
     }

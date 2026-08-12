@@ -145,7 +145,7 @@ void cRSnail::AIGoldy()
     if (cutscene.state != CUT_SCENE_STATE_INACTIVE) {
         cutscene.AI();
     } else if (anim_manager.queue_count == 0 && owner_player->slug_fall_active == 0) {
-        dispatch_cutscene_animation(1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
+        SetAnimation(1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
     }
 
     owner_player->sub_hover.Jets();

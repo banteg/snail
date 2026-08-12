@@ -53,7 +53,7 @@ slow_fire:
 
     unsigned int current_flags = shoot_flags;
     if (current_flags != previous_shoot_flags) {
-        presentation.set_snail_weapon(current_flags);
+        presentation.SetWeapon(current_flags);
     }
 
     previous_shoot_flags = shoot_flags;

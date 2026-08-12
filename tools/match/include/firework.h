@@ -8,7 +8,7 @@
 // native callers still use the C++ thiscall surface.
 class cRFireWork {
 public:
-    void firework_shoot(
+    void Shoot(
         Vector3* position, int owner, int texture_id, int count); // @ 0x441dd0, cRFireWork::Shoot
 };
 

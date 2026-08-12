@@ -27,10 +27,10 @@ void cRDamageGuage::Take(float delta, bool force)
                     hit_flash_progress = hit_flash_step;
                 if (!g_game->subgame.embedded_player()->slug_fall_active) {
                     g_game->subgame.embedded_player()->presentation
-                        .dispatch_cutscene_animation(
+                        .SetAnimation(
                             6, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
                     g_game->subgame.embedded_player()->presentation
-                        .dispatch_cutscene_animation(
+                        .SetAnimation(
                             1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
                 }
             } else {

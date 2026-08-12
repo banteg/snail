@@ -4,7 +4,7 @@
 #include "object_render_types.h"
 #include "weapon.h"
 
-void cRWeapon::set_weapon_animation(
+void cRWeapon::SetAnimation(
     int animation_id,
     bool immediate,
     int mode_flags)

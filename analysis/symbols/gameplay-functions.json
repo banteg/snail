@@ -3945,11 +3945,17 @@
     {
       "address": "0x441b70",
       "name": "zero_timer_counters",
+      "aliases": [
+        "cRTime_Zero"
+      ],
       "description": "Exact void `cRTime::Zero()`: clears all six fields of the authored 0x18-byte time value shared by player, level, and high-score state. iOS and Android preserve the owner and method name."
     },
     {
       "address": "0x441b90",
       "name": "advance_timer_counters",
+      "aliases": [
+        "cRTime_Add"
+      ],
       "description": "Exact void `cRTime::Add(float)`: accumulates a 60 Hz-scaled delta, rolls seconds into minutes at 60, and refreshes the derived hundredths and thousandths fields. The final Windows EAX value is incidental, not a semantic return."
     },
     {
@@ -3971,7 +3977,10 @@
     {
       "address": "0x441dd0",
       "name": "firework_shoot",
-      "description": "Windows `FireWork::firework_shoot`, authored as `cRFireWork::Shoot`: spawns a randomized sprite burst through the exact empty one-byte child at `cRSubGoldy +0x1d0`. The receiver is unused by the body but is passed by the native thiscall; Android and iOS retain the owner with a by-value vector signature."
+      "aliases": [
+        "cRFireWork_Shoot"
+      ],
+      "description": "Authored `cRFireWork::Shoot`: spawns a randomized sprite burst through the exact empty one-byte child at `cRSubGoldy +0x1d0`. The receiver is unused by the Windows body but is passed by the native thiscall; Android and iOS retain the owner with a by-value vector signature."
     },
     {
       "address": "0x441f60",
@@ -4066,6 +4075,9 @@
     {
       "address": "0x442e40",
       "name": "release_snail_weapons",
+      "aliases": [
+        "cRSnail_ReleaseWeapons"
+      ],
       "description": "Authored `cRSnail::ReleaseWeapons()`: constructs and scales one random/forward `Vector3` release step for each embedded weapon and jetpack animation channel, raises the one-shot Invincible gate, and ends the active cRSubGoldy jetpack hover."
     },
     {
@@ -4176,11 +4188,17 @@
     {
       "address": "0x444600",
       "name": "dispatch_cutscene_animation",
+      "aliases": [
+        "cRSnail_SetAnimation"
+      ],
       "description": "Stable Windows name for the authored void `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation. Android independently proves the void contract: its immediate exit leaves `this` in R0 while its queued exit leaves an interior queued-array address."
     },
     {
       "address": "0x4446e0",
       "name": "set_weapon_animation",
+      "aliases": [
+        "cRWeapon_SetAnimation"
+      ],
       "description": "Authored void `cRWeapon::SetAnimation(int, bool, int)` over one exact 0x3dc-byte Weapon owner: queues an id or immediately selects one of five owned 0x80-byte RenderableBod slots, follows its Object::animation link, and installs the borrowed Object on the channel. Android independently preserves the void mutator contract."
     },
     {
@@ -4274,11 +4292,17 @@
     {
       "address": "0x445860",
       "name": "set_snail_jetpack",
+      "aliases": [
+        "cRSnail_SetJetPack"
+      ],
       "description": "Windows `cRSnail::SetJetPack(int)`: maps the requested state onto the exact Snail-owned jetpack `Weapon`, preserving the target/selected-state transition and one-byte immediate flag independently corroborated by Android and iOS."
     },
     {
       "address": "0x445920",
       "name": "set_snail_weapon",
+      "aliases": [
+        "cRSnail_SetWeapon"
+      ],
       "description": "Authored `cRSnail::SetWeapon(int)`: maps `cRSubGoldy::shoot_flags` onto the three animation channels owned by the exact Snail at `cRSubGoldy +0x2984`."
     },
     {

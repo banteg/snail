@@ -90,11 +90,11 @@ class cRSnail : public RenderableBod {
 public:
     cRSnail* initialize_player_presentation_controller(); // @ 0x4086d0
     void noop_runtime_ai();                   // folded @ 0x407b50; cRSnail::AI()
-    void release_snail_weapons();          // @ 0x442e40
-    void set_snail_jetpack(int state);      // @ 0x445860
-    void set_snail_weapon(int shoot_flags);    // @ 0x445920
+    void ReleaseWeapons();          // @ 0x442e40
+    void SetJetPack(int state);      // @ 0x445860
+    void SetWeapon(int shoot_flags);    // @ 0x445920
     void AIGoldy();                      // @ 0x4428d0
-    void dispatch_cutscene_animation(int animation, unsigned char immediate, int mode_flags); // @ 0x444600
+    void SetAnimation(int animation, bool immediate, int mode_flags); // @ 0x444600
     void BuildHotSpots();                   // @ 0x445cd0
     void extract_snail_local_hotspots();    // @ 0x445d50
 

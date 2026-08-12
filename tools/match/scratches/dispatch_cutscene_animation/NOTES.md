@@ -1,130 +1,20 @@
-# dispatch_cutscene_animation @ 0x444600
+# cRSnail::SetAnimation @ 0x444600
 
-Stable Windows name for authored `cRSnail::SetAnimation(int, bool, int)`, the
-Snail-root counterpart to `set_weapon_animation`.
+Current recovery: semantic-complete (`compiler` residual). Windows exposes a
+void `thiscall` with `int`, one-byte immediate, and `int` arguments. Android
+names it `cRSnail::SetAnimation(int, bool, int)`, while iOS independently
+preserves the class/name provenance in `SubGame.o`. Authoring the Windows byte
+as `bool`, matching the paired `cRWeapon` method, is byte-identical.
 
-This scratch uses the same queue/start source shape over the controller root:
+The immediate path selects one of ten owned renderable slots, installs its
+borrowed animation and object, normalizes forward/reverse progress, clears the
+queue, and publishes the active-body flag. The queued path appends the three
+arguments to the exact `cRAnimManager` arrays.
 
-- animated `Object*` at `Snail +0x24`
-- `anim_manager` at `+0x104`
-- ten owned renderable animation slots begin at `+0x14c`; slot zero's inherited
-  `Object*` link is at `+0x170`, and records have 0x80-byte stride
+Focused VC6 result: **94.55%**, exact 55/55 instruction parity, prefix 48/55,
+with all three relocation operands audited and clean. Only the final queued
+slot publication rotates equivalent registers.
 
-Callers use this for base, lookback, skid-stop, damage, shell, fall, and talk
-cutscene/presentation animation ids.
-
-Current focused result:
-
-- 94.55% fuzzy match, 55 candidate insns / 55 native insns
-- prefix 48/55
-- masked comparison: 3 ok, 0 mismatch
-
-Remaining known shape issues are the same as the adjacent
-`set_weapon_animation` helper: the immediate path matches exactly, while the
-queued branch uses the opposite `eax`/`edx` owners for the equivalent count,
-argument, and indexed store sequence.
-
-2026-06-20 larger-chunk audit: replacing the queued branch locals with a direct
-`anim_manager.queued_animations[anim_manager.queue_count] = animation_id`
-subscript is codegen-neutral at 88.07% and keeps the queue count in `eax`
-instead of native `edx`. Removing the top-level `active_animation` local and
-storing/reading through `anim_manager.active_animation` is also neutral; the
-non-reversing branch still does not reload the manager field before clearing
-progress. Keep the existing clearer paired source shape.
-
-2026-06-21 active-animation reload pass: reading the non-reversing branch's
-`anim_manager.active_animation` lane through a narrow volatile pointer view
-recovers the native reload before `progress = 0.0f`, promoting both this helper
-and `set_weapon_animation` to 94.55% with a 48/55 exact prefix. This is a
-code-shape barrier for the manager lane, not a new type/layout claim. Plain
-locals, declaration-order changes, direct queue subscripts, and raw queue stores
-remain codegen-neutral; the only retained residual is the queued branch's
-`queue_count`/`animation_id` register ownership.
-
-2026-06-21 queued-argument barrier: reading the queued `animation_id` through a
-narrow volatile pointer recovers the native queued-array store register shape
-for both animation helpers. Focused Wibo improves from 94.55% to 98.18%,
-staying at 55/55 instructions and 48/55 prefix with `3 ok / 0 mismatch` masked
-operands. Combining this with volatile queue-count reads, explicit queue-slot
-pointers, raw slot stores, and direct subscripts did not recover the final load
-order; the only remaining diff is native loading `queue_count` before reloading
-the stack argument.
-
-2026-06-21 queue-count-only retry: making only the queue-count read volatile
-while leaving `animation_id` plain loads the queue count first, but into `eax`,
-and moves the stack argument to `edx`, regressing the paired store-register
-shape to 94.55%. A plain queue-count pointer local is codegen-neutral at 98.18%
-and still loads the stack argument before the queue count.
-
-2026-07-10 no-fakematch audit: both retained volatile barriers were compiler
-coercions, not recovered ownership, and are removed. Writing `progress = 0`
-before taking the non-reversing branch's local `active_animation` naturally
-recovers native's member reload and keeps the entire immediate path exact.
-The plain queued assignment remains an honest three-instruction register-owner
-swap, so focused Wibo is 94.55%, 55/55, prefix 48, with three clean masks.
-Every native caller ignores the result, and a `void` declaration is codegen-
-neutral in both helpers and representative callers. At this point return
-ownership remained unproven, so the existing `int` ABI was retained
-conservatively rather than being inferred away from incidental callsite use.
-
-2026-07-12 object/slot ownership: the Snail constructor independently builds
-the ten complete `RenderableBod` slots at `+0x14c`. The immediate path now
-follows each slot's inherited `object +0x24` into `Object::animation +0xbc`
-and installs that same borrowed `Object*` on the Snail. This is codegen-neutral
-at 94.55%, 55/55, with the same 48-instruction exact prefix.
-
-2026-07-14 animation-mode ownership: the third argument is the authored
-animation mode word, not an initial frame. The parser and exact updater prove
-loop `1`, ping-pong `2`, once `4`, and reverse-once `8`; caller sentinel `-1`
-preserves the selected clip's current flags. Queued animation id `-1` has a
-separate role: the exact manager updater consumes it by hiding the target model.
-
-2026-07-18 analysis replay: both Windows databases now render the exact
-`Snail*` receiver, ten owned `RenderableBod` animation slots, nested
-`Object::animation`, root `AnimManager`, and borrowed target model. This retires
-the stale `PlayerPresentationController`, `active_keyframe`, `self_ref`, and
-`initial_frame` analysis vocabulary without changing the then-conservative
-`int32_t` return contract. Focused matching remains honestly at 94.55%; the
-remaining three-instruction queue-tail register swap is still visible and is
-not fakematched.
-
-## 2026-07-24 authored void ABI
-
-Android independently resolves the result contract for both paired authored
-members. `cRSnail::SetAnimation(int, bool, int)` and
-`cRWeapon::SetAnimation(int, bool, int)` each return directly from two paths:
-the immediate path leaves the owner `this` pointer in R0, while the queued path
-advances R0 into the embedded queued-animation array before its final store.
-Those incompatible pointer residues cannot be one semantic return value.
-
-The Windows `dispatch_cutscene_animation` transcription therefore now joins
-the already-void Weapon method as an authored `void` mutator. This removes the
-old conservative integer ABI without changing the honest 94.55%, 55/55
-instruction frontier, 48-instruction prefix, or three clean masked operands.
-
-## 2026-07-29 bounded queue-publication audit
-
-Four recorded sweeps evaluated 44 variants over postfix publication, explicit
-index/count locals, pointer and reference slots, branch joins, and parameter
-lifetimes. Forty-two variants are byte-neutral and one regresses. The sole
-fuzzy gain uses `queue_count = queue_index + 1`: it reaches 95.41% by recovering
-the queued-store register owners, but drops the native post-store count reload
-and produces only 54/55 instructions. That structural tradeoff is rejected.
-
-An inline `AnimManager` queue helper was also codegen-neutral. The retained
-94.55%, 55/55 source is still exact through instruction 48 and preserves the
-native reload; only the three-instruction EAX/EDX ownership swap remains.
-The sweep history is descriptive, not a stop rule. The paired Weapon setter
-independently reproduces every result.
-
-## 2026-08-12 recovery classification
-
-The recovery is semantic-complete. The live Windows body and verified Android
-`cRSnail::SetAnimation(int, bool, int)` body establish the Snail owner, ten
-owned animation slots, selected Object and ObjectAnimation, mode handling,
-forward/reverse progress, target-model visibility, queue reset, and deferred
-queue append. All 55 instructions and all three references are represented.
-
-Only the deferred tail exchanges EAX and EDX for the queue index and animation
-id while preserving the same store and count reload. That is compiler register
-allocation, not missing ownership or behavior.
+The matcher source now uses authored `SetAnimation` and exact VC6 symbol
+`?SetAnimation@cRSnail@@QAEXH_NH@Z`; `dispatch_cutscene_animation` remains only
+the stable scratch and Windows-address identity.

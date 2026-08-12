@@ -34,11 +34,11 @@ void cRCutScene::AI()
         progress = 0.0f;
         progress_step = 0.00833333377f;
         force_camera_update = 1;
-        presentation->dispatch_cutscene_animation(
+        presentation->SetAnimation(
             9, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
-        presentation->dispatch_cutscene_animation(
+        presentation->SetAnimation(
             9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
-        presentation->dispatch_cutscene_animation(
+        presentation->SetAnimation(
             1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
         // fall through
 
@@ -96,7 +96,7 @@ void cRCutScene::AI()
 
     case CUT_SCENE_STATE_DEATH_PENDING:
         camera_mode = -1;
-        presentation->dispatch_cutscene_animation(
+        presentation->SetAnimation(
             7, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
         state = CUT_SCENE_STATE_DEATH_BLEND;
         progress = 0.0f;
@@ -105,7 +105,7 @@ void cRCutScene::AI()
         g_voice_manager.Play(
             VOICE_SET_FALL, VOICE_PLAY_INTERRUPT, -1);
         presentation->owner_player->attachment_exit_gate_a = 1;
-        presentation->release_snail_weapons();
+        presentation->ReleaseWeapons();
         // fall through
 
     case CUT_SCENE_STATE_DEATH_BLEND: {
@@ -158,11 +158,11 @@ void cRCutScene::AI()
     case CUT_SCENE_STATE_COMPLETION_PENDING: {
         state = CUT_SCENE_STATE_COMPLETION_HOLD;
         camera_mode = -1;
-        presentation->dispatch_cutscene_animation(
+        presentation->SetAnimation(
             8, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
-        presentation->dispatch_cutscene_animation(
+        presentation->SetAnimation(
             9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
-        presentation->dispatch_cutscene_animation(
+        presentation->SetAnimation(
             9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
 
         state = CUT_SCENE_STATE_COMPLETION_BLEND;
@@ -231,7 +231,7 @@ void cRCutScene::AI()
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
         live_matrix.LookAt(presentation->transform.position);
         if (presentation->anim_manager.queue_count == 0)
-            presentation->dispatch_cutscene_animation(
+            presentation->SetAnimation(
                 9, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
         progress = progress + progress_step;
         break;

@@ -12,7 +12,7 @@ Semantics complete and they REFINE the harvested hit-flash plan:
   child at `Game +0x434038`, voice 0 (damage) mode 1 seeding the timer on success;
   on FAILURE voice 9 (ouch) mode 0 (also seeding on success) and — only
   in this failure branch, gated on `Player::slug_fall_active` clear —
-  the anim pair dispatch_cutscene_animation(6, immediate) then (1, queued) on
+  the anim pair SetAnimation(6, immediate) then (1, queued) on
   `Player::presentation` at `Game +0x432700`
 - fill at +0x1c accumulates the delta, clamped to [0, 1]
 - collision callers feed -0.5 health, +0.04 garbage, +0.15 salt,

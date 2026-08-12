@@ -44,7 +44,7 @@ void cRSubHover::AI()
         } else if (next_progress > 0.94f) {
             warning_intensity = (1.0f - next_progress) * 16.6666679f;
             if (next_progress - progress_step <= 0.94f) {
-                g_game->subgame.embedded_player()->presentation.set_snail_jetpack(0);
+                g_game->subgame.embedded_player()->presentation.SetJetPack(0);
                 JetUnInit();
             }
         } else {
@@ -73,7 +73,7 @@ void cRSubHover::AI()
 finish_hover:
     End();
     if (progress <= 0.94f)
-        g_game->subgame.embedded_player()->presentation.set_snail_jetpack(0);
+        g_game->subgame.embedded_player()->presentation.SetJetPack(0);
     state = SUB_HOVER_STATE_INACTIVE;
     wobble_alpha = (float)zero;
     wobble_y = (float)zero;

@@ -169,7 +169,7 @@ void cRSubGoldy::Collision()
                                 burst_position.y = probe_salt.y;
                                 probe_salt.z = burst_offset.z + cached_camera_target_world.z;
                                 burst_position.z = probe_salt.z;
-                                firework.firework_shoot(
+                                firework.Shoot(
                                     &burst_position, slot_id, 92, 80);
                             } else {
                                 float rate = game->subgame_rate;

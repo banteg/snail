@@ -16,7 +16,7 @@ typedef char PresentationAnimationSlot_must_be_0x80[
 // instance for the jetpack presentation channel.
 class cRWeapon : public RenderableBod {
 public:
-    void set_weapon_animation(int animation_id, bool immediate, int mode_flags);
+    void SetAnimation(int animation_id, bool immediate, int mode_flags);
 
     // build_subgame_level links this inherited renderable BOD. The Weapon
     // remains embedded in the authored Snail owner; the list only borrows it.

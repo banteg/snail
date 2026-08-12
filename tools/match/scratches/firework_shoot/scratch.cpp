@@ -8,7 +8,7 @@
 
 int gRMathRand2();
 
-void cRFireWork::firework_shoot(
+void cRFireWork::Shoot(
     Vector3* position, int owner, int texture_id, int count)
 {
     if ((g_runtime_config.render_flags & RUNTIME_RENDER_PARTICLE_EFFECTS) == 0

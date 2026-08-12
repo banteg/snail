@@ -13,7 +13,7 @@ void cRSubHover::On()
         wobble_y = 0.0f;
         wobble_x = 0.0f;
 
-        g_game->subgame.embedded_player()->presentation.set_snail_jetpack(1);
+        g_game->subgame.embedded_player()->presentation.SetJetPack(1);
         JetInit();
     }
 }

@@ -308,12 +308,12 @@ steering_stored:
             if (!row_event_cutscene_started) {
                 row_event_cutscene_started = 1;
                 if (p_position->x > 0.0f)
-                    presentation.dispatch_cutscene_animation(
+                    presentation.SetAnimation(
                         4, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
                 else
-                    presentation.dispatch_cutscene_animation(
+                    presentation.SetAnimation(
                         3, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
-                presentation.dispatch_cutscene_animation(
+                presentation.SetAnimation(
                     1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             }
             int definition = row_record->row_event_id;
@@ -596,12 +596,12 @@ steering_stored:
                     velocity.y = game->subgame_rate * 0.2f;
                     if (!slug_fall_active) {
                         if (p_position->x > 0.0f)
-                            presentation.dispatch_cutscene_animation(
+                            presentation.SetAnimation(
                                 4, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
                         else
-                            presentation.dispatch_cutscene_animation(
+                            presentation.SetAnimation(
                                 3, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
-                        presentation.dispatch_cutscene_animation(
+                        presentation.SetAnimation(
                             1, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
                     }
                 } else if (game->LocFromPos(p_position)->tile_id
@@ -964,7 +964,7 @@ steering_stored:
             unsigned char slug_fall_snapshot = slug_fall_active;
             attachment_exit_gate_a = 1;
             if (!slug_fall_snapshot && transform.position.y < -6.0f)
-                presentation.dispatch_cutscene_animation(
+                presentation.SetAnimation(
                     5, 1, OBJECT_ANIMATION_MODE_UNCHANGED);
         }
         if (transform.position.y < -7.0f && !attachment_exit_gate_b) {

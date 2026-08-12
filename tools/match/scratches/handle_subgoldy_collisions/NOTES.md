@@ -426,7 +426,7 @@ became available when `spawn_slug_hazard` recovered `Vector3::operator*`:
 - knockback is `Vector3(0, 0.2, -0.2) * subgame_rate`;
 - the half-distance burst offset is `normalized_delta * (distance * 0.5)`;
 - the burst position is a real `Vector3`, not an anonymous float array; and
-- the burst call is `Player::firework.firework_shoot(...)`, with the embedded
+- the burst call is `Player::firework.Shoot(...)`, with the embedded
   authored `FireWork` receiver at `Player +0x1d0` proven by both the Windows
   `lea ecx, [esi+0x1d0]` and Android `cRFireWork::Shoot(player+440, ...)`.
 

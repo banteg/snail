@@ -5,7 +5,7 @@
 
 int gRMathRand2();
 
-void cRSnail::release_snail_weapons()
+void cRSnail::ReleaseWeapons()
 {
     if (channel_release_steps_active == 0) {
         float random_x =

@@ -1,101 +1,18 @@
-# release_snail_weapons @ 0x442e40
+# cRSnail::ReleaseWeapons @ 0x442e40
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
-`cRSnail::ReleaseWeapons()` bodies and the live Windows Snail method establish
-the one-shot gate, all four random/forward release vectors, their channel
-destinations, and the hover shutdown. All 33 references are clean and both
-sides contain 125 instructions; the remaining deltas are equivalent temporary
-stack slots and owner-load/publication scheduling.
+Current recovery: semantic-complete (`compiler` residual). Live Windows
+analysis establishes a void no-argument `cRSnail` member, and Android/iOS both
+retain `cRSnail::ReleaseWeapons()` in `SubGame.o`.
 
-Authored `cRSnail::ReleaseWeapons()` helper that arms the Snail weapon and
-jetpack channel release steps once, then marks the Snail-owned
-`channel_release_steps_active` gate.
+On the first release it constructs randomized, forward-biased release steps
+for the jetpack and all three weapon channels, ends the owning Goldy hover, and
+publishes the one-shot release gate. The exact embedded `cRWeapon` layout and
+the non-owning `owner_player` backlink corroborate every destination.
 
-Recovered relationships:
+Focused VC6 result: **92.80%**, exact 125/125 instruction parity, prefix
+13/125, with all 33 relocation operands audited and clean. Remaining drift is
+anonymous vector/scalar stack-slot allocation across the four repeated blocks.
 
-- The one-shot gate is `Snail::channel_release_steps_active` at
-  `presentation +0x1934`.
-- Release step writes target:
-  - `jetpack_channel.release_step` at `+0x15b0`;
-  - `weapon_channels[0].release_step` at `+0x0a1c`;
-  - `weapon_channels[2].release_step` at `+0x11d4`;
-  - `weapon_channels[1].release_step` at `+0x0df8`.
-- The Z release component is `owner_player->velocity.z * 0.30000001f`.
-- The helper ends live jetpack hover through the authored
-  `owner_player->sub_hover` child.
-
-Focused match:
-
-- 2026-06-18: 49.55%, 125 target instructions versus 97 candidate
-  instructions.
-- 2026-06-21: 88.80%, 125 target instructions versus 125 candidate
-  instructions, 32 ok masks. Staging the release vector through a stack
-  `Vector3`, making the `random_y + 0.5f` adjustment explicit, and reusing the
-  staged `z` slot for the raw forward velocity recovers the native component
-  spill/store shape.
-- This callsite needs the two-argument `random_float_below(1.0f, 0)` view.
-- This callsite also behaves better with a float return view for
-  `random_float_below`; the native instruction stream uses `fadd/fmul dword`
-  constants for the returned value.
-- The previous shape gap was local-frame layout: native reserved `0x1c` bytes
-  while the component-by-component candidate used a `0x10` frame. Splitting raw
-  forward-Z into a separate scalar regressed to 74.38%, because the compiler
-  delayed the owner-velocity load again.
-- 2026-06-21 follow-up release-vector audit: spelling
-  `random_float_below(...) + 0.5f` inline and giving each forward-z load a
-  distinct source local are both codegen-neutral at 88.80%; they do not move the
-  frame to native's 0x1c layout. Direct scalar stores for the release vectors
-  shrink the frame and regress to the low-50% range. Keep the staged `Vector3`
-  source.
-
-iOS and Android retain this method on cRSnail, confirming the four animation
-channels, release gate, and Player backlink all belong to the one exact
-`Snail` at `Player +0x2984`.
-
-2026-07-09 frame campaign: dead pad floats are optimized away (still 0x10).
-Persistent raw `slot_x/y/z` locals before the 0.3 scale regress to 72.73%. Keep
-the staged value semantics rather than padding the frame.
-
-2026-07-12 returned-vector source shape: each channel now assigns
-`Vector3(random_x, random_y, forward_z) * 0.3f`. The raw constructed value and
-the real `Vector3::operator*` return value recover the missing pair of vector
-temporaries and the exact native `0x1c` frame. Focused Wibo improves from
-88.80% to 92.80%, with 125/125 instructions, prefix 5, and all 31 masked
-operands clean. The residual is limited to the first random-X stack-slot choice
-and independent owner-load/store scheduling in the third channel; explicit
-raw-vector locals regress to 68.80% and are not retained.
-
-2026-07-18 analysis replay: the Windows Binary Ninja and IDA databases now pin
-this as `void __thiscall release_snail_weapons(Snail* snail)`, replacing the
-stale `void*`/`int this` receivers. Both decompilers read the four exact embedded
-`Weapon::release_step` vectors, the Snail-owned one-shot gate, the `Player`
-backlink and velocity, and `Player::sub_hover` without raw owner offsets. A
-focused replay verifies the exact `SubHover`, `Weapon`, `Invincible`, `Snail`,
-and `Player` sizes before applying either ABI. This is ownership/decompile
-recovery only: the authored matcher remains honestly at 92.80%, with no source
-padding or fakematch.
-
-2026-07-28 mobile boundary correction: Android and iOS place
-`cutscene_roll_progress`, `cutscene_roll_step`, and the release gate at
-`cRSnail +0x1764/+0x1768/+0x176c`. Their exact `cRInvincible` state machine
-ends immediately before those lanes, just as the Windows owner ends at
-`Snail +0x192c`. The three fields now belong directly to `Snail`; the Windows
-`Invincible` extent is the cross-port-consistent 0x98 bytes. This is
-codegen-neutral ownership recovery, not a matching shim.
-
-## 2026-07-29 bounded release-vector audit
-
-Four recorded sweeps evaluated 143 variants across channel-local lifetimes,
-vector publication, owner/destination order, and branch scope. Inlining the
-authored `random_float_below(1.0f, 0) + 0.5f` expression extends the exact
-prefix from 5 to 13 instructions while preserving the 92.80%, 125/125 result
-and all 33 clean references. The same spelling is retained for all four
-channels because both mobile bodies preserve that expression directly.
-
-No variant improved the fuzzy score: 122 were neutral and 21 regressed. Named
-or in-place vectors, component stores, pointer/reference destinations,
-owner aliases, declaration reorderings, and moving reused locals outside the
-one-shot branch do not recover the native first-`random_x` stack slot or the
-third-channel publication schedule. Ordinary lifetime or publication syntax
-currently has no evidence-backed improvement,
-but remains open to fresh translation-unit or compiler evidence.
+The matcher source now uses authored `ReleaseWeapons` and exact VC6 symbol
+`?ReleaseWeapons@cRSnail@@QAEXXZ`; `release_snail_weapons` remains only the
+stable scratch and Windows-address identity.
