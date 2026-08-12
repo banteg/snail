@@ -139,9 +139,9 @@ void cRSubGolb::update_golb_ai()
         tertiary_body.transform = source_matrix;
         if (spun > 6.2831855f)
             spin = spun - 6.2831855f;
-        spawn_golb_smoke(&source_matrix.position);
+        Smoke(&source_matrix.position);
         smoke_position = source_matrix.position - direction * 0.5f;
-        spawn_golb_smoke(&smoke_position);
+        Smoke(&smoke_position);
         break;
     }
     case 1:
@@ -150,11 +150,11 @@ void cRSubGolb::update_golb_ai()
     case 0: {
         Vec3* body_position = &render_sprite->position;
         *body_position = source_matrix.position;
-        spawn_golb_trail_sprite(&source_matrix.position);
+        Jet(&source_matrix.position);
         trail_a = source_matrix.position - direction * 0.30000001f;
-        spawn_golb_trail_sprite(&trail_a);
+        Jet(&trail_a);
         trail_b = source_matrix.position - direction * 0.60000002f;
-        spawn_golb_trail_sprite(&trail_b);
+        Jet(&trail_b);
         break;
     }
     }

@@ -2517,6 +2517,24 @@
       "description": "Compiler-emitted switch jump table used by update_golb_ai."
     },
     {
+      "address": "0x415bb0",
+      "name": "spawn_golb_trail_sprite",
+      "kind": "function",
+      "aliases": [
+        "?Jet@cRSubGolb@@QAEPAVcRSprite@@PAUtVector@@@Z"
+      ],
+      "description": "Exact Windows cRSubGolb::Jet(tVector*) entry with its authored name and Windows Sprite-return ABI."
+    },
+    {
+      "address": "0x415c60",
+      "name": "spawn_golb_smoke",
+      "kind": "function",
+      "aliases": [
+        "?Smoke@cRSubGolb@@QAEXPAUtVector@@@Z"
+      ],
+      "description": "Exact void Windows cRSubGolb::Smoke(tVector*) entry with its authored name and Windows pointer ABI."
+    },
+    {
       "address": "0x415e20",
       "name": "initialize_enemy_manager",
       "kind": "function_alias",

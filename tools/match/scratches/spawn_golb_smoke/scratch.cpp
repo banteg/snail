@@ -1,10 +1,10 @@
-// cRSubGolb::Smoke(tVector) / spawn_golb_smoke @ 0x415c60
+// cRSubGolb::Smoke @ 0x415c60
 
 #include "golb.h"
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-void cRSubGolb::spawn_golb_smoke(Vector3* position)
+void cRSubGolb::Smoke(Vector3* position)
 {
     cRSprite* sprite = g_sprite_manager.New(
         owner_player->player_slot,

@@ -1561,14 +1561,17 @@
       "aliases": [
         "cRSubGolb_Jet"
       ],
-      "description": "Exact Windows `cRSubGolb::Jet(tVector)`/`GolbShot` member that allocates and returns one short-lived trail sprite at the supplied world position. Windows `update_golb_ai` calls it at the current projectile position and 0.3 and 0.6 units behind; Android preserves the authored Jet method and the identical three call positions but compiles its body as a no-op.",
+      "description": "Exact Windows `cRSubGolb::Jet(tVector*)` member that allocates and returns one short-lived trail sprite at the supplied world position. Windows `cRSubGolb::AI()` calls it at the current projectile position and 0.3 and 0.6 units behind; Android preserves the authored by-value Jet method and identical call positions but compiles its body as a no-op.",
       "source_object": "Golb.o",
       "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x415c60",
       "name": "spawn_golb_smoke",
-      "description": "Side-effect-only `cRSubGolb::Smoke(tVector)`/`GolbShot` member that borrows the owning subgame rate and projectile velocity to seed one sprite at the supplied world position. Android preserves the owner and all Sprite initialization lanes."
+      "aliases": [
+        "cRSubGolb_Smoke"
+      ],
+      "description": "Exact void Windows `cRSubGolb::Smoke(tVector*)` member that borrows the owning subgame rate and projectile velocity to seed one sprite at the supplied world position. Android preserves the authored by-value Smoke method and all Sprite initialization lanes."
     },
     {
       "address": "0x415d80",

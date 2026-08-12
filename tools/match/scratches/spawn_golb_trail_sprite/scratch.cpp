@@ -1,11 +1,11 @@
-// cRSubGolb::Jet(tVector) / spawn_golb_trail_sprite @ 0x415bb0
+// cRSubGolb::Jet @ 0x415bb0
 // (Windows thiscall, pointer argument, ret 0x4)
 
 #include "golb.h"
 #include "player.h"
 #include "sprite.h"
 
-cRSprite* cRSubGolb::spawn_golb_trail_sprite(Vector3* position)
+cRSprite* cRSubGolb::Jet(Vector3* position)
 {
     cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x21, -1, -1);
     int flags = sprite->flags;

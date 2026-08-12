@@ -76,10 +76,10 @@ public:
     void Kill(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
     void update_golb_ai(); // @ 0x414820, iOS/Android cRSubGolb::AI()
     void create_golb(cRSubGoldy* player, int spawn_selector, int shot_slot_index); // @ 0x415280
-    cRSprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0,
-        // Android cRSubGolb::Jet(tVector)
-    void spawn_golb_smoke(Vector3* position); // @ 0x415c60,
-        // Android cRSubGolb::Smoke(tVector)
+    // Windows retains pointer arguments and returns its allocated Jet sprite;
+    // Android preserves the authored by-value method names.
+    cRSprite* Jet(Vector3* position); // @ 0x415bb0
+    void Smoke(Vector3* position); // @ 0x415c60
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80,
         // Android cRSubGolb::Explode(tVector)
 

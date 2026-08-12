@@ -7528,60 +7528,103 @@ def test_mobile_falling_init_recovers_windows_carryover_method() -> None:
     assert "checked-in iOS decompile corpus is v1.5" in notes
 
 
-def test_android_golb_jet_recovers_windows_trail_method() -> None:
+def test_android_golb_jet_and_smoke_recover_windows_methods() -> None:
     repo_root = Path(__file__).parents[1]
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
-    entry = next(
-        entry
+    entries = {
+        entry["windows_name"]: entry
         for entry in complete["entries"]
-        if entry["windows_name"] == "spawn_golb_trail_sprite"
-    )
-    mobile_symbol = "cRSubGolb::Jet(tVector)"
-
-    assert entry["status"] == "verified"
-    assert entry["confidence"] == "high"
-    assert entry["android_symbol"] == mobile_symbol
-    assert entry["android_body_count"] == 1
-    assert "ios_symbol" not in entry
-    assert entry["source_object"] == "Golb.o"
-    assert (
-        entry["source_object_evidence"]
-        == "windows-contiguous-source-run"
-    )
+    }
+    expected = {
+        "spawn_golb_trail_sprite": "cRSubGolb::Jet(tVector)",
+        "spawn_golb_smoke": "cRSubGolb::Smoke(tVector)",
+    }
+    for windows_name, mobile_symbol in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert "ios_symbol" not in entry
+        assert entry["source_object"] == "Golb.o"
+    assert entries["spawn_golb_trail_sprite"][
+        "source_object_evidence"
+    ] == "windows-contiguous-source-run"
 
     android_index = load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json")
-    jet = resolve_corpus_symbol(android_index, mobile_symbol)
+    jet = resolve_corpus_symbol(android_index, expected["spawn_golb_trail_sprite"])
+    smoke = resolve_corpus_symbol(android_index, expected["spawn_golb_smoke"])
     ai = resolve_corpus_symbol(android_index, "cRSubGolb::AI()")
     assert jet is not None
+    assert smoke is not None
     assert ai is not None
     jet_body = corpus_function_path(
         DEFAULT_ANDROID_CORPUS_ROOT, jet
+    ).read_text(encoding="utf-8")
+    smoke_body = corpus_function_path(
+        DEFAULT_ANDROID_CORPUS_ROOT, smoke
     ).read_text(encoding="utf-8")
     ai_body = corpus_function_path(
         DEFAULT_ANDROID_CORPUS_ROOT, ai
     ).read_text(encoding="utf-8")
     assert "return;" in jet_body
+    assert "0.16666667" in smoke_body
+    assert "0.4166667" in smoke_body
+    assert "* 0.4" in smoke_body
     assert ai_body.count("Jet();") == 3
+    assert ai_body.count("Smoke();") == 2
     assert "* 0.3" in ai_body
     assert "* 0.6" in ai_body
 
     manifest = load_json(
         repo_root / "analysis/symbols/gameplay-functions.json"
     )
-    function = next(
-        function
-        for function in manifest["functions"]
-        if function["name"] == "spawn_golb_trail_sprite"
-    )
-    assert function["aliases"] == ["cRSubGolb_Jet"]
-    assert "three call positions" in function["description"]
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = {
+        symbol["name"]: symbol
+        for symbol in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    object_symbols = {
+        "spawn_golb_trail_sprite": (
+            "?Jet@cRSubGolb@@QAEPAVcRSprite@@PAUtVector@@@Z"
+        ),
+        "spawn_golb_smoke": "?Smoke@cRSubGolb@@QAEXPAUtVector@@@Z",
+    }
+    aliases = {
+        "spawn_golb_trail_sprite": "cRSubGolb_Jet",
+        "spawn_golb_smoke": "cRSubGolb_Smoke",
+    }
+    scratch_root = repo_root / "tools/match/scratches"
+    for windows_name, authored_alias in aliases.items():
+        method = "Jet" if windows_name.endswith("trail_sprite") else "Smoke"
+        assert functions[windows_name]["aliases"] == [authored_alias]
+        assert references[windows_name]["aliases"] == [
+            object_symbols[windows_name]
+        ]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        notes = (scratch_root / windows_name / "NOTES.md").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSubGolb::{method}" in source
+        assert f"SYMBOL={object_symbols[windows_name]}\n" in config
+        assert "Exact at" in notes
 
-    notes = (
-        repo_root
-        / "tools/match/scratches/spawn_golb_trail_sprite/NOTES.md"
-    ).read_text(encoding="utf-8")
-    assert "authored Jet method recovery" in notes
-    assert "47/47 instructions" in notes
+    ai_source = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert ai_source.count("Jet(") == 3
+    assert ai_source.count("Smoke(") == 2
+    assert "spawn_golb_trail_sprite(" not in ai_source
+    assert "spawn_golb_smoke(" not in ai_source
 
 
 def test_android_enemy_manager_find_recovers_golb_search_method() -> None:
@@ -11080,8 +11123,8 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
         "kill_golb": "Kill",
         "update_golb_ai": "update_golb_ai",
         "create_golb": "create_golb",
-        "spawn_golb_trail_sprite": "spawn_golb_trail_sprite",
-        "spawn_golb_smoke": "spawn_golb_smoke",
+        "spawn_golb_trail_sprite": "Jet",
+        "spawn_golb_smoke": "Smoke",
         "spawn_golb_impact_sprite": "spawn_golb_impact_sprite",
     }
     for function, method in methods.items():

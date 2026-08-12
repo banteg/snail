@@ -1,72 +1,14 @@
-# spawn_golb_trail_sprite @ 0x415bb0
+# cRSubGolb::Jet
 
-Exact match under the standard `msvc6.5 /O2 /G5 /W3` profile.
+Exact at 47/47 instructions with two clean relocation masks. The Windows
+method allocates sprite `0x21`, seeds its gameplay-owned trail lanes, copies the
+supplied position, forwards the shot-bank index into `object_ref`, and returns
+the allocated `cRSprite*`.
 
-This helper allocates the short-lived projectile trail sprite for the straight
-Golb family:
-
-- owner slot comes from `owner_player->player_slot`
-- sprite id is `0x21`
-- additive draw flag `0x800` is set and age/gravity/velocity lanes are zeroed
-- the player movement flag branch writes two alternate progress-step values,
-  then the native source unconditionally overwrites the same lane with
-  `0.55555558f`
-- the supplied world position is copied into the sprite and the projectile's
-  `shot_slot_index` is forwarded bit-for-bit into `Sprite::object_ref`
-
-The typed `Vector3* velocity` local is required for the native store schedule:
-without it, VC6 delays the progress/size constants until after velocity zeroing
-and lands at 93.62%.
-
-Type consolidation:
-
-- This scratch now uses the promoted `GolbShot` view in
-  `tools/match/include/golb.h`, sharing `shot_slot_index +0x274` and
-  `owner_player +0x278` with the exact creation and lifecycle helpers. The
-  match stays exact.
-
-## 2026-07-16 analysis receiver replay
-
-The durable Binary Ninja and IDA ownership replays now preserve this helper as
-`Sprite* __thiscall(GolbShot*, Vec3*)`. That agrees with the exact Windows
-body, whose success path returns the allocated sprite, and prevents either
-decompiler from falling back to a generic receiver when the shared Golb types
-are replayed. The exact 47/47 matcher result is unchanged.
-
-## 2026-07-23 Sprite owner lifetime replay
-
-Binary Ninja's allocation result is now replayed as the complete `Sprite*`
-owner for its register lifetime. The exported decompile consequently exposes
-the flags, progress, lifetime, size, velocity, gravity, position, and
-`object_ref` writes through `trail_sprite` instead of raw `void**` word
-indices. This is analysis-only and leaves the exact 47/47 source match
-unchanged.
-
-## 2026-08-09 shot-slot identity closure
-
-Whole-image Windows xrefs prove `GolbShot +0x274` is the 12-entry shot-bank
-index written by `create_golb`; this exact helper is its only reader. The
-explicit cast documents that the integer identity is copied into the trail
-sprite's opaque `object_ref` lane. Impact sprites do not consume the field and
-retain their allocator-installed `-1` sentinel. Removing the stale pointer
-alias from `GolbShot` leaves this helper exact at 47/47 instructions with both
-masked operands clean.
-
-## 2026-08-12 authored Jet method recovery
-
-Android exports the authored sibling as `cRSubGolb::Jet(tVector)`. Although
-that port deliberately leaves `Jet` empty, `cRSubGolb::AI()` still invokes it
-three times in the kind-zero presentation lane: once at the current projectile
-position, then at direction-scaled offsets 0.3 and 0.6 behind it. Live Windows
-Binary Ninja callsites independently show the exact helper called at those
-same three positions, with native constants 0.3 and 0.6 and every return value
-discarded. iOS removes the standalone symbol and emits a different two-sprite,
-lower-rate trail effect inline in the corresponding kind-zero AI lane.
-
-That callsite triad is stronger identity evidence than the Android no-op body
-is negative evidence: this exact Windows helper is the platform's implemented
-`cRSubGolb::Jet(tVector)`. The stable matcher name remains in source and the
-manifest carries `cRSubGolb_Jet` as the authored alias. Windows retains its
-observed pointer argument and `Sprite*` result rather than importing Android's
-by-value/void ABI. Focused matching remains exact at 47/47 instructions with
-both masked operands clean.
+Android preserves the authored `cRSubGolb::Jet(tVector)` symbol and the same
+three `cRSubGolb::AI()` call positions: current projectile position and 0.3
+and 0.6 units behind it. Its standalone Jet body is deliberately empty, while
+iOS inlines a different trail effect. Windows therefore keeps its observed
+`tVector*` argument and `cRSprite*` result rather than importing the mobile
+ABI. The typed velocity pointer is retained because it naturally produces the
+native zero-store schedule.
