@@ -3046,6 +3046,9 @@
     {
       "address": "0x437c40",
       "name": "update_progress_bar",
+      "aliases": [
+        "cRProgressBar_AI"
+      ],
       "description": "Exact `cRProgressBar::AI()` method for the empty authored class at cRSubGoldy +0x3f0. It ignores `this`, derives track progress from the containing Goldy's z position and cRSubGame row bounds, and queues the three left-column HUD quads. Android and iOS preserve the same owner role."
     },
     {

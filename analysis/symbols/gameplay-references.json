@@ -2458,6 +2458,15 @@
       "description": "Compiler-emitted eight-entry level-mode switch jump table used by initialize_subgame for startup setup."
     },
     {
+      "address": "0x437c40",
+      "name": "update_progress_bar",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRProgressBar@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRProgressBar::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x437e80",
       "name": "calc_slider_to_rate",
       "kind": "function",

@@ -85,7 +85,7 @@ void cRSubGoldy::AI()
     if (current_game->subgame_pause_gate) {
         if (g_game->players[0].frontend_state != 9) {
             damage_gauge.AI();
-            progress_bar.update_progress_bar();
+            progress_bar.AI();
             warning.AI();
             game->completion.AI();
         }
@@ -846,7 +846,7 @@ steering_stored:
             g_game->players[0].completion_handoff_transform.position.y - 1.0f;
     }
     damage_gauge.AI();
-    progress_bar.update_progress_bar();
+    progress_bar.AI();
 
     Vector3* camera_target = &cached_camera_target_world;
     *camera_target = *p_position;

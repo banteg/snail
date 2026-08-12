@@ -67,3 +67,12 @@ The stale tracked decompiles are refreshed instead of adding a redundant narrow
 sync script: both now expose `Player::body.transform.position.z` and the
 `cRSubGame` first/completion row bounds through `GameRoot`. Focused matching
 remains exact at 110/110 instructions with 19 clean masked operands.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact non-folded member as `cRProgressBar::AI()` and
+exports `?AI@cRProgressBar@@QAEXXZ`. Both live Windows callsites pass the empty
+one-byte child at `cRSubGoldy + 0x3f0`; Android and iOS independently retain the
+same symbol and method body. The unrelated shared no-op at `0x407b50` remains
+polymorphic rather than acquiring a speculative single owner. Matching stays
+exact at 110/110 with all 19 operands clean.

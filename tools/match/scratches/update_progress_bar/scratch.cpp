@@ -22,7 +22,7 @@ int queue_axis_aligned_textured_quad_uv(
     int blend_mode,
     float rotation);
 
-void cRProgressBar::update_progress_bar()
+void cRProgressBar::AI()
 {
     GameRoot* game = g_game;
     float progress =

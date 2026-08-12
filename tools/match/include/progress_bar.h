@@ -5,7 +5,7 @@ class cRProgressBar {
 public:
     // cRProgressBar::Init folds into the shared one-byte stub at 0x407b50.
     void noop_runtime_ai();
-    void update_progress_bar(); // @ 0x437c40, cRProgressBar::AI
+    void AI(); // @ 0x437c40
 
     // Authored empty C++ class; cRSubGoldy supplies alignment padding afterward.
     unsigned char _empty;
