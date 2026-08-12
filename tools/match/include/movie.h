@@ -16,7 +16,7 @@ enum MovieFlag {
 
 class cRMovie : public Object {
 public:
-    void advance_frame_sequence(); // @ 0x430470
+    void AI(); // @ 0x430470
 
     int sequence_flags; // +0xdc
     int current_frame_index; // +0xe0

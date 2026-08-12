@@ -1084,6 +1084,15 @@
       "description": "Exact cRObject-owned alternate Windows facequad-normal builder; mobile candidates remain unverified."
     },
     {
+      "address": "0x430470",
+      "name": "advance_frame_sequence",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRMovie@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRMovie::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x430570",
       "name": "request_object_edges",
       "kind": "function",
@@ -3620,6 +3629,15 @@
         "?AI@cRBanner@@QAEXXZ"
       ],
       "description": "Exact Windows cRBanner::AI() entry installed through the authored Banner callback table."
+    },
+    {
+      "address": "0x441f60",
+      "name": "update_smtracks",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRFace@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRFace::AI() entry installed through the authored Face callback table."
     },
     {
       "address": "0x441fa0",

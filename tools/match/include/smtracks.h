@@ -18,7 +18,7 @@ void __cdecl sample_smtrack_heightmap(
 // landscape-height face, not an ObjectFaceQuad.
 class cRFace : public BodBase {
 public:
-    void update_smtracks(); // @ 0x441f60
+    void AI(); // @ 0x441f60
 
     cRMovie movie; // +0x38
 };

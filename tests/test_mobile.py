@@ -11674,6 +11674,9 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
         entry["address"]: entry
         for entry in references["symbols"]
     }
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
 
     sampler = entries["sample_smtrack_heightmap"]
     assert sampler["status"] == "verified"
@@ -11710,6 +11713,12 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     assert "cRMovie_AI" in (
         functions_by_name["advance_frame_sequence"]["aliases"]
     )
+    assert references_by_name["update_smtracks"]["aliases"] == [
+        "?AI@cRFace@@QAEXXZ"
+    ]
+    assert references_by_name["advance_frame_sequence"]["aliases"] == [
+        "?AI@cRMovie@@QAEXXZ"
+    ]
     callback_table = references_by_address["0x4972f8"]
     assert callback_table["name"] == "g_face_callback_table"
     assert "g_smtracks_callback_table" in callback_table["aliases"]
@@ -11727,14 +11736,27 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     assert "typedef cRMovie Movie;" in movie_header
     assert "sizeof(cRFace)" in matcher_header
     assert "sizeof(cRMovie)" in movie_header
+    assert "void AI(); // @ 0x441f60" in matcher_header
+    assert "void update_smtracks();" not in matcher_header
+    assert "void AI(); // @ 0x430470" in movie_header
+    assert "void advance_frame_sequence();" not in movie_header
     face_source = (
         repo_root / "tools/match/scratches/update_smtracks/scratch.cpp"
     ).read_text(encoding="utf-8")
     movie_source = (
         repo_root / "tools/match/scratches/advance_frame_sequence/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "cRFace::update_smtracks" in face_source
-    assert "cRMovie::advance_frame_sequence" in movie_source
+    face_config = (
+        repo_root / "tools/match/scratches/update_smtracks/scratch.conf"
+    ).read_text(encoding="utf-8")
+    movie_config = (
+        repo_root / "tools/match/scratches/advance_frame_sequence/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert "void cRFace::AI()" in face_source
+    assert "movie.AI();" in face_source
+    assert "void cRMovie::AI()" in movie_source
+    assert "SYMBOL=?AI@cRFace@@QAEXXZ\n" in face_config
+    assert "SYMBOL=?AI@cRMovie@@QAEXXZ\n" in movie_config
     assert "bool cubic" in matcher_header
     assert "SmtrackHeightfieldAnimator" not in matcher_header
     assert "FrameSequence" not in matcher_header

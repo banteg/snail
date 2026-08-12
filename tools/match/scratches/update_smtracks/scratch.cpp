@@ -2,9 +2,9 @@
 
 #include "smtracks.h"
 
-void cRFace::update_smtracks()
+void cRFace::AI()
 {
-    movie.advance_frame_sequence();
+    movie.AI();
     object->facequads[0].texture_ref = movie.current_texture_ref;
     sample_smtrack_heightmap(
         object,
