@@ -75,6 +75,15 @@
       "description": "Exact Windows cRBorder::Init(int, int, float, float, tColour*, float, int) overload with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x401d30",
+      "name": "initialize_frontend_widget",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRBorder@@QAEXHPADHMMPAUtColour@@HM@Z"
+      ],
+      "description": "Exact Windows cRBorder::Init(int, char*, int, float, float, tColour*, int, float) overload with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4024a0",
       "name": "layout_frontend_widget",
       "kind": "function",
@@ -118,6 +127,15 @@
         "?Highlight@cRBorder@@QAEXXZ"
       ],
       "description": "Exact Windows cRBorder::Highlight() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x402820",
+      "name": "update_frontend_widget_interaction",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRBorder@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorder::AI() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x4032a0",
@@ -280,6 +298,15 @@
         "?SpriteExtend@cRBorder@@QAEXHHH_N@Z"
       ],
       "description": "Exact Windows cRBorder::SpriteExtend(int, int, int, bool) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x404580",
+      "name": "border_mouse_test",
+      "kind": "function",
+      "aliases": [
+        "?MouseTest@cRBorder@@QAEEXZ"
+      ],
+      "description": "Exact Windows cRBorder::MouseTest() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x404730",

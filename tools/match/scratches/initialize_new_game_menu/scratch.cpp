@@ -31,7 +31,7 @@ void cRIntro::Init()
     g_game->render_skip_countdown = 2;
 
     tutorial_button = g_game->border_manager.GetBorder();
-    tutorial_button->initialize_frontend_widget(
+    tutorial_button->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -44,7 +44,7 @@ void cRIntro::Init()
         0.0f);
 
     postal_button = g_game->border_manager.GetBorder();
-    postal_button->initialize_frontend_widget(
+    postal_button->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -58,7 +58,7 @@ void cRIntro::Init()
     postal_button->SetBelow(tutorial_button);
 
     time_trial_button = g_game->border_manager.GetBorder();
-    time_trial_button->initialize_frontend_widget(
+    time_trial_button->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -72,7 +72,7 @@ void cRIntro::Init()
     time_trial_button->SetBelow(postal_button);
 
     challenge_button = g_game->border_manager.GetBorder();
-    challenge_button->initialize_frontend_widget(
+    challenge_button->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_challenge_mode_text,
@@ -85,7 +85,7 @@ void cRIntro::Init()
     challenge_button->SetBelow(time_trial_button);
 
     help_button = g_game->border_manager.GetBorder();
-    help_button->initialize_frontend_widget(
+    help_button->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -98,7 +98,7 @@ void cRIntro::Init()
         -220.0f);
 
     back_button = g_game->border_manager.GetBorder();
-    back_button->initialize_frontend_widget(
+    back_button->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text,

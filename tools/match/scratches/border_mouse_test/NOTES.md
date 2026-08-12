@@ -1,127 +1,20 @@
-# border_mouse_test @ 0x404580
+# cRBorder::MouseTest @ 0x404580
 
-First tracked scratch for the frontend border/widget mouse hit-test helper.
+Current recovery: semantic-complete (`compiler` residual). Live Windows
+analysis establishes an unsigned-byte `thiscall` member, while Android and iOS
+independently retain `cRBorder::MouseTest()` in `Border.o`.
 
-Recovered behavior:
+Ordinary widgets test the player-zero cursor against padded layout bounds.
+Texture-backed widgets map the cursor into a borrowed `TgaImageView`, clamp the
+sample coordinates, and accept a zero mask byte. The sprite manager getter,
+cursor owner, TGA layout, and relevant `cRBorder` fields are independently
+corroborated by exact siblings and both mobile bodies.
 
-- reads the authored mouse position from the shared mouse cursor state at
-  `g_game_base + 0x290`;
-- plain widgets use the laid-out rectangle expanded by `target_padding`;
-- texture-backed widgets first test a separate texture-hit rectangle, then map
-  the mouse position to the borrowed TGA bytes returned by
-  `SpriteManager::get_sprite_tga`;
-- the hit mask clamps sampled x/y to the texture dimensions and treats a zero
-  mask byte as hittable.
+Focused VC6 result: **98.29%**, exact 117/117 instruction parity, prefix 73/117,
+with all five relocation operands audited and clean. Native and candidate differ
+only in which dead multiplicand register retains the final row product; 43
+recorded natural source forms leave that isolated choice unchanged or regress.
 
-2026-07-11 owner closure: iOS `Border.o` names this exact behavior
-`cRBorder::MouseTest()`. The scratch now runs as the real `FrontendWidget`
-method rather than a fastcall-shaped free helper, uses direct widget members,
-and reaches the cursor through `GameRoot::players[0].mouse_cursor`. Those
-ownership substitutions preserve the prior 98.29%, 117/117 result exactly.
-The remaining multiply-destination residual is unchanged and stays honest.
-
-This pass promotes the missing `FrontendWidget` texture-hit fields around
-`+0x5c`, `+0x64`, `+0x240`, `+0x244`, `+0x250`, and `+0x254`.
-
-Focused Wibo result: 98.29%, 117/117 instructions, prefix 73/117, with 5 clean
-masked operands. The retained residual is only the final `imul` destination
-register in the raw mask-row index.
-
-2026-06-19 row-index retry: focused Wibo still reports 98.29%, 117/117
-instructions, prefix 73/117, and 5 clean masked operands. Rewriting the final
-mask index as dead `width *= y`, `y * width + x + 6`, a separate add chain, or
-`x + 6` followed by the row product all compile identically and leave the same
-`imul esi, eax` versus `imul eax, esi` destination-register residual. Keep the
-clear `row = width; row *= y` source.
-
-2026-06-20 near-proof retry: mutating the live `width` local directly
-(`width *= y; pixel_index = width + x + 6`) is also codegen-neutral at 98.29%.
-It does not recover native's product-in-`esi` destination, so the explicit
-`row` temporary remains the clearer source shape for the mask row index.
-
-2026-06-20 border-family retry: collapsing the row calculation into
-`width * y + x + 6` and indexing through the declared `mask->pixels` field are
-both codegen-neutral at 98.29%. Typing the dimensions as `unsigned short`
-recovers the native `imul esi, eax` destination only by regressing the
-surrounding register ownership and zero-extension shape: width-only drops to
-85.47% with `and esi, 0xffff`, height-only drops to 78.63% by swapping the mask
-and height registers, and both dimensions as shorts drop to 79.49%. Keep the
-32-bit dimension locals plus explicit `row` temporary.
-
-2026-06-20 larger near-proof pass: focused Wibo still reports 98.29%,
-117/117 instructions, 73/117 prefix, and five clean masked operands. Retried
-the remaining original-looking row/index spellings: `mask->pixels[(row + x) *
-3]`, a single `pixel_index` accumulator initialized from `width`, explicit
-`row = y; row *= width`, and a raw pointer advanced by row stride then
-`(x + 6) * 3`. All compile to the same two-instruction residual
-(`imul esi, eax` native versus `imul eax, esi` candidate). Keep the clearer
-raw-base source; the miss remains a local multiply destination choice, not
-evidence for another mask layout.
-
-2026-06-20 larger helper sweep: focused Wibo still reports 98.29%, 117/117
-instructions, 73/117 prefix, and five clean masked operands. Two decompiler-
-plausible product-owner probes were neutral: mutating the live clamped `y`
-local with `y *= width` before indexing, and initializing `pixel_index` from
-`y` before multiplying by `width`. Both still emit the candidate
-`imul eax, esi` / `lea eax, [eax+edi+6]` pair. Keep the explicit
-`row = width; row *= y` source; native's `imul esi, eax` remains an isolated
-multiply-destination residual.
-
-## 2026-07-14 TGA view recovery
-
-The scratch-local `TextureHitMask` duplicated the already-proven
-`TgaImageView`: width and height are the TGA `+0x0c/+0x0e` fields and pixels
-begin at `+0x12`. Android calls this exact border path through
-`cRSpriteManager::GetTga(int)`, which returns the texture record's `+0x98`
-payload just like Windows `0x44e580`. The shared typed view and corrected
-manager method preserve the honest 98.29%, 117/117 result; the only residual
-is still the documented multiply destination.
-
-## 2026-07-23 borrowed mask replay
-
-The Windows getter has only this caller. Replaying its cross-port-proved
-`TgaImageView*` result into Binary Ninja now keeps the borrowed mask as
-`TgaImageView* mask` and renders `mask->width` / `mask->height` instead of a
-`void*` plus raw `+0x0c/+0x0e` loads. The final pixel address remains the
-native factored `(row + x + 6) * 3` expression over the inline payload; forcing
-that arithmetic into a prettier field access would invent source shape and is
-intentionally rejected.
-
-## 2026-07-25 cursor-owner replay
-
-The root constructor and world initializer prove that player zero owns its
-`MouseCursorState` inline at player `+0x16c`. Binary Ninja and IDA now both
-retain `players[0].mouse_cursor.saved_x/saved_y` throughout this hit test while
-borrowing the cross-port-proved `TgaImageView` from `g_sprite_manager`.
-Fail-closed replay checks reject the old root-float and raw TGA-header
-renderings. This is an analysis-only ownership clarification; the honest
-98.29%, 117/117 scratch is unchanged.
-
-## 2026-07-29 bounded mask-row product sweep
-
-Three recorded sweeps tested 43 unique row-product forms. Thirty-two compile
-byte-identically, four valid variants regress, and seven deliberately partial
-two-site lifetime probes are rejected by the compiler; no variant improves the
-98.29% baseline.
-
-The first sweep included the Android `cRBorder::MouseTest()` control shape,
-where the row product is assigned inside the negative/in-range/overflow Y
-arms. VC6 does not fold that mobile-authored form into the Windows branch
-layout and it regresses substantially. Direct and commuted products, mutating
-the live width, named row/clamped-Y owners, and factored pixel indices all
-retain the candidate multiply destination.
-
-The second and third sweeps moved the row owner before the Y clamp and tested
-const, register, signed/unsigned, direct-initialization, reference, pointer,
-and nested-scope storage. Every non-regressing ordinary owner still emits:
-
-```text
-candidate: imul eax, esi; lea eax, [eax+edi+6]
-native:    imul esi, eax; lea eax, [esi+edi+6]
-```
-
-ESI is the recovered mask width, EAX is the clamped Y coordinate, and EDI is
-the clamped X coordinate. Both streams compute the identical pixel address;
-only the dead multiplicand chosen to retain the product differs. The clear
-`row = width; row *= y` source remains canonical without a fabricated later
-use or register-directed construct.
+The matcher source now uses the authored `MouseTest` method and exact VC6 symbol
+`?MouseTest@cRBorder@@QAEEXZ`; `border_mouse_test` remains only the stable
+scratch and Windows-address identity.

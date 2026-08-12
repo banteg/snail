@@ -55,7 +55,7 @@ void cRGalaxy::Init()
     {
         tColour color;
         route_title_widget = g_game->border_manager.GetBorder();
-        route_title_widget->initialize_frontend_widget(
+        route_title_widget->Init(
             FRONTEND_WIDGET_FLAG_FRAMELESS,
             "Intergalactic Delivery Route",
             20,
@@ -83,7 +83,7 @@ void cRGalaxy::Init()
     exit_or_back_widget = g_game->border_manager.GetBorder();
     if (route_mode == 1) {
         tColour color;
-        exit_or_back_widget->initialize_frontend_widget(
+        exit_or_back_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -96,7 +96,7 @@ void cRGalaxy::Init()
             0.0f);
     } else {
         tColour color;
-        exit_or_back_widget->initialize_frontend_widget(
+        exit_or_back_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -124,7 +124,7 @@ void cRGalaxy::Init()
     {
         tColour color;
         bounds_frame_widget = g_game->border_manager.GetBorder();
-        bounds_frame_widget->initialize_frontend_widget(
+        bounds_frame_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_USE_AUTHORED_RECT
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
@@ -148,7 +148,7 @@ void cRGalaxy::Init()
         bounds_frame_widget->frame_height = 100.0f;
 
         selected_title_widget = g_game->border_manager.GetBorder();
-        selected_title_widget->initialize_frontend_widget(
+        selected_title_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
@@ -164,7 +164,7 @@ void cRGalaxy::Init()
         selected_title_widget->stack_gap = 0.0f;
 
         selected_detail_widget = g_game->border_manager.GetBorder();
-        selected_detail_widget->initialize_frontend_widget(
+        selected_detail_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
@@ -180,7 +180,7 @@ void cRGalaxy::Init()
         selected_detail_widget->stack_gap = 0.0f;
 
         selected_description_widget = g_game->border_manager.GetBorder();
-        selected_description_widget->initialize_frontend_widget(
+        selected_description_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
@@ -199,7 +199,7 @@ void cRGalaxy::Init()
     play_or_deliver_widget = g_game->border_manager.GetBorder();
     if (level_progress_base->level_mode == 0) {
         tColour color;
-        play_or_deliver_widget->initialize_frontend_widget(
+        play_or_deliver_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -213,7 +213,7 @@ void cRGalaxy::Init()
             100.0f);
     } else {
         tColour color;
-        play_or_deliver_widget->initialize_frontend_widget(
+        play_or_deliver_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -232,7 +232,7 @@ void cRGalaxy::Init()
     {
         tColour color;
         replay_widget = g_game->border_manager.GetBorder();
-        replay_widget->initialize_frontend_widget(
+        replay_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN
                 | FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED

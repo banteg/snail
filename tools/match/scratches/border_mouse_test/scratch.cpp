@@ -6,7 +6,7 @@
 
 extern cRSpriteManager g_sprite_manager; // data_790f30
 
-unsigned char cRBorder::border_mouse_test()
+unsigned char cRBorder::MouseTest()
 {
     cRMouse* mouse = &g_game->players[0].mouse_cursor;
 

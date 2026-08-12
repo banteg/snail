@@ -67,10 +67,10 @@ public:
     void SpriteExtend(int hot_texture_id, int retained_state,
         int hit_mask_texture_id, bool wobble_positive); // @ 0x404540,
         // Android cRBorder::SpriteExtend(int, int, int, bool)
-    unsigned char border_mouse_test(); // @ 0x404580, iOS cRBorder::MouseTest()
-    void update_frontend_widget_interaction(); // @ 0x402820,
+    unsigned char MouseTest(); // @ 0x404580, iOS cRBorder::MouseTest()
+    void AI(); // @ 0x402820,
         // iOS/Android cRBorder::AI()
-    void initialize_frontend_widget(int flags, char* text, int widget_type,
+    void Init(int flags, char* text, int widget_type,
         float x, float y, tColour* color, int alignment, float anchor_x);
     void Init(int flags, int sprite, float x, float y,
         tColour* color, float z, int layer);

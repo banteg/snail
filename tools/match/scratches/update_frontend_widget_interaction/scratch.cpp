@@ -14,7 +14,7 @@
 char read_pressed_text_input_key_code();
 int sprintf(char* buffer, const char* format, ...);
 
-void cRBorder::update_frontend_widget_interaction()
+void cRBorder::AI()
 {
     previous_widget_flags = widget_flags;
     widget_flags &= ~FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
@@ -86,7 +86,7 @@ void cRBorder::update_frontend_widget_interaction()
     }
 
     if (g_game->players[0].mouse_cursor.IsActive() == 0
-        || border_mouse_test() == 0) {
+        || MouseTest() == 0) {
         widget_flags &= 0xffdfffff;
         if (((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
             && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {

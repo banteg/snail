@@ -177,7 +177,7 @@ aliases respectively and restore the 85 clean operands.
 
 2026-07-11 border-owner header refresh:
 
-- Adding the recovered `FrontendWidget::border_mouse_test()` declaration moves
+- Adding the recovered `FrontendWidget::MouseTest()` declaration moves
   the same tables to `$L4719`/`$L4720`, still at object `+0x62c`/`+0x640`.
 - `$L4719` is reassigned from its prior startup-table spelling to the current
   bottom-HUD table, avoiding an ambiguous local-label alias. The bounded five-

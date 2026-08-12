@@ -53,6 +53,9 @@
     {
       "address": "0x401d30",
       "name": "initialize_frontend_widget",
+      "aliases": [
+        "cRBorder_InitText"
+      ],
       "description": "Authored void `cRBorder::Init(int, char*, int, float, float, tColour, int, float)`: constructs one shell-font widget, seeds its border style, text scale, alignment, six color blocks, and optional slider children, then links it into the active list. All 83 Windows callers discard the incidental EAX state."
     },
     {
@@ -98,7 +101,10 @@
     {
       "address": "0x402820",
       "name": "update_frontend_widget_interaction",
-      "description": "Authored void `cRBorder::AI()`: slot-zero per-frame callback for one complete front-end border/widget owner. The Android and iOS bodies preserve the Windows flag snapshot, active-list removal, mouse/shortcut dispatch, tooltip and twinkle updates, RePosition/Draw calls, sound IDs 8/9, text input, and slider-child propagation. The Windows active-BOD dispatcher ignores callback results; the honest scratch remains 68.32% with all 93 audited operands clean."
+      "aliases": [
+        "cRBorder_AI"
+      ],
+      "description": "Authored void `cRBorder::AI()`: slot-zero per-frame callback for one complete front-end border/widget owner. Android and iOS preserve the Windows flag snapshot, active-list removal, mouse/shortcut dispatch, tooltip and twinkle updates, RePosition/Draw calls, sound IDs 8/9, text input, and slider-child propagation. The honest scratch is 95.83% with 96 clean operands and two bounded candidate-only clamp constants."
     },
     {
       "address": "0x4032a0",
@@ -262,7 +268,10 @@
     {
       "address": "0x404580",
       "name": "border_mouse_test",
-      "description": "Runs cRBorder::MouseTest() on one FrontendWidget: tests the player-zero saved cursor position against either the padded layout rectangle or a normalized per-pixel RGB hit mask selected by the widget's texture-hit sprite."
+      "aliases": [
+        "cRBorder_MouseTest"
+      ],
+      "description": "Authored cRBorder::MouseTest() hit test over the player-owned cursor: ordinary borders use padded layout bounds, while sprite-extended borders sample the borrowed TGA mask payload. iOS and Android independently preserve the same owner, branch split, clamp, and zero-byte acceptance rule."
     },
     {
       "address": "0x404730",

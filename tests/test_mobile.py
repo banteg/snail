@@ -10415,14 +10415,17 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         "unhide_border_init": "UnHideInit",
         "draw_frontend_widget": "Draw",
         "initialize_frontend_sprite_button": "Init",
+        "initialize_frontend_widget": "Init",
         "layout_frontend_widget": "RePosition",
         "set_frontend_widget_shortcut_key": "SetKeyLeft",
         "stack_widget_below": "SetBelow",
         "unhighlight_border": "UnHighlight",
         "highlight_border": "Highlight",
+        "update_frontend_widget_interaction": "AI",
         "border_input_text_init": "InputTextInit",
         "border_input_text": "InputText",
         "border_sprite_extend": "SpriteExtend",
+        "border_mouse_test": "MouseTest",
         "apply_all_border_visibility_mode": "Perform",
         "allocate_border": "GetBorder",
         "activate_all_borders": "ActivateBorders",
@@ -10634,11 +10637,53 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         assert f"SYMBOL={object_symbol}\n" in config
         assert f"void {method}(" in frontend
 
+    remaining_border_methods = {
+        "initialize_frontend_widget": (
+            "cRBorder::Init(int, char*, int, float, float, tColour, int, float)",
+            "?Init@cRBorder@@QAEXHPADHMMPAUtColour@@HM@Z",
+            "cRBorder_InitText",
+            "void Init(int flags, char* text, int widget_type,",
+        ),
+        "update_frontend_widget_interaction": (
+            "cRBorder::AI()",
+            "?AI@cRBorder@@QAEXXZ",
+            "cRBorder_AI",
+            "void AI();",
+        ),
+        "border_mouse_test": (
+            "cRBorder::MouseTest()",
+            "?MouseTest@cRBorder@@QAEEXZ",
+            "cRBorder_MouseTest",
+            "unsigned char MouseTest();",
+        ),
+    }
+    for function, (
+        mobile_symbol,
+        object_symbol,
+        alias,
+        declaration,
+    ) in remaining_border_methods.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Border.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert declaration in frontend
+
     all_sources = "\n".join(
         path.read_text(encoding="utf-8")
         for path in scratch_root.glob("*/scratch.cpp")
     )
-    for stable_name in border_methods:
+    for stable_name in (*border_methods, *remaining_border_methods):
         assert f"{stable_name}(" not in all_sources
     assert "int hit_mask_texture_id, bool wobble_positive);" in frontend
 

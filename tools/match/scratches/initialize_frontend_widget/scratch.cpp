@@ -9,7 +9,7 @@ extern char g_blank_text[]; // data_4dfb08
 
 int report_errorf(char* format, ...);
 
-void cRBorder::initialize_frontend_widget(
+void cRBorder::Init(
     int flags,
     char* text,
     int widget_type,
@@ -178,7 +178,7 @@ void cRBorder::initialize_frontend_widget(
         slider_less_widget->SpriteExtend(40, 39, 41, 0);
 
         slider_value_widget = g_game->border_manager.GetBorder();
-        slider_value_widget->initialize_frontend_widget(
+        slider_value_widget->Init(
             FRONTEND_WIDGET_FLAG_FRAMELESS,
             (char*)"00%",
             21,

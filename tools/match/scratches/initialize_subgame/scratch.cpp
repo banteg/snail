@@ -95,7 +95,7 @@ void cRSubGame::Init()
     times_up.state = TIMES_UP_STATE_INACTIVE;
 
     top_score_widget = g_game->border_manager.GetBorder();
-    top_score_widget->initialize_frontend_widget(
+    top_score_widget->Init(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "0",
         0x14,
@@ -122,7 +122,7 @@ void cRSubGame::Init()
         lives_icon_widget->sprite_shadow_offset = 0.0f;
 
         lives_text_widget = g_game->border_manager.GetBorder();
-        lives_text_widget->initialize_frontend_widget(
+        lives_text_widget->Init(
             FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "0",
             0x14,
@@ -179,7 +179,7 @@ void cRSubGame::Init()
     }
 
     bottom_score_widget = g_game->border_manager.GetBorder();
-    bottom_score_widget->initialize_frontend_widget(
+    bottom_score_widget->Init(
         FRONTEND_WIDGET_FLAG_FRAMELESS | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "0",
         0x14,

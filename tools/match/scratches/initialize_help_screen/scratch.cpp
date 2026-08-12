@@ -25,7 +25,7 @@ void cRHelp::Init()
     g_game->border_manager.SetJustifyCentre(0.0f);
 
     back_button = g_game->border_manager.GetBorder();
-    back_button->initialize_frontend_widget(
+    back_button->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

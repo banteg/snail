@@ -32,7 +32,7 @@ void cRGUI::Init()
     tColour back_color;
 
     difficulty_slider = g_game->border_manager.GetBorder();
-    difficulty_slider->initialize_frontend_widget(
+    difficulty_slider->Init(
         FRONTEND_WIDGET_FLAG_SLIDER
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
         "     Select Difficulty     >",
@@ -48,7 +48,7 @@ void cRGUI::Init()
     ((FrontendWidgetVirtualLayout*)difficulty_slider)->RePosition();
 
     speed_slider = g_game->border_manager.GetBorder();
-    speed_slider->initialize_frontend_widget(
+    speed_slider->Init(
         FRONTEND_WIDGET_FLAG_SLIDER
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
         "       Select Speed       >",
@@ -69,7 +69,7 @@ void cRGUI::Init()
         play_anchor_x = 100.0f;
 
     play_button = g_game->border_manager.GetBorder();
-    play_button->initialize_frontend_widget(
+    play_button->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -84,7 +84,7 @@ void cRGUI::Init()
     play_button->SetBelow(speed_slider);
 
     replay_button = g_game->border_manager.GetBorder();
-    replay_button->initialize_frontend_widget(
+    replay_button->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
@@ -101,7 +101,7 @@ void cRGUI::Init()
         replay_button->HideInit();
 
     back_button = g_game->border_manager.GetBorder();
-    back_button->initialize_frontend_widget(
+    back_button->Init(
         FRONTEND_WIDGET_FLAG_HIGHLIGHTED
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,

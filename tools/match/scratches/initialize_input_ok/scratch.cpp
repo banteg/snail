@@ -11,7 +11,7 @@ void cRInputOK::Init()
         g_game->border_manager.GetBorder();
     cRBorder* source = source_widget;
     ok_widget = widget;
-    widget->initialize_frontend_widget(
+    widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         "OK",

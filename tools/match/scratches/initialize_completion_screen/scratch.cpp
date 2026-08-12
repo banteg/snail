@@ -53,7 +53,7 @@ void cRCompletion::Init(
         + new_delivered_count * 100 + bonus;
 
     title_widget = g_game->border_manager.GetBorder();
-    title_widget->initialize_frontend_widget(
+    title_widget->Init(
         FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "Delivery Complete!",
@@ -62,13 +62,13 @@ void cRCompletion::Init(
 
     delivered_count_widget = g_game->border_manager.GetBorder();
     if (delivered_count == 1) {
-        delivered_count_widget->initialize_frontend_widget(
+        delivered_count_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             " 0 Package Delivered", 20, 0.0f, 160.0f,
             tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else {
-        delivered_count_widget->initialize_frontend_widget(
+        delivered_count_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "00 Packages Delivered", 20, 0.0f, 160.0f,
@@ -85,13 +85,13 @@ void cRCompletion::Init(
     bonus_summary_widget = g_game->border_manager.GetBorder();
     mode = g_game->subgame.level_mode;
     if (mode == 0) {
-        bonus_summary_widget->initialize_frontend_widget(
+        bonus_summary_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "PERFECT SCORE!>50,000 Bonus Points", 20, 0.0f, 302.0f,
             tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else if (mode == 1) {
-        bonus_summary_widget->initialize_frontend_widget(
+        bonus_summary_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             "LEVEL COMPLETE!>", 20, 0.0f, 302.0f,
@@ -105,13 +105,13 @@ void cRCompletion::Init(
 
     continue_widget = g_game->border_manager.GetBorder();
     if (perfect_delivery != 0) {
-        continue_widget->initialize_frontend_widget(
+        continue_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_click_to_continue_text, 20, 0.0f, 400.0f,
             tColour().Set(1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
     } else {
-        continue_widget->initialize_frontend_widget(
+        continue_widget->Init(
             FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
                 | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
             g_click_to_continue_text, 20, 0.0f, 320.0f,

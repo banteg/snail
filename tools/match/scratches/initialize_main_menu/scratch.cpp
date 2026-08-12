@@ -30,7 +30,7 @@ void cRMainMenu::Init()
     g_game->render_skip_countdown = 2;
 
     new_game_widget = g_game->border_manager.GetBorder();
-    new_game_widget->initialize_frontend_widget(
+    new_game_widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_new_game_text,
@@ -42,7 +42,7 @@ void cRMainMenu::Init()
         0.0f);
 
     high_scores_widget = g_game->border_manager.GetBorder();
-    high_scores_widget->initialize_frontend_widget(
+    high_scores_widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_high_scores_text,
@@ -55,7 +55,7 @@ void cRMainMenu::Init()
     high_scores_widget->SetBelow(new_game_widget);
 
     options_widget = g_game->border_manager.GetBorder();
-    options_widget->initialize_frontend_widget(
+    options_widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_options_text,
@@ -68,7 +68,7 @@ void cRMainMenu::Init()
     options_widget->SetBelow(high_scores_widget);
 
     options_widget = g_game->border_manager.GetBorder();
-    options_widget->initialize_frontend_widget(
+    options_widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_options_text,
@@ -81,7 +81,7 @@ void cRMainMenu::Init()
     options_widget->SetBelow(high_scores_widget);
 
     credits_widget = g_game->border_manager.GetBorder();
-    credits_widget->initialize_frontend_widget(
+    credits_widget->Init(
         FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
@@ -95,7 +95,7 @@ void cRMainMenu::Init()
     credits_widget->SetBelow(options_widget);
 
     exit_widget = g_game->border_manager.GetBorder();
-    exit_widget->initialize_frontend_widget(
+    exit_widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_exit_text,

@@ -18,7 +18,7 @@ void cROptions::Init()
 
     fullscreen_widget =
         g_game->border_manager.GetBorder();
-    fullscreen_widget->initialize_frontend_widget(
+    fullscreen_widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_blank_text,
@@ -32,7 +32,7 @@ void cROptions::Init()
 
     sound_volume_widget =
         g_game->border_manager.GetBorder();
-    sound_volume_widget->initialize_frontend_widget(
+    sound_volume_widget->Init(
         FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND
             | FRONTEND_WIDGET_FLAG_SLIDER
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
@@ -50,7 +50,7 @@ void cROptions::Init()
 
     music_volume_widget =
         g_game->border_manager.GetBorder();
-    music_volume_widget->initialize_frontend_widget(
+    music_volume_widget->Init(
         FRONTEND_WIDGET_FLAG_SLIDER
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED,
         g_music_volume_text,
@@ -67,7 +67,7 @@ void cROptions::Init()
 
     back_widget =
         g_game->border_manager.GetBorder();
-    back_widget->initialize_frontend_widget(
+    back_widget->Init(
         FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text,

@@ -26,7 +26,7 @@ void cRSplash::Init()
     g_game->border_manager.SetJustifyCentre(0.0f);
 
     message_widget = g_game->border_manager.GetBorder();
-    message_widget->initialize_frontend_widget(
+    message_widget->Init(
         FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN | FRONTEND_WIDGET_FLAG_FRAMELESS
             | FRONTEND_WIDGET_FLAG_HIGHLIGHTED,
         "Thanks For Playing!",
