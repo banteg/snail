@@ -4,7 +4,7 @@
 
 void play_sound_effect_backend(int sample_id, float gain, float pitch, float pan);
 
-void SoundEffectManager::play_sound_effect_scaled(int sample_id, float gain)
+void cRSound::play_sound_effect_scaled(int sample_id, float gain)
 {
     play_sound_effect_backend(sample_id, gain, -1.0f, 0.0f);
 }

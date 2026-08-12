@@ -4,7 +4,7 @@
 
 void stop_registered_warning_sample(int handle);
 
-void SoundEffectManager::stop_warning_sample_handle(int handle)
+void cRSound::stop_warning_sample_handle(int handle)
 {
     stop_registered_warning_sample(handle);
 }

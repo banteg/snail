@@ -6488,6 +6488,32 @@ def test_root_input_types_use_authored_primary_owners() -> None:
         assert f"{owner}::{function}" in source
 
 
+def test_sound_facade_uses_authored_primary_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "sound_effect_manager.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRSound" in header
+    assert "typedef cRSound SoundEffectManager;" in header
+    assert "sizeof(cRSound)" in header
+    assert "extern cRSound g_sound_effect_manager;" in header
+    for function in (
+        "initialize_sound_bank",
+        "play_sound_effect_at_position",
+        "play_sound_effect",
+        "play_sound_effect_scaled",
+        "play_warning_sample_backend",
+        "stop_warning_sample_handle",
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSound::{function}" in source
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

@@ -4,7 +4,7 @@
 
 int register_sound_sample(char* path, int normalization_class);
 
-void SoundEffectManager::initialize_sound_bank(SoundBankEntry* entries)
+void cRSound::initialize_sound_bank(SoundBankEntry* entries)
 {
     SoundBankEntry* cursor = entries;
     char* result = cursor->path;

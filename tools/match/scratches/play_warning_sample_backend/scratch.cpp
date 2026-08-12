@@ -4,7 +4,7 @@
 
 int play_registered_warning_sample(int sample_id);
 
-int SoundEffectManager::play_warning_sample_backend(int sample_id)
+int cRSound::play_warning_sample_backend(int sample_id)
 {
     return play_registered_warning_sample(sample_id);
 }

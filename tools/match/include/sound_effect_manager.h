@@ -19,7 +19,7 @@ enum {
     SOUND_BANK_ENTRY_COUNT = SOUND_BANK_LIVE_ENTRY_COUNT + 1,
 };
 
-class SoundEffectManager {
+class cRSound {
 public:
     void initialize_sound_bank(SoundBankEntry* entries); // @ 0x44dcb0
     void play_sound_effect(int sound_id); // @ 0x44dde0
@@ -30,13 +30,15 @@ public:
     void stop_warning_sample_handle(int handle);
 };
 
-extern SoundEffectManager g_sound_effect_manager;
+typedef cRSound SoundEffectManager;
+
+extern cRSound g_sound_effect_manager;
 extern SoundBankEntry
     g_sound_bank_entries[SOUND_BANK_ENTRY_COUNT]; // 0x4a2140, Android gSFXBank
 
 typedef char SoundBankEntry_must_be_0x0c[
     (sizeof(SoundBankEntry) == 0x0c) ? 1 : -1];
 typedef char SoundEffectManager_must_be_0x01[
-    (sizeof(SoundEffectManager) == 0x01) ? 1 : -1];
+    (sizeof(cRSound) == 0x01) ? 1 : -1];
 
 #endif
