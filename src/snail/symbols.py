@@ -41,6 +41,8 @@ class FunctionSymbol:
     description: str | None = None
     aliases: tuple[str, ...] = ()
     port_scope: FunctionPortScope = "core"
+    source_object: str | None = None
+    source_object_evidence: str | None = None
     mobile_candidate_rejections: tuple[MobileCandidateRejection, ...] = ()
 
     @property
@@ -173,6 +175,29 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
             raise ValueError(
                 f"functions[{index}].port_scope must be one of: {allowed}"
             )
+        source_object = raw_symbol.get("source_object")
+        if source_object is not None and (
+            not isinstance(source_object, str) or not source_object.strip()
+        ):
+            raise ValueError(
+                f"functions[{index}].source_object must be a non-empty string when present"
+            )
+        source_object_evidence = raw_symbol.get("source_object_evidence")
+        if source_object_evidence is not None and (
+            not isinstance(source_object_evidence, str)
+            or not source_object_evidence.strip()
+        ):
+            raise ValueError(
+                f"functions[{index}].source_object_evidence must be a non-empty string when present"
+            )
+        if source_object_evidence is not None and source_object is None:
+            raise ValueError(
+                f"functions[{index}].source_object_evidence requires source_object"
+            )
+        if source_object is not None:
+            source_object = source_object.strip()
+        if source_object_evidence is not None:
+            source_object_evidence = source_object_evidence.strip()
         if address in seen_addresses:
             raise ValueError(f"duplicate function address: 0x{address:x}")
         for symbol_name in names:
@@ -188,6 +213,8 @@ def _load_function_symbols(raw_symbols: object) -> tuple[FunctionSymbol, ...]:
                 description=description,
                 aliases=tuple(aliases_value),
                 port_scope=port_scope,
+                source_object=source_object,
+                source_object_evidence=source_object_evidence,
                 mobile_candidate_rejections=tuple(
                     mobile_candidate_rejections
                 ),
@@ -278,6 +305,20 @@ def normalize_function_symbol_manifest(
                 **(
                     {"description": function.description}
                     if function.description is not None
+                    else {}
+                ),
+                **(
+                    {"source_object": function.source_object}
+                    if function.source_object is not None
+                    else {}
+                ),
+                **(
+                    {
+                        "source_object_evidence": (
+                            function.source_object_evidence
+                        )
+                    }
+                    if function.source_object_evidence is not None
                     else {}
                 ),
                 **(

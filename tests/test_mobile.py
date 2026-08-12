@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import Counter
+from itertools import pairwise
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -5898,9 +5899,7 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
     assert intervals == sorted(intervals)
     assert all(
         left_end <= right_start
-        for (_, left_end, _), (right_start, _, _) in zip(
-            intervals, intervals[1:]
-        )
+        for (_, left_end, _), (right_start, _, _) in pairwise(intervals)
     )
 
     inferred = [
@@ -5945,6 +5944,52 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         == "android-contiguous-source-run"
         for entry in complete_verified
     ) == 38
+
+
+def test_unverified_windows_source_runs_preserve_owner_provenance(
+    capsys,
+) -> None:
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = complete["entries"]
+    by_name = {entry["windows_name"]: entry for entry in entries}
+    expected = {
+        "draw_split_backdrop": "Game.o",
+        "spawn_golb_trail_sprite": "Golb.o",
+        "search_path_for_golb": "Golb.o",
+        "load_high_scores_from_file": "HighScore.o",
+        "calc_object_bounding_box": "RObject.o",
+        "calc_object_facequad_normals_simple": "RObject.o",
+        "begin_post_follow_carryover": "SubGame.o",
+    }
+
+    for windows_name, source_object in expected.items():
+        entry = by_name[windows_name]
+        assert entry["status"] == "unverified"
+        assert entry["source_object"] == source_object
+        assert (
+            entry["source_object_evidence"]
+            == "windows-contiguous-source-run"
+        )
+        index = entries.index(entry)
+        for neighbor in (entries[index - 1], entries[index + 1]):
+            assert neighbor["status"] == "verified"
+            assert neighbor["source_object"] == source_object
+
+    result = main(
+        [
+            "match",
+            "mobile",
+            "load_high_scores_from_file",
+            "--windows-tool",
+            "none",
+            "--paths-only",
+        ]
+    )
+    output = capsys.readouterr().out
+    assert result == 0
+    assert "mapping: unverified" in output
+    assert "source object: HighScore.o" in output
+    assert "source object evidence: windows-contiguous-source-run" in output
 
 
 def test_subgame_leaf_types_use_authored_primary_owners() -> None:

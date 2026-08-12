@@ -1003,7 +1003,9 @@
     {
       "address": "0x410f90",
       "name": "draw_split_backdrop",
-      "description": "Queues the split `_A` / `_B` backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout. Windows intentionally propagates the second queue append's integer offset into its folded `cRBackdrop::AI` path."
+      "description": "Queues the split `_A` / `_B` backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout. Windows intentionally propagates the second queue append's integer offset into its folded `cRBackdrop::AI` path.",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x411040",
@@ -1360,7 +1362,9 @@
     {
       "address": "0x415bb0",
       "name": "spawn_golb_trail_sprite",
-      "description": "`GolbShot` member that allocates and returns one short-lived trail sprite for the straight-flight Golb family at the supplied world position. `update_golb_ai` emits it in a short three-point chain behind the projectile each tick."
+      "description": "`GolbShot` member that allocates and returns one short-lived trail sprite for the straight-flight Golb family at the supplied world position. `update_golb_ai` emits it in a short three-point chain behind the projectile each tick.",
+      "source_object": "Golb.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x415c60",
@@ -1380,7 +1384,9 @@
     {
       "address": "0x415e30",
       "name": "search_path_for_golb",
-      "description": "Exact Windows `EnemyManager::search_path_for_golb`: scans the manager's per-frame entries for the nearest target strictly ahead by less than 30 units, returning the owned ContactTargetEntry or null."
+      "description": "Exact Windows `EnemyManager::search_path_for_golb`: scans the manager's per-frame entries for the nearest target strictly ahead by less than 30 units, returning the owned ContactTargetEntry or null.",
+      "source_object": "Golb.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x415ef0",
@@ -1452,7 +1458,9 @@
     {
       "address": "0x4175e0",
       "name": "load_high_scores_from_file",
-      "description": "Loads one encoded ScoreA/B/C high-score overlay into the embedded cRSubHighScore owner, decodes compact cRSubSolutionHeader records, and dispatches each expanded solution into the postal, survival, or per-route time-trial array. The function is side-effect-only; known callers ignore the incidental register return."
+      "description": "Loads one encoded ScoreA/B/C high-score overlay into the embedded cRSubHighScore owner, decodes compact cRSubSolutionHeader records, and dispatches each expanded solution into the postal, survival, or per-route time-trial array. The function is side-effect-only; known callers ignore the incidental register return.",
+      "source_object": "HighScore.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x4176a0",
@@ -2075,6 +2083,8 @@
       "address": "0x42fb10",
       "name": "calc_object_bounding_box",
       "description": "Recomputes one cRObject's min/max bounds and maximum vertex magnitude in place. Its sole native caller discards EAX, confirming this is a void object mutator rather than the decompiler-derived count-returning helper. Android and iOS retain the surrounding cRObjects::BuildObjects() owner but omit both a call and an inline equivalent of this Windows-only bounds pass.",
+      "source_object": "RObject.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRObjects::BuildObjects()",
@@ -2110,7 +2120,9 @@
     {
       "address": "0x430230",
       "name": "calc_object_facequad_normals_simple",
-      "description": "Recomputes only the per-face quad-normal pairs for the current vertex positions without rebuilding the full accumulated vertex-normal table. Used by the distort path before the toon edge pass reuses the updated face data."
+      "description": "Recomputes only the per-face quad-normal pairs for the current vertex positions without rebuilding the full accumulated vertex-normal table. Used by the distort path before the toon edge pass reuses the updated face data.",
+      "source_object": "RObject.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x4303f0",
@@ -3057,6 +3069,8 @@
       "address": "0x43af60",
       "name": "begin_post_follow_carryover",
       "description": "Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` into `post_follow_exit_roll` and the live attachment record's installed-heading bits into `post_follow_heading_carryover`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path.",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",

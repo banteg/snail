@@ -388,6 +388,9 @@ def build_complete_mobile_crosswalk(
             "windows_size": windows_size,
             "status": "verified" if verified else "unverified",
         }
+        for key in ("source_object", "source_object_evidence"):
+            if key in function:
+                entry[key] = function[key]
         if verified:
             for key in (
                 "android_symbol",
@@ -462,6 +465,8 @@ def build_complete_mobile_crosswalk(
             "body_count records how many matching exports exist in this corpus version.",
             "windows_size is the distance to the next curated manifest start and can include gaps.",
             "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
+            "source_object on an unverified entry is independent Windows compilation-unit provenance and does not turn a candidate into a mobile mapping.",
+            "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
             "mobile_candidate_rejections preserve audited negative evidence and exclude only the exact demangled symbols listed by the Windows manifest.",
         ],
         "counts": {

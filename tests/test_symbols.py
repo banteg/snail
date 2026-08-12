@@ -53,6 +53,11 @@ def test_default_function_symbol_manifest_loads() -> None:
     )
     assert by_name["initialize_translation_matrix"].port_scope == "third-party"
     assert by_name["game_window_proc"].port_scope == "replaceable-platform"
+    assert by_name["load_high_scores_from_file"].source_object == "HighScore.o"
+    assert (
+        by_name["load_high_scores_from_file"].source_object_evidence
+        == "windows-contiguous-source-run"
+    )
     game_init = by_name["initialize_game_assets_and_world"]
     assert {
         rejection.symbol
@@ -90,6 +95,16 @@ def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Pat
     )
     assert third_party["port_scope"] == "third-party"
     assert "port_scope" not in raw["functions"][0]
+    high_score_load = next(
+        function
+        for function in raw["functions"]
+        if function["name"] == "load_high_scores_from_file"
+    )
+    assert high_score_load["source_object"] == "HighScore.o"
+    assert (
+        high_score_load["source_object_evidence"]
+        == "windows-contiguous-source-run"
+    )
     game_init = next(
         function
         for function in raw["functions"]

@@ -10,6 +10,8 @@
     "body_count records how many matching exports exist in this corpus version.",
     "windows_size is the distance to the next curated manifest start and can include gaps.",
     "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
+    "source_object on an unverified entry is independent Windows compilation-unit provenance and does not turn a candidate into a mobile mapping.",
+    "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
     "mobile_candidate_rejections preserve audited negative evidence and exclude only the exact demangled symbols listed by the Windows manifest."
   ],
   "counts": {
@@ -6803,6 +6805,8 @@
       "windows_name": "draw_split_backdrop",
       "windows_size": 176,
       "status": "unverified",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRTextures::Add(char*, cTgaHeader*, int)",
@@ -9212,6 +9216,8 @@
       "windows_name": "spawn_golb_trail_sprite",
       "windows_size": 176,
       "status": "unverified",
+      "source_object": "Golb.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRSprite::AI()",
@@ -9379,6 +9385,8 @@
       "windows_name": "search_path_for_golb",
       "windows_size": 192,
       "status": "unverified",
+      "source_object": "Golb.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRHash::Search(char*)",
@@ -9642,6 +9650,8 @@
       "windows_name": "load_high_scores_from_file",
       "windows_size": 192,
       "status": "unverified",
+      "source_object": "HighScore.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRSubHighScore::AddTimeTrial(int, bool)",
@@ -11885,6 +11895,8 @@
       "windows_name": "calc_object_bounding_box",
       "windows_size": 416,
       "status": "unverified",
+      "source_object": "RObject.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRObjects::BuildObjects()",
@@ -11994,6 +12006,8 @@
       "windows_name": "calc_object_facequad_normals_simple",
       "windows_size": 448,
       "status": "unverified",
+      "source_object": "RObject.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "cRObject::CalcFaceQuadNormals()",
@@ -16966,6 +16980,8 @@
       "windows_name": "begin_post_follow_carryover",
       "windows_size": 112,
       "status": "unverified",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
