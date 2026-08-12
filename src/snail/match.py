@@ -3054,10 +3054,15 @@ def compile_scratch(
 
     build_dir.mkdir(exist_ok=True)
     shutil.copy(source, build_dir / "scratch.cpp")
+    # VC6 can overwrite a shorter object without truncating the previous
+    # file, leaving stale bytes after the new COFF string table. Start from a
+    # missing output so every cache miss produces one self-contained object.
+    obj_path.unlink(missing_ok=True)
     completed = subprocess.run(
         list(_scratch_compile_argv(config, match_root)),
         cwd=build_dir,
         env={**os.environ, "MSVC_VER": config.compiler},
+        check=False,
         capture_output=True,
         text=True,
     )

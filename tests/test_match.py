@@ -4385,6 +4385,44 @@ def test_scratch_object_current_tracks_build_inputs(tmp_path: Path) -> None:
     assert _scratch_object_is_current(obj_path, changed_match_config, match_root)
 
 
+def test_compile_scratch_removes_stale_object_before_vc6(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import subprocess
+
+    from snail.match import ScratchConfig, compile_scratch
+
+    match_root = tmp_path / "match"
+    scratch_dir = match_root / "scratches/foo"
+    build_dir = scratch_dir / "build"
+    compiler_dir = match_root / "compilers/msvc6.5/Bin"
+    build_dir.mkdir(parents=True)
+    compiler_dir.mkdir(parents=True)
+    (match_root / "cl.sh").write_text("#!/bin/sh\n")
+    (compiler_dir / "CL.EXE").write_bytes(b"cl")
+    (scratch_dir / "scratch.cpp").write_text("void foo() {}\n")
+    obj_path = build_dir / "scratch.obj"
+    obj_path.write_bytes(b"stale object tail")
+    config = ScratchConfig(
+        directory=scratch_dir,
+        function="foo",
+        compiler="msvc6.5",
+        cflags="/O2 /G5 /W3",
+        end_va=None,
+        symbol=None,
+    )
+
+    def fake_run(*args, cwd: Path, **kwargs) -> subprocess.CompletedProcess:
+        assert not (Path(cwd) / "scratch.obj").exists()
+        (Path(cwd) / "scratch.obj").write_bytes(b"fresh object")
+        return subprocess.CompletedProcess(args, 0, "", "")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    assert compile_scratch(config, match_root) == obj_path
+    assert obj_path.read_bytes() == b"fresh object"
+
+
 def test_format_cl_failure_identifies_diagnostic_free_vc6_ice(tmp_path: Path) -> None:
     from snail.match import _format_cl_failure
 
