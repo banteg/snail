@@ -4412,6 +4412,9 @@
     {
       "address": "0x4461d0",
       "name": "update_cameraman",
+      "aliases": [
+        "cRCameraman_AI"
+      ],
       "description": "Advances the exact cRCameraman owner: builds the desired follow-camera pose from player transform, attachment state, motion scalars, and backdrop zoom, smooths FOV and lift envelopes, and blends the live matrix before `update_subgame_camera` consumes it. Android and iOS retain this method as `cRCameraman::AI()`."
     },
     {

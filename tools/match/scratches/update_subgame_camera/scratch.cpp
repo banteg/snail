@@ -18,7 +18,7 @@ void cRSubGame::update_subgame_camera()
         target.position.y = 3.0f;
         g_game->players[0].camera.fov_degrees = 110.0f;
     } else {
-        player.cameraman.update_cameraman();
+        player.cameraman.AI();
         if (player.presentation.cutscene.state != CUT_SCENE_STATE_INACTIVE) {
             camera_snap_requested = player.presentation.cutscene.force_camera_update;
             target = player.presentation.cutscene.live_matrix;

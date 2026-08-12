@@ -11529,7 +11529,7 @@ def test_cameraman_uses_authored_primary_owner() -> None:
     assert "cRCameraman cameraman" in player
     methods = {
         "initialize_cameraman": "Init",
-        "update_cameraman": "update_cameraman",
+        "update_cameraman": "AI",
     }
     for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
@@ -11582,6 +11582,32 @@ def test_cameraman_uses_authored_primary_owner() -> None:
     ).read_text(encoding="utf-8")
     assert game_init.count("subgame.player.cameraman.Init();") == 1
     assert player_init.count("cameraman.Init();") == 1
+
+    updater = crosswalk["update_cameraman"]
+    assert updater["status"] == "verified"
+    assert updater["confidence"] == "high"
+    assert updater["source_object"] == "SubGame.o"
+    assert updater["android_symbol"] == "cRCameraman::AI()"
+    assert updater["ios_symbol"] == "cRCameraman::AI()"
+    assert updater["android_body_count"] == 1
+    assert updater["ios_body_count"] == 1
+    assert functions_by_name["update_cameraman"]["aliases"] == [
+        "cRCameraman_AI"
+    ]
+    updater_symbol = "?AI@cRCameraman@@QAEXXZ"
+    assert references_by_name["update_cameraman"]["aliases"] == [
+        updater_symbol
+    ]
+    updater_config = (
+        scratch_root / "update_cameraman/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={updater_symbol}\n" in updater_config
+    assert "void AI(); // @ 0x4461d0" in header
+    assert "update_cameraman();" not in header
+    camera_update = (
+        scratch_root / "update_subgame_camera/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert camera_update.count("player.cameraman.AI();") == 1
 
     folded = (
         scratch_root / "noop_runtime_slot_constructor" / "scratch.cpp"

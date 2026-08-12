@@ -13,7 +13,7 @@ public:
     // 0x408600. The cRSubGame constructor passes cRSubGoldy::cameraman exactly.
     cRCameraman* noop_runtime_slot_constructor();
     void Init(); // @ 0x446160
-    void update_cameraman(); // @ 0x4461d0, cRCameraman::AI
+    void AI(); // @ 0x4461d0
 
     TransformMatrix live_matrix; // +0x00
     TransformMatrix desired_matrix; // +0x40

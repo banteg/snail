@@ -11,7 +11,7 @@ float Cos(float angle);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 extern char g_worm_fov_report_format[];
 
-void cRCameraman::update_cameraman()
+void cRCameraman::AI()
 {
     TransformMatrix transform;
     cRSubGoldy* p = player;

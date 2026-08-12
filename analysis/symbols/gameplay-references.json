@@ -4185,6 +4185,15 @@
       "description": "Exact Windows cRCameraman::Init() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x4461d0",
+      "name": "update_cameraman",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRCameraman@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRCameraman::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4466d0",
       "name": "update_cutscene",
       "kind": "function",
