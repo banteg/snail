@@ -21,7 +21,7 @@ char* __cdecl load_file_bytes_fixed_size_from_archive_or_fs(
     FILE* file;
     char* result;
 
-    g_loading_bar.update_loading_screen();
+    g_loading_bar.AI();
 
     archive_index = g_archive_index_records;
     if (archive_index != 0) {

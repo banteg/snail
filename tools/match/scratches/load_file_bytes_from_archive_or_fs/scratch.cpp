@@ -24,7 +24,7 @@ char* __cdecl load_file_bytes_from_archive_or_fs(
     char* result;
     char* allocated;
 
-    g_loading_bar.update_loading_screen();
+    g_loading_bar.AI();
 
     requested_path = file_name;
     archive_index = g_archive_index_records;

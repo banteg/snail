@@ -1758,12 +1758,18 @@
     {
       "address": "0x418e50",
       "name": "destroy_loading_screen",
-      "description": "Exact void cRLoadingBar::UnInit(): tears down the loading-screen textures and preserves the last measured loading budget. Startup discards the final COM Release value left in EAX."
+      "description": "Exact void cRLoadingBar::UnInit(): tears down the loading-screen textures and preserves the last measured loading budget. Startup discards the final COM Release value left in EAX.",
+      "aliases": [
+        "cRLoadingBar_UnInit"
+      ]
     },
     {
       "address": "0x418e80",
       "name": "update_loading_screen",
-      "description": "Exact void cRLoadingBar::AI(): advances the normalized percentage, draws the loading background, and clips the fill quad into the recovered 192x289 to 448x321 window. All three Windows callers discard EAX."
+      "description": "Exact void cRLoadingBar::AI(): advances the normalized percentage, draws the loading background, and clips the fill quad into the recovered 192x289 to 448x321 window. All three Windows callers discard EAX.",
+      "aliases": [
+        "cRLoadingBar_AI"
+      ]
     },
     {
       "address": "0x419110",

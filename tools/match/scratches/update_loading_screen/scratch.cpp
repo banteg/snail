@@ -8,7 +8,7 @@
 
 int present_backbuffer(); // @ 0x413520
 
-void cRLoadingBar::update_loading_screen()
+void cRLoadingBar::AI()
 {
     int result = active;
     if (active != 0) {

@@ -9325,6 +9325,8 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         "update_help_screen": "AI",
         "initialize_new_game_menu": "Init",
         "update_new_game_menu": "AI",
+        "destroy_loading_screen": "UnInit",
+        "update_loading_screen": "AI",
         "initialize_cheat": "Init",
         "update_cheat": "AI",
         "match_cheat_text": "MatchText",
@@ -9389,6 +9391,75 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
     assert "struct cRSubSolutionHeader" in solution
     assert "typedef cRSubSolutionHeader SubSolutionHeader;" in solution
     assert "cRSubSolutionHeader* compact" in solution
+
+    loading = (include_root / "loading_bar.h").read_text(encoding="utf-8")
+    assert "void initialize_loading_screen();" in loading
+    assert "void UnInit();" in loading
+    assert "void AI();" in loading
+    assert "void destroy_loading_screen();" not in loading
+    assert "void update_loading_screen();" not in loading
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    loading_methods = {
+        "destroy_loading_screen": (
+            "cRLoadingBar::UnInit()",
+            "?UnInit@cRLoadingBar@@QAEXXZ",
+            "cRLoadingBar_UnInit",
+            False,
+        ),
+        "update_loading_screen": (
+            "cRLoadingBar::AI()",
+            "?AI@cRLoadingBar@@QAEXXZ",
+            "cRLoadingBar_AI",
+            True,
+        ),
+    }
+    for function, (
+        mobile_symbol,
+        object_symbol,
+        alias,
+        has_ios,
+    ) in loading_methods.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "LoadingBar.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if has_ios:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("scratch.cpp")
+        if "build" not in path.parts
+    )
+    assert "g_loading_bar.UnInit();" in all_sources
+    assert all_sources.count("g_loading_bar.AI();") == 3
+    assert ".destroy_loading_screen(" not in all_sources
+    assert ".update_loading_screen(" not in all_sources
 
 
 def test_core_gameplay_types_use_authored_primary_owners() -> None:

@@ -4,7 +4,7 @@
 #include "loading_bar.h"
 #include "runtime_config.h"
 
-void cRLoadingBar::destroy_loading_screen()
+void cRLoadingBar::UnInit()
 {
     g_runtime_config.last_loading_budget = last_loading_budget;
     g_loading_background_texture->vtbl->Release(g_loading_background_texture);

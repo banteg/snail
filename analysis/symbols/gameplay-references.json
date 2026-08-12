@@ -450,6 +450,24 @@
       "description": "Exact authored cRLandscapeManager::UnInit() member."
     },
     {
+      "address": "0x418e50",
+      "name": "destroy_loading_screen",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRLoadingBar@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRLoadingBar::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x418e80",
+      "name": "update_loading_screen",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRLoadingBar@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRLoadingBar::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x419110",
       "name": "open_logo",
       "kind": "function",

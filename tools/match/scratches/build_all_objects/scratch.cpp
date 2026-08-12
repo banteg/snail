@@ -10,7 +10,7 @@ void cRObjects::BuildObjects()
         int object_offset = 0;
         do {
             if ((index % 4) == 0) {
-                g_loading_bar.update_loading_screen();
+                g_loading_bar.AI();
             }
 
             if (((Object*)((char*)objects + object_offset))->vertex_count != 0) {

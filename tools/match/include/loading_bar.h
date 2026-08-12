@@ -1,5 +1,6 @@
 // Authored cRLoadingBar global owner. Windows keeps the exact 0x0c-byte
-// controller at data_503290; function names retain the loading_screen harness.
+// controller at data_503290. Init retains its descriptive matcher name until
+// its remaining compiler-scheduling residual is recovered.
 #ifndef LOADING_BAR_H
 #define LOADING_BAR_H
 
@@ -8,8 +9,8 @@ struct ObjectRenderBuffers;
 
 struct cRLoadingBar {
     void initialize_loading_screen(); // @ 0x418b50, cRLoadingBar::Init
-    void destroy_loading_screen();    // @ 0x418e50, cRLoadingBar::UnInit
-    void update_loading_screen();     // @ 0x418e80, cRLoadingBar::AI
+    void UnInit();                     // @ 0x418e50
+    void AI();                         // @ 0x418e80
 
     int active;              // +0x00
     int previous_percent;    // +0x04
