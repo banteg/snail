@@ -7,13 +7,13 @@
 #include "runtime_config.h"
 
 
-int queue_axis_aligned_textured_quad_uv(
+int OSDPrintUV(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0,
     float v0,
@@ -59,7 +59,7 @@ void cRBorder::draw_frontend_widget()
         tColour* color = &slider_color;
         float slider = slider_position_current;
         if (slider > 0.0f) {
-            queue_axis_aligned_textured_quad_uv(
+            OSDPrintUV(
                 37,
                 texture_hit_x + width * 0.5f - 128.0f,
                 texture_hit_y + 50.0f,
@@ -75,7 +75,7 @@ void cRBorder::draw_frontend_widget()
                 0);
         }
         if (slider < 1.0f) {
-            queue_axis_aligned_textured_quad_uv(
+            OSDPrintUV(
                 36,
                 texture_hit_x + width * 0.5f - 128.0f + slider * 256.0f,
                 texture_hit_y + 50.0f,
@@ -105,7 +105,7 @@ void cRBorder::draw_frontend_widget()
 
         float pad = border_edge * 0.5f;
         if ((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) != 0) {
-            queue_axis_aligned_textured_quad_uv(
+            OSDPrintUV(
                 sprite_hot_texture_id,
                 texture_hit_x + wobble - pad,
                 texture_hit_y - pad,
@@ -120,7 +120,7 @@ void cRBorder::draw_frontend_widget()
                 texture_layer,
                 0);
         } else {
-            queue_axis_aligned_textured_quad_uv(
+            OSDPrintUV(
                 texture_id,
                 texture_hit_x + wobble - pad,
                 texture_hit_y - pad,
@@ -140,7 +140,7 @@ void cRBorder::draw_frontend_widget()
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SPRITE_MODE) != 0) {
         float pad = border_edge * 0.5f;
-        queue_axis_aligned_textured_quad_uv(
+        OSDPrintUV(
             texture_id,
             texture_hit_x - pad,
             texture_hit_y - pad,
@@ -158,7 +158,7 @@ void cRBorder::draw_frontend_widget()
         if (sprite_shadow_offset > 0.0f) {
             tColour shadow_color;
             float shadow_pad = border_edge * 0.5f;
-            queue_axis_aligned_textured_quad_uv(
+            OSDPrintUV(
                 texture_id,
                 texture_hit_x + sprite_shadow_offset - shadow_pad,
                 texture_hit_y + sprite_shadow_offset - shadow_pad,
@@ -211,17 +211,17 @@ void cRBorder::draw_frontend_widget()
     float top = y - edge;
     float left = x - edge;
 
-    queue_axis_aligned_textured_quad_uv(border_texture_id, left, top, edge, edge, 0x1000000, &current_fill_color, 0.0f, 0.0f, u0, u0, blend_mode, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, x, top, width, edge, 0x1000000, &current_fill_color, u0, 0.0f, u1, u0, blend_mode, 0);
+    OSDPrintUV(border_texture_id, left, top, edge, edge, 0x1000000, &current_fill_color, 0.0f, 0.0f, u0, u0, blend_mode, 0);
+    OSDPrintUV(border_texture_id, x, top, width, edge, 0x1000000, &current_fill_color, u0, 0.0f, u1, u0, blend_mode, 0);
     float right = x + width;
-    queue_axis_aligned_textured_quad_uv(border_texture_id, right, top, edge, edge, 0x1000000, &current_fill_color, u1, 0.0f, 1.0f, u0, glow_blend_mode, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, left, y, edge, height, 0x1000000, &current_fill_color, 0.0f, u0, u0, u1, glow_blend_mode, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, x, y, width, height, 0x1000000, &current_fill_color, u0, u0, u1, u1, glow_blend_mode, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, right, y, edge, height, 0x1000000, &current_fill_color, u1, u0, 1.0f, u1, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, right, top, edge, edge, 0x1000000, &current_fill_color, u1, 0.0f, 1.0f, u0, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, left, y, edge, height, 0x1000000, &current_fill_color, 0.0f, u0, u0, u1, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, x, y, width, height, 0x1000000, &current_fill_color, u0, u0, u1, u1, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, right, y, edge, height, 0x1000000, &current_fill_color, u1, u0, 1.0f, u1, glow_blend_mode, 0);
     float bottom = y + height;
-    queue_axis_aligned_textured_quad_uv(border_texture_id, left, bottom, edge, edge, 0x1000000, &current_fill_color, 0.0f, u1, u0, 1.0f, glow_blend_mode, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, x, bottom, width, edge, 0x1000000, &current_fill_color, u0, u1, u1, 1.0f, glow_blend_mode, 0);
-    queue_axis_aligned_textured_quad_uv(border_texture_id, right, bottom, edge, edge, 0x1000000, &current_fill_color, u1, u1, 1.0f, 1.0f, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, left, bottom, edge, edge, 0x1000000, &current_fill_color, 0.0f, u1, u0, 1.0f, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, x, bottom, width, edge, 0x1000000, &current_fill_color, u0, u1, u1, 1.0f, glow_blend_mode, 0);
+    OSDPrintUV(border_texture_id, right, bottom, edge, edge, 0x1000000, &current_fill_color, u1, u1, 1.0f, 1.0f, glow_blend_mode, 0);
 
     if (g_game->border_manager.delayed_widget_active != 0
         && this == g_game->border_manager.delayed_widget) {
@@ -237,13 +237,13 @@ void cRBorder::draw_frontend_widget()
             (g_game->border_manager.delayed_widget_progress
                 * 0.69999999f
              + 1.0f) * edge;
-        queue_axis_aligned_textured_quad_uv(99, x - glow_edge, y - glow_edge, glow_edge, glow_edge, 0x1000000, &glow_color, 0.0f, 0.0f, u0, u0, 3, 0);
-        queue_axis_aligned_textured_quad_uv(99, x, y - glow_edge, width, glow_edge, 0x1000000, &glow_color, u0, 0.0f, u1, u0, 3, 0);
-        queue_axis_aligned_textured_quad_uv(99, right, y - glow_edge, glow_edge, glow_edge, 0x1000000, &glow_color, u1, 0.0f, 1.0f, u0, 3, 0);
-        queue_axis_aligned_textured_quad_uv(99, x - glow_edge, y, glow_edge, height, 0x1000000, &glow_color, 0.0f, u0, u0, u1, 3, 0);
-        queue_axis_aligned_textured_quad_uv(99, right, y, glow_edge, height, 0x1000000, &glow_color, u1, u0, 1.0f, u1, 3, 0);
-        queue_axis_aligned_textured_quad_uv(99, x - glow_edge, bottom, glow_edge, glow_edge, 0x1000000, &glow_color, 0.0f, u1, u0, 1.0f, 3, 0);
-        queue_axis_aligned_textured_quad_uv(99, x, bottom, width, glow_edge, 0x1000000, &glow_color, u0, u1, u1, 1.0f, 3, 0);
-        queue_axis_aligned_textured_quad_uv(99, right, bottom, glow_edge, glow_edge, 0x1000000, &glow_color, u1, u1, 1.0f, 1.0f, 3, 0);
+        OSDPrintUV(99, x - glow_edge, y - glow_edge, glow_edge, glow_edge, 0x1000000, &glow_color, 0.0f, 0.0f, u0, u0, 3, 0);
+        OSDPrintUV(99, x, y - glow_edge, width, glow_edge, 0x1000000, &glow_color, u0, 0.0f, u1, u0, 3, 0);
+        OSDPrintUV(99, right, y - glow_edge, glow_edge, glow_edge, 0x1000000, &glow_color, u1, 0.0f, 1.0f, u0, 3, 0);
+        OSDPrintUV(99, x - glow_edge, y, glow_edge, height, 0x1000000, &glow_color, 0.0f, u0, u0, u1, 3, 0);
+        OSDPrintUV(99, right, y, glow_edge, height, 0x1000000, &glow_color, u1, u0, 1.0f, u1, 3, 0);
+        OSDPrintUV(99, x - glow_edge, bottom, glow_edge, glow_edge, 0x1000000, &glow_color, 0.0f, u1, u0, 1.0f, 3, 0);
+        OSDPrintUV(99, x, bottom, width, glow_edge, 0x1000000, &glow_color, u0, u1, u1, 1.0f, 3, 0);
+        OSDPrintUV(99, right, bottom, glow_edge, glow_edge, 0x1000000, &glow_color, u1, u1, 1.0f, 1.0f, 3, 0);
     }
 }

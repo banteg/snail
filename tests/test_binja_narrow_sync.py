@@ -246,9 +246,8 @@ def test_mobile_galaxy_and_backdrop_evidence_preserves_windows_abi_boundaries() 
     assert "void Line(" in galaxy_header
     assert "int update_backdrop();" in backdrop_header
     assert "int draw_split_backdrop();" in backdrop_header
-    assert "int queue_axis_aligned_textured_quad(" in font_header
-    assert "int queue_axis_aligned_textured_quad_uv(" in font_header
-    assert "int queue_textured_quad_corners(" in font_header
+    assert "int OSDPrint(" in font_header
+    assert font_header.count("int OSDPrintUV(") == 2
 
 
 def test_mobile_landscape_evidence_recovers_authored_lifecycle() -> None:
@@ -13853,8 +13852,8 @@ def test_font_system_ownership_stays_aligned() -> None:
 
     assert "int32_t __cdecl register_font_texture_sheet(" in analysis_header
     assert "void __cdecl layout_and_queue_wrapped_font_text(" in analysis_header
-    assert "int register_font_texture_sheet(" in matcher_header
-    assert "void layout_and_queue_wrapped_font_text(" in matcher_header
+    assert "int FontLoad(" in matcher_header
+    assert "void FontType(" in matcher_header
 
     for source in (binja_sync, ida_sync):
         assert "g_render_queue_active" in source

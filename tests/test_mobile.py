@@ -6015,6 +6015,203 @@ def test_ios_font_and_objectproc_stabs_catalog_covers_authored_symbols() -> None
     )
 
 
+def test_mobile_font_core_recovers_authored_windows_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry
+        for entry in references["symbols"]
+    }
+
+    expected = {
+        "initialize_font_wave_state": (
+            "FontInit()",
+            "FontInit",
+            "?FontInit@@YAXXZ",
+            True,
+        ),
+        "update_font_wave_state": (
+            "FontAI()",
+            "FontAI",
+            "?FontAI@@YAXXZ",
+            True,
+        ),
+        "font_slot_index_for_char": (
+            "FontASCIIRemap(char)",
+            "FontASCIIRemap",
+            "?FontASCIIRemap@@YAHD@Z",
+            True,
+        ),
+        "measure_font_text_width": (
+            "FontGetStringX(char*, int, float)",
+            "FontGetStringX",
+            "?FontGetStringX@@YAMPADHM@Z",
+            False,
+        ),
+        "register_font_texture_sheet": (
+            "FontLoad(char*, int, float, float)",
+            "FontLoad",
+            "?FontLoad@@YAHPADHMM@Z",
+            True,
+        ),
+        "draw_font_text_instance": (
+            "FontPrintReal(cFontPrintBuffer*)",
+            "FontPrintReal",
+            "?FontPrintReal@@YAXPAUcFontPrintBuffer@@@Z",
+            True,
+        ),
+        "draw_queued_font_quad_instance": (
+            "OSDPrintReal(cFontPrintBuffer*)",
+            "OSDPrintReal",
+            "?OSDPrintReal@@YAXPAUcFontPrintBuffer@@@Z",
+            False,
+        ),
+        "draw_font_text_queue": (
+            "FontPrintRender(int)",
+            "FontPrintRender",
+            "?FontPrintRender@@YAXH@Z",
+            True,
+        ),
+        "queue_font_text_instance": (
+            (
+                "FontPrint(char*, int, float, float, float, int, float, "
+                "int, tColour, float, bool)"
+            ),
+            "FontPrint",
+            "?FontPrint@@YAXPADHMMMHMHPAUtColour@@MD@Z",
+            False,
+        ),
+        "queue_axis_aligned_textured_quad": (
+            "OSDPrint(int, float, float, float, float, int, tColour, int)",
+            "OSDPrint",
+            "?OSDPrint@@YAHHMMMMHPAUtColour@@H@Z",
+            True,
+        ),
+        "queue_axis_aligned_textured_quad_uv": (
+            (
+                "OSDPrintUV(int, float, float, float, float, int, tColour, "
+                "float, float, float, float, int, float)"
+            ),
+            "OSDPrintUV",
+            "?OSDPrintUV@@YAHHMMMMHPAUtColour@@MMMMHM@Z",
+            True,
+        ),
+        "queue_textured_quad_corners": (
+            (
+                "OSDPrintUV(int, float, float, float, float, float, float, "
+                "float, float, float, float, int, tColour, float, float, "
+                "float, float, int, float)"
+            ),
+            "OSDPrintUV",
+            "?OSDPrintUV@@YAHHMMMMMMMMMMHPAUtColour@@MMMMHM@Z",
+            True,
+        ),
+        "layout_and_queue_wrapped_font_text": (
+            (
+                "FontType(char*, int, float, float, float, float*, float*, "
+                "float*, float*, float, bool, int, float, int, tColour, "
+                "bool, bool)"
+            ),
+            "FontType",
+            "?FontType@@YAXPADHMMMPAM111MDHMHPAUtColour@@DD@Z",
+            True,
+        ),
+        "initialize_font3d_objects": (
+            "FontMake3D(short)",
+            "FontMake3D",
+            "?FontMake3D@@YAXF@Z",
+            True,
+        ),
+    }
+
+    for windows_name, (
+        mobile_symbol,
+        authored_name,
+        object_symbol,
+        has_ios,
+    ) in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Font.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        if has_ios:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        else:
+            assert "ios_symbol" not in entry
+
+        function = functions_by_name[windows_name]
+        if authored_name == "OSDPrintUV":
+            assert "aliases" not in function
+        else:
+            assert function["aliases"] == [authored_name]
+        assert references_by_name[windows_name]["aliases"] == [
+            object_symbol
+        ]
+
+        scratch = repo_root / "tools/match/scratches" / windows_name
+        source = (scratch / "scratch.cpp").read_text(encoding="utf-8")
+        config = (scratch / "scratch.conf").read_text(encoding="utf-8")
+        notes = (scratch / "NOTES.md").read_text(encoding="utf-8")
+        assert f"{authored_name}(" in source
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert authored_name in notes
+
+    font_header = (
+        repo_root / "tools/match/include/font_system.h"
+    ).read_text(encoding="utf-8")
+    for declaration in (
+        "void FontInit();",
+        "void FontAI();",
+        "int FontASCIIRemap(char value);",
+        "float FontGetStringX(",
+        "int FontLoad(",
+        "void FontPrintReal(",
+        "void OSDPrintReal(",
+        "void FontPrintRender(int render_mask);",
+        "void FontPrint(",
+        "int OSDPrint(",
+        "void FontType(",
+        "void FontMake3D(short font_id);",
+    ):
+        assert declaration in font_header
+    assert font_header.count("int OSDPrintUV(") == 2
+
+    matcher_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for root in (
+            repo_root / "tools/match/include",
+            repo_root / "tools/match/scratches",
+        )
+        for pattern in ("*.h", "*.cpp")
+        for path in root.rglob(pattern)
+        if "build" not in path.parts
+    )
+    for stale_name in expected:
+        assert not re.search(rf"\b{stale_name}\b", matcher_sources)
+    assert not re.search(
+        r"\bint OSDPrint(?:UV)?\([^)]*unsigned int",
+        matcher_sources,
+        flags=re.DOTALL,
+    )
+
+
 def test_verified_ios_symbols_have_native_evidence() -> None:
     repo_root = Path(__file__).parents[1]
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

@@ -1,8 +1,8 @@
-// measure_font_text_width @ 0x449e90 (cdecl)
+// FontGetStringX @ 0x449e90 (cdecl)
 
 #include "font_system.h"
 
-float measure_font_text_width(char* text, int font_id, float scale)
+float FontGetStringX(char* text, int font_id, float scale)
 {
     char* cursor = text;
     float width = 0.0f;
@@ -19,7 +19,7 @@ float measure_font_text_width(char* text, int font_id, float scale)
         glyph_lane_base <<= 1;
         sheet_lane_base <<= 3;
         do {
-            int slot = (char)font_slot_index_for_char(*cursor);
+            int slot = (char)FontASCIIRemap(*cursor);
             ++cursor;
             float glyph_width =
                 (&g_font_sheets[0].glyph_width[0])[glyph_lane_base + slot];
@@ -31,7 +31,7 @@ float measure_font_text_width(char* text, int font_id, float scale)
         } while (*cursor != '\0');
     }
 
-    char space_slot = font_slot_index_for_char(' ');
+    char space_slot = FontASCIIRemap(' ');
     int glyph_lane_base = font_id;
     int sheet_lane_base = font_id;
     glyph_lane_base <<= 6;

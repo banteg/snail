@@ -28,8 +28,8 @@ extern SubSegmentRaw* g_builtin_segment_definitions[]; // 0x4a63d0
 
 int report_errorf(char* format, ...); // @ 0x431cc0
 int debug_report_stub(char* format, ...); // @ 0x449c00
-void initialize_font_wave_state(); // @ 0x449c70
-void initialize_font3d_objects(short font_id); // @ 0x44ae10
+void FontInit(); // @ 0x449c70
+void FontMake3D(short font_id); // @ 0x44ae10
 void register_font_texture_sheet_wrapper(
     char* font_path,
     int shadow_offset_pixels,
@@ -181,8 +181,8 @@ char cRGame::initialize_game_assets_and_world()
     initialize_overlay_slot(&overlay_1);
 
     register_font_texture_sheet_wrapper((char*)"Objects/Font/Font-menu-hover.tga", 2, 0.75f, 1.0f);
-    initialize_font3d_objects(0);
-    initialize_font_wave_state();
+    FontMake3D(0);
+    FontInit();
     g_sprite_manager.Init();
     g_sprite_manager.Load((char*)"Sprites/Debug.tga", 1, 0);
     g_sprite_manager.Load((char*)"Sprites/Overlay.tga", 2, 0);

@@ -1,8 +1,8 @@
-// draw_queued_font_quad_instance @ 0x44a6d0 (cdecl)
+// OSDPrintReal @ 0x44a6d0 (cdecl)
 
 #include "font_system.h"
 
-void draw_queued_font_quad_instance(cFontPrintBuffer* entry)
+void OSDPrintReal(cFontPrintBuffer* entry)
 {
     draw_textured_quad_immediate(
         g_sprite_texture_table[entry->texture_id],

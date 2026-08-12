@@ -1,14 +1,13 @@
-# font_slot_index_for_char
+# FontASCIIRemap
 
-Initial scratch for the FONT-MENU-HOVER byte-to-slot mapper at `0x449d20`.
+`FontASCIIRemap(char)` is the native-authored owner of the Windows routine at
+`0x449d20`. The focused match is exact at 145/145 instructions.
 
-Wibo result: exact 100%, 145/145 instructions, no masked operands.
+It maps letters, digits, punctuation, and UI symbols into font-atlas slots.
+The Windows source preserves the native multi-character `'""'` comparison;
+mobile `RFontTypeSet` branches differ, but Android and iOS both retain the core
+`FontASCIIRemap(char)` owner in `Font.o`. Live Windows analysis finds six
+callers.
 
-Recovered relationships:
-
-- `A..Z`, `a..z`, and `0..9` map into contiguous atlas ranges.
-- Several punctuation bytes map to icon/symbol slots used by shipped tutorial
-  and front-end strings.
-- Native contains an impossible signed-char compare against the multi-character
-  constant `'""'` (`0x2222`), so a plain double-quote falls through to the
-  fallback slot. The scratch preserves that source-level oddity.
+The directory and manifest retain `font_slot_index_for_char` as the stable
+matcher identifier.

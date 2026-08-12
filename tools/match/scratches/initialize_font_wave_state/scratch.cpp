@@ -1,8 +1,8 @@
-// initialize_font_wave_state @ 0x449c70 (cdecl, ret)
+// FontInit @ 0x449c70 (cdecl, ret)
 
 #include "font_system.h"
 
-void initialize_font_wave_state()
+void FontInit()
 {
     g_font_wave_phase_a = 0;
     g_font_wave_step_a = 0.104719758f;

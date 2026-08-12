@@ -1,8 +1,8 @@
-// layout_and_queue_wrapped_font_text @ 0x44abe0 (cdecl)
+// FontType @ 0x44abe0 (cdecl)
 
 #include "font_system.h"
 
-void layout_and_queue_wrapped_font_text(
+void FontType(
     char* text,
     int font_id,
     float text_scale,
@@ -16,7 +16,7 @@ void layout_and_queue_wrapped_font_text(
     char shadow_enabled,
     int horizontal_align,
     float anchor_x,
-    unsigned int flags,
+    int flags,
     tColour* color_arg,
     char measure_only,
     char pulse_alpha)
@@ -38,7 +38,7 @@ void layout_and_queue_wrapped_font_text(
             *out = 0;
 
             if (out != line) {
-                float width = measure_font_text_width(line, font_id, text_scale);
+                float width = FontGetStringX(line, font_id, text_scale);
                 float right = width + x;
                 if (right > max_right)
                     max_right = right;
@@ -46,7 +46,7 @@ void layout_and_queue_wrapped_font_text(
                 if (measure_only == 0) {
                     if (pulse_alpha != 0)
                         color.a = Sin(cursor_y * 0.00654498488f);
-                    queue_font_text_instance(
+                    FontPrint(
                         line,
                         font_id,
                         text_scale,

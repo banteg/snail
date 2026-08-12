@@ -42,7 +42,7 @@ void cRFade::AI()
     }
 
     if (alpha > 0.01f) {
-        queue_axis_aligned_textured_quad(
+        OSDPrint(
             2,
             0.0f,
             0.0f,

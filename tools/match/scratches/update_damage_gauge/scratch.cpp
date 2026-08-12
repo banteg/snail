@@ -10,7 +10,7 @@
 
 
 float Sin(float angle);
-int queue_axis_aligned_textured_quad_uv(
+int OSDPrintUV(
     int texture_id,
     float x,
     float y,
@@ -130,7 +130,7 @@ render:
 
         float flash_pulse = (Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f;
         float flash_alpha = alpha - flash_pulse * alpha * 0.5f;
-        queue_axis_aligned_textured_quad_uv(
+        OSDPrintUV(
             91,
             560.0f,
             70.0f,
@@ -147,7 +147,7 @@ render:
     }
 
     float mask_v = mask_height * 0.001953125f;
-    queue_axis_aligned_textured_quad_uv(
+    OSDPrintUV(
         89,
         560.0f,
         70.0f,
@@ -162,7 +162,7 @@ render:
         3,
         0);
 
-    queue_axis_aligned_textured_quad_uv(
+    OSDPrintUV(
         90,
         560.0f,
         mask_height + 70.0f,

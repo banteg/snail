@@ -189,7 +189,7 @@ update_game:
                     update_keyboard_input(g_main_window);
                     update_joystick_input(g_main_window);
                     update_mouse(g_main_window);
-                    update_font_wave_state();
+                    FontAI();
                     int frame_result = g_game->AI();
                     g_frame_render_requested = 1;
                     if (frame_result == 1 || frame_result == 2 || frame_result == 3) {

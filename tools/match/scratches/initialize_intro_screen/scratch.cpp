@@ -133,7 +133,7 @@ void cRLogo::Init(char* file_name)
                 ++cursor;
         } else if (*cursor != 0) {
             while (*cursor != 0 && *cursor != 13) {
-                width += g_font3d_scales[font_slot_index_for_char(*cursor)];
+                width += g_font3d_scales[FontASCIIRemap(*cursor)];
                 ++count;
                 ++cursor;
             }
@@ -148,7 +148,7 @@ void cRLogo::Init(char* file_name)
                     add_intro_renderable_to_active_list(
                         &letters[renderable_count]);
                     letters[renderable_count].SetObject(
-                        g_font3d_bods[font_slot_index_for_char(*glyph)].object);
+                        g_font3d_bods[FontASCIIRemap(*glyph)].object);
                     set_matrix_identity(
                         &letters[renderable_count].transform);
                     letters[renderable_count].transform.position =
@@ -166,7 +166,7 @@ void cRLogo::Init(char* file_name)
                         &letters[renderable_count];
                     ((BodAiDispatch*)renderable)->update_bod_ai();
 
-                    x -= g_font3d_scales[font_slot_index_for_char(*glyph)]
+                    x -= g_font3d_scales[FontASCIIRemap(*glyph)]
                         * 0.80000001f;
                     ++glyph;
                     ++renderable_count;

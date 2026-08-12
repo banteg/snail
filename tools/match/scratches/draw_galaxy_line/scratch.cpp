@@ -22,7 +22,7 @@ void cRGalaxy::Line(
     float offset_x = normal.y * width * -0.5f;
     float offset_y = normal.x * width * 0.5f;
 
-    queue_textured_quad_corners(
+    OSDPrintUV(
         texture_id,
         x0 - offset_x,
         y0 - offset_y,

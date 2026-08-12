@@ -31,13 +31,13 @@ struct RuntimeCellSlotBase {
 };
 
 
-int queue_axis_aligned_textured_quad_uv(
+int OSDPrintUV(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0,
     float v0,
@@ -172,12 +172,12 @@ void cRSubGame::AI()
         if (selected_level_record_active == one
             && g_game->intro.hide_for_replay_latch == zero) {
             if (level_mode == three) {
-                queue_axis_aligned_textured_quad_uv(
+                OSDPrintUV(
                     27, 580.0f, 6.0f, 64.0f, 64.0f, 0x1000000,
                     replay_color.Set(1.0f, 1.0f, 1.0f, 0.400000006f),
                     0.0f, 0.0f, 1.0f, 1.0f, 1, 0);
             } else {
-                queue_axis_aligned_textured_quad_uv(
+                OSDPrintUV(
                     27, 288.0f, 10.0f, 64.0f, 64.0f, 0x1000000,
                     replay_color_alt.Set(1.0f, 1.0f, 1.0f, 0.400000006f),
                     0.0f, 0.0f, 1.0f, 1.0f, 1, 0);

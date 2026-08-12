@@ -4296,6 +4296,132 @@
       "description": "Release-stripped debug/report helper stub used by score, fringe, salt, and loading callsites."
     },
     {
+      "address": "0x449c70",
+      "name": "initialize_font_wave_state",
+      "kind": "function",
+      "aliases": [
+        "?FontInit@@YAXXZ"
+      ],
+      "description": "Exact authored void FontInit() entry."
+    },
+    {
+      "address": "0x449ca0",
+      "name": "update_font_wave_state",
+      "kind": "function",
+      "aliases": [
+        "?FontAI@@YAXXZ"
+      ],
+      "description": "Exact authored void FontAI() entry."
+    },
+    {
+      "address": "0x449d20",
+      "name": "font_slot_index_for_char",
+      "kind": "function",
+      "aliases": [
+        "?FontASCIIRemap@@YAHD@Z"
+      ],
+      "description": "Exact authored int FontASCIIRemap(char) entry."
+    },
+    {
+      "address": "0x449e90",
+      "name": "measure_font_text_width",
+      "kind": "function",
+      "aliases": [
+        "?FontGetStringX@@YAMPADHM@Z"
+      ],
+      "description": "Exact authored float FontGetStringX(char*, int, float) entry."
+    },
+    {
+      "address": "0x449f50",
+      "name": "register_font_texture_sheet",
+      "kind": "function",
+      "aliases": [
+        "?FontLoad@@YAHPADHMM@Z"
+      ],
+      "description": "Semantic-complete Windows int FontLoad(char*, int, float, float) entry."
+    },
+    {
+      "address": "0x44a360",
+      "name": "draw_font_text_instance",
+      "kind": "function",
+      "aliases": [
+        "?FontPrintReal@@YAXPAUcFontPrintBuffer@@@Z"
+      ],
+      "description": "Exact authored void FontPrintReal(cFontPrintBuffer*) entry."
+    },
+    {
+      "address": "0x44a6d0",
+      "name": "draw_queued_font_quad_instance",
+      "kind": "function",
+      "aliases": [
+        "?OSDPrintReal@@YAXPAUcFontPrintBuffer@@@Z"
+      ],
+      "description": "Exact authored void OSDPrintReal(cFontPrintBuffer*) entry."
+    },
+    {
+      "address": "0x44a730",
+      "name": "draw_font_text_queue",
+      "kind": "function",
+      "aliases": [
+        "?FontPrintRender@@YAXH@Z"
+      ],
+      "description": "Exact authored void FontPrintRender(int) entry."
+    },
+    {
+      "address": "0x44a790",
+      "name": "queue_font_text_instance",
+      "kind": "function",
+      "aliases": [
+        "?FontPrint@@YAXPADHMMMHMHPAUtColour@@MD@Z"
+      ],
+      "description": "Exact authored void FontPrint Windows entry with its native pointer and byte ABI."
+    },
+    {
+      "address": "0x44a8b0",
+      "name": "queue_axis_aligned_textured_quad",
+      "kind": "function",
+      "aliases": [
+        "?OSDPrint@@YAHHMMMMHPAUtColour@@H@Z"
+      ],
+      "description": "Semantic-complete Windows int OSDPrint entry."
+    },
+    {
+      "address": "0x44a9b0",
+      "name": "queue_axis_aligned_textured_quad_uv",
+      "kind": "function",
+      "aliases": [
+        "?OSDPrintUV@@YAHHMMMMHPAUtColour@@MMMMHM@Z"
+      ],
+      "description": "Semantic-complete Windows int short OSDPrintUV overload."
+    },
+    {
+      "address": "0x44aac0",
+      "name": "queue_textured_quad_corners",
+      "kind": "function",
+      "aliases": [
+        "?OSDPrintUV@@YAHHMMMMMMMMMMHPAUtColour@@MMMMHM@Z"
+      ],
+      "description": "Semantic-complete Windows int long OSDPrintUV overload."
+    },
+    {
+      "address": "0x44abe0",
+      "name": "layout_and_queue_wrapped_font_text",
+      "kind": "function",
+      "aliases": [
+        "?FontType@@YAXPADHMMMPAM111MDHMHPAUtColour@@DD@Z"
+      ],
+      "description": "Exact authored void FontType Windows entry with its native pointer and byte ABI."
+    },
+    {
+      "address": "0x44ae10",
+      "name": "initialize_font3d_objects",
+      "kind": "function",
+      "aliases": [
+        "?FontMake3D@@YAXF@Z"
+      ],
+      "description": "Semantic-complete authored void FontMake3D(short) entry."
+    },
+    {
       "address": "0x44c920",
       "name": "j_rand",
       "kind": "function",
@@ -8415,7 +8541,7 @@
         "data_753ce8"
       ],
       "size": "0x800",
-      "description": "Transient font text string buffer reset by update_font_wave_state and appended by queue_font_text_instance before the font queue array."
+      "description": "Transient font text string buffer reset by FontAI and appended by FontPrint before the font queue array."
     },
     {
       "address": "0x7544e8",
@@ -8425,7 +8551,7 @@
         "data_7544e8"
       ],
       "size": "0x21000",
-      "description": "Shared 0x400-entry cFontPrintBuffer array populated by queued text and quad helpers before draw_font_text_queue drains it. Android exports FontPrintBuffer with an exact 0x10800-byte size, independently proving 512 mobile records at the same 0x84-byte stride; Windows preserves four 12-byte x/y/z corner lanes before the text fields and doubles the capacity."
+      "description": "Shared 0x400-entry cFontPrintBuffer array populated by FontPrint and the OSDPrint overloads before FontPrintRender drains it. Android exports FontPrintBuffer with an exact 0x10800-byte size, independently proving 512 mobile records at the same 0x84-byte stride; Windows preserves four 12-byte x/y/z corner lanes before the text fields and doubles the capacity."
     },
     {
       "address": "0x75cfff",
@@ -8452,7 +8578,7 @@
         "data_7772e8",
         "unk_7772e8"
       ],
-      "description": "First global text-wave animation phase initialized by initialize_font_wave_state and advanced by update_font_wave_state."
+      "description": "First global text-wave animation phase initialized by FontInit and advanced by FontAI."
     },
     {
       "address": "0x7770e8",
@@ -8464,7 +8590,7 @@
         "g_font_glyph_widths"
       ],
       "size": "0x200",
-      "description": "Per-glyph 3D font width-scale cache filled by initialize_font3d_objects and read by intro-screen text layout."
+      "description": "Per-glyph 3D font width-scale cache filled by FontMake3D and read by intro-screen text layout."
     },
     {
       "address": "0x7772ec",
@@ -8474,7 +8600,7 @@
         "data_7772ec",
         "unk_7772ec"
       ],
-      "description": "Second global text-wave animation phase initialized by initialize_font_wave_state and advanced by update_font_wave_state."
+      "description": "Second global text-wave animation phase initialized by FontInit and advanced by FontAI."
     },
     {
       "address": "0x7772f0",
@@ -8483,7 +8609,7 @@
       "aliases": [
         "data_7772f0"
       ],
-      "description": "Cursor into g_font_text_buffer reset by update_font_wave_state and advanced by queue_font_text_instance."
+      "description": "Cursor into g_font_text_buffer reset by FontAI and advanced by FontPrint."
     },
     {
       "address": "0x7772f4",
@@ -8493,7 +8619,7 @@
         "data_7772f4",
         "unk_7772f4"
       ],
-      "description": "Second text-wave phase increment seeded by initialize_font_wave_state and consumed by update_font_wave_state."
+      "description": "Second text-wave phase increment seeded by FontInit and consumed by FontAI."
     },
     {
       "address": "0x7772f8",
@@ -8512,7 +8638,7 @@
       "aliases": [
         "data_777b20"
       ],
-      "description": "Per-frame registered font counter cleared by update_font_wave_state before font records are queued."
+      "description": "Per-frame registered font counter cleared by FontAI before font records are queued."
     },
     {
       "address": "0x777b24",
@@ -8521,7 +8647,7 @@
       "aliases": [
         "data_777b24"
       ],
-      "description": "Live font queue entry count cleared by update_font_wave_state and incremented by font text and quad queue helpers."
+      "description": "Live font queue entry count cleared by FontAI and incremented by FontPrint and the OSDPrint overloads."
     },
     {
       "address": "0x777b28",
@@ -8531,7 +8657,7 @@
         "data_777b28",
         "unk_777b28"
       ],
-      "description": "First text-wave phase increment seeded by initialize_font_wave_state and consumed by update_font_wave_state."
+      "description": "First text-wave phase increment seeded by FontInit and consumed by FontAI."
     },
     {
       "address": "0x777b2c",

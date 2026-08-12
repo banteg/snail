@@ -1,10 +1,10 @@
-// queue_textured_quad_corners @ 0x44aac0 (cdecl)
+// OSDPrintUV @ 0x44aac0 (cdecl)
 
 #include "font_system.h"
 
 #pragma warning(disable: 4715)
 
-int queue_textured_quad_corners(
+int OSDPrintUV(
     int texture_id,
     float x0,
     float y0,
@@ -16,7 +16,7 @@ int queue_textured_quad_corners(
     float y3,
     float unused_28,
     float unused_2c,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0,
     float v0,

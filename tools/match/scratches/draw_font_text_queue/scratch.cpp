@@ -1,9 +1,9 @@
-// draw_font_text_queue @ 0x44a730 (cdecl)
+// FontPrintRender @ 0x44a730 (cdecl)
 
 #include "font_system.h"
 #include "render_scene.h"
 
-void draw_font_text_queue(unsigned int render_mask)
+void FontPrintRender(int render_mask)
 {
     int count = g_font_queue_count;
     if (count != 0) {
@@ -14,9 +14,9 @@ void draw_font_text_queue(unsigned int render_mask)
             unsigned int flags = entry->flags;
             if ((flags & render_mask & RENDER_SCENE_MASK) != 0) {
                 if ((flags & 1) != 0)
-                    draw_font_text_instance(entry);
+                    FontPrintReal(entry);
                 else
-                    draw_queued_font_quad_instance(entry);
+                    OSDPrintReal(entry);
             }
         } while (--remaining != 0);
     }

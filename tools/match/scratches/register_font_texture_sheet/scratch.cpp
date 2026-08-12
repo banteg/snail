@@ -1,4 +1,4 @@
-// register_font_texture_sheet @ 0x449f50 (cdecl)
+// FontLoad @ 0x449f50 (cdecl)
 
 #include "font_system.h"
 #include "tga_image_view.h"
@@ -7,7 +7,7 @@ char* load_file_bytes(char* file_name, int* out_size);
 void free_tracked_memory(void* pointer);
 int sample_tga_pixel_rgb(TgaImageView* image, int x, int y);
 
-int register_font_texture_sheet(
+int FontLoad(
     char* texture_path,
     int shadow_offset_pixels,
     float width_scale,

@@ -1,6 +1,6 @@
-// font_slot_index_for_char @ 0x449d20 (cdecl)
+// FontASCIIRemap @ 0x449d20 (cdecl)
 
-int font_slot_index_for_char(char value)
+int FontASCIIRemap(char value)
 {
     if (value >= 'A' && value <= 'Z')
         return value - 0x26;

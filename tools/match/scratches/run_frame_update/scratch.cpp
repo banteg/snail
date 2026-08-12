@@ -8,13 +8,13 @@
 #include "voice_manager.h"
 
 int report_errorf(const char* format, ...);
-int queue_axis_aligned_textured_quad(
+int OSDPrint(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int color,
+    int flags,
     tColour* tint,
     int blend_mode);
 
@@ -40,7 +40,7 @@ int cRGame::AI()
             players[0].mouse_cursor.suppress_next_draw = 0;
         } else {
             tColour color;
-            queue_axis_aligned_textured_quad(
+            OSDPrint(
                 22,
                 players[0].mouse_cursor.saved_x - 8.0f,
                 players[0].mouse_cursor.saved_y - 7.0f,

@@ -20,13 +20,13 @@ inline Vector3 subtract_screen_xy(const Vector3& lhs, float screen_x, float scre
     return result;
 }
 
-int queue_axis_aligned_textured_quad_uv(
+int OSDPrintUV(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0,
     float v0,
@@ -86,7 +86,7 @@ int cRGalaxy::AI()
                 color.a = 0.99000001f;
 
                 if (!route_index) {
-                    queue_axis_aligned_textured_quad_uv(
+                    OSDPrintUV(
                         151, route_slots[0].record.map_x - 16.0f,
                         route_slots[0].record.map_y - 16.0f, 32.0f, 32.0f, 0x1000000,
                         route_zero_color.Set(1.0f, 0.0f, 0.0f, 0.99000001f), 0.0f, 0.0f,
@@ -94,7 +94,7 @@ int cRGalaxy::AI()
                 } else {
                     if (route_mode == 1 && route_index > selected_index)
                         goto skip_route_icon;
-                    queue_axis_aligned_textured_quad_uv(
+                    OSDPrintUV(
                         151, record->map_x - 16.0f, record->map_y - 16.0f, 32.0f, 32.0f, 0x1000000,
                         &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
                 }
@@ -102,7 +102,7 @@ int cRGalaxy::AI()
             skip_route_icon:
                 if (record->route_tint_alpha > 0.0f) {
                     color.a = record->route_tint_alpha;
-                    queue_axis_aligned_textured_quad_uv(
+                    OSDPrintUV(
                         150, record->map_x - 32.0f, record->map_y - 32.0f, 64.0f, 64.0f, 0x1000000,
                         &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
                 }
@@ -139,7 +139,7 @@ int cRGalaxy::AI()
         int galaxy_index = 0;
         GalaxyRouteNameRecord* route_name = route_names;
         do {
-            queue_axis_aligned_textured_quad_uv(galaxy_index + 139, route_name->map_x - 128.0f,
+            OSDPrintUV(galaxy_index + 139, route_name->map_x - 128.0f,
                                                 route_name->map_y - 128.0f, 256.0f, 256.0f,
                                                 0x1000000, &color, 0.0f, 0.0f, 1.0f, 1.0f, 15, 0);
             ++galaxy_index;

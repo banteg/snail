@@ -1,8 +1,8 @@
-// queue_font_text_instance @ 0x44a790 (cdecl)
+// FontPrint @ 0x44a790 (cdecl)
 
 #include "font_system.h"
 
-void queue_font_text_instance(
+void FontPrint(
     char* text,
     int font_id,
     float text_scale,
@@ -10,7 +10,7 @@ void queue_font_text_instance(
     float y,
     int horizontal_align,
     float anchor_x,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float text_wave_amplitude,
     char shadow_enabled)

@@ -1,16 +1,16 @@
-// queue_axis_aligned_textured_quad @ 0x44a8b0 (cdecl)
+// OSDPrint @ 0x44a8b0 (cdecl)
 
 #include "font_system.h"
 
 #pragma warning(disable: 4715)
 
-int queue_axis_aligned_textured_quad(
+int OSDPrint(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     int blend_mode)
 {

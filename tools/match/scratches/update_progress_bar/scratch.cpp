@@ -7,13 +7,13 @@
 #include "sprite.h"
 
 
-int queue_axis_aligned_textured_quad_uv(
+int OSDPrintUV(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0,
     float v0,
@@ -40,7 +40,7 @@ void cRProgressBar::AI()
     float lit_y = remaining_height + 150.0f;
 
     tColour color;
-    queue_axis_aligned_textured_quad_uv(
+    OSDPrintUV(
         0x9d,
         12.0f,
         lit_y - 39.0f,
@@ -56,7 +56,7 @@ void cRProgressBar::AI()
         0);
 
     float split_v = remaining_height * 0.00390625f;
-    queue_axis_aligned_textured_quad_uv(
+    OSDPrintUV(
         0x9b,
         13.0f,
         150.0f,
@@ -71,7 +71,7 @@ void cRProgressBar::AI()
         3,
         0);
 
-    queue_axis_aligned_textured_quad_uv(
+    OSDPrintUV(
         0x9c,
         13.0f,
         lit_y,

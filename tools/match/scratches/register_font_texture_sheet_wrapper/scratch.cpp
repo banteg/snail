@@ -8,6 +8,6 @@ int register_font_texture_sheet_wrapper(
     float width_scale,
     float height_scale)
 {
-    return register_font_texture_sheet(
+    return FontLoad(
         texture_path, shadow_offset_pixels, width_scale, height_scale);
 }

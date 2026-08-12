@@ -4,13 +4,13 @@
 #include "backdrop.h"
 #include "sprite.h"
 
-int queue_axis_aligned_textured_quad_uv(
+int OSDPrintUV(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0,
     float v0,
@@ -22,7 +22,7 @@ int queue_axis_aligned_textured_quad_uv(
 int cRBackdrop::draw_split_backdrop()
 {
     tColour color;
-    queue_axis_aligned_textured_quad_uv(
+    OSDPrintUV(
         active_primary_texture_id,
         0.0f,
         0.0f,
@@ -37,7 +37,7 @@ int cRBackdrop::draw_split_backdrop()
         0,
         0);
 
-    return queue_axis_aligned_textured_quad_uv(
+    return OSDPrintUV(
         active_secondary_texture_id,
         512.0f,
         0.0f,

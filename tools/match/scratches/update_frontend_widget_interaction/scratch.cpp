@@ -222,7 +222,7 @@ update_after_input:
                 layout_width = frame_width;
                 layout_height = frame_height;
             } else {
-                layout_and_queue_wrapped_font_text(
+                FontType(
                     text_buffer,
                     font_id,
                     font_scale,

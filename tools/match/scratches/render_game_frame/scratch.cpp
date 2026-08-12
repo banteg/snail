@@ -246,7 +246,7 @@ void cRGame::render_game_frame()
 
             end_sprite_depth_render_state();
             begin_overlay_render_state();
-            draw_font_text_queue(viewports[camera_index].flags);
+            FontPrintRender(viewports[camera_index].flags);
             end_overlay_render_state();
 
             if ((viewports[camera_index].flags & 2) == 0 &&

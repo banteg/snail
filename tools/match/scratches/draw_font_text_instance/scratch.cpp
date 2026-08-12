@@ -1,27 +1,27 @@
-// draw_font_text_instance @ 0x44a360 (cdecl)
+// FontPrintReal @ 0x44a360 (cdecl)
 
 #include "font_system.h"
 
-void draw_font_text_instance(cFontPrintBuffer* entry)
+void FontPrintReal(cFontPrintBuffer* entry)
 {
     float cursor_x = entry->x0;
     int alignment = entry->horizontal_align;
 
     if (alignment == 2) {
-        float width = measure_font_text_width(entry->text, entry->font_id, entry->text_scale);
+        float width = FontGetStringX(entry->text, entry->font_id, entry->text_scale);
         cursor_x = entry->anchor_x + 320.0f - width * 0.5f;
     } else if (alignment == 1) {
-        measure_font_text_width(entry->text, entry->font_id, entry->text_scale);
+        FontGetStringX(entry->text, entry->font_id, entry->text_scale);
         cursor_x = entry->anchor_x + 320.0f;
     } else if (alignment == 3) {
-        float width = measure_font_text_width(entry->text, entry->font_id, entry->text_scale);
+        float width = FontGetStringX(entry->text, entry->font_id, entry->text_scale);
         cursor_x = entry->anchor_x + 320.0f - width;
     }
 
     char* cursor = entry->text;
     float wave_index = 0.0f;
     for (; *cursor != 0; ++cursor) {
-        int slot = font_slot_index_for_char(*cursor);
+        int slot = FontASCIIRemap(*cursor);
         int font_id = entry->font_id;
 
         float u0 = g_font_sheets[font_id].glyph_u0[slot];

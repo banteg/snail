@@ -33,7 +33,7 @@ void cRBorder::layout_frontend_widget()
         } else {
             layout_top_ptr = &widget->layout_y;
             layout_left_ptr = &widget->layout_x;
-            layout_and_queue_wrapped_font_text(
+            FontType(
                 widget->text_buffer,
                 widget->font_id,
                 widget->font_scale,

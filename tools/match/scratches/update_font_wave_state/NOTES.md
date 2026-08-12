@@ -1,37 +1,11 @@
-# update_font_wave_state
+# FontAI
 
-Initial scratch for the per-frame font queue reset and wave-phase updater at
-`0x449ca0`.
+`FontAI()` is the native-authored owner of the Windows routine at `0x449ca0`.
+The focused match is exact: 25/25 instructions and 17 clean references.
 
-Wibo result: exact 100%, 25/25 instructions, masked operands 17 ok.
+It resets the transient text cursor and queue counters, advances both wave
+phases, and wraps them by one full turn. Android and iOS both export `FontAI()`
+from `Font.o`; the live Windows database has one main-loop caller.
 
-Recovered relationships:
-
-- Resets the shared text-buffer cursor (`data_7772f0`) to `data_753ce8`.
-- Clears the registered-font counter (`data_777b20`) and font queue count
-  (`data_777b24`) every frame before queued text/quads are appended.
-- Advances the two wave phases initialized by exact `initialize_font_wave_state`
-  and wraps each phase by one `2*pi` interval.
-
-## 2026-07-14 shared global declarations
-
-The reset and initializer now share the font runtime declarations instead of
-redeclaring the four wave scalars, text cursor, and counters independently.
-Their addresses also close the tail around the fixed sheet bank: the scale
-cache ends at `g_font_wave_phase_a` (`0x7772e8`), followed by phase B, the text
-cursor, step B, the one-sheet array, registered/queue counts, and step A.
-
-Both exact routines remain byte-identical: `update_font_wave_state` retains
-hash `5585d19e0efdb2d1ee1b0fa481c8dae4e5928fa1d6183b6a1b2c387939065365`
-(`25/25`, 17 clean operands), and `initialize_font_wave_state` retains hash
-`3a31a5797a1d96d8af76b1af64c46364afee7e5de4c6f690a3502cc17f5215e4`
-(`5/5`, four clean operands).
-
-# 2026-07-25 cross-tool state replay
-
-The narrow font-system replay now includes both font-wave lifecycle helpers,
-not just their data symbols. Binary Ninja and IDA therefore persist the exact
-`void __cdecl` contracts and reanalyze the initializer/updater after naming the
-two phase/step pairs, transient text cursor, registered-font count, and queued
-entry count. This closes the stale IDA `unk_*` presentation without grouping
-the non-contiguous globals into a synthetic owner.
+The directory and manifest retain `update_font_wave_state` as the stable
+matcher identifier; source and linkage use the recovered authored name.

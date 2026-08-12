@@ -12,7 +12,7 @@ void cRFlash::AI()
     current.a = (target.a - current.a) * 0.145f + current.a;
 
     if (current.a > 0.01f) {
-        queue_axis_aligned_textured_quad(
+        OSDPrint(
             2,
             0.0f,
             0.0f,

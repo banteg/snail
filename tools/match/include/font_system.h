@@ -79,13 +79,13 @@ extern float g_font_wave_phase_b;         // data_7772ec
 extern float g_font_wave_step_b;          // data_7772f4
 extern float g_font_wave_step_a;          // data_777b28
 int report_errorf(const char* format, ...);
-void initialize_font_wave_state(); // @ 0x449c70
-void update_font_wave_state(); // @ 0x449ca0
-int font_slot_index_for_char(char value); // @ 0x449d20
-float measure_font_text_width(char* text, int font_id, float scale); // @ 0x449e90
-int register_font_texture_sheet(char* texture_path, int shadow_offset_pixels,
+void FontInit(); // @ 0x449c70
+void FontAI(); // @ 0x449ca0
+int FontASCIIRemap(char value); // @ 0x449d20
+float FontGetStringX(char* text, int font_id, float scale); // @ 0x449e90
+int FontLoad(char* texture_path, int shadow_offset_pixels,
     float width_scale, float height_scale); // @ 0x449f50
-void layout_and_queue_wrapped_font_text(
+void FontType(
     char* text,
     int font_id,
     float text_scale,
@@ -99,11 +99,11 @@ void layout_and_queue_wrapped_font_text(
     char shadow_enabled,
     int horizontal_align,
     float anchor_x,
-    unsigned int flags,
+    int flags,
     tColour* color,
     char measure_only,
     char pulse_alpha); // @ 0x44abe0
-void initialize_font3d_objects(short font_id); // @ 0x44ae10
+void FontMake3D(short font_id); // @ 0x44ae10
 float Sin(float angle); // @ 0x44c9d0
 float Cos(float angle); // @ 0x44c980
 void draw_textured_quad_immediate(
@@ -118,25 +118,25 @@ void draw_textured_quad_immediate(
     tColour* color,
     int blend_mode,
     float rotation); // @ 0x413030
-void draw_font_text_instance(cFontPrintBuffer* entry); // @ 0x44a360
-void draw_queued_font_quad_instance(cFontPrintBuffer* entry); // @ 0x44a6d0
-void draw_font_text_queue(unsigned int render_mask); // @ 0x44a730
-int queue_axis_aligned_textured_quad(
+void FontPrintReal(cFontPrintBuffer* entry); // @ 0x44a360
+void OSDPrintReal(cFontPrintBuffer* entry); // @ 0x44a6d0
+void FontPrintRender(int render_mask); // @ 0x44a730
+int OSDPrint(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     int blend_mode); // @ 0x44a8b0; appended byte offset, incidental on skip
-int queue_axis_aligned_textured_quad_uv(
+int OSDPrintUV(
     int texture_id,
     float x,
     float y,
     float width,
     float height,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0,
     float v0,
@@ -144,7 +144,7 @@ int queue_axis_aligned_textured_quad_uv(
     float v1,
     int blend_mode,
     float rotation); // @ 0x44a9b0; appended byte offset, incidental on skip
-void queue_font_text_instance(
+void FontPrint(
     char* text,
     int font_id,
     float text_scale,
@@ -152,11 +152,11 @@ void queue_font_text_instance(
     float y,
     int horizontal_align,
     float anchor_x,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float text_wave_amplitude,
     char shadow_enabled); // @ 0x44a790
-int queue_textured_quad_corners(
+int OSDPrintUV(
     int texture_id,
     float x0, float y0,
     float x1, float y1,
@@ -164,7 +164,7 @@ int queue_textured_quad_corners(
     float x3, float y3,
     float unused_28,
     float unused_2c,
-    unsigned int flags,
+    int flags,
     tColour* color,
     float u0, float v0,
     float u1, float v1,

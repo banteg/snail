@@ -1,10 +1,10 @@
-// initialize_font3d_objects @ 0x44ae10 (cdecl)
+// FontMake3D @ 0x44ae10 (cdecl)
 
 #include "bod_types.h"
 #include "font_system.h"
 #include "object_render_types.h"
 
-void initialize_font3d_objects(short font_id)
+void FontMake3D(short font_id)
 {
     int font = font_id;
     int index = 0;

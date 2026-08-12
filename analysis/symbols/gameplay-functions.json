@@ -4846,82 +4846,118 @@
     {
       "address": "0x449c70",
       "name": "initialize_font_wave_state",
-      "description": "Seeds the shared sine-wave text animation phases and per-tick phase increments that `draw_font_text_instance` consumes for wobble text."
+      "aliases": [
+        "FontInit"
+      ],
+      "description": "Exact authored `FontInit()` entry: seeds the shared sine-wave text animation phases and per-tick phase increments that `FontPrintReal` consumes for wobble text."
     },
     {
       "address": "0x449ca0",
       "name": "update_font_wave_state",
-      "description": "Void FontAI counterpart: advances the shared sine-wave text animation phases, wraps them into `[0, 2pi)`, and resets the transient font-wave bookkeeping lanes each frame. Its sole Windows caller discards EAX."
+      "aliases": [
+        "FontAI"
+      ],
+      "description": "Exact authored void `FontAI()`: advances the shared sine-wave text animation phases, wraps them into `[0, 2pi)`, and resets the transient font queue bookkeeping each frame."
     },
     {
       "address": "0x449d20",
       "name": "font_slot_index_for_char",
-      "description": "Maps front-end text bytes onto FONT-MENU-HOVER atlas slot indices; shipped tutorial strings reuse bytes like `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;` as icon tokens."
+      "aliases": [
+        "FontASCIIRemap"
+      ],
+      "description": "Exact authored `FontASCIIRemap(char)` entry: maps front-end text bytes onto FONT-MENU-HOVER atlas slot indices; shipped tutorial strings reuse punctuation bytes as icon tokens."
     },
     {
       "address": "0x449e90",
       "name": "measure_font_text_width",
-      "description": "Accumulates atlas slot widths for one string using the registered font's spacing scalar and trailing space padding."
+      "aliases": [
+        "FontGetStringX"
+      ],
+      "description": "Exact authored `FontGetStringX(char*, int, float)` entry: accumulates atlas slot widths for one string using the registered font's spacing scalar and trailing space padding."
     },
     {
       "address": "0x449f50",
       "name": "register_font_texture_sheet",
+      "aliases": [
+        "FontLoad"
+      ],
       "port_scope": "boundary",
-      "description": "Windows integer-returning `FontLoad` variant: owns one FONT-MENU-HOVER atlas buffer through release, derives split-page paths, publishes texture refs and glyph metadata into the Windows-specific FontSheet owner, then returns the pre-increment sheet index. Both mobile ports retain a void ABI and a different 0xa28 sheet format."
+      "description": "Semantic-complete Windows integer-returning `FontLoad(char*, int, float, float)`: owns one atlas buffer through release, derives split-page paths, publishes texture refs and glyph metadata into the Windows-specific FontSheet, then returns the pre-increment sheet index. Both mobile ports retain a void ABI and a different 0xa28 sheet layout."
     },
     {
       "address": "0x44a360",
       "name": "draw_font_text_instance",
+      "aliases": [
+        "FontPrintReal"
+      ],
       "port_scope": "boundary",
-      "description": "Exact void FontPrintReal counterpart over one cFontPrintBuffer: preserves the borrowed queue-entry owner in ESI, reuses its incoming stack slot as the horizontal glyph cursor, maps each byte to the FontSheet glyph_u0/glyph_u1/glyph_v0/glyph_v1 atlas quartet and saved texture page, independently reborrows the selected texture and sheet dimensions for the shadow and primary draws, then advances by the integer glyph width. The optional shadow pass casts the positive sheet offset directly into both coordinates and supplies its black color setter as the draw argument; the queue drain discards EAX on every path."
+      "description": "Exact authored void `FontPrintReal(cFontPrintBuffer*)`: maps each queued text byte to its FontSheet atlas slot, emits the optional shadow and primary glyph quads, applies the two shared wave phases, and advances by the integer glyph width."
     },
     {
       "address": "0x44a6d0",
       "name": "draw_queued_font_quad_instance",
+      "aliases": [
+        "OSDPrintReal"
+      ],
       "port_scope": "boundary",
-      "description": "Void OSDPrintReal counterpart over one cFontPrintBuffer: forwards its stored coordinates, UVs, size mode, angle, and color into the shared immediate textured-quad helper. The queue drain discards EAX."
+      "description": "Exact authored void `OSDPrintReal(cFontPrintBuffer*)`: forwards one queued quad's texture, coordinates, UVs, color, blend mode, and rotation to the immediate textured-quad renderer."
     },
     {
       "address": "0x44a730",
       "name": "draw_font_text_queue",
+      "aliases": [
+        "FontPrintRender"
+      ],
       "port_scope": "boundary",
-      "description": "Void FontPrintRender counterpart: iterates the live cFontPrintBuffer queue backward and draws entries matching the supplied render mask. Its sole Windows caller discards EAX."
+      "description": "Exact authored void `FontPrintRender(int)`: iterates the live cFontPrintBuffer queue backward and dispatches matching entries to `FontPrintReal` or `OSDPrintReal`."
     },
     {
       "address": "0x44a790",
       "name": "queue_font_text_instance",
+      "aliases": [
+        "FontPrint"
+      ],
       "port_scope": "boundary",
-      "description": "FontPrint counterpart: copies one text run into the shared font print string buffer and appends the matching cFontPrintBuffer record with its font, position, alignment, colors, and render flags."
+      "description": "Exact authored void `FontPrint(...)`: copies one text run into the shared string buffer and appends its cFontPrintBuffer record with font, position, alignment, color, wave, shadow, and render state. Windows preserves its pointer/byte ABI where the mobile ports use tColour and bool values."
     },
     {
       "address": "0x44a8b0",
       "name": "queue_axis_aligned_textured_quad",
+      "aliases": [
+        "OSDPrint"
+      ],
       "port_scope": "boundary",
-      "description": "OSDPrint counterpart: appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags. The mobile overloads are void, but Windows intentionally retains an integer queue-offset result; forcing the mobile ABI destroys the native register schedule."
+      "description": "Semantic-complete Windows `OSDPrint(...)`: appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue. Mobile declares the overload void; Windows retains its incidental integer queue-offset result because forcing the mobile return ABI changes native scheduling."
     },
     {
       "address": "0x44a9b0",
       "name": "queue_axis_aligned_textured_quad_uv",
       "port_scope": "boundary",
-      "description": "Short OSDPrintUV overload counterpart: appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper. The mobile overloads are void, while Windows retains the successful append offset as an integer result; the focused matcher rejects a cross-port void projection."
+      "description": "Semantic-complete short `OSDPrintUV(...)` overload: appends one axis-aligned textured quad with explicit UV bounds. Mobile declares it void; Windows retains the successful append offset as an integer result because the focused matcher rejects a cross-port void projection."
     },
     {
       "address": "0x44aac0",
       "name": "queue_textured_quad_corners",
       "port_scope": "boundary",
-      "description": "Long OSDPrintUV overload counterpart: appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. Its two otherwise-unused post-corner formals are floats in both symbol-rich mobile builds. Mobile declares the overload void, but Windows retains an integer queue-offset result; the backdrop and galaxy-line renderers consume it according to their platform-specific contracts."
+      "description": "Semantic-complete long `OSDPrintUV(...)` overload: appends one arbitrary four-corner textured quad with explicit positions and UV bounds. Its two unused post-corner formals are floats in both symbol-rich mobile builds; Windows preserves its integer queue-offset result."
     },
     {
       "address": "0x44abe0",
       "name": "layout_and_queue_wrapped_font_text",
+      "aliases": [
+        "FontType"
+      ],
       "port_scope": "boundary",
-      "description": "Authored void `FontType(...)`: splits one text string into wrapped line runs, queues each run through `queue_font_text_instance`, and writes the aligned authored-space origin and measured bounds through four borrowed output pointers."
+      "description": "Exact authored void `FontType(...)`: splits one text string into wrapped line runs, queues each run through `FontPrint`, and writes the aligned authored-space origin and measured bounds through four borrowed output pointers. Windows preserves its pointer/byte ABI where the mobile ports pass tColour and bool values."
     },
     {
       "address": "0x44ae10",
       "name": "initialize_font3d_objects",
+      "aliases": [
+        "FontMake3D"
+      ],
       "port_scope": "boundary",
-      "description": "Void materializer for the registered font atlas: advances a FontGlyphAtlasCursor anchored at glyph_u1 with synchronized +0x200 glyph_width and +0x400 texture_page lanes, borrows one ObjectList slot per glyph into the fixed 128-entry g_font3d_bods array, applies the horizontally paired and vertically flipped glyph UVs, and records the derived glyph_scale in g_font3d_scales."
+      "description": "Semantic-complete void `FontMake3D(short)`: materializes the registered atlas into fixed g_font3d_bods/g_font3d_scales arrays, assigns one object per glyph, applies paired and vertically flipped UVs, and records the derived glyph scale."
     },
     {
       "address": "0x44afc0",

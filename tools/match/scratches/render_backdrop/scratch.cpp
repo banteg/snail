@@ -37,7 +37,7 @@ void cRBackdrop::render_backdrop()
                 left_x = row * 91.4285736f;
                 right_x = next_row * 91.4285736f;
                 left_y = column * 68.5714264f;
-                queue_textured_quad_corners(
+                OSDPrintUV(
                     active_primary_texture_id,
                     left_x + cell[26],
                     left_y + cell[27],
@@ -65,7 +65,7 @@ void cRBackdrop::render_backdrop()
                 left_x = row * 91.4285736f;
                 right_x = next_row * 91.4285736f;
                 left_y = column * 68.5714264f;
-                queue_textured_quad_corners(
+                OSDPrintUV(
                     active_primary_texture_id,
                     left_x + cell[26],
                     left_y + cell[27],
