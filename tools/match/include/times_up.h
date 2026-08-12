@@ -17,7 +17,7 @@ public:
     void show_times_up_message(); // @ 0x445e90, cRTimesUp::Init
 
     TimesUpState state; // +0x00
-    FrontendWidget* border; // +0x04, borrowed BorderManager handle
+    cRBorder* border; // +0x04, borrowed cRBorderManager handle
     float progress; // +0x08
     float progress_step; // +0x0c
 };

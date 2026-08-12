@@ -155,9 +155,9 @@
       "name": "galaxy_border_bound",
       "kind": "function",
       "aliases": [
-        "?BorderBound@cRGalaxy@@QAEXAAM000PAVFrontendWidget@@@Z"
+        "?BorderBound@cRGalaxy@@QAEXAAM000PAVcRBorder@@@Z"
       ],
-      "description": "Exact cRGalaxy::BorderBound member; VC6 emits the current cRBorder compatibility typedef as FrontendWidget."
+      "description": "Exact cRGalaxy::BorderBound member with the authored cRBorder pointer owner."
     },
     {
       "address": "0x410710",

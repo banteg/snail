@@ -39,9 +39,7 @@ two clean operands.
 The source surface now matches Android's
 `cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`; references
 are pointer-identical at the Windows ABI and preserve the exact body. Because
-the current Windows matcher still defines `cRBorder` as a compatibility typedef
-of `FrontendWidget`, VC6 emits the honest symbol
-`?BorderBound@cRGalaxy@@QAEXAAM000PAVFrontendWidget@@@Z`. A future atomic
-cRBorder-primary promotion may narrow that parameter spelling; this slice does
-not forge it locally. Focused output remains exact at 63/63 with both operands
-clean.
+the shared matcher now defines `cRBorder` as the primary owner, VC6 emits
+`?BorderBound@cRGalaxy@@QAEXAAM000PAVcRBorder@@@Z`. The compatibility
+`FrontendWidget` typedef remains available to analysis-only consumers. Focused
+output remains exact at 63/63 with both operands clean.

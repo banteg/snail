@@ -25,17 +25,17 @@ public:
     unsigned char entering_name; // +0x10
     char unknown_11[0x14 - 0x11];
     int selected_rank; // +0x14
-    FrontendWidget* title_widget; // +0x18, heading or name-entry prompt
-    FrontendWidget* back_button; // +0x1c
-    FrontendWidget* bank_toggle_button; // +0x20
-    FrontendWidget* cancel_name_button; // +0x24, Cancel/Escape
-    FrontendWidget* submit_name_button; // +0x28, Submit/Enter
-    FrontendWidget*
+    cRBorder* title_widget; // +0x18, heading or name-entry prompt
+    cRBorder* back_button; // +0x1c
+    cRBorder* bank_toggle_button; // +0x20
+    cRBorder* cancel_name_button; // +0x24, Cancel/Escape
+    cRBorder* submit_name_button; // +0x28, Submit/Enter
+    cRBorder*
         row_background_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x2c
-    FrontendWidget* rank_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x54
-    FrontendWidget* name_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x7c
-    FrontendWidget* score_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0xa4
-    FrontendWidget* replay_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0xcc
+    cRBorder* rank_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x54
+    cRBorder* name_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0x7c
+    cRBorder* score_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0xa4
+    cRBorder* replay_row_widgets[SUB_HIGH_SCORE_TOP_TEN_COUNT]; // +0xcc
 };
 
 typedef cRHighScore HighScore;

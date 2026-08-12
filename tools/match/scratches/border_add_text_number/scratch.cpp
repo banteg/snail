@@ -2,7 +2,7 @@
 
 #include "frontend_widget.h"
 
-void FrontendWidget::border_add_text_number(int value)
+void cRBorder::border_add_text_number(int value)
 {
     char* out = text_buffer;
     while (*out != 0)

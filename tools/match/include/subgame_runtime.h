@@ -210,11 +210,11 @@ public:
     cRSlugVoiceManager slug_voice_manager; // +0x35bb7c, authored manager
     // BorderManager pool handles. cRSubGame retains them for gameplay,
     // then destroy_subgame returns each handle through kill_border().
-    FrontendWidget* top_score_widget; // +0x35bb88
-    FrontendWidget* bottom_score_widget; // +0x35bb8c
-    FrontendWidget* lives_icon_widget; // +0x35bb90
-    FrontendWidget* lives_text_widget; // +0x35bb94
-    FrontendWidget* life_stock_widgets[9]; // +0x35bb98
+    cRBorder* top_score_widget; // +0x35bb88
+    cRBorder* bottom_score_widget; // +0x35bb8c
+    cRBorder* lives_icon_widget; // +0x35bb90
+    cRBorder* lives_text_widget; // +0x35bb94
+    cRBorder* life_stock_widgets[9]; // +0x35bb98
     // Fixed visual pool owned by cRSubGame. cRSubLoc fringe fields
     // only borrow handles into this storage while a built track is live.
     cRFringeManager fringe_manager; // +0x35bbbc, count at +0x3bb6fc

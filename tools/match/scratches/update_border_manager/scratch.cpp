@@ -4,13 +4,13 @@
 #include "game_root.h"
 
 
-void BorderManager::update_border_manager()
+void cRBorderManager::update_border_manager()
 {
     if (delayed_widget_active != 0) {
         float progress = delayed_widget_progress_step + delayed_widget_progress;
         delayed_widget_progress = progress;
         if (progress > 1.0f) {
-            FrontendWidget* widget = delayed_widget;
+            cRBorder* widget = delayed_widget;
             delayed_widget_progress = 1.0f;
             unsigned int widget_flags = widget->widget_flags;
             if ((widget_flags & FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION) == 0 ||

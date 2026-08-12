@@ -14,7 +14,7 @@ public:
     void uninit_thanks_screen(); // @ 0x4340c0
 
     cRSubGame* game; // +0x00, borrowed enclosing cRSubGame owner
-    FrontendWidget* message_widget; // +0x04
+    cRBorder* message_widget; // +0x04
     int message_state; // +0x08
     float message_progress; // +0x0c
     float message_progress_step; // +0x10

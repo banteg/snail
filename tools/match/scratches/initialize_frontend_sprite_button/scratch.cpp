@@ -6,7 +6,7 @@
 
 int report_errorf(char* format, ...);
 
-void FrontendWidget::initialize_frontend_sprite_button(
+void cRBorder::initialize_frontend_sprite_button(
     int flags,
     int sprite,
     float x,
@@ -16,7 +16,7 @@ void FrontendWidget::initialize_frontend_sprite_button(
     int layer)
 {
     char* self = (char*)this;
-    FrontendWidget* head = (FrontendWidget*)&g_game->border_manager;
+    cRBorder* head = (cRBorder*)&g_game->border_manager;
 
     if ((list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDafter");

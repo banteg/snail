@@ -22,7 +22,7 @@ int queue_axis_aligned_textured_quad_uv(
     int blend_mode,
     float rotation);
 
-void FrontendWidget::draw_frontend_widget()
+void cRBorder::draw_frontend_widget()
 {
     tColour white;
     tColour slider_color;

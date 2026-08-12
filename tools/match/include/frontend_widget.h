@@ -4,6 +4,7 @@
 #ifndef FRONTEND_WIDGET_H
 #define FRONTEND_WIDGET_H
 
+#include "border_fwd.h"
 #include "bod_types.h"
 #include "sprite.h"
 #include "tooltip_state.h"
@@ -46,14 +47,14 @@ enum FrontendWidgetFlag {
 // constructor initializes the inherited BodBase and color_06c; the manager
 // allocator stamps created_time before returning this view. Widget-specific
 // semantics begin at +0x38.
-class FrontendWidget : public BodBase {
+class cRBorder : public BodBase {
 public:
     void draw_frontend_widget(); // @ 0x401130, iOS/Android cRBorder::Draw()
     void hide_border_init(); // @ 0x4010e0, Android cRBorder::HideInit()
     void unhide_border_init(); // @ 0x401110, Android cRBorder::UnHideInit()
     void highlight_border(); // @ 0x402800, Android cRBorder::Highlight()
     void unhighlight_border(); // @ 0x4027e0, Android cRBorder::UnHighlight()
-    void stack_widget_below(FrontendWidget* previous_widget); // @ 0x4027b0,
+    void stack_widget_below(cRBorder* previous_widget); // @ 0x4027b0,
         // Android cRBorder::SetBelow(cRBorder*)
     void layout_frontend_widget(); // @ 0x4024a0,
         // Android cRBorder::RePosition()
@@ -112,7 +113,7 @@ public:
     int sprite_extend_retained_state; // +0x068, write-only in the Windows image
     tColour color_06c; // +0x06c, constructed with the backing BorderRecord
     int widget_type; // +0x7c, border style/font preset
-    TwinkleManager twinkle_manager; // +0x080, five inline twinkles and manager state
+    cRTwinkleManager twinkle_manager; // +0x080, five inline twinkles and manager state
     float sprite_shadow_offset; // +0x178, optional second sprite draw offset
     union {
         float slider_value;
@@ -128,7 +129,7 @@ public:
     float slider_hit_bottom; // +0x190
     int shortcut_key_code; // +0x194
     char unknown_198[0x19c - 0x198];
-    int created_time; // +0x19c, stamped by BorderManager::allocate_border
+    int created_time; // +0x19c, stamped by cRBorderManager::allocate_border
     unsigned int widget_flags; // +0x1a0, FrontendWidgetFlag word
     unsigned int previous_widget_flags; // +0x1a4
     char unknown_1a8[0x1ac - 0x1a8];
@@ -185,7 +186,7 @@ public:
     float previous_mouse_x; // +0x27c
     float previous_mouse_y; // +0x280
     char unknown_284[0x28c - 0x284];
-    FrontendWidgetTooltip tooltip; // +0x28c, authored cRToolTip owner
+    cRToolTip tooltip; // +0x28c, authored cRToolTip owner
     char text_buffer[0x420]; // +0x2cc
     int font_id; // +0x6ec
     float font_scale; // +0x6f0
@@ -199,27 +200,23 @@ public:
     int input_length; // +0x710, text length excluding the editing marker
     int input_capacity; // +0x714
     union {
-        FrontendWidget* child_widget_0;
-        FrontendWidget* slider_less_widget;
+        cRBorder* child_widget_0;
+        cRBorder* slider_less_widget;
     }; // +0x718
     union {
-        FrontendWidget* child_widget_1;
-        FrontendWidget* slider_more_widget;
+        cRBorder* child_widget_1;
+        cRBorder* slider_more_widget;
     }; // +0x71c
     union {
-        FrontendWidget* child_widget_2;
-        FrontendWidget* slider_value_widget;
+        cRBorder* child_widget_2;
+        cRBorder* slider_value_widget;
     }; // +0x720
 };
 
 typedef char FrontendWidget_must_be_0x724[
-    (sizeof(FrontendWidget) == 0x724) ? 1 : -1];
+    (sizeof(cRBorder) == 0x724) ? 1 : -1];
 
-// Authored cross-port owner. Mobile cRBorder uses a distinct layout, so this
-// alias names the Windows owner without importing mobile field offsets.
-typedef FrontendWidget cRBorder;
-
-inline InputOkState* FrontendWidget::input_ok_state()
+inline InputOkState* cRBorder::input_ok_state()
 {
     // Text-input widgets reuse the tooltip tail as an InputOkState. Its
     // source/OK pointers land at the tooltip's final two pointer lanes.

@@ -26,11 +26,11 @@ public:
     void AI(); // @ 0x404cf0
     void RegisterParcel(); // @ 0x405040
 
-    FrontendWidget* title_widget; // +0x00, "Delivery Complete!" heading
-    FrontendWidget* delivered_count_widget; // +0x04
-    FrontendWidget* bonus_summary_widget; // +0x08, blinking bonus text
-    FrontendWidget* bonus_icon_widget; // +0x0c, sprite id 122
-    FrontendWidget* continue_widget; // +0x10
+    cRBorder* title_widget; // +0x00, "Delivery Complete!" heading
+    cRBorder* delivered_count_widget; // +0x04
+    cRBorder* bonus_summary_widget; // +0x08, blinking bonus text
+    cRBorder* bonus_icon_widget; // +0x0c, sprite id 122
+    cRBorder* continue_widget; // +0x10
     union {
         CompletionState state;
         CompletionState continue_state;

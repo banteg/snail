@@ -39,11 +39,11 @@ enum {
     BORDER_RECORD_COUNT = 150,
 };
 
-class BorderManager : public BodBase {
+class cRBorderManager : public BodBase {
 public:
     // The backing storage is BorderRecord-sized, but frontend callers use the
-    // returned record through the FrontendWidget view.
-    FrontendWidget* allocate_border(); // @ 0x4032a0
+    // returned record through the cRBorder view.
+    cRBorder* allocate_border(); // @ 0x4032a0
     void activate_all_borders(); // @ 0x403300,
         // Android cRBorderManager::ActivateBorders()
     void kill_all_borders(); // @ 0x4033c0, cRBorderManager::KillBorders
@@ -51,9 +51,9 @@ public:
         // iOS/Android cRBorderManager::HideBorders()
     void unhide_all_borders(); // @ 0x403400,
         // iOS/Android cRBorderManager::UnHideBorders()
-    int kill_border(FrontendWidget* border);
+    int kill_border(cRBorder* border);
     void queue_frontend_widget_flag_after_delay(
-        FrontendWidget* widget,
+        cRBorder* widget,
         int queued_flags); // @ 0x403f60,
         // Android cRBorderManager::DelayClick(cRBorder*, int)
     void update_border_manager(); // @ 0x403fc0,
@@ -61,7 +61,7 @@ public:
     void set_border_justify_centre(
         float justify_centre); // @ 0x404730, cRBorderManager::SetJustifyCentre
 
-    BorderStack border_stack; // +0x38, exact cRBorderStack owner/link history
+    cRBorderStack border_stack; // +0x38, exact cRBorderStack owner/link history
     BorderRecord borders[BORDER_RECORD_COUNT]; // +0x684
     // One transition lane follows the fixed border pool. While active it
     // gates front-end input and drives the target widget's wobble/glow until
@@ -71,11 +71,11 @@ public:
     char unknown_435a1[0x435a4 - 0x435a1];
     float delayed_widget_progress; // +0x435a4
     float delayed_widget_progress_step; // +0x435a8
-    FrontendWidget* delayed_widget; // +0x435ac, borrowed border handle
+    cRBorder* delayed_widget; // +0x435ac, borrowed border handle
     float justify_centre; // +0x435b0, added to authored widget anchors
 };
 
 typedef char BorderManager_must_be_0x435b4[
-    (sizeof(BorderManager) == 0x435b4) ? 1 : -1];
+    (sizeof(cRBorderManager) == 0x435b4) ? 1 : -1];
 
 #endif

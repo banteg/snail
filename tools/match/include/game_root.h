@@ -108,7 +108,7 @@ public:
     int unknown_000b48; // +0xb48, startup-only dword storage
     // Exact cRBorder manager: the 150-record pool is followed by its delayed
     // transition lane and center-justify scalar, ending at the root BOD bank.
-    BorderManager border_manager; // +0xb4c, ends exactly at +0x44100
+    cRBorderManager border_manager; // +0xb4c, ends exactly at +0x44100
     RootBodCatalog root_bod_catalog; // +0x44100, fixed 352-entry cRBod bank
     DirectXLoader directx_loader; // +0x48e00, owns 128 cached X-mesh slots
     cRBackdrop backdrop; // +0x4ec10, owned cRBackdrop renderer

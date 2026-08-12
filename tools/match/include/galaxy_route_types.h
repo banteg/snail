@@ -146,33 +146,33 @@ public:
     cRSubGame* level_progress_base; // +0x10f70, borrowed enclosing subgame
     union {
         struct {
-            FrontendWidget* exit_or_back_widget; // +0x10f74
-            FrontendWidget* route_title_widget; // +0x10f78
-            FrontendWidget* route_icon_widget; // +0x10f7c
+            cRBorder* exit_or_back_widget; // +0x10f74
+            cRBorder* route_title_widget; // +0x10f78
+            cRBorder* route_icon_widget; // +0x10f7c
         };
-        FrontendWidget* pre_route_borders[3]; // +0x10f74
+        cRBorder* pre_route_borders[3]; // +0x10f74
     };
     int selected_index; // +0x10f80
     int hover_state; // +0x10f84
     char unknown_10f88[0x10f8c - 0x10f88];
     union {
         struct {
-            FrontendWidget* bounds_frame_widget; // +0x10f8c
-            FrontendWidget* selected_title_widget; // +0x10f90
-            FrontendWidget* selected_detail_widget; // +0x10f94
-            FrontendWidget* selected_description_widget; // +0x10f98
-            FrontendWidget* play_or_deliver_widget; // +0x10f9c
-            FrontendWidget* replay_widget; // +0x10fa0
+            cRBorder* bounds_frame_widget; // +0x10f8c
+            cRBorder* selected_title_widget; // +0x10f90
+            cRBorder* selected_detail_widget; // +0x10f94
+            cRBorder* selected_description_widget; // +0x10f98
+            cRBorder* play_or_deliver_widget; // +0x10f9c
+            cRBorder* replay_widget; // +0x10fa0
         };
         struct {
-            FrontendWidget* bounds_widget; // +0x10f8c
-            FrontendWidget* title_widget; // +0x10f90
-            FrontendWidget* detail_widget; // +0x10f94
-            FrontendWidget* description_widget; // +0x10f98
-            FrontendWidget* back_widget; // +0x10f9c
-            FrontendWidget* continue_widget; // +0x10fa0
+            cRBorder* bounds_widget; // +0x10f8c
+            cRBorder* title_widget; // +0x10f90
+            cRBorder* detail_widget; // +0x10f94
+            cRBorder* description_widget; // +0x10f98
+            cRBorder* back_widget; // +0x10f9c
+            cRBorder* continue_widget; // +0x10fa0
         };
-        FrontendWidget* borders[6]; // +0x10f8c
+        cRBorder* borders[6]; // +0x10f8c
     };
     int unknown_10fa4; // +0x10fa4, unresolved cRGalaxy tail
 };

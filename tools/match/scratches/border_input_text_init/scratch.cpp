@@ -4,7 +4,7 @@
 #include "input_ok_state.h"
 #include "rstring.h"
 
-void FrontendWidget::border_input_text_init(int capacity, char* text, int flags)
+void cRBorder::border_input_text_init(int capacity, char* text, int flags)
 {
     input_flags = flags;
     rstrcpy_checked_ascii(text_buffer + 0x400, text);

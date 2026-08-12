@@ -10,7 +10,7 @@ public:
     void destroy_help_screen(); // @ 0x4168c0, cRHelp::UnInit
     void update_help_screen(); // @ 0x4168d0, cRHelp::AI
 
-    FrontendWidget* back_button; // +0x00
+    cRBorder* back_button; // +0x00
 };
 
 typedef cRHelp Help;

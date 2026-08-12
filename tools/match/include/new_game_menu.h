@@ -22,12 +22,12 @@ public:
     float replay_probe_progress; // +0x10
     float replay_probe_step; // +0x14
     char unknown_18[0x30 - 0x18];
-    FrontendWidget* postal_button; // +0x30
-    FrontendWidget* time_trial_button; // +0x34
-    FrontendWidget* challenge_button; // +0x38
-    FrontendWidget* tutorial_button; // +0x3c
-    FrontendWidget* help_button; // +0x40
-    FrontendWidget* back_button; // +0x44
+    cRBorder* postal_button; // +0x30
+    cRBorder* time_trial_button; // +0x34
+    cRBorder* challenge_button; // +0x38
+    cRBorder* tutorial_button; // +0x3c
+    cRBorder* help_button; // +0x40
+    cRBorder* back_button; // +0x44
 };
 typedef cRIntro Intro;
 typedef cRIntro NewGameMenu;

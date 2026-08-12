@@ -10,8 +10,8 @@ public:
     void initialize_input_ok(); // @ 0x403560, Android cRInputOK::Init()
 
     char unknown_00[0x1c];
-    FrontendWidget* source_widget; // +0x1c
-    FrontendWidget* ok_widget; // +0x20
+    cRBorder* source_widget; // +0x1c
+    cRBorder* ok_widget; // +0x20
 };
 
 // Android retains the authored name and the same complete 0x24-byte owner.

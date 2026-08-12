@@ -4,7 +4,7 @@
 
 int next_math_random_value();
 
-void Twinkle::update_twinkle()
+void cRTwinkle::update_twinkle()
 {
     float wrapped_angle = angle + angle_step;
     angle = wrapped_angle;
@@ -46,7 +46,7 @@ void Twinkle::update_twinkle()
 
                 int step_random = next_math_random_value();
                 delay_progress = 0.0f;
-                FrontendWidget* active_owner = owner_widget;
+                cRBorder* active_owner = owner_widget;
                 delay_step = 1.0f;
                 angle_step =
                     1.0f /

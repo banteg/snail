@@ -6476,9 +6476,10 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
         "BorderManager *manager, FrontendWidget *widget, int32_t queued_flags);"
     ) in ida_joined_literals
     assert (
-        "void BorderManager::queue_frontend_widget_flag_after_delay("
+        "void cRBorderManager::queue_frontend_widget_flag_after_delay("
         in delayed_action_source
     )
+    assert "cRBorder* widget, int queued_flags" in delayed_action_source
     assert "result = g_game->fade.begin_frontend_fade_out" not in delayed_action_source
     assert "return result;" not in delayed_action_source
 
@@ -11820,11 +11821,6 @@ def test_completion_state_ownership_stays_aligned() -> None:
         assert "COMPLETION_STATE_SUMMARY_ACTIVE = 4" in header
         assert "COMPLETION_STATE_CONTINUE_ACCEPTED = 5" in header
         assert "COMPLETION_STATE_EMPTY_DELIVERY_DELAY = 6" in header
-        assert "FrontendWidget* title_widget;" in header
-        assert "FrontendWidget* delivered_count_widget;" in header
-        assert "FrontendWidget* bonus_summary_widget;" in header
-        assert "FrontendWidget* bonus_icon_widget;" in header
-        assert "FrontendWidget* continue_widget;" in header
         assert "fast_forward_enabled" in header
         for stale_declaration in (
             "    FrontendWidget* widget_a;\n",
@@ -11834,6 +11830,18 @@ def test_completion_state_ownership_stays_aligned() -> None:
             "        unsigned char gate_18;\n",
         ):
             assert stale_declaration not in header
+
+    for header in analysis_headers:
+        assert "FrontendWidget* title_widget;" in header
+        assert "FrontendWidget* delivered_count_widget;" in header
+        assert "FrontendWidget* bonus_summary_widget;" in header
+        assert "FrontendWidget* bonus_icon_widget;" in header
+        assert "FrontendWidget* continue_widget;" in header
+    assert "cRBorder* title_widget;" in matcher_header
+    assert "cRBorder* delivered_count_widget;" in matcher_header
+    assert "cRBorder* bonus_summary_widget;" in matcher_header
+    assert "cRBorder* bonus_icon_widget;" in matcher_header
+    assert "cRBorder* continue_widget;" in matcher_header
 
     for offset, field_name, field_type in (
         ("0x00", "title_widget", "FrontendWidget*"),
@@ -14444,10 +14452,14 @@ def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
 
     for header in (analysis_header, matcher_header):
         assert "TipData* definition" in header
-        assert "FrontendWidget* widget_main" in header
-        assert "FrontendWidget* widget_ok" in header
-        assert "FrontendWidget* widget_disable" in header
         assert "Tip tips[" in header
+
+    assert "FrontendWidget* widget_main" in analysis_header
+    assert "FrontendWidget* widget_ok" in analysis_header
+    assert "FrontendWidget* widget_disable" in analysis_header
+    assert "cRBorder* widget_main" in matcher_header
+    assert "cRBorder* widget_ok" in matcher_header
+    assert "cRBorder* widget_disable" in matcher_header
 
     for marker in (
         '"--tip-only"',
@@ -19482,7 +19494,7 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
 
     # The matcher keeps an intentional result-shaped VC6 harness, while the
     # analysis databases persist the independently evidenced semantic void ABI.
-    assert "int kill_border(FrontendWidget* border);" in matcher_border_header
+    assert "int kill_border(cRBorder* border);" in matcher_border_header
     assert "void set_border_justify_centre(" in matcher_border_header
     assert "float justify_centre);" in matcher_border_header
     assert "int set_border_justify_centre" not in matcher_border_header

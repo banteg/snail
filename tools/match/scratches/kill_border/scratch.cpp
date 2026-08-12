@@ -6,7 +6,7 @@
 // self-tail-recursion.
 #pragma warning(disable:4716)
 
-int BorderManager::kill_border(FrontendWidget* border)
+int cRBorderManager::kill_border(cRBorder* border)
 {
     int result;
     if (border != 0) {

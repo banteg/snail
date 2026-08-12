@@ -14,9 +14,9 @@ public:
     char unknown_04[0x08 - 0x04];
     int previous_frontend_state; // +0x08
     float prompt_y; // +0x0c
-    FrontendWidget* prompt_title; // +0x10
-    FrontendWidget* yes_button; // +0x14
-    FrontendWidget* no_button; // +0x18
+    cRBorder* prompt_title; // +0x10
+    cRBorder* yes_button; // +0x14
+    cRBorder* no_button; // +0x18
 };
 
 typedef cRExit Exit;

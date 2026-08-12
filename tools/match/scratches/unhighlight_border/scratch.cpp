@@ -2,7 +2,7 @@
 
 #include "frontend_widget.h"
 
-void FrontendWidget::unhighlight_border()
+void cRBorder::unhighlight_border()
 {
     int result = *(int*)&idle_padding;
     hover_blend_target = 0.0f;

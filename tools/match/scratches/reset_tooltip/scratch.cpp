@@ -4,7 +4,7 @@
 #include "game_root.h"
 
 
-void FrontendWidgetTooltip::reset_tooltip()
+void cRToolTip::reset_tooltip()
 {
     switch (state) {
     case 3:

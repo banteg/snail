@@ -8,7 +8,7 @@
 
 char read_repeating_text_input_key_code();
 
-void FrontendWidget::border_input_text()
+void cRBorder::border_input_text()
 {
     char key = read_repeating_text_input_key_code();
 

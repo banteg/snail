@@ -4156,7 +4156,7 @@ def test_mobile_fringe_logo_and_galaxy_recover_authored_owners() -> None:
             "galaxy_border_bound",
             "cRGalaxy_BorderBound",
             "void cRGalaxy::BorderBound(",
-            "?BorderBound@cRGalaxy@@QAEXAAM000PAVFrontendWidget@@@Z",
+            "?BorderBound@cRGalaxy@@QAEXAAM000PAVcRBorder@@@Z",
             True,
         ),
     )
@@ -5179,10 +5179,10 @@ def test_mobile_sprite_renderer_recovers_gl_owner_and_void_boundaries() -> None:
     for windows_name, alias in renderer_aliases.items():
         assert alias in functions_by_name[windows_name]["aliases"]
 
-    frontend_header = (
-        repo_root / "tools/match/include/frontend_widget.h"
+    border_fwd = (
+        repo_root / "tools/match/include/border_fwd.h"
     ).read_text(encoding="utf-8")
-    assert "typedef FrontendWidget cRBorder;" in frontend_header
+    assert "typedef cRBorder FrontendWidget;" in border_fwd
 
 
 def test_mobile_delay_click_recovers_border_manager_owner() -> None:
@@ -6248,6 +6248,103 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         "cREnemyManager enemy_manager",
     ):
         assert field_type in subgame
+
+
+def test_border_presentation_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    owners = {
+        "frontend_widget.h": (
+            "cRBorder",
+            (
+                "border_add_text_number",
+                "hide_border_init",
+                "unhide_border_init",
+                "draw_frontend_widget",
+                "initialize_frontend_sprite_button",
+                "initialize_frontend_widget",
+                "layout_frontend_widget",
+                "set_frontend_widget_shortcut_key",
+                "stack_widget_below",
+                "unhighlight_border",
+                "highlight_border",
+                "update_frontend_widget_interaction",
+                "border_input_text_init",
+                "border_input_text",
+                "border_sprite_extend",
+                "border_mouse_test",
+            ),
+        ),
+        "border_manager.h": (
+            "cRBorderManager",
+            (
+                "allocate_border",
+                "activate_all_borders",
+                "kill_border",
+                "kill_all_borders",
+                "hide_all_borders",
+                "unhide_all_borders",
+                "queue_frontend_widget_flag_after_delay",
+                "update_border_manager",
+                "set_border_justify_centre",
+            ),
+        ),
+        "border_batch_state.h": (
+            "cRBorderStack",
+            ("apply_all_border_visibility_mode",),
+        ),
+        "tooltip_state.h": (
+            "cRToolTip",
+            ("reset_tooltip", "update_tooltip"),
+        ),
+        "twinkle.h": (
+            "cRTwinkle",
+            ("draw_twinkle", "update_twinkle"),
+        ),
+        "twinkle_manager.h": (
+            "cRTwinkleManager",
+            ("update_twinkle_manager",),
+        ),
+    }
+    for header_name, (authored, functions) in owners.items():
+        header = (include_root / header_name).read_text(encoding="utf-8")
+        assert f"class {authored}" in header
+        assert f"sizeof({authored})" in header
+        for function in functions:
+            source = (
+                scratch_root / function / "scratch.cpp"
+            ).read_text(encoding="utf-8")
+            assert f"{authored}::{function}" in source
+
+    aliases = (include_root / "border_fwd.h").read_text(encoding="utf-8")
+    assert "typedef cRBorder FrontendWidget;" in aliases
+    assert "typedef cRBorderManager BorderManager;" in aliases
+    assert "typedef cRBorderStack BorderStack;" in (
+        include_root / "border_batch_state.h"
+    ).read_text(encoding="utf-8")
+    assert "typedef cRToolTip FrontendWidgetTooltip;" in (
+        include_root / "tooltip_state.h"
+    ).read_text(encoding="utf-8")
+    assert "typedef cRTwinkle Twinkle;" in (
+        include_root / "twinkle.h"
+    ).read_text(encoding="utf-8")
+    assert "typedef cRTwinkleManager TwinkleManager;" in (
+        include_root / "twinkle_manager.h"
+    ).read_text(encoding="utf-8")
+
+    frontend = (include_root / "frontend_widget.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRTwinkleManager twinkle_manager" in frontend
+    assert "cRToolTip tooltip" in frontend
+    manager = (include_root / "border_manager.h").read_text(
+        encoding="utf-8"
+    )
+    assert "cRBorderStack border_stack" in manager
+    assert "cRBorder* delayed_widget" in manager
+    game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
+    assert "cRBorderManager border_manager" in game_root
 
 
 def test_mobile_cli_ranks_pending_verified_bodies(

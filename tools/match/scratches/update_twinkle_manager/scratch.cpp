@@ -2,14 +2,14 @@
 
 #include "twinkle_manager.h"
 
-void TwinkleManager::update_twinkle_manager()
+void cRTwinkleManager::update_twinkle_manager()
 {
     int result = active_state;
     --result;
     if (result == 0) {
         int index = 0;
         if (twinkle_count > 0) {
-            Twinkle* twinkle = twinkles;
+            cRTwinkle* twinkle = twinkles;
             do {
                 twinkle->update_twinkle();
                 ++index;

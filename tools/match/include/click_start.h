@@ -22,7 +22,7 @@ public:
     void AI(); // @ 0x442290
 
     ClickStartState state;      // +0x80
-    FrontendWidget* prompt;     // +0x84
+    cRBorder* prompt;           // +0x84
     float teardown_progress;    // +0x88
     float teardown_progress_step; // +0x8c
     char unknown_90[0x98 - 0x90];

@@ -9,7 +9,7 @@ extern char g_blank_text[]; // data_4dfb08
 
 int report_errorf(char* format, ...);
 
-void FrontendWidget::initialize_frontend_widget(
+void cRBorder::initialize_frontend_widget(
     int flags,
     char* text,
     int widget_type,
@@ -20,7 +20,7 @@ void FrontendWidget::initialize_frontend_widget(
     float anchor_x)
 {
     char* self = (char*)this;
-    FrontendWidget* head;
+    cRBorder* head;
     tColour tmp0;
     tColour tmp1;
     tColour tmp2;
@@ -44,7 +44,7 @@ void FrontendWidget::initialize_frontend_widget(
     render_inset_delta = 0.0f;
     render_inset_base = 20.0f;
     render_inset_dynamic = 0;
-    head = (FrontendWidget*)&g_game->border_manager;
+    head = (cRBorder*)&g_game->border_manager;
 
     if ((list_flags & BOD_FLAG_LINKED) != 0) {
         report_errorf("List ADDafter");

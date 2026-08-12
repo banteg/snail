@@ -4,9 +4,9 @@
 #include "frontend_widget.h"
 #include "runtime_config.h"
 
-void FrontendWidget::layout_frontend_widget()
+void cRBorder::layout_frontend_widget()
 {
-    FrontendWidget* widget = this;
+    cRBorder* widget = this;
     int result;
 
     while (true) {

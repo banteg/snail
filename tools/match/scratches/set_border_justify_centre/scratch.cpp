@@ -2,7 +2,7 @@
 
 #include "border_manager.h"
 
-void BorderManager::set_border_justify_centre(float justify_centre_)
+void cRBorderManager::set_border_justify_centre(float justify_centre_)
 {
     justify_centre = justify_centre_;
 }

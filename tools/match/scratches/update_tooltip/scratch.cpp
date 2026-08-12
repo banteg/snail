@@ -5,7 +5,7 @@
 
 int report_errorf(char* format, ...);
 
-void FrontendWidgetTooltip::update_tooltip()
+void cRToolTip::update_tooltip()
 {
     tColour color;
     tColour color_above;

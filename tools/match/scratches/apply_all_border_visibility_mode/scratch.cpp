@@ -2,7 +2,7 @@
 
 #include "border_manager.h"
 
-void BorderStack::apply_all_border_visibility_mode(int mode)
+void cRBorderStack::apply_all_border_visibility_mode(int mode)
 {
     switch (mode) {
     case 0: {
@@ -15,7 +15,7 @@ void BorderStack::apply_all_border_visibility_mode(int mode)
                     == 0) {
                 owner->borders[i].flags = flags | FRONTEND_WIDGET_FLAG_HIDDEN;
                 entries[entry_count].widget =
-                    (FrontendWidget*)&owner->borders[i];
+                    (cRBorder*)&owner->borders[i];
                 entries[entry_count].generation = generation;
                 ++entry_count;
             }
@@ -60,7 +60,7 @@ void BorderStack::apply_all_border_visibility_mode(int mode)
                     == 0) {
                 owner->borders[i].flags = flags | FRONTEND_WIDGET_FLAG_DISABLED;
                 entries[entry_count].widget =
-                    (FrontendWidget*)&owner->borders[i];
+                    (cRBorder*)&owner->borders[i];
                 entries[entry_count].generation = generation;
                 ++entry_count;
             }

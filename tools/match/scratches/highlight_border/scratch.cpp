@@ -2,7 +2,7 @@
 
 #include "frontend_widget.h"
 
-void FrontendWidget::highlight_border()
+void cRBorder::highlight_border()
 {
     int result = *(int*)&hot_padding;
     hover_blend_target = 1.0f;

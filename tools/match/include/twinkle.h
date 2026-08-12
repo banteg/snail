@@ -1,9 +1,9 @@
 #ifndef TWINKLE_H
 #define TWINKLE_H
 
-class FrontendWidget;
+#include "border_fwd.h"
 
-class Twinkle {
+class cRTwinkle {
 public:
     int state; // +0x00
     int unused_04; // +0x04
@@ -16,13 +16,14 @@ public:
     float x; // +0x20
     float y; // +0x24
     float size; // +0x28
-    FrontendWidget* owner_widget; // +0x2c, borrowed authored cRBorder
+    cRBorder* owner_widget; // +0x2c, borrowed authored cRBorder
 
     void draw_twinkle();
     void update_twinkle(); // @ 0x404080
 };
 
+typedef cRTwinkle Twinkle;
 typedef char Twinkle_must_be_0x30[
-    (sizeof(Twinkle) == 0x30) ? 1 : -1];
+    (sizeof(cRTwinkle) == 0x30) ? 1 : -1];
 
 #endif

@@ -2,9 +2,8 @@
 #ifndef TIP_MANAGER_H
 #define TIP_MANAGER_H
 
+#include "border_fwd.h"
 #include "bod_types.h"
-
-class FrontendWidget;
 
 struct cRTipData {
     unsigned int flags;        // +0x00
@@ -29,9 +28,9 @@ public:
     int active;                         // +0x00
     int previous_outer_owner;           // +0x04
     cRTipData* definition;              // +0x08
-    FrontendWidget* widget_main;        // +0x0c
-    FrontendWidget* widget_ok;          // +0x10
-    FrontendWidget* widget_disable;     // +0x14
+    cRBorder* widget_main;        // +0x0c
+    cRBorder* widget_ok;          // +0x10
+    cRBorder* widget_disable;     // +0x14
     float dismiss_progress;             // +0x18
     float dismiss_step;                 // +0x1c
 };

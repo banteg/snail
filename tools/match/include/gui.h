@@ -15,15 +15,15 @@ public:
     int update_challenge_setup_screen(); // @ 0x416370, cRGUI::AI
 
     cRSubGame* game; // +0x00, borrowed enclosing cRSubGame owner
-    FrontendWidget* next_level_button; // +0x04
-    FrontendWidget* previous_level_button; // +0x08
-    FrontendWidget* level_name_widget; // +0x0c
-    FrontendWidget* play_button; // +0x10
+    cRBorder* next_level_button; // +0x04
+    cRBorder* previous_level_button; // +0x08
+    cRBorder* level_name_widget; // +0x0c
+    cRBorder* play_button; // +0x10
     char unknown_14[0x18 - 0x14];
-    FrontendWidget* back_button; // +0x18
-    FrontendWidget* speed_slider; // +0x1c
-    FrontendWidget* difficulty_slider; // +0x20
-    FrontendWidget* replay_button; // +0x24
+    cRBorder* back_button; // +0x18
+    cRBorder* speed_slider; // +0x1c
+    cRBorder* difficulty_slider; // +0x20
+    cRBorder* replay_button; // +0x24
 };
 
 typedef cRGUI GUI;

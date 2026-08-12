@@ -2,7 +2,7 @@
 
 #include "border_manager.h"
 
-void BorderManager::kill_all_borders()
+void cRBorderManager::kill_all_borders()
 {
     int result = 0;
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {

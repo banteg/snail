@@ -2,7 +2,7 @@
 
 #include "frontend_widget.h"
 
-void FrontendWidget::border_sprite_extend(
+void cRBorder::border_sprite_extend(
     int hot_texture_id,
     int retained_state,
     int hit_mask_texture_id,

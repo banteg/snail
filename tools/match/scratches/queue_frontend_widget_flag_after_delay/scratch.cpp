@@ -4,8 +4,8 @@
 #include "game_root.h"
 
 
-void BorderManager::queue_frontend_widget_flag_after_delay(
-    FrontendWidget* widget, int queued_flags)
+void cRBorderManager::queue_frontend_widget_flag_after_delay(
+    cRBorder* widget, int queued_flags)
 {
     if (delayed_widget_active == 0) {
         if ((widget->widget_flags & FRONTEND_WIDGET_FLAG_FADE_BEFORE_ACTION) != 0)

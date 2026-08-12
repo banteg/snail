@@ -14,7 +14,7 @@
 char read_pressed_text_input_key_code();
 int sprintf(char* buffer, const char* format, ...);
 
-void FrontendWidget::update_frontend_widget_interaction()
+void cRBorder::update_frontend_widget_interaction()
 {
     previous_widget_flags = widget_flags;
     widget_flags &= ~FRONTEND_WIDGET_FLAG_POINTER_INSIDE;
@@ -251,7 +251,7 @@ update_after_input:
     previous_mouse_y = g_game->players[0].mouse_cursor.saved_y;
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_SLIDER) != 0) {
-        FrontendWidget* more = slider_more_widget;
+        cRBorder* more = slider_more_widget;
         if ((more->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             more->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             float current_slider_value = slider_value + 0.2f;
@@ -260,7 +260,7 @@ update_after_input:
             slider_value = current_slider_value;
         }
 
-        FrontendWidget* less = slider_less_widget;
+        cRBorder* less = slider_less_widget;
         if ((less->widget_flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             less->widget_flags &= ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             float current_slider_value = slider_value - 0.2f;

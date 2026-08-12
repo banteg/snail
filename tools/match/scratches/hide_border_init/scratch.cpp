@@ -2,7 +2,7 @@
 
 #include "frontend_widget.h"
 
-void FrontendWidget::hide_border_init()
+void cRBorder::hide_border_init()
 {
     int result = widget_flags;
     if ((result & FRONTEND_WIDGET_FLAG_HIDDEN) != 0)

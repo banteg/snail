@@ -6,12 +6,12 @@
 
 int report_errorf(char* format, ...);
 
-FrontendWidget* BorderManager::allocate_border()
+cRBorder* cRBorderManager::allocate_border()
 {
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
         if (borders[i].flags == 0) {
             borders[i].created_time = g_game->frame_counter;
-            return (FrontendWidget*)&borders[i];
+            return (cRBorder*)&borders[i];
         }
     }
 

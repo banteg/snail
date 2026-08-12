@@ -2,7 +2,7 @@
 
 #include "border_manager.h"
 
-void BorderManager::activate_all_borders()
+void cRBorderManager::activate_all_borders()
 {
     for (int i = 0; i < BORDER_RECORD_COUNT; ++i) {
         int flags = borders[i].flags;

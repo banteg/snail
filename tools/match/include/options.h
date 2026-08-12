@@ -14,10 +14,10 @@ public:
     int previous_frontend_state; // +0x00
     unsigned char active; // +0x04
     char unknown_05[0x10 - 0x05];
-    FrontendWidget* back_widget; // +0x10
-    FrontendWidget* fullscreen_widget; // +0x14
-    FrontendWidget* sound_volume_widget; // +0x18
-    FrontendWidget* music_volume_widget; // +0x1c
+    cRBorder* back_widget; // +0x10
+    cRBorder* fullscreen_widget; // +0x14
+    cRBorder* sound_volume_widget; // +0x18
+    cRBorder* music_volume_widget; // +0x1c
     float previous_sample_volume; // +0x20
 };
 

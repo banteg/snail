@@ -23,7 +23,7 @@ public:
     WarningState state; // +0x00
     float phase; // +0x04
     float phase_step; // +0x08
-    FrontendWidget* border; // +0x0c
+    cRBorder* border; // +0x0c
 };
 
 typedef cRWarning Warning;
