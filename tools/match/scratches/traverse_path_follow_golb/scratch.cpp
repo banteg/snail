@@ -7,7 +7,7 @@
 
 typedef Vector3 Vec3;
 
-int GolbPathFollowState::traverse_path_follow_golb(float path_factor, Vec3* position, Vec3* velocity)
+int cRPathFollowGolb::traverse_path_follow_golb(float path_factor, Vec3* position, Vec3* velocity)
 {
     Path* current_template = template_record;
     AttachmentSample* samples = current_template->secondary_samples;

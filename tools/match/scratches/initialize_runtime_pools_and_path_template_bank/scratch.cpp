@@ -149,7 +149,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
     subgoldy->follow_state.noop_runtime_slot_constructor();
     initialize_array_with_constructor(
         (RuntimeSlot*)subgoldy->golb_shots,
-        sizeof(GolbShot),
+        sizeof(cRSubGolb),
         sizeof(subgoldy->golb_shots) / sizeof(subgoldy->golb_shots[0]),
         &RuntimeSlot::initialize_golb_shot);
     subgoldy->presentation.initialize_player_presentation_controller();

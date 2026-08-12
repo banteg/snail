@@ -25,7 +25,7 @@ void cRSubGoldy::Shoot(cRSubGoldy* shoot_source)
 
 spawn:
     int index = 0;
-    GolbShot* slot = golb_shots;
+    cRSubGolb* slot = golb_shots;
     do {
         if (slot->state == 0) {
             slot->create_golb(owner, spawn_count, index);

@@ -215,9 +215,9 @@ void cRSubGoldy::Init(int player_slot)
 
     enum {
         SHOT_TRANSFORM_TO_STATE =
-            offsetof(GolbShot, state) - offsetof(GolbShot, flight_transform),
+            offsetof(cRSubGolb, state) - offsetof(cRSubGolb, flight_transform),
         SHOT_TRANSFORM_TO_GAME =
-            offsetof(GolbShot, game) - offsetof(GolbShot, flight_transform),
+            offsetof(cRSubGolb, game) - offsetof(cRSubGolb, flight_transform),
     };
     char* shot_transform = (char*)&this->golb_shots[0].flight_transform;
     int transform_count = 12;
@@ -225,7 +225,7 @@ void cRSubGoldy::Init(int player_slot)
         *(int*)(shot_transform + SHOT_TRANSFORM_TO_STATE) = zero;
         ((TransformMatrix*)shot_transform)->Identity();
         *(cRSubGame**)(shot_transform + SHOT_TRANSFORM_TO_GAME) = this->game;
-        shot_transform += sizeof(GolbShot);
+        shot_transform += sizeof(cRSubGolb);
         --transform_count;
     } while (transform_count);
 

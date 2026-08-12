@@ -6557,6 +6557,54 @@ def test_cameraman_uses_authored_primary_owner() -> None:
     assert "cRCameraman::" not in folded
 
 
+def test_golb_projectile_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "golb.h").read_text(encoding="utf-8")
+    player = (include_root / "player.h").read_text(encoding="utf-8")
+
+    assert "class cRSubGolb : public RenderableBod" in header
+    assert "typedef cRSubGolb GolbShot;" in header
+    assert "sizeof(cRSubGolb)" in header
+    assert "class cRPathFollowGolb" in header
+    assert "typedef cRPathFollowGolb GolbPathFollowState;" in header
+    assert "sizeof(cRPathFollowGolb)" in header
+    assert "class cRGolbRocket : public RenderableBod" in header
+    assert "typedef cRGolbRocket GolbRocket;" in header
+    assert "sizeof(cRGolbRocket)" in header
+    assert "cRPathFollowGolb path_follow" in header
+    assert "cRGolbRocket tertiary_body" in header
+    assert "cRSubGolb golb_shots[12]" in player
+
+    for function in (
+        "initialize_golb_shot",
+        "kill_golb",
+        "update_golb_ai",
+        "create_golb",
+        "spawn_golb_trail_sprite",
+        "spawn_golb_smoke",
+        "spawn_golb_impact_sprite",
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSubGolb::{function}" in source
+    for function in (
+        "initialize_path_follow_golb",
+        "traverse_path_follow_golb",
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRPathFollowGolb::{function}" in source
+
+    folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "cRGolbRocket::" not in folded
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

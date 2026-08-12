@@ -4,7 +4,7 @@
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-void GolbShot::spawn_golb_smoke(Vector3* position)
+void cRSubGolb::spawn_golb_smoke(Vector3* position)
 {
     cRSprite* sprite = g_sprite_manager.New(
         owner_player->player_slot,

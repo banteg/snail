@@ -4297,17 +4297,18 @@ def test_golb_shot_inherited_base_and_nested_vapour_owner_are_replayed() -> None
     )
     matcher_owner = (
         "    cRVapour vapour; // +0x080, complete kind-1 trail renderer\n"
-        "    GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink\n"
-        "    GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner"
+        "    cRSubGolb* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink\n"
+        "    cRGolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner"
     )
     assert analysis_owner in analysis_header
-    assert "class GolbShot : public RenderableBod {" in matcher_header
+    assert "class cRSubGolb : public RenderableBod {" in matcher_header
+    assert "typedef cRSubGolb GolbShot;" in matcher_header
     assert matcher_owner in matcher_header
     analysis_golb_owner = analysis_header.split(
         "typedef struct __base(RenderableBod, 0x00) GolbShot {", 1
     )[1].split("} GolbShot;", 1)[0]
     matcher_golb_owner = matcher_header.split(
-        "class GolbShot : public RenderableBod {", 1
+        "class cRSubGolb : public RenderableBod {", 1
     )[1].split("typedef char GolbShot_must_be_0x2e8", 1)[0]
     for source in (analysis_golb_owner, matcher_golb_owner):
         assert "primary_body" not in source
@@ -6137,8 +6138,9 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
     assert "typedef cRBodPos RenderableBod;" in bod_forward_header
     assert "class cRCamera : public RenderableBod" in viewport_header
     assert "typedef cRCamera RenderCamera;" in viewport_header
-    assert "typedef GolbRocket cRGolbRocket;" in golb_header
-    assert "GolbRocket tertiary_body;" in golb_header
+    assert "class cRGolbRocket : public RenderableBod" in golb_header
+    assert "typedef cRGolbRocket GolbRocket;" in golb_header
+    assert "cRGolbRocket tertiary_body;" in golb_header
     player_fwd_header = (
         repo_root / "tools/match/include/player_fwd.h"
     ).read_text(encoding="utf-8")

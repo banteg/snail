@@ -6,7 +6,7 @@ extern void* g_vapour_vtable;          // off_49731c / data_49731c
 extern void* g_golb_shot_vtable;       // off_49734c / data_49734c
 extern void* g_golb_noop_body_vtable;  // off_497350 / data_497350
 
-GolbShot* GolbShot::initialize_golb_shot()
+cRSubGolb* cRSubGolb::initialize_golb_shot()
 {
     initialize_renderable_bod();
     vapour.initialize_renderable_bod();

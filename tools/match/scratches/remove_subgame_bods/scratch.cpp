@@ -137,7 +137,7 @@ void cRSubGame::RemoveBods()
         }
     }
 
-    GolbShot* shot = player.golb_shots;
+    cRSubGolb* shot = player.golb_shots;
     for (int m = 0;
          m < (int)(sizeof(player.golb_shots) / sizeof(player.golb_shots[0]));
          ++m) {

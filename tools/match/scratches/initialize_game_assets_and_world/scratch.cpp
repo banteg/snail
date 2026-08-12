@@ -2877,7 +2877,7 @@ char cRGame::initialize_game_assets_and_world()
     subgame.player.presentation.invincible_shell.object->flags &=
         ~OBJECT_FLAG_DISABLE_CULLING;
 
-    GolbShot* golb_shot = &subgame.player.golb_shots[0];
+    cRSubGolb* golb_shot = &subgame.player.golb_shots[0];
     golb_shot->tertiary_body.SetObject(
         g_object_list.Add());
     loader->load_x_mesh(

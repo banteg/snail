@@ -271,7 +271,7 @@ public:
     unsigned char attachment_exit_gate_b;  // +0x44d
     unsigned char completion_handoff_voice_gate; // +0x44e
     char unknown_44f[0x450 - 0x44f];
-    GolbShot golb_shots[12];               // +0x450, owned projectile bank through +0x2730
+    cRSubGolb golb_shots[12];              // +0x450, owned projectile bank through +0x2730
     float shoot_cooldown_progress;          // +0x2730
     float shoot_cooldown_step;              // +0x2734
     float slide_extension_threshold_z;      // +0x2738

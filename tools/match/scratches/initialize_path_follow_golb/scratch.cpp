@@ -2,8 +2,8 @@
 #include "golb.h"
 #include "track_attachment_types.h"
 
-int GolbPathFollowState::initialize_path_follow_golb(
-    cRSubLoc* cell, const Vector3* position, GolbShot* shot_)
+int cRPathFollowGolb::initialize_path_follow_golb(
+    cRSubLoc* cell, const Vector3* position, cRSubGolb* shot_)
 {
     active = 1;
     template_record = cell->attachment_template_record;

@@ -5,7 +5,7 @@
 #include "runtime_config.h"
 #include "sprite.h"
 
-void GolbShot::spawn_golb_impact_sprite(Vector3* position)
+void cRSubGolb::spawn_golb_impact_sprite(Vector3* position)
 {
     unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
 

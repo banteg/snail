@@ -15,7 +15,7 @@
 typedef Vector3 Vec3;
 float __fastcall normalize_vector(Vec3* vector);
 
-void GolbShot::update_golb_ai()
+void cRSubGolb::update_golb_ai()
 {
     enum {
         SLUG_POOL_FROM_SUBGAME =

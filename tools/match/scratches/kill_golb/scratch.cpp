@@ -7,7 +7,7 @@
 int report_errorf(char* format, ...);
 
 
-void GolbShot::kill_golb()
+void cRSubGolb::kill_golb()
 {
     BodList* list = &g_game->active_bod_list;
     unsigned int flags = list_flags;

@@ -4,7 +4,7 @@
 #include "player.h"
 #include "sprite.h"
 
-cRSprite* GolbShot::spawn_golb_trail_sprite(Vector3* position)
+cRSprite* cRSubGolb::spawn_golb_trail_sprite(Vector3* position)
 {
     cRSprite* sprite = g_sprite_manager.New(owner_player->player_slot, 0x21, -1, -1);
     int flags = sprite->flags;

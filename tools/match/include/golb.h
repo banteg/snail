@@ -12,14 +12,15 @@
 #include "vector3.h"
 
 class cRSubGame;
-class GolbShot;
+class cRSubGolb;
+typedef cRSubGolb GolbShot;
 
 // Kind/state overlay for the projectile lane at GolbShot+0x198..+0x1bf.
 // Kind 2 retains a borrowed contact target here until teardown releases it.
 struct GolbShotHomingStateOverlay {
     ContactTargetObject* homing_target_object; // +0x00
     Vector3 homing_target; // +0x04
-    GolbShot* rocket_owner_shot; // +0x10, kind-2 embedded-body backlink
+    cRSubGolb* rocket_owner_shot; // +0x10, kind-2 embedded-body backlink
     float homing_blend; // +0x14
     float homing_blend_step; // +0x18
     float spin; // +0x1c
@@ -32,12 +33,12 @@ struct GolbShotHomingStateOverlay {
 typedef char GolbShotHomingStateOverlay_must_be_0x28[
     (sizeof(GolbShotHomingStateOverlay) == 0x28) ? 1 : -1];
 
-class GolbPathFollowState {
+class cRPathFollowGolb {
 public:
     int initialize_path_follow_golb(
         cRSubLoc* source_cell,
         const Vector3* position,
-        GolbShot* shot_); // @ 0x421770
+        cRSubGolb* shot_); // @ 0x421770
     int traverse_path_follow_golb(float path_factor, Vector3* position, Vector3* velocity); // @ 0x4217b0
 
     unsigned char active;     // +0x00
@@ -48,30 +49,30 @@ public:
     float progress;            // +0x10
     float vertical_offset;     // +0x14
     Vector3 output_position;   // +0x18
-    GolbShot* shot;            // +0x24
+    cRSubGolb* shot;           // +0x24
 };
 
+typedef cRPathFollowGolb GolbPathFollowState;
 typedef char GolbPathFollowState_must_be_0x28[
-    (sizeof(GolbPathFollowState) == 0x28) ? 1 : -1];
-typedef GolbPathFollowState cRPathFollowGolb;
+    (sizeof(cRPathFollowGolb) == 0x28) ? 1 : -1];
 
 // Authored cRGolbRocket is a fieldless cRBodPos specialization whose AI body
 // folds into the shared one-byte Windows no-op.
-class GolbRocket : public RenderableBod {
+class cRGolbRocket : public RenderableBod {
 public:
     void noop_runtime_ai(); // folded @ 0x407b50; cRGolbRocket::AI()
 };
 typedef char GolbRocket_must_be_0x80[
-    (sizeof(GolbRocket) == 0x80) ? 1 : -1];
-typedef GolbRocket cRGolbRocket;
+    (sizeof(cRGolbRocket) == 0x80) ? 1 : -1];
+typedef cRGolbRocket GolbRocket;
 
 // Windows and the mobile cRSubGoldy constructor agree that each shot is a
 // zero-offset cRBodPos specialization, followed by its platform-specific
 // presentation children. update_golb_ai still keeps some raw collision lanes,
 // but the projectile owner layout is shared here.
-class GolbShot : public RenderableBod {
+class cRSubGolb : public RenderableBod {
 public:
-    GolbShot* initialize_golb_shot(); // @ 0x408690
+    cRSubGolb* initialize_golb_shot(); // @ 0x408690
     void kill_golb(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
     void update_golb_ai(); // @ 0x414820, iOS/Android cRSubGolb::AI()
     void create_golb(cRSubGoldy* player, int spawn_selector, int shot_slot_index); // @ 0x415280
@@ -82,11 +83,11 @@ public:
         // Android cRSubGolb::Explode(tVector)
 
     cRVapour vapour; // +0x080, complete kind-1 trail renderer
-    GolbShot* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
-    GolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner
+    cRSubGolb* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink
+    cRGolbRocket tertiary_body; // +0x118, authored cRGolbRocket owner
     ContactTargetObject* homing_target_object; // +0x198, reserved target owner
     Vector3 homing_target;           // +0x19c
-    GolbShot* rocket_owner_shot;     // +0x1a8, kind-2 embedded-body backlink
+    cRSubGolb* rocket_owner_shot;    // +0x1a8, kind-2 embedded-body backlink
     float homing_blend;              // +0x1ac
     float homing_blend_step;         // +0x1b0
     float spin;                      // +0x1b4
@@ -114,11 +115,10 @@ public:
         cRSubGoldy* player;        // +0x278, update_golb_ai bounds/collision view
     };
     TransformMatrix source_matrix; // +0x27c
-    GolbPathFollowState path_follow; // +0x2bc
+    cRPathFollowGolb path_follow; // +0x2bc
     float path_entry_z_latch; // +0x2e4
 };
 
-typedef char GolbShot_must_be_0x2e8[(sizeof(GolbShot) == 0x2e8) ? 1 : -1];
-typedef GolbShot cRSubGolb;
+typedef char GolbShot_must_be_0x2e8[(sizeof(cRSubGolb) == 0x2e8) ? 1 : -1];
 
 #endif
