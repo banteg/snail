@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -255,7 +255,7 @@ void cRPath::initialize_twister2_path_template_pair(
         if (!handedness)
             angle += 3.1415927f;
 
-        float center_scale = cosine(angle) + 1.0f;
+        float center_scale = Cos(angle) + 1.0f;
         center_scale = center_scale * 0.5f;
         center_scale = center_scale * 5.0f;
         float center = 2.5f - center_scale;
@@ -267,10 +267,10 @@ void cRPath::initialize_twister2_path_template_pair(
         primary_samples[i].lateral_scale = 1.0f;
         set_matrix_identity(&primary_samples[i].transform);
         primary_samples[i].transform.position.x = primary_samples[i].center_x;
-        float angle_sine = sine(angle);
+        float angle_sine = Sin(angle);
         int sample_z = local_index + 1;
         primary_samples[i].transform.position.y =
-            sine(half_angle) * angle_sine * height;
+            Sin(half_angle) * angle_sine * height;
         primary_samples[i].transform.position.z = (float)sample_z;
         set_matrix_identity(&secondary_samples[i].transform);
         secondary_samples[i].transform.position.x = primary_samples[i].center_x;

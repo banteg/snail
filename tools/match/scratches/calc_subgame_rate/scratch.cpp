@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-float sine(float angle);
+float Sin(float angle);
 
 void cRSubGame::CalcRate()
 {
@@ -38,7 +38,7 @@ void cRSubGame::CalcRate()
             } else {
                 float envelope =
                     (1.0f
-                        - sine(
+                        - Sin(
                             player.damage_gauge.display_fill * 12.566371f
                             + 1.57079637f))
                     * 0.5f;

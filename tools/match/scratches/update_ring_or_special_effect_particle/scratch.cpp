@@ -5,8 +5,8 @@
 #include "ring_special_effect_types.h"
 #include "sprite.h"
 
-float sine(float radians);
-float cosine(float radians);
+float Sin(float radians);
+float Cos(float radians);
 
 void cRSubRingStar::AI()
 {
@@ -18,8 +18,8 @@ void cRSubRingStar::AI()
         phase -= 6.2831855f;
 
     Vector3 staged_position;
-    float orbit_y = cosine(phase) * radius;
-    float orbit_x = sine(phase);
+    float orbit_y = Cos(phase) * radius;
+    float orbit_x = Sin(phase);
     cRSubRing* live_parent = parent;
     cRSprite* live_sprite = sprite;
     Vector3* parent_position = &live_parent->transform.position;

@@ -1,4 +1,4 @@
-// initialize_trigonometry_tables @ 0x44c930 (cdecl)
+// RMathInit @ 0x44c930 (cdecl)
 
 #include "rmath_random.h"
 
@@ -8,7 +8,7 @@ extern "C" double __cdecl sin(double value);
 extern float g_cosine_table_init_base[]; // 0x777f38, one element before g_cosine_table
 extern float g_sine_table_init_base[]; // 0x77ff88, one element before g_sine_table
 
-void initialize_trigonometry_tables()
+void RMathInit()
 {
     int index = 0;
     int source_index = 0;
@@ -22,5 +22,5 @@ void initialize_trigonometry_tables()
         g_sine_table_init_base[index] = (float)sin(angle);
     } while (index < 0x2000);
 
-    initialize_math_random_table();
+    gRMathRand2Init();
 }

@@ -46,8 +46,8 @@ void cRSubGame::AddRing(
 
         slot_cursor->ring.owner_player = player;
         if (requested_kind == SUB_RING_KIND_NORMAL_DEFAULT) {
-            if (random_float_below(1.0f, "RT") > 0.930000007f ||
-                (random_float_below(1.0f, "RT2") > 0.5f
+            if (RAND(1.0f, "RT") > 0.930000007f ||
+                (RAND(1.0f, "RT2") > 0.5f
                     && level_mode == requested_kind)) {
                 requested_kind = SUB_RING_KIND_SLOW_DEFAULT;
             }
@@ -58,10 +58,10 @@ void cRSubGame::AddRing(
             Vector3 staged_position =
                 cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
-            float random_x = random_float_below(1.0f, "RR") - 0.5f;
+            float random_x = RAND(1.0f, "RR") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
             slot_cursor->ring.active_phase =
-                random_float_below(1.0f, "RR1") * 6.28318548f;
+                RAND(1.0f, "RR1") * 6.28318548f;
             slot_cursor->ring.active_phase_step = default_phase_step;
             break;
         }
@@ -69,10 +69,10 @@ void cRSubGame::AddRing(
             Vector3 staged_position =
                 cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
-            float random_x = random_float_below(1.0f, "RR2") - 0.5f;
+            float random_x = RAND(1.0f, "RR2") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
             slot_cursor->ring.active_phase =
-                random_float_below(1.0f, "RR3") * 6.28318548f;
+                RAND(1.0f, "RR3") * 6.28318548f;
             slot_cursor->ring.active_phase_step = default_phase_step;
             break;
         }
@@ -80,10 +80,10 @@ void cRSubGame::AddRing(
             Vector3 staged_position =
                 cell->position + Vector3(0.0f, 3.5f, 17.0f);
             slot_cursor->ring.transform.position = staged_position;
-            float random_x = random_float_below(1.0f, "RR4") - 0.5f;
+            float random_x = RAND(1.0f, "RR4") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
             slot_cursor->ring.active_phase =
-                random_float_below(1.0f, "RR5") * 6.28318548f;
+                RAND(1.0f, "RR5") * 6.28318548f;
             slot_cursor->ring.active_phase_step = default_phase_step;
             break;
         }
@@ -91,11 +91,11 @@ void cRSubGame::AddRing(
             Vector3 staged_position =
                 cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
-            float random_x = random_float_below(1.0f, "RR6") - 0.5f;
+            float random_x = RAND(1.0f, "RR6") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
             SubRing* selected_ring = &slot_cursor->ring;
             selected_ring->active_phase =
-                random_float_below(1.0f, "RR7") * 6.28318548f;
+                RAND(1.0f, "RR7") * 6.28318548f;
             selected_ring->active_phase_step = default_phase_step;
             break;
         }
@@ -103,11 +103,11 @@ void cRSubGame::AddRing(
             Vector3 staged_position =
                 cell->position + Vector3(0.0f, 2.5f, 6.0f);
             slot_cursor->ring.transform.position = staged_position;
-            float random_x = random_float_below(1.0f, "RR8") - 0.5f;
+            float random_x = RAND(1.0f, "RR8") - 0.5f;
             slot_cursor->ring.transform.position.x = (random_x + random_x) * 3.0f;
             SubRing* selected_ring = &slot_cursor->ring;
             selected_ring->active_phase =
-                random_float_below(1.0f, "RR9") * 6.28318548f;
+                RAND(1.0f, "RR9") * 6.28318548f;
             selected_ring->active_phase_step = default_phase_step;
             break;
         }
@@ -116,7 +116,7 @@ void cRSubGame::AddRing(
                 cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
-                random_float_below(1.0f, "RR10") * 6.28318548f;
+                RAND(1.0f, "RR10") * 6.28318548f;
             slot_cursor->ring.active_phase_step =
                 1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
             break;
@@ -126,7 +126,7 @@ void cRSubGame::AddRing(
                 cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
-                random_float_below(1.0f, "RR11") * 6.28318548f;
+                RAND(1.0f, "RR11") * 6.28318548f;
             slot_cursor->ring.active_phase_step =
                 1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
             break;
@@ -136,7 +136,7 @@ void cRSubGame::AddRing(
                 cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
-                random_float_below(1.0f, "RR12") * 6.28318548f;
+                RAND(1.0f, "RR12") * 6.28318548f;
             slot_cursor->ring.active_phase_step =
                 1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
             break;
@@ -146,7 +146,7 @@ void cRSubGame::AddRing(
                 cell->position + Vector3(0.0f, 2.5f, 0.0f);
             slot_cursor->ring.transform.position = staged_position;
             slot_cursor->ring.active_phase =
-                random_float_below(1.0f, "RR13") * 6.28318548f;
+                RAND(1.0f, "RR13") * 6.28318548f;
             slot_cursor->ring.active_phase_step =
                 1.0f / (ring_speed * 60.0f) * subgame_rate * 6.28318548f;
             break;
@@ -161,7 +161,7 @@ void cRSubGame::AddRing(
                 &slot_cursor->ring.owner_lives_snapshot;
             *owner_lives_snapshot = player->lives;
             slot_cursor->ring.state = SUB_RING_STATE_ACTIVE;
-            if (random_float_below(1.0f, "RT1") > 0.5f)
+            if (RAND(1.0f, "RT1") > 0.5f)
                 slot_cursor->ring.active_phase_step =
                     slot_cursor->ring.active_phase_step * -1.0f;
 

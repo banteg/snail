@@ -104,8 +104,8 @@ void layout_and_queue_wrapped_font_text(
     char measure_only,
     char pulse_alpha); // @ 0x44abe0
 void initialize_font3d_objects(short font_id); // @ 0x44ae10
-float sine(float angle); // @ 0x44c9d0
-float cosine(float angle); // @ 0x44c980
+float Sin(float angle); // @ 0x44c9d0
+float Cos(float angle); // @ 0x44c980
 void draw_textured_quad_immediate(
     cRTexture* texture,
     float x0, float y0,

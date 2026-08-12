@@ -3,15 +3,15 @@
 #include "axis.h"
 #include "quaternion.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 void tQuaternian::operator=(const tAxis& axis)
 {
-    double scale = sine(axis.angle * 0.5f);
+    double scale = Sin(axis.angle * 0.5f);
     x = (float)scale * axis.x;
     y = (float)scale * axis.y;
     z = (float)scale * axis.z;
 
-    w = cosine(axis.angle * 0.5f);
+    w = Cos(axis.angle * 0.5f);
 }

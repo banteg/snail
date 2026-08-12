@@ -1,4 +1,4 @@
-# convert_math_type32_to_16 @ 0x44c890
+# MathType32to16 @ 0x44c890
 
 Exact match: 100.00%, 4/4 instructions.
 

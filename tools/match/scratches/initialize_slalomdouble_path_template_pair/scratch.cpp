@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -205,7 +205,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
         if (folded < 0.0f)
             folded = -folded;
 
-        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
+        float center = Sin(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
         primary_samples[i].center_x = center;
         primary_samples[i].rotation_scalar_98 = 0.0f;
         primary_samples[i].rotation_scalar_94 = 0.0f;
@@ -215,7 +215,7 @@ void cRPath::initialize_slalomdouble_path_template_pair(
         primary_samples[i].transform.position.x =
             primary_samples[i].center_x;
         primary_samples[i].transform.position.y =
-            1.0f - cosine(angle * 0.5f);
+            1.0f - Cos(angle * 0.5f);
         float z = (float)(curve_index + 4);
         primary_samples[i].transform.position.z = z;
 

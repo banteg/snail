@@ -6,7 +6,7 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float cosine(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -252,11 +252,11 @@ void cRPath::initialize_sbend_path_template_pair(
                 ->transform.position.x =
                 ((PathTemplateSample*)((char*)primary_samples + sample_offset))
                     ->center_x;
-            float y = (1.0f - cosine(phase * 0.5f)) * 0.5f;
+            float y = (1.0f - Cos(phase * 0.5f)) * 0.5f;
             y *= height;
             ((PathTemplateSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.y = y;
-            float z = (1.0f - cosine(phase * 1.5f)) * 0.5f;
+            float z = (1.0f - Cos(phase * 1.5f)) * 0.5f;
             z = z * z_amplitude * 0.33333334f + 1.0f;
             ((PathTemplateSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.z = z;

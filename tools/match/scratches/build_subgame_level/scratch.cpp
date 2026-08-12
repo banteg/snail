@@ -22,7 +22,7 @@
 
 extern char g_blank_text[];
 
-int next_math_random_value();
+int gRMathRand2();
 char cache_music_file(char* path, int unused, char* unused_default_path);
 int report_errorf(char* format, ...);
 int sprintf(char* buffer, char* format, ...);
@@ -38,7 +38,7 @@ void cRSubGame::StartLevel(int level_index)
 
     int zero = 0;
     switch ((unsigned int)(
-        next_math_random_value() * 0.0000305175781f * 4.0f)) {
+        gRMathRand2() * 0.0000305175781f * 4.0f)) {
     case 0:
         cache_music_file("music/1.ogg", zero, g_blank_text);
         break;
@@ -134,7 +134,7 @@ void cRSubGame::StartLevel(int level_index)
 
     if (level_definition.track_texture_set == 5) {
         int landscape_index;
-        switch ((unsigned int)random_float_below(4.0f, 0)) {
+        switch ((unsigned int)RAND(4.0f, 0)) {
         case 0:
             landscape_index =
                 g_game->subgame.landscape_manager
@@ -161,7 +161,7 @@ void cRSubGame::StartLevel(int level_index)
         }
 
         landscape_manager.Init(landscape_index);
-        if (random_float_below(1.0f, 0) > 0.5f)
+        if (RAND(1.0f, 0) > 0.5f)
             g_game->backdrop.pending_flip = 1;
         else
             g_game->backdrop.pending_flip = (unsigned char)zero;

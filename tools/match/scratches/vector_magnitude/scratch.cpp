@@ -2,10 +2,10 @@
 
 #include "vector3.h"
 
-float square_root(float value);
+float Sqrt(float value);
 
 float tVector::Magnitude() const
 {
-    float magnitude = square_root(x * x + y * y + z * z);
+    float magnitude = Sqrt(x * x + y * y + z * z);
     return magnitude;
 }

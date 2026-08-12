@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -273,8 +273,8 @@ void cRPath::initialize_invert_path_template_pair(
         primary_samples[sample_index].transform.position.z = z_position;
         primary_samples[sample_index].transform.position.y = 0.0f;
 
-        float basis_y = cosine(angle);
-        float basis_x = sine(angle);
+        float basis_y = Cos(angle);
+        float basis_x = Sin(angle);
         primary_samples[sample_index].transform.basis_up =
             Vector3(basis_x, basis_y, 0.0f);
         primary_samples[sample_index].transform.basis_forward =

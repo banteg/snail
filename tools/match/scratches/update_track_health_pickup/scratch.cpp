@@ -8,7 +8,7 @@
 
 
 int report_errorf(char* format, ...);
-float sine(float radians);
+float Sin(float radians);
 
 void cRSubHealth::AI()
 {
@@ -53,6 +53,6 @@ update_bob:
     if (advanced > 1.0f)
         bob_phase = advanced - 1.0f;
     sprite->position.y =
-        (sine(bob_phase * 6.2831855f) + 1.0f) * 0.30000001f
+        (Sin(bob_phase * 6.2831855f) + 1.0f) * 0.30000001f
         + position.y;
 }

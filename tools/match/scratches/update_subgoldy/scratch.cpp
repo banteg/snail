@@ -33,8 +33,8 @@
 #include "track_parcel_runtime.h"
 #include "voice_manager.h"
 
-float convert_math_type16_to_32(unsigned short value, float scale);
-short convert_math_type32_to_16(float value, float scale);
+float MathType16to32(short value, float scale);
+short MathType32to16(float value, float scale);
 float resolve_uncaptured_cursor_sensitivity_scale(float scale);
 
 extern float g_subgoldy_ghost_z;          // flt_643190
@@ -132,7 +132,7 @@ void cRSubGoldy::AI()
                < replay_game->selected_level_record->replay_sample_count
         && click_start.state != CLICK_START_STATE_WAITING_FOR_START) {
         p_position = &transform.position;
-        transform.position.x = convert_math_type16_to_32(
+        transform.position.x = MathType16to32(
             replay_game
                 ->selected_level_record
                 ->run_records[replay_game->replay_update_cursor]
@@ -210,21 +210,21 @@ steering_stored:
             }
         }
         p_position = &transform.position;
-        float quantized_x = convert_math_type16_to_32(
-            convert_math_type32_to_16(transform.position.x, 16.0f), 16.0f);
+        float quantized_x = MathType16to32(
+            MathType32to16(transform.position.x, 16.0f), 16.0f);
         transform.position.x = quantized_x;
         cRSubGame* record_game = game;
         record_game
             ->current_high_score_record
             .run_records[record_game->replay_update_cursor]
-            .lateral_x = convert_math_type32_to_16(quantized_x, 16.0f);
+            .lateral_x = MathType32to16(quantized_x, 16.0f);
         cRSubGame* record_game_z = game;
         if (!game->replay_update_cursor) {
             record_game_z
                 ->current_high_score_record
                 .run_records[record_game_z->replay_update_cursor]
-                .delta_z = convert_math_type32_to_16(transform.position.z, 32.0f);
-            g_replay_accum_z = convert_math_type16_to_32(
+                .delta_z = MathType32to16(transform.position.z, 32.0f);
+            g_replay_accum_z = MathType16to32(
                 game
                     ->current_high_score_record
                     .run_records[game->replay_update_cursor]
@@ -235,9 +235,9 @@ steering_stored:
                 ->current_high_score_record
                 .run_records[record_game_z->replay_update_cursor]
                 .delta_z =
-                convert_math_type32_to_16(transform.position.z - g_replay_accum_z, 32.0f);
+                MathType32to16(transform.position.z - g_replay_accum_z, 32.0f);
             g_replay_accum_z =
-                convert_math_type16_to_32(
+                MathType16to32(
                     game
                         ->current_high_score_record
                         .run_records[game->replay_update_cursor]
@@ -911,12 +911,12 @@ steering_stored:
                         TIME_TRIAL_RECORD_AT(record_block)->replay_start_cursor
                             - anchor + cursor)
                     == 0)
-                ghost_z = convert_math_type16_to_32(
+                ghost_z = MathType16to32(
                     (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
                         ->run_records[0].delta_z,
                     32.0f);
             else
-                ghost_z = convert_math_type16_to_32(
+                ghost_z = MathType16to32(
                               (unsigned short)TIME_TRIAL_RECORD_AT(record_block)
                                   ->run_records[offset_cursor].delta_z,
                               32.0f)

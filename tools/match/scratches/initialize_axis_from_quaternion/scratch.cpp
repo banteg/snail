@@ -3,14 +3,14 @@
 #include "axis.h"
 #include "quaternion.h"
 
-float sine(float angle);
-float arccosine(float value);
+float Sin(float angle);
+float ACos(float value);
 
 void tAxis::operator=(const tQuaternian& quaternion)
 {
-    float half_angle = arccosine(quaternion.w);
-    x = quaternion.x / sine(half_angle);
-    y = quaternion.y / sine(half_angle);
-    z = quaternion.z / sine(half_angle);
+    float half_angle = ACos(quaternion.w);
+    x = quaternion.x / Sin(half_angle);
+    y = quaternion.y / Sin(half_angle);
+    z = quaternion.z / Sin(half_angle);
     angle = half_angle + half_angle;
 }

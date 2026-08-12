@@ -96,7 +96,7 @@ void cRBorder::draw_frontend_widget()
         float wobble = 0.0f;
         if (g_game->border_manager.delayed_widget_active != 0
             && this == g_game->border_manager.delayed_widget) {
-            wobble = sine(
+            wobble = Sin(
                 g_game->border_manager.delayed_widget_progress
                 * 3.1415927f) * 3.0f;
             if (sprite_wobble_positive == 0)

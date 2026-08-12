@@ -7,7 +7,7 @@
 #include "subgame_runtime.h"
 #include "track_attachment.h"
 
-float cosine(float angle);
+float Cos(float angle);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 extern char g_worm_fov_report_format[];
 
@@ -66,7 +66,7 @@ void cRCameraman::update_cameraman()
             phase = 0.0f;
         else if (phase > 1.0f)
             phase = 1.0f;
-        attachment_lift_envelope = (0.5f - cosine(phase * 6.2831855f) * 0.5f) * 0.34999999f;
+        attachment_lift_envelope = (0.5f - Cos(phase * 6.2831855f) * 0.5f) * 0.34999999f;
     } else {
         attachment_lift_envelope = 0.0f;
     }
@@ -74,7 +74,7 @@ void cRCameraman::update_cameraman()
     cRSubGoldy* pitch_player = player;
     if (pitch_player->cutscene_pitch_cycle > 0.0f) {
         attachment_lift_envelope =
-            (0.5f - cosine(pitch_player->cutscene_pitch_cycle * 4.712389f + 1.5707964f) * 0.5f) * 0.23999999f
+            (0.5f - Cos(pitch_player->cutscene_pitch_cycle * 4.712389f + 1.5707964f) * 0.5f) * 0.23999999f
             + attachment_lift_envelope;
     }
 
@@ -100,7 +100,7 @@ void cRCameraman::update_cameraman()
     desired_matrix.RotLocalX(pitch);
 
     cRSubGoldy* lean_player = player;
-    float lean_roll = (0.5f - cosine(lean_player->lane_lean_progress * 3.1415927f) * 0.5f)
+    float lean_roll = (0.5f - Cos(lean_player->lane_lean_progress * 3.1415927f) * 0.5f)
         * lean_player->lane_lean_amplitude * 6.2831855f;
     float steer_roll = lean_player->cached_camera_target_world.x * -8.0f;
     steer_roll = steer_roll * 0.017449999f;
@@ -127,7 +127,7 @@ void cRCameraman::update_cameraman()
             phase = 0.0f;
         else if (phase > 1.0f)
             phase = 1.0f;
-        float envelope = 0.5f - cosine(phase * 6.2831855f) * 0.5f;
+        float envelope = 0.5f - Cos(phase * 6.2831855f) * 0.5f;
         debug_report_stub(g_worm_fov_report_format, (double)envelope);
         desired_fov = envelope * 50.0f + 110.0f;
     } else {

@@ -50,9 +50,9 @@ void cRSubGarbage::AI()
         case SUB_GARBAGE_STATE_BURST_PENDING: {
             state = SUB_GARBAGE_STATE_BURST;
             Vector3 random_velocity;
-            random_velocity.x = (float)random_signed_float_below(0.1f, "GDI");
-            random_velocity.y = (float)random_float_below(0.2f, 0) + 0.1f;
-            random_velocity.z = (float)random_float_below(0.30000001f, 0);
+            random_velocity.x = (float)SRAND(0.1f, "GDI");
+            random_velocity.y = (float)RAND(0.2f, 0) + 0.1f;
+            random_velocity.z = (float)RAND(0.30000001f, 0);
             cRSubGame* rate_game = owner_game;
             Vector3* burst_velocity = &velocity;
             float rate = rate_game->subgame_rate;

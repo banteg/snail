@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -210,17 +210,17 @@ void cRPath::initialize_supertramp_path_template_pair(
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
-                sine(angle) * radius + 7.0f;
+                Sin(angle) * radius + 7.0f;
             primary_samples[sample_index].transform.position.y =
-                radius - cosine(angle) * radius;
+                radius - Cos(angle) * radius;
 
             set_matrix_identity(&secondary_samples[sample_index].transform);
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
-                sine(angle) * secondary_radius + 7.0f;
+                Sin(angle) * secondary_radius + 7.0f;
             secondary_samples[sample_index].transform.position.y =
-                radius - cosine(angle) * secondary_radius;
+                radius - Cos(angle) * secondary_radius;
 
             primary_samples[sample_index].transform.basis_right =
                 Vector3(1.0f, 0.0f, 0.0f);

@@ -6,7 +6,7 @@
 #include "input_state.h"
 
 
-void set_math_random_seed(int seed);
+void RandSeed(int seed);
 void set_input_controller_pointer_authored_xy(int slot, float authored_x, float authored_y);
 
 void cRClickStart::AI()
@@ -78,7 +78,7 @@ start_subgame:
     }
 
 begin_teardown:
-        set_math_random_seed(g_game->subgame.current_high_score_record.runtime_build_seed);
+        RandSeed(g_game->subgame.current_high_score_record.runtime_build_seed);
         state = CLICK_START_STATE_TEARDOWN;
         teardown_progress = 0.0f;
         teardown_progress_step = 0.0166666675f;

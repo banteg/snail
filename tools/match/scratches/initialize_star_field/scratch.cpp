@@ -3,7 +3,7 @@
 #include "game_root.h"
 
 
-int next_math_random_value(); // @ 0x44c900
+int gRMathRand2(); // @ 0x44c900
 
 inline Vector3 operator/(const Vector3& vector, float scale)
 {
@@ -34,7 +34,7 @@ void cRStarManager::Init()
                 entries->alpha_scale = 0.400000006f;
             } else {
                 entries[index].alpha_scale =
-                    ((float)next_math_random_value() - 16384.0f)
+                    ((float)gRMathRand2() - 16384.0f)
                         * 0.0000610351562f * 0.1f +
                     0.400000006f;
             }
@@ -45,20 +45,20 @@ void cRStarManager::Init()
                 root->overlay_0.transform.position;
 
             entries[index].velocity = Vector3(
-                ((float)next_math_random_value() - 16384.0f) * 0.0000610351562f,
-                ((float)next_math_random_value() - 16384.0f) * 0.0000610351562f,
+                ((float)gRMathRand2() - 16384.0f) * 0.0000610351562f,
+                ((float)gRMathRand2() - 16384.0f) * 0.0000610351562f,
                 0.0f);
             entries[index].velocity.Normalize();
 
             float velocity_scale =
-                (float)next_math_random_value() * 0.0000305175781f * 0.6f
+                (float)gRMathRand2() * 0.0000305175781f * 0.6f
                     + 0.300000012f;
             entries[index].velocity *= velocity_scale;
             entries[index].velocity.z = 0.0f;
 
             entries[index].speed = entries[index].velocity.Magnitude();
             entries[index].travel_distance =
-                (float)next_math_random_value() * 0.0000305175781f * 35.0f;
+                (float)gRMathRand2() * 0.0000305175781f * 35.0f;
 
             entries[index].position =
                 entries[index].velocity * entries[index].travel_distance /

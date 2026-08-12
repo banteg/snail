@@ -4,12 +4,12 @@
 #include "player.h"
 #include "subgame_runtime.h"
 
-int next_math_random_value();
+int gRMathRand2();
 
 void cRSlug::Kill()
 {
     if (state == SUB_SLUG_STATE_ACTIVE) {
-        int variant = (int)((float)next_math_random_value()
+        int variant = (int)((float)gRMathRand2()
             * 0.0000305175781f * -2.0f);
         VoicePlay(28 - variant);
         float x = transform.position.x;

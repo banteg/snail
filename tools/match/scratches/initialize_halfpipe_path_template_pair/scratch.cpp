@@ -5,7 +5,7 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
+float Sin(float angle);
 
 
 void cRPath::initialize_halfpipe_path_template_pair(
@@ -36,7 +36,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
         float index = (float)lead_index;
         float angle_base = index * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
-        float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
+        float depth = ((0.5f - Sin(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->center_x = (float)width_cells * 0.5f - 4.0f;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->rotation_scalar_98 = 0.0f;
         ((AttachmentSample*)((char*)primary_samples + lead_sample_offset))->rotation_scalar_94 = 0.0f;
@@ -62,7 +62,7 @@ void cRPath::initialize_halfpipe_path_template_pair(
     do {
         float angle_base = 1.0f - (float)exit_index * 0.0625f;
         float angle = angle_base * 3.1415927f + 1.5707964f;
-        float depth = ((0.5f - sine(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
+        float depth = ((0.5f - Sin(angle) * 0.5f) * 0.94999999f + 0.050000001f) * 4.0f;
         primary_samples[exit_index + 50].center_x =
             4.0f - (float)width_cells * 0.5f;
         primary_samples[exit_index + 50].rotation_scalar_98 = 0.0f;

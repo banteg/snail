@@ -2,15 +2,15 @@
 
 #include "voice_manager.h"
 
-int next_math_random_value();
+int gRMathRand2();
 
 void cRVoiceSet::Shuffle()
 {
     int remaining = 100;
     int second_index;
     do {
-        int first_index = (int)((float)next_math_random_value() * (float)sample_count * 0.000030517578f);
-        second_index = (int)((float)next_math_random_value() * (float)sample_count * 0.000030517578f);
+        int first_index = (int)((float)gRMathRand2() * (float)sample_count * 0.000030517578f);
+        second_index = (int)((float)gRMathRand2() * (float)sample_count * 0.000030517578f);
         int* list = playlist;
         --remaining;
         int second_value = list[second_index];

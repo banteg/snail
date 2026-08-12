@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -214,7 +214,7 @@ void cRPath::initialize_start_path_template_pair(
             float angle =
                 (float)curve_index * 3.1415927f / curve_segments_f;
             primary_samples[i].transform.position.y =
-                (cosine(angle) + 1.0f) * length;
+                (Cos(angle) + 1.0f) * length;
 
             set_matrix_identity(&secondary_samples[i].transform);
             secondary_samples[i].transform.position.x = primary_samples[i].center_x;

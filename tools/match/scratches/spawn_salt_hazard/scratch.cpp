@@ -3,7 +3,7 @@
 #include "salt_hazard_types.h"
 #include "transform_matrix.h"
 
-int next_math_random_value();
+int gRMathRand2();
 int report_errorf(char* format, ...);
 
 void cRSaltManager::Add(tVector& position)
@@ -32,7 +32,7 @@ void cRSaltManager::Add(tVector& position)
     *spawn_position = position;
     live_matrix->RotIdentity();
     live_matrix->RotLocalY(
-        ((float)next_math_random_value() - 16384.0f)
+        ((float)gRMathRand2() - 16384.0f)
         * 0.0000610351562f * 3.1415927f);
     slot->collision_armed = 1;
     int* list_flags = &slot->list_flags;

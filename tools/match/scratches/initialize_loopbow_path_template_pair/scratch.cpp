@@ -7,8 +7,8 @@
 #include "transform_matrix.h"
 #include "vector3.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 // The native caller ignores the incidental EAX state left by this finalizer.
 void __fastcall calc_path_length_z(Path* path);
@@ -117,7 +117,7 @@ void cRPath::initialize_loopbow_path_template_pair(
 
             float half_angle = angle * 0.5f;
             primary_samples[sample_index].center_x =
-                sine(half_angle + 4.712389f) * center_offset
+                Sin(half_angle + 4.712389f) * center_offset
                 + primary_samples[sample_index].center_x;
             primary_samples[sample_index].rotation_scalar_98 = 0.0f;
             primary_samples[sample_index].rotation_scalar_94 = 0.0f;
@@ -128,17 +128,17 @@ void cRPath::initialize_loopbow_path_template_pair(
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
-                sine(angle) * curve_scale + 7.0f;
+                Sin(angle) * curve_scale + 7.0f;
             primary_samples[sample_index].transform.position.y =
-                curve_scale - cosine(angle) * curve_scale;
+                curve_scale - Cos(angle) * curve_scale;
 
             set_matrix_identity(&secondary_samples[sample_index].transform);
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
-                sine(angle) * secondary_radius + 7.0f;
+                Sin(angle) * secondary_radius + 7.0f;
             secondary_samples[sample_index].transform.position.y =
-                curve_scale - cosine(angle) * secondary_radius;
+                curve_scale - Cos(angle) * secondary_radius;
 
             primary_samples[sample_index].transform.basis_right = primary_right;
             primary_samples[sample_index].transform.basis_up.x = 0.0f;
@@ -166,9 +166,9 @@ void cRPath::initialize_loopbow_path_template_pair(
 
             TransformMatrix rotation;
             set_matrix_identity(&rotation);
-            float half_sine = sine(half_angle);
+            float half_sine = Sin(half_angle);
             rotation.RotLocalY(
-                sine(half_angle) * half_sine * 0.52359879f);
+                Sin(half_angle) * half_sine * 0.52359879f);
 
             primary_samples[sample_index].transform.position.z -= 7.0f;
             secondary_samples[sample_index].transform.position.z -= 7.0f;

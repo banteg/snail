@@ -4,7 +4,7 @@
 #include "quaternion.h"
 #include "transform_matrix.h"
 
-float square_root(float value);
+float Sqrt(float value);
 int debug_report_stub(char* format, ...); // @ 0x449c00, stripped in release
 
 tQuaternian::tQuaternian(const tMatrix& matrix)
@@ -12,7 +12,7 @@ tQuaternian::tQuaternian(const tMatrix& matrix)
     const float* matrix_rows = &matrix.basis_right.x;
     float trace = matrix_rows[5] + matrix_rows[0] + matrix_rows[10] + 1.0f;
     if (trace > 0.000001f) {
-        float scale = 0.5f / square_root(trace);
+        float scale = 0.5f / Sqrt(trace);
         w = 0.25f / scale;
         x = (matrix_rows[6] - matrix_rows[9]) * scale;
         y = (matrix_rows[8] - matrix_rows[2]) * scale;
@@ -38,7 +38,7 @@ z_dominant:
             radicand = 0.0f;
         }
 
-        float doubled_root = square_root(radicand);
+        float doubled_root = Sqrt(radicand);
         doubled_root = doubled_root + doubled_root;
         x = (matrix_rows[8] + matrix_rows[2]) / doubled_root;
         y = (matrix_rows[9] + matrix_rows[6]) / doubled_root;
@@ -63,7 +63,7 @@ x_dominant:
             radicand = 0.0f;
         }
 
-        float doubled_root = square_root(radicand);
+        float doubled_root = Sqrt(radicand);
         doubled_root = doubled_root + doubled_root;
         x = doubled_root * 0.25f;
         y = (matrix_rows[4] + matrix_rows[1]) / doubled_root;
@@ -80,7 +80,7 @@ y_dominant:
             radicand = 0.0f;
         }
 
-        float doubled_root = square_root(radicand);
+        float doubled_root = Sqrt(radicand);
         doubled_root = doubled_root + doubled_root;
         x = (matrix_rows[4] + matrix_rows[1]) / doubled_root;
         y = doubled_root * 0.25f;

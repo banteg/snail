@@ -26,7 +26,7 @@
 typedef Vector3 Vec3;
 
 float __fastcall normalize_vector(Vec3* vector);
-int next_math_random_value();
+int gRMathRand2();
 int sprintf(char* buffer, const char* format, ...);
 
 void cRSubGoldy::Collision()
@@ -126,7 +126,7 @@ void cRSubGoldy::Collision()
                     ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
                     damage_gauge.Take(0.039999999f, 0);
                     g_sound_effect_manager.Play(
-                        39 - (int)((float)next_math_random_value()
+                        39 - (int)((float)gRMathRand2()
                             * 0.0000305175781f * -2.0f));
                 }
             }
@@ -157,7 +157,7 @@ void cRSubGoldy::Collision()
                                 game->slug_hazards.slots[m]
                                     .player_encounter_latched = 1;
                                 game->slug_hazards.slots[m].VoicePlay(
-                                    34 - (int)((float)next_math_random_value()
+                                    34 - (int)((float)gRMathRand2()
                                         * 0.0000305175781f * -2.0f));
                                 float half = distance * 0.5f;
                                 presentation.wobble.lift_phase_step = 0.0f;

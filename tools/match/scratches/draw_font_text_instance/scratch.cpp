@@ -30,9 +30,9 @@ void draw_font_text_instance(cFontPrintBuffer* entry)
         float v1 = g_font_sheets[font_id].glyph_v1;
         int texture_page = g_font_sheets[font_id].texture_page[slot];
 
-        float wave_x = sine(g_font_wave_phase_a + wave_index)
+        float wave_x = Sin(g_font_wave_phase_a + wave_index)
             * entry->text_wave_amplitude * 2.0f;
-        float wave_y = cosine(wave_index * 3.0f + g_font_wave_phase_a)
+        float wave_y = Cos(wave_index * 3.0f + g_font_wave_phase_a)
             * entry->text_wave_amplitude * 4.0f;
         wave_index = wave_index + 1.0f;
 

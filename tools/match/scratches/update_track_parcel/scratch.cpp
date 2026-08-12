@@ -3,8 +3,8 @@
 #include "subgame_runtime.h"
 #include "track_parcel_runtime.h"
 
-float sine(float radians);
-int next_math_random_value();
+float Sin(float radians);
+int gRMathRand2();
 
 void cRParcel::AI()
 {
@@ -30,7 +30,7 @@ void cRParcel::AI()
 
         sprite->position = position;
         sprite->position.y =
-            sine(bob_phase * 6.2831855f) * 0.30000001f + sprite->position.y;
+            Sin(bob_phase * 6.2831855f) * 0.30000001f + sprite->position.y;
 
         sprite->facing_angle = owner_player->heading_roll;
         if (owner_player->follow_state.active == 1)
@@ -44,7 +44,7 @@ void cRParcel::AI()
         return;
 
     case PARCEL_STATE_COLLECT_PENDING: {
-        float bob_lift = sine(bob_phase * 6.2831855f) * 0.30000001f;
+        float bob_lift = Sin(bob_phase * 6.2831855f) * 0.30000001f;
         cRSubGame* current_subgame = owner_subgame;
         Vector3* home_anchor = current_subgame->parcel_home_anchor();
         progress = 0.0f;
@@ -70,7 +70,7 @@ void cRParcel::AI()
         sprite->size_end = remaining * 0.60000002f + 0.40000001f;
         sprite->size_start = sprite->size_end;
 
-        float arc = sine(progress * 3.1415927f) * 0.5f;
+        float arc = Sin(progress * 3.1415927f) * 0.5f;
         Vector3* basis = owner_subgame->parcel_delivery_arc_basis();
         sprite->position = *basis * arc + position;
 
@@ -89,9 +89,9 @@ void cRParcel::AI()
         progress_step = 0.0166666675f;
         state = PARCEL_STATE_DELIVERING;
         delivery_offset.x =
-            ((float)next_math_random_value() - 16384.0f) * 0.000061035156f;
+            ((float)gRMathRand2() - 16384.0f) * 0.000061035156f;
         {
-            int random_y = next_math_random_value();
+            int random_y = gRMathRand2();
             delivery_offset.z = 0.0f;
             delivery_offset.y = ((float)random_y - 16384.0f) *
                                     0.0000610351562f * 1.5f +
@@ -113,7 +113,7 @@ void cRParcel::AI()
         sprite->position =
             delta * progress + *owner_subgame->parcel_home_anchor();
 
-        sprite->position += delivery_offset * sine(progress * 3.1415927f);
+        sprite->position += delivery_offset * Sin(progress * 3.1415927f);
 
         float advanced_progress = progress_step + progress;
         progress = advanced_progress;

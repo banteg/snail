@@ -5,7 +5,7 @@
 #include "player.h"
 
 
-int next_math_random_value();
+int gRMathRand2();
 double __fastcall normalize_vector(Vector3* vector);
 
 void cRSubGoldy::PlayShootSfx()
@@ -15,19 +15,19 @@ void cRSubGoldy::PlayShootSfx()
 
     if ((flags & 7) != 0) {
         int variant = (int)(
-            (float)next_math_random_value() * 0.0000305175781f * 2.0f);
+            (float)gRMathRand2() * 0.0000305175781f * 2.0f);
         shoot_sfx_variant_sample = variant;
         sound_id = variant + 17;
     } else if ((flags & 0x18) != 0) {
         int variant = (int)(
-            (float)next_math_random_value() * 0.0000305175781f * 3.0f);
+            (float)gRMathRand2() * 0.0000305175781f * 3.0f);
         shoot_sfx_variant_sample = variant;
         sound_id = variant + 19;
     } else {
         if ((flags & 0x60) == 0)
             return;
         int variant = (int)(
-            (float)next_math_random_value() * 0.0000305175781f * 3.0f);
+            (float)gRMathRand2() * 0.0000305175781f * 3.0f);
         shoot_sfx_variant_sample = variant;
         sound_id = variant + 22;
     }

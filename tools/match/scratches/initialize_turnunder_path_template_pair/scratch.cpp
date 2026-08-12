@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -274,17 +274,17 @@ void cRPath::initialize_turnunder_path_template_pair(
             set_matrix_identity(&primary_samples[i].transform);
 
             float half_angle = angle * 0.5f;
-            float half_sine = sine(half_angle);
-            float angle_sine = sine(angle);
+            float half_sine = Sin(half_angle);
+            float angle_sine = Sin(angle);
             primary_samples[i].transform.position.x =
                 primary_samples[i].center_x -
                 (angle_sine * half_sine + angle_sine * half_sine);
             primary_samples[i].transform.position.z = (float)(curve_index + 6);
             primary_samples[i].transform.position.y =
-                (turns - cosine(angle) * turns) * -0.2f;
+                (turns - Cos(angle) * turns) * -0.2f;
 
-            float roll_cosine = cosine(sine(angle) * 1.0471976f);
-            float roll_sine = sine(sine(angle) * 1.0471976f);
+            float roll_cosine = Cos(Sin(angle) * 1.0471976f);
+            float roll_sine = Sin(Sin(angle) * 1.0471976f);
             primary_samples[i].transform.basis_up =
                 Vector3(-roll_sine, roll_cosine, 0.0f);
             primary_samples[i].transform.basis_forward = Vector3(

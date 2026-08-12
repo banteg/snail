@@ -3,7 +3,7 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float atan2_positive(float y, float x);
+float ATan(float y, float x);
 
 void cRSprite::BuildTail(tMatrix* matrix)
 {
@@ -17,7 +17,7 @@ void cRSprite::BuildTail(tMatrix* matrix)
             delta_source.z = position.z - previous_position.z;
             delta = delta_source;
             rotated = delta.Rotate(*matrix);
-            float angle = atan2_positive(rotated.x, rotated.y) + 7.0685835f;
+            float angle = ATan(rotated.x, rotated.y) + 7.0685835f;
             facing_refresh_progress = 0.001f;
             facing_angle = angle;
         }
@@ -33,6 +33,6 @@ void cRSprite::BuildTail(tMatrix* matrix)
         delta_source.z = position.z - previous_position.z;
         delta = delta_source;
         rotated = delta.Rotate(*matrix);
-        facing_angle = atan2_positive(rotated.x, rotated.y) + 7.0685835f;
+        facing_angle = ATan(rotated.x, rotated.y) + 7.0685835f;
     }
 }

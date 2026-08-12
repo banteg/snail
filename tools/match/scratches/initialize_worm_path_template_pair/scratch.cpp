@@ -200,17 +200,17 @@ void cRPath::initialize_worm_path_template_pair(char* texture_path)
                             radius * primary_samples[row].transform.basis_up;
                         float column_as_float = (float)mesh_column;
                         Vector3 up_component =
-                            cosine(column_as_float / (float)width_cells * WORM_TAU) *
+                            Cos(column_as_float / (float)width_cells * WORM_TAU) *
                                 up_radius;
                         Vector3 base_plus_right =
                             primary_samples[row].transform.position +
-                            sine(column_as_float / (float)width_cells * WORM_TAU) *
+                            Sin(column_as_float / (float)width_cells * WORM_TAU) *
                                 (radius * primary_samples[row].transform.basis_right);
                         Vector3 vertex = base_plus_right + up_component;
                         vertices[mesh_column + row * width_cells] = vertex;
 
                         float double_row_angle = row_angle + row_angle;
-                        float row_wave = cosine(double_row_angle);
+                        float row_wave = Cos(double_row_angle);
                         float alpha = 0.5f - row_wave * 0.5f;
                         vertex_colours[mesh_column + row * width_cells].store_color4f(
                             1.0f, 1.0f, 1.0f, alpha);

@@ -103,7 +103,7 @@ void cRSubGame::AI()
     }
         // Fresh state-zero setup enters the same front-end dispatch as state one.
     case 1: {
-        random_float_below(1.0f, 0);
+        RAND(1.0f, 0);
         int challenge_speed = g_runtime_config.challenge_speed_percent;
         int challenge_difficulty =
             g_runtime_config.challenge_difficulty_percent;
@@ -401,7 +401,7 @@ void cRSubGame::AI()
                                 && (runtime_flags
                                         & SUBGAME_RUNTIME_FLAG_AMBIENT_GARBAGE)
                                     != 0
-                                && random_float_below(1.0f, "G")
+                                && RAND(1.0f, "G")
                                     > (1.0f - garbage_frequency) * 0.2f
                                         + 0.8f
                                 && (attachment_count == 0
@@ -427,10 +427,10 @@ void cRSubGame::AI()
                                 && player.click_start.state
                                     != CLICK_START_STATE_WAITING_FOR_START
                                 && (level_mode != 4
-                                    || random_float_below(1.0f, "G2")
+                                    || RAND(1.0f, "G2")
                                         <= base_subgame_rate * 0.3f + 0.7f)
                                 && (level_mode != 0
-                                    || random_float_below(1.0f, "G3")
+                                    || RAND(1.0f, "G3")
                                         <= base_subgame_rate * 0.6f + 0.4f)) {
                             AddGarbage(
                                 &cell_slot->cell, &player);
@@ -451,7 +451,7 @@ void cRSubGame::AI()
                                 != CLICK_START_STATE_WAITING_FOR_START
                             && (runtime_flags & SUBGAME_RUNTIME_FLAG_AMBIENT_SALT)
                                 != 0
-                            && random_float_below(1.0f, "S")
+                            && RAND(1.0f, "S")
                                 > (1.0f - salt_frequency) * 0.02f
                                     + 0.98f
                             && cell_index >= first_block_row_count
@@ -540,7 +540,7 @@ after_authored_ring:
                                 } else if ((runtime_flags
                                                 & SUBGAME_RUNTIME_FLAG_DEFAULT_RAMP_RINGS)
                                             != 0
-                                    && (random_float_below(1.0f, "R") > 0.7f
+                                    && (RAND(1.0f, "R") > 0.7f
                                         || level_mode == 7)
                                     && cell_slot->cell.tile_id
                                         != SUBLOC_TILE_RAMP_LEFT_BRACKET
@@ -572,7 +572,7 @@ after_authored_ring:
                                         &cell_slot->cell, SUB_RING_KIND_EXPLODE_RAMP, &player,
                                         runtime_rows[cell_index].ring_speed);
                                     player.last_ring_spawn_z = cell_slot->cell.position.z;
-                                } else if (random_float_below(1.0f, "R2") > 0.7f
+                                } else if (RAND(1.0f, "R2") > 0.7f
                                     || level_mode == 7
                                     || ((runtime_rows[cell_index].flags
                                             & SUBROW_FLAG_RING_EXPLODE)

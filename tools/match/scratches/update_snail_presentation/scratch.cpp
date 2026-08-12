@@ -4,7 +4,7 @@
 #include "player.h"
 
 
-float sine(float angle);
+float Sin(float angle);
 
 void cRSnail::AIGoldy()
 {
@@ -76,7 +76,7 @@ void cRSnail::AIGoldy()
     base_matrix = transform;
     roll_matrix.Identity();
     roll_matrix.RotLocalZ(
-        sine(wobble.roll_phase * 6.28318548f) * 0.0174499992f);
+        Sin(wobble.roll_phase * 6.28318548f) * 0.0174499992f);
 
     inverse_live.Invert(transform);
     transform *= inverse_live;
@@ -85,7 +85,7 @@ void cRSnail::AIGoldy()
     transform.position.y = transform.position.y - 1.29999995f;
     transform *= base_matrix;
 
-    float lift_sine = sine(wobble.lift_phase * 6.28318548f);
+    float lift_sine = Sin(wobble.lift_phase * 6.28318548f);
     transform.position +=
         (transform.basis_up * lift_sine) * 0.0299999993f;
 

@@ -20,7 +20,7 @@ extern "C" void* memset(void* destination, int value, unsigned int count);
 
 #define ROOT_BOD_OBJECT(slot) (g_game->root_bod_catalog.slot.object)
 
-void set_math_random_seed(int seed);
+void RandSeed(int seed);
 int report_errorf(const char* format, ...);
 int debug_report_stub(const char* format, ...);
 void set_object_color(Object* object, tColour color);
@@ -37,7 +37,7 @@ void cRSubGame::BuildLevel()
         if (mode == 4 || mode == 7) {
             runtime_build_seed = 0;
         } else {
-            runtime_build_seed = (int)random_float_below(32768.0f, "Seed");
+            runtime_build_seed = (int)RAND(32768.0f, "Seed");
         }
     }
 
@@ -83,7 +83,7 @@ void cRSubGame::BuildLevel()
     player.stopwatch.Zero();
     player.score_tail = 0;
     player.shooting_tier = 0;
-    set_math_random_seed(runtime_build_seed);
+    RandSeed(runtime_build_seed);
     g_game->track.Change(level_definition.track_texture_set);
 
     int segment_cursor = 0;
@@ -398,12 +398,12 @@ void cRSubGame::BuildLevel()
             if (level_definition.random_enabled == 1) {
                 float picked_value;
                 if (level_mode == 1) {
-                    picked_value = random_float_below(
+                    picked_value = RAND(
                         (challenge_difficulty_scalar * 0.89999998f + 0.100000001f)
                             * (float)level_definition.segment_count,
                         "Segdif");
                 } else {
-                    picked_value = random_float_below(
+                    picked_value = RAND(
                         (float)level_definition.segment_count,
                         "Segtra");
                 }

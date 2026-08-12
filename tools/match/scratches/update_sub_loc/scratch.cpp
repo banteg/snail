@@ -20,7 +20,7 @@ void cRSubLoc::AI()
         if ((float)g_game->subgame.first_block_row_count
             >= g_game->subgame.embedded_player()->transform.position.z)
             goto cull_check;
-        if (random_float_below(100.0f, "W") < 4.0f) {
+        if (RAND(100.0f, "W") < 4.0f) {
             Vector3 spawn = position + Vector3(0.0f, 8.0f, 0.0f);
             unsigned int merged_run_width =
                 (lane_and_flags >> SUBLOC_MERGED_RUN_WIDTH_SHIFT)
@@ -31,7 +31,7 @@ void cRSubLoc::AI()
                 + Vector3(
                     0.0f,
                     0.0f,
-                    random_signed_float_below(3.0f, "Wall2") + 8.0f);
+                    SRAND(3.0f, "Wall2") + 8.0f);
             Vector3 direction;
             direction = target - spawn;
             if (direction.z >= -4.0f)

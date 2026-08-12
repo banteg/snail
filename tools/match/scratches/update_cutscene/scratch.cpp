@@ -63,7 +63,7 @@ void cRCutScene::AI()
         set_matrix_identity(&camera_matrix_a);
         camera_matrix_a.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
-        float swing = sine(progress * 3.1415927f);
+        float swing = Sin(progress * 3.1415927f);
         camera_matrix_a.position.x = swing + swing + camera_matrix_a.position.x;
         camera_matrix_a.LookAt(presentation->transform.position);
 
@@ -71,7 +71,7 @@ void cRCutScene::AI()
         live_matrix.LinearInterpolate(
             camera_matrix_a,
             camera_matrix_b,
-            sine(progress * 1.5707964f));
+            Sin(progress * 1.5707964f));
 
         target_delta = live_matrix.position - presentation->transform.position;
         float distance = target_delta.Normalize();
@@ -113,7 +113,7 @@ void cRCutScene::AI()
         set_matrix_identity(&camera_matrix_b);
         camera_matrix_b.position = presentation->snail_hotspots_world[
             SNAIL_HOTSPOT_CAMERA_INTRO_TALK];
-        float swing = sine(progress * 3.1415927f);
+        float swing = Sin(progress * 3.1415927f);
         camera_matrix_b.position.x = swing + swing + camera_matrix_b.position.x;
         if (camera_matrix_b.position.y < 0.0f)
             camera_matrix_b.position.y = 0.0f;
@@ -123,7 +123,7 @@ void cRCutScene::AI()
         live_matrix.LinearInterpolate(
             camera_matrix_a,
             camera_matrix_b,
-            sine(progress * 1.5707964f));
+            Sin(progress * 1.5707964f));
 
         progress = progress + progress_step;
         if (progress > 1.0f) {
@@ -204,7 +204,7 @@ void cRCutScene::AI()
             completion_delta * progress
             + camera_matrix_a.position;
 
-        float skid_arc = sine(progress * 3.1415927f);
+        float skid_arc = Sin(progress * 3.1415927f);
         camera_matrix_b.position.x = camera_matrix_b.position.x - skid_arc * 0.5f;
         camera_matrix_b.LookAt(presentation->transform.position);
 
@@ -212,7 +212,7 @@ void cRCutScene::AI()
         live_matrix.LinearInterpolate(
             camera_matrix_a,
             camera_matrix_b,
-            sine(progress * 1.5707964f));
+            Sin(progress * 1.5707964f));
 
         progress = progress + progress_step;
         if (progress > 1.0f) {

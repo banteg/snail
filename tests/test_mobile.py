@@ -5755,7 +5755,7 @@ def test_mobile_object_text_loader_rejects_binary_object_owner() -> None:
     }
 
 
-def test_mobile_rng_pair_recovers_authored_contract() -> None:
+def test_mobile_rmath_family_recovers_authored_names() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = {
@@ -5769,55 +5769,140 @@ def test_mobile_rng_pair_recovers_authored_contract() -> None:
         entry["name"]: entry
         for entry in functions["functions"]
     }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
 
     expected = {
-        "random_float_below": ("RAND(float, char*)", "RAND"),
-        "random_signed_float_below": ("SRAND(float, char*)", "SRAND"),
+        "convert_math_type32_to_16": (
+            "MathType32to16(float, float)",
+            "MathType32to16",
+            "?MathType32to16@@YAFMM@Z",
+        ),
+        "convert_math_type16_to_32": (
+            "MathType16to32(short, float)",
+            "MathType16to32",
+            "?MathType16to32@@YAMFM@Z",
+        ),
+        "initialize_math_random_table": (
+            "gRMathRand2Init()",
+            "gRMathRand2Init",
+            "?gRMathRand2Init@@YAXXZ",
+        ),
+        "next_math_random_value": (
+            "gRMathRand2()",
+            "gRMathRand2",
+            "?gRMathRand2@@YAHXZ",
+        ),
+        "initialize_trigonometry_tables": (
+            "RMathInit()",
+            "RMathInit",
+            "?RMathInit@@YAXXZ",
+        ),
+        "set_math_random_seed": (
+            "RandSeed(int)",
+            "RandSeed",
+            "?RandSeed@@YAXH@Z",
+        ),
+        "cosine": ("Cos(float)", "Cos", "?Cos@@YAMM@Z"),
+        "sine": ("Sin(float)", "Sin", "?Sin@@YAMM@Z"),
+        "arccosine": ("ACos(float)", "ACos", "?ACos@@YAMM@Z"),
+        "atan2_positive": (
+            "ATan(float, float)",
+            "ATan",
+            "?ATan@@YAMMM@Z",
+        ),
+        "square_root": ("Sqrt(float)", "Sqrt", "?Sqrt@@YAMM@Z"),
+        "random_float_below": (
+            "RAND(float, char*)",
+            "RAND",
+            "?RAND@@YAMMPAD@Z",
+        ),
+        "random_signed_float_below": (
+            "SRAND(float, char*)",
+            "SRAND",
+            "?SRAND@@YAMMPAD@Z",
+        ),
     }
-    for windows_name, (mobile_symbol, alias) in expected.items():
+    scratch_root = repo_root / "tools/match/scratches"
+    for windows_name, (mobile_symbol, alias, object_symbol) in expected.items():
         entry = entries[windows_name]
         assert entry["status"] == "verified"
         assert entry["confidence"] == "high"
         assert entry["source_object"] == "RMaths.o"
         assert entry["android_symbol"] == mobile_symbol
-        assert entry["ios_symbol"] == mobile_symbol
         assert entry["android_body_count"] == 1
-        assert entry["ios_body_count"] == 1
-        assert alias in functions_by_name[windows_name]["aliases"]
+        if windows_name == "initialize_math_random_table":
+            assert "ios_symbol" not in entry
+        else:
+            assert entry["ios_symbol"] == mobile_symbol
+            assert entry["ios_body_count"] == 1
+        assert functions_by_name[windows_name]["aliases"] == [alias]
+        assert references_by_name[windows_name]["aliases"] == [
+            object_symbol
+        ]
 
-    rmath_init = entries["initialize_trigonometry_tables"]
-    assert rmath_init["status"] == "verified"
-    assert rmath_init["source_object"] == "RMaths.o"
-    assert rmath_init["android_symbol"] == "RMathInit()"
-    assert rmath_init["ios_symbol"] == "RMathInit()"
-    assert rmath_init["android_body_count"] == 1
-    assert rmath_init["ios_body_count"] == 1
-    assert "RMathInit" in (
-        functions_by_name["initialize_trigonometry_tables"]["aliases"]
-    )
-
-    random_init = entries["initialize_math_random_table"]
-    assert random_init["status"] == "verified"
-    assert random_init["android_symbol"] == "gRMathRand2Init()"
-    assert random_init["android_body_count"] == 1
-    assert "gRMathRand2Init" in (
-        functions_by_name["initialize_math_random_table"]["aliases"]
-    )
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        notes = (scratch_root / windows_name / "NOTES.md").read_text(
+            encoding="utf-8"
+        )
+        assert f"{alias}(" in source
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert alias in notes
 
     random_header = (
         repo_root / "tools/match/include/rmath_random.h"
     ).read_text(encoding="utf-8")
-    assert (
-        "float __cdecl random_float_below(float upper_bound, char* tag);"
-        in random_header
+    declarations = {
+        "short __cdecl MathType32to16(float value, float scale);",
+        "float __cdecl MathType16to32(short value, float scale);",
+        "void __cdecl gRMathRand2Init();",
+        "int __cdecl gRMathRand2();",
+        "void __cdecl RMathInit();",
+        "void __cdecl RandSeed(int seed);",
+        "float __cdecl Cos(float angle);",
+        "float __cdecl Sin(float angle);",
+        "float __cdecl ACos(float value);",
+        "float __cdecl ATan(float y, float x);",
+        "float __cdecl Sqrt(float value);",
+        "float __cdecl RAND(float upper_bound, char* tag);",
+        "float __cdecl SRAND(float upper_bound, char* tag);",
+    }
+    for declaration in declarations:
+        assert declaration in random_header
+
+    stale_names = {
+        "cosine",
+        "sine",
+        "arccosine",
+        "atan2_positive",
+        "square_root",
+        "convert_math_type32_to_16",
+        "convert_math_type16_to_32",
+        "initialize_math_random_table",
+        "next_math_random_value",
+        "set_math_random_seed",
+        "initialize_trigonometry_tables",
+        "random_float_below",
+        "random_signed_float_below",
+    }
+    matcher_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for root in (repo_root / "tools/match/include", scratch_root)
+        for pattern in ("*.h", "*.cpp")
+        for path in root.rglob(pattern)
+        if "build" not in path.parts
     )
-    assert (
-        "float __cdecl random_signed_float_below("
-        "float upper_bound, char* tag);"
-        in random_header
-    )
-    assert "void __cdecl initialize_math_random_table();" in random_header
-    assert "void __cdecl initialize_trigonometry_tables();" in random_header
+    for stale_name in stale_names:
+        assert not re.search(rf"\b{stale_name}\b", matcher_sources)
 
 
 def test_ios_rmath_stabs_catalog_covers_verified_windows_symbols() -> None:
@@ -6126,8 +6211,8 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
     for scratch_path in scratch_paths:
         scratch = scratch_path.read_text(encoding="utf-8")
         if (
-            "random_float_below(" in scratch
-            or "random_signed_float_below(" in scratch
+            "RAND(" in scratch
+            or "SRAND(" in scratch
         ):
             random_scratches.append(scratch_path)
             assert '#include "rmath_random.h"' in scratch

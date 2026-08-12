@@ -8,7 +8,7 @@
 #include "runtime_config.h"
 
 
-int next_math_random_value(); // @ 0x44c900
+int gRMathRand2(); // @ 0x44c900
 int report_errorf(char* format, ...);
 
 void cRLandscapeManager::Init(int script_index)
@@ -18,7 +18,7 @@ void cRLandscapeManager::Init(int script_index)
     if (mode == 7) {
         flip = 0;
     } else if (mode == 1) {
-        if ((float)next_math_random_value() * 0.0000305175781f > 0.5f)
+        if ((float)gRMathRand2() * 0.0000305175781f > 0.5f)
             flip = 0;
         else
             flip = 1;

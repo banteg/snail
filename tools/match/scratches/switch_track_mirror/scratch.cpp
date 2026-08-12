@@ -8,7 +8,7 @@
 
 void cRSubGame::SwitchMirror()
 {
-    bool mirror_enabled = random_float_below(1.0f, "Mirror") > 0.5f;
+    bool mirror_enabled = RAND(1.0f, "Mirror") > 0.5f;
     if (mirror_enabled == track_mirror_enabled)
         ++track_mirror_repeat_count;
     else

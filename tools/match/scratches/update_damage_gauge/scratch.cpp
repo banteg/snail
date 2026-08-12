@@ -9,7 +9,7 @@
 #include "warning.h"
 
 
-float sine(float angle);
+float Sin(float angle);
 int queue_axis_aligned_textured_quad_uv(
     int texture_id,
     float x,
@@ -128,7 +128,7 @@ render:
         else
             alpha = 1.0f;
 
-        float flash_pulse = (sine(pulse_progress * 6.2831855f) + 1.0f) * 0.5f;
+        float flash_pulse = (Sin(pulse_progress * 6.2831855f) + 1.0f) * 0.5f;
         float flash_alpha = alpha - flash_pulse * alpha * 0.5f;
         queue_axis_aligned_textured_quad_uv(
             91,

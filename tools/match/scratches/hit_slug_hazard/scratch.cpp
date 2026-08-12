@@ -2,7 +2,7 @@
 
 #include "slug_hazard_types.h"
 
-int next_math_random_value();
+int gRMathRand2();
 
 void cRSlug::Hit(int damage)
 {
@@ -15,6 +15,6 @@ void cRSlug::Hit(int damage)
 
     hit_flash_pending = 1;
     int variant = (int)(
-        (float)next_math_random_value() * 0.0000305175781f * -3.0f);
+        (float)gRMathRand2() * 0.0000305175781f * -3.0f);
     VoicePlay(36 - variant);
 }

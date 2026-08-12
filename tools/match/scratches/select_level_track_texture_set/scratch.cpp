@@ -22,7 +22,7 @@ void cRTrack::Change(int texture_set)
         selected = 3;
         break;
     case 5:
-        selected = (int)random_float_below(4.0f, 0);
+        selected = (int)RAND(4.0f, 0);
         break;
     default:
         selected = texture_set;

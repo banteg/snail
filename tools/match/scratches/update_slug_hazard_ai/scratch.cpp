@@ -12,7 +12,7 @@
 #include "voice_manager.h"
 
 
-int next_math_random_value();
+int gRMathRand2();
 int report_errorf(char* format, ...);
 
 void cRSlug::AI()
@@ -74,9 +74,9 @@ active_state_tail:
         if (owner_player->transform.position.z + 1.0f > transform.position.z
             && player_encounter_latched == 0) {
             player_encounter_latched = 1;
-            random_value = next_math_random_value();
+            random_value = gRMathRand2();
             if ((float)random_value * 0.000030517578f > 0.600000024f) {
-                random_value = next_math_random_value();
+                random_value = gRMathRand2();
                 int variant =
                     (int)((float)random_value * 0.0000305175781f * -4.0f);
                 VoicePlay(30 - variant);
@@ -120,7 +120,7 @@ update_tail:
         lateral_phase = lateral_phase_step + lateral_phase;
         if (lateral_phase > 6.28318548f)
             lateral_phase = lateral_phase - 6.28318548f;
-        transform.position.x = sine(lateral_phase) * 3.0f;
+        transform.position.x = Sin(lateral_phase) * 3.0f;
         if (transform.position.z < owner_player->transform.position.z && passed_player == 0)
             passed_player = 1;
         sprite->position = transform.position;
@@ -137,9 +137,9 @@ update_tail:
     case SUB_SLUG_STATE_DEATH_TOSS_PENDING: {
         state = SUB_SLUG_STATE_TEARDOWN_PENDING;
         velocity = Vector3(
-            (float)random_signed_float_below(0.100000001f, "SDI"),
-            (float)random_float_below(0.200000003f, 0) + 0.100000001f,
-            (float)random_float_below(0.300000012f, 0));
+            (float)SRAND(0.100000001f, "SDI"),
+            (float)RAND(0.200000003f, 0) + 0.100000001f,
+            (float)RAND(0.300000012f, 0));
 
         double adjusted_x;
         if (death_toss_direction == SUB_SLUG_DEATH_TOSS_RIGHT) {

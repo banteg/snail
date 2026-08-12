@@ -2,7 +2,7 @@
 
 #include "subgame_runtime.h"
 
-int next_math_random_value();
+int gRMathRand2();
 
 void cRSubGame::BlinkRandInit()
 {
@@ -11,7 +11,7 @@ void cRSubGame::BlinkRandInit()
     int remaining = 24;
 
     do {
-        int result = next_math_random_value();
+        int result = gRMathRand2();
         --remaining;
         *sample = 1.0f / (((float)result * 0.000030517578f + 1.0f) * 60.0f);
         ++sample;

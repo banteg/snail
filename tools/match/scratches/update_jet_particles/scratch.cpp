@@ -6,7 +6,7 @@
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-int next_math_random_value();
+int gRMathRand2();
 
 void cRSubHover::Jets()
 {
@@ -21,10 +21,10 @@ void cRSubHover::Jets()
     }
 
     float forward_scale =
-        (float)next_math_random_value() * 0.0000305175781f * 0.05f
+        (float)gRMathRand2() * 0.0000305175781f * 0.05f
         + 0.400000006f;
     float size_scale =
-        (float)next_math_random_value() * 0.0000305175781f * 0.05f
+        (float)gRMathRand2() * 0.0000305175781f * 0.05f
         + 0.119999997f;
     int row = 0;
 
@@ -62,7 +62,7 @@ void cRSubHover::Jets()
             slot->sprite->position = base_position;
 
             if (row == JET_PARTICLE_LAST_ROW_INDEX
-                && (float)next_math_random_value() * 0.0000305175781f
+                && (float)gRMathRand2() * 0.0000305175781f
                        > 0.899999976f) {
                 cRSprite* sprite =
                     g_sprite_manager.New(

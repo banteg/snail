@@ -5,7 +5,7 @@
 #include "track_attachment_types.h"
 #include "transform_matrix.h"
 
-float cosine(float angle);
+float Cos(float angle);
 
 
 void cRPath::initialize_cage2_path_template_pair(
@@ -58,7 +58,7 @@ void cRPath::initialize_cage2_path_template_pair(
         float sample_index_f = (float)sample_index;
         float curve_angle = sample_index_f * 0.31415927f;
         float angle = sample_index_f * 0.47123891f;
-        primary_samples[i].center_x = cosine(angle) * primary_samples[0].center_x;
+        primary_samples[i].center_x = Cos(angle) * primary_samples[0].center_x;
         primary_samples[i].rotation_scalar_98 = 0.0f;
         primary_samples[i].rotation_scalar_94 = 0.0f;
         primary_samples[i].special_scalar = 0.0f;
@@ -88,7 +88,7 @@ void cRPath::initialize_cage2_path_template_pair(
                 &primary_samples[i - 1].transform.basis_up,
                 &primary_samples[i - 1].transform.basis_forward);
             primary_samples[i - 1].transform.RotLocalZ(
-                (float)((1.0f - cosine(curve_angle)) * 0.5f)
+                (float)((1.0f - Cos(curve_angle)) * 0.5f)
                     * primary_samples[i - 1].center_x * 0.39269909f);
 
             secondary_samples[i - 1].transform.basis_up = Vector3(0.0f, 1.0f, 0.0f);
@@ -100,7 +100,7 @@ void cRPath::initialize_cage2_path_template_pair(
                 &secondary_samples[i - 1].transform.basis_up,
                 &secondary_samples[i - 1].transform.basis_forward);
             secondary_samples[i - 1].transform.RotLocalZ(
-                (float)((1.0f - cosine(curve_angle)) * 0.5f)
+                (float)((1.0f - Cos(curve_angle)) * 0.5f)
                     * primary_samples[i - 1].center_x * 0.39269909f);
         }
     }

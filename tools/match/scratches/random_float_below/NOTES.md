@@ -1,4 +1,4 @@
-# random_float_below @ 0x44dc90
+# RAND @ 0x44dc90
 
 Exact match: 100.00%, 8/8 instructions.
 

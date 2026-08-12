@@ -2,8 +2,8 @@
 
 #include "nuke.h"
 
-float sine(float radians);
-float cosine(float radians);
+float Sin(float radians);
+float Cos(float radians);
 
 void cRNuke::AI()
 {
@@ -35,8 +35,8 @@ active:
         float angle = angle_base * 6.2831855f + self->orbit_phase;
         (*slots)->position.z = self->orbit_center_z;
         float angle_arg = angle;
-        (*slots)->position.x = sine(angle_arg) * 7.0f;
-        float y = cosine(angle_arg) * 7.0f;
+        (*slots)->position.x = Sin(angle_arg) * 7.0f;
+        float y = Cos(angle_arg) * 7.0f;
         result = (int)*slots;
         i++;
         slots++;

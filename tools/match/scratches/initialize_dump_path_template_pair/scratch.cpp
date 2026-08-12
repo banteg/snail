@@ -12,8 +12,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathAttachmentSample;
 
@@ -167,7 +167,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             float center = (primary_samples[curve_count + 7].center_x
                     - primary_samples[0].center_x)
                 * sample_f / curve_count_f + primary_samples[0].center_x;
-            center += sine(angle * 0.5f + 4.712389f) * loop_wiggle;
+            center += Sin(angle * 0.5f + 4.712389f) * loop_wiggle;
 
             primary_samples[sample_index].center_x = center;
             primary_samples[sample_index].rotation_scalar_98 = 0.0f;
@@ -178,17 +178,17 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
-                sine(angle) * loop_radius + 7.0f;
+                Sin(angle) * loop_radius + 7.0f;
             primary_samples[sample_index].transform.position.y =
-                loop_radius - cosine(angle) * loop_radius;
+                loop_radius - Cos(angle) * loop_radius;
 
             set_matrix_identity(&secondary_samples[sample_index].transform);
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
-                sine(angle) * secondary_radius + 7.0f;
+                Sin(angle) * secondary_radius + 7.0f;
             secondary_samples[sample_index].transform.position.y =
-                loop_radius - cosine(angle) * secondary_radius;
+                loop_radius - Cos(angle) * secondary_radius;
 
             orient_loop_sample(
                 &primary_samples[sample_index],
@@ -200,7 +200,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                 7.0f - secondary_samples[sample_index].transform.position.z);
 
 #if PATH_VARIANT == 1
-            float roll = sine(angle * 0.5f) * sine(angle * 8.0f) * 0.39269909f;
+            float roll = Sin(angle * 0.5f) * Sin(angle * 8.0f) * 0.39269909f;
             primary_samples[sample_index].transform.RotLocalZ(roll);
             secondary_samples[sample_index].transform.RotLocalZ(roll);
 #endif
@@ -254,7 +254,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             float center = (primary_samples[curve_count + 10].center_x
                     - primary_samples[0].center_x)
                 * sample_f / curve_count_f + primary_samples[0].center_x;
-            center += sine(angle * 0.5f + 4.712389f) * 0.30000001f;
+            center += Sin(angle * 0.5f + 4.712389f) * 0.30000001f;
 
             primary_samples[sample_index].center_x = center;
             primary_samples[sample_index].rotation_scalar_98 = 0.0f;
@@ -265,17 +265,17 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             primary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             primary_samples[sample_index].transform.position.z =
-                sine(angle) * loop_radius + 10.0f;
+                Sin(angle) * loop_radius + 10.0f;
             primary_samples[sample_index].transform.position.y =
-                cosine(angle) * loop_radius + center_y;
+                Cos(angle) * loop_radius + center_y;
 
             set_matrix_identity(&secondary_samples[sample_index].transform);
             secondary_samples[sample_index].transform.position.x =
                 primary_samples[sample_index].center_x;
             secondary_samples[sample_index].transform.position.z =
-                sine(angle) * secondary_radius + 10.0f;
+                Sin(angle) * secondary_radius + 10.0f;
             secondary_samples[sample_index].transform.position.y =
-                cosine(angle) * secondary_radius + center_y;
+                Cos(angle) * secondary_radius + center_y;
 
             orient_loop_sample(
                 &primary_samples[sample_index],
@@ -357,7 +357,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             int sample_index = i + 7;
             float angle = (float)i * 6.2831855f / curve_count_f;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
-                ->center_x = cosine(angle * 0.5f) * primary_samples[0].center_x;
+                ->center_x = Cos(angle * 0.5f) * primary_samples[0].center_x;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->rotation_scalar_98 = 0.0f;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
@@ -374,7 +374,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     ->center_x;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.y =
-                -((1.0f - cosine(angle)) * curve_source * PATH_HEIGHT_SCALE);
+                -((1.0f - Cos(angle)) * curve_source * PATH_HEIGHT_SCALE);
             float z = (float)sample_index;
             ((PathAttachmentSample*)((char*)primary_samples + sample_offset))
                 ->transform.position.z = z;
@@ -386,7 +386,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
                     ->center_x;
             ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
                 ->transform.position.y =
-                0.49000001f - (1.0f - cosine(angle)) * curve_source * PATH_HEIGHT_SCALE;
+                0.49000001f - (1.0f - Cos(angle)) * curve_source * PATH_HEIGHT_SCALE;
             ((PathAttachmentSample*)((char*)secondary_samples + sample_offset))
                 ->transform.position.z = z;
             if (sample_offset > 7 * (int)sizeof(PathAttachmentSample)) {
@@ -462,7 +462,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         for (i = 0; i < curve_count; ++i) {
             int sample_index = i + 1;
             float angle = (float)i * 6.2831855f / curve_count_f;
-            float y = -((1.0f - cosine(angle)) * dip_radius);
+            float y = -((1.0f - Cos(angle)) * dip_radius);
             initialize_sample_pair(
                 &primary_samples[sample_index],
                 &secondary_samples[sample_index],
@@ -519,24 +519,24 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
         for (i = 0; i < curve_count; ++i) {
             int sample_index = i + 3;
             float angle = (float)i * 6.2831855f / curve_count_f;
-            float center = cosine(angle * 0.5f) * 0.5f;
+            float center = Cos(angle * 0.5f) * 0.5f;
             initialize_sample_pair(
                 &primary_samples[sample_index],
                 &secondary_samples[sample_index],
                 center,
                 0.0f,
-                cosine(angle) * 0.49000001f,
+                Cos(angle) * 0.49000001f,
                 (float)(i + 3),
                 0);
             primary_samples[sample_index].rotation_scalar_94 = angle;
             secondary_samples[sample_index].transform.position.x =
-                primary_samples[sample_index].center_x - sine(angle) * 0.49000001f;
+                primary_samples[sample_index].center_x - Sin(angle) * 0.49000001f;
             if (sample_index <= 3) {
                 primary_samples[sample_index - 1].transform.RotIdentity();
                 secondary_samples[sample_index - 1].transform.RotIdentity();
             } else {
-                float up_x = -sine(angle);
-                float up_y = cosine(angle);
+                float up_x = -Sin(angle);
+                float up_y = Cos(angle);
                 orient_previous_with_fixed_up(
                     &primary_samples[sample_index - 1],
                     &primary_samples[sample_index],
@@ -593,7 +593,7 @@ void cRPath::PATH_FUNCTION(PATH_SIGNATURE)
             float falloff = t - 0.5f;
             if (falloff < 0.0f)
                 falloff = -falloff;
-            float center = sine(angle) * (1.0f - falloff) * (1.0f - falloff) * 5.0f;
+            float center = Sin(angle) * (1.0f - falloff) * (1.0f - falloff) * 5.0f;
             initialize_sample_pair(
                 &primary_samples[sample_index],
                 &secondary_samples[sample_index],

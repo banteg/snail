@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -234,7 +234,7 @@ void cRPath::initialize_snake_path_template_pair(
          i += (int)sizeof(PathTemplateSample)) {
         float angle = (float)curve_index * 0.34906587f;
         ((PathTemplateSample*)((char*)primary_samples + i))->center_x =
-            (0.5f - cosine(angle * 0.5f) * 0.5f)
+            (0.5f - Cos(angle * 0.5f) * 0.5f)
             * primary_samples[24].center_x;
         ((PathTemplateSample*)((char*)primary_samples + i))->rotation_scalar_98 = 0.0f;
         ((PathTemplateSample*)((char*)primary_samples + i))->rotation_scalar_94 = 0.0f;
@@ -245,7 +245,7 @@ void cRPath::initialize_snake_path_template_pair(
         ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + i))->center_x;
         ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.y =
-            -(1.0f - cosine(angle));
+            -(1.0f - Cos(angle));
         float z = (float)(curve_index + 6);
         ((PathTemplateSample*)((char*)primary_samples + i))->transform.position.z = z;
 
@@ -254,7 +254,7 @@ void cRPath::initialize_snake_path_template_pair(
         ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.x =
             ((PathTemplateSample*)((char*)primary_samples + i))->center_x;
         ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.y =
-            0.49000001f - (1.0f - cosine(angle));
+            0.49000001f - (1.0f - Cos(angle));
         ((PathTemplateSample*)((char*)secondary_samples + i))->transform.position.z = z;
 
         if (i > 6 * (int)sizeof(PathTemplateSample)) {

@@ -1,8 +1,8 @@
-// atan2_positive @ 0x44ca10 (cdecl)
+// ATan @ 0x44ca10 (cdecl)
 
 extern "C" double __cdecl atan(double value);
 
-float atan2_positive(float y, float x)
+float ATan(float y, float x)
 {
     int quadrant;
 

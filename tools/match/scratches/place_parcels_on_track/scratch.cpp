@@ -156,7 +156,7 @@ void cRSubGame::PlaceParcels()
     int placed = 0;
     if (set_or_target > 0 && set_entry_count > 0) {
         do {
-            int picked = (int)random_float_below((float)set_entry_count, "P1");
+            int picked = (int)RAND((float)set_entry_count, "P1");
             placed += g_parcel_set_buckets[picked].candidate_count;
             for (int spot = 0;
                  spot < g_parcel_set_buckets[picked].candidate_count;
@@ -212,7 +212,7 @@ void cRSubGame::PlaceParcels()
 
     if (placed < level_definition.parcel_count && zero_entry_count > 0) {
         do {
-            int picked = (int)random_float_below((float)zero_entry_count, "P2");
+            int picked = (int)RAND((float)zero_entry_count, "P2");
             placed += g_zero_parcel_buckets[picked].candidate_count;
             int absolute_row =
                 g_zero_parcel_buckets[picked].candidates[0].row

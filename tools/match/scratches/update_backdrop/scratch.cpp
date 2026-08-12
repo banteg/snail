@@ -2,8 +2,8 @@
 
 #include "backdrop.h"
 
-float sine(float radians); // @ 0x44c9d0
-float cosine(float radians); // @ 0x44c980
+float Sin(float radians); // @ 0x44c9d0
+float Cos(float radians); // @ 0x44c980
 
 int cRBackdrop::update_backdrop()
 {
@@ -36,8 +36,8 @@ int cRBackdrop::update_backdrop()
             }
 
             float& current_x = cell->current_x_offset;
-            current_x = sine(cell->phase) * cell->x_offset;
-            cell->current_y_offset = cosine(cell->phase) * cell->y_offset;
+            current_x = Sin(cell->phase) * cell->x_offset;
+            cell->current_y_offset = Cos(cell->phase) * cell->y_offset;
             cell += GRID_COLUMN_COUNT;
             row_count--;
         } while (row_count != 0);

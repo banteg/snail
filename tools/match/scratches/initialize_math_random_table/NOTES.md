@@ -1,4 +1,4 @@
-# initialize_math_random_table @ 0x44c8d0
+# gRMathRand2Init @ 0x44c8d0
 
 Exact match: 100.00%, 10/10 instructions.
 

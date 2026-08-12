@@ -1,8 +1,8 @@
-# initialize_trigonometry_tables @ 0x44c930
+# RMathInit @ 0x44c930
 
 Exact match: 100.00%, 18/18 instructions.
 
-Builds the shared cosine and sine lookup tables, then resets the companion
+Builds the shared Cos and Sin lookup tables, then resets the companion
 gameplay random table. The angle scale is kept as two `float` multiplies so VC6
 emits the native two `fmul dword` sequence before `fcos`/`fsin`.
 
@@ -14,7 +14,7 @@ lookup helpers still read the canonical table starts at `data_777f3c` and
 ## 2026-07-27 authored RMathInit boundary
 
 Android and iOS export this startup phase as void `RMathInit()`. All three
-ports build the sine/cosine lookup banks and then initialize the gameplay
+ports build the Sin/Cos lookup banks and then initialize the gameplay
 random table. Windows uses 0x2000 entries and calls its separate
 `gRMathRand2Init()` implementation; mobile uses 0x8000 entries and also
 constructs platform color defaults. Those platform-specific extents and the

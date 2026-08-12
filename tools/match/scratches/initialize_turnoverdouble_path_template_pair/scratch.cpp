@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -39,7 +39,7 @@ static __forceinline void initialize_pair_sample(
 static __forceinline void orient_turnover_sample(
     PathTemplateSample* sample, PathTemplateSample* previous, float angle)
 {
-    sample->transform.basis_up = Vector3(sine(angle), cosine(angle), 0.0f);
+    sample->transform.basis_up = Vector3(Sin(angle), Cos(angle), 0.0f);
     sample->transform.basis_forward = Vector3(
         sample->transform.position.x - previous->transform.position.x,
         sample->transform.position.y - previous->transform.position.y,
@@ -305,7 +305,7 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
                 roll_angle = 12.566371f - roll_angle;
 
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->center_x =
-                sine(slalom_angle + 1.5707964f) * primary_samples[0].center_x;
+                Sin(slalom_angle + 1.5707964f) * primary_samples[0].center_x;
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->rotation_scalar_98 = -roll_angle;
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
@@ -319,8 +319,8 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
                     ->transform);
 
             float half = roll_angle * 0.5f;
-            float half_sine = sine(half);
-            float roll_sine = sine(roll_angle);
+            float half_sine = Sin(half);
+            float roll_sine = Sin(roll_angle);
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.position.x =
                 ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
@@ -330,10 +330,10 @@ void cRPath::initialize_turnoverdouble_path_template_pair(
                 ->transform.position.z = (float)(curve_index + 6);
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.position.y =
-                (length - cosine(roll_angle) * length) * 0.40000001f;
+                (length - Cos(roll_angle) * length) * 0.40000001f;
 
-            float up_y = cosine(roll_angle);
-            float up_x = sine(roll_angle);
+            float up_y = Cos(roll_angle);
+            float up_x = Sin(roll_angle);
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
                 ->transform.basis_up = Vector3(up_x, up_y, 0.0f);
             ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))

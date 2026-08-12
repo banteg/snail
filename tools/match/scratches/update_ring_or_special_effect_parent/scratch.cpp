@@ -9,7 +9,7 @@
 
 
 int report_errorf(const char* format, ...);
-float sine(float radians);
+float Sin(float radians);
 
 void cRSubRing::AI()
 {
@@ -38,7 +38,7 @@ void cRSubRing::AI()
             } else if (phase < 0.0f) {
                 active_phase = phase + 6.28318548f;
             }
-            transform.position.x = sine(active_phase) * 3.0f;
+            transform.position.x = Sin(active_phase) * 3.0f;
         }
 
         {

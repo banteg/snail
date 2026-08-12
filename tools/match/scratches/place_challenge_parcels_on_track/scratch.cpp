@@ -44,7 +44,7 @@ void cRSubGame::PlaceParcelsSurvival()
             if (candidate_count <= 0) {
                 break;
             }
-            int picked = (int)random_float_below((float)candidate_count, "P3");
+            int picked = (int)RAND((float)candidate_count, "P3");
             int selected_row = g_parcel_group_survival_0[picked];
             ++placed;
 

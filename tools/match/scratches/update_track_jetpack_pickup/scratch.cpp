@@ -1,6 +1,6 @@
 // update_track_jetpack_pickup / cRJetPack::AI @ 0x43efb0 (thiscall, ret)
 // State 2 -> list remove + kill_sprite; state 1 -> cull behind the owner
-// kill plane or advance the wrapped sine bob on the nested sprite. The
+// kill plane or advance the wrapped Sin bob on the nested sprite. The
 // embedded renderable bodies live below the pickup parent; this update only
 // manages the parent state and sprite bob.
 
@@ -10,7 +10,7 @@
 #include "track_jetpack_pickup.h"
 
 int report_errorf(char* format, ...);
-float sine(float radians);
+float Sin(float radians);
 
 void cRJetPack::AI()
 {
@@ -51,5 +51,5 @@ update_bob:
     bob_phase = advanced;
     if (advanced > 1.0f)
         bob_phase = advanced - 1.0f;
-    sprite->position.y = sine(bob_phase * 6.2831855f) * 0.30000001f + position.y;
+    sprite->position.y = Sin(bob_phase * 6.2831855f) * 0.30000001f + position.y;
 }

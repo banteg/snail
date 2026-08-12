@@ -3,7 +3,7 @@
 
 #include "banner.h"
 
-float sine(float angle); // @ 0x44c9d0
+float Sin(float angle); // @ 0x44c9d0
 
 void cRBanner::AI()
 {
@@ -28,5 +28,5 @@ void cRBanner::AI()
     if (next_phase > 1.0f)
         phase = next_phase - 1.0f;
 
-    position.y = sine(phase * 6.2831855f) * 0.25999999f;
+    position.y = Sin(phase * 6.2831855f) * 0.25999999f;
 }

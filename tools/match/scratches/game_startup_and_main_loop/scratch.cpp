@@ -55,7 +55,7 @@ char* save_config_file(char* file_name, void* bytes, int byte_count); // @ 0x42f
 int uninitialize_game_data_archive(); // @ 0x430ef0
 int uninitialize_input_devices(); // @ 0x411d80
 int restore_desktop_display_mode(); // @ 0x407860
-int next_math_random_value(); // @ 0x44c900
+int gRMathRand2(); // @ 0x44c900
 
 int __stdcall game_startup_and_main_loop(
     HINSTANCE hInstance, HINSTANCE hPrevInstance, char* lpCmdLine, int nShowCmd)
@@ -75,7 +75,7 @@ int __stdcall game_startup_and_main_loop(
     g_runtime_config.registration_key_valid =
         validate_config_tail_stub(g_runtime_config.registration_key);
     g_application_instance = hInstance;
-    initialize_trigonometry_tables();
+    RMathInit();
 
     if (initialize_game_data_archive() == 0)
         return 0;
@@ -113,8 +113,8 @@ int __stdcall game_startup_and_main_loop(
             int warmup_count = (int)timeGetTime() % 1000;
             if (warmup_count > 0) {
                 do {
-                    random_float_below(1.0f, 0);
-                    next_math_random_value();
+                    RAND(1.0f, 0);
+                    gRMathRand2();
                     --warmup_count;
                 } while (warmup_count != 0);
             }

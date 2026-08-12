@@ -1,4 +1,4 @@
-# cosine @ 0x44c980
+# Cos @ 0x44c980
 
 Exact match: 100.00%, 21/21 instructions.
 

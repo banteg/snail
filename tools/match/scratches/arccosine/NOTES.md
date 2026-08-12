@@ -1,7 +1,8 @@
-# arccosine @ 0x44ca00
+# ACos @ 0x44ca00
 
 Exact match: 100.00%, 3/3 instructions.
 
-This helper is the shared arccosine wrapper used by quaternion and
-attachment/camera math paths. The explicit result local prevents VC6 from
-tail-calling the CRT wrapper.
+Android and iOS preserve the authored float `ACos(float)` contract. The exact
+Windows quaternion caller independently consumes a float result, and promoting
+that return type remains byte-identical. The explicit double CRT-result local
+prevents VC6 from tail-calling the wrapper.

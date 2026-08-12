@@ -11,12 +11,12 @@ float* __stdcall build_perspective_projection_matrix(
     float far_z)
 {
     float* cosine_out = &vertical_fov_radians;
-    float sine;
-    float* sine_out = &sine;
+    float Sin;
+    float* sine_out = &Sin;
     float half_fov = vertical_fov_radians * 0.5f;
     *cosine_out = (float)cos(half_fov);
     *sine_out = (float)sin(half_fov);
-    float y_scale = vertical_fov_radians / sine;
+    float y_scale = vertical_fov_radians / Sin;
     float z_scale = far_z / (near_z - far_z);
 
     matrix[11] = -1.0f;

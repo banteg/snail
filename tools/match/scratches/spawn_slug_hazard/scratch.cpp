@@ -13,7 +13,7 @@
 #include "transform_matrix.h"
 
 
-int next_math_random_value();
+int gRMathRand2();
 int report_errorf(char* format, ...);
 
 void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
@@ -106,7 +106,7 @@ void cRSubGame::AddSlug(cRSubLoc* cell, cRSubGoldy* owner_player)
     }
 
     slug_hazards.slots[slot_index].blink_progress = 0.0f;
-    int blink_random_value = next_math_random_value();
+    int blink_random_value = gRMathRand2();
     slug_hazards.slots[slot_index].blink_step =
         1.0f /
         (((float)blink_random_value * 0.000030517578f + 1.0f) * 60.0f);

@@ -22,7 +22,7 @@ enum {
 };
 
 
-int next_math_random_value();
+int gRMathRand2();
 int report_warningf(char* format, ...);
 int report_errorf(char* format, ...);
 
@@ -50,7 +50,7 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
 
     garbage_hazards.slots[slot_index].owner_player = player;
     float* radius = &garbage_hazards.slots[slot_index].radius;
-    *radius = (random_float_below(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
+    *radius = (RAND(0.40000001f, "Gadd") + 1.0f) * 0.60000002f;
     garbage_hazards.slots[slot_index].state = SUB_GARBAGE_STATE_ACTIVE;
     garbage_hazards.slots[slot_index].transform.Identity();
 
@@ -89,7 +89,7 @@ void cRSubGame::AddGarbage(cRSubLoc* cell, cRSubGoldy* player)
     cRSprite* sprite = g_sprite_manager.New(
         garbage_hazards.slots[slot_index].owner_player->player_slot,
         114 - (int)(
-                  (float)next_math_random_value() * 0.0000305175781f * -4.0f),
+                  (float)gRMathRand2() * 0.0000305175781f * -4.0f),
         -1,
         -1);
     garbage_hazards.slots[slot_index].sprite = sprite;

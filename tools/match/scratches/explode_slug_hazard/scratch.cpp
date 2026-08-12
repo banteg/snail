@@ -4,15 +4,15 @@
 #include "sprite.h"
 #include "subgame_runtime.h"
 
-int next_math_random_value();
+int gRMathRand2();
 
 void cRSlug::Explode()
 {
     int count = 70;
     do {
         float spread =
-            (float)next_math_random_value() * 0.0000305175781f * 0.2f + 0.2f;
-        float size = (float)next_math_random_value() * 0.000030517578f;
+            (float)gRMathRand2() * 0.0000305175781f * 0.2f + 0.2f;
+        float size = (float)gRMathRand2() * 0.000030517578f;
         size = size * 0.75f + 0.25f;
         cRSprite* sprite = g_sprite_manager.New(1, 129, -1, -1);
         sprite->progress = 0.0f;
@@ -21,7 +21,7 @@ void cRSlug::Explode()
         sprite->corner_scale = size + size;
         float progress_step =
             1.0f
-            / (((float)next_math_random_value() * 0.0000305175781f * 0.5f
+            / (((float)gRMathRand2() * 0.0000305175781f * 0.5f
                    + 0.6f)
                 * 60.0f)
             * owner_game->subgame_rate;
@@ -29,7 +29,7 @@ void cRSlug::Explode()
         sprite->lifetime_step = 0.0f;
         sprite->progress_step = progress_step;
         sprite->color.Grey(
-            (float)next_math_random_value() * 0.0000305175781f * 0.3f + 0.7f);
+            (float)gRMathRand2() * 0.0000305175781f * 0.3f + 0.7f);
         sprite->size_start = size * 0.30000001f;
         sprite->size_end = size * 1.2f;
         float rate = owner_game->subgame_rate;
@@ -39,19 +39,19 @@ void cRSlug::Explode()
 
         Vector3 random_velocity;
         random_velocity.x =
-            ((float)next_math_random_value() - 16384.0f) * spread * 0.000061035156f;
+            ((float)gRMathRand2() - 16384.0f) * spread * 0.000061035156f;
         random_velocity.y =
-            (float)next_math_random_value() * (spread + 0.30000001f) * 0.000030517578f;
+            (float)gRMathRand2() * (spread + 0.30000001f) * 0.000030517578f;
         cRSubGame* game = owner_game;
         random_velocity.z =
-            (float)next_math_random_value() * spread * 0.000030517578f
+            (float)gRMathRand2() * spread * 0.000030517578f
             + game->player.velocity.z;
         float speed = game->subgame_rate;
         sprite->velocity = random_velocity * speed;
 
         Vector3* velocity = &sprite->velocity;
         float position_scale =
-            (float)next_math_random_value() * 0.0000305175781f * 10.0f;
+            (float)gRMathRand2() * 0.0000305175781f * 10.0f;
         Vector3 position_offset;
         position_offset.x = position_scale * velocity->x;
         position_offset.y = position_scale * velocity->y;

@@ -9,9 +9,9 @@
 
 void bind_texture_ref(cRTexture* texture);
 void set_immediate_blend_mode(int blend_mode);
-float square_root(float value);
-float sine(float angle);
-float cosine(float angle);
+float Sqrt(float value);
+float Sin(float angle);
+float Cos(float angle);
 int report_errorf(const char* format, ...);
 
 void draw_textured_quad_immediate(
@@ -113,10 +113,10 @@ void draw_textured_quad_immediate(
         float center_x = x0 + half_width;
         float half_height = height * 0.5f;
         float center_y = y0 + half_height;
-        float radius = square_root(half_width * half_width + half_height * half_height)
+        float radius = Sqrt(half_width * half_width + half_height * half_height)
             * 1.41400003f;
-        float sin_radius = sine(rotation) * radius;
-        float cos_radius = cosine(rotation) * radius;
+        float sin_radius = Sin(rotation) * radius;
+        float cos_radius = Cos(rotation) * radius;
 
         vertices[0].x = center_x + sin_radius;
         vertices[0].y = center_y + cos_radius;

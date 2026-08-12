@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -264,7 +264,7 @@ void cRPath::initialize_toad_path_template_pair(
     int curve_sample_offset = lead_count * sizeof(AttachmentSample);
     for (i = 0; i < 26; ++i) {
         float phase = (float)i * 6.2831855f / 26.0f;
-        float angle = (1.0f - cosine(phase)) * 0.5f;
+        float angle = (1.0f - Cos(phase)) * 0.5f;
         angle = angle * turn_sign * 3.1415927f * 0.5f;
 
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->center_x =
@@ -279,7 +279,7 @@ void cRPath::initialize_toad_path_template_pair(
             1.0f;
         set_matrix_identity(
             &((AttachmentSample*)((char*)primary_samples + curve_sample_offset))->transform);
-        float turn_x = sine(angle);
+        float turn_x = Sin(angle);
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))
             ->transform.position.x = turn_x + turn_x + start_x;
         ((AttachmentSample*)((char*)primary_samples + curve_sample_offset))

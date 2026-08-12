@@ -1,4 +1,4 @@
-# atan2_positive @ 0x44ca10
+# ATan @ 0x44ca10
 
 Exact match: 100.00%, 48/48 instructions.
 

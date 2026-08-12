@@ -1,12 +1,21 @@
 #ifndef SNAIL_RMATH_RANDOM_H
 #define SNAIL_RMATH_RANDOM_H
 
-// Cross-port authored names: RAND(float, char*) and SRAND(float, char*).
-// Windows retains the debug tag in its caller ABI even though these two
+short __cdecl MathType32to16(float value, float scale);
+float __cdecl MathType16to32(short value, float scale);
+void __cdecl gRMathRand2Init();
+int __cdecl gRMathRand2();
+void __cdecl RMathInit();
+void __cdecl RandSeed(int seed);
+float __cdecl Cos(float angle);
+float __cdecl Sin(float angle);
+float __cdecl ACos(float value);
+float __cdecl ATan(float y, float x);
+float __cdecl Sqrt(float value);
+
+// Windows retains the debug tag in its RAND/SRAND caller ABI even though the
 // release-build bodies do not read it.
-float __cdecl random_float_below(float upper_bound, char* tag);
-float __cdecl random_signed_float_below(float upper_bound, char* tag);
-void __cdecl initialize_math_random_table();
-void __cdecl initialize_trigonometry_tables();
+float __cdecl RAND(float upper_bound, char* tag);
+float __cdecl SRAND(float upper_bound, char* tag);
 
 #endif

@@ -15,8 +15,8 @@ extern "C" TransformMatrix* __stdcall D3DXMatrixTranslation(
     TransformMatrix* matrix, float x, float y, float z);
 
 void bind_texture_ref(cRTexture* texture);
-float cosine(float angle);
-float sine(float angle);
+float Cos(float angle);
+float Sin(float angle);
 int report_errorf(const char* format, ...);
 
 int draw_sprite_quad(Vec3* position, cRSprite* sprite)
@@ -92,9 +92,9 @@ int draw_sprite_quad(Vec3* position, cRSprite* sprite)
         vertices[3].y = negative_extent;
     } else {
         float rot_x =
-            cosine(sprite->facing_angle + 0.78539819f) * half_extent * 1.41400003f;
+            Cos(sprite->facing_angle + 0.78539819f) * half_extent * 1.41400003f;
         float rot_y =
-            sine(sprite->facing_angle + 0.78539819f) * half_extent * 1.41400003f;
+            Sin(sprite->facing_angle + 0.78539819f) * half_extent * 1.41400003f;
 
         vertices[0].x = -rot_y;
         vertices[0].y = rot_x;

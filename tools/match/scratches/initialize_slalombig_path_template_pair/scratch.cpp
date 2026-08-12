@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -336,7 +336,7 @@ void cRPath::initialize_slalombig_path_template_pair(
             folded = -folded;
 
         float angle = t * 6.2831855f;
-        float center = sine(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
+        float center = Sin(angle) * (1.0f - folded) * (1.0f - folded_copy) * 4.4444447f;
         ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))
             ->center_x = center;
         ((PathTemplateSample*)((char*)primary_samples + curve_sample_offset))

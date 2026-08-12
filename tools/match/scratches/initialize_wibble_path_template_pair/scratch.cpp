@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float sine(float angle);
-float cosine(float angle);
+float Sin(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -250,8 +250,8 @@ void cRPath::initialize_wibble_path_template_pair(
         primary_samples[sample_index].transform.position.z = (float)z_index;
         primary_samples[sample_index].transform.position.y = 0.0f;
 
-        float basis_y = cosine(sine(roll_phase) * 0.30000001f);
-        float basis_x = sine(sine(roll_phase) * 0.30000001f);
+        float basis_y = Cos(Sin(roll_phase) * 0.30000001f);
+        float basis_x = Sin(Sin(roll_phase) * 0.30000001f);
         primary_samples[sample_index].transform.basis_up =
             Vector3(basis_x, basis_y, 0.0f);
         primary_samples[sample_index].transform.basis_forward =

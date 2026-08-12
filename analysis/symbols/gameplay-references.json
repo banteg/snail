@@ -4304,7 +4304,124 @@
         "j__rand",
         "sub_44c920"
       ],
-      "description": "Small jump thunk that dispatches random_float_below and random_signed_float_below to the statically linked CRT rand body at 0x48bfe5."
+      "description": "Small jump thunk that dispatches RAND and SRAND to the statically linked CRT rand body at 0x48bfe5."
+    },
+    {
+      "address": "0x44c890",
+      "name": "convert_math_type32_to_16",
+      "kind": "function",
+      "aliases": [
+        "?MathType32to16@@YAFMM@Z"
+      ],
+      "description": "Exact authored short MathType32to16(float, float) entry."
+    },
+    {
+      "address": "0x44c8b0",
+      "name": "convert_math_type16_to_32",
+      "kind": "function",
+      "aliases": [
+        "?MathType16to32@@YAMFM@Z"
+      ],
+      "description": "Exact authored float MathType16to32(short, float) entry."
+    },
+    {
+      "address": "0x44c8d0",
+      "name": "initialize_math_random_table",
+      "kind": "function",
+      "aliases": [
+        "?gRMathRand2Init@@YAXXZ"
+      ],
+      "description": "Exact authored void gRMathRand2Init() entry."
+    },
+    {
+      "address": "0x44c900",
+      "name": "next_math_random_value",
+      "kind": "function",
+      "aliases": [
+        "?gRMathRand2@@YAHXZ"
+      ],
+      "description": "Exact Windows int gRMathRand2() entry."
+    },
+    {
+      "address": "0x44c930",
+      "name": "initialize_trigonometry_tables",
+      "kind": "function",
+      "aliases": [
+        "?RMathInit@@YAXXZ"
+      ],
+      "description": "Exact authored void RMathInit() entry."
+    },
+    {
+      "address": "0x44c970",
+      "name": "set_math_random_seed",
+      "kind": "function",
+      "aliases": [
+        "?RandSeed@@YAXH@Z"
+      ],
+      "description": "Exact authored void RandSeed(int) entry."
+    },
+    {
+      "address": "0x44c980",
+      "name": "cosine",
+      "kind": "function",
+      "aliases": [
+        "?Cos@@YAMM@Z"
+      ],
+      "description": "Exact authored float Cos(float) entry."
+    },
+    {
+      "address": "0x44c9d0",
+      "name": "sine",
+      "kind": "function",
+      "aliases": [
+        "?Sin@@YAMM@Z"
+      ],
+      "description": "Exact authored float Sin(float) entry."
+    },
+    {
+      "address": "0x44ca00",
+      "name": "arccosine",
+      "kind": "function",
+      "aliases": [
+        "?ACos@@YAMM@Z"
+      ],
+      "description": "Exact authored float ACos(float) entry."
+    },
+    {
+      "address": "0x44ca10",
+      "name": "atan2_positive",
+      "kind": "function",
+      "aliases": [
+        "?ATan@@YAMMM@Z"
+      ],
+      "description": "Exact authored float ATan(float, float) entry."
+    },
+    {
+      "address": "0x44cab0",
+      "name": "square_root",
+      "kind": "function",
+      "aliases": [
+        "?Sqrt@@YAMM@Z"
+      ],
+      "description": "Exact authored float Sqrt(float) entry."
+    },
+    {
+      "address": "0x44dc70",
+      "name": "random_signed_float_below",
+      "kind": "function",
+      "aliases": [
+        "?SRAND@@YAMMPAD@Z"
+      ],
+      "description": "Exact authored float SRAND(float, char*) entry."
+    },
+    {
+      "address": "0x44dc90",
+      "name": "random_float_below",
+      "kind": "function",
+      "aliases": [
+        "?RAND@@YAMMPAD@Z"
+      ],
+      "description": "Exact authored float RAND(float, char*) entry."
     },
     {
       "address": "0x44cac0",

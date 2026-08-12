@@ -6,7 +6,7 @@
 #include "sprite.h"
 #include "transform_matrix.h"
 
-float cosine(float angle);
+float Cos(float angle);
 
 typedef AttachmentSample PathTemplateSample;
 
@@ -17,7 +17,7 @@ static __forceinline void initialize_secondary_hill(
     set_matrix_identity(&path->secondary_samples[index].transform);
     path->secondary_samples[index].transform.position.x =
         path->primary_samples[index].center_x;
-    float y = (1.0f - cosine(phase)) * 0.5f;
+    float y = (1.0f - Cos(phase)) * 0.5f;
     y *= height;
     path->secondary_samples[index].transform.position.y = y + 0.49000001f;
     path->secondary_samples[index].transform.position.z = z;
@@ -258,7 +258,7 @@ void cRPath::initialize_hill_valley_path_template_pair(
         set_matrix_identity(&primary_samples[sample_index].transform);
         primary_samples[sample_index].transform.position.x =
             primary_samples[sample_index].center_x;
-        float y = (1.0f - cosine(phase)) * 0.5f;
+        float y = (1.0f - Cos(phase)) * 0.5f;
         y *= height;
         primary_samples[sample_index].transform.position.y = y;
         float z = (float)sample_index;

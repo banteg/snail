@@ -1,4 +1,4 @@
-# sine @ 0x44c9d0
+# Sin @ 0x44c9d0
 
 Exact match: 100.00%, 7/7 instructions.
 

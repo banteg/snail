@@ -2,7 +2,7 @@
 
 #include "object_render_types.h"
 
-float sine(float angle); // @ 0x44c9d0
+float Sin(float angle); // @ 0x44c9d0
 
 #define ABS_FLOAT(value) ((value) < 0.0f ? -(value) : (value))
 #define MAX_FLOAT(lhs, rhs) ((lhs) < (rhs) ? (rhs) : (lhs))
@@ -25,7 +25,7 @@ void cRDistort::Build(cRObject* object)
                 float z = ABS_FLOAT(object->vertices[index].z);
 
                 object->copied_vertices[index].y =
-                    (sine(z * 1.5707964f / z_range + 4.712389f) + 1.0f)
+                    (Sin(z * 1.5707964f / z_range + 4.712389f) + 1.0f)
                     * z_wave + source[index].y;
                 object->copied_vertices[index].z = source[index].z;
                 ++index;
@@ -37,8 +37,8 @@ void cRDistort::Build(cRObject* object)
     }
 
     if (y_squash != 0.0f) {
-        float scale_x = sine(y_squash * 1.5707964f) + 1.0f;
-        float squash_y = 1.0f - sine(y_squash * 1.5707964f);
+        float scale_x = Sin(y_squash * 1.5707964f) + 1.0f;
+        float squash_y = 1.0f - Sin(y_squash * 1.5707964f);
         float base_y = object->bounds_min.y;
 
         int index = 0;
@@ -57,8 +57,8 @@ void cRDistort::Build(cRObject* object)
     }
 
     if (xyz_scale != 0.0f) {
-        float scale_xy = sine(xyz_scale * 1.5707964f) * 0.1f + 1.0f;
-        float scale_z = 1.0f - sine(xyz_scale * 1.5707964f);
+        float scale_xy = Sin(xyz_scale * 1.5707964f) * 0.1f + 1.0f;
+        float scale_z = 1.0f - Sin(xyz_scale * 1.5707964f);
 
         int index = 0;
         if (object->vertex_count > 0) {

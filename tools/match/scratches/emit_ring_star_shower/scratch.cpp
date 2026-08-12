@@ -6,8 +6,8 @@
 #include "runtime_config.h"
 #include "sprite.h"
 
-float sine(float radians);
-float cosine(float radians);
+float Sin(float radians);
+float Cos(float radians);
 
 
 void cRSubRingStar::Shower(cRSubGoldy* owner)
@@ -27,8 +27,8 @@ void cRSubRingStar::Shower(cRSubGoldy* owner)
         star->size_start = 0.40000001f;
         star->size_end = 0.2f;
 
-        orbit_velocity.x = sine(phase + 1.0471976f) * radius;
-        orbit_velocity.y = cosine(phase + 1.0471976f) * radius;
+        orbit_velocity.x = Sin(phase + 1.0471976f) * radius;
+        orbit_velocity.y = Cos(phase + 1.0471976f) * radius;
         velocity.x = orbit_velocity.x * 0.30000001f;
         velocity.y = orbit_velocity.y * 0.30000001f;
         star->velocity = velocity;

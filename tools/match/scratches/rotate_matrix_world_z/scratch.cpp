@@ -2,13 +2,13 @@
 
 #include "transform_matrix.h"
 
-float cosine(float angle);
-float sine(float angle);
+float Cos(float angle);
+float Sin(float angle);
 
 void tMatrix::RotLocalZ(float angle)
 {
-    float cos_angle = cosine(angle);
-    float sin_angle = sine(angle);
+    float cos_angle = Cos(angle);
+    float sin_angle = Sin(angle);
 
     float new_right_x = cos_angle * basis_right.x + sin_angle * basis_up.x;
     basis_up.x = cos_angle * basis_up.x - sin_angle * basis_right.x;

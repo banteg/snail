@@ -2,7 +2,7 @@
 
 #include "frontend_widget.h"
 
-int next_math_random_value();
+int gRMathRand2();
 
 void cRTwinkle::AI()
 {
@@ -27,24 +27,24 @@ void cRTwinkle::AI()
                 alpha = 0.0f;
                 target_alpha = 0.89999998f;
                 angle =
-                    ((float)next_math_random_value() - 16384.0f) *
+                    ((float)gRMathRand2() - 16384.0f) *
                     0.0000610351562f * 3.1415927f;
 
                 int spin_direction;
-                if (((float)next_math_random_value() - 16384.0f) *
+                if (((float)gRMathRand2() - 16384.0f) *
                         0.000061035156f <
                     0.0f) {
                     spin_direction = -1;
                 } else {
                     spin_direction =
-                        (((float)next_math_random_value() - 16384.0f) *
+                        (((float)gRMathRand2() - 16384.0f) *
                              0.000061035156f ==
                          0.0f)
                             ? 0
                             : 1;
                 }
 
-                int step_random = next_math_random_value();
+                int step_random = gRMathRand2();
                 delay_progress = 0.0f;
                 cRBorder* active_owner = owner_widget;
                 delay_step = 1.0f;
@@ -55,21 +55,21 @@ void cRTwinkle::AI()
                         60.0f) *
                     spin_direction * 6.2831855f;
 
-                x = ((float)next_math_random_value() *
+                x = ((float)gRMathRand2() *
                          (active_owner->layout_width * 0.80000001f) *
                          0.000030517578f +
                      active_owner->layout_x) +
                     active_owner->layout_width * 0.100000001f;
 
                 active_owner = owner_widget;
-                y = ((float)next_math_random_value() *
+                y = ((float)gRMathRand2() *
                          (active_owner->layout_height * 0.80000001f) *
                          0.000030517578f +
                      active_owner->layout_height * 0.100000001f) +
                     active_owner->layout_y;
 
                 size =
-                    ((float)next_math_random_value() - 16384.0f) *
+                    ((float)gRMathRand2() - 16384.0f) *
                         0.0000610351562f * 12.0f +
                     25.0f;
             }
@@ -105,7 +105,7 @@ void cRTwinkle::AI()
             delay_progress = 0.0f;
             delay_step =
                 1.0f /
-                (((float)next_math_random_value() * 0.000030517578f +
+                (((float)gRMathRand2() * 0.000030517578f +
                      0.0099999998f) *
                     60.0f);
         }

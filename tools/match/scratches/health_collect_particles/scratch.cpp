@@ -6,8 +6,8 @@
 #include "track_health_pickup.h"
 
 
-float sine(float radians);
-float cosine(float radians);
+float Sin(float radians);
+float Cos(float radians);
 
 void cRSubGoldy::HealthCollect(cRSubHealth* pickup)
 {
@@ -36,8 +36,8 @@ void cRSubGoldy::HealthCollect(cRSubHealth* pickup)
             float angle = (float)index * 0.785398185f;
 
             Vector3 burst_velocity_value(
-                sine(angle) * 0.0149999997f,
-                cosine(angle) * 0.0149999997f,
+                Sin(angle) * 0.0149999997f,
+                Cos(angle) * 0.0149999997f,
                 velocity.z * 0.400000006f);
             particle->velocity = burst_velocity_value;
 

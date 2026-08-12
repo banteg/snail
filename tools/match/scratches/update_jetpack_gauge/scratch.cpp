@@ -9,8 +9,8 @@
 #include "vector3.h"
 
 
-float cosine(float angle);
-float sine(float angle);
+float Cos(float angle);
+float Sin(float angle);
 int debug_report_stub(char* format, ...);
 
 void cRSubHover::AI()
@@ -59,9 +59,9 @@ void cRSubHover::AI()
         }
 
         warning_intensity =
-            1.0f - (cosine(warning_intensity * 3.1415927f) + 1.0f) * 0.5f;
-        wobble_x = sine(progress * 25.132742f) * warning_intensity * 0.25f;
-        float wobble_y_sine = sine(progress * 37.699112f);
+            1.0f - (Cos(warning_intensity * 3.1415927f) + 1.0f) * 0.5f;
+        wobble_x = Sin(progress * 25.132742f) * warning_intensity * 0.25f;
+        float wobble_y_sine = Sin(progress * 37.699112f);
         int intensity_bits = *(int*)&warning_intensity;
         wobble_alpha = 0.0f;
         *(int*)&warning_intensity_latch = intensity_bits;

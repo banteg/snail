@@ -45,7 +45,7 @@ void layout_and_queue_wrapped_font_text(
 
                 if (measure_only == 0) {
                     if (pulse_alpha != 0)
-                        color.a = sine(cursor_y * 0.00654498488f);
+                        color.a = Sin(cursor_y * 0.00654498488f);
                     queue_font_text_instance(
                         line,
                         font_id,
