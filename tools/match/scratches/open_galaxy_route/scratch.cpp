@@ -18,7 +18,7 @@ void cRGalaxy::BoxOn(int selected_level_index)
     title_widget->layout_anchor_y = route_slots[selected_index].record.map_y - 130.0f;
 
     while (1) {
-        title_widget->layout_frontend_widget();
+        title_widget->RePosition();
 
         detail_widget->UnHideInit();
         Rstrcpy(

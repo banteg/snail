@@ -10413,12 +10413,15 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         "border_add_text_number": "AddTextNumber",
         "hide_border_init": "HideInit",
         "unhide_border_init": "UnHideInit",
+        "draw_frontend_widget": "Draw",
         "initialize_frontend_sprite_button": "Init",
+        "layout_frontend_widget": "RePosition",
         "set_frontend_widget_shortcut_key": "SetKeyLeft",
         "stack_widget_below": "SetBelow",
         "unhighlight_border": "UnHighlight",
         "highlight_border": "Highlight",
         "border_input_text_init": "InputTextInit",
+        "border_input_text": "InputText",
         "border_sprite_extend": "SpriteExtend",
         "apply_all_border_visibility_mode": "Perform",
         "allocate_border": "GetBorder",
@@ -10560,6 +10563,16 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
             "?UnHideInit@cRBorder@@QAEXXZ",
             True,
         ),
+        "draw_frontend_widget": (
+            "cRBorder::Draw()",
+            "?Draw@cRBorder@@QAEXXZ",
+            True,
+        ),
+        "layout_frontend_widget": (
+            "cRBorder::RePosition()",
+            "?RePosition@cRBorder@@QAEXXZ",
+            True,
+        ),
         "set_frontend_widget_shortcut_key": (
             "cRBorder::SetKeyLeft(int)",
             "?SetKeyLeft@cRBorder@@QAEXH@Z",
@@ -10583,6 +10596,11 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         "border_input_text_init": (
             "cRBorder::InputTextInit(int, char*, int)",
             "?InputTextInit@cRBorder@@QAEXHPADH@Z",
+            True,
+        ),
+        "border_input_text": (
+            "cRBorder::InputText()",
+            "?InputText@cRBorder@@QAEXXZ",
             True,
         ),
         "border_sprite_extend": (

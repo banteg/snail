@@ -22,7 +22,7 @@ int OSDPrintUV(
     int blend_mode,
     float rotation);
 
-void cRBorder::draw_frontend_widget()
+void cRBorder::Draw()
 {
     tColour white;
     tColour slider_color;

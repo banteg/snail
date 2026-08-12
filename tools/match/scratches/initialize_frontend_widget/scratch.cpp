@@ -189,5 +189,5 @@ void cRBorder::initialize_frontend_widget(
             0.0f);
     }
 
-    layout_frontend_widget();
+    RePosition();
 }

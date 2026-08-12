@@ -26,7 +26,7 @@ int cRGUI::AI()
             Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
-            level_name_widget->layout_frontend_widget();
+            level_name_widget->RePosition();
             Rstrcpy(
                 game->bottom_score_widget->text_buffer,
                 game->time_trial.format_time_trial_string(
@@ -46,7 +46,7 @@ int cRGUI::AI()
             Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
-            level_name_widget->layout_frontend_widget();
+            level_name_widget->RePosition();
             Rstrcpy(
                 game->bottom_score_widget->text_buffer,
                 game->time_trial.format_time_trial_string(
@@ -155,7 +155,7 @@ int cRGUI::AI()
             Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
-            level_name_widget->layout_frontend_widget();
+            level_name_widget->RePosition();
         }
 
         flags = previous_level_button->widget_flags;
@@ -169,7 +169,7 @@ int cRGUI::AI()
             Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
-            level_name_widget->layout_frontend_widget();
+            level_name_widget->RePosition();
         }
 
         if (game->level_mode_arg == 0) {

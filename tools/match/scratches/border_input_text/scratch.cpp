@@ -8,7 +8,7 @@
 
 char read_repeating_text_input_key_code();
 
-void cRBorder::border_input_text()
+void cRBorder::InputText()
 {
     char key = read_repeating_text_input_key_code();
 
@@ -264,7 +264,7 @@ void cRBorder::border_input_text()
         text_buffer[input_cursor] = '|';
     else
         text_buffer[input_cursor] = ' ';
-    layout_frontend_widget();
+    RePosition();
     return;
 
 finish_input:
@@ -283,7 +283,7 @@ finish_input:
     widget_flags = cleared_flags;
     input_length = remaining_length;
     widget_flags = closing_flags;
-    layout_frontend_widget();
+    RePosition();
     if ((input_flags & 0x0c) != 0)
         g_game->border_manager
             .kill_border(input_ok_state()->ok_widget);

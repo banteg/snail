@@ -37,6 +37,9 @@
     {
       "address": "0x401130",
       "name": "draw_frontend_widget",
+      "aliases": [
+        "cRBorder_Draw"
+      ],
       "description": "Authored void `cRBorder::Draw()` renderer for one owned front-end widget: emits slider strips, sprite/icon quads, the nine-slice border body, shadow, and the BorderManager-owned delayed glow. Android preserves the same receiver and render branches; the sole Windows caller discards EAX."
     },
     {
@@ -55,7 +58,10 @@
     {
       "address": "0x4024a0",
       "name": "layout_frontend_widget",
-      "description": "Authored void `cRBorder::RePosition()`: recomputes one widget's authored-space position, measured text bounds, and attached slider-child offsets before draw. All 24 Windows callers discard EAX; the honest void transcription is 177/177 instructions at 84.18%."
+      "aliases": [
+        "cRBorder_RePosition"
+      ],
+      "description": "Authored void `cRBorder::RePosition()`: recomputes one widget's authored-space position, measured text bounds, and attached slider-child offsets before draw. All 24 Windows callers discard EAX; the honest void transcription is 177/177 instructions at 99.44%."
     },
     {
       "address": "0x402790",
@@ -166,6 +172,9 @@
     {
       "address": "0x4035b0",
       "name": "border_input_text",
+      "aliases": [
+        "cRBorder_InputText"
+      ],
       "description": "Stable Windows harness identity for the authored void cRBorder::InputText() member. The iOS and Android bodies preserve the same autorepeat key dispatch, inline cursor marker, insertion/deletion and separator-aware movement, blink/layout refresh, and optional cRInputOK teardown over the complete editor tail. The sole Windows caller ignores EAX; mobile return values are incidental RePosition/Kill results, not an authored result."
     },
     {

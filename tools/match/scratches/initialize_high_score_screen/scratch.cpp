@@ -73,7 +73,7 @@ void cRHighScore::Init(int mode_, int rank)
 
     if (entering_name != 0) {
         Rstrcpy(title_widget->text_buffer, (char*)"Enter your name here!");
-        title_widget->layout_frontend_widget();
+        title_widget->RePosition();
     }
 
     int row_index = 0;
@@ -114,7 +114,7 @@ void cRHighScore::Init(int mode_, int rank)
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->AddTextNumber(row_index + 1);
-                rank_row_widgets[row_index]->layout_frontend_widget();
+                rank_row_widgets[row_index]->RePosition();
 
                 name_row_widgets[row_index] =
                     g_game->border_manager.GetBorder();
@@ -132,7 +132,7 @@ void cRHighScore::Init(int mode_, int rank)
                     name_row_widgets[row_index]->widget_flags |=
                         FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
                 }
-                name_row_widgets[row_index]->layout_frontend_widget();
+                name_row_widgets[row_index]->RePosition();
 
                 score_row_widgets[row_index] =
                     g_game->border_manager.GetBorder();
@@ -144,7 +144,7 @@ void cRHighScore::Init(int mode_, int rank)
                 score_row_widgets[row_index]->AddTextNumber(
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->score);
-                score_row_widgets[row_index]->layout_frontend_widget();
+                score_row_widgets[row_index]->RePosition();
 
                 replay_row_widgets[row_index] =
                     g_game->border_manager.GetBorder();
@@ -186,7 +186,7 @@ void cRHighScore::Init(int mode_, int rank)
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->AddTextNumber(row_index + 1);
-                rank_row_widgets[row_index]->layout_frontend_widget();
+                rank_row_widgets[row_index]->RePosition();
 
                 name_row_widgets[row_index] =
                     g_game->border_manager.GetBorder();
@@ -204,7 +204,7 @@ void cRHighScore::Init(int mode_, int rank)
                     name_row_widgets[row_index]->widget_flags |=
                         FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE;
                 }
-                name_row_widgets[row_index]->layout_frontend_widget();
+                name_row_widgets[row_index]->RePosition();
 
                 score_row_widgets[row_index] =
                     g_game->border_manager.GetBorder();
@@ -216,7 +216,7 @@ void cRHighScore::Init(int mode_, int rank)
                 score_row_widgets[row_index]->AddTextNumber(
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->score);
-                score_row_widgets[row_index]->layout_frontend_widget();
+                score_row_widgets[row_index]->RePosition();
 
                 replay_row_widgets[row_index] =
                     g_game->border_manager.GetBorder();

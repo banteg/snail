@@ -28,7 +28,7 @@ void cRSubPause::Init()
         g_options_text, 0x14, 0.0f, 190.0f,
         color.Set(1.0f, 1.0f, 1.0f, 0.029999999f), 2, 0.0f);
     options_widget->SetKeyLeft(111);
-    options_widget->layout_frontend_widget();
+    options_widget->RePosition();
     options_widget->SetBelow(end_game_widget);
 
     resume_widget = g_game->border_manager.GetBorder();

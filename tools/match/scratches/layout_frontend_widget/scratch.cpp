@@ -4,7 +4,7 @@
 #include "frontend_widget.h"
 #include "runtime_config.h"
 
-void cRBorder::layout_frontend_widget()
+void cRBorder::RePosition()
 {
     cRBorder* widget = this;
     int result;
@@ -109,9 +109,9 @@ void cRBorder::layout_frontend_widget()
             }
 
             widget->slider_more_widget->layout_y = widget->texture_hit_y + 33.0f;
-            widget->slider_more_widget->layout_frontend_widget();
+            widget->slider_more_widget->RePosition();
             widget->slider_less_widget->layout_y = widget->texture_hit_y + 33.0f;
-            widget->slider_less_widget->layout_frontend_widget();
+            widget->slider_less_widget->RePosition();
             widget->slider_value_widget->layout_anchor_y =
                 widget->texture_hit_y + 49.0f;
             widget = widget->slider_value_widget;

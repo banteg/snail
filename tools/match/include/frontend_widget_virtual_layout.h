@@ -1,10 +1,10 @@
-// Thin view used when native code dispatches layout_frontend_widget virtually.
+// Thin view used when native code dispatches cRBorder::RePosition virtually.
 #ifndef FRONTEND_WIDGET_VIRTUAL_LAYOUT_H
 #define FRONTEND_WIDGET_VIRTUAL_LAYOUT_H
 
 class FrontendWidgetVirtualLayout {
 public:
-    virtual void layout_frontend_widget();
+    virtual void RePosition();
 };
 
 #endif

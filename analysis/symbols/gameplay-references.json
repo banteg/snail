@@ -57,6 +57,15 @@
       "description": "Exact Windows cRBorder::UnHideInit() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x401130",
+      "name": "draw_frontend_widget",
+      "kind": "function",
+      "aliases": [
+        "?Draw@cRBorder@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorder::Draw() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x401a70",
       "name": "initialize_frontend_sprite_button",
       "kind": "function",
@@ -64,6 +73,15 @@
         "?Init@cRBorder@@QAEXHHMMPAUtColour@@MH@Z"
       ],
       "description": "Exact Windows cRBorder::Init(int, int, float, float, tColour*, float, int) overload with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4024a0",
+      "name": "layout_frontend_widget",
+      "kind": "function",
+      "aliases": [
+        "?RePosition@cRBorder@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorder::RePosition() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x402790",
@@ -172,6 +190,15 @@
         "?Init@cRInputOK@@QAEXXZ"
       ],
       "description": "Exact Windows cRInputOK::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4035b0",
+      "name": "border_input_text",
+      "kind": "function",
+      "aliases": [
+        "?InputText@cRBorder@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRBorder::InputText() entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x403be0",

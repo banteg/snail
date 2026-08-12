@@ -30,7 +30,7 @@ void cRBorder::InputTextInit(int capacity, char* text, int flags)
     input_capacity = capacity;
     *(int*)&input_cursor_blink_step = 0x3daaaaab;
 
-    layout_frontend_widget();
+    RePosition();
     if ((flags & 0xc) != 0)
         input_ok_state()->Init();
 }

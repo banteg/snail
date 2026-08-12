@@ -48,20 +48,20 @@ enum FrontendWidgetFlag {
 // semantics begin at +0x38.
 class cRBorder : public BodBase {
 public:
-    void draw_frontend_widget(); // @ 0x401130, iOS/Android cRBorder::Draw()
+    void Draw(); // @ 0x401130, iOS/Android cRBorder::Draw()
     void HideInit(); // @ 0x4010e0, Android cRBorder::HideInit()
     void UnHideInit(); // @ 0x401110, Android cRBorder::UnHideInit()
     void Highlight(); // @ 0x402800, Android cRBorder::Highlight()
     void UnHighlight(); // @ 0x4027e0, Android cRBorder::UnHighlight()
     void SetBelow(cRBorder* previous_widget); // @ 0x4027b0,
         // Android cRBorder::SetBelow(cRBorder*)
-    void layout_frontend_widget(); // @ 0x4024a0,
+    void RePosition(); // @ 0x4024a0,
         // Android cRBorder::RePosition()
     void SetKeyLeft(int shortcut_key_code); // @ 0x402790,
         // Android cRBorder::SetKeyLeft(int)
     void InputTextInit(int capacity, char* text, int flags); // @ 0x403410,
         // Android cRBorder::InputTextInit(int, char*, int)
-    void border_input_text(); // @ 0x4035b0, iOS/Android cRBorder::InputText()
+    void InputText(); // @ 0x4035b0, iOS/Android cRBorder::InputText()
     void AddTextNumber(int value); // @ 0x401030,
         // iOS/Android cRBorder::AddTextNumber(int)
     void SpriteExtend(int hot_texture_id, int retained_state,

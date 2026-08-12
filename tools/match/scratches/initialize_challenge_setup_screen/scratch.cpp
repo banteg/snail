@@ -45,7 +45,7 @@ void cRGUI::Init()
     difficulty_slider->slider_value =
         (float)g_runtime_config.challenge_difficulty_percent * 0.0099999998f;
     difficulty_slider->slider_target_value = difficulty_slider->slider_value;
-    ((FrontendWidgetVirtualLayout*)difficulty_slider)->layout_frontend_widget();
+    ((FrontendWidgetVirtualLayout*)difficulty_slider)->RePosition();
 
     speed_slider = g_game->border_manager.GetBorder();
     speed_slider->initialize_frontend_widget(
@@ -62,7 +62,7 @@ void cRGUI::Init()
         (float)g_runtime_config.challenge_speed_percent * 0.0099999998f;
     speed_slider->slider_target_value = speed_slider->slider_value;
     speed_slider->SetBelow(difficulty_slider);
-    ((FrontendWidgetVirtualLayout*)speed_slider)->layout_frontend_widget();
+    ((FrontendWidgetVirtualLayout*)speed_slider)->RePosition();
 
     float play_anchor_x = 0.0f;
     if (game->sub_high_score.survival_pending_record.active == 1)

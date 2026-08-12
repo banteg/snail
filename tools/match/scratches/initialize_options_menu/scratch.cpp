@@ -46,7 +46,7 @@ void cROptions::Init()
     sound_volume_widget->SetBelow(fullscreen_widget);
     sound_volume_widget->slider_value = g_runtime_config.sample_volume;
     sound_volume_widget->slider_target_value = g_runtime_config.sample_volume;
-    ((FrontendWidgetVirtualLayout*)sound_volume_widget)->layout_frontend_widget();
+    ((FrontendWidgetVirtualLayout*)sound_volume_widget)->RePosition();
 
     music_volume_widget =
         g_game->border_manager.GetBorder();
@@ -63,7 +63,7 @@ void cROptions::Init()
     music_volume_widget->SetBelow(sound_volume_widget);
     music_volume_widget->slider_value = g_runtime_config.stream_volume;
     music_volume_widget->slider_target_value = g_runtime_config.stream_volume;
-    ((FrontendWidgetVirtualLayout*)music_volume_widget)->layout_frontend_widget();
+    ((FrontendWidgetVirtualLayout*)music_volume_widget)->RePosition();
 
     back_widget =
         g_game->border_manager.GetBorder();

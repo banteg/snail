@@ -107,7 +107,7 @@ void cRToolTip::AI()
                 border->stack_gap + border->layout_width + border->layout_x + border->hot_padding;
             if (right_edge > 640.0f)
                 border->layout_anchor_x = border->layout_anchor_x - (right_edge - 640.0f);
-            tooltip_widget->layout_frontend_widget();
+            tooltip_widget->RePosition();
             return;
         }
 

@@ -95,5 +95,5 @@ void cRBorder::Init(
     texture_layer = layer;
     teardown_progress = 0.0f;
     teardown_progress_step = 0.0f;
-    layout_frontend_widget();
+    RePosition();
 }

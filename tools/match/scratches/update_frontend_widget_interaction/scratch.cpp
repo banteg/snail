@@ -170,7 +170,7 @@ update_after_input:
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) != 0
         && g_game->players[0].mouse_cursor.IsActive() != 0) {
-        border_input_text();
+        InputText();
         if ((widget_flags & FRONTEND_WIDGET_FLAG_TEXT_INPUT_ACTIVE) == 0)
             g_game->border_manager.ActivateBorders();
     }
@@ -178,7 +178,7 @@ update_after_input:
     twinkle_manager.AI();
     tooltip.AI();
     char render_hot_text = (char)((widget_flags >> 8) & 1);
-    layout_frontend_widget();
+    RePosition();
 
     if ((widget_flags & FRONTEND_WIDGET_FLAG_HIDDEN) == 0) {
         current_fill_color.store_color4f(
@@ -242,7 +242,7 @@ update_after_input:
                     render_hot_text);
             }
         }
-        draw_frontend_widget();
+        Draw();
     }
 
     if (mouse_history_warmup_frames != 0)
