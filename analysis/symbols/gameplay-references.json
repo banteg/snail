@@ -2535,6 +2535,15 @@
       "description": "Exact void Windows cRSubGolb::Smoke(tVector*) entry with its authored name and Windows pointer ABI."
     },
     {
+      "address": "0x415d80",
+      "name": "spawn_golb_impact_sprite",
+      "kind": "function",
+      "aliases": [
+        "?Explode@cRSubGolb@@QAEXPAUtVector@@@Z"
+      ],
+      "description": "Windows cRSubGolb::Explode(tVector*) entry with its authored name and Windows pointer ABI."
+    },
+    {
       "address": "0x415e20",
       "name": "initialize_enemy_manager",
       "kind": "function_alias",

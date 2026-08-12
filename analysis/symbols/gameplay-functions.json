@@ -1576,7 +1576,10 @@
     {
       "address": "0x415d80",
       "name": "spawn_golb_impact_sprite",
-      "description": "Side-effect-only `cRSubGolb::Explode(tVector)`/`GolbShot` member that allocates the short-lived impact sprite used when a shot is killed or reaches a terminal collision point, seeded from the supplied world position. Android preserves the owner and effect contract with a platform-specific sprite resource id."
+      "aliases": [
+        "cRSubGolb_Explode"
+      ],
+      "description": "Void Windows `cRSubGolb::Explode(tVector*)` member that allocates the short-lived impact sprite used when a shot reaches a terminal collision point. Android preserves the authored owner and effect contract but passes `tVector` by value and uses a platform-specific sprite resource id."
     },
     {
       "address": "0x415e20",

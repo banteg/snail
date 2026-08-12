@@ -95,7 +95,7 @@ void cRSubGolb::update_golb_ai()
             target_delta.z = homing_target.z - current_position->z;
             delta = target_delta;
             if (normalize_vector(&delta) < 0.40000001f) {
-                spawn_golb_impact_sprite(&flight_transform.position);
+                Explode(&flight_transform.position);
                 goto retire;
             }
             float pull = homing_blend;
@@ -236,7 +236,7 @@ void cRSubGolb::update_golb_ai()
                             velocity = delta;
                             if (kind == 1) {
                                 Kill();
-                                spawn_golb_impact_sprite(new_output);
+                                Explode(new_output);
                                 ((cRSlug*)((char*)game
                                     + SLUG_SLOT_STRIDE * slug_index
                                     + SLUG_POOL_FROM_SUBGAME))->Hit(2);
@@ -244,7 +244,7 @@ void cRSubGolb::update_golb_ai()
                             }
                             if (kind == 2) {
                                 Kill();
-                                spawn_golb_impact_sprite(new_output);
+                                Explode(new_output);
                                 ((cRSlug*)((char*)game
                                     + SLUG_SLOT_STRIDE * slug_index
                                     + SLUG_POOL_FROM_SUBGAME))->Hit(4);
@@ -256,7 +256,7 @@ void cRSubGolb::update_golb_ai()
                                     return;
                                 }
                                 Kill();
-                                spawn_golb_impact_sprite(new_output);
+                                Explode(new_output);
                                 return;
                             }
                         }
@@ -268,7 +268,7 @@ void cRSubGolb::update_golb_ai()
 
 garbage_hit:
             Kill();
-            spawn_golb_impact_sprite(new_output);
+            Explode(new_output);
             if (kind == 2) {
                 for (cRSubGarbage* splash = game->garbage_hazards.active_head;
                     splash;
@@ -297,7 +297,7 @@ wall_probe:
             wall_source.y = new_output->y;
             wall_source.z = new_output->z - 1.0f;
             wall_impact = wall_source;
-            spawn_golb_impact_sprite(&wall_impact);
+            Explode(&wall_impact);
         }
     }
 retire:

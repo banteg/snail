@@ -1,11 +1,11 @@
-// cRSubGolb::Explode(tVector) / spawn_golb_impact_sprite @ 0x415d80
+// cRSubGolb::Explode(tVector*) @ 0x415d80
 
 #include "golb.h"
 #include "player.h"
 #include "runtime_config.h"
 #include "sprite.h"
 
-void cRSubGolb::spawn_golb_impact_sprite(Vector3* position)
+void cRSubGolb::Explode(Vector3* position)
 {
     unsigned char render_flags = (unsigned char)g_runtime_config.render_flags;
 

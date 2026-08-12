@@ -80,8 +80,7 @@ public:
     // Android preserves the authored by-value method names.
     cRSprite* Jet(Vector3* position); // @ 0x415bb0
     void Smoke(Vector3* position); // @ 0x415c60
-    void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80,
-        // Android cRSubGolb::Explode(tVector)
+    void Explode(Vector3* position); // @ 0x415d80; mobile passes tVector by value
 
     cRVapour vapour; // +0x080, complete kind-1 trail renderer
     cRSubGolb* vapour_owner_shot; // +0x114, kind-1 embedded-body backlink

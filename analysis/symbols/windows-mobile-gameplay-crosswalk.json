@@ -9294,22 +9294,22 @@
           "size_score": 0.925
         },
         {
-          "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.715,
-          "name_score": 0.675,
-          "size_score": 0.775
-        },
-        {
-          "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.715,
-          "name_score": 0.675,
-          "size_score": 0.775
-        },
-        {
           "symbol": "tVector::operator*=(tMatrix)",
           "score": 0.7,
           "name_score": 0.6,
           "size_score": 0.85
+        },
+        {
+          "symbol": "ATan(float, float)",
+          "score": 0.67,
+          "name_score": 0.45,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "OFBinaryKeyedWriter::OFBinaryKeyedWriter(bool)",
+          "score": 0.64,
+          "name_score": 0.4,
+          "size_score": 1.0
         }
       ]
     },

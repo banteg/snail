@@ -7528,7 +7528,7 @@ def test_mobile_falling_init_recovers_windows_carryover_method() -> None:
     assert "checked-in iOS decompile corpus is v1.5" in notes
 
 
-def test_android_golb_jet_and_smoke_recover_windows_methods() -> None:
+def test_android_golb_effects_recover_windows_methods() -> None:
     repo_root = Path(__file__).parents[1]
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = {
@@ -7538,6 +7538,7 @@ def test_android_golb_jet_and_smoke_recover_windows_methods() -> None:
     expected = {
         "spawn_golb_trail_sprite": "cRSubGolb::Jet(tVector)",
         "spawn_golb_smoke": "cRSubGolb::Smoke(tVector)",
+        "spawn_golb_impact_sprite": "cRSubGolb::Explode(tVector)",
     }
     for windows_name, mobile_symbol in expected.items():
         entry = entries[windows_name]
@@ -7554,15 +7555,22 @@ def test_android_golb_jet_and_smoke_recover_windows_methods() -> None:
     android_index = load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json")
     jet = resolve_corpus_symbol(android_index, expected["spawn_golb_trail_sprite"])
     smoke = resolve_corpus_symbol(android_index, expected["spawn_golb_smoke"])
+    explode = resolve_corpus_symbol(
+        android_index, expected["spawn_golb_impact_sprite"]
+    )
     ai = resolve_corpus_symbol(android_index, "cRSubGolb::AI()")
     assert jet is not None
     assert smoke is not None
+    assert explode is not None
     assert ai is not None
     jet_body = corpus_function_path(
         DEFAULT_ANDROID_CORPUS_ROOT, jet
     ).read_text(encoding="utf-8")
     smoke_body = corpus_function_path(
         DEFAULT_ANDROID_CORPUS_ROOT, smoke
+    ).read_text(encoding="utf-8")
+    explode_body = corpus_function_path(
+        DEFAULT_ANDROID_CORPUS_ROOT, explode
     ).read_text(encoding="utf-8")
     ai_body = corpus_function_path(
         DEFAULT_ANDROID_CORPUS_ROOT, ai
@@ -7571,8 +7579,12 @@ def test_android_golb_jet_and_smoke_recover_windows_methods() -> None:
     assert "0.16666667" in smoke_body
     assert "0.4166667" in smoke_body
     assert "* 0.4" in smoke_body
+    assert "0x800" in explode_body
+    assert "0x3d638e39" in explode_body
+    assert "0x3f555556" in explode_body
     assert ai_body.count("Jet();") == 3
     assert ai_body.count("Smoke();") == 2
+    assert ai_body.count("Explode();") == 6
     assert "* 0.3" in ai_body
     assert "* 0.6" in ai_body
 
@@ -7593,14 +7605,23 @@ def test_android_golb_jet_and_smoke_recover_windows_methods() -> None:
             "?Jet@cRSubGolb@@QAEPAVcRSprite@@PAUtVector@@@Z"
         ),
         "spawn_golb_smoke": "?Smoke@cRSubGolb@@QAEXPAUtVector@@@Z",
+        "spawn_golb_impact_sprite": (
+            "?Explode@cRSubGolb@@QAEXPAUtVector@@@Z"
+        ),
     }
     aliases = {
         "spawn_golb_trail_sprite": "cRSubGolb_Jet",
         "spawn_golb_smoke": "cRSubGolb_Smoke",
+        "spawn_golb_impact_sprite": "cRSubGolb_Explode",
+    }
+    methods = {
+        "spawn_golb_trail_sprite": "Jet",
+        "spawn_golb_smoke": "Smoke",
+        "spawn_golb_impact_sprite": "Explode",
     }
     scratch_root = repo_root / "tools/match/scratches"
     for windows_name, authored_alias in aliases.items():
-        method = "Jet" if windows_name.endswith("trail_sprite") else "Smoke"
+        method = methods[windows_name]
         assert functions[windows_name]["aliases"] == [authored_alias]
         assert references[windows_name]["aliases"] == [
             object_symbols[windows_name]
@@ -7616,15 +7637,22 @@ def test_android_golb_jet_and_smoke_recover_windows_methods() -> None:
         )
         assert f"cRSubGolb::{method}" in source
         assert f"SYMBOL={object_symbols[windows_name]}\n" in config
-        assert "Exact at" in notes
+        if windows_name == "spawn_golb_impact_sprite":
+            assert "63.64%" in notes
+            assert "ret 4" in notes
+            assert "cRSubGolb::Explode(tVector*)" in notes
+        else:
+            assert "Exact at" in notes
 
     ai_source = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
         encoding="utf-8"
     )
     assert ai_source.count("Jet(") == 3
     assert ai_source.count("Smoke(") == 2
+    assert ai_source.count("Explode(") == 6
     assert "spawn_golb_trail_sprite(" not in ai_source
     assert "spawn_golb_smoke(" not in ai_source
+    assert "spawn_golb_impact_sprite(" not in ai_source
 
 
 def test_android_enemy_manager_find_recovers_golb_search_method() -> None:
@@ -11125,7 +11153,7 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
         "create_golb": "create_golb",
         "spawn_golb_trail_sprite": "Jet",
         "spawn_golb_smoke": "Smoke",
-        "spawn_golb_impact_sprite": "spawn_golb_impact_sprite",
+        "spawn_golb_impact_sprite": "Explode",
     }
     for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
