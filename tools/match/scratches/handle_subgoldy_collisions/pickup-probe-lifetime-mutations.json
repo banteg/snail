@@ -3,11 +3,11 @@
   "sites": [
     {
       "name": "health-probe-lifetime",
-      "find": "            probe_c = probe_b;\n            if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {\n                float pickup_y;\n                if (probe_b.y < 0.0f)\n                    pickup_y = -probe_b.y;\n                else\n                    pickup_y = probe_b.y;\n                if (pickup_y < 0.40000001f\n                    && normalize_vector(&probe_c) < 0.98000002f) {\n                    g_sound_effect_manager.Play(14);",
+      "find": "            probe_c = probe_b;\n            if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {\n                float pickup_y;\n                if (probe_b.y < 0.0f)\n                    pickup_y = -probe_b.y;\n                else\n                    pickup_y = probe_b.y;\n                if (pickup_y < 0.40000001f\n                    && normalize_vector(&probe_c) < 0.98000002f) {\n                    g_sound_effect_manager.play_sound_effect(14);",
       "replacements": [
         {
           "name": "branch-local",
-          "text": "            Vec3 health_probe = probe_b;\n            if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {\n                float pickup_y;\n                if (probe_b.y < 0.0f)\n                    pickup_y = -probe_b.y;\n                else\n                    pickup_y = probe_b.y;\n                if (pickup_y < 0.40000001f\n                    && normalize_vector(&health_probe) < 0.98000002f) {\n                    g_sound_effect_manager.Play(14);"
+          "text": "            Vec3 health_probe = probe_b;\n            if (transform.position.y >= 0.49000001f && probe_b.z < 1.0f) {\n                float pickup_y;\n                if (probe_b.y < 0.0f)\n                    pickup_y = -probe_b.y;\n                else\n                    pickup_y = probe_b.y;\n                if (pickup_y < 0.40000001f\n                    && normalize_vector(&health_probe) < 0.98000002f) {\n                    g_sound_effect_manager.play_sound_effect(14);"
         }
       ]
     },
