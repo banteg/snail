@@ -684,6 +684,15 @@
       "notes": "All ports consume staged backdrop changes and advance the distortion cells. Windows additionally dispatches split or single rendering from AI when the persistent +0x658 draw gate equals one; mobile calls void cRBackdrop::Render() separately from the game render loop. Windows retains an integer tail result from that folded dispatch: projecting the mobile void ABI regresses focused matching from 88.24% to 85.29%, so the ports intentionally differ here."
     },
     {
+      "address": "0x4113b0",
+      "windows_name": "add_bod_to_front",
+      "android_symbol": "cLinkedList<cRBod>::Add(cRBod&)",
+      "source_object": "Game.o",
+      "source_object_evidence": "android-contiguous-source-run",
+      "confidence": "high",
+      "notes": "The exact Windows and Android bodies both reject an already-linked node with `List ADD`, use bit 0x200 as ownership, and splice the node at list +0x04 with the same +0x08/+0x0c link orientation for both empty and non-empty lists. Android expresses the node as cRBod& while the Windows thiscall passes the same address as BodNode*. The sole Android body lies inside the independently bounded Game.o symbol run; all four live Windows calls come from initialize_game_assets_and_world. No iOS body is present, and no mobile layout beyond the behavior-identical intrusive prefix is transferred."
+    },
+    {
       "address": "0x414670",
       "windows_name": "kill_golb",
       "ios_symbol": "cRSubGolb::Kill()",

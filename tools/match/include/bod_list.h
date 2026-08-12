@@ -44,8 +44,12 @@ typedef char BodNode_must_be_0x10[(sizeof(BodNode) == 0x10) ? 1 : -1];
         - ((int)offsetof(BodNode, list_next) \
             - (int)offsetof(BodNode, list_prev))))
 
+// Windows layout projection of the authored cLinkedList<cRBod> specialization.
+// Keep the stable BodList spelling for the exact matcher and analyzer replay.
 class BodList {
 public:
+    // Authored cLinkedList<cRBod>::Add(cRBod&); the reference has the same
+    // pointer ABI as this Windows projection.
     void add_bod_to_front(BodNode* node); // @ 0x4113b0
     void append_bod_to_end(BodNode* node); // @ 0x411420
     void recycle_bod_to_free_list(BodNode* node); // @ 0x447290

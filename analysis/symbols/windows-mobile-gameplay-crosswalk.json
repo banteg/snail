@@ -19,11 +19,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 583,
-    "unverified_entries": 202,
-    "verified_android_symbols": 577,
+    "verified_entries": 584,
+    "unverified_entries": 201,
+    "verified_android_symbols": 578,
     "verified_ios_symbols": 464,
-    "available_android_mappings": 577,
+    "available_android_mappings": 578,
     "available_ios_mappings": 428
   },
   "entries": [
@@ -6915,69 +6915,42 @@
       "address": "0x4113b0",
       "windows_name": "add_bod_to_front",
       "windows_size": 112,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cLinkedList<cRBod>::Remove(cRBod*)",
-          "score": 0.6557,
-          "name_score": 0.45,
-          "size_score": 0.9643
-        },
-        {
-          "symbol": "tAxis::operator=(tQuaternian const&)",
-          "score": 0.6286,
-          "name_score": 0.381,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRGalaxy::BoxOff()",
-          "score": 0.6241,
-          "name_score": 0.4211,
-          "size_score": 0.9286
-        },
-        {
-          "symbol": "cRBod::ApplyPos(tMatrix&)",
-          "score": 0.624,
-          "name_score": 0.3972,
-          "size_score": 0.9643
-        },
-        {
-          "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*)",
-          "score": 0.6169,
-          "name_score": 0.3615,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "cLinkedList<cRBod>::Add(cRBod&)",
+      "source_object": "Game.o",
+      "source_object_evidence": "android-contiguous-source-run",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.8971,
+          "name_score": 0.9,
+          "size_score": 0.8929
+        },
+        {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.8971,
+          "name_score": 0.9,
+          "size_score": 0.8929
+        },
+        {
           "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.6433,
-          "name_score": 0.47,
+          "score": 0.7663,
+          "name_score": 0.675,
           "size_score": 0.9032
         },
         {
           "symbol": "cRBodPos::cRBodPos()",
-          "score": 0.6433,
-          "name_score": 0.47,
+          "score": 0.7663,
+          "name_score": 0.675,
           "size_score": 0.9032
         },
         {
-          "symbol": "cRBod::ApplyPos(tMatrix&)",
-          "score": 0.6117,
-          "name_score": 0.3972,
-          "size_score": 0.9333
-        },
-        {
-          "symbol": "cRBorder::HideInit()",
-          "score": 0.6089,
-          "name_score": 0.3958,
-          "size_score": 0.9286
-        },
-        {
-          "symbol": "cROptions::Apply(bool)",
-          "score": 0.5989,
-          "name_score": 0.376,
-          "size_score": 0.9333
+          "symbol": "RShellSoundRegister(char*, int)",
+          "score": 0.67,
+          "name_score": 0.45,
+          "size_score": 1.0
         }
       ]
     },

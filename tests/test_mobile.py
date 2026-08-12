@@ -5787,6 +5787,49 @@ def test_mobile_tga_sampler_recovers_authored_rtexture_helper() -> None:
     }
 
 
+def test_mobile_bod_list_add_recovers_authored_template_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in crosswalk["entries"]
+        if entry["windows_name"] == "add_bod_to_front"
+    )
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in functions["functions"]
+        if function["name"] == "add_bod_to_front"
+    )
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["android_symbol"] == (
+        "cLinkedList<cRBod>::Add(cRBod&)"
+    )
+    assert entry["android_body_count"] == 1
+    assert "ios_symbol" not in entry
+    assert entry["source_object"] == "Game.o"
+    assert (
+        entry["source_object_evidence"]
+        == "android-contiguous-source-run"
+    )
+    assert "cLinkedList_cRBod_Add" in function["aliases"]
+
+    header = (repo_root / "tools/match/include/bod_list.h").read_text(
+        encoding="utf-8"
+    )
+    notes = (
+        repo_root
+        / "tools/match/scratches/add_bod_to_front/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "authored cLinkedList<cRBod> specialization" in header
+    assert "`cLinkedList<cRBod>::Add(cRBod&)`" in notes
+    assert "`append_bod_to_end` remains separate" in notes
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [
@@ -6014,13 +6057,13 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         if entry.get("source_object_evidence")
         == "android-contiguous-source-run"
     ]
-    assert len(inferred) == 39
+    assert len(inferred) == 40
     assert Counter(entry["source_object"] for entry in inferred) == {
         "RTexture.o": 1,
         "Font.o": 3,
         "GL.o": 2,
         "Galaxy.o": 1,
-        "Game.o": 2,
+        "Game.o": 3,
         "Keyboard.o": 1,
         "Mouse.o": 4,
         "SubGame.o": 25,
@@ -6050,7 +6093,7 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         entry.get("source_object_evidence")
         == "android-contiguous-source-run"
         for entry in complete_verified
-    ) == 39
+    ) == 40
 
 
 def test_unverified_windows_source_runs_preserve_owner_provenance(

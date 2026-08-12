@@ -1038,7 +1038,10 @@
     {
       "address": "0x4113b0",
       "name": "add_bod_to_front",
-      "description": "Intrusive BodList member that inserts an unlinked BodNode at the front and sets its linked flag, reporting an error if the node is already owned by a list."
+      "aliases": [
+        "cLinkedList_cRBod_Add"
+      ],
+      "description": "Exact Windows spelling of the authored void `cLinkedList<cRBod>::Add(cRBod&)` template member: inserts an unlinked BOD at the live-list head and sets its linked flag, reporting `List ADD` if the node is already owned. Android preserves the complete method body inside the bounded Game.o symbol run; the reference argument is passed as the same pointer ABI used by Windows."
     },
     {
       "address": "0x411420",
