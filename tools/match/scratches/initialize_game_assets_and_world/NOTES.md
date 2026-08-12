@@ -1,23 +1,15 @@
 # initialize_game_assets_and_world @ 0x40acf0
 
-Starter scratch for the large root-world bootstrap.
-
-This is intentionally a semantic partial, not a line-for-line transcription. It
-captures the recovered early root defaults, texture/object-list startup, overlay
-registration, landscape/menu/audio/font/sprite setup, the first backdrop/pillar
-world-object islands, and the first proven root-owned track/world asset banks.
-Recovered root, subgame, viewport, overlay, player-camera, landscape, catalog,
-and menu owners are typed; unrecovered later islands remain omitted.
-
-Expected residuals:
-- most later path-template, pickup, replay, score, and frontend pools are not
-  modeled yet;
-- the early overlay link still uses its local root-list helper, while the
-  recovered subgame group links use the shared inline intrusive-list operation;
-- later path-template and remaining world/catalog producers remain outside this
-  semantic partial;
-- string literals are used for concrete asset paths recovered from the binary,
-  so masked-operand audit may still need reference-manifest promotion later.
+Current recovery: semantic-complete (`compiler,references` residual). The live
+Windows `GameRoot` member and its exact constructor/caller, plus independently
+recovered producers and consumers for every embedded bank, establish the full
+one-function Windows bootstrap: root defaults, services, paths, world assets,
+actors, pools, presentation, scores, UI, and final mode selection. Android and
+iOS split the same responsibilities across `cRGame::Init0()` through `Init5()`
+and `LoadPaths()`; those bodies provide interior provenance only and are not
+claimed as a false one-to-one mapping. The 5,405/5,411 candidate has 1,880
+clean references. Its final two unaudited entries are alternate schedules for
+the proven `GolbShot::vapour.object` stride, not omitted startup behavior.
 
 ## 2026-07-13 snail cutscene animation ownership
 
@@ -1447,7 +1439,7 @@ rocket-subowner forms fall as low as 70.75%. The raw analysis cursor remains
 excluded from matcher source.
 
 The append-only ledger contains five bounded sweeps and 28 variants:
-2 improve, 5 are identical, and 21 regress. Three consecutive non-improving
-sweeps now mark this scratch stalled at the retained 81.34% frontier. A future
-retry needs new original-source evidence or a neighboring lifetime change,
-not another spelling of the same owner/index loop.
+2 improve, 5 are identical, and 21 regress. This bounds the tested owner/index
+forms without turning their non-improving streak into a stopping rule. The
+retained frontier is 81.34%; a useful future probe needs new original-source
+evidence or a neighboring lifetime change.

@@ -1,5 +1,13 @@
 # load_level_definition_file @ 0x447480
 
+Current recovery: semantic-complete (`compiler,references` residual). Exact
+Android/iOS `cRSubTracks::Init(char*)` bodies, the live Windows member, and its
+catalog, Galaxy, landscape, sound, and `BuildLevel` consumers establish the
+complete Windows level-definition parser and all fields of its `SubTracks`
+owner. The 942/926 candidate has 183 clean references; its two unaudited
+entries are one duplicated candidate-only cold-EOF diagnostic, not an unknown
+parse path.
+
 Initial relationship scratch.
 
 - Parses one `Levels/*.txt` file into the level-definition loader at
@@ -316,6 +324,7 @@ byte-identical at **88.12%**, 942/926 instructions, prefix 20/926, 183 clean
 references, and the same two bounded unaudited EOF diagnostics. The standard
 const-qualified declaration is retained as source truth, but it does not move
 the cleanup boundary. The ledger now contains 12 sweeps, 86 evaluated and 85
-unique variants, with a three-sweep no-improvement streak. The parser is
-formally stalled pending new compiler or original-source provenance for that
-cleanup schedule.
+unique variants. That history bounds the tested declaration and grouping
+forms without making the three-sweep no-improvement streak a stopping rule. A
+future cleanup-schedule probe needs a genuinely new source-lifetime or
+original-source hypothesis.

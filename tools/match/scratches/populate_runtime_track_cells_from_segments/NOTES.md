@@ -1,5 +1,14 @@
 # populate_runtime_track_cells_from_segments
 
+Current recovery: semantic-complete (`compiler,references` residual). Exact
+Android/iOS `cRSubGame::BuildLevel()` bodies, the live Windows member, and the
+complete Windows producer/consumer chain establish session setup, segment and
+row selection, all glyph dispatch arms, runtime cell/row construction,
+attachments, parcels, rings, fringe objects, and completion handling. The
+current 1,253/1,245 candidate has 163 clean references and four unaudited
+row-model/parcel-transfer references; those four are alignment debt around
+proven field owners, not unknown behavior.
+
 populate_runtime_track_cells_from_segments @ 0x435eb0. The function that
 DEFINES the grid conventions the 2026-06-13 grid-alignment audit hinges
 on.
@@ -1466,11 +1475,13 @@ loader, slot bank, and selected object—compile byte-identically to the direct
 member expression. That instruction order is therefore allocator-derived, not
 evidence for a distinct source owner.
 
-The ledger now contains 138 records, 132 mutation sweeps, 6 probes, 595
-evaluated variants, and 555 unique variants. Three consecutive complete
-non-improving sweeps formally stall this lane at **76.58%**, 1249/1245
-instructions, prefix 76/1245, with 162 clean / 0 unresolved / 1 physical
-jump-table mismatch / 4 unaudited references.
+At this historical snapshot the ledger contained 138 records, 132 mutation
+sweeps, 6 probes, 595 evaluated variants, and 555 unique variants. The tested
+owner forms did not improve the **76.58%**, 1249/1245 frontier, whose audit had
+162 clean references, one physical jump-table mismatch, and four unaudited
+references. That result bounds those specific forms without making their
+non-improving streak a stopping rule; the later producer-backed pass below
+resolves the jump-table mismatch.
 
 ## 2026-08-09 producer-backed trampoline cadence
 
