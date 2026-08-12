@@ -1,5 +1,12 @@
 # initialize_completion_screen
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRCompletion::Init(int, bool)` bodies and the live Windows Completion method
+establish the complete five-widget result flow, bonus tables, replay/live
+difficulty sources, score publication, state transition, and fast-forward
+latch. All 46 references are clean; the remaining delta is the equivalent
+difficulty/speed register allocation in the bonus-table block.
+
 `initialize_completion_screen` @ `0x404920` builds the delivery-complete result
 screen object used by the cutscene completion handoff. It is called only from
 `update_cutscene` with `game+0x12e6df0`, not from the frontend prompt object at
@@ -17,8 +24,8 @@ Recovered relationships:
   `complete_subgame` result-record copy and the completion replay bonus read.
 
 Current match: 92.81%, 278 target instructions / 278 candidate instructions,
-with a 23-instruction exact prefix, 44 clean masked operands, and four
-register-paired operands left unaudited. The remaining bonus-table block is a
+with a 23-instruction exact prefix and all 46 masked operands clean. The
+remaining bonus-table block is a
 register-allocation residual: native carries the difficulty/y index in `esi`
 and the speed/x source through `ecx`, while the straightforward C++ selects the
 opposite pair before converging on the same clamps, perfect-bonus test, and
@@ -218,6 +225,6 @@ The matcher now emits this honest 92.81%, 278/278 initializer as
 `?Init@cRCompletion@@QAEXHE@Z`. The Windows second argument deliberately
 remains `unsigned char`: mobile's source-level `bool` corroborates its role,
 but does not replace the one-byte Windows ABI. Android and iOS independently
-retain `_ZN12cRCompletion4InitEib`. The recorded 61 exhausted challenge/color
-variants remain historical evidence and were not reopened; the only residual
-is still the bounded difficulty/speed register allocation.
+retain `_ZN12cRCompletion4InitEib`. The 61 recorded challenge/color variants
+remain historical evidence; the only residual is still the bounded
+difficulty/speed register allocation.

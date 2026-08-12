@@ -1,5 +1,12 @@
 # initialize_high_score_screen @ 0x416910
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRHighScore::Init(int, int)` bodies and the live Windows HighScore method
+establish bank selection, ten-row construction, replay/name-entry modes, the
+footer, and all five widget banks. All 137 references are clean and both sides
+contain 600 instructions; the only delta is twelve equivalent `tColour`
+temporary stack-slot assignments.
+
 Starter scratch for the high-score front-end screen.
 
 Models the main-menu backdrop setup, selected bank pointer/count, optional name
@@ -184,7 +191,7 @@ stable matcher `FUNCTION` remains `initialize_high_score_screen`, and
 retain the same authored owner and method. The live Windows view confirms the
 void `thiscall` ABI and three direct callers, all of which discard EAX.
 
-This promotion does not revisit the exhausted 275 `tColour` allocation probes
-or hide their twelve honest stack-slot permutations. The instruction stream
-remains at 98.00%, 600/600 instructions, prefix 80, with all 137 masked
-operands clean.
+This promotion preserves the evidence from 275 tested `tColour` allocation
+variants and does not hide their twelve honest stack-slot permutations. The
+instruction stream remains at 98.00%, 600/600 instructions, prefix 80, with
+all 137 masked operands clean.

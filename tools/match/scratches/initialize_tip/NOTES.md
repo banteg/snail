@@ -1,5 +1,11 @@
 # initialize_tip
 
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRTip::Init(cRTipData*, bool)` bodies and the live Windows Tip method establish
+the default definition, timed/modal branch, three-widget construction, and
+frontend-owner handoff. All 27 references are clean; the remaining delta is
+equivalent definition-field register allocation and call scheduling.
+
 Initial source-shaped scratch for the tip slot initializer.
 
 Recovered relationships:
@@ -123,11 +129,11 @@ borrowing the anchor or staging only text perturbs the prologue and falls to
 root/border-manager load alignment.
 
 The complete ledger now covers 66 unique variants: two improve an earlier
-baseline, seven are neutral, and 57 regress, with one retained sweep win and
-three trailing non-improving sweeps. `initialize_tip` is formally stalled at
-84.42%, 154/154 instructions, prefix 19, 26 clean references, and the same two
-unaudited global loads. The member reference remains the strongest honest
-source; no volatile reload, dummy use, or raw owner view is reintroduced.
+baseline, seven are neutral, and 57 regress, with one retained sweep win. This
+is descriptive evidence, not a stopping rule. The current result is 84.42%,
+154/154 instructions, prefix 19, with all 27 references clean. The member
+reference remains the strongest honest source; no volatile reload, dummy use,
+or raw owner view is reintroduced.
 
 ## 2026-08-09 primary cRTipData and cRTip ownership
 
@@ -146,7 +152,7 @@ mobile-width ABI.
 
 This authored-name change is codegen-neutral: focused matching remains 84.42%,
 154/154 instructions, prefix 19, with all 27 currently audited references
-clean. None of the 66 exhausted source-shape variants was reopened. This closes
+clean. The 66 recorded source-shape variants remain as evidence. This closes
 the matcher owner spelling.
 
 ## 2026-08-09 stale mutation-plan retirement
