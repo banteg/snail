@@ -67,7 +67,7 @@ public:
 typedef char GamePlayer_must_be_0x1f8[
     (sizeof(GamePlayer) == 0x1f8) ? 1 : -1];
 
-class GameRoot {
+class cRGame {
 public:
     void* vtable; // +0x00, root runtime callback table
     unsigned char fog_enabled; // +0x04
@@ -137,19 +137,18 @@ public:
     TrackFringeBodCatalog* track_fringe_bod_catalog();
 };
 
-// Android and iOS retain this exact process owner as cRGame. GameRoot remains
-// the descriptive Windows spelling used by the matching and analysis sources.
-typedef GameRoot cRGame;
+// Keep the descriptive Windows analysis spelling as a compatibility alias.
+typedef cRGame GameRoot;
 
 typedef char GameRoot_must_be_0x12e6ff4[
-    (sizeof(GameRoot) == 0x12e6ff4) ? 1 : -1];
+    (sizeof(cRGame) == 0x12e6ff4) ? 1 : -1];
 
 // Canonical pointer to the single runtime allocation. The byte-oriented
 // analysis view in game_base.h aliases this same address without weakening
 // matching sources that have recovered the complete owner.
-extern GameRoot* g_game; // data_4df904
+extern cRGame* g_game; // data_4df904
 
-inline TrackFringeBodCatalog* GameRoot::track_fringe_bod_catalog()
+inline TrackFringeBodCatalog* cRGame::track_fringe_bod_catalog()
 {
     // The asset constructor proves entries 58..345 of the root BOD bank are
     // the complete 8x4x3x3 track-fringe catalog.

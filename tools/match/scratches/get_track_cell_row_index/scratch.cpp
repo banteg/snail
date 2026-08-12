@@ -2,9 +2,9 @@
 
 #include "track_attachment_types.h"
 
-class GameRoot;
+class cRGame;
 
-extern GameRoot* g_game; // data_4df904
+extern cRGame* g_game; // data_4df904
 extern char g_track_row_cells_offset[]; // 0x4340e0
 
 int cRSubLoc::Yi()

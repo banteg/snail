@@ -82,7 +82,7 @@ static __forceinline void initialize_overlay_slot(cROverlay* overlay)
     overlay->Init();
 }
 
-char GameRoot::initialize_game_assets_and_world()
+char cRGame::initialize_game_assets_and_world()
 {
     char* game = (char*)this;
     tColour asset_color;

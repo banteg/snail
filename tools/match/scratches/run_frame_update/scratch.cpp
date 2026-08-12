@@ -18,7 +18,7 @@ int queue_axis_aligned_textured_quad(
     tColour* tint,
     int blend_mode);
 
-int GameRoot::run_frame_update()
+int cRGame::run_frame_update()
 {
     fade.AI();
     g_audio_backend.noop_runtime_ai();

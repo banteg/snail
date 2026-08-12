@@ -21,7 +21,7 @@ int draw_sprite_quad(Vector3* position, cRSprite* sprite); // @ 0x4137f0
 
 extern RenderableBod* g_post_sprite_bods[]; // data_4dfb10
 
-void GameRoot::render_game_frame()
+void cRGame::render_game_frame()
 {
     enum {
         CAMERA_SLOT_COUNT =

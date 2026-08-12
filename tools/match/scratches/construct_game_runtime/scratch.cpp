@@ -23,7 +23,7 @@ extern void* g_overlay_callback_table;          // data_4972ec
 extern void* g_game_input_callback_table;       // data_4972f0
 
 #define REPORT_RUNTIME_SIZE_LEDGER() do { \
-    debug_report_stub("Size of cRGame %i\n", sizeof(GameRoot)); \
+    debug_report_stub("Size of cRGame %i\n", sizeof(cRGame)); \
     debug_report_stub("Size of cRSubGame %i\n", sizeof(cRSubGame)); \
     debug_report_stub("   Size of cRSegmentCache %i\n", sizeof(SegmentCache)); \
     debug_report_stub("   Size of cRTutorial\t%i\n", sizeof(Tutorial)); \
@@ -64,14 +64,14 @@ public:
     // The promoted GameRoot view contains reverse-engineered helper types with
     // synthetic no-op C++ constructors. Raw storage prevents those helpers
     // from running implicitly before the single recovered root constructor.
-    char storage[sizeof(GameRoot)];
+    char storage[sizeof(cRGame)];
     __forceinline GameRootAllocation();
 };
 
 __forceinline GameRootAllocation::GameRootAllocation()
 {
     {
-        GameRoot* root = (GameRoot*)this;
+        cRGame* root = (cRGame*)this;
         root->fog_color.noop_this_constructor();
         GameInput* game_input = &root->game_inputs[0];
         int game_input_count =
@@ -183,7 +183,7 @@ int construct_game_runtime()
 {
     REPORT_RUNTIME_SIZE_LEDGER();
 
-    GameRoot* game = (GameRoot*)new GameRootAllocation;
+    cRGame* game = (cRGame*)new GameRootAllocation;
 
     g_game = game;
     ((int (__cdecl *)(char*, int, int))debug_report_stub)(

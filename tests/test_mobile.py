@@ -6385,6 +6385,36 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
     assert "cRSnail::" not in folded
 
 
+def test_game_root_uses_authored_primary_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "game_root.h").read_text(encoding="utf-8")
+
+    assert "class cRGame {" in header
+    assert "typedef cRGame GameRoot;" in header
+    assert "sizeof(cRGame)" in header
+    assert "extern cRGame* g_game;" in header
+    for function in (
+        "run_frame_update",
+        "render_game_frame",
+        "initialize_game_last",
+        "initialize_game_assets_and_world",
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRGame::{function}" in source
+
+    constructor = (
+        scratch_root / "construct_game_runtime" / "scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert 'sizeof(cRGame)' in constructor
+    assert "cRGame* root = (cRGame*)this" in constructor
+    assert "cRGame* game = (cRGame*)new GameRootAllocation" in constructor
+    assert "GameRoot::" not in constructor
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

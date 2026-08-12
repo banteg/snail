@@ -14202,7 +14202,9 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     resurrect_source = (
         repo_root / "tools/match/scratches/update_subgoldy_resurrect/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "extern GameRoot* g_game; // data_4df904" in matcher_header
+    assert "class cRGame {" in matcher_header
+    assert "typedef cRGame GameRoot;" in matcher_header
+    assert "extern cRGame* g_game; // data_4df904" in matcher_header
     for source in (update_source, resurrect_source):
         assert '#include "game_root.h"' in source
         assert "extern GameRoot* g_game;" not in source
