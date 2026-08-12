@@ -24,7 +24,7 @@ Recovered layout evidence:
 - `record +0x120` is the script `Distort:` scalar consumed by
   `change_backdrop`.
 - object slots at `Game+0x48e2c` are
-  `DirectXLoader::cached_x_mesh_slots[0].object`; their `0xbc` stride provides
+  `cRDirectX::cached_x_mesh_slots[0].object`; their `0xbc` stride provides
   the retained `Object*` used for each repeated slice.
 - each live slice records `repeat_z_span = max_z - min_z`, resets its inherited
   transform to identity, places its local z at `(index - 0.5) * repeat_z_span`,
@@ -77,7 +77,7 @@ All five owner/consumer listings remain byte-identical:
 
 ## 2026-07-15 durable DirectX loader owner
 
-The IDA root graph now carries the exact `DirectXLoader +0x48e00` owner into
+The IDA root graph now carries the exact `cRDirectX +0x48e00` owner into
 this consumer, so the selected mesh comes from
 `directx_loader.cached_x_mesh_slots` rather than root-relative arithmetic.
 Its `0x5e10`-byte extent terminates exactly at `Backdrop +0x4ec10`. This

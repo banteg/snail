@@ -21,14 +21,14 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 X_ANIMATION_LOADER_PROTOTYPE = (
     "void __thiscall load_x_animation_clip("
-    "DirectXLoader* loader, char* mesh_name, Object* object)"
+    "cRDirectX* loader, char* mesh_name, Object* object)"
 )
 
 EXPECTED_TYPE_WIDTHS = {
     "XAnimationKeyframe": 0x80,
     "Object": 0xDC,
     "DuplicateVertices": 0x08,
-    "DirectXLoader": 0x5E10,
+    "cRDirectX": 0x5E10,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -44,7 +44,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x00: ("active_count", "int32_t"),
         0x04: ("records", "DuplicateVertexRecord*"),
     },
-    "DirectXLoader": {
+    "cRDirectX": {
         0x00: ("animation_bytes", "char*"),
         0x5E08: ("duplicate_vertices", "DuplicateVertices"),
     },
@@ -59,7 +59,7 @@ EXPECTED_STRUCT_FIELDS = {
 # 0x80-byte directory-name records, EBP counts keyframes, EDI points at the
 # current keyframe's frame_number field, and the later ESI/EBX pair retains the
 # bounded animation block and its AnimEnd delimiter. The latter are borrowed
-# pointers into DirectXLoader::animation_bytes; none owns or frees storage.
+# pointers into cRDirectX::animation_bytes; none owns or frees storage.
 X_ANIMATION_LOADER_USER_VAR_UPDATES = (
     (
         "load_x_animation_clip",
@@ -224,7 +224,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical DirectXLoader/Object owners.",
+        help="Header documenting the canonical cRDirectX/Object owners.",
     )
     return parser.parse_args()
 

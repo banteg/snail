@@ -1860,6 +1860,100 @@ def test_mobile_crduplicatevertices_recovers_primary_owner_and_methods() -> None
     assert ".clean_duplicate_vertices(" not in animation_source
 
 
+def test_mobile_crdirectx_recovers_primary_owner_and_methods() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entries = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    header = (
+        repo_root / "tools/match/include/directx_loader.h"
+    ).read_text(encoding="utf-8")
+
+    expected_methods = {
+        "load_x_mesh": (
+            "Load",
+            "cRDirectX::Load(char*, cRObject*, int)",
+            "cRDirectX_Load",
+            "?Load@cRDirectX@@QAEXPADPAUcRObject@@H@Z",
+        ),
+        "initialize_directx_loader": (
+            "Init",
+            "cRDirectX::Init()",
+            "cRDirectX_Init",
+            "?Init@cRDirectX@@QAEXXZ",
+        ),
+        "load_or_reuse_cached_x_mesh": (
+            "ModelAdd",
+            "cRDirectX::ModelAdd(char*)",
+            "cRDirectX_ModelAdd",
+            "?ModelAdd@cRDirectX@@QAEHPAD@Z",
+        ),
+        "load_x_animation_clip": (
+            "LoadAnim",
+            "cRDirectX::LoadAnim(char*, cRObject*)",
+            "cRDirectX_LoadAnim",
+            "?LoadAnim@cRDirectX@@QAEXPADPAUcRObject@@@Z",
+        ),
+    }
+    for windows_name, (
+        method,
+        mobile_symbol,
+        alias,
+        object_symbol,
+    ) in expected_methods.items():
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        entry = entries[windows_name]
+
+        assert f"cRDirectX::{method}(" in source
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert functions_by_name[windows_name]["aliases"] == [alias]
+        assert references_by_name[windows_name]["aliases"] == [
+            object_symbol
+        ]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "DirectX.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+
+    assert "class cRDirectX {" in header
+    assert "class DirectXLoader {" not in header
+    assert "void Init(); // @ 0x405c90" in header
+    assert "void Load(char* mesh_path," in header
+    assert "int ModelAdd(char* mesh_name);" in header
+    assert "void LoadAnim(char* mesh_name," in header
+
+    world_source = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRDirectX* loader = &directx_loader;" in world_source
+    assert "loader->Init();" in world_source
+    assert "loader->Load(" in world_source
+    assert "loader->LoadAnim(" in world_source
+    assert "loader->load_x_" not in world_source
+
+
 def test_mobile_tvector_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

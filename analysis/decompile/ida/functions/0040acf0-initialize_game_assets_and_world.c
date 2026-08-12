@@ -2,7 +2,7 @@
 /* function: initialize_game_assets_and_world @ 0x40acf0 */
 /* selector: initialize_game_assets_and_world */
 
-// Bootstraps the shared app world, front-end managers, score tables, star field, and the embedded 63-pair path-template bank. Public Path= slots 0..50 are constructed in place at GameRoot+0x1066f2c; slots 51..62 own transition meshes for flagged loop/invert families, HALFPIPE is the direct slot-42 constructor call, and WARP slot 30 remains unbuilt.
+// Monolithic Windows cRGame bootstrap for the shared app world, front-end managers, score tables, star field, and embedded 63-pair path-template bank. Android and iOS split the equivalent ordered responsibilities across cRGame::Init0() through Init5(), with cRGame::LoadPaths() only an interior path-building phase called by Init0(), so no one-to-one mobile function mapping is currently verified. Public Path= slots 0..50 are constructed in place at GameRoot+0x1066f2c; slots 51..62 own transition meshes for flagged loop/invert families, HALFPIPE is the direct slot-42 constructor call, and WARP slot 30 remains unbuilt.
 uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
 {
   FrameOverlay *p_overlay_0; // eax
@@ -349,7 +349,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   game->subgame.subgame_pause_gate = 0;
   initialize_cheat(&g_cheat_state);
   game->intro.hide_for_replay_latch = 0;
-  initialize_blink_random((float *)&game->subgame.scan_reset);
+  initialize_blink_random(&game->subgame);
   set_subgame_rate(&game->subgame, 1.1);
   game->render_skip_count = 2;
   game->fixed_update_count = 1;
@@ -399,7 +399,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     BYTE1(v7) = BYTE1(*p_list_flags) | 2;
     *p_list_flags = v7;
   }
-  initialize_overlay((int)&game->overlay_0);
+  initialize_overlay(&game->overlay_0);
   memset(&g_directx_loader_scratch, 0, 0x15Cu);
   initialize_directx_loader(&game->directx_loader);
   reset_landscape_manager(&game->subgame.landscape_manager);
@@ -409,7 +409,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   load_landscape_script_by_name(&game->subgame.landscape_manager, g_help_script_path);
   game->subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
   bind_subgame_owner((SubgameOwnerLink *)&game->subgame.gui);
-  bind_subgame_owner((SubgameOwnerLink *)&game->subgame.thanks_screen);
+  bind_subgame_owner((SubgameOwnerLink *)&game->subgame.splash);
   load_galaxy_layout(&game->subgame.galaxy);
   initialize_cameraman(&game->subgame.player.cameraman);
   open_logo(&game->logo);
@@ -464,7 +464,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     BYTE1(v12) = BYTE1(*edge_selector) | 2;
     *edge_selector = v12;
   }
-  initialize_overlay((int)&game->overlay_2);
+  initialize_overlay(&game->overlay_2);
   game->viewports[2].sort_key = 2;
   game->viewports[2].flags = 67108867;
   game->viewports[2].camera = &game->overlay_1.camera;
@@ -500,7 +500,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     BYTE1(v17) = BYTE1(*edge_selectora) | 2;
     *edge_selectora = v17;
   }
-  initialize_overlay((int)&game->overlay_1);
+  initialize_overlay(&game->overlay_1);
   register_font_texture_sheet_wrapper(aObjectsFontFon, 2, 0.75, 1.0);
   initialize_font3d_objects(0);
   initialize_font_wave_state();
@@ -927,7 +927,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[0].primary,
     6.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -954,7 +954,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[1].primary,
     6.0,
     2,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -981,7 +981,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[2].primary,
     8.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1008,7 +1008,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[6].primary,
     8.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1035,7 +1035,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[3].primary,
     3.0,
     2,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1062,7 +1062,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[4].primary,
     3.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1089,7 +1089,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[5].primary,
     3.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1116,7 +1116,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[7].primary,
     6.0,
     4u,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1143,7 +1143,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[37].primary,
     6.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1170,7 +1170,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[38].primary,
     6.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1197,7 +1197,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[43].primary,
     2.5,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1224,7 +1224,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[44].primary,
     2.5,
     3,
-    0,
+    false,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1251,7 +1251,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[45].primary,
     2.5,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1278,7 +1278,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[46].primary,
     2.5,
     3,
-    0,
+    false,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1305,7 +1305,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[39].primary,
     6.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1332,7 +1332,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[41].primary,
     6.0,
     8,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1359,7 +1359,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[42].primary,
     6.0,
     8,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1386,7 +1386,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[40].primary,
     6.0,
     8,
-    1,
+    true,
     texture_a,
     texture_a,
     vertical_texture);
@@ -1413,7 +1413,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[31].primary,
     6.0,
     2,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture,
@@ -1431,7 +1431,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[31].secondary,
     6.0,
     2,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture,
@@ -1449,7 +1449,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[36].primary,
     4.0,
     8,
-    1,
+    true,
     texture_a,
     texture_a,
     vertical_texture);
@@ -1466,7 +1466,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[36].secondary,
     4.0,
     8,
-    1,
+    true,
     texture_a,
     aObjectsWorld00_3,
     vertical_texture);
@@ -1483,7 +1483,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[25].primary,
     3.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1510,7 +1510,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[27].primary,
     5.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1537,7 +1537,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[26].primary,
     3.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1565,7 +1565,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4.0,
     1.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1593,7 +1593,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4.0,
     1.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1621,7 +1621,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4.0,
     0.30000001,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1649,7 +1649,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4.0,
     0.30000001,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1677,7 +1677,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     8,
     4.0,
     20.0,
-    1,
+    true,
     texture_a,
     texture_a,
     vertical_texture);
@@ -1705,7 +1705,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4,
     4.0,
     20.0,
-    0,
+    false,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1733,7 +1733,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4,
     4.0,
     20.0,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1761,7 +1761,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     8,
     8.0,
     14.0,
-    1,
+    true,
     aObjectsWorld00,
     aObjectsWorld00,
     vertical_texture);
@@ -1789,7 +1789,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     8,
     -4.0,
     20.0,
-    1,
+    true,
     texture_a,
     texture_a,
     vertical_texture);
@@ -1817,7 +1817,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4,
     -4.0,
     20.0,
-    0,
+    false,
     texture_a,
     texture_a,
     vertical_texture);
@@ -1845,7 +1845,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     4,
     -4.0,
     20.0,
-    1,
+    true,
     texture_a,
     texture_a,
     vertical_texture);
@@ -1872,7 +1872,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[20].primary,
     4.0,
     2,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1899,7 +1899,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[21].primary,
     24,
     3,
-    1,
+    true,
     texture_a,
     texture_a,
     vertical_texture);
@@ -1926,7 +1926,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[22].primary,
     32,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1953,7 +1953,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[23].primary,
     32,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -1980,7 +1980,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[32].primary,
     32,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2027,7 +2027,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[28].primary,
     4.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2164,7 +2164,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[29].primary,
     2.0,
     4,
-    1,
+    true,
     texture_a,
     aObjectsWorld00,
     vertical_texture);
@@ -2293,7 +2293,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[51].primary,
     6.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2327,7 +2327,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[52].primary,
     6.0,
     2,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2360,7 +2360,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[53].primary,
     8.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2393,7 +2393,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[57].primary,
     8.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2424,7 +2424,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[54].primary,
     3.0,
     2,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2455,7 +2455,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[55].primary,
     3.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2486,7 +2486,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[56].primary,
     3.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2517,7 +2517,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[58].primary,
     6.0,
     4u,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2548,7 +2548,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[62].primary,
     6.0,
     8,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2579,7 +2579,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[59].primary,
     3.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2610,7 +2610,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[61].primary,
     5.0,
     4,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2641,7 +2641,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
     &game->subgame.path_pairs[60].primary,
     3.0,
     3,
-    1,
+    true,
     texture_a,
     texture_b,
     vertical_texture);
@@ -2685,7 +2685,7 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   }
   else
   {
-    rstrcpy_checked_ascii(ArgList, aTurboBase000X);
+    rstrcpy_checked_ascii(ArgList, source);
   }
   load_x_animation_clip(
     &game->directx_loader,

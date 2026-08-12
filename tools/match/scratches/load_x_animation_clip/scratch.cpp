@@ -1,4 +1,4 @@
-// load_x_animation_clip @ 0x405d60 (thiscall, ret 0x8)
+// cRDirectX::LoadAnim @ 0x405d60 (thiscall, ret 0x8)
 
 #include <stdio.h>
 
@@ -20,7 +20,7 @@ int report_errorf(char* format, ...); // @ 0x431cc0
 
 extern DirectoryEntryName g_animation_directory[128]; // data_4b2f50
 
-void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
+void cRDirectX::LoadAnim(char* mesh_name, Object* object)
 {
     char* cursor;
     char saved_end_char;
@@ -55,7 +55,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
         XAnimationKeyframe* keyframe = keyframes;
         do {
             keyframe->SetObject(g_object_list.Add());
-            load_x_mesh(mesh_path, keyframe->object, 0);
+            Load(mesh_path, keyframe->object, 0);
 
             cursor = mesh_path;
             cursor = Rstrfind("-", cursor) + 1;
@@ -69,7 +69,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
     }
 
     duplicate_vertices.Clean(keyframe_count);
-    load_x_mesh(g_animation_directory[0], object, 0);
+    Load(g_animation_directory[0], object, 0);
     object->RequestVerticesCopy();
     object->flags |= OBJECT_FLAG_DISTORT_ENABLED;
 

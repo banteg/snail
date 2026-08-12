@@ -14927,7 +14927,7 @@
       "name": "ida_object_mesh_loader_owner",
       "artifact": "analysis/decompile/ida/functions/00405640-load_x_mesh.c",
       "required_substrings": [
-        "void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *object, int32_t options_flags)",
+        "void __thiscall load_x_mesh(cRDirectX *loader, char *mesh_path, Object *object, int32_t options_flags)",
         "request_object_facequads(object",
         "request_object_vertices(object",
         "object->vertices",

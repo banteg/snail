@@ -362,7 +362,7 @@
       "ios_symbol": "cRDirectX::Load(char*, cRObject*, int)",
       "source_object": "DirectX.o",
       "confidence": "high",
-      "notes": "The Windows thiscall uses the root-owned DirectXLoader and an owned Object. Its option tests consume the low byte of the authored 32-bit formal without changing the cross-port contract.",
+      "notes": "The Windows thiscall uses the root-owned cRDirectX and an owned Object. Its option tests consume the low byte of the authored 32-bit formal without changing the cross-port contract.",
       "android_symbol": "cRDirectX::Load(char*, cRObject*, int)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -382,7 +382,7 @@
       "ios_symbol": "cRDirectX::ModelAdd(char*)",
       "source_object": "DirectX.o",
       "confidence": "high",
-      "notes": "The exact Windows member searches or appends one entry in the DirectXLoader-owned fixed X-mesh cache and returns its slot index.",
+      "notes": "The exact Windows member searches or appends one entry in the cRDirectX-owned fixed X-mesh cache and returns its slot index.",
       "android_symbol": "cRDirectX::ModelAdd(char*)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -4597,7 +4597,7 @@
       "ios_symbol": "cRDuplicateVertices::Init(int)",
       "source_object": "ObjectProc.o",
       "confidence": "high",
-      "notes": "The exact Windows initializer operates on the 8-byte cRDuplicateVertices owner embedded at DirectXLoader +0x5e08 and allocates count times 10 bytes for its records. Windows' observed allocation-pointer result is retained because the shared C++ symbol does not encode a return type.",
+      "notes": "The exact Windows initializer operates on the 8-byte cRDuplicateVertices owner embedded at cRDirectX +0x5e08 and allocates count times 10 bytes for its records. Windows' observed allocation-pointer result is retained because the shared C++ symbol does not encode a return type.",
       "android_symbol": "cRDuplicateVertices::Init(int)",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

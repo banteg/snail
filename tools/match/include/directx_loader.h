@@ -1,4 +1,4 @@
-// Root-owned DirectX/X-file loader at GameRoot +0x48e00. The object contains
+// Root-owned cRDirectX at cRGame +0x48e00. The object contains
 // the animation script bytes, the complete fixed cached-mesh bank, and the
 // duplicate-vertex workspace used while parsing animation clips.
 #ifndef DIRECTX_LOADER_H
@@ -20,12 +20,12 @@ public:
     char name[0x80]; // +0x3c
 };
 
-class DirectXLoader {
+class cRDirectX {
 public:
-    void initialize_directx_loader(); // @ 0x405c90
-    void load_x_mesh(char* mesh_path, Object* object, int options_flags); // @ 0x405640
-    int load_or_reuse_cached_x_mesh(char* mesh_name); // @ 0x405cc0
-    void load_x_animation_clip(char* mesh_name, Object* object); // @ 0x405d60
+    void Init(); // @ 0x405c90
+    void Load(char* mesh_path, Object* object, int options_flags); // @ 0x405640
+    int ModelAdd(char* mesh_name); // @ 0x405cc0
+    void LoadAnim(char* mesh_name, Object* object); // @ 0x405d60
 
     char* animation_bytes; // +0x00
     int cached_x_mesh_count; // +0x04
@@ -35,7 +35,7 @@ public:
 
 typedef char CachedXMeshSlot_must_be_0xbc[
     (sizeof(CachedXMeshSlot) == 0xbc) ? 1 : -1];
-typedef char DirectXLoader_must_be_0x5e10[
-    (sizeof(DirectXLoader) == 0x5e10) ? 1 : -1];
+typedef char cRDirectX_must_be_0x5e10[
+    (sizeof(cRDirectX) == 0x5e10) ? 1 : -1];
 
 #endif

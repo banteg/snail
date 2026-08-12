@@ -1,20 +1,12 @@
-# initialize_directx_loader @ 0x405c90
+# cRDirectX::Init @ 0x405c90
 
-Windows and the symbol-preserving ports identify this as the authored void
-`cRDirectX::Init()` member. It initializes the root-owned `DirectXLoader` by
-clearing the fixed-cache count, retaining the loaded `XAnimation.txt` bytes,
-and allocating the duplicate-vertex workspace after the 128-slot cached-mesh
-bank.
+This is the exact Windows `cRDirectX::Init()` body: 13/13 instructions, a full
+prefix, and three clean masked operands. The VC6 candidate exports
+`?Init@cRDirectX@@QAEXXZ`.
 
-The exact containing layout is `0x5e10` bytes: `animation_bytes +0x00`,
-`cached_x_mesh_count +0x04`, `CachedXMeshSlot[128] +0x08` with `0xbc` stride,
-and authored `cRDuplicateVertices +0x5e08`. Its sole startup caller discards `eax`;
-changing the former helper-pointer result to `void` preserves the proof-grade
-`13/13` match with three clean masked operands.
-
-2026-07-23 tracked-owner refresh: the shared X-mesh replay now explicitly
-reasserts this member ABI alongside the cache helper and the full mesh loader.
-The tracked Binary Ninja artifact therefore carries the root
-`DirectXLoader::{cached_x_mesh_count, animation_bytes, duplicate_vertices}`
-owners instead of stale `arg1` indexing. Focused matching remains **100.00%**,
-13/13 instructions, with all three masked operands clean.
+The sole native caller passes `cRGame +0x48e00`. The method clears the cached
+mesh count, retains the loaded `XAnimation.txt` bytes, and initializes the
+embedded `cRDuplicateVertices` workspace at `+0x5e08`. Together the animation
+pointer, 128 fixed `0xbc` cache slots, and duplicate workspace close the
+root-owned `cRDirectX` extent at `0x5e10` bytes. Android and iOS preserve the
+same authored owner and method.

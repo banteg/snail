@@ -127,8 +127,8 @@ char cRGame::initialize_game_assets_and_world()
     initialize_overlay_slot(&overlay_0);
 
     memset(g_directx_loader_scratch, 0, 0x15c);
-    DirectXLoader* loader = &directx_loader;
-    loader->initialize_directx_loader();
+    cRDirectX* loader = &directx_loader;
+    loader->Init();
     cRLandscapeManager* landscape = &subgame.landscape_manager;
     landscape->Open();
     cRSMTracks* sm_tracks = &subgame.sm_tracks;
@@ -276,49 +276,49 @@ char cRGame::initialize_game_assets_and_world()
 
     BodBase* pillar = &root_bod_catalog.pillars[0];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar1.x", pillar->object, 1);
+    loader->Load((char*)"pillar1.x", pillar->object, 1);
     transform.position.x = 0.0f;
     pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[1];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar2.x", pillar->object, 1);
+    loader->Load((char*)"pillar2.x", pillar->object, 1);
     transform.position.x = 0.5f;
     pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[2];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar3.x", pillar->object, 1);
+    loader->Load((char*)"pillar3.x", pillar->object, 1);
     transform.position.x = 1.0f;
     pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[3];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar4.x", pillar->object, 1);
+    loader->Load((char*)"pillar4.x", pillar->object, 1);
     transform.position.x = 1.5f;
     pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[4];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar5.x", pillar->object, 1);
+    loader->Load((char*)"pillar5.x", pillar->object, 1);
     transform.position.x = 2.0f;
     pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[5];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar6.x", pillar->object, 1);
+    loader->Load((char*)"pillar6.x", pillar->object, 1);
     transform.position.x = 2.5f;
     pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[6];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar7.x", pillar->object, 1);
+    loader->Load((char*)"pillar7.x", pillar->object, 1);
     transform.position.x = 3.0f;
     pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[7];
     pillar->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"pillar8.x", pillar->object, 1);
+    loader->Load((char*)"pillar8.x", pillar->object, 1);
     transform.position.x = 3.5f;
     pillar->ApplyPos(transform);
 
@@ -393,7 +393,7 @@ char cRGame::initialize_game_assets_and_world()
 
     BodBase* trampoline = &root_bod_catalog.trampoline;
     trampoline->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"Tramp.x", trampoline->object, 1);
+    loader->Load((char*)"Tramp.x", trampoline->object, 1);
     trampoline->object->blend_mode = 6;
     trampoline->object->facequads[0].texture_ref->flags |= TEXTURE_REF_REGISTERED;
 
@@ -437,7 +437,7 @@ char cRGame::initialize_game_assets_and_world()
 
     BodBase* salt_model = &root_bod_catalog.salt_model;
     salt_model->SetObject(g_object_list.Add());
-    loader->load_x_mesh((char*)"salt.x", salt_model->object, 1);
+    loader->Load((char*)"salt.x", salt_model->object, 1);
 
     cRSubGame** salt_owner = &subgame.salt_hazards.slots[0].owner_game;
     int salt_count = 40;
@@ -458,13 +458,13 @@ char cRGame::initialize_game_assets_and_world()
         ((Banner*)(banner_cursor + BANNER_POOL_FROM_ROOT))
             ->SetObject(g_object_list.Add());
         if (banner_index == 0) {
-            loader->load_x_mesh(
+            loader->Load(
                 (char*)"postofficestop.x",
                 subgame.banners.slots[0].object,
                 1);
         }
         if (banner_index == 1) {
-            loader->load_x_mesh(
+            loader->Load(
                 (char*)"postofficestop.x",
                 subgame.banners.slots[1].object,
                 banner_index);
@@ -2556,62 +2556,62 @@ char cRGame::initialize_game_assets_and_world()
             base_animation_name, (char*)"turbo-base-000.x");
     }
 
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         base_animation_name,
         subgame.player.presentation.cutscene_animation_slots[0].body.object);
     subgame.player.presentation.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         base_animation_name, subgame.player.presentation.object);
 
     subgame.player.presentation.cutscene_animation_slots[1].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-move-000.x",
         subgame.player.presentation.cutscene_animation_slots[1].body.object);
     subgame.player.presentation.cutscene_animation_slots[2].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-bobalong-000.x",
         subgame.player.presentation.cutscene_animation_slots[2].body.object);
     subgame.player.presentation.cutscene_animation_slots[3].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-lookbackleft-000.x",
         subgame.player.presentation.cutscene_animation_slots[3].body.object);
     subgame.player.presentation.cutscene_animation_slots[4].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-lookbackright-000.x",
         subgame.player.presentation.cutscene_animation_slots[4].body.object);
     subgame.player.presentation.cutscene_animation_slots[5].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-fall-000.x",
         subgame.player.presentation.cutscene_animation_slots[5].body.object);
     subgame.player.presentation.cutscene_animation_slots[6].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-damaged-000.x",
         subgame.player.presentation.cutscene_animation_slots[6].body.object);
     subgame.player.presentation.cutscene_animation_slots[7].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-intoshell-000.x",
         subgame.player.presentation.cutscene_animation_slots[7].body.object);
     subgame.player.presentation.cutscene_animation_slots[8].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-skidstop-000.x",
         subgame.player.presentation.cutscene_animation_slots[8].body.object);
     subgame.player.presentation.cutscene_animation_slots[9].body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"turbo-talk-000.x",
         subgame.player.presentation.cutscene_animation_slots[9].body.object);
 
     subgame.player.presentation.snail_hotspot_body.SetObject(
         g_object_list.Add());
-    loader->load_x_mesh(
+    loader->Load(
         (char*)"TurboHotSpots.x",
         subgame.player.presentation.snail_hotspot_body.object,
         2);
@@ -2643,20 +2643,20 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.player.presentation.jetpack_channel.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"jetpack-base-000.x",
         subgame.player.presentation.jetpack_channel.object);
     subgame.player.presentation.jetpack_channel.animation_slots[0]
         .body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"jetpack-base-000.x",
         subgame.player.presentation.jetpack_channel.animation_slots[0]
             .body.object);
     subgame.player.presentation.jetpack_channel.animation_slots[1]
         .body.SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"jetpack-draw-000.x",
         subgame.player.presentation.jetpack_channel.animation_slots[1]
             .body.object);
@@ -2683,36 +2683,36 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.player.presentation.weapon_channels[0].SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterleft-base-000.x",
         subgame.player.presentation.weapon_channels[0].object);
     subgame.player.presentation.weapon_channels[0].animation_slots[0]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterleft-base-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[0]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[1]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterleft-draw-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[1]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[2]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterleft-fire-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[2]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[3]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"Laserleft-base-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[3]
             .body.object);
     subgame.player.presentation.weapon_channels[0].animation_slots[4]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"Laserleft-draw-000.x",
         subgame.player.presentation.weapon_channels[0].animation_slots[4]
             .body.object);
@@ -2741,36 +2741,36 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.player.presentation.weapon_channels[1].SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterRight-base-000.x",
         subgame.player.presentation.weapon_channels[1].object);
     subgame.player.presentation.weapon_channels[1].animation_slots[0]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterRight-base-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[0]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[1]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterRight-draw-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[1]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[2]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterRight-fire-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[2]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[3]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"Laserright-base-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[3]
             .body.object);
     subgame.player.presentation.weapon_channels[1].animation_slots[4]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"Laserright-draw-000.x",
         subgame.player.presentation.weapon_channels[1].animation_slots[4]
             .body.object);
@@ -2799,36 +2799,36 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.player.presentation.weapon_channels[2].SetObject(
         g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterTop-base-000.x",
         subgame.player.presentation.weapon_channels[2].object);
     subgame.player.presentation.weapon_channels[2].animation_slots[0]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterTop-base-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[0]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[1]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterTop-draw-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[1]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[2]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"blasterTop-fire-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[2]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[3]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"rocketlauncher-base-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[3]
             .body.object);
     subgame.player.presentation.weapon_channels[2].animation_slots[4]
         .body.SetObject(g_object_list.Add());
-    loader->load_x_animation_clip(
+    loader->LoadAnim(
         (char*)"rocketlauncher-draw-000.x",
         subgame.player.presentation.weapon_channels[2].animation_slots[4]
             .body.object);
@@ -2870,7 +2870,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.player.presentation.invincible_shell.SetObject(
         g_object_list.Add());
-    loader->load_x_mesh(
+    loader->Load(
         (char*)"invincible-base-000.x",
         subgame.player.presentation.invincible_shell.object,
         1);
@@ -2880,7 +2880,7 @@ char cRGame::initialize_game_assets_and_world()
     cRSubGolb* golb_shot = &subgame.player.golb_shots[0];
     golb_shot->tertiary_body.SetObject(
         g_object_list.Add());
-    loader->load_x_mesh(
+    loader->Load(
         (char*)"rocket-base-000.x", golb_shot->tertiary_body.object, 1);
     Object* rocket_object = golb_shot->tertiary_body.object;
     int golb_shot_count = 12;

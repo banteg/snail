@@ -21,15 +21,15 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_object_render_types.h"
 
 X_MESH_LOADER_PROTOTYPE = (
     "void __thiscall load_x_mesh("
-    "DirectXLoader* loader, char* mesh_path, Object* object, "
+    "cRDirectX* loader, char* mesh_path, Object* object, "
     "int32_t options_flags)"
 )
 DIRECTX_LOADER_INIT_PROTOTYPE = (
-    "void __thiscall initialize_directx_loader(DirectXLoader* loader)"
+    "void __thiscall initialize_directx_loader(cRDirectX* loader)"
 )
 CACHED_X_MESH_LOADER_PROTOTYPE = (
     "int32_t __thiscall load_or_reuse_cached_x_mesh("
-    "DirectXLoader* loader, char* mesh_name)"
+    "cRDirectX* loader, char* mesh_name)"
 )
 
 EXPECTED_TYPE_WIDTHS = {
@@ -39,7 +39,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Object": 0xDC,
     "CachedXMeshSlot": 0xBC,
     "DuplicateVertices": 0x08,
-    "DirectXLoader": 0x5E10,
+    "cRDirectX": 0x5E10,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -61,7 +61,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x24: ("object", "Object*"),
         0x3C: ("name", "char[128]"),
     },
-    "DirectXLoader": {
+    "cRDirectX": {
         0x00: ("animation_bytes", "char*"),
         0x04: ("cached_x_mesh_count", "int32_t"),
         0x08: ("cached_x_mesh_slots", "CachedXMeshSlot[128]"),
@@ -197,7 +197,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical DirectXLoader/Object owners.",
+        help="Header documenting the canonical cRDirectX/Object owners.",
     )
     return parser.parse_args()
 

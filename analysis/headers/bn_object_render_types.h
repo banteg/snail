@@ -370,12 +370,12 @@ typedef struct CachedXMeshSlot {
     char name[0x80];
 } CachedXMeshSlot;
 
-typedef struct DirectXLoader {
+typedef struct cRDirectX {
     char* animation_bytes;
     int32_t cached_x_mesh_count;
     CachedXMeshSlot cached_x_mesh_slots[0x80];
     DuplicateVertices duplicate_vertices;
-} DirectXLoader;
+} cRDirectX;
 typedef struct D3DPresentParameters {
     uint32_t back_buffer_width;
     uint32_t back_buffer_height;
@@ -564,12 +564,12 @@ void __thiscall request_object_texture_groups(Object* object, int32_t group_coun
 void __thiscall request_object_edges(Object* object, int32_t edge_count);
 void __cdecl load_object_definition(char* path, Object* object);
 
-void __thiscall initialize_directx_loader(DirectXLoader* loader);
+void __thiscall initialize_directx_loader(cRDirectX* loader);
 void __thiscall load_x_mesh(
-    DirectXLoader* loader, char* mesh_path, Object* object, int32_t options_flags);
-int32_t __thiscall load_or_reuse_cached_x_mesh(DirectXLoader* loader, char* mesh_name);
+    cRDirectX* loader, char* mesh_path, Object* object, int32_t options_flags);
+int32_t __thiscall load_or_reuse_cached_x_mesh(cRDirectX* loader, char* mesh_name);
 void __thiscall load_x_animation_clip(
-    DirectXLoader* loader, char* mesh_name, Object* object);
+    cRDirectX* loader, char* mesh_name, Object* object);
 void* __thiscall initialize_duplicate_vertices(
     DuplicateVertices* duplicate_vertices, int32_t count);
 void __thiscall clean_duplicate_vertices(

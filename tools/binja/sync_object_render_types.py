@@ -56,7 +56,7 @@ OBJECT_DISTORT_VERTEX_CURSOR_USER_VAR_UPDATES = (
 )
 
 GAME_ROOT_FIELDS = (
-    ("0x48e00", "directx_loader", "DirectXLoader"),
+    ("0x48e00", "directx_loader", "cRDirectX"),
 )
 
 TEXTURE_REF_FIELDS = (
@@ -425,19 +425,19 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_directx_loader",
-        "void __thiscall initialize_directx_loader(DirectXLoader* loader)",
+        "void __thiscall initialize_directx_loader(cRDirectX* loader)",
     ),
     (
         "load_x_mesh",
-        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, int32_t options_flags)",
+        "void __thiscall load_x_mesh(cRDirectX* loader, char* mesh_path, Object* object, int32_t options_flags)",
     ),
     (
         "load_or_reuse_cached_x_mesh",
-        "int32_t __thiscall load_or_reuse_cached_x_mesh(DirectXLoader* loader, char* mesh_name)",
+        "int32_t __thiscall load_or_reuse_cached_x_mesh(cRDirectX* loader, char* mesh_name)",
     ),
     (
         "load_x_animation_clip",
-        "void __thiscall load_x_animation_clip(DirectXLoader* loader, char* mesh_name, Object* object)",
+        "void __thiscall load_x_animation_clip(cRDirectX* loader, char* mesh_name, Object* object)",
     ),
     (
         "initialize_duplicate_vertices",
@@ -684,7 +684,7 @@ def main() -> int:
     operations: list[dict[str, object]] = apply_type_renames(
         REPO_ROOT,
         target=args.target,
-        renames=(("ObjectDistort", "Distort"),),
+        renames=(("DirectXLoader", "cRDirectX"),),
     )
     operations.append(
         types_declare_if_changed(

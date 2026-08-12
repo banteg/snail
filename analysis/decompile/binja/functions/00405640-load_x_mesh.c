@@ -150,11 +150,11 @@
 00405b0f        if (i_5 != facequad_count)
 00405b1b        report_errorf("No MeshMaterialList face number is not equal to Mesh face number in %s", &mesh_file_path)
 00405b2d        return
-00405b3d        struct TextureRef** pointer_2 = allocate_tracked_memory(eax_29 << 2, "Direct X Materiallist")
+00405b3d        cRTexture** pointer_2 = allocate_tracked_memory(eax_29 << 2, "Direct X Materiallist")
 00405b46        char* searched_7 = material_cursor
 00405b4d        int32_t ebp_1 = 0
 00405b55        if (eax_29 s> 0)
-00405b5b        struct TextureRef** pointer_4 = pointer_2
+00405b5b        cRTexture** pointer_4 = pointer_2
 00405b63        char* searched_6 = find_case_insensitive_substring("TextureFilename ", searched_7)
 00405b6d        if (searched_6 != 0)
 00405bba        searched_7 = &find_case_insensitive_substring(""", searched_6)[1]
@@ -172,13 +172,13 @@
 00405bf6        eax_32[2] = 0x67
 00405bfa        eax_32[3] = 0x61
 00405bfd        eax_32[4] = 0
-00405c09        struct TextureRef* eax_36 = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
+00405c09        cRTexture* eax_36 = get_or_create_texture_ref(&g_texture_refs, &texture_path, nullptr, 0)
 00405c0e        *pointer_4 = eax_36
 00405c10        enum TextureRefFlags flags = eax_36->flags
 00405c12        flags:1.b |= 0x10
 00405c15        eax_36->flags = flags
 00405c20        if ((options_flags.b & 2) != 0)
-00405c22        struct TextureRef* eax_38 = *pointer_4
+00405c22        cRTexture* eax_38 = *pointer_4
 00405c24        enum TextureRefFlags flags_1 = eax_38->flags
 00405c26        flags_1:1.b |= 0x80
 00405c29        eax_38->flags = flags_1

@@ -181,19 +181,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_directx_loader",
-        "void __thiscall initialize_directx_loader(DirectXLoader* loader);",
+        "void __thiscall initialize_directx_loader(cRDirectX* loader);",
     ),
     (
         "load_x_mesh",
-        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, Object* object, int32_t options_flags);",
+        "void __thiscall load_x_mesh(cRDirectX* loader, char* mesh_path, Object* object, int32_t options_flags);",
     ),
     (
         "load_or_reuse_cached_x_mesh",
-        "int __thiscall load_or_reuse_cached_x_mesh(DirectXLoader* loader, char* mesh_name);",
+        "int __thiscall load_or_reuse_cached_x_mesh(cRDirectX* loader, char* mesh_name);",
     ),
     (
         "load_x_animation_clip",
-        "void __thiscall load_x_animation_clip(DirectXLoader* loader, char* mesh_name, Object* object);",
+        "void __thiscall load_x_animation_clip(cRDirectX* loader, char* mesh_name, Object* object);",
     ),
     (
         "initialize_duplicate_vertices",
@@ -464,7 +464,7 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct ObjectList {",
     "ObjectList_must_be_0x0c",
     "extern ObjectList g_object_list;",
-    "typedef struct DirectXLoader {",
+    "typedef struct cRDirectX {",
     "void __thiscall load_x_mesh(",
     "void __thiscall request_object_vertices(Object* object, int32_t vertex_count);",
     "void __thiscall copy_object_vertices(Object* object);",
@@ -513,7 +513,7 @@ EXPECTED_OWNER_SIZES = {
     "ObjectList": 0xC,
     "DuplicateVertices": 0x8,
     "CachedXMeshSlot": 0xBC,
-    "DirectXLoader": 0x5E10,
+    "cRDirectX": 0x5E10,
 }
 
 # Rebuild the recovered helpers and their direct ownership-bearing callers.

@@ -185,9 +185,9 @@ intentional.
 - `bn_object_render_types.h`
 - `uv run python tools/binja/sync_object_render_types.py`
   - Promotes the dual-mobile `cRDistort` identity to canonical `Distort` while
-    retaining `ObjectDistort` only as a compatibility typedef. The shared
-    rename helper recognizes that alias as an already-current replay state
-    instead of treating it as a competing owner.
+    retaining `ObjectDistort` only as a compatibility typedef.
+  - Migrates the old analysis-only `DirectXLoader` type to the dual-mobile
+    `cRDirectX` owner before replaying its exact layout and method receivers.
   - Preserves `Object::vertices` and `Object::copied_vertices` as the real
     buffer owners while typing the stable Z-wave and XYZ-scale interior
     `Vec3::z` cursor lifetimes. The paired IDA replay binds all three distort
@@ -235,7 +235,7 @@ intentional.
   - Width-gates the constructor-proven 352-entry, 0x4d00-byte catalog and
     borrows the exact 0xdc-byte `Object` owner for each entry without
     redeclaring it, then composes the catalog with the adjacent 0x5e10-byte
-    `DirectXLoader` owner in IDA.
+    `cRDirectX` owner in IDA.
 - `bn_subgame_hazard_pool_types.h`
 - `uv run python tools/binja/sync_subgame_hazard_pool_types.py`
 - `bn_subgame_pool_types.h`
@@ -514,7 +514,7 @@ The IDA frame, object-render, root-catalog, front-end, path-template, and
 subgame-runtime replays share
 `tools/ida/game_root_owner.py` for the recovered root graph. Once its exact
 component types are present, it composes the contiguous
-`RootBodCatalog +0x44100`, `DirectXLoader +0x48e00`, `Backdrop +0x4ec10`,
+`RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `Backdrop +0x4ec10`,
 `Intro`, `MainMenu`, `StarManager`, `Options`, `Exit`, standalone `BodBase`,
 and `Logo` block through `+0x74618`, followed by the complete
 `cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real

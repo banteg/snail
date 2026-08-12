@@ -402,26 +402,38 @@
     {
       "address": "0x405640",
       "name": "load_x_mesh",
+      "aliases": [
+        "cRDirectX_Load"
+      ],
       "port_scope": "boundary",
-      "description": "Void Windows member corresponding to iOS `cRDirectX::Load(char*, cRObject*, int)`: loads one X mesh into an owned Object, preserves raw and signed-16-bit working counts, writes scalar UV and index lanes through the Object-owned face array, then assigns each face material from a guarded local TextureRef table."
+      "description": "Exact Windows `cRDirectX::Load(char*, cRObject*, int)`: loads one X mesh into an owned cRObject, preserves raw and signed-16-bit working counts, writes scalar UV and index lanes through the object-owned face array, then assigns each face material from a guarded local texture table. Android and iOS preserve the same authored owner and ABI."
     },
     {
       "address": "0x405c90",
       "name": "initialize_directx_loader",
+      "aliases": [
+        "cRDirectX_Init"
+      ],
       "port_scope": "boundary",
-      "description": "Void Windows `cRDirectX::Init()` member: initializes the root-owned 0x5e10-byte X-file loader, clears its cached-mesh count, loads XAnimation.txt, and allocates the duplicate-vertex workspace after the fixed 128-slot mesh cache."
+      "description": "Exact Windows `cRDirectX::Init()`: initializes the root-owned 0x5e10-byte X-file loader, clears its cached-mesh count, loads XAnimation.txt, and allocates the duplicate-vertex workspace after the fixed 128-slot mesh cache. Android and iOS preserve the same authored owner."
     },
     {
       "address": "0x405cc0",
       "name": "load_or_reuse_cached_x_mesh",
+      "aliases": [
+        "cRDirectX_ModelAdd"
+      ],
       "port_scope": "boundary",
-      "description": "Searches the root DirectX loader's fixed 128-slot X-mesh cache by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from the global object list, loads the mesh, and returns the new index."
+      "description": "Exact Windows `cRDirectX::ModelAdd(char*)`: searches the root-owned fixed 128-slot X-mesh cache by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from cRObjects, loads the mesh, and returns the new index. Android and iOS preserve the same authored owner and result ABI."
     },
     {
       "address": "0x405d60",
       "name": "load_x_animation_clip",
+      "aliases": [
+        "cRDirectX_LoadAnim"
+      ],
       "port_scope": "boundary",
-      "description": "Void Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte BodBase-derived records, loads their borrowed ObjectList slots, parses duration/mode metadata, and asks the destination Object to retain the generated animation graph."
+      "description": "Exact Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte cRBodPos records, loads their borrowed cRObjects slots, parses duration and mode metadata, and asks the destination cRObject to retain the generated animation graph. Android and iOS preserve the same authored owner and ABI."
     },
     {
       "address": "0x406060",
@@ -1923,7 +1935,7 @@
       "aliases": [
         "cRDuplicateVertices_Init"
       ],
-      "description": "Exact Windows `cRDuplicateVertices::Init(int)` for the embedded 8-byte duplicate-vertex workspace retained at DirectXLoader +0x5e08. Android and iOS preserve the authored owner and method; Windows' observed allocation-pointer result remains authoritative because C++ symbols do not encode return types."
+      "description": "Exact Windows `cRDuplicateVertices::Init(int)` for the embedded 8-byte duplicate-vertex workspace retained at cRDirectX +0x5e08. Android and iOS preserve the authored owner and method; Windows' observed allocation-pointer result remains authoritative because C++ symbols do not encode return types."
     },
     {
       "address": "0x419f80",

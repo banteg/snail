@@ -33,12 +33,12 @@ _FRONTEND_TYPE_SIZES = {
 
 _CATALOG_LOADER_TYPE_SIZES = {
     "RootBodCatalog": 0x4D00,
-    "DirectXLoader": 0x5E10,
+    "cRDirectX": 0x5E10,
 }
 
 _CANONICAL_CATALOG_LOADER = (
     (0x44100, 0x4D00, "root_bod_catalog", "RootBodCatalog"),
-    (0x48E00, 0x5E10, "directx_loader", "DirectXLoader"),
+    (0x48E00, 0x5E10, "directx_loader", "cRDirectX"),
 )
 
 _CANONICAL_FRONTEND = (

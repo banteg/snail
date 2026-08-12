@@ -1476,7 +1476,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"cRSubGame": 0x1272838' in owner_sync
     for owner in (
         '(0x44100, 0x4D00, "root_bod_catalog", "RootBodCatalog")',
-        '(0x48E00, 0x5E10, "directx_loader", "DirectXLoader")',
+        '(0x48E00, 0x5E10, "directx_loader", "cRDirectX")',
     ):
         assert owner in owner_sync
     for owner in (
@@ -2258,15 +2258,18 @@ def test_x_mesh_loader_replay_keeps_cache_and_parser_lifetimes() -> None:
         encoding="utf-8"
     )
 
+    assert '("DirectXLoader", "cRDirectX")' in owner_sync
+    assert "typedef struct cRDirectX {" in header
+    assert "typedef struct DirectXLoader {" not in header
     prototype = (
         "void __thiscall load_x_mesh("
-        "DirectXLoader* loader, char* mesh_path, Object* object, "
+        "cRDirectX* loader, char* mesh_path, Object* object, "
         "int32_t options_flags)"
     )
     assert prototype in owner_sync
     for fragment in (
         "void __thiscall load_x_mesh(",
-        "DirectXLoader* loader, char* mesh_path, Object* object, ",
+        "cRDirectX* loader, char* mesh_path, Object* object, ",
         "int32_t options_flags)",
     ):
         assert fragment in replay
@@ -2276,17 +2279,17 @@ def test_x_mesh_loader_replay_keeps_cache_and_parser_lifetimes() -> None:
     assert "verify_x_mesh_loader_owner_layouts" in replay
     for prototype, fragments in (
         (
-            "void __thiscall initialize_directx_loader(DirectXLoader* loader)",
+            "void __thiscall initialize_directx_loader(cRDirectX* loader)",
             ("void __thiscall initialize_directx_loader(",),
         ),
         (
             (
                 "int32_t __thiscall load_or_reuse_cached_x_mesh("
-                "DirectXLoader* loader, char* mesh_name)"
+                "cRDirectX* loader, char* mesh_name)"
             ),
             (
                 "int32_t __thiscall load_or_reuse_cached_x_mesh(",
-                "DirectXLoader* loader, char* mesh_name)",
+                "cRDirectX* loader, char* mesh_name)",
             ),
         ),
     ):
@@ -2341,12 +2344,12 @@ def test_x_animation_loader_replay_keeps_keyframes_and_parser_lifetimes() -> Non
 
     prototype = (
         "void __thiscall load_x_animation_clip("
-        "DirectXLoader* loader, char* mesh_name, Object* object)"
+        "cRDirectX* loader, char* mesh_name, Object* object)"
     )
     assert prototype in owner_sync
     for fragment in (
         "void __thiscall load_x_animation_clip(",
-        "DirectXLoader* loader, char* mesh_name, Object* object)",
+        "cRDirectX* loader, char* mesh_name, Object* object)",
     ):
         assert fragment in replay
         assert fragment in header
@@ -7855,7 +7858,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
         ("Object", "0xDC"),
         ("DuplicateVertices", "0x8"),
         ("CachedXMeshSlot", "0xBC"),
-        ("DirectXLoader", "0x5E10"),
+        ("cRDirectX", "0x5E10"),
     ):
         assert f'"{owner_name}": {expected_size}' in ida_sync_source
 
@@ -7911,7 +7914,7 @@ def test_object_geometry_replay_keeps_owned_helpers_and_workspace_globals() -> N
     assert '("dynamic_vertices", 0x412350)' in ida_sync_source
     assert "info.set_split_lvar()" in ida_sync_source
     assert (
-        "void __thiscall load_x_mesh(DirectXLoader* loader, char* mesh_path, "
+        "void __thiscall load_x_mesh(cRDirectX* loader, char* mesh_path, "
         "Object* object, int32_t options_flags);"
     ) in ida_sync_source
     assert (
@@ -8204,7 +8207,7 @@ def test_object_buffer_replay_keeps_copy_distort_and_workspace_owners() -> None:
         assert "void __cdecl sort_object_faces_by_texture_group(Object* object);" in header
 
     assert "apply_type_renames" in sync_source
-    assert 'renames=(("ObjectDistort", "Distort"),)' in sync_source
+    assert 'renames=(("DirectXLoader", "cRDirectX"),)' in sync_source
     assert '("0x80", "distort", "Distort")' in sync_source
     assert "struct cRDistort" in matcher_header
     assert "typedef cRDistort Distort;" in matcher_header
@@ -14195,8 +14198,8 @@ def test_frontend_bridge_root_ownership_stays_aligned() -> None:
     ):
         assert field_update in overlay_sync
     assert "apply_struct_and_proto_updates" in overlay_sync
-    assert 'DirectXLoader directx_loader; // +0x48e00' in matcher_header
-    assert '("0x48e00", "directx_loader", "DirectXLoader")' in object_sync
+    assert 'cRDirectX directx_loader; // +0x48e00' in matcher_header
+    assert '("0x48e00", "directx_loader", "cRDirectX")' in object_sync
     assert "apply_struct_and_proto_updates" in object_sync
     assert 'RootBodCatalog root_bod_catalog; // +0x44100' in matcher_header
     assert (

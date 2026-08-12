@@ -1,10 +1,10 @@
-// load_or_reuse_cached_x_mesh @ 0x405cc0 (thiscall, ret 4)
+// cRDirectX::ModelAdd @ 0x405cc0 (thiscall, ret 4)
 
 #include "directx_loader.h"
 #include "object_render_types.h"
 #include "rstring.h"
 
-int DirectXLoader::load_or_reuse_cached_x_mesh(char* mesh_name)
+int cRDirectX::ModelAdd(char* mesh_name)
 {
     int i = 0;
     CachedXMeshSlot* slot;
@@ -20,7 +20,7 @@ int DirectXLoader::load_or_reuse_cached_x_mesh(char* mesh_name)
 
     Rstrcpy(cached_x_mesh_slots[cached_x_mesh_count].name, mesh_name);
     cached_x_mesh_slots[cached_x_mesh_count].SetObject(g_object_list.Add());
-    load_x_mesh(mesh_name, cached_x_mesh_slots[i].object, 1);
+    Load(mesh_name, cached_x_mesh_slots[i].object, 1);
 
     ++cached_x_mesh_count;
     return cached_x_mesh_count - 1;

@@ -2,7 +2,7 @@
 /* function: load_landscape_script_by_name @ 0x4182f0 */
 /* selector: load_landscape_script_by_name */
 
-// Loads or reuses one `Backgrounds/<name>` landscape script, parses its `ID`, `Fog`, `Picture`, `Landscape`, and `Distort` fields, registers the referenced backdrop textures, and returns the cached landscape index.
+// Windows `cRLandscapeManager::Import(char*)`: loads or reuses one `Backgrounds/<name>` script, parses its `ID`, `Fog`, `Picture`, `Landscape`, and `Distort` fields, registers the desktop backdrop and mesh resources, and returns the cached landscape index. Android and iOS preserve the owner, parser, cache, and return contract while extending their 0x1ac-byte records with mobile-only fields.
 int32_t __thiscall load_landscape_script_by_name(LandscapeManager *manager, char *script_name)
 {
   char *v2; // ebx

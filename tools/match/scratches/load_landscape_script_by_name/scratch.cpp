@@ -163,7 +163,7 @@ load_script:
             out[1] = 0;
 
             scripts[script_count].object_index =
-                g_game->directx_loader.load_or_reuse_cached_x_mesh(
+                g_game->directx_loader.ModelAdd(
                     object_mesh_name);
         }
     }

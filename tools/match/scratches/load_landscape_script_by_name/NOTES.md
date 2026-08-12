@@ -27,7 +27,7 @@ loader remains exact at 386/386 instructions with all 63 operands clean.
 ## 2026-07-15 durable root-loader replay
 
 The tracked IDA database now derives that same receiver from the shared exact
-root graph: `DirectXLoader +0x48e00` spans `0x5e10` bytes and ends at
+root graph: `cRDirectX +0x48e00` spans `0x5e10` bytes and ends at
 `Backdrop +0x4ec10`. The refreshed listing therefore retains
 `&v23->directx_loader` without a raw `GameRoot +298496` cast. This is
 analysis-only; the matching source remains exact at 386/386 instructions with

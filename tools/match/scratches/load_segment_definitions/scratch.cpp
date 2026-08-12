@@ -153,7 +153,7 @@ void cRSMTracks::Import()
                 *mesh_out = 0;
                 row->object_id =
                     g_game->directx_loader
-                        .load_or_reuse_cached_x_mesh(mesh_name);
+                        .ModelAdd(mesh_name);
 
                 option_match = Rstrfind("(", option_match);
                 row->object_position.x = RTextExtractFloat(&option_match);

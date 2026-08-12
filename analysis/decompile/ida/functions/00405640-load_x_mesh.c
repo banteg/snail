@@ -2,8 +2,8 @@
 /* function: load_x_mesh @ 0x405640 */
 /* selector: load_x_mesh */
 
-// Void Windows member corresponding to iOS `cRDirectX::Load(char*, cRObject*, int)`: loads one X mesh into an owned Object, preserves raw and signed-16-bit working counts, writes scalar UV and index lanes through the Object-owned face array, then assigns each face material from a guarded local TextureRef table.
-void __thiscall load_x_mesh(DirectXLoader *loader, char *mesh_path, Object *object, int32_t options_flags)
+// Exact Windows `cRDirectX::Load(char*, cRObject*, int)`: loads one X mesh into an owned cRObject, preserves raw and signed-16-bit working counts, writes scalar UV and index lanes through the object-owned face array, then assigns each face material from a guarded local texture table. Android and iOS preserve the same authored owner and ABI.
+void __thiscall load_x_mesh(cRDirectX *loader, char *mesh_path, Object *object, int32_t options_flags)
 {
   char *archive_data_base; // esi
   char *case_insensitive_substring; // eax

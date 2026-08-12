@@ -2,8 +2,8 @@
 /* function: load_or_reuse_cached_x_mesh @ 0x405cc0 */
 /* selector: load_or_reuse_cached_x_mesh */
 
-// Searches the root DirectX loader's fixed 128-slot X-mesh cache by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from the global object list, loads the mesh, and returns the new index.
-int32_t __thiscall load_or_reuse_cached_x_mesh(DirectXLoader *loader, char *mesh_name)
+// Exact Windows `cRDirectX::ModelAdd(char*)`: searches the root-owned fixed 128-slot X-mesh cache by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from cRObjects, loads the mesh, and returns the new index. Android and iOS preserve the same authored owner and result ABI.
+int32_t __thiscall load_or_reuse_cached_x_mesh(cRDirectX *loader, char *mesh_name)
 {
   int32_t v3; // edi
   char *name; // ebx

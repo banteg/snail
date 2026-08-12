@@ -2,8 +2,8 @@
 /* function: load_x_animation_clip @ 0x405d60 */
 /* selector: load_x_animation_clip */
 
-// Void Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte BodBase-derived records, loads their borrowed ObjectList slots, parses duration/mode metadata, and asks the destination Object to retain the generated animation graph.
-void __thiscall load_x_animation_clip(DirectXLoader *loader, char *mesh_name, Object *object)
+// Exact Windows `cRDirectX::LoadAnim(char*, cRObject*)`: owns the shared parse cursor while enumerating one mesh's X-animation keyframes into 0x80-byte cRBodPos records, loads their borrowed cRObjects slots, parses duration and mode metadata, and asks the destination cRObject to retain the generated animation graph. Android and iOS preserve the same authored owner and ABI.
+void __thiscall load_x_animation_clip(cRDirectX *loader, char *mesh_name, Object *object)
 {
   char *v3; // edi
   char *case_insensitive_substring; // eax

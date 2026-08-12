@@ -748,7 +748,7 @@ No matcher source changed, so the existing 80.50% frontier is preserved.
 
 ## 2026-07-15 root DirectX-loader replay
 
-The exact `DirectXLoader` extent at root `+0x48e00` is now part of the durable
+The exact `cRDirectX` extent at root `+0x48e00` is now part of the durable
 object-render sync. Its 0x5e10 bytes end exactly where the independently proven
 `Backdrop` begins at `+0x4ec10`; the initializer and the loader's four exact
 methods supply 48 mesh/animation callsites plus the direct `animation_bytes`
@@ -817,7 +817,7 @@ This ownership-only improvement leaves the focused native frontier at 80.50%
 
 The guarded IDA root replay now composes the constructor-proven
 `RootBodCatalog +0x44100` (exactly `0x4d00` bytes) and
-`DirectXLoader +0x48e00` (exactly `0x5e10` bytes) immediately before
+`cRDirectX +0x48e00` (exactly `0x5e10` bytes) immediately before
 `Backdrop +0x4ec10`. The initializer consequently exposes the catalog's real
 corner, slice, pillar, fringe, and universe-hole owners together with the
 loader's cached-mesh and animation storage. There is no invented gap or

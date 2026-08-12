@@ -1,4 +1,4 @@
-// load_x_mesh @ 0x405640 (thiscall, ret 0xc)
+// cRDirectX::Load @ 0x405640 (thiscall, ret 0xc)
 
 #include <stdio.h>
 #include <string.h>
@@ -16,7 +16,7 @@ void free_tracked_memory(void* pointer); // @ 0x431bf0 / RShellMemoryFree(void*)
 int report_errorf(char* format, ...); // @ 0x431cc0
 int report_warningf(char* format, ...); // @ 0x431d10
 
-void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_flags)
+void cRDirectX::Load(char* mesh_path, Object* object, int options_flags)
 {
     char* file_text = get_archive_data_base();
     char mesh_file_path[0x100];

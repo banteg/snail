@@ -8,7 +8,7 @@ seam harmonization, and corner edge variants.
 
 The constructor and the asset initializer jointly prove that `GameRoot+0x44100`
 is one contiguous array of 352 56-byte `BodBase` records. It ends exactly at
-the root-owned `DirectXLoader` at `GameRoot+0x48E00`.
+the root-owned `cRDirectX` at `cRGame+0x48E00`.
 
 | record indices | `GameRoot` range | recovered owner/role |
 |---|---|---|

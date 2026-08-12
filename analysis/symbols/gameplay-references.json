@@ -1399,6 +1399,42 @@
       "description": "Exact authored cRCompletion::RegisterParcel() member."
     },
     {
+      "address": "0x405640",
+      "name": "load_x_mesh",
+      "kind": "function",
+      "aliases": [
+        "?Load@cRDirectX@@QAEXPADPAUcRObject@@H@Z"
+      ],
+      "description": "Exact Windows cRDirectX::Load(char*, cRObject*, int) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x405c90",
+      "name": "initialize_directx_loader",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRDirectX@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRDirectX::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x405cc0",
+      "name": "load_or_reuse_cached_x_mesh",
+      "kind": "function",
+      "aliases": [
+        "?ModelAdd@cRDirectX@@QAEHPAD@Z"
+      ],
+      "description": "Exact Windows cRDirectX::ModelAdd(char*) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x405d60",
+      "name": "load_x_animation_clip",
+      "kind": "function",
+      "aliases": [
+        "?LoadAnim@cRDirectX@@QAEXPADPAUcRObject@@@Z"
+      ],
+      "description": "Exact Windows cRDirectX::LoadAnim(char*, cRObject*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x440fa0",
       "name": "initialize_damage_gauge",
       "kind": "function",
