@@ -1,8 +1,8 @@
-// uninit_nuke @ 0x4470e0 (thiscall, ret)
+// cRNuke::UnInit @ 0x4470e0 (thiscall, ret)
 
 #include "nuke.h"
 
-void cRNuke::uninit_nuke()
+void cRNuke::UnInit()
 {
     if (state == NUKE_STATE_ACTIVE) {
         for (int i = 0; i < NUKE_SPRITE_SLOT_COUNT; i++) {

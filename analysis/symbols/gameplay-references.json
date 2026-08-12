@@ -3089,6 +3089,33 @@
       "description": "Exact authored cRFringeManager::GetFringe() member."
     },
     {
+      "address": "0x4470e0",
+      "name": "uninit_nuke",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRNuke@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRNuke::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x447110",
+      "name": "initialize_nuke",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRNuke@@QAEXXZ"
+      ],
+      "description": "Windows cRNuke::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4471e0",
+      "name": "update_nuke",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRNuke@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRNuke::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4489e0",
       "name": "kill_tip_widgets",
       "kind": "function",

@@ -63,3 +63,11 @@ typed state gate, orbit z/phase pairs, and each sprite position component;
 strict health checks reject the stale `NukeController`, raw slot offsets, and
 compensating owner subtraction. Focused output remains exact at 59/59
 instructions with all eight operands clean.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain `cRNuke::AI()`, and Android preserves the
+same state gate, z/phase updates, wrap, and 25-slot radius-seven orbit. The
+matcher definition, `Init` tail edge, and player AI caller now use `AI`,
+emitting `?AI@cRNuke@@QAEXXZ`; `update_nuke` remains the stable function ID.
+The Windows body stays exact at 59/59 with all eight operands clean.

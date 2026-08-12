@@ -148,3 +148,12 @@ The remaining four-instruction region only rotates the sprite flag word between
 EDX/ECX and swaps the adjacent `3.0f` materialization with a slot reload. That
 is compiler register/scheduling residue, not a different sprite, slot, flag,
 loop, or owner.
+
+## 2026-08-12 authored method surface
+
+Android retains the exact `cRNuke::Init()` symbol, complete 0x7c-byte layout,
+25-slot allocation loop, and terminal `AI()` dispatch. The matcher definition,
+collision caller, and internal lifecycle edge now use `Init` and `AI`, emitting
+`?Init@cRNuke@@QAEXXZ`. `initialize_nuke` remains the stable function ID; the
+honest Windows result remains 64/64 instructions at 93.75% with five clean
+operands and only the already-bounded four-instruction scheduling residual.

@@ -1,11 +1,11 @@
-// update_nuke @ 0x4471e0 (thiscall)
+// cRNuke::AI @ 0x4471e0 (thiscall)
 
 #include "nuke.h"
 
 float sine(float radians);
 float cosine(float radians);
 
-void cRNuke::update_nuke()
+void cRNuke::AI()
 {
     cRNuke* self = this;
     int result = self->state;

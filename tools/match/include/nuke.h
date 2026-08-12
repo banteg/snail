@@ -16,9 +16,9 @@ enum NukeState {
 
 class cRNuke {
 public:
-    void initialize_nuke(); // @ 0x447110, cRNuke::Init
-    void update_nuke(); // @ 0x4471e0, cRNuke::AI
-    void uninit_nuke(); // @ 0x4470e0, cRNuke::UnInit
+    void Init();   // @ 0x447110
+    void AI();     // @ 0x4471e0
+    void UnInit(); // @ 0x4470e0
 
     NukeState state; // +0x00
     cRSubGoldy* owner_player; // +0x04, non-owning backlink to containing cRSubGoldy

@@ -368,7 +368,7 @@ void cRSubGoldy::Collision()
                         ScoreAdd(SUBGOLDY_SCORE_RING, 0);
                         g_sound_effect_manager.Play(42);
                         nuke_effect_progress = nuke_effect_progress_step;
-                        nuke.initialize_nuke();
+                        nuke.Init();
                     }
                 }
             }

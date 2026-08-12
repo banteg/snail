@@ -1,4 +1,4 @@
-// initialize_nuke @ 0x447110 (thiscall)
+// cRNuke::Init @ 0x447110 (thiscall)
 
 #include "game_root.h"
 #include "nuke.h"
@@ -6,7 +6,7 @@
 #include "subgame_runtime.h"
 
 
-void cRNuke::initialize_nuke()
+void cRNuke::Init()
 {
     int zero = NUKE_STATE_INACTIVE;
     if (state == zero) {
@@ -43,5 +43,5 @@ void cRNuke::initialize_nuke()
         } while (count);
     }
 
-    update_nuke();
+    AI();
 }

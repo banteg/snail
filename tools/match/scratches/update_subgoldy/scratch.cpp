@@ -887,9 +887,9 @@ steering_stored:
         nuke_effect_progress = advanced;
         if (advanced > 1.0f) {
             nuke_effect_progress = 0.0f;
-            nuke.uninit_nuke();
+            nuke.UnInit();
         } else {
-            nuke.update_nuke();
+            nuke.AI();
         }
     }
 

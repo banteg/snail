@@ -28,3 +28,11 @@ the typed `ACTIVE -> INACTIVE` transition and `kill_sprite` ownership. Strict
 health checks reject the stale controller name, pointer-to-array subtraction,
 and raw slot arithmetic. Focused output remains exact at 18/18 instructions
 with its operand clean.
+
+## 2026-08-12 authored method surface
+
+Android and iOS independently retain `cRNuke::UnInit()`, and the Android body
+preserves the same active guard, 25-slot kill loop, and inactive transition.
+The matcher definition and sole source-facing caller now use `UnInit`, emitting
+`?UnInit@cRNuke@@QAEXXZ`; `uninit_nuke` remains the stable function ID. The
+Windows body stays exact at 18/18 with its sprite-kill edge clean.

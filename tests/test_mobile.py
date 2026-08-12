@@ -7723,6 +7723,11 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
             ),
         ),
     }
+    member_names = {
+        "initialize_nuke": "Init",
+        "update_nuke": "AI",
+        "uninit_nuke": "UnInit",
+    }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
         assert f"class {authored}" in header
@@ -7732,7 +7737,8 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
             source = (
                 scratch_root / function / "scratch.cpp"
             ).read_text(encoding="utf-8")
-            assert f"{authored}::{function}" in source
+            member = member_names.get(function, function)
+            assert f"{authored}::{member}" in source
 
     player = (include_root / "player.h").read_text(encoding="utf-8")
     for field_type in (
@@ -7751,6 +7757,89 @@ def test_subgame_leaf_types_use_authored_primary_owners() -> None:
     assert "cRBanner slots[2]" in (
         include_root / "banner.h"
     ).read_text(encoding="utf-8")
+
+
+def test_nuke_lifecycle_uses_authored_method_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/nuke.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "uninit_nuke": {
+            "method": "UnInit",
+            "symbol": "?UnInit@cRNuke@@QAEXXZ",
+            "mobile": "cRNuke::UnInit()",
+            "aliases": ["cRNuke_UnInit"],
+        },
+        "initialize_nuke": {
+            "method": "Init",
+            "symbol": "?Init@cRNuke@@QAEXXZ",
+            "mobile": "cRNuke::Init()",
+            "aliases": ["cRNuke_Init"],
+        },
+        "update_nuke": {
+            "method": "AI",
+            "symbol": "?AI@cRNuke@@QAEXXZ",
+            "mobile": "cRNuke::AI()",
+            "aliases": ["cRNuke_AI"],
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "SubGame.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        if windows_name != "initialize_nuke":
+            assert entry["ios_symbol"] == recovered["mobile"]
+        assert functions[windows_name]["aliases"] == recovered["aliases"]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRNuke::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void Init();" in header
+    assert "void AI();" in header
+    assert "void UnInit();" in header
+    init = (scratch_root / "initialize_nuke" / "scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "AI();" in init
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.glob("*/scratch.cpp")
+    )
+    for stale_method in (
+        ".initialize_nuke(",
+        ".update_nuke(",
+        ".uninit_nuke(",
+    ):
+        assert stale_method not in all_sources
+    assert "nuke.Init()" in all_sources
+    assert "nuke.AI()" in all_sources
+    assert "nuke.UnInit()" in all_sources
 
 
 def test_screen_controller_types_use_authored_primary_owners() -> None:
