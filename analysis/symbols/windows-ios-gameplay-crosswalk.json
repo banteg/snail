@@ -3839,9 +3839,9 @@
       "address": "0x44c420",
       "windows_name": "load_object_definition",
       "ios_symbol": "ObjectTextLoad(char*, cRObject*)",
-      "source_object": "ObjectProc.o",
+      "source_object": "ObjectText.o",
       "confidence": "high",
-      "notes": "Android and iOS both preserve the exact global ObjectTextLoad owner immediately after their ObjectProc families: it loads %s/_Object.txt, parses the VERTEX and FACEQUAD sections through the RText helpers, and populates the borrowed cRObject slot. Mobile cRObject::Load(char*) is a distinct binary object loader and is not the Windows counterpart.",
+      "notes": "The iOS STABS records directly place the exact global ObjectTextLoad symbol in ObjectText.cpp / ObjectText.o, correcting the older ObjectProc.o inference from link adjacency. Android independently preserves the same one-function unit between its ObjectProc and RSprite families. All three ports load %s/_Object.txt, parse the VERTEX and FACEQUAD sections through the RText helpers, and populate the borrowed cRObject slot; mobile cRObject::Load(char*) remains a distinct binary object loader.",
       "android_symbol": "ObjectTextLoad(char*, cRObject*)"
     },
     {

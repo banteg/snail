@@ -44,6 +44,13 @@
       "last_symbol": "FontLoad(char*, int, float, float)"
     },
     {
+      "source_object": "ObjectText.o",
+      "start": "0x3c7ec",
+      "end": "0x3cc9c",
+      "first_symbol": "ObjectTextLoad(char*, cRObject*)",
+      "last_symbol": "ObjectTextLoad(char*, cRObject*)"
+    },
+    {
       "source_object": "Game.o",
       "start": "0x3e01c",
       "end": "0x4b2e0",

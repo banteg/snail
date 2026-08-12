@@ -5374,7 +5374,7 @@ def test_mobile_object_text_loader_rejects_binary_object_owner() -> None:
     loader = entries["load_object_definition"]
     assert loader["status"] == "verified"
     assert loader["confidence"] == "high"
-    assert loader["source_object"] == "ObjectProc.o"
+    assert loader["source_object"] == "ObjectText.o"
     assert loader["android_symbol"] == (
         "ObjectTextLoad(char*, cRObject*)"
     )
@@ -5415,7 +5415,37 @@ def test_mobile_object_text_loader_rejects_binary_object_owner() -> None:
         / "tools/match/scratches/load_object_definition/NOTES.md"
     ).read_text(encoding="utf-8")
     assert "`cRObject::Load(char*)` is a different" in notes
-    assert "`ObjectProc.o` ownership" in notes
+    assert "direct STABS records" in notes
+    assert "prior claim of `ObjectProc.o` ownership was inaccurate" in notes
+
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    assert dict(names["source_objects"])["ObjectText.o"] == [
+        "ObjectTextLoad(char*, cRObject*)"
+    ]
+    symbol = next(
+        row
+        for row in names["symbols"]
+        if row[0] == "ObjectTextLoad(char*, cRObject*)"
+    )
+    assert symbol[3] == ["ObjectText.o"]
+
+    source_runs = load_json(
+        repo_root
+        / "analysis/symbols/android-gameplay-source-runs.json"
+    )["runs"]
+    assert next(
+        run
+        for run in source_runs
+        if run["source_object"] == "ObjectText.o"
+    ) == {
+        "source_object": "ObjectText.o",
+        "start": "0x3c7ec",
+        "end": "0x3cc9c",
+        "first_symbol": "ObjectTextLoad(char*, cRObject*)",
+        "last_symbol": "ObjectTextLoad(char*, cRObject*)",
+    }
 
 
 def test_mobile_rng_pair_recovers_authored_contract() -> None:

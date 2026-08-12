@@ -4812,7 +4812,7 @@
       "aliases": [
         "ObjectTextLoad"
       ],
-      "description": "Exact Windows `ObjectTextLoad(char*, cRObject*)`: the ObjectProc.o text loader parses one authored `_Object.txt` definition into the caller-owned Object slot, installs its owned vertex and facequad arrays, and borrows texture refs from the shared manager. Mobile `cRObject::Load(char*)` is a separate binary object loader."
+      "description": "Exact Windows `ObjectTextLoad(char*, cRObject*)`: the ObjectText.o loader parses one authored `_Object.txt` definition into the caller-owned Object slot, installs its owned vertex and facequad arrays, and borrows texture refs from the shared manager. Mobile `cRObject::Load(char*)` is a separate binary object loader."
     },
     {
       "address": "0x44c870",

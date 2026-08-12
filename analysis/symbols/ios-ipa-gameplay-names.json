@@ -18,8 +18,8 @@
   },
   "counts": {
     "objc_classes": 12,
-    "source_objects_with_symbols": 53,
-    "symbols": 1056,
+    "source_objects_with_symbols": 54,
+    "symbols": 1057,
     "type_strings": 82
   },
   "description": "Deduped iOS IPA gameplay names/classes for Windows decomp shape mining. ARM/iOS addresses and per-slice ordinals are intentionally omitted.",
@@ -893,6 +893,12 @@
         "cRDistort::BuildMatrix(tMatrix*, tMatrix*)",
         "cRDistort::Init()",
         "cRDuplicateVertices::Init(int)"
+      ]
+    ],
+    [
+      "ObjectText.o",
+      [
+        "ObjectTextLoad(char*, cRObject*)"
       ]
     ],
     [
@@ -3227,6 +3233,19 @@
       ],
       [
         "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectTextLoad(char*, cRObject*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectText.o"
       ]
     ],
     [

@@ -173,7 +173,19 @@ conflated loaders:
   consumes typed binary records, installs animation and render buffers, and
   does not parse `_Object.txt`.
 
-In both mobile link layouts, `ObjectTextLoad` follows the ObjectProc function
-family and precedes the next source family, recovering `ObjectProc.o` ownership.
-The verified crosswalk and gameplay alias now record the global
-`ObjectTextLoad` identity; no Windows code or ABI changed.
+The verified crosswalk and gameplay alias record the global `ObjectTextLoad`
+identity; no Windows code or ABI changed.
+
+## 2026-08-12 direct source-owner correction
+
+The v1.5 iOS Mach-O retains direct STABS records for
+`Source/ObjectText.cpp`, `Objects-normal/armv6/ObjectText.o`, and the sole
+enclosed function `ObjectTextLoad(char*, cRObject*) @ 0x16b78`. This is
+stronger evidence than the earlier link-adjacency inference and corrects the
+Windows owner from `ObjectProc.o` to `ObjectText.o`.
+
+Android independently preserves the exact symbol as the sole function between
+the ObjectProc and RSprite families. Its tracked function interval is
+`0x3c7ec..0x3cc9c`, so the source-run catalog now records the same one-function
+`ObjectText.o` unit. The prior claim of `ObjectProc.o` ownership was inaccurate;
+the semantic mapping and exact Windows match remain unchanged.
