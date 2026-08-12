@@ -130,11 +130,13 @@ four-instruction `0x44d1d0` member does. The exact source now spells the three
 calls as multiply assignments. This preserves the full 339/339 instruction
 match and all 44 clean operands while assigning the calls to their real member.
 
-## 2026-07-26 mobile-backed canonical ownership
+## 2026-08-12 authored method surface
 
 Android and iOS both retain the exact symbol `cRSnail::AIGoldy()` and the same
-per-frame presentation body. Windows calls it once from `update_subgoldy`;
-the distinct `initialize_cutscene_ai @ 0x446130` remains the real
-`cRCutScene::Init`. The canonical Windows name is therefore
-`update_snail_presentation`, with `initialize_cutscene` retained only as a
-compatibility alias. The exact 339/339 matcher body is unchanged.
+per-frame presentation body. The live 1385-byte Windows void thiscall is called
+once from `update_subgoldy`, with `ECX = cRSubGoldy + 0x2984`, exactly the
+embedded `cRSnail presentation` receiver. The Windows matching source now uses
+the authored `cRSnail::AIGoldy()` spelling; `update_snail_presentation` remains
+the stable address-keyed scratch identity and `initialize_cutscene` remains a
+compatibility alias. The distinct exact `initialize_cutscene_ai @ 0x446130`
+is still the real `cRCutScene::Init`. The 339/339 matcher body is unchanged.

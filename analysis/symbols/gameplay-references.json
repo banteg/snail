@@ -1370,6 +1370,15 @@
       "description": "Exact authored cRVapour::AI() member with an owner-qualified generic method alias."
     },
     {
+      "address": "0x4428d0",
+      "name": "update_snail_presentation",
+      "kind": "function",
+      "aliases": [
+        "?AIGoldy@cRSnail@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSnail::AIGoldy() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x404350",
       "name": "initialize_border_stack",
       "kind": "function",

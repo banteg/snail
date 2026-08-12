@@ -6,7 +6,7 @@
 
 float sine(float angle);
 
-void cRSnail::update_snail_presentation()
+void cRSnail::AIGoldy()
 {
     if (g_game->subgame.subgame_pause_gate != 0)
         return;

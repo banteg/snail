@@ -9580,6 +9580,23 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
     scratch_root = repo_root / "tools/match/scratches"
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
     player = (include_root / "player.h").read_text(encoding="utf-8")
     player_fwd = (include_root / "player_fwd.h").read_text(
         encoding="utf-8"
@@ -9589,20 +9606,51 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
     assert "sizeof(cRSnail)" in player
     assert "typedef cRSnail Snail;" in player_fwd
     assert "cRSnail presentation" in player
-    for function in (
-        "initialize_player_presentation_controller",
-        "update_snail_presentation",
-        "release_snail_weapons",
-        "dispatch_cutscene_animation",
-        "set_snail_jetpack",
-        "set_snail_weapon",
-        "build_snail_world_hotspots",
-        "extract_snail_local_hotspots",
-    ):
+    methods = {
+        "initialize_player_presentation_controller": (
+            "initialize_player_presentation_controller"
+        ),
+        "update_snail_presentation": "AIGoldy",
+        "release_snail_weapons": "release_snail_weapons",
+        "dispatch_cutscene_animation": "dispatch_cutscene_animation",
+        "set_snail_jetpack": "set_snail_jetpack",
+        "set_snail_weapon": "set_snail_weapon",
+        "build_snail_world_hotspots": "build_snail_world_hotspots",
+        "extract_snail_local_hotspots": "extract_snail_local_hotspots",
+    }
+    for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRSnail::{function}" in source
+        assert f"cRSnail::{method}" in source
+
+    presentation = entries["update_snail_presentation"]
+    assert presentation["status"] == "verified"
+    assert presentation["confidence"] == "high"
+    assert presentation["source_object"] == "SubGame.o"
+    assert presentation["android_symbol"] == "cRSnail::AIGoldy()"
+    assert presentation["ios_symbol"] == presentation["android_symbol"]
+    assert presentation["android_body_count"] == 1
+    assert presentation["ios_body_count"] == 1
+    assert functions_by_name["update_snail_presentation"]["aliases"] == [
+        "cRSnail_AIGoldy",
+        "AIGoldy",
+        "initialize_cutscene",
+    ]
+    object_symbol = "?AIGoldy@cRSnail@@QAEXXZ"
+    assert object_symbol in (
+        references_by_name["update_snail_presentation"]["aliases"]
+    )
+    config = (
+        scratch_root / "update_snail_presentation/scratch.conf"
+    ).read_text(encoding="utf-8")
+    update = (scratch_root / "update_subgoldy/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert f"SYMBOL={object_symbol}\n" in config
+    assert "void AIGoldy();" in player
+    assert "presentation.AIGoldy();" in update
+    assert ".update_snail_presentation(" not in update
 
     snail_skin = (include_root / "snail_skin.h").read_text(encoding="utf-8")
     cut_scene = (include_root / "cut_scene.h").read_text(encoding="utf-8")

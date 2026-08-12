@@ -1010,7 +1010,7 @@ steering_stored:
     presentation.weapon_channels[1].anim_manager.AI();
     presentation.weapon_channels[2].anim_manager.AI();
     game->parcel_manager.AI();
-    presentation.update_snail_presentation();
+    presentation.AIGoldy();
     SetShootFlags();
     if (g_game->subgame.replay_update_cursor < 10)
         shoot_cooldown_progress = shoot_cooldown_step;

@@ -3907,6 +3907,8 @@
       "address": "0x4428d0",
       "name": "update_snail_presentation",
       "aliases": [
+        "cRSnail_AIGoldy",
+        "AIGoldy",
         "initialize_cutscene"
       ],
       "description": "Authored `cRSnail::AIGoldy()`, preserved by Android and iOS: this per-frame presentation method borrows `cRSubGoldy::live_transform()` and `cached_camera_target_world`, advances the Snail's matrices, skin, world hotspots, hover jets and animation channels, and updates the embedded cRCutScene owner. The historical `initialize_cutscene` label remains an alias; the distinct exact `initialize_cutscene_ai @ 0x446130` is the real cRCutScene initializer."
