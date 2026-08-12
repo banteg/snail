@@ -5998,6 +5998,23 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     assert previous_verified["source_object"] == "Game.o"
     assert next_verified["source_object"] == "Game.o"
 
+    color_initializers = [
+        by_name["initialize_global_color4f_bank_32_thunk"],
+        by_name["initialize_global_color4f_bank_32"],
+    ]
+    assert all(entry["status"] == "unverified" for entry in color_initializers)
+    assert all(entry["source_object"] == "Game.o" for entry in color_initializers)
+    assert all(
+        entry["source_object_evidence"] == "windows-contiguous-source-run"
+        for entry in color_initializers
+    )
+    first_index = entries.index(color_initializers[0])
+    last_index = entries.index(color_initializers[-1])
+    assert entries[first_index - 1]["status"] == "verified"
+    assert entries[first_index - 1]["source_object"] == "Game.o"
+    assert entries[last_index + 1]["status"] == "verified"
+    assert entries[last_index + 1]["source_object"] == "Game.o"
+
     result = main(
         [
             "match",

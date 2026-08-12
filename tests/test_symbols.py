@@ -113,6 +113,15 @@ def test_default_function_symbol_manifest_loads() -> None:
             by_name[name].source_object_evidence
             == "android-global-constructor-source-file"
         )
+    for name in (
+        "initialize_global_color4f_bank_32_thunk",
+        "initialize_global_color4f_bank_32",
+    ):
+        assert by_name[name].source_object == "Game.o"
+        assert (
+            by_name[name].source_object_evidence
+            == "windows-contiguous-source-run"
+        )
     assert {
         rejection.symbol
         for rejection in game_init.mobile_candidate_rejections

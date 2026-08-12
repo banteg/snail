@@ -6538,6 +6538,8 @@
       "windows_name": "initialize_global_color4f_bank_32_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -6608,6 +6610,8 @@
       "windows_name": "initialize_global_color4f_bank_32",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",

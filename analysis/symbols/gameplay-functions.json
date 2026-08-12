@@ -957,12 +957,16 @@
     {
       "address": "0x410c00",
       "name": "initialize_global_color4f_bank_32_thunk",
-      "description": "CRT startup thunk for the adjacent 32-entry tColour constructor loop; `.CRT$XCU` entry 0x4a1014 points here."
+      "description": "CRT startup thunk for the adjacent 32-entry tColour constructor loop; `.CRT$XCU` entry 0x4a1014 points here.",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x410c10",
       "name": "initialize_global_color4f_bank_32",
-      "description": "Runs the folded no-op tColour constructor across the exact 32-entry global allocation at `data_4f6e50`. No runtime consumer or cross-port symbol supports a more specific semantic owner."
+      "description": "Runs the folded no-op tColour constructor across the exact 32-entry global allocation at `data_4f6e50`. No runtime consumer or cross-port symbol supports a more specific semantic owner.",
+      "source_object": "Game.o",
+      "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x410c30",
