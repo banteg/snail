@@ -669,6 +669,24 @@
       "description": "Exact Windows cRPath::Mirror(cRPath*) entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x42b9c0",
+      "name": "get_path_position_at_node",
+      "kind": "function",
+      "aliases": [
+        "?GetPos@cRPath@@QAEXAAUtVector@@HH0@Z"
+      ],
+      "description": "Exact Windows cRPath::GetPos(tVector&, int, int, tVector&) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x42ca90",
+      "name": "is_point_inside_track_attachment",
+      "kind": "function",
+      "aliases": [
+        "?SearchPos@cRPath@@QAE_NUtVector@@0PAUcRSubLoc@@@Z"
+      ],
+      "description": "Exact Windows cRPath::SearchPos(tVector, tVector, cRSubLoc*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x42f0a0",
       "name": "load_png_image",
       "kind": "function",

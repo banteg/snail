@@ -10978,6 +10978,84 @@ def test_mobile_path_mirror_recovers_authored_method() -> None:
         assert "CalcLengthZ" in body
 
 
+def test_mobile_path_queries_recover_authored_methods() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entries = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    methods = {
+        "get_path_position_at_node": (
+            "cRPath::GetPos(tVector&, int, int, tVector&)",
+            "?GetPos@cRPath@@QAEXAAUtVector@@HH0@Z",
+            "cRPath_GetPos",
+            "void cRPath::GetPos(",
+        ),
+        "is_point_inside_track_attachment": (
+            "cRPath::SearchPos(tVector, tVector, cRSubLoc*)",
+            "?SearchPos@cRPath@@QAE_NUtVector@@0PAUcRSubLoc@@@Z",
+            "cRPath_SearchPos",
+            "bool cRPath::SearchPos(",
+        ),
+    }
+    for function, (
+        mobile_symbol,
+        object_symbol,
+        alias,
+        definition,
+    ) in methods.items():
+        entry = entries[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Path.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    assert "void GetPos(" in header
+    assert "bool SearchPos(" in header
+    assert "void get_path_position_at_node(" not in header
+    assert "bool is_point_inside_track_attachment(" not in header
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("scratch.cpp")
+        if "build" not in path.parts
+    )
+    assert all_sources.count("->GetPos(") == 2
+    assert all_sources.count("->SearchPos(") == 2
+    assert "->get_path_position_at_node(" not in all_sources
+    assert "->is_point_inside_track_attachment(" not in all_sources
+
+
 def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

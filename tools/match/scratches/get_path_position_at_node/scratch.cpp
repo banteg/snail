@@ -7,8 +7,8 @@ inline Vector3 operator*(float scale, const Vector3& vector)
     return Vector3(scale * vector.x, scale * vector.y, scale * vector.z);
 }
 
-void cRPath::get_path_position_at_node(
-    Vector3& out, int node, int row_index, Vector3& local)
+void cRPath::GetPos(
+    tVector& out, int node, int row_index, tVector& local)
 {
     const Vector3* local_ptr = &local;
     float local_y = local_ptr->y;

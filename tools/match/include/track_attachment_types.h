@@ -256,8 +256,8 @@ struct cRPath : public BodBase {
         cRSubLoc* cell); // @ 0x42c770, cRPath::Search
     void compute_kind42_attachment_transform(
         float radius, float x, float y, TransformMatrix* transform, float* out_angle);
-    bool is_point_inside_track_attachment(
-        Vector3 probe, Vector3 swept_motion, cRSubLoc* cell); // @ 0x42ca90, cRPath::SearchPos
+    bool SearchPos(
+        tVector probe, tVector swept_motion, cRSubLoc* cell); // @ 0x42ca90
 
     PathTemplateKind kind;           // +0x38, after the inherited BodBase
     unsigned char is_mirrored_x;     // +0x3c
@@ -282,8 +282,8 @@ struct cRPath : public BodBase {
     Object* entry_transition_strip_mesh; // +0xa0, borrowed from an auxiliary pair
     Object* entry_base_strip_mesh;       // +0xa4, the public pair's own strip mesh
 
-    void get_path_position_at_node(
-        Vector3& out, int node, int row_index, Vector3& local); // @ 0x42b9c0, void cRPath::GetPos
+    void GetPos(
+        tVector& out, int node, int row_index, tVector& local); // @ 0x42b9c0
 };
 
 typedef char cRPath_must_be_0xa8[

@@ -2,8 +2,8 @@
 
 #include "track_attachment.h"
 
-bool cRPath::is_point_inside_track_attachment(
-    Vector3 probe, Vector3 swept_motion, cRSubLoc* cell)
+bool cRPath::SearchPos(
+    tVector probe, tVector swept_motion, cRSubLoc* cell)
 {
     Vector3 local;
     Vector3 sample_origin;

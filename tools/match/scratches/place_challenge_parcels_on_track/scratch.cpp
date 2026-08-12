@@ -110,7 +110,7 @@ void cRSubGame::PlaceParcelsSurvival()
                 } else {
                     runtime_rows[scan]
                         .primary_attachment_cell->attachment_template_record
-                        ->get_path_position_at_node(
+                        ->GetPos(
                             runtime_rows[scan].parcel_spawn_position,
                             node,
                             cell->Yi(),
