@@ -68,6 +68,10 @@ def test_default_function_symbol_manifest_loads() -> None:
         "initialize_parcel_set_bucket_pool": "SubGame.o",
         "initialize_zero_parcel_bucket_pool_thunk": "SubGame.o",
         "initialize_zero_parcel_bucket_pool": "SubGame.o",
+        "initialize_global_sprite_pool_colors_thunk": "RSprite.o",
+        "initialize_global_sprite_pool_colors": "RSprite.o",
+        "initialize_global_sprite_sentinel_color_thunk": "RSprite.o",
+        "initialize_global_sprite_sentinel_color": "RSprite.o",
     }.items():
         assert by_name[name].source_object == source_object
         assert (

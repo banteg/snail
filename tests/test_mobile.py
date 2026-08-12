@@ -6043,6 +6043,22 @@ def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
             "SubGame.o",
             "gGroup0",
         ),
+        "initialize_global_sprite_pool_colors_thunk": (
+            "RSprite.o",
+            "gRSpriteManager",
+        ),
+        "initialize_global_sprite_pool_colors": (
+            "RSprite.o",
+            "gRSpriteManager",
+        ),
+        "initialize_global_sprite_sentinel_color_thunk": (
+            "RSprite.o",
+            "gSpriteDummy",
+        ),
+        "initialize_global_sprite_sentinel_color": (
+            "RSprite.o",
+            "gSpriteDummy",
+        ),
     }
 
     for windows_name, (source_object, global_name) in expected.items():

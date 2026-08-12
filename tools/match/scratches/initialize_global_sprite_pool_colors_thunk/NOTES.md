@@ -2,3 +2,6 @@
 
 CRT constructor-table entry at `0x4a106c`. It tail-forwards to the adjacent
 loop that constructs every `Sprite::color` subobject in the global manager.
+
+The direct CRT edge carries the exact `gRSpriteManager` provenance from the
+constructor body; iOS assigns that global to `RSprite.o`.

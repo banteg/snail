@@ -24708,6 +24708,8 @@
       "windows_name": "initialize_global_sprite_pool_colors_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RSprite.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRObject::cRObject()",
@@ -24778,6 +24780,8 @@
       "windows_name": "initialize_global_sprite_pool_colors",
       "windows_size": 32,
       "status": "unverified",
+      "source_object": "RSprite.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",
@@ -24848,6 +24852,8 @@
       "windows_name": "initialize_global_sprite_sentinel_color_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RSprite.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRObject::cRObject()",
@@ -24918,6 +24924,8 @@
       "windows_name": "initialize_global_sprite_sentinel_color",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "RSprite.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "tColour::tColour(float, float, float, float)",

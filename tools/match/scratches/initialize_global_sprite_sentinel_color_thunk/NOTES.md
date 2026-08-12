@@ -2,3 +2,6 @@
 
 CRT constructor-table entry at `0x4a1070`. The shipped function is a tail jump
 to the adjacent initializer for the standalone allocation-sentinel color.
+
+The direct CRT edge carries the exact `gSpriteDummy` provenance from the
+constructor body; iOS assigns that sentinel global to `RSprite.o`.
