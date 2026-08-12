@@ -6,9 +6,9 @@ class cRSubGame;
 
 class cRTutorial {
 public:
-    void initialize_tutorial(); // @ 0x448da0, cRTutorial::Init
-    void uninit_tutorial(); // @ 0x448dd0, cRTutorial::UnInit
-    void update_tutorial(); // @ 0x448de0, cRTutorial::AI
+    void Init(); // @ 0x448da0
+    void UnInit(); // @ 0x448dd0
+    void AI(); // @ 0x448de0
 
     int state; // +0x00
     char unknown_04[0x0c - 0x04];

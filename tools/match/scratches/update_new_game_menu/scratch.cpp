@@ -56,7 +56,7 @@ void cRIntro::AI()
         g_game->players[0].frontend_state = 10;
         g_game->players[0].redispatch_requested = 1;
         g_game->subgame.level_mode = 7;
-        g_game->subgame.tutorial.initialize_tutorial();
+        g_game->subgame.tutorial.Init();
         g_runtime_config.new_game_tutorial_started = 1;
         return;
     }

@@ -4569,17 +4569,26 @@
     {
       "address": "0x448da0",
       "name": "initialize_tutorial",
-      "description": "Exact Windows `Tutorial::initialize_tutorial`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing cRSubGame, and applies the tutorial runtime flags. Android and iOS retain `cRTutorial::Init()`."
+      "aliases": [
+        "cRTutorial_Init"
+      ],
+      "description": "Exact Windows `cRTutorial::Init()`: seeds the embedded 0x1c-byte tutorial owner, borrows its containing cRSubGame, and applies the tutorial runtime flags. Android and iOS retain the same owner and method."
     },
     {
       "address": "0x448dd0",
       "name": "uninit_tutorial",
-      "description": "Exact Windows `Tutorial::uninit_tutorial` thunk that tears down the root tip manager for tutorial-mode exit. Android and iOS retain `cRTutorial::UnInit()`."
+      "aliases": [
+        "cRTutorial_UnInit"
+      ],
+      "description": "Exact Windows `cRTutorial::UnInit()` thunk that tears down the root tip manager for tutorial-mode exit. Android and iOS retain the same owner and method."
     },
     {
       "address": "0x448de0",
       "name": "update_tutorial",
-      "description": "Exact void Windows Tutorial::update_tutorial thunk: samples the live Goldy position through the borrowed containing cRSubGame. Its only native caller discards the lookup result, and Android/iOS retain cRTutorial::AI()."
+      "aliases": [
+        "cRTutorial_AI"
+      ],
+      "description": "Exact void Windows `cRTutorial::AI()` thunk: samples the live Goldy position through the borrowed containing cRSubGame. Its only native caller discards the lookup result; Android and iOS retain the same owner and method."
     },
     {
       "address": "0x448df0",

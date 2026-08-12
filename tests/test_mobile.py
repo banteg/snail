@@ -11121,15 +11121,73 @@ def test_tutorial_uses_authored_primary_owner() -> None:
     assert "typedef cRTutorial Tutorial;" in header
     assert "sizeof(cRTutorial)" in header
     assert "cRTutorial tutorial" in subgame
-    for function in (
-        "initialize_tutorial",
-        "uninit_tutorial",
-        "update_tutorial",
-    ):
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    methods = {
+        "initialize_tutorial": "Init",
+        "uninit_tutorial": "UnInit",
+        "update_tutorial": "AI",
+    }
+    addresses = {
+        "initialize_tutorial": "0x448da0",
+        "uninit_tutorial": "0x448dd0",
+        "update_tutorial": "0x448de0",
+    }
+    for function, method in methods.items():
+        entry = crosswalk[function]
+        mobile_symbol = f"cRTutorial::{method}()"
+        object_symbol = f"?{method}@cRTutorial@@QAEXXZ"
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Tutorial.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [
+            f"cRTutorial_{method}"
+        ]
+        assert references_by_name[function]["aliases"] == [object_symbol]
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRTutorial::{function}" in source
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRTutorial::{method}" in source
+        assert f"SYMBOL={object_symbol}\n" in config
+        assert f"void {method}(); // @ {addresses[function]}" in header
+
+    assert "initialize_tutorial();" not in header
+    assert "uninit_tutorial();" not in header
+    assert "update_tutorial();" not in header
+
+    new_game = (
+        scratch_root / "update_new_game_menu/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    destroy = (
+        scratch_root / "destroy_subgame/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    update = (
+        scratch_root / "update_subgame/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert new_game.count("tutorial.Init();") == 1
+    assert destroy.count("tutorial.UnInit();") == 1
+    assert update.count("tutorial.AI();") == 1
 
     constructor = (
         scratch_root / "construct_game_runtime" / "scratch.cpp"

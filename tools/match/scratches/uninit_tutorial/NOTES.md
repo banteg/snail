@@ -1,18 +1,10 @@
-# Exact match
+# Exact cRTutorial::UnInit
 
-`Tutorial::uninit_tutorial` @ `0x448dd0` is the Windows
-`cRTutorial::UnInit()`. It delegates tutorial UI teardown to the root
-`TipManager`; the embedded tutorial object owns no tip allocation.
+`0x448dd0` is the authored `cRTutorial::UnInit()` method. Android and iOS
+`Tutorial.o` preserve the same owner and method with one body each. VC6 emits
+`?UnInit@cRTutorial@@QAEXXZ`; the three-instruction Windows thunk and both
+relocated operands match exactly.
 
-The primary 0x1c-byte `Tutorial` owner remains exact at 3/3 instructions with
-both operands clean.
-
-The teardown call now names `GameRoot::tip_manager`, the exact 0x98-byte root
-tail owner, instead of reconstructing it from `root + 0x12e6f58`. The global
-receiver load and exact three-instruction body are unchanged.
-
-2026-07-18 durable decompiler replay: IDA now preserves the unused-but-authored
-`Tutorial*` receiver and folds the normalized `0x12e6f58` displacement into
-`GameRoot::tip_manager`; Binary Ninja retains the same root-owned tail call.
-Health checks reject the former no-argument, `_DWORD**`, and raw-root views.
-The scratch remains exact at 3/3 with two clean operands.
+The method delegates tutorial UI teardown to the root-owned cRTipManager; the
+embedded tutorial object owns no tip allocation. Windows retains the authored
+receiver even though this tiny thunk does not read its fields.

@@ -5,7 +5,7 @@
 #include "tutorial.h"
 
 
-void cRTutorial::uninit_tutorial()
+void cRTutorial::UnInit()
 {
     g_game->tip_manager.UnInitTips();
 }

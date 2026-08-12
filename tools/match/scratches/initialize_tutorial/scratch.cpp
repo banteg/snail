@@ -5,7 +5,7 @@
 #include "tutorial.h"
 
 
-void cRTutorial::initialize_tutorial()
+void cRTutorial::Init()
 {
     state = 0;
     game = &g_game->subgame;

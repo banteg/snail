@@ -71,7 +71,7 @@ void cRSubGame::UnInit()
     g_game->backdrop.corner_index_buffer_handle = 1;
 
     if (level_mode == 7)
-        tutorial.uninit_tutorial();
+        tutorial.UnInit();
 
     embedded_player()->warning.UnInit();
     landscape_manager.UnInit();

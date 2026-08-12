@@ -190,7 +190,7 @@ void cRSubGame::AI()
             player.stopwatch.Add(1.0f);
 
         if (level_mode == 7)
-            tutorial.update_tutorial();
+            tutorial.AI();
 
         slug_voice_manager.AI();
 

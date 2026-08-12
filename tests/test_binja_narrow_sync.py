@@ -19602,7 +19602,7 @@ def test_embedded_subgame_ai_void_abis_are_persisted() -> None:
         assert prototype + ";" in header
 
     assert '(0x440F80, "update_barrier_ai")' in ida_sync
-    assert "void update_tutorial();" in tutorial_header
+    assert "void AI(); // @ 0x448de0" in tutorial_header
     assert "void AI();" in barrier_header
 
     for stale in (

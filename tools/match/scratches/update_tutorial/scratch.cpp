@@ -3,7 +3,7 @@
 #include "subgame_runtime.h"
 #include "tutorial.h"
 
-void cRTutorial::update_tutorial()
+void cRTutorial::AI()
 {
     cRSubGame* owner = game;
     owner->LocFromPos(&owner->player.transform.position);

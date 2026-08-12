@@ -4079,6 +4079,33 @@
       "description": "Exact Windows cRTipManager::AI() entry; the owner-qualified alias disambiguates it from other authored AI methods."
     },
     {
+      "address": "0x448da0",
+      "name": "initialize_tutorial",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRTutorial@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTutorial::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x448dd0",
+      "name": "uninit_tutorial",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRTutorial@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTutorial::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x448de0",
+      "name": "update_tutorial",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRTutorial@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTutorial::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x448df0",
       "name": "initialize_voice_set",
       "kind": "function",
