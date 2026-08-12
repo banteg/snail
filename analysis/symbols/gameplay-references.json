@@ -2784,6 +2784,69 @@
       "description": "Exact cRObject::RequestAnim(int, cRBodPos*, float, int) animation builder retained under the same authored owner, name, and parameter types by Android and iOS."
     },
     {
+      "address": "0x431da0",
+      "name": "copy_c_string",
+      "kind": "function",
+      "aliases": [
+        "?RTextCopy@@YAXPAD0@Z"
+      ],
+      "description": "Exact Windows RTextCopy(char*, char*) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x431dc0",
+      "name": "strings_equal_case_insensitive",
+      "kind": "function",
+      "aliases": [
+        "?RTextCompStart@@YA_NPAD0@Z"
+      ],
+      "description": "Exact Windows RTextCompStart(char*, char*) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x431e30",
+      "name": "skip_to_next_line",
+      "kind": "function",
+      "aliases": [
+        "?RTextNewLine@@YAXPAPAD@Z"
+      ],
+      "description": "Exact Windows RTextNewLine(char**) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x431e50",
+      "name": "append_c_string",
+      "kind": "function",
+      "aliases": [
+        "?RTextAppend@@YAXPAD0@Z"
+      ],
+      "description": "Exact Windows RTextAppend(char*, char*) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x431e80",
+      "name": "parse_next_space_delimited_token",
+      "kind": "function",
+      "aliases": [
+        "?RTextExtractString@@YAXPAPADPAD@Z"
+      ],
+      "description": "Exact Windows RTextExtractString(char**, char*) entry with its authored void decorated relocation name."
+    },
+    {
+      "address": "0x431ec0",
+      "name": "parse_next_int32",
+      "kind": "function",
+      "aliases": [
+        "?RTextExtractInt@@YAHPAPAD@Z"
+      ],
+      "description": "Exact Windows RTextExtractInt(char**) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x431f20",
+      "name": "parse_next_float32",
+      "kind": "function",
+      "aliases": [
+        "?RTextExtractFloat@@YAMPAPAD@Z"
+      ],
+      "description": "Exact Windows RTextExtractFloat(char**) entry with its authored decorated relocation name."
+    },
+    {
       "address": "0x432d40",
       "name": "reset_registered_sound_sample_count",
       "kind": "function",

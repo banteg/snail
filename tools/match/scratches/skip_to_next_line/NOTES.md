@@ -1,15 +1,9 @@
-# Matched
+# RTextNewLine
 
-`skip_to_next_line` is instruction-exact at 13/13 instructions. It advances
-the caller-owned cursor through LF or NUL and then steps once so the next read
-starts on the following line.
+Exact at 13/13 instructions with no masked operands. It advances the
+caller-owned cursor through LF or NUL, then steps once so the next read starts
+on the following line.
 
-## 2026-07-27 authored RText ownership
-
-Android and iOS preserve the same body as void `RTextNewLine(char**)` in
-`RShell.o`, between `RTextCompStart` and `RTextAppend`. Mobile
-`ObjectTextLoad` uses it at the same section and row boundaries as Windows
-`load_object_definition`.
-
-All seven Windows calls discard EAX. Removing the synthetic pointer return
-preserves the exact object, recovering the authored void contract directly.
+Android and iOS preserve the void `RTextNewLine(char**)` contract and its slot
+between `RTextCompStart` and `RTextAppend` in `RShell.o`. All seven Windows
+calls discard EAX.

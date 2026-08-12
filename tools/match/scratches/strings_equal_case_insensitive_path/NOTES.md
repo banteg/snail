@@ -7,7 +7,7 @@ Recovered relationships:
 - Used by segment path lookup, level segment copying, landscape script lookup,
   mesh-cache lookup, and music stream path reuse.
 - This helper requires both strings to terminate after a folded match. It is
-  not the prefix-friendly `strings_equal_case_insensitive` at `0x431dc0`.
+  not the prefix-friendly `RTextCompStart` at `0x431dc0`.
 - Folding is ASCII-only and subtracts `0x20` for bytes in `a..z`.
 
 The function was previously only present in

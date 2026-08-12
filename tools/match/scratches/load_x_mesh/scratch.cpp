@@ -87,16 +87,16 @@ void DirectXLoader::load_x_mesh(char* mesh_path, Object* object, int options_fla
 
     int i;
     for (i = 0; i < vertex_count; ++i) {
-        texture_coords[i].u = parse_next_float32(&texcoord_cursor);
-        texture_coords[i].v = parse_next_float32(&texcoord_cursor);
+        texture_coords[i].u = RTextExtractFloat(&texcoord_cursor);
+        texture_coords[i].v = RTextExtractFloat(&texcoord_cursor);
     }
 
     if ((short)parsed_vertex_count > 0) {
         int vertex_index = 0;
         do {
-            object->vertices[vertex_index].x = parse_next_float32(&mesh_cursor);
-            object->vertices[vertex_index].y = parse_next_float32(&mesh_cursor);
-            object->vertices[vertex_index].z = parse_next_float32(&mesh_cursor);
+            object->vertices[vertex_index].x = RTextExtractFloat(&mesh_cursor);
+            object->vertices[vertex_index].y = RTextExtractFloat(&mesh_cursor);
+            object->vertices[vertex_index].z = RTextExtractFloat(&mesh_cursor);
             ++vertex_index;
             --vertex_count;
         } while (vertex_count != 0);

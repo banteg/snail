@@ -156,9 +156,9 @@ void cRSMTracks::Import()
                         .load_or_reuse_cached_x_mesh(mesh_name);
 
                 option_match = find_case_insensitive_substring("(", option_match);
-                row->object_position.x = parse_next_float32(&option_match);
-                row->object_position.y = parse_next_float32(&option_match);
-                row->object_position.z = parse_next_float32(&option_match);
+                row->object_position.x = RTextExtractFloat(&option_match);
+                row->object_position.y = RTextExtractFloat(&option_match);
+                row->object_position.z = RTextExtractFloat(&option_match);
 
                 option_match = find_case_insensitive_substring("Velocity=", option_text);
                 if (option_match != 0) {
@@ -166,9 +166,9 @@ void cRSMTracks::Import()
                     row->flags |=
                         AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY;
                     option_match = find_case_insensitive_substring("(", option_match);
-                    row->object_velocity.x = parse_next_float32(&option_match);
-                    row->object_velocity.y = parse_next_float32(&option_match);
-                    row->object_velocity.z = parse_next_float32(&option_match);
+                    row->object_velocity.x = RTextExtractFloat(&option_match);
+                    row->object_velocity.y = RTextExtractFloat(&option_match);
+                    row->object_velocity.z = RTextExtractFloat(&option_match);
                 }
             }
 
@@ -178,9 +178,9 @@ void cRSMTracks::Import()
                 option_match = find_case_insensitive_substring("=", option_match) + 1;
                 row->parcel_set_id = parse_next_signed_int(&option_match);
                 option_match = find_case_insensitive_substring("(", option_match) + 1;
-                row->local_position.x = parse_next_float32(&option_match);
-                row->local_position.y = parse_next_float32(&option_match);
-                row->local_position.z = parse_next_float32(&option_match);
+                row->local_position.x = RTextExtractFloat(&option_match);
+                row->local_position.y = RTextExtractFloat(&option_match);
+                row->local_position.z = RTextExtractFloat(&option_match);
             }
 
             option_match = find_case_insensitive_substring("Path=", option_text);
@@ -225,7 +225,7 @@ void cRSMTracks::Import()
             option_match = find_case_insensitive_substring("RingSpeed=", option_text);
             if (option_match != 0) {
                 option_match = find_case_insensitive_substring("=", option_match) + 1;
-                row->ring_speed.value = parse_next_float32(&option_match);
+                row->ring_speed.value = RTextExtractFloat(&option_match);
             } else {
                 row->ring_speed.bits = 0;
             }

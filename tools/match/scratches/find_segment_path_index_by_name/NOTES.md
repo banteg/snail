@@ -20,7 +20,7 @@ content uses the 51 populated names.
 
 The comparison helper is the uncurated ASCII case-folding routine at
 `0x44e6c0`; it is distinct from the earlier curated
-`strings_equal_case_insensitive` function at `0x431dc0`.
+`RTextCompStart` function at `0x431dc0`.
 
 Source-shape constraints:
 

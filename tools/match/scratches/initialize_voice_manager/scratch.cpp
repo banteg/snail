@@ -143,7 +143,7 @@ void cRVoiceManager::Init()
 
     cursor = find_case_insensitive_substring("Frequency:", file_text);
     cursor = find_case_insensitive_substring(":", cursor);
-    global_frequency_seconds = parse_next_float32(&cursor);
+    global_frequency_seconds = RTextExtractFloat(&cursor);
 
     ReSet();
 }

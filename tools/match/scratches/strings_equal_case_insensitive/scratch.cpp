@@ -1,8 +1,8 @@
-// strings_equal_case_insensitive @ 0x431dc0 (cdecl)
+// RTextCompStart @ 0x431dc0 (cdecl)
 
 #include "rtext.h"
 
-bool __cdecl strings_equal_case_insensitive(char* left, char* prefix)
+bool __cdecl RTextCompStart(char* left, char* prefix)
 {
     char right_value = *prefix;
     char left_value = *left;

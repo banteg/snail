@@ -5980,6 +5980,12 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
         entry["name"]: entry
         for entry in functions["functions"]
     }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
 
     expected = {
         "copy_c_string": "RTextCopy(char*, char*)",
@@ -5992,8 +5998,26 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
         "parse_next_int32": "RTextExtractInt(char**)",
         "parse_next_float32": "RTextExtractFloat(char**)",
     }
+    object_symbols = {
+        "copy_c_string": "?RTextCopy@@YAXPAD0@Z",
+        "strings_equal_case_insensitive": "?RTextCompStart@@YA_NPAD0@Z",
+        "skip_to_next_line": "?RTextNewLine@@YAXPAPAD@Z",
+        "append_c_string": "?RTextAppend@@YAXPAD0@Z",
+        "parse_next_space_delimited_token": (
+            "?RTextExtractString@@YAXPAPADPAD@Z"
+        ),
+        "parse_next_int32": "?RTextExtractInt@@YAHPAPAD@Z",
+        "parse_next_float32": "?RTextExtractFloat@@YAMPAPAD@Z",
+    }
+    scratch_symbols = {
+        **object_symbols,
+        "parse_next_space_delimited_token": (
+            "?RTextExtractString@@YAPAPADPAPADPAD@Z"
+        ),
+    }
     for windows_name, mobile_symbol in expected.items():
         entry = entries[windows_name]
+        authored_name = mobile_symbol.split("(", 1)[0]
         assert entry["status"] == "verified"
         assert entry["confidence"] == "high"
         assert entry["source_object"] == "RShell.o"
@@ -6001,9 +6025,15 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
         assert entry["ios_symbol"] == mobile_symbol
         assert entry["android_body_count"] == 1
         assert entry["ios_body_count"] == 1
-        assert mobile_symbol.split("(", 1)[0] in (
-            functions_by_name[windows_name]["aliases"]
-        )
+        assert functions_by_name[windows_name]["aliases"] == [authored_name]
+        assert references_by_name[windows_name]["aliases"] == [
+            object_symbols[windows_name]
+        ]
+        scratch = repo_root / "tools/match/scratches" / windows_name
+        source = (scratch / "scratch.cpp").read_text(encoding="utf-8")
+        config = (scratch / "scratch.conf").read_text(encoding="utf-8")
+        assert f"{authored_name}(" in source
+        assert f"SYMBOL={scratch_symbols[windows_name]}\n" in config
 
     assert "`Rstrcmp` is strict equality" in (
         functions_by_name["strings_equal_case_insensitive"]["description"]
@@ -6016,15 +6046,24 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
         repo_root / "tools/match/include/rtext.h"
     ).read_text(encoding="utf-8")
     for declaration in (
-        "void __cdecl copy_c_string(char* destination, char* source);",
-        "char* left, char* prefix",
-        "void __cdecl skip_to_next_line(char** cursor);",
-        "void __cdecl append_c_string(char* destination, char* source);",
-        "void __cdecl parse_next_space_delimited_token(",
-        "int __cdecl parse_next_int32(char** cursor);",
-        "float __cdecl parse_next_float32(char** cursor);",
+        "void __cdecl RTextCopy(char* destination, char* source);",
+        "bool __cdecl RTextCompStart(char* left, char* prefix);",
+        "void __cdecl RTextNewLine(char** cursor);",
+        "void __cdecl RTextAppend(char* destination, char* source);",
+        "void __cdecl RTextExtractString(",
+        "int __cdecl RTextExtractInt(char** cursor);",
+        "float __cdecl RTextExtractFloat(char** cursor);",
     ):
         assert declaration in rtext_header
+    all_scratch_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in sorted(
+            (repo_root / "tools/match/scratches").glob("*/scratch.cpp")
+        )
+    )
+    for stale_name in expected:
+        assert f"{stale_name}(" not in rtext_header
+        assert f"{stale_name}(" not in all_scratch_sources
 
     binja_replay = (
         repo_root / "tools/binja/sync_rtext_types.py"

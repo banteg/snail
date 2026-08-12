@@ -31,75 +31,75 @@ void load_object_definition(char* path, Object* object)
         do {
             if (*cursor != '*') {
                 if (*cursor != '[') {
-                    skip_to_next_line(&cursor);
-                } else if (strings_equal_case_insensitive(cursor, "[VERTEX START]")) {
-                    skip_to_next_line(&cursor);
+                    RTextNewLine(&cursor);
+                } else if (RTextCompStart(cursor, "[VERTEX START]")) {
+                    RTextNewLine(&cursor);
 
                     line_cursor = cursor;
-                    if (!strings_equal_case_insensitive(cursor, "[VERTEX END]")) {
+                    if (!RTextCompStart(cursor, "[VERTEX END]")) {
                         do {
                             ++vertex_count;
-                            skip_to_next_line(&line_cursor);
-                        } while (!strings_equal_case_insensitive(line_cursor, "[VERTEX END]"));
+                            RTextNewLine(&line_cursor);
+                        } while (!RTextCompStart(line_cursor, "[VERTEX END]"));
                     }
 
                     object->RequestVertices(vertex_count);
 
-                    while (!strings_equal_case_insensitive(cursor, "[VERTEX END]")) {
+                    while (!RTextCompStart(cursor, "[VERTEX END]")) {
                         line_cursor = cursor;
-                        int index = parse_next_int32(&line_cursor);
-                        float x = parse_next_float32(&line_cursor);
-                        float y = parse_next_float32(&line_cursor);
-                        float z = parse_next_float32(&line_cursor);
+                        int index = RTextExtractInt(&line_cursor);
+                        float x = RTextExtractFloat(&line_cursor);
+                        float y = RTextExtractFloat(&line_cursor);
+                        float z = RTextExtractFloat(&line_cursor);
 
-                        skip_to_next_line(&cursor);
+                        RTextNewLine(&cursor);
 
                         object->vertices[index].x = x;
                         object->vertices[index].y = y;
                         object->vertices[index].z = z;
                     }
 
-                    skip_to_next_line(&cursor);
-                } else if (strings_equal_case_insensitive(cursor, "[FACEQUAD START]")) {
-                    skip_to_next_line(&cursor);
+                    RTextNewLine(&cursor);
+                } else if (RTextCompStart(cursor, "[FACEQUAD START]")) {
+                    RTextNewLine(&cursor);
 
                     line_cursor = cursor;
-                    if (!strings_equal_case_insensitive(cursor, "[FACEQUAD END]")) {
+                    if (!RTextCompStart(cursor, "[FACEQUAD END]")) {
                         do {
                             ++facequad_count;
-                            skip_to_next_line(&line_cursor);
-                        } while (!strings_equal_case_insensitive(line_cursor, "[FACEQUAD END]"));
+                            RTextNewLine(&line_cursor);
+                        } while (!RTextCompStart(line_cursor, "[FACEQUAD END]"));
                     }
 
                     object->RequestFaceQuads(facequad_count);
 
-                    while (!strings_equal_case_insensitive(cursor, "[FACEQUAD END]")) {
+                    while (!RTextCompStart(cursor, "[FACEQUAD END]")) {
                         line_cursor = cursor;
-                        int face_index = parse_next_int32(&line_cursor);
-                        int vertex_0 = parse_next_int32(&line_cursor);
-                        int vertex_1 = parse_next_int32(&line_cursor);
-                        int vertex_2 = parse_next_int32(&line_cursor);
-                        int vertex_3 = parse_next_int32(&line_cursor);
-                        float u0 = parse_next_float32(&line_cursor);
-                        float v0 = parse_next_float32(&line_cursor);
-                        float u1 = parse_next_float32(&line_cursor);
-                        float v1 = parse_next_float32(&line_cursor);
-                        float u2 = parse_next_float32(&line_cursor);
-                        float v2 = parse_next_float32(&line_cursor);
-                        float u3 = parse_next_float32(&line_cursor);
-                        float v3 = parse_next_float32(&line_cursor);
+                        int face_index = RTextExtractInt(&line_cursor);
+                        int vertex_0 = RTextExtractInt(&line_cursor);
+                        int vertex_1 = RTextExtractInt(&line_cursor);
+                        int vertex_2 = RTextExtractInt(&line_cursor);
+                        int vertex_3 = RTextExtractInt(&line_cursor);
+                        float u0 = RTextExtractFloat(&line_cursor);
+                        float v0 = RTextExtractFloat(&line_cursor);
+                        float u1 = RTextExtractFloat(&line_cursor);
+                        float v1 = RTextExtractFloat(&line_cursor);
+                        float u2 = RTextExtractFloat(&line_cursor);
+                        float v2 = RTextExtractFloat(&line_cursor);
+                        float u3 = RTextExtractFloat(&line_cursor);
+                        float v3 = RTextExtractFloat(&line_cursor);
 
-                        parse_next_space_delimited_token(&line_cursor, texture_name);
-                        append_c_string(texture_name, ".tga");
-                        copy_c_string(texture_path, path);
-                        append_c_string(texture_path, "/");
-                        append_c_string(texture_path, texture_name);
+                        RTextExtractString(&line_cursor, texture_name);
+                        RTextAppend(texture_name, ".tga");
+                        RTextCopy(texture_path, path);
+                        RTextAppend(texture_path, "/");
+                        RTextAppend(texture_path, texture_name);
 
                         object->facequads[face_index].texture_ref =
                             g_texture_refs.Add(
                                 texture_path, 0, 0);
 
-                        skip_to_next_line(&cursor);
+                        RTextNewLine(&cursor);
 
                         object->facequads[face_index].header_word = 0;
                         object->facequads[face_index].vertex_0 =
@@ -120,7 +120,7 @@ void load_object_definition(char* path, Object* object)
                         object->facequads[face_index].uv[3].v = v3;
                     }
 
-                    skip_to_next_line(&cursor);
+                    RTextNewLine(&cursor);
                 }
             } else {
                 do {

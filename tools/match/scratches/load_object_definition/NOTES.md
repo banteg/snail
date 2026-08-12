@@ -107,7 +107,7 @@ were introduced to conceal that residual.
 2026-07-14 parser-dispatch closure:
 
 - The prior scratch incorrectly placed one unconditional
-  `skip_to_next_line(&cursor)` after the bracket dispatch. Native has three
+  `RTextNewLine(&cursor)` after the bracket dispatch. Native has three
   semantic call sites instead: non-`[` lines, the completed vertex section,
   and the completed facequad section. An unrecognized `[` line falls directly
   to the outer termination test without advancing.

@@ -88,7 +88,7 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
         cursor = find_case_insensitive_substring("Duration:", animation_block);
         if (cursor != 0) {
             cursor = find_case_insensitive_substring(":", cursor) + 1;
-            progress_step = 1.0f / (parse_next_float32(&cursor) * 60.0f);
+            progress_step = 1.0f / (RTextExtractFloat(&cursor) * 60.0f);
         } else {
             progress_step = 0.0166666675f;
         }

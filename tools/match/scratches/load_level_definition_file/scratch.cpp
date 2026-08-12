@@ -231,7 +231,7 @@ void cRSubTracks::load_level_definition_file(char* filename)
             selected_speed = 100.0f;
         } else {
             cursor = find_case_insensitive_substring(":", cursor) + 1;
-            selected_speed = parse_next_float32(&cursor);
+            selected_speed = RTextExtractFloat(&cursor);
         }
     }
 
@@ -239,13 +239,13 @@ void cRSubTracks::load_level_definition_file(char* filename)
     if (cursor == 0)
         garbage_frequency = -1.0f;
     else
-        garbage_frequency = parse_next_float32(&cursor);
+        garbage_frequency = RTextExtractFloat(&cursor);
 
     cursor = find_case_insensitive_substring("Salt:", LEVEL_FILE_BUFFER);
     if (cursor == 0)
         salt_frequency = -1.0f;
     else
-        salt_frequency = parse_next_float32(&cursor);
+        salt_frequency = RTextExtractFloat(&cursor);
 
     segment_count = 0;
     cursor = find_case_insensitive_substring("Segments Begin:", LEVEL_FILE_BUFFER);
@@ -329,7 +329,7 @@ void cRSubTracks::load_level_definition_file(char* filename)
                 if (line_cursor != 0) {
                     line_cursor = find_case_insensitive_substring("=", line_cursor) + 1;
                     segment_slots[segment_count].message_duration.value =
-                        parse_next_float32(&line_cursor);
+                        RTextExtractFloat(&line_cursor);
                 }
 
                 line_cursor = find_case_insensitive_substring("Sample=", line_options);

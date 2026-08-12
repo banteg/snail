@@ -83,8 +83,8 @@ void cRLogo::Init(char* file_name)
             *out = 0;
             ++cursor;
 
-            float image_width = parse_next_float32(&cursor);
-            float image_height = parse_next_float32(&cursor);
+            float image_width = RTextExtractFloat(&cursor);
+            float image_height = RTextExtractFloat(&cursor);
             sprintf(path, "Intro/%s", image_name);
 
             add_intro_renderable_to_active_list(&letters[renderable_count]);
@@ -183,7 +183,7 @@ void cRLogo::Init(char* file_name)
 
     cursor = find_case_insensitive_substring((char*)"Duration:", file_bytes);
     cursor = find_case_insensitive_substring((char*)":", cursor);
-    float duration = parse_next_float32(&cursor);
+    float duration = RTextExtractFloat(&cursor);
     duration_seconds = duration;
 
     float step = (1.0f / (duration * 60.0f)) * (3.0f - crawl_y);

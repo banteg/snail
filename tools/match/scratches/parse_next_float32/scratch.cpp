@@ -1,8 +1,8 @@
-// parse_next_float32 @ 0x431f20 (cdecl)
+// RTextExtractFloat @ 0x431f20 (cdecl)
 
 #include "rtext.h"
 
-float __cdecl parse_next_float32(char** cursor)
+float __cdecl RTextExtractFloat(char** cursor)
 {
     while (**cursor != '-') {
         char* current = *cursor;

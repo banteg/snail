@@ -173,7 +173,7 @@ load_script:
         report_errorf("Landscape. Cannot find Distort: in %s", script_path);
     } else {
         cursor = find_case_insensitive_substring(":", cursor) + 1;
-        scripts[script_count].distort = parse_next_float32(&cursor);
+        scripts[script_count].distort = RTextExtractFloat(&cursor);
     }
 
     script_count++;

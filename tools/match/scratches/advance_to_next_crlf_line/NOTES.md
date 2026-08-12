@@ -5,7 +5,7 @@ Initial scratch for the CRLF-only resource text cursor helper at `0x44e690`.
 Recovered relationships:
 
 - Called by level, segment, and voice definition loaders.
-- This is distinct from the exact `skip_to_next_line` helper at `0x431e30`.
+- This is distinct from the exact `RTextNewLine` helper at `0x431e30`.
 - It searches for a Windows `\r\n` line break and returns the first character
   after it, but returns null when no CRLF is found or when the CRLF is the final
   text in the buffer.

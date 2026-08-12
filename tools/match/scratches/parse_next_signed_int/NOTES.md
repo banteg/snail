@@ -8,7 +8,7 @@ Recovered relationships:
 - A leading `-` flips the sign and is consumed; leading `+` and `.` are
   recognized as scan terminators but are not consumed by the sign block.
 - Accumulates base-10 digits using the same `value * 10 + digit - '0'` idiom as
-  the exact lower-level `parse_next_int32` helper.
+  the exact lower-level `RTextExtractInt` helper.
 
 Focused Wibo result: 28.87%, 50/47 candidate/target instructions, no masked
 operands. The semantic phases match BN, but native keeps the cursor owner in
@@ -37,8 +37,8 @@ best observed parser shape.
 focused Wibo to 70.10%, still 50/47 candidate/target instructions and no
 masked operands. The accepted shape scopes the pre-scan `current` pointer but
 spells the caller-owned character reads as `**cursor`, then uses the exact
-`parse_next_int32` digit-loop idiom for the sign/digit tail. The related
-`parse_next_float32` scratch accepts the same pre-scan owner-read idiom, so this
+`RTextExtractInt` digit-loop idiom for the sign/digit tail. The related
+`RTextExtractFloat` scratch accepts the same pre-scan owner-read idiom, so this
 looks like a real parser-family source pattern rather than a one-off nudge.
 
 Rejected/neutral probes in this pass:

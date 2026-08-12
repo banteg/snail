@@ -1,6 +1,6 @@
-// parse_next_space_delimited_token @ 0x431e80 (cdecl)
+// RTextExtractString @ 0x431e80 (cdecl)
 
-char** __cdecl parse_next_space_delimited_token(char** cursor, char* out)
+char** __cdecl RTextExtractString(char** cursor, char* out)
 {
     char** result = cursor;
 

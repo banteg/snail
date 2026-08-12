@@ -1,14 +1,9 @@
-# Matched
+# RTextAppend
 
-`append_c_string` is instruction-exact at 19/19 instructions: scan to the
-destination NUL, copy the source bytes, and write the final terminator.
+Exact at 19/19 instructions with no masked operands. It scans to the
+destination NUL, appends the source bytes, and writes the final terminator.
 
-## 2026-07-27 authored RText ownership
-
-Android and iOS preserve the same helper as void
-`RTextAppend(char*, char*)` in `RShell.o`. Mobile `ObjectTextLoad` performs the
-same `.tga`, slash, and texture-name appends as Windows
-`load_object_definition`, inside the same contiguous RText helper family.
-
-All three Windows calls discard EAX. Removing the synthetic pointer return
-keeps the exact object and restores the authored void boundary.
+Android and iOS preserve the void `RTextAppend(char*, char*)` contract in the
+contiguous `RShell.o` RText family. Mobile `ObjectTextLoad` performs the same
+extension, separator, and texture-name appends as Windows
+`load_object_definition`; all three Windows calls discard EAX.

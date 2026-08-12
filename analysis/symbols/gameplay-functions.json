@@ -2650,7 +2650,7 @@
       "aliases": [
         "RTextCopy"
       ],
-      "description": "Void Windows `RTextCopy(char*, char*)`: copies one NUL-terminated C string into the destination buffer. Android and iOS preserve the authored RShell.o name, body, and placement at the head of the contiguous RText helper family."
+      "description": "Exact void Windows `RTextCopy(char*, char*)`: copies one NUL-terminated C string into the destination buffer. Android and iOS preserve the authored RShell.o name, body, and placement at the head of the contiguous RText helper family."
     },
     {
       "address": "0x431dc0",
@@ -2658,7 +2658,7 @@
       "aliases": [
         "RTextCompStart"
       ],
-      "description": "Windows `RTextCompStart(char*, char*)`: compares ASCII case-insensitively and returns true when the prefix argument terminates after matching. Mobile `Rstrcmp` is strict equality instead; the contiguous RShell.o RText sequence and ObjectTextLoad call graph resolve the owner."
+      "description": "Exact Windows `RTextCompStart(char*, char*)`: compares ASCII case-insensitively and returns true when the prefix argument terminates after matching. Mobile `Rstrcmp` is strict equality instead; the contiguous RShell.o RText sequence and ObjectTextLoad call graph resolve the owner."
     },
     {
       "address": "0x431e30",
@@ -2666,7 +2666,7 @@
       "aliases": [
         "RTextNewLine"
       ],
-      "description": "Void Windows `RTextNewLine(char**)`: advances the caller-owned text cursor to the next line break or NUL and then steps once more so the cursor starts on the following line."
+      "description": "Exact void Windows `RTextNewLine(char**)`: advances the caller-owned text cursor to the next line break or NUL and then steps once more so the cursor starts on the following line."
     },
     {
       "address": "0x431e50",
@@ -2674,7 +2674,7 @@
       "aliases": [
         "RTextAppend"
       ],
-      "description": "Void Windows `RTextAppend(char*, char*)`: advances to the destination string's trailing NUL and appends the source string in place."
+      "description": "Exact void Windows `RTextAppend(char*, char*)`: advances to the destination string's trailing NUL and appends the source string in place."
     },
     {
       "address": "0x431e80",
@@ -2682,7 +2682,7 @@
       "aliases": [
         "RTextExtractString"
       ],
-      "description": "Void Windows `RTextExtractString(char**, char*)`: skips leading spaces, copies the next space- or CR-delimited token from the caller-owned text cursor into the destination buffer, and advances the cursor."
+      "description": "Exact void Windows `RTextExtractString(char**, char*)`: skips leading spaces, copies the next space- or CR-delimited token from the caller-owned text cursor into the destination buffer, and advances the cursor."
     },
     {
       "address": "0x431ec0",

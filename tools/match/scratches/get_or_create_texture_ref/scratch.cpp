@@ -19,14 +19,14 @@ cRTexture* cRTextures::Add(
     if ((flags & TEXTURE_REF_DISABLE_PATH_REUSE) == 0 && 0 < count) {
         char* cursor = entries[0].name;
         while (i < count) {
-            if (strings_equal_case_insensitive(cursor, texture_path) != 0)
+            if (RTextCompStart(cursor, texture_path) != 0)
                 goto found_existing;
             ++i;
             cursor += sizeof(cRTexture);
         }
     }
 
-    copy_c_string(entries[count].name, texture_path);
+    RTextCopy(entries[count].name, texture_path);
     current = count;
     entries[current].slot_index = current;
     entries[count].flags = 0;

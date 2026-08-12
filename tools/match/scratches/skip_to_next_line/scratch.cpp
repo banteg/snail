@@ -1,8 +1,8 @@
-// skip_to_next_line @ 0x431e30 (cdecl)
+// RTextNewLine @ 0x431e30 (cdecl)
 
 #include "rtext.h"
 
-void __cdecl skip_to_next_line(char** cursor)
+void __cdecl RTextNewLine(char** cursor)
 {
     char* result = *cursor;
     while (*result != '\0') {
