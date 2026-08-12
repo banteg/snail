@@ -1,4 +1,13 @@
-# `build_subgame_level` scratch notes
+# build_subgame_level @ 0x437eb0
+
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRSubGame::StartLevel(int)` bodies and the live Windows SubGame method
+establish the complete music and manager reset, replay/default configuration,
+nested level generation, landscape and Banner setup, Player initialization,
+active-list insertion, HUD, and terminal rate setup. All 108 references are
+clean and both sides contain 555 instructions; the remaining deltas are the
+landscape default-parameter reload, Banner scheduling, and equivalent
+active-list register allocation.
 
 ## Scope
 

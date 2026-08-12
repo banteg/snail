@@ -1,4 +1,12 @@
-# WIP scratch — 85.88%, 673/673 insns (2026-08-09 motion-contract closure)
+# handle_subgoldy_collisions @ 0x444cf0
+
+Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
+`cRSubGoldy::Collision()` bodies and the live Windows Player method establish
+all eight collision sweeps, their pool/state gates, distance tests, damage and
+pickup transitions, score/reward ladders, garbage response, and first/repeat
+slug-hit motion. All 89 references are clean and both sides contain 673
+instructions; the remaining deltas are equivalent vector stack colouring,
+register allocation, and two scale-one SIB encodings.
 
 Structure complete: all eight pool sweeps in order with asm-verified
 offsets. The remaining debt is systematic local-stack and register allocation:
@@ -359,7 +367,7 @@ Asm-verified field finds (cross-findings for the campaign):
   0x35b7f4/kind 0x35b814; parcel hud owner dword 0x35bb94, total
   0x1b01e0
 
-# Dossier — scratch not yet written (673 insns, 2887 bytes)
+## Initial collision dossier (historical 673-insn baseline)
 
 cRSubGoldy::Collision() per cross-port symbols. target.asm committed.
 The contact table, from the IDA export (line refs in 00444cf0-*.c):
@@ -750,10 +758,11 @@ Four current-state follow-up sweeps bound the adjacent allocation:
   shorter mobile expression.
 
 The complete ledger now contains 100 unique variants across fourteen sweeps,
-with five sweep wins and four consecutive non-improving follow-ups. This lane
-is formally stalled at 85.88%; the remaining early stack-color differences
-need new source provenance, while the final two ring-kind differences are only
-equivalent scale-one SIB base/index encodings.
+with five sweep wins; the last four follow-ups were non-improving. This is
+descriptive evidence, not a stopping rule. The current lane remains at 85.88%;
+the early stack-color differences need new source provenance, while the final
+two ring-kind differences are only equivalent scale-one SIB base/index
+encodings.
 
 ## 2026-08-09 slug-hit motion and falling-handoff closure
 
@@ -793,8 +802,8 @@ split and side values.
 Focused validation remains 85.88%, 673/673 instructions, prefix 18, native
 `0x74` frame, and 89 clean references. Because the retained source already
 encodes every recovered write and ordering edge, no score-neutral spelling or
-new mutation sweep is warranted. The fourteen-sweep, 100-variant vector lane
-remains formally stalled until genuinely new source provenance appears.
+new mutation sweep is currently warranted. The fourteen-sweep, 100-variant
+vector evidence remains available for any genuinely new source provenance.
 
 ## 2026-08-09 falling-latch producer closure
 
@@ -832,8 +841,8 @@ consumer now spell the field `slug_fall_active`; ordinary non-slug falling
 paths do not set it.
 
 This closure is score-neutral. Focused validation remains 85.88%, 673/673,
-prefix 18, frame `0x74`, and 89 clean references; the stalled vector grids were
-not reopened.
+prefix 18, frame `0x74`, and 89 clean references; the recorded vector grids
+were not rerun.
 
 ## 2026-08-09 invincibility-capability collision contract
 
@@ -853,7 +862,7 @@ weapon selector bits.
 Replacing the three raw masks with the shared named capability is
 codegen-neutral. Focused Windows validation remains 85.88%, 673/673
 instructions, prefix 18, native frame `0x74`, and all 89 references clean.
-The formally stalled collision stack-coloring lane was not reopened.
+The recorded collision stack-coloring experiments were not rerun.
 
 ## 2026-08-09 stale mutation-plan retirement
 
