@@ -4615,7 +4615,7 @@
         "off_497360",
         "data_497360"
       ],
-      "description": "Active landscape entry vtable installed by initialize_active_landscape_entry."
+      "description": "One-entry ActiveLandscapeEntry callback table installed by initialize_active_landscape_entry; its sole target is exact update_active_landscape_entry at 0x418ac0 in the terminal Windows Landscape.o run."
     },
     {
       "address": "0x497364",

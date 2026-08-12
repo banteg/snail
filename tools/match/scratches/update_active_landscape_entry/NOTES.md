@@ -42,3 +42,20 @@ constructor/activate/clear siblings. The decompile exposes `state`,
 `repeat_z_span`, `reference_bod`, the inherited transform, and object bounds
 directly. The matcher remains exact at 41/41 with all four operands clean; no
 matching source or masks changed.
+
+## 2026-08-12 Landscape.o source-unit tail
+
+This exact callback is the terminal function of the Windows Landscape unit.
+The four preceding lifecycle functions are verified `Landscape.o` methods:
+`cRLandscapeManager::Open`, `Import`, `Init`, and `UnInit`. The next function,
+`initialize_loading_screen @ 0x418b50`, is independently verified as the first
+`LoadingBar.o` method. The updater's sole native reference is the one-entry
+table at `0x497360`, installed on the exact ten-record bank owned and driven by
+those Landscape methods.
+
+Android and iOS omit that complete repeated DirectX slice bank: their
+`cRLandscapeManager::Init(int)` retains backdrop, border, and fog setup but no
+per-slice update callback. The source object is therefore recovered as
+`Landscape.o` with `windows-source-unit-tail` evidence while the mobile
+crosswalk remains honestly unverified. The matcher stays exact at 41/41; no
+synthetic mobile owner or platform layout is introduced.

@@ -1623,7 +1623,9 @@
     {
       "address": "0x418ac0",
       "name": "update_active_landscape_entry",
-      "description": "Updates one active repeated landscape slice: state 1 wraps its inherited transform z offset by the recovered repeat span, then toggles the shared visibility bit against the reference BOD camera band."
+      "description": "Updates one active repeated landscape slice: state 1 wraps its inherited transform z offset by the recovered repeat span, then toggles the shared visibility bit against the reference BOD camera band. This exact callback is the terminal function in the Windows Landscape.o run; mobile cRLandscapeManager::Init omits the complete ten-slice DirectX bank, so no one-to-one mobile method exists.",
+      "source_object": "Landscape.o",
+      "source_object_evidence": "windows-source-unit-tail"
     },
     {
       "address": "0x418b50",

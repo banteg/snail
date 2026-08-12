@@ -6001,6 +6001,63 @@ def test_mobile_bod_list_tail_splice_recovers_game_source_object() -> None:
     )
 
 
+def test_windows_landscape_source_unit_tail_recovers_entry_updater() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = complete["entries"]
+    by_name = {entry["windows_name"]: entry for entry in entries}
+    updater = by_name["update_active_landscape_entry"]
+
+    assert updater["status"] == "unverified"
+    assert "android_symbol" not in updater
+    assert "ios_symbol" not in updater
+    assert updater["source_object"] == "Landscape.o"
+    assert (
+        updater["source_object_evidence"]
+        == "windows-source-unit-tail"
+    )
+
+    index = entries.index(updater)
+    preceding = entries[index - 4 : index]
+    assert [entry["windows_name"] for entry in preceding] == [
+        "reset_landscape_manager",
+        "load_landscape_script_by_name",
+        "activate_landscape_entry",
+        "clear_active_landscape_entries",
+    ]
+    assert all(entry["status"] == "verified" for entry in preceding)
+    assert all(
+        entry["source_object"] == "Landscape.o" for entry in preceding
+    )
+    next_entry = entries[index + 1]
+    assert next_entry["windows_name"] == "initialize_loading_screen"
+    assert next_entry["status"] == "verified"
+    assert next_entry["source_object"] == "LoadingBar.o"
+
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    callback_table = next(
+        reference
+        for reference in references["symbols"]
+        if reference["address"] == "0x497360"
+    )
+    assert callback_table["name"] == "g_active_landscape_entry_vtable"
+    assert "sole target" in callback_table["description"]
+    assert "Landscape.o" in callback_table["description"]
+
+    notes = (
+        repo_root
+        / "tools/match/scratches/update_active_landscape_entry/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "windows-source-unit-tail" in notes
+    assert "crosswalk remains" in notes
+    assert "honestly unverified" in notes
+    assert any(
+        "windows-source-unit-tail" in note for note in complete["notes"]
+    )
+
+
 def test_mobile_cli_prints_verified_cross_port_paths(capsys) -> None:
     result = main(
         [
