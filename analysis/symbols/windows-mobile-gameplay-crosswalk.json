@@ -12,6 +12,7 @@
     "unverified candidate scores blend curated names and aliases with size similarity; an exact curated alias outranks platform-stub size drift, but candidates are not mappings.",
     "source_object on an unverified entry is independent Windows compilation-unit provenance and does not turn a candidate into a mobile mapping.",
     "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
+    "source_object_evidence set to windows-isolated-class-source-run means a closed Windows method family forms its own linker run between independently identified source units, and the exact native class name fixes that run's object filename.",
     "source_object_evidence set to ios-global-source-object means the Windows function initializes, or is the direct CRT thunk for, a cross-port global whose exact iOS symbol is assigned to that source object.",
     "source_object_evidence set to android-global-constructor-source-file means an exact Android `_GLOBAL__I_<source>.cpp` symbol constructs the corresponding cross-port globals, and the canonical iOS source catalog assigns that source file to the named object unit.",
     "mobile_candidate_rejections preserve audited negative evidence and exclude only the exact demangled symbols listed by the Windows manifest."
@@ -13777,6 +13778,8 @@
       "windows_name": "initialize_track_render_cache_manager",
       "windows_size": 448,
       "status": "unverified",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run",
       "android_candidates": [
         {
           "symbol": "cRResourceManager::AI()",
@@ -13847,6 +13850,8 @@
       "windows_name": "build_track_render_caches",
       "windows_size": 1552,
       "status": "unverified",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run",
       "android_candidates": [
         {
           "symbol": "cRSubGame::cRSubGame()",
@@ -13917,6 +13922,8 @@
       "windows_name": "add_track_cache_vertex",
       "windows_size": 304,
       "status": "unverified",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run",
       "android_candidates": [
         {
           "symbol": "cRMouse::ConvertScreenXY(float, float, float*, float*)",
@@ -13987,6 +13994,8 @@
       "windows_name": "append_track_cache_object",
       "windows_size": 464,
       "status": "unverified",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run",
       "android_candidates": [
         {
           "symbol": "cRObject::CalcEdges()",
@@ -14057,6 +14066,8 @@
       "windows_name": "update_track_render_cache_rows",
       "windows_size": 848,
       "status": "unverified",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run",
       "android_candidates": [
         {
           "symbol": "cRGame::cRGame()",
@@ -14127,6 +14138,8 @@
       "windows_name": "update_active_bod",
       "windows_size": 160,
       "status": "unverified",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run",
       "android_candidates": [
         {
           "symbol": "cRBorderManager::DeActivateOtherBorders(cRBorder*, cRBorder*, cRBorder*, cRBorder*)",
@@ -14197,6 +14210,8 @@
       "windows_name": "remove_track_render_cache_bods",
       "windows_size": 160,
       "status": "unverified",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run",
       "android_candidates": [
         {
           "symbol": "cRBod::cRBod()",

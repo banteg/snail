@@ -2552,37 +2552,51 @@
     {
       "address": "0x433060",
       "name": "initialize_track_render_cache_manager",
-      "description": "Authored void initializer for the embedded cRSegmentCache owner: constructs its fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its sole Windows caller discards the incidental final allocation pointer, and its complete 0xa7f8-byte extent matches the Windows runtime size ledger."
+      "description": "Authored void initializer for the embedded cRSegmentCache owner: constructs its fixed 143x5 track-render BOD grid plus shared GDX cache vertex/index buffers and per-family scratch arrays. Its sole Windows caller discards the incidental final allocation pointer, and its complete 0xa7f8-byte extent matches the Windows runtime size ledger.",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run"
     },
     {
       "address": "0x433220",
       "name": "build_track_render_caches",
-      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning cRSubGame\u2019s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state."
+      "description": "Authored void cRSegmentCache builder for the Floor, Slide, Warn, Ramp, and Fringe families: consumes the owning cRSubGame\u2019s fixed runtime-cell slab and uses each embedded cRSubLoc anchor as the mesh-instance position. The final debug-report result is incidental call state.",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run"
     },
     {
       "address": "0x433830",
       "name": "add_track_cache_vertex",
-      "description": "Transforms and deduplicates one source object vertex into a cRSegmentCache family staging buffer, optionally projecting track UVs."
+      "description": "Transforms and deduplicates one source object vertex into a cRSegmentCache family staging buffer, optionally projecting track UVs.",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run"
     },
     {
       "address": "0x433960",
       "name": "append_track_cache_object",
-      "description": "Appends one source object\u2019s triangle or quad faces to a cRSegmentCache family by emitting deduplicated vertices and indices."
+      "description": "Appends one source object\u2019s triangle or quad faces to a cRSegmentCache family by emitting deduplicated vertices and indices.",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run"
     },
     {
       "address": "0x433b30",
       "name": "update_track_render_cache_rows",
-      "description": "Advances cRSegmentCache while Goldy\u2019s current row stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe BOD slots into their active lists and seeding each slot color."
+      "description": "Advances cRSegmentCache while Goldy\u2019s current row stays ahead of the next cached row, linking the Floor, Slide, Warn, Ramp, and Fringe BOD slots into their active lists and seeding each slot color.",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run"
     },
     {
       "address": "0x433e80",
       "name": "update_active_bod",
-      "description": "Exact TrackRenderCacheSlot callback installed by initialize_active_bod: recycles one live cache BOD to the root free list once its cache-row base plus the native 24-unit span falls behind the current subgame cutoff."
+      "description": "Exact TrackRenderCacheSlot callback installed by initialize_active_bod: recycles one live cache BOD to the root free list once its cache-row base plus the native 24-unit span falls behind the current subgame cutoff.",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run"
     },
     {
       "address": "0x433f20",
       "name": "remove_track_render_cache_bods",
-      "description": "Unlinks the cRSegmentCache owner\u2019s fixed 143x5 BOD grid from the shared active-bod list during subgame teardown."
+      "description": "Unlinks the cRSegmentCache owner\u2019s fixed 143x5 BOD grid from the shared active-bod list during subgame teardown.",
+      "source_object": "SegmentCache.o",
+      "source_object_evidence": "windows-isolated-class-source-run"
     },
     {
       "address": "0x433fc0",

@@ -6032,6 +6032,47 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     assert "source object evidence: windows-contiguous-source-run" in output
 
 
+def test_windows_isolated_class_source_run_preserves_cache_owner() -> None:
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = complete["entries"]
+    by_name = {entry["windows_name"]: entry for entry in entries}
+    cache_names = (
+        "initialize_track_render_cache_manager",
+        "build_track_render_caches",
+        "add_track_cache_vertex",
+        "append_track_cache_object",
+        "update_track_render_cache_rows",
+        "update_active_bod",
+        "remove_track_render_cache_bods",
+    )
+    cache_entries = [by_name[name] for name in cache_names]
+
+    assert [entry["address"] for entry in cache_entries] == [
+        "0x433060",
+        "0x433220",
+        "0x433830",
+        "0x433960",
+        "0x433b30",
+        "0x433e80",
+        "0x433f20",
+    ]
+    assert all(entry["status"] == "unverified" for entry in cache_entries)
+    assert all(
+        entry["source_object"] == "SegmentCache.o"
+        for entry in cache_entries
+    )
+    assert all(
+        entry["source_object_evidence"]
+        == "windows-isolated-class-source-run"
+        for entry in cache_entries
+    )
+    first_index = entries.index(cache_entries[0])
+    last_index = entries.index(cache_entries[-1])
+    assert entries[first_index : last_index + 1] == cache_entries
+    assert entries[last_index + 1]["windows_name"] == "bind_subgame_owner"
+    assert entries[last_index + 1]["source_object"] == "GUI.o"
+
+
 def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
     repo_root = Path(__file__).parents[1]
     names = load_json(

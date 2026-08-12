@@ -317,3 +317,20 @@ and complete reference audit are otherwise identical. This is now a measured
 backend encoding boundary rather than an untried pointer-owner expression; no
 integer-to-pointer trick or synthetic dependency is retained to exchange
 commutative SIB roles.
+
+## 2026-08-12 source-unit closure
+
+The seven functions from `0x433060` through `0x433f20` form one closed
+Windows linker run owned by the exact runtime-ledger class `cRSegmentCache`.
+Live Binary Ninja xrefs show that `add_track_cache_vertex` and
+`append_track_cache_object` are private to the run, while `update_active_bod`
+is reached only through the callback table installed across its owned slot
+grid. The four external calls all pass the embedded `cRSegmentCache` receiver.
+The next function at `0x433fc0` is independently verified as `GUI.o`, so the
+cache family is recorded as the distinct `SegmentCache.o` source unit.
+
+This does not transfer the mobile `cRFringeManager` owner. Mobile
+`cRSubGame::FringeEdgeTrack()` is already the exact counterpart of Windows
+`build_track_fringe_objects`; it creates the fringe records that the
+Windows-only segment cache later batches together with Floor, Slide, Warn,
+and Ramp geometry.

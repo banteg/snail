@@ -122,6 +122,20 @@ def test_default_function_symbol_manifest_loads() -> None:
             by_name[name].source_object_evidence
             == "windows-contiguous-source-run"
         )
+    for name in (
+        "initialize_track_render_cache_manager",
+        "build_track_render_caches",
+        "add_track_cache_vertex",
+        "append_track_cache_object",
+        "update_track_render_cache_rows",
+        "update_active_bod",
+        "remove_track_render_cache_bods",
+    ):
+        assert by_name[name].source_object == "SegmentCache.o"
+        assert (
+            by_name[name].source_object_evidence
+            == "windows-isolated-class-source-run"
+        )
     assert {
         rejection.symbol
         for rejection in game_init.mobile_candidate_rejections
