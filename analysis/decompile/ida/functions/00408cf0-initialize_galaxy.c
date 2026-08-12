@@ -2,8 +2,8 @@
 /* function: initialize_galaxy @ 0x408cf0 */
 /* selector: initialize_galaxy */
 
-// Exact void Windows `Galaxy::initialize_galaxy`: builds the Star Map, seeds its selected route from SnailMail.cfg, and wires Deliver/Play, replay, and back controls. Android and iOS preserve `cRGalaxy::Init()`.
-void __thiscall initialize_galaxy(Galaxy *galaxy)
+// Exact void Windows `cRGalaxy::Init()`: builds the Star Map, seeds its selected route from SnailMail.cfg, and wires Deliver/Play, replay, and back controls. Android and iOS preserve the same authored member.
+void __thiscall initialize_galaxy(cRGalaxy *galaxy)
 {
   int32_t landscape_script_by_name; // eax
   cRSubGame *level_progress_base; // eax

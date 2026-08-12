@@ -132,19 +132,19 @@ literal is intentionally retained rather than inventing a second global.
 
 The durable replay now installs `GalaxyPoint[10]` at `0x4a1c4c`,
 `GalaxyPoint[101]` at `0x4a1d14`, and the true
-`void __thiscall load_galaxy_layout(Galaxy*)` contract. This supersedes the
+`void __thiscall load_galaxy_layout(cRGalaxy*)` contract. This supersedes the
 earlier failed manual prototype attempt: live readback and a focused export
-both preserve the Galaxy owner and named point banks. Moving their externs to
+both preserve the cRGalaxy owner and named point banks. Moving their externs to
 the shared route header is source-shape neutral at 88.27%, 236/233
 candidate/target instructions, prefix 62, and 39 clean operands.
 
 ## 2026-07-17 paired IDA lifecycle replay
 
-The parallel IDA subgame-runtime lane now applies the same ten Galaxy member
+The parallel IDA subgame-runtime lane now applies the same ten cRGalaxy member
 contracts as Binary Ninja and types the external `GalaxyPoint[10]` group bank
 and `GalaxyPoint[101]` route bank. Live readback confirms the void loader and
 the typed constructor, destructor, updater, line renderer, route tick, route
-open/close, and bounds helper. Focused paired exports now retain `Galaxy*`,
+open/close, and bounds helper. Focused paired exports now retain `cRGalaxy*`,
 `GalaxyStar*`, both point-bank owners, and the borrowed
 `cRSubGame* level_progress_base` instead of IDA's former `_DWORD*` and
 integer receivers. Matching remains honestly unchanged at 88.27%, 236/233
@@ -277,7 +277,7 @@ byte-identical rather than being reactivated for owner spelling.
 
 The current canonical match, both verified mobile `cRGalaxy::Open(int)`
 bodies, and live Binary Ninja readback close the authored Windows bootstrap.
-The `Galaxy` receiver, two complete point banks, their interior y-lane cursors,
+The `cRGalaxy` receiver, two complete point banks, their interior y-lane cursors,
 borrowed `cRSubGame` backlink, archive text, route-name records, route slots,
 parser exits, and route-zero finalization are all represented. The focused
 audit has 42 clean references with no unresolved, mismatched, or unaudited

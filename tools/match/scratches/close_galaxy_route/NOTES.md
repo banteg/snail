@@ -15,14 +15,14 @@ match. The two field clears precede the calls in source; VC6 hoists the first
 
 Type layout recovered for this call: `+0x08` route-state word, `+0x10f80`
 selected index with a `-1` sentinel, `+0x10f8c` a six-entry `FrontendWidget*`
-border array. The parent now uses the shared `Galaxy` header also used by
+border array. The parent now uses the shared `cRGalaxy` header also used by
 `open_galaxy_route` (@ 0x409c50) and `update_galaxy` (@ 0x4092f0).
 
 Android/iOS retain this exact 18/18 member as `cRGalaxy::BoxOff()`.
 
 ## 2026-07-15 Binary Ninja lifecycle replay
 
-Live readback now records `void __thiscall close_galaxy_route(Galaxy*)` and
+Live readback records `void __thiscall close_galaxy_route(cRGalaxy*)` and
 the focused export retains all six named widget owners. Matching remains exact
 at 18/18 with six clean operands.
 

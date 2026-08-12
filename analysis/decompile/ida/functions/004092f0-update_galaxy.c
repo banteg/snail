@@ -3,7 +3,7 @@
 /* selector: update_galaxy */
 
 // Runs the embedded cRGalaxy Star Map state machine, including route selection, replay launch, Deliver/Play handoff, and the route/icon render pass. Android and iOS split the same ownership between `cRGalaxy::AI()` and `cRGalaxy::Render()`; their trivial `AIControl()` exposes the result state that Windows returns directly.
-int32_t __thiscall update_galaxy(Galaxy *galaxy)
+int32_t __thiscall update_galaxy(cRGalaxy *galaxy)
 {
   int32_t v2; // edi
   GalaxyStar *route_slots; // ebx

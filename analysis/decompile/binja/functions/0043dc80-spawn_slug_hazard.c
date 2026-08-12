@@ -66,7 +66,7 @@
 0043ddab        list_flags_1:1.b |= 2
 0043ddae        slug_slot_cursor->slug.body.bod.bod.list_flags = list_flags_1
 0043dd78        report_errorf("List ADDbefore")
-0043ddc7        struct Sprite* eax_7 = allocate_sprite(&g_sprite_manager, owner_player->player_slot, 0x76, 0xffffffff, 0xffffffff)
+0043ddc7        cRSprite* eax_7 = allocate_sprite(&g_sprite_manager, owner_player->player_slot, 0x76, 0xffffffff, 0xffffffff)
 0043ddcc        slug_slot_cursor->slug.sprite = eax_7
 0043ddd2        enum SpriteFlag flags = eax_7->flags
 0043ddd5        flags:1.b |= 8

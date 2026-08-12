@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 9,
+  "function_count": 10,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 9,
-  "ida_exported": 9,
+  "bn_exported": 10,
+  "ida_exported": 10,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,40 +18,44 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "construct_game_runtime",
-      "address": "0x407b60"
+      "name": "load_galaxy_layout",
+      "address": "0x4088e0"
+    },
+    {
+      "name": "destroy_galaxy",
+      "address": "0x408c10"
+    },
+    {
+      "name": "initialize_galaxy",
+      "address": "0x408cf0"
     },
     {
       "name": "update_galaxy",
       "address": "0x4092f0"
     },
     {
-      "name": "initialize_input",
-      "address": "0x40aa50"
+      "name": "draw_galaxy_line",
+      "address": "0x409b00"
     },
     {
-      "name": "update_input",
-      "address": "0x40aa80"
+      "name": "update_galaxy_route_record",
+      "address": "0x409bd0"
     },
     {
-      "name": "update_game_input",
-      "address": "0x40aab0"
+      "name": "close_galaxy_route",
+      "address": "0x409bf0"
     },
     {
-      "name": "initialize_game_assets_and_world",
-      "address": "0x40acf0"
+      "name": "open_galaxy_route",
+      "address": "0x409c50"
     },
     {
-      "name": "update_frontend_state_machine",
-      "address": "0x4107d0"
+      "name": "galaxy_border_bound",
+      "address": "0x40a0c0"
     },
     {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
-    },
-    {
-      "name": "click_mouse_screen",
-      "address": "0x44c060"
+      "name": "spawn_slug_hazard",
+      "address": "0x43dc80"
     }
   ],
   "health_check_count": 1158,

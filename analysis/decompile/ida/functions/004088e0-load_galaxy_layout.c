@@ -2,8 +2,8 @@
 /* function: load_galaxy_layout @ 0x4088e0 */
 /* selector: load_galaxy_layout */
 
-// Recovered void Galaxy bootstrap: loads `Galaxy/_Galaxy.txt`, rescales the authored point tables, populates the embedded route/star bank, and binds its borrowed cRSubGame backlink. Android and iOS retain this parser inside `cRGalaxy::Open(int)`.
-void __thiscall load_galaxy_layout(Galaxy *galaxy)
+// Recovered void cRGalaxy bootstrap: loads `Galaxy/_Galaxy.txt`, rescales the authored point tables, populates the embedded route/star bank, and binds its borrowed cRSubGame backlink. Android and iOS retain this parser inside the authored Open family.
+void __thiscall load_galaxy_layout(cRGalaxy *galaxy)
 {
   union GalaxyPoint::$05C98FCC6CBF70FB5A4B689A398B23F2 *p_y_bits; // eax
   double v3; // st7

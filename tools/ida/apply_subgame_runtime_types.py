@@ -16,8 +16,8 @@ SCRIPT_ROOT = pathlib.Path(__file__).resolve().parent
 if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
-from game_root_owner import sync_game_root_owner_graph  # noqa: E402
-
+from game_root_owner import sync_game_root_owner_graph
+from type_alias_migration import migrate_equivalent_struct_aliases
 
 HELP_OWNER_EXPECTED_SIZE = 0x04
 SUBGAME_OWNER_EXPECTED_SIZE = 0x1272838
@@ -113,9 +113,13 @@ BANNER_OWNER_EXPECTED_SIZES = {
     "BannerInitStrideView": 0x3CD6F8,
 }
 
+GALAXY_OWNER_TYPE_ALIASES = (
+    ("Galaxy", "cRGalaxy", 0x10FA8),
+)
+
 GALAXY_OWNER_EXPECTED_SIZES = {
     "GalaxyStar": 0x2A0,
-    "Galaxy": 0x10FA8,
+    "cRGalaxy": 0x10FA8,
 }
 
 PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES = {
@@ -265,23 +269,23 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "load_galaxy_layout",
-        "void __thiscall load_galaxy_layout(Galaxy* galaxy);",
+        "void __thiscall load_galaxy_layout(cRGalaxy* galaxy);",
     ),
     (
         "destroy_galaxy",
-        "void __thiscall destroy_galaxy(Galaxy* galaxy);",
+        "void __thiscall destroy_galaxy(cRGalaxy* galaxy);",
     ),
     (
         "initialize_galaxy",
-        "void __thiscall initialize_galaxy(Galaxy* galaxy);",
+        "void __thiscall initialize_galaxy(cRGalaxy* galaxy);",
     ),
     (
         "update_galaxy",
-        "int32_t __thiscall update_galaxy(Galaxy* galaxy);",
+        "int32_t __thiscall update_galaxy(cRGalaxy* galaxy);",
     ),
     (
         "draw_galaxy_line",
-        "void __thiscall draw_galaxy_line(Galaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color);",
+        "void __thiscall draw_galaxy_line(cRGalaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color);",
     ),
     (
         "update_galaxy_route_record",
@@ -289,15 +293,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "close_galaxy_route",
-        "void __thiscall close_galaxy_route(Galaxy* galaxy);",
+        "void __thiscall close_galaxy_route(cRGalaxy* galaxy);",
     ),
     (
         "open_galaxy_route",
-        "void __thiscall open_galaxy_route(Galaxy* galaxy, int32_t selected_level_index);",
+        "void __thiscall open_galaxy_route(cRGalaxy* galaxy, int32_t selected_level_index);",
     ),
     (
         "galaxy_border_bound",
-        "void __thiscall galaxy_border_bound(Galaxy* galaxy, float* min_x, float* max_x, float* min_y, float* max_y, FrontendWidget* widget);",
+        "void __thiscall galaxy_border_bound(cRGalaxy* galaxy, float* min_x, float* max_x, float* min_y, float* max_y, FrontendWidget* widget);",
     ),
     (
         "zero_timer_counters",
@@ -1716,6 +1720,10 @@ def _sync_world_initializer_stack_pointer_lvars() -> dict[str, object]:
     }
 
 
+# The allocate_sprite return at 0x43ddc8 is already inferred as canonical
+# cRSprite*. Persisting a Sprite* override there is both redundant and harmful
+# after the shared Sprite/cRSprite alias is installed, so this lane owns only
+# the two genuinely ambiguous pool cursors.
 SPAWN_SLUG_HAZARD_LVAR_SPECS = (
     (
         "state_stride_cursor",
@@ -1738,14 +1746,6 @@ SPAWN_SLUG_HAZARD_LVAR_SPECS = (
         {"int", "char *", "void *", "SlugSlotCursor *"},
         "slug_slot_cursor",
         "SlugSlotCursor",
-    ),
-    (
-        "sprite",
-        0x43DDC8,
-        {"sprite"},
-        {"_DWORD *", "Sprite *"},
-        "sprite",
-        "Sprite",
     ),
 )
 
@@ -1883,6 +1883,20 @@ def _sync_types(header_path: pathlib.Path) -> int:
     contact_header_path = header_path.with_name("contact_target_types.h")
     contact_parse_errors = idc.parse_decls(str(contact_header_path), idc.PT_FILE)
     parse_errors = contact_parse_errors + idc.parse_decls(str(header_path), idc.PT_FILE)
+    type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(GALAXY_OWNER_TYPE_ALIASES)
+    )
+    type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     subgame_owner_size = _named_struct_size("cRSubGame")
     parcel_owner_sizes = {
         name: _named_struct_size(name) for name in EXPECTED_PARCEL_OWNER_SIZES
@@ -1985,13 +1999,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "observed": salt_owner_game_cursor_size,
             }
         )
-    if parse_errors or size_failures:
+    if parse_errors or type_alias_failures or size_failures:
         print(
             json.dumps(
                 {
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "type_alias_migrations": type_alias_migrations,
                     "subgame_owner_size": subgame_owner_size,
                     "parcel_owner_sizes": parcel_owner_sizes,
                     "help_owner_size": help_owner_size,
@@ -2004,7 +2019,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         sub_lazer_body_object_cursor_size
                     ),
                     "salt_owner_game_cursor_size": salt_owner_game_cursor_size,
-                    "failed": size_failures,
+                    "failed": [*type_alias_failures, *size_failures],
                 },
                 indent=2,
             )
@@ -2401,6 +2416,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "banner_owner_sizes": banner_owner_sizes,
                 "galaxy_owner_sizes": galaxy_owner_sizes,
+                "type_alias_migrations": type_alias_migrations,
                 "presentation_animation_cursor_sizes": (
                     presentation_animation_cursor_sizes
                 ),
@@ -2429,7 +2445,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "Help": _named_struct_size("Help"),
                     "cRSplash": _named_struct_size("cRSplash"),
                     "GalaxyStar": _named_struct_size("GalaxyStar"),
-                    "Galaxy": _named_struct_size("Galaxy"),
+                    "cRGalaxy": _named_struct_size("cRGalaxy"),
                     "Parcel": _named_struct_size("Parcel"),
                     "ParcelManager": _named_struct_size("ParcelManager"),
                     "Completion": _named_struct_size("Completion"),

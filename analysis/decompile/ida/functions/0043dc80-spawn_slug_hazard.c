@@ -2,7 +2,7 @@
 /* function: spawn_slug_hazard @ 0x43dc80 */
 /* selector: spawn_slug_hazard */
 
-// Void allocator for one live `Slug`: scans the eight owned 0xec-byte records for `SUB_SLUG_STATE_INACTIVE`, writes `SUB_SLUG_STATE_ACTIVE`, installs the borrowed owner Player, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded Player tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning method as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`; both independently leave incompatible receiver and random/blink residues on exhaustion versus success, proving those values are incidental rather than a return contract. The honest Windows void reconstruction preserves the resulting two-instruction epilogue residual.
+// Void allocator for one live `Slug`: scans the eight owned 0xec-byte records for `SUB_SLUG_STATE_INACTIVE`, writes `SUB_SLUG_STATE_ACTIVE`, installs the borrowed owner cRSubGoldy, scales `(0, 0, -0.2)` by the subgame rate, links the inherited body before the embedded cRSubGoldy tail, and arms the spaced engagement-voice gate. Android and iOS identify the owning method as `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`; both independently leave incompatible receiver and random/blink residues on exhaustion versus success, proving those values are incidental rather than a return contract. The honest Windows void reconstruction preserves the resulting two-instruction epilogue residual.
 void __thiscall spawn_slug_hazard(cRSubGame *game, cRSubLoc *cell, Player *owner_player)
 {
   int v3; // eax
@@ -14,7 +14,7 @@ void __thiscall spawn_slug_hazard(cRSubGame *game, cRSubLoc *cell, Player *owner
   BodList *p_active_bod_list; // edx
   Player *p_player; // ecx
   uint32_t list_flags; // ecx
-  Sprite *sprite; // eax
+  cRSprite *sprite; // eax
   SpriteFlag flags; // ecx
   uint32_t v15; // eax
   float v16; // [esp+8h] [ebp-8h]

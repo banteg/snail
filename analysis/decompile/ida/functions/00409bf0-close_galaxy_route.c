@@ -2,8 +2,8 @@
 /* function: close_galaxy_route @ 0x409bf0 */
 /* selector: close_galaxy_route */
 
-// Exact Windows `Galaxy::close_galaxy_route`: closes the active Star Map route card and clears its replay/play controls. Android and iOS preserve `cRGalaxy::BoxOff()`.
-void __thiscall close_galaxy_route(Galaxy *galaxy)
+// Exact Windows `cRGalaxy::BoxOff()`: closes the active Star Map route card and clears its replay/play controls. Android and iOS preserve the same authored member.
+void __thiscall close_galaxy_route(cRGalaxy *galaxy)
 {
   FrontendWidget *bounds_frame_widget; // ecx
 

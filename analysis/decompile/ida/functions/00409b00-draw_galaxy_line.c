@@ -4,7 +4,7 @@
 
 // Exact void Windows `cRGalaxy::Line` projection: normalizes one route segment, expands it by the requested half-width, and queues the resulting four-corner textured quad. Android preserves the authored `cRGalaxy::Line(int, float, float, float, float, float, tColour&)` body and void contract; every Windows caller discards the queue helper's platform-specific integer result.
 void __thiscall draw_galaxy_line(
-        Galaxy *galaxy,
+        cRGalaxy *galaxy,
         int32_t texture_id,
         float x0,
         float y0,

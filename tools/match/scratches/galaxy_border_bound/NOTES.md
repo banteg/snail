@@ -30,7 +30,7 @@ parent rename is codegen-neutral.
 
 ## 2026-07-15 Binary Ninja lifecycle replay
 
-Live readback now preserves the true `Galaxy*` receiver, four float in/out
+Live readback preserves the true `cRGalaxy*` receiver, four float in/out
 bounds, and the `FrontendWidget*` client. Matching remains exact at 63/63 with
 two clean operands.
 

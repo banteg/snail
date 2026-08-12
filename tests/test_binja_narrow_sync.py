@@ -40,6 +40,9 @@ def test_owner_syncs_keep_subgame_runtime_as_the_canonical_backlink() -> None:
 
 def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     repo_root = Path(__file__).parents[1]
+    path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     runtime_sync = (BINJA_DIR / "sync_subgame_runtime_types.py").read_text(
         encoding="utf-8"
     )
@@ -66,14 +69,17 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert '("0x4a1c4c", "g_galaxy_group_points")' in runtime_sync
     assert '("0x4a1d14", "g_galaxy_route_points")' in runtime_sync
     assert '("0x84", "color", "tColour")' in runtime_sync
-    assert "int32_t __thiscall update_galaxy(Galaxy* galaxy)" in runtime_sync
-    assert "void __thiscall draw_galaxy_line(Galaxy* galaxy," in runtime_sync
-    assert "int32_t __thiscall draw_galaxy_line(Galaxy* galaxy," not in runtime_sync
+    assert "int32_t __thiscall update_galaxy(cRGalaxy* galaxy)" in runtime_sync
+    assert "void __thiscall draw_galaxy_line(cRGalaxy* galaxy," in runtime_sync
+    assert "int32_t __thiscall draw_galaxy_line(cRGalaxy* galaxy," not in runtime_sync
     assert "void __thiscall open_galaxy_route(" in runtime_sync
     assert "void __thiscall galaxy_border_bound(" in runtime_sync
     assert "GALAXY_ROUTE_CURSOR_EXPECTED_SIZES" in runtime_sync
     assert '"GalaxyStar": 0x2A0' in runtime_sync
-    assert '"Galaxy": 0x10FA8' in runtime_sync
+    assert '"cRGalaxy": 0x10FA8' in runtime_sync
+    assert '("Galaxy", "cRGalaxy")' in runtime_sync
+    assert 'renames=(("Galaxy", "cRGalaxy"),)' in path_sync
+    assert '("0x1260020", "galaxy", "cRGalaxy")' in path_sync
     assert "GALAXY_ROUTE_CURSOR_USER_VAR_UPDATES" in runtime_sync
     assert (
         '"update_galaxy",\n'
@@ -128,15 +134,15 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
 
     for declaration in (
         "GalaxyRouteNameRecord* __thiscall initialize_galaxy_route_name_record(",
-        "void __thiscall load_galaxy_layout(Galaxy* galaxy);",
-        "void __thiscall destroy_galaxy(Galaxy* galaxy);",
-        "void __thiscall initialize_galaxy(Galaxy* galaxy);",
-        "int32_t __thiscall update_galaxy(Galaxy* galaxy);",
-        "void __thiscall draw_galaxy_line(Galaxy* galaxy,",
+        "void __thiscall load_galaxy_layout(cRGalaxy* galaxy);",
+        "void __thiscall destroy_galaxy(cRGalaxy* galaxy);",
+        "void __thiscall initialize_galaxy(cRGalaxy* galaxy);",
+        "int32_t __thiscall update_galaxy(cRGalaxy* galaxy);",
+        "void __thiscall draw_galaxy_line(cRGalaxy* galaxy,",
         "void __thiscall update_galaxy_route_record(GalaxyStar* star);",
-        "void __thiscall close_galaxy_route(Galaxy* galaxy);",
-        "void __thiscall open_galaxy_route(Galaxy* galaxy,",
-        "void __thiscall galaxy_border_bound(Galaxy* galaxy,",
+        "void __thiscall close_galaxy_route(cRGalaxy* galaxy);",
+        "void __thiscall open_galaxy_route(cRGalaxy* galaxy,",
+        "void __thiscall galaxy_border_bound(cRGalaxy* galaxy,",
     ):
         assert declaration in ida_runtime_sync
     assert "GalaxyPoint g_galaxy_group_points[10];" in ida_runtime_sync
@@ -147,7 +153,9 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
     assert "GALAXY_ROUTE_POINT_NEXT_OWNER_ADDRESS = 0x4A203C" in ida_runtime_sync
     assert "GALAXY_OWNER_EXPECTED_SIZES" in ida_runtime_sync
     assert '"GalaxyStar": 0x2A0' in ida_runtime_sync
-    assert '"Galaxy": 0x10FA8' in ida_runtime_sync
+    assert '"cRGalaxy": 0x10FA8' in ida_runtime_sync
+    assert '("Galaxy", "cRGalaxy", 0x10FA8)' in ida_runtime_sync
+    assert "migrate_equivalent_struct_aliases" in ida_runtime_sync
     assert '"GalaxyStar": _named_struct_size("GalaxyStar")' in ida_runtime_sync
     for stale_address, stale_name in (
         ("0x4A1D18", "g_galaxy_initial_map_y_bits"),
@@ -167,6 +175,9 @@ def test_galaxy_replay_keeps_route_and_point_bank_ownership() -> None:
         assert "typedef struct GalaxyPoint" in header
         assert "GalaxyStar route_slots[101]" in header
         assert "GalaxyRouteNameRecord route_names[10]" in header
+        assert "typedef struct cRGalaxy" in header
+        assert "cRGalaxy galaxy;" in header
+        assert "typedef struct Galaxy {" not in header
 
     assert "extern GalaxyPoint g_galaxy_group_points[10];" in matcher_header
     assert "extern GalaxyPoint g_galaxy_route_points[101];" in matcher_header
@@ -836,7 +847,7 @@ def test_galaxy_layout_lifetime_replay_preserves_borrowed_cursors() -> None:
         '"tColour": 0x10',
         '"GalaxyPoint": 0x08',
         '"GalaxyRouteNameRecord": 0xA0',
-        '"Galaxy": 0x10FA8',
+        '"cRGalaxy": 0x10FA8',
         '0x00: ("name", "char[128]")',
         '0x84: ("color", "tColour")',
         '0x10930: ("route_names", "GalaxyRouteNameRecord[10]")',
@@ -6550,7 +6561,7 @@ def test_matcher_authored_frontend_pickup_and_row_owners_preserve_analysis_vocab
     assert "typedef struct SubRow {" in path_analysis
 
 
-def test_matcher_fringe_logo_and_galaxy_owners_preserve_analysis_vocabulary() -> None:
+def test_matcher_fringe_logo_and_galaxy_owners_preserve_recovered_vocabulary() -> None:
     repo_root = Path(__file__).parents[1]
     fringe_matcher = (
         repo_root / "tools/match/include/fringe_object.h"
@@ -6591,7 +6602,7 @@ def test_matcher_fringe_logo_and_galaxy_owners_preserve_analysis_vocabulary() ->
     assert "typedef struct FringeManager {" in path_analysis
     assert "typedef struct Logo {" in logo_analysis
     assert "typedef struct LogoLetter {" in logo_analysis
-    assert "typedef struct Galaxy {" in galaxy_analysis
+    assert "typedef struct cRGalaxy {" in galaxy_analysis
     assert "typedef struct GalaxyStar {" in galaxy_analysis
 
 
@@ -11350,13 +11361,11 @@ def test_crslug_owner_replays_across_analysis_lanes() -> None:
     assert "SPAWN_SLUG_HAZARD_LVAR_SPECS" in ida_sync
     assert "0x43DC89" in ida_sync
     assert "0x43DCBD" in ida_sync
-    assert "0x43DDC8" in ida_sync
     assert '"slug_state_cursor"' in ida_sync
     assert '"SlugStateStrideCursor"' in ida_sync
     assert '"slug_slot_cursor"' in ida_sync
     assert '"SlugSlotCursor"' in ida_sync
-    assert '"sprite"' in ida_sync
-    assert '"Sprite"' in ida_sync
+    assert "0x43DDC8" not in ida_sync
     assert "SlugHazardRuntime*" not in ida_sync
     assert "SLUG_OWNER_EXPECTED_SIZE = 0xEC" in ida_sync
     assert "SLUG_POOL_EXPECTED_SIZE = 0x760" in ida_sync

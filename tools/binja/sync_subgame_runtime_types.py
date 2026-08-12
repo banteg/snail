@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
-    apply_symbol_updates,
     apply_struct_and_proto_updates,
+    apply_symbol_updates,
     apply_type_renames,
     apply_user_var_updates,
     current_header_type_equivalence,
@@ -22,7 +21,7 @@ from _narrow_sync import (
     types_declare_if_missing,
     types_declare_missing_only,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_runtime_types.h"
@@ -142,7 +141,7 @@ SALT_STARTUP_CURSOR_EXPECTED_SIZES = {
 
 GALAXY_ROUTE_CURSOR_EXPECTED_SIZES = {
     "GalaxyStar": 0x2A0,
-    "Galaxy": 0x10FA8,
+    "cRGalaxy": 0x10FA8,
 }
 
 BANNER_INITIALIZER_USER_VAR_UPDATES = (
@@ -232,7 +231,7 @@ SALT_STARTUP_CURSOR_USER_VAR_UPDATES = (
 )
 
 # update_galaxy's first route pass borrows one GalaxyStar at a time from
-# Galaxy::route_slots. Native advances EBX by exactly sizeof(GalaxyStar);
+# cRGalaxy::route_slots. Native advances EBX by exactly sizeof(GalaxyStar);
 # without this bounded lifetime Binary Ninja promotes the borrow to a pointer
 # to the complete 101-slot owner and renders a misleading owner-sized step.
 #
@@ -329,7 +328,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x125ffe0", "gui", "GUI"),
     ("0x1260008", "help", "Help"),
     ("0x126000c", "splash", "cRSplash"),
-    ("0x1260020", "galaxy", "Galaxy"),
+    ("0x1260020", "galaxy", "cRGalaxy"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x1270fcc", "next_slug_voice_trigger_z", "float"),
     ("0x1270fd0", "slug_voice_trigger_spacing_z", "float"),
@@ -426,23 +425,23 @@ PROTO_UPDATES = (
     ),
     (
         "load_galaxy_layout",
-        "void __thiscall load_galaxy_layout(Galaxy* galaxy)",
+        "void __thiscall load_galaxy_layout(cRGalaxy* galaxy)",
     ),
     (
         "destroy_galaxy",
-        "void __thiscall destroy_galaxy(Galaxy* galaxy)",
+        "void __thiscall destroy_galaxy(cRGalaxy* galaxy)",
     ),
     (
         "initialize_galaxy",
-        "void __thiscall initialize_galaxy(Galaxy* galaxy)",
+        "void __thiscall initialize_galaxy(cRGalaxy* galaxy)",
     ),
     (
         "update_galaxy",
-        "int32_t __thiscall update_galaxy(Galaxy* galaxy)",
+        "int32_t __thiscall update_galaxy(cRGalaxy* galaxy)",
     ),
     (
         "draw_galaxy_line",
-        "void __thiscall draw_galaxy_line(Galaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color)",
+        "void __thiscall draw_galaxy_line(cRGalaxy* galaxy, int32_t texture_id, float x0, float y0, float x1, float y1, float width, tColour* color)",
     ),
     (
         "update_galaxy_route_record",
@@ -450,15 +449,15 @@ PROTO_UPDATES = (
     ),
     (
         "close_galaxy_route",
-        "void __thiscall close_galaxy_route(Galaxy* galaxy)",
+        "void __thiscall close_galaxy_route(cRGalaxy* galaxy)",
     ),
     (
         "open_galaxy_route",
-        "void __thiscall open_galaxy_route(Galaxy* galaxy, int32_t selected_level_index)",
+        "void __thiscall open_galaxy_route(cRGalaxy* galaxy, int32_t selected_level_index)",
     ),
     (
         "galaxy_border_bound",
-        "void __thiscall galaxy_border_bound(Galaxy* galaxy, float* min_x, float* max_x, float* min_y, float* max_y, FrontendWidget* widget)",
+        "void __thiscall galaxy_border_bound(cRGalaxy* galaxy, float* min_x, float* max_x, float* min_y, float* max_y, FrontendWidget* widget)",
     ),
     (
         "zero_timer_counters",
@@ -639,7 +638,7 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help=(
             "Replay only update_galaxy's borrowed route-slot cursor after "
-            "verifying the existing Galaxy owner layouts."
+            "verifying the existing cRGalaxy owner layouts."
         ),
     )
     return parser.parse_args()
@@ -660,7 +659,7 @@ def require_galaxy_route_cursor_dependencies(*, target: str) -> dict[str, object
     }
     if mismatches:
         raise RuntimeError(
-            "refusing Galaxy route cursor replay with size mismatches: "
+            "refusing cRGalaxy route cursor replay with size mismatches: "
             f"{mismatches!r}"
         )
     return {
@@ -737,6 +736,7 @@ def main() -> int:
         renames=(
             ("SubgameRuntime", "cRSubGame"),
             ("GalaxyRouteSlot", "GalaxyStar"),
+            ("Galaxy", "cRGalaxy"),
         ),
     )
 
@@ -775,7 +775,7 @@ def main() -> int:
                 "GalaxyRouteRecord",
                 "GalaxyStar",
                 "GalaxyRouteNameRecord",
-                "Galaxy",
+                "cRGalaxy",
                 "Vapour",
                 "TrackPickupState",
                 "JetPack",
@@ -994,7 +994,7 @@ def main() -> int:
                 ("GalaxyRouteRecord", GALAXY_ROUTE_RECORD_FIELD_UPDATES),
                 ("GalaxyStar", GALAXY_STAR_FIELD_UPDATES),
                 ("GalaxyRouteNameRecord", GALAXY_ROUTE_NAME_FIELD_UPDATES),
-                ("Galaxy", GALAXY_FIELD_UPDATES),
+                ("cRGalaxy", GALAXY_FIELD_UPDATES),
                 ("JetPack", JETPACK_FIELD_UPDATES),
                 ("Banner", BANNER_FIELD_UPDATES),
                 (

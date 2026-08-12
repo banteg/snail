@@ -2,9 +2,9 @@
 /* function: galaxy_border_bound @ 0x40a0c0 */
 /* selector: galaxy_border_bound */
 
-// Exact Windows `Galaxy::galaxy_border_bound`, matching Android `cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`.
+// Exact Windows `cRGalaxy::BorderBound`, matching Android `cRGalaxy::BorderBound(float&, float&, float&, float&, cRBorder*)`.
 void __thiscall galaxy_border_bound(
-        Galaxy *galaxy,
+        cRGalaxy *galaxy,
         float *min_x,
         float *max_x,
         float *min_y,

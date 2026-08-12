@@ -120,7 +120,7 @@ semantic parent view without changing the honest 61.11%, 550/566 result or its
 
 ## 2026-07-12 line-helper owner recovery
 
-- Both native callsites load the enclosing `Galaxy*` into `ecx` before calling
+- Both native callsites load the enclosing `cRGalaxy*` into `ecx` before calling
   `0x409b00`. The exact helper does not consume that register, which allowed a
   false standalone stdcall spelling to match its body while losing the
   authored owner at every caller.
@@ -197,9 +197,9 @@ with all 52 operands clean.
 
 ## 2026-07-15 Binary Ninja lifecycle replay
 
-The live database now records `int32_t __thiscall update_galaxy(Galaxy*)` and
+The live database records `int32_t __thiscall update_galaxy(cRGalaxy*)` and
 resolves its two former anonymous helpers as
-`update_galaxy_route_record(GalaxyStar*)` and the true Galaxy-member
+`update_galaxy_route_record(GalaxyStar*)` and the true cRGalaxy member
 `draw_galaxy_line`. The focused export also retains typed destroy/open/close
 transitions and the enclosing subgame backlink. Honest matching is unchanged
 at 71.01%, 569/566 candidate/target instructions, prefix 48, and 52 clean

@@ -26,14 +26,14 @@ canonical `GameRoot::border_manager` owner. Focused matching remains exact at
 
 ## 2026-07-15 Binary Ninja lifecycle replay
 
-Live readback now records `void __thiscall destroy_galaxy(Galaxy*)`; the
-exported body resolves all nine releases through named `Galaxy` widget fields.
+Live readback records `void __thiscall destroy_galaxy(cRGalaxy*)`; the
+exported body resolves all nine releases through named `cRGalaxy` widget fields.
 Focused matching remains exact at 49/49 with 18 clean operands.
 
 ## 2026-08-09 primary cRGalaxy ownership
 
 The matcher now emits this teardown as `cRGalaxy::UnInit()` and binds
-`?UnInit@cRGalaxy@@QAEXXZ`; `Galaxy` remains compatibility vocabulary for the
-tracked analyzer replay. Android and iOS independently retain the same member
+`?UnInit@cRGalaxy@@QAEXXZ`; `Galaxy` remains only matcher compatibility
+vocabulary. Android and iOS independently retain the same member
 in `Galaxy.o`. The ownership spelling is codegen-neutral: focused output stays
 exact at 49/49 instructions with all 18 operands clean.

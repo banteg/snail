@@ -15,6 +15,7 @@ from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_header_type_equivalence,
     current_prototypes,
@@ -489,7 +490,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Help",
     "cRSplash",
     "GalaxyPoint",
-    "Galaxy",
+    "cRGalaxy",
     "EnemyManager",
     "RuntimeRateOrLevelArg",
     "SubgameRuntimeFlag",
@@ -2893,7 +2894,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x125ffe0", "gui", "GUI"),
     ("0x1260008", "help", "Help"),
     ("0x126000c", "splash", "cRSplash"),
-    ("0x1260020", "galaxy", "Galaxy"),
+    ("0x1260020", "galaxy", "cRGalaxy"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x1270fcc", "next_slug_voice_trigger_z", "float"),
     ("0x1270fd0", "slug_voice_trigger_spacing_z", "float"),
@@ -4581,7 +4582,7 @@ SUBGAME_BACKPOINTER_STRUCT_UPDATES = (
     ("SaltOwnerGameStrideCursor", (("0x00", "owner_game", "cRSubGame*"),)),
     ("GUI", (("0x00", "game", "cRSubGame*"),)),
     ("cRSplash", (("0x00", "game", "cRSubGame*"),)),
-    ("Galaxy", (("0x10f70", "level_progress_base", "cRSubGame*"),)),
+    ("cRGalaxy", (("0x10f70", "level_progress_base", "cRSubGame*"),)),
 )
 
 # These functions retain a user-defined ECX parameter even after their owner
@@ -6029,6 +6030,13 @@ def main() -> int:
         )
 
     if not args.golb_only:
+        operations.extend(
+            apply_type_renames(
+                REPO_ROOT,
+                target=args.target,
+                renames=(("Galaxy", "cRGalaxy"),),
+            )
+        )
         operations.append(
             ensure_c_r_sub_loc_owner_types(
                 target=args.target,

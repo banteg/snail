@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_user_var_updates,
@@ -14,7 +14,6 @@ from _narrow_sync import (
 )
 from _target import DEFAULT_TARGET
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
@@ -22,7 +21,7 @@ EXPECTED_TYPE_WIDTHS = {
     "tColour": 0x10,
     "GalaxyPoint": 0x08,
     "GalaxyRouteNameRecord": 0xA0,
-    "Galaxy": 0x10FA8,
+    "cRGalaxy": 0x10FA8,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -44,7 +43,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x98: ("map_y", "float"),
         0x9C: ("map_z", "float"),
     },
-    "Galaxy": {
+    "cRGalaxy": {
         0x10930: ("route_names", "GalaxyRouteNameRecord[10]"),
         0x10F70: ("level_progress_base", "cRSubGame*"),
     },
@@ -117,7 +116,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical Galaxy point and name owners.",
+        help="Header documenting the canonical cRGalaxy point and name owners.",
     )
     return parser.parse_args()
 
@@ -166,7 +165,7 @@ def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
     if not header_path.is_file():
-        raise FileNotFoundError(f"Galaxy ownership header not found: {header_path}")
+        raise FileNotFoundError(f"cRGalaxy ownership header not found: {header_path}")
 
     operations = [
         verify_galaxy_layout_owners(args.target),

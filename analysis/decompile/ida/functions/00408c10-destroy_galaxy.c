@@ -2,8 +2,8 @@
 /* function: destroy_galaxy @ 0x408c10 */
 /* selector: destroy_galaxy */
 
-// Exact Windows `Galaxy::destroy_galaxy`: tears down the active Star Map widgets before replay launch, route handoff, or return. Android preserves `cRGalaxy::UnInit()`.
-void __thiscall destroy_galaxy(Galaxy *galaxy)
+// Exact Windows `cRGalaxy::UnInit()`: tears down the active Star Map widgets before replay launch, route handoff, or return. Android preserves the same authored member.
+void __thiscall destroy_galaxy(cRGalaxy *galaxy)
 {
   kill_border(&g_game_base->border_manager, galaxy->route_title_widget);
   kill_border(&g_game_base->border_manager, galaxy->route_icon_widget);

@@ -448,7 +448,7 @@ typedef struct GalaxyRouteNameRecord {
     float map_z;
 } GalaxyRouteNameRecord;
 
-typedef struct Galaxy {
+typedef struct cRGalaxy {
     uint8_t active;
     uint8_t unknown_001[0x04 - 0x01];
     int32_t route_mode;
@@ -470,7 +470,7 @@ typedef struct Galaxy {
     FrontendWidget* play_or_deliver_widget;
     FrontendWidget* replay_widget;
     int32_t unknown_10fa4;
-} Galaxy;
+} cRGalaxy;
 
 typedef union RuntimeRateOrLevelArg {
     float base_rate;
@@ -565,7 +565,7 @@ typedef struct cRSubGame {
     GUI gui;
     Help help;
     cRSplash splash;
-    Galaxy galaxy;
+    cRGalaxy galaxy;
     int32_t subgame_rebuild_selector;
     float next_slug_voice_trigger_z;
     float slug_voice_trigger_spacing_z;

@@ -15394,7 +15394,7 @@
       "name": "ida_galaxy_layout_point_bank_owner",
       "artifact": "analysis/decompile/ida/functions/004088e0-load_galaxy_layout.c",
       "required_substrings": [
-        "void __thiscall load_galaxy_layout(Galaxy *galaxy)",
+        "void __thiscall load_galaxy_layout(cRGalaxy *galaxy)",
         "g_galaxy_group_points[0].y_bits",
         "&g_galaxy_route_points[0].y_bits",
         "g_galaxy_route_points[v19",
@@ -15437,7 +15437,7 @@
       "name": "ida_galaxy_lifecycle_owner",
       "artifact": "analysis/decompile/ida/functions/00408cf0-initialize_galaxy.c",
       "required_substrings": [
-        "void __thiscall initialize_galaxy(Galaxy *galaxy)",
+        "void __thiscall initialize_galaxy(cRGalaxy *galaxy)",
         "galaxy->level_progress_base",
         "galaxy->route_title_widget",
         "galaxy->bounds_frame_widget",
@@ -15479,7 +15479,7 @@
       "name": "ida_galaxy_update_owner",
       "artifact": "analysis/decompile/ida/functions/004092f0-update_galaxy.c",
       "required_substrings": [
-        "int32_t __thiscall update_galaxy(Galaxy *galaxy)",
+        "int32_t __thiscall update_galaxy(cRGalaxy *galaxy)",
         "GalaxyStar *route_slots;",
         "galaxy->level_progress_base",
         "update_galaxy_route_record(route_slots)",
@@ -15515,7 +15515,7 @@
       "artifact": "analysis/decompile/ida/functions/00409b00-draw_galaxy_line.c",
       "required_substrings": [
         "void __thiscall draw_galaxy_line(",
-        "Galaxy *galaxy",
+        "cRGalaxy *galaxy",
         "normalize_vector(&vector);",
         "queue_textured_quad_corners("
       ],
@@ -15546,7 +15546,7 @@
       "name": "ida_galaxy_route_card_owner",
       "artifact": "analysis/decompile/ida/functions/00409c50-open_galaxy_route.c",
       "required_substrings": [
-        "void __thiscall open_galaxy_route(Galaxy *galaxy, int32_t selected_level_index)",
+        "void __thiscall open_galaxy_route(cRGalaxy *galaxy, int32_t selected_level_index)",
         "galaxy->selected_title_widget",
         "galaxy->route_names",
         "galaxy_border_bound(galaxy",

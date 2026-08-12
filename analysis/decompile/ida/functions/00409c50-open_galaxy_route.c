@@ -2,8 +2,8 @@
 /* function: open_galaxy_route @ 0x409c50 */
 /* selector: open_galaxy_route */
 
-// Exact void Windows `Galaxy::open_galaxy_route`: opens a selected Star Map route card, loads its preview label and widget stack, and toggles replay controls. Android and iOS preserve this member as `cRGalaxy::BoxOn(int)`.
-void __thiscall open_galaxy_route(Galaxy *galaxy, int32_t selected_level_index)
+// Exact void Windows `cRGalaxy::BoxOn(int)`: opens a selected Star Map route card, loads its preview label and widget stack, and toggles replay controls. Android and iOS preserve the same authored member.
+void __thiscall open_galaxy_route(cRGalaxy *galaxy, int32_t selected_level_index)
 {
   int32_t v2; // eax
   FrontendWidget *selected_title_widget; // ecx
