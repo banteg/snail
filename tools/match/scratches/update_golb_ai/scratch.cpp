@@ -60,7 +60,7 @@ void cRSubGolb::AI()
     }
 
     if (path_follow.active == 1) {
-        switch (path_follow.traverse_path_follow_golb(path_factor, &flight_transform.position, &velocity)) {
+        switch (path_follow.Traverse(path_factor, flight_transform.position, &velocity)) {
         case 1:
         case 3:
             {

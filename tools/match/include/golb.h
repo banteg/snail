@@ -39,7 +39,7 @@ public:
         cRSubLoc* source_cell,
         tVector& position,
         cRSubGolb* shot_); // @ 0x421770
-    int traverse_path_follow_golb(float path_factor, Vector3* position, Vector3* velocity); // @ 0x4217b0
+    int Traverse(float path_factor, tVector& position, tVector* velocity); // @ 0x4217b0
 
     unsigned char active;     // +0x00
     char unknown_01[3];

@@ -457,8 +457,8 @@ public:
     cRPathFollowGoldy* noop_runtime_slot_constructor();
     void Init(
         cRSubLoc* source_cell, tVector& world_position, cRSubGoldy* player); // @ 0x420c40
-    int update_track_attachment_follow_state(
-        float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
+    int Traverse(
+        float rate, tVector& out_position, tVector* motion); // @ 0x420cb0
 
     unsigned char active;        // +0x00
     char unknown_01[3];
@@ -467,7 +467,7 @@ public:
     int sample_index;            // +0x0c
     float progress;              // +0x10
     float vertical_offset;       // +0x14
-    // slot order pinned by the update_track_attachment_follow_state scratch;
+    // Slot order pinned by cRPathFollowGoldy::Traverse;
     // orientation_b (+0x1c) = player+0x3a0, cross-confirmed by
     // cRSubGoldy::FallingInit's embedded-state read.
     float orientation_a;         // +0x18 (zeroed by the swept entry)

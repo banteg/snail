@@ -30,7 +30,7 @@ This is the producer for the post-follow camera exit lanes:
 2026-07-14 consolidation: the scratch now uses shared `player.h`'s embedded
 `FollowState` and `Path::installed_heading_bits`. The same template
 slot remains `installed_heading_delta` for float arithmetic in
-`update_track_attachment_follow_state`; this helper proves the raw-bit view.
+`cRPathFollowGoldy::Traverse`; this helper proves the raw-bit view.
 
 2026-06-18 naming sync: `player+0x42c` is now `post_follow_exit_roll`, matching
 the only confirmed consumer in `update_cameraman`. `player+0x430` is

@@ -1,4 +1,4 @@
-// update_track_attachment_follow_state @ 0x420cb0 (thiscall, ret 0xc)
+// cRPathFollowGoldy::Traverse @ 0x420cb0 (thiscall, ret 0xc)
 #include "game_root.h"
 #include "player.h"
 #include "track_attachment_types.h"
@@ -9,9 +9,9 @@
 typedef Vector3 Vec3;
 
 
-int cRPathFollowGoldy::update_track_attachment_follow_state(
+int cRPathFollowGoldy::Traverse(
     float path_factor,
-    Vec3* out_position,
+    Vec3& out_position,
     Vec3* motion)
 {
     int index = sample_index;
@@ -115,7 +115,7 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
         }
 
         if (current_template->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
-            arg2 = out_position->x - v85;
+            arg2 = out_position.x - v85;
             current_template->compute_kind42_attachment_transform(
                 arg1, arg2, 0.49000001f, &transform, &out_angle);
             unsigned int active_index = sample_index;
@@ -185,7 +185,7 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
                 transform.basis_up.x * vertical,
                 transform.basis_up.y * vertical,
                 transform.basis_up.z * vertical);
-            float local_x = out_position->x - v85;
+            float local_x = out_position.x - v85;
             Vec3 right_offset(
                 local_x * transform.basis_right.x,
                 transform.basis_right.y * local_x,
@@ -251,18 +251,18 @@ int cRPathFollowGoldy::update_track_attachment_follow_state(
             / (float)(int)orient_template->segment_count;
 
         if (player->sub_hover.state != SUB_HOVER_STATE_ACTIVE) {
-            float abs_lateral = out_position->x - v85;
+            float abs_lateral = out_position.x - v85;
             if (abs_lateral < 0.0f)
                 abs_lateral = -abs_lateral;
             if (abs_lateral > (float)(int)orient_template->width_cells * 0.5f + 0.30000001f
                 && vertical_offset <= 0.0f) {
-                *out_position = output_position;
+                out_position = output_position;
                 player->heading_roll =
                     this->template_record->installed_heading_delta + player->heading_roll;
-                float clamped_x = out_position->x < -4.0f
+                float clamped_x = out_position.x < -4.0f
                     ? -4.0f
-                    : (out_position->x > 4.0f ? 4.0f : out_position->x);
-                out_position->x = clamped_x;
+                    : (out_position.x > 4.0f ? 4.0f : out_position.x);
+                out_position.x = clamped_x;
                 return this->template_record->side_exit_mode == 0;
             }
         }
@@ -291,7 +291,7 @@ terminal_path:
         if (final_template->kind == PATH_TEMPLATE_KIND_SUPERTRAMP) {
             motion->y = motion->z * 0.69999999f;
             Path* supertramp_template = this->template_record;
-            float old_x = out_position->x;
+            float old_x = out_position.x;
             unsigned int count = supertramp_template->segment_count;
             float carry = delta + supertramp_template->width_or_scale;
             AttachmentSample* samples = supertramp_template->secondary_samples;
@@ -309,15 +309,15 @@ terminal_path:
             launch_position.x = base_position.x + forward_offset.x;
             launch_position.y = base_position.y + forward_offset.y;
             launch_position.z = base_position.z + forward_offset.z;
-            *out_position = launch_position;
-            out_position->x = old_x;
+            out_position = launch_position;
+            out_position.x = old_x;
             player->cutscene_pitch_cycle_step =
                 g_game->subgame.subgame_rate * 0.013888888f;
             player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step;
             g_voice_manager.Play(
                 VOICE_SET_SUPERTRAMP, VOICE_PLAY_IF_IDLE, -1);
         } else {
-            out_position->z =
+            out_position.z =
                 final_template->secondary_samples[final_template->segment_count - 1].transform.position.z
                 + source_cell->position.z
                 + final_template->width_or_scale

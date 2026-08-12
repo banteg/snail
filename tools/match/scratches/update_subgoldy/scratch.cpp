@@ -367,8 +367,7 @@ steering_stored:
     if (follow_state.active == 1) {
         Vector3* p_velocity = &velocity;
         float follow_speed = velocity.z;
-        switch (follow_state.update_track_attachment_follow_state(follow_speed, p_position,
-                                                                  &velocity)) {
+        switch (follow_state.Traverse(follow_speed, *p_position, &velocity)) {
         case 1:
         case 3:
             if (follow_state.active == 1)

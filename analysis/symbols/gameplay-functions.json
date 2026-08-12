@@ -2109,6 +2109,9 @@
     {
       "address": "0x420cb0",
       "name": "update_track_attachment_follow_state",
+      "aliases": [
+        "cRPathFollowGoldy_Traverse"
+      ],
       "description": "Advances one live attachment-follow session along its borrowed cRPath and cRSubLoc, updates progress and local height, publishes the interpolated basis into the live cRSubGoldy matrix, stores the up basis in owned `cRPathFollowGoldy::orientation_up`, writes the output position, and returns the mode consumed by `update_subgoldy`. `FollowState` remains only a compatibility alias. Windows `cdb` confirmed `ARCADE007` mid-follow samples at local height `-0.49f` and the direct fall-state handoff. The static `voice 4` lane is unreachable: traversal terminates at `sample_index == segment_count` before the later doubled-count guard can hold. Android and iOS preserve that guard, the aggregate orientation copy, and the exact authored `cRPathFollowGoldy::Traverse(float, tVector&, tVector*)` symbol; Windows independently supplies the 0x40-byte layout and offsets."
     },
     {
@@ -2122,6 +2125,9 @@
     {
       "address": "0x4217b0",
       "name": "traverse_path_follow_golb",
+      "aliases": [
+        "cRPathFollowGolb_Traverse"
+      ],
       "description": "Advances one Golb projectile attachment-follow session through the borrowed authored `cRPath::primary_samples`/`secondary_samples` banks and emits the interpolated position or exit velocity. Android and iOS Path.o independently name this owner `cRPathFollowGolb::Traverse(float, tVector&, tVector*)`; the formerly misassigned `calc_path_length_z` name now belongs to the distinct no-argument `cRPath::CalcLengthZ()` owner at 0x42c600."
     },
     {

@@ -51,7 +51,7 @@ offsets onto generated track rows" pass.
   more 0 parcels"
 
 The separate `game+0x641184` table is the follow-runtime row-slot table used
-by `update_track_attachment_follow_state`, not this parcel row table.
+by `cRPathFollowGoldy::Traverse`, not this parcel row table.
 
 ## WIP scratch — 23.40%, 643/639 insns (2026-06-13)
 

@@ -147,9 +147,9 @@ seed:
             .installed_heading_delta;
     PLAYER->follow_state.orientation_b = 0;
     PLAYER->follow_state.orientation_a = 0;
-    PLAYER->follow_state.update_track_attachment_follow_state(
+    PLAYER->follow_state.Traverse(
         PLAYER->velocity.z,
-        &PLAYER->transform.position,
+        PLAYER->transform.position,
         &PLAYER->velocity);
 }
 

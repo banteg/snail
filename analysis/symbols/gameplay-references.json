@@ -939,6 +939,15 @@
       "description": "Exact Windows cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*) entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x420cb0",
+      "name": "update_track_attachment_follow_state",
+      "kind": "function",
+      "aliases": [
+        "?Traverse@cRPathFollowGoldy@@QAEHMAAUtVector@@PAU2@@Z"
+      ],
+      "description": "Exact Windows cRPathFollowGoldy::Traverse(float, tVector&, tVector*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x421770",
       "name": "initialize_path_follow_golb",
       "kind": "function",
@@ -946,6 +955,15 @@
         "?Init@cRPathFollowGolb@@QAEXPAUcRSubLoc@@AAUtVector@@PAVcRSubGolb@@@Z"
       ],
       "description": "Exact Windows cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4217b0",
+      "name": "traverse_path_follow_golb",
+      "kind": "function",
+      "aliases": [
+        "?Traverse@cRPathFollowGolb@@QAEHMAAUtVector@@PAU2@@Z"
+      ],
+      "description": "Exact Windows cRPathFollowGolb::Traverse(float, tVector&, tVector*) entry with its owner-qualified decorated relocation name."
     },
     {
       "address": "0x421dc0",

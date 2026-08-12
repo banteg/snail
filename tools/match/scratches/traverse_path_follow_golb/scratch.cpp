@@ -1,4 +1,4 @@
-// traverse_path_follow_golb @ 0x4217b0 (thiscall, ret 0xc)
+// cRPathFollowGolb::Traverse @ 0x4217b0 (thiscall, ret 0xc)
 // cRPathFollowGolb::Traverse(float, Vec3&, Vec3*): advance the Golb
 // projectile path-follow state and return the mode consumed by update_golb_ai.
 #include "transform_matrix.h"
@@ -7,7 +7,7 @@
 
 typedef Vector3 Vec3;
 
-int cRPathFollowGolb::traverse_path_follow_golb(float path_factor, Vec3* position, Vec3* velocity)
+int cRPathFollowGolb::Traverse(float path_factor, Vec3& position, Vec3* velocity)
 {
     Path* current_template = template_record;
     AttachmentSample* samples = current_template->secondary_samples;
@@ -32,7 +32,7 @@ int cRPathFollowGolb::traverse_path_follow_golb(float path_factor, Vec3* positio
             Path* terminal_template = template_record;
             if (terminal_template->kind == PATH_TEMPLATE_KIND_SUPERTRAMP) {
                 velocity->y = velocity->z * 0.69999999f;
-                float old_x = position->x;
+                float old_x = position.x;
                 Path* launch_template = template_record;
                 int count = launch_template->segment_count;
                 float carry = delta + launch_template->width_or_scale;
@@ -48,9 +48,9 @@ int cRPathFollowGolb::traverse_path_follow_golb(float path_factor, Vec3* positio
                     anchor->y + terminal[-1].transform.position.y + forward.y;
                 terminal_position.z =
                     anchor->z + terminal[-1].transform.position.z + forward.z;
-                *position = terminal_position;
-                position->x = old_x;
-                shot->flight_transform.position = *position;
+                position = terminal_position;
+                position.x = old_x;
+                shot->flight_transform.position = position;
             } else {
                 float z =
                     delta
@@ -58,7 +58,7 @@ int cRPathFollowGolb::traverse_path_follow_golb(float path_factor, Vec3* positio
                           .transform.position.z
                     + source_cell->position.z
                     + terminal_template->width_or_scale;
-                position->z = z;
+                position.z = z;
                 shot->flight_transform.position.z = z;
             }
             return 3;
@@ -110,7 +110,7 @@ int cRPathFollowGolb::traverse_path_follow_golb(float path_factor, Vec3* positio
     TransformMatrix from;
     TransformMatrix to;
     Vec3* motion = velocity;
-    Vec3* input_position = position;
+    Vec3* input_position = &position;
 
     if (current_template->kind == PATH_TEMPLATE_KIND_NONLINEAR_42) {
         float local_x = input_position->x - center_x;

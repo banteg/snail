@@ -39,8 +39,8 @@ Recovered behavior and ownership:
   `cRSquidge`; the installed heading comes from
   `cRSubGame::runtime_rows[row].installed_heading_delta`.
 - The final validation is
-  `cRPathFollowGoldy::update_track_attachment_follow_state(player.velocity.z,
-  &player.transform.position, &player.velocity)`.
+  `cRPathFollowGoldy::Traverse(player.velocity.z,
+  player.transform.position, &player.velocity)`.
 
 The two native callers discard EAX, both empty exits return without producing
 a value, and the final helper result is not semantically consumed. Binary Ninja

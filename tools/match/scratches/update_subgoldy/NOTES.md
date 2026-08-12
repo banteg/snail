@@ -91,7 +91,7 @@ in `local_f4`, passes that scalar to `Traverse`, and updates the same component
 in the returned-mode cases. This is evidence for a value snapshot across the
 call, not a second velocity owner or a borrowed pointer. Spelling the Windows
 source accordingly as `float follow_speed = velocity.z` before
-`update_track_attachment_follow_state` recovers VC6's native register
+`cRPathFollowGoldy::Traverse` recovers VC6's native register
 allocation without importing a mobile layout.
 
 That one lifetime change raises the focused result from 74.43% at 2070/2087
