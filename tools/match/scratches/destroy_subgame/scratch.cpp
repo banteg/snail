@@ -75,7 +75,7 @@ void cRSubGame::UnInit()
 
     embedded_player()->warning.UnInit();
     landscape_manager.UnInit();
-    times_up.uninit_times_up();
+    times_up.UnInit();
     RemoveBods();
 
     DWORD subgame_state = this->subgame_state;

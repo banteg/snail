@@ -4,7 +4,7 @@
 #include "times_up.h"
 
 
-void cRTimesUp::show_times_up_message()
+void cRTimesUp::Init()
 {
     if (state == TIMES_UP_STATE_INACTIVE) {
         tColour color;

@@ -5,7 +5,7 @@
 #include "times_up.h"
 
 
-void cRTimesUp::update_times_up()
+void cRTimesUp::AI()
 {
     switch (state) {
         case TIMES_UP_STATE_INACTIVE:
@@ -17,7 +17,7 @@ void cRTimesUp::update_times_up()
             }
             break;
         case TIMES_UP_STATE_EXPIRED:
-            uninit_times_up();
+            UnInit();
             g_game->subgame.player.Kill();
             state = TIMES_UP_STATE_INACTIVE;
             break;

@@ -35,3 +35,11 @@ Player already named in source and Binary Ninja. Normalizing that single
 colliding operand removes IDA's false standalone `g_player_block` expression
 and closes the TimesUp-to-Player lifetime without changing the exact 26/26
 matcher result.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRTimesUp::AI()` and exports
+`?AI@cRTimesUp@@QAEXXZ`. Its sole external Windows caller passes the final
+0x10-byte owner at `cRSubGame + 0x1272828`; the state-2 arm calls the adjacent
+authored `UnInit()` member on the same receiver. Android and iOS independently
+retain `cRTimesUp::AI()`. Matching stays exact at 26/26 with five clean operands.

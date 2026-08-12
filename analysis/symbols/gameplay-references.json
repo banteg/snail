@@ -3069,6 +3069,33 @@
       "description": "Compiler-emitted byte lookup table mapping movement flags 1..192 to set_snail_weapon switch case indexes."
     },
     {
+      "address": "0x445e20",
+      "name": "update_times_up",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRTimesUp@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTimesUp::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x445e70",
+      "name": "uninit_times_up",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRTimesUp@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTimesUp::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x445e90",
+      "name": "show_times_up_message",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRTimesUp@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRTimesUp::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x445f60",
       "name": "initialize_snail_skin",
       "kind": "function",

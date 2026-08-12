@@ -18,3 +18,11 @@ matching remains exact at 8/8 instructions with both operands clean.
 `void __thiscall(TimesUp*)` ABI and exposes the borrowed `border` field instead
 of a raw `_DWORD**` receiver, matching Binary Ninja. Focused output remains
 exact at 8/8 instructions with both masked operands clean.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRTimesUp::UnInit()` and exports
+`?UnInit@cRTimesUp@@QAEXXZ`. Live Windows recovery finds the teardown edge from
+`cRSubGame` destruction and the internal expiry edge from `cRTimesUp::AI()`.
+Android independently preserves the class-qualified symbol and body. Matching
+stays exact at 8/8 with both operands clean.

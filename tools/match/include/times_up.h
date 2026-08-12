@@ -12,9 +12,9 @@ enum TimesUpState {
 
 class cRTimesUp {
 public:
-    void update_times_up(); // @ 0x445e20, cRTimesUp::AI
-    void uninit_times_up(); // @ 0x445e70, cRTimesUp::UnInit
-    void show_times_up_message(); // @ 0x445e90, cRTimesUp::Init
+    void AI();     // @ 0x445e20
+    void UnInit(); // @ 0x445e70
+    void Init();   // @ 0x445e90
 
     TimesUpState state; // +0x00
     cRBorder* border; // +0x04, borrowed cRBorderManager handle

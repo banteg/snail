@@ -1067,8 +1067,8 @@ steering_stored:
     cursor_game->replay_update_cursor = cursor_game->replay_update_cursor + 1;
     cRSubGame* times_game = game;
     if (times_game->replay_update_cursor == 21000)
-        times_game->times_up.show_times_up_message();
-    game->times_up.update_times_up();
+        times_game->times_up.Init();
+    game->times_up.AI();
 }
 
 #undef TIME_TRIAL_RECORD_AT

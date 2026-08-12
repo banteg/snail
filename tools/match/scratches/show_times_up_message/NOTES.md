@@ -23,3 +23,11 @@ clean operands.
 agrees with Binary Ninja on `void __thiscall(TimesUp*)`, the borrowed border,
 and the complete state/progress producer edge. Focused output remains exact at
 31/31 instructions with six clean masked operands.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRTimesUp::Init()` and exports
+`?Init@cRTimesUp@@QAEXXZ`. Its sole live Windows caller passes the final
+0x10-byte `cRSubGame` child immediately before calling its `AI()` method.
+Android and iOS independently retain the authored symbol. Matching stays exact
+at 31/31 with all six operands clean.
