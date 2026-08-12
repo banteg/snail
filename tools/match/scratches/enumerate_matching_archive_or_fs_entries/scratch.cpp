@@ -62,8 +62,8 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
                                 break;
                             }
 
-                            upper_name = ascii_upper_if_lowercase(basename[name_index]);
-                            if (upper_name != ascii_upper_if_lowercase(pattern_char)) {
+                            upper_name = RstrASC(basename[name_index]);
+                            if (upper_name != RstrASC(pattern_char)) {
                                 if (pattern[pattern_index] != '*') {
                                     break;
                                 }
@@ -82,7 +82,7 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
                     }
 
                     if (basename[name_index] == 0) {
-                        rstrcpy_checked_ascii(names[g_enumerated_entry_count], basename);
+                        Rstrcpy(names[g_enumerated_entry_count], basename);
                         g_enumerated_entry_count += 1;
                     }
                 }
@@ -105,11 +105,11 @@ void __cdecl enumerate_matching_archive_or_fs_entries(
 
     handle = _findfirst(pattern, &find_data);
     if (handle != -1) {
-        rstrcpy_checked_ascii(names[g_enumerated_entry_count], find_data.name);
+        Rstrcpy(names[g_enumerated_entry_count], find_data.name);
         g_enumerated_entry_count += 1;
 
         while (_findnext(handle, &find_data) != -1) {
-            rstrcpy_checked_ascii(names[g_enumerated_entry_count], find_data.name);
+            Rstrcpy(names[g_enumerated_entry_count], find_data.name);
             g_enumerated_entry_count += 1;
         }
     }

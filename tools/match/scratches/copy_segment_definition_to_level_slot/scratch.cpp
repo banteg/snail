@@ -15,7 +15,7 @@ void cRSubTracks::ImportSegment(
     int index = 0;
     SegmentCatalogEntry* scan = catalog->entries;
     while (index < catalog->count) {
-        if (strings_equal_case_insensitive_path(segment_name, scan->filename) == 1)
+        if (Rstrcmp(segment_name, scan->filename) == 1)
             break;
         ++index;
         ++scan;

@@ -2541,10 +2541,10 @@ char cRGame::initialize_game_assets_and_world()
         g_object_list.Add());
 
     char base_animation_name[0x80];
-    char* test_line = find_case_insensitive_substring(
+    char* test_line = Rstrfind(
         (char*)"Test:", loader->animation_bytes);
     if (test_line != 0) {
-        char* source = find_case_insensitive_substring((char*)":", test_line) + 1;
+        char* source = Rstrfind((char*)":", test_line) + 1;
         char* destination = base_animation_name;
         while (*source != '.')
             *destination++ = *source++;
@@ -2552,7 +2552,7 @@ char cRGame::initialize_game_assets_and_world()
         *destination++ = 'x';
         *destination = 0;
     } else {
-        rstrcpy_checked_ascii(
+        Rstrcpy(
             base_animation_name, (char*)"turbo-base-000.x");
     }
 
@@ -3059,7 +3059,7 @@ char cRGame::initialize_game_assets_and_world()
                 players[0].frontend_state = 12;
             players[player_index].high_score_entry_pending = 0;
             players[player_index].selected_high_score_rank = 0;
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 players[player_index].player_name,
                 g_runtime_config.last_entered_player_name);
             ++player_index;

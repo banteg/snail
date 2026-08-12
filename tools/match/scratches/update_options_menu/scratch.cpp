@@ -17,9 +17,9 @@ void cROptions::AI()
     g_runtime_config.sample_volume = sound_volume_widget->slider_value;
 
     if (g_runtime_config.fullscreen_enabled != 0)
-        rstrcpy_checked_ascii(fullscreen_widget->text_buffer, g_fullscreen_on_text);
+        Rstrcpy(fullscreen_widget->text_buffer, g_fullscreen_on_text);
     else
-        rstrcpy_checked_ascii(fullscreen_widget->text_buffer, g_fullscreen_off_text);
+        Rstrcpy(fullscreen_widget->text_buffer, g_fullscreen_off_text);
 
     unsigned int flags = fullscreen_widget->widget_flags;
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {

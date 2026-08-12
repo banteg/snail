@@ -35,7 +35,7 @@ the loop-tail finalization branch was neutral, so those spellings stay honest.
 
 2026-06-21 cursor-spill retry: spelling the galaxy marker search as an
 assignment inside the null-check condition is codegen-neutral at 78.37%. VC6
-still stores the `find_case_insensitive_substring` result to the cursor local
+still stores the `Rstrfind` result to the cursor local
 before testing it, while native compares against zero before the spill.
 
 2026-06-21 local-owner retry: swapping the declarations of `star_index` and

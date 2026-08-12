@@ -41,7 +41,7 @@ void cRSMTracks::Import()
         sprintf(file_path, "Segments/%s", segment_file_name, file_buffer);
         load_file_bytes_from_archive_or_fs(file_path, file_buffer, (void*)0);
 
-        char* id_cursor = find_case_insensitive_substring("ID:", file_buffer);
+        char* id_cursor = Rstrfind("ID:", file_buffer);
         if (id_cursor == 0) {
             report_errorf("Cannot find ID: in Segment %s\n", segment_files[segment_index]);
             return;
@@ -61,13 +61,13 @@ void cRSMTracks::Import()
         entries[segment_index].id = id;
         sprintf(entries[segment_index].filename, "%s", segment_file_name);
 
-        char* name_cursor = find_case_insensitive_substring("Name:'", file_buffer);
+        char* name_cursor = Rstrfind("Name:'", file_buffer);
         if (name_cursor == 0) {
             report_errorf("Cannot find Name: in Segment %s\n", segment_files[segment_index]);
             return;
         }
 
-        name_cursor = find_case_insensitive_substring("'", name_cursor) + 1;
+        name_cursor = Rstrfind("'", name_cursor) + 1;
         char* display_out = entries[segment_index].display_name;
         if (*name_cursor != '\'') {
             do {
@@ -76,19 +76,19 @@ void cRSMTracks::Import()
             } while (*name_cursor != '\'');
         }
 
-        char* data_cursor = find_case_insensitive_substring("Data:", file_buffer);
+        char* data_cursor = Rstrfind("Data:", file_buffer);
         if (data_cursor == 0) {
             report_errorf("Cannot find Data: in Segment %s\n", segment_files[segment_index]);
             return;
         }
 
-        data_cursor = advance_to_next_crlf_line(data_cursor);
+        data_cursor = Rstrnewline(data_cursor);
         if (data_cursor == 0) {
             report_errorf("Unexpected end of file in Segment %s\n", segment_files[segment_index]);
             return;
         }
 
-        data_cursor = advance_to_next_crlf_line(data_cursor);
+        data_cursor = Rstrnewline(data_cursor);
         if (data_cursor == 0) {
             report_errorf("Unexpected end of file in Segment %s\n", segment_files[segment_index]);
             return;
@@ -137,9 +137,9 @@ void cRSMTracks::Import()
             *option_out = 0;
 
             char* option_match =
-                find_case_insensitive_substring("3DModel=", option_text);
+                Rstrfind("3DModel=", option_text);
             if (option_match != 0) {
-                option_match = find_case_insensitive_substring("=", option_match) + 1;
+                option_match = Rstrfind("=", option_match) + 1;
                 char* mesh_out = mesh_name;
                 char mesh_char = *option_match;
                 while (mesh_char != '.') {
@@ -155,37 +155,37 @@ void cRSMTracks::Import()
                     g_game->directx_loader
                         .load_or_reuse_cached_x_mesh(mesh_name);
 
-                option_match = find_case_insensitive_substring("(", option_match);
+                option_match = Rstrfind("(", option_match);
                 row->object_position.x = RTextExtractFloat(&option_match);
                 row->object_position.y = RTextExtractFloat(&option_match);
                 row->object_position.z = RTextExtractFloat(&option_match);
 
-                option_match = find_case_insensitive_substring("Velocity=", option_text);
+                option_match = Rstrfind("Velocity=", option_text);
                 if (option_match != 0) {
-                    option_match = find_case_insensitive_substring("=", option_match) + 1;
+                    option_match = Rstrfind("=", option_match) + 1;
                     row->flags |=
                         AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY;
-                    option_match = find_case_insensitive_substring("(", option_match);
+                    option_match = Rstrfind("(", option_match);
                     row->object_velocity.x = RTextExtractFloat(&option_match);
                     row->object_velocity.y = RTextExtractFloat(&option_match);
                     row->object_velocity.z = RTextExtractFloat(&option_match);
                 }
             }
 
-            option_match = find_case_insensitive_substring("Parcel=", option_text);
+            option_match = Rstrfind("Parcel=", option_text);
             if (option_match != 0) {
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_PARCEL;
-                option_match = find_case_insensitive_substring("=", option_match) + 1;
-                row->parcel_set_id = parse_next_signed_int(&option_match);
-                option_match = find_case_insensitive_substring("(", option_match) + 1;
+                option_match = Rstrfind("=", option_match) + 1;
+                row->parcel_set_id = Rstrint(&option_match);
+                option_match = Rstrfind("(", option_match) + 1;
                 row->local_position.x = RTextExtractFloat(&option_match);
                 row->local_position.y = RTextExtractFloat(&option_match);
                 row->local_position.z = RTextExtractFloat(&option_match);
             }
 
-            option_match = find_case_insensitive_substring("Path=", option_text);
+            option_match = Rstrfind("Path=", option_text);
             if (option_match != 0) {
-                option_match = find_case_insensitive_substring("=", option_match) + 1;
+                option_match = Rstrfind("=", option_match) + 1;
                 char* path_out = path_name;
                 char path_char = *option_match;
                 while (path_char >= 32) {
@@ -203,38 +203,38 @@ void cRSMTracks::Import()
                         AUTHORED_SEGMENT_ROW_FLAG_PATH_OR_MODEL_VELOCITY;
             }
 
-            option_match = find_case_insensitive_substring("NoFall", option_text);
+            option_match = Rstrfind("NoFall", option_text);
             if (option_match != 0)
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_NO_FALL;
-            option_match = find_case_insensitive_substring("Ring=None", option_text);
+            option_match = Rstrfind("Ring=None", option_text);
             if (option_match != 0)
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_NONE;
-            option_match = find_case_insensitive_substring("Ring=Normal", option_text);
+            option_match = Rstrfind("Ring=Normal", option_text);
             if (option_match != 0)
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_NORMAL;
-            option_match = find_case_insensitive_substring("Ring=PowerUp", option_text);
+            option_match = Rstrfind("Ring=PowerUp", option_text);
             if (option_match != 0)
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_POWER_UP;
-            option_match = find_case_insensitive_substring("Ring=Explode", option_text);
+            option_match = Rstrfind("Ring=Explode", option_text);
             if (option_match != 0)
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_EXPLODE;
-            option_match = find_case_insensitive_substring("Ring=Slow", option_text);
+            option_match = Rstrfind("Ring=Slow", option_text);
             if (option_match != 0)
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_RING_SLOW;
 
-            option_match = find_case_insensitive_substring("RingSpeed=", option_text);
+            option_match = Rstrfind("RingSpeed=", option_text);
             if (option_match != 0) {
-                option_match = find_case_insensitive_substring("=", option_match) + 1;
+                option_match = Rstrfind("=", option_match) + 1;
                 row->ring_speed.value = RTextExtractFloat(&option_match);
             } else {
                 row->ring_speed.bits = 0;
             }
 
-            option_match = find_case_insensitive_substring("JetPack=Off", option_text);
+            option_match = Rstrfind("JetPack=Off", option_text);
             if (option_match != 0)
                 row->flags |= AUTHORED_SEGMENT_ROW_FLAG_JETPACK_OFF;
 
-            data_cursor = advance_to_next_crlf_line(option_cursor);
+            data_cursor = Rstrnewline(option_cursor);
             if (data_cursor == 0) {
                 report_errorf(
                     "Unexpected end of file in Segment %s\n",

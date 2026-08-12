@@ -27,7 +27,7 @@ void cRVoiceManager::Init()
 
     char* cursor;
     for (int set_index = zero; set_index < VOICE_SET_COUNT; ++set_index) {
-        rstrcpy_checked_ascii(set_tag, "Set:");
+        Rstrcpy(set_tag, "Set:");
 
         switch (set_index) {
         case VOICE_SET_DAMAGE:
@@ -80,21 +80,21 @@ void cRVoiceManager::Init()
             break;
         }
 
-        cursor = find_case_insensitive_substring(set_tag, file_text);
+        cursor = Rstrfind(set_tag, file_text);
         if (cursor == 0) {
             report_errorf("Cannot find %s in _Voice.txt", set_tag);
             return;
         }
 
-        cursor = find_case_insensitive_substring("{", cursor);
-        char* close_brace = find_case_insensitive_substring("}", cursor);
-        cursor = advance_to_next_crlf_line(cursor);
+        cursor = Rstrfind("{", cursor);
+        char* close_brace = Rstrfind("}", cursor);
+        cursor = Rstrnewline(cursor);
 
         int entry_count = 0;
         char* count_cursor = cursor;
         while (count_cursor < close_brace) {
             ++entry_count;
-            count_cursor = advance_to_next_crlf_line(count_cursor);
+            count_cursor = Rstrnewline(count_cursor);
         }
 
         cRVoiceSet* set = &sets[set_index];
@@ -105,7 +105,7 @@ void cRVoiceManager::Init()
             for (; *cursor == '\t' || *cursor == ' '; ++cursor) {
             }
 
-            rstrcpy_checked_ascii(voice_path, "Voice/");
+            Rstrcpy(voice_path, "Voice/");
 
             char* path_cursor = voice_path + 6;
             while (*cursor != '.') {
@@ -117,32 +117,32 @@ void cRVoiceManager::Init()
             *path_cursor++ = 'g';
             *path_cursor = 0;
 
-            cursor = advance_to_next_crlf_line(cursor);
+            cursor = Rstrnewline(cursor);
             set->bites[entry_index] = register_sound_sample(voice_path, 1);
             ++entry_index;
         }
 
     }
 
-    cursor = find_case_insensitive_substring("NormalizeMusic:", file_text);
-    cursor = find_case_insensitive_substring(":", cursor);
-    float music_scale = (float)parse_next_signed_int(&cursor) * 0.0099999998f;
+    cursor = Rstrfind("NormalizeMusic:", file_text);
+    cursor = Rstrfind(":", cursor);
+    float music_scale = (float)Rstrint(&cursor) * 0.0099999998f;
 
-    cursor = find_case_insensitive_substring("NormalizeSfx:", file_text);
-    cursor = find_case_insensitive_substring(":", cursor);
-    float sfx_scale = (float)parse_next_signed_int(&cursor) * 0.0099999998f;
+    cursor = Rstrfind("NormalizeSfx:", file_text);
+    cursor = Rstrfind(":", cursor);
+    float sfx_scale = (float)Rstrint(&cursor) * 0.0099999998f;
 
-    cursor = find_case_insensitive_substring("NormalizeVoice:", file_text);
-    cursor = find_case_insensitive_substring(":", cursor);
-    float voice_scale = (float)parse_next_signed_int(&cursor) * 0.0099999998f;
+    cursor = Rstrfind("NormalizeVoice:", file_text);
+    cursor = Rstrfind(":", cursor);
+    float voice_scale = (float)Rstrint(&cursor) * 0.0099999998f;
 
     g_audio_backend.set_audio_normalization_scales(
         music_scale,
         sfx_scale,
         voice_scale);
 
-    cursor = find_case_insensitive_substring("Frequency:", file_text);
-    cursor = find_case_insensitive_substring(":", cursor);
+    cursor = Rstrfind("Frequency:", file_text);
+    cursor = Rstrfind(":", cursor);
     global_frequency_seconds = RTextExtractFloat(&cursor);
 
     ReSet();

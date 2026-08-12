@@ -1,8 +1,8 @@
-// advance_to_next_crlf_line @ 0x44e690 (cdecl)
+// Rstrnewline @ 0x44e690 (cdecl)
 
 #include "rstring.h"
 
-char* __cdecl advance_to_next_crlf_line(char* cursor)
+char* __cdecl Rstrnewline(char* cursor)
 {
     char linefeed = '\n';
     while (*cursor != '\0') {

@@ -11,14 +11,14 @@ int DirectXLoader::load_or_reuse_cached_x_mesh(char* mesh_name)
 
     slot = cached_x_mesh_slots;
     while (i < cached_x_mesh_count) {
-        if (strings_equal_case_insensitive_path(mesh_name, slot->name) != 0) {
+        if (Rstrcmp(mesh_name, slot->name) != 0) {
             return i;
         }
         ++i;
         ++slot;
     }
 
-    rstrcpy_checked_ascii(cached_x_mesh_slots[cached_x_mesh_count].name, mesh_name);
+    Rstrcpy(cached_x_mesh_slots[cached_x_mesh_count].name, mesh_name);
     cached_x_mesh_slots[cached_x_mesh_count].SetObject(g_object_list.Add());
     load_x_mesh(mesh_name, cached_x_mesh_slots[i].object, 1);
 

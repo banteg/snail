@@ -11,7 +11,7 @@ void cRGalaxy::BoxOn(int selected_level_index)
     selected_index = selected_level_index;
 
     title_widget->UnHideInit();
-    rstrcpy_checked_ascii(
+    Rstrcpy(
         title_widget->text_buffer,
         route_names[route_slots[selected_index].record.route_name_index].name);
     title_widget->layout_anchor_x = route_slots[selected_index].record.map_x + 60.0f;
@@ -21,13 +21,13 @@ void cRGalaxy::BoxOn(int selected_level_index)
         title_widget->layout_frontend_widget();
 
         detail_widget->UnHideInit();
-        rstrcpy_checked_ascii(
+        Rstrcpy(
             detail_widget->text_buffer,
             route_slots[selected_index].record.detail_text);
         detail_widget->SetBelow(title_widget);
 
         description_widget->UnHideInit();
-        rstrcpy_checked_ascii(
+        Rstrcpy(
             description_widget->text_buffer,
             route_slots[selected_index].record.description_text);
         description_widget->SetBelow(detail_widget);

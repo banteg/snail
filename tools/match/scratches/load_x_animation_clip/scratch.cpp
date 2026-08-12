@@ -33,8 +33,8 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
 
     sprintf(path_pattern, "%s", mesh_name);
     cursor = path_pattern;
-    cursor = find_case_insensitive_substring("-", cursor) + 1;
-    cursor = find_case_insensitive_substring("-", cursor) + 1;
+    cursor = Rstrfind("-", cursor) + 1;
+    cursor = Rstrfind("-", cursor) + 1;
     *cursor++ = '*';
     *cursor++ = '.';
     *cursor++ = 'x';
@@ -58,9 +58,9 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
             load_x_mesh(mesh_path, keyframe->object, 0);
 
             cursor = mesh_path;
-            cursor = find_case_insensitive_substring("-", cursor) + 1;
-            cursor = find_case_insensitive_substring("-", cursor) + 1;
-            keyframe->frame_number = parse_next_signed_int(&cursor);
+            cursor = Rstrfind("-", cursor) + 1;
+            cursor = Rstrfind("-", cursor) + 1;
+            keyframe->frame_number = Rstrint(&cursor);
 
             ++i;
             mesh_path += 0x80;
@@ -74,9 +74,9 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
     object->flags |= OBJECT_FLAG_DISTORT_ENABLED;
 
     sprintf(animation_tag, "Anim:%s", mesh_name);
-    char* animation_block = find_case_insensitive_substring(animation_tag, animation_bytes);
+    char* animation_block = Rstrfind(animation_tag, animation_bytes);
     if (animation_block != 0) {
-        char* animation_end = find_case_insensitive_substring("AnimEnd:", animation_block);
+        char* animation_end = Rstrfind("AnimEnd:", animation_block);
         if (animation_end == 0) {
             report_errorf("Cannot find AnimEnd: for %s \n", mesh_name);
             return;
@@ -85,22 +85,22 @@ void DirectXLoader::load_x_animation_clip(char* mesh_name, Object* object)
         saved_end_char = *animation_end;
         *animation_end = 0;
 
-        cursor = find_case_insensitive_substring("Duration:", animation_block);
+        cursor = Rstrfind("Duration:", animation_block);
         if (cursor != 0) {
-            cursor = find_case_insensitive_substring(":", cursor) + 1;
+            cursor = Rstrfind(":", cursor) + 1;
             progress_step = 1.0f / (RTextExtractFloat(&cursor) * 60.0f);
         } else {
             progress_step = 0.0166666675f;
         }
 
         mode_flags = 0;
-        cursor = find_case_insensitive_substring("Mode:Loop", animation_block);
+        cursor = Rstrfind("Mode:Loop", animation_block);
         if (cursor != 0)
             mode_flags = OBJECT_ANIMATION_MODE_LOOP;
-        cursor = find_case_insensitive_substring("Mode:Once", animation_block);
+        cursor = Rstrfind("Mode:Once", animation_block);
         if (cursor != 0)
             mode_flags |= OBJECT_ANIMATION_MODE_ONCE;
-        cursor = find_case_insensitive_substring("Mode:Pingpong", animation_block);
+        cursor = Rstrfind("Mode:Pingpong", animation_block);
         if (cursor != 0)
             mode_flags |= OBJECT_ANIMATION_MODE_PING_PONG;
 

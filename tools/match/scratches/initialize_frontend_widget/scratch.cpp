@@ -123,7 +123,7 @@ void cRBorder::initialize_frontend_widget(
     slider_position_current = 0.5f;
     *(int*)(self + 0x38) = 1;
     UnHideInit();
-    rstrcpy_checked_ascii(text_buffer, text);
+    Rstrcpy(text_buffer, text);
     layout_anchor_x = x;
     layout_anchor_y = y;
     hover_blend_target = 1.0f;

@@ -60,9 +60,9 @@ void cRLogo::Init(char* file_name)
     float crawl_y = 0.2f;
     this->renderable_count = 0;
     char* cursor =
-        find_case_insensitive_substring((char*)"Text Start:", file_bytes);
-    cursor = find_case_insensitive_substring((char*)":", cursor) + 1;
-    char* text_end = find_case_insensitive_substring((char*)"Text End:", file_bytes);
+        Rstrfind((char*)"Text Start:", file_bytes);
+    cursor = Rstrfind((char*)":", cursor) + 1;
+    char* text_end = Rstrfind((char*)"Text End:", file_bytes);
     LogoLetter* image_donor = image_donors;
 
     while (cursor < text_end) {
@@ -181,8 +181,8 @@ void cRLogo::Init(char* file_name)
         }
     }
 
-    cursor = find_case_insensitive_substring((char*)"Duration:", file_bytes);
-    cursor = find_case_insensitive_substring((char*)":", cursor);
+    cursor = Rstrfind((char*)"Duration:", file_bytes);
+    cursor = Rstrfind((char*)":", cursor);
     float duration = RTextExtractFloat(&cursor);
     duration_seconds = duration;
 

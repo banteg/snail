@@ -4772,6 +4772,60 @@
       "description": "Exact Windows cRSpriteManager::GetTga(int) entry returning a borrowed TgaImageView pointer."
     },
     {
+      "address": "0x44e5a0",
+      "name": "ascii_upper_if_lowercase",
+      "kind": "function",
+      "aliases": [
+        "?RstrASC@@YADD@Z"
+      ],
+      "description": "Exact Windows RstrASC(char) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x44e5b0",
+      "name": "rstrcpy_checked_ascii",
+      "kind": "function",
+      "aliases": [
+        "?Rstrcpy@@YAXPADPBD@Z"
+      ],
+      "description": "Exact Windows Rstrcpy(char*, char const*) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x44e600",
+      "name": "find_case_insensitive_substring",
+      "kind": "function",
+      "aliases": [
+        "?Rstrfind@@YAPADPAD0@Z"
+      ],
+      "description": "Exact Windows Rstrfind(char*, char*) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x44e690",
+      "name": "advance_to_next_crlf_line",
+      "kind": "function",
+      "aliases": [
+        "?Rstrnewline@@YAPADPAD@Z"
+      ],
+      "description": "Exact Windows Rstrnewline(char*) entry with its authored decorated relocation name."
+    },
+    {
+      "address": "0x44e6c0",
+      "name": "strings_equal_case_insensitive_path",
+      "kind": "function",
+      "aliases": [
+        "?Rstrcmp@@YAHPAD0@Z"
+      ],
+      "description": "Exact Windows Rstrcmp(char*, char*) entry with its authored int-return decorated relocation name."
+    },
+    {
+      "address": "0x44e710",
+      "name": "parse_next_signed_int",
+      "kind": "function",
+      "aliases": [
+        "?Rstrint@@YAHPAPAD@Z"
+      ],
+      "description": "Exact Windows Rstrint(char**) entry with its authored decorated relocation name."
+    },
+    {
       "address": "0x44ebc1",
       "name": "D3DXVec3Normalize",
       "kind": "function",

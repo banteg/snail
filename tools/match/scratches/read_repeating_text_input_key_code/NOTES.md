@@ -55,7 +55,7 @@ Remaining residuals:
   scancode-to-byte mapping. Mirroring its Enter/Ctrl `char ctrl_down` idiom is
   codegen-neutral and still emits `add bl, 5`; removing the explicit `!= 0`
   regresses to 97.84% by replacing native `test/setne` with `mov bl, al`.
-  Making `repeat_code` unsigned or declaring `ascii_upper_if_lowercase` as
+  Making `repeat_code` unsigned or declaring `RstrASC` as
   returning `unsigned char` is codegen-neutral. A named folded repeat byte
   regresses to 98.75% by spilling the folded value to the stack, and rewriting
   the tail as a decompiler-shaped `!=` reset-first branch regresses to 97.27%
@@ -72,7 +72,7 @@ Remaining residuals:
 - 2026-06-20 larger case-folding pass: helper-call and promotion probes did not
   produce a retained source change. Re-swapping the equality operands regressed
   to 98.86%, changing the compare direction without fixing the stack/global
-  load order. Declaring `ascii_upper_if_lowercase` with an `int` parameter
+  load order. Declaring `RstrASC` with an `int` parameter
   regressed to 71.96% by changing the stack frame from the first instruction;
   declaring its parameter as `unsigned char` was codegen-neutral. A
   no-parameter declaration would model old C promotion, but the `.cpp` scratch
@@ -130,7 +130,7 @@ and reduce the whole-function score to 98.98%; `int` and in-place
 normalization forms disturb the frame more broadly.
 
 The remaining byte-level blocker begins at instruction 408. Native loads the
-stack `repeat_code`, calls `ascii_upper_if_lowercase`, then loads the global
+stack `repeat_code`, calls `RstrASC`, then loads the global
 last-repeat byte; the candidate loads the global first, calls, then loads the
 stack byte. Both call the same exact out-of-line helper twice and compare the
 same folded bytes. The two unaudited operands are those displaced global/stack

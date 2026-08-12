@@ -161,7 +161,7 @@ void cRSubGame::Init()
             char* text =
                 time_trial.format_time_trial_string(
                     &sub_high_score.current_result_record.timer);
-            rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
+            Rstrcpy(top_score_widget->text_buffer, text);
         } else {
             top_score_widget->AddTextNumber(
                 sub_high_score.current_result_record.score);
@@ -172,7 +172,7 @@ void cRSubGame::Init()
             char* text =
                 time_trial.format_time_trial_string(
                     (Time*)scratch);
-            rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
+            Rstrcpy(top_score_widget->text_buffer, text);
         } else {
             top_score_widget->AddTextNumber(0);
         }
@@ -202,7 +202,7 @@ void cRSubGame::Init()
     case 4: {
         char* text =
             time_trial.format_time_trial_string(&active_level_timer);
-        rstrcpy_checked_ascii(bottom_score_widget->text_buffer, text);
+        Rstrcpy(bottom_score_widget->text_buffer, text);
         break;
     }
     case 2:

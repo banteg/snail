@@ -13,7 +13,7 @@ int cRPathManager::NameCode(char* name)
     // The shipped bound spans 63 slots, but only 51 are populated. An unknown
     // name reaches a null tail slot before the nominal -1 exit.
     while ((int)cursor < (int)g_segment_path_names_end) {
-        if (strings_equal_case_insensitive_path(name, *cursor))
+        if (Rstrcmp(name, *cursor))
             return index;
         ++cursor;
         ++index;

@@ -19,14 +19,14 @@ void cRHighScore::AI()
             g_sprite_manager.KillGame();
 
             int rank = selected_rank;
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                     + rank * SUB_SOLUTION_STRIDE))->player_name,
                 name_row_widgets[rank]->text_buffer);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 g_game->players[0].player_name,
                 name_row_widgets[selected_rank]->text_buffer);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 g_runtime_config.last_entered_player_name,
                 name_row_widgets[selected_rank]->text_buffer);
             Exit();

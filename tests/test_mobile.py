@@ -6319,6 +6319,12 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
         entry["name"]: entry
         for entry in functions["functions"]
     }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
 
     expected = {
         "ascii_upper_if_lowercase": "RstrASC(char)",
@@ -6328,8 +6334,17 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
         "strings_equal_case_insensitive_path": "Rstrcmp(char*, char*)",
         "parse_next_signed_int": "Rstrint(char**)",
     }
+    object_symbols = {
+        "ascii_upper_if_lowercase": "?RstrASC@@YADD@Z",
+        "rstrcpy_checked_ascii": "?Rstrcpy@@YAXPADPBD@Z",
+        "find_case_insensitive_substring": "?Rstrfind@@YAPADPAD0@Z",
+        "advance_to_next_crlf_line": "?Rstrnewline@@YAPADPAD@Z",
+        "strings_equal_case_insensitive_path": "?Rstrcmp@@YAHPAD0@Z",
+        "parse_next_signed_int": "?Rstrint@@YAHPAPAD@Z",
+    }
     for windows_name, mobile_symbol in expected.items():
         entry = entries[windows_name]
+        authored_name = mobile_symbol.split("(", 1)[0]
         assert entry["status"] == "verified"
         assert entry["confidence"] == "high"
         assert entry["source_object"] == "RString.o"
@@ -6337,9 +6352,15 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
         assert entry["ios_symbol"] == mobile_symbol
         assert entry["android_body_count"] == 1
         assert entry["ios_body_count"] == 1
-        assert mobile_symbol.split("(", 1)[0] in (
-            functions_by_name[windows_name]["aliases"]
-        )
+        assert functions_by_name[windows_name]["aliases"] == [authored_name]
+        assert references_by_name[windows_name]["aliases"] == [
+            object_symbols[windows_name]
+        ]
+        scratch = repo_root / "tools/match/scratches" / windows_name
+        source = (scratch / "scratch.cpp").read_text(encoding="utf-8")
+        config = (scratch / "scratch.conf").read_text(encoding="utf-8")
+        assert f"{authored_name}(" in source
+        assert f"SYMBOL={object_symbols[windows_name]}\n" in config
 
     comparator_description = functions_by_name[
         "strings_equal_case_insensitive_path"
@@ -6352,15 +6373,15 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
         repo_root / "tools/match/include/rstring.h"
     ).read_text(encoding="utf-8")
     for declaration in (
-        "char __cdecl ascii_upper_if_lowercase(char value);",
-        "char* destination, const char* source",
-        "char* pattern, char* searched",
-        "char* __cdecl advance_to_next_crlf_line(char* cursor);",
-        "int __cdecl strings_equal_case_insensitive_path(",
-        "int __cdecl parse_next_signed_int(char** cursor);",
+        "char __cdecl RstrASC(char value);",
+        "void __cdecl Rstrcpy(char* destination, const char* source);",
+        "char* __cdecl Rstrfind(char* pattern, char* searched);",
+        "char* __cdecl Rstrnewline(char* cursor);",
+        "int __cdecl Rstrcmp(char* left, char* right);",
+        "int __cdecl Rstrint(char** cursor);",
     ):
         assert declaration in rstring_header
-    assert "bool __cdecl strings_equal_case_insensitive_path" not in rstring_header
+    assert "bool __cdecl Rstrcmp" not in rstring_header
 
     binja_replay = (
         repo_root / "tools/binja/sync_rstring_types.py"
@@ -6409,20 +6430,17 @@ def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> N
 
     scratch_sources = "\n".join(
         path.read_text(encoding="utf-8")
-        for path in (repo_root / "tools/match/scratches").glob("*/scratch.cpp")
+        for path in sorted(
+            (repo_root / "tools/match/scratches").glob("*/scratch.cpp")
+        )
     )
-    for stale_declaration in (
-        "void rstrcpy_checked_ascii(char* destination, char* source);",
-        "char* find_case_insensitive_substring(char* needle, char* haystack);",
-        "char* advance_to_next_crlf_line(char* cursor);",
-        "int strings_equal_case_insensitive_path(char* left, char* right);",
-        "int parse_next_signed_int(char** cursor);",
-    ):
-        assert stale_declaration not in scratch_sources
+    for stale_name in expected:
+        assert f"{stale_name}(" not in rstring_header
+        assert f"{stale_name}(" not in scratch_sources
     assert '#include "rstring.h"' in (
         repo_root / "tools/match/include/high_score.h"
     ).read_text(encoding="utf-8")
-    assert "regressed the focused match to 87.88%" in (
+    assert "bool transcription changes those writes to AL" in (
         repo_root
         / "tools/match/scratches/strings_equal_case_insensitive_path/NOTES.md"
     ).read_text(encoding="utf-8")

@@ -12,7 +12,7 @@ int AudioBackend::play_music_stream_from_bytes(
     register AudioBackend* backend = this;
     register char* source_path = path;
     register int path_length = strlen(source_path);
-    rstrcpy_checked_ascii(g_cached_music_path, source_path);
+    Rstrcpy(g_cached_music_path, source_path);
 
     if (g_active_music_stream != 0) {
         backend->stop_music_stream();

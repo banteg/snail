@@ -76,10 +76,10 @@ void cRGalaxy::Open()
         sprintf(marker, "Galaxy%i:", galaxy_index);
 
         char* cursor;
-        if ((cursor = find_case_insensitive_substring(marker, file_text)) == (char*)0)
+        if ((cursor = Rstrfind(marker, file_text)) == (char*)0)
             goto missing_galaxy;
 
-        cursor = find_case_insensitive_substring(":", cursor) + 1;
+        cursor = Rstrfind(":", cursor) + 1;
         if (*cursor != '"')
             goto missing_quote;
 
@@ -91,10 +91,10 @@ void cRGalaxy::Open()
         }
         *name_cursor = 0;
 
-        cursor = find_case_insensitive_substring("StarNumber=", cursor);
-        cursor = find_case_insensitive_substring("=", cursor) + 1;
+        cursor = Rstrfind("StarNumber=", cursor);
+        cursor = Rstrfind("=", cursor) + 1;
         route_name_cursor[ROUTE_NAME_COLOR_TO_STAR_COUNT] =
-            parse_next_signed_int(&cursor);
+            Rstrint(&cursor);
         route_name_cursor[0] = 0x3f800000;
         route_name_cursor[1] = 0x3f800000;
         route_name_cursor[2] = 0x3f800000;
@@ -123,9 +123,9 @@ void cRGalaxy::Open()
 
             char missing_label[128];
             sprintf(missing_label, "LEVEL %i MISSING", record_count);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 route_slots[record_count].record.detail_text, missing_label);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 route_slots[record_count].record.description_text,
                 missing_label);
             ++record_count;

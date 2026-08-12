@@ -41,7 +41,7 @@ void cRSplash::AI()
     case 1:
         message_state = 2;
         message_progress_step = 0.00416666688f;
-        rstrcpy_checked_ascii(
+        Rstrcpy(
             message_widget->text_buffer, "Test your reflexes in Challenge Mode!");
         message_widget->UnHideInit();
         return;
@@ -55,7 +55,7 @@ void cRSplash::AI()
     case 3:
         message_state = 4;
         message_progress_step = 0.00416666688f;
-        rstrcpy_checked_ascii(
+        Rstrcpy(
             message_widget->text_buffer, "Improve your skills in Time Trial!");
         message_widget->UnHideInit();
         return;
@@ -69,7 +69,7 @@ void cRSplash::AI()
     case 5:
         message_state = 6;
         message_progress_step = 0.00416666688f;
-        rstrcpy_checked_ascii(message_widget->text_buffer, g_click_to_continue_text);
+        Rstrcpy(message_widget->text_buffer, g_click_to_continue_text);
         message_widget->UnHideInit();
         return;
 

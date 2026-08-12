@@ -1,8 +1,8 @@
-// parse_next_signed_int @ 0x44e710 (cdecl)
+// Rstrint @ 0x44e710 (cdecl)
 
 #include "rstring.h"
 
-int __cdecl parse_next_signed_int(char** cursor)
+int __cdecl Rstrint(char** cursor)
 {
     while (**cursor != '-') {
         char* current;

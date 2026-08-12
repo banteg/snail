@@ -1,6 +1,5 @@
-# ascii_upper_if_lowercase
+# RstrASC
 
-Small ASCII helper at 0x44e5a0. Converts lowercase ASCII letters to uppercase
-and returns all other bytes unchanged.
-
-Exact match: 100.00%, 7/7 instructions, no masked operands.
+Exact at 7/7 instructions with no masked operands. It folds lowercase ASCII to
+uppercase and leaves every other byte unchanged. Android and iOS preserve the
+same `RstrASC(char)` entry in `RString.o`.

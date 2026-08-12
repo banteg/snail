@@ -596,12 +596,12 @@ after_authored_ring:
 
         if (level_mode == 4) {
             char* text = time_trial.format_time_trial_string(&player.stopwatch);
-            rstrcpy_checked_ascii(top_score_widget->text_buffer, text);
+            Rstrcpy(top_score_widget->text_buffer, text);
             if (sub_high_score.time_trial_route_records[level_mode_arg].active
                 == one) {
                 text = time_trial.format_time_trial_string(
                     &sub_high_score.time_trial_route_records[level_mode_arg].timer);
-                rstrcpy_checked_ascii(bottom_score_widget->text_buffer, text);
+                Rstrcpy(bottom_score_widget->text_buffer, text);
                 break;
             }
             bottom_score_widget->HideInit();

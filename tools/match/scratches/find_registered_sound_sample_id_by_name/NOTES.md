@@ -7,7 +7,7 @@ Small registered-sample table lookup helper between `register_sound_sample` and
   `data_5108b0`.
 - Each stored sample path/name entry is a 0x80-byte slot written by
   `register_sound_sample`.
-- Uses `find_case_insensitive_substring(requested, registered_entry)`, so the
+- Uses `Rstrfind(requested, registered_entry)`, so the
   level `Sample="..."` payload can name a suffix or substring of the stored
   sample path.
 - Returns the sample id / table index on match.

@@ -23,11 +23,11 @@ int cRGUI::AI()
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
                 game->level_mode_arg);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 game->bottom_score_widget->text_buffer,
                 game->time_trial.format_time_trial_string(
                     &game->sub_high_score
@@ -43,11 +43,11 @@ int cRGUI::AI()
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
                 game->level_mode_arg);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 game->bottom_score_widget->text_buffer,
                 game->time_trial.format_time_trial_string(
                     &game->sub_high_score
@@ -152,7 +152,7 @@ int cRGUI::AI()
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
                 game->level_mode_arg);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();
@@ -166,7 +166,7 @@ int cRGUI::AI()
             game->level_definition.load_frontend_level_by_mode_and_index(
                 game->level_mode,
                 game->level_mode_arg);
-            rstrcpy_checked_ascii(
+            Rstrcpy(
                 level_name_widget->text_buffer,
                 game->level_definition.level_display_name);
             level_name_widget->layout_frontend_widget();

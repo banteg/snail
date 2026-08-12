@@ -6,7 +6,7 @@
 char AudioBackend::prepare_music_stream_reload_if_path_changed(char* path)
 {
     if (music_stream_active) {
-        if (strings_equal_case_insensitive_path(path, g_cached_music_path) != 0) {
+        if (Rstrcmp(path, g_cached_music_path) != 0) {
             return 0;
         }
         stop_music_stream();

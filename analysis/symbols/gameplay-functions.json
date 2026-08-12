@@ -5735,7 +5735,7 @@
     {
       "address": "0x44e600",
       "name": "find_case_insensitive_substring",
-      "description": "Windows `Rstrfind(char*, char*)`: scans the second argument for the first ASCII-case-insensitive match of the first argument and returns that searched-string cursor. Used for prefix-friendly parser metadata and tag probes.",
+      "description": "Exact Windows `Rstrfind(char*, char*)`: scans the second argument for the first ASCII-case-insensitive match of the first argument and returns that searched-string cursor. Used for prefix-friendly parser metadata and tag probes.",
       "aliases": [
         "Rstrfind"
       ]

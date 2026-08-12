@@ -13,7 +13,7 @@ Source-shape details retained:
 
 - The `Voice/_Voice.txt` load keeps the `get_archive_data_base()` buffer as the
   text cursor and ignores the loader return, matching the native pre-call store.
-- Set tag construction uses `rstrcpy_checked_ascii(set_tag, "Set:")` followed by
+- Set tag construction uses `Rstrcpy(set_tag, "Set:")` followed by
   CRT `strcat`, which VC6 expands into the observed `rep movsd`/`rep movsb`
   append block.
 - Case 13 reuses the existing `g_tutorial_text` data string at `0x4a38e4`;

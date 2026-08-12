@@ -50,12 +50,12 @@ void cRSubTracks::load_level_definition_file(char* filename)
         load_file_bytes_from_archive_or_fs(level_path, LEVEL_FILE_BUFFER, 0);
     }
 
-    cursor = find_case_insensitive_substring("Name:'", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Name:'", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("Cannot find Name:' in %s", level_path);
     }
 
-    cursor = find_case_insensitive_substring("'", cursor) + 1;
+    cursor = Rstrfind("'", cursor) + 1;
     char* name_out = level_display_name;
     char ch = *cursor;
     while (*cursor != '\'') {
@@ -68,37 +68,37 @@ void cRSubTracks::load_level_definition_file(char* filename)
     *name_out = 0;
 
     if (g_game->subgame.galaxy.active == 0) {
-        cursor = find_case_insensitive_substring("Arcade", filename);
+        cursor = Rstrfind("Arcade", filename);
         if (cursor != 0) {
-            cursor = find_case_insensitive_substring("e", cursor) + 1;
-            int galaxy_route_index = parse_next_signed_int(&cursor);
+            cursor = Rstrfind("e", cursor) + 1;
+            int galaxy_route_index = Rstrint(&cursor);
             sprintf(
                 g_game->subgame.galaxy.route_slots[galaxy_route_index]
                     .record.detail_text,
                 "%s",
                 level_display_name);
 
-            cursor = find_case_insensitive_substring("GalaxyText:", LEVEL_FILE_BUFFER);
+            cursor = Rstrfind("GalaxyText:", LEVEL_FILE_BUFFER);
             if (cursor == 0) {
                 report_warningf("Cannot find GalaxyText: in %s", filename);
-                rstrcpy_checked_ascii(
+                Rstrcpy(
                     g_game->subgame.galaxy.route_slots[galaxy_route_index]
                         .record.description_text,
                     "TEXT MISSING");
             } else {
-                cursor = find_case_insensitive_substring("{", cursor);
+                cursor = Rstrfind("{", cursor);
                 if (cursor == 0) {
                     report_warningf("Cannot find { for GalaxyText: in %s", filename);
-                    rstrcpy_checked_ascii(
+                    Rstrcpy(
                         g_game->subgame.galaxy.route_slots[galaxy_route_index]
                             .record.description_text,
                         "TEXT ERROR { MISSING");
                 } else {
-                    cursor = advance_to_next_crlf_line(cursor);
-                    char* close_brace = find_case_insensitive_substring("}", cursor);
+                    cursor = Rstrnewline(cursor);
+                    char* close_brace = Rstrfind("}", cursor);
                     if (close_brace == 0) {
                         report_warningf("Cannot find } for GalaxyText: in %s", filename);
-                        rstrcpy_checked_ascii(
+                        Rstrcpy(
                             g_game->subgame.galaxy.route_slots[galaxy_route_index]
                                 .record.description_text,
                             "TEXT ERROR } MISSING");
@@ -122,15 +122,15 @@ void cRSubTracks::load_level_definition_file(char* filename)
         }
     }
 
-    cursor = find_case_insensitive_substring("Random:yes", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Random:yes", LEVEL_FILE_BUFFER);
     if (cursor != 0) {
         random_enabled = 1;
-        cursor = find_case_insensitive_substring("Length:", LEVEL_FILE_BUFFER);
+        cursor = Rstrfind("Length:", LEVEL_FILE_BUFFER);
         if (cursor == 0) {
             report_errorf("Cannot Length: in %s", level_path);
             return;
         }
-        cursor = find_case_insensitive_substring(":", cursor) + 1;
+        cursor = Rstrfind(":", cursor) + 1;
         random_length = 0;
         ch = *cursor;
         if (ch != 'a' && ch != 'A') {
@@ -147,12 +147,12 @@ void cRSubTracks::load_level_definition_file(char* filename)
         random_length = 0;
     }
 
-    cursor = find_case_insensitive_substring("Background:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Background:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("No Background: in %s", level_path);
         return;
     }
-    cursor = find_case_insensitive_substring(":", cursor) + 1;
+    cursor = Rstrfind(":", cursor) + 1;
     char* background_out = background_name;
     ch = *cursor;
     while (*cursor != '.') {
@@ -168,26 +168,26 @@ void cRSubTracks::load_level_definition_file(char* filename)
     landscape_script_index = g_game->subgame.landscape_manager
         .Import(background_name);
 
-    cursor = find_case_insensitive_substring("Fringe:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Fringe:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("No Fringe: in %s using white", level_path);
         fringe_color.store_color4f(1.0f, 1.0f, 1.0f, 1.0f);
     } else {
-        cursor = find_case_insensitive_substring(":", cursor) + 1;
-        parsed_int = parse_next_signed_int(&cursor);
+        cursor = Rstrfind(":", cursor) + 1;
+        parsed_int = Rstrint(&cursor);
         fringe_color.r = (float)parsed_int * 0.0039215689f;
-        parsed_int = parse_next_signed_int(&cursor);
+        parsed_int = Rstrint(&cursor);
         fringe_color.g = (float)parsed_int * 0.0039215689f;
-        parsed_int = parse_next_signed_int(&cursor);
+        parsed_int = Rstrint(&cursor);
         fringe_color.b = (float)parsed_int * 0.0039215689f;
     }
 
-    cursor = find_case_insensitive_substring("Track:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Track:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("No Track: in %s using Track0.tga", level_path);
         track_texture_set = 0;
     } else {
-        cursor = find_case_insensitive_substring(":", cursor) + 1;
+        cursor = Rstrfind(":", cursor) + 1;
         ch = *cursor;
         if (ch == '0') {
             track_texture_set = 0;
@@ -203,63 +203,63 @@ void cRSubTracks::load_level_definition_file(char* filename)
         }
     }
 
-    cursor = find_case_insensitive_substring("Parcels:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Parcels:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         parcel_count = 0;
         report_errorf("No Parcel: in %s", level_path);
         return;
     }
-    cursor = find_case_insensitive_substring(":", cursor);
-    parcel_count = parse_next_signed_int(&cursor);
+    cursor = Rstrfind(":", cursor);
+    parcel_count = Rstrint(&cursor);
 
-    cursor = find_case_insensitive_substring("Quota:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Quota:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         parcel_quota = 0;
         report_errorf("No Quota: in %s", level_path);
         return;
     }
-    cursor = find_case_insensitive_substring(":", cursor);
-    parcel_quota = parse_next_signed_int(&cursor);
+    cursor = Rstrfind(":", cursor);
+    parcel_quota = Rstrint(&cursor);
 
-    cursor = find_case_insensitive_substring("Speed:select", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Speed:select", LEVEL_FILE_BUFFER);
     if (cursor != 0) {
         selected_speed = -1.0f;
     } else {
-        cursor = find_case_insensitive_substring("Speed:", LEVEL_FILE_BUFFER);
+        cursor = Rstrfind("Speed:", LEVEL_FILE_BUFFER);
         if (cursor == 0) {
             report_errorf("Cannot find Speed: in Segment %s\n", level_path);
             selected_speed = 100.0f;
         } else {
-            cursor = find_case_insensitive_substring(":", cursor) + 1;
+            cursor = Rstrfind(":", cursor) + 1;
             selected_speed = RTextExtractFloat(&cursor);
         }
     }
 
-    cursor = find_case_insensitive_substring("Garbage:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Garbage:", LEVEL_FILE_BUFFER);
     if (cursor == 0)
         garbage_frequency = -1.0f;
     else
         garbage_frequency = RTextExtractFloat(&cursor);
 
-    cursor = find_case_insensitive_substring("Salt:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Salt:", LEVEL_FILE_BUFFER);
     if (cursor == 0)
         salt_frequency = -1.0f;
     else
         salt_frequency = RTextExtractFloat(&cursor);
 
     segment_count = 0;
-    cursor = find_case_insensitive_substring("Segments Begin:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Segments Begin:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("Cannot find Segments Begin: in %s", level_path);
         return;
     }
-    segments_end = find_case_insensitive_substring("Segments End:", LEVEL_FILE_BUFFER);
+    segments_end = Rstrfind("Segments End:", LEVEL_FILE_BUFFER);
     if (segments_end == 0) {
         report_errorf("Cannot find Segments End: in %s", level_path);
         return;
     }
 
-    cursor = advance_to_next_crlf_line(cursor);
+    cursor = Rstrnewline(cursor);
     if (cursor == 0) {
         report_errorf("Unexpected end of file in %s", level_path);
         return;
@@ -292,10 +292,10 @@ void cRSubTracks::load_level_definition_file(char* filename)
             }
             *options_out = 0;
 
-            line_cursor = find_case_insensitive_substring("Angle=", line_options);
+            line_cursor = Rstrfind("Angle=", line_options);
             if (line_cursor != 0) {
-                line_cursor = find_case_insensitive_substring("=", line_cursor);
-                parsed_int = parse_next_signed_int(&line_cursor);
+                line_cursor = Rstrfind("=", line_cursor);
+                parsed_int = Rstrint(&line_cursor);
                 segment_slots[segment_count].angle_radians.value =
                     (float)parsed_int * 0.017453292f;
             } else {
@@ -303,9 +303,9 @@ void cRSubTracks::load_level_definition_file(char* filename)
             }
 
             segment_slots[segment_count].message_text[0] = 0;
-            line_cursor = find_case_insensitive_substring("Message=", line_options);
+            line_cursor = Rstrfind("Message=", line_options);
             if (line_cursor != 0) {
-                line_cursor = find_case_insensitive_substring("=", line_cursor) + 1;
+                line_cursor = Rstrfind("=", line_cursor) + 1;
                 if (*line_cursor != '"') {
                     report_errorf("Need \" after Message=");
                     return;
@@ -324,18 +324,18 @@ void cRSubTracks::load_level_definition_file(char* filename)
                 }
                 *message_out = 0;
 
-                line_cursor = find_case_insensitive_substring("Duration=", line_options);
+                line_cursor = Rstrfind("Duration=", line_options);
                 segment_slots[segment_count].message_duration.value = 4.0f;
                 if (line_cursor != 0) {
-                    line_cursor = find_case_insensitive_substring("=", line_cursor) + 1;
+                    line_cursor = Rstrfind("=", line_cursor) + 1;
                     segment_slots[segment_count].message_duration.value =
                         RTextExtractFloat(&line_cursor);
                 }
 
-                line_cursor = find_case_insensitive_substring("Sample=", line_options);
+                line_cursor = Rstrfind("Sample=", line_options);
                 segment_slots[segment_count].message_sample_id = -1;
                 if (line_cursor != 0) {
-                    line_cursor = find_case_insensitive_substring("=", line_cursor) + 2;
+                    line_cursor = Rstrfind("=", line_cursor) + 2;
                     char* sample_out = sample_name;
                     ch = *line_cursor;
                     while (*line_cursor != '"') {
@@ -352,7 +352,7 @@ void cRSubTracks::load_level_definition_file(char* filename)
             }
 
             segment_count++;
-            cursor = advance_to_next_crlf_line(cursor);
+            cursor = Rstrnewline(cursor);
         } while (cursor != 0 && cursor < segments_end);
         if (cursor == 0) {
             report_errorf("Unexpected end of file in %s", filename);
@@ -360,12 +360,12 @@ void cRSubTracks::load_level_definition_file(char* filename)
         }
     }
 
-    cursor = find_case_insensitive_substring("First:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("First:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("Cannot find 'First:' in %s", level_path);
         return;
     }
-    cursor = advance_to_next_crlf_line(cursor);
+    cursor = Rstrnewline(cursor);
     if (cursor == 0) {
         report_errorf("Unexpected end of file in %s", level_path);
         return;
@@ -385,12 +385,12 @@ void cRSubTracks::load_level_definition_file(char* filename)
     *special_out = 0;
     ImportSegment(segment_name, &first_segment);
 
-    cursor = find_case_insensitive_substring("Last:", LEVEL_FILE_BUFFER);
+    cursor = Rstrfind("Last:", LEVEL_FILE_BUFFER);
     if (cursor == 0) {
         report_errorf("Cannot find 'Last:' in %s", level_path);
         return;
     }
-    cursor = advance_to_next_crlf_line(cursor);
+    cursor = Rstrnewline(cursor);
     if (cursor == 0) {
         report_errorf("Unexpected end of file in %s", level_path);
         return;

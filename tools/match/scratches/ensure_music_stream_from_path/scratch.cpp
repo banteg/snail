@@ -10,7 +10,7 @@ int AudioBackend::ensure_music_stream_from_path(char* path, char play_mode)
 {
     register AudioBackend* backend = this;
     if (music_stream_active) {
-        int same_path = strings_equal_case_insensitive_path(path, g_cached_music_path);
+        int same_path = Rstrcmp(path, g_cached_music_path);
         if (same_path != 0) {
             return same_path;
         }
@@ -19,7 +19,7 @@ int AudioBackend::ensure_music_stream_from_path(char* path, char play_mode)
 
     register char* source_path = path;
     register int path_length = strlen(source_path);
-    rstrcpy_checked_ascii(g_cached_music_path, source_path);
+    Rstrcpy(g_cached_music_path, source_path);
 
     if (g_active_music_stream != 0) {
         backend->stop_music_stream();

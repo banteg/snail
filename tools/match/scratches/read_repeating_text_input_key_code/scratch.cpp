@@ -239,8 +239,8 @@ after_letters:
         return result;
     }
 
-    if (ascii_upper_if_lowercase(g_text_input_last_repeat_code)
-        == ascii_upper_if_lowercase(repeat_code)) {
+    if (RstrASC(g_text_input_last_repeat_code)
+        == RstrASC(repeat_code)) {
         float accumulator = g_text_input_repeat_step + g_text_input_repeat_accumulator;
         g_text_input_repeat_accumulator = accumulator;
         if (accumulator > 1.0f) {

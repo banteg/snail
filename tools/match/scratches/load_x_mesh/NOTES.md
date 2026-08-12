@@ -83,7 +83,7 @@ Notable shape details:
 
 2026-07-12 parser and material-slot lifetimes:
 
-- Native preserves the raw `parse_next_signed_int` return for the authored
+- Native preserves the raw `Rstrint` return for the authored
   vertex count, then sign-extends its low 16 bits into the working count. The
   Android sibling independently exposes the same `Rstrint(...) << 16` / signed
   high-half lifetime. Keeping both values and consuming the working count in

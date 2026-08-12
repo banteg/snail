@@ -26,7 +26,7 @@ int register_sound_sample(char* path, int normalization_class)
             path, g_registered_sound_sample_count, normalization_class);
     }
 
-    rstrcpy_checked_ascii(
+    Rstrcpy(
         g_registered_sound_sample_names[g_registered_sound_sample_count],
         source_path);
 

@@ -13,7 +13,7 @@ int cRSubSolution::Save(
     compact->replay_mode_id = replay_mode_id;
     compact->replay_speed_scalar_bits = replay_speed_scalar_bits;
     compact->challenge_difficulty_scalar_bits = challenge_difficulty_scalar_bits;
-    rstrcpy_checked_ascii(compact->player_name, player_name);
+    Rstrcpy(compact->player_name, player_name);
 
     compact->timer = timer;
     compact->score_tail = score_tail;

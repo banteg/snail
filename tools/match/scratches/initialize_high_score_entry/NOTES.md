@@ -14,7 +14,7 @@ Recovered layout corrections:
 
 2026-06-19 post-name-copy ordering:
 
-- Exact match. Spelling the post-`rstrcpy_checked_ascii` stores in native order
+- Exact match. Spelling the post-`Rstrcpy` stores in native order
   (`active = 0` before `runtime_build_flags = runtime_build_flags_value`) keeps
   the existing argument reload shape and removes the last one-instruction store
   swap without barriers, raw offset writes, or dummy temporaries.

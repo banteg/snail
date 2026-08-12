@@ -28,7 +28,7 @@ Retained source-shape choices:
 - scope the archive byte offset to the guarded record loop and rebind the local `ArchiveIndex*` from `g_archive_index_records` at the loop tail; this recovers the native `0x324` frame, pre-frame `eax` load, and archive-only `ebx`/`ebp` saves, raising the match from 49.60% to 71.39%;
 - compare the archive path through the advancing cursor directly, recovering the native `ecx`/`dl`/`al` register lanes and raising the match to 80.98%;
 - initialize the basename index before the pattern index, matching the native `edi`/`esi` zeroing order and raising the match to 81.52%;
-- keep the archive prefix comparison inline, but call the exact `ascii_upper_if_lowercase` helper for wildcard matching;
+- keep the archive prefix comparison inline, but call the exact `RstrASC` helper for wildcard matching;
 - keep only one named folded-byte temporary and inline the pattern fold call, reflecting the native stack model without manufacturing a spill;
 - curate `g_enumerated_entry_count`, `_findfirst`, and `_findnext` in `analysis/symbols/gameplay-references.json` after BN confirmed the xrefs and wrapper behavior.
 

@@ -72,7 +72,7 @@ void cRHighScore::Init(int mode_, int rank)
     }
 
     if (entering_name != 0) {
-        rstrcpy_checked_ascii(title_widget->text_buffer, (char*)"Enter your name here!");
+        Rstrcpy(title_widget->text_buffer, (char*)"Enter your name here!");
         title_widget->layout_frontend_widget();
     }
 

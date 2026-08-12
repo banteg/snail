@@ -17,7 +17,7 @@ unsigned char cRSubSolution::Load(
     replay_mode_id = compact->replay_mode_id;
     replay_speed_scalar_bits = compact->replay_speed_scalar_bits;
     challenge_difficulty_scalar_bits = compact->challenge_difficulty_scalar_bits;
-    rstrcpy_checked_ascii(player_name, compact->player_name);
+    Rstrcpy(player_name, compact->player_name);
 
     score = compact->score;
     timer = compact->timer;

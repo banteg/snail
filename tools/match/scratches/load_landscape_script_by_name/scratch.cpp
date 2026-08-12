@@ -31,7 +31,7 @@ int cRLandscapeManager::Import(char* script_name)
 
     loaded_name = scripts[0].name;
     while (index < script_count) {
-        if (strings_equal_case_insensitive_path(loaded_name, script_name) != 0)
+        if (Rstrcmp(loaded_name, script_name) != 0)
             goto found_existing;
         ++index;
         loaded_name += sizeof(cRLandscape);
@@ -48,36 +48,36 @@ load_script:
         return 0;
     }
 
-    rstrcpy_checked_ascii(scripts[script_count].name, script_name);
+    Rstrcpy(scripts[script_count].name, script_name);
 
-    cursor = find_case_insensitive_substring("ID:", file_bytes);
+    cursor = Rstrfind("ID:", file_bytes);
     if (cursor == 0) {
         report_errorf("Landscape. Cannot find ID: %s", script_path);
         scripts[script_count].id = 0;
     } else {
-        cursor = find_case_insensitive_substring(":", cursor);
-        scripts[script_count].id = parse_next_signed_int(&cursor);
+        cursor = Rstrfind(":", cursor);
+        scripts[script_count].id = Rstrint(&cursor);
     }
 
-    cursor = find_case_insensitive_substring("Fog:", file_bytes);
+    cursor = Rstrfind("Fog:", file_bytes);
     if (cursor == 0) {
         report_errorf("Landscape. Cannot find Fog: %s", script_path);
         scripts[script_count].fog_color.Black();
     } else {
-        cursor = find_case_insensitive_substring(":", cursor);
-        parsed_int = parse_next_signed_int(&cursor);
+        cursor = Rstrfind(":", cursor);
+        parsed_int = Rstrint(&cursor);
         scripts[script_count].fog_color.r = (float)parsed_int * 0.00392156886f;
-        parsed_int = parse_next_signed_int(&cursor);
+        parsed_int = Rstrint(&cursor);
         scripts[script_count].fog_color.g = (float)parsed_int * 0.00392156886f;
-        parsed_int = parse_next_signed_int(&cursor);
+        parsed_int = Rstrint(&cursor);
         scripts[script_count].fog_color.b = (float)parsed_int * 0.00392156886f;
     }
 
-    cursor = find_case_insensitive_substring("Picture:", file_bytes);
+    cursor = Rstrfind("Picture:", file_bytes);
     if (cursor == 0) {
         report_errorf("Landscape. Cannot find Picture: in %s", script_path);
     } else {
-        cursor = find_case_insensitive_substring(":", cursor) + 1;
+        cursor = Rstrfind(":", cursor) + 1;
         char* out = texture_stem;
         char ch = *cursor;
         while (*cursor != '.') {
@@ -100,9 +100,9 @@ load_script:
         } else {
             scripts[script_count].split_backdrop_texture_pair = 1;
 
-            rstrcpy_checked_ascii(split_texture_a,
+            Rstrcpy(split_texture_a,
                 scripts[script_count].backdrop_texture_path);
-            rstrcpy_checked_ascii(split_texture_b,
+            Rstrcpy(split_texture_b,
                 scripts[script_count].backdrop_texture_path);
 
             char* dot = split_texture_a;
@@ -143,11 +143,11 @@ load_script:
             scripts[script_count].backdrop_texture_path);
     }
 
-    cursor = find_case_insensitive_substring("Landscape:", file_bytes);
+    cursor = Rstrfind("Landscape:", file_bytes);
     if (cursor == 0) {
         report_errorf("Landscape. Cannot find Landscape: in %s", script_path);
     } else {
-        cursor = find_case_insensitive_substring(":", cursor) + 1;
+        cursor = Rstrfind(":", cursor) + 1;
         char ch = *cursor;
         if (ch == ' ' || ch < ' ') {
             scripts[script_count].object_index = -1;
@@ -168,11 +168,11 @@ load_script:
         }
     }
 
-    cursor = find_case_insensitive_substring("Distort:", file_bytes);
+    cursor = Rstrfind("Distort:", file_bytes);
     if (cursor == 0) {
         report_errorf("Landscape. Cannot find Distort: in %s", script_path);
     } else {
-        cursor = find_case_insensitive_substring(":", cursor) + 1;
+        cursor = Rstrfind(":", cursor) + 1;
         scripts[script_count].distort = RTextExtractFloat(&cursor);
     }
 

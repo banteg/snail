@@ -11,7 +11,7 @@ int find_registered_sound_sample_id_by_name(char* sample_name)
 
     for (sample_id = 0; sample_id < g_registered_sound_sample_count; ++sample_id) {
         char* registered_name = g_registered_sound_sample_names[sample_id];
-        if (find_case_insensitive_substring(sample_name, registered_name) != 0)
+        if (Rstrfind(sample_name, registered_name) != 0)
             return sample_id;
     }
 
