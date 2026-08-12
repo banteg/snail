@@ -313,3 +313,15 @@ changes no source or instruction similarity: the excluded platform frontier
 remains 70.86%, 327/325 instructions, and prefix 1/325. Its current audit has
 151 clean plus 23 unaudited entries, with no unresolved or mismatched
 references.
+
+## 2026-08-12 audio-backend prefix provenance
+
+The reference manifest now records the minimum proven `0x19`-byte
+`g_audio_backend` prefix. This reaches exactly through the one-byte
+`AudioBackend::is_paused` field at `+0x18`, whose ownership is independently
+established by the startup resume gate and the exact pause/resume members. It
+does not claim the owner's padded size or unknown tail.
+
+The native `0x753c70` access and the candidate `g_audio_backend +0x18`
+relocation therefore share one audited reference identity. This is provenance
+closure only: no instruction alignment, source shape, or score changes.
