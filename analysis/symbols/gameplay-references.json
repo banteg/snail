@@ -2012,6 +2012,33 @@
       "description": "Exact Windows cREnemyManager::Register(tVector&, float, int, cRBodPos*) entry with its fully decorated relocation name."
     },
     {
+      "address": "0x415f50",
+      "name": "initialize_challenge_setup_screen",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRGUI@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRGUI::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4161f0",
+      "name": "destroy_challenge_setup_screen",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRGUI@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRGUI::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x416370",
+      "name": "update_challenge_setup_screen",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRGUI@@QAEHXZ"
+      ],
+      "description": "Exact result-bearing Windows int cRGUI::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x41a9fc",
       "name": "initialize_backdrop_tile_quad_orientation_jump_table",
       "kind": "jump_table",

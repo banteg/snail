@@ -100,3 +100,12 @@ semantic `int __thiscall(GUI*)` result consumed by `update_subgame`, alongside
 typed replay, slider, navigation, and borrowed runtime access. Strict paired
 export passed with zero mismatches and preserves the exact 355/355 matcher
 baseline.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the semantic result-bearing member as `int cRGUI::AI()`
+and exports `?AI@cRGUI@@QAEHXZ`. Its sole live Windows caller immediately
+compares EAX against the `1` and `3` handoff results, proving that this generic
+method is not void. Android and iOS retain the same owner and one body each;
+all eight teardown paths now call `UnInit()`. Matching remains exact at
+355/355 with all 38 operands clean.

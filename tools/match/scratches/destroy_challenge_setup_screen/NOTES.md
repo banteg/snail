@@ -33,3 +33,11 @@ Binary Ninja and IDA now both decompile this exact method through the persisted
 teardown fields are typed `FrontendWidget*`, while `GUI::game` remains the
 borrowed `cRSubGame*` that owns `level_mode`. Strict paired export passed
 without a symbol or address mismatch.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRGUI::UnInit()` and exports
+`?UnInit@cRGUI@@QAEXXZ`. All eight live Windows calls originate in
+`cRGUI::AI()` with its receiver preserved in ECX; Android and iOS retain the
+same void symbol and one body each. Matching remains exact at 96/96 with all
+32 operands clean.

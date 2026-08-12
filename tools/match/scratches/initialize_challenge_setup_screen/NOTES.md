@@ -60,3 +60,11 @@ ownership.
 Focused matching improves from 96.41% to 100.00%, 167/167 instructions, with
 all 37 relocatable operands clean. No synthetic return, volatile barrier, or
 dummy state was introduced.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRGUI::Init()` and exports
+`?Init@cRGUI@@QAEXXZ`. Its sole live Windows caller passes the embedded GUI at
+`cRSubGame + 0x125ffe0` and discards EAX; Android and iOS retain the same void
+symbol and one body each. Matching remains exact at 167/167 with all 37
+operands clean.

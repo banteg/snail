@@ -1513,16 +1513,25 @@
     {
       "address": "0x415f50",
       "name": "initialize_challenge_setup_screen",
-      "description": "Void `cRGUI::Init()`: builds the mode-specific postal, challenge, or time-trial level-selection controls. Mode 1 adds Select Difficulty, Select Speed, Play, Watch Replay, and Back widgets. The sole Windows caller discards EAX; the honest void transcription is 167/167 instructions at 96.41%."
+      "aliases": [
+        "cRGUI_Init"
+      ],
+      "description": "Exact void `cRGUI::Init()`: builds the mode-specific postal, challenge, or time-trial level-selection controls. Mode 1 adds Select Difficulty, Select Speed, Play, Watch Replay, and Back widgets. The sole Windows caller discards EAX; the authored void transcription matches all 167 instructions."
     },
     {
       "address": "0x4161f0",
       "name": "destroy_challenge_setup_screen",
+      "aliases": [
+        "cRGUI_UnInit"
+      ],
       "description": "Implements `cRGUI::UnInit()`: tears down the cRGUI widget set selected by gameplay mode 0, 1, or 4, including optional replay and challenge slider controls."
     },
     {
       "address": "0x416370",
       "name": "update_challenge_setup_screen",
+      "aliases": [
+        "cRGUI_AI"
+      ],
       "description": "Implements result-bearing `cRGUI::AI()`: runs postal, challenge, and time-trial level selection, including navigation, difficulty/speed changes, replay launch, Play, and Back handoffs. `update_subgame` consumes its semantic 0/1/3 result, so this member remains `int`."
     },
     {

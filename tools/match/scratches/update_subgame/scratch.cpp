@@ -146,7 +146,7 @@ void cRSubGame::AI()
             return;
 
         case 1:
-            result = gui.update_challenge_setup_screen();
+            result = gui.AI();
             if (result == one) {
                 subgame_rebuild_selector = 2;
                 StartLevel(0);

@@ -6,7 +6,7 @@
 #include "subgame_runtime.h"
 
 
-void cRGUI::destroy_challenge_setup_screen()
+void cRGUI::UnInit()
 {
     int mode = game->level_mode;
     switch (mode) {

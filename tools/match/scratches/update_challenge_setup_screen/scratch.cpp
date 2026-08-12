@@ -9,7 +9,7 @@
 #include "game_time.h"
 #include "time_trial.h"
 
-int cRGUI::update_challenge_setup_screen()
+int cRGUI::AI()
 {
     game->HideScores();
 
@@ -82,7 +82,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             back_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             return 3;
         }
 
@@ -90,7 +90,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             play_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             return 1;
         }
 
@@ -98,7 +98,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             replay_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             game->selected_level_record_active = 1;
             game->selected_level_record =
                 &game->sub_high_score
@@ -113,7 +113,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             back_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             return 3;
         }
 
@@ -121,7 +121,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             play_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             return 1;
         }
 
@@ -134,7 +134,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             replay_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             game->selected_level_record_active = 1;
             game->selected_level_record =
                 &game->sub_high_score.survival_pending_record;
@@ -188,7 +188,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             back_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             return 3;
         }
 
@@ -196,7 +196,7 @@ int cRGUI::update_challenge_setup_screen()
         if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
             play_button->widget_flags =
                 flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-            destroy_challenge_setup_screen();
+            UnInit();
             return 1;
         }
         break;

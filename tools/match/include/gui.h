@@ -10,9 +10,9 @@ class cRSubGame;
 
 class cRGUI {
 public:
-    void initialize_challenge_setup_screen(); // @ 0x415f50, cRGUI::Init
-    void destroy_challenge_setup_screen(); // @ 0x4161f0, cRGUI::UnInit
-    int update_challenge_setup_screen(); // @ 0x416370, cRGUI::AI
+    void Init();   // @ 0x415f50
+    void UnInit(); // @ 0x4161f0
+    int AI();      // @ 0x416370
 
     cRSubGame* game; // +0x00, borrowed enclosing cRSubGame owner
     cRBorder* next_level_button; // +0x04

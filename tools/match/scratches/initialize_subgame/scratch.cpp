@@ -257,7 +257,7 @@ void cRSubGame::Init()
                 ReSet();
                 return;
             case 1:
-                gui.initialize_challenge_setup_screen();
+                gui.Init();
                 ReSet();
                 return;
             case 7:

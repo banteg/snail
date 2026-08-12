@@ -8802,6 +8802,91 @@ def test_cheat_uses_authored_method_surface() -> None:
     assert "g_cheat_state.AI()" in all_sources
 
 
+def test_gui_uses_authored_lifecycle_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/gui.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "initialize_challenge_setup_screen": {
+            "method": "Init",
+            "symbol": "?Init@cRGUI@@QAEXXZ",
+            "mobile": "cRGUI::Init()",
+            "alias": "cRGUI_Init",
+        },
+        "destroy_challenge_setup_screen": {
+            "method": "UnInit",
+            "symbol": "?UnInit@cRGUI@@QAEXXZ",
+            "mobile": "cRGUI::UnInit()",
+            "alias": "cRGUI_UnInit",
+        },
+        "update_challenge_setup_screen": {
+            "method": "AI",
+            "symbol": "?AI@cRGUI@@QAEHXZ",
+            "mobile": "cRGUI::AI()",
+            "alias": "cRGUI_AI",
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "GUI.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["ios_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRGUI::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    assert "void Init();" in header
+    assert "void UnInit();" in header
+    assert "int AI();" in header
+    ai_source = (
+        scratch_root / "update_challenge_setup_screen/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert sum(
+        line.strip() == "UnInit();" for line in ai_source.splitlines()
+    ) == 8
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".initialize_challenge_setup_screen(",
+        ".destroy_challenge_setup_screen(",
+        ".update_challenge_setup_screen(",
+    ):
+        assert stale_method not in all_sources
+    assert "gui.Init()" in all_sources
+    assert "gui.AI()" in all_sources
+
+
 def test_screen_controller_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
@@ -8904,6 +8989,9 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         "initialize_cheat": "Init",
         "update_cheat": "AI",
         "match_cheat_text": "MatchText",
+        "initialize_challenge_setup_screen": "Init",
+        "destroy_challenge_setup_screen": "UnInit",
+        "update_challenge_setup_screen": "AI",
         "destroy_main_menu": "UnInit",
         "initialize_main_menu": "Init",
         "update_main_menu": "AI",
