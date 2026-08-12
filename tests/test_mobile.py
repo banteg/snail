@@ -10329,6 +10329,75 @@ def test_mobile_object_tile_helpers_recover_authored_free_functions() -> None:
         assert "ObjectProc.o" in notes
 
 
+def test_mobile_path_mirror_recovers_authored_method() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
+    }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+
+    entry = entries["mirror_path"]
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "Path.o"
+    assert entry["android_symbol"] == "cRPath::Mirror(cRPath*)"
+    assert entry["ios_symbol"] == entry["android_symbol"]
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+    assert functions_by_name["mirror_path"]["aliases"] == [
+        "mirror_path_template_pair_x",
+        "cRPath_Mirror",
+        "Mirror",
+    ]
+    object_symbol = "?Mirror@cRPath@@QAEXPAU1@@Z"
+    assert object_symbol in references_by_name["mirror_path"]["aliases"]
+
+    scratch_root = repo_root / "tools/match/scratches"
+    source = (scratch_root / "mirror_path/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    config = (scratch_root / "mirror_path/scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    initializer = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "void cRPath::Mirror(cRPath* source)" in source
+    assert f"SYMBOL={object_symbol}\n" in config
+    assert "void Mirror(cRPath* source); // @ 0x421dc0" in header
+    assert initializer.count(".Mirror(path);") == 60
+    assert ".mirror_path(" not in initializer
+
+    for corpus_root in (
+        DEFAULT_ANDROID_CORPUS_ROOT,
+        DEFAULT_IOS_CORPUS_ROOT,
+    ):
+        index = load_json(corpus_root / "index.json")
+        mobile = resolve_corpus_symbol(index, entry["android_symbol"])
+        assert mobile is not None
+        body = corpus_function_path(corpus_root, mobile).read_text(
+            encoding="utf-8"
+        )
+        assert "cRPath::Mirror(cRPath*)" in body
+        assert "CalcLengthZ" in body
+
+
 def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

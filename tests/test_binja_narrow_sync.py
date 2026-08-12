@@ -24922,7 +24922,7 @@ def test_c_r_path_primary_ownership_stays_aligned() -> None:
     assert "cRPath primary;" in matcher_header
     assert "cRPath secondary;" in matcher_header
     assert "void cRPath::PATH_FUNCTION" in matcher_skeleton
-    assert "void cRPath::mirror_path(cRPath* source)" in mirror_scratch
+    assert "void cRPath::Mirror(cRPath* source)" in mirror_scratch
 
     assert "typedef struct cRPath {" in analysis_header
     assert "} cRPath;\ntypedef cRPath Path;" in analysis_header

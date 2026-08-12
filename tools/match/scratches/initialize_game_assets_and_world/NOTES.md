@@ -397,7 +397,7 @@ proves that not every `PathPair` derives its secondary record from its primary:
    secondary uses the distinct `Slidex.tga` middle surface.
 
 The independent records each allocate their own render object and run the full
-builder rather than calling `mirror_path`. This recovers a real
+builder rather than calling `cRPath::Mirror`. This recovers a real
 per-member ownership distinction that the `PathPair` container alone could not
 express. The focused bootstrap rises from 30.58% (1,973 candidate instructions)
 to 33.02% (2,155/5,411), with 662 clean masked operands and unchanged problem

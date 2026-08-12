@@ -21,7 +21,7 @@ static inline void swap_vertex_index(
     right = temporary;
 }
 
-void cRPath::mirror_path(cRPath* source)
+void cRPath::Mirror(cRPath* source)
 {
     is_mirrored_x = 1;
     segment_count = source->segment_count;

@@ -507,7 +507,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[0].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[0].secondary.mirror_path(path);
+    subgame.path_pairs[0].secondary.Mirror(path);
     subgame.path_pairs[0].secondary.position.z = 0.0f;
     subgame.path_pairs[0].secondary.position.y = 0.0f;
     subgame.path_pairs[0].secondary.position.x = 0.0f;
@@ -538,7 +538,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[1].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[1].secondary.mirror_path(path);
+    subgame.path_pairs[1].secondary.Mirror(path);
     subgame.path_pairs[1].secondary.position.z = 0.0f;
     subgame.path_pairs[1].secondary.position.y = 0.0f;
     subgame.path_pairs[1].secondary.position.x = 0.0f;
@@ -569,7 +569,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[2].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[2].secondary.mirror_path(path);
+    subgame.path_pairs[2].secondary.Mirror(path);
     subgame.path_pairs[2].secondary.position.z = 0.0f;
     subgame.path_pairs[2].secondary.position.y = 0.0f;
     subgame.path_pairs[2].secondary.position.x = 0.0f;
@@ -600,7 +600,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[6].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[6].secondary.mirror_path(path);
+    subgame.path_pairs[6].secondary.Mirror(path);
     subgame.path_pairs[6].secondary.position.z = 0.0f;
     subgame.path_pairs[6].secondary.position.y = 0.0f;
     subgame.path_pairs[6].secondary.position.x = 0.0f;
@@ -631,7 +631,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[3].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[3].secondary.mirror_path(path);
+    subgame.path_pairs[3].secondary.Mirror(path);
     subgame.path_pairs[3].secondary.position.z = 0.0f;
     subgame.path_pairs[3].secondary.position.y = 0.0f;
     subgame.path_pairs[3].secondary.position.x = 0.0f;
@@ -662,7 +662,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[4].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[4].secondary.mirror_path(path);
+    subgame.path_pairs[4].secondary.Mirror(path);
     subgame.path_pairs[4].secondary.position.z = 0.0f;
     subgame.path_pairs[4].secondary.position.y = 0.0f;
     subgame.path_pairs[4].secondary.position.x = 0.0f;
@@ -693,7 +693,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[5].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[5].secondary.mirror_path(path);
+    subgame.path_pairs[5].secondary.Mirror(path);
     subgame.path_pairs[5].secondary.position.z = 0.0f;
     subgame.path_pairs[5].secondary.position.y = 0.0f;
     subgame.path_pairs[5].secondary.position.x = 0.0f;
@@ -724,7 +724,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[7].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[7].secondary.mirror_path(path);
+    subgame.path_pairs[7].secondary.Mirror(path);
     subgame.path_pairs[7].secondary.position.z = 0.0f;
     subgame.path_pairs[7].secondary.position.y = 0.0f;
     subgame.path_pairs[7].secondary.position.x = 0.0f;
@@ -755,7 +755,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[37].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[37].secondary.mirror_path(path);
+    subgame.path_pairs[37].secondary.Mirror(path);
     subgame.path_pairs[37].secondary.position.z = 0.0f;
     subgame.path_pairs[37].secondary.position.y = 0.0f;
     subgame.path_pairs[37].secondary.position.x = 0.0f;
@@ -786,7 +786,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[38].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[38].secondary.mirror_path(path);
+    subgame.path_pairs[38].secondary.Mirror(path);
     subgame.path_pairs[38].secondary.position.z = 0.0f;
     subgame.path_pairs[38].secondary.position.y = 0.0f;
     subgame.path_pairs[38].secondary.position.x = 0.0f;
@@ -817,7 +817,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[43].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[43].secondary.mirror_path(path);
+    subgame.path_pairs[43].secondary.Mirror(path);
     subgame.path_pairs[43].secondary.position.z = 0.0f;
     subgame.path_pairs[43].secondary.position.y = 0.0f;
     subgame.path_pairs[43].secondary.position.x = 0.0f;
@@ -848,7 +848,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[44].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[44].secondary.mirror_path(path);
+    subgame.path_pairs[44].secondary.Mirror(path);
     subgame.path_pairs[44].secondary.position.z = 0.0f;
     subgame.path_pairs[44].secondary.position.y = 0.0f;
     subgame.path_pairs[44].secondary.position.x = 0.0f;
@@ -879,7 +879,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[45].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[45].secondary.mirror_path(path);
+    subgame.path_pairs[45].secondary.Mirror(path);
     subgame.path_pairs[45].secondary.position.z = 0.0f;
     subgame.path_pairs[45].secondary.position.y = 0.0f;
     subgame.path_pairs[45].secondary.position.x = 0.0f;
@@ -910,7 +910,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[46].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[46].secondary.mirror_path(path);
+    subgame.path_pairs[46].secondary.Mirror(path);
     subgame.path_pairs[46].secondary.position.z = 0.0f;
     subgame.path_pairs[46].secondary.position.y = 0.0f;
     subgame.path_pairs[46].secondary.position.x = 0.0f;
@@ -941,7 +941,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[39].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[39].secondary.mirror_path(path);
+    subgame.path_pairs[39].secondary.Mirror(path);
     subgame.path_pairs[39].secondary.position.z = 0.0f;
     subgame.path_pairs[39].secondary.position.y = 0.0f;
     subgame.path_pairs[39].secondary.position.x = 0.0f;
@@ -972,7 +972,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[41].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[41].secondary.mirror_path(path);
+    subgame.path_pairs[41].secondary.Mirror(path);
     subgame.path_pairs[41].secondary.position.z = 0.0f;
     subgame.path_pairs[41].secondary.position.y = 0.0f;
     subgame.path_pairs[41].secondary.position.x = 0.0f;
@@ -1003,7 +1003,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[42].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[42].secondary.mirror_path(path);
+    subgame.path_pairs[42].secondary.Mirror(path);
     subgame.path_pairs[42].secondary.position.z = 0.0f;
     subgame.path_pairs[42].secondary.position.y = 0.0f;
     subgame.path_pairs[42].secondary.position.x = 0.0f;
@@ -1034,7 +1034,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[40].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[40].secondary.mirror_path(path);
+    subgame.path_pairs[40].secondary.Mirror(path);
     subgame.path_pairs[40].secondary.position.z = 0.0f;
     subgame.path_pairs[40].secondary.position.y = 0.0f;
     subgame.path_pairs[40].secondary.position.x = 0.0f;
@@ -1139,7 +1139,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[25].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[25].secondary.mirror_path(path);
+    subgame.path_pairs[25].secondary.Mirror(path);
     subgame.path_pairs[25].secondary.position.z = 0.0f;
     subgame.path_pairs[25].secondary.position.y = 0.0f;
     subgame.path_pairs[25].secondary.position.x = 0.0f;
@@ -1170,7 +1170,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[27].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[27].secondary.mirror_path(path);
+    subgame.path_pairs[27].secondary.Mirror(path);
     subgame.path_pairs[27].secondary.position.z = 0.0f;
     subgame.path_pairs[27].secondary.position.y = 0.0f;
     subgame.path_pairs[27].secondary.position.x = 0.0f;
@@ -1201,7 +1201,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[26].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[26].secondary.mirror_path(path);
+    subgame.path_pairs[26].secondary.Mirror(path);
     subgame.path_pairs[26].secondary.position.z = 0.0f;
     subgame.path_pairs[26].secondary.position.y = 0.0f;
     subgame.path_pairs[26].secondary.position.x = 0.0f;
@@ -1233,7 +1233,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[16].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[16].secondary.mirror_path(path);
+    subgame.path_pairs[16].secondary.Mirror(path);
     subgame.path_pairs[16].secondary.position.z = 0.0f;
     subgame.path_pairs[16].secondary.position.y = 0.0f;
     subgame.path_pairs[16].secondary.position.x = 0.0f;
@@ -1265,7 +1265,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[17].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[17].secondary.mirror_path(path);
+    subgame.path_pairs[17].secondary.Mirror(path);
     subgame.path_pairs[17].secondary.position.z = 0.0f;
     subgame.path_pairs[17].secondary.position.y = 0.0f;
     subgame.path_pairs[17].secondary.position.x = 0.0f;
@@ -1297,7 +1297,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[18].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[18].secondary.mirror_path(path);
+    subgame.path_pairs[18].secondary.Mirror(path);
     subgame.path_pairs[18].secondary.position.z = 0.0f;
     subgame.path_pairs[18].secondary.position.y = 0.0f;
     subgame.path_pairs[18].secondary.position.x = 0.0f;
@@ -1329,7 +1329,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[19].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[19].secondary.mirror_path(path);
+    subgame.path_pairs[19].secondary.Mirror(path);
     subgame.path_pairs[19].secondary.position.z = 0.0f;
     subgame.path_pairs[19].secondary.position.y = 0.0f;
     subgame.path_pairs[19].secondary.position.x = 0.0f;
@@ -1361,7 +1361,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[8].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[8].secondary.mirror_path(path);
+    subgame.path_pairs[8].secondary.Mirror(path);
     subgame.path_pairs[8].secondary.position.z = 0.0f;
     subgame.path_pairs[8].secondary.position.y = 0.0f;
     subgame.path_pairs[8].secondary.position.x = 0.0f;
@@ -1393,7 +1393,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[10].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[10].secondary.mirror_path(path);
+    subgame.path_pairs[10].secondary.Mirror(path);
     subgame.path_pairs[10].secondary.position.z = 0.0f;
     subgame.path_pairs[10].secondary.position.y = 0.0f;
     subgame.path_pairs[10].secondary.position.x = 0.0f;
@@ -1425,7 +1425,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[9].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[9].secondary.mirror_path(path);
+    subgame.path_pairs[9].secondary.Mirror(path);
     subgame.path_pairs[9].secondary.position.z = 0.0f;
     subgame.path_pairs[9].secondary.position.y = 0.0f;
     subgame.path_pairs[9].secondary.position.x = 0.0f;
@@ -1457,7 +1457,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[14].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[14].secondary.mirror_path(path);
+    subgame.path_pairs[14].secondary.Mirror(path);
     subgame.path_pairs[14].secondary.position.z = 0.0f;
     subgame.path_pairs[14].secondary.position.y = 0.0f;
     subgame.path_pairs[14].secondary.position.x = 0.0f;
@@ -1489,7 +1489,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[11].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[11].secondary.mirror_path(path);
+    subgame.path_pairs[11].secondary.Mirror(path);
     subgame.path_pairs[11].secondary.position.z = 0.0f;
     subgame.path_pairs[11].secondary.position.y = 0.0f;
     subgame.path_pairs[11].secondary.position.x = 0.0f;
@@ -1521,7 +1521,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[13].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[13].secondary.mirror_path(path);
+    subgame.path_pairs[13].secondary.Mirror(path);
     subgame.path_pairs[13].secondary.position.z = 0.0f;
     subgame.path_pairs[13].secondary.position.y = 0.0f;
     subgame.path_pairs[13].secondary.position.x = 0.0f;
@@ -1553,7 +1553,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[12].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[12].secondary.mirror_path(path);
+    subgame.path_pairs[12].secondary.Mirror(path);
     subgame.path_pairs[12].secondary.position.z = 0.0f;
     subgame.path_pairs[12].secondary.position.y = 0.0f;
     subgame.path_pairs[12].secondary.position.x = 0.0f;
@@ -1584,7 +1584,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[20].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[20].secondary.mirror_path(path);
+    subgame.path_pairs[20].secondary.Mirror(path);
     subgame.path_pairs[20].secondary.position.z = 0.0f;
     subgame.path_pairs[20].secondary.position.y = 0.0f;
     subgame.path_pairs[20].secondary.position.x = 0.0f;
@@ -1615,7 +1615,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[21].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[21].secondary.mirror_path(path);
+    subgame.path_pairs[21].secondary.Mirror(path);
     subgame.path_pairs[21].secondary.position.z = 0.0f;
     subgame.path_pairs[21].secondary.position.y = 0.0f;
     subgame.path_pairs[21].secondary.position.x = 0.0f;
@@ -1646,7 +1646,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[22].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[22].secondary.mirror_path(path);
+    subgame.path_pairs[22].secondary.Mirror(path);
     subgame.path_pairs[22].secondary.position.z = 0.0f;
     subgame.path_pairs[22].secondary.position.y = 0.0f;
     subgame.path_pairs[22].secondary.position.x = 0.0f;
@@ -1677,7 +1677,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[23].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[23].secondary.mirror_path(path);
+    subgame.path_pairs[23].secondary.Mirror(path);
     subgame.path_pairs[23].secondary.position.z = 0.0f;
     subgame.path_pairs[23].secondary.position.y = 0.0f;
     subgame.path_pairs[23].secondary.position.x = 0.0f;
@@ -1708,7 +1708,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[32].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[32].secondary.mirror_path(path);
+    subgame.path_pairs[32].secondary.Mirror(path);
     subgame.path_pairs[32].secondary.position.z = 0.0f;
     subgame.path_pairs[32].secondary.position.y = 0.0f;
     subgame.path_pairs[32].secondary.position.x = 0.0f;
@@ -1734,7 +1734,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[24].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[24].secondary.mirror_path(path);
+    subgame.path_pairs[24].secondary.Mirror(path);
     subgame.path_pairs[24].secondary.position.z = 0.0f;
     subgame.path_pairs[24].secondary.position.y = 0.0f;
     subgame.path_pairs[24].secondary.position.x = 0.0f;
@@ -1765,7 +1765,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[28].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[28].secondary.mirror_path(path);
+    subgame.path_pairs[28].secondary.Mirror(path);
     subgame.path_pairs[28].secondary.position.z = 0.0f;
     subgame.path_pairs[28].secondary.position.y = 0.0f;
     subgame.path_pairs[28].secondary.position.x = 0.0f;
@@ -1794,7 +1794,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[15].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[15].secondary.mirror_path(path);
+    subgame.path_pairs[15].secondary.Mirror(path);
     subgame.path_pairs[15].secondary.position.z = 0.0f;
     subgame.path_pairs[15].secondary.position.y = 0.0f;
     subgame.path_pairs[15].secondary.position.x = 0.0f;
@@ -1828,7 +1828,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[33].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[33].secondary.mirror_path(path);
+    subgame.path_pairs[33].secondary.Mirror(path);
     subgame.path_pairs[33].secondary.position.z = 0.0f;
     subgame.path_pairs[33].secondary.position.y = 0.0f;
     subgame.path_pairs[33].secondary.position.x = 0.0f;
@@ -1862,7 +1862,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[34].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[34].secondary.mirror_path(path);
+    subgame.path_pairs[34].secondary.Mirror(path);
     subgame.path_pairs[34].secondary.position.z = 0.0f;
     subgame.path_pairs[34].secondary.position.y = 0.0f;
     subgame.path_pairs[34].secondary.position.x = 0.0f;
@@ -1896,7 +1896,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[35].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[35].secondary.mirror_path(path);
+    subgame.path_pairs[35].secondary.Mirror(path);
     subgame.path_pairs[35].secondary.position.z = 0.0f;
     subgame.path_pairs[35].secondary.position.y = 0.0f;
     subgame.path_pairs[35].secondary.position.x = 0.0f;
@@ -1927,7 +1927,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[29].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[29].secondary.mirror_path(path);
+    subgame.path_pairs[29].secondary.Mirror(path);
     subgame.path_pairs[29].secondary.position.z = 0.0f;
     subgame.path_pairs[29].secondary.position.y = 0.0f;
     subgame.path_pairs[29].secondary.position.x = 0.0f;
@@ -1956,7 +1956,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[47].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[47].secondary.mirror_path(path);
+    subgame.path_pairs[47].secondary.Mirror(path);
     subgame.path_pairs[47].secondary.position.z = 0.0f;
     subgame.path_pairs[47].secondary.position.y = 0.0f;
     subgame.path_pairs[47].secondary.position.x = 0.0f;
@@ -1985,7 +1985,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[48].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[48].secondary.mirror_path(path);
+    subgame.path_pairs[48].secondary.Mirror(path);
     subgame.path_pairs[48].secondary.position.z = 0.0f;
     subgame.path_pairs[48].secondary.position.y = 0.0f;
     subgame.path_pairs[48].secondary.position.x = 0.0f;
@@ -2014,7 +2014,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[49].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[49].secondary.mirror_path(path);
+    subgame.path_pairs[49].secondary.Mirror(path);
     subgame.path_pairs[49].secondary.position.z = 0.0f;
     subgame.path_pairs[49].secondary.position.y = 0.0f;
     subgame.path_pairs[49].secondary.position.x = 0.0f;
@@ -2043,7 +2043,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[50].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[50].secondary.mirror_path(path);
+    subgame.path_pairs[50].secondary.Mirror(path);
     subgame.path_pairs[50].secondary.position.z = 0.0f;
     subgame.path_pairs[50].secondary.position.y = 0.0f;
     subgame.path_pairs[50].secondary.position.x = 0.0f;
@@ -2078,7 +2078,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[51].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[51].secondary.mirror_path(path);
+    subgame.path_pairs[51].secondary.Mirror(path);
     subgame.path_pairs[51].secondary.position.z = 0.0f;
     subgame.path_pairs[51].secondary.position.y = 0.0f;
     subgame.path_pairs[51].secondary.position.x = 0.0f;
@@ -2118,7 +2118,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[52].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[52].secondary.mirror_path(path);
+    subgame.path_pairs[52].secondary.Mirror(path);
     subgame.path_pairs[52].secondary.position.z = 0.0f;
     subgame.path_pairs[52].secondary.position.y = 0.0f;
     subgame.path_pairs[52].secondary.position.x = 0.0f;
@@ -2158,7 +2158,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[53].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[53].secondary.mirror_path(path);
+    subgame.path_pairs[53].secondary.Mirror(path);
     subgame.path_pairs[53].secondary.position.z = 0.0f;
     subgame.path_pairs[53].secondary.position.y = 0.0f;
     subgame.path_pairs[53].secondary.position.x = 0.0f;
@@ -2198,7 +2198,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[57].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[57].secondary.mirror_path(path);
+    subgame.path_pairs[57].secondary.Mirror(path);
     subgame.path_pairs[57].secondary.position.z = 0.0f;
     subgame.path_pairs[57].secondary.position.y = 0.0f;
     subgame.path_pairs[57].secondary.position.x = 0.0f;
@@ -2238,7 +2238,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[54].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[54].secondary.mirror_path(path);
+    subgame.path_pairs[54].secondary.Mirror(path);
     subgame.path_pairs[54].secondary.position.z = 0.0f;
     subgame.path_pairs[54].secondary.position.y = 0.0f;
     subgame.path_pairs[54].secondary.position.x = 0.0f;
@@ -2278,7 +2278,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[55].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[55].secondary.mirror_path(path);
+    subgame.path_pairs[55].secondary.Mirror(path);
     subgame.path_pairs[55].secondary.position.z = 0.0f;
     subgame.path_pairs[55].secondary.position.y = 0.0f;
     subgame.path_pairs[55].secondary.position.x = 0.0f;
@@ -2318,7 +2318,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[56].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[56].secondary.mirror_path(path);
+    subgame.path_pairs[56].secondary.Mirror(path);
     subgame.path_pairs[56].secondary.position.z = 0.0f;
     subgame.path_pairs[56].secondary.position.y = 0.0f;
     subgame.path_pairs[56].secondary.position.x = 0.0f;
@@ -2358,7 +2358,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[58].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[58].secondary.mirror_path(path);
+    subgame.path_pairs[58].secondary.Mirror(path);
     subgame.path_pairs[58].secondary.position.z = 0.0f;
     subgame.path_pairs[58].secondary.position.y = 0.0f;
     subgame.path_pairs[58].secondary.position.x = 0.0f;
@@ -2398,7 +2398,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[62].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[62].secondary.mirror_path(path);
+    subgame.path_pairs[62].secondary.Mirror(path);
     subgame.path_pairs[62].secondary.position.z = 0.0f;
     subgame.path_pairs[62].secondary.position.y = 0.0f;
     subgame.path_pairs[62].secondary.position.x = 0.0f;
@@ -2438,7 +2438,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[59].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[59].secondary.mirror_path(path);
+    subgame.path_pairs[59].secondary.Mirror(path);
     subgame.path_pairs[59].secondary.position.z = 0.0f;
     subgame.path_pairs[59].secondary.position.y = 0.0f;
     subgame.path_pairs[59].secondary.position.x = 0.0f;
@@ -2478,7 +2478,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[61].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[61].secondary.mirror_path(path);
+    subgame.path_pairs[61].secondary.Mirror(path);
     subgame.path_pairs[61].secondary.position.z = 0.0f;
     subgame.path_pairs[61].secondary.position.y = 0.0f;
     subgame.path_pairs[61].secondary.position.x = 0.0f;
@@ -2516,7 +2516,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.path_pairs[60].secondary.SetObject(
         g_object_list.Add());
-    subgame.path_pairs[60].secondary.mirror_path(path);
+    subgame.path_pairs[60].secondary.Mirror(path);
     subgame.path_pairs[60].secondary.position.zero_vector3();
 
     path->build_track_fringe_mesh(

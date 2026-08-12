@@ -248,7 +248,7 @@ struct cRPath : public BodBase {
         char* vertical_texture);
     void build_track_fringe_mesh(char* texture_path, float clamp_side); // @ 0x4246a0, cRPath::BuildFringe
     void build_track_fringe_supertramp_mesh(char* texture_path); // @ 0x424ad0, cRPath::BuildFringeSuperTramp
-    void mirror_path(cRPath* source); // @ 0x421dc0, cRPath::Mirror
+    void Mirror(cRPath* source); // @ 0x421dc0
     void __fastcall calc_path_length_z(); // @ 0x42c600, cRPath::CalcLengthZ
     void try_enter_track_attachment_from_swept_motion(
         float px, float py, float pz,

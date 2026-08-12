@@ -88,3 +88,13 @@ instructions, a 314-instruction exact prefix, and all 15 masked operands clean.
 Together with the independently named Android and iOS bodies, this closes the
 shared `cRPath::Mirror(cRPath*)` owner while retaining the explicit fact that
 only Windows mirrors the generated strip mesh.
+
+## 2026-08-12 authored method surface
+
+The live Windows function is a 1058-byte void thiscall with typed `cRPath*`
+receiver and source parameters. Binary Ninja records 60 direct calls from the
+asset initializer; every call passes one path-pair secondary as the receiver
+and its authored primary half as the source. Together with the independently
+named Android and iOS `cRPath::Mirror(cRPath*)` bodies, this anchors the exact
+`cRPath::Mirror` spelling throughout the Windows source. The stable
+`mirror_path` name remains only the address-keyed scratch identity.

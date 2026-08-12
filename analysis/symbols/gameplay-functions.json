@@ -1983,6 +1983,7 @@
       "name": "mirror_path",
       "aliases": [
         "mirror_path_template_pair_x",
+        "cRPath_Mirror",
         "Mirror"
       ],
       "description": "Windows `cRPath::Mirror(cRPath*)`: clones one cRPath, negates X-space samples, and additionally mirrors the Windows strip mesh and flips its winding. Android and iOS independently preserve the authored owner and signature, while their mobile implementations stop after sample mirroring and `CalcLengthZ()`."

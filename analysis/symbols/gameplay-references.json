@@ -460,6 +460,15 @@
       "description": "Exact Windows cROptions::AI() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x421dc0",
+      "name": "mirror_path",
+      "kind": "function",
+      "aliases": [
+        "?Mirror@cRPath@@QAEXPAU1@@Z"
+      ],
+      "description": "Exact Windows cRPath::Mirror(cRPath*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x42f0a0",
       "name": "load_png_image",
       "kind": "function",
