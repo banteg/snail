@@ -10240,7 +10240,7 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
         "dispatch_cutscene_animation": "dispatch_cutscene_animation",
         "set_snail_jetpack": "set_snail_jetpack",
         "set_snail_weapon": "set_snail_weapon",
-        "build_snail_world_hotspots": "build_snail_world_hotspots",
+        "build_snail_world_hotspots": "BuildHotSpots",
         "extract_snail_local_hotspots": "extract_snail_local_hotspots",
     }
     for function, method in methods.items():
@@ -10276,6 +10276,34 @@ def test_snail_presentation_uses_authored_primary_owner() -> None:
     assert "void AIGoldy();" in player
     assert "presentation.AIGoldy();" in update
     assert ".update_snail_presentation(" not in update
+
+    hotspot_builder = entries["build_snail_world_hotspots"]
+    assert hotspot_builder["status"] == "verified"
+    assert hotspot_builder["confidence"] == "high"
+    assert hotspot_builder["source_object"] == "SubGame.o"
+    assert hotspot_builder["android_symbol"] == (
+        "cRSnail::BuildHotSpots()"
+    )
+    assert hotspot_builder["android_body_count"] == 1
+    assert hotspot_builder.get("ios_symbol") is None
+    assert functions_by_name["build_snail_world_hotspots"]["aliases"] == [
+        "update_snail_skin",
+        "cRSnail_BuildHotSpots",
+    ]
+    hotspot_symbol = "?BuildHotSpots@cRSnail@@QAEXXZ"
+    assert references_by_name["build_snail_world_hotspots"]["aliases"] == [
+        hotspot_symbol
+    ]
+    hotspot_config = (
+        scratch_root / "build_snail_world_hotspots/scratch.conf"
+    ).read_text(encoding="utf-8")
+    hotspot_update = (
+        scratch_root / "update_snail_presentation/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={hotspot_symbol}\n" in hotspot_config
+    assert "void BuildHotSpots();" in player
+    assert "BuildHotSpots();" in hotspot_update
+    assert "build_snail_world_hotspots();" not in hotspot_update
 
     snail_skin = (include_root / "snail_skin.h").read_text(encoding="utf-8")
     cut_scene = (include_root / "cut_scene.h").read_text(encoding="utf-8")

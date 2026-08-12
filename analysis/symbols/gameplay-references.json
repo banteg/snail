@@ -3825,6 +3825,15 @@
       "description": "Compiler-emitted byte lookup table mapping movement flags 1..192 to set_snail_weapon switch case indexes."
     },
     {
+      "address": "0x445cd0",
+      "name": "build_snail_world_hotspots",
+      "kind": "function",
+      "aliases": [
+        "?BuildHotSpots@cRSnail@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSnail::BuildHotSpots() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x445e20",
       "name": "update_times_up",
       "kind": "function",

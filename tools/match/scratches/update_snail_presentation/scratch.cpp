@@ -140,7 +140,7 @@ void cRSnail::AIGoldy()
     camera_target = &owner_player->cached_camera_target_world;
     snail_hotspot_body.transform.position = *camera_target;
 
-    build_snail_world_hotspots();
+    BuildHotSpots();
 
     if (cutscene.state != CUT_SCENE_STATE_INACTIVE) {
         cutscene.AI();

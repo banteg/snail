@@ -4249,7 +4249,8 @@
       "address": "0x445cd0",
       "name": "build_snail_world_hotspots",
       "aliases": [
-        "update_snail_skin"
+        "update_snail_skin",
+        "cRSnail_BuildHotSpots"
       ],
       "description": "Android `cRSnail::BuildHotSpots()`: transforms the exact Snail's 19 local hotspots through two live source matrices into the world-space bank consumed by cRCutScene. The historical `update_snail_skin` label remains an alias."
     },

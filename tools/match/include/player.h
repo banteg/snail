@@ -95,7 +95,7 @@ public:
     void set_snail_weapon(int shoot_flags);    // @ 0x445920
     void AIGoldy();                      // @ 0x4428d0
     void dispatch_cutscene_animation(int animation, unsigned char immediate, int mode_flags); // @ 0x444600
-    void build_snail_world_hotspots();      // @ 0x445cd0
+    void BuildHotSpots();                   // @ 0x445cd0
     void extract_snail_local_hotspots();    // @ 0x445d50
 
     // build_subgame_level links this inherited renderable BOD; the intrusive
