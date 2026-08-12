@@ -4,7 +4,7 @@
 #include "thanks_screen.h"
 
 
-void ThanksScreen::uninit_thanks_screen()
+void cRSplash::uninit_thanks_screen()
 {
     g_game->border_manager.kill_border(message_widget);
     g_game->players[0].frontend_state = 14;

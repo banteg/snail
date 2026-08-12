@@ -18,20 +18,20 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "create_golb",
-      "address": "0x415280"
+      "name": "bind_subgame_owner",
+      "address": "0x433fc0"
     },
     {
-      "name": "spawn_golb_trail_sprite",
-      "address": "0x415bb0"
+      "name": "initialize_thanks_for_playing_screen",
+      "address": "0x433fd0"
     },
     {
-      "name": "shoot_subgoldy",
-      "address": "0x43a300"
+      "name": "uninit_thanks_screen",
+      "address": "0x4340c0"
     },
     {
-      "name": "firework_shoot",
-      "address": "0x441dd0"
+      "name": "update_thanks_for_playing_screen",
+      "address": "0x4340f0"
     }
   ],
   "health_check_count": 1156,

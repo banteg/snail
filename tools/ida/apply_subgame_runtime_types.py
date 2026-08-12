@@ -2427,7 +2427,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "EnemyManager": _named_struct_size("EnemyManager"),
                     "GUI": _named_struct_size("GUI"),
                     "Help": _named_struct_size("Help"),
-                    "ThanksScreen": _named_struct_size("ThanksScreen"),
+                    "cRSplash": _named_struct_size("cRSplash"),
                     "GalaxyStar": _named_struct_size("GalaxyStar"),
                     "Galaxy": _named_struct_size("Galaxy"),
                     "Parcel": _named_struct_size("Parcel"),

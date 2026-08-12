@@ -487,7 +487,7 @@ REQUIRED_HEADER_STRUCTS = (
     "LandscapeManager",
     "GUI",
     "Help",
-    "ThanksScreen",
+    "cRSplash",
     "GalaxyPoint",
     "Galaxy",
     "EnemyManager",
@@ -2892,7 +2892,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x125ffdc", "salt_frequency", "float"),
     ("0x125ffe0", "gui", "GUI"),
     ("0x1260008", "help", "Help"),
-    ("0x126000c", "thanks_screen", "ThanksScreen"),
+    ("0x126000c", "splash", "cRSplash"),
     ("0x1260020", "galaxy", "Galaxy"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x1270fcc", "next_slug_voice_trigger_z", "float"),
@@ -3037,7 +3037,7 @@ ROW_MODEL_FIELD_UPDATES = (
     ("0x80", "velocity", "Vec3"),
 )
 
-THANKS_SCREEN_FIELD_UPDATES = (
+SPLASH_FIELD_UPDATES = (
     ("0x00", "game", "cRSubGame*"),
     ("0x04", "message_widget", "FrontendWidget*"),
     ("0x08", "message_state", "int32_t"),
@@ -3774,18 +3774,18 @@ SLUG_VOICE_MANAGER_PROTO_UPDATES = (
     ),
 )
 
-THANKS_SCREEN_PROTO_UPDATES = (
+SPLASH_PROTO_UPDATES = (
     (
         "initialize_thanks_for_playing_screen",
-        "void __thiscall initialize_thanks_for_playing_screen(ThanksScreen* thanks_screen)",
+        "void __thiscall initialize_thanks_for_playing_screen(cRSplash* splash)",
     ),
     (
         "uninit_thanks_screen",
-        "void __thiscall uninit_thanks_screen(ThanksScreen* thanks_screen)",
+        "void __thiscall uninit_thanks_screen(cRSplash* splash)",
     ),
     (
         "update_thanks_for_playing_screen",
-        "void __thiscall update_thanks_for_playing_screen(ThanksScreen* thanks_screen)",
+        "void __thiscall update_thanks_for_playing_screen(cRSplash* splash)",
     ),
 )
 
@@ -3856,7 +3856,7 @@ PROTO_UPDATES = (
     *ROW_MODEL_PROTO_UPDATES,
     *LANDSCAPE_MANAGER_PROTO_UPDATES,
     *SLUG_VOICE_MANAGER_PROTO_UPDATES,
-    *THANKS_SCREEN_PROTO_UPDATES,
+    *SPLASH_PROTO_UPDATES,
     *NUKE_PROTO_UPDATES,
     *TIP_PROTO_UPDATES,
     *BOD_CORE_PROTO_UPDATES,
@@ -4580,7 +4580,7 @@ SUBGAME_BACKPOINTER_STRUCT_UPDATES = (
     ),
     ("SaltOwnerGameStrideCursor", (("0x00", "owner_game", "cRSubGame*"),)),
     ("GUI", (("0x00", "game", "cRSubGame*"),)),
-    ("ThanksScreen", (("0x00", "game", "cRSubGame*"),)),
+    ("cRSplash", (("0x00", "game", "cRSubGame*"),)),
     ("Galaxy", (("0x10f70", "level_progress_base", "cRSubGame*"),)),
 )
 
@@ -5152,7 +5152,7 @@ def parse_args() -> argparse.Namespace:
     focused_group.add_argument(
         "--thanks-screen-only",
         action="store_true",
-        help="Replay only the ThanksScreen layout and lifecycle method ABIs.",
+        help="Replay only the cRSplash layout and lifecycle method ABIs.",
     )
     focused_group.add_argument(
         "--landscape-loader-only",
@@ -5785,7 +5785,7 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 header_path=header_path,
-                required_structs=("ThanksScreen",),
+                required_structs=("cRSplash",),
             )
         )
         operations.extend(
@@ -5803,15 +5803,15 @@ def main() -> int:
             apply_struct_field_updates(
                 REPO_ROOT,
                 target=args.target,
-                struct_name="ThanksScreen",
-                updates=THANKS_SCREEN_FIELD_UPDATES,
+                struct_name="cRSplash",
+                updates=SPLASH_FIELD_UPDATES,
             )
         )
         operations.extend(
             apply_proto_updates(
                 REPO_ROOT,
                 target=args.target,
-                updates=THANKS_SCREEN_PROTO_UPDATES,
+                updates=SPLASH_PROTO_UPDATES,
             )
         )
         return emit_summary(

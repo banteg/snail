@@ -2037,15 +2037,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_thanks_for_playing_screen",
-        "void __thiscall initialize_thanks_for_playing_screen(ThanksScreen* thanks_screen);",
+        "void __thiscall initialize_thanks_for_playing_screen(cRSplash* splash);",
     ),
     (
         "uninit_thanks_screen",
-        "void __thiscall uninit_thanks_screen(ThanksScreen* thanks_screen);",
+        "void __thiscall uninit_thanks_screen(cRSplash* splash);",
     ),
     (
         "update_thanks_for_playing_screen",
-        "void __thiscall update_thanks_for_playing_screen(ThanksScreen* thanks_screen);",
+        "void __thiscall update_thanks_for_playing_screen(cRSplash* splash);",
     ),
     (
         "initialize_noop_renderable_bod",

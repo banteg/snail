@@ -365,11 +365,11 @@ changing constructor code generation.
 
 The consolidated Binary Ninja/IDA analysis layouts now replace the anonymous
 `+0x125ffd8..+0x12727d8` tail with the same proven owners used by the matching
-headers: normalized garbage/salt frequencies, `GUI`, `Help`, `ThanksScreen`,
+headers: normalized garbage/salt frequencies, `GUI`, `Help`, `cRSplash`,
 `Galaxy`, the rebuild and slug-voice cadence scalars, and `EnemyManager`.
 Their exact extents form one contiguous chain through the existing
 `Completion` and `TimesUp` tail. A Binary Ninja declaration preview verified
-`GUI 0x28`, `Help 0x04`, `ThanksScreen 0x14`, `Galaxy 0x10fa8`,
+`GUI 0x28`, `Help 0x04`, `cRSplash 0x14`, `Galaxy 0x10fa8`,
 `EnemyManager 0x1804`, and the unchanged `cRSubGame 0x1272838`, then
 reverted without changing the database.
 

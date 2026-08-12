@@ -282,7 +282,7 @@ public:
     };
     cRGUI gui; // +0x125ffe0
     cRHelp help; // +0x1260008, exact authored cRHelp owner
-    ThanksScreen thanks_screen; // +0x126000c, embedded front-end controller
+    cRSplash splash; // +0x126000c, authored post-run controller
     cRGalaxy galaxy; // +0x1260020, authored cRGalaxy owner through +0x1270fc8
     int subgame_rebuild_selector; // +0x1270fc8
     float next_slug_voice_trigger_z; // +0x1270fcc, advances when a spawned slug is marked to speak

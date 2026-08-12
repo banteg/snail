@@ -347,13 +347,13 @@ typedef struct Help {
 } Help;
 typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
 
-typedef struct ThanksScreen {
+typedef struct cRSplash {
     cRSubGame* game;
     FrontendWidget* message_widget;
     int32_t message_state;
     float message_progress;
     float message_progress_step;
-} ThanksScreen;
+} cRSplash;
 
 typedef struct GalaxyRouteRecord {
     int32_t route_name_index;
@@ -507,7 +507,7 @@ typedef struct cRSubGame {
     float salt_frequency;
     GUI gui;
     Help help;
-    ThanksScreen thanks_screen;
+    cRSplash splash;
     Galaxy galaxy;
     int32_t subgame_rebuild_selector;
     float next_slug_voice_trigger_z;

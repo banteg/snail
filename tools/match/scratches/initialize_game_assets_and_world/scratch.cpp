@@ -139,7 +139,7 @@ char cRGame::initialize_game_assets_and_world()
 
     subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector;
     ((SubgameOwnerLink*)&subgame.gui)->bind_subgame_owner();
-    ((SubgameOwnerLink*)&subgame.thanks_screen)->bind_subgame_owner();
+    ((SubgameOwnerLink*)&subgame.splash)->bind_subgame_owner();
     subgame.galaxy.Open();
     subgame.player.cameraman.initialize_cameraman();
     logo.Open();

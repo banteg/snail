@@ -89,7 +89,7 @@ Historical recovery notes:
 
 Binary Ninja now resolves the state-machine receivers through the exact root
 `Intro` and `Logo` owners, alongside the existing Subgame, HighScore, Help,
-and ThanksScreen graph. The tracked artifact is deliberately not refreshed in
+and cRSplash graph. The tracked artifact is deliberately not refreshed in
 this slice: current lifting regresses the final authored input-coordinate copy
 to six `unimplemented` x87 lines. Keeping the prior healthy artifact while the
 live owner fields remain installed avoids trading ownership clarity for a

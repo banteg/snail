@@ -1,5 +1,6 @@
-// Thanks-for-playing frontend screen view. Cross-checked by open, initialize,
-// and uninit helpers.
+// Windows cRSplash post-run controller. Mobile preserves the authored class
+// name and lifecycle, while its leading exit flag makes the port layout 0x18
+// instead of this independently recovered 0x14-byte Windows owner.
 #ifndef THANKS_SCREEN_H
 #define THANKS_SCREEN_H
 
@@ -7,7 +8,7 @@
 
 class cRSubGame;
 
-class ThanksScreen {
+class cRSplash {
 public:
     void initialize_thanks_for_playing_screen(); // @ 0x433fd0
     void update_thanks_for_playing_screen(); // @ 0x4340f0
@@ -20,7 +21,7 @@ public:
     float message_progress_step; // +0x10
 };
 
-// Field-first owner-link view shared by GUI and ThanksScreen.
+// Field-first owner-link view shared by GUI and cRSplash.
 // Both concrete controllers keep their own layouts; this does not assert a
 // common C++ base class merely because their identical setup was folded.
 class SubgameOwnerLink {

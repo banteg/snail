@@ -334,6 +334,66 @@ def test_mobile_utility_owner_mappings_are_exact_and_verified() -> None:
     assert "ios_symbol" not in input_ok
 
 
+def test_mobile_splash_lifecycle_recovers_authored_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    expected = {
+        "initialize_thanks_for_playing_screen": "cRSplash::Init()",
+        "uninit_thanks_screen": "cRSplash::UnInit()",
+        "update_thanks_for_playing_screen": "cRSplash::AI()",
+    }
+
+    for windows_name, mobile_symbol in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Splash.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+
+    for windows_name in (
+        "initialize_thanks_for_playing_screen",
+        "update_thanks_for_playing_screen",
+    ):
+        entry = entries[windows_name]
+        assert entry["ios_symbol"] == entry["android_symbol"]
+        assert entry["ios_body_count"] == 1
+
+    teardown = entries["uninit_thanks_screen"]
+    assert "ios_symbol" not in teardown
+    assert "ios_body_count" not in teardown
+    assert teardown["source_object_evidence"] == "unique-ios-class-object"
+
+    splash_header = (
+        repo_root / "tools/match/include/thanks_screen.h"
+    ).read_text(encoding="utf-8")
+    subgame_header = (
+        repo_root / "tools/match/include/subgame_runtime.h"
+    ).read_text(encoding="utf-8")
+    analysis_headers = [
+        (repo_root / "analysis/headers/bn_subgame_runtime_types.h").read_text(
+            encoding="utf-8"
+        ),
+        (repo_root / "analysis/headers/ida_subgame_runtime_types.h").read_text(
+            encoding="utf-8"
+        ),
+        (repo_root / "analysis/headers/path_template_types.h").read_text(
+            encoding="utf-8"
+        ),
+    ]
+    assert "class cRSplash" in splash_header
+    assert "cRSubGame* game; // +0x00" in splash_header
+    assert "cRSplash splash;" in subgame_header
+    assert "ThanksScreen" not in splash_header
+    assert "ThanksScreen" not in subgame_header
+    assert all("cRSplash" in header for header in analysis_headers)
+    assert all("ThanksScreen" not in header for header in analysis_headers)
+
+
 def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

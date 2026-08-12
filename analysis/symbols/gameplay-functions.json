@@ -2601,21 +2601,34 @@
     {
       "address": "0x433fc0",
       "name": "bind_subgame_owner",
-      "description": "Binds a front-end controller\u2019s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the identical one-store body with the ThanksScreen owner-binding callsite."
+      "aliases": [
+        "cRSplash_Open"
+      ],
+      "description": "Binds a front-end controller\u2019s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the byte-identical `cRSplash::Open()` body into the same address."
     },
     {
       "address": "0x433fd0",
       "name": "initialize_thanks_for_playing_screen",
-      "description": "Initializes the post-run Thanks For Playing owner, including the Splash backdrop, INTROTEXT.OGG, and the first shell-font message widget before state 30 begins updating it."
+      "aliases": [
+        "cRSplash_Init"
+      ],
+      "description": "Initializes the authored cRSplash post-run controller, including the Splash backdrop, INTROTEXT.OGG, and the first shell-font message widget before state 30 begins updating it. Android and iOS preserve the same owner and lifecycle as `cRSplash::Init()`."
     },
     {
       "address": "0x4340c0",
-      "name": "uninit_thanks_screen"
+      "name": "uninit_thanks_screen",
+      "aliases": [
+        "cRSplash_UnInit"
+      ],
+      "description": "Authored `cRSplash::UnInit()` teardown: releases the post-run message widget and returns the front-end state machine to state 14. Android preserves the exact owner and lifecycle; iOS inlines the same teardown into `cRSplash::AI()`."
     },
     {
       "address": "0x4340f0",
       "name": "update_thanks_for_playing_screen",
-      "description": "Runs the post-run Thanks For Playing message sequence, including the Challenge Mode and Time Trial prompts, Click to Continue, and the fade-out handoff back through the saved front-end return state."
+      "aliases": [
+        "cRSplash_AI"
+      ],
+      "description": "Authored `cRSplash::AI()` state machine for the post-run Thanks For Playing sequence, including the Challenge Mode and Time Trial prompts, Click to Continue, and the fade-out handoff back through the saved front-end return state. Android and iOS preserve the owner and sequence."
     },
     {
       "address": "0x434270",

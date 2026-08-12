@@ -25022,7 +25022,8 @@ def test_c_r_subgame_primary_ownership_stays_aligned() -> None:
         assert owner_field in binja_subgame_sync
     assert "SUB_LAZER_STARTUP_CURSOR_FIELD_UPDATES" in binja_subgame_sync
     assert "SALT_STARTUP_CURSOR_FIELD_UPDATES" in binja_subgame_sync
-    assert "THANKS_SCREEN_FIELD_UPDATES" in binja_subgame_sync
+    assert "SPLASH_FIELD_UPDATES" in binja_subgame_sync
+    assert '("0x126000c", "splash", "cRSplash")' in binja_subgame_sync
 
     assert "SUBGAME_OWNER_MARKERS" in ida_sync
     assert "SUBGAME_OWNER_SIZES" in ida_sync

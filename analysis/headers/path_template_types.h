@@ -535,14 +535,14 @@ typedef struct LoadingQuadVertexView {
     LoadingVertex vertices[4];
 } LoadingQuadVertexView;
 
-/* Exact 0x14-byte thanks-for-playing controller. */
-typedef struct ThanksScreen {
+/* Exact 0x14-byte Windows cRSplash post-run controller. */
+typedef struct cRSplash {
     cRSubGame* game;
     FrontendWidget* message_widget;
     int32_t message_state;
     float message_progress;
     float message_progress_step;
-} ThanksScreen;
+} cRSplash;
 
 typedef struct GalaxyRouteRecord {
     int32_t route_name_index;
@@ -2681,7 +2681,7 @@ typedef struct cRSubGame {
     float salt_frequency;
     GUI gui;
     Help help;
-    ThanksScreen thanks_screen;
+    cRSplash splash;
     Galaxy galaxy;
     int32_t subgame_rebuild_selector;
     float next_slug_voice_trigger_z;

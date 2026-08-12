@@ -136,6 +136,14 @@ def test_default_function_symbol_manifest_loads() -> None:
             by_name[name].source_object_evidence
             == "windows-isolated-class-source-run"
         )
+    splash_aliases = {
+        "bind_subgame_owner": "cRSplash_Open",
+        "initialize_thanks_for_playing_screen": "cRSplash_Init",
+        "uninit_thanks_screen": "cRSplash_UnInit",
+        "update_thanks_for_playing_screen": "cRSplash_AI",
+    }
+    for name, alias in splash_aliases.items():
+        assert alias in by_name[name].aliases
     assert {
         rejection.symbol
         for rejection in game_init.mobile_candidate_rejections

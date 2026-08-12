@@ -4739,13 +4739,40 @@
       "notes": "The ports share the cRGUI owner and postal, challenge, and time-trial level-selection state machine; the broad Windows body remains honestly partial."
     },
     {
+      "address": "0x433fd0",
+      "windows_name": "initialize_thanks_for_playing_screen",
+      "ios_symbol": "cRSplash::Init()",
+      "android_symbol": "cRSplash::Init()",
+      "source_object": "Splash.o",
+      "confidence": "high",
+      "notes": "All three implementations initialize the authored cRSplash post-run controller: hide the star field, start the intro-text media, load the Splash landscape, change the backdrop, allocate a centered message widget, set its 1.2 scale, and seed the same message-state progress. Mobile adds full-version SplashPro text and a leading exit flag, so its field offsets do not replace the independently recovered 0x14-byte Windows layout."
+    },
+    {
+      "address": "0x4340c0",
+      "windows_name": "uninit_thanks_screen",
+      "android_symbol": "cRSplash::UnInit()",
+      "source_object": "Splash.o",
+      "source_object_evidence": "unique-ios-class-object",
+      "confidence": "high",
+      "notes": "Windows and Android both kill the cRSplash-owned message widget and restore front-end state 14. iOS has no standalone UnInit export, but its cRSplash::AI() body inlines the same two teardown effects; no mobile layout offset is transferred."
+    },
+    {
+      "address": "0x4340f0",
+      "windows_name": "update_thanks_for_playing_screen",
+      "ios_symbol": "cRSplash::AI()",
+      "android_symbol": "cRSplash::AI()",
+      "source_object": "Splash.o",
+      "confidence": "high",
+      "notes": "All three cRSplash state machines accept the primary-action or key-11 continue input after message state 2, begin the same fade-out, advance the same hide/show sequence, and display corresponding Challenge Mode, Time Trial, and continue prompts. The mobile full-version wording and leading exit flag are version-specific; the owner and lifecycle are exact."
+    },
+    {
       "address": "0x433fc0",
       "windows_name": "bind_subgame_owner",
       "ios_symbol": "cRGUI::Open()",
       "android_symbol": "cRGUI::Open()",
       "source_object": "GUI.o",
       "confidence": "high",
-      "notes": "For the GUI callsite, the exact four-instruction Windows helper is cRGUI::Open: it stores the root-owned cRSubGame pointer at GUI +0x00. The linker folded the identical ThanksScreen owner-binding body into the same address, so the stable Windows harness name remains generic."
+      "notes": "For the GUI callsite, the exact four-instruction Windows helper is cRGUI::Open: it stores the root-owned cRSubGame pointer at GUI +0x00. The linker folded the byte-identical Windows cRSplash::Open body into the same address, so the stable Windows harness name remains generic. Mobile independently exports both authored Open methods, with cRSplash using its platform-specific +0x04 game field."
     },
     {
       "address": "0x4141d0",

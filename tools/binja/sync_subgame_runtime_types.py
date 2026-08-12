@@ -328,7 +328,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x125ffdc", "salt_frequency", "float"),
     ("0x125ffe0", "gui", "GUI"),
     ("0x1260008", "help", "Help"),
-    ("0x126000c", "thanks_screen", "ThanksScreen"),
+    ("0x126000c", "splash", "cRSplash"),
     ("0x1260020", "galaxy", "Galaxy"),
     ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x1270fcc", "next_slug_voice_trigger_z", "float"),
@@ -403,7 +403,7 @@ HELP_FIELD_UPDATES = (
     ("0x00", "back_button", "FrontendWidget*"),
 )
 
-THANKS_SCREEN_FIELD_UPDATES = (
+SPLASH_FIELD_UPDATES = (
     ("0x00", "game", "cRSubGame*"),
 )
 
@@ -770,7 +770,7 @@ def main() -> int:
                 "TimeTrial",
                 "GUI",
                 "Help",
-                "ThanksScreen",
+                "cRSplash",
                 "GalaxyPoint",
                 "GalaxyRouteRecord",
                 "GalaxyStar",
@@ -1007,7 +1007,7 @@ def main() -> int:
                 ("TimesUp", TIMES_UP_FIELD_UPDATES),
                 ("GUI", GUI_FIELD_UPDATES),
                 ("Help", HELP_FIELD_UPDATES),
-                ("ThanksScreen", THANKS_SCREEN_FIELD_UPDATES),
+                ("cRSplash", SPLASH_FIELD_UPDATES),
             ),
             # Several legacy analysis aliases are re-inferred during preview.
             # The batch helper applies prototypes through the same verified
