@@ -23,11 +23,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 594,
-    "unverified_entries": 191,
-    "verified_android_symbols": 588,
+    "verified_entries": 595,
+    "unverified_entries": 190,
+    "verified_android_symbols": 589,
     "verified_ios_symbols": 465,
-    "available_android_mappings": 588,
+    "available_android_mappings": 589,
     "available_ios_mappings": 432
   },
   "entries": [
@@ -16588,48 +16588,37 @@
       "address": "0x43af60",
       "windows_name": "begin_post_follow_carryover",
       "windows_size": 112,
-      "status": "unverified",
+      "status": "verified",
       "source_object": "SubGame.o",
       "source_object_evidence": "windows-contiguous-source-run",
+      "android_symbol": "cRSubGoldy::FallingInit()",
+      "confidence": "high",
       "mobile_candidate_rejections": [
         {
           "symbol": "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
           "reason": "Both mobile bodies initialize a new attachment-follow session and map exactly to begin_track_attachment_follow_state at 0x420c40, not this later carryover helper."
         }
       ],
-      "android_candidates": [
+      "android_body_count": 1,
+      "ios_candidates": [
         {
-          "symbol": "cRMouse::SetActive()",
+          "symbol": "cRBod::cRBod()",
+          "score": 0.7171,
+          "name_score": 0.6,
+          "size_score": 0.8929
+        },
+        {
+          "symbol": "cRBod::cRBod()",
+          "score": 0.7171,
+          "name_score": 0.6,
+          "size_score": 0.8929
+        },
+        {
+          "symbol": "cAccelerometer::Init()",
           "score": 0.6886,
           "name_score": 0.6,
           "size_score": 0.8214
         },
-        {
-          "symbol": "cRSpriteManager::SetBefore(cRSprite*, cRSprite*)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "MouseSet(int, int, int)",
-          "score": 0.6313,
-          "name_score": 0.45,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "SetGameState(int, int, int, int)",
-          "score": 0.6267,
-          "name_score": 0.6,
-          "size_score": 0.6667
-        },
-        {
-          "symbol": "cRSubGame::SwitchMirror()",
-          "score": 0.6024,
-          "name_score": 0.4019,
-          "size_score": 0.9032
-        }
-      ],
-      "ios_candidates": [
         {
           "symbol": "MouseSet(int, int, int)",
           "score": 0.67,
@@ -16637,28 +16626,10 @@
           "size_score": 1.0
         },
         {
-          "symbol": "cRMouse::SetActive()",
-          "score": 0.6472,
-          "name_score": 0.6,
-          "size_score": 0.7179
-        },
-        {
-          "symbol": "RShellError(char*, ...)",
-          "score": 0.6114,
-          "name_score": 0.4,
-          "size_score": 0.9286
-        },
-        {
-          "symbol": "OFBinaryMemorySink::write(void const*, unsigned int)",
-          "score": 0.5961,
-          "name_score": 0.3268,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFHttpBinaryParameter::getAsMPURLRequestParameter() const",
-          "score": 0.5867,
-          "name_score": 0.3342,
-          "size_score": 0.9655
+          "symbol": "cKeyPad::Init(cRBorder*)",
+          "score": 0.6557,
+          "name_score": 0.45,
+          "size_score": 0.9643
         }
       ]
     },

@@ -4,6 +4,6 @@
 
 void cRSubGoldy::Kill()
 {
-    begin_post_follow_carryover();
+    FallingInit();
     transform.position.y = -8.0f;
 }

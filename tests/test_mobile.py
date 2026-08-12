@@ -6979,7 +6979,6 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
         "initialize_object_constructor_thunk": "RObject.o",
         "calc_object_bounding_box": "RObject.o",
         "calc_object_facequad_normals_simple": "RObject.o",
-        "begin_post_follow_carryover": "SubGame.o",
         "j_rand": "RMaths.o",
         "destroy_cross_vectors_static_result": "RMaths.o",
     }
@@ -7065,6 +7064,104 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     assert "mapping: unverified" in output
     assert "source object: HighScore.o" in output
     assert "source object evidence: windows-contiguous-source-run" in output
+
+
+def test_mobile_falling_init_recovers_windows_carryover_method() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"] == "begin_post_follow_carryover"
+    )
+    mobile_symbol = "cRSubGoldy::FallingInit()"
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["android_symbol"] == mobile_symbol
+    assert entry["android_body_count"] == 1
+    assert "ios_symbol" not in entry
+    assert entry["source_object"] == "SubGame.o"
+    assert (
+        entry["source_object_evidence"]
+        == "windows-contiguous-source-run"
+    )
+
+    android = resolve_corpus_symbol(
+        load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json"),
+        mobile_symbol,
+    )
+    assert android is not None
+    body = corpus_function_path(
+        DEFAULT_ANDROID_CORPUS_ROOT, android
+    ).read_text(encoding="utf-8")
+    for evidence in (
+        "this[0x374] == (cRSubGoldy)0x0",
+        "this[0x415] = (cRSubGoldy)0x1",
+        "this[0x374] = (cRSubGoldy)0x0",
+        "*(undefined4 *)(this + 0x41c) = *(undefined4 *)(this + 100)",
+        "*(undefined4 *)(this + 0x42c) = 0",
+    ):
+        assert evidence in body
+
+    ios_names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    ios_symbol = {
+        row[0]: row for row in ios_names["symbols"]
+    }[mobile_symbol]
+    assert ios_symbol[2] == ["ios-phone-v1.9.0-4pda"]
+    assert ios_symbol[3] == []
+
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in manifest["functions"]
+        if function["name"] == "begin_post_follow_carryover"
+    )
+    assert function["aliases"] == [
+        "cRSubGoldy_FallingInit",
+        "FallingInit",
+    ]
+    assert "Exact Windows `cRSubGoldy::FallingInit()`" in function[
+        "description"
+    ]
+
+    scratch_root = (
+        repo_root
+        / "tools/match/scratches/begin_post_follow_carryover"
+    )
+    scratch = (scratch_root / "scratch.cpp").read_text(encoding="utf-8")
+    config = (scratch_root / "scratch.conf").read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/player.h").read_text(
+        encoding="utf-8"
+    )
+    assert "void cRSubGoldy::FallingInit()" in scratch
+    assert "SYMBOL=?FallingInit@cRSubGoldy@@QAEXXZ" in config
+    assert "void FallingInit();" in header
+    assert "void begin_post_follow_carryover();" not in header
+
+    caller_counts = {
+        "handle_subgoldy_collisions": 1,
+        "kill_subgoldy": 1,
+        "update_subgoldy": 4,
+    }
+    for scratch_name, expected_count in caller_counts.items():
+        caller = (
+            repo_root
+            / "tools/match/scratches"
+            / scratch_name
+            / "scratch.cpp"
+        ).read_text(encoding="utf-8")
+        assert caller.count("FallingInit();") == expected_count
+        assert "begin_post_follow_carryover();" not in caller
+
+    notes = (scratch_root / "NOTES.md").read_text(encoding="utf-8")
+    assert "authored method recovery" in notes
+    assert "0x7d298" in notes
+    assert "checked-in iOS decompile corpus is v1.5" in notes
 
 
 def test_android_golb_jet_recovers_windows_trail_method() -> None:

@@ -142,7 +142,7 @@ enum SubGoldyShootFlag {
 class cRSubGoldy : public RenderableBod {
 public:
     void AI();              // @ 0x43b120, cRSubGoldy::AI()
-    void begin_post_follow_carryover();   // @ 0x43af60
+    void FallingInit();     // @ 0x43af60, cRSubGoldy::FallingInit()
     void SetShootFlags();                  // @ 0x43a1a0, cRSubGoldy::SetShootFlags()
     void Shoot(cRSubGoldy* player);                   // @ 0x43a300, cRSubGoldy::Shoot(cRSubGoldy*)
     void PlayShootSfx();                   // @ 0x43afd0, cRSubGoldy::PlayShootSfx()
@@ -253,7 +253,7 @@ public:
     char unknown_41e[0x424 - 0x41e];
     float attachment_exit_anchor_z;        // +0x424
     char unknown_428[0x42c - 0x428];
-    // carryover pair written by begin_post_follow_carryover (matched 100%):
+    // carryover pair written by FallingInit (matched 100% at 0x43af60):
     // +0x42c <- follow_state.orientation_b, consumed by update_cameraman as the
     // exit roll while attachment_exit_pending is set.
     // +0x430 <- follow_state.template_record->installed_heading_bits

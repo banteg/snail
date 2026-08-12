@@ -373,7 +373,7 @@ steering_stored:
         case 1:
         case 3:
             if (follow_state.active == 1)
-                begin_post_follow_carryover();
+                FallingInit();
             break;
         case 0:
             if (follow_state.template_record->kind != PATH_TEMPLATE_KIND_CAGE2) {
@@ -535,7 +535,7 @@ steering_stored:
                         fraction_low = 0.2f;
                     if (fraction < fraction_high && fraction > fraction_low
                         && !attachment_exit_pending)
-                        begin_post_follow_carryover();
+                        FallingInit();
                 }
                 cRSubGame* probe_game = game;
                 if (probe_game->level_mode == 3)
@@ -619,7 +619,7 @@ steering_stored:
                 velocity.y = gravity + velocity.y;
             }
             if (transform.position.y < 0.0f && velocity.y <= 0.0f)
-                begin_post_follow_carryover();
+                FallingInit();
         } else {
             {
                 float rate = game->subgame_rate;
@@ -665,7 +665,7 @@ steering_stored:
             if (advanced > 1.0f) {
                 barrier_hold_progress = 0.0f;
                 if (!attachment_exit_pending)
-                    begin_post_follow_carryover();
+                    FallingInit();
             }
         }
     }

@@ -2003,6 +2003,15 @@
       "notes": "Both implementations walk exactly nine borrowed life widgets, unhide the prefix below Goldy's visible-life count, and hide the remainder. No iOS symbol was found."
     },
     {
+      "address": "0x43af60",
+      "windows_name": "begin_post_follow_carryover",
+      "android_symbol": "cRSubGoldy::FallingInit()",
+      "source_object": "SubGame.o",
+      "source_object_evidence": "windows-contiguous-source-run",
+      "confidence": "high",
+      "notes": "Windows and Android preserve the same authored cRSubGoldy::FallingInit lifecycle: conditionally carry forward the live follow orientation and template heading, clear follow activity, arm the pending exit, latch body z, and reset progress and gate state. Raw armv6 iOS v1.9 disassembly at 0x7d298 independently preserves the exact named body and roles; no ios_symbol is claimed because the tracked iOS decompile corpus is v1.5."
+    },
+    {
       "address": "0x43d3d0",
       "windows_name": "set_subgoldy_ghost_z",
       "android_symbol": "cRSubGoldy::GhostDraw(float)",

@@ -2,6 +2,23 @@
 
 Exact match: `100%`, `20/20` instructions.
 
+## 2026-08-12 authored method recovery
+
+Android retains this exact body as `cRSubGoldy::FallingInit()`. Its
+port-relative fields preserve every Windows lifecycle role: conditional copies
+of the active follow orientation and template heading, follow deactivation,
+pending-exit arming, body-z capture, and progress/gate resets. Raw armv6 iOS
+v1.9 evidence independently retains the same non-external symbol at `0x7d298`;
+the body at `0x7d298..0x7d31c` performs the same conditional pair copy and
+terminal state writes. The checked-in iOS decompile corpus is v1.5, so the
+crosswalk deliberately records this corroboration in prose without claiming an
+`ios_symbol` that cannot resolve to a tracked body.
+
+The matching function ID and decompiler label remain
+`begin_post_follow_carryover` for stable tooling. The source-facing declaration,
+definition, and callsites now use the recovered authored method name
+`cRSubGoldy::FallingInit()`; the scratch selects its VC6 symbol explicitly.
+
 This is the producer for the post-follow camera exit lanes:
 
 - if follow is active, player+0x42c receives `follow_state.orientation_b`

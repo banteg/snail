@@ -151,7 +151,7 @@ void cRSubGoldy::Collision()
                                 float rate = hit_game->subgame_rate;
                                 velocity =
                                     Vector3(0.0f, 0.2f, -0.2f) * rate;
-                                begin_post_follow_carryover();
+                                FallingInit();
                                 presentation.cutscene.state =
                                     CUT_SCENE_STATE_DEATH_PENDING;
                                 game->slug_hazards.slots[m]
