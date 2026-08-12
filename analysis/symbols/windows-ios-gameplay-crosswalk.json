@@ -9,6 +9,7 @@
     "source_object_evidence set to unique-ios-class-object means the mapped symbol belongs to an authored C++ class whose v1.5 STABS-marked methods occur in exactly one object file; this is class-level compilation-unit provenance, not a direct marker on that symbol.",
     "source_object_evidence set to unique-ios-nonconstructor-method-object means all v1.5 STABS-marked non-constructor methods of the mapped symbol class occur in one object file after excluding constructor or destructor emissions from other units.",
     "source_object_evidence set to android-contiguous-source-run means the mapped Android body falls in a recorded contiguous authored symbol interval bounded by independently sourced object owners; it is link-order evidence, not a direct file marker.",
+    "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
     "Android-only mappings use android_symbol instead of ios_symbol; their notes identify whether the body or only the exported name was compared.",
     "android_symbol_evidence or ios_symbol_evidence set to exact-demangled-symbol means the other verified port name was found verbatim in that corpus; it is a name transfer, not a new semantic mapping."
   ],
@@ -1419,10 +1420,10 @@
     {
       "address": "0x446020",
       "windows_name": "update_subgame_camera",
-      "ios_symbol": "cRSubGame::CameraAI()",
       "source_object": "SubGame.o",
+      "source_object_evidence": "unique-ios-nonconstructor-method-object",
       "confidence": "medium",
-      "notes": "The specific CameraAI spelling comes from cross-port evidence; iOS confirms cRCameraman and cRSubGame ownership in the same object group.",
+      "notes": "Android preserves the exact cRSubGame::CameraAI spelling. Neither inspected iOS phone binary retains a standalone CameraAI export; the iOS STABS catalog instead places all non-constructor cRSubGame methods in SubGame.o, while the body also confirms cRCameraman ownership.",
       "android_symbol": "cRSubGame::CameraAI()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -1976,11 +1977,10 @@
     {
       "address": "0x441fd0",
       "windows_name": "update_subgoldy_resurrect",
-      "ios_symbol": "cRSubGoldy::RessurectAI()",
       "source_object": "SubGame.o",
       "source_object_evidence": "unique-ios-class-object",
       "confidence": "high",
-      "notes": "v1.9-only spelling preserves the shipped typo. The sole Windows caller loads Player* in ECX and consumes no result, proving the void thiscall member contract.",
+      "notes": "Android preserves the exact cRSubGoldy::RessurectAI spelling, shipped typo, and update body. The sole Windows caller loads Player* in ECX and consumes no result, proving the void thiscall member contract. Neither inspected iOS phone binary retains this standalone method; the iOS STABS catalog instead supplies unique cRSubGoldy class ownership in SubGame.o.",
       "android_symbol": "cRSubGoldy::RessurectAI()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },
@@ -3540,10 +3540,10 @@
     {
       "address": "0x431c70",
       "windows_name": "free_tracked_allocations_to_mark",
-      "ios_symbol": "RShellMemoryUnBookmark()",
       "source_object": "RShell.o",
+      "source_object_evidence": "windows-contiguous-source-run",
       "confidence": "high",
-      "notes": "Both void lifecycle procedures unwind top allocation records until the active depth reaches the saved bookmark. The Android body does not produce a return value, confirming that Windows EAX is incidental.",
+      "notes": "Windows is physically bounded by the directly sourced RShell.o helpers RShellMemoryFree and RShellMemoryBookmark, while Android preserves the exact RShellMemoryUnBookmark name and top-record unwind body. The Android body does not produce a return value, confirming that Windows EAX is incidental. Neither inspected iOS phone binary retains a standalone UnBookmark export, so no iOS symbol is claimed.",
       "android_symbol": "RShellMemoryUnBookmark()",
       "android_symbol_evidence": "exact-demangled-symbol"
     },

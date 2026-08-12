@@ -19,7 +19,7 @@
   "counts": {
     "objc_classes": 12,
     "source_objects_with_symbols": 54,
-    "symbols": 1074,
+    "symbols": 1086,
     "type_strings": 82
   },
   "description": "Deduped iOS IPA gameplay names/classes for Windows decomp shape mining. ARM/iOS addresses and per-slice ordinals are intentionally omitted.",
@@ -547,7 +547,10 @@
         "FontMake3D(short)",
         "FontPrintReal(cFontPrintBuffer*)",
         "FontPrintRender(int)",
-        "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)"
+        "FontType(char*, int, float, float, float, float*, float*, float*, float*, float, bool, int, float, int, tColour, bool, bool)",
+        "OSDPrint(int, float, float, float, float, int, tColour, int)",
+        "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+        "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)"
       ]
     ],
     [
@@ -889,7 +892,16 @@
     [
       "ObjectProc.o",
       [
+        "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+        "ObjectProcJoinTextures(cRObject*)",
         "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
+        "ObjectProcNull(cRObject*)",
+        "ObjectProcSimplifyFaces(cRObject*)",
+        "ObjectProcTileFast(cRObject*, char*, float)",
+        "ObjectProcTileFastRamp(int, cRObject*)",
+        "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+        "ObjectProcTileFloorFast(cRObject*, char*, float)",
+        "ObjectProcVertexCompare(void const*, void const*)",
         "cRDistort::BuildMatrix(tMatrix*, tMatrix*)",
         "cRDistort::Init()",
         "cRDuplicateVertices::Init(int)"
@@ -1629,7 +1641,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -1641,7 +1654,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -1653,7 +1667,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -3258,7 +3273,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -3270,7 +3286,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -3301,12 +3318,168 @@
       ]
     ],
     [
+      "OSDPrint(int, float, float, float, float, int, tColour, int)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "Font.o"
+      ]
+    ],
+    [
+      "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcJoinTextures(cRObject*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
       "ObjectProcLandScapeUpdate(cRObject*, float, float, cRTexture*, bool)",
       [
         "authored_cpp_symbol"
       ],
       [
         "ios-phone-v1.5.0"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcNull(cRObject*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcSimplifyFaces(cRObject*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcTileFast(cRObject*, char*, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcTileFastRamp(int, cRObject*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcTileFloorFast(cRObject*, char*, float)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
+      ],
+      [
+        "ObjectProc.o"
+      ]
+    ],
+    [
+      "ObjectProcVertexCompare(void const*, void const*)",
+      [
+        "authored_cpp_symbol"
+      ],
+      [
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "ObjectProc.o"
@@ -4238,7 +4411,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -4263,7 +4437,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -4275,7 +4450,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -12720,7 +12896,8 @@
         "authored_cpp_symbol"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13283,7 +13460,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13296,7 +13474,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13309,7 +13488,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13322,7 +13502,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13335,7 +13516,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13348,7 +13530,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13361,7 +13544,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"
@@ -13598,7 +13782,8 @@
         "engine_math"
       ],
       [
-        "ios-phone-v1.5.0"
+        "ios-phone-v1.5.0",
+        "ios-phone-v1.9.0-4pda"
       ],
       [
         "RMaths.o"

@@ -5541,7 +5541,10 @@ def test_ios_rmath_stabs_catalog_covers_verified_windows_symbols() -> None:
     assert expected <= set(dict(names["source_objects"])["RMaths.o"])
     symbols = {row[0]: row for row in names["symbols"]}
     for symbol in expected:
-        assert symbols[symbol][2] == ["ios-phone-v1.5.0"]
+        assert symbols[symbol][2] == [
+            "ios-phone-v1.5.0",
+            "ios-phone-v1.9.0-4pda",
+        ]
         assert symbols[symbol][3] == ["RMaths.o"]
 
     crosswalk = load_json(
@@ -5558,6 +5561,102 @@ def test_ios_rmath_stabs_catalog_covers_verified_windows_symbols() -> None:
         and entry["source_object"] == "RMaths.o"
         for entry in mapped.values()
     )
+
+
+def test_ios_font_and_objectproc_stabs_catalog_covers_authored_symbols() -> None:
+    repo_root = Path(__file__).parents[1]
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    expected_by_object = {
+        "Font.o": {
+            "OSDPrint(int, float, float, float, float, int, tColour, int)",
+            "OSDPrintUV(int, float, float, float, float, float, float, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+            "OSDPrintUV(int, float, float, float, float, int, tColour, float, float, float, float, int, float)",
+        },
+        "ObjectProc.o": {
+            "ObjectProcFringe(cRObject*, int, int, int, int, char*)",
+            "ObjectProcJoinTextures(cRObject*)",
+            "ObjectProcNull(cRObject*)",
+            "ObjectProcSimplifyFaces(cRObject*)",
+            "ObjectProcTileFast(cRObject*, char*, float)",
+            "ObjectProcTileFastRamp(int, cRObject*)",
+            "ObjectProcTileFloorCornerFast(int, cRObject*, char*)",
+            "ObjectProcTileFloorFast(cRObject*, char*, float)",
+            "ObjectProcVertexCompare(void const*, void const*)",
+        },
+    }
+    source_objects = dict(names["source_objects"])
+    symbols = {row[0]: row for row in names["symbols"]}
+    for source_object, expected in expected_by_object.items():
+        assert expected <= set(source_objects[source_object])
+        for symbol in expected:
+            assert symbols[symbol][2] == [
+                "ios-phone-v1.5.0",
+                "ios-phone-v1.9.0-4pda",
+            ]
+            assert symbols[symbol][3] == [source_object]
+
+    mapped_expected = {
+        symbol
+        for symbols_for_object in expected_by_object.values()
+        for symbol in symbols_for_object
+        if symbol
+        not in {
+            "ObjectProcSimplifyFaces(cRObject*)",
+            "ObjectProcVertexCompare(void const*, void const*)",
+        }
+    }
+    crosswalk = load_json(
+        repo_root / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    mapped = {
+        entry["ios_symbol"]: entry
+        for entry in crosswalk["entries"]
+        if entry.get("ios_symbol") in mapped_expected
+    }
+    assert set(mapped) == mapped_expected
+    assert all(
+        entry["confidence"] == "high"
+        and entry["source_object"] in expected_by_object
+        for entry in mapped.values()
+    )
+
+
+def test_verified_ios_symbols_have_native_evidence() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    catalog_symbols = {row[0] for row in names["symbols"]}
+
+    for entry in complete["entries"]:
+        ios_symbol = entry.get("ios_symbol")
+        if entry["status"] != "verified" or ios_symbol is None:
+            continue
+        assert entry.get("ios_body_count", 0) > 0 or (
+            ios_symbol in catalog_symbols
+        ), entry["windows_name"]
+
+    entries = {
+        entry["windows_name"]: entry
+        for entry in complete["entries"]
+    }
+    expected_android_only = {
+        "free_tracked_allocations_to_mark": (
+            "windows-contiguous-source-run"
+        ),
+        "update_subgame_camera": (
+            "unique-ios-nonconstructor-method-object"
+        ),
+        "update_subgoldy_resurrect": "unique-ios-class-object",
+    }
+    for windows_name, source_evidence in expected_android_only.items():
+        entry = entries[windows_name]
+        assert "ios_symbol" not in entry
+        assert entry["android_body_count"] == 1
+        assert entry["source_object_evidence"] == source_evidence
 
 
 def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
