@@ -1,5 +1,12 @@
 # build_track_fringe_supertramp_mesh reconstruction notes
 
+Current recovery: semantic-complete (`compiler` residual). The live Windows
+`cRPath` receiver and exact Android/iOS `BuildFringeSuperTramp` bodies
+establish generated-object ownership, both edge extrusions, the terminal cap
+vertices, and every face/UV publication. Candidate and target are both 421
+instructions with all 25 references clean; the remaining regions are store
+scheduling only.
+
 `build_track_fringe_supertramp_mesh` creates the generated supertramp fringe
 mesh for an attachment path template. It allocates an `Object` into the
 template's second `BodBase` slot at `+0x60`, disables culling with
@@ -147,8 +154,8 @@ prefix-69 baseline: 27 variants were byte-identical and 14 degraded.
   Scalar aliases are neutral; materializing corner or aggregate owners changes
   instruction count and regresses.
 
-The ledger is formally stalled after three consecutive non-improving sweeps.
-The canonical direct indexing and scalar UV publication remain the strongest
-source-backed forms, consistent with the authored mobile builder. The
-residuals are bounded VC6 scheduling differences rather than missing geometry,
-ownership, or control flow.
+The ledger records three trailing non-improving sweeps. The canonical direct
+indexing and scalar UV publication remain the strongest source-backed forms,
+consistent with the authored mobile builder. The residuals are bounded VC6
+scheduling differences rather than missing geometry, ownership, or control
+flow.

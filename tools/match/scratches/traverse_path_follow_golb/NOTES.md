@@ -1,5 +1,11 @@
 # traverse_path_follow_golb
 
+Current recovery: semantic-complete (`compiler` residual). The live Windows
+prototype and exact Android/iOS `cRPathFollowGolb::Traverse` bodies establish
+the complete borrowed Path/sample traversal, both transform paths, Golb flight
+publication, side exit, and terminal launch. All seven references are clean;
+the four-instruction deficit is bounded vector-temporary and stack coloring.
+
 ## 2026-07-26 mobile owner correction
 
 The former Windows label `calc_path_length_z` was an ownership error. Exact
@@ -351,8 +357,8 @@ mismatched, or unaudited references.
 The append-only ledger covers 12 complete mutation sweeps and 214 unique
 variants: 34 improve their sweep baseline, 41 are identical, 139 regress,
 six sweeps produce retained winners, and no variants repeat or fail. Eleven
-metric tradeoffs are recorded. Three consecutive non-improving sweeps after
-the final owner-lifetime win now mark this lane formally stalled.
+metric tradeoffs are recorded. Three trailing non-improving sweeps after the
+final owner-lifetime win document the tested frontier without closing it.
 
 The remaining four-instruction deficit is localized and bounded. The target
 spills the y/z components of `anchor + terminal.position` before adding the

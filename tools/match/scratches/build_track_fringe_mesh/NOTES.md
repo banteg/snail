@@ -1,5 +1,11 @@
 # build_track_fringe_mesh reconstruction notes
 
+Current recovery: semantic-complete (`compiler` residual). The live Windows
+`cRPath` receiver and exact Android/iOS `BuildFringe` bodies establish the
+generated-object ownership, both edge extrusions and clamp cases, and the full
+face/UV loop. Candidate and target are both 318 instructions with all 23
+references clean; the remaining regions are store scheduling only.
+
 `build_track_fringe_mesh` creates the generated side/fringe strip mesh for an
 attachment path template. It allocates an `Object` into the template's second
 `BodBase` slot at `+0x60`, copies the current track skirt colour into that BOD,
@@ -171,9 +177,9 @@ remaining mismatch region. None improves the 92.77%, exact
   four neutral index forms with neutral first- and second-face UV forms; all
   index/UV interactions are also neutral.
 
-The ledger is formally stalled after six consecutive non-improving sweeps.
-The retained direct indices and scalar UV assignments agree with the verified
-mobile `cRPath::BuildFringe` geometry and remain the strongest source-backed
-form. The residual is bounded to VC6 store scheduling, not missing geometry,
+The ledger records six trailing non-improving sweeps. The retained direct
+indices and scalar UV assignments agree with the verified mobile
+`cRPath::BuildFringe` geometry and remain the strongest source-backed form.
+The residual is bounded to VC6 store scheduling, not missing geometry,
 ownership, reference identity, or control flow; no synthetic aggregate,
 volatile qualifier, or manual store barrier is retained.

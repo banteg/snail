@@ -1,5 +1,12 @@
 # update_track_attachment_follow_state @ 0x420cb0
 
+Current recovery: semantic-complete (`compiler` residual). The live Windows
+prototype and exact Android/iOS `cRPathFollowGoldy::Traverse` bodies establish
+the full follow-state graph: sample stepping and overflow, both transform
+paths, Player publication, side exits, and the Supertramp terminal. All 65
+references are clean; the remaining 14-instruction deficit is matrix-stack,
+x87, and duplicated-epilogue layout.
+
 Best current source-shaped reconstruction for the native attachment-follow update helper.
 
 Current matcher result:
@@ -440,7 +447,7 @@ The remaining ordinary-path hypotheses are bounded. Five aggregate result
 forms regress to `66.43%`–`66.81%`; a shared output-position pointer is neutral
 or worse; all complete hoisted `path_x/y/z` lifetimes are byte-neutral; and all
 63 combinations of anchor/sample operand order compile identically. Three
-consecutive non-improving sweeps therefore leave the last 14 instructions as
-matrix-stack and x87 scheduling residue rather than missing ownership or
-arithmetic. The improved source remains free of padding, dummy locals, and
-score-only control flow.
+trailing non-improving sweeps document the tested forms; the last 14
+instructions are matrix-stack and x87 scheduling residue rather than missing
+ownership or arithmetic. The improved source remains free of padding, dummy
+locals, and score-only control flow.
