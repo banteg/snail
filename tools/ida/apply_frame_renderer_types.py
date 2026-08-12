@@ -5,8 +5,8 @@ import pathlib
 import re
 import sys
 
-import ida_funcs
 import ida_bytes
+import ida_funcs
 import ida_hexrays
 import ida_kernwin
 import ida_name
@@ -19,6 +19,12 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+from type_alias_migration import migrate_equivalent_struct_aliases
+
+INPUT_OWNER_TYPE_ALIASES = (
+    ("InputState", "cRInput", 0x38),
+    ("GameInput", "cRGameInput", 0x70),
+)
 
 
 EXPECTED_OWNER_SIZES = {
@@ -34,7 +40,7 @@ EXPECTED_OWNER_SIZES = {
     "FrontendFade": 0x14,
     "FrontendOverlayColorLerp": 0x24,
     "TgaImageView": 0x14,
-    "GameInput": 0x70,
+    "cRGameInput": 0x70,
     "GamePlayer": 0x1F8,
     "GamePlayerInitStrideView": 0x31C,
     "FrameBodBase": 0x38,
@@ -308,7 +314,7 @@ BORDER_KILL_REANALYSIS_FUNCTIONS = (
 )
 
 # These three functions share one cross-function owner graph: player zero owns
-# MouseCursorState inline and borrows the corresponding root-owned GameInput.
+# MouseCursorState inline and borrows the corresponding root-owned cRGameInput.
 # Re-decompile them after every GameRoot rebind so later header imports cannot
 # leave raw +0x290/+0x28c arithmetic cached in the database.
 MOUSE_INPUT_OWNER_FUNCTIONS = {
@@ -862,9 +868,9 @@ ROOT_CONSTRUCTOR_POINTER_LVAR_SPECS = (
         "game_input_cursor",
         0x407D9A,
         {"v2", "game_inputs", "game_input_cursor"},
-        {"BodBase *", "GameInput *"},
+        {"BodBase *", "GameInput *", "cRGameInput *"},
         "game_input_cursor",
-        "GameInput",
+        "cRGameInput",
         1,
     ),
     (
@@ -945,6 +951,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
             )
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    type_alias_migrations = migrate_equivalent_struct_aliases(
+        INPUT_OWNER_TYPE_ALIASES
+    )
     owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
     applied = 0
     unchanged = 0
@@ -961,6 +970,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected in EXPECTED_OWNER_SIZES.items()
         if owner_sizes[name] != expected
     ]
+    failed.extend(
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    )
     failed.extend(
         {
             "selector": result["header"],
@@ -1213,6 +1231,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "dependency_headers": dependency_parse_results,
                 "parse_errors": parse_errors,
+                "type_alias_migrations": type_alias_migrations,
                 "owner_sizes": owner_sizes,
                 "viewport_owner_readback": viewport_owner_readback,
                 "applied": applied,

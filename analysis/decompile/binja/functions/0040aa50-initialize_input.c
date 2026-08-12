@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_input @ 0x40aa50 */
 
-0040aa52        state->inverse_current_buttons = 0xffffffff
+0040aa52        state->inverse_current_buttons = INPUT_BUTTON_PRIMARY | INPUT_BUTTON_SECONDARY | INPUT_BUTTON_UNRESOLVED_00400000 | INPUT_BUTTON_UNRESOLVED_00800000 | 0xff3f3fff
 0040aa59        state->current_buttons = 0
 0040aa5c        state->pressed_buttons = 0
 0040aa5f        state->released_buttons = 0

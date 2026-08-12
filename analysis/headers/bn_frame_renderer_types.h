@@ -53,7 +53,7 @@ typedef enum InputButtonFlag {
     INPUT_BUTTON_UNRESOLVED_00800000 = 0x00800000,
 } InputButtonFlag;
 
-typedef struct InputState {
+typedef struct cRInput {
     int32_t controller_slot;
     InputButtonFlag pressed_buttons;
     InputButtonFlag released_buttons;
@@ -68,7 +68,8 @@ typedef struct InputState {
     float authored_y;
     float pointer_value;
     InputButtonFlag current_buttons;
-} InputState;
+} cRInput;
+typedef cRInput InputState;
 
 typedef struct GameInputBodBase {
     void* vtable;
@@ -82,10 +83,11 @@ typedef struct GameInputBodBase {
     float color[4];
 } GameInputBodBase;
 
-typedef struct GameInput {
+typedef struct cRGameInput {
     GameInputBodBase bod;
-    InputState input;
-} GameInput;
+    cRInput input;
+} cRGameInput;
+typedef cRGameInput GameInput;
 
 typedef struct MouseCursorState {
     uint8_t captured;
@@ -172,7 +174,7 @@ typedef struct GamePlayer {
     int32_t saved_frontend_state;
     uint8_t unknown_09c[0x04];
     FrameRenderCamera camera;
-    GameInput* game_input;
+    cRGameInput* game_input;
     MouseCursorState mouse_cursor;
     FrontendOverlayColorLerp frontend_overlay;
     FrameTransformMatrix completion_handoff_transform;
@@ -364,7 +366,7 @@ typedef struct GameRoot {
     int32_t frontend_quit_requested;
     int32_t fixed_update_count;
     int32_t player_count;
-    GameInput game_inputs[2];
+    cRGameInput game_inputs[2];
     GamePlayer players[2];
     int32_t unknown_000514;
     float fixed_update_accumulator;

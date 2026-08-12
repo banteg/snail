@@ -2,7 +2,8 @@
 /* function: update_input @ 0x40aa80 */
 /* selector: update_input */
 
-void __thiscall update_input(InputState *state)
+// Void Windows cRInput::Update(): derives pressed and released button edges from current versus previous state, stores the inverse mask, advances previous state, and clears the current word. Android preserves the same edge algebra and cRInput owner; the honest Windows scratch remains 52.94% because of an extra native EDI lifetime.
+void __thiscall update_input(cRInput *state)
 {
   InputButtonFlag current_buttons; // eax
   __int32 v2; // edx

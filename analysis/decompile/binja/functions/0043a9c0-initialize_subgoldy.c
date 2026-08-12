@@ -141,7 +141,7 @@
     .x = 0
 }
 0043adf9        struct GameRoot* game_base_1 = g_game_base
-0043adfe        struct InputState* eax_8
+0043adfe        struct cRInput* eax_8
 0043adfe        if (player->player_slot != 1)
 0043ae14        if (&game_base_1->game_inputs[1] == 0)
 0043ae1d        eax_8 = nullptr

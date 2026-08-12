@@ -6665,7 +6665,7 @@ def test_mouse_cursor_and_borrowed_input_owner_graph_is_replayed_cross_decompile
     assert "cRGameInput* game_input; // +0x168" in matcher_root
     assert "cRMouse mouse_cursor; // +0x16c" in matcher_root
     for header in analysis_headers:
-        assert "GameInput* game_input;" in header
+        assert "cRGameInput* game_input;" in header
         assert "MouseCursorState mouse_cursor;" in header
 
     for source in (binja_sync, ida_sync):
@@ -6725,6 +6725,12 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     ida_source = (IDA_DIR / "apply_input_state_types.py").read_text(
         encoding="utf-8"
     )
+    ida_frame_source = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_alias_source = (IDA_DIR / "type_alias_migration.py").read_text(
+        encoding="utf-8"
+    )
     headers = tuple(
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in ("bn_input_state_types.h", "ida_input_state_types.h")
@@ -6773,6 +6779,16 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         assert "INPUT_BUTTON_UNRESOLVED_00800000 = 0x00800000" in header
         assert "InputButtonFlag pressed_buttons;" in header
         assert "InputButtonFlag current_buttons;" in header
+        assert "typedef struct cRInput {" in header
+        assert "typedef struct cRGameInput {" in header
+        assert "cRInput input;" in header
+
+    for header in (headers[0], frame_headers[0]):
+        assert "typedef cRInput InputState;" in header
+        assert "typedef cRGameInput GameInput;" in header
+    for header in (headers[1], frame_headers[1]):
+        assert "typedef cRInput InputState;" not in header
+        assert "typedef cRGameInput GameInput;" not in header
 
     assert (
         "INPUT_BUTTON_UNRESOLVED_00400000 = 0x00400000"
@@ -6812,9 +6828,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "extern uint8_t g_keyboard_current_state[256];",
         "extern IDirectInput8A* g_keyboard_input;",
         "extern IDirectInputDevice8A* g_keyboard_device;",
-        "void __thiscall initialize_input(InputState* state);",
-        "void __thiscall update_input(InputState* state);",
-        "void __thiscall update_game_input(GameInput* game_input);",
+        "void __thiscall initialize_input(cRInput* state);",
+        "void __thiscall update_input(cRInput* state);",
+        "void __thiscall update_game_input(cRGameInput* game_input);",
     ):
         assert all(declaration in header for header in headers)
 
@@ -6829,8 +6845,11 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         "apply_symbol_removals",
         '("0x5108b8", "g_text_input_repeat_accumulator")',
         '("0x53c7f5", "g_text_input_last_repeat_code")',
-        '"void __thiscall initialize_input(InputState* state)"',
-        '"void __thiscall update_input(InputState* state)"',
+        '"void __thiscall initialize_input(cRInput* state)"',
+        '"void __thiscall update_input(cRInput* state)"',
+        '"void __thiscall update_game_input(cRGameInput* game_input)"',
+        '("InputState", "cRInput")',
+        '("GameInput", "cRGameInput")',
         '"char __cdecl read_pressed_text_input_key_code()"',
         '"char __cdecl read_repeating_text_input_key_code()"',
         "RSHELL_INPUT_FUNCTION_SYMBOL_UPDATES",
@@ -6878,7 +6897,7 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     ):
         assert marker in binja_source
 
-    assert '"int32_t __thiscall initialize_input(InputState* state)"' not in binja_source
+    assert '"int32_t __thiscall initialize_input(cRInput* state)"' not in binja_source
 
     for marker in (
         '(0x50339C, 20, "g_text_input_repeat_step", "float[5]")',
@@ -6899,8 +6918,9 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
         '"phase": "data_item_guard"',
         'r"\\buint8_t\\b|\\bunsigned __int8\\b"',
         '"char __cdecl read_repeating_text_input_key_code();"',
-        '"void __thiscall initialize_input(InputState *state);"',
-        '"void __thiscall update_input(InputState *state);"',
+        '"void __thiscall initialize_input(cRInput *state);"',
+        '"void __thiscall update_input(cRInput *state);"',
+        '"void __thiscall update_game_input(cRGameInput *game_input);"',
         '"float g_text_input_repeat_step;"',
         '"unsigned char g_text_input_last_repeat_code;"',
         '(0x508890, 8)',
@@ -6937,7 +6957,19 @@ def test_input_state_replays_preserve_portable_abi_and_text_input_repeat_ownersh
     ):
         assert marker in ida_source
 
-    assert '"int __thiscall initialize_input(InputState *state);"' not in ida_source
+    assert '"int __thiscall initialize_input(cRInput *state);"' not in ida_source
+    for source in (ida_source, ida_frame_source):
+        assert "migrate_equivalent_struct_aliases" in source
+        assert '("InputState", "cRInput", 0x38)' in source
+        assert '("GameInput", "cRGameInput", 0x70)' in source
+    for marker in (
+        "def migrate_equivalent_struct_aliases(",
+        "ida_typeinf.set_type_alias",
+        '"reason": "source_type_retired"',
+        '"reason": "non_equivalent_struct_layouts"',
+        '"reason": "type_alias_readback_failed"',
+    ):
+        assert marker in ida_alias_source
 
     references = json.loads(
         (repo_root / "analysis/symbols/gameplay-references.json").read_text(

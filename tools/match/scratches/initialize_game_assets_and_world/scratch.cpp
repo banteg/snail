@@ -3028,7 +3028,7 @@ char cRGame::initialize_game_assets_and_world()
         TEXTURE_REF_REGISTERED;
 
     BodList* active_bods = &active_bod_list;
-    GameInput* game_input = &game_inputs[0];
+    cRGameInput* game_input = &game_inputs[0];
     int input_index = 0;
     do {
         active_bods->add_bod_to_front(game_input);

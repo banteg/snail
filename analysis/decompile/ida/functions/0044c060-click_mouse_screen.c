@@ -2,8 +2,8 @@
 /* function: click_mouse_screen @ 0x44c060 */
 /* selector: click_mouse_screen */
 
-// Optionally forwards a cursor position to SetCursorPos when the window is active and captured, then stores raw/live mouse coordinates for the selected slot and publishes authored x/y through player zero's borrowed cRGameInput owner.
-void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)
+// Exact void `MouseSet(int, int, int)`: optionally forwards a cursor position to SetCursorPos when the Windows window is active and captured, then stores raw/live coordinates for the selected slot and publishes authored x/y through player zero's borrowed cRGameInput owner. Android and iOS preserve the authored global and incompatible incidental return-register residues.
+void __cdecl click_mouse_screen(int slot, int x, int y)
 {
   double v3; // st7
   GameRoot *v4; // ecx

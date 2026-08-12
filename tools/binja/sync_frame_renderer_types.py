@@ -3,14 +3,14 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_header_type_equivalence,
     current_struct_size,
@@ -19,7 +19,7 @@ from _narrow_sync import (
     types_declare_if_missing,
     types_declare_missing_only,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frame_renderer_types.h"
@@ -40,8 +40,10 @@ REQUIRED_STRUCTS = (
     "SpriteDepthNode",
     "FrontendFadeCallback",
     "FrontendFade",
+    "cRInput",
     "InputState",
     "GameInputBodBase",
+    "cRGameInput",
     "GameInput",
     "MouseCursorState",
     "FrontendOverlayColorLerp",
@@ -376,7 +378,7 @@ ROOT_CONSTRUCTOR_USER_VAR_UPDATES = (
         569,
         73,
         "game_input_cursor",
-        "GameInput*",
+        "cRGameInput*",
     ),
     (
         "construct_game_runtime",
@@ -509,7 +511,7 @@ GAME_PLAYER_FIELD_UPDATES = (
     ("0x94", "frontend_state", "int32_t"),
     ("0x98", "saved_frontend_state", "int32_t"),
     ("0xa0", "camera", "FrameRenderCamera"),
-    ("0x168", "game_input", "GameInput*"),
+    ("0x168", "game_input", "cRGameInput*"),
     ("0x16c", "mouse_cursor", "MouseCursorState"),
     ("0x184", "frontend_overlay", "FrontendOverlayColorLerp"),
     ("0x1a8", "completion_handoff_transform", "FrameTransformMatrix"),
@@ -526,7 +528,7 @@ GAME_PLAYER_INIT_STRIDE_VIEW_FIELD_UPDATES = (
 
 GAME_INPUT_FIELD_UPDATES = (
     ("0x00", "bod", "GameInputBodBase"),
-    ("0x38", "input", "InputState"),
+    ("0x38", "input", "cRInput"),
 )
 
 FRAME_SUBGAME_RUNTIME_FIELD_UPDATES = (
@@ -616,7 +618,7 @@ GAME_ROOT_FIELD_UPDATES = (
     ("0x38", "frontend_quit_requested", "int32_t"),
     ("0x3c", "fixed_update_count", "int32_t"),
     ("0x40", "player_count", "int32_t"),
-    ("0x44", "game_inputs", "GameInput[2]"),
+    ("0x44", "game_inputs", "cRGameInput[2]"),
     ("0x124", "players", "GamePlayer[2]"),
     ("0x514", "unknown_000514", "int32_t"),
     ("0x518", "fixed_update_accumulator", "float"),
@@ -978,6 +980,16 @@ def main() -> int:
             operations=operations,
         )
 
+    operations.extend(
+        apply_type_renames(
+            REPO_ROOT,
+            target=args.target,
+            renames=(
+                ("InputState", "cRInput"),
+                ("GameInput", "cRGameInput"),
+            ),
+        )
+    )
     operations.extend([
         types_declare_if_missing(
             REPO_ROOT,
@@ -1023,7 +1035,7 @@ def main() -> int:
         REPO_ROOT,
         target=args.target,
         struct_updates=(
-            ("GameInput", GAME_INPUT_FIELD_UPDATES),
+            ("cRGameInput", GAME_INPUT_FIELD_UPDATES),
             ("MouseCursorState", MOUSE_CURSOR_FIELD_UPDATES),
             ("FrontendFade", FRONTEND_FADE_FIELD_UPDATES),
             ("FrontendOverlayColorLerp", FRONTEND_OVERLAY_FIELD_UPDATES),

@@ -10,6 +10,12 @@ import ida_name
 import ida_pro
 import ida_typeinf
 import idc
+from type_alias_migration import migrate_equivalent_struct_aliases
+
+INPUT_OWNER_TYPE_ALIASES = (
+    ("InputState", "cRInput", 0x38),
+    ("GameInput", "cRGameInput", 0x70),
+)
 
 
 TRUSTED_NAMES = [
@@ -103,15 +109,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_input",
-        "void __thiscall initialize_input(InputState *state);",
+        "void __thiscall initialize_input(cRInput *state);",
     ),
     (
         "update_input",
-        "void __thiscall update_input(InputState *state);",
+        "void __thiscall update_input(cRInput *state);",
     ),
     (
         "update_game_input",
-        "void __thiscall update_game_input(GameInput *game_input);",
+        "void __thiscall update_game_input(cRGameInput *game_input);",
     ),
     (
         "initialize_mouse_authored_scale_from_clip_rect",
@@ -667,6 +673,30 @@ def _sync_types(header_path: pathlib.Path) -> int:
         )
         return 1
 
+    type_alias_migrations = migrate_equivalent_struct_aliases(
+        INPUT_OWNER_TYPE_ALIASES
+    )
+    failed_type_alias_migrations = [
+        result
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    if failed_type_alias_migrations:
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "parse_errors": parse_errors,
+                    "phase": "type_alias_migration",
+                    "type_alias_migrations": type_alias_migrations,
+                    "failed": failed_type_alias_migrations,
+                },
+                indent=2,
+            )
+        )
+        return 1
+
     applied = 0
     unchanged = 0
     renamed = 0
@@ -848,6 +878,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "type_alias_migrations": type_alias_migrations,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,

@@ -493,6 +493,15 @@
       "description": "Exact Windows cRInput::Init() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x40aa80",
+      "name": "update_input",
+      "kind": "function",
+      "aliases": [
+        "?Update@cRInput@@QAEXXZ"
+      ],
+      "description": "Windows cRInput::Update() entry with its owner-qualified decorated relocation name; the semantic body remains a non-exact compiler residual."
+    },
+    {
       "address": "0x40aab0",
       "name": "update_game_input",
       "kind": "function",

@@ -24,7 +24,7 @@ void click_mouse_screen(int slot, int x, int y)
     g_mouse_live_x[slot] = (float)x;
     float y_float = (float)y;
     g_mouse_live_y[slot] = y_float;
-    GameInput* owner = g_game->players[0].game_input;
+    cRGameInput* owner = g_game->players[0].game_input;
     owner->input.authored_x = (float)x;
     g_game->players[0].game_input->input.authored_y = y_float;
 }

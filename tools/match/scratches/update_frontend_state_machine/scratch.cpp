@@ -179,7 +179,7 @@ void cRPlayer::AI()
         }
     } while (redispatch_requested == 1);
 
-    GameInput* input_owner = game_input;
+    cRGameInput* input_owner = game_input;
     float anchor_x = input_owner->input.authored_x;
     mouse_cursor.saved_x = anchor_x;
     float anchor_y = input_owner->input.authored_y;

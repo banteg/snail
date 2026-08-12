@@ -7,9 +7,7 @@
 class cRInput {
 public:
     void Init(); // @ 0x40aa50
-    // Verified cRInput::Update(); the descriptive matcher name remains until
-    // its saved-register lifetime matches naturally.
-    void update_input(); // @ 0x40aa80
+    void Update(); // @ 0x40aa80
 
     int controller_slot;          // +0x00
     union {

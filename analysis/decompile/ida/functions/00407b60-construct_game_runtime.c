@@ -7,7 +7,7 @@ int32_t construct_game_runtime()
 {
   struct GameRoot *v0; // eax
   struct GameRoot *game; // esi
-  struct GameInput *game_input_cursor; // edi
+  struct cRGameInput *game_input_cursor; // edi
   int i; // ebx
   struct GamePlayer *player_cursor; // edi
   int j; // ebx

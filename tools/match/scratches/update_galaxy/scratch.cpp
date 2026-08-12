@@ -149,7 +149,7 @@ int cRGalaxy::AI()
 
     int hovered_route_index = -1;
     int probe_index = 1;
-    GameInput* mouse_state = g_game->players[0].game_input;
+    cRGameInput* mouse_state = g_game->players[0].game_input;
     float mouse_x = mouse_state->input.authored_x;
     float mouse_y = mouse_state->input.authored_y;
 

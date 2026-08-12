@@ -2,12 +2,12 @@
 /* function: update_frontend_state_machine @ 0x4107d0 */
 /* selector: update_frontend_state_machine */
 
-// Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded MouseCursorState saved position from the active camera anchor.
+// Runs cRPlayer::AI: dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and states 29/30, then snapshots the owned player transform into its cRCamera and refreshes the embedded cRMouse saved position from the active camera anchor.
 void __thiscall update_frontend_state_machine(GamePlayer *player)
 {
   int32_t frontend_state; // eax
   int32_t saved_frontend_state; // eax
-  GameInput *game_input; // eax
+  cRGameInput *game_input; // eax
   double authored_y; // st7
 
   player->redispatch_requested = 1;
@@ -119,15 +119,15 @@ LABEL_26:
         break;
       case 29:
         player->frontend_state = 30;
-        initialize_thanks_for_playing_screen((int *)&g_game_base->subgame.thanks_screen);
+        initialize_thanks_for_playing_screen(&g_game_base->subgame.splash);
         goto LABEL_29;
       case 30:
 LABEL_29:
-        update_thanks_for_playing_screen((int)&g_game_base->subgame.thanks_screen);
+        update_thanks_for_playing_screen(&g_game_base->subgame.splash);
         break;
       case 31:
         player->frontend_state = 32;
-        initialize_help_screen(&g_game_base->subgame.help.back_button);
+        initialize_help_screen(&g_game_base->subgame.help);
         goto LABEL_31;
       case 32:
 LABEL_31:

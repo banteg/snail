@@ -199,11 +199,16 @@ intentional.
 - `uv run python tools/binja/sync_input_state_types.py`
 - `uv run python tools/binja/sync_input_pointer_region_types.py`
   - Mirrors the same DirectInput controller owners and aggregate stack locals
-    into Binary Ninja; the paired IDA replay above is deliberately kept narrow
-    so both decompilers preserve the SDK layout without importing a full
-    platform header universe. Use the focused pointer-region lane for routine
-    verification of the two helper ABIs and four two-slot bound arrays; it
-    avoids traversing the unrelated mouse, text-input, and joystick inventory.
+    into Binary Ninja, and migrates the former analysis-only `InputState` and
+    `GameInput` primaries to the mobile-proven `cRInput` and `cRGameInput`
+    owners. Binary Ninja retains compatibility typedefs; IDA redirects the
+    legacy local-type ordinals to the canonical owners so repeated header
+    imports remain idempotent. The paired IDA replay above is deliberately kept
+    narrow so both decompilers preserve the SDK layout without importing a
+    full platform header universe. Use the focused
+    pointer-region lane for routine verification of the two helper ABIs and
+    four two-slot bound arrays; it avoids traversing the unrelated mouse,
+    text-input, and joystick inventory.
 - `path_template_types.h`
 - `uv run python tools/binja/sync_path_template_types.py --target SnailMail_unwrapped.exe.bndb`
 - `uv run python tools/binja/sync_path_template_kind.py --target SnailMail_unwrapped.exe.bndb`
@@ -450,9 +455,9 @@ position-to-gravity byte cursors with `uv run python
 tools/binja/sync_sprite_effect_owner_lifetimes.py --target
 SnailMail_unwrapped.exe.bndb`.
 
-The input-state BN/IDA lane carries the recovered `InputState` button edge
-masks, controller-axis fields, pointer-authored coordinates, and the embedded
-`GameInput.input` field proven by the exact Windows bridge and iOS
+The input-state BN/IDA lane carries the recovered `cRInput` button edge masks,
+controller-axis fields, pointer-authored coordinates, and the embedded
+`cRGameInput.input` field proven by the exact Windows bridge and iOS
 `cRGameInput::AI()` provenance. The root frame lane also places the two owned
 records at `GameRoot +0x44` and their borrowed player backlinks at `+0x168`.
 Each record now exposes its inherited 0x38-byte cRBod-compatible prefix as

@@ -158,7 +158,8 @@ typedef struct InputControllerSlot {
     float pointer_value;
 } InputControllerSlot;
 
-typedef struct InputState {
+/* Exact 0x38-byte cRInput owner retained by both root input records. */
+typedef struct cRInput {
     int32_t controller_slot;
     InputButtonFlag pressed_buttons;
     InputButtonFlag released_buttons;
@@ -173,7 +174,8 @@ typedef struct InputState {
     float authored_y;
     float pointer_value;
     InputButtonFlag current_buttons;
-} InputState;
+} cRInput;
+typedef cRInput InputState;
 
 typedef struct GameInputBodBase {
     void* vtable;
@@ -187,10 +189,12 @@ typedef struct GameInputBodBase {
     float color[4];
 } GameInputBodBase;
 
-typedef struct GameInput {
+/* Exact 0x70-byte BodBase-derived cRGameInput owner. */
+typedef struct cRGameInput {
     GameInputBodBase bod;
-    InputState input;
-} GameInput;
+    cRInput input;
+} cRGameInput;
+typedef cRGameInput GameInput;
 
 typedef struct MouseScreenRect {
     int32_t left;
@@ -261,8 +265,8 @@ void __cdecl set_input_controller_pointer_authored_xy(
     int32_t slot,
     float authored_x,
     float authored_y);
-void __thiscall initialize_input(InputState* state);
-void __thiscall update_input(InputState* state);
-void __thiscall update_game_input(GameInput* game_input);
+void __thiscall initialize_input(cRInput* state);
+void __thiscall update_input(cRInput* state);
+void __thiscall update_game_input(cRGameInput* game_input);
 
 #endif

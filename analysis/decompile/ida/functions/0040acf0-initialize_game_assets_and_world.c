@@ -283,29 +283,29 @@ uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game)
   Object *v277; // eax
   GolbShotVapourObjectStrideCursor *golb_shot_vapour_object_cursor; // esi
   Object *v279; // eax
-  TextureRef *v280; // eax
+  cRTexture *v280; // eax
   TextureRefFlags v281; // ecx
-  TextureRef *v282; // eax
-  TextureRef *v283; // eax
-  TextureRef *v284; // eax
+  cRTexture *v282; // eax
+  cRTexture *v283; // eax
+  cRTexture *v284; // eax
   TextureRefFlags v285; // ecx
-  TextureRef *v286; // eax
-  TextureRef *v287; // eax
-  TextureRef *v288; // eax
-  TextureRef *v289; // eax
-  TextureRef *v290; // eax
-  TextureRef *v291; // eax
-  TextureRef *v292; // eax
-  TextureRef *v293; // eax
+  cRTexture *v286; // eax
+  cRTexture *v287; // eax
+  cRTexture *v288; // eax
+  cRTexture *v289; // eax
+  cRTexture *v290; // eax
+  cRTexture *v291; // eax
+  cRTexture *v292; // eax
+  cRTexture *v293; // eax
   Object *v294; // eax
   struct RootFringeCatalogObjectStrideCursor *fringe_orientation_object_cursor; // eax
   struct RootFringeCatalogObjectStrideCursor *fringe_entry_object_cursor; // esi
   int j; // edi
   Object *v298; // eax
   Object *v299; // eax
-  TextureRef *v300; // eax
+  cRTexture *v300; // eax
   TextureRefFlags v301; // ecx
-  InputState *p_input; // esi
+  cRInput *p_input; // esi
   int v303; // edi
   struct BorderRecordFlagsStrideCursor *border_flags_cursor; // eax
   int k; // ecx

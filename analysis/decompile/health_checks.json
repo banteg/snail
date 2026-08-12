@@ -5685,7 +5685,7 @@
       "name": "bn_input_state_portable_lifecycle_abi",
       "artifact": "analysis/decompile/binja/functions/0040aa50-initialize_input.c",
       "required_substrings": [
-        "state->inverse_current_buttons = 0xffffffff",
+        "state->inverse_current_buttons = INPUT_BUTTON_PRIMARY | INPUT_BUTTON_SECONDARY | INPUT_BUTTON_UNRESOLVED_00400000 | INPUT_BUTTON_UNRESOLVED_00800000 | 0xff3f3fff",
         "state->current_buttons = 0",
         "state->authored_x = 320f",
         "state->authored_y = 240f",
@@ -5703,7 +5703,7 @@
       "name": "ida_input_state_portable_lifecycle_abi",
       "artifact": "analysis/decompile/ida/functions/0040aa50-initialize_input.c",
       "required_substrings": [
-        "void __thiscall initialize_input(InputState *state)",
+        "void __thiscall initialize_input(cRInput *state)",
         "state->inverse_current_buttons = -1",
         "state->current_buttons = 0",
         "state->authored_x = 320.0",
@@ -5740,7 +5740,7 @@
       "name": "ida_game_input_owner_and_void_abi",
       "artifact": "analysis/decompile/ida/functions/0040aab0-update_game_input.c",
       "required_substrings": [
-        "void __thiscall update_game_input(GameInput *game_input)",
+        "void __thiscall update_game_input(cRGameInput *game_input)",
         "game_input->input.controller_slot",
         "game_input->input.current_buttons",
         "game_input->input.authored_x",
@@ -5909,7 +5909,7 @@
       "name": "ida_mouse_coordinate_globals",
       "artifact": "analysis/decompile/ida/functions/0044c060-click_mouse_screen.c",
       "required_substrings": [
-        "void __cdecl click_mouse_screen(int32_t slot, int32_t x, int32_t y)",
+        "void __cdecl click_mouse_screen(int slot, int x, int y)",
         "g_mouse_screen_x[slot]",
         "g_mouse_screen_y[slot]",
         "g_mouse_live_x[slot]",
@@ -20483,7 +20483,7 @@
       "artifact": "analysis/decompile/binja/functions/00407b60-construct_game_runtime.c",
       "required_substrings": [
         "struct GameRoot* game = operator_new(0x12e6ff4)",
-        "struct GameInput* game_input_cursor = &game->game_inputs",
+        "struct cRGameInput* game_input_cursor = &game->game_inputs",
         "struct GamePlayer* player_cursor = &game->players",
         "struct Viewport* viewport_cursor = &game->viewports",
         "struct BodBase* root_bod_cursor = &game->root_bod_catalog",
@@ -20507,7 +20507,7 @@
       "artifact": "analysis/decompile/ida/functions/00407b60-construct_game_runtime.c",
       "required_substrings": [
         "struct GameRoot *game; // esi",
-        "struct GameInput *game_input_cursor; // edi",
+        "struct cRGameInput *game_input_cursor; // edi",
         "struct GamePlayer *player_cursor; // edi",
         "struct Viewport *viewport_cursor; // edi",
         "struct BodBase *root_bod_cursor; // edi",
@@ -22335,7 +22335,7 @@
       "name": "bn_primary_controller_slot_seed_contract",
       "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c",
       "required_substrings": [
-        "0041007f        struct InputState* state = &game->game_inputs[0].input",
+        "0041007f        struct cRInput* state = &game->game_inputs[0].input",
         "00410085        int32_t i_2 = 0",
         "0041009a        state->controller_slot = i_2",
         "004100a2        state = &state[2]",
@@ -22960,7 +22960,7 @@
       "name": "ida_input_update_mobile_owner_contract",
       "artifact": "analysis/decompile/ida/functions/0040aa80-update_input.c",
       "required_substrings": [
-        "void __thiscall update_input(InputState *state)",
+        "void __thiscall update_input(cRInput *state)",
         "InputButtonFlag current_buttons",
         "state->previous_buttons = current_buttons",
         "state->pressed_buttons = current_buttons & v2",

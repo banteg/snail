@@ -112,7 +112,7 @@
 00409684        do while (i_3 s< 0xa)
 0040968b        int32_t i_5 = 1
 00409690        int32_t selected_index = 0xffffffff
-00409693        struct GameInput* game_input = g_game_base->players[0].game_input
+00409693        struct cRGameInput* game_input = g_game_base->players[0].game_input
 00409699        float authored_x = game_input->input.authored_x
 0040969c        float authored_y = game_input->input.authored_y
 004096a6        bool cond:3 = galaxy->route_state != 1

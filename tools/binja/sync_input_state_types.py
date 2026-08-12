@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_struct_field_updates,
     apply_symbol_removals,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     emit_summary,
     types_declare_if_changed,
@@ -229,7 +230,7 @@ INPUT_CONTROLLER_SLOT_FIELDS = (
 
 GAME_INPUT_FIELDS = (
     ("0x00", "bod", "GameInputBodBase"),
-    ("0x38", "input", "InputState"),
+    ("0x38", "input", "cRInput"),
 )
 
 RSHELL_INPUT_PROTO_UPDATES = (
@@ -269,9 +270,9 @@ PROTO_UPDATES = (
         "0x4327e0",
         "char __cdecl read_repeating_text_input_key_code()",
     ),
-    ("initialize_input", "void __thiscall initialize_input(InputState* state)"),
-    ("update_input", "void __thiscall update_input(InputState* state)"),
-    ("update_game_input", "void __thiscall update_game_input(GameInput* game_input)"),
+    ("initialize_input", "void __thiscall initialize_input(cRInput* state)"),
+    ("update_input", "void __thiscall update_input(cRInput* state)"),
+    ("update_game_input", "void __thiscall update_game_input(cRGameInput* game_input)"),
     ("0x44bbb0", "void __cdecl initialize_mouse_authored_scale_from_clip_rect()"),
     ("0x44bbd0", "void __cdecl update_mouse_authored_scale(float authored_width, float authored_height)"),
     ("0x44bc20", "float __cdecl resolve_uncaptured_cursor_sensitivity_scale(float scale)"),
@@ -334,7 +335,15 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     target = parse_args().target
-    operations = [
+    operations: list[dict[str, object]] = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=(
+            ("InputState", "cRInput"),
+            ("GameInput", "cRGameInput"),
+        ),
+    )
+    operations.extend([
         types_declare_if_changed(
             REPO_ROOT,
             target=target,
@@ -343,7 +352,7 @@ def main() -> int:
         *apply_struct_field_updates(
             REPO_ROOT,
             target=target,
-            struct_name="InputState",
+            struct_name="cRInput",
             updates=INPUT_STATE_FIELDS,
         ),
         *apply_struct_field_updates(
@@ -355,7 +364,7 @@ def main() -> int:
         *apply_struct_field_updates(
             REPO_ROOT,
             target=target,
-            struct_name="GameInput",
+            struct_name="cRGameInput",
             updates=GAME_INPUT_FIELDS,
         ),
         *apply_symbol_updates(
@@ -493,7 +502,7 @@ def main() -> int:
             target=target,
             updates=CONTROLLER_USER_VAR_UPDATES,
         ),
-    ]
+    ])
     return emit_summary(
         repo_root=REPO_ROOT,
         target=target,

@@ -2,7 +2,7 @@
 /* function: update_galaxy @ 0x4092f0 */
 /* selector: update_galaxy */
 
-// Runs the embedded `Galaxy` Star Map state machine, including route selection, replay launch, Deliver/Play handoff, and the route/icon render pass. Android and iOS split the same ownership between `cRGalaxy::AI()` and `cRGalaxy::Render()`; their trivial `AIControl()` exposes the result state that Windows returns directly.
+// Runs the embedded cRGalaxy Star Map state machine, including route selection, replay launch, Deliver/Play handoff, and the route/icon render pass. Android and iOS split the same ownership between `cRGalaxy::AI()` and `cRGalaxy::Render()`; their trivial `AIControl()` exposes the result state that Windows returns directly.
 int32_t __thiscall update_galaxy(Galaxy *galaxy)
 {
   int32_t v2; // edi
@@ -19,7 +19,7 @@ int32_t __thiscall update_galaxy(Galaxy *galaxy)
   float *v13; // ebp
   int32_t v14; // ebp
   int32_t v15; // ebx
-  GameInput *game_input; // eax
+  cRGameInput *game_input; // eax
   float authored_x; // ecx
   float authored_y; // edx
   int32_t route_state; // eax

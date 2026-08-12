@@ -1906,7 +1906,7 @@
 00410066        do while (cond:14_1)
 00410078        cRTexture* eax_346 = get_or_create_texture_ref(&g_texture_refs, "Objects/Universe/Fringe.tga", nullptr, 0)
 0041007d        enum TextureRefFlags flags_4 = eax_346->flags
-0041007f        struct InputState* state = &game->game_inputs[0].input
+0041007f        struct cRInput* state = &game->game_inputs[0].input
 00410082        flags_4:1.b |= 4
 00410085        int32_t i_2 = 0
 00410087        eax_346->flags = flags_4

@@ -3,11 +3,11 @@
 /* selector: update_game_input */
 
 // Runs cRGameInput::AI() for one root-owned BodBase-derived input record: when the root sampling gate is live, copies the selected controller's buttons, axes, pointer values, and authored x/y into the trailing cRInput-compatible state and derives the current-frame button edges.
-void __thiscall update_game_input(GameInput *game_input)
+void __thiscall update_game_input(cRGameInput *game_input)
 {
-  InputState *p_input; // esi
+  cRInput *p_input; // esi
 
-  if ( g_game_base->input_sampling_gate )
+  if ( g_game_base->input_sampling_gate != 0 )
   {
     p_input = &game_input->input;
     copy_active_input_controller_state(

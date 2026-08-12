@@ -15,7 +15,7 @@
 00407d81        int32_t var_4 = 0
 00407d89        if (game == 0)
 00407f6d        game = nullptr
-00407d99        struct GameInput* game_input_cursor = &game->game_inputs
+00407d99        struct cRGameInput* game_input_cursor = &game->game_inputs
 00407d9c        int32_t i_4 = 2
 00407db2        int32_t i
 00407da3        initialize_bod_base(game_input_cursor)

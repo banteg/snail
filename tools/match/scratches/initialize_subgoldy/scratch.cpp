@@ -189,17 +189,17 @@ void cRSubGoldy::Init(int player_slot)
     velocity_lanes[0] = zero;
 
     int active_slot = this->player_slot;
-    InputState* control_source;
+    cRInput* control_source;
     if (active_slot == 1) {
         GameRoot* app = g_game;
-        GameInput* control_check = &app->game_inputs[0];
+        cRGameInput* control_check = &app->game_inputs[0];
         if (control_check != 0)
             control_source = &app->game_inputs[0].input;
         else
             control_source = 0;
     } else {
         GameRoot* app = g_game;
-        GameInput* control_check = &app->game_inputs[1];
+        cRGameInput* control_check = &app->game_inputs[1];
         if (control_check != 0)
             control_source = &app->game_inputs[1].input;
         else

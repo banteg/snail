@@ -100,7 +100,7 @@
 00410b24        case 0x20
 00410b24        update_help_screen(&g_game_base->subgame.help)
 00410b30        do while (player->redispatch_requested == 1)
-00410b36        struct GameInput* game_input = player->game_input
+00410b36        struct cRGameInput* game_input = player->game_input
 00410b4a        player->mouse_cursor.saved_x = fconvert.s(fconvert.t(game_input->input.authored_x))
 00410b50        long double x87_r7_1 = fconvert.t(game_input->input.authored_y)
 00410b59        __builtin_memcpy(&player->camera.body.transform, &player->body.transform.basis_right.x, 0x40)

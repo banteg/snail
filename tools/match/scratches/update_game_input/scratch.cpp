@@ -28,6 +28,6 @@ void cRGameInput::AI()
             &input.pointer_value,
             &input.pointer_x,
             &input.pointer_y);
-        input.update_input();
+        input.Update();
     }
 }

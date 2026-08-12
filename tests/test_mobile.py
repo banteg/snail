@@ -11332,7 +11332,7 @@ def test_root_input_types_use_authored_primary_owners() -> None:
 
     for owner, function, member in (
         ("cRInput", "initialize_input", "Init"),
-        ("cRInput", "update_input", "update_input"),
+        ("cRInput", "update_input", "Update"),
         ("cRGameInput", "update_game_input", "AI"),
     ):
         source = (scratch_root / function / "scratch.cpp").read_text(
@@ -11341,8 +11341,10 @@ def test_root_input_types_use_authored_primary_owners() -> None:
         assert f"{owner}::{member}" in source
 
     assert "void Init();" in input_header
+    assert "void Update();" in input_header
     assert "void AI();" in input_header
     assert "void initialize_input();" not in input_header
+    assert "void update_input();" not in input_header
     assert "void update_game_input();" not in input_header
 
     crosswalk = {
@@ -11361,11 +11363,17 @@ def test_root_input_types_use_authored_primary_owners() -> None:
             repo_root / "analysis/symbols/gameplay-references.json"
         )["symbols"]
     }
-    exact_methods = {
+    owned_methods = {
         "initialize_input": (
             "cRInput::Init()",
             "?Init@cRInput@@QAEXXZ",
             "cRInput_Init",
+            False,
+        ),
+        "update_input": (
+            "cRInput::Update()",
+            "?Update@cRInput@@QAEXXZ",
+            "cRInput_Update",
             False,
         ),
         "update_game_input": (
@@ -11380,7 +11388,7 @@ def test_root_input_types_use_authored_primary_owners() -> None:
         object_symbol,
         alias,
         has_ios,
-    ) in exact_methods.items():
+    ) in owned_methods.items():
         entry = crosswalk[function]
         assert entry["status"] == "verified"
         assert entry["confidence"] == "high"
@@ -11402,6 +11410,12 @@ def test_root_input_types_use_authored_primary_owners() -> None:
     ).read_text(encoding="utf-8")
     assert "game_input->input.Init();" in asset_initializer
     assert ".initialize_input(" not in asset_initializer
+
+    game_input_ai = (
+        scratch_root / "update_game_input/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "input.Update();" in game_input_ai
+    assert "input.update_input();" not in game_input_ai
 
 
 def test_sound_facade_uses_authored_primary_owner() -> None:
