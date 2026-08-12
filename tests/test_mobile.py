@@ -7005,9 +7005,21 @@ def test_mobile_face_heightmap_chain_recovers_authored_owner() -> None:
     movie_header = (
         repo_root / "tools/match/include/movie.h"
     ).read_text(encoding="utf-8")
-    assert "class Face : public BodBase" in matcher_header
-    assert "Movie movie;" in matcher_header
-    assert "class Movie : public Object" in movie_header
+    assert "class cRFace : public BodBase" in matcher_header
+    assert "typedef cRFace Face;" in matcher_header
+    assert "cRMovie movie;" in matcher_header
+    assert "class cRMovie : public Object" in movie_header
+    assert "typedef cRMovie Movie;" in movie_header
+    assert "sizeof(cRFace)" in matcher_header
+    assert "sizeof(cRMovie)" in movie_header
+    face_source = (
+        repo_root / "tools/match/scratches/update_smtracks/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    movie_source = (
+        repo_root / "tools/match/scratches/advance_frame_sequence/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRFace::update_smtracks" in face_source
+    assert "cRMovie::advance_frame_sequence" in movie_source
     assert "bool cubic" in matcher_header
     assert "SmtrackHeightfieldAnimator" not in matcher_header
     assert "FrameSequence" not in matcher_header

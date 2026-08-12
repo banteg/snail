@@ -14,7 +14,7 @@ enum MovieFlag {
     MOVIE_PAUSED = 0x10,
 };
 
-class Movie : public Object {
+class cRMovie : public Object {
 public:
     void advance_frame_sequence(); // @ 0x430470
 
@@ -25,7 +25,8 @@ public:
     cRTexture* current_texture_ref; // +0xec
 };
 
+typedef cRMovie Movie;
 typedef char Movie_must_be_0xf0[
-    (sizeof(Movie) == 0xf0) ? 1 : -1];
+    (sizeof(cRMovie) == 0xf0) ? 1 : -1];
 
 #endif

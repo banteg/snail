@@ -4,7 +4,7 @@
 
 #include "movie.h"
 
-void Movie::advance_frame_sequence()
+void cRMovie::advance_frame_sequence()
 {
     int frame_index = current_frame_index;
     cRFaceQuad* frame_records = facequads;

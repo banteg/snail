@@ -16,14 +16,15 @@ void __cdecl sample_smtrack_heightmap(
 
 // Windows layout of the authored cross-port cRFace owner. This is the animated
 // landscape-height face, not an ObjectFaceQuad.
-class Face : public BodBase {
+class cRFace : public BodBase {
 public:
     void update_smtracks(); // @ 0x441f60
 
-    Movie movie; // +0x38
+    cRMovie movie; // +0x38
 };
 
+typedef cRFace Face;
 typedef char Face_must_be_0x128[
-    (sizeof(Face) == 0x128) ? 1 : -1];
+    (sizeof(cRFace) == 0x128) ? 1 : -1];
 
 #endif

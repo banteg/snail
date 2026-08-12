@@ -2,7 +2,7 @@
 
 #include "smtracks.h"
 
-void Face::update_smtracks()
+void cRFace::update_smtracks()
 {
     movie.advance_frame_sequence();
     object->facequads[0].texture_ref = movie.current_texture_ref;
