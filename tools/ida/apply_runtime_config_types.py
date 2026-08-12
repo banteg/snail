@@ -8,10 +8,13 @@ import ida_name
 import ida_pro
 import idc
 
-
 TRUSTED_NAMES = (
     (0x406C10, "initialize_default_runtime_config_thunk"),
     (0x406C20, "initialize_default_runtime_config"),
+    (0x42F470, "load_config_file"),
+    (0x42F490, "load_file_bytes_from_path"),
+    (0x42F540, "save_config_file"),
+    (0x42F5B0, "validate_config_tail_stub"),
     (0x4DF918, "g_runtime_config"),
 )
 
@@ -23,6 +26,22 @@ TRUSTED_FUNCTION_DECLARATIONS = (
     (
         "initialize_default_runtime_config",
         "void __cdecl initialize_default_runtime_config();",
+    ),
+    (
+        "load_config_file",
+        "void *__cdecl load_config_file(char *file_name, void *buffer);",
+    ),
+    (
+        "load_file_bytes_from_path",
+        "void *__cdecl load_file_bytes_from_path(char *file_name, void *buffer, int *out_size, int byte_count);",
+    ),
+    (
+        "save_config_file",
+        "char *__cdecl save_config_file(char *file_name, void *bytes, int byte_count);",
+    ),
+    (
+        "validate_config_tail_stub",
+        "unsigned char __cdecl validate_config_tail_stub(char *registration_key);",
     ),
 )
 

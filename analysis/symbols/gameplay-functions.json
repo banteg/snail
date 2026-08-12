@@ -2050,23 +2050,25 @@
     },
     {
       "address": "0x42f470",
-      "name": "load_config_file"
+      "name": "load_config_file",
+      "description": "Exact Windows `gRegisterLoadFile(char*, void*)` overload: forwards the file name and caller buffer to the four-argument Register.o loader with null size output and a zero byte-count override. Android preserves the same overload chain, while iOS Register.o forwards this overload directly to MacLoadFile."
     },
     {
       "address": "0x42f490",
       "name": "load_file_bytes_from_path",
       "port_scope": "boundary",
-      "description": "Loads one filesystem path into caller-supplied or freshly allocated bytes, optionally returning the byte count through the extra output lanes."
+      "description": "Windows implementation of authored `gRegisterLoadFile(char*, void*, int*, int)`: loads one filesystem path into caller-supplied or freshly allocated bytes, optionally returning the byte count through the extra output lanes. Android preserves the exact four-argument overload while delegating storage to its platform backend."
     },
     {
       "address": "0x42f540",
       "name": "save_config_file",
-      "port_scope": "boundary"
+      "port_scope": "boundary",
+      "description": "Windows implementation of authored `gRegisterSaveFile(char*, void*, int)`: writes the supplied byte span directly to the named path. Android and iOS preserve the exact three-argument Register.o symbol while using their platform file backends."
     },
     {
       "address": "0x42f5b0",
       "name": "validate_config_tail_stub",
-      "description": "Legacy config-tail validation helper called after SnailMail.cfg is loaded; this build ignores the tail pointer and returns true."
+      "description": "Exact Windows `gRegisterTestRegisterKey(char*)`: the registration-disabled build ignores the key/config-tail pointer and returns true. Android preserves the same symbol, argument, and unconditional-success body."
     },
     {
       "address": "0x42f5c0",

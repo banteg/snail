@@ -3127,6 +3127,42 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x42f470",
+      "windows_name": "load_config_file",
+      "ios_symbol": "gRegisterLoadFile(char*, void*)",
+      "android_symbol": "gRegisterLoadFile(char*, void*)",
+      "source_object": "Register.o",
+      "confidence": "high",
+      "notes": "The iOS Register.cpp STABS run directly owns this exact overload, which forwards to MacLoadFile; Android preserves the same two-argument wrapper and forwards null size output plus zero byte count to its four-argument overload. Windows has the identical two-argument-to-four-argument call shape, and its sole caller passes the config path and gConfig counterpart while discarding the backend pointer left in EAX."
+    },
+    {
+      "address": "0x42f490",
+      "windows_name": "load_file_bytes_from_path",
+      "android_symbol": "gRegisterLoadFile(char*, void*, int*, int)",
+      "source_object": "Register.o",
+      "source_object_evidence": "android-contiguous-source-run",
+      "confidence": "high",
+      "notes": "Android preserves the exact four-argument overload inside the bounded Register.o symbol run. Both implementations accept a caller buffer and optional size output, load the named file through the platform backend, and feed the two-argument overload with null size output and a zero final argument. Windows additionally exposes the desktop allocation and explicit-byte-count paths inside this boundary implementation; those platform details are not transferred to mobile."
+    },
+    {
+      "address": "0x42f540",
+      "windows_name": "save_config_file",
+      "ios_symbol": "gRegisterSaveFile(char*, void*, int)",
+      "android_symbol": "gRegisterSaveFile(char*, void*, int)",
+      "source_object": "Register.o",
+      "confidence": "high",
+      "notes": "The iOS Register.cpp STABS run directly owns the exact three-argument save symbol and delegates it to MacSaveFile; Android preserves the same symbol over its JNI backend. Windows takes the same path, byte buffer, and byte count and implements the desktop file write directly. Return-register differences are backend residue rather than a reason to split the authored operation."
+    },
+    {
+      "address": "0x42f5b0",
+      "windows_name": "validate_config_tail_stub",
+      "android_symbol": "gRegisterTestRegisterKey(char*)",
+      "source_object": "Register.o",
+      "source_object_evidence": "android-contiguous-source-run",
+      "confidence": "high",
+      "notes": "Android preserves this exact Register.o symbol as an unconditional return-true stub that ignores its char pointer. Windows does the same in two instructions; startup passes the loaded config validation tail as the otherwise-unused key argument. The iOS Register.cpp unit omits the disabled registration test entirely."
+    },
+    {
       "address": "0x413bb0",
       "windows_name": "get_or_append_object_texture_group_vertex",
       "android_symbol": "AddVertexUV(cGLVertexUV*, int&, tVector*, float, float)",

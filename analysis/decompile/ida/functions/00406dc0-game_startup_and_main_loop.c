@@ -6,16 +6,15 @@
 int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, char *lpCmdLine, int nShowCmd)
 {
   int v4; // edi
-  ObjectIndexBufferResource *v6; // ecx
-  int v7; // edx
+  int v6; // edx
   int i; // esi
-  double v9; // st7
-  double v11; // st7
-  char v12; // c0
+  double v8; // st7
+  double v10; // st7
+  char v11; // c0
   HWND ActiveWindow; // esi
-  int v14; // esi
-  int v15; // eax
-  double v16; // st7
+  int v13; // esi
+  int v14; // eax
+  double v15; // st7
   _DWORD Msg[7]; // [esp+10h] [ebp-1Ch] BYREF
 
   v4 = 0;
@@ -24,8 +23,8 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
   if ( query_directx_runtime_version() < 2049 )
     abort_startup_with_3d_error();
   rebuild_game_archive_if_needed();
-  load_config_file(nullptr, aSnailmailCfg, &g_runtime_config);
-  g_runtime_config.load_valid_flag = validate_config_tail_stub(v6);
+  load_config_file(aSnailmailCfg, &g_runtime_config);
+  g_runtime_config.registration_key_valid = validate_config_tail_stub(g_runtime_config.registration_key);
   g_application_instance = hInstance;
   initialize_trigonometry_tables();
   if ( initialize_game_data_archive() == 0 )
@@ -61,10 +60,10 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       set_fullscreen_mode(g_runtime_config.fullscreen_enabled);
       initialize_main_loop_display_state();
       initialize_loading_screen(&g_loading_bar);
-      v7 = ((int (*)(void))timeGetTime)() % 1000;
-      if ( v7 > 0 )
+      v6 = ((int (*)(void))timeGetTime)() % 1000;
+      if ( v6 > 0 )
       {
-        for ( i = v7; i != 0; --i )
+        for ( i = v6; i != 0; --i )
         {
           random_float_below(1.0, nullptr);
           next_math_random_value();
@@ -92,9 +91,9 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
     do
       g_current_frame_timestamp_seconds = (double)(unsigned int)((int (*)(void))timeGetTime)() * 0.001;
     while ( g_frame_time_accumulator + g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds < 0.0008333333333333334 );
-    v9 = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
+    v8 = g_current_frame_timestamp_seconds - g_previous_frame_timestamp_seconds;
     g_previous_frame_timestamp_seconds = g_current_frame_timestamp_seconds;
-    g_frame_time_accumulator = v9 + g_frame_time_accumulator;
+    g_frame_time_accumulator = v8 + g_frame_time_accumulator;
     if ( g_frame_time_accumulator > 0.41666666 )
       g_frame_time_accumulator = 0.41666666;
     g_fixed_update_abort_requested = 0;
@@ -105,10 +104,10 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
         break;
       g_current_frame_update_steps = g_current_frame_update_steps + 1.0;
       g_frame_time_accumulator = g_frame_time_accumulator - 0.016666668;
-      v11 = g_frame_time_accumulator;
-      if ( v12 != 0 )
-        v11 = -v11;
-      if ( v11 >= 0.0000083333334 )
+      v10 = g_frame_time_accumulator;
+      if ( v11 != 0 )
+        v10 = -v10;
+      if ( v10 >= 0.0000083333334 )
       {
         g_render_queue_active = g_frame_time_accumulator <= 0.0;
       }
@@ -128,7 +127,7 @@ int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, c
       if ( g_window_deactivated != 0 )
       {
 LABEL_42:
-        v14 = 0;
+        v13 = 0;
         if ( g_game_base->fixed_update_count > 0 )
         {
           while ( 1 )
@@ -137,11 +136,11 @@ LABEL_42:
             update_joystick_input();
             update_mouse(g_main_window);
             update_font_wave_state();
-            v15 = run_frame_update(g_game_base);
+            v14 = run_frame_update(g_game_base);
             g_frame_render_requested = 1;
-            if ( v15 == 1 || v15 == 2 || v15 == 3 )
+            if ( v14 == 1 || v14 == 2 || v14 == 3 )
               break;
-            if ( ++v14 >= g_game_base->fixed_update_count )
+            if ( ++v13 >= g_game_base->fixed_update_count )
               goto LABEL_49;
           }
           v4 = 1;
@@ -159,9 +158,9 @@ LABEL_49:
       ;
     }
     g_fixed_update_abort_requested = 0;
-    v16 = g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps;
+    v15 = g_main_loop_frame_count * g_mean_update_steps_per_frame + g_current_frame_update_steps;
     g_main_loop_frame_count = g_main_loop_frame_count + 1.0;
-    g_mean_update_steps_per_frame = v16 / g_main_loop_frame_count;
+    g_mean_update_steps_per_frame = v15 / g_main_loop_frame_count;
     noop_runtime_ai();
   }
   while ( g_main_loop_exit_requested == 0 && v4 == 0 );

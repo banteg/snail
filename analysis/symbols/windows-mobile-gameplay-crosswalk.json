@@ -23,12 +23,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 590,
-    "unverified_entries": 195,
-    "verified_android_symbols": 584,
-    "verified_ios_symbols": 466,
-    "available_android_mappings": 584,
-    "available_ios_mappings": 430
+    "verified_entries": 594,
+    "unverified_entries": 191,
+    "verified_android_symbols": 588,
+    "verified_ios_symbols": 468,
+    "available_android_mappings": 588,
+    "available_ios_mappings": 432
   },
   "entries": [
     {
@@ -10974,110 +10974,31 @@
       "address": "0x42f470",
       "windows_name": "load_config_file",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRContinue::UnInit()",
-          "score": 0.6564,
-          "name_score": 0.4273,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "gRegisterLoadFile(char*, void*, int*, int)",
-          "score": 0.6358,
-          "name_score": 0.5263,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "cRSaltManager::Init()",
-          "score": 0.6304,
-          "name_score": 0.384,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cGlowManager::Init()",
-          "score": 0.6159,
-          "name_score": 0.4431,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRWarning::Start()",
-          "score": 0.6149,
-          "name_score": 0.3581,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "MacFindFile(char*)",
-          "score": 0.7396,
-          "name_score": 0.64,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "MacOFSaveHighScores()",
-          "score": 0.6897,
-          "name_score": 0.4828,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "gRegisterLoadFile(char*, void*)",
-          "score": 0.6658,
-          "name_score": 0.5263,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "MacGetFileName(char*, char*)",
-          "score": 0.62,
-          "name_score": 0.5,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "OFISerializer::isCurrentScopeASeries() const",
-          "score": 0.6062,
-          "name_score": 0.4178,
-          "size_score": 0.8889
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "gRegisterLoadFile(char*, void*)",
+      "ios_symbol": "gRegisterLoadFile(char*, void*)",
+      "source_object": "Register.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x42f490",
       "windows_name": "load_file_bytes_from_path",
       "windows_size": 176,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRLoadingBar::Signal()",
-          "score": 0.6942,
-          "name_score": 0.4904,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRLoadingBar::AI()",
-          "score": 0.6824,
-          "name_score": 0.5009,
-          "size_score": 0.9545
-        },
-        {
-          "symbol": "cRLoadingBar::Init()",
-          "score": 0.6824,
-          "name_score": 0.5009,
-          "size_score": 0.9545
-        },
-        {
-          "symbol": "cRLogoLetter::AI()",
-          "score": 0.6525,
-          "name_score": 0.5009,
-          "size_score": 0.88
-        },
-        {
-          "symbol": "cRSubHighScore::MiniDelete(int)",
-          "score": 0.6427,
-          "name_score": 0.4348,
-          "size_score": 0.9545
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "gRegisterLoadFile(char*, void*, int*, int)",
+      "source_object": "Register.o",
+      "source_object_evidence": "android-contiguous-source-run",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
+        {
+          "symbol": "LoadFile(char*, void*, int*)",
+          "score": 0.8721,
+          "name_score": 0.9,
+          "size_score": 0.8302
+        },
         {
           "symbol": "cGLVertexArray::WorldFlatten()",
           "score": 0.6791,
@@ -11091,22 +11012,16 @@
           "size_score": 0.898
         },
         {
+          "symbol": "LoadFileDataInfo(char const*, OpaqueAudioFileID*&, AudioStreamBasicDescription&, unsigned long long&)",
+          "score": 0.6526,
+          "name_score": 0.45,
+          "size_score": 0.9565
+        },
+        {
           "symbol": "cRBorderManager::HideBorders()",
           "score": 0.65,
           "name_score": 0.4167,
           "size_score": 1.0
-        },
-        {
-          "symbol": "OFDelegate::operator=(OFDelegate const&)",
-          "score": 0.6488,
-          "name_score": 0.4904,
-          "size_score": 0.8864
-        },
-        {
-          "symbol": "tMatrix::RotLocalY(float)",
-          "score": 0.6454,
-          "name_score": 0.4545,
-          "size_score": 0.9318
         }
       ]
     },
@@ -11114,112 +11029,33 @@
       "address": "0x42f540",
       "windows_name": "save_config_file",
       "windows_size": 112,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "JAVACFindFile(char*)",
-          "score": 0.7613,
-          "name_score": 0.6667,
-          "size_score": 0.9032
-        },
-        {
-          "symbol": "JAVACDeleteFile(char*)",
-          "score": 0.6897,
-          "name_score": 0.4828,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "JAVACFileSize(char*)",
-          "score": 0.6844,
-          "name_score": 0.5185,
-          "size_score": 0.9333
-        },
-        {
-          "symbol": "RShellConvertFileName(char*, char*)",
-          "score": 0.6657,
-          "name_score": 0.5143,
-          "size_score": 0.8929
-        },
-        {
-          "symbol": "cRSubHighScore::MiniFileName(char*, int)",
-          "score": 0.6502,
-          "name_score": 0.4615,
-          "size_score": 0.9333
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "OpenFile(char const*, OpaqueAudioFileID*&)",
-          "score": 0.6667,
-          "name_score": 0.5455,
-          "size_score": 0.8485
-        },
-        {
-          "symbol": "RShellConvertFileName(char*, char*)",
-          "score": 0.6657,
-          "name_score": 0.5143,
-          "size_score": 0.8929
-        },
-        {
-          "symbol": "tMatrix::Scale(float)",
-          "score": 0.6389,
-          "name_score": 0.4211,
-          "size_score": 0.9655
-        },
-        {
-          "symbol": "RShellWarning(char*, ...)",
-          "score": 0.5937,
-          "name_score": 0.3704,
-          "size_score": 0.9286
-        },
-        {
-          "symbol": "RShellSoundRegister(char*, int)",
-          "score": 0.592,
-          "name_score": 0.32,
-          "size_score": 1.0
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "gRegisterSaveFile(char*, void*, int)",
+      "ios_symbol": "gRegisterSaveFile(char*, void*, int)",
+      "source_object": "Register.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x42f5b0",
       "windows_name": "validate_config_tail_stub",
       "windows_size": 16,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRWarning::Stop()",
-          "score": 0.6095,
-          "name_score": 0.3491,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "tColour::Set(float, float, float)",
-          "score": 0.5986,
-          "name_score": 0.331,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBod::IsAfterSprites()",
-          "score": 0.57,
-          "name_score": 0.45,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "cAccelerometer::Input(float, float, float)",
-          "score": 0.5686,
-          "name_score": 0.281,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.5667,
-          "name_score": 0.2778,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "gRegisterTestRegisterKey(char*)",
+      "source_object": "Register.o",
+      "source_object_evidence": "android-contiguous-source-run",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
-          "symbol": "cRBod::IsAfterSprites()",
+          "symbol": "KeyTest(unsigned char)",
+          "score": 0.8067,
+          "name_score": 0.9,
+          "size_score": 0.6667
+        },
+        {
+          "symbol": "gRegisterSaveFile(char*, void*, int)",
           "score": 0.67,
           "name_score": 0.45,
           "size_score": 1.0
@@ -11240,12 +11076,6 @@
           "symbol": "RShellDeleteFile(char*)",
           "score": 0.621,
           "name_score": 0.3684,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "MacOFGetHighScore()",
-          "score": 0.6154,
-          "name_score": 0.359,
           "size_score": 1.0
         }
       ]

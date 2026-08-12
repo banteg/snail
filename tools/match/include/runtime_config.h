@@ -28,8 +28,8 @@ struct RuntimeConfig {
     int reserved_14;                             // +0x14
     int reserved_18;                             // +0x18
     unsigned int render_flags;                   // +0x1c
-    unsigned char validation_tail[0x11];         // +0x20
-    unsigned char load_valid_flag;               // +0x31
+    char registration_key[0x11];                 // +0x20
+    unsigned char registration_key_valid;        // +0x31
     unsigned char unknown_32[2];                 // +0x32
     int display_mode_index;                      // +0x34
     float steering_sensitivity[2];               // +0x38

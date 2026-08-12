@@ -30,6 +30,13 @@
       "last_symbol": "cRMouse::AI()"
     },
     {
+      "source_object": "Register.o",
+      "start": "0x31200",
+      "end": "0x318d0",
+      "first_symbol": "gRegisterSearchEncryptList(int*, int)",
+      "last_symbol": "gRegisterInit(int)"
+    },
+    {
       "source_object": "Font.o",
       "start": "0x318dc",
       "end": "0x33108",

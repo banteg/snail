@@ -26,7 +26,7 @@ extern "C" __declspec(dllimport) BOOL __stdcall ClipCursor(void* rect);
 
 
 int query_directx_runtime_version(); // @ 0x44afc0
-char validate_config_tail_stub(void* config_tail); // @ 0x42f5b0
+char validate_config_tail_stub(char* config_tail); // @ 0x42f5b0
 void abort_startup_with_3d_error(); // @ 0x4088a0
 int rebuild_game_archive_if_needed(); // @ 0x405370
 void* load_config_file(char* file_name, void* buffer); // @ 0x42f470
@@ -72,8 +72,8 @@ int __stdcall game_startup_and_main_loop(
 
     rebuild_game_archive_if_needed();
     load_config_file("SnailMail.cfg", &g_runtime_config);
-    g_runtime_config.load_valid_flag =
-        validate_config_tail_stub(g_runtime_config.validation_tail);
+    g_runtime_config.registration_key_valid =
+        validate_config_tail_stub(g_runtime_config.registration_key);
     g_application_instance = hInstance;
     initialize_trigonometry_tables();
 

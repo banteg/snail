@@ -13755,14 +13755,24 @@ def test_runtime_config_ownership_stays_aligned() -> None:
         assert "last_entered_player_name[0x40]" in header
         assert "highest_galaxy_route_index" in header
         assert "new_game_tutorial_started" in header
+        assert "registration_key[0x11]" in header
+        assert "registration_key_valid" in header
+        assert "validation_tail" not in header
+        assert "load_valid_flag" not in header
 
     assert '("0x1c", "render_flags", "RuntimeRenderFlag")' in binja_sync
+    assert '("0x20", "registration_key", "char[0x11]")' in binja_sync
+    assert (
+        '("0x31", "registration_key_valid", "uint8_t")'
+        in binja_sync
+    )
     assert '("0x4df918", "g_runtime_config")' in binja_sync
     assert '("0x4df918", "RuntimeConfig")' in binja_sync
     assert 'struct_name="RuntimeConfig"' in binja_sync
     assert 'initialize_default_runtime_config_thunk(void)' in analysis_header
     assert '(0x406C10, "initialize_default_runtime_config_thunk")' in ida_sync
     assert '(0x406C20, "initialize_default_runtime_config")' in ida_sync
+    assert '(0x42F5B0, "validate_config_tail_stub")' in ida_sync
     assert '(0x4DF918, "g_runtime_config")' in ida_sync
     assert 'RuntimeConfig g_runtime_config;' in ida_sync
 

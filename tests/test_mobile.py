@@ -6456,7 +6456,7 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         if entry.get("source_object_evidence")
         == "android-contiguous-source-run"
     ]
-    assert len(inferred) == 40
+    assert len(inferred) == 42
     assert Counter(entry["source_object"] for entry in inferred) == {
         "RTexture.o": 1,
         "Font.o": 3,
@@ -6465,6 +6465,7 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         "Game.o": 3,
         "Keyboard.o": 1,
         "Mouse.o": 4,
+        "Register.o": 2,
         "SubGame.o": 25,
     }
 
@@ -6492,7 +6493,88 @@ def test_android_source_runs_close_remaining_owner_gaps() -> None:
         entry.get("source_object_evidence")
         == "android-contiguous-source-run"
         for entry in complete_verified
-    ) == 40
+    ) == 42
+
+
+def test_mobile_register_run_recovers_config_file_family() -> None:
+    repo_root = Path(__file__).parents[1]
+    names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    source_objects = dict(names["source_objects"])
+    assert source_objects["Register.o"] == [
+        "gRegisterLoadFile(char*, void*)",
+        "gRegisterSaveFile(char*, void*, int)",
+    ]
+    assert names["counts"]["source_objects_with_symbols"] == len(
+        names["source_objects"]
+    )
+    assert names["counts"]["symbols"] == len(names["symbols"])
+
+    runs = load_json(
+        repo_root / "analysis/symbols/android-gameplay-source-runs.json"
+    )["runs"]
+    register_run = next(
+        run for run in runs if run["source_object"] == "Register.o"
+    )
+    assert register_run == {
+        "source_object": "Register.o",
+        "start": "0x31200",
+        "end": "0x318d0",
+        "first_symbol": "gRegisterSearchEncryptList(int*, int)",
+        "last_symbol": "gRegisterInit(int)",
+    }
+
+    crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry
+        for entry in crosswalk["entries"]
+    }
+    expected = {
+        "load_config_file": (
+            "gRegisterLoadFile(char*, void*)",
+            "gRegisterLoadFile(char*, void*)",
+            None,
+        ),
+        "load_file_bytes_from_path": (
+            "gRegisterLoadFile(char*, void*, int*, int)",
+            None,
+            "android-contiguous-source-run",
+        ),
+        "save_config_file": (
+            "gRegisterSaveFile(char*, void*, int)",
+            "gRegisterSaveFile(char*, void*, int)",
+            None,
+        ),
+        "validate_config_tail_stub": (
+            "gRegisterTestRegisterKey(char*)",
+            None,
+            "android-contiguous-source-run",
+        ),
+    }
+    for windows_name, (
+        android_symbol,
+        ios_symbol,
+        source_evidence,
+    ) in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Register.o"
+        assert entry["android_symbol"] == android_symbol
+        assert entry.get("ios_symbol") == ios_symbol
+        assert entry.get("source_object_evidence") == source_evidence
+        assert entry["android_body_count"] == 1
+        if ios_symbol is not None:
+            assert entry["ios_body_count"] == 1
+
+    runtime_header = (
+        repo_root / "tools/match/include/runtime_config.h"
+    ).read_text(encoding="utf-8")
+    assert "char registration_key[0x11]" in runtime_header
+    assert "unsigned char registration_key_valid" in runtime_header
+    assert "validation_tail" not in runtime_header
+    assert "load_valid_flag" not in runtime_header
 
 
 def test_windows_constructor_support_run_recovers_mac_object(capsys) -> None:

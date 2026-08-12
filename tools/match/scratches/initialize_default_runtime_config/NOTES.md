@@ -19,8 +19,8 @@ at the two aligned boundaries makes the initializer exact at 36/36
 instructions with all 32 masked operands resolved; the one-instruction thunk is
 tracked independently. The saved `SnailMail.cfg` blob slots have curated
 references when their consumers are known, while fields with no recovered
-consumer remain explicit reserved config offsets. The config-tail validation
-helper at `0x42f5b0` is recovered as `validate_config_tail_stub`; it ignores its
+consumer remain explicit reserved config offsets. The registration-key test at
+`0x42f5b0` is recovered through its mobile symbol; this build ignores its
 argument and returns true.
 
 2026-07-11 ownership recovery: the persisted bytes are now represented by one
@@ -95,3 +95,13 @@ bit `0x400` for `0x5fe`. The crosswalk therefore records the iOS STABS source
 provenance `Mac.o` for the Windows initializer, not a claim that the Windows
 platform unit shared either the `Mac` or `Ad` filename. The exact Windows
 36/36 body is unchanged.
+
+## 2026-08-12 registration config fields
+
+The exact Android `gRegisterTestRegisterKey(char*)` identity resolves the
+formerly generic config tail at `+0x20` as the 17-byte `registration_key` and
+the adjacent byte at `+0x31` as `registration_key_valid`. The default
+initializer clears the first key character and seeds validity to true before
+the config overlay; startup then tests the loaded key and rewrites the flag.
+Only names and the character element type change, so the exact 36/36 initializer
+stream is preserved.

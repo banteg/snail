@@ -5657,22 +5657,22 @@
     },
     {
       "address": "0x4df938",
-      "name": "g_config_validation_tail_start",
+      "name": "g_config_registration_key_start",
       "kind": "global",
       "aliases": [
         "data_4df938"
       ],
-      "description": "Start byte of the loaded config tail passed to the legacy validation stub after SnailMail.cfg is loaded."
+      "description": "Start of the 17-byte registration key loaded from SnailMail.cfg and passed to gRegisterTestRegisterKey after the config overlay."
     },
     {
       "address": "0x4df949",
-      "name": "g_config_load_valid_flag",
+      "name": "g_config_registration_key_valid",
       "kind": "global",
       "aliases": [
         "data_4df949"
       ],
       "size": "0x1",
-      "description": "Config-load validity flag initialized to true and rewritten from validate_config_tail_stub after SnailMail.cfg is loaded."
+      "description": "Registration-key validity flag initialized to true and rewritten from gRegisterTestRegisterKey after SnailMail.cfg is loaded."
     },
     {
       "address": "0x4df94c",

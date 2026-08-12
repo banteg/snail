@@ -10,8 +10,8 @@ void initialize_default_runtime_config()
 
     g_runtime_config.fullscreen_enabled = (char)one;
     g_runtime_config.render_flags = 0xfe | 0x500;
-    g_runtime_config.load_valid_flag = (unsigned char)one;
-    g_runtime_config.validation_tail[0] = (unsigned char)zero;
+    g_runtime_config.registration_key_valid = (unsigned char)one;
+    g_runtime_config.registration_key[0] = (char)zero;
     g_runtime_config.display_mode_index = one;
     g_runtime_config.stream_volume = 0.6f;
     g_runtime_config.sample_volume = 0.6f;

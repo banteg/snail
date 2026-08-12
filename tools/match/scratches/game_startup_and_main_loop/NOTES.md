@@ -325,3 +325,13 @@ does not claim the owner's padded size or unknown tail.
 The native `0x753c70` access and the candidate `g_audio_backend +0x18`
 relocation therefore share one audited reference identity. This is provenance
 closure only: no instruction alignment, source shape, or score changes.
+
+## 2026-08-12 Register ownership recovery
+
+The symbol-preserving iOS build places the exact two-argument config loader in
+`Register.cpp`, and Android preserves that overload, the four-argument backend
+overload, and `gRegisterTestRegisterKey(char*)`. This recovers the startup call
+as `gRegisterLoadFile("SnailMail.cfg", &g_runtime_config)` in authored terms and
+proves that config offsets `+0x20..+0x30` hold the registration key while
+`+0x31` records its validity. Stable harness names remain in source; the field
+promotion is codegen-neutral and does not alter the honest main-loop residual.

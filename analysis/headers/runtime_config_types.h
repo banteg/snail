@@ -28,8 +28,8 @@ typedef struct RuntimeConfig {
     int32_t reserved_14;
     int32_t reserved_18;
     RuntimeRenderFlag render_flags;
-    uint8_t validation_tail[0x11];
-    uint8_t load_valid_flag;
+    char registration_key[0x11];
+    uint8_t registration_key_valid;
     uint8_t unknown_32[2];
     int32_t display_mode_index;
     float steering_sensitivity[2];
@@ -58,6 +58,12 @@ typedef struct RuntimeConfig {
 
 void __cdecl initialize_default_runtime_config_thunk(void);
 void __cdecl initialize_default_runtime_config(void);
+void* __cdecl load_config_file(char* file_name, void* buffer);
+void* __cdecl load_file_bytes_from_path(
+    char* file_name, void* buffer, int32_t* out_size, int32_t byte_count);
+char* __cdecl save_config_file(
+    char* file_name, void* bytes, int32_t byte_count);
+uint8_t __cdecl validate_config_tail_stub(char* registration_key);
 extern RuntimeConfig g_runtime_config;
 
 #endif

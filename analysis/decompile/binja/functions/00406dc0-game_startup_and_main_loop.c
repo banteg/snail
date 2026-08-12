@@ -11,8 +11,7 @@
 00406dfd        return 0
 00406e00        rebuild_game_archive_if_needed()
 00406e0f        load_config_file("SnailMail.cfg", &g_runtime_config)
-00406e14        uint8_t (* var_38)[0x11] = &g_runtime_config.validation_tail
-00406e1e        g_runtime_config.load_valid_flag = sub_42f5b0()
+00406e1e        g_runtime_config.registration_key_valid = validate_config_tail_stub(&g_runtime_config.registration_key)
 00406e2a        g_application_instance = hInstance
 00406e2f        initialize_trigonometry_tables()
 00406e3b        if (initialize_game_data_archive() == 0)

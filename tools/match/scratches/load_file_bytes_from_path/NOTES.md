@@ -14,3 +14,12 @@ native cleanup shape.
 `FILE`, the stream operations, `malloc`, and `getcwd`. Removing the opaque
 scratch `File` and six approximate declarations keeps the exact 59/59 object
 and all nine masked operands.
+
+2026-08-12 Register ownership recovery: Android preserves the exact authored
+`gRegisterLoadFile(char*, void*, int*, int)` overload in the bounded
+`Register.o` run between the independently sourced Mouse.o and Font.o units.
+Both implementations accept a borrowed destination and optional size output;
+the two-argument overload reaches each with null size output and a zero final
+argument. Windows owns the desktop `fopen`/allocation implementation while
+Android delegates to its platform backend, so the mapping establishes the
+operation and unit without transferring platform behavior.

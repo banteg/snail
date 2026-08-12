@@ -2,36 +2,35 @@
 /* function: load_file_bytes_from_path @ 0x42f490 */
 /* selector: load_file_bytes_from_path */
 
-// Loads one filesystem path into caller-supplied or freshly allocated bytes, optionally returning the byte count through the extra output lanes.
-void *__cdecl load_file_bytes_from_path(char *FileName, void *Buffer, int *a3, int ElementCount)
+// Windows implementation of authored `gRegisterLoadFile(char*, void*, int*, int)`: loads one filesystem path into caller-supplied or freshly allocated bytes, optionally returning the byte count through the extra output lanes. Android preserves the exact four-argument overload while delegating storage to its platform backend.
+void *__cdecl load_file_bytes_from_path(char *file_name, void *buffer, int *out_size, int byte_count)
 {
-  #91 *v4; // eax
-  FILE *v5; // esi
-  int v7; // edi
+  File *v4; // eax
+  File *v5; // esi
+  int stream_length_preserve_position; // edi
   void *v8; // ebx
   char DstBuf[512]; // [esp+8h] [ebp-200h] BYREF
 
-  v4 = fopen(FileName, Mode);
+  v4 = fopen(file_name, mode);
   v5 = v4;
-  if ( v4 )
+  if ( v4 != nullptr )
   {
-    v7 = ElementCount;
-    if ( !ElementCount )
-      v7 = get_stream_length_preserve_position(v4);
-    v8 = Buffer;
-    if ( !Buffer )
-      v8 = (void *)malloc(v7);
-    fread(v8, 1, v7, v5);
+    stream_length_preserve_position = byte_count;
+    if ( byte_count == 0 )
+      stream_length_preserve_position = get_stream_length_preserve_position(v4);
+    v8 = buffer;
+    if ( buffer == nullptr )
+      v8 = malloc(stream_length_preserve_position);
+    fread(v8, 1u, stream_length_preserve_position, v5);
     fclose(v5);
-    if ( a3 )
-      *a3 = v7;
+    if ( out_size != nullptr )
+      *out_size = stream_length_preserve_position;
     return v8;
   }
   else
   {
-    _getcwd(DstBuf, 512);
-    printf("WARNING:Cannot find file : %s (from %s)\n", FileName, DstBuf);
+    getcwd(DstBuf, 512);
+    printf("WARNING:Cannot find file : %s (from %s)\n", file_name, DstBuf);
     return nullptr;
   }
 }
-

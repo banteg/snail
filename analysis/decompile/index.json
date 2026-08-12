@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 6,
+  "ida_exported": 6,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,23 +18,31 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "bind_subgame_owner",
-      "address": "0x433fc0"
+      "name": "initialize_default_runtime_config",
+      "address": "0x406c20"
     },
     {
-      "name": "initialize_thanks_for_playing_screen",
-      "address": "0x433fd0"
+      "name": "game_startup_and_main_loop",
+      "address": "0x406dc0"
     },
     {
-      "name": "uninit_thanks_screen",
-      "address": "0x4340c0"
+      "name": "load_config_file",
+      "address": "0x42f470"
     },
     {
-      "name": "update_thanks_for_playing_screen",
-      "address": "0x4340f0"
+      "name": "load_file_bytes_from_path",
+      "address": "0x42f490"
+    },
+    {
+      "name": "save_config_file",
+      "address": "0x42f540"
+    },
+    {
+      "name": "validate_config_tail_stub",
+      "address": "0x42f5b0"
     }
   ],
-  "health_check_count": 1156,
+  "health_check_count": 1158,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

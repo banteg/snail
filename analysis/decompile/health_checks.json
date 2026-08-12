@@ -1359,9 +1359,9 @@
       "name": "bn_save_config_byte_buffer_owner",
       "artifact": "analysis/decompile/binja/functions/0042f540-save_config_file.c",
       "required_substrings": [
-        "fopen(path, \"wb\")",
-        "sub_48b7a1(bytes, 1, byte_count",
-        "fclose(eax)"
+        "fopen(file_name, \"wb\")",
+        "fwrite(bytes, 1, byte_count, stream)",
+        "fclose(stream)"
       ],
       "forbidden_substrings": [
         "arg1",
@@ -1375,7 +1375,7 @@
       "name": "ida_save_config_byte_buffer_owner",
       "artifact": "analysis/decompile/ida/functions/0042f540-save_config_file.c",
       "required_substrings": [
-        "char *__cdecl save_config_file(char *path, void *bytes, int byte_count)",
+        "char *__cdecl save_config_file(char *file_name, void *bytes, int byte_count)",
         "File *stream",
         "char cwd_buffer[512]",
         "fwrite(bytes, 1u, byte_count, stream)"
@@ -1385,6 +1385,30 @@
         "CompletionResultScreen",
         "&cwd_buffer[12]",
         "FILE **"
+      ]
+    },
+    {
+      "name": "bn_register_key_test_owner",
+      "artifact": "analysis/decompile/binja/functions/0042f5b0-validate_config_tail_stub.c",
+      "required_substrings": [
+        "function: validate_config_tail_stub @ 0x42f5b0",
+        "return 1"
+      ],
+      "forbidden_substrings": [
+        "sub_42f5b0",
+        "arg1"
+      ]
+    },
+    {
+      "name": "ida_register_key_test_owner",
+      "artifact": "analysis/decompile/ida/functions/0042f5b0-validate_config_tail_stub.c",
+      "required_substrings": [
+        "unsigned __int8 __cdecl validate_config_tail_stub(char *registration_key)",
+        "return 1;"
+      ],
+      "forbidden_substrings": [
+        "sub_42F5B0",
+        "void *config_tail"
       ]
     },
     {
@@ -1679,6 +1703,7 @@
       "artifact": "analysis/decompile/binja/functions/00406dc0-game_startup_and_main_loop.c",
       "required_substrings": [
         "load_config_file(\"SnailMail.cfg\", &g_runtime_config)",
+        "g_runtime_config.registration_key_valid = validate_config_tail_stub(&g_runtime_config.registration_key)",
         "g_application_instance = hInstance",
         "initialize_game_last(g_game_base)",
         "save_high_scores_and_config(&g_game_base->subgame.sub_high_score, 1)",
@@ -1688,7 +1713,9 @@
         "data_4dfad8",
         "data_4df904 + 0x6ffae0",
         "&data_4df918",
-        "data_4df920"
+        "data_4df920",
+        "g_runtime_config.validation_tail",
+        "g_runtime_config.load_valid_flag"
       ]
     },
     {
@@ -1696,6 +1723,7 @@
       "artifact": "analysis/decompile/ida/functions/00406dc0-game_startup_and_main_loop.c",
       "required_substrings": [
         "int __stdcall game_startup_and_main_loop(void *hInstance, void *hPrevInstance, char *lpCmdLine, int nShowCmd)",
+        "g_runtime_config.registration_key_valid = validate_config_tail_stub(g_runtime_config.registration_key);",
         "g_application_instance = hInstance;",
         "initialize_game_last(g_game_base);",
         "set_fullscreen_mode(g_runtime_config.fullscreen_enabled);"
@@ -1705,7 +1733,9 @@
         "uint16_t hPrevInstance",
         "initialize_game_last((char *)g_game_base)",
         "g_mouse_wheel_delta[2]",
-        "FrontendWidget *a1@<ebp>"
+        "FrontendWidget *a1@<ebp>",
+        "g_runtime_config.validation_tail",
+        "g_runtime_config.load_valid_flag"
       ]
     },
     {
@@ -11190,10 +11220,14 @@
       "artifact": "analysis/decompile/binja/functions/00406c20-initialize_default_runtime_config.c",
       "required_substrings": [
         "g_runtime_config.render_flags",
-        "RUNTIME_RENDER_FONT_SHADOW"
+        "RUNTIME_RENDER_FONT_SHADOW",
+        "g_runtime_config.registration_key_valid = 1",
+        "g_runtime_config.registration_key[0] = 0"
       ],
       "forbidden_substrings": [
         "RUNTIME_RENDER_FONT_WAVE",
+        "g_runtime_config.validation_tail",
+        "g_runtime_config.load_valid_flag",
         "__asm",
         "_ET1"
       ]
@@ -11203,10 +11237,14 @@
       "artifact": "analysis/decompile/ida/functions/00406c20-initialize_default_runtime_config.c",
       "required_substrings": [
         "g_runtime_config.render_flags",
-        "RUNTIME_RENDER_FONT_SHADOW"
+        "RUNTIME_RENDER_FONT_SHADOW",
+        "g_runtime_config.registration_key_valid = 1;",
+        "g_runtime_config.registration_key[0] = 0;"
       ],
       "forbidden_substrings": [
         "RUNTIME_RENDER_FONT_WAVE",
+        "g_runtime_config.validation_tail",
+        "g_runtime_config.load_valid_flag",
         "__asm",
         "_ET1"
       ]

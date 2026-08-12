@@ -5,8 +5,8 @@
 
 00406c2c        g_runtime_config.fullscreen_enabled = 1
 00406c32        g_runtime_config.render_flags = RUNTIME_RENDER_STAR_FIELD | RUNTIME_RENDER_PARTICLE_EFFECTS | RUNTIME_RENDER_TRACK_FRINGE | RUNTIME_RENDER_FONT_SHADOW | RUNTIME_RENDER_32_BIT_COLOR | 0xca
-00406c3c        g_runtime_config.load_valid_flag = 1
-00406c42        g_runtime_config.validation_tail[0] = 0
+00406c3c        g_runtime_config.registration_key_valid = 1
+00406c42        g_runtime_config.registration_key[0] = 0
 00406c47        g_runtime_config.display_mode_index = 1
 00406c4d        g_runtime_config.stream_volume = 0.600000024f
 00406c57        g_runtime_config.sample_volume = 0x3f19999a

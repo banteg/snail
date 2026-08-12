@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_data_var_updates,
     apply_proto_updates,
@@ -16,7 +15,7 @@ from _narrow_sync import (
     ensure_function_entry,
     types_declare,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/runtime_config_types.h"
@@ -30,8 +29,8 @@ RUNTIME_CONFIG_FIELD_UPDATES = (
     ("0x14", "reserved_14", "int32_t"),
     ("0x18", "reserved_18", "int32_t"),
     ("0x1c", "render_flags", "RuntimeRenderFlag"),
-    ("0x20", "validation_tail", "uint8_t[0x11]"),
-    ("0x31", "load_valid_flag", "uint8_t"),
+    ("0x20", "registration_key", "char[0x11]"),
+    ("0x31", "registration_key_valid", "uint8_t"),
     ("0x34", "display_mode_index", "int32_t"),
     ("0x38", "steering_sensitivity", "float[0x2]"),
     ("0x40", "challenge_speed_percent", "int32_t"),
@@ -55,22 +54,35 @@ RUNTIME_CONFIG_FIELD_UPDATES = (
     ("0xc0", "new_game_tutorial_started", "uint8_t"),
 )
 
-DATA_SYMBOL_UPDATES = (
-    ("0x4df918", "g_runtime_config"),
-)
+DATA_SYMBOL_UPDATES = (("0x4df918", "g_runtime_config"),)
 
 FUNCTION_SYMBOL_UPDATES = (
     ("0x406c10", "initialize_default_runtime_config_thunk"),
     ("0x406c20", "initialize_default_runtime_config"),
+    ("0x42f470", "load_config_file"),
+    ("0x42f490", "load_file_bytes_from_path"),
+    ("0x42f540", "save_config_file"),
+    ("0x42f5b0", "validate_config_tail_stub"),
 )
 
-DATA_VAR_UPDATES = (
-    ("0x4df918", "RuntimeConfig"),
-)
+DATA_VAR_UPDATES = (("0x4df918", "RuntimeConfig"),)
 
 PROTO_UPDATES = (
     ("0x406c10", "void __cdecl initialize_default_runtime_config_thunk()"),
     ("0x406c20", "void __cdecl initialize_default_runtime_config()"),
+    ("0x42f470", "void* __cdecl load_config_file(char* file_name, void* buffer)"),
+    (
+        "0x42f490",
+        "void* __cdecl load_file_bytes_from_path(char* file_name, void* buffer, int32_t* out_size, int32_t byte_count)",
+    ),
+    (
+        "0x42f540",
+        "char* __cdecl save_config_file(char* file_name, void* bytes, int32_t byte_count)",
+    ),
+    (
+        "0x42f5b0",
+        "uint8_t __cdecl validate_config_tail_stub(char* registration_key)",
+    ),
 )
 
 
@@ -101,6 +113,7 @@ def main() -> int:
     operations: list[dict[str, object]] = [
         types_declare(REPO_ROOT, target=args.target, header_path=header_path),
         ensure_function_entry(REPO_ROOT, target=args.target, address=0x406C20),
+        ensure_function_entry(REPO_ROOT, target=args.target, address=0x42F5B0),
         *apply_struct_field_updates(
             REPO_ROOT,
             target=args.target,

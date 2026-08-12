@@ -20,3 +20,10 @@ operands are unchanged.
 - The correction is durable and idempotent: a second replay reports every
   prototype and local unchanged, paired health checks pass, and the matcher
   remains exact at 31/31 instructions with five clean masked operands.
+
+2026-08-12 Register ownership recovery: the v1.5 iOS STABS records directly
+assign `gRegisterSaveFile(char*, void*, int)` to `Register.cpp` / `Register.o`;
+Android preserves the same three-argument symbol. All three builds pass a path,
+borrowed byte span, and byte count before dispatching to their platform file
+backend. The Windows branch-dependent EAX residue remains an exact matcher
+harness detail rather than a cross-port return contract.
