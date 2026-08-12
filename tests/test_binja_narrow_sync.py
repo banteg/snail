@@ -6192,7 +6192,8 @@ def test_mobile_subgoldy_layout_recovers_folded_constructor_owners() -> None:
     assert "cRPathFollowGoldy_ctor" in noop["aliases"]
     assert "subgoldy->cameraman.noop_runtime_slot_constructor();" in constructor
     assert "subgoldy->follow_state.noop_runtime_slot_constructor();" in constructor
-    assert "typedef Cameraman cRCameraman;" in cameraman_header
+    assert "class cRCameraman" in cameraman_header
+    assert "typedef cRCameraman Cameraman;" in cameraman_header
     assert "class cRPathFollowGoldy {" in attachment_header
     assert "typedef cRPathFollowGoldy FollowState;" in attachment_header
     assert "typedef Cameraman cRCameraman;" in analysis_header

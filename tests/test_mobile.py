@@ -6534,6 +6534,29 @@ def test_input_ok_overlay_uses_authored_primary_owner() -> None:
         assert "FrontendWidget*" not in source
 
 
+def test_cameraman_uses_authored_primary_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    header = (include_root / "cameraman.h").read_text(encoding="utf-8")
+    player = (include_root / "player.h").read_text(encoding="utf-8")
+
+    assert "class cRCameraman" in header
+    assert "typedef cRCameraman Cameraman;" in header
+    assert "sizeof(cRCameraman)" in header
+    assert "cRCameraman cameraman" in player
+    for function in ("initialize_cameraman", "update_cameraman"):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRCameraman::{function}" in source
+
+    folded = (
+        scratch_root / "noop_runtime_slot_constructor" / "scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRCameraman::" not in folded
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

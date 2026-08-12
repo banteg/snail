@@ -7,11 +7,11 @@
 
 class cRSubGame;
 
-class Cameraman {
+class cRCameraman {
 public:
     // VC6 folds this empty owner constructor into the shared body at
     // 0x408600. The cRSubGame constructor passes cRSubGoldy::cameraman exactly.
-    Cameraman* noop_runtime_slot_constructor();
+    cRCameraman* noop_runtime_slot_constructor();
     void initialize_cameraman(); // @ 0x446160, cRCameraman::Init
     void update_cameraman(); // @ 0x4461d0, cRCameraman::AI
 
@@ -27,7 +27,7 @@ public:
     float smoothed_attachment_lift_envelope; // +0xd4
 };
 
-typedef char Cameraman_must_be_0xd8[(sizeof(Cameraman) == 0xd8) ? 1 : -1];
-typedef Cameraman cRCameraman;
+typedef cRCameraman Cameraman;
+typedef char Cameraman_must_be_0xd8[(sizeof(cRCameraman) == 0xd8) ? 1 : -1];
 
 #endif
