@@ -1,0 +1,61 @@
+{
+  "name": "Snail Mail Android gameplay source-unit runs",
+  "source_index": "analysis/decompile/android/index.json",
+  "canonical_object_source": "analysis/symbols/ios-ipa-gameplay-names.json",
+  "notes": [
+    "Ranges are half-open Android text-address intervals.",
+    "Each range is a contiguous authored symbol family bounded by functions whose canonical source-object ownership is independently known from the v1.5 iOS STABS records.",
+    "These are link-order provenance ranges, not Android DWARF or STABS file records; canonical .o names follow the independently recovered iOS compilation units."
+  ],
+  "runs": [
+    {
+      "source_object": "Keyboard.o",
+      "start": "0x30b00",
+      "end": "0x30c78",
+      "first_symbol": "KeyboardInit()",
+      "last_symbol": "FreeDirectInputKeyboard()"
+    },
+    {
+      "source_object": "Mouse.o",
+      "start": "0x30c78",
+      "end": "0x31200",
+      "first_symbol": "MouseGetDesktopSize()",
+      "last_symbol": "cRMouse::AI()"
+    },
+    {
+      "source_object": "Font.o",
+      "start": "0x318dc",
+      "end": "0x33108",
+      "first_symbol": "FontInit()",
+      "last_symbol": "FontLoad(char*, int, float, float)"
+    },
+    {
+      "source_object": "Game.o",
+      "start": "0x3e01c",
+      "end": "0x4b2e0",
+      "first_symbol": "cRInput::Init()",
+      "last_symbol": "cROverlay::AI()"
+    },
+    {
+      "source_object": "Galaxy.o",
+      "start": "0x58c84",
+      "end": "0x5b334",
+      "first_symbol": "cRGalaxy::AIControl()",
+      "last_symbol": "cRGalaxy::Open(int)"
+    },
+    {
+      "source_object": "SubGame.o",
+      "start": "0x6b788",
+      "end": "0x83a60",
+      "first_symbol": "cRSubGame::DeSaltTrack()",
+      "last_symbol": "cRSubGame::AI()"
+    },
+    {
+      "source_object": "GL.o",
+      "start": "0x8a7d8",
+      "end": "0x8d0f8",
+      "first_symbol": "G0RenderStart()",
+      "last_symbol": "G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)"
+    }
+  ]
+}

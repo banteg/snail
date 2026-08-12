@@ -8,6 +8,7 @@
     "source_object is from the v1.5 iPhone STABS-style object markers when available; v1.9-only symbols often lack an object file.",
     "source_object_evidence set to unique-ios-class-object means the mapped symbol belongs to an authored C++ class whose v1.5 STABS-marked methods occur in exactly one object file; this is class-level compilation-unit provenance, not a direct marker on that symbol.",
     "source_object_evidence set to unique-ios-nonconstructor-method-object means all v1.5 STABS-marked non-constructor methods of the mapped symbol class occur in one object file after excluding constructor or destructor emissions from other units.",
+    "source_object_evidence set to android-contiguous-source-run means the mapped Android body falls in a recorded contiguous authored symbol interval bounded by independently sourced object owners; it is link-order evidence, not a direct file marker.",
     "Android-only mappings use android_symbol instead of ios_symbol; their notes identify whether the body or only the exported name was compared.",
     "android_symbol_evidence or ios_symbol_evidence set to exact-demangled-symbol means the other verified port name was found verbatim in that corpus; it is a name transfer, not a new semantic mapping."
   ],
@@ -459,7 +460,8 @@
       "address": "0x409bd0",
       "windows_name": "update_galaxy_route_record",
       "android_symbol": "cRGalaxyStar::AI()",
-      "source_object": null,
+      "source_object": "Galaxy.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The exact 6-instruction Windows helper and Android cRGalaxyStar::AI both update child +0x18 by (child +0x1c - child +0x18) * 0.1. Their Galaxy callers traverse the child bank at the same 0x2a0 stride. iOS has no standalone cRGalaxyStar export, but cRGalaxy::AI inlines the identical expression over the same stride, and its position, tint, target, and text accesses preserve the same child-relative layout."
     },
@@ -559,7 +561,8 @@
       "address": "0x40ab00",
       "windows_name": "initialize_frontend_overlay_color_lerp",
       "android_symbol": "cRFlash::Init(int)",
-      "source_object": null,
+      "source_object": "Game.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves the exact 0x24-byte state plus target/current tColour layout and the same white, zero-alpha initialization. Windows callers discard EAX, and the natural void member remains exact at 18/18 instructions."
     },
@@ -567,7 +570,8 @@
       "address": "0x40ab40",
       "windows_name": "draw_frontend_overlay_color_lerp",
       "android_symbol": "cRFlash::AI()",
-      "source_object": null,
+      "source_object": "Game.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves the same four 0.145 channel lerps, alpha threshold, render-scene mask, current-color draw, and cRFlash owner. The natural void Windows member remains exact at 38/38 instructions."
     },
@@ -974,7 +978,8 @@
       "address": "0x439b00",
       "windows_name": "refresh_fringe_object_draw_list",
       "android_symbol": "cRFringe::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The Windows cRFringe constructor table points directly to this exact callback. Android retains the class and method but its renderer-specific body is a no-op."
     },
@@ -1297,7 +1302,8 @@
       "windows_name": "update_track_parcels",
       "ios_symbol": "cRParcelManager::AI()",
       "android_symbol": "cRParcelManager::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both manager bodies walk the fixed parcel array and virtually dispatch each active cRParcel; the platform slot strides differ."
     },
@@ -1305,7 +1311,8 @@
       "address": "0x443160",
       "windows_name": "initialize_track_parcel_slots",
       "android_symbol": "cRParcelManager::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both clear 50 inline parcel states and seed each borrowed containing-subgame backlink."
     },
@@ -1313,7 +1320,8 @@
       "address": "0x443190",
       "windows_name": "allocate_track_parcel_slot",
       "android_symbol": "cRParcelManager::New()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both scan 50 inline records for the first inactive parcel and return null after the same exhaustion error."
     },
@@ -1387,7 +1395,8 @@
       "address": "0x447090",
       "windows_name": "initialize_fringe_manager",
       "android_symbol": "cRFringeManager::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both reset the manager allocation cursor before rebuilding track fringe objects."
     },
@@ -1395,7 +1404,8 @@
       "address": "0x4470a0",
       "windows_name": "allocate_fringe_object",
       "android_symbol": "cRFringeManager::GetFringe()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both return the next inline cRFringe record and advance the manager cursor; Windows proves a fixed 7000-entry, 0x38-stride pool."
     },
@@ -1404,7 +1414,8 @@
       "windows_name": "uninit_nuke",
       "ios_symbol": "cRNuke::UnInit()",
       "android_symbol": "cRNuke::UnInit()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android uses the same state at +0x00 and 25 sprite slots at +0x18, then clears the owner after killing every slot. cRSubGoldy::AI() owns the teardown edge."
     },
@@ -1412,7 +1423,8 @@
       "address": "0x447110",
       "windows_name": "initialize_nuke",
       "android_symbol": "cRNuke::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves the exact state, owner backlink, z-step/center, phase/step, and 25-slot offsets through the 0x7c-byte cRNuke layout; cRSubGoldy::Collision() calls Init."
     },
@@ -1421,7 +1433,8 @@
       "windows_name": "update_nuke",
       "ios_symbol": "cRNuke::AI()",
       "android_symbol": "cRNuke::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android and Windows advance the same z and angular fields and orbit all 25 sprite slots; Android cRSubGoldy::AI() calls the method through its embedded cRNuke."
     },
@@ -1747,7 +1760,8 @@
       "address": "0x449e90",
       "windows_name": "measure_font_text_width",
       "android_symbol": "FontGetStringX(char*, int, float)",
-      "source_object": null,
+      "source_object": "Font.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both accumulate per-glyph atlas widths through the remapper and append the scaled trailing-space adjustment."
     },
@@ -1775,7 +1789,8 @@
       "address": "0x44a6d0",
       "windows_name": "draw_queued_font_quad_instance",
       "android_symbol": "OSDPrintReal(cFontPrintBuffer*)",
-      "source_object": null,
+      "source_object": "Font.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The mangled Android signature independently recovers cFontPrintBuffer ownership. Both forward the explicit quad coordinates, texture, UVs, color, integer blend mode, and float rotation fields; the only Windows caller discards EAX, and the exact forwarder remains byte-identical as void."
     },
@@ -1793,7 +1808,8 @@
       "address": "0x44a790",
       "windows_name": "queue_font_text_instance",
       "android_symbol": "FontPrint(char*, int, float, float, float, int, float, int, tColour, float, bool)",
-      "source_object": null,
+      "source_object": "Font.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves the same queue gate, 0x84-byte cFontPrintBuffer stride, text-buffer cursor and cap, field layout, and queue-count increment."
     },
@@ -2047,7 +2063,8 @@
       "windows_name": "initialize_anim_manager",
       "ios_symbol": "cRAnimManager::Init()",
       "android_symbol": "cRAnimManager::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Windows and Android clear the same state, progress, progress-step, and completion fields. Android returns directly, proving that the exact Windows EAX zero is only a store source and the authored contract is void."
     },
@@ -2056,7 +2073,8 @@
       "windows_name": "update_anim_manager",
       "ios_symbol": "cRAnimManager::AI()",
       "android_symbol": "cRAnimManager::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android independently reads the same cRAnimManager offsets through +0x44 and preserves the state, flag, clamp, queue, borrowed cRBod target, cRBod slot, cRObject, and next-animation flow. Windows slots are 0x80-byte RenderableBod owners; record stride and Object::animation offset differ by port."
     },
@@ -2153,7 +2171,8 @@
       "windows_name": "initialize_warning",
       "ios_symbol": "cRWarning::Init(cRSubGoldy*)",
       "android_symbol": "cRWarning::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "All ports initialize the cRWarning phase state and border. Windows uses an exact 0x10-byte embedded owner; mobile variants add presentation fields before the border pointer."
     },
@@ -2161,7 +2180,8 @@
       "address": "0x446f10",
       "windows_name": "uninit_warning",
       "android_symbol": "cRWarning::UnInit()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android cRSubGame::UnInit() calls this method to release the warning border, matching the Windows SubGame teardown edge."
     },
@@ -2169,7 +2189,8 @@
       "address": "0x446f30",
       "windows_name": "start_warning",
       "android_symbol": "cRWarning::Start()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android cRDamageGuage::AI() calls Start on the embedded cRWarning, matching the Windows damage-gauge relationship."
     },
@@ -2178,7 +2199,8 @@
       "windows_name": "stop_warning",
       "ios_symbol": "cRWarning::Stop()",
       "android_symbol": "cRWarning::Stop()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "All ports stop the warning state and hide its owned border."
     },
@@ -2187,7 +2209,8 @@
       "windows_name": "stop_warning_sample",
       "ios_symbol": "cRWarning::StopSample()",
       "android_symbol": "cRWarning::StopSample()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The Windows member does not read its receiver and stops the shared warning sample; Android preserves ownership but ships a no-op body."
     },
@@ -2196,7 +2219,8 @@
       "windows_name": "update_warning",
       "ios_symbol": "cRWarning::AI()",
       "android_symbol": "cRWarning::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android cRSubGoldy::AI() calls this method through the embedded warning owner; its state, phase, step, border-alpha, and sound-loop behavior match the Windows role despite the wider mobile layout."
     },
@@ -2249,7 +2273,8 @@
       "address": "0x43f5c0",
       "windows_name": "initialize_slug_voice_manager",
       "android_symbol": "cRSlugVoiceManager::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both initialize the complete 0x0c-byte manager state: inactive, zero progress, and a 1/60 step."
     },
@@ -2257,7 +2282,8 @@
       "address": "0x43f5e0",
       "windows_name": "update_slug_voice_manager",
       "android_symbol": "cRSlugVoiceManager::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Both advance positive progress and clear the active/progress lanes after the cooldown passes one."
     },
@@ -2546,7 +2572,8 @@
       "windows_name": "update_times_up",
       "ios_symbol": "cRTimesUp::AI()",
       "android_symbol": "cRTimesUp::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The exact Windows method advances the same state/progress pair and dispatches UnInit before killing the embedded cRSubGoldy."
     },
@@ -2554,7 +2581,8 @@
       "address": "0x445e70",
       "windows_name": "uninit_times_up",
       "android_symbol": "cRTimesUp::UnInit()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The exact Windows member kills the borrowed border whenever the 0x10-byte cRTimesUp owner is active."
     },
@@ -2563,7 +2591,8 @@
       "windows_name": "show_times_up_message",
       "ios_symbol": "cRTimesUp::Init()",
       "android_symbol": "cRTimesUp::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The exact Windows member allocates and initializes the Time's Up widget, then seeds state, progress, and progress step on the same owner."
     },
@@ -2572,7 +2601,8 @@
       "windows_name": "initialize_snail_skin",
       "ios_symbol": "cRSnailSkin::Init(cRSnail*)",
       "android_symbol": "cRSnailSkin::Init()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The exact Windows and Android initializers clear selected_slot and active on the same 0x20-byte owner and store the borrowed cRSnail backlink at +0x10. iOS v1.9 exposes that parent explicitly as the Init argument."
     },
@@ -2580,7 +2610,8 @@
       "address": "0x445f80",
       "windows_name": "update_snail_skin_transition",
       "android_symbol": "cRSnailSkin::AI()",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The exact Windows and Android bodies follow the cRSnail backlink into its linked cRObject, dirty that object, select its material override from the three-slot bank, and advance the same active/progress/progress_step lanes."
     },
@@ -2588,7 +2619,8 @@
       "address": "0x445fd0",
       "windows_name": "change_snail_skin",
       "android_symbol": "cRSnailSkin::Change(int, float)",
-      "source_object": null,
+      "source_object": "SubGame.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "The exact Windows and Android members arm the same skin slot and either apply it immediately or derive progress_step from the requested duration at 60 Hz."
     },
@@ -4719,7 +4751,8 @@
       "address": "0x4141d0",
       "windows_name": "set_object_color",
       "android_symbol": "G0SetColour(tColourSmall*)",
-      "source_object": null,
+      "source_object": "GL.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "This is the Windows Direct3D variant of the same per-object render-colour operation: it packs the float tint into tColourSmall and rewrites grouped diffuse vertices instead of updating OpenGL state. Android proves the authored packed owner and void contract; all 26 Windows callsites discard EAX, and the void source remains exact at 47/47 instructions."
     },
@@ -4780,7 +4813,8 @@
       "address": "0x4129f0",
       "windows_name": "set_cull_mode",
       "android_symbol": "G0SetCull(bool)",
-      "source_object": null,
+      "source_object": "GL.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "This exact Windows wrapper forwards the one-bit cull selector to the Direct3D renderer singleton. Android preserves the authored G0SetCull boolean operation while implementing the platform state through OpenGL."
     },
@@ -4974,7 +5008,8 @@
       "address": "0x44bb60",
       "windows_name": "release_keyboard_input",
       "android_symbol": "FreeDirectInputKeyboard()",
-      "source_object": null,
+      "source_object": "Keyboard.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android retains the authored void FreeDirectInputKeyboard global as a platform no-op stub whose R0 value is arbitrary. Windows performs the desktop DirectInput teardown, and both Windows callers ignore EAX; the natural void transcription preserves the exact 21/21 body."
     },
@@ -4982,7 +5017,8 @@
       "address": "0x44bbb0",
       "windows_name": "initialize_mouse_authored_scale_from_clip_rect",
       "android_symbol": "MouseGetDesktopSize()",
-      "source_object": null,
+      "source_object": "Mouse.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves the authored void no-argument MouseGetDesktopSize global as a four-byte platform no-op. Windows retains the desktop implementation that caches GetClipCursor into the shared rectangle and calls MouseCalcDesktopScale(640, 480). This function heads the same ordered API chain in both binaries: MouseGetDesktopSize, MouseCalcDesktopScale, MouseCalcScale, ReadImmediateDataMouse, HideWindowMouse, MouseSet, MouseRead, then cRMouse methods."
     },
@@ -4990,7 +5026,8 @@
       "address": "0x44bbd0",
       "windows_name": "update_mouse_authored_scale",
       "android_symbol": "MouseCalcDesktopScale(float, float)",
-      "source_object": null,
+      "source_object": "Mouse.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves the exact authored void two-float MouseCalcDesktopScale contract as a four-byte platform no-op. Windows retains the desktop implementation that derives X/Y authored scales from the cached clip rectangle. Its direct caller ignores EAX, the clip-rectangle wrapper only propagated that residue to another value-agnostic caller, and a natural void transcription remains exact at 17/17 instructions."
     },
@@ -5007,7 +5044,8 @@
       "address": "0x44bc50",
       "windows_name": "update_mouse",
       "android_symbol": "ReadImmediateDataMouse()",
-      "source_object": null,
+      "source_object": "Mouse.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves ReadImmediateDataMouse as a four-byte no-argument platform stub because touch events replace desktop polling. Windows retains the exact desktop role: poll DIMOUSESTATE2, update live coordinates, maintain Win32 clip rectangles, publish button and wheel state, and return zero. The function occupies the identical slot between MouseCalcScale and HideWindowMouse in the cross-port API chain; the HWND parameter is a Windows-only ABI extension and is not transferred to Android."
     },
@@ -5033,7 +5071,8 @@
       "address": "0x44c100",
       "windows_name": "convert_mouse_screen_xy",
       "android_symbol": "MouseRead(int, float*, float*)",
-      "source_object": null,
+      "source_object": "Mouse.o",
+      "source_object_evidence": "android-contiguous-source-run",
       "confidence": "high",
       "notes": "Android preserves the exact global MouseRead argument list as a four-byte platform stub; Windows retains the desktop implementation that reads or recenters the OS cursor and updates the two float outputs. The ordered neighbors are MouseSet immediately before it and cRMouse methods after the Windows-only DirectInput setup/teardown pair. Android's separate cRMouse::ConvertScreenXY(float, float, float*, float*) rotates touch coordinates and is deliberately rejected as a mapping despite its tempting descriptive-name score."
     },

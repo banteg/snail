@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -5863,6 +5864,87 @@ def test_unique_ios_class_owner_provenance_is_sound(capsys) -> None:
     assert result == 0
     assert "source object: Galaxy.o" in output
     assert "source object evidence: unique-ios-class-object" in output
+
+
+def test_android_source_runs_close_remaining_owner_gaps() -> None:
+    repo_root = Path(__file__).parents[1]
+    android_index = load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json")
+    source_runs = load_json(
+        repo_root
+        / "analysis/symbols/android-gameplay-source-runs.json"
+    )["runs"]
+    verified = load_json(
+        repo_root
+        / "analysis/symbols/windows-ios-gameplay-crosswalk.json"
+    )
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+
+    intervals = []
+    for run in source_runs:
+        start = int(run["start"], 0)
+        end = int(run["end"], 0)
+        first = resolve_corpus_symbols(
+            android_index, run["first_symbol"]
+        )
+        last = resolve_corpus_symbols(
+            android_index, run["last_symbol"]
+        )
+        assert len(first) == 1
+        assert len(last) == 1
+        assert int(first[0]["address"], 16) == start
+        assert int(last[0]["address"], 16) + last[0]["size"] == end
+        intervals.append((start, end, run["source_object"]))
+
+    assert intervals == sorted(intervals)
+    assert all(
+        left_end <= right_start
+        for (_, left_end, _), (right_start, _, _) in zip(
+            intervals, intervals[1:]
+        )
+    )
+
+    inferred = [
+        entry
+        for entry in verified["entries"]
+        if entry.get("source_object_evidence")
+        == "android-contiguous-source-run"
+    ]
+    assert len(inferred) == 38
+    assert Counter(entry["source_object"] for entry in inferred) == {
+        "Font.o": 3,
+        "GL.o": 2,
+        "Galaxy.o": 1,
+        "Game.o": 2,
+        "Keyboard.o": 1,
+        "Mouse.o": 4,
+        "SubGame.o": 25,
+    }
+
+    for entry in inferred:
+        bodies = resolve_corpus_symbols(
+            android_index, entry["android_symbol"]
+        )
+        addresses = [int(body["address"], 16) for body in bodies]
+        matching_runs = [
+            source_object
+            for start, end, source_object in intervals
+            if addresses
+            and all(start <= address < end for address in addresses)
+        ]
+        assert matching_runs == [entry["source_object"]]
+
+    assert all(entry.get("source_object") for entry in verified["entries"])
+    complete_verified = [
+        entry
+        for entry in complete["entries"]
+        if entry["status"] == "verified"
+    ]
+    assert all(entry.get("source_object") for entry in complete_verified)
+    assert sum(
+        entry.get("source_object_evidence")
+        == "android-contiguous-source-run"
+        for entry in complete_verified
+    ) == 38
 
 
 def test_mobile_cli_ranks_pending_verified_bodies(
