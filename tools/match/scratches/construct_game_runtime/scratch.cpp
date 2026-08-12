@@ -73,7 +73,7 @@ __forceinline GameRootAllocation::GameRootAllocation()
     {
         cRGame* root = (cRGame*)this;
         root->fog_color.noop_this_constructor();
-        GameInput* game_input = &root->game_inputs[0];
+        cRGameInput* game_input = &root->game_inputs[0];
         int game_input_count =
             sizeof(root->game_inputs) / sizeof(root->game_inputs[0]);
         do {

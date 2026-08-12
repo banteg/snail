@@ -44,7 +44,7 @@ public:
     int saved_frontend_state; // +0x98
     char unknown_09c[0xa0 - 0x9c];
     cRCamera camera; // +0xa0, owned cRCamera subobject
-    GameInput* game_input; // +0x168, borrows the matching root input owner
+    cRGameInput* game_input; // +0x168, borrows the matching root input owner
     MouseCursorState mouse_cursor; // +0x16c, root player 0 cursor state
     cRFlash frontend_overlay; // +0x184, root player 0 overlay
     // During the gameplay completion handoff, update_subgoldy snapshots the
@@ -84,7 +84,7 @@ public:
     };
     int fixed_update_count;      // +0x3c
     int player_count; // +0x40, controls the two-player initialization loop
-    GameInput game_inputs[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x44, paired input owners
+    cRGameInput game_inputs[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x44, paired input owners
     cRPlayer players[GAME_ROOT_PLAYER_SLOT_COUNT]; // +0x124, owned cRPlayer array
     int unknown_000514; // +0x514, startup-only dword storage
     float fixed_update_accumulator; // +0x518, consumed in unit fixed steps

@@ -41,7 +41,7 @@ typedef cRSubHealth SubHealth;
 // Goldy borrows the trailing InputState subobject from one of the root-owned
 // GameInput records. These aliases retain the gameplay vocabulary while the
 // shared owner fixes the complete 0x38-byte layout.
-typedef InputState PlayerControlSource;
+typedef cRInput PlayerControlSource;
 
 struct PlayerRowEventState {
     int id;                         // +0x00

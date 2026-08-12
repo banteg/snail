@@ -6458,6 +6458,36 @@ def test_root_presentation_types_use_authored_primary_owners() -> None:
     assert "cRCamera::" not in folded
 
 
+def test_root_input_types_use_authored_primary_owners() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    input_header = (include_root / "input_state.h").read_text(
+        encoding="utf-8"
+    )
+    game_root = (include_root / "game_root.h").read_text(encoding="utf-8")
+
+    assert "class cRInput" in input_header
+    assert "typedef cRInput InputState;" in input_header
+    assert "sizeof(cRInput)" in input_header
+    assert "class cRGameInput : public BodBase" in input_header
+    assert "typedef cRGameInput GameInput;" in input_header
+    assert "sizeof(cRGameInput)" in input_header
+    assert "cRInput input" in input_header
+    assert "cRGameInput game_inputs[GAME_ROOT_PLAYER_SLOT_COUNT]" in game_root
+    assert "cRGameInput* game_input" in game_root
+
+    for owner, function in (
+        ("cRInput", "initialize_input"),
+        ("cRInput", "update_input"),
+        ("cRGameInput", "update_game_input"),
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"{owner}::{function}" in source
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

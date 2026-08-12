@@ -4,7 +4,7 @@
 #include "bod_types.h"
 #include "input_buttons.h"
 
-class InputState {
+class cRInput {
 public:
     void initialize_input();
     void update_input();
@@ -34,16 +34,18 @@ public:
     int current_buttons;          // +0x34
 };
 
-typedef char InputState_must_be_0x38[(sizeof(InputState) == 0x38) ? 1 : -1];
+typedef cRInput InputState;
+typedef char InputState_must_be_0x38[(sizeof(cRInput) == 0x38) ? 1 : -1];
 
 // Windows owner corresponding to the portable cRGameInput class.
-class GameInput : public BodBase {
+class cRGameInput : public BodBase {
 public:
     void update_game_input();
 
-    InputState input; // +0x38
+    cRInput input; // +0x38
 };
 
-typedef char GameInput_must_be_0x70[(sizeof(GameInput) == 0x70) ? 1 : -1];
+typedef cRGameInput GameInput;
+typedef char GameInput_must_be_0x70[(sizeof(cRGameInput) == 0x70) ? 1 : -1];
 
 #endif

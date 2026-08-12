@@ -6649,7 +6649,7 @@ def test_mouse_cursor_and_borrowed_input_owner_graph_is_replayed_cross_decompile
     )
     checks = {check["name"]: check for check in health["checks"]}
 
-    assert "GameInput* game_input; // +0x168" in matcher_root
+    assert "cRGameInput* game_input; // +0x168" in matcher_root
     assert "MouseCursorState mouse_cursor; // +0x16c" in matcher_root
     for header in analysis_headers:
         assert "GameInput* game_input;" in header

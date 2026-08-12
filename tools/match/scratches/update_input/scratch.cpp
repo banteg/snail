@@ -2,7 +2,7 @@
 
 #include "input_state.h"
 
-void InputState::update_input()
+void cRInput::update_input()
 {
     int result = current_buttons;
     int changed = previous_buttons ^ result;
