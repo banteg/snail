@@ -73,7 +73,7 @@ start_subgame:
 
         set_input_controller_pointer_authored_xy(0, 320.0f, 240.0f);
         set_input_controller_pointer_authored_xy(1, 320.0f, 240.0f);
-        g_sound_effect_manager.play_sound_effect(8);
+        g_sound_effect_manager.Play(8);
         return;
     }
 

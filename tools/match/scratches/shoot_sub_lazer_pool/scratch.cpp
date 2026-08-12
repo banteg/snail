@@ -28,5 +28,5 @@ found_slot:
     raw.z = origin->z;
     staged = raw;
     slots[index].Shoot(&staged, direction);
-    g_sound_effect_manager.play_sound_effect_at_position(15, *origin);
+    g_sound_effect_manager.Play(15, *origin);
 }

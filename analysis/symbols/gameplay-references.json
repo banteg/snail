@@ -3574,6 +3574,60 @@
       "description": "Exact Windows void tColour::Black() entry."
     },
     {
+      "address": "0x44dcb0",
+      "name": "initialize_sound_bank",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSound@@QAEXPAUcRSoundBank@@@Z"
+      ],
+      "description": "Exact Windows cRSound::Init(cRSoundBank*) entry with its owner- and argument-qualified decorated relocation name."
+    },
+    {
+      "address": "0x44dce0",
+      "name": "play_sound_effect_at_position",
+      "kind": "function",
+      "aliases": [
+        "?Play@cRSound@@QAEXHAAUtVector@@@Z"
+      ],
+      "description": "Exact Windows cRSound::Play(int, tVector&) overload with its fully decorated relocation name."
+    },
+    {
+      "address": "0x44dde0",
+      "name": "play_sound_effect",
+      "kind": "function",
+      "aliases": [
+        "?Play@cRSound@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRSound::Play(int) overload with its fully decorated relocation name."
+    },
+    {
+      "address": "0x44de00",
+      "name": "play_sound_effect_scaled",
+      "kind": "function",
+      "aliases": [
+        "?PlayVolume@cRSound@@QAEXHM@Z"
+      ],
+      "description": "Exact Windows cRSound::PlayVolume(int, float) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x44de20",
+      "name": "play_warning_sample_backend",
+      "kind": "function",
+      "aliases": [
+        "?PlayLooped@cRSound@@QAEHH@Z"
+      ],
+      "description": "Exact Windows cRSound::PlayLooped(int) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x44de30",
+      "name": "stop_warning_sample_handle",
+      "kind": "function",
+      "aliases": [
+        "?StopLooped@cRSound@@QAEXH@Z"
+      ],
+      "description": "Exact Windows cRSound::StopLooped(int) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x44de90",
       "name": "initialize_sprite",
       "kind": "function",

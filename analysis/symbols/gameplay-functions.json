@@ -5263,24 +5263,36 @@
     {
       "address": "0x44dcb0",
       "name": "initialize_sound_bank",
+      "aliases": [
+        "cRSound_Init"
+      ],
       "port_scope": "boundary",
       "description": "Exact void Windows `cRSound::Init(cRSoundBank*)` member: registers the 51 shipped `g_sound_bank_entries` records, stores each returned sample id at record `+0x04`, and stops at the 52nd empty-string sentinel. Android names the same 12-byte table owner `gSFXBank`; Windows and Android leave different incidental return-register residue, and both startup callers discard it."
     },
     {
       "address": "0x44dce0",
       "name": "play_sound_effect_at_position",
+      "aliases": [
+        "cRSound_PlayVector"
+      ],
       "port_scope": "boundary",
-      "description": "Windows cRSound positional overload: folds a one-listener minimum-distance loop over GamePlayer[0]'s owned camera transform position, then plays one effect id with 25-unit attenuation and left-right pan derived from the supplied Vector3 reference."
+      "description": "Exact Windows `cRSound::Play(int, tVector&)` overload: folds a one-listener minimum-distance loop over GamePlayer[0]'s owned camera transform position, then plays one effect id with 25-unit attenuation and left-right pan derived from the supplied tVector reference."
     },
     {
       "address": "0x44dde0",
       "name": "play_sound_effect",
+      "aliases": [
+        "cRSound_Play"
+      ],
       "port_scope": "boundary",
       "description": "Exact Windows `cRSound::Play(int)` member: forwards one effect id into the shared audio backend with the default volume, pitch, and pan parameters."
     },
     {
       "address": "0x44de00",
       "name": "play_sound_effect_scaled",
+      "aliases": [
+        "cRSound_PlayVolume"
+      ],
       "port_scope": "boundary",
       "description": "Exact Windows `cRSound::PlayVolume(int, float)` member: forwards one effect id and explicit gain into the shared audio backend, leaving pitch and pan on their default lanes."
     },

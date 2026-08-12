@@ -52,7 +52,7 @@ void cROptions::update_options_menu()
 
     apply_audio_config_volumes();
     if (previous_sample_volume != g_runtime_config.sample_volume) {
-        g_sound_effect_manager.play_sound_effect(8);
+        g_sound_effect_manager.Play(8);
         previous_sample_volume = g_runtime_config.sample_volume;
     }
 }

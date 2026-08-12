@@ -97,3 +97,12 @@ body recovers `position->{x,y,z}` and the listener at
 `g_game_base->players[0].camera.body.transform.position` without changing the
 exact `66/66` matcher result or introducing a receiver field that Windows never
 reads.
+
+## 2026-08-12 authored source surface
+
+Android and iOS independently retain the exact
+`cRSound::Play(int, tVector&)` overload and body. The matcher now uses that
+authored method and argument owner directly and emits the recovered VC6
+`?Play@cRSound@@QAEXHAAUtVector@@@Z` symbol. The stable function ID remains
+`play_sound_effect_at_position`; the exact Windows body and the audited
+`shoot_sub_lazer_pool` callsite remain unchanged.

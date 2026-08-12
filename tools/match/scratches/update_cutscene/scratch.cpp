@@ -186,7 +186,7 @@ void cRCutScene::AI()
             int delivered_count = player->parcels_collected;
             game->subgame.completion.Init(delivered_count, 1);
         }
-        g_sound_effect_manager.play_sound_effect(46);
+        g_sound_effect_manager.Play(46);
         // fall through
     }
 

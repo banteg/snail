@@ -25,7 +25,7 @@ void cRWarning::AI()
             if (advanced > 1.0f) {
                 phase = 0.0f;
                 state = WARNING_STATE_OPAQUE;
-                g_sound_effect_manager.play_sound_effect(50);
+                g_sound_effect_manager.Play(50);
             }
             break;
         case WARNING_STATE_OPAQUE:

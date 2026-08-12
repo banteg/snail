@@ -8,3 +8,12 @@ pan `0.0`.
 The Windows method receiver is supplied at callsites and the cross-port owner
 is `cRSound::PlayVolume(int, float)`. Promoting the standalone transcription to
 the shared owner preserves the exact 9/9 body and its resolved backend call.
+
+## 2026-08-12 authored source surface
+
+Android and iOS independently retain the exact
+`cRSound::PlayVolume(int, float)` symbol and forwarding body. The matcher
+definition and its source-facing caller now use `PlayVolume`, emitting the
+recovered VC6 `?PlayVolume@cRSound@@QAEXHM@Z` symbol while keeping
+`play_sound_effect_scaled` as the stable function ID and decompiler label. The
+wrapper remains exact at 9/9 with its audited backend edge clean.

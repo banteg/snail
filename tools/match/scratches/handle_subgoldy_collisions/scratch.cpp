@@ -125,7 +125,7 @@ void cRSubGoldy::Collision()
                         garbage->collision_side = SUB_GARBAGE_COLLISION_SIDE_RIGHT;
                     ScoreAdd(SUBGOLDY_SCORE_GARBAGE, 0);
                     damage_gauge.Take(0.039999999f, 0);
-                    g_sound_effect_manager.play_sound_effect(
+                    g_sound_effect_manager.Play(
                         39 - (int)((float)next_math_random_value()
                             * 0.0000305175781f * -2.0f));
                 }
@@ -203,7 +203,7 @@ void cRSubGoldy::Collision()
                     ScoreAdd(SUBGOLDY_SCORE_PARCEL_COLLECT, 0);
                     g_voice_manager.Play(
                         VOICE_SET_PACKAGE, VOICE_PLAY_AFTER_GLOBAL_COOLDOWN, -1);
-                    g_sound_effect_manager.play_sound_effect(27);
+                    g_sound_effect_manager.Play(27);
                     game->parcel_manager.slots[n].state =
                         PARCEL_STATE_COLLECT_PENDING;
                     cRSubGame* parcel_game = game;
@@ -239,7 +239,7 @@ void cRSubGoldy::Collision()
                     pickup_y = probe_b.y;
                 if (pickup_y < 0.40000001f
                     && normalize_vector(&pickup_probe) < 0.98000002f) {
-                    g_sound_effect_manager.play_sound_effect(14);
+                    g_sound_effect_manager.Play(14);
                     game->health_pickups[ii].state =
                         TRACK_PICKUP_STATE_TEARDOWN_PENDING;
                     HealthCollect(&game->health_pickups[ii]);
@@ -311,7 +311,7 @@ void cRSubGoldy::Collision()
                         if (kind == SUB_RING_KIND_SLOW_DEFAULT
                             || kind == SUB_RING_KIND_SLOW_AUTHORED) {
                             velocity.z = -0.1f;
-                            g_sound_effect_manager.play_sound_effect(43);
+                            g_sound_effect_manager.Play(43);
                         } else {
                             velocity.z = effect_game->subgame_rate * 0.5f;
                         }
@@ -342,7 +342,7 @@ void cRSubGoldy::Collision()
                         int effect_index = shooting_tier - 1;
                         if (effect_index > 6)
                             effect_index = 6;
-                        g_sound_effect_manager.play_sound_effect(effect_index + 1);
+                        g_sound_effect_manager.Play(effect_index + 1);
                         ScoreAdd(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
@@ -356,17 +356,17 @@ void cRSubGoldy::Collision()
                         int effect_index = shooting_tier - 1;
                         if (effect_index > 6)
                             effect_index = 6;
-                        g_sound_effect_manager.play_sound_effect(effect_index + 1);
+                        g_sound_effect_manager.Play(effect_index + 1);
                         ScoreAdd(SUBGOLDY_SCORE_RING, 0);
                         continue;
                     }
                     if (effect_kind == SUB_RING_KIND_UNKNOWN_1) {
                         ScoreAdd(SUBGOLDY_SCORE_RING, 0);
-                        g_sound_effect_manager.play_sound_effect(1);
+                        g_sound_effect_manager.Play(1);
                     } else if (effect_kind == SUB_RING_KIND_EXPLODE_RAMP
                         || effect_kind == SUB_RING_KIND_EXPLODE_AUTHORED) {
                         ScoreAdd(SUBGOLDY_SCORE_RING, 0);
-                        g_sound_effect_manager.play_sound_effect(42);
+                        g_sound_effect_manager.Play(42);
                         nuke_effect_progress = nuke_effect_progress_step;
                         nuke.initialize_nuke();
                     }

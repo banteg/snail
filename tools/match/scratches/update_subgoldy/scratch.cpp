@@ -636,7 +636,7 @@ steering_stored:
                 transform.position.y = trampoline_cell->position.y + 0.49000001f;
                 attachment_exit_pending = 0;
                 trampoline_bounce_active = 1;
-                g_sound_effect_manager.play_sound_effect(41);
+                g_sound_effect_manager.Play(41);
             }
         }
     }
@@ -658,7 +658,7 @@ steering_stored:
             velocity.z = 0.0f;
             transform.position.z = (float)(int)(transform.position.z + 0.49000001f) - 0.5f;
             if (squidge.z_output == 0.0f)
-                g_sound_effect_manager.play_sound_effect(47);
+                g_sound_effect_manager.Play(47);
             squidge.start_squidge_z(-0.33000001f);
             float advanced = barrier_hold_step + barrier_hold_progress;
             barrier_hold_progress = advanced;
@@ -750,7 +750,7 @@ steering_stored:
             g_voice_manager.ReSet();
             sub_hover.End();
             presentation.cutscene.state = CUT_SCENE_STATE_COMPLETION_PENDING;
-            g_sound_effect_manager.play_sound_effect(0);
+            g_sound_effect_manager.Play(0);
             boost_one_tick = 0;
         }
         completion_handoff_active = 1;

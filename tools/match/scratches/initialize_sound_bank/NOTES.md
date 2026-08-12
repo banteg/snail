@@ -45,3 +45,13 @@ counted-loop contract that native does not have.
   method ABIs, and `g_sound_bank_entries[52]`. Readback proves the complete
   `0x270` data extent in both databases; the IDA replay explicitly repairs and
   guards against a stale four-byte item head.
+
+## 2026-08-12 authored source surface
+
+The exact iOS and Android symbols independently retain
+`cRSound::Init(cRSoundBank*)`, and both bodies walk the same sentinel-terminated
+12-byte records. The matcher now promotes `cRSoundBank` as the primary record
+owner, retains `SoundBankEntry` only as a compatibility alias, and emits the
+recovered VC6 `?Init@cRSound@@QAEXPAUcRSoundBank@@@Z` symbol. The stable
+function ID and decompiler label remain `initialize_sound_bank`; the Windows
+body remains exact at 21/21 with its audited operand clean.

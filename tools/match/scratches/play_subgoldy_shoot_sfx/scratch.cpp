@@ -48,9 +48,9 @@ void cRSubGoldy::PlayShootSfx()
             } else if (volume > 1.0f) {
                 volume = 1.0f;
             }
-            g_sound_effect_manager.play_sound_effect_scaled(sound_id, volume);
+            g_sound_effect_manager.PlayVolume(sound_id, volume);
         } else {
-            g_sound_effect_manager.play_sound_effect(sound_id);
+            g_sound_effect_manager.Play(sound_id);
         }
     }
 }

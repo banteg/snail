@@ -8124,24 +8124,91 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
     scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
     header = (include_root / "sound_effect_manager.h").read_text(
         encoding="utf-8"
     )
 
     assert "class cRSound" in header
     assert "typedef cRSound SoundEffectManager;" in header
+    assert "struct cRSoundBank" in header
+    assert "typedef cRSoundBank SoundBankEntry;" in header
+    assert "cRSoundBank_must_be_0x0c" in header
     assert "sizeof(cRSound)" in header
     assert "extern cRSound g_sound_effect_manager;" in header
-    for function in (
-        "initialize_sound_bank",
-        "play_sound_effect_at_position",
-        "play_sound_effect",
-        "play_sound_effect_scaled",
-    ):
+    expected = {
+        "initialize_sound_bank": {
+            "method": "Init",
+            "mobile_symbol": "cRSound::Init(cRSoundBank*)",
+            "aliases": ["cRSound_Init"],
+            "symbol": "?Init@cRSound@@QAEXPAUcRSoundBank@@@Z",
+        },
+        "play_sound_effect_at_position": {
+            "method": "Play",
+            "mobile_symbol": "cRSound::Play(int, tVector&)",
+            "aliases": ["cRSound_PlayVector"],
+            "symbol": "?Play@cRSound@@QAEXHAAUtVector@@@Z",
+        },
+        "play_sound_effect": {
+            "method": "Play",
+            "mobile_symbol": "cRSound::Play(int)",
+            "aliases": ["cRSound_Play"],
+            "symbol": "?Play@cRSound@@QAEXH@Z",
+        },
+        "play_sound_effect_scaled": {
+            "method": "PlayVolume",
+            "mobile_symbol": "cRSound::PlayVolume(int, float)",
+            "aliases": ["cRSound_PlayVolume"],
+            "symbol": "?PlayVolume@cRSound@@QAEXHM@Z",
+        },
+    }
+    for function, recovered in expected.items():
+        entry = entries[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "RSound.o"
+        assert entry["ios_symbol"] == recovered["mobile_symbol"]
+        assert entry["android_symbol"] == recovered["mobile_symbol"]
+        assert entry["ios_body_count"] == 1
+        assert entry["android_body_count"] == 1
+        assert functions[function]["aliases"] == recovered["aliases"]
+
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRSound::{function}" in source
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSound::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.glob("*/scratch.cpp")
+    )
+    for stale_method in (
+        ".initialize_sound_bank(",
+        ".play_sound_effect_at_position(",
+        ".play_sound_effect(",
+        ".play_sound_effect_scaled(",
+    ):
+        assert stale_method not in all_sources
+    assert all_sources.count("g_sound_effect_manager.Play(") >= 25
+    assert "g_sound_effect_manager.PlayVolume(" in all_sources
+    assert "g_sound_effect_manager.Init(g_sound_bank_entries)" in all_sources
 
     authored_loop_methods = {
         "play_warning_sample_backend": "PlayLooped",
@@ -8164,6 +8231,9 @@ def test_sound_facade_uses_authored_primary_owner() -> None:
 
 def test_mobile_sound_loop_methods_recover_authored_surface() -> None:
     repo_root = Path(__file__).parents[1]
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
     complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
     entries = {
         entry["windows_name"]: entry for entry in complete["entries"]
@@ -8212,6 +8282,7 @@ def test_mobile_sound_loop_methods_recover_authored_surface() -> None:
             encoding="utf-8"
         )
         assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
 
         ios = resolve_corpus_symbol(ios_index, recovered["ios_symbol"])
         assert ios is not None

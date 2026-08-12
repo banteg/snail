@@ -44,7 +44,7 @@ void cRSubGoldy::ScoreAdd(int score_kind, int bonus_score)
             visible_life_stock = lives + 1;
             if (g_game->subgame.level_mode == 0) {
                 if (g_game->fade.state == 0) {
-                    g_sound_effect_manager.play_sound_effect(0x2c);
+                    g_sound_effect_manager.Play(0x2c);
                 }
             }
         }

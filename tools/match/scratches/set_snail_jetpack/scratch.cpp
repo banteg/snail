@@ -27,7 +27,7 @@ void cRSnail::set_snail_jetpack(int state)
             jetpack_channel.set_weapon_animation(
                 1, 1, OBJECT_ANIMATION_MODE_ONCE_REVERSE);
             immediate = false;
-            g_sound_effect_manager.play_sound_effect(26);
+            g_sound_effect_manager.Play(26);
         }
 
         if (target_state != 0) {
@@ -35,7 +35,7 @@ void cRSnail::set_snail_jetpack(int state)
                 jetpack_channel.set_weapon_animation(1, immediate, target_state);
                 jetpack_channel.set_weapon_animation(
                     0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
-                g_sound_effect_manager.play_sound_effect(16);
+                g_sound_effect_manager.Play(16);
             }
         } else {
             jetpack_channel.set_weapon_animation(

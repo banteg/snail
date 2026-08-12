@@ -1,16 +1,16 @@
-// initialize_sound_bank @ 0x44dcb0 (thiscall, ret 0x4)
+// cRSound::Init @ 0x44dcb0 (thiscall, ret 0x4)
 
 #include "sound_effect_manager.h"
 
 int register_sound_sample(char* path, int normalization_class);
 
-void cRSound::initialize_sound_bank(SoundBankEntry* entries)
+void cRSound::Init(cRSoundBank* entries)
 {
-    SoundBankEntry* cursor = entries;
+    cRSoundBank* cursor = entries;
     char* result = cursor->path;
 
     if (*result != 0) {
-        SoundBankEntry* store = entries;
+        cRSoundBank* store = entries;
         do {
             store->sample_id = register_sound_sample(result, store->normalization_class);
             cursor += 1;

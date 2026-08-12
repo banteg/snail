@@ -108,7 +108,7 @@ void cRBorder::update_frontend_widget_interaction()
     if (((widget_flags & FRONTEND_WIDGET_FLAG_HIGHLIGHTED) == 0)
         && ((widget_flags & FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED) != 0)) {
         if ((widget_flags & FRONTEND_WIDGET_FLAG_SNAP_VISUAL_STATE) == 0)
-            g_sound_effect_manager.play_sound_effect(9);
+            g_sound_effect_manager.Play(9);
         widget_flags |= FRONTEND_WIDGET_FLAG_HIGHLIGHTED;
     }
 
@@ -124,7 +124,7 @@ void cRBorder::update_frontend_widget_interaction()
                         this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
             }
             if ((widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) == 0)
-                g_sound_effect_manager.play_sound_effect(8);
+                g_sound_effect_manager.Play(8);
             if ((tooltip.mode_flags & 0x20) == 0)
                 tooltip.reset_tooltip();
         }
@@ -142,7 +142,7 @@ void cRBorder::update_frontend_widget_interaction()
                 g_game->border_manager
                     .queue_frontend_widget_flag_after_delay(
                         this, FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED);
-            g_sound_effect_manager.play_sound_effect(8);
+            g_sound_effect_manager.Play(8);
             tooltip.reset_tooltip();
         }
     }

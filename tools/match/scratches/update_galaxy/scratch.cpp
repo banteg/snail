@@ -276,10 +276,10 @@ int cRGalaxy::AI()
                     if (state == 1) {
                         BoxOff();
                         BoxOn(hovered_route_index);
-                        g_sound_effect_manager.play_sound_effect(8);
+                        g_sound_effect_manager.Play(8);
                     } else if (state == 0) {
                         BoxOn(hovered_route_index);
-                        g_sound_effect_manager.play_sound_effect(8);
+                        g_sound_effect_manager.Play(8);
                     }
                 }
                 return 0;
@@ -290,7 +290,7 @@ int cRGalaxy::AI()
                 && state == 1
                 && g_runtime_config.highest_galaxy_route_index > 1) {
                 BoxOff();
-                g_sound_effect_manager.play_sound_effect(8);
+                g_sound_effect_manager.Play(8);
                 return 0;
             }
         }

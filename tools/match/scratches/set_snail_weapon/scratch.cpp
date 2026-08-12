@@ -165,7 +165,7 @@ void cRSnail::set_snail_weapon(int shoot_flags)
             weapon_channels[2].set_weapon_animation(
                 0, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             weapon_channels[2].selected_state = target_channel_2_state;
-            g_sound_effect_manager.play_sound_effect(25);
+            g_sound_effect_manager.Play(25);
             return;
         case 3:
             weapon_channels[2].set_weapon_animation(
@@ -173,13 +173,13 @@ void cRSnail::set_snail_weapon(int shoot_flags)
             weapon_channels[2].set_weapon_animation(
                 3, 0, OBJECT_ANIMATION_MODE_UNCHANGED);
             weapon_channels[2].selected_state = target_channel_2_state;
-            g_sound_effect_manager.play_sound_effect(25);
+            g_sound_effect_manager.Play(25);
             return;
         }
 
         weapon_channels[2].selected_state = target_channel_2_state;
-        g_sound_effect_manager.play_sound_effect(25);
+        g_sound_effect_manager.Play(25);
     } else if (any_channel_changed != 0) {
-        g_sound_effect_manager.play_sound_effect(25);
+        g_sound_effect_manager.Play(25);
     }
 }

@@ -14,3 +14,11 @@ Ninja and IDA, while preserving the genuine void wrapper and the exact matcher.
 The adjacent scaled and warning wrappers share the same replayed owner; only
 the warning play edge retains an integer result because its caller immediately
 passes the returned live handle to the stop edge.
+
+## 2026-08-12 authored source surface
+
+Both mobile ports independently retain the exact `cRSound::Play(int)` symbol
+and forwarding body. The matcher definition and all source-facing callers now
+use `Play`, emitting the recovered VC6 `?Play@cRSound@@QAEXH@Z` symbol while
+keeping `play_sound_effect` as the stable function ID and decompiler label. The
+wrapper remains exact at 8/8 and its broad native call graph remains clean.

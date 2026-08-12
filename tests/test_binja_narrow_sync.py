@@ -1402,7 +1402,8 @@ def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None
     assert "extern SoundBankEntry g_sound_bank_entries[52];" in analysis_header
     assert '(0x4A2140, 0x270, "g_sound_bank_entries", "SoundBankEntry[52]")' in ida_sync
     assert "ida_bytes.get_item_size" in ida_sync
-    assert "void initialize_sound_bank(SoundBankEntry* entries);" in matcher_header
+    assert "void Init(cRSoundBank* entries);" in matcher_header
+    assert "typedef cRSoundBank SoundBankEntry;" in matcher_header
     assert "class cRSound" in matcher_header
     assert "typedef cRSound SoundEffectManager;" in matcher_header
     assert "extern cRSound g_sound_effect_manager;" in matcher_header

@@ -143,7 +143,7 @@ char cRGame::initialize_game_assets_and_world()
     subgame.galaxy.Open();
     subgame.player.cameraman.initialize_cameraman();
     logo.Open();
-    g_sound_effect_manager.initialize_sound_bank(g_sound_bank_entries);
+    g_sound_effect_manager.Init(g_sound_bank_entries);
     g_voice_manager.Init();
     options.apply_audio_config_volumes();
     sm_tracks->OpenLevels();

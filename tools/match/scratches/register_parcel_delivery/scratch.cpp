@@ -11,11 +11,11 @@ void cRCompletion::RegisterParcel()
     if (delivered_parcel_count != parcel_target_count) {
         g_game->subgame.player.ScoreAdd(SUBGOLDY_SCORE_PARCEL_DELIVER, 0);
         delivered_parcel_count += 1;
-        g_sound_effect_manager.play_sound_effect(0x2d);
+        g_sound_effect_manager.Play(0x2d);
         if (delivered_parcel_count == parcel_target_count) {
             if (bonus_enabled != 0) {
                 g_game->subgame.player.ScoreAdd(SUBGOLDY_SCORE_BONUS, bonus_score);
-                g_sound_effect_manager.play_sound_effect(0x31);
+                g_sound_effect_manager.Play(0x31);
             }
             state = COMPLETION_STATE_SUMMARY_PENDING;
         }

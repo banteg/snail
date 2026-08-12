@@ -93,7 +93,7 @@ void cRCompletion::AI()
                 if (game->subgame.level_mode == 1) {
                     game->subgame.player.ScoreAdd(
                         SUBGOLDY_SCORE_BONUS, controller->bonus_score);
-                    g_sound_effect_manager.play_sound_effect(0x31);
+                    g_sound_effect_manager.Play(0x31);
                 }
             }
         }
@@ -121,7 +121,7 @@ void cRCompletion::AI()
                 & INPUT_BUTTON_PRIMARY)
             != 0) {
             controller->state = COMPLETION_STATE_CONTINUE_ACCEPTED;
-            g_sound_effect_manager.play_sound_effect(8);
+            g_sound_effect_manager.Play(8);
         }
         break;
     }

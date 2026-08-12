@@ -16,7 +16,7 @@ void cRSplash::update_thanks_for_playing_screen()
             || read_pressed_text_input_key_code() == 0xb)
         && message_state >= 2
         && g_game->fade.state == 0) {
-        g_sound_effect_manager.play_sound_effect(8);
+        g_sound_effect_manager.Play(8);
         g_game->fade.Start(0);
     }
 
