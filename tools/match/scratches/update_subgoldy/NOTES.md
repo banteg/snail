@@ -1061,3 +1061,21 @@ sequence wrong. Those score-only aliases are rejected; the scratch remains
 82.75%, 2,087/2,087 with 315 clean references and one visible unaudited load.
 The lane remains open to a source form that reproduces the observed owners
 without trading away surrounding native lifetimes.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows body, verified Android and
+iOS `cRSubGoldy::AI()` bodies, exact neighboring helpers, whole-image field
+xrefs, and the complete 2,087-instruction scratch establish the Player owner
+and every replay, steering, row-event, attachment-follow, wall/trampoline,
+completion, ghost, presentation, and firing path. The candidate has the exact
+target instruction count; 315 aligned references are clean and none is
+unresolved or mismatched.
+
+The one unaudited candidate reference is the documented duplicate `g_game`
+load in the completion-exit schedule. Native loads the same root once before
+the persistent/transient branch and reuses it; the candidate reloads that
+known root in the branch arms. It exposes compiler scheduling and one-to-one
+reference-alignment residue, not a missing global, state, call, or owner. Exact
+matching of the observed Windows lifetime remains open without making the
+semantic recovery incomplete.

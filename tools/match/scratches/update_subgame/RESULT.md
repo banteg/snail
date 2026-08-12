@@ -113,7 +113,7 @@ The semantic state machine, runtime rows, and principal ownership are covered.
 The `0x3c` frame remains exact, while the candidate is three instructions
 longer than the 1033-instruction target. Remaining differences are state-1,
 ring, and HUD/handoff register scheduling plus branch-label identities induced
-by that earlier layout. All masked operands are audited and clean. Do not force
-the residual with long-lived aliases, `volatile`, dummy symbols, raw offsets,
-or normalizer-specific control flow; resume only with a new Windows lifetime
-or independent source evidence.
+by that earlier layout. All masked operands are audited and clean. The rejected
+long-lived aliases, `volatile`, dummy symbols, raw offsets, and
+normalizer-specific control flow document non-solutions rather than imposing a
+stop rule on future independent evidence.

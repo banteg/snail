@@ -756,3 +756,19 @@ state-0/state-7 assignments already expressed by the scratch: no replay-exit
 reshaping, common owner, or extra source lifetime is justified. Matching
 source and canonical SHA remain unchanged at 79.94%, 1036/1033 instructions,
 prefix 9/1033, with all 129 reference operands clean.
+
+## 2026-08-12 recovery classification
+
+The recovery is semantic-complete. The live Windows `cRSubGame::AI()` body,
+both verified mobile bodies, exact neighboring state-transition producers, and
+exact row-event callees jointly establish every outer state, nested mode,
+early-return handoff, runtime-row and cell owner, intrusive-list mutation,
+pickup/hazard/ring dispatch, HUD update, and shared camera tail. All 1,033
+target instructions are represented and all 129 reference-bearing
+instructions are paired and clean.
+
+The candidate's three additional instructions only alter state-one, ring, and
+HUD register scheduling and therefore shift equivalent local branch labels.
+The byte-identical replay-exit tail confirms that the displacement accumulates
+earlier; it does not expose a missing state, field, call, or owner. The 79.94%
+residual is compiler layout rather than unrecovered gameplay semantics.
