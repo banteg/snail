@@ -10897,11 +10897,61 @@ def test_cameraman_uses_authored_primary_owner() -> None:
     assert "typedef cRCameraman Cameraman;" in header
     assert "sizeof(cRCameraman)" in header
     assert "cRCameraman cameraman" in player
-    for function in ("initialize_cameraman", "update_cameraman"):
+    methods = {
+        "initialize_cameraman": "Init",
+        "update_cameraman": "update_cameraman",
+    }
+    for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRCameraman::{function}" in source
+        assert f"cRCameraman::{method}" in source
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    initializer = crosswalk["initialize_cameraman"]
+    assert initializer["status"] == "verified"
+    assert initializer["confidence"] == "high"
+    assert initializer["source_object"] == "SubGame.o"
+    assert initializer["android_symbol"] == "cRCameraman::Init()"
+    assert initializer["ios_symbol"] == "cRCameraman::Init(cRSubGoldy*)"
+    assert initializer["android_body_count"] == 1
+    assert initializer["ios_body_count"] == 1
+    assert functions_by_name["initialize_cameraman"]["aliases"] == [
+        "cRCameraman_Init"
+    ]
+    object_symbol = "?Init@cRCameraman@@QAEXXZ"
+    assert references_by_name["initialize_cameraman"]["aliases"] == [
+        object_symbol
+    ]
+    config = (
+        scratch_root / "initialize_cameraman/scratch.conf"
+    ).read_text(encoding="utf-8")
+    assert f"SYMBOL={object_symbol}\n" in config
+    assert "void Init(); // @ 0x446160" in header
+    assert "initialize_cameraman();" not in header
+    game_init = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    player_init = (
+        scratch_root / "initialize_subgoldy/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert game_init.count("subgame.player.cameraman.Init();") == 1
+    assert player_init.count("cameraman.Init();") == 1
 
     folded = (
         scratch_root / "noop_runtime_slot_constructor" / "scratch.cpp"

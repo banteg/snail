@@ -164,7 +164,7 @@ void cRSubGoldy::Init(int player_slot)
     this->presentation.previous_live_matrix.Identity();
     this->parcels_collected = zero;
     click_start.Init(this);
-    cameraman.initialize_cameraman();
+    cameraman.Init();
     GhostInit(this->player_slot);
 
     this->damage_retrigger_step = 0.0505050495f;

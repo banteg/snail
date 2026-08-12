@@ -4344,7 +4344,10 @@
     {
       "address": "0x446160",
       "name": "initialize_cameraman",
-      "description": "Initializes the exact 0xd8-byte cRCameraman embedded in cRSubGoldy at +0x200, wiring its cRSubGoldy and cRSubGame backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android and iOS retain this method as `cRCameraman::Init()`."
+      "aliases": [
+        "cRCameraman_Init"
+      ],
+      "description": "Exact Windows `cRCameraman::Init()`: initializes the 0xd8-byte camera owner embedded in cRSubGoldy at +0x200, wiring its cRSubGoldy and cRSubGame backlinks, resetting all three matrices and both lift envelopes, and seeding the 110-degree FOV. Android preserves the no-argument method; iOS retains the same owner and name with an explicit cRSubGoldy parameter."
     },
     {
       "address": "0x4461d0",

@@ -3897,6 +3897,15 @@
       "description": "Exact Windows cRCutScene::Init() entry; the owner-qualified alias disambiguates it from other authored Init methods."
     },
     {
+      "address": "0x446160",
+      "name": "initialize_cameraman",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRCameraman@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRCameraman::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4466d0",
       "name": "update_cutscene",
       "kind": "function",

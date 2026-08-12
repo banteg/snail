@@ -141,7 +141,7 @@ char cRGame::initialize_game_assets_and_world()
     ((SubgameOwnerLink*)&subgame.gui)->bind_subgame_owner();
     ((SubgameOwnerLink*)&subgame.splash)->bind_subgame_owner();
     subgame.galaxy.Open();
-    subgame.player.cameraman.initialize_cameraman();
+    subgame.player.cameraman.Init();
     logo.Open();
     g_sound_effect_manager.Init(g_sound_bank_entries);
     g_voice_manager.Init();

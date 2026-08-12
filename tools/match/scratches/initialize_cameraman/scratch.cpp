@@ -3,7 +3,7 @@
 #include "game_root.h"
 
 
-void cRCameraman::initialize_cameraman()
+void cRCameraman::Init()
 {
     player = g_game->subgame.embedded_player();
     game = &g_game->subgame;

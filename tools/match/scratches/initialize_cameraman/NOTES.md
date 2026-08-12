@@ -1,52 +1,19 @@
-# initialize_cameraman @ 0x446160
+# Exact cRCameraman::Init
 
-Exact match: `100%`, `20/20` instructions, `6 ok` masked operands.
+`0x446160` is the Windows `cRCameraman::Init()` method.
 
-This initializes the shared `Cameraman` layout:
+Evidence:
 
-- `player` borrows `cRSubGame::player`
-- `game` borrows the enclosing `GameRoot::subgame`
-- `previous_desired_matrix`, `desired_matrix`, and `live_matrix` are reset to
-  identity
-- attachment lift smoothing starts at zero
-- `fov_degrees` starts at `110.0f`
+- Windows uses a void no-argument `__thiscall` on the exact 0xd8-byte camera
+  embedded at `cRSubGoldy + 0x200`.
+- Android `SubGame.o` preserves `cRCameraman::Init()` with one body. iOS keeps
+  the same owner and method name but passes its cRSubGoldy backlink explicitly.
+- VC6 emits `?Init@cRCameraman@@QAEXXZ`; the candidate matches all 20
+  instructions with six clean operands, and both Windows callers retain their
+  baseline instruction streams.
 
-2026-06-16 consolidation: `Cameraman` now lives in
-`include/cameraman.h` and is shared with `update_cameraman`. The focused
-match remains exact.
-
-2026-06-21 owner typing: `Cameraman::game` is now a `cRSubGame*`.
-The initializer keeps the same exact `100%`, `20/20` match with an explicit
-cast from `g_game_base + 0x74618`.
-
-2026-07-11 authored-owner recovery: Android `cRCameraman::Init()` writes the
-same three matrices at +0x00/+0x40/+0x80, Player/cRSubGame backlinks at
-+0xc0/+0xc4, FOV at +0xc8, byte gate at +0xcc, and envelope pair at
-+0xd0/+0xd4. This independently proves the exact 0xd8-byte Windows
-`Cameraman` owner and the side-effect-only `void` contract. Focused Wibo
-remains exact at 20/20 instructions with six clean masked operands.
-
-2026-07-14 root-owner closure: both backlinks now follow the canonical
-`GameRoot -> cRSubGame -> Player` graph. The method remains exact at
-20/20 with all six operands clean.
-
-2026-07-14 camera handoff recovery: the byte at `Cameraman +0xcc` is
-`force_camera_update`. `update_subgame_camera` copies it into the same
-`camera_snap_requested` gate used by `CutScene::force_camera_update`; the
-Cameraman initializer and AI both clear the request in the shipped Windows
-path. The semantic rename is instruction-exact in this initializer.
-
-2026-07-16 durable replay closure: the path-template BN replay now guards
-`Cameraman +0xcc` explicitly as `force_camera_update`. This prevents the live
-database from retaining the older `unresolved_cc` spelling even when the
-complete imported type is structurally unchanged. The exact 20/20 initializer
-and its six clean operands are unaffected.
-
-## 2026-07-25 IDA Player-root replay
-
-The backlink at `0x446168` adds root `+0x42fd7c`, closing exactly to
-`GameRoot::subgame.player`. IDA had promoted the displacement into the
-standalone `g_player_block` evidence symbol even though the following store
-requires `Player*`. Exact operand normalization now makes both decompilers
-agree on the Player and cRSubGame backlinks; the matcher remains exact at
-20/20.
+The initializer borrows `GameRoot::subgame.player` and its enclosing
+`cRSubGame`, resets the live, desired, and previous desired matrices, clears
+the camera-snap request and lift envelopes, and seeds a 110-degree FOV. The
+root-relative Player load and following backlink store independently close the
+two owner fields; no mobile offsets are transferred.

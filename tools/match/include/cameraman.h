@@ -12,7 +12,7 @@ public:
     // VC6 folds this empty owner constructor into the shared body at
     // 0x408600. The cRSubGame constructor passes cRSubGoldy::cameraman exactly.
     cRCameraman* noop_runtime_slot_constructor();
-    void initialize_cameraman(); // @ 0x446160, cRCameraman::Init
+    void Init(); // @ 0x446160
     void update_cameraman(); // @ 0x4461d0, cRCameraman::AI
 
     TransformMatrix live_matrix; // +0x00
