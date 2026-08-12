@@ -22,12 +22,12 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 585,
-    "unverified_entries": 200,
-    "verified_android_symbols": 579,
-    "verified_ios_symbols": 465,
-    "available_android_mappings": 579,
-    "available_ios_mappings": 429
+    "verified_entries": 586,
+    "unverified_entries": 199,
+    "verified_android_symbols": 580,
+    "verified_ios_symbols": 466,
+    "available_android_mappings": 580,
+    "available_ios_mappings": 430
   },
   "entries": [
     {
@@ -13371,71 +13371,13 @@
       "address": "0x432d20",
       "windows_name": "register_font_texture_sheet_wrapper",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "TexturesFunctionGetName(int)",
-          "score": 0.6939,
-          "name_score": 0.4898,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.6769,
-          "name_score": 0.4615,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "G0RemoveTexture(cRTexture*)",
-          "score": 0.64,
-          "name_score": 0.4,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTexture(int)",
-          "score": 0.6166,
-          "name_score": 0.4444,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "cRSubGoldy::ScoreStatsInit()",
-          "score": 0.6,
-          "name_score": 0.3333,
-          "size_score": 1.0
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.5769,
-          "name_score": 0.4615,
-          "size_score": 0.75
-        },
-        {
-          "symbol": "MacOFSaveHighScores()",
-          "score": 0.5756,
-          "name_score": 0.2927,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::GetSkirtColourRandomOpen()",
-          "score": 0.568,
-          "name_score": 0.28,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGoldy::ScoreStatsInit()",
-          "score": 0.5555,
-          "name_score": 0.3333,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "RShellSoundStopLooped(int)",
-          "score": 0.5542,
-          "name_score": 0.3404,
-          "size_score": 0.875
-        }
-      ]
+      "status": "verified",
+      "android_symbol": "RShellFontLoad(char*, int, float, float)",
+      "ios_symbol": "RShellFontLoad(char*, int, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
+      "ios_body_count": 1
     },
     {
       "address": "0x432d40",

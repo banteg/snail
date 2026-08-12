@@ -5612,6 +5612,66 @@ def test_mobile_rtext_family_recovers_rshell_ownership_and_real_abis() -> None:
     assert random_scratches
 
 
+def test_mobile_rshell_font_load_recovers_windows_wrapper_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"] == "register_font_texture_sheet_wrapper"
+    )
+    mobile_symbol = "RShellFontLoad(char*, int, float, float)"
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "RShell.o"
+    assert entry["android_symbol"] == mobile_symbol
+    assert entry["ios_symbol"] == mobile_symbol
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in manifest["functions"]
+        if function["name"] == "register_font_texture_sheet_wrapper"
+    )
+    assert function["aliases"] == ["RShellFontLoad"]
+    assert function["port_scope"] == "boundary"
+    assert "sole startup caller discards it" in function["description"]
+
+    android = resolve_corpus_symbol(
+        load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json"),
+        mobile_symbol,
+    )
+    ios = resolve_corpus_symbol(
+        load_json(DEFAULT_IOS_CORPUS_ROOT / "index.json"),
+        mobile_symbol,
+    )
+    assert android is not None
+    assert ios is not None
+    assert android["size"] == 4
+    assert ios["size"] == 16
+    ios_body = corpus_function_path(DEFAULT_IOS_CORPUS_ROOT, ios).read_text(
+        encoding="utf-8"
+    )
+    assert "FontLoad(param_1,param_2,param_3,param_4);" in ios_body
+
+    ios_names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    assert mobile_symbol in dict(ios_names["source_objects"])["RShell.o"]
+
+    notes = (
+        repo_root
+        / "tools/match/scratches/register_font_texture_sheet_wrapper/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "authored RShell owner" in notes
+    assert "11/11 instructions" in notes
+
+
 def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

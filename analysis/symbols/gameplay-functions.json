@@ -2545,7 +2545,11 @@
     {
       "address": "0x432d20",
       "name": "register_font_texture_sheet_wrapper",
-      "description": "Exact Windows cdecl forwarding wrapper for the FONT-MENU-HOVER path, shadow offset, and two scales; it preserves the registrar's Windows integer result even though the sole startup caller discards it."
+      "aliases": [
+        "RShellFontLoad"
+      ],
+      "port_scope": "boundary",
+      "description": "Exact Windows `RShellFontLoad(char*, int, float, float)` forwarding wrapper: passes the font path, shadow offset, and two scales to FontLoad. iOS preserves the same direct wrapper and Android emits it as a four-byte tail alias; the Windows form keeps FontLoad's integer result even though the sole startup caller discards it."
     },
     {
       "address": "0x432d40",

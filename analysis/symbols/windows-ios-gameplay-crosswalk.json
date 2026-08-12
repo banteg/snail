@@ -3638,6 +3638,15 @@
       "notes": "All ports map held keyboard scancodes through the same repeat state. Android names the three owners gRShellKeyRepeatLife, gRShellKeyRepeatLifeRate, and gRShellOldKey, proving the Windows scalar globals and their RShell.o ownership."
     },
     {
+      "address": "0x432d20",
+      "windows_name": "register_font_texture_sheet_wrapper",
+      "ios_symbol": "RShellFontLoad(char*, int, float, float)",
+      "android_symbol": "RShellFontLoad(char*, int, float, float)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Windows and iOS preserve the authored four-argument RShellFontLoad forwarding entry point around FontLoad; Android emits the same exact demangled symbol as a four-byte tail alias into its FontLoad body. Windows retains FontLoad's integer result while both mobile ABIs are void, but the sole Windows caller discards EAX and all ports preserve the wrapper's argument contract and RShell.o ownership."
+    },
+    {
       "address": "0x432d40",
       "windows_name": "reset_registered_sound_sample_count",
       "android_symbol": "RShellSoundInit()",
