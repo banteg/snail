@@ -6639,7 +6639,6 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     by_name = {entry["windows_name"]: entry for entry in entries}
     expected = {
         "draw_split_backdrop": "Game.o",
-        "spawn_golb_trail_sprite": "Golb.o",
         "load_high_scores_from_file": "HighScore.o",
         "refresh_object_vertex_buffer": "GL.o",
         "initialize_object_constructor_thunk": "RObject.o",
@@ -6731,6 +6730,62 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     assert "mapping: unverified" in output
     assert "source object: HighScore.o" in output
     assert "source object evidence: windows-contiguous-source-run" in output
+
+
+def test_android_golb_jet_recovers_windows_trail_method() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entry = next(
+        entry
+        for entry in complete["entries"]
+        if entry["windows_name"] == "spawn_golb_trail_sprite"
+    )
+    mobile_symbol = "cRSubGolb::Jet(tVector)"
+
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["android_symbol"] == mobile_symbol
+    assert entry["android_body_count"] == 1
+    assert "ios_symbol" not in entry
+    assert entry["source_object"] == "Golb.o"
+    assert (
+        entry["source_object_evidence"]
+        == "windows-contiguous-source-run"
+    )
+
+    android_index = load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json")
+    jet = resolve_corpus_symbol(android_index, mobile_symbol)
+    ai = resolve_corpus_symbol(android_index, "cRSubGolb::AI()")
+    assert jet is not None
+    assert ai is not None
+    jet_body = corpus_function_path(
+        DEFAULT_ANDROID_CORPUS_ROOT, jet
+    ).read_text(encoding="utf-8")
+    ai_body = corpus_function_path(
+        DEFAULT_ANDROID_CORPUS_ROOT, ai
+    ).read_text(encoding="utf-8")
+    assert "return;" in jet_body
+    assert ai_body.count("Jet();") == 3
+    assert "* 0.3" in ai_body
+    assert "* 0.6" in ai_body
+
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    function = next(
+        function
+        for function in manifest["functions"]
+        if function["name"] == "spawn_golb_trail_sprite"
+    )
+    assert function["aliases"] == ["cRSubGolb_Jet"]
+    assert "three call positions" in function["description"]
+
+    notes = (
+        repo_root
+        / "tools/match/scratches/spawn_golb_trail_sprite/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert "authored Jet method recovery" in notes
+    assert "47/47 instructions" in notes
 
 
 def test_android_enemy_manager_find_recovers_golb_search_method() -> None:

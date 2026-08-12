@@ -739,6 +739,15 @@
       "android_symbol_evidence": "exact-demangled-symbol"
     },
     {
+      "address": "0x415bb0",
+      "windows_name": "spawn_golb_trail_sprite",
+      "android_symbol": "cRSubGolb::Jet(tVector)",
+      "source_object": "Golb.o",
+      "source_object_evidence": "windows-contiguous-source-run",
+      "confidence": "high",
+      "notes": "Android preserves the authored Jet(tVector) member and calls it three times from the kind-zero cRSubGolb::AI lane at the current projectile position and at direction-scaled offsets 0.3 and 0.6 behind it, exactly matching the three Windows calls to this helper. The Android Jet body is a deliberate no-op, while Windows allocates the trail Sprite and iOS inlines a different lower-rate trail effect in the same lane; the mapping recovers method identity and ownership without transferring implementation or ABI details across ports."
+    },
+    {
       "address": "0x415c60",
       "windows_name": "spawn_golb_smoke",
       "android_symbol": "cRSubGolb::Smoke(tVector)",
@@ -752,7 +761,7 @@
       "android_symbol": "cRSubGolb::Explode(tVector)",
       "source_object": "Golb.o",
       "confidence": "high",
-      "notes": "Android's symbol-preserving Explode body matches the Windows impact helper's particle gate, cRSubGolb receiver, allocated Sprite owner, constant motion/progress/lifetime/size lanes, and copied world position. The sprite resource identifier is platform-specific. Android cRSubGolb::Jet(tVector) is a no-op and is intentionally not mapped to Windows spawn_golb_trail_sprite."
+      "notes": "Android's symbol-preserving Explode body matches the Windows impact helper's particle gate, cRSubGolb receiver, allocated Sprite owner, constant motion/progress/lifetime/size lanes, and copied world position. The sprite resource identifier is platform-specific."
     },
     {
       "address": "0x415e20",

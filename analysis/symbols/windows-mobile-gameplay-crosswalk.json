@@ -23,11 +23,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 589,
-    "unverified_entries": 196,
-    "verified_android_symbols": 583,
+    "verified_entries": 590,
+    "unverified_entries": 195,
+    "verified_android_symbols": 584,
     "verified_ios_symbols": 466,
-    "available_android_mappings": 583,
+    "available_android_mappings": 584,
     "available_ios_mappings": 430
   },
   "entries": [
@@ -9182,71 +9182,42 @@
       "address": "0x415bb0",
       "windows_name": "spawn_golb_trail_sprite",
       "windows_size": 176,
-      "status": "unverified",
+      "status": "verified",
       "source_object": "Golb.o",
       "source_object_evidence": "windows-contiguous-source-run",
-      "android_candidates": [
-        {
-          "symbol": "cRSprite::AI()",
-          "score": 0.6843,
-          "name_score": 0.9,
-          "size_score": 0.3607
-        },
-        {
-          "symbol": "cRFlash::AI()",
-          "score": 0.6611,
-          "name_score": 0.45,
-          "size_score": 0.9778
-        },
-        {
-          "symbol": "cRHelp::AI()",
-          "score": 0.6611,
-          "name_score": 0.45,
-          "size_score": 0.9778
-        },
-        {
-          "symbol": "ATan(float, float)",
-          "score": 0.6609,
-          "name_score": 0.45,
-          "size_score": 0.9773
-        },
-        {
-          "symbol": "cRSubTrampRing::AI()",
-          "score": 0.6547,
-          "name_score": 0.48,
-          "size_score": 0.9167
-        }
-      ],
+      "android_symbol": "cRSubGolb::Jet(tVector)",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
-          "symbol": "cRHelp::AI()",
-          "score": 0.6526,
-          "name_score": 0.45,
-          "size_score": 0.9565
+          "symbol": "tVector::operator*(tMatrix const&) const",
+          "score": 0.7145,
+          "name_score": 0.6,
+          "size_score": 0.8864
         },
         {
-          "symbol": "cRSprite::AI()",
-          "score": 0.648,
-          "name_score": 0.9,
-          "size_score": 0.2699
+          "symbol": "tVector::Cross(tVector const&, tVector const&)",
+          "score": 0.6964,
+          "name_score": 0.6,
+          "size_score": 0.8409
         },
         {
-          "symbol": "FontAI()",
-          "score": 0.6445,
-          "name_score": 0.45,
-          "size_score": 0.9362
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.6868,
+          "name_score": 0.675,
+          "size_score": 0.7045
         },
         {
-          "symbol": "cRBanner::AI()",
-          "score": 0.6445,
-          "name_score": 0.45,
-          "size_score": 0.9362
+          "symbol": "cRBodPos::cRBodPos()",
+          "score": 0.6868,
+          "name_score": 0.675,
+          "size_score": 0.7045
         },
         {
-          "symbol": "ATan(float, float)",
-          "score": 0.6336,
-          "name_score": 0.45,
-          "size_score": 0.9091
+          "symbol": "tVector::operator*=(tMatrix)",
+          "score": 0.6691,
+          "name_score": 0.6,
+          "size_score": 0.7727
         }
       ]
     },

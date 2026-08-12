@@ -1443,7 +1443,10 @@
     {
       "address": "0x415bb0",
       "name": "spawn_golb_trail_sprite",
-      "description": "`GolbShot` member that allocates and returns one short-lived trail sprite for the straight-flight Golb family at the supplied world position. `update_golb_ai` emits it in a short three-point chain behind the projectile each tick.",
+      "aliases": [
+        "cRSubGolb_Jet"
+      ],
+      "description": "Exact Windows `cRSubGolb::Jet(tVector)`/`GolbShot` member that allocates and returns one short-lived trail sprite at the supplied world position. Windows `update_golb_ai` calls it at the current projectile position and 0.3 and 0.6 units behind; Android preserves the authored Jet method and the identical three call positions but compiles its body as a no-op.",
       "source_object": "Golb.o",
       "source_object_evidence": "windows-contiguous-source-run"
     },

@@ -51,3 +51,22 @@ sprite's opaque `object_ref` lane. Impact sprites do not consume the field and
 retain their allocator-installed `-1` sentinel. Removing the stale pointer
 alias from `GolbShot` leaves this helper exact at 47/47 instructions with both
 masked operands clean.
+
+## 2026-08-12 authored Jet method recovery
+
+Android exports the authored sibling as `cRSubGolb::Jet(tVector)`. Although
+that port deliberately leaves `Jet` empty, `cRSubGolb::AI()` still invokes it
+three times in the kind-zero presentation lane: once at the current projectile
+position, then at direction-scaled offsets 0.3 and 0.6 behind it. Live Windows
+Binary Ninja callsites independently show the exact helper called at those
+same three positions, with native constants 0.3 and 0.6 and every return value
+discarded. iOS removes the standalone symbol and emits a different two-sprite,
+lower-rate trail effect inline in the corresponding kind-zero AI lane.
+
+That callsite triad is stronger identity evidence than the Android no-op body
+is negative evidence: this exact Windows helper is the platform's implemented
+`cRSubGolb::Jet(tVector)`. The stable matcher name remains in source and the
+manifest carries `cRSubGolb_Jet` as the authored alias. Windows retains its
+observed pointer argument and `Sprite*` result rather than importing Android's
+by-value/void ABI. Focused matching remains exact at 47/47 instructions with
+both masked operands clean.

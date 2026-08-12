@@ -1,4 +1,5 @@
-// spawn_golb_trail_sprite @ 0x415bb0 (thiscall, ret 0x4)
+// cRSubGolb::Jet(tVector) / spawn_golb_trail_sprite @ 0x415bb0
+// (Windows thiscall, pointer argument, ret 0x4)
 
 #include "golb.h"
 #include "player.h"

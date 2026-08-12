@@ -76,7 +76,8 @@ public:
     void kill_golb(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
     void update_golb_ai(); // @ 0x414820, iOS/Android cRSubGolb::AI()
     void create_golb(cRSubGoldy* player, int spawn_selector, int shot_slot_index); // @ 0x415280
-    cRSprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0
+    cRSprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0,
+        // Android cRSubGolb::Jet(tVector)
     void spawn_golb_smoke(Vector3* position); // @ 0x415c60,
         // Android cRSubGolb::Smoke(tVector)
     void spawn_golb_impact_sprite(Vector3* position); // @ 0x415d80,
