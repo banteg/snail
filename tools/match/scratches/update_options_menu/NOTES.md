@@ -37,3 +37,12 @@ the same 0x24-byte owner in the tracked artifact.
 decompilers as `g_game_base->frontend_link_latch = 0`; health checks reject the
 former root byte-array form. The source remains exact at 73/73 with 19 clean
 operands.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cROptions::AI()` and exports
+`?AI@cROptions@@QAEXXZ`. Its sole live Windows caller passes the embedded
+Options at `GameRoot + 0x4f388`; Android and iOS retain the same symbol and one
+body each. The Back path now calls `UnInit()` directly, while the no-argument
+audio subset deliberately retains its Windows-specific descriptive name.
+Matching remains exact at 73/73 with all 19 operands clean.

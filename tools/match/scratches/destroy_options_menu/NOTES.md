@@ -17,3 +17,11 @@ reloads the game root. The `save_config_file` pointer previously forwarded in
 EAX is therefore incidental, while the cross-port `cROptions::UnInit()` role
 supplies the authored void contract. The corrected member remains exact at
 32/32 instructions with all 13 operands clean.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cROptions::UnInit()` and exports
+`?UnInit@cROptions@@QAEXXZ`. Its sole live Windows call comes from
+`cROptions::AI()` with the receiver preserved in ECX; Android and iOS retain
+the same void symbol and one body each. Matching remains exact at 32/32 with
+all 13 operands clean.

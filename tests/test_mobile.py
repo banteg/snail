@@ -8887,6 +8887,99 @@ def test_gui_uses_authored_lifecycle_surface() -> None:
     assert "gui.AI()" in all_sources
 
 
+def test_options_uses_authored_lifecycle_surface() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    references = (
+        repo_root / "analysis/symbols/gameplay-references.json"
+    ).read_text(encoding="utf-8")
+    header = (repo_root / "tools/match/include/options.h").read_text(
+        encoding="utf-8"
+    )
+    expected = {
+        "initialize_options_menu": {
+            "method": "Init",
+            "symbol": "?Init@cROptions@@QAEXXZ",
+            "mobile": "cROptions::Init()",
+            "alias": "cROptions_Init",
+        },
+        "destroy_options_menu": {
+            "method": "UnInit",
+            "symbol": "?UnInit@cROptions@@QAEXXZ",
+            "mobile": "cROptions::UnInit()",
+            "alias": "cROptions_UnInit",
+        },
+        "update_options_menu": {
+            "method": "AI",
+            "symbol": "?AI@cROptions@@QAEXXZ",
+            "mobile": "cROptions::AI()",
+            "alias": "cROptions_AI",
+        },
+    }
+
+    for windows_name, recovered in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Options.o"
+        assert entry["android_symbol"] == recovered["mobile"]
+        assert entry["ios_symbol"] == recovered["mobile"]
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions[windows_name]["aliases"] == [recovered["alias"]]
+
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"cROptions::{recovered['method']}" in source
+        assert f"SYMBOL={recovered['symbol']}" in config
+        assert recovered["symbol"] in references
+
+    apply_entry = entries["apply_audio_config_volumes"]
+    assert apply_entry["confidence"] == "medium"
+    assert apply_entry["android_symbol"] == "cROptions::Apply(bool)"
+    assert apply_entry["ios_symbol"] == "cROptions::Apply(bool)"
+    assert "aliases" not in functions["apply_audio_config_volumes"]
+
+    assert "void Init();" in header
+    assert "void UnInit();" in header
+    assert "void AI();" in header
+    assert "void apply_audio_config_volumes();" in header
+    ai_source = (scratch_root / "update_options_menu/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert sum(
+        line.strip() == "UnInit();" for line in ai_source.splitlines()
+    ) == 1
+    assert "apply_audio_config_volumes();" in ai_source
+    all_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in scratch_root.rglob("*.cpp")
+        if "build" not in path.parts
+    )
+    for stale_method in (
+        ".initialize_options_menu(",
+        ".destroy_options_menu(",
+        ".update_options_menu(",
+    ):
+        assert stale_method not in all_sources
+    assert "options.Init()" in all_sources
+    assert "options.AI()" in all_sources
+
+
 def test_screen_controller_types_use_authored_primary_owners() -> None:
     repo_root = Path(__file__).parents[1]
     include_root = repo_root / "tools/match/include"
@@ -8992,6 +9085,9 @@ def test_screen_controller_types_use_authored_primary_owners() -> None:
         "initialize_challenge_setup_screen": "Init",
         "destroy_challenge_setup_screen": "UnInit",
         "update_challenge_setup_screen": "AI",
+        "initialize_options_menu": "Init",
+        "destroy_options_menu": "UnInit",
+        "update_options_menu": "AI",
         "destroy_main_menu": "UnInit",
         "initialize_main_menu": "Init",
         "update_main_menu": "AI",

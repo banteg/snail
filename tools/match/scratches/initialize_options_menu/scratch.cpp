@@ -9,7 +9,7 @@ extern char g_blank_text[]; // 0x4dfb08
 extern char g_sounds_volume_text[]; // 0x4a3d30
 extern char g_music_volume_text[]; // 0x4a3d14
 extern char g_back_text[]; // 0x4a20ec
-void cROptions::initialize_options_menu()
+void cROptions::Init()
 {
     tColour color;
 

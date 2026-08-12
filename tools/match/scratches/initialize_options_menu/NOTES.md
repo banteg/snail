@@ -33,3 +33,11 @@ snapshot through the real receiver.
 `frontend_link_latch` byte and canonical `BorderManager` receiver, including
 the typed hide and allocation calls. The source remains exact at 127/127 with
 32 clean operands.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cROptions::Init()` and exports
+`?Init@cROptions@@QAEXXZ`. Its sole live Windows caller passes the 0x24-byte
+Options owner at `GameRoot + 0x4f388`; Android and iOS retain the same symbol
+and one body each. Matching remains exact at 127/127 with all 32 operands
+clean.

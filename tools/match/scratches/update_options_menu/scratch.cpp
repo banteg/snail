@@ -11,7 +11,7 @@ extern char g_fullscreen_off_text[]; // 0x4a3d4c
 
 void set_fullscreen_mode(char enabled);
 
-void cROptions::update_options_menu()
+void cROptions::AI()
 {
     g_runtime_config.stream_volume = music_volume_widget->slider_value;
     g_runtime_config.sample_volume = sound_volume_widget->slider_value;
@@ -43,7 +43,7 @@ void cROptions::update_options_menu()
     if ((flags & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED) != 0) {
         back_widget->widget_flags =
             flags & ~FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
-        destroy_options_menu();
+        UnInit();
         GameRoot* game = g_game;
         game->frontend_link_latch = 0;
         game = g_game;

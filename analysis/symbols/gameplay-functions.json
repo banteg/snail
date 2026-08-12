@@ -1859,16 +1859,25 @@
     {
       "address": "0x41ace0",
       "name": "initialize_options_menu",
+      "aliases": [
+        "cROptions_Init"
+      ],
       "description": "Constructs the Options screen widgets, seeds them from SnailMail.cfg, and links the fullscreen, sounds, music, and back controls. Cross-port Android and iOS symbols match this helper to `cROptions::Init()`."
     },
     {
       "address": "0x41aee0",
       "name": "destroy_options_menu",
+      "aliases": [
+        "cROptions_UnInit"
+      ],
       "description": "Exact void cROptions::UnInit(): tears down the Options widgets and writes SnailMail.cfg. Its sole Windows caller discards the save_config_file pointer left in EAX."
     },
     {
       "address": "0x41af60",
       "name": "update_options_menu",
+      "aliases": [
+        "cROptions_AI"
+      ],
       "description": "Runs the Options-screen state machine, including fullscreen toggles, slider updates, audio-volume refresh, save, and return to the owning front-end state. Cross-port Android and iOS symbols match this helper to `cROptions::AI()`."
     },
     {

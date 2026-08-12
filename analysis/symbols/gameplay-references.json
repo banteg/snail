@@ -370,6 +370,33 @@
       "description": "Windows cRDistort::Build(cRObject*) body under the authored Android owner and signature; Windows remains authoritative for bounds and render-tail behavior."
     },
     {
+      "address": "0x41ace0",
+      "name": "initialize_options_menu",
+      "kind": "function",
+      "aliases": [
+        "?Init@cROptions@@QAEXXZ"
+      ],
+      "description": "Exact Windows cROptions::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x41aee0",
+      "name": "destroy_options_menu",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cROptions@@QAEXXZ"
+      ],
+      "description": "Exact Windows cROptions::UnInit() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x41af60",
+      "name": "update_options_menu",
+      "kind": "function",
+      "aliases": [
+        "?AI@cROptions@@QAEXXZ"
+      ],
+      "description": "Exact Windows cROptions::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x42f0a0",
       "name": "load_png_image",
       "kind": "function",

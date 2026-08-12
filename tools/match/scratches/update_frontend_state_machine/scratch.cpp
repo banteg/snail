@@ -87,12 +87,12 @@ void cRPlayer::update_frontend_state_machine()
             frontend_state = 7;
         {
             GameRoot* owner = g_game;
-            owner->options.initialize_options_menu();
+            owner->options.Init();
         }
         case 7:
         {
             GameRoot* owner = g_game;
-            owner->options.update_options_menu();
+            owner->options.AI();
             break;
         }
         case 8:

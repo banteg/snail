@@ -6,9 +6,9 @@
 
 class cROptions {
 public:
-    void initialize_options_menu(); // @ 0x41ace0, cROptions::Init
-    void destroy_options_menu(); // @ 0x41aee0, cROptions::UnInit
-    void update_options_menu(); // @ 0x41af60, cROptions::AI
+    void Init();   // @ 0x41ace0
+    void UnInit(); // @ 0x41aee0
+    void AI();     // @ 0x41af60
     void apply_audio_config_volumes(); // @ 0x41b070, cROptions::Apply-compatible
 
     int previous_frontend_state; // +0x00
