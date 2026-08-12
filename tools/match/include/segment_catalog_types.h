@@ -119,7 +119,7 @@ typedef char SubSegmentParcelScanAnchor_must_be_0x4220[
 
 // Windows layout of the authored cRSubSegmentRaw records named by the iOS
 // cRSubTracks::Init(cRSubSegmentRaw**) symbol.
-struct SubSegmentRaw {
+struct cRSubSegmentRaw {
     int row_count;                 // +0x00, filled after measuring row 0
     int metadata_words[6];         // +0x04, authored static metadata unused here
     int path_index;                // +0x1c
@@ -128,6 +128,9 @@ struct SubSegmentRaw {
     char* glyph_rows[8];           // +0x28
 };
 
+typedef cRSubSegmentRaw SubSegmentRaw;
+typedef char cRSubSegmentRaw_must_be_0x48[
+    (sizeof(cRSubSegmentRaw) == 0x48) ? 1 : -1];
 typedef char SubSegmentRaw_must_be_0x48[
     (sizeof(SubSegmentRaw) == 0x48) ? 1 : -1];
 

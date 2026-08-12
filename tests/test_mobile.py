@@ -10070,6 +10070,8 @@ def test_core_gameplay_types_use_authored_primary_owners() -> None:
         "search_path_for_golb": "Find",
         "append_subgame_contact_target": "Register",
         "copy_segment_definition_to_level_slot": "ImportSegment",
+        "load_level_definition_file": "Init",
+        "load_builtin_segment_definitions": "Init",
     }
     for header_name, (authored, compatibility, functions) in owners.items():
         header = (include_root / header_name).read_text(encoding="utf-8")
@@ -10287,6 +10289,120 @@ def test_mobile_subtracks_import_recovers_authored_method_and_type() -> None:
     ).read_text(encoding="utf-8")
     assert caller.count("ImportSegment(") == 3
     assert "copy_segment_definition_to_level_slot(" not in caller
+
+
+def test_mobile_subtrack_owner_surface_is_authored_consistently() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entries = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    expected = {
+        "copy_segment_definition_to_level_slot": (
+            "cRSubTracks::ImportSegment(char*, cRSubSegment*)",
+            "cRSubTracks_ImportSegment",
+            "?ImportSegment@cRSubTracks@@QAEXPADPAUcRSubSegment@@@Z",
+            "cRSubTracks::ImportSegment(",
+        ),
+        "load_level_definition_file": (
+            "cRSubTracks::Init(char*)",
+            "cRSubTracks_InitPath",
+            "?Init@cRSubTracks@@QAEXPAD@Z",
+            "cRSubTracks::Init(char* filename)",
+        ),
+        "load_builtin_segment_definitions": (
+            "cRSubTracks::Init(cRSubSegmentRaw**)",
+            "cRSubTracks_InitRaw",
+            "?Init@cRSubTracks@@QAEXPAPAUcRSubSegmentRaw@@@Z",
+            "cRSubTracks::Init(\n    cRSubSegmentRaw** raw_segments)",
+        ),
+        "load_segment_definitions": (
+            "cRSMTracks::Import()",
+            "cRSMTracks_Import",
+            "?Import@cRSMTracks@@QAEXXZ",
+            "cRSMTracks::Import()",
+        ),
+        "load_level_definitions": (
+            "cRSMTracks::OpenLevels()",
+            "cRSMTracks_OpenLevels",
+            "?OpenLevels@cRSMTracks@@QAEXXZ",
+            "cRSMTracks::OpenLevels()",
+        ),
+    }
+
+    for windows_name, (mobile, alias, symbol, source_spelling) in (
+        expected.items()
+    ):
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Subtrack.o"
+        assert entry["android_symbol"] == mobile
+        assert entry["ios_symbol"] == mobile
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert references_by_name[windows_name]["aliases"] == [symbol]
+
+        unit_root = scratch_root / windows_name
+        source = (unit_root / "scratch.cpp").read_text(encoding="utf-8")
+        config = (unit_root / "scratch.conf").read_text(encoding="utf-8")
+        notes = (unit_root / "NOTES.md").read_text(encoding="utf-8")
+        assert source_spelling in source
+        assert f"SYMBOL={symbol}\n" in config
+        assert mobile.split("(", 1)[0] in notes
+
+    segment_header = (
+        repo_root / "tools/match/include/segment_catalog_types.h"
+    ).read_text(encoding="utf-8")
+    tracks_header = (
+        repo_root / "tools/match/include/sub_tracks.h"
+    ).read_text(encoding="utf-8")
+    assert "struct cRSubSegmentRaw {" in segment_header
+    assert "typedef cRSubSegmentRaw SubSegmentRaw;" in segment_header
+    assert "sizeof(cRSubSegmentRaw) == 0x48" in segment_header
+    assert "void Init(char* path); // @ 0x447480" in tracks_header
+    assert "void Init(cRSubSegmentRaw** raw_segments);" in tracks_header
+
+    frontend = (
+        scratch_root
+        / "load_frontend_level_by_mode_and_index/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    levels = (
+        scratch_root / "load_level_definitions/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    world = (
+        scratch_root / "initialize_game_assets_and_world/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    subgame = (
+        scratch_root / "initialize_subgame/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "Init(path);" in frontend
+    assert ".Init(name);" in levels
+    for caller in (world, subgame):
+        assert "level_definition_scratch.Init(" in caller
+        assert "g_builtin_segment_definitions);" in caller
+
+    matcher_sources = "\n".join(
+        path.read_text(encoding="utf-8")
+        for root in (repo_root / "tools/match/include", scratch_root)
+        for pattern in ("*.h", "scratch.cpp")
+        for path in root.rglob(pattern)
+        if "build" not in path.parts
+    )
+    assert "load_level_definition_file" not in matcher_sources
+    assert "load_builtin_segment_definitions" not in matcher_sources
 
 
 def test_border_presentation_types_use_authored_primary_owners() -> None:

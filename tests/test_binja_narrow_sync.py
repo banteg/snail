@@ -25350,8 +25350,14 @@ def test_c_r_sm_tracks_primary_ownership_stays_aligned() -> None:
             "load_level_definitions",
         }
     }
-    assert entries["load_segment_definitions"]["aliases"] == ["Import"]
-    assert entries["load_level_definitions"]["aliases"] == ["OpenLevels"]
+    assert entries["load_segment_definitions"]["aliases"] == [
+        "Import",
+        "cRSMTracks_Import",
+    ]
+    assert entries["load_level_definitions"]["aliases"] == [
+        "OpenLevels",
+        "cRSMTracks_OpenLevels",
+    ]
 
     for mobile_body, authored_method in (
         (

@@ -1,4 +1,4 @@
-// load_level_definition_file @ 0x447480 (thiscall, ret 0x4)
+// cRSubTracks::Init(char*) @ 0x447480 (thiscall, ret 0x4)
 
 #include "sprite.h"
 #include "landscape_manager.h"
@@ -28,7 +28,7 @@ struct LevelDefinitionParseBuffers {
     char background_name[512];
 };
 
-void cRSubTracks::load_level_definition_file(char* filename)
+void cRSubTracks::Init(char* filename)
 {
     char* cursor;
     char* line_cursor;

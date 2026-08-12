@@ -51,5 +51,5 @@ void cRSubTracks::load_frontend_level_by_mode_and_index(
         break;
     }
 
-    load_level_definition_file(path);
+    Init(path);
 }

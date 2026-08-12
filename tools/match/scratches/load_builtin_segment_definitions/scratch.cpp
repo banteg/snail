@@ -1,9 +1,9 @@
-// load_builtin_segment_definitions @ 0x448060 (thiscall, ret 0x4)
+// cRSubTracks::Init(cRSubSegmentRaw**) @ 0x448060 (thiscall, ret 0x4)
 
 #include "sub_tracks.h"
 
-void cRSubTracks::load_builtin_segment_definitions(
-    SubSegmentRaw** raw_segments)
+void cRSubTracks::Init(
+    cRSubSegmentRaw** raw_segments)
 {
     SubSegment* slots = segment_slots;
 

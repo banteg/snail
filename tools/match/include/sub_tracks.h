@@ -1,5 +1,5 @@
-// Windows cRSubTracks owner. The tail layout is recovered from
-// load_level_definition_file and shared with frontend level selection users.
+// Windows cRSubTracks owner. Android and iOS preserve its Init overloads and
+// ImportSegment member; the tail layout is shared with frontend level users.
 #ifndef SUB_TRACKS_H
 #define SUB_TRACKS_H
 
@@ -9,11 +9,11 @@
 class cRSubTracks {
 public:
     void load_frontend_level_by_mode_and_index(int mode, int level_index); // @ 0x443650
-    void load_level_definition_file(char* path); // @ 0x447480
+    void Init(char* path); // @ 0x447480
     void ImportSegment(
         char* segment_name,
         cRSubSegment* segment); // @ 0x447300
-    void load_builtin_segment_definitions(SubSegmentRaw** raw_segments); // @ 0x448060
+    void Init(cRSubSegmentRaw** raw_segments); // @ 0x448060
 
     int segment_count;                   // +0x000000
     SubSegment segment_slots[100];       // +0x000004

@@ -4500,11 +4500,17 @@
     {
       "address": "0x447480",
       "name": "load_level_definition_file",
+      "aliases": [
+        "cRSubTracks_InitPath"
+      ],
       "description": "Parses one Levels/*.txt definition into the owning SubTracks instance, including its SubSegments, display metadata, speed, hazard frequencies, landscape, parcel, and texture fields. Arcade definitions also populate the selected GalaxyStar child's detail and description text in the root-owned Galaxy controller. Symbol-preserving iOS builds name the corresponding void overload `cRSubTracks::Init(char*)`; all Windows callers discard the path-dependent incidental value left in EAX."
     },
     {
       "address": "0x448060",
       "name": "load_builtin_segment_definitions",
+      "aliases": [
+        "cRSubTracks_InitRaw"
+      ],
       "description": "Initializes the secondary SubTracks owner from the shipped `SubSegmentRaw*` table at `0x4a63d0`, including records such as `Start`, `Finish`, and `Filler` plus their eight authored glyph rows and path metadata. Every live 0x48-byte raw record also owns a distinct `marker_row` pointer at +0x24 whose width matches the glyph rows and whose text contains one `*`; Windows does not consume that lane or the preceding six metadata dwords here. The inconsistent incidental return register proves the member is void; symbol-preserving iOS builds name the corresponding overload `cRSubTracks::Init(cRSubSegmentRaw**)`."
     },
     {
@@ -4512,7 +4518,8 @@
       "name": "load_segment_definitions",
       "description": "Implements the void `cRSMTracks::Import()` member: parses SEGMENTS/*.TXT into the exact 0x25cfb4-byte cRSMTracks owner, stores the internal `Name:'...'` display label separately from the enumerated filename, and fills each 0x4088-byte entry's complete 256-row authored metadata bank with parcel, model, velocity, path, ring, ring-speed, and jetpack-off data.",
       "aliases": [
-        "Import"
+        "Import",
+        "cRSMTracks_Import"
       ]
     },
     {
@@ -4520,7 +4527,8 @@
       "name": "load_level_definitions",
       "description": "Implements the void `cRSMTracks::OpenLevels()` member by enumerating LEVELS/*.TXT and parsing each name into the root-owned SubTracks scratch definition.",
       "aliases": [
-        "OpenLevels"
+        "OpenLevels",
+        "cRSMTracks_OpenLevels"
       ]
     },
     {

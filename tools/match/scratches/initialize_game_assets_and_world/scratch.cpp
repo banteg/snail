@@ -149,7 +149,7 @@ char cRGame::initialize_game_assets_and_world()
     sm_tracks->OpenLevels();
     g_game->subgame.landscape_manager
         .Import(g_menu_background_script_path);
-    subgame.level_definition_scratch.load_builtin_segment_definitions(
+    subgame.level_definition_scratch.Init(
         g_builtin_segment_definitions);
 
     viewports[1].sort_key = 1;

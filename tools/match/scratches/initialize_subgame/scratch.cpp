@@ -224,7 +224,7 @@ void cRSubGame::Init()
 
     g_game->players[0].high_score_entry_pending = 0;
     g_game->players[0].selected_high_score_rank = 0;
-    level_definition_scratch.load_builtin_segment_definitions(
+    level_definition_scratch.Init(
         g_builtin_segment_definitions);
     cRSubGoldy* player = embedded_player();
     player->live_transform()->Identity();

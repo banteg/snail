@@ -22,7 +22,7 @@ void cRSMTracks::OpenLevels()
     if (count > 0) {
         char* name = names;
         do {
-            g_game->subgame.level_definition_scratch.load_level_definition_file(name);
+            g_game->subgame.level_definition_scratch.Init(name);
             ++index;
             name += 0x80;
         } while (index < count);

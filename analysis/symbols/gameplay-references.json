@@ -4178,6 +4178,42 @@
       "description": "Exact Windows cRSubTracks::ImportSegment(char*, cRSubSegment*) entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x447480",
+      "name": "load_level_definition_file",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSubTracks@@QAEXPAD@Z"
+      ],
+      "description": "Windows cRSubTracks::Init(char*) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x448060",
+      "name": "load_builtin_segment_definitions",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSubTracks@@QAEXPAPAUcRSubSegmentRaw@@@Z"
+      ],
+      "description": "Windows cRSubTracks::Init(cRSubSegmentRaw**) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x448160",
+      "name": "load_segment_definitions",
+      "kind": "function",
+      "aliases": [
+        "?Import@cRSMTracks@@QAEXXZ"
+      ],
+      "description": "Windows cRSMTracks::Import() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x448900",
+      "name": "load_level_definitions",
+      "kind": "function",
+      "aliases": [
+        "?OpenLevels@cRSMTracks@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSMTracks::OpenLevels() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4489e0",
       "name": "kill_tip_widgets",
       "kind": "function",
