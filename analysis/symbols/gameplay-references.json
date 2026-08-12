@@ -84,6 +84,24 @@
       "description": "Exact Windows cRBorderManager::UnHideBorders() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x4034d0",
+      "name": "update_input_ok",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRInputOK@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRInputOK::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x403560",
+      "name": "initialize_input_ok",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRInputOK@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRInputOK::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x403be0",
       "name": "reset_tooltip",
       "kind": "function",

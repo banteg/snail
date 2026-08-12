@@ -32,5 +32,5 @@ void cRBorder::border_input_text_init(int capacity, char* text, int flags)
 
     layout_frontend_widget();
     if ((flags & 0xc) != 0)
-        input_ok_state()->initialize_input_ok();
+        input_ok_state()->Init();
 }

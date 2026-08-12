@@ -134,6 +134,9 @@
     {
       "address": "0x403560",
       "name": "initialize_input_ok",
+      "aliases": [
+        "cRInputOK_Init"
+      ],
       "description": "Exact void cRInputOK::Init() member: allocates the manager-owned OK widget, binds it to the borrowed source widget, initializes its presentation, and finishes by calling the void layout helper. Its only native caller discards EAX."
     },
     {

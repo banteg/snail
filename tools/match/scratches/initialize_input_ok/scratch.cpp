@@ -1,11 +1,11 @@
-// initialize_input_ok @ 0x403560 (thiscall)
+// cRInputOK::Init @ 0x403560 (thiscall)
 
 #include "border_manager.h"
 #include "game_root.h"
 #include "input_ok_state.h"
 
 
-void cRInputOK::initialize_input_ok()
+void cRInputOK::Init()
 {
     cRBorder* widget =
         g_game->border_manager.GetBorder();
@@ -21,5 +21,5 @@ void cRInputOK::initialize_input_ok()
         &source->idle_fill_color,
         0,
         0.0f);
-    update_input_ok();
+    AI();
 }

@@ -1,8 +1,8 @@
-// update_input_ok @ 0x4034d0 (thiscall)
+// cRInputOK::AI @ 0x4034d0 (thiscall)
 
 #include "input_ok_state.h"
 
-void cRInputOK::update_input_ok()
+void cRInputOK::AI()
 {
     cRBorder* source = source_widget;
     unsigned int flags = source->input_flags;

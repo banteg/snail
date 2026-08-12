@@ -13,7 +13,7 @@ void cRBorder::border_input_text()
     char key = read_repeating_text_input_key_code();
 
     if ((input_flags & 0x0c) != 0) {
-        input_ok_state()->update_input_ok();
+        input_ok_state()->AI();
         if ((input_ok_state()->ok_widget->widget_flags
                 & FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED)
             != 0)

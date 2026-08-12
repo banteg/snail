@@ -1,12 +1,14 @@
-# initialize_input_ok @ 0x403560
+# cRInputOK::Init @ 0x403560
 
-Exact 23/23-instruction initializer for the reused 0x24-byte `cRInputOK`
-overlay. Android retains the authored `cRInputOK::Init()` vocabulary. The
-member allocates one BorderManager-owned OK widget, stores that handle beside
-the borrowed source widget, initializes its presentation, and delegates final
-placement to `update_input_ok`.
+Exact match: 100.00%, 23/23 instructions, with all five masked operands clean.
 
-2026-07-16 void ABI recovery: the only native caller at
-`border_input_text_init +0xae` enters its epilogue immediately after the call.
-The natural `void` source remains exact with all five masked operands clean;
-the former result was only residue from the nested void layout call.
+This lifecycle method allocates one BorderManager-owned OK border, binds it
+beside the borrowed source border, initializes its presentation, and delegates
+final placement to `cRInputOK::AI()`.
+
+Android `Border.o` independently exports `cRInputOK::Init()` and preserves the
+same lifecycle; no iOS export survives. Live Windows analysis confirms a void
+thiscall whose sole caller is `cRBorder::InputTextInit`.
+
+The stable matcher identity remains `initialize_input_ok`; source and
+relocations now use the authored member name.

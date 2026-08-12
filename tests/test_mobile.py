@@ -10666,12 +10666,76 @@ def test_input_ok_overlay_uses_authored_primary_owner() -> None:
     assert "sizeof(cRInputOK)" in header
     assert "typedef cRInputOK InputOkState;" in forward
     assert "cRInputOK* input_ok_state()" in border
-    for function in ("update_input_ok", "initialize_input_ok"):
+    methods = {
+        "update_input_ok": "AI",
+        "initialize_input_ok": "Init",
+    }
+    for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRInputOK::{function}" in source
+        assert f"cRInputOK::{method}" in source
         assert "FrontendWidget*" not in source
+
+    crosswalk = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    expected = {
+        "update_input_ok": (
+            "cRInputOK::AI()",
+            "cRInputOK_AI",
+            "?AI@cRInputOK@@QAEXXZ",
+        ),
+        "initialize_input_ok": (
+            "cRInputOK::Init()",
+            "cRInputOK_Init",
+            "?Init@cRInputOK@@QAEXXZ",
+        ),
+    }
+    for function, (mobile_symbol, alias, object_symbol) in expected.items():
+        entry = crosswalk[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Border.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry.get("ios_symbol") is None
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    assert "void AI(); // @ 0x4034d0" in header
+    assert "void Init(); // @ 0x403560" in header
+    assert "void update_input_ok();" not in header
+    assert "void initialize_input_ok();" not in header
+    initializer = (
+        scratch_root / "initialize_input_ok/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert initializer.count("AI();") == 1
+    input_text_init = (
+        scratch_root / "border_input_text_init/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    input_text = (
+        scratch_root / "border_input_text/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert input_text_init.count("input_ok_state()->Init();") == 1
+    assert input_text.count("input_ok_state()->AI();") == 1
 
 
 def test_cameraman_uses_authored_primary_owner() -> None:
