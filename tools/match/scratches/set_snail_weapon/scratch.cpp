@@ -3,7 +3,7 @@
 #include "audio_system.h"
 #include "player.h"
 
-void Snail::set_snail_weapon(int shoot_flags)
+void cRSnail::set_snail_weapon(int shoot_flags)
 {
     bool any_channel_changed;
     int target_channel_0_state;

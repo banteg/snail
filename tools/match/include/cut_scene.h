@@ -5,8 +5,6 @@
 #include "player_fwd.h"
 #include "transform_matrix.h"
 
-class Snail;
-
 enum CutSceneState {
     CUT_SCENE_STATE_INACTIVE = 0,
     CUT_SCENE_STATE_INTRO_PENDING = 1,
@@ -27,7 +25,7 @@ public:
     void Init(); // @ 0x446130
     void AI(); // @ 0x4466d0
 
-    Snail* presentation; // +0x00, non-owning parent cRSnail
+    cRSnail* presentation; // +0x00, non-owning parent cRSnail
     cRSubGoldy* player; // +0x04, non-owning Goldy owner
     int camera_mode; // +0x08
     CutSceneState state; // +0x0c

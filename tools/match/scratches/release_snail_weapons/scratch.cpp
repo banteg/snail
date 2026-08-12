@@ -5,7 +5,7 @@
 
 int next_math_random_value();
 
-void Snail::release_snail_weapons()
+void cRSnail::release_snail_weapons()
 {
     if (channel_release_steps_active == 0) {
         float random_x =

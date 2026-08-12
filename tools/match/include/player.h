@@ -38,8 +38,6 @@ class cRSubGame;
 class cRSubHealth;
 typedef cRSubHealth SubHealth;
 
-class Snail;
-
 // Goldy borrows the trailing InputState subobject from one of the root-owned
 // GameInput records. These aliases retain the gameplay vocabulary while the
 // shared owner fixes the complete 0x38-byte layout.
@@ -88,9 +86,9 @@ struct PresentationWobbleController {
 typedef char PresentationWobbleController_must_be_0x10[
     (sizeof(PresentationWobbleController) == 0x10) ? 1 : -1];
 
-class Snail : public RenderableBod {
+class cRSnail : public RenderableBod {
 public:
-    Snail* initialize_player_presentation_controller(); // @ 0x4086d0
+    cRSnail* initialize_player_presentation_controller(); // @ 0x4086d0
     void noop_runtime_ai();                   // folded @ 0x407b50; cRSnail::AI()
     void release_snail_weapons();          // @ 0x442e40
     void set_snail_jetpack(int state);      // @ 0x445860
@@ -132,8 +130,7 @@ public:
     cRSnailSkin snail_skin;                     // +0x1938, authored cRSnailSkin
     cRCutScene cutscene;                        // +0x1958, authored cRCutScene
 };
-typedef char Snail_must_be_0x19b4[(sizeof(Snail) == 0x19b4) ? 1 : -1];
-typedef Snail cRSnail;
+typedef char Snail_must_be_0x19b4[(sizeof(cRSnail) == 0x19b4) ? 1 : -1];
 
 // Capability bit composed with the lower weapon-family selectors by
 // cRSubGoldy::SetShootFlags. The lower selector bits remain intentionally
@@ -289,7 +286,7 @@ public:
     char unknown_2974[0x2980 - 0x2974];
     // Legacy spelling: runtime consumers treat this as the trailing/lower edge.
     float active_window_min_z;               // +0x2980, lower/trailing active bound
-    Snail presentation;                       // +0x2984, authored cRSnail
+    cRSnail presentation;                     // +0x2984, authored cRSnail
     int parcels_collected;                 // +0x4338
     char unknown_433c[0x4340 - 0x433c];
     int visible_life_stock;                // +0x4340

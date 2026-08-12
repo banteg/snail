@@ -2,7 +2,7 @@
 
 #include "player.h"
 
-void Snail::build_snail_world_hotspots()
+void cRSnail::build_snail_world_hotspots()
 {
     for (int index = 0; index < SNAIL_HOTSPOT_COUNT; ++index) {
         TransformMatrix* source_matrix = &snail_hotspot_body.transform;

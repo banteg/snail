@@ -2,9 +2,8 @@
 #ifndef SNAIL_SKIN_H
 #define SNAIL_SKIN_H
 
+#include "player_fwd.h"
 #include "texture_fwd.h"
-
-class Snail;
 
 enum {
     SNAIL_SKIN_SLOT_DEFAULT = 0,
@@ -21,7 +20,7 @@ public:
 
     int selected_slot;             // +0x00
     cRTexture* material_overrides[SNAIL_SKIN_SLOT_COUNT]; // +0x04
-    Snail* owner_snail;            // +0x10, non-owning parent backlink
+    cRSnail* owner_snail;          // +0x10, non-owning parent backlink
     int active;                    // +0x14
     float progress;                // +0x18
     float progress_step;           // +0x1c

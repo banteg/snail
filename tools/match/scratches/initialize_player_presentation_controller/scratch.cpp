@@ -12,7 +12,7 @@ typedef RenderableBod* (RenderableBod::*RenderableBodConstructor)();
 void __stdcall initialize_array_with_constructor(
     void* base, int stride, int count, RenderableBodConstructor constructor);
 
-Snail* Snail::initialize_player_presentation_controller()
+cRSnail* cRSnail::initialize_player_presentation_controller()
 {
     initialize_renderable_bod();
 

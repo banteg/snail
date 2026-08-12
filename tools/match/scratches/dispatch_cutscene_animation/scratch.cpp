@@ -4,7 +4,7 @@
 #include "object_render_types.h"
 #include "player.h"
 
-void Snail::dispatch_cutscene_animation(
+void cRSnail::dispatch_cutscene_animation(
     int animation_id,
     unsigned char immediate,
     int mode_flags)

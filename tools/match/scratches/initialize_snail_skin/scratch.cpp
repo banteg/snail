@@ -5,7 +5,7 @@
 
 void cRSnailSkin::initialize_snail_skin()
 {
-    Snail* owner = &g_game->subgame.embedded_player()->presentation;
+    cRSnail* owner = &g_game->subgame.embedded_player()->presentation;
     selected_slot = SNAIL_SKIN_SLOT_DEFAULT;
     active = 0;
     owner_snail = owner;

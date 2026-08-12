@@ -6347,6 +6347,44 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
     assert "cRBorderManager border_manager" in game_root
 
 
+def test_snail_presentation_uses_authored_primary_owner() -> None:
+    repo_root = Path(__file__).parents[1]
+    include_root = repo_root / "tools/match/include"
+    scratch_root = repo_root / "tools/match/scratches"
+    player = (include_root / "player.h").read_text(encoding="utf-8")
+    player_fwd = (include_root / "player_fwd.h").read_text(
+        encoding="utf-8"
+    )
+
+    assert "class cRSnail : public RenderableBod" in player
+    assert "sizeof(cRSnail)" in player
+    assert "typedef cRSnail Snail;" in player_fwd
+    assert "cRSnail presentation" in player
+    for function in (
+        "initialize_player_presentation_controller",
+        "update_snail_presentation",
+        "release_snail_weapons",
+        "dispatch_cutscene_animation",
+        "set_snail_jetpack",
+        "set_snail_weapon",
+        "build_snail_world_hotspots",
+        "extract_snail_local_hotspots",
+    ):
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        assert f"cRSnail::{function}" in source
+
+    snail_skin = (include_root / "snail_skin.h").read_text(encoding="utf-8")
+    cut_scene = (include_root / "cut_scene.h").read_text(encoding="utf-8")
+    assert "cRSnail* owner_snail" in snail_skin
+    assert "cRSnail* presentation" in cut_scene
+    folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert "cRSnail::" not in folded
+
+
 def test_mobile_cli_ranks_pending_verified_bodies(
     capsys,
     monkeypatch,

@@ -6135,7 +6135,11 @@ def test_mobile_noop_vtables_recover_distinct_folded_owners() -> None:
     assert "typedef RenderCamera cRCamera;" in viewport_header
     assert "typedef GolbRocket cRGolbRocket;" in golb_header
     assert "GolbRocket tertiary_body;" in golb_header
-    assert "typedef Snail cRSnail;" in player_header
+    player_fwd_header = (
+        repo_root / "tools/match/include/player_fwd.h"
+    ).read_text(encoding="utf-8")
+    assert "class cRSnail : public RenderableBod" in player_header
+    assert "typedef cRSnail Snail;" in player_fwd_header
     assert "typedef RenderableBod cRGolbRocket;" in analysis_header
     assert "cRGolbRocket tertiary_body;" in analysis_header
 

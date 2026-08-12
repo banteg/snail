@@ -6,4 +6,7 @@
 class cRSubGoldy;
 typedef cRSubGoldy Player;
 
+class cRSnail;
+typedef cRSnail Snail;
+
 #endif
