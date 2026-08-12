@@ -142,7 +142,7 @@ void cRSubGame::RemoveBods()
          m < (int)(sizeof(player.golb_shots) / sizeof(player.golb_shots[0]));
          ++m) {
         if (shot->state == 1)
-            shot->kill_golb();
+            shot->Kill();
         ++shot;
     }
 

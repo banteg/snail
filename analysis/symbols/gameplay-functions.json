@@ -1510,6 +1510,9 @@
     {
       "address": "0x414670",
       "name": "kill_golb",
+      "aliases": [
+        "cRSubGolb_Kill"
+      ],
       "description": "Void `cRSubGolb::Kill()` teardown for one 0x2e8-byte `GolbShot`: removes its inherited zero-offset body, releases the kind-specific sprite, complete embedded vapour body, or tertiary rocket and homing-target reservation, and marks the owned player-bank slot inactive."
     },
     {

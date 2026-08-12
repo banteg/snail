@@ -2134,6 +2134,15 @@
       "description": "Queries the Direct3D device caps into the renderer wrapper and logs the maximum texture width and height."
     },
     {
+      "address": "0x414670",
+      "name": "kill_golb",
+      "kind": "function",
+      "aliases": [
+        "?Kill@cRSubGolb@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSubGolb::Kill() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x5031bc",
       "name": "g_object_grouped_vertex_cursor",
       "kind": "global",

@@ -10648,19 +10648,20 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
     assert "cRGolbRocket tertiary_body" in header
     assert "cRSubGolb golb_shots[12]" in player
 
-    for function in (
-        "initialize_golb_shot",
-        "kill_golb",
-        "update_golb_ai",
-        "create_golb",
-        "spawn_golb_trail_sprite",
-        "spawn_golb_smoke",
-        "spawn_golb_impact_sprite",
-    ):
+    methods = {
+        "initialize_golb_shot": "initialize_golb_shot",
+        "kill_golb": "Kill",
+        "update_golb_ai": "update_golb_ai",
+        "create_golb": "create_golb",
+        "spawn_golb_trail_sprite": "spawn_golb_trail_sprite",
+        "spawn_golb_smoke": "spawn_golb_smoke",
+        "spawn_golb_impact_sprite": "spawn_golb_impact_sprite",
+    }
+    for function, method in methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRSubGolb::{function}" in source
+        assert f"cRSubGolb::{method}" in source
     for function in (
         "initialize_path_follow_golb",
         "traverse_path_follow_golb",
@@ -10674,6 +10675,66 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
         encoding="utf-8"
     )
     assert "cRGolbRocket::" not in folded
+
+
+def test_mobile_golb_kill_recovers_authored_method() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entry = next(
+        entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+        if entry["windows_name"] == "kill_golb"
+    )
+    assert entry["status"] == "verified"
+    assert entry["confidence"] == "high"
+    assert entry["source_object"] == "Golb.o"
+    assert entry["android_symbol"] == "cRSubGolb::Kill()"
+    assert entry["ios_symbol"] == "cRSubGolb::Kill()"
+    assert entry["android_body_count"] == 1
+    assert entry["ios_body_count"] == 1
+
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    assert functions_by_name["kill_golb"]["aliases"] == [
+        "cRSubGolb_Kill"
+    ]
+    object_symbol = "?Kill@cRSubGolb@@QAEXXZ"
+    assert references_by_name["kill_golb"]["aliases"] == [object_symbol]
+
+    source = (scratch_root / "kill_golb/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    config = (scratch_root / "kill_golb/scratch.conf").read_text(
+        encoding="utf-8"
+    )
+    header = (repo_root / "tools/match/include/golb.h").read_text(
+        encoding="utf-8"
+    )
+    assert "void cRSubGolb::Kill()" in source
+    assert f"SYMBOL={object_symbol}\n" in config
+    assert "void Kill(); // @ 0x414670" in header
+    assert "void kill_golb();" not in header
+
+    update = (scratch_root / "update_golb_ai/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    cleanup = (scratch_root / "remove_subgame_bods/scratch.cpp").read_text(
+        encoding="utf-8"
+    )
+    assert update.count("Kill();") == 5
+    assert cleanup.count("->Kill();") == 1
+    assert "kill_golb(" not in update
+    assert "kill_golb(" not in cleanup
 
 
 def test_tutorial_uses_authored_primary_owner() -> None:

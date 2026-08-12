@@ -1,76 +1,19 @@
-# kill_golb @ 0x414670
+# cRSubGolb::Kill @ 0x414670
 
-Exact match: 100.00%, 132/132 instructions.
+Exact match: 100.00%, 132/132 instructions, with all 16 masked operands
+clean.
 
-This helper tears down one live Golb projectile:
+This authored teardown removes the inherited zero-offset body from the active
+list, clears the live state, and releases the kind-specific child: the kind-0
+sprite, kind-1 embedded `cRVapour` body, or kind-2 `cRGolbRocket` body and its
+borrowed homing-target reservation. The 0x2e8-byte Windows `cRSubGolb` layout
+and all three subobject offsets are independently shared by its constructor,
+creator, updater, and cleanup paths.
 
-- removes the primary projectile BOD from the shared active/free list;
-- clears the live state at `+0x244`;
-- for kind `0`, kills the owner sprite at `+0x248`;
-- for kind `1`, removes the embedded `Vapour::body` at `+0x80`; and
-- for kind `2`, removes the tertiary BOD at `+0x118` and clears
-  `BOD_FLAG_SUPPRESS_CONTACT` on the reserved contact-target object at
-  `+0x198`.
+Android and iOS `Golb.o` both export `cRSubGolb::Kill()` and preserve the same
+kind dispatch. Live Windows analysis confirms a void thiscall on the same
+zero-offset owner and six native calls: five from `cRSubGolb::AI()` and one
+from subgame cleanup.
 
-The exact source shape uses the shared typed `BodNode`/`BodList` intrusive-list
-implementation as exact `recycle_bod_to_free_list`, spells the kind dispatch as
-a `switch`, and calls `kill_sprite` as a sprite member function.
-
-Type consolidation:
-
-- `GolbShot` is now promoted in `tools/match/include/golb.h` for this
-  teardown and the small trail/smoke/impact sprite emitters. This exact match
-  anchors the primary/Vapour/tertiary `BodNode` offsets, `kind +0x1c0`,
-  `state +0x244`, and the variant-specific owners at `+0x198`/`+0x248`.
-- The exact `EnemyManager` search/register pair proves that `+0x198`
-  is a borrowed `ContactTargetObject*`: `create_golb` sets its reservation bit
-  and this teardown clears the same bit. Promoting that owner leaves the exact
-  132/132 instruction body unchanged.
-
-2026-07-14 root-list closure: all three variant removals now name
-`GameRoot::active_bod_list` directly. The canonical owner graph preserves the
-exact 132/132 body and all 16 clean operands.
-
-The kind-0 `+0x248` owner is now shared as `GolbShot::render_sprite` across
-creation, per-tick position updates, and this exact teardown. Replacing the
-last local cast preserves the exact 132/132 body and all 16 clean operands.
-
-## 2026-07-16 lifecycle receiver contract
-
-The exact teardown paths and mobile `cRSubGolb::Kill()` symbol establish
-`void __thiscall kill_golb(GolbShot*)`: the inherited body/list operations do
-not make the receiver a `FrameBodBase`, and none of the callers consume a
-result. Both analysis replay catalogs now preserve that owner and void return.
-The exact 132/132 match remains unchanged.
-
-## 2026-07-17 enclosing-shot lifetime closure
-
-The callee-saved ESI lifetime is now replayed as the enclosing `GolbShot*`, so
-all three teardown branches retain their real subobject owners: `primary_body`,
-`vapour.body`, and `tertiary_body`. The complete `Vapour` extent ending at
-`+0x114` rules out the old `secondary_body` alias, while the tertiary transform
-accounts for the former direct `live_matrix +0x150` view.
-
-Both tracked decompilers now show those owners without raw `+0x80`/`+0x118`
-casts. The matcher stays exact at 132/132 instructions with all 16 masked
-operands clean.
-
-## 2026-07-23 canonical kind-zero Sprite field
-
-The analysis layout now names `GolbShot +0x248` directly as
-`Sprite* render_sprite`, completing the same ownership already used by this
-exact source. Binary Ninja now emits `kill_sprite(shot->render_sprite)`;
-focused matching remains exact at 132/132 with all 16 masks clean.
-
-## 2026-07-28 inherited cRSubGolb teardown owner
-
-Android's expanded `cRSubGoldy` constructor proves that every `cRSubGolb`
-begins with an inherited `cRBodPos`, then installs the actor vtable on that
-base. Windows independently constructs and dispatches the same zero-offset
-body. The teardown now accesses its inherited `BodNode` fields directly rather
-than naming a separately owned `primary_body`.
-
-This is an ownership correction, not byte shaping: the function remains exact
-at 132/132 instructions with all 16 masked operands clean. Binary Ninja and
-IDA 9.4 both read back `shot->bod.bod` for the primary removal while retaining
-the distinct embedded `vapour` and `tertiary_body` children.
+The stable matcher identity remains `kill_golb`; source and relocations now use
+the authored member name.

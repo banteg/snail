@@ -1,4 +1,4 @@
-// cRSubGolb::Kill() / kill_golb @ 0x414670
+// cRSubGolb::Kill() @ 0x414670
 
 #include "bod_flags.h"
 #include "game_root.h"
@@ -7,7 +7,7 @@
 int report_errorf(char* format, ...);
 
 
-void cRSubGolb::kill_golb()
+void cRSubGolb::Kill()
 {
     BodList* list = &g_game->active_bod_list;
     unsigned int flags = list_flags;

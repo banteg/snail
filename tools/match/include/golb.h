@@ -73,7 +73,7 @@ typedef cRGolbRocket GolbRocket;
 class cRSubGolb : public RenderableBod {
 public:
     cRSubGolb* initialize_golb_shot(); // @ 0x408690
-    void kill_golb(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
+    void Kill(); // @ 0x414670, iOS/Android cRSubGolb::Kill()
     void update_golb_ai(); // @ 0x414820, iOS/Android cRSubGolb::AI()
     void create_golb(cRSubGoldy* player, int spawn_selector, int shot_slot_index); // @ 0x415280
     cRSprite* spawn_golb_trail_sprite(Vector3* position); // @ 0x415bb0,

@@ -237,7 +237,7 @@ void cRSubGolb::update_golb_ai()
                             delta.z = -(deflect_speed * probe.z);
                             velocity = delta;
                             if (kind == 1) {
-                                kill_golb();
+                                Kill();
                                 spawn_golb_impact_sprite(new_output);
                                 ((cRSlug*)((char*)game
                                     + SLUG_SLOT_STRIDE * slug_index
@@ -245,7 +245,7 @@ void cRSubGolb::update_golb_ai()
                                 return;
                             }
                             if (kind == 2) {
-                                kill_golb();
+                                Kill();
                                 spawn_golb_impact_sprite(new_output);
                                 ((cRSlug*)((char*)game
                                     + SLUG_SLOT_STRIDE * slug_index
@@ -257,7 +257,7 @@ void cRSubGolb::update_golb_ai()
                                     slug_bounce_armed = 1;
                                     return;
                                 }
-                                kill_golb();
+                                Kill();
                                 spawn_golb_impact_sprite(new_output);
                                 return;
                             }
@@ -269,7 +269,7 @@ void cRSubGolb::update_golb_ai()
             }
 
 garbage_hit:
-            kill_golb();
+            Kill();
             spawn_golb_impact_sprite(new_output);
             if (kind == 2) {
                 for (cRSubGarbage* splash = game->garbage_hazards.active_head;
@@ -303,5 +303,5 @@ wall_probe:
         }
     }
 retire:
-    kill_golb();
+    Kill();
 }
