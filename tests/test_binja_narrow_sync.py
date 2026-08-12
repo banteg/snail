@@ -998,10 +998,13 @@ def test_cheat_state_replay_keeps_exact_global_owner_and_authored_abis() -> None
     assert "char bytes[8];" in analysis_header
     assert "CheatTextBuffer recent_text;" in analysis_header
     assert "extern CheatState g_cheat_state;" in analysis_header
-    assert "void initialize_cheat();" in matcher_header
-    assert "void update_cheat();" in matcher_header
-    assert "bool match_cheat_text(char* text);" in matcher_header
+    assert "void Init();" in matcher_header
+    assert "void AI();" in matcher_header
+    assert "bool MatchText(char* text);" in matcher_header
     assert "cRCheat::Init()" in functions
+    assert "?Init@cRCheat@@QAEXXZ" in references
+    assert "?AI@cRCheat@@QAEXXZ" in references
+    assert "?MatchText@cRCheat@@QAE_NPAD@Z" in references
     assert '"gCheat"' in references
     assert (
         'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/cheat_state_types.h"'

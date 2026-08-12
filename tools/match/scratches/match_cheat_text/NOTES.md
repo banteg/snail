@@ -43,3 +43,11 @@ The paired decompiler replays also name the reverse comparison pointer
 `recent_text_cursor` from its exact ECX/EDX SSA and Hex-Rays definition
 identities. It remains a `char*` borrow into the owned eight-byte window rather
 than a fabricated allocation or wider field.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRCheat::MatchText(char*)` and
+exports `?MatchText@cRCheat@@QAE_NPAD@Z`. All three live Windows callsites are
+inside `cRCheat::AI()` and preserve its receiver in ECX; Android independently
+retains the same bool member and one body. Matching remains exact at 42/42
+instructions with both operands clean.

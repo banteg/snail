@@ -98,7 +98,7 @@ char cRGame::initialize_game_assets_and_world()
     frontend_link_latch = 0;
     subgame.subgame_pause_gate = 0;
 
-    g_cheat_state.initialize_cheat();
+    g_cheat_state.Init();
     intro.hide_for_replay_latch = 0;
     subgame.BlinkRandInit();
     subgame.SetRate(1.1f);

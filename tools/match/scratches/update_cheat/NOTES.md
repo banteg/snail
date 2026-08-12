@@ -53,3 +53,11 @@ Binary Ninja and Hex-Rays now persist the descending shift cursor as
 `recent_text_cursor`, an exact `char*` borrow starting at `recent_text[7]`.
 Both replays verify the cursor's native register/definition identity before
 mutation, so this clarification does not invent a second buffer owner.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRCheat::AI()` and exports
+`?AI@cRCheat@@QAEXXZ`. Its sole live Windows frame caller loads `0x4b2f40`
+into ECX; Android and iOS retain the same symbol and one body each. Its three
+owned comparisons now call `MatchText()` directly. Matching remains exact at
+52/52 instructions with all seven operands clean.

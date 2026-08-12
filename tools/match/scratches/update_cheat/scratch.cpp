@@ -2,7 +2,7 @@
 
 #include "cheat_state.h"
 
-void cRCheat::update_cheat()
+void cRCheat::AI()
 {
     char key = read_pressed_text_input_key_code();
     if (key >= 'a' && key <= 'z') {
@@ -18,13 +18,13 @@ void cRCheat::update_cheat()
 
         recent_text[0] = key;
 
-        if (match_cheat_text("NEWTON") != 0) {
+        if (MatchText("NEWTON") != 0) {
             flags |= CHEAT_STATE_FLAG_NEWTON;
         }
-        if (match_cheat_text("AUTUMN") != 0) {
+        if (MatchText("AUTUMN") != 0) {
             flags |= CHEAT_STATE_FLAG_AUTUMN;
         }
-        key = match_cheat_text("SHEEP");
+        key = MatchText("SHEEP");
         if (key != 0) {
             int value = flags;
             value |= CHEAT_STATE_FLAG_SHEEP;

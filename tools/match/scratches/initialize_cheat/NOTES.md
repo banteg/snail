@@ -15,3 +15,10 @@ zero temporary to clear `flags`; that residue is not an owned result. Removing
 the synthetic integer return preserves the exact 5/5 instruction body. The
 paired analysis lane now records the exact 0x10-byte owner and the adjacent
 `g_animation_directory +0x10` boundary.
+
+## 2026-08-12 authored method surface
+
+The scratch now spells the exact member as `cRCheat::Init()` and exports
+`?Init@cRCheat@@QAEXXZ`. Its sole live Windows caller passes the global
+0x10-byte owner at `0x4b2f40`; Android and iOS independently retain the same
+symbol and one body each. Matching remains exact at 5/5 instructions.

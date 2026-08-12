@@ -9,9 +9,9 @@ enum CheatStateFlag {
 
 class cRCheat {
 public:
-    void initialize_cheat();
-    void update_cheat();
-    bool match_cheat_text(char* text);
+    void Init();
+    void AI();
+    bool MatchText(char* text);
 
     int flags; // +0x00
     int unused_04; // +0x04

@@ -30,6 +30,33 @@
       "description": "Frontend sprite-button flag word passed to initialize_frontend_sprite_button by initialize_warning."
     },
     {
+      "address": "0x404740",
+      "name": "initialize_cheat",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRCheat@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRCheat::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x404750",
+      "name": "update_cheat",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRCheat@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRCheat::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4047d0",
+      "name": "match_cheat_text",
+      "kind": "function",
+      "aliases": [
+        "?MatchText@cRCheat@@QAE_NPAD@Z"
+      ],
+      "description": "Exact Windows bool cRCheat::MatchText(char*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x408040",
       "name": "initialize_noop_renderable_bod",
       "kind": "function",

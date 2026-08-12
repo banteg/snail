@@ -22,7 +22,7 @@ int cRGame::run_frame_update()
 {
     fade.AI();
     g_audio_backend.noop_runtime_ai();
-    g_cheat_state.update_cheat();
+    g_cheat_state.AI();
     g_voice_manager.AI();
 
     int sprite_update_count = 0;
