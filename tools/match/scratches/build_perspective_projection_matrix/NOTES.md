@@ -2,6 +2,10 @@
 
 Projection helper at `0x450314`.
 
+`scratch.conf` pins `END=0x4503a8`, immediately after the native `ret 0x14`.
+Without that bound, the next curated symbol at `0x451ad9` makes the matcher
+attribute nearly 6 KiB of unrelated address-space gap to this 148-byte helper.
+
 Recovered behavior:
 
 - stdcall helper returning the destination matrix pointer;
