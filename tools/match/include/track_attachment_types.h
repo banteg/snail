@@ -455,8 +455,8 @@ public:
     // VC6 folds this empty owner constructor into the shared body at
     // 0x408600. The cRSubGame constructor passes cRSubGoldy::follow_state exactly.
     cRPathFollowGoldy* noop_runtime_slot_constructor();
-    void begin_track_attachment_follow_state(
-        cRSubLoc* source_cell, const Vector3* world_position, cRSubGoldy* player); // @ 0x420c40
+    void Init(
+        cRSubLoc* source_cell, tVector& world_position, cRSubGoldy* player); // @ 0x420c40
     int update_track_attachment_follow_state(
         float rate, Vector3* out_position, Vector3* motion); // @ 0x420cb0
 

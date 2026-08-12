@@ -3,15 +3,15 @@
 #include "game_root.h"
 
 
-void cRPathFollowGoldy::begin_track_attachment_follow_state(
-    cRSubLoc* cell, const Vector3* world_position, cRSubGoldy* owning_player)
+void cRPathFollowGoldy::Init(
+    cRSubLoc* cell, tVector& world_position, cRSubGoldy* owning_player)
 {
     active = 1;
     template_record = cell->attachment_template_record;
     source_cell = cell;
     sample_index = 0;
-    progress = world_position->z - cell->position.z;
-    float height = world_position->y - 0.49f;
+    progress = world_position.z - cell->position.z;
+    float height = world_position.y - 0.49f;
     player = owning_player;
     vertical_offset = height;
     int row_index = cell->Yi();

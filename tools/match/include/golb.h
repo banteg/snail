@@ -35,9 +35,9 @@ typedef char GolbShotHomingStateOverlay_must_be_0x28[
 
 class cRPathFollowGolb {
 public:
-    int initialize_path_follow_golb(
+    void Init(
         cRSubLoc* source_cell,
-        const Vector3* position,
+        tVector& position,
         cRSubGolb* shot_); // @ 0x421770
     int traverse_path_follow_golb(float path_factor, Vector3* position, Vector3* velocity); // @ 0x4217b0
 

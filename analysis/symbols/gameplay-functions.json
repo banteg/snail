@@ -2059,6 +2059,9 @@
     {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state",
+      "aliases": [
+        "cRPathFollowGoldy_Init"
+      ],
       "description": "Exact void initializer for the cRSubGoldy-embedded `cRPathFollowGoldy`: stores the selected cRPath and borrowed runtime cRSubLoc, resets the sample index, seeds progress from `world_z - cell_anchor_z`, seeds unclamped local height from `world_y - 0.49`, retains the cRSubGoldy backlink, and copies `cRSubGame::runtime_rows[row].installed_heading_delta` into the cRPath. Its only Windows caller discards EAX; the apparent cRPath result was the incidental value left by the final field store. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height. Android and iOS Path.o both preserve the exact authored symbol `cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)`; Windows independently supplies the 0x40-byte layout and offsets."
     },
     {
@@ -2069,7 +2072,10 @@
     {
       "address": "0x421770",
       "name": "initialize_path_follow_golb",
-      "description": "Starts one Golb projectile attachment-follow session by borrowing the runtime `cRSubLoc`, its authored `cRPath`, and its world anchor; iOS Path.o names this owner family `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`."
+      "aliases": [
+        "cRPathFollowGolb_Init"
+      ],
+      "description": "Exact void initializer for the cRSubGolb-embedded `cRPathFollowGolb`: borrows the runtime `cRSubLoc` and its authored `cRPath`, resets traversal, seeds progress and vertical offset from the supplied world position, and stores the cRSubGolb backlink. Both native callers discard EAX, so its shot-shaped residue is incidental rather than an authored return. Android and iOS Path.o preserve `cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)`."
     },
     {
       "address": "0x4217b0",

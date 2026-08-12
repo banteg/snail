@@ -338,8 +338,7 @@ steering_stored:
         if ((tile_id == SUBLOC_TILE_PATH_ENTRY_LOWERCASE
                 || tile_id == SUBLOC_TILE_PATH_ENTRY_UPPERCASE)
             && !follow_state.active) {
-            follow_state.begin_track_attachment_follow_state(
-                source_cell, p_position, this);
+            follow_state.Init(source_cell, *p_position, this);
             if (follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM)
                 g_voice_manager.Play(
                     VOICE_SET_WORM_TUNNEL, VOICE_PLAY_IF_IDLE, -1);

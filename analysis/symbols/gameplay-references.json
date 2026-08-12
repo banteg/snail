@@ -795,6 +795,24 @@
       "description": "Exact Windows cRPath::GetNodes() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x420c40",
+      "name": "begin_track_attachment_follow_state",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRPathFollowGoldy@@QAEXPAUcRSubLoc@@AAUtVector@@PAVcRSubGoldy@@@Z"
+      ],
+      "description": "Exact Windows cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*) entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x421770",
+      "name": "initialize_path_follow_golb",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRPathFollowGolb@@QAEXPAUcRSubLoc@@AAUtVector@@PAVcRSubGolb@@@Z"
+      ],
+      "description": "Exact Windows cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x421dc0",
       "name": "mirror_path",
       "kind": "function",

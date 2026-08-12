@@ -10915,14 +10915,15 @@ def test_golb_projectile_types_use_authored_primary_owners() -> None:
             encoding="utf-8"
         )
         assert f"cRSubGolb::{method}" in source
-    for function in (
-        "initialize_path_follow_golb",
-        "traverse_path_follow_golb",
-    ):
+    path_follow_methods = {
+        "initialize_path_follow_golb": "Init",
+        "traverse_path_follow_golb": "traverse_path_follow_golb",
+    }
+    for function, method in path_follow_methods.items():
         source = (scratch_root / function / "scratch.cpp").read_text(
             encoding="utf-8"
         )
-        assert f"cRPathFollowGolb::{function}" in source
+        assert f"cRPathFollowGolb::{method}" in source
 
     folded = (scratch_root / "noop_runtime_ai" / "scratch.cpp").read_text(
         encoding="utf-8"
@@ -11468,6 +11469,90 @@ def test_mobile_path_queries_recover_authored_methods() -> None:
     assert all_sources.count("->SearchPos(") == 2
     assert "->get_path_position_at_node(" not in all_sources
     assert "->is_point_inside_track_attachment(" not in all_sources
+
+
+def test_mobile_path_follow_initializers_recover_authored_methods() -> None:
+    repo_root = Path(__file__).parents[1]
+    scratch_root = repo_root / "tools/match/scratches"
+    entries = {
+        entry["windows_name"]: entry
+        for entry in load_json(DEFAULT_MOBILE_CROSSWALK_PATH)["entries"]
+    }
+    functions_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-functions.json"
+        )["functions"]
+    }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
+    methods = {
+        "begin_track_attachment_follow_state": (
+            "cRPathFollowGoldy::Init(cRSubLoc*, tVector&, cRSubGoldy*)",
+            "?Init@cRPathFollowGoldy@@QAEXPAUcRSubLoc@@AAUtVector@@PAVcRSubGoldy@@@Z",
+            "cRPathFollowGoldy_Init",
+            "void cRPathFollowGoldy::Init(",
+        ),
+        "initialize_path_follow_golb": (
+            "cRPathFollowGolb::Init(cRSubLoc*, tVector&, cRSubGolb*)",
+            "?Init@cRPathFollowGolb@@QAEXPAUcRSubLoc@@AAUtVector@@PAVcRSubGolb@@@Z",
+            "cRPathFollowGolb_Init",
+            "void cRPathFollowGolb::Init(",
+        ),
+    }
+    for function, (
+        mobile_symbol,
+        object_symbol,
+        alias,
+        definition,
+    ) in methods.items():
+        entry = entries[function]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == "Path.o"
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["ios_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert entry["ios_body_count"] == 1
+        assert functions_by_name[function]["aliases"] == [alias]
+        assert references_by_name[function]["aliases"] == [object_symbol]
+
+        source = (scratch_root / function / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / function / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert definition in source
+        assert f"SYMBOL={object_symbol}\n" in config
+
+    goldy_header = (
+        repo_root / "tools/match/include/track_attachment_types.h"
+    ).read_text(encoding="utf-8")
+    golb_header = (repo_root / "tools/match/include/golb.h").read_text(
+        encoding="utf-8"
+    )
+    assert "tVector& world_position" in goldy_header
+    assert "begin_track_attachment_follow_state(" not in goldy_header
+    assert "tVector& position" in golb_header
+    assert "initialize_path_follow_golb(" not in golb_header
+
+    update_goldy = (
+        scratch_root / "update_subgoldy/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    update_golb = (
+        scratch_root / "update_golb_ai/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert update_goldy.count(
+        "follow_state.Init(source_cell, *p_position, this);"
+    ) == 1
+    assert update_golb.count("path_follow.Init(") == 2
+    assert "begin_track_attachment_follow_state(" not in update_goldy
+    assert "initialize_path_follow_golb(" not in update_golb
 
 
 def test_mobile_path_lifecycle_recovers_authored_methods() -> None:
