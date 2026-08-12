@@ -3707,7 +3707,7 @@ BOD_CORE_PROTO_UPDATES = (
     ),
     (
         "apply_bod_position",
-        "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
+        "void __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
     ),
     (
         "recycle_bod_to_free_list",

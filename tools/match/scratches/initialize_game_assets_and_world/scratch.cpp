@@ -278,49 +278,49 @@ char cRGame::initialize_game_assets_and_world()
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar1.x", pillar->object, 1);
     transform.position.x = 0.0f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[1];
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar2.x", pillar->object, 1);
     transform.position.x = 0.5f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[2];
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar3.x", pillar->object, 1);
     transform.position.x = 1.0f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[3];
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar4.x", pillar->object, 1);
     transform.position.x = 1.5f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[4];
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar5.x", pillar->object, 1);
     transform.position.x = 2.0f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[5];
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar6.x", pillar->object, 1);
     transform.position.x = 2.5f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[6];
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar7.x", pillar->object, 1);
     transform.position.x = 3.0f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     pillar = &root_bod_catalog.pillars[7];
     pillar->SetObject(g_object_list.Add());
     loader->load_x_mesh((char*)"pillar8.x", pillar->object, 1);
     transform.position.x = 3.5f;
-    pillar->ApplyPos(&transform);
+    pillar->ApplyPos(transform);
 
     BodBase* ramp_edge = &root_bod_catalog.ramp_edges[0];
     ramp_edge->SetObject(g_object_list.Add());

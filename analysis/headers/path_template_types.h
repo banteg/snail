@@ -2827,7 +2827,7 @@ bool __thiscall is_bod_after_sprites(BodBase* bod);
 int32_t __thiscall set_bod_object(BodBase* bod, Object* object);
 BodBase* __thiscall initialize_bod_base(BodBase* bod);
 RenderableBod* __thiscall initialize_renderable_bod(RenderableBod* body);
-Object* __thiscall apply_bod_position(
+void __thiscall apply_bod_position(
     BodBase* bod,
     TransformMatrix* matrix
 );

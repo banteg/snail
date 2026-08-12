@@ -1,20 +1,14 @@
 # initialize_object @ 0x42f6f0
 
-Exact default initializer for one `cRObject` slot. It clears the
-render flags and blend mode, live vertex and facequad counts, accumulated
-vertex-normal pointer/count lane, and live texture-group count. `cRObjects`
-owns the surrounding contiguous `0xdc`-byte slot array.
+Exact 9/9-instruction `void cRObject::Init()` member. It clears the render
+flags and blend mode, live geometry counts and pointers, accumulated-normal
+state, and texture-group count for one `0xdc`-byte object slot.
 
-2026-07-14 void constructor ABI: the preserved iOS symbol is
-`cRObject::cRObject()`, and every Windows caller either ignores EAX or uses the
-separate constructor adapter at `0x42f6e0`, which explicitly returns the
-original receiver. The zero left in EAX by this body is the shared assignment
-value, not a result contract. Declaring the initializer `void` preserves its
-exact 9/9 instructions; the adapter, list initializer, and slot allocator also
-remain exact.
+Windows calls it from `cRObject::cRObject()`, `cRObjects::Init(int)`, and
+`cRObjects::Add()`. Android exports the same `Init()` member and constructor
+edge. iOS inlines the corresponding writes into `cRObject::cRObject()` and has
+no standalone `Init` symbol. This cross-port split corrects the old mapping
+that assigned the iOS constructor name directly to the Windows initializer.
 
-2026-07-29 owner closure: Android and iOS preserve `cRObject` across the
-constructor, allocation, geometry, edge, animation, and render-buffer
-surfaces. The matcher now uses `cRObject` as the primary 0xdc-byte owner and
-retains `Object` only as a compatibility typedef. The Windows void initializer
-remains deliberately distinct from the mobile constructor spelling.
+All Windows callers and the natural member spelling remain instruction-exact;
+the zero left in EAX is assignment residue, not a return contract.

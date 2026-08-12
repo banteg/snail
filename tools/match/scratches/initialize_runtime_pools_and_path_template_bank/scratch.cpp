@@ -1,7 +1,6 @@
 // initialize_runtime_pools_and_path_template_bank @ 0x408060 (thiscall, ret)
 
 #include <stddef.h>
-
 #include "player.h"
 #include "runtime_slot.h"
 #include "sprite.h"
@@ -199,7 +198,7 @@ cRSubGame* cRSubGame::initialize_runtime_pools_and_path_template_bank()
 
     Face* face = &smtrack_heightfield;
     face->initialize_bod_base();
-    face->movie.initialize_object_constructor_thunk();
+    face->movie.cRObject::cRObject();
     face->vtable = &g_face_callback_table;
 
     initialize_array_with_constructor(

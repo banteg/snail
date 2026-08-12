@@ -1087,28 +1087,27 @@
       "name": "apply_bod_position",
       "kind": "function",
       "aliases": [
-        "?ApplyPos@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
+        "?ApplyPos@cRBod@@QAEXAAUtMatrix@@@Z"
       ],
-      "description": "Exact cRBod::ApplyPos geometry transform, retaining the authored owner and name found on Android and iOS while preserving the Windows pointer parameter and cRObject* result."
+      "description": "Exact void cRBod::ApplyPos(tMatrix&) geometry transform. Android and iOS preserve the authored owner and signature, while all eight Windows callers discard the incidental final object value in EAX."
     },
     {
       "address": "0x42f6e0",
       "name": "initialize_object_constructor_thunk",
       "kind": "function",
       "aliases": [
-        "?initialize_object_constructor_thunk@cRObject@@QAEPAU1@XZ",
-        "sub_42F6E0"
+        "??0cRObject@@QAE@XZ"
       ],
-      "description": "Exact cRObject-owned constructor adapter: calls the void slot initializer at 0x42f6f0, preserves the original receiver, and returns it."
+      "description": "Exact cRObject constructor: calls cRObject::Init at 0x42f6f0 and returns the receiver through the VC6 constructor ABI."
     },
     {
       "address": "0x42f6f0",
       "name": "initialize_object",
       "kind": "function",
       "aliases": [
-        "?initialize_object@cRObject@@QAEXXZ"
+        "?Init@cRObject@@QAEXXZ"
       ],
-      "description": "Exact void cRObject slot initializer. Mobile constructor bodies independently preserve the owner and initialized fields, while Windows requires this non-constructor return shape."
+      "description": "Exact void cRObject::Init member. Android preserves the same split lifecycle and field initialization; iOS folds the equivalent body into its constructor."
     },
     {
       "address": "0x42f710",

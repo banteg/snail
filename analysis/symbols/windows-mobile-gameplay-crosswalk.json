@@ -24,11 +24,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 597,
-    "unverified_entries": 188,
-    "verified_android_symbols": 590,
+    "verified_entries": 598,
+    "unverified_entries": 187,
+    "verified_android_symbols": 591,
     "verified_ios_symbols": 467,
-    "available_android_mappings": 590,
+    "available_android_mappings": 591,
     "available_ios_mappings": 434
   },
   "entries": [
@@ -11157,86 +11157,58 @@
       "address": "0x42f6e0",
       "windows_name": "initialize_object_constructor_thunk",
       "windows_size": 16,
-      "status": "unverified",
+      "status": "verified",
       "source_object": "RObject.o",
       "source_object_evidence": "windows-contiguous-source-run",
-      "android_candidates": [
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRObject::GLVBO()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcWorldReset(cRObject*)",
-          "score": 0.6634,
-          "name_score": 0.439,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcVertexCompare(void const*, void const*)",
-          "score": 0.6204,
-          "name_score": 0.3673,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRObject::cRObject()",
-          "score": 0.608,
-          "name_score": 0.48,
-          "size_score": 0.8
-        }
-      ],
-      "ios_candidates": [
-        {
-          "symbol": "ObjectProcNull(cRObject*)",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "ObjectProcVertexCompare(void const*, void const*)",
-          "score": 0.6204,
-          "name_score": 0.3673,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRBorderStack::Init()",
-          "score": 0.5868,
-          "name_score": 0.3114,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "OFSmartObject::OFSmartObject()",
-          "score": 0.5859,
-          "name_score": 0.4431,
-          "size_score": 0.8
-        },
-        {
-          "symbol": "OFSmartObject::~OFSmartObject()",
-          "score": 0.5859,
-          "name_score": 0.4431,
-          "size_score": 0.8
-        }
-      ]
+      "android_symbol": "cRObject::cRObject()",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "ios_symbol": "cRObject::cRObject()",
+      "confidence": "high",
+      "android_body_count": 2,
+      "ios_body_count": 1
     },
     {
       "address": "0x42f6f0",
       "windows_name": "initialize_object",
       "windows_size": 32,
       "status": "verified",
-      "android_symbol": "cRObject::cRObject()",
+      "android_symbol": "cRObject::Init()",
       "android_symbol_evidence": "exact-demangled-symbol",
-      "ios_symbol": "cRObject::cRObject()",
       "source_object": "RObject.o",
       "confidence": "high",
-      "android_body_count": 2,
-      "ios_body_count": 1
+      "android_body_count": 1,
+      "ios_candidates": [
+        {
+          "symbol": "OFSmartObject::~OFSmartObject()",
+          "score": 0.7652,
+          "name_score": 0.6087,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "cRObject::cRObject()",
+          "score": 0.76,
+          "name_score": 1.0,
+          "size_score": 0.4
+        },
+        {
+          "symbol": "OFSmartObject::Release()",
+          "score": 0.7506,
+          "name_score": 0.5843,
+          "size_score": 1.0
+        },
+        {
+          "symbol": "cRObject::ApplyToon(int)",
+          "score": 0.723,
+          "name_score": 0.705,
+          "size_score": 0.75
+        },
+        {
+          "symbol": "cRBod::SetObject(cRObject*)",
+          "score": 0.7,
+          "name_score": 0.75,
+          "size_score": 0.625
+        }
+      ]
     },
     {
       "address": "0x42f710",

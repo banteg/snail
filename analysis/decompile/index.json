@@ -1,45 +1,33 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": false,
+  "sync_ida_symbols": true,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": false,
+  "binja_analysis_refreshed": true,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_default_runtime_config",
-      "address": "0x406c20"
+      "name": "apply_bod_position",
+      "address": "0x42f680"
     },
     {
-      "name": "game_startup_and_main_loop",
-      "address": "0x406dc0"
+      "name": "initialize_object_constructor_thunk",
+      "address": "0x42f6e0"
     },
     {
-      "name": "load_config_file",
-      "address": "0x42f470"
-    },
-    {
-      "name": "load_file_bytes_from_path",
-      "address": "0x42f490"
-    },
-    {
-      "name": "save_config_file",
-      "address": "0x42f540"
-    },
-    {
-      "name": "validate_config_tail_stub",
-      "address": "0x42f5b0"
+      "name": "initialize_object",
+      "address": "0x42f6f0"
     }
   ],
   "health_check_count": 1158,

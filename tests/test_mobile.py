@@ -1421,12 +1421,12 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         (
             "initialize_object_constructor_thunk",
             "cRObject",
-            "?initialize_object_constructor_thunk@cRObject@@QAEPAU1@XZ",
+            "??0cRObject@@QAE@XZ",
         ),
         (
             "initialize_object",
             "cRObject",
-            "?initialize_object@cRObject@@QAEXXZ",
+            "?Init@cRObject@@QAEXXZ",
         ),
         (
             "request_object_vertices",
@@ -1554,7 +1554,8 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
         assert object_symbol in references_by_name[windows_name]["aliases"]
 
     verified_mobile_methods = {
-        "initialize_object": "cRObject::cRObject()",
+        "initialize_object_constructor_thunk": "cRObject::cRObject()",
+        "initialize_object": "cRObject::Init()",
         "request_object_vertices": "cRObject::RequestVertices(int)",
         "copy_object_vertices": "cRObject::CopyVertices()",
         "request_object_vertices_copy": "cRObject::RequestVerticesCopy()",
@@ -1595,6 +1596,16 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
             entry.get("android_symbol"),
             entry.get("ios_symbol"),
         }
+
+    object_constructor = entries["initialize_object_constructor_thunk"]
+    assert object_constructor["address"] == "0x42f6e0"
+    assert object_constructor["android_symbol"] == "cRObject::cRObject()"
+    assert object_constructor["ios_symbol"] == "cRObject::cRObject()"
+
+    object_initializer = entries["initialize_object"]
+    assert object_initializer["address"] == "0x42f6f0"
+    assert object_initializer["android_symbol"] == "cRObject::Init()"
+    assert "ios_symbol" not in object_initializer
 
     request_anim_source = (
         repo_root
@@ -1650,10 +1661,17 @@ def test_mobile_crobject_owners_recover_primary_structs() -> None:
     )
 
     constructor_source = (
+        repo_root
+        / "tools/match/scratches/initialize_object_constructor_thunk/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "cRObject::cRObject()" in constructor_source
+    assert "Init();" in constructor_source
+
+    initializer_source = (
         repo_root / "tools/match/scratches/initialize_object/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "void cRObject::initialize_object()" in constructor_source
-    assert "cRObject::cRObject()" not in constructor_source
+    assert "void cRObject::Init()" in initializer_source
+    assert "cRObject::cRObject()" not in initializer_source
 
     gl_builder_source = (
         repo_root
@@ -5219,7 +5237,7 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
             "?initialize_renderable_bod@cRBodPos@@QAEPAV1@XZ"
         ),
         "apply_bod_position": (
-            "?ApplyPos@cRBod@@QAEPAUcRObject@@PAUtMatrix@@@Z"
+            "?ApplyPos@cRBod@@QAEXAAUtMatrix@@@Z"
         ),
         "initialize_noop_renderable_bod": (
             "?initialize_noop_renderable_bod@cRBodPos@@QAEPAV1@XZ"
@@ -5261,7 +5279,7 @@ def test_mobile_crbod_owners_are_primary_without_faking_constructors() -> None:
         repo_root
         / "tools/match/scratches/set_bod_object/scratch.cpp"
     ).read_text(encoding="utf-8")
-    assert "Object* cRBod::ApplyPos(TransformMatrix* matrix)" in (
+    assert "void cRBod::ApplyPos(TransformMatrix& matrix)" in (
         repo_root
         / "tools/match/scratches/apply_bod_position/scratch.cpp"
     ).read_text(encoding="utf-8")
@@ -7619,11 +7637,10 @@ def test_unverified_windows_source_runs_preserve_owner_provenance(
     entries = complete["entries"]
     by_name = {entry["windows_name"]: entry for entry in entries}
     expected = {
-        "draw_split_backdrop": "Game.o",
-        "load_high_scores_from_file": "HighScore.o",
-        "refresh_object_vertex_buffer": "GL.o",
-        "initialize_object_constructor_thunk": "RObject.o",
-        "calc_object_bounding_box": "RObject.o",
+            "draw_split_backdrop": "Game.o",
+            "load_high_scores_from_file": "HighScore.o",
+            "refresh_object_vertex_buffer": "GL.o",
+            "calc_object_bounding_box": "RObject.o",
         "calc_object_facequad_normals_simple": "RObject.o",
         "j_rand": "RMaths.o",
         "destroy_cross_vectors_static_result": "RMaths.o",

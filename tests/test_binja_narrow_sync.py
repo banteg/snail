@@ -7449,7 +7449,7 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
         "bool __thiscall is_bod_after_sprites(BodBase* bod)",
         "int32_t __thiscall set_bod_object(BodBase* bod, Object* object)",
         "BodBase* __thiscall initialize_bod_base(BodBase* bod)",
-        "Object* __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
+        "void __thiscall apply_bod_position(BodBase* bod, TransformMatrix* matrix)",
         "void __thiscall recycle_bod_to_free_list(BodList* list, BodNode* node)",
     )
     for declaration in declarations:
@@ -7473,7 +7473,7 @@ def test_bod_intrusive_list_lifecycle_replay_owns_shared_layout() -> None:
     assert "void recycle_bod_to_free_list(BodNode* node);" in bod_list_header
     assert "bool IsAfterSprites();" in bod_types_header
     assert "int SetObject(Object* object);" in bod_types_header
-    assert "Object* ApplyPos(TransformMatrix* matrix);" in bod_types_header
+    assert "void ApplyPos(TransformMatrix& matrix);" in bod_types_header
 
 
 def test_fringe_replay_owns_authored_pool_and_callback_abi() -> None:

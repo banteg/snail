@@ -1,9 +1,8 @@
-// cRObject::initialize_object_constructor_thunk @ 0x42f6e0
+// cRObject::cRObject @ 0x42f6e0
 
 #include "object_render_types.h"
 
-cRObject* cRObject::initialize_object_constructor_thunk()
+cRObject::cRObject()
 {
-    initialize_object();
-    return this;
+    Init();
 }

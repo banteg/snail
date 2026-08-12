@@ -1,47 +1,17 @@
 # apply_bod_position @ 0x42f680
 
-Exact match with `END=0x42f6d9`; the default manifest extent also includes
-seven nops plus an adjacent uncurated thunk at `0x42f6e0`.
+Exact 39/39-instruction `void cRBod::ApplyPos(tMatrix&)`. It walks the attached
+`cRObject` vertex array, transforms each position through
+`multiply_vector_by_matrix_copy`, and writes x/y/z back in place. The direct
+member-call expression preserves VC6's native receiver lifetime; a named
+source pointer changes the loop call setup.
 
-Semantics:
+Android and iOS independently preserve the authored owner, method name, void
+return, and matrix-reference parameter. Live Windows inspection finds eight
+callers, all of which discard EAX. Its terminal object value is loop residue,
+so the previous pointer parameter and `cRObject*` result were inaccurate ABI
+guesses rather than Windows evidence.
 
-- iterates every vertex in the attached `Object` (`object + 0x2c`
-  count, `object + 0x38` vertex array);
-- transforms each vertex through exact `multiply_vector_by_matrix_copy`;
-- writes the transformed x/y/z lanes back into the same vertex slot;
-- reloads `object` for the loop guard, matching native owner lifetime.
-
-Source-shape note: the direct member-call expression is required. Introducing a
-named `source` pointer makes VC6 compute the vertex `this` pointer before the
-stack scratch argument and regresses the loop call setup.
-
-The transformed lanes can be copied with ordinary `destination->x/y/z` field
-assignments. VC6 still emits dword moves for the float copy, so no `*(int*)&`
-bit-punning is needed here.
-
-2026-07-14 ownership pass: the exact function now uses the shared `Object`
-owner directly for `vertex_count` and `vertices`; the scratch-local
-`ObjectGeometry` prefix overlay was redundant. The result remains 39/39 exact
-with its matrix-helper operand clean.
-
-2026-07-14 operator ownership: the callee definition is now the real
-value-returning matrix `operator*`, but this exact consumer retains its explicit
-hidden-sret compatibility call. Natural named-value and const-reference
-spellings both make VC6 stop dereferencing the returned EAX pointer and regress
-this loop to 76.92%, so they are rejected rather than normalized away.
-
-## 2026-07-18 analyzer ownership replay
-
-Both analyzers now retain the exact `Object*` result with a `BodBase*` receiver
-and `TransformMatrix*` argument. This exposes the borrowed `object` and its
-geometry owner without changing the source shape that produces the exact loop.
-
-## 2026-07-29 mobile-authored naming
-
-Android and iOS independently retain this method as
-`cRBod::ApplyPos(tMatrix&)`, proving the authored owner and method name.
-The Windows matcher now uses `cRBod::ApplyPos` too, but deliberately keeps the
-exact Windows `TransformMatrix*` parameter and `Object*` result. Converting
-those ABI observations to the mobile reference/void spelling would discard
-Windows evidence rather than recover it. The renamed Windows body remains
-39/39 exact.
+The helper's hidden-return compatibility call remains explicit because natural
+named-value spellings change the generated loop. Ordinary float field copies
+still compile to the exact dword moves; no bit-punning is required.

@@ -5,7 +5,8 @@
 
 0042f687        int32_t i = 0
 0042f689        struct Object* object = bod->object
-0042f691        if (object->vertex_count s> 0)
+0042f691        if (object->vertex_count s<= 0)
+0042f691        return
 0042f699        int32_t esi_1 = 0
 0042f6a6        struct Vec3 out
 0042f6a6        struct Vec3* eax = multiply_vector_by_matrix_copy(object->vertices + esi_1, &out, matrix)
@@ -17,4 +18,4 @@
 0042f6c4        ecx_4[2] = eax->z
 0042f6c7        object = bod->object
 0042f6cd        do while (i s< object->vertex_count)
-0042f6d6        return object
+0042f6d6        return

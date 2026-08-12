@@ -3,7 +3,7 @@
 #include "bod_types.h"
 #include "object_render_types.h"
 
-Object* cRBod::ApplyPos(TransformMatrix* matrix)
+void cRBod::ApplyPos(TransformMatrix& matrix)
 {
     int index = 0;
     Object* result = object;
@@ -13,7 +13,7 @@ Object* cRBod::ApplyPos(TransformMatrix* matrix)
             Vector3 transformed;
             Vector3* copied =
                 ((Vector3*)((char*)result->vertices + offset))
-                    ->multiply_vector_by_matrix_copy(&transformed, matrix);
+                    ->multiply_vector_by_matrix_copy(&transformed, &matrix);
             Object* destination_object = object;
             Vector3* destination = (Vector3*)((char*)destination_object->vertices + offset);
             ++index;
@@ -24,5 +24,4 @@ Object* cRBod::ApplyPos(TransformMatrix* matrix)
             result = object;
         } while (index < result->vertex_count);
     }
-    return result;
 }

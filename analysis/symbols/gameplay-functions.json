@@ -2345,19 +2345,19 @@
     {
       "address": "0x42f680",
       "name": "apply_bod_position",
-      "description": "Applies one body's position into the supplied matrix before object rendering; iOS RObject.o names this `cRBod::ApplyPos(tMatrix&)`."
+      "description": "Exact void Windows `cRBod::ApplyPos(tMatrix&)`: transforms every vertex of the body's borrowed `cRObject` in place through the supplied matrix reference. Android and iOS preserve the authored owner and signature, and all eight Windows callers discard EAX."
     },
     {
       "address": "0x42f6e0",
       "name": "initialize_object_constructor_thunk",
-      "description": "Object constructor thunk that calls the recovered object initializer and returns the original receiver.",
+      "description": "Exact Windows `cRObject::cRObject()` constructor: calls the adjacent `Init()` member at 0x42f6f0 and returns the receiver through the constructor ABI. Android preserves the same split constructor/Init lifecycle; iOS keeps the constructor but inlines the initialization body.",
       "source_object": "RObject.o",
       "source_object_evidence": "windows-contiguous-source-run"
     },
     {
       "address": "0x42f6f0",
       "name": "initialize_object",
-      "description": "Constructs one render object with empty geometry buffers and default render flags; iOS RObject.o names this `cRObject::cRObject()`."
+      "description": "Exact void Windows `cRObject::Init()`: clears one render object's geometry pointers/counts and default render state. Android independently preserves this member and calls it from `cRObject::cRObject()`; iOS inlines the same initialization into its constructor."
     },
     {
       "address": "0x42f710",

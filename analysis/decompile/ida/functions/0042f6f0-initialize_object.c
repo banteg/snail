@@ -2,7 +2,7 @@
 /* function: initialize_object @ 0x42f6f0 */
 /* selector: initialize_object */
 
-// Constructs one render object with empty geometry buffers and default render flags; iOS RObject.o names this `cRObject::cRObject()`.
+// Exact void Windows `cRObject::Init()`: clears one render object's geometry pointers/counts and default render state. Android independently preserves this member and calls it from `cRObject::cRObject()`; iOS inlines the same initialization into its constructor.
 void __thiscall initialize_object(Object *object)
 {
   object->flags = 0;

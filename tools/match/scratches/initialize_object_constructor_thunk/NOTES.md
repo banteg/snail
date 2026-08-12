@@ -1,19 +1,16 @@
 # initialize_object_constructor_thunk @ 0x42f6e0
 
-Constructor adapter used by the root runtime's object-pool array initializer.
-It preserves the incoming `Object*`, runs the recovered empty/default object
-initializer at `0x42f6f0`, and returns the original receiver.
+This is the exact Windows `cRObject::cRObject()` constructor, not a descriptive
+receiver-returning adapter. Its only operation is a call to the adjacent
+`cRObject::Init()` body at `0x42f6f0`; the VC6 constructor ABI then returns the
+receiver. The natural constructor definition is exact at 6/6 instructions.
 
-2026-07-17: exact 6/6 code and the Object-derived `Movie` caller close
-the adapter ABI as `Object* __thiscall initialize_object_constructor_thunk(Object*)`.
-The unrelated `std::_Vector_iterator::operator++` symbol previously imported
-at this address is retired; it described neither the code nor its callers.
+Android independently preserves the same split lifecycle: both constructor
+variants call its exported `cRObject::Init()`. iOS preserves the constructor
+symbol but inlines the equivalent field initialization. Live Windows xrefs
+show one caller in the `cRSubGame` constructor, where VC6 accepts the direct
+subobject spelling `face->movie.cRObject::cRObject()` without the null guard
+introduced by placement-new. The old fake member aliases are therefore gone.
 
-## 2026-08-12 source-unit closure
-
-The thunk is the only function between the verified `RObject.o` bodies
-`cRBod::ApplyPos` and `cRObject::cRObject`. It has one native xref, from the
-object-pool array initializer, and its sole outbound call is the immediately
-following recovered object initializer. This closes its Windows compilation
-unit as `RObject.o` without claiming a standalone mobile constructor-thunk
-symbol.
+The function lies inside the verified contiguous `RObject.o` run between
+`cRBod::ApplyPos` and `cRObject::Init`.

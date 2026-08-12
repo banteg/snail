@@ -3231,16 +3231,27 @@
       "source_object": "RObject.o",
       "confidence": "high",
       "android_symbol": "cRBod::ApplyPos(tMatrix&)",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Both mobile ports preserve the authored void member and matrix-reference parameter. All eight Windows callers discard EAX, whose final object value is only loop residue; the natural void/reference spelling remains exact at 39/39 instructions."
     },
     {
-      "address": "0x42f6f0",
-      "windows_name": "initialize_object",
+      "address": "0x42f6e0",
+      "windows_name": "initialize_object_constructor_thunk",
       "ios_symbol": "cRObject::cRObject()",
       "source_object": "RObject.o",
       "confidence": "high",
       "android_symbol": "cRObject::cRObject()",
-      "android_symbol_evidence": "exact-demangled-symbol"
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Windows and Android preserve the split lifecycle: the constructor's only operation is calling the adjacent cRObject::Init member. iOS keeps the constructor symbol but inlines the same initialization body. The exact Windows constructor spelling remains 6/6 instructions."
+    },
+    {
+      "address": "0x42f6f0",
+      "windows_name": "initialize_object",
+      "android_symbol": "cRObject::Init()",
+      "source_object": "RObject.o",
+      "confidence": "high",
+      "android_symbol_evidence": "exact-demangled-symbol",
+      "notes": "Android independently exports cRObject::Init and calls it from both constructor variants. Windows has the same adjacent constructor-to-Init edge and the same default-state writes. iOS inlines this body into cRObject::cRObject and has no standalone Init export."
     },
     {
       "address": "0x42f710",

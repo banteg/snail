@@ -15,7 +15,7 @@ void cRObjects::Init(int object_capacity)
         int offset = 0;
         do {
             Object* object = (Object*)((char*)objects + offset);
-            object->initialize_object();
+            object->Init();
             offset += sizeof(Object);
             --object_capacity;
         } while (object_capacity != 0);

@@ -1,8 +1,8 @@
-// initialize_object @ 0x42f6f0 (thiscall, ret)
+// cRObject::Init @ 0x42f6f0
 
 #include "object_render_types.h"
 
-void cRObject::initialize_object()
+void cRObject::Init()
 {
     flags = 0;
     blend_mode = 0;

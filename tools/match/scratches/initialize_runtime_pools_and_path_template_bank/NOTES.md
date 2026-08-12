@@ -3,9 +3,9 @@
 - This scratch walks the canonical embedded owners in `cRSubGame`. The
   constructor pass spans many unrelated pools, so a few neutral callback casts
   remain where VC6 folded distinct authored constructors to one helper.
-- The call at +0x10013dc targets the small object-constructor thunk at
-  0x42f6e0 on the embedded height-field animator's `Movie`, not
-  `initialize_object` directly.
+- The embedded height-field animator's `Movie` is explicitly constructed with
+  `cRObject::cRObject()` at 0x42f6e0. Direct VC6 constructor-call syntax keeps
+  the aggregate scratch exact; placement-new adds a non-native null guard.
 
 ## 2026-07-25 inline pool element borrows
 

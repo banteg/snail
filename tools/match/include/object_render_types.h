@@ -174,8 +174,8 @@ struct ObjectIndexBuffer {
 };
 
 struct cRObject {
-    cRObject* initialize_object_constructor_thunk(); // @ 0x42f6e0
-    void initialize_object(); // @ 0x42f6f0
+    cRObject(); // @ 0x42f6e0
+    void Init(); // @ 0x42f6f0
     void RequestVertices(int vertex_count); // @ 0x42f710
     void RequestVerticesCopy(); // @ 0x42f7d0
     void CopyVertices(); // @ 0x42f790; Android cRObject::CopyVertices()

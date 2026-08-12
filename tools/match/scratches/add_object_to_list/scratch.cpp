@@ -11,6 +11,6 @@ cRObject* cRObjects::Add()
     }
 
     Object* object = &objects[count++];
-    object->initialize_object();
+    object->Init();
     return object;
 }

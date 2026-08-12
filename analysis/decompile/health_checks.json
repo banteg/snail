@@ -21282,13 +21282,13 @@
       "required_substrings": [
         "struct Object* object = bod->object",
         "object->vertex_count",
-        "multiply_vector_by_matrix_copy(object->vertices",
-        "return object"
+        "multiply_vector_by_matrix_copy(object->vertices"
       ],
       "forbidden_substrings": [
         "arg1",
         "arg2",
         "*(bod +",
+        "return object",
         "unimplemented"
       ]
     },
@@ -21296,16 +21296,17 @@
       "name": "ida_bod_position_object_geometry_owner_abi",
       "artifact": "analysis/decompile/ida/functions/0042f680-apply_bod_position.c",
       "required_substrings": [
-        "Object *__thiscall apply_bod_position(BodBase *bod, TransformMatrix *matrix)",
-        "result = bod->object;",
-        "result->vertex_count",
-        "&bod->object->vertices[v5]",
-        "return result;"
+        "void __thiscall apply_bod_position(BodBase *bod, TransformMatrix *matrix)",
+        "object = bod->object;",
+        "object->vertex_count",
+        "&bod->object->vertices[v5]"
       ],
       "forbidden_substrings": [
         "sub_42F680",
         "_DWORD *this",
         "float *a2",
+        "return object;",
+        "return result;",
         "unimplemented"
       ]
     },

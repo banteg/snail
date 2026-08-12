@@ -25,7 +25,7 @@ public:
     void noop_runtime_ai();               // folded @ 0x407b50; cRBod::AI()
     bool IsAfterSprites();                // @ 0x42f5c0
     int SetObject(Object* object);        // @ 0x42f5d0
-    Object* ApplyPos(TransformMatrix* matrix); // @ 0x42f680
+    void ApplyPos(TransformMatrix& matrix); // @ 0x42f680
 
     Vector3 position;   // +0x10, copied into temporary render matrices
     float render_arg_1c; // +0x1c, forwarded to render_object texture-u offset
