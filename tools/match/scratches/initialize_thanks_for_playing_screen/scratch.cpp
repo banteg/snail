@@ -13,7 +13,7 @@ extern char g_blank_text[]; // 0x4dfb08
 
 char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0x432d50
 
-void cRSplash::initialize_thanks_for_playing_screen()
+void cRSplash::Init()
 {
     tColour color;
 

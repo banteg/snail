@@ -25,3 +25,7 @@ sequence of Challenge Mode, Time Trial, and continue prompts through alternating
 hide/unhide states. The full-version mobile wording and leading exit flag are
 platform/version differences; they identify the authored `cRSplash` owner but
 do not transfer mobile offsets into the Windows layout.
+
+The exact Windows object symbol `?AI@cRSplash@@QAEXXZ` now anchors the authored
+`cRSplash::AI()` method spelling throughout the exact source; its fade-complete
+edge calls the independently anchored `cRSplash::UnInit()` member.

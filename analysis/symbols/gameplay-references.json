@@ -2430,6 +2430,33 @@
       "description": "Tiny cdecl outbound-link helper reached from update_completion_screen after pushing the Alpha72.url resource literal; the helper ignores the argument and sets the launch latch."
     },
     {
+      "address": "0x433fd0",
+      "name": "initialize_thanks_for_playing_screen",
+      "kind": "function",
+      "aliases": [
+        "?Init@cRSplash@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSplash::Init() entry with its owner-qualified decorated relocation name."
+    },
+    {
+      "address": "0x4340c0",
+      "name": "uninit_thanks_screen",
+      "kind": "function",
+      "aliases": [
+        "?UnInit@cRSplash@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSplash::UnInit() entry with its owner-qualified decorated relocation name. Its address also equals the unrelated numeric Player squidge-field offset recorded separately below."
+    },
+    {
+      "address": "0x4340f0",
+      "name": "update_thanks_for_playing_screen",
+      "kind": "function",
+      "aliases": [
+        "?AI@cRSplash@@QAEXXZ"
+      ],
+      "description": "Exact Windows cRSplash::AI() entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x4326fc",
       "name": "g_subgame_cull_plane_z_offset",
       "kind": "offset",
@@ -2488,10 +2515,7 @@
       "address": "0x4340c0",
       "name": "g_player_squidge_offset",
       "kind": "offset",
-      "aliases": [
-        "uninit_thanks_screen"
-      ],
-      "description": "Relocatable Player squidge-controller offset at player+0x4344, used by swept attachment entry and subgoldy motion."
+      "description": "Relocatable Player squidge-controller offset at player+0x4344, used by swept attachment entry and subgoldy motion. Its numeric value happens to equal the unrelated cRSplash::UnInit() code address."
     },
     {
       "address": "0x4340e0",

@@ -9,7 +9,7 @@ extern char g_click_to_continue_text[]; // 0x4a11c4
 
 char read_pressed_text_input_key_code(); // @ 0x432440
 
-void cRSplash::update_thanks_for_playing_screen()
+void cRSplash::AI()
 {
     int flags = g_game->players[0].game_input->input.pressed_buttons;
     if (((flags & INPUT_BUTTON_PRIMARY) != 0
@@ -21,7 +21,7 @@ void cRSplash::update_thanks_for_playing_screen()
     }
 
     if (g_game->fade.state == 4) {
-        uninit_thanks_screen();
+        UnInit();
     }
 
     message_progress = message_progress + message_progress_step;

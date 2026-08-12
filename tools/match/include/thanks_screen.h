@@ -10,9 +10,9 @@ class cRSubGame;
 
 class cRSplash {
 public:
-    void initialize_thanks_for_playing_screen(); // @ 0x433fd0
-    void update_thanks_for_playing_screen(); // @ 0x4340f0
-    void uninit_thanks_screen(); // @ 0x4340c0
+    void Init(); // @ 0x433fd0
+    void UnInit(); // @ 0x4340c0
+    void AI(); // @ 0x4340f0
 
     cRSubGame* game; // +0x00, borrowed enclosing cRSubGame owner
     cRBorder* message_widget; // +0x04

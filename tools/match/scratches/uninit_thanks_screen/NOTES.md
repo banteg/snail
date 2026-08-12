@@ -18,3 +18,9 @@ border and set front-end state 14. iOS has no standalone teardown export;
 `cRSplash::AI()` inlines both effects. The exact mobile lifecycle establishes
 the authored owner name `cRSplash` without importing its different field
 offsets into the 0x14-byte Windows controller.
+
+The exact Windows object symbol `?UnInit@cRSplash@@QAEXXZ` now anchors the
+authored `cRSplash::UnInit()` method spelling. Address `0x4340c0` also happens
+to be the numeric Player squidge-field offset, so the reference manifest keeps
+the function and offset as independent same-address identities rather than
+aliasing the teardown to the field offset.

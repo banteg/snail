@@ -341,19 +341,62 @@ def test_mobile_splash_lifecycle_recovers_authored_owner() -> None:
         entry["windows_name"]: entry
         for entry in crosswalk["entries"]
     }
-    expected = {
-        "initialize_thanks_for_playing_screen": "cRSplash::Init()",
-        "uninit_thanks_screen": "cRSplash::UnInit()",
-        "update_thanks_for_playing_screen": "cRSplash::AI()",
+    functions = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions_by_name = {
+        entry["name"]: entry for entry in functions["functions"]
     }
+    references = load_json(
+        repo_root / "analysis/symbols/gameplay-references.json"
+    )
+    references_by_name = {
+        entry["name"]: entry for entry in references["symbols"]
+    }
+    expected = {
+        "initialize_thanks_for_playing_screen": (
+            "cRSplash::Init()",
+            "Init",
+            "cRSplash_Init",
+            "?Init@cRSplash@@QAEXXZ",
+        ),
+        "uninit_thanks_screen": (
+            "cRSplash::UnInit()",
+            "UnInit",
+            "cRSplash_UnInit",
+            "?UnInit@cRSplash@@QAEXXZ",
+        ),
+        "update_thanks_for_playing_screen": (
+            "cRSplash::AI()",
+            "AI",
+            "cRSplash_AI",
+            "?AI@cRSplash@@QAEXXZ",
+        ),
+    }
+    scratch_root = repo_root / "tools/match/scratches"
 
-    for windows_name, mobile_symbol in expected.items():
+    for windows_name, (
+        mobile_symbol,
+        method,
+        alias,
+        object_symbol,
+    ) in expected.items():
         entry = entries[windows_name]
         assert entry["status"] == "verified"
         assert entry["confidence"] == "high"
         assert entry["source_object"] == "Splash.o"
         assert entry["android_symbol"] == mobile_symbol
         assert entry["android_body_count"] == 1
+        assert alias in functions_by_name[windows_name]["aliases"]
+        assert object_symbol in references_by_name[windows_name]["aliases"]
+        source = (scratch_root / windows_name / "scratch.cpp").read_text(
+            encoding="utf-8"
+        )
+        config = (scratch_root / windows_name / "scratch.conf").read_text(
+            encoding="utf-8"
+        )
+        assert f"void cRSplash::{method}()" in source
+        assert f"SYMBOL={object_symbol}\n" in config
 
     for windows_name in (
         "initialize_thanks_for_playing_screen",
@@ -367,6 +410,20 @@ def test_mobile_splash_lifecycle_recovers_authored_owner() -> None:
     assert "ios_symbol" not in teardown
     assert "ios_body_count" not in teardown
     assert teardown["source_object_evidence"] == "unique-ios-class-object"
+
+    collision_entries = [
+        entry
+        for entry in references["symbols"]
+        if entry["address"] == "0x4340c0"
+    ]
+    assert [
+        (entry["name"], entry["kind"])
+        for entry in collision_entries
+    ] == [
+        ("uninit_thanks_screen", "function"),
+        ("g_player_squidge_offset", "offset"),
+    ]
+    assert "aliases" not in references_by_name["g_player_squidge_offset"]
 
     splash_header = (
         repo_root / "tools/match/include/thanks_screen.h"
@@ -386,12 +443,25 @@ def test_mobile_splash_lifecycle_recovers_authored_owner() -> None:
         ),
     ]
     assert "class cRSplash" in splash_header
+    assert "void Init(); // @ 0x433fd0" in splash_header
+    assert "void UnInit(); // @ 0x4340c0" in splash_header
+    assert "void AI(); // @ 0x4340f0" in splash_header
     assert "cRSubGame* game; // +0x00" in splash_header
     assert "cRSplash splash;" in subgame_header
     assert "ThanksScreen" not in splash_header
     assert "ThanksScreen" not in subgame_header
     assert all("cRSplash" in header for header in analysis_headers)
     assert all("ThanksScreen" not in header for header in analysis_headers)
+
+    frontend = (
+        scratch_root / "update_frontend_state_machine/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    splash_ai = (
+        scratch_root / "update_thanks_for_playing_screen/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "splash.Init();" in frontend
+    assert "splash.AI();" in frontend
+    assert "UnInit();" in splash_ai
 
 
 def test_mobile_track_pipeline_recovers_authored_windows_members() -> None:

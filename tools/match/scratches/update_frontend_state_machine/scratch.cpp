@@ -159,11 +159,11 @@ void cRPlayer::update_frontend_state_machine()
             frontend_state = 30;
         {
             GameRoot* owner = g_game;
-            owner->subgame.splash.initialize_thanks_for_playing_screen();
+            owner->subgame.splash.Init();
         }
         case 30: {
             GameRoot* owner = g_game;
-            owner->subgame.splash.update_thanks_for_playing_screen();
+            owner->subgame.splash.AI();
             break;
         }
         case 31:

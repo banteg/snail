@@ -32,3 +32,8 @@ state/progress fields. The iOS STABS catalog assigns the authored class to
 `Splash.o`. Mobile's leading exit flag makes its owner 0x18 bytes with the game
 link at +0x04; the exact Windows owner remains its independently recovered
 0x14-byte layout with the game link at +0x00.
+
+The exact Windows object symbol `?Init@cRSplash@@QAEXXZ` now anchors the
+authored `cRSplash::Init()` method spelling in the matching source and
+reference manifest; the descriptive scratch identity remains only the stable
+Windows-address key.

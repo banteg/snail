@@ -36,6 +36,7 @@ from snail.match import (
     render_status_table,
     resolve_function_extent,
     TypeConsolidationFinding,
+    _resolve_image_reference,
     _reference_symbol_for_symbol_name,
     type_consolidation_findings,
 )
@@ -344,6 +345,43 @@ def test_reference_symbol_manifest_allows_duplicate_addresses(tmp_path: Path) ->
         "g_table_base",
         "foo_static_guard",
     ]
+
+
+def test_same_address_function_and_offset_keep_distinct_reference_keys(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "references.json"
+    manifest_path.write_text(
+        """
+{
+  "name": "function and numeric offset collision",
+  "symbols": [
+    {
+      "address": "0x4340c0",
+      "name": "uninit_thanks_screen",
+      "kind": "function",
+      "aliases": ["?UnInit@cRSplash@@QAEXXZ"]
+    },
+    {
+      "address": "0x4340c0",
+      "name": "g_player_squidge_offset",
+      "kind": "offset"
+    }
+  ]
+}
+""",
+        encoding="utf-8",
+    )
+    manifest = load_reference_symbol_manifest(manifest_path)
+
+    reference = _resolve_image_reference(
+        0x4340C0,
+        reference_manifest=manifest,
+    )
+
+    assert reference.text == "function:uninit_thanks_screen@0x4340c0"
+    assert reference.key == "ref:uninit_thanks_screen"
+    assert reference.alternate_keys == ("ref:g_player_squidge_offset",)
 
 
 def test_reference_symbol_manifest_rejects_duplicate_aliases(tmp_path: Path) -> None:
