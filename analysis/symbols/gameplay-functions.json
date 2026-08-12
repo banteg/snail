@@ -273,8 +273,11 @@
     {
       "address": "0x405270",
       "name": "scramble_archive_bytes_in_place",
+      "aliases": [
+        "RShellScrambleFileDat"
+      ],
       "port_scope": "replaceable-platform",
-      "description": "Applies the archive rebuild byte-scramble in place by XORing each byte with its index-derived polynomial mask."
+      "description": "Exact Windows `RShellScrambleFileDat(void*, int)`: applies the archive byte scramble in place by XORing byte i with the low-byte polynomial `(i * i) ^ (i * 3)`. Android preserves the authored name, void ABI, and identical modulo-256 mask."
     },
     {
       "address": "0x4052a0",
@@ -2601,7 +2604,12 @@
     },
     {
       "address": "0x433010",
-      "name": "xor_decode_buffer_with_index"
+      "name": "xor_decode_buffer_with_index",
+      "aliases": [
+        "RShellScrambleFile"
+      ],
+      "port_scope": "boundary",
+      "description": "Exact void Windows `RShellScrambleFile(void*, int)`: XORs each buffer byte with its zero-based index in place. Android preserves the authored name, argument contract, and loop; its incidental return residue differs, while all four Windows callers discard EAX."
     },
     {
       "address": "0x433030",

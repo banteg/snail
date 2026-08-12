@@ -71,6 +71,7 @@ DATA_SYMBOL_UPDATES = (
 FUNCTION_SYMBOL_UPDATES = (
     ("0x405140", "file_exists"),
     ("0x4051b0", "load_file_bytes_allocating"),
+    ("0x405270", "scramble_archive_bytes_in_place"),
     ("0x4052a0", "save_file_bytes_with_optional_archive_scramble"),
     ("0x405340", "delete_file_path"),
     ("0x405350", "toggle_archive_high_bit_in_place"),
@@ -414,6 +415,10 @@ PROTO_UPDATES = (
         "void* __cdecl load_file_bytes_allocating(char* path, int32_t* out_size)",
     ),
     (
+        "scramble_archive_bytes_in_place",
+        "void __cdecl scramble_archive_bytes_in_place(void* buffer, int32_t byte_count)",
+    ),
+    (
         "save_file_bytes_with_optional_archive_scramble",
         "int32_t __cdecl save_file_bytes_with_optional_archive_scramble(char* path, void* bytes, int32_t byte_count, uint8_t should_scramble)",
     ),
@@ -471,7 +476,7 @@ PROTO_UPDATES = (
     ),
     (
         "xor_decode_buffer_with_index",
-        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
+        "void __cdecl xor_decode_buffer_with_index(void* buffer, int32_t byte_count)",
     ),
     (
         "write_file_bytes",

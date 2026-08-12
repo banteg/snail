@@ -347,6 +347,15 @@
       "notes": "The exact Windows helper increments the delivered count, awards the parcel score, and advances the same Completion state machine."
     },
     {
+      "address": "0x405270",
+      "windows_name": "scramble_archive_bytes_in_place",
+      "android_symbol": "RShellScrambleFileDat(void*, int)",
+      "source_object": "DatBuild.o",
+      "source_object_evidence": "ios-enclosing-function-source-object",
+      "confidence": "high",
+      "notes": "Windows and Android both mutate byte i with the low-byte mask `(i * i) ^ (i * 3)` for every index below the signed byte count. Android preserves the authored void RShellScrambleFileDat name and void-pointer contract. iOS inlines the complete operation inside SaveFile(char*, void*, int, bool), which its STABS record places in DatBuild.o; the cohesive Windows archive-builder run and sole SaveFile caller recover that Windows source unit without claiming a standalone iOS mapping."
+    },
+    {
       "address": "0x405640",
       "windows_name": "load_x_mesh",
       "ios_symbol": "cRDirectX::Load(char*, cRObject*, int)",
@@ -3715,6 +3724,14 @@
       "source_object": "RShell.o",
       "confidence": "high",
       "notes": "Windows and Android scan 128-byte RShellSoundName slots up to RShellSoundCount and return the matching index, with the same error-and-zero miss contract. Android exports the matrix at exactly 256 slots and the count as a separate four-byte scalar."
+    },
+    {
+      "address": "0x433010",
+      "windows_name": "xor_decode_buffer_with_index",
+      "android_symbol": "RShellScrambleFile(void*, int)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "notes": "Windows and Android both XOR each byte in place with its zero-based index under the same signed positive-count guard. Android preserves the authored void RShellScrambleFile name and void-pointer contract; all four Windows callers discard EAX, and the exact Windows scratch remains byte-identical after removing its synthetic pointer return."
     },
     {
       "address": "0x433030",

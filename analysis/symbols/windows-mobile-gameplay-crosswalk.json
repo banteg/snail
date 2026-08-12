@@ -14,6 +14,7 @@
     "source_object_evidence set to windows-contiguous-source-run means the function is physically bounded by verified Windows functions from the same source object and its recovered owner agrees with that unit.",
     "source_object_evidence set to windows-constructor-support-run means a compiler-emitted helper belongs to a bounded constructor support block with a direct source-object anchor and a closed native caller graph; shared folded and cross-cutting helpers are excluded.",
     "source_object_evidence set to dual-mobile-inline-source-object means Android and iOS inline the complete Windows operation inside the same authored enclosing method, both ports independently assign that method to the named source unit, and the Windows call graph agrees; this is source provenance, not a whole-function mobile mapping.",
+    "source_object_evidence set to ios-enclosing-function-source-object means iOS inlines the complete Windows operation inside a function with a direct STABS source-object record and the bounded Windows unit plus call graph agree; this recovers Windows source provenance without claiming a standalone iOS mapping.",
     "source_object_evidence set to windows-source-unit-tail means an exact Windows helper follows a verified same-object lifecycle family, its recovered owner belongs to that family, and the next verified function begins a different source unit.",
     "source_object_evidence set to windows-isolated-class-source-run means a closed Windows method family forms its own linker run between independently identified source units, and the exact native class name fixes that run's object filename.",
     "source_object_evidence set to ios-global-source-object means the Windows function initializes, or is the direct CRT thunk for, a cross-port global whose exact iOS symbol is assigned to that source object.",
@@ -22,11 +23,11 @@
   ],
   "counts": {
     "manifest_functions": 785,
-    "verified_entries": 586,
-    "unverified_entries": 199,
-    "verified_android_symbols": 580,
+    "verified_entries": 588,
+    "unverified_entries": 197,
+    "verified_android_symbols": 582,
     "verified_ios_symbols": 466,
-    "available_android_mappings": 580,
+    "available_android_mappings": 582,
     "available_ios_mappings": 430
   },
   "entries": [
@@ -1316,45 +1317,24 @@
       "address": "0x405270",
       "windows_name": "scramble_archive_bytes_in_place",
       "windows_size": 48,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRFade::FadeIn()",
-          "score": 0.67,
-          "name_score": 0.45,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubHover::JetUnInit()",
-          "score": 0.6016,
-          "name_score": 0.336,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellScrambleFile(void*, int)",
-          "score": 0.6,
-          "name_score": 0.4444,
-          "size_score": 0.8333
-        },
-        {
-          "symbol": "JAVAMusicRestart()",
-          "score": 0.5954,
-          "name_score": 0.3256,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "JAVAOpenFeintOpen()",
-          "score": 0.5909,
-          "name_score": 0.3182,
-          "size_score": 1.0
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "RShellScrambleFileDat(void*, int)",
+      "source_object": "DatBuild.o",
+      "source_object_evidence": "ios-enclosing-function-source-object",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
         {
           "symbol": "cRFade::FadeIn()",
           "score": 0.67,
           "name_score": 0.45,
           "size_score": 1.0
+        },
+        {
+          "symbol": "RShellConvertFileName(char*, char*)",
+          "score": 0.624,
+          "name_score": 0.72,
+          "size_score": 0.48
         },
         {
           "symbol": "cRDuplicateVertices::Init(int)",
@@ -1369,16 +1349,10 @@
           "size_score": 1.0
         },
         {
-          "symbol": "cRMouse::ClickScreen(bool, float, float)",
-          "score": 0.5895,
-          "name_score": 0.3158,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubGame::HideScores()",
-          "score": 0.5622,
-          "name_score": 0.2703,
-          "size_score": 1.0
+          "symbol": "MacGetFileName(char*, char*)",
+          "score": 0.6033,
+          "name_score": 0.45,
+          "size_score": 0.8333
         }
       ]
     },
@@ -13539,40 +13513,18 @@
       "address": "0x433010",
       "windows_name": "xor_decode_buffer_with_index",
       "windows_size": 32,
-      "status": "unverified",
-      "android_candidates": [
-        {
-          "symbol": "cRContinue::UnInit()",
-          "score": 0.6115,
-          "name_score": 0.3525,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSpriteManager::GetTextureRef(int)",
-          "score": 0.5622,
-          "name_score": 0.2703,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSure::UnInit()",
-          "score": 0.5536,
-          "name_score": 0.256,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "cRSubLazerManager::Init()",
-          "score": 0.5477,
-          "name_score": 0.2462,
-          "size_score": 1.0
-        },
-        {
-          "symbol": "RShellGetScreenWidth()",
-          "score": 0.5455,
-          "name_score": 0.4091,
-          "size_score": 0.75
-        }
-      ],
+      "status": "verified",
+      "android_symbol": "RShellScrambleFile(void*, int)",
+      "source_object": "RShell.o",
+      "confidence": "high",
+      "android_body_count": 1,
       "ios_candidates": [
+        {
+          "symbol": "cRTime::Zero()",
+          "score": 0.6256,
+          "name_score": 0.45,
+          "size_score": 0.8889
+        },
         {
           "symbol": "OFISerializer::StringKey::equals(OFISerializerKey const*) const",
           "score": 0.6207,
@@ -13580,28 +13532,22 @@
           "size_score": 1.0
         },
         {
+          "symbol": "RShellDeleteFile(char*)",
+          "score": 0.605,
+          "name_score": 0.675,
+          "size_score": 0.5
+        },
+        {
+          "symbol": "RShellSaveFile(char*, void*, int)",
+          "score": 0.605,
+          "name_score": 0.675,
+          "size_score": 0.5
+        },
+        {
           "symbol": "cRSubGame::GetSkirtColourRandomOpen()",
           "score": 0.6,
           "name_score": 0.3333,
           "size_score": 1.0
-        },
-        {
-          "symbol": "OFISerializer::isCurrentScopeASeries() const",
-          "score": 0.5956,
-          "name_score": 0.4,
-          "size_score": 0.8889
-        },
-        {
-          "symbol": "OFOutputSerializer::OFOutputSerializer()",
-          "score": 0.5786,
-          "name_score": 0.381,
-          "size_score": 0.875
-        },
-        {
-          "symbol": "OFBinaryMemorySink::getDataBuffer() const",
-          "score": 0.577,
-          "name_score": 0.3784,
-          "size_score": 0.875
         }
       ]
     },

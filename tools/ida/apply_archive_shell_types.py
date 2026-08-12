@@ -249,6 +249,10 @@ TRUSTED_DECLARATIONS = [
         "void* __cdecl load_file_bytes_allocating(char* path, int* out_size);",
     ),
     (
+        "scramble_archive_bytes_in_place",
+        "void __cdecl scramble_archive_bytes_in_place(void* buffer, int byte_count);",
+    ),
+    (
         "save_file_bytes_with_optional_archive_scramble",
         "int __cdecl save_file_bytes_with_optional_archive_scramble(char* path, void* bytes, int byte_count, unsigned char should_scramble);",
     ),
@@ -306,7 +310,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "xor_decode_buffer_with_index",
-        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
+        "void __cdecl xor_decode_buffer_with_index(void* buffer, int byte_count);",
     ),
     (
         "write_file_bytes",
@@ -322,6 +326,7 @@ TRUSTED_NAMES = [
     (0x4050C0, "classify_archive_entry_extension"),
     (0x405140, "file_exists"),
     (0x4051B0, "load_file_bytes_allocating"),
+    (0x405270, "scramble_archive_bytes_in_place"),
     (0x4052A0, "save_file_bytes_with_optional_archive_scramble"),
     (0x405340, "delete_file_path"),
     (0x405350, "toggle_archive_high_bit_in_place"),

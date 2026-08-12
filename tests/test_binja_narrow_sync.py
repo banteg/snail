@@ -5478,7 +5478,8 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
     binja_declarations = (
         "int32_t __cdecl fseek(File* stream, int32_t offset, int32_t origin)",
         "int32_t __cdecl ftell(File* stream)",
-        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count)",
+        "void __cdecl scramble_archive_bytes_in_place(void* buffer, int32_t byte_count)",
+        "void __cdecl xor_decode_buffer_with_index(void* buffer, int32_t byte_count)",
         "int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count)",
         "char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count)",
     )
@@ -5486,7 +5487,8 @@ def test_archive_shell_replays_preserve_persistence_helper_abis() -> None:
         "unsigned int __cdecl fread(void* bytes, unsigned int element_size, unsigned int element_count, File* stream);",
         "int __cdecl fseek(File* stream, int offset, int origin);",
         "int __cdecl ftell(File* stream);",
-        "char* __cdecl xor_decode_buffer_with_index(char* bytes, int byte_count);",
+        "void __cdecl scramble_archive_bytes_in_place(void* buffer, int byte_count);",
+        "void __cdecl xor_decode_buffer_with_index(void* buffer, int byte_count);",
         "int __cdecl write_file_bytes(char* path, void* bytes, int byte_count);",
         "char* __cdecl save_config_file(char* path, void* bytes, int byte_count);",
     )

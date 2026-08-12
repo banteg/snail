@@ -5672,6 +5672,117 @@ def test_mobile_rshell_font_load_recovers_windows_wrapper_owner() -> None:
     assert "11/11 instructions" in notes
 
 
+def test_android_rshell_scramble_helpers_recover_windows_contracts() -> None:
+    repo_root = Path(__file__).parents[1]
+    complete = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)
+    entries = {
+        entry["windows_name"]: entry for entry in complete["entries"]
+    }
+    expected = {
+        "scramble_archive_bytes_in_place": (
+            "RShellScrambleFileDat(void*, int)",
+            "25/25 instructions",
+            "DatBuild.o",
+        ),
+        "xor_decode_buffer_with_index": (
+            "RShellScrambleFile(void*, int)",
+            "15/15 instructions",
+            "RShell.o",
+        ),
+    }
+
+    android_index = load_json(DEFAULT_ANDROID_CORPUS_ROOT / "index.json")
+    ios_index = load_json(DEFAULT_IOS_CORPUS_ROOT / "index.json")
+    for windows_name, (
+        mobile_symbol,
+        exact_count,
+        source_object,
+    ) in expected.items():
+        entry = entries[windows_name]
+        assert entry["status"] == "verified"
+        assert entry["confidence"] == "high"
+        assert entry["source_object"] == source_object
+        assert entry["android_symbol"] == mobile_symbol
+        assert entry["android_body_count"] == 1
+        assert "ios_symbol" not in entry
+
+        android = resolve_corpus_symbol(android_index, mobile_symbol)
+        assert android is not None
+        body = corpus_function_path(
+            DEFAULT_ANDROID_CORPUS_ROOT, android
+        ).read_text(encoding="utf-8")
+        assert resolve_corpus_symbol(ios_index, mobile_symbol) is None
+
+        notes = (
+            repo_root
+            / "tools/match/scratches"
+            / windows_name
+            / "NOTES.md"
+        ).read_text(encoding="utf-8")
+        assert mobile_symbol in notes
+        assert exact_count in notes
+
+        if windows_name == "scramble_archive_bytes_in_place":
+            assert "bVar1 = bVar1 + 3;" in body
+            assert "(char)iVar2 * (char)iVar2" in body
+            assert entry["source_object_evidence"] == (
+                "ios-enclosing-function-source-object"
+            )
+        else:
+            assert "^ (byte)iVar1" in body
+            assert "void xor_decode_buffer_with_index(void* buffer" in (
+                repo_root
+                / "tools/match/scratches/xor_decode_buffer_with_index/"
+                "scratch.cpp"
+            ).read_text(encoding="utf-8")
+
+    ios_names = load_json(
+        repo_root / "analysis/symbols/ios-ipa-gameplay-names.json"
+    )
+    save_file_symbol = "SaveFile(char*, void*, int, bool)"
+    assert save_file_symbol in dict(ios_names["source_objects"])[
+        "DatBuild.o"
+    ]
+    ios_save_file = resolve_corpus_symbol(ios_index, save_file_symbol)
+    assert ios_save_file is not None
+    ios_save_body = corpus_function_path(
+        DEFAULT_IOS_CORPUS_ROOT, ios_save_file
+    ).read_text(encoding="utf-8")
+    assert "(char)iVar3 * (char)iVar3 ^ bVar1" in ios_save_body
+    assert "bVar1 = bVar1 + 3;" in ios_save_body
+    assert any(
+        "ios-enclosing-function-source-object" in note
+        for note in complete["notes"]
+    )
+
+    manifest = load_json(
+        repo_root / "analysis/symbols/gameplay-functions.json"
+    )
+    functions = {
+        function["name"]: function for function in manifest["functions"]
+    }
+    assert functions["scramble_archive_bytes_in_place"]["aliases"] == [
+        "RShellScrambleFileDat"
+    ]
+    assert functions["xor_decode_buffer_with_index"]["aliases"] == [
+        "RShellScrambleFile"
+    ]
+    assert functions["xor_decode_buffer_with_index"]["port_scope"] == (
+        "boundary"
+    )
+
+    ordered = complete["entries"]
+    xor_index = ordered.index(entries["xor_decode_buffer_with_index"])
+    assert ordered[xor_index - 1]["windows_name"] == (
+        "find_registered_sound_sample_id_by_name"
+    )
+    assert ordered[xor_index + 1]["windows_name"] == (
+        "get_authored_view_width"
+    )
+    assert ordered[xor_index - 1]["source_object"] == "RShell.o"
+    assert ordered[xor_index + 1]["source_object"] == "RShell.o"
+
+
 def test_mobile_rstring_family_recovers_strict_comparator_and_windows_abi() -> None:
     repo_root = Path(__file__).parents[1]
     crosswalk = load_json(DEFAULT_MOBILE_CROSSWALK_PATH)

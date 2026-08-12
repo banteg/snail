@@ -7,7 +7,7 @@ const int HIGH_SCORE_SAVE_BUFFER_SIZE = 0x4c4b40;
 
 extern char* allocate_tracked_memory(int size, char* name);
 extern void free_tracked_memory(void* memory);
-extern char* xor_decode_buffer_with_index(char* bytes, int byte_count);
+extern void xor_decode_buffer_with_index(void* buffer, int byte_count);
 extern int write_file_bytes(char* file_name, void* bytes, int byte_count);
 extern char* save_config_file(char* file_name, void* bytes, int byte_count);
 

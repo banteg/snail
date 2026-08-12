@@ -299,6 +299,8 @@ ArchiveEntryExtensionClass __cdecl classify_archive_entry_extension(
 void __cdecl rebuild_game_archive_if_needed(void);
 uint8_t __cdecl file_exists(char* path);
 void* __cdecl load_file_bytes_allocating(char* path, int32_t* out_size);
+/* RShellScrambleFileDat(void*, int) */
+void __cdecl scramble_archive_bytes_in_place(void* buffer, int32_t byte_count);
 int32_t __cdecl save_file_bytes_with_optional_archive_scramble(
     char* path, void* bytes, int32_t byte_count, uint8_t should_scramble);
 int32_t __cdecl delete_file_path(char* path);
@@ -330,7 +332,8 @@ void* __cdecl get_archive_data_base(void);
 void* __cdecl get_archive_data_end(void);
 void* __cdecl allocate_tracked_memory(int32_t size, char* name);
 void __cdecl free_tracked_memory(void* pointer);
-char* __cdecl xor_decode_buffer_with_index(char* bytes, int32_t byte_count);
+/* RShellScrambleFile(void*, int) */
+void __cdecl xor_decode_buffer_with_index(void* buffer, int32_t byte_count);
 int32_t __cdecl write_file_bytes(char* path, void* bytes, int32_t byte_count);
 char* __cdecl save_config_file(char* path, void* bytes, int32_t byte_count);
 

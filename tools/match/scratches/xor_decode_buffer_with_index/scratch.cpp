@@ -1,8 +1,9 @@
 // xor_decode_buffer_with_index @ 0x433010 (cdecl)
+// Authored mobile name: RShellScrambleFile(void*, int)
 
-char* xor_decode_buffer_with_index(char* bytes, int byte_count)
+void xor_decode_buffer_with_index(void* buffer, int byte_count)
 {
-    char* result = bytes;
+    char* result = (char*)buffer;
     int index = 0;
     if (byte_count > 0) {
         do {
@@ -11,5 +12,4 @@ char* xor_decode_buffer_with_index(char* bytes, int byte_count)
             ++index;
         } while (index < byte_count);
     }
-    return result;
 }

@@ -3,7 +3,7 @@
 #include <direct.h>
 #include <stdio.h>
 
-void scramble_archive_bytes_in_place(char* bytes, int size);
+void scramble_archive_bytes_in_place(void* buffer, int size);
 
 int __cdecl save_file_bytes_with_optional_archive_scramble(char* file_name, void* bytes, int byte_count, char should_scramble)
 {
@@ -11,7 +11,7 @@ int __cdecl save_file_bytes_with_optional_archive_scramble(char* file_name, void
     FILE* file;
 
     if (should_scramble != 0) {
-        scramble_archive_bytes_in_place((char*)bytes, byte_count);
+        scramble_archive_bytes_in_place(bytes, byte_count);
     }
 
     file = fopen(file_name, "wb");
