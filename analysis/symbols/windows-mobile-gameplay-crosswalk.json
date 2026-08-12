@@ -1920,6 +1920,8 @@
       "windows_name": "initialize_default_runtime_config_thunk",
       "windows_size": 16,
       "status": "unverified",
+      "source_object": "Mac.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRFringeManager::Init()",
@@ -1990,6 +1992,8 @@
       "windows_name": "initialize_default_runtime_config",
       "windows_size": 240,
       "status": "unverified",
+      "source_object": "Mac.o",
+      "source_object_evidence": "ios-global-source-object",
       "android_candidates": [
         {
           "symbol": "cRSound::Play(int, tVector&)",

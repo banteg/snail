@@ -78,3 +78,20 @@ entry at `0x406c10` is a one-instruction thunk, while the 36-instruction default
 initializer begins at `0x406c20`. Focused Binary Ninja exports now retire an
 obsolete same-address artifact after a tracked function rename, matching the
 existing IDA behavior without pruning unrelated exports.
+
+## 2026-08-12 cross-port source provenance
+
+The symbol-preserving iPhone v1.5 binary exposes `gConfig` in `Mac.o`. Its local
+`__GLOBAL__I_MACAppPath` wrapper at `0x2d80` enters the static initializer at
+`0x2c60`, which writes the same config offsets and defaults as this Windows
+body through `+0xc0`. The Android ELF independently names its corresponding
+initializer `_GLOBAL__I_Ad.cpp`; it preserves the same layout and values while
+extending the mobile config beyond `+0xc0`.
+
+The three platform defaults explain the real differences: mobile clears the
+fullscreen and display-mode fields and uses render flags `0x1fe`, while
+Windows enables fullscreen, selects display mode 1, and adds desktop render
+bit `0x400` for `0x5fe`. The crosswalk therefore records the iOS STABS source
+provenance `Mac.o` for the Windows initializer, not a claim that the Windows
+platform unit shared either the `Mac` or `Ad` filename. The exact Windows
+36/36 body is unchanged.

@@ -6069,6 +6069,8 @@ def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
             "RMaths.o",
             "gUnitMatrix",
         ),
+        "initialize_default_runtime_config_thunk": ("Mac.o", "gConfig"),
+        "initialize_default_runtime_config": ("Mac.o", "gConfig"),
     }
 
     for windows_name, (source_object, global_name) in expected.items():
@@ -6077,6 +6079,21 @@ def test_ios_globals_recover_windows_static_initializer_source_units() -> None:
         assert entry["source_object"] == source_object
         assert entry["source_object_evidence"] == "ios-global-source-object"
         assert global_objects[global_name] == {source_object}
+
+
+def test_cross_port_runtime_config_initializer_preserves_platform_split() -> None:
+    repo_root = Path(__file__).parents[1]
+    android_decompile = (
+        repo_root
+        / "artifacts/android/unpacked/com.sandlotgames.snailmail.1/lib/armeabi/libsnailmail.so.c"
+    ).read_text(encoding="utf-8")
+
+    assert "`global constructor keyed to'Ad.cpp()" in android_decompile
+    assert "dword_9A208 = 510;" in android_decompile
+    assert "gConfig = 1058642330;" in android_decompile
+    assert "dword_9A228 = 1061158912;" in android_decompile
+    assert "dword_9A234 = 40;" in android_decompile
+    assert "dword_9A29C = 1092616192;" in android_decompile
 
 
 def test_ios_track_colour_globals_recover_windows_initializer_units() -> None:

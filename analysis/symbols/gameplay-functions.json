@@ -352,12 +352,16 @@
     {
       "address": "0x406c10",
       "name": "initialize_default_runtime_config_thunk",
-      "description": "CRT initializer-table thunk that tail-calls the adjacent SnailMail.cfg default-state initializer."
+      "description": "CRT initializer-table thunk that tail-calls the adjacent SnailMail.cfg default-state initializer.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x406c20",
       "name": "initialize_default_runtime_config",
-      "description": "Seeds the 0xc4-byte SnailMail.cfg blob with default sound volume, music volume, fullscreen, progression, and tuning values before any file overlay is loaded."
+      "description": "Seeds the 0xc4-byte SnailMail.cfg blob with default sound volume, music volume, fullscreen, progression, and tuning values before any file overlay is loaded.",
+      "source_object": "Mac.o",
+      "source_object_evidence": "ios-global-source-object"
     },
     {
       "address": "0x406d10",
