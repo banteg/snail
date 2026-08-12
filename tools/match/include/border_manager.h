@@ -49,10 +49,9 @@ public:
     void HideBorders(); // @ 0x4033f0
     void UnHideBorders(); // @ 0x403400
     int kill_border(cRBorder* border);
-    void queue_frontend_widget_flag_after_delay(
+    void DelayClick(
         cRBorder* widget,
-        int queued_flags); // @ 0x403f60,
-        // Android cRBorderManager::DelayClick(cRBorder*, int)
+        int queued_flags); // @ 0x403f60
     void AI(); // @ 0x403fc0
     void SetJustifyCentre(float justify_centre); // @ 0x404730
 

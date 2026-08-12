@@ -192,6 +192,15 @@
       "description": "Exact Windows cRToolTip::AI() entry with its owner-qualified decorated relocation name."
     },
     {
+      "address": "0x403f60",
+      "name": "queue_frontend_widget_flag_after_delay",
+      "kind": "function",
+      "aliases": [
+        "?DelayClick@cRBorderManager@@QAEXPAVcRBorder@@H@Z"
+      ],
+      "description": "Exact Windows cRBorderManager::DelayClick(cRBorder*, int) entry with its owner-qualified decorated relocation name."
+    },
+    {
       "address": "0x403fc0",
       "name": "update_border_manager",
       "kind": "function",

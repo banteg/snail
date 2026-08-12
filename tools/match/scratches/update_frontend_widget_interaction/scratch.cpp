@@ -81,7 +81,7 @@ void cRBorder::update_frontend_widget_interaction()
             widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
         else
             g_game->border_manager
-                .queue_frontend_widget_flag_after_delay(
+                .DelayClick(
                     this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
     }
 
@@ -120,7 +120,7 @@ void cRBorder::update_frontend_widget_interaction()
                 widget_flags |= FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED;
             } else {
                 g_game->border_manager
-                    .queue_frontend_widget_flag_after_delay(
+                    .DelayClick(
                         this, FRONTEND_WIDGET_FLAG_PRIMARY_ACTION_TRIGGERED);
             }
             if ((widget_flags & FRONTEND_WIDGET_FLAG_SUPPRESS_ACTION_SOUND) == 0)
@@ -140,7 +140,7 @@ void cRBorder::update_frontend_widget_interaction()
                 widget_flags |= FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED;
             else
                 g_game->border_manager
-                    .queue_frontend_widget_flag_after_delay(
+                    .DelayClick(
                         this, FRONTEND_WIDGET_FLAG_SECONDARY_ACTION_TRIGGERED);
             g_sound_effect_manager.Play(8);
             tooltip.ReSet();

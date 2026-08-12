@@ -5536,6 +5536,12 @@ def test_mobile_delay_click_recovers_border_manager_owner() -> None:
         entry["name"]: entry
         for entry in functions["functions"]
     }
+    references_by_name = {
+        entry["name"]: entry
+        for entry in load_json(
+            repo_root / "analysis/symbols/gameplay-references.json"
+        )["symbols"]
+    }
 
     delay_click = entries["queue_frontend_widget_flag_after_delay"]
     assert delay_click["status"] == "verified"
@@ -5546,11 +5552,36 @@ def test_mobile_delay_click_recovers_border_manager_owner() -> None:
     )
     assert delay_click["android_body_count"] == 1
     assert "ios_symbol" not in delay_click
-    assert "cRBorderManager_DelayClick" in (
-        functions_by_name[
-            "queue_frontend_widget_flag_after_delay"
-        ]["aliases"]
+    assert functions_by_name[
+        "queue_frontend_widget_flag_after_delay"
+    ]["aliases"] == ["cRBorderManager_DelayClick"]
+    object_symbol = (
+        "?DelayClick@cRBorderManager@@QAEXPAVcRBorder@@H@Z"
     )
+    assert references_by_name[
+        "queue_frontend_widget_flag_after_delay"
+    ]["aliases"] == [object_symbol]
+
+    scratch_root = repo_root / "tools/match/scratches"
+    source = (
+        scratch_root
+        / "queue_frontend_widget_flag_after_delay/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    config = (
+        scratch_root
+        / "queue_frontend_widget_flag_after_delay/scratch.conf"
+    ).read_text(encoding="utf-8")
+    header = (
+        repo_root / "tools/match/include/border_manager.h"
+    ).read_text(encoding="utf-8")
+    caller = (
+        scratch_root / "update_frontend_widget_interaction/scratch.cpp"
+    ).read_text(encoding="utf-8")
+    assert "void cRBorderManager::DelayClick(" in source
+    assert f"SYMBOL={object_symbol}\n" in config
+    assert "void DelayClick(" in header
+    assert caller.count(".DelayClick(") == 3
+    assert "queue_frontend_widget_flag_after_delay(" not in caller
 
     android_body = (
         repo_root
@@ -5579,8 +5610,8 @@ def test_mobile_delay_click_recovers_border_manager_owner() -> None:
         / "queue_frontend_widget_flag_after_delay"
         / "NOTES.md"
     ).read_text(encoding="utf-8")
-    assert "standalone authored" in notes
-    assert "iOS independently inlines" in notes
+    assert "# Exact cRBorderManager::DelayClick" in notes
+    assert "iOS inlines" in notes
 
 
 def test_mobile_matrix_premultiply_recovers_authored_member() -> None:
@@ -9869,6 +9900,7 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
         "kill_all_borders": "KillBorders",
         "hide_all_borders": "HideBorders",
         "unhide_all_borders": "UnHideBorders",
+        "queue_frontend_widget_flag_after_delay": "DelayClick",
         "update_border_manager": "AI",
         "set_border_justify_centre": "SetJustifyCentre",
         "reset_tooltip": "ReSet",
@@ -10138,6 +10170,13 @@ def test_border_presentation_types_use_authored_primary_owners() -> None:
             "cRBorderManager_UnHideBorders",
             "void UnHideBorders();",
             True,
+        ),
+        "queue_frontend_widget_flag_after_delay": (
+            "cRBorderManager::DelayClick(cRBorder*, int)",
+            "?DelayClick@cRBorderManager@@QAEXPAVcRBorder@@H@Z",
+            "cRBorderManager_DelayClick",
+            "void DelayClick(",
+            False,
         ),
         "update_border_manager": (
             "cRBorderManager::AI()",

@@ -6493,10 +6493,7 @@ def test_frontend_fade_and_color_overlay_owners_are_replayed_cross_decompiler() 
         "void __thiscall queue_frontend_widget_flag_after_delay("
         "BorderManager *manager, FrontendWidget *widget, int32_t queued_flags);"
     ) in ida_joined_literals
-    assert (
-        "void cRBorderManager::queue_frontend_widget_flag_after_delay("
-        in delayed_action_source
-    )
+    assert "void cRBorderManager::DelayClick(" in delayed_action_source
     assert "cRBorder* widget, int queued_flags" in delayed_action_source
     assert "result = g_game->fade.begin_frontend_fade_out" not in delayed_action_source
     assert "return result;" not in delayed_action_source

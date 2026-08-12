@@ -4,7 +4,7 @@
 #include "game_root.h"
 
 
-void cRBorderManager::queue_frontend_widget_flag_after_delay(
+void cRBorderManager::DelayClick(
     cRBorder* widget, int queued_flags)
 {
     if (delayed_widget_active == 0) {
