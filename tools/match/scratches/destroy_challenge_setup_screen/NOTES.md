@@ -23,14 +23,14 @@ same +0x04 through +0x24 widget slots. Windows stays exact at 96/96.
 
 2026-07-13 root border ownership: each mode-specific teardown now reloads the
 canonical `GameRoot::border_manager` instead of reconstructing a manager from
-`g_game_base +0xb4c`. The borrowed `GUI::game` still owns the mode selector;
+`g_game_base +0xb4c`. The borrowed `cRGUI::game` still owns the mode selector;
 focused output remains exact at 96/96 with all 32 operands clean.
 
 ## 2026-07-15 durable owner replay
 
 Binary Ninja and IDA now both decompile this exact method through the persisted
-0x28-byte cRGUI owner. Live BN readback is `void __thiscall(GUI*)`; the widget
-teardown fields are typed `FrontendWidget*`, while `GUI::game` remains the
+0x28-byte cRGUI owner. Live BN readback is `void __thiscall(cRGUI*)`; the widget
+teardown fields are typed `FrontendWidget*`, while `cRGUI::game` remains the
 borrowed `cRSubGame*` that owns `level_mode`. Strict paired export passed
 without a symbol or address mismatch.
 
@@ -41,3 +41,9 @@ The scratch now spells the exact member as `cRGUI::UnInit()` and exports
 `cRGUI::AI()` with its receiver preserved in ECX; Android and iOS retain the
 same void symbol and one body each. Matching remains exact at 96/96 with all
 32 operands clean.
+
+## 2026-08-13 canonical analysis owner
+
+The generic analysis-only `GUI` record is now migrated to canonical `cRGUI`
+after exact 0x28-byte layout equivalence. The focused replay reads back every
+widget slot, the enclosing subgame edge, and the adjacent help boundary.

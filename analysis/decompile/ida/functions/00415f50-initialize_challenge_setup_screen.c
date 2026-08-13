@@ -3,7 +3,7 @@
 /* selector: initialize_challenge_setup_screen */
 
 // Void `cRGUI::Init()`: builds the mode-specific postal, challenge, or time-trial level-selection controls. Mode 1 adds Select Difficulty, Select Speed, Play, Watch Replay, and Back widgets. The sole Windows caller discards EAX; the honest void transcription is 167/167 instructions at 96.41%.
-void __thiscall initialize_challenge_setup_screen(GUI *gui)
+void __thiscall initialize_challenge_setup_screen(cRGUI *gui)
 {
   tColour *v2; // eax
   tColour *v3; // eax

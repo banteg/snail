@@ -3,7 +3,7 @@
 /* selector: update_challenge_setup_screen */
 
 // Implements result-bearing `cRGUI::AI()`: runs postal, challenge, and time-trial level selection, including navigation, difficulty/speed changes, replay launch, Play, and Back handoffs. `update_subgame` consumes its semantic 0/1/3 result, so this member remains `int`.
-int __thiscall update_challenge_setup_screen(GUI *gui)
+int __thiscall update_challenge_setup_screen(cRGUI *gui)
 {
   int32_t level_mode; // eax
   int v3; // eax

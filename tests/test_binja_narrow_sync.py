@@ -20497,6 +20497,7 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
 
 
 def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:
+    focused_header = (HEADER_DIR / "gui_types.h").read_text(encoding="utf-8")
     binja_header = (HEADER_DIR / "bn_subgame_runtime_types.h").read_text(
         encoding="utf-8"
     )
@@ -20516,8 +20517,10 @@ def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:
         encoding="utf-8"
     )
 
-    for header in (binja_header, ida_header, ida_canonical_header):
-        assert "typedef struct GUI" in header
+    for header in (focused_header, binja_header, ida_header, ida_canonical_header):
+        assert "typedef struct cRGUI" in header
+        assert "typedef struct GUI" not in header
+        assert "cRGUI_must_be_0x28" in header
         assert "cRSubGame* game;" in header
         for field in (
             "next_level_button",
@@ -20532,12 +20535,72 @@ def test_challenge_gui_owner_and_void_initializer_are_persisted() -> None:
             assert f"FrontendWidget* {field};" in header
 
     assert "GUI_FIELD_UPDATES = (" in binja_sync
+    assert '("GUI", "cRGUI")' in binja_sync
     assert '("0x00", "game", "cRSubGame*")' in binja_sync
     assert '("0x24", "replay_button", "FrontendWidget*")' in binja_sync
-    assert "void __thiscall initialize_challenge_setup_screen(GUI* gui)" in binja_sync
-    assert "void __thiscall initialize_challenge_setup_screen(GUI* gui);" in ida_sync
+    assert "void __thiscall initialize_challenge_setup_screen(cRGUI* gui)" in binja_sync
+    assert "void __thiscall initialize_challenge_setup_screen(cRGUI* gui);" in ida_sync
+    assert '("GUI", "cRGUI", 0x28)' in ida_sync
     assert "int __thiscall initialize_challenge_setup_screen" not in ida_sync
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"' in ida_runner
+
+
+def test_gui_owner_replays_are_canonical_and_boundary_checked() -> None:
+    repo_root = Path(__file__).parents[1]
+    focused_binja_sync = (BINJA_DIR / "sync_gui_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_sync = (IDA_DIR / "apply_gui_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_gui_types.py").read_text(encoding="utf-8")
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+
+    for source in (focused_binja_sync, focused_ida_sync):
+        assert '("GUI", "cRGUI"' in source
+        assert "initialize_challenge_setup_screen(cRGUI* gui)" in source
+        assert "destroy_challenge_setup_screen(cRGUI* gui)" in source
+        assert "update_challenge_setup_screen(cRGUI* gui)" in source
+
+    assert '"cRGUI": 0x28' in focused_binja_sync
+    assert '("0x125ffe0", "gui", "cRGUI")' in focused_binja_sync
+    assert '("0x1260008", "help", "Help")' in focused_binja_sync
+    assert "current_header_type_equivalence" in focused_binja_sync
+    assert "types_declare_missing_only" in focused_binja_sync
+
+    assert "EXPECTED_OWNER_LAYOUT" in focused_ida_sync
+    assert "EXPECTED_OWNER_EDGES" in focused_ida_sync
+    assert '"subgame_embed"' in focused_ida_sync
+    assert '"following_help"' in focused_ida_sync
+    assert '"offset": "0x125ffe0"' in focused_ida_sync
+    assert '"offset": "0x1260008"' in focused_ida_sync
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/gui_types.h"'
+        in ida_runner
+    )
+
+    assert '("GUI", "cRGUI")' in path_binja_sync
+    assert '"cRGUI",' in path_binja_sync
+    assert '("0x125ffe0", "gui", "cRGUI")' in path_binja_sync
+    assert "GUI_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert '("GUI", "cRGUI", 0x28)' in path_ida_sync
+    assert "gui_owner_type_alias_migrations" in path_ida_sync
+    assert "gui_owner_type_alias_failures" in path_ida_sync
+
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+    for prototype in (
+        "initialize_challenge_setup_screen(cRGUI *gui)",
+        "destroy_challenge_setup_screen(cRGUI *gui)",
+        "update_challenge_setup_screen(cRGUI *gui)",
+    ):
+        assert prototype in health_checks
 
 
 def test_embedded_subgame_ai_void_abis_are_persisted() -> None:

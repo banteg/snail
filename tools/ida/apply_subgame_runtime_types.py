@@ -120,6 +120,7 @@ GALAXY_OWNER_TYPE_ALIASES = (
 TIMES_UP_OWNER_TYPE_ALIASES = (("TimesUp", "cRTimesUp", 0x10),)
 TIME_OWNER_TYPE_ALIASES = (("Time", "cRTime", 0x18),)
 TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
+GUI_OWNER_TYPE_ALIASES = (("GUI", "cRGUI", 0x28),)
 
 TIMES_UP_OWNER_EXPECTED_SIZE = 0x10
 TIMES_UP_OWNER_EXPECTED_MEMBERS = (
@@ -581,15 +582,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_challenge_setup_screen",
-        "void __thiscall initialize_challenge_setup_screen(GUI* gui);",
+        "void __thiscall initialize_challenge_setup_screen(cRGUI* gui);",
     ),
     (
         "destroy_challenge_setup_screen",
-        "void __thiscall destroy_challenge_setup_screen(GUI* gui);",
+        "void __thiscall destroy_challenge_setup_screen(cRGUI* gui);",
     ),
     (
         "update_challenge_setup_screen",
-        "int __thiscall update_challenge_setup_screen(GUI* gui);",
+        "int __thiscall update_challenge_setup_screen(cRGUI* gui);",
     ),
     (
         "format_time_trial_string",
@@ -2033,6 +2034,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 *GALAXY_OWNER_TYPE_ALIASES,
                 *TIME_OWNER_TYPE_ALIASES,
                 *TIME_TRIAL_OWNER_TYPE_ALIASES,
+                *GUI_OWNER_TYPE_ALIASES,
                 *TIMES_UP_OWNER_TYPE_ALIASES,
             )
         )
@@ -2613,7 +2615,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "SlugStateStrideCursor": _named_struct_size("SlugStateStrideCursor"),
                     "SlugSlotCursor": _named_struct_size("SlugSlotCursor"),
                     "EnemyManager": _named_struct_size("EnemyManager"),
-                    "GUI": _named_struct_size("GUI"),
+                    "cRGUI": _named_struct_size("cRGUI"),
                     "Help": _named_struct_size("Help"),
                     "cRSplash": _named_struct_size("cRSplash"),
                     "GalaxyStar": _named_struct_size("GalaxyStar"),

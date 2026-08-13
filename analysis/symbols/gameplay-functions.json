@@ -2966,7 +2966,7 @@
       "aliases": [
         "cRSplash_Open"
       ],
-      "description": "Binds a front-end controller\u2019s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the byte-identical `cRSplash::Open()` body into the same address."
+      "description": "Binds a front-end controller\u2019s first field to the embedded cRSubGame owner. For the 0x28-byte cRGUI receiver this is `cRGUI::Open()`; Windows folds the byte-identical `cRSplash::Open()` body into the same address."
     },
     {
       "address": "0x433fd0",

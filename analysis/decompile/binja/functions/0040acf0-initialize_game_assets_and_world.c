@@ -63,7 +63,7 @@
 0040aeca        load_landscape_script_by_name(&game->subgame.landscape_manager, "Help.txt")
 0040aed5        game->subgame.level_mode_arg = g_runtime_config.landscape_backdrop_variant_selector
 0040aee1        bind_subgame_owner(&game->subgame.gui)
-0040aeec        bind_subgame_owner(&game->subgame.thanks_screen)
+0040aeec        bind_subgame_owner(&game->subgame.splash)
 0040aef7        load_galaxy_layout(&game->subgame.galaxy)
 0040af02        initialize_cameraman(&game->subgame.player.cameraman)
 0040af0d        open_logo(&game->logo)

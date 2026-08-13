@@ -639,6 +639,8 @@ TIME_TRIAL_OWNER_SIZES = {
 
 TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
 
+GUI_OWNER_TYPE_ALIASES = (("GUI", "cRGUI", 0x28),)
+
 EXPECTED_TIME_TRIAL_OWNER_LAYOUTS = {
     "TimeTrialCourseRecord": {
         "size": 0x10,
@@ -6673,6 +6675,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in time_trial_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
+    gui_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(GUI_OWNER_TYPE_ALIASES)
+    )
+    gui_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "gui",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in gui_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     times_up_owner_type_alias_migrations = (
         []
         if parse_errors
@@ -7326,6 +7343,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or anim_manager_owner_type_alias_failures
         or time_owner_type_alias_failures
         or time_trial_owner_type_alias_failures
+        or gui_owner_type_alias_failures
         or times_up_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
@@ -7364,6 +7382,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "time_trial_owner_type_alias_migrations": (
                         time_trial_owner_type_alias_migrations
+                    ),
+                    "gui_owner_type_alias_migrations": (
+                        gui_owner_type_alias_migrations
                     ),
                     "times_up_owner_type_alias_migrations": (
                         times_up_owner_type_alias_migrations
@@ -7445,6 +7466,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         + anim_manager_owner_type_alias_failures
                         + time_owner_type_alias_failures
                         + time_trial_owner_type_alias_failures
+                        + gui_owner_type_alias_failures
                         + times_up_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
@@ -8188,6 +8210,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 ),
                 "time_trial_owner_type_alias_migrations": (
                     time_trial_owner_type_alias_migrations
+                ),
+                "gui_owner_type_alias_migrations": (
+                    gui_owner_type_alias_migrations
                 ),
                 "times_up_owner_type_alias_migrations": (
                     times_up_owner_type_alias_migrations

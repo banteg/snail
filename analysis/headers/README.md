@@ -151,6 +151,13 @@ Current checked-in example:
     equivalence, verifies the authored 0x10-byte `cRTimesUp` tail at
     `cRSubGame +0x1272828`, then replays the exact `Init`, `AI`, and `UnInit`
     receivers plus all live Windows producers and teardown edges.
+- `gui_types.h`
+- `uv run python tools/binja/sync_gui_types.py --target SnailMail_unwrapped.exe.bndb`
+- `uv run python tools/ida/sync_gui_types.py`
+  - Retires the generic analysis-only `GUI` record after exact layout
+    equivalence, verifies the authored 0x28-byte `cRGUI` at
+    `cRSubGame +0x125ffe0` and the following `cRHelp` boundary, then replays
+    the exact void `Init`/`UnInit` and result-bearing `AI` receivers.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`
@@ -163,7 +170,7 @@ Current checked-in example:
   - Reuses canonical `path_template_types.h` while replaying the narrower
     subgame-helper prototype set, so it cannot replace the recovered runtime
     children with the older sparse compatibility view. This lane also persists
-    the exact cRGUI owner and its void `Init`/`UnInit` versus result-bearing
+    the exact canonical cRGUI owner and its void `Init`/`UnInit` versus result-bearing
     `AI` lifecycle contracts. The same replay owns the canonical `SubRing` /
     `SubRingStar` / `SubRingPool` graph and its six constructor, spawn, and
     update prototypes; the old IDA-only `RingEffectRateSource` shell is retired
@@ -305,7 +312,7 @@ intentional.
 - `uv run python tools/binja/sync_high_score_bank_types.py`
 - `bn_subgame_runtime_types.h`
 - `uv run python tools/binja/sync_subgame_runtime_types.py`
-  - Replays the exact 0x28-byte cRGUI owner, including its borrowed
+  - Replays the exact canonical 0x28-byte cRGUI owner, including its borrowed
     `cRSubGame*` and eight owned `FrontendWidget*` slots, plus the same
     `void`/`void`/`int` lifecycle split.
 - `bn_overlay_types.h`

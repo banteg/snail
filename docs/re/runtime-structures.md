@@ -629,7 +629,7 @@ same `0x1272838`-byte gameplay aggregate. The older Binary Ninja `Game` type
 was a separate named-type identity with the same extent, not a second owner.
 Once the receiver is bound to `cRSubGame`, the initializer exposes the
 embedded runtime-cell grid, high-score banks, HUD handles, player backlink,
-GUI, galaxy, completion, and times-up owners directly. `Game` remains useful
+cRGUI, galaxy, completion, and times-up owners directly. `Game` remains useful
 only as historical decompiler spelling in older evidence.
 
 - `+0x14`: `sub_pause`
@@ -1273,15 +1273,15 @@ member indiscriminately:
 - root-owned 0x1c-byte `Exit::initialize_exit_prompt` is the exact void
   `cRExit::Init()`; Android reaches a common side-effect-only epilogue and the
   sole Windows caller discards EAX
-- embedded 0x28-byte `GUI::initialize_challenge_setup_screen` is void
+- embedded 0x28-byte `cRGUI::initialize_challenge_setup_screen` is void
   `cRGUI::Init()`; Binary Ninja applied and read back this prototype, while
-  `GUI::update_challenge_setup_screen` remains result-bearing `cRGUI::AI()`
+  `cRGUI::update_challenge_setup_screen` remains result-bearing `cRGUI::AI()`
   because `update_subgame` consumes its semantic 0/1/3 result
 - the four `HighScore` methods are the void `cRHighScore::Init(int, int)`,
   `AI()`, `UnInit()`, and `Exit()` lifecycle; Android AI directly tail-branches
   to the other three, and every external Windows caller discards EAX
 
-Exit Init and HighScore UnInit/Exit remain exact. GUI Init is honestly 96.41%
+Exit Init and HighScore UnInit/Exit remain exact. cRGUI Init is honestly 96.41%
 at 167/167 instructions, and HighScore AI is honestly 98.05% at 205/205; both
 lost only register allocation formerly constrained by synthetic return values.
 The cRBorder, Exit, and HighScore void prototypes remain explicitly deferred

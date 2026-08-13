@@ -480,7 +480,7 @@ typedef char ParcelManager_must_be_0x1b58[
     (sizeof(ParcelManager) == 0x1b58) ? 1 : -1];
 
 /* Exact 0x28-byte authored cRGUI front-end controller. */
-typedef struct GUI {
+typedef struct cRGUI {
     cRSubGame* game;
     FrontendWidget* next_level_button;
     FrontendWidget* previous_level_button;
@@ -491,7 +491,8 @@ typedef struct GUI {
     FrontendWidget* speed_slider;
     FrontendWidget* difficulty_slider;
     FrontendWidget* replay_button;
-} GUI;
+} cRGUI;
+typedef char cRGUI_must_be_0x28[(sizeof(cRGUI) == 0x28) ? 1 : -1];
 
 /* Exact four-byte authored cRHelp front-end controller. */
 typedef struct Help {
@@ -2716,7 +2717,7 @@ typedef struct cRSubGame {
     ParcelManager parcel_manager;
     float garbage_frequency;
     float salt_frequency;
-    GUI gui;
+    cRGUI gui;
     Help help;
     cRSplash splash;
     cRGalaxy galaxy;

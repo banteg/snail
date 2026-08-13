@@ -1,61 +1,37 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 10,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 10,
-  "ida_exported": 10,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "binja_refreshed": true,
-  "binja_analysis_refreshed": true,
+  "binja_analysis_refreshed": false,
   "ida_refreshed": true,
   "health_check_ran": true,
   "strict": true,
   "selected_functions": [
     {
+      "name": "initialize_challenge_setup_screen",
+      "address": "0x415f50"
+    },
+    {
+      "name": "destroy_challenge_setup_screen",
+      "address": "0x4161f0"
+    },
+    {
       "name": "update_challenge_setup_screen",
       "address": "0x416370"
     },
     {
-      "name": "initialize_high_score_entry",
-      "address": "0x417a70"
-    },
-    {
-      "name": "populate_runtime_track_cells_from_segments",
-      "address": "0x435eb0"
-    },
-    {
-      "name": "initialize_subgame",
-      "address": "0x4374b0"
-    },
-    {
-      "name": "reset_subgame",
-      "address": "0x437b10"
-    },
-    {
-      "name": "update_subgame",
-      "address": "0x438b90"
-    },
-    {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
-    },
-    {
-      "name": "zero_timer_counters",
-      "address": "0x441b70"
-    },
-    {
-      "name": "advance_timer_counters",
-      "address": "0x441b90"
-    },
-    {
-      "name": "format_time_trial_string",
-      "address": "0x448960"
+      "name": "bind_subgame_owner",
+      "address": "0x433fc0"
     }
   ],
   "health_check_count": 1177,

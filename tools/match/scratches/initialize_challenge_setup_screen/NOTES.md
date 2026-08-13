@@ -13,7 +13,7 @@ First structured scratch for the challenge mode setup initializer.
 - The former scalar transcription matched 167/167 instructions; the authored
   void contract below supersedes that proof-grade classification.
 
-2026-07-11 ownership closure: `GUI::game` is a borrowed
+2026-07-11 ownership closure: `cRGUI::game` is a borrowed
 `cRSubGame*`, not a scratch-local setup view. The selected mode/index and
 inline `SubTracks` owner belongs to that runtime, while replay availability
 comes from its owned `SubHighScore::survival_pending_record`. Focused Wibo
@@ -42,7 +42,7 @@ consumes its semantic 0/1/3 state result.
 
 The narrow Binary Ninja sync now persists the exact 0x28-byte cRGUI layout:
 the borrowed `cRSubGame*` at +0x00 and eight `FrontendWidget*` slots
-through +0x24. Live readback kept `Init` as `void __thiscall(GUI*)`. The IDA
+through +0x24. Live readback kept `Init` as `void __thiscall(cRGUI*)`. The IDA
 replay corrected its stale result-bearing prototype to the same void contract,
 and a strict three-method export completed with zero BN or IDA mismatches.
 
@@ -53,8 +53,8 @@ The initializer now uses the same authored mode-switch family as
 mode `1` in this Windows body. That source shape naturally emits the native
 `load level_mode; dec; branch` sequence while preserving the independently
 proved `void` ABI. Binary Ninja and a fresh IDA 9.3 decompile agree that the
-only live body is gated by `GUI::game->level_mode == 1`; Android retains the
-same mode-1 gate, and the sibling GUI methods establish the shared switch
+only live body is gated by `cRGUI::game->level_mode == 1`; Android retains the
+same mode-1 gate, and the sibling cRGUI methods establish the shared switch
 ownership.
 
 Focused matching improves from 96.41% to 100.00%, 167/167 instructions, with
@@ -64,7 +64,14 @@ dummy state was introduced.
 ## 2026-08-12 authored method surface
 
 The scratch now spells the exact member as `cRGUI::Init()` and exports
-`?Init@cRGUI@@QAEXXZ`. Its sole live Windows caller passes the embedded GUI at
+`?Init@cRGUI@@QAEXXZ`. Its sole live Windows caller passes the embedded cRGUI at
 `cRSubGame + 0x125ffe0` and discards EAX; Android and iOS retain the same void
 symbol and one body each. Matching remains exact at 167/167 with all 37
 operands clean.
+
+## 2026-08-13 canonical analysis owner
+
+The analysis databases now retire the generic `GUI` shell in favor of the
+authored `cRGUI` name. The migration is layout-gated at 0x28 bytes, verifies
+the exact `cRSubGame +0x125ffe0` embed and following `cRHelp` boundary, and is
+codegen-neutral for the already exact matcher source.

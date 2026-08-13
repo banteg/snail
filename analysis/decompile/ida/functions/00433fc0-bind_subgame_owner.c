@@ -2,7 +2,7 @@
 /* function: bind_subgame_owner @ 0x433fc0 */
 /* selector: bind_subgame_owner */
 
-// Binds a front-end controller’s first field to the embedded cRSubGame owner. For the 0x28-byte GUI receiver this is `cRGUI::Open()`; Windows folds the byte-identical `cRSplash::Open()` body into the same address.
+// Binds a front-end controller’s first field to the embedded cRSubGame owner. For the 0x28-byte cRGUI receiver this is `cRGUI::Open()`; Windows folds the byte-identical `cRSplash::Open()` body into the same address.
 cRSubGame *__thiscall bind_subgame_owner(SubgameOwnerLink *owner)
 {
   cRSubGame *result; // eax

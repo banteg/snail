@@ -96,7 +96,7 @@ prefix 355/355 and all 38 masked operands clean.
 
 The exact 0x28-byte cRGUI layout is now replayed into both decompilers instead
 of living only in the matcher and canonical IDA header. BN readback retains the
-semantic `int __thiscall(GUI*)` result consumed by `update_subgame`, alongside
+semantic `int __thiscall(cRGUI*)` result consumed by `update_subgame`, alongside
 typed replay, slider, navigation, and borrowed runtime access. Strict paired
 export passed with zero mismatches and preserves the exact 355/355 matcher
 baseline.
@@ -109,3 +109,9 @@ compares EAX against the `1` and `3` handoff results, proving that this generic
 method is not void. Android and iOS retain the same owner and one body each;
 all eight teardown paths now call `UnInit()`. Matching remains exact at
 355/355 with all 38 operands clean.
+
+## 2026-08-13 canonical analysis owner
+
+Both decompilers now persist the authored `cRGUI` name rather than a generic
+analysis shell. The exact 0x28-byte layout and result-bearing `AI` ABI are
+verified independently of the already exact matching source.

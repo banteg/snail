@@ -3,16 +3,16 @@
 /* selector: destroy_challenge_setup_screen */
 
 // Implements `cRGUI::UnInit()`: tears down the cRGUI widget set selected by gameplay mode 0, 1, or 4, including optional replay and challenge slider controls.
-void __thiscall destroy_challenge_setup_screen(GUI *gui)
+void __thiscall destroy_challenge_setup_screen(cRGUI *gui)
 {
   int32_t level_mode; // eax
   int v3; // eax
 
   level_mode = gui->game->level_mode;
-  if ( level_mode )
+  if ( level_mode != 0 )
   {
     v3 = level_mode - 1;
-    if ( v3 )
+    if ( v3 != 0 )
     {
       if ( v3 == 3 )
       {

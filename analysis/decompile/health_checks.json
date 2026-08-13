@@ -9841,7 +9841,7 @@
       "name": "ida_challenge_gui_initializer_owner",
       "artifact": "analysis/decompile/ida/functions/00415f50-initialize_challenge_setup_screen.c",
       "required_substrings": [
-        "void __thiscall initialize_challenge_setup_screen(GUI *gui)",
+        "void __thiscall initialize_challenge_setup_screen(cRGUI *gui)",
         "gui->game->level_mode",
         "gui->difficulty_slider = allocate_border",
         "gui->replay_button",
@@ -9874,7 +9874,7 @@
       "name": "ida_challenge_gui_destroy_owner",
       "artifact": "analysis/decompile/ida/functions/004161f0-destroy_challenge_setup_screen.c",
       "required_substrings": [
-        "void __thiscall destroy_challenge_setup_screen(GUI *gui)",
+        "void __thiscall destroy_challenge_setup_screen(cRGUI *gui)",
         "level_mode = gui->game->level_mode",
         "kill_border(&g_game_base->border_manager, gui->difficulty_slider);",
         "kill_border(&g_game_base->border_manager, gui->replay_button);"
@@ -9907,7 +9907,7 @@
       "name": "ida_challenge_gui_update_owner",
       "artifact": "analysis/decompile/ida/functions/00416370-update_challenge_setup_screen.c",
       "required_substrings": [
-        "int __thiscall update_challenge_setup_screen(GUI *gui)",
+        "int __thiscall update_challenge_setup_screen(cRGUI *gui)",
         "level_mode = gui->game->level_mode",
         "gui->difficulty_slider->slider_position_target",
         "gui->replay_button",

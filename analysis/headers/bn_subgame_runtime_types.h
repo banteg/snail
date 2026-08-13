@@ -392,18 +392,19 @@ typedef char cRTimeTrial_must_be_0x330[
     (sizeof(cRTimeTrial) == 0x330) ? 1 : -1
 ];
 
-typedef struct GUI {
+typedef struct cRGUI {
     cRSubGame* game;
     FrontendWidget* next_level_button;
     FrontendWidget* previous_level_button;
     FrontendWidget* level_name_widget;
     FrontendWidget* play_button;
-    uint8_t unknown_14[0x18 - 0x14];
+    uint8_t _pad_14[0x18 - 0x14];
     FrontendWidget* back_button;
     FrontendWidget* speed_slider;
     FrontendWidget* difficulty_slider;
     FrontendWidget* replay_button;
-} GUI;
+} cRGUI;
+typedef char cRGUI_must_be_0x28[(sizeof(cRGUI) == 0x28) ? 1 : -1];
 
 typedef struct Help {
     FrontendWidget* back_button;
@@ -568,7 +569,7 @@ typedef struct cRSubGame {
     ParcelManager parcel_manager;
     float garbage_frequency;
     float salt_frequency;
-    GUI gui;
+    cRGUI gui;
     Help help;
     cRSplash splash;
     cRGalaxy galaxy;

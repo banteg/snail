@@ -121,6 +121,8 @@ TIMES_UP_TYPE_RENAMES = (("TimesUp", "cRTimesUp"),)
 
 TIME_TRIAL_TYPE_RENAMES = (("TimeTrial", "cRTimeTrial"),)
 
+GUI_TYPE_RENAMES = (("GUI", "cRGUI"),)
+
 TIME_TRIAL_FIELD_UPDATES = (
     ("0x00", "course_records", "TimeTrialCourseRecord[0x33]"),
 )
@@ -352,7 +354,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x125e480", "parcel_manager", "ParcelManager"),
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
-    ("0x125ffe0", "gui", "GUI"),
+    ("0x125ffe0", "gui", "cRGUI"),
     ("0x1260008", "help", "Help"),
     ("0x126000c", "splash", "cRSplash"),
     ("0x1260020", "galaxy", "cRGalaxy"),
@@ -422,6 +424,7 @@ GUI_FIELD_UPDATES = (
     ("0x08", "previous_level_button", "FrontendWidget*"),
     ("0x0c", "level_name_widget", "FrontendWidget*"),
     ("0x10", "play_button", "FrontendWidget*"),
+    ("0x14", "_pad_14", "uint8_t[0x4]"),
     ("0x18", "back_button", "FrontendWidget*"),
     ("0x1c", "speed_slider", "FrontendWidget*"),
     ("0x20", "difficulty_slider", "FrontendWidget*"),
@@ -609,15 +612,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_challenge_setup_screen",
-        "void __thiscall initialize_challenge_setup_screen(GUI* gui)",
+        "void __thiscall initialize_challenge_setup_screen(cRGUI* gui)",
     ),
     (
         "destroy_challenge_setup_screen",
-        "void __thiscall destroy_challenge_setup_screen(GUI* gui)",
+        "void __thiscall destroy_challenge_setup_screen(cRGUI* gui)",
     ),
     (
         "update_challenge_setup_screen",
-        "int32_t __thiscall update_challenge_setup_screen(GUI* gui)",
+        "int32_t __thiscall update_challenge_setup_screen(cRGUI* gui)",
     ),
     (
         "format_time_trial_string",
@@ -825,6 +828,7 @@ def main() -> int:
             ("Galaxy", "cRGalaxy"),
             ("Time", "cRTime"),
             *TIME_TRIAL_TYPE_RENAMES,
+            *GUI_TYPE_RENAMES,
             *TIMES_UP_TYPE_RENAMES,
         ),
     )
@@ -858,7 +862,7 @@ def main() -> int:
                 "cRTime",
                 "TimeTrialCourseRecord",
                 "cRTimeTrial",
-                "GUI",
+                "cRGUI",
                 "Help",
                 "cRSplash",
                 "GalaxyPoint",
@@ -1103,7 +1107,7 @@ def main() -> int:
                 ("Parcel", PARCEL_FIELD_UPDATES),
                 ("cRTimeTrial", TIME_TRIAL_FIELD_UPDATES),
                 ("cRTimesUp", TIMES_UP_FIELD_UPDATES),
-                ("GUI", GUI_FIELD_UPDATES),
+                ("cRGUI", GUI_FIELD_UPDATES),
                 ("Help", HELP_FIELD_UPDATES),
                 ("cRSplash", SPLASH_FIELD_UPDATES),
             ),
