@@ -312,7 +312,7 @@ def _reanalyze_timed_out_functions(
     """Retry selected functions that the ordinary refresh abandoned on timeout."""
     addresses = [function.address for function in functions]
     code = f"""
-from binaryninja import FunctionAnalysisSkipOverride
+from binaryninja import AnalysisSkipReason, FunctionAnalysisSkipOverride
 
 addresses = {json.dumps(addresses)}
 reanalyzed = []
@@ -339,13 +339,18 @@ for address in addresses:
         continue
     if not function.analysis_skipped:
         continue
-    reason = str(function.analysis_skip_reason)
-    if reason != "AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason":
-        unresolved.append({{"address": hex(address), "reason": reason}})
+    reason = function.analysis_skip_reason
+    reason_name = getattr(reason, "name", str(reason))
+    if reason != AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason:
+        unresolved.append({{"address": hex(address), "reason": reason_name}})
         continue
     function.analysis_skip_override = FunctionAnalysisSkipOverride.NeverSkipFunctionAnalysis
     function.reanalyze()
-    reanalyzed.append({{"address": hex(address), "name": function.name, "reason": reason}})
+    reanalyzed.append({{
+        "address": hex(address),
+        "name": function.name,
+        "reason": reason_name,
+    }})
 
 snapshot_saved = False
 if reanalyzed:

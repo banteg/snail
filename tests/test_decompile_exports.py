@@ -422,6 +422,8 @@ def test_binja_export_reanalyzes_timed_out_functions(
     assert result["snapshot_saved"] is True
     assert calls[0][:4] == ("py", "exec", "--target", "snail-mail.bndb")
     assert "NeverSkipFunctionAnalysis" in calls[0][-1]
+    assert "AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason" in calls[0][-1]
+    assert "reason != AnalysisSkipReason" in calls[0][-1]
     assert "get_functions_containing" in calls[0][-1]
 
 

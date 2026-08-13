@@ -442,9 +442,10 @@ try:
             continue
 
         if kind == "ensure_function_analysis":
-            from binaryninja import FunctionAnalysisSkipOverride
+            from binaryninja import AnalysisSkipReason, FunctionAnalysisSkipOverride
 
             function = find_function(operation["identifier"])
+            analysis_skip_reason = function.analysis_skip_reason
             before = {
                 "name": str(function.name),
                 "address": hex(int(function.start)),
@@ -455,8 +456,8 @@ try:
             }
             if (
                 before["analysis_skipped"]
-                and "ExceedFunctionAnalysisTimeSkipReason"
-                not in before["analysis_skip_reason"]
+                and analysis_skip_reason
+                != AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason
             ):
                 raise RuntimeError(
                     "refusing to override a non-timeout analysis skip for "

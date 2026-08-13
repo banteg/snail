@@ -16168,7 +16168,9 @@ def test_previewed_batch_can_pin_timed_out_function_analysis() -> None:
     )
 
     assert "FunctionAnalysisSkipOverride.NeverSkipFunctionAnalysis" in code
-    assert "ExceedFunctionAnalysisTimeSkipReason" in code
+    assert "AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason" in code
+    assert "analysis_skip_reason" in code
+    assert "!= AnalysisSkipReason.ExceedFunctionAnalysisTimeSkipReason" in code
     assert "refusing to override a non-timeout analysis skip" in code
     assert "function.analysis_skip_override = desired_override" in code
     assert "function.reanalyze()" in code
