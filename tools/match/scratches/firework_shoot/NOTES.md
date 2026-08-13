@@ -18,3 +18,21 @@ x87 lifetime and loop-register scheduling after velocity construction.
 The matcher source now uses authored `Shoot` and exact VC6 symbol
 `?Shoot@cRFireWork@@QAEXPAUtVector@@HHH@Z`; `firework_shoot` remains only the
 stable scratch and Windows-address identity.
+
+## Countdown lifetime before position publication (2026-08-13)
+
+Live Windows disassembly shows the loop countdown becoming dead while the
+final trivial `Vector3` position copy is still being published: VC6 loads and
+decrements `remaining` between the three position-lane stores. Expressing that
+ordinary local lifetime by decrementing before the copy improves focused Wibo
+from **94.17% to 95.15%** (+4 fuzzy bytes), with exact 103/103 instruction
+parity, the same 78-instruction prefix, and all 21 references clean.
+
+A recorded six-variant sweep covers the natural depth, velocity, countdown,
+and position publication orders. Only the two spellings that end the countdown
+lifetime before the position copy improve; moving the depth write after the
+copy regresses. Follow-up direct-copy, reference, source-pointer, and subtraction
+spellings are byte-identical to the accepted form, while component-wise copying
+regresses sharply. The remaining five-instruction tail drift begins where VC6
+chooses when to advance the sprite base while the last x87 multiply is live;
+no artificial storage or register constraint is justified.

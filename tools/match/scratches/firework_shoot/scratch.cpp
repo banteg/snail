@@ -46,7 +46,8 @@ void cRFireWork::Shoot(
 
         sprite->depth_offset = 0.0f;
         sprite->velocity = velocity;
+        --remaining;
         Vector3* out_position = &sprite->position;
         *out_position = *position;
-    } while (--remaining != 0);
+    } while (remaining != 0);
 }

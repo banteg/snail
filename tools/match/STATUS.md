@@ -556,7 +556,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | ✅ | attach_render_camera_source | 0x44e900 | 18 | 6/6 | 100.00% | 6/6 | - |  | boundary |
 | ✅ | initialize_render_camera_slot | 0x44e920 | 36 | 11/11 | 100.00% | 11/11 | - |  | boundary |
 
-## Near Match (95-99.99%) (27)
+## Near Match (95-99.99%) (28)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -581,6 +581,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_ring_or_special_effect_particle | 0x43e780 | 174 | 55/55 | 96.36% | 28/55 | 5 ok |  | core |
 | 🚧 | explode_slug_hazard | 0x43f680 | 556 | 146/147 | 97.61% | 79/147 | 32 ok |  | core |
 | 🚧 | update_sub_lazer_projectile | 0x4417d0 | 768 | 218/218 | 99.08% | 86/218 | 24 ok |  | core |
+| 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 95.15% | 78/103 | 21 ok |  | core |
 | 🚧 | update_cutscene | 0x4466d0 | 1888 | 503/505 | 97.62% | 10/505 | 58 ok |  | core |
 | 🚧 | load_builtin_segment_definitions | 0x448060 | 256 | 92/92 | 98.91% | 18/92 | - |  | core |
 | 🚧 | queue_axis_aligned_textured_quad | 0x44a8b0 | 249 | 65/65 | 98.46% | 43/65 | 20 ok |  | boundary |
@@ -588,7 +589,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (46)
+## High Progress (80-94.99%) (45)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -622,7 +623,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | update_subgoldy | 0x43b120 | 8456 | 2087/2087 | 82.75% | 12/2087 | 1 unaudited, 315 ok |  | core |
 | 🚧 | spawn_track_jetpack_pickup | 0x43d890 | 491 | 147/144 | 87.29% | 44/144 | 9 ok |  | core |
 | 🚧 | update_damage_gauge | 0x440fd0 | 1043 | 268/268 | 94.03% | 122/268 | 65 ok |  | core |
-| 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 13/125 | 33 ok |  | core |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 unaudited, 12 ok |  | core |
 | 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 637/639 | 88.09% | 7/639 | 98 ok |  | core |

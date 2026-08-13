@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "tail-publication-order",
+      "find": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (--remaining != 0);",
+      "replacements": [
+        {
+          "name": "velocity-before-depth",
+          "text": "        sprite->velocity = velocity;\n        sprite->depth_offset = 0.0f;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (--remaining != 0);"
+        },
+        {
+          "name": "position-before-depth",
+          "text": "        sprite->velocity = velocity;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n        sprite->depth_offset = 0.0f;\n    } while (--remaining != 0);"
+        },
+        {
+          "name": "decrement-before-position",
+          "text": "        sprite->depth_offset = 0.0f;\n        sprite->velocity = velocity;\n        --remaining;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (remaining != 0);"
+        },
+        {
+          "name": "velocity-depth-decrement-position",
+          "text": "        sprite->velocity = velocity;\n        sprite->depth_offset = 0.0f;\n        --remaining;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n    } while (remaining != 0);"
+        },
+        {
+          "name": "velocity-position-decrement-depth",
+          "text": "        sprite->velocity = velocity;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n        --remaining;\n        sprite->depth_offset = 0.0f;\n    } while (remaining != 0);"
+        },
+        {
+          "name": "depth-position-decrement",
+          "text": "        sprite->depth_offset = 0.0f;\n        Vector3* out_position = &sprite->position;\n        *out_position = *position;\n        --remaining;\n        sprite->velocity = velocity;\n    } while (remaining != 0);"
+        }
+      ]
+    }
+  ]
+}
