@@ -1,7 +1,7 @@
 # uninit_nuke
 
 - Exact match: 100.00%, 18/18 instructions.
-- Uses a typed `Nuke` layout: active `state` at `+0x00` and the
+- Uses the typed `cRNuke` layout: active `state` at `+0x00` and the
   25 sprite-owner slots at `+0x18`.
 - Semantics: only `NUKE_STATE_ACTIVE` tears down the effect; it kills all 25
   orbit sprites and then clears the controller to `NUKE_STATE_INACTIVE`.
@@ -11,7 +11,7 @@
 2026-07-11 authored-owner recovery: Android and iOS retain
 `cRNuke::UnInit()`. Android uses the same state and 25-slot offsets, and
 `cRSubGoldy::AI()` owns the teardown edge. The shared exact 0x7c-byte Windows
-type is now `Nuke`. Focused Wibo remains exact at 18/18 instructions with one
+type is now canonical `cRNuke`. Focused Wibo remains exact at 18/18 instructions with one
 clean masked operand.
 
 ## 2026-07-14 lifecycle state ownership
@@ -36,3 +36,11 @@ preserves the same active guard, 25-slot kill loop, and inactive transition.
 The matcher definition and sole source-facing caller now use `UnInit`, emitting
 `?UnInit@cRNuke@@QAEXXZ`; `uninit_nuke` remains the stable function ID. The
 Windows body stays exact at 18/18 with its sprite-kill edge clean.
+
+## 2026-08-13 canonical owner replay
+
+Windows decorated names, Android and iOS symbols, and the complete live 0x7c
+layout now converge on `cRNuke`. Both decompiler databases retire their generic
+`Nuke` record, read back the canonical seven-member layout, and bind this
+method to `cRNuke*`. Focused output remains exact at 18/18 instructions with
+its operand clean.

@@ -22034,7 +22034,7 @@
       "name": "ida_nuke_initialize_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00447110-initialize_nuke.c",
       "required_substrings": [
-        "void __thiscall initialize_nuke(Nuke *nuke)",
+        "void __thiscall initialize_nuke(cRNuke *nuke)",
         "nuke->state == NUKE_STATE_INACTIVE",
         "nuke->owner_player->body.transform.position.z",
         "g_game_base->subgame.subgame_rate",
@@ -22046,6 +22046,7 @@
       ],
       "forbidden_substrings": [
         "NukeController",
+        "initialize_nuke(Nuke *nuke)",
         "MEMORY[",
         "void **sprite_slots",
         "int32_t __thiscall initialize_nuke",
@@ -22077,7 +22078,7 @@
       "name": "ida_nuke_update_owner_graph",
       "artifact": "analysis/decompile/ida/functions/004471e0-update_nuke.c",
       "required_substrings": [
-        "void __thiscall update_nuke(Nuke *nuke)",
+        "void __thiscall update_nuke(cRNuke *nuke)",
         "nuke->state == NUKE_STATE_ACTIVE",
         "nuke->orbit_center_z_step",
         "nuke->orbit_phase_step",
@@ -22088,6 +22089,7 @@
       ],
       "forbidden_substrings": [
         "NukeController",
+        "update_nuke(Nuke *nuke)",
         "MEMORY[",
         "void **sprite_slots",
         "*((float *)",
@@ -22114,7 +22116,7 @@
       "name": "ida_nuke_uninit_owner_graph",
       "artifact": "analysis/decompile/ida/functions/004470e0-uninit_nuke.c",
       "required_substrings": [
-        "void __thiscall uninit_nuke(Nuke *nuke)",
+        "void __thiscall uninit_nuke(cRNuke *nuke)",
         "nuke->state == NUKE_STATE_ACTIVE",
         "Sprite **sprite_slots",
         "kill_sprite(*sprite_slots++)",
@@ -22122,6 +22124,7 @@
       ],
       "forbidden_substrings": [
         "NukeController",
+        "uninit_nuke(Nuke *nuke)",
         "MEMORY[",
         "int *sprite_slots",
         "nuke->state = 0;"

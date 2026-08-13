@@ -3,12 +3,12 @@
 /* selector: initialize_nuke */
 
 // Initializes the exact 0x7c-byte cRNuke owner at Player +0x150: spawns the 25-sprite ring effect used by collision kinds `2` and `6`, seeds its orbit height and phase step from the owning player and global tick delta, and immediately dispatches `cRNuke::AI()`. Android retains this method as `cRNuke::Init()`.
-void __thiscall initialize_nuke(Nuke *nuke)
+void __thiscall initialize_nuke(cRNuke *nuke)
 {
   Sprite **sprite_slots; // esi
   int v3; // ebp
   double v4; // st7
-  Sprite *sprite; // eax
+  cRSprite *sprite; // eax
   SpriteFlag flags; // edx
   Vec3 *p_velocity; // eax
   Vec3 *p_position; // eax
@@ -46,7 +46,7 @@ void __thiscall initialize_nuke(Nuke *nuke)
       p_position->x = 0.0;
       (*(sprite_slots - 1))->gravity_step = 0.0;
     }
-    while ( v3 );
+    while ( v3 != 0 );
   }
   update_nuke(nuke);
 }

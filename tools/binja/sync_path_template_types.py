@@ -69,8 +69,19 @@ FRINGE_OWNER_SIZES = {
 }
 
 NUKE_OWNER_SIZES = {
-    "Nuke": 0x7C,
+    "cRNuke": 0x7C,
 }
+
+NUKE_OWNER_TYPE_RENAMES = (("Nuke", "cRNuke"),)
+
+NUKE_REANALYSIS_FUNCTIONS = (
+    "initialize_nuke",
+    "update_nuke",
+    "uninit_nuke",
+    "initialize_subgoldy",
+    "handle_subgoldy_collisions",
+    "update_subgoldy",
+)
 
 TIP_OWNER_SIZES = {
     "cRTipData": 0x14,
@@ -597,7 +608,7 @@ REQUIRED_HEADER_STRUCTS = (
     "Warning",
     "SubPause",
     "NukeState",
-    "Nuke",
+    "cRNuke",
     "FireWork",
     "ClickStartState",
     "ClickStart",
@@ -747,13 +758,67 @@ def verify_nuke_owner_size(*, target: str) -> dict[str, object]:
         if observed.get(name) != expected
     }
     if failures:
-        raise RuntimeError(f"Nuke owner size mismatch: {failures}")
+        raise RuntimeError(f"cRNuke owner size mismatch: {failures}")
     return {
         "op": "owner_size_verify",
         "status": "verified",
         "owner_group": "nuke",
         "owner_sizes": observed,
     }
+
+
+def ensure_nuke_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire Nuke only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=NUKE_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=NUKE_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in NUKE_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=NUKE_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: NUKE_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRNuke owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": NUKE_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in NUKE_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
 
 
 def verify_tip_owner_sizes(*, target: str) -> dict[str, object]:
@@ -1078,7 +1143,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x9c", "ghost_sprite_b", "Sprite*"),
     ("0xa0", "click_start", "ClickStart"),
     ("0x14c", "row_event_cutscene_started", "uint8_t"),
-    ("0x150", "nuke", "Nuke"),
+    ("0x150", "nuke", "cRNuke"),
     ("0x1cc", "shoot_sfx_variant_sample", "int32_t"),
     ("0x1d0", "firework", "FireWork"),
     ("0x1d4", "damage_retrigger_timer", "float"),
@@ -3945,15 +4010,15 @@ SPLASH_PROTO_UPDATES = (
 NUKE_PROTO_UPDATES = (
     (
         "initialize_nuke",
-        "void __thiscall initialize_nuke(Nuke* nuke)",
+        "void __thiscall initialize_nuke(cRNuke* nuke)",
     ),
     (
         "update_nuke",
-        "void __thiscall update_nuke(Nuke* nuke)",
+        "void __thiscall update_nuke(cRNuke* nuke)",
     ),
     (
         "uninit_nuke",
-        "void __thiscall uninit_nuke(Nuke* nuke)",
+        "void __thiscall uninit_nuke(cRNuke* nuke)",
     ),
 )
 
@@ -6103,28 +6168,22 @@ def main() -> int:
         )
 
     if args.nuke_only:
-        operations.append(
-            types_declare_if_missing(
-                REPO_ROOT,
+        operations.extend(
+            ensure_nuke_owner_type(
                 target=args.target,
                 header_path=header_path,
-                required_structs=("NukeState", "Nuke"),
             )
         )
         operations.append(verify_nuke_owner_size(target=args.target))
         operations.extend(
-            apply_struct_field_updates(
+            apply_struct_and_proto_updates(
                 REPO_ROOT,
                 target=args.target,
-                struct_name="Nuke",
-                updates=NUKE_FIELD_UPDATES,
-            )
-        )
-        operations.extend(
-            apply_proto_updates(
-                REPO_ROOT,
-                target=args.target,
-                updates=NUKE_PROTO_UPDATES,
+                struct_updates=(
+                    ("cRNuke", NUKE_FIELD_UPDATES),
+                    ("Player", (("0x150", "nuke", "cRNuke"),)),
+                ),
+                proto_updates=NUKE_PROTO_UPDATES,
             )
         )
         operations.extend(
@@ -6132,6 +6191,13 @@ def main() -> int:
                 REPO_ROOT,
                 target=args.target,
                 updates=NUKE_USER_VAR_UPDATES,
+            )
+        )
+        operations.extend(
+            reanalyze_functions(
+                REPO_ROOT,
+                target=args.target,
+                identifiers=NUKE_REANALYSIS_FUNCTIONS,
             )
         )
         return emit_summary(
@@ -6228,7 +6294,7 @@ def main() -> int:
                 proto_updates=TUTORIAL_PROTO_UPDATES,
             )
         )
-        operations.append(
+        operations.extend(
             reanalyze_functions(
                 REPO_ROOT,
                 target=args.target,
@@ -6252,6 +6318,12 @@ def main() -> int:
                     ("Fringe", "cRFringe"),
                     ("FringeManager", "cRFringeManager"),
                 ),
+            )
+        )
+        operations.extend(
+            ensure_nuke_owner_type(
+                target=args.target,
+                header_path=header_path,
             )
         )
         operations.extend(
@@ -6300,6 +6372,7 @@ def main() -> int:
         )
         operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(verify_fringe_owner_sizes(target=args.target))
+        operations.append(verify_nuke_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(verify_tutorial_owner_size(target=args.target))
         operations.append(
@@ -6418,7 +6491,7 @@ def main() -> int:
                 ("Banner", BANNER_FIELD_UPDATES),
                 ("Warning", WARNING_FIELD_UPDATES),
                 ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
-                ("Nuke", NUKE_FIELD_UPDATES),
+                ("cRNuke", NUKE_FIELD_UPDATES),
                 ("ClickStart", CLICK_START_FIELD_UPDATES),
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
@@ -6460,7 +6533,14 @@ def main() -> int:
             proto_updates=CORE_SUBGAME_PROTO_UPDATES,
         )
     )
-    operations.append(
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=NUKE_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
         reanalyze_functions(
             REPO_ROOT,
             target=args.target,

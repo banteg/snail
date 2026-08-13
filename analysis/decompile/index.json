@@ -10,7 +10,7 @@
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
-  "sync_ida_symbols": true,
+  "sync_ida_symbols": false,
   "binja_refreshed": true,
   "binja_analysis_refreshed": true,
   "ida_refreshed": true,
@@ -18,28 +18,28 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_new_game_menu",
-      "address": "0x417eb0"
+      "name": "initialize_subgoldy",
+      "address": "0x43a9c0"
     },
     {
-      "name": "destroy_subgame",
-      "address": "0x438850"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     },
     {
-      "name": "update_subgame",
-      "address": "0x438b90"
+      "name": "handle_subgoldy_collisions",
+      "address": "0x444cf0"
     },
     {
-      "name": "initialize_tutorial",
-      "address": "0x448da0"
+      "name": "uninit_nuke",
+      "address": "0x4470e0"
     },
     {
-      "name": "uninit_tutorial",
-      "address": "0x448dd0"
+      "name": "initialize_nuke",
+      "address": "0x447110"
     },
     {
-      "name": "update_tutorial",
-      "address": "0x448de0"
+      "name": "update_nuke",
+      "address": "0x4471e0"
     }
   ],
   "health_check_count": 1171,

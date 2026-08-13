@@ -185,7 +185,7 @@ scratch additionally pins:
 
 ## Struct facts (player block)
 
-Exact embedded children now used here are `Nuke` +0x150,
+Exact embedded children now used here are `cRNuke` +0x150,
 `PlayerRowEventState` +0x1e8, `DamageGuage` +0x3c4, empty `ProgressBar`
 +0x3f0, `Warning` +0x3f4, `Snail` presentation +0x2984, and `Squidge`
 +0x4344. Damage-gauge state is the first field and skin_hold_ticks is +0x18.
@@ -419,7 +419,7 @@ source-shape issue is solved.
 The shared headers have matured enough to supersede the earlier local-prefix
 guidance without perturbing this scheduling-sensitive body:
 
-- The then-local player view adopted the exact shared `Nuke`,
+- The then-local player view adopted the exact shared `cRNuke`,
   `PlayerRowEventState`, `Warning`, `Snail`, and `Squidge` children, and uses
   `PlayerControlSource*`. The scratch-local completion, times-up, nuke,
   warning, control-source, presentation, cutscene, and squidge shells are gone.

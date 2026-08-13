@@ -7,7 +7,7 @@ advances the z-axis orbit center by `orbit_center_z_step`, advances and wraps th
 phase, then updates all 25 sprite slots around a radius-7 circle using the
 existing `sine`/`cosine` helpers.
 
-This uses the typed `Nuke` and `Sprite` layout pinned by
+This uses the typed `cRNuke` and `Sprite` layout pinned by
 `initialize_nuke` and exact `uninit_nuke`. The updater is modeled as a
 side-effect-only method; its return value in decompiler output is incidental
 leftover register state.
@@ -42,7 +42,7 @@ Rejected source-shape probes:
 2026-07-11 authored-owner recovery: Android and iOS name this exact role
 `cRNuke::AI()`. Android advances the same +0x08/+0x0c z pair and +0x10/+0x14
 phase pair, then orbits the same 25 slots at +0x18; `cRSubGoldy::AI()` calls it
-through the embedded owner. The shared Windows type is now `Nuke`, and the
+through the embedded owner. The shared Windows type is now canonical `cRNuke`, and the
 decompiler prototypes are corrected from incidental `int` to `void`. Focused
 Wibo remains exact at 59/59 instructions with eight clean masked operands.
 
@@ -56,7 +56,7 @@ eight operands clean.
 ## 2026-07-18 durable lifecycle replay
 
 The focused path-ownership lane now verifies and replays this method through
-the exact 0x7c-byte `Nuke` owner. Narrow BN views preserve the native
+the exact 0x7c-byte `cRNuke` owner. Narrow BN views preserve the native
 `Sprite**` slot cursor and the shared integer/x87 loop-index lifetimes without
 inventing a pointer-to-array owner. The paired tracked decompiles expose the
 typed state gate, orbit z/phase pairs, and each sprite position component;
@@ -71,3 +71,11 @@ same state gate, z/phase updates, wrap, and 25-slot radius-seven orbit. The
 matcher definition, `Init` tail edge, and player AI caller now use `AI`,
 emitting `?AI@cRNuke@@QAEXXZ`; `update_nuke` remains the stable function ID.
 The Windows body stays exact at 59/59 with all eight operands clean.
+
+## 2026-08-13 canonical owner replay
+
+The live Windows layout, exact Android body, independent iOS symbol, and
+owner-qualified Windows relocation now converge on `cRNuke`. Both database
+lanes retire generic `Nuke`, read back the complete seven-member owner, and
+bind this AI method to `cRNuke*`. Focused output remains exact at 59/59
+instructions with all eight operands clean.

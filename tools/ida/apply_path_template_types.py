@@ -339,6 +339,42 @@ FRINGE_OWNER_TYPE_ALIASES = (
     ("FringeManager", "cRFringeManager", 0x5FB44),
 )
 
+NUKE_OWNER_MARKERS = (
+    "typedef struct cRNuke {",
+    "} cRNuke;",
+    "cRNuke_must_be_0x7c",
+    "cRNuke nuke;",
+    "void __thiscall initialize_nuke(cRNuke* nuke);",
+    "void __thiscall update_nuke(cRNuke* nuke);",
+    "void __thiscall uninit_nuke(cRNuke* nuke);",
+)
+
+NUKE_OWNER_SIZES = {
+    "cRNuke": 0x7C,
+}
+
+NUKE_OWNER_TYPE_ALIASES = (("Nuke", "cRNuke", 0x7C),)
+
+EXPECTED_NUKE_OWNER_LAYOUT = {
+    "size": 0x7C,
+    "members": {
+        0x00: (0x04, "state", "NukeState"),
+        0x04: (0x04, "owner_player", "Player *"),
+        0x08: (0x04, "orbit_center_z_step", "float"),
+        0x0C: (0x04, "orbit_center_z", "float"),
+        0x10: (0x04, "orbit_phase", "float"),
+        0x14: (0x04, "orbit_phase_step", "float"),
+        0x18: (0x64, "sprite_slots", "Sprite *[25]"),
+    },
+}
+
+EXPECTED_NUKE_PLAYER_EMBED = {
+    "offset": "0x150",
+    "size": 0x7C,
+    "name": "nuke",
+    "type": "cRNuke",
+}
+
 TIP_OWNER_MARKERS = (
     "cRTipData_must_be_0x14",
     "cRTip_must_be_0x20",
@@ -3004,15 +3040,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_nuke",
-        "void __thiscall initialize_nuke(Nuke* nuke);",
+        "void __thiscall initialize_nuke(cRNuke* nuke);",
     ),
     (
         "update_nuke",
-        "void __thiscall update_nuke(Nuke* nuke);",
+        "void __thiscall update_nuke(cRNuke* nuke);",
     ),
     (
         "uninit_nuke",
-        "void __thiscall uninit_nuke(Nuke* nuke);",
+        "void __thiscall uninit_nuke(cRNuke* nuke);",
     ),
     (
         "get_track_grid_cell_at_world_position",
@@ -4801,8 +4837,66 @@ def _normalize_udt_type(value: str) -> str:
     return re.sub(r"\b(?:struct|class|union)\s+", "", normalized)
 
 
+def _nuke_owner_layout_readback() -> dict[str, object]:
+    """Verify the complete canonical cRNuke owner before its method ABIs."""
+    type_name = "cRNuke"
+    expected = EXPECTED_NUKE_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "nuke",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "nuke",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    player_embed = _named_struct_member_readback("Player", 0x150)
+    if player_embed != EXPECTED_NUKE_PLAYER_EMBED:
+        failures.append(
+            {
+                "selector": "Player.nuke",
+                "owner_group": "nuke",
+                "reason": "embedded_owner_mismatch",
+                "expected": EXPECTED_NUKE_PLAYER_EMBED,
+                "observed": player_embed,
+            }
+        )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "player_embed": player_embed,
+        "failures": failures,
+    }
+
+
 def _tip_owner_layout_readback() -> dict[str, object]:
-    """Verify every canonical tutorial owner before applying its method ABIs."""
+    """Verify every canonical tip owner before applying its method ABIs."""
     readback: dict[str, object] = {}
     failures: list[dict[str, object]] = []
     for type_name, expected in EXPECTED_TIP_OWNER_LAYOUTS.items():
@@ -5175,6 +5269,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in FRINGE_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_nuke_owner_markers = [
+        marker
+        for marker in NUKE_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_tip_owner_markers = [
         marker
         for marker in TIP_OWNER_MARKERS
@@ -5217,6 +5316,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_path_manager_owner_markers
         or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
+        or missing_nuke_owner_markers
         or missing_tip_owner_markers
         or missing_tutorial_owner_markers
         or missing_track_render_cache_owner_markers
@@ -5246,6 +5346,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append({"reason": "noncanonical_bod_core_header"})
         if missing_fringe_owner_markers:
             marker_failures.append({"reason": "noncanonical_fringe_header"})
+        if missing_nuke_owner_markers:
+            marker_failures.append({"reason": "noncanonical_nuke_owner_header"})
         if missing_tip_owner_markers:
             marker_failures.append({"reason": "noncanonical_tip_owner_header"})
         if missing_tutorial_owner_markers:
@@ -5289,6 +5391,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
                     "missing_fringe_owner_markers": missing_fringe_owner_markers,
+                    "missing_nuke_owner_markers": missing_nuke_owner_markers,
                     "missing_tip_owner_markers": missing_tip_owner_markers,
                     "missing_tutorial_owner_markers": (
                         missing_tutorial_owner_markers
@@ -5329,6 +5432,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in fringe_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    nuke_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(NUKE_OWNER_TYPE_ALIASES)
+    )
+    nuke_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "nuke",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in nuke_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     tip_owner_type_alias_migrations = (
@@ -5385,6 +5503,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         name: _named_struct_size(name)
         for name in FRINGE_OWNER_SIZES
     }
+    nuke_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in NUKE_OWNER_SIZES
+    }
+    nuke_owner_layout_readback = (
+        {
+            "type": "cRNuke",
+            "size": None,
+            "members": {},
+            "player_embed": None,
+            "failures": [],
+        }
+        if parse_errors or nuke_owner_type_alias_failures
+        else _nuke_owner_layout_readback()
+    )
     tip_owner_sizes = {
         name: _named_struct_size(name)
         for name in TIP_OWNER_SIZES
@@ -5508,6 +5641,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in FRINGE_OWNER_SIZES.items()
         if fringe_owner_sizes[name] != expected_size
     ]
+    nuke_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "nuke",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": nuke_owner_sizes[name],
+        }
+        for name, expected_size in NUKE_OWNER_SIZES.items()
+        if nuke_owner_sizes[name] != expected_size
+    ]
     tip_owner_size_failures = [
         {
             "selector": name,
@@ -5548,6 +5692,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + path_manager_owner_size_failures
         + bod_core_owner_size_failures
         + fringe_owner_size_failures
+        + nuke_owner_size_failures
+        + nuke_owner_layout_readback["failures"]
         + tip_owner_size_failures
         + tip_owner_layout_readback["failures"]
         + tutorial_owner_size_failures
@@ -5668,6 +5814,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if (
         parse_errors
         or fringe_owner_type_alias_failures
+        or nuke_owner_type_alias_failures
         or tip_owner_type_alias_failures
         or tutorial_owner_type_alias_failures
         or owner_size_failures
@@ -5681,6 +5828,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "fringe_owner_type_alias_migrations": (
                         fringe_owner_type_alias_migrations
                     ),
+                    "nuke_owner_type_alias_migrations": (
+                        nuke_owner_type_alias_migrations
+                    ),
                     "tip_owner_type_alias_migrations": (
                         tip_owner_type_alias_migrations
                     ),
@@ -5693,6 +5843,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "path_manager_owner_sizes": path_manager_owner_sizes,
                     "bod_core_owner_sizes": bod_core_owner_sizes,
                     "fringe_owner_sizes": fringe_owner_sizes,
+                    "nuke_owner_sizes": nuke_owner_sizes,
+                    "nuke_owner_layout_readback": nuke_owner_layout_readback,
                     "tip_owner_sizes": tip_owner_sizes,
                     "tip_owner_layout_readback": tip_owner_layout_readback,
                     "tutorial_owner_sizes": tutorial_owner_sizes,
@@ -5711,6 +5863,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "player_shoot_members": player_shoot_members,
                     "failed": (
                         fringe_owner_type_alias_failures
+                        + nuke_owner_type_alias_failures
                         + tip_owner_type_alias_failures
                         + tutorial_owner_type_alias_failures
                         + owner_size_failures
@@ -6429,6 +6582,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_owner_type_alias_migrations": (
                     fringe_owner_type_alias_migrations
                 ),
+                "nuke_owner_type_alias_migrations": (
+                    nuke_owner_type_alias_migrations
+                ),
                 "tip_owner_type_alias_migrations": (
                     tip_owner_type_alias_migrations
                 ),
@@ -6441,6 +6597,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "path_manager_owner_sizes": path_manager_owner_sizes,
                 "bod_core_owner_sizes": bod_core_owner_sizes,
                 "fringe_owner_sizes": fringe_owner_sizes,
+                "nuke_owner_sizes": nuke_owner_sizes,
+                "nuke_owner_layout_readback": nuke_owner_layout_readback,
                 "tip_owner_sizes": tip_owner_sizes,
                 "tip_owner_layout_readback": tip_owner_layout_readback,
                 "tutorial_owner_sizes": tutorial_owner_sizes,

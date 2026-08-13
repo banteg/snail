@@ -516,10 +516,10 @@ changing any prototype. Both database lanes retire the stale generic
 
 The canonical IDA `path_template_types.h` lane remains useful beyond path
 templates because it is the single accumulated `cRSubGame` and gameplay
-owner graph. It retires the layout-equivalent generic `TipData` / `Tip` /
+owner graph. It retires the layout-equivalent generic `Nuke`, `TipData` / `Tip` /
 `TipManager` and `Tutorial` records only after importing and reading back the
-exact mobile-authored `cRTipData` / `cRTip` / `cRTipManager` and `cRTutorial`
-layouts. The front-end lifecycle slice reuses it for exact `Help`,
+exact mobile-authored `cRNuke`, `cRTipData` / `cRTip` / `cRTipManager`, and
+`cRTutorial` layouts. The front-end lifecycle slice reuses it for exact `Help`,
 `cROptions`, and `cRLoadingBar` records instead of creating another broad GameRoot
 header. Its narrow trusted declarations now preserve void Help and cROptions teardown
 and the complete void cRLoadingBar lifecycle, while the frame-root lane owns the

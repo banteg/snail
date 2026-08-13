@@ -18,8 +18,9 @@
 00447224        int32_t i = 0
 00447227        loop_index_float_source = 0
 0044722b        struct Sprite** sprite_slots = &nuke->sprite_slots
+00447243        long double x87_r7_10 = float.t(loop_index_float_source) * fconvert.t(0.0399999991f) * fconvert.t(6.28318548f) + fconvert.t(nuke->orbit_phase)
 00447246        (*sprite_slots)->position.z = nuke->orbit_center_z
-00447249        float var_4 = fconvert.s(float.t(loop_index_float_source) * fconvert.t(0.0399999991f) * fconvert.t(6.28318548f) + fconvert.t(nuke->orbit_phase))
+00447249        float var_4 = fconvert.s(x87_r7_10)
 00447260        (*sprite_slots)->position.x = fconvert.s(sine(var_4) * fconvert.t(7f))
 00447268        long double x87_r7_14 = cosine(var_4) * fconvert.t(7f)
 0044726e        struct Sprite* eax_4 = *sprite_slots

@@ -1,7 +1,7 @@
 # initialize_nuke
 
 - Near-exact/source-shaped match: 93.75%, 64/64 instructions.
-- Uses typed `Nuke`, `Player`, `cRSubGame`, `SpriteManager`, and
+- Uses typed `cRNuke`, `Player`, `cRSubGame`, `SpriteManager`, and
   `Sprite` layouts. This pins the owner player pointer, `subgame_rate` read
   through `GameRoot::subgame`, orbit center-z/phase
   fields, and the 25 sprite slots at controller `+0x18`.
@@ -65,7 +65,7 @@ Android `cRNuke::Init()` uses the same exact Windows layout: state +0x00,
 non-owning cRSubGoldy backlink +0x04, orbit z step/center +0x08/+0x0c,
 phase/step +0x10/+0x14, and 25 sprite pointers from +0x18 through +0x78.
 `cRSubGoldy::Collision()` calls it through that embedded 0x7c-byte owner. The
-shared type is now `Nuke`, and the analysis prototypes correctly preserve the
+shared type is now canonical `cRNuke`, and the analysis prototypes correctly preserve the
 side-effect-only `void` contract. Focused Wibo remains an honest 93.75%, 64/64
 instructions, prefix 30/64, with five clean masked operands.
 
@@ -73,7 +73,7 @@ instructions, prefix 30/64, with five clean masked operands.
 
 `NUKE_SPRITE_SLOT_COUNT` now owns the 25-entry extent used by the inline array,
 initializer, exact updater, and exact teardown. Binary Ninja field xrefs show
-those are the complete Windows consumers of `Nuke::sprite_slots`; Android
+those are the complete Windows consumers of `cRNuke::sprite_slots`; Android
 independently preserves the same 0x7c-byte class layout and 25-slot walks. This
 is a derived capacity name, not a claim that the original source exposed an
 identically named constant.
@@ -139,7 +139,7 @@ flag, or loop owner.
 ## 2026-08-12 recovery classification
 
 The recovery is semantic-complete. The live Windows body and verified Android
-`cRNuke::Init()` establish the exact 0x7c Nuke owner, inactive/active lifecycle,
+`cRNuke::Init()` establish the exact 0x7c cRNuke owner, inactive/active lifecycle,
 borrowed Player, SubGame rate, orbit fields, complete 25-slot sprite bank,
 allocator arguments, and every sprite initialization lane. All 64 instructions
 and all five references are represented.
@@ -157,3 +157,13 @@ collision caller, and internal lifecycle edge now use `Init` and `AI`, emitting
 `?Init@cRNuke@@QAEXXZ`. `initialize_nuke` remains the stable function ID; the
 honest Windows result remains 64/64 instructions at 93.75% with five clean
 operands and only the already-bounded four-instruction scheduling residual.
+
+## 2026-08-13 canonical owner replay
+
+The complete Android `cRNuke::{Init,AI,UnInit}` bodies, independent iOS
+`AI`/`UnInit` symbols, Windows decorated names, and both live decompiler
+layouts now agree on canonical `cRNuke`. The guarded replays retire generic
+`Nuke`, verify all seven members and the Player +0x150 embed, and bind all three
+lifecycle ABIs to `cRNuke*`. This is an ownership improvement only: the honest
+initializer remains 93.75%, 64/64 instructions, prefix 30/64, with five clean
+operands and the same bounded four-instruction scheduling residual.

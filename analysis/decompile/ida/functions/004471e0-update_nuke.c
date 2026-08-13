@@ -3,7 +3,7 @@
 /* selector: update_nuke */
 
 // Advances the exact cRNuke owner by moving its 25 sprite slots around the containing player at radius `7.0`, using the +0x08/+0x0c z-step pair and +0x10/+0x14 phase pair. Android and iOS retain this method as `cRNuke::AI()`.
-void __thiscall update_nuke(Nuke *nuke)
+void __thiscall update_nuke(cRNuke *nuke)
 {
   double v2; // st7
   unsigned __int8 v4; // c0
@@ -21,7 +21,7 @@ void __thiscall update_nuke(Nuke *nuke)
     nuke->orbit_center_z = nuke->orbit_center_z_step + nuke->orbit_center_z;
     v2 = nuke->orbit_phase_step + nuke->orbit_phase;
     nuke->orbit_phase = v2;
-    if ( !(v4 | v5) )
+    if ( (v4 | v5) == 0 )
       nuke->orbit_phase = v2 - 6.2831855;
     v6 = 0;
     v11 = 0;

@@ -2088,8 +2088,8 @@ typedef enum NukeState {
     NUKE_STATE_ACTIVE = 1,
 } NukeState;
 
-/* Authored cRNuke, exact 0x7c-byte collision-ring effect owner. */
-typedef struct Nuke {
+/* Exact 0x7c-byte authored cRNuke collision-ring effect owner. */
+typedef struct cRNuke {
     NukeState state;
     Player* owner_player;
     float orbit_center_z_step;
@@ -2097,7 +2097,10 @@ typedef struct Nuke {
     float orbit_phase;
     float orbit_phase_step;
     Sprite* sprite_slots[25];
-} Nuke;
+} cRNuke;
+
+typedef char cRNuke_must_be_0x7c[
+    (sizeof(cRNuke) == 0x7c) ? 1 : -1];
 
 /* Authored empty cRFireWork; an empty C++ child occupies one byte. */
 typedef struct FireWork {
@@ -2502,7 +2505,7 @@ typedef struct Player {
     ClickStart click_start;
     uint8_t row_event_cutscene_started;
     uint8_t _pad_14d[0x3];
-    Nuke nuke;
+    cRNuke nuke;
     int32_t shoot_sfx_variant_sample;
     FireWork firework;
     uint8_t _pad_1d1[0x3];
@@ -3002,9 +3005,9 @@ void __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, 
 void __thiscall initialize_cutscene_ai(CutScene* cutscene);
 void __thiscall update_cutscene(CutScene* cutscene);
 void __thiscall update_progress_bar(ProgressBar* progress_bar);
-void __thiscall initialize_nuke(Nuke* nuke);
-void __thiscall update_nuke(Nuke* nuke);
-void __thiscall uninit_nuke(Nuke* nuke);
+void __thiscall initialize_nuke(cRNuke* nuke);
+void __thiscall update_nuke(cRNuke* nuke);
+void __thiscall uninit_nuke(cRNuke* nuke);
 float __thiscall calc_slider_to_rate(cRSubGame* game, float slider);
 void __thiscall calc_subgame_rate(cRSubGame* game);
 double __thiscall advance_blink_random(cRSubGame* game);

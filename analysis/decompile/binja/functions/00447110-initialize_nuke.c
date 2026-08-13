@@ -13,7 +13,7 @@
 0044714f        nuke->state = 1
 00447155        nuke->orbit_center_z_step = fconvert.s(x87_r7_3 + x87_r7_3)
 004471c3        int32_t i
-00447170        struct Sprite* eax_3 = allocate_sprite(&g_sprite_manager, nuke->owner_player->player_slot, 0x83, 0xffffffff, 0xffffffff)
+00447170        cRSprite* eax_3 = allocate_sprite(&g_sprite_manager, nuke->owner_player->player_slot, 0x83, 0xffffffff, 0xffffffff)
 00447175        *sprite_slots = eax_3
 00447177        enum SpriteFlag flags = eax_3->flags
 0044717a        flags:1.b |= 8

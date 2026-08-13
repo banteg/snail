@@ -14613,18 +14613,48 @@ def test_nuke_state_ownership_stays_aligned() -> None:
     matcher_header = (repo_root / "tools/match/include/nuke.h").read_text(
         encoding="utf-8"
     )
-
-    assert '"NukeState",' in path_sync
-    assert '("0x00", "state", "NukeState")' in path_sync
-    assert '("Nuke", NUKE_FIELD_UPDATES)' in path_sync
-    assert '"--nuke-only"' in path_sync
-    assert "NUKE_OWNER_SIZES" in path_sync
-    assert "verify_nuke_owner_size" in path_sync
-    assert "updates=NUKE_PROTO_UPDATES" in path_sync
-    assert "updates=NUKE_USER_VAR_UPDATES" in path_sync
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
+
+    assert '"NukeState",' in path_sync
+    assert '("0x00", "state", "NukeState")' in path_sync
+    assert '("cRNuke", NUKE_FIELD_UPDATES)' in path_sync
+    assert 'NUKE_OWNER_TYPE_RENAMES = (("Nuke", "cRNuke"),)' in path_sync
+    assert '"cRNuke": 0x7C' in path_sync
+    assert '"--nuke-only"' in path_sync
+    assert "NUKE_OWNER_SIZES" in path_sync
+    assert "ensure_nuke_owner_type" in path_sync
+    assert "verify_nuke_owner_size" in path_sync
+    assert "updates=NUKE_PROTO_UPDATES" in path_sync
+    assert "updates=NUKE_USER_VAR_UPDATES" in path_sync
+    assert '("0x150", "nuke", "cRNuke")' in path_sync
+    assert "typedef struct cRNuke" in analysis_header
+    assert "typedef struct Nuke" not in analysis_header
+    assert "cRNuke_must_be_0x7c" in analysis_header
+    assert "cRNuke nuke;" in analysis_header
+    assert "class cRNuke" in matcher_header
+    assert "typedef cRNuke Nuke;" in matcher_header
+
+    for prototype in (
+        "void __thiscall initialize_nuke(cRNuke* nuke)",
+        "void __thiscall update_nuke(cRNuke* nuke)",
+        "void __thiscall uninit_nuke(cRNuke* nuke)",
+    ):
+        assert prototype in path_sync
+        assert prototype + ";" in ida_sync
+        assert prototype + ";" in analysis_header
+
+    for marker in (
+        '("Nuke", "cRNuke", 0x7C)',
+        "NUKE_OWNER_MARKERS",
+        "NUKE_OWNER_SIZES",
+        "EXPECTED_NUKE_OWNER_LAYOUT",
+        "EXPECTED_NUKE_PLAYER_EMBED",
+        "nuke_owner_layout_readback",
+    ):
+        assert marker in ida_sync
+
     for address in ("0x4470E0", "0x447110", "0x4471E0"):
         assert address in ida_sync
     for header in (analysis_header, matcher_header):
