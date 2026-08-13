@@ -10,3 +10,10 @@ frequencies, landscape, parcels, and texture selection.
 - masked operands: 183 audited, 2 candidate-only references unaudited
 - residual: compiler scheduling and two shifted diagnostic references
 - live callers: `cRSubTracks` frontend selection and `cRSMTracks::OpenLevels`
+
+## 2026-08-14 shared EOF replay maintenance
+
+The shared-diagnostic mutation plan now anchors on the current authored
+`Rstrnewline` helper name. A fresh two-site replay evaluates normally at the
+88.12% baseline; the shared-label shape remains a negative compiler-layout
+probe rather than a broken or silently skipped experiment.
