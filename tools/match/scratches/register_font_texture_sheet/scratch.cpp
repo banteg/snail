@@ -57,39 +57,38 @@ int FontLoad(
 
     while (x < image->width) {
         int pixel = sample_tga_pixel_rgb(image, x, 0);
+        int font_index = g_registered_font_count;
         if (pixel == 0xffffff) {
             float glyph_run_width = (float)run_width;
             int glyph_left = x - run_width;
             run_width = 0;
-            g_font_sheets[g_registered_font_count].glyph_width[slot] =
+            g_font_sheets[font_index].glyph_width[slot] =
                 glyph_run_width;
 
             float centered_left = (float)glyph_left + 0.5f;
             float centered_last = (float)last_x + 0.5f;
-            g_font_sheets[g_registered_font_count].glyph_u0[slot] =
+            g_font_sheets[font_index].glyph_u0[slot] =
                 centered_left / (float)image->width;
-            g_font_sheets[g_registered_font_count].glyph_u1[slot] =
+            g_font_sheets[font_index].glyph_u1[slot] =
                 centered_last / (float)image->width;
-            g_font_sheets[g_registered_font_count].texture_page[slot] = 0;
+            g_font_sheets[font_index].texture_page[slot] = 0;
 
             if (image->width == 0x800) {
                 if (glyph_left > split_x) {
-                    g_font_sheets[g_registered_font_count].glyph_u0[slot] =
+                    g_font_sheets[font_index].glyph_u0[slot] =
                         ((float)(glyph_left - split_x) + 0.5f)
                             * 0.0009765625f;
-                    g_font_sheets[g_registered_font_count].glyph_u1[slot] =
+                    g_font_sheets[font_index].glyph_u1[slot] =
                         ((float)(x - split_x) + 0.5f)
                             / (float)(image->width >> 1);
-                    g_font_sheets[g_registered_font_count].texture_page[slot] =
-                        1;
+                    g_font_sheets[font_index].texture_page[slot] = 1;
                 } else {
-                    g_font_sheets[g_registered_font_count].glyph_u0[slot] =
+                    g_font_sheets[font_index].glyph_u0[slot] =
                         centered_left * 0.0009765625f;
-                    g_font_sheets[g_registered_font_count].glyph_u1[slot] =
+                    g_font_sheets[font_index].glyph_u1[slot] =
                         centered_last
                         / (float)(image->width >> 1);
-                    g_font_sheets[g_registered_font_count].texture_page[slot] =
-                        0;
+                    g_font_sheets[font_index].texture_page[slot] = 0;
                 }
             }
 
