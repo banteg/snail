@@ -22,7 +22,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_menu_types.h"
 EXPECTED_STRUCT_SIZES = {
     "cRMainMenu": 0x18,
     "cROptions": 0x24,
-    "Exit": 0x1C,
+    "cRExit": 0x1C,
 }
 
 BOD_BASE_EXPECTED_SIZE = 0x38
@@ -30,13 +30,14 @@ BOD_BASE_EXPECTED_SIZE = 0x38
 GAME_ROOT_FIELD_UPDATES = (
     ("0x4f324", "main_menu", "cRMainMenu"),
     ("0x4f388", "options", "cROptions"),
-    ("0x4f3ac", "exit_controller", "Exit"),
+    ("0x4f3ac", "exit_controller", "cRExit"),
     ("0x4f3c8", "root_bod_4f3c8", "BodBase"),
 )
 
 TYPE_RENAMES = (
     ("MainMenu", "cRMainMenu"),
     ("Options", "cROptions"),
+    ("Exit", "cRExit"),
 )
 
 MAIN_MENU_FIELD_UPDATES = (
@@ -88,15 +89,15 @@ PROTO_UPDATES = (
     ),
     (
         "destroy_completion_screen",
-        "void __thiscall destroy_completion_screen(Exit* exit_controller)",
+        "void __thiscall destroy_completion_screen(cRExit* exit_controller)",
     ),
     (
         "initialize_exit_prompt",
-        "void __thiscall initialize_exit_prompt(Exit* exit_controller)",
+        "void __thiscall initialize_exit_prompt(cRExit* exit_controller)",
     ),
     (
         "update_completion_screen",
-        "void __thiscall update_completion_screen(Exit* exit_controller)",
+        "void __thiscall update_completion_screen(cRExit* exit_controller)",
     ),
 )
 
@@ -150,7 +151,7 @@ def main() -> int:
         if (
             observed_widths.get(name) != expected_size
             or (
-                name in {"cRMainMenu", "cROptions"}
+                name in {"cRMainMenu", "cROptions", "cRExit"}
                 and not type_equivalence.get(name, False)
             )
         )
@@ -180,7 +181,7 @@ def main() -> int:
     struct_updates = (
         ("cRMainMenu", MAIN_MENU_FIELD_UPDATES),
         ("cROptions", OPTIONS_FIELD_UPDATES),
-        ("Exit", EXIT_FIELD_UPDATES),
+        ("cRExit", EXIT_FIELD_UPDATES),
         ("GameRoot", GAME_ROOT_FIELD_UPDATES),
     )
     operations: list[dict[str, object]] = [

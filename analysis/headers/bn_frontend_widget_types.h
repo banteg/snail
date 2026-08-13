@@ -179,7 +179,7 @@ typedef struct FrontendWidget {
 } FrontendWidget;
 
 /* Authored cRExit, exact 0x1c-byte root owner. */
-typedef struct Exit {
+typedef struct cRExit {
     int32_t state;
     uint8_t _pad_04[0x08 - 0x04];
     int32_t previous_frontend_state;
@@ -187,6 +187,6 @@ typedef struct Exit {
     FrontendWidget* prompt_title;
     FrontendWidget* yes_button;
     FrontendWidget* no_button;
-} Exit;
+} cRExit;
 
 #endif

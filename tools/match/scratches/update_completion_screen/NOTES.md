@@ -13,7 +13,7 @@ Source-shape notes:
   `0x406b90`.
 - VC6 only matched after the case bodies were ordered by native block layout:
   states `9, 10, 11, 2, 7, 3, 4, 8`.
-- `destroy_main_menu` uses the recovered `MainMenu` member spelling so this
+- `destroy_main_menu` uses the recovered `cRMainMenu` member spelling so this
   callsite prepares the embedded main-menu owner in `ECX`. The body ignores
   `this` and is linker-folded with `Intro::destroy_new_game_menu`.
 
@@ -37,8 +37,9 @@ The prompt is `GameRoot::exit_controller`; pause state, galaxy, replay, and
 subgame methods belong to `GameRoot::subgame`; menu objects and the link latch
 belong directly to `GameRoot`. The complete rewrite remains exact at 207/207.
 
-Android and iOS retain the authored owner as `cRExit::AI()`. The primary
-`Exit` rename is codegen-neutral and keeps all 69 operands clean.
+Android and iOS retain the authored owner as `cRExit::AI()`. Replacing the
+former analysis-only `Exit` spelling with canonical `cRExit` is codegen-neutral
+and keeps all 69 operands clean.
 
 2026-07-13 canonical root graph: every state-machine transition now reloads
 the typed `GameRoot*` global and follows the owning menu, galaxy, subgame,
@@ -57,8 +58,8 @@ The four teardown paths now reach the authored `SubPause` embedded at
 matching three-pointer layout close that child owner while preserving the
 exact 207/207 stream and all 69 clean operands.
 
-2026-07-15 live analysis replay: the exact `Exit*` receiver and adjacent
-`MainMenu` root field now survive analysis together. The tracked state machine
+2026-07-15 live analysis replay: the exact `cRExit*` receiver and adjacent
+`cRMainMenu` root field now survive analysis together. The tracked state machine
 uses `exit_controller` for prompt state and widgets, and its two menu lifecycle
 calls use `g_game_base->main_menu`; no synthetic CompletionPrompt owner or raw
 front-end offsets remain.

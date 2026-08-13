@@ -2,8 +2,8 @@
 /* function: update_completion_screen @ 0x4067e0 */
 /* selector: update_completion_screen */
 
-// Exact void Windows `Exit::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0.
-void __thiscall update_completion_screen(Exit *exit_controller)
+// Exact void Windows `cRExit::AI()`: the entry named `update_completion_screen` runs the continue, replay, route-map return, and outbound-link state machine. Android and iOS retain the same authored member; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0.
+void __thiscall update_completion_screen(cRExit *exit_controller)
 {
   FrontendWidget *v2; // ecx
   FrontendWidgetFlag v3; // eax
@@ -41,7 +41,7 @@ void __thiscall update_completion_screen(Exit *exit_controller)
           destroy_completion_screen(exit_controller);
           uninit_pause_menu(&g_game_base->subgame.sub_pause);
           g_game_base->subgame.subgame_pause_gate = 0;
-          set_sprite_manager_paused(g_sprite_manager, 0);
+          set_sprite_manager_paused(&g_sprite_manager, false);
           destroy_subgame(&g_game_base->subgame);
         }
         else
@@ -49,7 +49,7 @@ void __thiscall update_completion_screen(Exit *exit_controller)
           destroy_completion_screen(exit_controller);
           uninit_pause_menu(&g_game_base->subgame.sub_pause);
           g_game_base->subgame.subgame_pause_gate = 0;
-          set_sprite_manager_paused(g_sprite_manager, 0);
+          set_sprite_manager_paused(&g_sprite_manager, false);
           destroy_subgame(&g_game_base->subgame);
           level_mode = g_game_base->subgame.level_mode;
           if ( level_mode == 4 || level_mode == 1 )
@@ -69,7 +69,7 @@ void __thiscall update_completion_screen(Exit *exit_controller)
         destroy_completion_screen(exit_controller);
         uninit_pause_menu(&g_game_base->subgame.sub_pause);
         g_game_base->subgame.subgame_pause_gate = 0;
-        set_sprite_manager_paused(g_sprite_manager, 0);
+        set_sprite_manager_paused(&g_sprite_manager, false);
         destroy_subgame(&g_game_base->subgame);
         g_game_base->players[0].frontend_state = g_game_base->subgame.selected_level_record_cursor;
       }
@@ -94,7 +94,7 @@ void __thiscall update_completion_screen(Exit *exit_controller)
         destroy_completion_screen(exit_controller);
         uninit_pause_menu(&g_game_base->subgame.sub_pause);
         g_game_base->subgame.subgame_pause_gate = 0;
-        set_sprite_manager_paused(g_sprite_manager, 0);
+        set_sprite_manager_paused(&g_sprite_manager, false);
         goto LABEL_24;
       }
       break;
@@ -133,12 +133,12 @@ void __thiscall update_completion_screen(Exit *exit_controller)
         v4->widget_flags = v5;
         destroy_completion_screen(exit_controller);
         destroy_main_menu(&g_game_base->main_menu);
-        if ( !g_game_base->frontend_quit_requested )
+        if ( g_game_base->frontend_quit_requested == 0 )
           g_game_base->frontend_quit_requested = 1;
       }
       break;
     case 0xB:
-      update_galaxy((char *)&g_game_base->subgame.galaxy);
+      update_galaxy(&g_game_base->subgame.galaxy);
       v6 = exit_controller->yes_button;
       v7 = v6->widget_flags;
       if ( (v7 & 0x20) != 0 )

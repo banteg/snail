@@ -2,8 +2,8 @@
 /* function: initialize_exit_prompt @ 0x4060d0 */
 /* selector: initialize_exit_prompt */
 
-// Exact void Windows `Exit::initialize_exit_prompt`: builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain the side-effect-only `cRExit::Init()`, and the sole Windows caller discards EAX.
-void __thiscall initialize_exit_prompt(Exit *exit_controller)
+// Exact void Windows `cRExit::Init()`: the entry named `initialize_exit_prompt` builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain the same side-effect-only member, and the sole Windows caller discards EAX.
+void __thiscall initialize_exit_prompt(cRExit *exit_controller)
 {
   tColour *v2; // eax
   tColour *v3; // eax

@@ -3403,24 +3403,42 @@
       "artifact": "analysis/decompile/binja/functions/004060d0-initialize_exit_prompt.c",
       "required_substrings": [
         "hide_all_borders(&g_game_base->border_manager)",
-        "switch (exit_prompt->state - 2)",
-        "exit_prompt->prompt_title",
-        "exit_prompt->yes_button",
-        "exit_prompt->no_button",
+        "switch (exit_controller->state - 2)",
+        "exit_controller->prompt_title",
+        "exit_controller->yes_button",
+        "exit_controller->no_button",
         "004067b0        return"
       ],
       "forbidden_substrings": [
-        "exit_controller",
+        "exit_prompt->",
         "struct GameRoot* result",
         "return initialize_frontend_widget",
         "hide_all_borders((int32_t*)"
       ]
     },
     {
+      "name": "ida_frontend_exit_teardown_owner",
+      "artifact": "analysis/decompile/ida/functions/00406060-destroy_completion_screen.c",
+      "required_substrings": [
+        "void __thiscall destroy_completion_screen(cRExit *exit_controller)",
+        "kill_border(&g_game_base->border_manager, exit_controller->prompt_title)",
+        "kill_border(&g_game_base->border_manager, exit_controller->yes_button)",
+        "kill_border(&g_game_base->border_manager, exit_controller->no_button)",
+        "g_game_base->players[0].frontend_state = exit_controller->previous_frontend_state"
+      ],
+      "forbidden_substrings": [
+        "int __thiscall destroy_completion_screen",
+        "sub_406060"
+      ],
+      "forbidden_regexes": [
+        "\\bExit \\*exit_controller"
+      ]
+    },
+    {
       "name": "ida_frontend_exit_prompt_void_owner",
       "artifact": "analysis/decompile/ida/functions/004060d0-initialize_exit_prompt.c",
       "required_substrings": [
-        "void __thiscall initialize_exit_prompt(Exit *exit_controller)",
+        "void __thiscall initialize_exit_prompt(cRExit *exit_controller)",
         "hide_all_borders(&g_game_base->border_manager)",
         "exit_controller->prompt_title",
         "exit_controller->yes_button",
@@ -3431,6 +3449,9 @@
         "hide_all_borders((int *)",
         "return initialize_frontend_widget",
         "sub_4060D0"
+      ],
+      "forbidden_regexes": [
+        "\\bExit \\*exit_controller"
       ]
     },
     {
@@ -17301,13 +17322,18 @@
       "name": "ida_completion_root_latch_owner",
       "artifact": "analysis/decompile/ida/functions/004067e0-update_completion_screen.c",
       "required_substrings": [
-        "void __thiscall update_completion_screen(Exit *exit_controller)",
+        "void __thiscall update_completion_screen(cRExit *exit_controller)",
         "g_game_base->frontend_link_latch = 0",
-        "g_game_base->players[0].frontend_state"
+        "g_game_base->players[0].frontend_state",
+        "launch_alpha72_url(aAlpha72Url)"
       ],
       "forbidden_substrings": [
         "g_game_base->unknown_000521",
-        "(char *)g_game_base + 1384"
+        "(char *)g_game_base + 1384",
+        "launch_alpha72_url()"
+      ],
+      "forbidden_regexes": [
+        "\\bExit \\*exit_controller"
       ]
     },
     {

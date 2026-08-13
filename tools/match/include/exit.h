@@ -23,6 +23,6 @@ typedef cRExit Exit;
 typedef char Exit_must_be_0x1c[
     (sizeof(cRExit) == 0x1c) ? 1 : -1];
 
-int __cdecl launch_alpha72_url(char* url); // @ 0x433050
+void __cdecl launch_alpha72_url(char* url); // @ 0x433050
 
 #endif

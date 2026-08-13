@@ -16,7 +16,7 @@
 00406996        destroy_completion_screen(exit_controller)
 004069a6        uninit_pause_menu(&g_game_base->subgame.sub_pause)
 004069b2        g_game_base->subgame.subgame_pause_gate = 0
-004069bd        set_sprite_manager_paused(&g_sprite_manager, 0)
+004069bd        set_sprite_manager_paused(&g_sprite_manager, false)
 004069ce        destroy_subgame(&g_game_base->subgame)
 004069d3        struct GameRoot* game_base_5 = g_game_base
 004069d9        int32_t level_mode = game_base_5->subgame.level_mode
@@ -27,7 +27,7 @@
 00406952        destroy_completion_screen(exit_controller)
 00406962        uninit_pause_menu(&g_game_base->subgame.sub_pause)
 0040696e        g_game_base->subgame.subgame_pause_gate = 0
-00406979        set_sprite_manager_paused(&g_sprite_manager, 0)
+00406979        set_sprite_manager_paused(&g_sprite_manager, false)
 0040698a        destroy_subgame(&g_game_base->subgame)
 00406a54        case 1
 00406a54        struct FrontendWidget* yes_button_5 = exit_controller->yes_button
@@ -38,7 +38,7 @@
 00406a6f        destroy_completion_screen(exit_controller)
 00406a80        uninit_pause_menu(&g_game_base->subgame.sub_pause)
 00406a91        g_game_base->subgame.subgame_pause_gate = 0
-00406a97        set_sprite_manager_paused(&g_sprite_manager, 0)
+00406a97        set_sprite_manager_paused(&g_sprite_manager, false)
 00406aa7        destroy_subgame(&g_game_base->subgame)
 00406aac        struct GameRoot* game_base_4 = g_game_base
 00406ab7        game_base_4->players[0].frontend_state = game_base_4->subgame.selected_level_record_cursor
@@ -61,7 +61,7 @@
 00406a23        destroy_completion_screen(exit_controller)
 00406a33        uninit_pause_menu(&g_game_base->subgame.sub_pause)
 00406a3f        g_game_base->subgame.subgame_pause_gate = 0
-00406a4a        set_sprite_manager_paused(&g_sprite_manager, 0)
+00406a4a        set_sprite_manager_paused(&g_sprite_manager, false)
 00406aee        destroy_subgame(&g_game_base->subgame)
 00406af8        g_game_base->players[0].frontend_state = 2
 00406b10        case 6

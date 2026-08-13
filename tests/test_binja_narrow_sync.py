@@ -1496,7 +1496,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '(0x4F324, 0x18, "main_menu", "cRMainMenu")',
         '(0x4F33C, 0x4C, "star_manager", "cRStarManager")',
         '(0x4F388, 0x24, "options", "cROptions")',
-        '(0x4F3AC, 0x1C, "exit_controller", "Exit")',
+        '(0x4F3AC, 0x1C, "exit_controller", "cRExit")',
         '(0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase")',
         '(0x4F400, 0x25218, "logo", "cRLogo")',
     ):
@@ -1710,10 +1710,12 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
 
     assert '"cRMainMenu": 0x18' in menu_apply
     assert '"cROptions": 0x24' in menu_apply
-    assert '"Exit": 0x1C' in menu_apply
+    assert '"cRExit": 0x1C' in menu_apply
     assert "migrate_equivalent_struct_aliases" in menu_apply
     assert '("MainMenu", "cRMainMenu", 0x18)' in menu_apply
     assert '("Options", "cROptions", 0x24)' in menu_apply
+    assert '("Exit", "cRExit", 0x1C)' in menu_apply
+    assert "void __cdecl launch_alpha72_url(char* url);" in menu_apply
     assert "EXPECTED_OWNER_LAYOUTS" in menu_apply
     assert "owner_layout_readback" in menu_apply
     assert 'analysis/headers/bn_frontend_menu_types.h' in menu_sync
@@ -2030,9 +2032,9 @@ def test_normalize_prototype_treats_default_cdecl_as_equivalent() -> None:
     )
 
     assert _narrow_sync.normalize_prototype(
-        "int32_t(char* url)", identifier="0x433050"
+        "void(char* url)", identifier="0x433050"
     ) == _narrow_sync.normalize_prototype(
-        "int32_t __cdecl launch_alpha72_url(char* url)",
+        "void __cdecl launch_alpha72_url(char* url)",
         identifier="0x433050",
     )
 
@@ -2111,7 +2113,7 @@ def test_ensure_function_entry_verifies_created_boundary(monkeypatch) -> None:
 
 def test_direct_proto_batch_accepts_address_identifiers(monkeypatch) -> None:
     calls = []
-    prototype = "int32_t __cdecl launch_alpha72_url(char* url)"
+    prototype = "void __cdecl launch_alpha72_url(char* url)"
 
     def fake_run_bn(_repo_root, *args):
         calls.append(args)
@@ -2121,7 +2123,7 @@ def test_direct_proto_batch_accepts_address_identifiers(monkeypatch) -> None:
     monkeypatch.setattr(
         _narrow_sync,
         "current_prototypes",
-        lambda *_args, **_kwargs: {"0x433050": "int32_t(char* url)"},
+        lambda *_args, **_kwargs: {"0x433050": "void(char* url)"},
     )
 
     result = _narrow_sync.apply_direct_proto_updates_batch(
@@ -3656,26 +3658,29 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
     for owner in (
         '("0x4f324", "main_menu", "cRMainMenu")',
         '("0x4f388", "options", "cROptions")',
-        '("0x4f3ac", "exit_controller", "Exit")',
+        '("0x4f3ac", "exit_controller", "cRExit")',
         '("0x4f3c8", "root_bod_4f3c8", "BodBase")',
     ):
         assert owner in source
     for expected_size in (
         '"cRMainMenu": 0x18',
         '"cROptions": 0x24',
-        '"Exit": 0x1C',
+        '"cRExit": 0x1C',
     ):
         assert expected_size in source
     for prototype in (
         "void __thiscall initialize_main_menu(cRMainMenu* menu)",
         "void __thiscall update_options_menu(cROptions* options)",
-        "void __thiscall initialize_exit_prompt(Exit* exit_controller)",
+        "void __thiscall destroy_completion_screen(cRExit* exit_controller)",
+        "void __thiscall initialize_exit_prompt(cRExit* exit_controller)",
+        "void __thiscall update_completion_screen(cRExit* exit_controller)",
     ):
         assert prototype in source
     assert "apply_struct_and_proto_updates" in source
     assert "apply_type_renames" in source
     assert '("MainMenu", "cRMainMenu")' in source
     assert '("Options", "cROptions")' in source
+    assert '("Exit", "cRExit")' in source
     assert "current_header_type_equivalence" in source
     assert "types_declare_missing_only" in source
     assert 'BOD_BASE_EXPECTED_SIZE = 0x38' in source
@@ -3686,7 +3691,8 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
     assert "typedef struct MainMenu" not in header
     assert "typedef struct cROptions" in header
     assert "typedef struct Options" not in header
-    assert "typedef struct Exit" in header
+    assert "typedef struct cRExit" in header
+    assert "typedef struct Exit" not in header
 
 
 def test_broad_type_declaration_rejects_complete_to_forward_regression(monkeypatch) -> None:
@@ -13641,6 +13647,9 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
     frontend_sync = (BINJA_DIR / "sync_frontend_widget_types.py").read_text(
         encoding="utf-8"
     )
+    frontend_header = (HEADER_DIR / "bn_frontend_widget_types.h").read_text(
+        encoding="utf-8"
+    )
     ida_path_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -13650,7 +13659,7 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
     )[0]
 
     expected = (
-        "void __thiscall initialize_exit_prompt(Exit* exit_prompt)",
+        "void __thiscall initialize_exit_prompt(cRExit* exit_controller)",
         "void __thiscall draw_frontend_widget(FrontendWidget* widget)",
         "void __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, tColour* color, int32_t text_alignment, float anchor_x)",
         "void __thiscall layout_frontend_widget(FrontendWidget* widget)",
@@ -13675,6 +13684,13 @@ def test_frontend_widget_void_replays_stay_direct() -> None:
         ):
             assert f'"{prototype};"' in ida_path_sync
     assert "DEFERRED_PROTO_UPDATES" not in frontend_sync
+    assert "apply_type_renames" in frontend_sync
+    assert '("Exit", "cRExit")' in frontend_sync
+    assert "current_header_type_equivalence" in frontend_sync
+    assert "typedef struct cRExit" in frontend_header
+    assert "typedef struct Exit" not in frontend_header
+    assert "void __cdecl launch_alpha72_url(char* url)" in frontend_sync
+    assert "int32_t __cdecl launch_alpha72_url" not in frontend_sync
     assert (
         '"initialize_frontend_widget",\n'
         '        "RegisterVariableSourceType",\n'

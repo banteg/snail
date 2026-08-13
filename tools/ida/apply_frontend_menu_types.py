@@ -21,13 +21,14 @@ from type_alias_migration import migrate_equivalent_struct_aliases
 FRONTEND_MENU_OWNER_TYPE_ALIASES = (
     ("MainMenu", "cRMainMenu", 0x18),
     ("Options", "cROptions", 0x24),
+    ("Exit", "cRExit", 0x1C),
 )
 
 
 EXPECTED_OWNER_SIZES = {
     "cRMainMenu": 0x18,
     "cROptions": 0x24,
-    "Exit": 0x1C,
+    "cRExit": 0x1C,
 }
 
 EXPECTED_OWNER_LAYOUTS = {
@@ -53,7 +54,7 @@ EXPECTED_OWNER_LAYOUTS = {
             0x20: ("previous_sample_volume", "float"),
         },
     },
-    "Exit": {
+    "cRExit": {
         "size": 0x1C,
         "members": {
             0x00: ("state", "int32_t"),
@@ -88,16 +89,17 @@ TRUSTED_DECLARATIONS = (
     ),
     (
         "destroy_completion_screen",
-        "void __thiscall destroy_completion_screen(Exit* exit_controller);",
+        "void __thiscall destroy_completion_screen(cRExit* exit_controller);",
     ),
     (
         "initialize_exit_prompt",
-        "void __thiscall initialize_exit_prompt(Exit* exit_controller);",
+        "void __thiscall initialize_exit_prompt(cRExit* exit_controller);",
     ),
     (
         "update_completion_screen",
-        "void __thiscall update_completion_screen(Exit* exit_controller);",
+        "void __thiscall update_completion_screen(cRExit* exit_controller);",
     ),
+    ("launch_alpha72_url", "void __cdecl launch_alpha72_url(char* url);"),
 )
 
 

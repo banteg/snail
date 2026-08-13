@@ -26,7 +26,7 @@ _FRONTEND_TYPE_SIZES = {
     "cRMainMenu": 0x18,
     "cRStarManager": 0x4C,
     "cROptions": 0x24,
-    "Exit": 0x1C,
+    "cRExit": 0x1C,
     "BodBase": 0x38,
     "cRLogo": 0x25218,
 }
@@ -47,7 +47,7 @@ _CANONICAL_FRONTEND = (
     (0x4F324, 0x18, "main_menu", "cRMainMenu"),
     (0x4F33C, 0x4C, "star_manager", "cRStarManager"),
     (0x4F388, 0x24, "options", "cROptions"),
-    (0x4F3AC, 0x1C, "exit_controller", "Exit"),
+    (0x4F3AC, 0x1C, "exit_controller", "cRExit"),
     (0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase"),
     (0x4F400, 0x25218, "logo", "cRLogo"),
 )

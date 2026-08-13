@@ -441,7 +441,7 @@
       "aliases": [
         "cRExit_UnInit"
       ],
-      "description": "Exact void Windows `Exit::destroy_completion_screen`: tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains this member as `cRExit::UnInit()`; it is distinct from the embedded subgame `cRCompletion::UnInit()`."
+      "description": "Exact void Windows `cRExit::UnInit()`: the entry named `destroy_completion_screen` tears down the three widgets owned by the root prompt and restores its saved front-end state. Android retains the same authored member; it is distinct from the embedded subgame `cRCompletion::UnInit()`."
     },
     {
       "address": "0x4060d0",
@@ -449,7 +449,7 @@
       "aliases": [
         "cRExit_Init"
       ],
-      "description": "Exact void Windows `Exit::initialize_exit_prompt`: builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain the side-effect-only `cRExit::Init()`, and the sole Windows caller discards EAX."
+      "description": "Exact void Windows `cRExit::Init()`: the entry named `initialize_exit_prompt` builds the shared Yes/No root prompt, including the `Do you really want to quit?` title and state-specific button layouts. Android and iOS retain the same side-effect-only member, and the sole Windows caller discards EAX."
     },
     {
       "address": "0x4067e0",
@@ -457,7 +457,7 @@
       "aliases": [
         "cRExit_AI"
       ],
-      "description": "Exact void Windows `Exit::update_completion_screen` state machine for continue, replay, route-map return, and outbound-link actions. Android and iOS retain `cRExit::AI()`; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
+      "description": "Exact void Windows `cRExit::AI()`: the entry named `update_completion_screen` runs the continue, replay, route-map return, and outbound-link state machine. Android and iOS retain the same authored member; it is distinct from embedded `cRCompletion::AI()` at 0x404cf0."
     },
     {
       "address": "0x406bc0",
@@ -2909,7 +2909,7 @@
       "address": "0x433050",
       "name": "launch_alpha72_url",
       "port_scope": "replaceable-platform",
-      "description": "Completion-screen outbound-link helper that minimizes the game window and raises the pending-deactivate latch; its Alpha72.url path argument is unused by this stripped body."
+      "description": "Exact void completion-screen outbound-link helper that accepts the Alpha72.url path, minimizes the game window, and raises the pending-deactivate latch; the stripped Windows body does not read the path and its sole caller discards EAX."
     },
     {
       "address": "0x433060",

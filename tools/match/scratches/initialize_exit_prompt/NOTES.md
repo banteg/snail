@@ -1,7 +1,7 @@
 # initialize_exit_prompt
 
-- Target: `Exit::initialize_exit_prompt` at `0x4060d0`, the Windows
-  `cRExit::Init()` owner recovered independently in Android and iOS.
+- Target: `cRExit::Init()` at `0x4060d0`, exposed by the descriptive Windows
+  selector `initialize_exit_prompt` and recovered independently in Android and iOS.
 - First-pass recovery from BN decompile/disassembly. The function hides the
   active border batch, switches on `state - 2`, then allocates/layouts the
   prompt title plus Yes/No buttons for most states.
@@ -31,9 +31,10 @@
   sequences, so the ten prompt destinations are proved by content without
   assigning a globally false label alias. The exact 441/441 body remains at
   109 clean masked operands.
-- 2026-07-11 owner closure: `Exit` is the primary 0x1c-byte owner at
+- 2026-07-11 owner closure: `cRExit` is the authored 0x1c-byte owner at
   `GameRoot +0x4f3ac`. It is distinct from the 0x50-byte subgame `Completion`
-  at root `+0x12e6df0`. The rename is codegen-neutral at the exact baseline.
+  at root `+0x12e6df0`. The former analysis-only `Exit` spelling is a
+  codegen-neutral compatibility alias at the exact baseline.
 - 2026-07-13 root-owner cleanup: border hiding and every prompt allocation now
   reload the canonical `GameRoot::border_manager` member. The native duplicated
   switch bodies and their short borrow lifetimes remain untouched; output is
@@ -42,15 +43,15 @@
   side-effect-only epilogue, and the sole Windows caller discards EAX. Rewriting
   the tail branches as calls followed by `return;` preserves the exact 441/441
   body and all 109 clean operands. Binary Ninja now has the exact 0x1c-byte
-  `Exit` owner; its void prototype preview verifies but live analysis restores
+  `cRExit` owner; its void prototype preview verifies but live analysis restores
   the stale scalar form, so the sync script reports it as deferred.
 
 - 2026-07-15 live analysis replay: installing the complete neighboring menu
-  ABIs lets Binary Ninja retain the exact void `Exit*` initializer prototype.
+  ABIs lets Binary Ninja retain the exact void `cRExit*` initializer prototype.
   The refreshed artifact names the 0x1c-byte receiver and its state, prompt-y,
   and three widget fields without borrowing the subgame Completion owner.
 - 2026-07-17 replay cleanup: the live prototype remains the exact void
-  `Exit*` member across restart and readback, so it now travels through the
+  `cRExit*` member across restart and readback, so it now travels through the
   ordinary previewed direct-prototype lane rather than the obsolete deferred
   list. The exact 441/441 matching body is unchanged.
 

@@ -8,8 +8,10 @@ from _narrow_sync import (
     apply_int_display_updates,
     apply_struct_and_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_enum_members,
+    current_header_type_equivalence,
     current_type_widths,
     emit_summary,
     types_declare_missing_only,
@@ -27,8 +29,10 @@ EXPECTED_STRUCT_SIZES = {
     "FrontendWidgetTooltip": 0x40,
     "FrontendWidgetTextBuffer": 0x420,
     "FrontendWidget": 0x724,
-    "Exit": 0x1C,
+    "cRExit": 0x1C,
 }
+
+TYPE_RENAMES = (("Exit", "cRExit"),)
 
 EXPECTED_FLAG_MEMBERS = (
     ("FRONTEND_WIDGET_FLAG_HIGHLIGHTED", 0x00000002),
@@ -162,7 +166,7 @@ TWINKLE_MANAGER_FIELDS = (
 PROTO_UPDATES = (
     (
         "initialize_exit_prompt",
-        "void __thiscall initialize_exit_prompt(Exit* exit_prompt)",
+        "void __thiscall initialize_exit_prompt(cRExit* exit_controller)",
     ),
     (
         "draw_frontend_widget",
@@ -216,7 +220,7 @@ PROTO_UPDATES = (
         "update_twinkle_manager",
         "void __thiscall update_twinkle_manager(TwinkleManager* manager)",
     ),
-    ("0x433050", "int32_t __cdecl launch_alpha72_url(char* url)"),
+    ("0x433050", "void __cdecl launch_alpha72_url(char* url)"),
 )
 
 USER_VAR_UPDATES = (
@@ -333,15 +337,19 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    type_rename_operations = (
+        []
+        if args.flag_immediates_only
+        else apply_type_renames(
+            REPO_ROOT,
+            target=args.target,
+            renames=TYPE_RENAMES,
+        )
+    )
     observed_widths = current_type_widths(
         REPO_ROOT,
         target=args.target,
         type_names=EXPECTED_STRUCT_SIZES,
-    )
-    mismatched_types = tuple(
-        name
-        for name, expected_size in EXPECTED_STRUCT_SIZES.items()
-        if observed_widths.get(name) != expected_size
     )
     observed_flag_members = current_enum_members(
         REPO_ROOT,
@@ -382,6 +390,19 @@ def main() -> int:
                 ),
             ],
         )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in EXPECTED_STRUCT_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or (name == "cRExit" and not type_equivalence.get(name, False))
+        )
+    )
     replay_types = (*mismatched_types, *stale_flag_types)
     if replay_types:
         type_operation = types_declare_missing_only(
@@ -405,9 +426,11 @@ def main() -> int:
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
             "expected_flag_members": EXPECTED_FLAG_MEMBERS,
+            "type_equivalence": type_equivalence,
         }
 
     operations: list[dict[str, object]] = [
+        *type_rename_operations,
         type_operation,
         *apply_struct_and_proto_updates(
             REPO_ROOT,

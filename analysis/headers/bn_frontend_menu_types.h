@@ -29,7 +29,7 @@ typedef struct cROptions {
 } cROptions;
 
 /* Exact Windows cRExit owner at GameRoot +0x4f3ac. */
-typedef struct Exit {
+typedef struct cRExit {
     int32_t state;
     uint8_t _pad_04[0x4];
     int32_t previous_frontend_state;
@@ -37,6 +37,6 @@ typedef struct Exit {
     FrontendWidget* prompt_title;
     FrontendWidget* yes_button;
     FrontendWidget* no_button;
-} Exit;
+} cRExit;
 
 #endif
