@@ -140,6 +140,20 @@ Useful analysis helpers:
   }
   ```
 
+  When a replacement only compiles with another choice, encode that relation
+  rather than scheduling known-invalid variants. Object replacements accept
+  `requires` and `conflicts` arrays of `site/replacement` keys; invalid
+  combinations are excluded from both the plan and its possible-variant count:
+
+  ```json
+  {
+    "name": "reuse-shared",
+    "text": "return shared",
+    "requires": ["owner/declare-shared"],
+    "conflicts": ["qualifier/make-const"]
+  }
+  ```
+
   Sites must match exactly once unless they specify a one-based
   `"occurrence"`. The default sweep changes one site at a time; use
   `--max-changes` for interactions and `--max-variants` or `--time-budget` to

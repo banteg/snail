@@ -116,6 +116,101 @@ def test_mutation_spec_generates_bounded_combinations(
     assert batch.variants[-1].source_text == "const int value = y + x;\n"
 
 
+def test_mutation_constraints_exclude_invalid_dependent_variants(
+    tmp_path: Path,
+) -> None:
+    spec_path = tmp_path / "dependent.json"
+    spec_path.write_text(
+        json.dumps(
+            {
+                "schema": 1,
+                "sites": [
+                    {
+                        "name": "owner",
+                        "find": "int value",
+                        "replacements": [
+                            {
+                                "name": "declare-shared",
+                                "text": "int shared; int value",
+                                "conflicts": ["qualifier/make-const"],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "use",
+                        "find": "return value",
+                        "replacements": [
+                            {
+                                "name": "reuse-shared",
+                                "text": "return shared",
+                                "requires": ["owner/declare-shared"],
+                            },
+                        ],
+                    },
+                    {
+                        "name": "qualifier",
+                        "find": "value = 1",
+                        "replacements": [
+                            {
+                                "name": "make-const",
+                                "text": "value = 1 /* const shape */",
+                            },
+                        ],
+                    },
+                ],
+            },
+        ),
+        encoding="utf-8",
+    )
+    spec = load_mutation_spec(spec_path)
+
+    batch = generate_mutation_variants(
+        "int value; value = 1; return value;\n",
+        spec,
+        max_changes=2,
+    )
+
+    assert batch.possible_by_changes == (2, 1)
+    assert [variant.label for variant in batch.variants] == [
+        "owner/declare-shared",
+        "qualifier/make-const",
+        "owner/declare-shared+use/reuse-shared",
+    ]
+    assert not batch.truncated
+
+
+def test_mutation_constraints_reject_unknown_and_contradictory_choices(
+    tmp_path: Path,
+) -> None:
+    base = {
+        "schema": 1,
+        "sites": [
+            {
+                "name": "value",
+                "find": "x",
+                "replacements": [
+                    {
+                        "name": "alternate",
+                        "text": "y",
+                        "requires": ["missing/choice"],
+                    },
+                ],
+            },
+        ],
+    }
+    path = tmp_path / "invalid.json"
+    path.write_text(json.dumps(base), encoding="utf-8")
+    with pytest.raises(ValueError, match="references unknown choices"):
+        load_mutation_spec(path)
+
+    replacement = base["sites"][0]["replacements"][0]
+    replacement["requires"] = ["value/alternate"]
+    replacement["conflicts"] = ["value/alternate"]
+    path.write_text(json.dumps(base), encoding="utf-8")
+    with pytest.raises(ValueError, match="cannot constrain itself"):
+        load_mutation_spec(path)
+
+
 def test_mutation_spec_can_select_only_higher_order_combinations(
     tmp_path: Path,
 ) -> None:
