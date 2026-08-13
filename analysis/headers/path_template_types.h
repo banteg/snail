@@ -2185,13 +2185,17 @@ typedef struct PlayerRowEventState {
     cRTipData tip_definition;
 } PlayerRowEventState;
 
-typedef struct Tutorial {
+/* Exact 0x1c-byte authored cRTutorial owner embedded in cRSubGame. */
+typedef struct cRTutorial {
     int32_t state;
     int32_t _pad_04;
     int32_t _pad_08;
     cRSubGame* game;
     uint8_t _pad_10[0xc];
-} Tutorial;
+} cRTutorial;
+
+typedef char cRTutorial_must_be_0x1c[
+    (sizeof(cRTutorial) == 0x1c) ? 1 : -1];
 
 typedef enum CompletionState {
     COMPLETION_STATE_INACTIVE = 0,
@@ -2631,7 +2635,7 @@ typedef struct cRSubGame {
     SegmentCache segment_cache;
     uint8_t track_state_latch;
     uint8_t _pad_a855[0x3];
-    Tutorial tutorial;
+    cRTutorial tutorial;
     SubTracks level_definition;
     SubTracks level_definition_scratch;
     BodBase fringe_attachment_list_head;
@@ -2949,9 +2953,9 @@ void __thiscall initialize_tip_manager(cRTipManager* manager);
 void __thiscall uninit_tips(cRTipManager* manager);
 cRTip* __thiscall enqueue_tip_message(cRTipManager* manager, cRTipData* definition, int32_t hide_disable_button);
 void __thiscall update_tip_manager(cRTipManager* manager);
-void __thiscall initialize_tutorial(Tutorial* tutorial);
-void __thiscall uninit_tutorial(Tutorial* tutorial);
-void __thiscall update_tutorial(Tutorial* tutorial);
+void __thiscall initialize_tutorial(cRTutorial* tutorial);
+void __thiscall uninit_tutorial(cRTutorial* tutorial);
+void __thiscall update_tutorial(cRTutorial* tutorial);
 void __thiscall update_barrier_ai(BarrierActor* barrier);
 void __thiscall flush_row_event_display(Completion* completion);
 void __thiscall initialize_completion_screen(

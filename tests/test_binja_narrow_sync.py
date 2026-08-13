@@ -33,8 +33,8 @@ def test_owner_syncs_keep_subgame_runtime_as_the_canonical_backlink() -> None:
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(encoding="utf-8")
     path_header = (HEADER_DIR / "path_template_types.h").read_text(encoding="utf-8")
 
-    assert 'TUTORIAL_FIELD_UPDATES = (\n    ("0x0c", "game", "cRSubGame*"),' in path_sync
-    assert '("Tutorial", TUTORIAL_FIELD_UPDATES),' in path_sync
+    assert 'CR_TUTORIAL_FIELD_UPDATES = (\n    ("0x0c", "game", "cRSubGame*"),' in path_sync
+    assert '("cRTutorial", CR_TUTORIAL_FIELD_UPDATES),' in path_sync
     assert "cRSubGame* game;" in path_header
 
 
@@ -14738,6 +14738,9 @@ def test_tip_manager_lifecycle_replay_keeps_exact_owner_graph() -> None:
 
 def test_tutorial_lifecycle_replay_keeps_runtime_and_tip_manager_owners() -> None:
     repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
     ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -14753,10 +14756,41 @@ def test_tutorial_lifecycle_replay_keeps_runtime_and_tip_manager_owners() -> Non
     ida_root_owner = (IDA_DIR / "game_root_owner.py").read_text(encoding="utf-8")
 
     for header in (analysis_header, matcher_tutorial):
+        assert "cRTutorial" in header
         assert "cRSubGame* game" in header
+    assert "typedef struct cRTutorial" in analysis_header
+    assert "typedef struct Tutorial" not in analysis_header
+    assert "cRTutorial_must_be_0x1c" in analysis_header
+    assert "cRTutorial tutorial;" in analysis_header
     for header in (analysis_header, matcher_subgame):
         assert "runtime_flags" in header
     assert '(0x12E6F58, 0x98, "tip_manager", "cRTipManager")' in ida_root_owner
+
+    assert 'TUTORIAL_OWNER_TYPE_RENAMES = (("Tutorial", "cRTutorial"),)' in binja_sync
+    assert '"cRTutorial": 0x1C' in binja_sync
+    assert '"--tutorial-only"' in binja_sync
+    assert "ensure_tutorial_owner_type" in binja_sync
+    assert "verify_tutorial_owner_size" in binja_sync
+    assert '("0xa858", "tutorial", "cRTutorial")' in binja_sync
+    assert '("cRTutorial", (("0x0c", "game", "cRSubGame*"),))' in binja_sync
+
+    for prototype in (
+        "void __thiscall initialize_tutorial(cRTutorial* tutorial)",
+        "void __thiscall uninit_tutorial(cRTutorial* tutorial)",
+        "void __thiscall update_tutorial(cRTutorial* tutorial)",
+    ):
+        assert prototype in binja_sync
+        assert prototype + ";" in ida_sync
+        assert prototype + ";" in analysis_header
+
+    for marker in (
+        '("Tutorial", "cRTutorial", 0x1C)',
+        "TUTORIAL_OWNER_MARKERS",
+        "TUTORIAL_OWNER_SIZES",
+        "EXPECTED_TUTORIAL_OWNER_LAYOUT",
+        "tutorial_owner_layout_readback",
+    ):
+        assert marker in ida_sync
 
     for marker in (
         "TUTORIAL_NUMERIC_OPERANDS",
@@ -19820,7 +19854,7 @@ def test_embedded_subgame_ai_void_abis_are_persisted() -> None:
     )
 
     for prototype in (
-        "void __thiscall update_tutorial(Tutorial* tutorial)",
+        "void __thiscall update_tutorial(cRTutorial* tutorial)",
         "void __thiscall update_barrier_ai(BarrierActor* barrier)",
     ):
         assert prototype in binja_sync
@@ -25268,7 +25302,7 @@ def test_c_r_subgame_primary_ownership_stays_aligned() -> None:
         '("Player", (("0x408", "game", "cRSubGame*"),))',
         '("SegmentCache", (("0x54", "owner_subgame", "cRSubGame*"),))',
         '("SubRing", (("0x1d0", "rate_source", "cRSubGame*"),))',
-        '("Tutorial", (("0x0c", "game", "cRSubGame*"),))',
+        '("cRTutorial", (("0x0c", "game", "cRSubGame*"),))',
     ):
         assert owner_backpointer in binja_sync
     for owner_method in (

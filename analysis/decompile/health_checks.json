@@ -18065,13 +18065,14 @@
       "name": "ida_tutorial_void_subgame_owner",
       "artifact": "analysis/decompile/ida/functions/00448de0-update_tutorial.c",
       "required_substrings": [
-        "void __thiscall update_tutorial(Tutorial *tutorial)",
+        "void __thiscall update_tutorial(cRTutorial *tutorial)",
         "tutorial->game->player.body.transform.position"
       ],
       "forbidden_substrings": [
         "cRSubLoc *__fastcall update_tutorial",
         "return get_track_grid_cell_at_world_position",
-        "TutorialController *controller"
+        "TutorialController *controller",
+        "update_tutorial(Tutorial *tutorial)"
       ]
     },
     {
@@ -22435,7 +22436,7 @@
       "name": "ida_tutorial_initialize_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00448da0-initialize_tutorial.c",
       "required_substrings": [
-        "void __thiscall initialize_tutorial(Tutorial *tutorial)",
+        "void __thiscall initialize_tutorial(cRTutorial *tutorial)",
         "p_subgame = &g_game_base->subgame;",
         "tutorial->game = &g_game_base->subgame;",
         "p_subgame->runtime_flags |= 0x600000u;",
@@ -22445,21 +22446,23 @@
         "TutorialController",
         "MEMORY[",
         "unk_600000",
-        "game[19]"
+        "game[19]",
+        "initialize_tutorial(Tutorial *tutorial)"
       ]
     },
     {
       "name": "ida_tutorial_uninit_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00448dd0-uninit_tutorial.c",
       "required_substrings": [
-        "void __thiscall uninit_tutorial(Tutorial *tutorial)",
+        "void __thiscall uninit_tutorial(cRTutorial *tutorial)",
         "uninit_tips(&g_game_base->tip_manager);"
       ],
       "forbidden_substrings": [
         "void uninit_tutorial()",
         "MEMORY[",
         "_DWORD **",
-        "4955094"
+        "4955094",
+        "uninit_tutorial(Tutorial *tutorial)"
       ]
     },
     {

@@ -342,7 +342,7 @@ Windows-specific lifetime or surrounding-block insight rather than more
 cross-port case order, result ownership, or shared-label shaping.
 
 2026-07-11 cRTutorial owner: the mode-7 tick now calls the embedded
-`tutorial.update_tutorial()` directly. The exact Init/AI/UnInit siblings,
+`tutorial.AI()` directly. The exact Init/AI/UnInit siblings,
 mobile symbols, and the native 0x1c size ledger prove the owner at `+0xa858`;
 the local one-method `TutorialRuntime` shell is retired. Focused output remains
 78.22%, 1033/1033, with 116 clean operands and the same two real table-shape

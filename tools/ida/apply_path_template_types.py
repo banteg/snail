@@ -393,6 +393,33 @@ EXPECTED_TIP_OWNER_LAYOUTS = {
     },
 }
 
+TUTORIAL_OWNER_MARKERS = (
+    "typedef struct cRTutorial {",
+    "} cRTutorial;",
+    "cRTutorial_must_be_0x1c",
+    "cRTutorial tutorial;",
+    "void __thiscall initialize_tutorial(cRTutorial* tutorial);",
+    "void __thiscall uninit_tutorial(cRTutorial* tutorial);",
+    "void __thiscall update_tutorial(cRTutorial* tutorial);",
+)
+
+TUTORIAL_OWNER_SIZES = {
+    "cRTutorial": 0x1C,
+}
+
+TUTORIAL_OWNER_TYPE_ALIASES = (("Tutorial", "cRTutorial", 0x1C),)
+
+EXPECTED_TUTORIAL_OWNER_LAYOUT = {
+    "size": 0x1C,
+    "members": {
+        0x00: (0x04, "state", "int32_t"),
+        0x04: (0x04, "_pad_04", "int32_t"),
+        0x08: (0x04, "_pad_08", "int32_t"),
+        0x0C: (0x04, "game", "cRSubGame *"),
+        0x10: (0x0C, "_pad_10", "uint8_t[12]"),
+    },
+}
+
 TRACK_RENDER_CACHE_OWNER_SIZES = {
     "TrackRenderCacheSlot": 0x3C,
     "SegmentCache": 0xA7F8,
@@ -2701,15 +2728,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_tutorial",
-        "void __thiscall initialize_tutorial(Tutorial* tutorial);",
+        "void __thiscall initialize_tutorial(cRTutorial* tutorial);",
     ),
     (
         "uninit_tutorial",
-        "void __thiscall uninit_tutorial(Tutorial* tutorial);",
+        "void __thiscall uninit_tutorial(cRTutorial* tutorial);",
     ),
     (
         "update_tutorial",
-        "void __thiscall update_tutorial(Tutorial* tutorial);",
+        "void __thiscall update_tutorial(cRTutorial* tutorial);",
     ),
     (
         "update_input_ok",
@@ -4819,6 +4846,52 @@ def _tip_owner_layout_readback() -> dict[str, object]:
     return {"types": readback, "failures": failures}
 
 
+def _tutorial_owner_layout_readback() -> dict[str, object]:
+    """Verify the complete canonical cRTutorial owner before its method ABIs."""
+    type_name = "cRTutorial"
+    expected = EXPECTED_TUTORIAL_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "tutorial",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "tutorial",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "failures": failures,
+    }
+
+
 def _golb_shot_prefix_snapshot(owner: ida_typeinf.tinfo_t) -> list[dict[str, object]] | None:
     udt = ida_typeinf.udt_type_data_t()
     if not owner.get_udt_details(udt):
@@ -5107,6 +5180,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in TIP_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_tutorial_owner_markers = [
+        marker
+        for marker in TUTORIAL_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_track_render_cache_owner_markers = [
         marker
         for marker in TRACK_RENDER_CACHE_OWNER_MARKERS
@@ -5140,6 +5218,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_tip_owner_markers
+        or missing_tutorial_owner_markers
         or missing_track_render_cache_owner_markers
         or missing_sub_lazer_asset_cursor_markers
         or missing_salt_asset_cursor_markers
@@ -5169,6 +5248,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append({"reason": "noncanonical_fringe_header"})
         if missing_tip_owner_markers:
             marker_failures.append({"reason": "noncanonical_tip_owner_header"})
+        if missing_tutorial_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_tutorial_owner_header"}
+            )
         if missing_track_render_cache_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_track_render_cache_header"}
@@ -5207,6 +5290,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
                     "missing_fringe_owner_markers": missing_fringe_owner_markers,
                     "missing_tip_owner_markers": missing_tip_owner_markers,
+                    "missing_tutorial_owner_markers": (
+                        missing_tutorial_owner_markers
+                    ),
                     "missing_track_render_cache_owner_markers": (
                         missing_track_render_cache_owner_markers
                     ),
@@ -5260,6 +5346,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in tip_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
+    tutorial_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(TUTORIAL_OWNER_TYPE_ALIASES)
+    )
+    tutorial_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "tutorial",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in tutorial_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     subgame_owner_sizes = {
         name: _named_struct_size(name)
         for name in SUBGAME_OWNER_SIZES
@@ -5292,6 +5393,15 @@ def _sync_types(header_path: pathlib.Path) -> int:
         {"types": {}, "failures": []}
         if parse_errors or tip_owner_type_alias_failures
         else _tip_owner_layout_readback()
+    )
+    tutorial_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in TUTORIAL_OWNER_SIZES
+    }
+    tutorial_owner_layout_readback = (
+        {"type": "cRTutorial", "size": None, "members": {}, "failures": []}
+        if parse_errors or tutorial_owner_type_alias_failures
+        else _tutorial_owner_layout_readback()
     )
     track_render_cache_owner_sizes = {
         name: _named_struct_size(name)
@@ -5409,6 +5519,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in TIP_OWNER_SIZES.items()
         if tip_owner_sizes[name] != expected_size
     ]
+    tutorial_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "tutorial",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": tutorial_owner_sizes[name],
+        }
+        for name, expected_size in TUTORIAL_OWNER_SIZES.items()
+        if tutorial_owner_sizes[name] != expected_size
+    ]
     track_render_cache_owner_size_failures = [
         {
             "selector": name,
@@ -5429,6 +5550,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + fringe_owner_size_failures
         + tip_owner_size_failures
         + tip_owner_layout_readback["failures"]
+        + tutorial_owner_size_failures
+        + tutorial_owner_layout_readback["failures"]
         + track_render_cache_owner_size_failures
     )
     if golb_shot_asset_cursor_size != GOLB_SHOT_ASSET_CURSOR_EXPECTED_SIZE:
@@ -5546,6 +5669,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         parse_errors
         or fringe_owner_type_alias_failures
         or tip_owner_type_alias_failures
+        or tutorial_owner_type_alias_failures
         or owner_size_failures
     ):
         print(
@@ -5560,6 +5684,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "tip_owner_type_alias_migrations": (
                         tip_owner_type_alias_migrations
                     ),
+                    "tutorial_owner_type_alias_migrations": (
+                        tutorial_owner_type_alias_migrations
+                    ),
                     "subgame_owner_sizes": subgame_owner_sizes,
                     "sub_loc_owner_sizes": sub_loc_owner_sizes,
                     "path_owner_sizes": path_owner_sizes,
@@ -5568,6 +5695,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "fringe_owner_sizes": fringe_owner_sizes,
                     "tip_owner_sizes": tip_owner_sizes,
                     "tip_owner_layout_readback": tip_owner_layout_readback,
+                    "tutorial_owner_sizes": tutorial_owner_sizes,
+                    "tutorial_owner_layout_readback": (
+                        tutorial_owner_layout_readback
+                    ),
                     "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                     "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                     "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,
@@ -5581,6 +5712,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "failed": (
                         fringe_owner_type_alias_failures
                         + tip_owner_type_alias_failures
+                        + tutorial_owner_type_alias_failures
                         + owner_size_failures
                     ),
                 },
@@ -6300,6 +6432,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "tip_owner_type_alias_migrations": (
                     tip_owner_type_alias_migrations
                 ),
+                "tutorial_owner_type_alias_migrations": (
+                    tutorial_owner_type_alias_migrations
+                ),
                 "subgame_owner_sizes": subgame_owner_sizes,
                 "sub_loc_owner_sizes": sub_loc_owner_sizes,
                 "path_owner_sizes": path_owner_sizes,
@@ -6308,6 +6443,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_owner_sizes": fringe_owner_sizes,
                 "tip_owner_sizes": tip_owner_sizes,
                 "tip_owner_layout_readback": tip_owner_layout_readback,
+                "tutorial_owner_sizes": tutorial_owner_sizes,
+                "tutorial_owner_layout_readback": (
+                    tutorial_owner_layout_readback
+                ),
                 "track_render_cache_owner_sizes": track_render_cache_owner_sizes,
                 "golb_shot_asset_cursor_size": golb_shot_asset_cursor_size,
                 "sub_lazer_asset_cursor_size": sub_lazer_asset_cursor_size,

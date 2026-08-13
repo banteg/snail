@@ -84,6 +84,21 @@ TIP_OWNER_TYPE_RENAMES = (
     ("TipManager", "cRTipManager"),
 )
 
+TUTORIAL_OWNER_SIZES = {
+    "cRTutorial": 0x1C,
+}
+
+TUTORIAL_OWNER_TYPE_RENAMES = (("Tutorial", "cRTutorial"),)
+
+TUTORIAL_REANALYSIS_FUNCTIONS = (
+    "initialize_tutorial",
+    "uninit_tutorial",
+    "update_tutorial",
+    "update_new_game_menu",
+    "destroy_subgame",
+    "update_subgame",
+)
+
 AUTHORED_ROW_CURSOR_SIZES = {
     "AuthoredSegmentRow": 0x38,
     "AuthoredSegmentRowPositionCursorView": 0x38,
@@ -612,7 +627,7 @@ REQUIRED_HEADER_STRUCTS = (
     "cRTipData",
     "cRTip",
     "cRTipManager",
-    "Tutorial",
+    "cRTutorial",
 )
 
 
@@ -754,7 +769,7 @@ def verify_tip_owner_sizes(*, target: str) -> dict[str, object]:
         if observed.get(name) != expected
     }
     if failures:
-        raise RuntimeError(f"Tip owner size mismatch: {failures}")
+        raise RuntimeError(f"cRTip owner size mismatch: {failures}")
     return {
         "op": "owner_size_verify",
         "status": "verified",
@@ -812,6 +827,82 @@ def ensure_tip_owner_types(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in TIP_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_tutorial_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRTutorial lifecycle ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TUTORIAL_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in TUTORIAL_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRTutorial owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "tutorial",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_tutorial_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire Tutorial only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=TUTORIAL_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TUTORIAL_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in TUTORIAL_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=TUTORIAL_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: TUTORIAL_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRTutorial owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": TUTORIAL_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in TUTORIAL_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -2906,7 +2997,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x58", "completion_row_start", "int32_t"),
     ("0x5c", "segment_cache", "SegmentCache"),
     ("0xa854", "track_state_latch", "uint8_t"),
-    ("0xa858", "tutorial", "Tutorial"),
+    ("0xa858", "tutorial", "cRTutorial"),
     ("0xa874", "level_definition", "SubTracks"),
     ("0x1b01ec", "level_definition_scratch", "SubTracks"),
     ("0x355b64", "fringe_attachment_list_head", "BodBase"),
@@ -3210,7 +3301,7 @@ TIP_MANAGER_FIELD_UPDATES = (
     ("0x38", "tips", "cRTip[0x3]"),
 )
 
-TUTORIAL_FIELD_UPDATES = (
+CR_TUTORIAL_FIELD_UPDATES = (
     ("0x0c", "game", "cRSubGame*"),
 )
 
@@ -3894,6 +3985,21 @@ TIP_PROTO_UPDATES = (
     ),
 )
 
+TUTORIAL_PROTO_UPDATES = (
+    (
+        "initialize_tutorial",
+        "void __thiscall initialize_tutorial(cRTutorial* tutorial)",
+    ),
+    (
+        "uninit_tutorial",
+        "void __thiscall uninit_tutorial(cRTutorial* tutorial)",
+    ),
+    (
+        "update_tutorial",
+        "void __thiscall update_tutorial(cRTutorial* tutorial)",
+    ),
+)
+
 TRACK_NORMALIZATION_VOID_PROTO_UPDATES = (
     (
         "merge_track_tile_runs",
@@ -4429,18 +4535,7 @@ PROTO_UPDATES = (
         "initialize_subgoldy_resurrect",
         "void __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
     ),
-    (
-        "initialize_tutorial",
-        "void __thiscall initialize_tutorial(Tutorial* tutorial)",
-    ),
-    (
-        "uninit_tutorial",
-        "void __thiscall uninit_tutorial(Tutorial* tutorial)",
-    ),
-    (
-        "update_tutorial",
-        "void __thiscall update_tutorial(Tutorial* tutorial)",
-    ),
+    *TUTORIAL_PROTO_UPDATES,
     (
         "initialize_invincible_shell",
         "void __thiscall initialize_invincible_shell(Invincible* invincible)",
@@ -4632,7 +4727,7 @@ SUBGAME_BACKPOINTER_STRUCT_UPDATES = (
     ("TrackHealthPickup", (("0x44", "owner_game", "cRSubGame*"),)),
     ("TrackJetpackPickup", (("0x44", "owner_game", "cRSubGame*"),)),
     ("TrackSpeedupRuntime", (("0x8c", "owner_game", "cRSubGame*"),)),
-    ("Tutorial", (("0x0c", "game", "cRSubGame*"),)),
+    ("cRTutorial", (("0x0c", "game", "cRSubGame*"),)),
     ("Parcel", (("0x3c", "owner_subgame", "cRSubGame*"),)),
     ("JetPack", (("0x44", "owner_game", "cRSubGame*"),)),
     ("Banner", (("0x48", "owner_game", "cRSubGame*"),)),
@@ -5197,6 +5292,11 @@ def parse_args() -> argparse.Namespace:
         "--tip-only",
         action="store_true",
         help="Replay only the exact cRTip/cRTipManager owner graph and lifecycle ABIs.",
+    )
+    focused_group.add_argument(
+        "--tutorial-only",
+        action="store_true",
+        help="Replay only the exact cRTutorial owner, embed, and lifecycle ABIs.",
     )
     focused_group.add_argument(
         "--track-cache-only",
@@ -6106,6 +6206,42 @@ def main() -> int:
             operations=operations,
         )
 
+    if args.tutorial_only:
+        operations.extend(
+            ensure_tutorial_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.append(verify_tutorial_owner_size(target=args.target))
+        operations.extend(
+            apply_struct_and_proto_updates(
+                REPO_ROOT,
+                target=args.target,
+                struct_updates=(
+                    ("cRTutorial", CR_TUTORIAL_FIELD_UPDATES),
+                    (
+                        "cRSubGame",
+                        (("0xa858", "tutorial", "cRTutorial"),),
+                    ),
+                ),
+                proto_updates=TUTORIAL_PROTO_UPDATES,
+            )
+        )
+        operations.append(
+            reanalyze_functions(
+                REPO_ROOT,
+                target=args.target,
+                identifiers=TUTORIAL_REANALYSIS_FUNCTIONS,
+            )
+        )
+        return emit_summary(
+            repo_root=REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            operations=operations,
+        )
+
     if not args.golb_only:
         operations.extend(
             apply_type_renames(
@@ -6120,6 +6256,12 @@ def main() -> int:
         )
         operations.extend(
             ensure_tip_owner_types(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
+            ensure_tutorial_owner_type(
                 target=args.target,
                 header_path=header_path,
             )
@@ -6159,6 +6301,7 @@ def main() -> int:
         operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(verify_fringe_owner_sizes(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
+        operations.append(verify_tutorial_owner_size(target=args.target))
         operations.append(
             ensure_path_analysis_views(
                 target=args.target,
@@ -6297,7 +6440,7 @@ def main() -> int:
                 ("cRTipData", TIP_DATA_FIELD_UPDATES),
                 ("cRTip", TIP_FIELD_UPDATES),
                 ("cRTipManager", TIP_MANAGER_FIELD_UPDATES),
-                ("Tutorial", TUTORIAL_FIELD_UPDATES),
+                ("cRTutorial", CR_TUTORIAL_FIELD_UPDATES),
                 ("Player", PLAYER_FIELD_UPDATES),
                 (
                     "PresentationWobbleController",
@@ -6315,6 +6458,13 @@ def main() -> int:
                 ),
             ),
             proto_updates=CORE_SUBGAME_PROTO_UPDATES,
+        )
+    )
+    operations.append(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=TUTORIAL_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

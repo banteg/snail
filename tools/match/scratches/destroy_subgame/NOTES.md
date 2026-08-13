@@ -10,7 +10,7 @@ Recovered behavior:
 - emits the stripped `"-SubGame::UnInit()\n"` debug report and marks the
   frontend/subgame bridge dirty byte at `app+0x4f26c`;
 - if the level mode is tutorial (`7`), calls
-  `Tutorial::uninit_tutorial()` at `game+0xa858`;
+  `cRTutorial::UnInit()` at `game+0xa858`;
 - always uninitializes the embedded player warning, the complete landscape
   manager's ten active entries, authored `TimesUp`, and the broader subgame BOD
   set through `cRSubGame::RemoveBods()`;
@@ -65,7 +65,7 @@ The adjacent tail call now resolves to the primary
 `cRSubGame::times_up.uninit_times_up()` owner. Android retains the exact
 callee as `cRTimesUp::UnInit()`; the code remains exact.
 
-Tutorial-mode teardown likewise reaches the primary embedded `Tutorial`.
+Tutorial-mode teardown likewise reaches the primary embedded `cRTutorial`.
 Android/iOS retain the exact three-instruction thunk as
 `cRTutorial::UnInit()`; the complete 0x1c owner ends at `SubTracks` with no
 wrapper padding. The teardown remains exact.
