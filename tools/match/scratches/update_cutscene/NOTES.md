@@ -251,3 +251,20 @@ the focused result remains 97.62%, 503/505 instructions, prefix 10/505, with
 all 58 masked operands clean. The final two-instruction comparison-byte spill
 remains the documented compiler-allocation frontier; none of the 84 tested
 spill, join, scope, or matrix-lifetime variants was reopened.
+
+## 2026-08-14 current structural replay
+
+Fresh diagnostics against the reopened Windows database align all 30 target
+and candidate basic blocks and the complete 0xe8-byte frame. The only native
+instructions without candidate counterparts are still the mode-0 completion
+argument's byte spill and enclosing-word reload; there is no missing state arm,
+completion call, or control-flow edge behind the 503/505 result.
+
+Android and iOS both pass the collected-parcel count and perfect-delivery
+comparison directly to `cRCompletion::Init`. The Windows source now preserves
+that authored call shape instead of introducing `delivered_count` and
+`perfect_delivery` locals. VC6 emits the same 97.62% candidate with all 58
+references clean, so this is a tradeoff-free source recovery independent of
+the historical experiment count. Four mutation plans anchored to those retired
+synthetic locals were removed; their measured results remain in the historical
+ledger, but the runnable plan set now describes the current source.
