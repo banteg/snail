@@ -764,9 +764,12 @@ typedef struct TextureRef {
 } TextureRef;
 
 /* Authored empty cRProgressBar at Player +0x3f0. */
-typedef struct ProgressBar {
+typedef struct cRProgressBar {
     uint8_t _empty;
-} ProgressBar;
+} cRProgressBar;
+
+typedef char cRProgressBar_must_be_0x1[
+    (sizeof(cRProgressBar) == 0x1) ? 1 : -1];
 
 typedef enum WarningState {
     WARNING_STATE_INACTIVE = 0,
@@ -2556,7 +2559,7 @@ typedef struct Player {
     int32_t player_slot;
     cRPathFollowGoldy follow_state;
     cRDamageGuage damage_gauge;
-    ProgressBar progress_bar;
+    cRProgressBar progress_bar;
     uint8_t _pad_3f1[0x3];
     cRWarning warning;
     int32_t lives;
@@ -3010,7 +3013,7 @@ void __thiscall update_snail_presentation(Snail* snail);
 void __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall initialize_cutscene_ai(CutScene* cutscene);
 void __thiscall update_cutscene(CutScene* cutscene);
-void __thiscall update_progress_bar(ProgressBar* progress_bar);
+void __thiscall update_progress_bar(cRProgressBar* progress_bar);
 void __thiscall initialize_damage_gauge(cRDamageGuage* damage_guage);
 void __thiscall update_damage_gauge(cRDamageGuage* damage_guage);
 void __thiscall apply_damage_gauge_delta(

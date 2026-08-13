@@ -13,11 +13,11 @@ frame-loop virtual `RuntimeCallback::update()` rows and removes the
 `RuntimeCallback` ABI-conflict group from `snail match types --paths`.
 
 2026-07-11 receiver-typed lifecycle recovery: the calls at 0x437f6c and
-0x43ae48 pass the empty `ProgressBar` embedded at cRSubGame +0x3bbb54 /
+0x43ae48 pass the empty `cRProgressBar` embedded at cRSubGame +0x3bbb54 /
 Player +0x3f0. Android independently calls the one-instruction
 `cRProgressBar::Init()` from `cRSubGame::StartLevel()` and
 `cRSubGoldy::Init()`. These Windows callsites are now spelled through
-`ProgressBar::noop_runtime_ai()` while the stable shared function identifier
+`cRProgressBar::noop_runtime_ai()` while the stable shared function identifier
 remains unchanged for unrelated folded no-op owners. The body stays exact at
 1/1 instruction.
 
@@ -35,7 +35,7 @@ four constructor stores, one for each of Snail's three weapon channels plus its
 jetpack Weapon. Android and iOS independently preserve empty
 `cRWeapon::AI()` bodies. The crosswalk therefore records cRWeapon as one exact
 authored owner of this folded address without collapsing the other proven
-ProgressBar and SubGoldy identities into it. The scratch remains exact at 1/1.
+cRProgressBar and cRSubGoldy identities into it. The scratch remains exact at 1/1.
 
 2026-07-27 audio-owner recovery: the frame loop passes
 `g_audio_backend @ 0x753c58` in `ECX` to this same folded one-byte body. iOS

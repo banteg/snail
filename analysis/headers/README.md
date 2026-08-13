@@ -98,6 +98,14 @@ Current checked-in example:
     equivalence, verifies the canonical 0x2c-byte `cRDamageGuage` and its
     `Player +0x3c4` embed, then replays the authored `Init`, `AI`, and
     `Take(float, bool)` receivers. The shipped `Guage` spelling is preserved.
+- `progress_bar_types.h`
+- `uv run python tools/binja/sync_progress_bar_types.py`
+- `uv run python tools/ida/sync_progress_bar_types.py`
+  - Retires the generic analysis-only `ProgressBar` record after exact layout
+    equivalence, verifies the authored one-byte `cRProgressBar` and its
+    `Player +0x3f0` embed, then replays the exact `AI` receiver. The folded
+    no-op at `0x407b50` remains polymorphic rather than acquiring a speculative
+    owner.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`

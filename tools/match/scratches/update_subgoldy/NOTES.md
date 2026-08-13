@@ -186,7 +186,7 @@ scratch additionally pins:
 ## Struct facts (player block)
 
 Exact embedded children now used here are `cRNuke` +0x150,
-`PlayerRowEventState` +0x1e8, `cRDamageGuage` +0x3c4, empty `ProgressBar`
+`PlayerRowEventState` +0x1e8, `cRDamageGuage` +0x3c4, empty `cRProgressBar`
 +0x3f0, `cRWarning` +0x3f4, `Snail` presentation +0x2984, and `Squidge`
 +0x4344. Damage-gauge state is the first field and skin_hold_ticks is +0x18.
 The presentation owns

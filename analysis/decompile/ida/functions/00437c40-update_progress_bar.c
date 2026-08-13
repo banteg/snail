@@ -3,7 +3,7 @@
 /* selector: update_progress_bar */
 
 // Exact `cRProgressBar::AI()` method for the empty authored class at Player +0x3f0. It ignores `this`, derives track progress from the containing Goldy's z position and cRSubGame row bounds, and queues the three left-column HUD quads. Android and iOS preserve the same owner role.
-void __thiscall update_progress_bar(ProgressBar *progress_bar)
+void __thiscall update_progress_bar(cRProgressBar *progress_bar)
 {
   double st6_1; // st6
   double v2; // st7

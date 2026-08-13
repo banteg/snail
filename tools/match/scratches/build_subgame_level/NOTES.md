@@ -331,7 +331,7 @@ operands and the one real table-shape mismatch.
 ## 2026-07-11 empty cRProgressBar owner
 
 The shared no-op call at cRSubGame +0x3bbb54 is now receiver-typed as the
-embedded `ProgressBar` at Player +0x3f0. Android `cRSubGame::StartLevel()`
+embedded `cRProgressBar` at Player +0x3f0. Android `cRSubGame::StartLevel()`
 independently calls the one-instruction `cRProgressBar::Init()` at the matching
 lifecycle point. Windows and Android AI ignore the receiver, so the owner is an
 empty one-byte C++ class followed by alignment, not a fabricated state word.

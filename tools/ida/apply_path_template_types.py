@@ -425,6 +425,34 @@ EXPECTED_DAMAGE_GUAGE_PLAYER_EMBED = {
     "type": "cRDamageGuage",
 }
 
+PROGRESS_BAR_OWNER_MARKERS = (
+    "typedef struct cRProgressBar {",
+    "} cRProgressBar;",
+    "cRProgressBar_must_be_0x1",
+    "cRProgressBar progress_bar;",
+    "void __thiscall update_progress_bar(cRProgressBar* progress_bar);",
+)
+
+PROGRESS_BAR_OWNER_SIZES = {
+    "cRProgressBar": 0x01,
+}
+
+PROGRESS_BAR_OWNER_TYPE_ALIASES = (("ProgressBar", "cRProgressBar", 0x01),)
+
+EXPECTED_PROGRESS_BAR_OWNER_LAYOUT = {
+    "size": 0x01,
+    "members": {
+        0x00: (0x01, "_empty", "uint8_t"),
+    },
+}
+
+EXPECTED_PROGRESS_BAR_PLAYER_EMBED = {
+    "offset": "0x3f0",
+    "size": 0x01,
+    "name": "progress_bar",
+    "type": "cRProgressBar",
+}
+
 WARNING_OWNER_MARKERS = (
     "typedef struct cRWarning {",
     "} cRWarning;",
@@ -622,6 +650,7 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x437270,  # normalize_segment_glyph_for_track_flags
     0x4374B0,  # initialize_subgame
     0x437B10,  # reset_subgame
+    0x437C40,  # update_progress_bar
     0x437DE0,  # rebuild_track_runtime_from_segments
     0x437E80,  # calc_slider_to_rate
     0x437EB0,  # build_subgame_level
@@ -3129,7 +3158,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_progress_bar",
-        "void __thiscall update_progress_bar(ProgressBar* progress_bar);",
+        "void __thiscall update_progress_bar(cRProgressBar* progress_bar);",
     ),
     (
         "initialize_warning",
@@ -5070,6 +5099,64 @@ def _damage_guage_owner_layout_readback() -> dict[str, object]:
     }
 
 
+def _progress_bar_owner_layout_readback() -> dict[str, object]:
+    """Verify the canonical empty cRProgressBar owner and Player embed."""
+    type_name = "cRProgressBar"
+    expected = EXPECTED_PROGRESS_BAR_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "progress_bar",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "progress_bar",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    player_embed = _named_struct_member_readback("Player", 0x3F0)
+    if player_embed != EXPECTED_PROGRESS_BAR_PLAYER_EMBED:
+        failures.append(
+            {
+                "selector": "Player.progress_bar",
+                "owner_group": "progress_bar",
+                "reason": "embedded_owner_mismatch",
+                "expected": EXPECTED_PROGRESS_BAR_PLAYER_EMBED,
+                "observed": player_embed,
+            }
+        )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "player_embed": player_embed,
+        "failures": failures,
+    }
+
+
 def _warning_owner_layout_readback() -> dict[str, object]:
     """Verify the complete canonical cRWarning owner and Player embed."""
     type_name = "cRWarning"
@@ -5512,6 +5599,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in DAMAGE_GUAGE_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_progress_bar_owner_markers = [
+        marker
+        for marker in PROGRESS_BAR_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_warning_owner_markers = [
         marker
         for marker in WARNING_OWNER_MARKERS
@@ -5561,6 +5653,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_fringe_owner_markers
         or missing_nuke_owner_markers
         or missing_damage_guage_owner_markers
+        or missing_progress_bar_owner_markers
         or missing_warning_owner_markers
         or missing_tip_owner_markers
         or missing_tutorial_owner_markers
@@ -5596,6 +5689,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if missing_damage_guage_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_damage_guage_owner_header"}
+            )
+        if missing_progress_bar_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_progress_bar_owner_header"}
             )
         if missing_warning_owner_markers:
             marker_failures.append(
@@ -5647,6 +5744,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "missing_nuke_owner_markers": missing_nuke_owner_markers,
                     "missing_damage_guage_owner_markers": (
                         missing_damage_guage_owner_markers
+                    ),
+                    "missing_progress_bar_owner_markers": (
+                        missing_progress_bar_owner_markers
                     ),
                     "missing_warning_owner_markers": (
                         missing_warning_owner_markers
@@ -5721,6 +5821,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in damage_guage_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    progress_bar_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(PROGRESS_BAR_OWNER_TYPE_ALIASES)
+    )
+    progress_bar_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "progress_bar",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in progress_bar_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     warning_owner_type_alias_migrations = (
@@ -5821,6 +5936,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         }
         if parse_errors or damage_guage_owner_type_alias_failures
         else _damage_guage_owner_layout_readback()
+    )
+    progress_bar_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in PROGRESS_BAR_OWNER_SIZES
+    }
+    progress_bar_owner_layout_readback = (
+        {
+            "type": "cRProgressBar",
+            "size": None,
+            "members": {},
+            "player_embed": None,
+            "failures": [],
+        }
+        if parse_errors or progress_bar_owner_type_alias_failures
+        else _progress_bar_owner_layout_readback()
     )
     warning_owner_sizes = {
         name: _named_struct_size(name)
@@ -5982,6 +6112,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in DAMAGE_GUAGE_OWNER_SIZES.items()
         if damage_guage_owner_sizes[name] != expected_size
     ]
+    progress_bar_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "progress_bar",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": progress_bar_owner_sizes[name],
+        }
+        for name, expected_size in PROGRESS_BAR_OWNER_SIZES.items()
+        if progress_bar_owner_sizes[name] != expected_size
+    ]
     warning_owner_size_failures = [
         {
             "selector": name,
@@ -6037,6 +6178,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + nuke_owner_layout_readback["failures"]
         + damage_guage_owner_size_failures
         + damage_guage_owner_layout_readback["failures"]
+        + progress_bar_owner_size_failures
+        + progress_bar_owner_layout_readback["failures"]
         + warning_owner_size_failures
         + warning_owner_layout_readback["failures"]
         + tip_owner_size_failures
@@ -6161,6 +6304,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or fringe_owner_type_alias_failures
         or nuke_owner_type_alias_failures
         or damage_guage_owner_type_alias_failures
+        or progress_bar_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
         or tutorial_owner_type_alias_failures
@@ -6180,6 +6324,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "damage_guage_owner_type_alias_migrations": (
                         damage_guage_owner_type_alias_migrations
+                    ),
+                    "progress_bar_owner_type_alias_migrations": (
+                        progress_bar_owner_type_alias_migrations
                     ),
                     "warning_owner_type_alias_migrations": (
                         warning_owner_type_alias_migrations
@@ -6201,6 +6348,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "damage_guage_owner_sizes": damage_guage_owner_sizes,
                     "damage_guage_owner_layout_readback": (
                         damage_guage_owner_layout_readback
+                    ),
+                    "progress_bar_owner_sizes": progress_bar_owner_sizes,
+                    "progress_bar_owner_layout_readback": (
+                        progress_bar_owner_layout_readback
                     ),
                     "warning_owner_sizes": warning_owner_sizes,
                     "warning_owner_layout_readback": (
@@ -6226,6 +6377,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         fringe_owner_type_alias_failures
                         + nuke_owner_type_alias_failures
                         + damage_guage_owner_type_alias_failures
+                        + progress_bar_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
                         + tutorial_owner_type_alias_failures
@@ -6951,6 +7103,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "damage_guage_owner_type_alias_migrations": (
                     damage_guage_owner_type_alias_migrations
                 ),
+                "progress_bar_owner_type_alias_migrations": (
+                    progress_bar_owner_type_alias_migrations
+                ),
                 "warning_owner_type_alias_migrations": (
                     warning_owner_type_alias_migrations
                 ),
@@ -6971,6 +7126,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "damage_guage_owner_sizes": damage_guage_owner_sizes,
                 "damage_guage_owner_layout_readback": (
                     damage_guage_owner_layout_readback
+                ),
+                "progress_bar_owner_sizes": progress_bar_owner_sizes,
+                "progress_bar_owner_layout_readback": (
+                    progress_bar_owner_layout_readback
                 ),
                 "warning_owner_sizes": warning_owner_sizes,
                 "warning_owner_layout_readback": warning_owner_layout_readback,

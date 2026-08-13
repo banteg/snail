@@ -14651,6 +14651,73 @@ def test_damage_guage_replay_keeps_exact_owner_and_three_member_abis() -> None:
     assert take_scratch.count("state != DAMAGE_GUAGE_STATE_DRAINING") == 2
 
 
+def test_progress_bar_replay_keeps_exact_empty_owner_and_ai_abi() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_progress_bar_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_focused_sync = (IDA_DIR / "apply_progress_bar_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_progress_bar_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_header = (HEADER_DIR / "progress_bar_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (
+        repo_root / "tools/match/include/progress_bar.h"
+    ).read_text(encoding="utf-8")
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    prototype = "void __thiscall update_progress_bar(cRProgressBar* progress_bar)"
+    for source in (binja_sync, ida_focused_sync, path_binja_sync, path_ida_sync):
+        assert prototype in source
+
+    assert '"cRProgressBar": 0x01' in binja_sync
+    assert 'OWNER_TYPE_RENAMES = (("ProgressBar", "cRProgressBar"),)' in binja_sync
+    assert '("cRProgressBar", PROGRESS_BAR_FIELD_UPDATES)' in binja_sync
+    assert '("0x3f0", "progress_bar", "cRProgressBar")' in binja_sync
+    for header in (focused_header, path_header):
+        assert "typedef struct cRProgressBar {" in header
+        assert "typedef struct ProgressBar {" not in header
+        assert "uint8_t _empty;" in header
+        assert "cRProgressBar_must_be_0x1" in header
+    assert "cRProgressBar progress_bar;" in path_header
+    assert f"{prototype};" in path_header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRProgressBar": 0x01,' in ida_focused_sync
+    assert '("ProgressBar", "cRProgressBar", 0x01)' in ida_focused_sync
+    assert "EXPECTED_OWNER_LAYOUT" in ida_focused_sync
+    assert "EXPECTED_PLAYER_EMBED" in ida_focused_sync
+    assert "owner_layout_readback" in ida_focused_sync
+    assert "PROGRESS_BAR_OWNER_TYPE_RENAMES" in path_binja_sync
+    assert "ensure_progress_bar_owner_type" in path_binja_sync
+    assert "PROGRESS_BAR_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert "progress_bar_owner_layout_readback" in path_ida_sync
+    assert "class cRProgressBar" in matcher_header
+    assert "typedef cRProgressBar ProgressBar;" in matcher_header
+    assert "?AI@cRProgressBar@@QAEXXZ" in (
+        repo_root / "tools/match/scratches/update_progress_bar/NOTES.md"
+    ).read_text(encoding="utf-8")
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/progress_bar_types.h"'
+        in ida_runner
+    )
+    assert "update_progress_bar(cRProgressBar *progress_bar)" in health_checks
+    assert "noop_runtime_ai(cRProgressBar" not in health_checks
+
+
 def test_click_start_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

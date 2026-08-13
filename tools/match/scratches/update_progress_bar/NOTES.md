@@ -23,7 +23,7 @@ mismatched operands.
 
 Source-shape notes:
 
-- `update_progress_bar` is kept as a `ProgressBar` member, matching the
+- `update_progress_bar` is kept as a `cRProgressBar` member, matching the
   callsite shape from `update_subgoldy`; the callee does not read `this`.
 - `g_game` must be declared non-volatile here. The volatile declaration was
   otherwise semantic-equivalent but caused VC6 to reserve stack locals before
@@ -33,7 +33,7 @@ Source-shape notes:
   owners now express the same offsets without that synthetic view.
 
 2026-06-20 type consolidation: `ProgressBar` now lives in
-`include/progress_bar.h` as the one-word player subobject used at
+`include/progress_bar.h` as the one-byte player subobject used at
 `Player +0x3f0`. Focused rerun remains exact at 100.00%, 110/110
 instructions, with 19 masked operands OK. The `update_subgoldy` callsite uses
 the shared header and keeps its existing 72.51% residual profile.
@@ -43,7 +43,7 @@ the shared header and keeps its existing 72.51% residual profile.
 remains exact at `100.00%`, `110/110` instructions, with `19` clean masked
 operands.
 
-2026-07-11 ownership closure: `Player` now owns the embedded `ProgressBar` at
+2026-07-11 ownership closure: `Player` now owns the embedded `cRProgressBar` at
 `+0x3f0`, while this updater reads inherited `Player::transform.position.z` and the enclosing
 `cRSubGame::first_block_row_count/completion_row_start` directly through
 `GameRoot`. The synthetic root view and active-row window are removed. Focused
@@ -76,3 +76,15 @@ one-byte child at `cRSubGoldy + 0x3f0`; Android and iOS independently retain the
 same symbol and method body. The unrelated shared no-op at `0x407b50` remains
 polymorphic rather than acquiring a speculative single owner. Matching stays
 exact at 110/110 with all 19 operands clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+The earlier broad replay preserved the correct one-byte layout and method ABI,
+but left the analysis-only primary named `ProgressBar` even after the matcher
+had promoted the authored `cRProgressBar` identity. A paired focused replay now
+retires that generic record in Binary Ninja and IDA only after exact layout
+equivalence, verifies the `Player +0x3f0` embed, and applies
+`void __thiscall update_progress_bar(cRProgressBar*)`. The shared folded no-op
+at `0x407b50` remains unowned, because its unrelated callers make a single
+receiver type dishonest. The broad replays remain clean and focused Wibo stays
+exact at 110/110 instructions with all 19 operands clean.

@@ -100,6 +100,19 @@ DAMAGE_GUAGE_REANALYSIS_FUNCTIONS = (
     "calc_subgame_rate",
 )
 
+PROGRESS_BAR_OWNER_SIZES = {
+    "cRProgressBar": 0x01,
+}
+
+PROGRESS_BAR_OWNER_TYPE_RENAMES = (("ProgressBar", "cRProgressBar"),)
+
+PROGRESS_BAR_REANALYSIS_FUNCTIONS = (
+    "update_progress_bar",
+    "update_subgoldy",
+    "build_subgame_level",
+    "initialize_subgoldy",
+)
+
 WARNING_OWNER_SIZES = {
     "cRWarning": 0x10,
 }
@@ -639,7 +652,7 @@ REQUIRED_HEADER_STRUCTS = (
     "cRPathFollowGoldy",
     "DamageGuageState",
     "cRDamageGuage",
-    "ProgressBar",
+    "cRProgressBar",
     "WarningState",
     "cRWarning",
     "SubPause",
@@ -928,6 +941,82 @@ def ensure_damage_guage_owner_type(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in DAMAGE_GUAGE_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_progress_bar_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRProgressBar AI ABI."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=PROGRESS_BAR_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in PROGRESS_BAR_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRProgressBar owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "progress_bar",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_progress_bar_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire ProgressBar only when its canonical empty owner is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=PROGRESS_BAR_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=PROGRESS_BAR_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in PROGRESS_BAR_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=PROGRESS_BAR_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: PROGRESS_BAR_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRProgressBar owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": PROGRESS_BAR_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in PROGRESS_BAR_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -1371,7 +1460,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x380", "player_slot", "int32_t"),
     ("0x384", "follow_state", "cRPathFollowGoldy"),
     ("0x3c4", "damage_gauge", "cRDamageGuage"),
-    ("0x3f0", "progress_bar", "ProgressBar"),
+    ("0x3f0", "progress_bar", "cRProgressBar"),
     ("0x3f4", "warning", "cRWarning"),
     ("0x404", "lives", "int32_t"),
     ("0x408", "game", "cRSubGame*"),
@@ -3380,6 +3469,10 @@ DAMAGE_GUAGE_FIELD_UPDATES = (
     ("0x28", "hit_flash_step", "float"),
 )
 
+PROGRESS_BAR_FIELD_UPDATES = (
+    ("0x00", "_empty", "uint8_t"),
+)
+
 NUKE_FIELD_UPDATES = (
     ("0x00", "state", "NukeState"),
 )
@@ -4680,7 +4773,7 @@ PROTO_UPDATES = (
     ),
     (
         "update_progress_bar",
-        "void __thiscall update_progress_bar(ProgressBar* progress_bar)",
+        "void __thiscall update_progress_bar(cRProgressBar* progress_bar)",
     ),
     (
         "initialize_cameraman",
@@ -6532,6 +6625,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_progress_bar_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_warning_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -6585,6 +6684,7 @@ def main() -> int:
         operations.append(verify_fringe_owner_sizes(target=args.target))
         operations.append(verify_nuke_owner_size(target=args.target))
         operations.append(verify_damage_guage_owner_size(target=args.target))
+        operations.append(verify_progress_bar_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(verify_tutorial_owner_size(target=args.target))
@@ -6704,6 +6804,7 @@ def main() -> int:
                 ("Banner", BANNER_FIELD_UPDATES),
                 ("cRWarning", WARNING_FIELD_UPDATES),
                 ("cRDamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
+                ("cRProgressBar", PROGRESS_BAR_FIELD_UPDATES),
                 ("cRNuke", NUKE_FIELD_UPDATES),
                 ("ClickStart", CLICK_START_FIELD_UPDATES),
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
@@ -6758,6 +6859,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=DAMAGE_GUAGE_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=PROGRESS_BAR_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

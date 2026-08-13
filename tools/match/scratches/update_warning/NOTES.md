@@ -63,7 +63,7 @@ not durable original-looking source.
 
 2026-07-11 ownership closure: the synthetic pause-only root view is removed;
 the gate is `GameRoot::subgame.subgame_pause_gate`. The shared `Player` and
-checked-in analysis types now also own the adjacent `ProgressBar`, `Warning`, and
+checked-in analysis types now also own the adjacent `cRProgressBar`, `cRWarning`, and
 lives fields at `+0x3f0/+0x3f4/+0x404`. Focused Wibo remains 98.08%, 52/52
 instructions, prefix 8/52, and seven clean masked operands; the honest
 `sub`/`cmp` residual is unchanged.

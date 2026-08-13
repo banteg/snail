@@ -429,7 +429,7 @@
       "name": "ida_progress_bar_empty_owner_and_root_inputs",
       "artifact": "analysis/decompile/ida/functions/00437c40-update_progress_bar.c",
       "required_substrings": [
-        "void __thiscall update_progress_bar(ProgressBar *progress_bar)",
+        "void __thiscall update_progress_bar(cRProgressBar *progress_bar)",
         "g_game_base->subgame.player.body.transform.position.z",
         "g_game_base->subgame.first_block_row_count",
         "g_game_base->subgame.completion_row_start",
@@ -439,6 +439,7 @@
         "queue_axis_aligned_textured_quad_uv(156"
       ],
       "forbidden_substrings": [
+        "void __thiscall update_progress_bar(ProgressBar *progress_bar)",
         "void sub_437C40()",
         "MEMORY[0x4DF904]",
         "*((float *)MEMORY",
