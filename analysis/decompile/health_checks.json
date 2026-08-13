@@ -7645,7 +7645,7 @@
       "name": "ida_snail_skin_change_owner",
       "artifact": "analysis/decompile/ida/functions/00445fd0-change_snail_skin.c",
       "required_substrings": [
-        "void __thiscall change_snail_skin(SnailSkin *snail_skin, int32_t slot_id, float duration_seconds)",
+        "void __thiscall change_snail_skin(cRSnailSkin *snail_skin, int32_t slot_id, float duration_seconds)",
         "snail_skin->active = 1;",
         "snail_skin->progress = 0.0;",
         "snail_skin->selected_slot = slot_id;",
@@ -7653,6 +7653,7 @@
       ],
       "forbidden_substrings": [
         "SnailSkinTransitionState",
+        "change_snail_skin(SnailSkin *snail_skin",
         "state->",
         "sub_445FD0",
         "MEMORY["
@@ -22180,7 +22181,7 @@
       "name": "ida_snail_skin_initialize_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00445f60-initialize_snail_skin.c",
       "required_substrings": [
-        "void __thiscall initialize_snail_skin(SnailSkin *snail_skin)",
+        "void __thiscall initialize_snail_skin(cRSnailSkin *snail_skin)",
         "v1 = g_game_base;",
         "snail_skin->selected_slot = 0;",
         "snail_skin->active = 0;",
@@ -22188,6 +22189,7 @@
       ],
       "forbidden_substrings": [
         "SnailSkinTransitionState",
+        "initialize_snail_skin(SnailSkin *snail_skin)",
         "owner_render_state",
         "MEMORY[",
         "sub_445F60"
@@ -22216,7 +22218,7 @@
       "name": "ida_snail_skin_update_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00445f80-update_snail_skin_transition.c",
       "required_substrings": [
-        "void __thiscall update_snail_skin_transition(SnailSkin *snail_skin)",
+        "void __thiscall update_snail_skin_transition(cRSnailSkin *snail_skin)",
         "snail_skin->owner_snail->body.bod.object->flags |= 8u;",
         "snail_skin->owner_snail->body.bod.object->override_texture_ref = snail_skin->material_overrides[snail_skin->selected_slot];",
         "snail_skin->progress_step + snail_skin->progress",
@@ -22224,6 +22226,7 @@
       ],
       "forbidden_substrings": [
         "SnailSkinTransitionState",
+        "update_snail_skin_transition(SnailSkin *snail_skin)",
         "owner_render_state",
         "slot_ids",
         "*(_DWORD *)",

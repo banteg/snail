@@ -4400,7 +4400,7 @@
       "aliases": [
         "cRSnailSkin_Init"
       ],
-      "description": "Exact Windows `SnailSkin::initialize_snail_skin`, authored as `cRSnailSkin::Init`: clears the 0x20-byte child state and stores its borrowed `Snail*` parent backlink. iOS v1.9 exposes that parent explicitly as `cRSnailSkin::Init(cRSnail*)`; Android retains the no-argument member."
+      "description": "Exact Windows `cRSnailSkin::Init()` (`initialize_snail_skin`): clears the 0x20-byte child state and stores its borrowed `Snail*` parent backlink. iOS v1.9 exposes that parent explicitly as `cRSnailSkin::Init(cRSnail*)`; Android retains the no-argument member."
     },
     {
       "address": "0x445f80",
@@ -4408,7 +4408,7 @@
       "aliases": [
         "cRSnailSkin_AI"
       ],
-      "description": "Exact Windows `SnailSkin::update_snail_skin_transition`, authored as `cRSnailSkin::AI`: follows the borrowed Snail backlink, marks its linked Object dirty, installs the selected TextureRef override, and advances the timed reset state."
+      "description": "Exact Windows `cRSnailSkin::AI()` (`update_snail_skin_transition`): follows the borrowed Snail backlink, marks its linked Object dirty, installs the selected TextureRef override, and advances the timed reset state."
     },
     {
       "address": "0x445fd0",
@@ -4416,7 +4416,7 @@
       "aliases": [
         "cRSnailSkin_Change"
       ],
-      "description": "Exact Windows `SnailSkin::change_snail_skin`, authored as `cRSnailSkin::Change(int, float)`: selects a material slot and either applies it immediately or derives the 60 Hz transition step from the requested duration."
+      "description": "Exact Windows `cRSnailSkin::Change(int, float)` (`change_snail_skin`): selects a material slot and either applies it immediately or derives the 60 Hz transition step from the requested duration."
     },
     {
       "address": "0x446020",

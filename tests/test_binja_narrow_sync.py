@@ -1087,9 +1087,9 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             "void __thiscall initialize_invincible_shell(Invincible* invincible)",
             "void __thiscall start_invincible_shell(Invincible* invincible)",
             "void __thiscall update_invincible_shell(Invincible* invincible)",
-            "void __thiscall initialize_snail_skin(SnailSkin* snail_skin)",
-            "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin)",
-            "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
+            "void __thiscall initialize_snail_skin(cRSnailSkin* snail_skin)",
+            "void __thiscall update_snail_skin_transition(cRSnailSkin* snail_skin)",
+            "void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
         ):
             assert declaration in source
         for declaration in (
@@ -1113,7 +1113,7 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             ('"SubHover"', "0x214"),
             ('"Weapon"', "0x3DC"),
             ('"Invincible"', "0x98"),
-            ('"SnailSkin"', "0x20"),
+            ('"cRSnailSkin"', "0x20"),
             ('"Snail"', "0x19B4"),
             ('"Player"', "0x4364"),
         ):
@@ -14812,6 +14812,108 @@ def test_squidge_replay_keeps_authored_owner_layout_and_method_abis() -> None:
         "start_squidge_y(cRSquidge *squidge, float value)",
         "start_squidge_z(cRSquidge *squidge, float value)",
         "update_squidge(cRSquidge *squidge)",
+    ):
+        assert selector in health_checks
+
+
+def test_snail_skin_replay_keeps_authored_owner_layout_and_method_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_snail_skin_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_focused_sync = (IDA_DIR / "apply_snail_skin_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_snail_skin_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    presentation_binja_sync = (
+        BINJA_DIR / "sync_snail_presentation_types.py"
+    ).read_text(encoding="utf-8")
+    presentation_ida_sync = (
+        IDA_DIR / "apply_snail_presentation_types.py"
+    ).read_text(encoding="utf-8")
+    focused_header = (HEADER_DIR / "snail_skin_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/snail_skin.h").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    prototypes = (
+        "void __thiscall initialize_snail_skin(cRSnailSkin* snail_skin)",
+        "void __thiscall update_snail_skin_transition(cRSnailSkin* snail_skin)",
+        "void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
+    )
+    for prototype in prototypes:
+        for source in (
+            binja_sync,
+            ida_focused_sync,
+            path_binja_sync,
+            path_ida_sync,
+            presentation_binja_sync,
+            presentation_ida_sync,
+        ):
+            assert prototype in source
+
+    assert '"cRSnailSkin": 0x20' in binja_sync
+    assert 'OWNER_TYPE_RENAMES = (("SnailSkin", "cRSnailSkin"),)' in binja_sync
+    assert '("cRSnailSkin", SNAIL_SKIN_FIELD_UPDATES)' in binja_sync
+    assert '("0x1938", "snail_skin", "cRSnailSkin")' in binja_sync
+    for header in (focused_header, path_header):
+        assert "typedef struct cRSnailSkin {" in header
+        assert "typedef struct SnailSkin {" not in header
+        assert "material_overrides[3]" in header
+        assert "owner_snail" in header
+        assert "cRSnailSkin_must_be_0x20" in header
+    assert "cRSnailSkin snail_skin;" in path_header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRSnailSkin": 0x20,' in ida_focused_sync
+    assert '("SnailSkin", "cRSnailSkin", 0x20)' in ida_focused_sync
+    assert "EXPECTED_OWNER_LAYOUT" in ida_focused_sync
+    assert "EXPECTED_SNAIL_EMBED" in ida_focused_sync
+    assert "owner_layout_readback" in ida_focused_sync
+    assert "SNAIL_SKIN_OWNER_TYPE_RENAMES" in path_binja_sync
+    assert "ensure_snail_skin_owner_type" in path_binja_sync
+    assert "SNAIL_SKIN_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert "snail_skin_owner_layout_readback" in path_ida_sync
+    assert "class cRSnailSkin" in matcher_header
+    assert "typedef cRSnailSkin SnailSkin;" in matcher_header
+    notes_text = "\n".join(
+        (repo_root / f"tools/match/scratches/{scratch}/NOTES.md").read_text(
+            encoding="utf-8"
+        )
+        for scratch in (
+            "initialize_snail_skin",
+            "update_snail_skin_transition",
+            "change_snail_skin",
+        )
+    )
+    for symbol in (
+        "?Init@cRSnailSkin@@QAEXXZ",
+        "?AI@cRSnailSkin@@QAEXXZ",
+        "?Change@cRSnailSkin@@QAEXHM@Z",
+    ):
+        assert symbol in notes_text
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/snail_skin_types.h"'
+        in ida_runner
+    )
+    for selector in (
+        "initialize_snail_skin(cRSnailSkin *snail_skin)",
+        "update_snail_skin_transition(cRSnailSkin *snail_skin)",
+        "change_snail_skin(cRSnailSkin *snail_skin, int32_t slot_id, float duration_seconds)",
     ):
         assert selector in health_checks
 

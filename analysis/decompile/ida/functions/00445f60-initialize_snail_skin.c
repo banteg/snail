@@ -2,8 +2,8 @@
 /* function: initialize_snail_skin @ 0x445f60 */
 /* selector: initialize_snail_skin */
 
-// Exact Windows `SnailSkin::initialize_snail_skin`, authored as `cRSnailSkin::Init`: clears the 0x20-byte child state and stores its borrowed `Snail*` parent backlink. iOS v1.9 exposes that parent explicitly as `cRSnailSkin::Init(cRSnail*)`; Android retains the no-argument member.
-void __thiscall initialize_snail_skin(SnailSkin *snail_skin)
+// Exact Windows `cRSnailSkin::Init()` (`initialize_snail_skin`): clears the 0x20-byte child state and stores its borrowed `Snail*` parent backlink. iOS v1.9 exposes that parent explicitly as `cRSnailSkin::Init(cRSnail*)`; Android retains the no-argument member.
+void __thiscall initialize_snail_skin(cRSnailSkin *snail_skin)
 {
   GameRoot *v1; // eax
 

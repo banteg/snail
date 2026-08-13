@@ -2,7 +2,7 @@
 /* function: update_invincible_shell @ 0x444b50 */
 /* selector: update_invincible_shell */
 
-// Authored `cRInvincible::AI()`: fades the embedded shell visual in while the invincible movement bit stays active, spins it on the shared snail matrix, and fades back to the base skin once invincibility clears.
+// Authored `cRInvincible::AI()`: fades the embedded shell visual in while the owning cRSubGoldy's named invincibility capability stays active, spins it on the shared snail matrix, and fades back to the base skin once the capability clears.
 void __thiscall update_invincible_shell(Invincible *invincible)
 {
   double v2; // st7
@@ -46,7 +46,7 @@ void __thiscall update_invincible_shell(Invincible *invincible)
 LABEL_15:
         v4 = invincible->spin_phase_step + invincible->spin_phase;
         invincible->spin_phase = v4;
-        if ( !(v6 | v7) )
+        if ( (v6 | v7) == 0 )
           invincible->spin_phase = v4 - 1.0;
         change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 2, 0.0);
         set_color_white(&invincible->body.bod.color);

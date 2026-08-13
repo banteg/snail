@@ -2,8 +2,8 @@
 /* function: change_snail_skin @ 0x445fd0 */
 /* selector: change_snail_skin */
 
-// Exact Windows `SnailSkin::change_snail_skin`, authored as `cRSnailSkin::Change(int, float)`: selects a material slot and either applies it immediately or derives the 60 Hz transition step from the requested duration.
-void __thiscall change_snail_skin(SnailSkin *snail_skin, int32_t slot_id, float duration_seconds)
+// Exact Windows `cRSnailSkin::Change(int, float)` (`change_snail_skin`): selects a material slot and either applies it immediately or derives the 60 Hz transition step from the requested duration.
+void __thiscall change_snail_skin(cRSnailSkin *snail_skin, int32_t slot_id, float duration_seconds)
 {
   snail_skin->active = 1;
   snail_skin->progress = 0.0;

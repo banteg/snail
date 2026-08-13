@@ -12,6 +12,7 @@ import ida_name
 import ida_pro
 import ida_typeinf
 import idc
+from type_alias_migration import migrate_equivalent_struct_aliases
 
 
 TRUSTED_NAMES = (
@@ -103,15 +104,15 @@ TRUSTED_DECLARATIONS = (
     ),
     (
         "initialize_snail_skin",
-        "void __thiscall initialize_snail_skin(SnailSkin* snail_skin);",
+        "void __thiscall initialize_snail_skin(cRSnailSkin* snail_skin);",
     ),
     (
         "update_snail_skin_transition",
-        "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);",
+        "void __thiscall update_snail_skin_transition(cRSnailSkin* snail_skin);",
     ),
     (
         "change_snail_skin",
-        "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);",
+        "void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds);",
     ),
 )
 
@@ -139,7 +140,7 @@ REQUIRED_OWNER_MARKERS = (
     "typedef struct Weapon {",
     "Vec3 release_step;",
     "typedef struct Invincible {",
-    "typedef struct SnailSkin {",
+    "typedef struct cRSnailSkin {",
     "TextureRef* material_overrides[3];",
     "typedef struct Snail {",
     "uint8_t channel_release_steps_active;",
@@ -162,10 +163,12 @@ EXPECTED_OWNER_SIZES = {
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0x98,
-    "SnailSkin": 0x20,
+    "cRSnailSkin": 0x20,
     "Snail": 0x19B4,
     "Player": 0x4364,
 }
+
+SNAIL_SKIN_OWNER_TYPE_ALIASES = (("SnailSkin", "cRSnailSkin", 0x20),)
 
 # The authored Player root displacement numerically lands on the tracked
 # g_player_block offset symbol. Keep that evidence symbol, but render this one
@@ -521,8 +524,22 @@ def _sync_types(header_path: pathlib.Path) -> int:
         result["parse_errors"] for result in dependency_parse_results
     )
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(SNAIL_SKIN_OWNER_TYPE_ALIASES)
+    )
+    owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
-    failed = [
+    failed = owner_type_alias_failures + [
         {
             "selector": name,
             "reason": "owner_size_mismatch",
@@ -540,6 +557,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "header": str(header_path),
                     "dependency_parse_results": dependency_parse_results,
                     "parse_errors": parse_errors,
+                    "owner_type_alias_migrations": owner_type_alias_migrations,
                     "owner_sizes": owner_sizes,
                     "failed": failed,
                 },
@@ -664,6 +682,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "dependency_parse_results": dependency_parse_results,
                 "parse_errors": parse_errors,
+                "owner_type_alias_migrations": owner_type_alias_migrations,
                 "owner_sizes": owner_sizes,
                 "subhover_player_root_offset": subhover_player_root_offset,
                 "invincible_root_offsets": invincible_root_offsets,

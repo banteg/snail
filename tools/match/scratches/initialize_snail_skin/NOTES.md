@@ -46,3 +46,11 @@ child at `cRSubGoldy + 0x42bc`; the function derives and stores the root-owned
 Snail backlink itself. That confirms the no-argument Windows ABI shared by
 Android, while the explicit `cRSnail*` parameter remains an iOS-only variation.
 The promotion preserves the exact 6/6 instruction match and both clean operands.
+
+## 2026-08-13 canonical database ownership
+
+Live Binary Ninja and IDA readback found the exact 0x20-byte layout under the
+stale generic `SnailSkin` name, embedded once at `Snail +0x1938`, with no
+`cRSnailSkin` type present. The guarded replay now retires that generic ordinal
+only after full layout equivalence, verifies the canonical embed, and assigns
+this function `void __thiscall(cRSnailSkin*)`. Matching remains exact at 6/6.

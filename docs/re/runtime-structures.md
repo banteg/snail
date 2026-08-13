@@ -233,15 +233,15 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x1934`: Snail-owned animation-channel release-step gate
   - `+0x1938`: exact 0x20-byte `snail_skin` (`cRSnailSkin`)
     - `+0x00`: `selected_slot`
-    - `+0x04`: `slot_ids[3]`
+    - `+0x04`: three borrowed `TextureRef* material_overrides`
     - `+0x10`: borrowed `Snail* owner_snail` parent backlink
     - `+0x14`: `active`
     - `+0x18`: `progress`
     - `+0x1c`: `progress_step`
     - `initialize_snail_skin` seeds the parent backlink and clears the timed skin-swap state
     - `update_snail_skin_transition` follows `owner_snail->object`, raises
-      object flag `0x8`, writes the selected material index, and advances the
-      timer lanes
+      `OBJECT_FLAG_USE_OVERRIDE_TEXTURE`, installs the selected texture
+      override, and advances the timer lanes
     - raw code at `0x4428ef` confirms `update_snail_presentation` passes
       `presentation + 0x1938` directly to `update_snail_skin_transition`; there
       is no separate `weapon_release_active` byte ahead of this state

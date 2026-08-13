@@ -10,6 +10,7 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_struct_fields,
     current_type_widths,
@@ -34,7 +35,7 @@ EXPECTED_OWNER_SIZES = {
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0x98,
-    "SnailSkin": 0x20,
+    "cRSnailSkin": 0x20,
     "Snail": 0x19B4,
     "Player": 0x4364,
 }
@@ -153,15 +154,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_snail_skin",
-        "void __thiscall initialize_snail_skin(SnailSkin* snail_skin)",
+        "void __thiscall initialize_snail_skin(cRSnailSkin* snail_skin)",
     ),
     (
         "update_snail_skin_transition",
-        "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin)",
+        "void __thiscall update_snail_skin_transition(cRSnailSkin* snail_skin)",
     ),
     (
         "change_snail_skin",
-        "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
+        "void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
     ),
 )
 
@@ -245,6 +246,11 @@ def main() -> int:
         )
 
     operations: list[dict[str, object]] = [
+        *apply_type_renames(
+            REPO_ROOT,
+            target=args.target,
+            renames=(("SnailSkin", "cRSnailSkin"),),
+        ),
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,

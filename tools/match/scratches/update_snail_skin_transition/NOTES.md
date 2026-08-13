@@ -33,3 +33,11 @@ The scratch now spells the exact member as `cRSnailSkin::AI()` and exports
 `Snail + 0x1938` child immediately before the rest of Snail presentation AI;
 Android independently retains the class-qualified symbol and body. The rename
 preserves the exact 25/25 instruction match and clean relocation audit.
+
+## 2026-08-13 canonical database ownership
+
+Both live decompiler databases previously exposed this exact body through a
+generic `SnailSkin*` receiver even though the matcher and mobile evidence name
+the authored owner. The guarded alias migration now preserves the complete
+field layout and `Snail +0x1938` embedding while assigning the canonical
+`cRSnailSkin*` ABI. Matching remains exact at 25/25 with its operand clean.

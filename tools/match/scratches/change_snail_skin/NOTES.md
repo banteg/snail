@@ -27,3 +27,11 @@ and exports `?Change@cRSnailSkin@@QAEXHM@Z`. Live Windows callsite recovery
 finds the same inline SnailSkin receiver in both damage paths and all three
 invincible-shell transitions. Android independently preserves the signature and
 body. The source promotion keeps the exact 19/19 match and three clean operands.
+
+## 2026-08-13 canonical database ownership
+
+Live Windows recovery confirms five calls all target the same embedded
+`cRSnailSkin` child: two damage paths and three invincibility transitions. The
+focused and broad replays now retire the layout-equivalent generic database
+type, verify the canonical owner and embed, and preserve the exact
+`Change(int, float)` receiver ABI. Matching stays exact at 19/19.

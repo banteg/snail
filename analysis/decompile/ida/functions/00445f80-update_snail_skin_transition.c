@@ -2,8 +2,8 @@
 /* function: update_snail_skin_transition @ 0x445f80 */
 /* selector: update_snail_skin_transition */
 
-// Exact Windows `SnailSkin::update_snail_skin_transition`, authored as `cRSnailSkin::AI`: follows the borrowed Snail backlink, marks its linked Object dirty, installs the selected TextureRef override, and advances the timed reset state.
-void __thiscall update_snail_skin_transition(SnailSkin *snail_skin)
+// Exact Windows `cRSnailSkin::AI()` (`update_snail_skin_transition`): follows the borrowed Snail backlink, marks its linked Object dirty, installs the selected TextureRef override, and advances the timed reset state.
+void __thiscall update_snail_skin_transition(cRSnailSkin *snail_skin)
 {
   double v1; // st7
 

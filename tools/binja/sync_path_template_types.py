@@ -129,6 +129,24 @@ SQUIDGE_REANALYSIS_FUNCTIONS = (
     "update_subgoldy",
 )
 
+SNAIL_SKIN_OWNER_SIZES = {
+    "cRSnailSkin": 0x20,
+}
+
+SNAIL_SKIN_OWNER_TYPE_RENAMES = (("SnailSkin", "cRSnailSkin"),)
+
+SNAIL_SKIN_REANALYSIS_FUNCTIONS = (
+    "initialize_snail_skin",
+    "update_snail_skin_transition",
+    "change_snail_skin",
+    "initialize_subgoldy",
+    "update_snail_presentation",
+    "update_damage_gauge",
+    "apply_damage_gauge_delta",
+    "initialize_invincible_shell",
+    "update_invincible_shell",
+)
+
 WARNING_OWNER_SIZES = {
     "cRWarning": 0x10,
 }
@@ -365,7 +383,7 @@ SNAIL_FIELD_UPDATES = (
     ("0x192c", "cutscene_roll_progress", "float"),
     ("0x1930", "cutscene_roll_step", "float"),
     ("0x1934", "channel_release_steps_active", "uint8_t"),
-    ("0x1938", "snail_skin", "SnailSkin"),
+    ("0x1938", "snail_skin", "cRSnailSkin"),
     ("0x1958", "cutscene", "CutScene"),
 )
 
@@ -685,7 +703,7 @@ REQUIRED_HEADER_STRUCTS = (
     "cRSquidge",
     "InvincibleState",
     "Invincible",
-    "SnailSkin",
+    "cRSnailSkin",
     "Snail",
     "CutSceneState",
     "CutScene",
@@ -1112,6 +1130,82 @@ def ensure_squidge_owner_type(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in SQUIDGE_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_snail_skin_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRSnailSkin method ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=SNAIL_SKIN_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in SNAIL_SKIN_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRSnailSkin owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "snail_skin",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_snail_skin_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire SnailSkin only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=SNAIL_SKIN_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=SNAIL_SKIN_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in SNAIL_SKIN_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=SNAIL_SKIN_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: SNAIL_SKIN_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRSnailSkin owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": SNAIL_SKIN_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in SNAIL_SKIN_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -4773,15 +4867,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_snail_skin",
-        "void __thiscall initialize_snail_skin(SnailSkin* snail_skin)",
+        "void __thiscall initialize_snail_skin(cRSnailSkin* snail_skin)",
     ),
     (
         "update_snail_skin_transition",
-        "void __thiscall update_snail_skin_transition(SnailSkin* snail_skin)",
+        "void __thiscall update_snail_skin_transition(cRSnailSkin* snail_skin)",
     ),
     (
         "change_snail_skin",
-        "void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
+        "void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
     ),
     (
         "build_snail_world_hotspots",
@@ -6741,6 +6835,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_snail_skin_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_warning_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -6796,6 +6896,7 @@ def main() -> int:
         operations.append(verify_damage_guage_owner_size(target=args.target))
         operations.append(verify_progress_bar_owner_size(target=args.target))
         operations.append(verify_squidge_owner_size(target=args.target))
+        operations.append(verify_snail_skin_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(verify_tutorial_owner_size(target=args.target))
@@ -6951,7 +7052,7 @@ def main() -> int:
                 ("Invincible", INVINCIBLE_FIELD_UPDATES),
                 ("Cameraman", CAMERAMAN_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),
-                ("SnailSkin", SNAIL_SKIN_FIELD_UPDATES),
+                ("cRSnailSkin", SNAIL_SKIN_FIELD_UPDATES),
                 *collect_c_r_subgame_backpointer_struct_updates(
                     target=args.target
                 ),
@@ -6985,6 +7086,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=SQUIDGE_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=SNAIL_SKIN_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

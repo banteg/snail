@@ -2006,14 +2006,17 @@ typedef struct Weapon {
 } Weapon;
 
 /* Authored cRSnailSkin, exact 0x20-byte material-selection owner. */
-typedef struct SnailSkin {
+typedef struct cRSnailSkin {
     int32_t selected_slot;
     TextureRef* material_overrides[3];
     Snail* owner_snail;
     int32_t active;
     float progress;
     float progress_step;
-} SnailSkin;
+} cRSnailSkin;
+
+typedef char cRSnailSkin_must_be_0x20[
+    (sizeof(cRSnailSkin) == 0x20) ? 1 : -1];
 
 /*
  * Exact 0x10-byte view over four adjacent cRSnail wobble lanes. The grouping
@@ -2064,7 +2067,7 @@ typedef struct Snail {
     float cutscene_roll_step;
     uint8_t channel_release_steps_active;
     uint8_t _pad_1935[0x3];
-    SnailSkin snail_skin;
+    cRSnailSkin snail_skin;
     CutScene cutscene;
 } Snail;
 typedef Snail cRSnail;
@@ -2936,7 +2939,7 @@ void __thiscall update_ring_or_special_effect_parent(SubRing* ring);
 void __thiscall initialize_invincible_shell(Invincible* invincible);
 void __thiscall start_invincible_shell(Invincible* invincible);
 void __thiscall update_invincible_shell(Invincible* invincible);
-void __thiscall initialize_snail_skin(SnailSkin* snail_skin);
+void __thiscall initialize_snail_skin(cRSnailSkin* snail_skin);
 void __thiscall release_snail_weapons(Snail* snail);
 void __thiscall build_snail_world_hotspots(Snail* snail);
 void __thiscall extract_snail_local_hotspots(Snail* snail);
@@ -2957,8 +2960,8 @@ int32_t __thiscall serialize_compact_high_score_record(
     SubSolution* record,
     CompactHighScoreRecord* compact);
 void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
-void __thiscall update_snail_skin_transition(SnailSkin* snail_skin);
-void __thiscall change_snail_skin(SnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
+void __thiscall update_snail_skin_transition(cRSnailSkin* snail_skin);
+void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
 void __thiscall store_color4f(tColour* color, float r, float g, float b, float a);
 tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, tColour* color);
 void __thiscall kill_tip_widgets(cRTip* tip);

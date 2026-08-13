@@ -113,6 +113,13 @@ Current checked-in example:
     equivalence, verifies the authored 0x18-byte `cRSquidge` and its
     `Player +0x4344` embed, then replays the exact `Init`, `StartY`, `StartZ`,
     and `AI` receivers plus their live Windows callers.
+- `snail_skin_types.h`
+- `uv run python tools/binja/sync_snail_skin_types.py`
+- `uv run python tools/ida/sync_snail_skin_types.py`
+  - Retires the generic analysis-only `SnailSkin` record after exact layout
+    equivalence, verifies the authored 0x20-byte `cRSnailSkin` and its
+    `Snail +0x1938` embed, then replays the exact `Init`, `AI`, and
+    `Change(int, float)` receivers plus every live Windows caller.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`
