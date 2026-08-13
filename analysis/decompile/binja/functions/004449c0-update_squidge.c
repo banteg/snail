@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_squidge @ 0x4449c0 */
 
-004449c0        struct Squidge* squidge_1 = squidge
+004449c0        struct cRSquidge* squidge_1 = squidge
 004449c1        long double x87_r7 = fconvert.t(squidge->y_velocity)
 004449c4        long double temp0 = fconvert.t(0f)
 004449c4        x87_r7 - temp0

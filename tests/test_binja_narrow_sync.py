@@ -14718,6 +14718,104 @@ def test_progress_bar_replay_keeps_exact_empty_owner_and_ai_abi() -> None:
     assert "noop_runtime_ai(cRProgressBar" not in health_checks
 
 
+def test_squidge_replay_keeps_authored_owner_layout_and_method_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    binja_sync = (BINJA_DIR / "sync_squidge_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_focused_sync = (IDA_DIR / "apply_squidge_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_squidge_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_header = (HEADER_DIR / "squidge_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/squidge.h").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    prototypes = (
+        "void __thiscall initialize_squidge(cRSquidge* squidge)",
+        "void __thiscall start_squidge_y(cRSquidge* squidge, float value)",
+        "void __thiscall start_squidge_z(cRSquidge* squidge, float value)",
+        "void __thiscall update_squidge(cRSquidge* squidge)",
+    )
+    for prototype in prototypes:
+        for source in (
+            binja_sync,
+            ida_focused_sync,
+            path_binja_sync,
+            path_ida_sync,
+        ):
+            assert prototype in source
+
+    assert '"cRSquidge": 0x18' in binja_sync
+    assert 'OWNER_TYPE_RENAMES = (("Squidge", "cRSquidge"),)' in binja_sync
+    assert '("cRSquidge", SQUIDGE_FIELD_UPDATES)' in binja_sync
+    assert '("0x4344", "squidge", "cRSquidge")' in binja_sync
+    for header in (focused_header, path_header):
+        assert "typedef struct cRSquidge {" in header
+        assert "typedef struct Squidge {" not in header
+        assert "float y_output;" in header
+        assert "float z_phase;" in header
+        assert "cRSquidge_must_be_0x18" in header
+    assert "cRSquidge squidge;" in path_header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRSquidge": 0x18,' in ida_focused_sync
+    assert '("Squidge", "cRSquidge", 0x18)' in ida_focused_sync
+    assert "EXPECTED_OWNER_LAYOUT" in ida_focused_sync
+    assert "EXPECTED_PLAYER_EMBED" in ida_focused_sync
+    assert "owner_layout_readback" in ida_focused_sync
+    assert "SQUIDGE_OWNER_TYPE_RENAMES" in path_binja_sync
+    assert "ensure_squidge_owner_type" in path_binja_sync
+    assert "SQUIDGE_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert "squidge_owner_layout_readback" in path_ida_sync
+    assert "class cRSquidge" in matcher_header
+    assert "typedef cRSquidge Squidge;" in matcher_header
+    notes_text = "\n".join(
+        (repo_root / f"tools/match/scratches/{scratch}/NOTES.md").read_text(
+            encoding="utf-8"
+        )
+        for scratch in (
+            "initialize_squidge",
+            "start_squidge_y",
+            "start_squidge_z",
+            "update_squidge",
+        )
+    )
+    for symbol in (
+        "?Init@cRSquidge@@QAEXXZ",
+        "?StartY@cRSquidge@@QAEXM@Z",
+        "?StartZ@cRSquidge@@QAEXM@Z",
+        "?AI@cRSquidge@@QAEXXZ",
+    ):
+        assert symbol in notes_text
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/squidge_types.h"'
+        in ida_runner
+    )
+    for selector in (
+        "initialize_squidge(cRSquidge *squidge)",
+        "start_squidge_y(cRSquidge *squidge, float value)",
+        "start_squidge_z(cRSquidge *squidge, float value)",
+        "update_squidge(cRSquidge *squidge)",
+    ):
+        assert selector in health_checks
+
+
 def test_click_start_state_ownership_stays_aligned() -> None:
     repo_root = Path(__file__).parents[1]
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(

@@ -21698,7 +21698,7 @@
       "name": "ida_squidge_initializer_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00444960-initialize_squidge.c",
       "required_substrings": [
-        "void __thiscall initialize_squidge(Squidge *squidge)",
+        "void __thiscall initialize_squidge(cRSquidge *squidge)",
         "squidge->y_output = 0.0",
         "squidge->y_velocity = 0.0",
         "squidge->z_output = 0.0",
@@ -21707,6 +21707,7 @@
       "forbidden_substrings": [
         "sub_444960",
         "_DWORD *this",
+        "initialize_squidge(Squidge *squidge)",
         "SquidgeState",
         "unimplemented"
       ]
@@ -21730,12 +21731,13 @@
       "name": "ida_squidge_start_y_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00444980-start_squidge_y.c",
       "required_substrings": [
-        "void __thiscall start_squidge_y(Squidge *squidge, float value)",
+        "void __thiscall start_squidge_y(cRSquidge *squidge, float value)",
         "squidge->y_phase = 0.0",
         "squidge->y_velocity = value * 0.5"
       ],
       "forbidden_substrings": [
         "SquidgeState",
+        "start_squidge_y(Squidge *squidge, float value)",
         "float *this",
         "sub_444980",
         "unimplemented"
@@ -21760,12 +21762,13 @@
       "name": "ida_squidge_start_z_owner_abi",
       "artifact": "analysis/decompile/ida/functions/004449a0-start_squidge_z.c",
       "required_substrings": [
-        "void __thiscall start_squidge_z(Squidge *squidge, float value)",
+        "void __thiscall start_squidge_z(cRSquidge *squidge, float value)",
         "squidge->z_phase = value",
         "squidge->z_velocity = value * -0.003"
       ],
       "forbidden_substrings": [
         "SquidgeState",
+        "start_squidge_z(Squidge *squidge, float value)",
         "float *this",
         "sub_4449A0",
         "unimplemented"
@@ -21775,7 +21778,7 @@
       "name": "bn_squidge_ai_owner",
       "artifact": "analysis/decompile/binja/functions/004449c0-update_squidge.c",
       "required_substrings": [
-        "struct Squidge* squidge_1 = squidge",
+        "struct cRSquidge* squidge_1 = squidge",
         "squidge->y_phase",
         "squidge->y_velocity",
         "squidge->y_output",
@@ -21786,6 +21789,7 @@
       "forbidden_substrings": [
         "arg1",
         "arg1[",
+        "struct Squidge* squidge_1",
         "unimplemented"
       ]
     },
@@ -21793,7 +21797,7 @@
       "name": "ida_squidge_ai_owner_abi",
       "artifact": "analysis/decompile/ida/functions/004449c0-update_squidge.c",
       "required_substrings": [
-        "void __thiscall update_squidge(Squidge *squidge)",
+        "void __thiscall update_squidge(cRSquidge *squidge)",
         "squidge->y_phase",
         "squidge->y_velocity",
         "squidge->y_output",
@@ -21803,6 +21807,7 @@
       ],
       "forbidden_substrings": [
         "SquidgeState",
+        "update_squidge(Squidge *squidge)",
         "float *this",
         "sub_4449C0",
         "unimplemented"

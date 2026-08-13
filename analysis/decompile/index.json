@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 7,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 7,
+  "ida_exported": 7,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,12 +18,8 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_progress_bar",
-      "address": "0x437c40"
-    },
-    {
-      "name": "build_subgame_level",
-      "address": "0x437eb0"
+      "name": "try_enter_track_attachment_from_swept_motion",
+      "address": "0x42c770"
     },
     {
       "name": "initialize_subgoldy",
@@ -32,6 +28,22 @@
     {
       "name": "update_subgoldy",
       "address": "0x43b120"
+    },
+    {
+      "name": "initialize_squidge",
+      "address": "0x444960"
+    },
+    {
+      "name": "start_squidge_y",
+      "address": "0x444980"
+    },
+    {
+      "name": "start_squidge_z",
+      "address": "0x4449a0"
+    },
+    {
+      "name": "update_squidge",
+      "address": "0x4449c0"
     }
   ],
   "health_check_count": 1172,

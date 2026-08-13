@@ -54,7 +54,7 @@ split keeps only seven stack dwords for position, sweep, and the borrowed cell.
 The fixed player is now reached through
 `GameRoot::subgame.player`; every accepted-entry write traverses canonical
 `Player` fields, including the embedded `follow_state`, inherited transform, velocity,
-exit gate, and `Squidge`. The installed heading likewise comes from the real
+exit gate, and `cRSquidge`. The installed heading likewise comes from the real
 `cRSubGame::runtime_rows[row]` owner. Seven field-first absolute globals
 are no longer needed by matching sources.
 
@@ -90,7 +90,7 @@ IDA had seven accepted-tail displacements rendered through unrelated symbols
 whose numeric addresses collide with the relocatable `GameRoot` offsets. The
 replay now normalizes only those instruction operands to numeric displacements;
 it preserves the symbols themselves and lets the existing `GameRoot*` type
-fold the accesses into `Player::attachment_exit_pending`, `Squidge`, the
+fold the accesses into `Player::attachment_exit_pending`, `cRSquidge`, the
 embedded `cRPathFollowGoldy`, its Player backlink and orientation fields, and
 `cRSubGame::runtime_rows[row].installed_heading_delta`. BN independently
 shows the same owner chain. Tracked health checks guard both exports against
@@ -182,7 +182,7 @@ recover additional behavior, ownership, ABI, or data layout.
 The recovery is semantic-complete. The live Windows decompile, caller gates,
 and both mobile `cRPath::Search` bodies close the reverse sample scan, local
 space bounds, swept hit test, embedded `cRPathFollowGoldy` handoff, Player
-velocity/Squidge state, source cell, installed row heading, and final follow
+velocity/`cRSquidge` state, source cell, installed row heading, and final follow
 update. The Windows split ABI and every embedded offset remain native-derived.
 
 All 47 references are clean. The sole arithmetic delta is a commuted x87

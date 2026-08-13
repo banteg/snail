@@ -187,7 +187,7 @@ scratch additionally pins:
 
 Exact embedded children now used here are `cRNuke` +0x150,
 `PlayerRowEventState` +0x1e8, `cRDamageGuage` +0x3c4, empty `cRProgressBar`
-+0x3f0, `cRWarning` +0x3f4, `Snail` presentation +0x2984, and `Squidge`
++0x3f0, `cRWarning` +0x3f4, `Snail` presentation +0x2984, and `cRSquidge`
 +0x4344. Damage-gauge state is the first field and skin_hold_ticks is +0x18.
 The presentation owns
 (`Object* +0x24`; the lateral/squidge writes are its
@@ -205,7 +205,7 @@ wall stall +0x328/c, exit voice
 timer +0x330/4, lane lean +0x350..+0x35c, timer pair +0x360/+0x368/+0x36c,
 nuke progress +0x374/8, handoff timer +0x444/8 + gates +0x44c/d/e.
 
-The scratch now uses the shared exact `Squidge` owner directly. Cross-port
+The scratch now uses the shared exact `cRSquidge` owner directly. Cross-port
 symbols and Android bodies identify the four helpers as
 `cRSquidge::{Init,StartY,StartZ,AI}`; the old Windows
 `initialize_score_stats` name is no longer attached to
@@ -420,7 +420,7 @@ The shared headers have matured enough to supersede the earlier local-prefix
 guidance without perturbing this scheduling-sensitive body:
 
 - The then-local player view adopted the exact shared `cRNuke`,
-  `PlayerRowEventState`, `Warning`, `Snail`, and `Squidge` children, and uses
+  `PlayerRowEventState`, `Warning`, `Snail`, and `cRSquidge` children, and uses
   `PlayerControlSource*`. The scratch-local completion, times-up, nuke,
   warning, control-source, presentation, cutscene, and squidge shells are gone.
 - Runtime row reads use the canonical `SubRow` slab. Authored row-event text,

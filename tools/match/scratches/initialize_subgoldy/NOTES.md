@@ -11,7 +11,7 @@ Recovered structure:
 
 - resets player, movement, row-event, nuke, resurrect, completion, and score
   producer lanes;
-- initializes the visual-root spring, Squidge oscillator, invincible shell, animation
+- initializes the visual-root spring, cRSquidge oscillator, invincible shell, animation
   managers, snail skin, authored cRInvincible, cutscene AI, click-start prompt, cameraman, ghost, and
   damage gauge;
 - binds presentation animation-manager targets only when their borrowed
@@ -80,7 +80,7 @@ Latest focused result:
 public `RenderableBod` inheritance. This removes the last cast-only prefix view
 from the exact initializer without changing its ownership or ABI.
 
-2026-07-11 Squidge ownership closure:
+2026-07-11 cRSquidge ownership closure:
 
 - The call on `Player +0x4344` is the authored `cRSquidge::Init`, not
   `cRSubGoldy::ScoreStatsInit`. Android and iOS expose the full matching

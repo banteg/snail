@@ -3,7 +3,7 @@
 /* selector: update_squidge */
 
 // Authored `cRSquidge::AI()`: advances and damps the inline owner's independent Y/Z spring oscillators and publishes their output lanes.
-void __thiscall update_squidge(Squidge *squidge)
+void __thiscall update_squidge(cRSquidge *squidge)
 {
   double v1; // st7
   double v2; // st7
@@ -29,7 +29,7 @@ void __thiscall update_squidge(Squidge *squidge)
     if ( v2 < 0.001 )
     {
       v4 = v11;
-      if ( v5 )
+      if ( v5 != 0 )
         v4 = -v4;
       if ( v4 < 0.001 )
       {
@@ -51,7 +51,7 @@ void __thiscall update_squidge(Squidge *squidge)
     if ( v7 < 0.001 )
     {
       v9 = v12;
-      if ( v10 )
+      if ( v10 != 0 )
         v9 = -v9;
       if ( v9 < 0.001 )
       {

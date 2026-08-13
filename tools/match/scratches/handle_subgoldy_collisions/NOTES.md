@@ -486,7 +486,7 @@ BN and IDA-facing headers now agree with the exact 0x4364-byte matching owner:
   `boost_one_tick +0x41c` replace proven opaque lanes;
 - `game +0x408` is the borrowed enclosing `cRSubGame*`;
 - `parcels_collected +0x4338` precedes `visible_life_stock +0x4340`; and
-- `Squidge +0x4344` plus the commentary timers at `+0x435c/+0x4360` close the
+- `cRSquidge +0x4344` plus the commentary timers at `+0x435c/+0x4360` close the
   real tail.
 
 This corrects the analysis owner used by collision, completion, parcel HUD,

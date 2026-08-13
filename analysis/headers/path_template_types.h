@@ -2083,14 +2083,17 @@ typedef struct PlayerControlSource {
 } PlayerControlSource;
 
 /* Authored cRSquidge, exact 0x18-byte two-axis spring oscillator. */
-typedef struct Squidge {
+typedef struct cRSquidge {
     float y_output;
     float y_velocity;
     float y_phase;
     float z_output;
     float z_velocity;
     float z_phase;
-} Squidge;
+} cRSquidge;
+
+typedef char cRSquidge_must_be_0x18[
+    (sizeof(cRSquidge) == 0x18) ? 1 : -1];
 
 typedef enum NukeState {
     NUKE_STATE_INACTIVE = 0,
@@ -2602,7 +2605,7 @@ typedef struct Player {
     int32_t parcels_collected;
     uint8_t _pad_433c[0x4];
     int32_t visible_life_stock;
-    Squidge squidge;
+    cRSquidge squidge;
     float slow_commentary_timer;
     float slow_commentary_step;
 } Player;
@@ -2901,10 +2904,10 @@ void __thiscall build_track_fringe_supertramp_mesh(
 tColour* __thiscall set_color_rgba(tColour* color, float r, float g, float b, float a);
 void __thiscall set_color_alpha(tColour* color, float alpha);
 void __thiscall set_color_grayscale(tColour* color, float intensity);
-void __thiscall initialize_squidge(Squidge* squidge);
-void __thiscall start_squidge_y(Squidge* squidge, float value);
-void __thiscall start_squidge_z(Squidge* squidge, float value);
-void __thiscall update_squidge(Squidge* squidge);
+void __thiscall initialize_squidge(cRSquidge* squidge);
+void __thiscall start_squidge_y(cRSquidge* squidge, float value);
+void __thiscall start_squidge_z(cRSquidge* squidge, float value);
+void __thiscall update_squidge(cRSquidge* squidge);
 void __thiscall firework_shoot(FireWork* firework, Vec3* position, int32_t owner, int32_t texture_id, int32_t count);
 void __thiscall update_banner(Banner* banner);
 SubSpeedUp* __thiscall initialize_track_speedup_runtime(SubSpeedUp* speedup);

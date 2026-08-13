@@ -27,13 +27,14 @@ copying from the output field improved only to 84.81% while changing instruction
 count, mutating `new_output` in place reproduced the old 75.15% regression, and
 volatile locals regressed badly.
 
-## 2026-07-18 analyzer replay
+## Analyzer replay
 
-The four-function `cRSquidge` family now exports through the canonical
-`Squidge` owner in both analyzers. Binary Ninja resolves the 0x18-byte
-initializer and all Y/Z spring fields; IDA retires the port-side
-`SquidgeState` compatibility name and the raw `sub_444960(_DWORD *this)` view.
-The tracked owner checks cover the initializer, both start methods, and AI.
+The four-function family now exports through its authored `cRSquidge` owner in
+both analyzers. Binary Ninja resolves the exact 0x18-byte initializer and all
+Y/Z spring fields; IDA retires both the earlier analysis-only `Squidge` record
+and the port-side `SquidgeState` compatibility name. The checked-in narrow and
+broad replays verify the single `Player + 0x4344` embed and all four receiver
+ABIs, including the formerly raw `sub_444960(_DWORD *this)` view.
 
 ## 2026-08-12 authored method surface
 

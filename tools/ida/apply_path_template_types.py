@@ -119,6 +119,9 @@ TRUSTED_NAMES = [
     (0x444600, "dispatch_cutscene_animation"),
     (0x4446E0, "set_weapon_animation"),
     (0x444960, "initialize_squidge"),
+    (0x444980, "start_squidge_y"),
+    (0x4449A0, "start_squidge_z"),
+    (0x4449C0, "update_squidge"),
     (0x445840, "kill_subgoldy"),
     (0x445F10, "hide_gameplay_scores"),
     (0x445F40, "unhide_gameplay_scores"),
@@ -453,6 +456,42 @@ EXPECTED_PROGRESS_BAR_PLAYER_EMBED = {
     "type": "cRProgressBar",
 }
 
+SQUIDGE_OWNER_MARKERS = (
+    "typedef struct cRSquidge {",
+    "} cRSquidge;",
+    "cRSquidge_must_be_0x18",
+    "cRSquidge squidge;",
+    "void __thiscall initialize_squidge(cRSquidge* squidge);",
+    "void __thiscall start_squidge_y(cRSquidge* squidge, float value);",
+    "void __thiscall start_squidge_z(cRSquidge* squidge, float value);",
+    "void __thiscall update_squidge(cRSquidge* squidge);",
+)
+
+SQUIDGE_OWNER_SIZES = {
+    "cRSquidge": 0x18,
+}
+
+SQUIDGE_OWNER_TYPE_ALIASES = (("Squidge", "cRSquidge", 0x18),)
+
+EXPECTED_SQUIDGE_OWNER_LAYOUT = {
+    "size": 0x18,
+    "members": {
+        0x00: (0x04, "y_output", "float"),
+        0x04: (0x04, "y_velocity", "float"),
+        0x08: (0x04, "y_phase", "float"),
+        0x0C: (0x04, "z_output", "float"),
+        0x10: (0x04, "z_velocity", "float"),
+        0x14: (0x04, "z_phase", "float"),
+    },
+}
+
+EXPECTED_SQUIDGE_PLAYER_EMBED = {
+    "offset": "0x4344",
+    "size": 0x18,
+    "name": "squidge",
+    "type": "cRSquidge",
+}
+
 WARNING_OWNER_MARKERS = (
     "typedef struct cRWarning {",
     "} cRWarning;",
@@ -715,6 +754,10 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4444B0,  # project_position_onto_track_attachment
     0x444600,  # dispatch_cutscene_animation
     0x4446E0,  # set_weapon_animation
+    0x444960,  # initialize_squidge
+    0x444980,  # start_squidge_y
+    0x4449A0,  # start_squidge_z
+    0x4449C0,  # update_squidge
     0x444CF0,  # handle_subgoldy_collisions
     0x445840,  # kill_subgoldy
     0x445CD0,  # build_snail_world_hotspots
@@ -2770,19 +2813,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_squidge",
-        "void __thiscall initialize_squidge(Squidge* squidge);",
+        "void __thiscall initialize_squidge(cRSquidge* squidge);",
     ),
     (
         "start_squidge_y",
-        "void __thiscall start_squidge_y(Squidge* squidge, float value);",
+        "void __thiscall start_squidge_y(cRSquidge* squidge, float value);",
     ),
     (
         "start_squidge_z",
-        "void __thiscall start_squidge_z(Squidge* squidge, float value);",
+        "void __thiscall start_squidge_z(cRSquidge* squidge, float value);",
     ),
     (
         "update_squidge",
-        "void __thiscall update_squidge(Squidge* squidge);",
+        "void __thiscall update_squidge(cRSquidge* squidge);",
     ),
     (
         "initialize_snail_skin",
@@ -5157,6 +5200,64 @@ def _progress_bar_owner_layout_readback() -> dict[str, object]:
     }
 
 
+def _squidge_owner_layout_readback() -> dict[str, object]:
+    """Verify the complete canonical cRSquidge owner and Player embed."""
+    type_name = "cRSquidge"
+    expected = EXPECTED_SQUIDGE_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "squidge",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "squidge",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    player_embed = _named_struct_member_readback("Player", 0x4344)
+    if player_embed != EXPECTED_SQUIDGE_PLAYER_EMBED:
+        failures.append(
+            {
+                "selector": "Player.squidge",
+                "owner_group": "squidge",
+                "reason": "embedded_owner_mismatch",
+                "expected": EXPECTED_SQUIDGE_PLAYER_EMBED,
+                "observed": player_embed,
+            }
+        )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "player_embed": player_embed,
+        "failures": failures,
+    }
+
+
 def _warning_owner_layout_readback() -> dict[str, object]:
     """Verify the complete canonical cRWarning owner and Player embed."""
     type_name = "cRWarning"
@@ -5604,6 +5705,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in PROGRESS_BAR_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_squidge_owner_markers = [
+        marker
+        for marker in SQUIDGE_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_warning_owner_markers = [
         marker
         for marker in WARNING_OWNER_MARKERS
@@ -5654,6 +5760,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_nuke_owner_markers
         or missing_damage_guage_owner_markers
         or missing_progress_bar_owner_markers
+        or missing_squidge_owner_markers
         or missing_warning_owner_markers
         or missing_tip_owner_markers
         or missing_tutorial_owner_markers
@@ -5693,6 +5800,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if missing_progress_bar_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_progress_bar_owner_header"}
+            )
+        if missing_squidge_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_squidge_owner_header"}
             )
         if missing_warning_owner_markers:
             marker_failures.append(
@@ -5747,6 +5858,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_progress_bar_owner_markers": (
                         missing_progress_bar_owner_markers
+                    ),
+                    "missing_squidge_owner_markers": (
+                        missing_squidge_owner_markers
                     ),
                     "missing_warning_owner_markers": (
                         missing_warning_owner_markers
@@ -5836,6 +5950,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in progress_bar_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    squidge_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(SQUIDGE_OWNER_TYPE_ALIASES)
+    )
+    squidge_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "squidge",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in squidge_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     warning_owner_type_alias_migrations = (
@@ -5951,6 +6080,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         }
         if parse_errors or progress_bar_owner_type_alias_failures
         else _progress_bar_owner_layout_readback()
+    )
+    squidge_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in SQUIDGE_OWNER_SIZES
+    }
+    squidge_owner_layout_readback = (
+        {
+            "type": "cRSquidge",
+            "size": None,
+            "members": {},
+            "player_embed": None,
+            "failures": [],
+        }
+        if parse_errors or squidge_owner_type_alias_failures
+        else _squidge_owner_layout_readback()
     )
     warning_owner_sizes = {
         name: _named_struct_size(name)
@@ -6123,6 +6267,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in PROGRESS_BAR_OWNER_SIZES.items()
         if progress_bar_owner_sizes[name] != expected_size
     ]
+    squidge_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "squidge",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": squidge_owner_sizes[name],
+        }
+        for name, expected_size in SQUIDGE_OWNER_SIZES.items()
+        if squidge_owner_sizes[name] != expected_size
+    ]
     warning_owner_size_failures = [
         {
             "selector": name,
@@ -6180,6 +6335,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + damage_guage_owner_layout_readback["failures"]
         + progress_bar_owner_size_failures
         + progress_bar_owner_layout_readback["failures"]
+        + squidge_owner_size_failures
+        + squidge_owner_layout_readback["failures"]
         + warning_owner_size_failures
         + warning_owner_layout_readback["failures"]
         + tip_owner_size_failures
@@ -6305,6 +6462,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or nuke_owner_type_alias_failures
         or damage_guage_owner_type_alias_failures
         or progress_bar_owner_type_alias_failures
+        or squidge_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
         or tutorial_owner_type_alias_failures
@@ -6327,6 +6485,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "progress_bar_owner_type_alias_migrations": (
                         progress_bar_owner_type_alias_migrations
+                    ),
+                    "squidge_owner_type_alias_migrations": (
+                        squidge_owner_type_alias_migrations
                     ),
                     "warning_owner_type_alias_migrations": (
                         warning_owner_type_alias_migrations
@@ -6353,6 +6514,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "progress_bar_owner_layout_readback": (
                         progress_bar_owner_layout_readback
                     ),
+                    "squidge_owner_sizes": squidge_owner_sizes,
+                    "squidge_owner_layout_readback": (
+                        squidge_owner_layout_readback
+                    ),
                     "warning_owner_sizes": warning_owner_sizes,
                     "warning_owner_layout_readback": (
                         warning_owner_layout_readback
@@ -6378,6 +6543,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         + nuke_owner_type_alias_failures
                         + damage_guage_owner_type_alias_failures
                         + progress_bar_owner_type_alias_failures
+                        + squidge_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
                         + tutorial_owner_type_alias_failures
@@ -7106,6 +7272,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "progress_bar_owner_type_alias_migrations": (
                     progress_bar_owner_type_alias_migrations
                 ),
+                "squidge_owner_type_alias_migrations": (
+                    squidge_owner_type_alias_migrations
+                ),
                 "warning_owner_type_alias_migrations": (
                     warning_owner_type_alias_migrations
                 ),
@@ -7131,6 +7300,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "progress_bar_owner_layout_readback": (
                     progress_bar_owner_layout_readback
                 ),
+                "squidge_owner_sizes": squidge_owner_sizes,
+                "squidge_owner_layout_readback": squidge_owner_layout_readback,
                 "warning_owner_sizes": warning_owner_sizes,
                 "warning_owner_layout_readback": warning_owner_layout_readback,
                 "tip_owner_sizes": tip_owner_sizes,

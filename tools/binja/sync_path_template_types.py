@@ -113,6 +113,22 @@ PROGRESS_BAR_REANALYSIS_FUNCTIONS = (
     "initialize_subgoldy",
 )
 
+SQUIDGE_OWNER_SIZES = {
+    "cRSquidge": 0x18,
+}
+
+SQUIDGE_OWNER_TYPE_RENAMES = (("Squidge", "cRSquidge"),)
+
+SQUIDGE_REANALYSIS_FUNCTIONS = (
+    "initialize_squidge",
+    "start_squidge_y",
+    "start_squidge_z",
+    "update_squidge",
+    "try_enter_track_attachment_from_swept_motion",
+    "initialize_subgoldy",
+    "update_subgoldy",
+)
+
 WARNING_OWNER_SIZES = {
     "cRWarning": 0x10,
 }
@@ -317,6 +333,9 @@ SYMBOL_UPDATES = (
     ("0x444600", "dispatch_cutscene_animation"),
     ("0x4446e0", "set_weapon_animation"),
     ("0x444960", "initialize_squidge"),
+    ("0x444980", "start_squidge_y"),
+    ("0x4449a0", "start_squidge_z"),
+    ("0x4449c0", "update_squidge"),
     ("0x445840", "kill_subgoldy"),
     ("0x445f10", "hide_gameplay_scores"),
     ("0x445f40", "unhide_gameplay_scores"),
@@ -663,7 +682,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ClickStart",
     "Cameraman",
     "cRCameraman",
-    "Squidge",
+    "cRSquidge",
     "InvincibleState",
     "Invincible",
     "SnailSkin",
@@ -1017,6 +1036,82 @@ def ensure_progress_bar_owner_type(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in PROGRESS_BAR_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_squidge_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRSquidge method ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=SQUIDGE_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in SQUIDGE_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRSquidge owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "squidge",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_squidge_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire Squidge only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=SQUIDGE_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=SQUIDGE_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in SQUIDGE_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=SQUIDGE_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: SQUIDGE_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRSquidge owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": SQUIDGE_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in SQUIDGE_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -1499,7 +1594,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2984", "presentation", "Snail"),
     ("0x4338", "parcels_collected", "int32_t"),
     ("0x4340", "visible_life_stock", "int32_t"),
-    ("0x4344", "squidge", "Squidge"),
+    ("0x4344", "squidge", "cRSquidge"),
 )
 
 # The row-event ID and the direct message probe share EAX at different native
@@ -3473,6 +3568,15 @@ PROGRESS_BAR_FIELD_UPDATES = (
     ("0x00", "_empty", "uint8_t"),
 )
 
+SQUIDGE_FIELD_UPDATES = (
+    ("0x00", "y_output", "float"),
+    ("0x04", "y_velocity", "float"),
+    ("0x08", "y_phase", "float"),
+    ("0x0c", "z_output", "float"),
+    ("0x10", "z_velocity", "float"),
+    ("0x14", "z_phase", "float"),
+)
+
 NUKE_FIELD_UPDATES = (
     ("0x00", "state", "NukeState"),
 )
@@ -4745,19 +4849,19 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_squidge",
-        "void __thiscall initialize_squidge(Squidge* squidge)",
+        "void __thiscall initialize_squidge(cRSquidge* squidge)",
     ),
     (
         "start_squidge_y",
-        "void __thiscall start_squidge_y(Squidge* squidge, float value)",
+        "void __thiscall start_squidge_y(cRSquidge* squidge, float value)",
     ),
     (
         "start_squidge_z",
-        "void __thiscall start_squidge_z(Squidge* squidge, float value)",
+        "void __thiscall start_squidge_z(cRSquidge* squidge, float value)",
     ),
     (
         "update_squidge",
-        "void __thiscall update_squidge(Squidge* squidge)",
+        "void __thiscall update_squidge(cRSquidge* squidge)",
     ),
     (
         "initialize_damage_gauge",
@@ -6631,6 +6735,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_squidge_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_warning_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -6685,6 +6795,7 @@ def main() -> int:
         operations.append(verify_nuke_owner_size(target=args.target))
         operations.append(verify_damage_guage_owner_size(target=args.target))
         operations.append(verify_progress_bar_owner_size(target=args.target))
+        operations.append(verify_squidge_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(verify_tutorial_owner_size(target=args.target))
@@ -6805,6 +6916,7 @@ def main() -> int:
                 ("cRWarning", WARNING_FIELD_UPDATES),
                 ("cRDamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
                 ("cRProgressBar", PROGRESS_BAR_FIELD_UPDATES),
+                ("cRSquidge", SQUIDGE_FIELD_UPDATES),
                 ("cRNuke", NUKE_FIELD_UPDATES),
                 ("ClickStart", CLICK_START_FIELD_UPDATES),
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
@@ -6866,6 +6978,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=PROGRESS_BAR_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=SQUIDGE_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

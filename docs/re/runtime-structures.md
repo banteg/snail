@@ -282,8 +282,9 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x80`: `follow_lateral_response`
     - `+0x84`: `squidge_primary`
     - `+0x88`: `squidge_secondary`
-- `player + 0x4344` is the real inline 0x18-byte `Squidge` (`cRSquidge`) consumed by `update_subgoldy` and copied into `player->presentation.visual_root`
+- `player + 0x4344` is the real inline 0x18-byte authored `cRSquidge` consumed by `update_subgoldy` and copied into `player->presentation.visual_root`
   - `initialize_squidge` is the exact Windows `cRSquidge::Init`; the stale `initialize_score_stats` alias has moved to `clear_subgoldy_score_buckets`, the actual Windows `cRSubGoldy::ScoreStatsInit()` over the independent score block at `player + 0x310`
+  - the paired narrow replay retires the generic analysis-only `Squidge`, verifies the exact six-float owner and embed, and applies all four authored receiver ABIs to both analyzers
 - `start_squidge_z` is a `void` helper, like `start_squidge_y`
   - the old float-return prototype was a decompiler artifact
   - forcing that float return into IDA was the direct cause of the `update_subgoldy` inline-asm regression; reverting it to `void` restores a normal high-level decompile

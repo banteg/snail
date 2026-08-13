@@ -106,6 +106,13 @@ Current checked-in example:
     `Player +0x3f0` embed, then replays the exact `AI` receiver. The folded
     no-op at `0x407b50` remains polymorphic rather than acquiring a speculative
     owner.
+- `squidge_types.h`
+- `uv run python tools/binja/sync_squidge_types.py`
+- `uv run python tools/ida/sync_squidge_types.py`
+  - Retires the generic analysis-only `Squidge` record after exact layout
+    equivalence, verifies the authored 0x18-byte `cRSquidge` and its
+    `Player +0x4344` embed, then replays the exact `Init`, `StartY`, `StartZ`,
+    and `AI` receivers plus their live Windows callers.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`
