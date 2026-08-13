@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "front-color-publication",
+      "find": "                        edge_a = 0;\n                        cell->fringe_front->color = *skirt_color;",
+      "replacements": [
+        {
+          "name": "color-before-reset",
+          "text": "                        cell->fringe_front->color = *skirt_color;\n                        edge_a = 0;"
+        }
+      ]
+    },
+    {
+      "name": "right-color-publication",
+      "find": "                        edge_a = 0;\n                        cell->fringe_right->color = *skirt_color;",
+      "replacements": [
+        {
+          "name": "color-before-reset",
+          "text": "                        cell->fringe_right->color = *skirt_color;\n                        edge_a = 0;"
+        }
+      ]
+    },
+    {
+      "name": "left-color-publication",
+      "find": "                        edge_a = 0;\n                        cell->fringe_left->color = *skirt_color;",
+      "replacements": [
+        {
+          "name": "color-before-reset",
+          "text": "                        cell->fringe_left->color = *skirt_color;\n                        edge_a = 0;"
+        }
+      ]
+    },
+    {
+      "name": "back-color-publication",
+      "find": "                        edge_a = 0;\n                        cell->fringe_back->color = *skirt_color;",
+      "replacements": [
+        {
+          "name": "color-before-reset",
+          "text": "                        cell->fringe_back->color = *skirt_color;\n                        edge_a = 0;"
+        }
+      ]
+    }
+  ]
+}

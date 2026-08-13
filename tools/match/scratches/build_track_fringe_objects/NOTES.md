@@ -361,3 +361,27 @@ through its already-live receiver. The rest of the 60.39% delta is a repeated
 saved-register and temporary-lifetime permutation across four equivalent
 direction blocks. These are compiler/reference-layout residuals, not missing
 decompilation.
+
+## 2026-08-13 directional color publication order
+
+Fresh comparison against the live Windows body found one repeated authored
+order that the prior `semantic-complete` classification had overlooked. In
+each direction, native publishes the returned skirt color into the borrowed
+`Fringe` first and only then resets the shared `edge_a` selector for the next
+direction. The scratch previously reset `edge_a` before the four-dword color
+copy.
+
+A complete 15-variant sweep moved each direction independently by three fuzzy
+bytes, with the four changes adding cleanly. Retaining all four raises focused
+Wibo from **60.39% to 61.20%** (+12 fuzzy bytes), preserves the 492/495
+instruction shape and 3-instruction prefix, and keeps the same 49 clean and
+four target-only singleton-call references. No direction regresses and there
+is no reference tradeoff.
+
+A scoped pointer borrow for the source position was also tested across every
+direction and compiled byte-identically. Re-testing singleton skirt-color
+receivers after the accepted order still regressed. The remaining large delta
+is therefore still dominated by the receiver/family/edge-selector register
+permutation, but the earlier claim that all of it was compiler residue was too
+strong. The retained change is ordinary publication sequencing, with no
+volatile state, dummy dependency, or register coercion.

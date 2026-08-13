@@ -94,8 +94,8 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_front->position = cell->position;
                         tColour color0;
                         tColour* skirt_color = GetSkirtColour(&color0);
-                        edge_a = 0;
                         cell->fringe_front->color = *skirt_color;
+                        edge_a = 0;
                     } else {
                         cell->fringe_front = 0;
                     }
@@ -118,8 +118,8 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_right->position = cell->position;
                         tColour color1;
                         tColour* skirt_color = GetSkirtColour(&color1);
-                        edge_a = 0;
                         cell->fringe_right->color = *skirt_color;
+                        edge_a = 0;
                     } else {
                         cell->fringe_right = 0;
                     }
@@ -142,8 +142,8 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_left->position = cell->position;
                         tColour color2;
                         tColour* skirt_color = GetSkirtColour(&color2);
-                        edge_a = 0;
                         cell->fringe_left->color = *skirt_color;
+                        edge_a = 0;
                     } else {
                         cell->fringe_left = 0;
                     }
@@ -166,8 +166,8 @@ void cRSubGame::FringeEdgeTrack()
                         cell->fringe_back->position = cell->position;
                         tColour color3;
                         tColour* skirt_color = GetSkirtColour(&color3);
-                        edge_a = 0;
                         cell->fringe_back->color = *skirt_color;
+                        edge_a = 0;
                     } else {
                         cell->fringe_back = 0;
                     }
