@@ -23009,8 +23009,26 @@ def test_supertramp_start_path_replay_preserves_mesh_owner_lifetimes() -> None:
     assert "apply_user_var_updates" in replay
     assert '0x90: ("center_x", "float")' in replay
     assert "(1035, 66," not in replay
-    assert "if (i <= 5)" in start_scratch
-    assert "if (curve_index == 0)" not in start_scratch
+    assert "if (curve_index != 0)" in start_scratch
+    assert "if (i <= 5)" not in start_scratch
+    primary_declaration = start_scratch.index(
+        "PathTemplateSample* primary_previous ="
+    )
+    primary_identity = start_scratch.index(
+        "primary_previous->transform.RotIdentity();"
+    )
+    secondary_declaration = start_scratch.index(
+        "PathTemplateSample* secondary_previous ="
+    )
+    secondary_identity = start_scratch.index(
+        "secondary_previous->transform.RotIdentity();"
+    )
+    assert (
+        primary_declaration
+        < primary_identity
+        < secondary_declaration
+        < secondary_identity
+    )
 
     for index, storage, name, variable_type in (
         (83, -64, "curve_count_f", "float"),

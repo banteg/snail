@@ -221,28 +221,12 @@ void cRPath::initialize_start_path_template_pair(
             secondary_samples[i].transform.position.z = z;
             secondary_samples[i].transform.position.y =
                 primary_samples[i].transform.position.y + 0.49000001f;
-            PathTemplateSample* primary_previous =
-                &primary_samples[i - 1];
-            PathTemplateSample* secondary_previous =
-                &secondary_samples[i - 1];
-
-            if (i <= 5) {
-                primary_previous->transform.RotIdentity();
-                secondary_previous->transform.RotIdentity();
-            } else {
+            if (curve_index != 0) {
                 primary_samples[i - 1].transform.basis_right =
                     Vector3(1.0f, 0.0f, 0.0f);
                 primary_samples[i - 1].transform.basis_forward =
-                    Vector3(
-                        primary_samples[i].transform.position.x -
-                            primary_samples[i - 1]
-                                .transform.position.x,
-                        primary_samples[i].transform.position.y -
-                            primary_samples[i - 1]
-                                .transform.position.y,
-                        primary_samples[i].transform.position.z -
-                            primary_samples[i - 1]
-                                .transform.position.z);
+                    primary_samples[i].transform.position -
+                    primary_samples[i - 1].transform.position;
                 primary_samples[i - 1]
                     .transform.basis_forward.Normalize();
                 primary_samples[i - 1].transform.basis_up.cross_vectors(
@@ -252,47 +236,38 @@ void cRPath::initialize_start_path_template_pair(
                 secondary_samples[i - 1].transform.basis_right =
                     Vector3(1.0f, 0.0f, 0.0f);
                 secondary_samples[i - 1].transform.basis_forward =
-                    Vector3(
-                        secondary_samples[i].transform.position.x -
-                            secondary_samples[i - 1]
-                                .transform.position.x,
-                        secondary_samples[i].transform.position.y -
-                            secondary_samples[i - 1]
-                                .transform.position.y,
-                        secondary_samples[i].transform.position.z -
-                            secondary_samples[i - 1]
-                                .transform.position.z);
+                    secondary_samples[i].transform.position -
+                    secondary_samples[i - 1].transform.position;
                 secondary_samples[i - 1]
                     .transform.basis_forward.Normalize();
                 secondary_samples[i - 1].transform.basis_up.cross_vectors(
                     &secondary_samples[i - 1].transform.basis_forward,
                     &secondary_samples[i - 1].transform.basis_right);
+            } else {
+                PathTemplateSample* primary_previous =
+                    &primary_samples[i - 1];
+                primary_previous->transform.RotIdentity();
+                PathTemplateSample* secondary_previous =
+                    &secondary_samples[i - 1];
+                secondary_previous->transform.RotIdentity();
             }
-            ++i;
             ++curve_index;
+            ++i;
         } while (curve_index < curve_segments);
     }
 
     int delta_index = 0;
     if (segment_count > 0) {
         do {
-            primary_samples[delta_index].delta_dir_to_next = Vector3(
-                primary_samples[delta_index + 1].transform.position.x -
-                    primary_samples[delta_index].transform.position.x,
-                primary_samples[delta_index + 1].transform.position.y -
-                    primary_samples[delta_index].transform.position.y,
-                primary_samples[delta_index + 1].transform.position.z -
-                    primary_samples[delta_index].transform.position.z);
+            primary_samples[delta_index].delta_dir_to_next =
+                primary_samples[delta_index + 1].transform.position -
+                primary_samples[delta_index].transform.position;
             primary_samples[delta_index].delta_length =
                 primary_samples[delta_index].delta_dir_to_next.Normalize();
 
-            secondary_samples[delta_index].delta_dir_to_next = Vector3(
-                secondary_samples[delta_index + 1].transform.position.x -
-                    secondary_samples[delta_index].transform.position.x,
-                secondary_samples[delta_index + 1].transform.position.y -
-                    secondary_samples[delta_index].transform.position.y,
-                secondary_samples[delta_index + 1].transform.position.z -
-                    secondary_samples[delta_index].transform.position.z);
+            secondary_samples[delta_index].delta_dir_to_next =
+                secondary_samples[delta_index + 1].transform.position -
+                secondary_samples[delta_index].transform.position;
             secondary_samples[delta_index].delta_length =
                 secondary_samples[delta_index].delta_dir_to_next.Normalize();
 

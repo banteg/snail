@@ -1,9 +1,11 @@
 # initialize_start_path_template_pair
 
-Current recovery: semantic-complete (`compiler` residual). The verified
-Android/iOS builder bodies establish the portable sample/control graph; the
-live Windows body and scratch additionally cover the native mesh/face tail.
-All references are clean, and the remaining differences are code layout.
+Current recovery: incomplete (`analysis,compiler` residuals). The verified
+Android/iOS builder bodies establish the portable sample/control graph, and
+the live Windows body covers the native mesh/face tail, but current-state
+retests have disproved the former compiler-only classification. All references
+are clean; remaining differences still include recoverable owner lifetimes and
+source scheduling as well as compiler layout.
 
 Ownership reconstruction for `initialize_start_path_template_pair @ 0x426400`.
 
@@ -13,10 +15,10 @@ sample, decrements `segment_count`, and uses the final allocated sample directly
 for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
-The retained scratch now matches 63.87% (605/610 candidate/target
-instructions), with masked operands at 35 ok, 0 unresolved, 0 mismatch. The
-candidate still has a 0x48 frame versus the target's 0x44 frame, so the
-remaining cross-branch register ownership and prologue spill are still open.
+The retained scratch now matches 82.46% at exact 610/610 candidate/target
+instructions, with a 148-instruction exact prefix and masked operands at 35
+ok, 0 unresolved, 0 mismatch, 0 unaudited. The candidate frame now agrees with
+the target at 0x44; later mesh/face owner allocation remains open.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 10.90% (124/610
@@ -409,3 +411,41 @@ Split-float lateral arithmetic is neutral, while double and volatile forms
 lose 15–55 weighted bytes and the double expression adds reference debt. The
 retained result is **76.86%**, 613/610 instructions, prefix 122/610, with all
 35 references clean.
+
+## 2026-08-13 current-state curve ownership recovery
+
+The former `semantic-complete` / compiler-only classification was stale. It
+was based on probes made before direct face ownership, shared mesh/face
+counters, and the current vector arithmetic changed VC6's whole-function
+allocation. Replaying the previously rejected curve owners against that new
+frontier recovers several ordinary authored boundaries.
+
+First, the identity pointers belong only to the first-curve-sample arm. The
+native and paired mobile bodies make later-sample orientation the fallthrough
+path, while the first sample branches forward to the two `RotIdentity` calls.
+Moving the previous-sample aliases into that arm, reversing the branch, and
+testing the logical `curve_index` owner raises the focused match from 76.86%
+to 77.74% without reference debt. This supersedes the July 27 conclusion that
+the mobile logical-index spelling was not portable to the Windows build.
+
+Both orientation lanes use the shared authored `tVector::operator-` operation.
+Either lane alone is byte-neutral, but the paired replacement adds 36 fuzzy
+bytes and reaches 79.38%. Replaying the same authored subtraction at the two
+terminal delta lanes adds another 27 fuzzy bytes, raises the match to 80.59%,
+and extends the exact prefix from 122 to 145 instructions. The old neutral
+terminal-delta result is therefore allocation-state-specific, not an exhausted
+semantic result.
+
+Windows forms the secondary previous-sample address only after returning from
+the primary identity call. Narrowing that pointer to its callsite removes the
+candidate spill; a reverse sweep loses 28 fuzzy bytes. Keeping the logical
+counter increment before the physical sample advance and spelling the later
+sample test as `curve_index != 0` then reaches exact candidate/target size and
+extends the prefix to 148 instructions. Positive-index spellings have a higher
+raw fuzzy score (83.02%) but regress the prefix to 145 and leave the candidate
+one instruction short, so they are rejected as score-only tradeoffs.
+
+The retained frontier is **82.46%**, **610/610** instructions, prefix
+**148/610**, and 35 clean references. Because multiple allegedly exhausted
+source owners produced material current-state gains, the scratch metadata is
+corrected to `incomplete` with `analysis,compiler` residuals.

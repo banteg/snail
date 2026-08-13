@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "secondary-previous-lifetime",
+      "find": "                PathTemplateSample* primary_previous =\n                    &primary_samples[i - 1];\n                primary_previous->transform.RotIdentity();\n                PathTemplateSample* secondary_previous =\n                    &secondary_samples[i - 1];\n                secondary_previous->transform.RotIdentity();",
+      "replacements": [
+        {
+          "name": "hoist-before-primary-call",
+          "text": "                PathTemplateSample* primary_previous =\n                    &primary_samples[i - 1];\n                PathTemplateSample* secondary_previous =\n                    &secondary_samples[i - 1];\n                primary_previous->transform.RotIdentity();\n                secondary_previous->transform.RotIdentity();"
+        }
+      ]
+    }
+  ]
+}

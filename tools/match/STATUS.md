@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**545/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101486/294937** bytes (**34.41%**) are proof-grade, and overall fuzzy is **85.55%**.
+**545/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101486/294937** bytes (**34.41%**) are proof-grade, and overall fuzzy is **85.60%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -589,7 +589,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_font3d_objects | 0x44ae10 | 419 | 126/126 | 99.21% | 106/126 | 20 ok |  | boundary |
 | 🚧 | build_sprite_tail | 0x44e410 | 304 | 86/86 | 97.67% | 36/86 | 8 ok |  | core |
 
-## High Progress (80-94.99%) (45)
+## High Progress (80-94.99%) (46)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -610,6 +610,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 652/652 | 85.74% | 289/652 | 40 ok |  | core |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  | core |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  | core |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 610/610 | 82.46% | 148/610 | 35 ok |  | core |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 669/668 | 81.68% | 21/668 | 41 ok |  | core |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 578/579 | 90.06% | 373/579 | 39 ok |  | core |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 433/437 | 93.56% | 98/437 | 22 ok |  | core |
@@ -639,7 +640,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | queue_textured_quad_corners | 0x44aac0 | 274 | 69/69 | 89.86% | 33/69 | 24 ok |  | boundary |
 | 🚧 | initialize_quaternion_from_matrix | 0x44d5d0 | 579 | 186/186 | 92.47% | 42/186 | 23 ok |  | core |
 
-## Mid Progress (50-79.99%) (44)
+## Mid Progress (50-79.99%) (43)
 
 | | function | address | bytes | insns | match | prefix | masked | build | scope |
 |---|---|---|---|---|---|---|---|---|---|
@@ -665,7 +666,6 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_supertramp_path_template_pair | 0x423f10 | 1935 | 544/552 | 77.37% | 16/552 | 36 ok |  | core |
 | 🚧 | initialize_slalomdouble_path_template_pair | 0x425050 | 2536 | 682/683 | 57.88% | 5/683 | 2 unaudited, 44 ok |  | core |
 | 🚧 | initialize_p_path_template_pair | 0x425a40 | 2482 | 677/679 | 63.42% | 6/679 | 41 ok |  | core |
-| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 613/610 | 76.86% | 122/610 | 35 ok |  | core |
 | 🚧 | initialize_turnover_path_template_pair | 0x426cb0 | 2433 | 671/671 | 69.45% | 54/671 | 41 ok |  | core |
 | 🚧 | initialize_turnoverdouble_path_template_pair | 0x427640 | 2458 | 683/680 | 75.28% | 80/680 | 46 ok |  | core |
 | 🚧 | initialize_turnunder_path_template_pair | 0x427fe0 | 2487 | 662/687 | 56.63% | 6/687 | 45 ok |  | core |

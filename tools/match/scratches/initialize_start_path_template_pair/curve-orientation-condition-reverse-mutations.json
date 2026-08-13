@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "later-curve-sample-condition",
+      "find": "            if (curve_index != 0) {",
+      "replacements": [
+        {
+          "name": "positive-index",
+          "text": "            if (curve_index > 0) {"
+        },
+        {
+          "name": "index-at-least-one",
+          "text": "            if (curve_index >= 1) {"
+        },
+        {
+          "name": "zero-less-than-index",
+          "text": "            if (0 < curve_index) {"
+        },
+        {
+          "name": "sample-index-greater-than-five",
+          "text": "            if (i > 5) {"
+        },
+        {
+          "name": "sample-index-at-least-six",
+          "text": "            if (i >= 6) {"
+        }
+      ]
+    }
+  ]
+}
