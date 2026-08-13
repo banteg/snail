@@ -646,7 +646,7 @@
     {
       "address": "0x407b60",
       "name": "construct_game_runtime",
-      "description": "Allocates the exact `0x12e6ff4`-byte `cRGame` root object with C++ exception cleanup, runs its inlined constructor, and publishes the live global game pointer. Android `cRGame::cRGame()` independently confirms the root owner and construction topology, including 150 border records, 128 cached object slots, Backdrop, StarManager, the logo banks, embedded cRSubGame, and TipManager; the surrounding Windows size ledger and global publication remain wrapper-only work."
+      "description": "Allocates the exact `0x12e6ff4`-byte `cRGame` root object with C++ exception cleanup, runs its inlined constructor, and publishes the live global game pointer. Android `cRGame::cRGame()` independently confirms the root owner and construction topology, including 150 border records, 128 cached object slots, cRBackdrop, StarManager, the logo banks, embedded cRSubGame, and TipManager; the surrounding Windows size ledger and global publication remain wrapper-only work."
     },
     {
       "address": "0x408000",
@@ -1132,7 +1132,7 @@
     {
       "address": "0x410720",
       "name": "initialize_game_last",
-      "description": "Exact Windows `cRGame::InitLast()` projection: completes root startup by initializing the embedded Backdrop at +0x4ec10 in last-mode 1. Android preserves that same call inside its larger platform finalizer; iOS preserves the authored lifecycle name and bootstrap call while performing a different mobile backdrop finalization sequence.",
+      "description": "Exact Windows `cRGame::InitLast()` projection: completes root startup by initializing the embedded cRBackdrop at +0x4ec10 in last-mode 1. Android preserves that same call inside its larger platform finalizer; iOS preserves the authored lifecycle name and bootstrap call while performing a different mobile backdrop finalization sequence.",
       "aliases": [
         "cRGame_InitLast"
       ]

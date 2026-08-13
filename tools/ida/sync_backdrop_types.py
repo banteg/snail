@@ -28,7 +28,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Shared Backdrop ownership header.",
+        help="Shared cRBackdrop ownership header.",
     )
     return parser.parse_args()
 
@@ -41,7 +41,7 @@ def main() -> int:
     if not db_path.is_file():
         raise FileNotFoundError(f"IDA database not found: {db_path}")
     if not header_path.is_file():
-        raise FileNotFoundError(f"Backdrop type header not found: {header_path}")
+        raise FileNotFoundError(f"cRBackdrop type header not found: {header_path}")
 
     exit_code, log_text = run_ida_script(
         ida_bin=ida_bin,

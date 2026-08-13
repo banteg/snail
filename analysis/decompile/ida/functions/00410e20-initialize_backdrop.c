@@ -3,7 +3,7 @@
 /* selector: initialize_backdrop */
 
 // Exact void Windows `cRBackdrop::Init` projection: initializes the shared renderer, seeds its texture-transition state, and primes its distortion grid. The unstripped Android build independently preserves `cRBackdrop::Init(int)`; no corresponding iOS export is present.
-void __thiscall initialize_backdrop(Backdrop *backdrop, int32_t last_mode)
+void __thiscall initialize_backdrop(cRBackdrop *backdrop, int32_t last_mode)
 {
   backdrop->corner_index_buffer_handle = 1;
   backdrop->unknown_660 = 0;

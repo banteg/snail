@@ -18,11 +18,52 @@ if str(SCRIPT_ROOT) not in sys.path:
     sys.path.insert(0, str(SCRIPT_ROOT))
 
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
+from type_alias_migration import migrate_equivalent_struct_aliases  # noqa: E402
 
 
 EXPECTED_BOD_BASE_SIZE = 0x38
 EXPECTED_BACKDROP_DISTORT_CELL_SIZE = 0x18
 EXPECTED_BACKDROP_SIZE = 0x6CC
+
+BACKDROP_OWNER_TYPE_ALIASES = (
+    ("Backdrop", "cRBackdrop", EXPECTED_BACKDROP_SIZE),
+)
+
+EXPECTED_OWNER_LAYOUTS = {
+    "BodBase": {
+        "size": EXPECTED_BOD_BASE_SIZE,
+        "members": {
+            0x24: ("object", "Object *"),
+            0x28: ("color", "tColour"),
+        },
+    },
+    "BackdropDistortCell": {
+        "size": EXPECTED_BACKDROP_DISTORT_CELL_SIZE,
+        "members": {
+            0x00: ("phase", "float"),
+            0x14: ("current_y_offset", "float"),
+        },
+    },
+    "BackdropWorldBlend": {
+        "size": 0x20,
+        "members": {
+            0x00: ("color", "tColour"),
+            0x1C: ("current_world", "int32_t"),
+        },
+    },
+    "cRBackdrop": {
+        "size": EXPECTED_BACKDROP_SIZE,
+        "members": {
+            0x00: ("bod", "BodBase"),
+            0x58: ("distort_grid", "BackdropDistortCell[8][8]"),
+            0x658: ("backdrop_render_enabled", "int32_t"),
+            0x65C: ("corner_index_buffer_handle", "uint32_t"),
+            0x67C: ("primary_world_blend", "BackdropWorldBlend"),
+            0x69C: ("secondary_world_blend", "BackdropWorldBlend"),
+            0x6C8: ("zoom", "float"),
+        },
+    },
+}
 
 TRUSTED_NAMES = (
     (0x410720, "initialize_game_last"),
@@ -36,35 +77,39 @@ TRUSTED_DECLARATIONS = (
     ),
     (
         "set_backdrop_zoom",
-        "void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom);",
+        "void __thiscall set_backdrop_zoom(cRBackdrop* backdrop, float zoom);",
     ),
     (
         "set_backdrop_distort",
-        "void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort);",
+        "void __thiscall set_backdrop_distort(cRBackdrop* backdrop, float distort);",
     ),
     (
         "change_backdrop",
-        "void __thiscall change_backdrop(Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip);",
+        "void __thiscall change_backdrop(cRBackdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip);",
     ),
     (
         "change_backdrop_real",
-        "void __thiscall change_backdrop_real(Backdrop* backdrop);",
+        "void __thiscall change_backdrop_real(cRBackdrop* backdrop);",
     ),
     (
         "initialize_backdrop",
-        "void __thiscall initialize_backdrop(Backdrop* backdrop, int32_t last_mode);",
+        "void __thiscall initialize_backdrop(cRBackdrop* backdrop, int32_t last_mode);",
     ),
     (
         "set_backdrop_texture_target",
-        "void __thiscall set_backdrop_texture_target(Backdrop* backdrop, int32_t world);",
+        "void __thiscall set_backdrop_texture_target(cRBackdrop* backdrop, int32_t world);",
+    ),
+    (
+        "draw_split_backdrop",
+        "int32_t __thiscall draw_split_backdrop(cRBackdrop* backdrop);",
     ),
     (
         "render_backdrop",
-        "void __thiscall render_backdrop(Backdrop* backdrop);",
+        "void __thiscall render_backdrop(cRBackdrop* backdrop);",
     ),
     (
         "update_backdrop",
-        "int32_t __thiscall update_backdrop(Backdrop* backdrop);",
+        "int32_t __thiscall update_backdrop(cRBackdrop* backdrop);",
     ),
 )
 
@@ -111,6 +156,60 @@ def _named_struct_size(name: str) -> int | None:
     if not value.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     return value.get_size()
+
+
+def _owner_layout_readback() -> dict[str, object]:
+    readback: dict[str, object] = {}
+    failures: list[dict[str, object]] = []
+    for type_name, expected in EXPECTED_OWNER_LAYOUTS.items():
+        type_info = ida_typeinf.tinfo_t()
+        if not type_info.get_named_type(None, type_name, ida_typeinf.BTF_STRUCT):
+            failures.append({"type": type_name, "reason": "missing_named_struct"})
+            continue
+        members = ida_typeinf.udt_type_data_t()
+        if not type_info.get_udt_details(members):
+            failures.append({"type": type_name, "reason": "missing_struct_details"})
+            continue
+        observed_members = {
+            int(member.offset) // 8: {
+                "name": str(member.name),
+                "type": _normalize_type_text(member.type.dstr()),
+            }
+            for member in members
+        }
+        observed = {
+            "size": type_info.get_size(),
+            "members": {
+                hex(offset): observed_members.get(offset)
+                for offset in expected["members"]
+            },
+        }
+        readback[type_name] = observed
+        if observed["size"] != expected["size"]:
+            failures.append(
+                {
+                    "type": type_name,
+                    "reason": "owner_size_mismatch",
+                    "expected": expected["size"],
+                    "observed": observed["size"],
+                }
+            )
+        for offset, (expected_name, expected_type) in expected["members"].items():
+            expected_member = {
+                "name": expected_name,
+                "type": _normalize_type_text(expected_type),
+            }
+            if observed_members.get(offset) != expected_member:
+                failures.append(
+                    {
+                        "type": type_name,
+                        "offset": hex(offset),
+                        "reason": "owner_member_mismatch",
+                        "expected": expected_member,
+                        "observed": observed_members.get(offset),
+                    }
+                )
+    return {"types": readback, "failures": failures}
 
 
 def _normalize_struct_pointer_type(value: str | None) -> str:
@@ -252,30 +351,29 @@ def _sync_types(header_path: pathlib.Path) -> int:
             }
         )
 
-    parse_errors = (
-        0 if failed else idc.parse_decls(str(header_path), idc.PT_FILE)
+    parse_errors = 0 if failed else idc.parse_decls(str(header_path), idc.PT_FILE)
+    type_alias_migrations = (
+        []
+        if failed or parse_errors
+        else migrate_equivalent_struct_aliases(BACKDROP_OWNER_TYPE_ALIASES)
     )
+    failed.extend(
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in type_alias_migrations
+        if result.get("status") == "failed"
+    )
+    owner_layout_readback = (
+        {"types": {}, "failures": []}
+        if failed or parse_errors
+        else _owner_layout_readback()
+    )
+    failed.extend(owner_layout_readback["failures"])
     distort_cell_size = _named_struct_size("BackdropDistortCell")
-    backdrop_size = _named_struct_size("Backdrop")
-
-    if distort_cell_size != EXPECTED_BACKDROP_DISTORT_CELL_SIZE:
-        failed.append(
-            {
-                "selector": "BackdropDistortCell",
-                "reason": "owner_size_mismatch",
-                "expected": EXPECTED_BACKDROP_DISTORT_CELL_SIZE,
-                "observed": distort_cell_size,
-            }
-        )
-    if backdrop_size != EXPECTED_BACKDROP_SIZE:
-        failed.append(
-            {
-                "selector": "Backdrop",
-                "reason": "owner_size_mismatch",
-                "expected": EXPECTED_BACKDROP_SIZE,
-                "observed": backdrop_size,
-            }
-        )
+    backdrop_size = _named_struct_size("cRBackdrop")
 
     if not parse_errors and not failed:
         for address, name in TRUSTED_NAMES:
@@ -362,6 +460,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "type_alias_migrations": type_alias_migrations,
+                "owner_layout_readback": owner_layout_readback,
                 "bod_base_size": bod_base_size,
                 "distort_cell_size": distort_cell_size,
                 "backdrop_size": backdrop_size,

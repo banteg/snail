@@ -3,7 +3,7 @@
 /* selector: change_backdrop_real */
 
 // Exact void Windows `cRBackdrop::ChangeReal` projection: commits the pending backdrop selection, refreshes the distortion grid when the world index changes, and copies the split-vs-single flags into active state. Android and iOS independently preserve `cRBackdrop::ChangeReal()`.
-void __thiscall change_backdrop_real(Backdrop *backdrop)
+void __thiscall change_backdrop_real(cRBackdrop *backdrop)
 {
   int32_t pending_primary_texture_id; // eax
   uint8_t pending_flip; // dl

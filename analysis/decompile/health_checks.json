@@ -17676,14 +17676,15 @@
       "name": "bn_backdrop_distort_void_owner",
       "artifact": "analysis/decompile/binja/functions/00410c40-set_backdrop_distort.c",
       "required_substrings": [
-        "struct Backdrop* backdrop_1 = backdrop",
+        "struct cRBackdrop* backdrop_1 = backdrop",
         "fconvert.t(distort)",
         "00410d42        return"
       ],
       "forbidden_substrings": [
         "arg1",
         "arg2",
-        "return result"
+        "return result",
+        "struct Backdrop* backdrop_1 = backdrop"
       ]
     },
     {
@@ -17741,14 +17742,15 @@
       "name": "ida_initialize_backdrop_corner_buffer_owner",
       "artifact": "analysis/decompile/ida/functions/00410e20-initialize_backdrop.c",
       "required_substrings": [
-        "void __thiscall initialize_backdrop(Backdrop *backdrop, int32_t last_mode)",
+        "void __thiscall initialize_backdrop(cRBackdrop *backdrop, int32_t last_mode)",
         "backdrop->corner_index_buffer_handle = 1;",
         "set_backdrop_texture_target(backdrop, 5);",
         "set_backdrop_distort(backdrop, 0.0);"
       ],
       "forbidden_substrings": [
         "backdrop->unknown_65c",
-        "sub_410E20"
+        "sub_410E20",
+        "initialize_backdrop(Backdrop *backdrop"
       ]
     },
     {
@@ -17784,14 +17786,15 @@
       "name": "bn_render_backdrop_void_owner",
       "artifact": "analysis/decompile/binja/functions/00411040-render_backdrop.c",
       "required_substrings": [
-        "struct Backdrop* backdrop_9 = backdrop",
+        "struct cRBackdrop* backdrop_9 = backdrop",
         "backdrop_9->active_flip",
         "backdrop_9->active_primary_texture_id",
         "004112e7        return"
       ],
       "forbidden_substrings": [
         "arg1",
-        "return result"
+        "return result",
+        "struct Backdrop* backdrop_9 = backdrop"
       ]
     },
     {
@@ -17820,21 +17823,22 @@
       "name": "ida_render_backdrop_owner",
       "artifact": "analysis/decompile/ida/functions/00411040-render_backdrop.c",
       "required_substrings": [
-        "void __thiscall render_backdrop(Backdrop *backdrop)",
+        "void __thiscall render_backdrop(cRBackdrop *backdrop)",
         "backdrop->active_flip",
         "backdrop->active_primary_texture_id"
       ],
       "forbidden_substrings": [
         "void __thiscall sub_411040(int this)",
         "render_backdrop(int this)",
-        "this + 60"
+        "this + 60",
+        "render_backdrop(Backdrop *backdrop)"
       ]
     },
     {
       "name": "ida_update_backdrop_owner",
       "artifact": "analysis/decompile/ida/functions/004112f0-update_backdrop.c",
       "required_substrings": [
-        "int32_t __thiscall update_backdrop(Backdrop *backdrop)",
+        "int32_t __thiscall update_backdrop(cRBackdrop *backdrop)",
         "backdrop->backdrop_change_queued",
         "backdrop->distort_grid[0]",
         "struct BackdropDistortCell *column_start",
@@ -17848,7 +17852,80 @@
         "sub_4112F0(int this)",
         "*(_BYTE *)(this +",
         "float *p_phase",
-        "p_phase["
+        "p_phase[",
+        "update_backdrop(Backdrop *backdrop)"
+      ]
+    },
+    {
+      "name": "ida_backdrop_zoom_canonical_owner",
+      "artifact": "analysis/decompile/ida/functions/00410c30-set_backdrop_zoom.c",
+      "required_substrings": [
+        "void __thiscall set_backdrop_zoom(cRBackdrop *backdrop, float zoom)",
+        "backdrop->zoom = zoom;"
+      ],
+      "forbidden_substrings": [
+        "set_backdrop_zoom(Backdrop *backdrop",
+        "set_backdrop_zoom(int this"
+      ]
+    },
+    {
+      "name": "ida_backdrop_distort_canonical_owner",
+      "artifact": "analysis/decompile/ida/functions/00410c40-set_backdrop_distort.c",
+      "required_substrings": [
+        "void __thiscall set_backdrop_distort(cRBackdrop *backdrop, float distort)",
+        "backdrop->distort_grid"
+      ],
+      "forbidden_substrings": [
+        "set_backdrop_distort(Backdrop *backdrop",
+        "set_backdrop_distort(int this"
+      ]
+    },
+    {
+      "name": "ida_change_backdrop_canonical_owner",
+      "artifact": "analysis/decompile/ida/functions/00410d50-change_backdrop.c",
+      "required_substrings": [
+        "void __thiscall change_backdrop(cRBackdrop *backdrop, LandscapeScriptRecord *record, uint8_t flip)",
+        "backdrop->pending_primary_texture_id"
+      ],
+      "forbidden_substrings": [
+        "change_backdrop(Backdrop *backdrop",
+        "change_backdrop(int this"
+      ]
+    },
+    {
+      "name": "ida_change_backdrop_real_canonical_owner",
+      "artifact": "analysis/decompile/ida/functions/00410dc0-change_backdrop_real.c",
+      "required_substrings": [
+        "void __thiscall change_backdrop_real(cRBackdrop *backdrop)",
+        "backdrop->active_primary_texture_id"
+      ],
+      "forbidden_substrings": [
+        "change_backdrop_real(Backdrop *backdrop)",
+        "change_backdrop_real(int this)"
+      ]
+    },
+    {
+      "name": "ida_backdrop_world_canonical_owner",
+      "artifact": "analysis/decompile/ida/functions/00410f40-set_backdrop_texture_target.c",
+      "required_substrings": [
+        "void __thiscall set_backdrop_texture_target(cRBackdrop *backdrop, int32_t world)",
+        "backdrop->primary_world_blend.current_world = world;"
+      ],
+      "forbidden_substrings": [
+        "set_backdrop_texture_target(Backdrop *backdrop",
+        "set_backdrop_texture_target(int this"
+      ]
+    },
+    {
+      "name": "ida_split_backdrop_canonical_owner",
+      "artifact": "analysis/decompile/ida/functions/00410f90-draw_split_backdrop.c",
+      "required_substrings": [
+        "int32_t __thiscall draw_split_backdrop(cRBackdrop *backdrop)",
+        "backdrop->active_secondary_texture_id"
+      ],
+      "forbidden_substrings": [
+        "draw_split_backdrop(Backdrop *backdrop)",
+        "draw_split_backdrop(int this)"
       ]
     },
     {

@@ -3,7 +3,7 @@
 /* selector: set_backdrop_texture_target */
 
 // Stable Windows harness identity for the authored cRBackdrop::SetWorld(int) member. It flips both owned world-blend fractions, shifts each current world into its previous slot, and installs the new world in both 0x20-byte BackdropWorldBlend records.
-void __thiscall set_backdrop_texture_target(Backdrop *backdrop, int32_t world)
+void __thiscall set_backdrop_texture_target(cRBackdrop *backdrop, int32_t world)
 {
   double v2; // st7
   int32_t current_world; // edx

@@ -6075,7 +6075,7 @@
         "off_4972e4",
         "data_4972e4"
       ],
-      "description": "Backdrop BOD callback table installed at root offset `0x4ec10`; first entry is `update_backdrop`."
+      "description": "cRBackdrop BOD callback table installed at root offset `0x4ec10`; first entry is `update_backdrop`."
     },
     {
       "address": "0x4972e8",

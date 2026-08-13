@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 9,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 9,
+  "ida_exported": 9,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,31 +18,43 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_intro_logo_renderable",
-      "address": "0x408490"
+      "name": "set_backdrop_zoom",
+      "address": "0x410c30"
     },
     {
-      "name": "open_logo",
-      "address": "0x419110"
+      "name": "set_backdrop_distort",
+      "address": "0x410c40"
     },
     {
-      "name": "initialize_intro_screen",
-      "address": "0x4191e0"
+      "name": "change_backdrop",
+      "address": "0x410d50"
     },
     {
-      "name": "destroy_intro_screen",
-      "address": "0x419920"
+      "name": "change_backdrop_real",
+      "address": "0x410dc0"
     },
     {
-      "name": "update_intro_screen",
-      "address": "0x4199e0"
+      "name": "initialize_backdrop",
+      "address": "0x410e20"
     },
     {
-      "name": "update_intro_logo_renderable",
-      "address": "0x419a90"
+      "name": "set_backdrop_texture_target",
+      "address": "0x410f40"
+    },
+    {
+      "name": "draw_split_backdrop",
+      "address": "0x410f90"
+    },
+    {
+      "name": "render_backdrop",
+      "address": "0x411040"
+    },
+    {
+      "name": "update_backdrop",
+      "address": "0x4112f0"
     }
   ],
-  "health_check_count": 1160,
+  "health_check_count": 1166,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

@@ -40,7 +40,7 @@ typedef struct LandscapeScriptRecord {
     float distort;
 } LandscapeScriptRecord;
 
-typedef struct Backdrop {
+typedef struct cRBackdrop {
     /*
      * Borrow the complete canonical BodBase already present in the analysis
      * database. The narrow replay verifies its exact 0x38-byte extent before
@@ -77,19 +77,19 @@ typedef struct Backdrop {
     float unknown_6c0;
     int32_t unknown_6c4;
     float zoom;
-} Backdrop;
+} cRBackdrop;
 
-typedef char Backdrop_must_be_0x6cc[(sizeof(Backdrop) == 0x6cc) ? 1 : -1];
+typedef char cRBackdrop_must_be_0x6cc[(sizeof(cRBackdrop) == 0x6cc) ? 1 : -1];
 
-void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom);
-void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort);
+void __thiscall set_backdrop_zoom(cRBackdrop* backdrop, float zoom);
+void __thiscall set_backdrop_distort(cRBackdrop* backdrop, float distort);
 void __thiscall change_backdrop(
-    Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip);
-void __thiscall change_backdrop_real(Backdrop* backdrop);
-void __thiscall initialize_backdrop(Backdrop* backdrop, int32_t last_mode);
-void __thiscall set_backdrop_texture_target(Backdrop* backdrop, int32_t world);
-int32_t __thiscall draw_split_backdrop(Backdrop* backdrop);
-void __thiscall render_backdrop(Backdrop* backdrop);
-int32_t __thiscall update_backdrop(Backdrop* backdrop);
+    cRBackdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip);
+void __thiscall change_backdrop_real(cRBackdrop* backdrop);
+void __thiscall initialize_backdrop(cRBackdrop* backdrop, int32_t last_mode);
+void __thiscall set_backdrop_texture_target(cRBackdrop* backdrop, int32_t world);
+int32_t __thiscall draw_split_backdrop(cRBackdrop* backdrop);
+void __thiscall render_backdrop(cRBackdrop* backdrop);
+int32_t __thiscall update_backdrop(cRBackdrop* backdrop);
 
 #endif

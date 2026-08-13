@@ -1491,7 +1491,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     ):
         assert owner in owner_sync
     for owner in (
-        '(0x4EC10, 0x6CC, "backdrop", "Backdrop")',
+        '(0x4EC10, 0x6CC, "backdrop", "cRBackdrop")',
         '(0x4F2DC, 0x48, "intro", "Intro")',
         '(0x4F324, 0x18, "main_menu", "MainMenu")',
         '(0x4F33C, 0x4C, "star_manager", "StarManager")',
@@ -1727,8 +1727,13 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
     assert '"target_name": "column_start"' in backdrop_apply
     assert '"target_name": "cell"' in backdrop_apply
     assert "DISTORT_CELL_LVARS" in backdrop_apply
-    assert "void __thiscall render_backdrop(Backdrop* backdrop);" in backdrop_apply
-    assert "int32_t __thiscall update_backdrop(Backdrop* backdrop);" in backdrop_apply
+    assert "migrate_equivalent_struct_aliases" in backdrop_apply
+    assert '("Backdrop", "cRBackdrop", EXPECTED_BACKDROP_SIZE)' in backdrop_apply
+    assert "EXPECTED_OWNER_LAYOUTS" in backdrop_apply
+    assert "_owner_layout_readback" in backdrop_apply
+    assert '0x65C: ("corner_index_buffer_handle", "uint32_t")' in backdrop_apply
+    assert "void __thiscall render_backdrop(cRBackdrop* backdrop);" in backdrop_apply
+    assert "int32_t __thiscall update_backdrop(cRBackdrop* backdrop);" in backdrop_apply
     assert 'analysis/headers/bn_backdrop_types.h' in backdrop_sync
 
 
@@ -1737,6 +1742,7 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     header = (HEADER_DIR / "bn_backdrop_types.h").read_text(encoding="utf-8")
 
     assert "apply_proto_updates" in source
+    assert "apply_type_renames" in source
     assert "apply_user_var_updates" in source
     assert "types_declare_if_changed" in source
     assert "report_deferred_prototypes" not in source
@@ -1744,7 +1750,10 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert "typedef struct LandscapeScriptRecord {" in header
     assert "BodBase bod;" in header
     assert "uint8_t bod_base[0x38];" not in header
-    assert "Backdrop_must_be_0x6cc" in header
+    assert '("Backdrop", "cRBackdrop")' in source
+    assert "typedef struct cRBackdrop {" in header
+    assert "typedef struct Backdrop {" not in header
+    assert "cRBackdrop_must_be_0x6cc" in header
     assert "uint32_t corner_index_buffer_handle;" in header
     assert "int32_t unknown_65c;" not in header
     assert "require_bod_base_dependency" in source
@@ -1763,15 +1772,15 @@ def test_binja_backdrop_owner_abis_are_directly_replayed() -> None:
     assert "float distort;" in header
     for prototype in (
         "void __thiscall initialize_game_last(GameRoot* game)",
-        "void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom)",
-        "void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort)",
-        "void __thiscall change_backdrop(Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip)",
-        "void __thiscall change_backdrop_real(Backdrop* backdrop)",
-        "void __thiscall initialize_backdrop(Backdrop* backdrop, int32_t last_mode)",
-        "void __thiscall set_backdrop_texture_target(Backdrop* backdrop, int32_t world)",
-        "int32_t __thiscall draw_split_backdrop(Backdrop* backdrop)",
-        "void __thiscall render_backdrop(Backdrop* backdrop)",
-        "int32_t __thiscall update_backdrop(Backdrop* backdrop)",
+        "void __thiscall set_backdrop_zoom(cRBackdrop* backdrop, float zoom)",
+        "void __thiscall set_backdrop_distort(cRBackdrop* backdrop, float distort)",
+        "void __thiscall change_backdrop(cRBackdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip)",
+        "void __thiscall change_backdrop_real(cRBackdrop* backdrop)",
+        "void __thiscall initialize_backdrop(cRBackdrop* backdrop, int32_t last_mode)",
+        "void __thiscall set_backdrop_texture_target(cRBackdrop* backdrop, int32_t world)",
+        "int32_t __thiscall draw_split_backdrop(cRBackdrop* backdrop)",
+        "void __thiscall render_backdrop(cRBackdrop* backdrop)",
+        "int32_t __thiscall update_backdrop(cRBackdrop* backdrop)",
     ):
         assert prototype in source
 

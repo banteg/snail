@@ -3,7 +3,7 @@
 /* selector: draw_split_backdrop */
 
 // Queues the split `_A` / `_B` backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout. Windows intentionally propagates the second queue append's integer offset into its folded `cRBackdrop::AI` path.
-int32_t __thiscall draw_split_backdrop(Backdrop *backdrop)
+int32_t __thiscall draw_split_backdrop(cRBackdrop *backdrop)
 {
   tColour *v2; // eax
   tColour *v3; // eax

@@ -3,7 +3,7 @@
 /* selector: change_backdrop */
 
 // Exact void Windows `cRBackdrop::Change` projection: binds one parsed background script entry into the shared renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Android and iOS independently preserve `cRBackdrop::Change(cRLandscape*, bool)`.
-void __thiscall change_backdrop(Backdrop *backdrop, LandscapeScriptRecord *record, uint8_t flip)
+void __thiscall change_backdrop(cRBackdrop *backdrop, LandscapeScriptRecord *record, uint8_t flip)
 {
   int32_t v3; // edx
   int32_t backdrop_texture_id; // esi

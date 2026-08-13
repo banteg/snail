@@ -11,6 +11,7 @@ from _narrow_sync import (
     apply_proto_updates,
     apply_struct_field_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_struct_size,
     emit_summary,
@@ -23,7 +24,11 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_backdrop_types.h"
 
 GAME_ROOT_FIELD_UPDATES = (
-    ("0x4ec10", "backdrop", "Backdrop"),
+    ("0x4ec10", "backdrop", "cRBackdrop"),
+)
+
+TYPE_RENAMES = (
+    ("Backdrop", "cRBackdrop"),
 )
 
 SYMBOL_UPDATES = (
@@ -37,39 +42,39 @@ PROTO_UPDATES = (
     ),
     (
         "set_backdrop_zoom",
-        "void __thiscall set_backdrop_zoom(Backdrop* backdrop, float zoom)",
+        "void __thiscall set_backdrop_zoom(cRBackdrop* backdrop, float zoom)",
     ),
     (
         "set_backdrop_distort",
-        "void __thiscall set_backdrop_distort(Backdrop* backdrop, float distort)",
+        "void __thiscall set_backdrop_distort(cRBackdrop* backdrop, float distort)",
     ),
     (
         "change_backdrop",
-        "void __thiscall change_backdrop(Backdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip)",
+        "void __thiscall change_backdrop(cRBackdrop* backdrop, LandscapeScriptRecord* record, uint8_t flip)",
     ),
     (
         "change_backdrop_real",
-        "void __thiscall change_backdrop_real(Backdrop* backdrop)",
+        "void __thiscall change_backdrop_real(cRBackdrop* backdrop)",
     ),
     (
         "initialize_backdrop",
-        "void __thiscall initialize_backdrop(Backdrop* backdrop, int32_t last_mode)",
+        "void __thiscall initialize_backdrop(cRBackdrop* backdrop, int32_t last_mode)",
     ),
     (
         "set_backdrop_texture_target",
-        "void __thiscall set_backdrop_texture_target(Backdrop* backdrop, int32_t world)",
+        "void __thiscall set_backdrop_texture_target(cRBackdrop* backdrop, int32_t world)",
     ),
     (
         "draw_split_backdrop",
-        "int32_t __thiscall draw_split_backdrop(Backdrop* backdrop)",
+        "int32_t __thiscall draw_split_backdrop(cRBackdrop* backdrop)",
     ),
     (
         "render_backdrop",
-        "void __thiscall render_backdrop(Backdrop* backdrop)",
+        "void __thiscall render_backdrop(cRBackdrop* backdrop)",
     ),
     (
         "update_backdrop",
-        "int32_t __thiscall update_backdrop(Backdrop* backdrop)",
+        "int32_t __thiscall update_backdrop(cRBackdrop* backdrop)",
     ),
 )
 
@@ -83,7 +88,7 @@ ROOT_INITIALIZER_REANALYSIS_FUNCTIONS = (
 # ESI borrows the current cell in that column and advances by eight cells.
 # Pin the exact cell-pointer lifetimes so Binary Ninja does not promote either
 # borrow to a pointer to the complete array and recover fields through a false
-# subtraction from the Backdrop owner.
+# subtraction from the cRBackdrop owner.
 BACKDROP_DISTORT_USER_VAR_UPDATES = (
     (
         "update_backdrop",
@@ -112,7 +117,7 @@ def require_bod_base_dependency(*, target: str) -> None:
     )
     if size != 0x38:
         raise RuntimeError(
-            "BodBase must be exactly 0x38 bytes before Backdrop replay; "
+            "BodBase must be exactly 0x38 bytes before cRBackdrop replay; "
             f"observed {size!r}"
         )
 
@@ -120,7 +125,7 @@ def require_bod_base_dependency(*, target: str) -> None:
 def require_distort_cursor_dependencies(*, target: str) -> dict[str, object]:
     expected_sizes = {
         "BackdropDistortCell": 0x18,
-        "Backdrop": 0x6CC,
+        "cRBackdrop": 0x6CC,
     }
     observed_sizes = {
         name: current_struct_size(REPO_ROOT, target=target, struct_name=name)
@@ -137,7 +142,7 @@ def require_distort_cursor_dependencies(*, target: str) -> dict[str, object]:
             for name, (expected, observed) in mismatches.items()
         )
         raise RuntimeError(
-            "Backdrop distortion cursor dependencies are not current: " + detail
+            "cRBackdrop distortion cursor dependencies are not current: " + detail
         )
     return {
         "op": "verify_backdrop_distort_cursor_dependencies",
@@ -191,10 +196,15 @@ def main() -> int:
         )
 
     require_bod_base_dependency(target=args.target)
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=TYPE_RENAMES,
+    )
     type_replay = types_declare_if_changed(
         REPO_ROOT, target=args.target, header_path=header_path
     )
-    operations: list[dict[str, object]] = [type_replay]
+    operations: list[dict[str, object]] = [*type_rename_operations, type_replay]
     operations.extend(
         apply_symbol_updates(
             REPO_ROOT,

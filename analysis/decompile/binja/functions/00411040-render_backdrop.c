@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: render_backdrop @ 0x411040 */
 
-00411046        struct Backdrop* backdrop_9 = backdrop
+00411046        struct cRBackdrop* backdrop_9 = backdrop
 00411048        float var_38 = 0f
 004112db        long double x87_r7_43
 004112db        long double temp1_1
@@ -35,18 +35,18 @@
 00411086        if (backdrop.b != 0)
 0041119e        int32_t var_48_2 = 0
 004111a0        int32_t var_4c_2 = 0
-004111a2        struct Backdrop* backdrop_8 = backdrop
+004111a2        struct cRBackdrop* backdrop_8 = backdrop
 004111a6        float var_30_2 = fconvert.s(fconvert.t(var_34_1) * fconvert.t(68.5714264f))
-004111b4        void* esi_2 = &backdrop_9->bod_base[eax_3 * 0x18]
+004111b4        void* esi_2 = backdrop_9 + eax_3 * 0x18
 004111b7        float var_24_2 = fconvert.s(fconvert.t(var_38) * fconvert.t(91.4285736f))
 004111c3        float var_2c_2 = fconvert.s(x87_r6_6 * fconvert.t(91.4285736f))
 004111cf        float var_28_2 = fconvert.s(x87_r7_1 * fconvert.t(68.5714264f))
 004111dd        v1 = fconvert.s(fconvert.t(var_34_1) * fconvert.t(0.133928567f))
-004111e0        struct Backdrop* backdrop_6 = backdrop
+004111e0        struct cRBackdrop* backdrop_6 = backdrop
 004111ed        u1 = fconvert.s(fconvert.t(0.800000012f) - x87_r6_6 * fconvert.t(0.0892857164f))
-004111f0        struct Backdrop* backdrop_4 = backdrop
+004111f0        struct cRBackdrop* backdrop_4 = backdrop
 004111f7        v0 = fconvert.s(x87_r7_1 * fconvert.t(0.133928567f))
-00411204        struct Backdrop* backdrop_2 = backdrop
+00411204        struct cRBackdrop* backdrop_2 = backdrop
 0041120f        u0 = fconvert.s(fconvert.t(0.800000012f) - fconvert.t(var_38) * fconvert.t(0.0892857164f))
 00411226        struct tColour color_2
 00411226        struct tColour* color_4
@@ -75,18 +75,18 @@
 004112a2        active_primary_texture_id = backdrop_9->active_primary_texture_id
 00411096        int32_t var_48_1 = 0
 00411098        int32_t var_4c_1 = 0
-0041109a        struct Backdrop* backdrop_7 = backdrop
+0041109a        struct cRBackdrop* backdrop_7 = backdrop
 0041109e        float var_30_1 = fconvert.s(fconvert.t(var_34_1) * fconvert.t(68.5714264f))
-004110ac        void* esi_1 = &backdrop_9->bod_base[eax_3 * 0x18]
+004110ac        void* esi_1 = backdrop_9 + eax_3 * 0x18
 004110af        float var_24_1 = fconvert.s(fconvert.t(var_38) * fconvert.t(91.4285736f))
 004110bb        float var_2c_1 = fconvert.s(x87_r6_6 * fconvert.t(91.4285736f))
 004110c7        float var_28_1 = fconvert.s(x87_r7_1 * fconvert.t(68.5714264f))
 004110d5        v1 = fconvert.s(fconvert.t(var_34_1) * fconvert.t(0.133928567f))
-004110d8        struct Backdrop* backdrop_5 = backdrop
+004110d8        struct cRBackdrop* backdrop_5 = backdrop
 004110df        u1 = fconvert.s(x87_r6_6 * fconvert.t(0.0892857164f))
-004110e2        struct Backdrop* backdrop_3 = backdrop
+004110e2        struct cRBackdrop* backdrop_3 = backdrop
 004110e9        v0 = fconvert.s(x87_r7_1 * fconvert.t(0.133928567f))
-004110f6        struct Backdrop* backdrop_1 = backdrop
+004110f6        struct cRBackdrop* backdrop_1 = backdrop
 004110fb        u0 = fconvert.s(fconvert.t(var_38) * fconvert.t(0.0892857164f))
 00411112        struct tColour color_1
 00411112        struct tColour* color_3
@@ -113,7 +113,7 @@
 00411187        int32_t var_8c_1 = ecx_1
 0041118b        x0 = fconvert.s(fconvert.t(var_24_1) + fconvert.t(*(esi_1 + 0x68)))
 0041118e        active_primary_texture_id = backdrop_9->active_primary_texture_id
-004112a3        backdrop = queue_textured_quad_corners(active_primary_texture_id, x0, y0, x1, y1, x2, y2, x3, y3, 0, 0, 0x8000000, color, u0, v0, u1, v1, 0, 0f)
+004112a3        backdrop = queue_textured_quad_corners(active_primary_texture_id, x0, y0, x1, y1, x2, y2, x3, y3, 0f, 0f, 0x8000000, color, u0, v0, u1, v1, 0, 0f)
 004112a8        x87_r7_1 = fconvert.t(var_34_1)
 004112ac        temp0_1 = fconvert.t(7f)
 004112ac        x87_r7_1 - temp0_1

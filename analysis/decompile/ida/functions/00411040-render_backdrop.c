@@ -3,7 +3,7 @@
 /* selector: render_backdrop */
 
 // Draws the single-texture 320x240 backdrop crop through the animated distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Render()`.
-void __thiscall render_backdrop(Backdrop *backdrop)
+void __thiscall render_backdrop(cRBackdrop *backdrop)
 {
   double v2; // st7
   double v3; // st6
@@ -40,11 +40,11 @@ void __thiscall render_backdrop(Backdrop *backdrop)
       v20 = v2 + 1.0;
       v3 = v19 + 1.0;
       v21 = v20 * 68.571426;
-      v4 = (float *)&backdrop->bod_base[192 * (__int64)v2 + 24 * (__int64)v19];
+      v4 = (float *)((char *)backdrop + 192 * (__int64)v2 + 24 * (__int64)v19);
       v24 = v19 * 91.428574;
       v22 = v3 * 91.428574;
       v23 = v2 * 68.571426;
-      if ( backdrop->active_flip )
+      if ( backdrop->active_flip != 0 )
       {
         u1 = 0.80000001 - v3 * 0.089285716;
         v0 = v2 * 0.13392857;
@@ -77,8 +77,8 @@ void __thiscall render_backdrop(Backdrop *backdrop)
         y2,
         x3,
         y3,
-        0,
-        0,
+        0.0,
+        0.0,
         0x8000000u,
         v14,
         u0,

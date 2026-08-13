@@ -3,7 +3,7 @@
 /* selector: update_backdrop */
 
 // Windows `cRBackdrop::AI` projection: advances the shared renderer, updates its distortion grid, and dispatches the split or warped draw path. Android and iOS preserve a void `cRBackdrop::AI()` with rendering split into `Render()`, but Windows folds rendering into this member and retains its observed integer tail result; projecting the mobile void ABI regresses native codegen.
-int32_t __thiscall update_backdrop(Backdrop *backdrop)
+int32_t __thiscall update_backdrop(cRBackdrop *backdrop)
 {
   struct BackdropDistortCell *column_start; // ebx
   struct BackdropDistortCell *cell; // esi

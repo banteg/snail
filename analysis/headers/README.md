@@ -166,8 +166,9 @@ intentional.
 - `bn_backdrop_types.h`
 - `uv run python tools/binja/sync_backdrop_types.py`
 - `uv run python tools/ida/sync_backdrop_types.py`
-  - Width-gates the exact 0x6cc-byte Backdrop and replays its authored
-    lifecycle/render receiver contracts into IDA as well as Binary Ninja.
+  - Width-gates the exact 0x6cc-byte `cRBackdrop`, retires the older generic
+    analysis owner, and replays its authored lifecycle/render receiver
+    contracts into IDA as well as Binary Ninja.
 - `bn_frame_renderer_types.h`
 - `uv run python tools/binja/sync_frame_renderer_types.py`
   - Replays the original cross-port `Viewport` owner for the five root camera
@@ -522,7 +523,7 @@ The IDA frame, object-render, root-catalog, front-end, path-template, and
 subgame-runtime replays share
 `tools/ida/game_root_owner.py` for the recovered root graph. Once its exact
 component types are present, it composes the contiguous
-`RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `Backdrop +0x4ec10`,
+`RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `cRBackdrop +0x4ec10`,
 `Intro`, `MainMenu`, `StarManager`, `Options`, `Exit`, standalone `BodBase`,
 and `cRLogo` block through `+0x74618`, followed by the complete
 `cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
