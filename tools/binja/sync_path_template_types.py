@@ -83,6 +83,25 @@ NUKE_REANALYSIS_FUNCTIONS = (
     "update_subgoldy",
 )
 
+WARNING_OWNER_SIZES = {
+    "cRWarning": 0x10,
+}
+
+WARNING_OWNER_TYPE_RENAMES = (("Warning", "cRWarning"),)
+
+WARNING_REANALYSIS_FUNCTIONS = (
+    "initialize_warning",
+    "uninit_warning",
+    "start_warning",
+    "stop_warning",
+    "stop_warning_sample",
+    "update_warning",
+    "initialize_subgame",
+    "destroy_subgame",
+    "update_damage_gauge",
+    "update_subgoldy",
+)
+
 TIP_OWNER_SIZES = {
     "cRTipData": 0x14,
     "cRTip": 0x20,
@@ -605,7 +624,7 @@ REQUIRED_HEADER_STRUCTS = (
     "DamageGuage",
     "ProgressBar",
     "WarningState",
-    "Warning",
+    "cRWarning",
     "SubPause",
     "NukeState",
     "cRNuke",
@@ -816,6 +835,82 @@ def ensure_nuke_owner_type(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in NUKE_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_warning_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRWarning lifecycle ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=WARNING_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in WARNING_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRWarning owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "warning",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_warning_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire Warning only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=WARNING_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=WARNING_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in WARNING_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=WARNING_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: WARNING_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRWarning owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": WARNING_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in WARNING_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -1184,7 +1279,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x384", "follow_state", "cRPathFollowGoldy"),
     ("0x3c4", "damage_gauge", "DamageGuage"),
     ("0x3f0", "progress_bar", "ProgressBar"),
-    ("0x3f4", "warning", "Warning"),
+    ("0x3f4", "warning", "cRWarning"),
     ("0x404", "lives", "int32_t"),
     ("0x408", "game", "cRSubGame*"),
     ("0x40c", "movement_mode_selector", "int32_t"),
@@ -4493,27 +4588,27 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_warning",
-        "void __thiscall initialize_warning(Warning* warning)",
+        "void __thiscall initialize_warning(cRWarning* warning)",
     ),
     (
         "uninit_warning",
-        "void __thiscall uninit_warning(Warning* warning)",
+        "void __thiscall uninit_warning(cRWarning* warning)",
     ),
     (
         "start_warning",
-        "void __thiscall start_warning(Warning* warning)",
+        "void __thiscall start_warning(cRWarning* warning)",
     ),
     (
         "stop_warning",
-        "void __thiscall stop_warning(Warning* warning)",
+        "void __thiscall stop_warning(cRWarning* warning)",
     ),
     (
         "stop_warning_sample",
-        "void __thiscall stop_warning_sample(Warning* warning)",
+        "void __thiscall stop_warning_sample(cRWarning* warning)",
     ),
     (
         "update_warning",
-        "void __thiscall update_warning(Warning* warning)",
+        "void __thiscall update_warning(cRWarning* warning)",
     ),
     (
         "initialize_jetpack_gauge",
@@ -6327,6 +6422,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_warning_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_tip_owner_types(
                 target=args.target,
                 header_path=header_path,
@@ -6373,6 +6474,7 @@ def main() -> int:
         operations.append(verify_bod_core_owner_sizes(target=args.target))
         operations.append(verify_fringe_owner_sizes(target=args.target))
         operations.append(verify_nuke_owner_size(target=args.target))
+        operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(verify_tutorial_owner_size(target=args.target))
         operations.append(
@@ -6489,7 +6591,7 @@ def main() -> int:
                 ("SaltStateStrideCursor", SALT_STATE_CURSOR_FIELD_UPDATES),
                 ("SubSpeedUp", SUB_SPEED_UP_FIELD_UPDATES),
                 ("Banner", BANNER_FIELD_UPDATES),
-                ("Warning", WARNING_FIELD_UPDATES),
+                ("cRWarning", WARNING_FIELD_UPDATES),
                 ("DamageGuage", DAMAGE_GUAGE_FIELD_UPDATES),
                 ("cRNuke", NUKE_FIELD_UPDATES),
                 ("ClickStart", CLICK_START_FIELD_UPDATES),
@@ -6538,6 +6640,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=NUKE_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=WARNING_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

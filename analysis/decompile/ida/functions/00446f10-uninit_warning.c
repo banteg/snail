@@ -3,7 +3,7 @@
 /* selector: uninit_warning */
 
 // Releases the border owned by Player's embedded cRWarning. Android preserves this lifecycle edge as cRWarning::UnInit().
-void __thiscall uninit_warning(Warning *warning)
+void __thiscall uninit_warning(cRWarning *warning)
 {
   kill_border(&g_game_base->border_manager, warning->border);
 }

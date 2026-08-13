@@ -85,6 +85,12 @@ Current checked-in example:
 - `uv run python tools/ida/sync_logo_types.py`
 - `path_template_types.h`
 - `uv run python tools/ida/sync_path_template_types.py`
+- `warning_types.h`
+- `uv run python tools/binja/sync_warning_types.py`
+- `uv run python tools/ida/sync_warning_types.py`
+  - Retires the generic analysis-only `Warning` record after exact layout
+    equivalence, verifies the canonical 0x10-byte `cRWarning` and its
+    `Player +0x3f4` embed, then replays all six authored lifecycle receivers.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`

@@ -2,7 +2,7 @@
 /* function: update_damage_gauge @ 0x440fd0 */
 /* selector: update_damage_gauge */
 
-// Advances the player contact-damage gauge controller at +0x3c4, smoothing its displayed fill, driving the warning or drain presentation, rendering the sprite-backed gauge widget, and applying state-2 drain. Native global gates now recovered here include the suspend byte `Game+0x74621`, warning-start blockers `Game+0x430199`/`Game+0x4301bc`, the `Game+0x42fde8 == 0.49f` drain transition gate, and state-2 exit gates `Game+0x4301c0`, `Game+0x42fe08`, and `Game+0x434064`; some writers remain unresolved. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`.
+// Advances the player-embedded contact-damage gauge controller at `Player+0x3c4`, smoothing its displayed fill, driving the warning/drain lifecycle, rendering the sprite-backed gauge, and applying state-2 drain. `cRSubGame::subgame_pause_gate` suspends updates; `Player::attachment_exit_pending` and `completion_handoff_active` gate warning startup; grounded state is `Player::transform.position.y == 0.49f`; and drain exits also read `completion_handoff_timer`, `resurrect_progress`, and `presentation.cutscene.state`. Android and iOS preserve this exact owner role as `cRDamageGuage::AI()`.
 void __thiscall update_damage_gauge(DamageGuage *damage_guage)
 {
   GameRoot *v2; // ecx
@@ -21,7 +21,7 @@ void __thiscall update_damage_gauge(DamageGuage *damage_guage)
   Color4f color; // [esp+38h] [ebp-10h] BYREF
 
   v2 = g_game_base;
-  if ( g_game_base->subgame.subgame_pause_gate )
+  if ( g_game_base->subgame.subgame_pause_gate != 0 )
     goto LABEL_26;
   damage_guage->display_fill = (damage_guage->fill - damage_guage->display_fill) * 0.2 + damage_guage->display_fill;
   if ( damage_guage->hit_flash_progress > 0.0 )
@@ -36,8 +36,11 @@ void __thiscall update_damage_gauge(DamageGuage *damage_guage)
     if ( LODWORD(damage_guage->fill) == 1065353216 )
     {
       v2 = g_game_base;
-      if ( g_game_base->subgame.player.attachment_exit_pending || g_game_base->subgame.player.completion_handoff_active )
+      if ( g_game_base->subgame.player.attachment_exit_pending != 0
+        || g_game_base->subgame.player.completion_handoff_active != 0 )
+      {
         goto LABEL_26;
+      }
       damage_guage->state = DAMAGE_GUAGE_STATE_WARNING_TRANSITION;
       damage_guage->warning_transition_progress = 0.0;
       damage_guage->warning_transition_step = 0.16666667;
@@ -47,7 +50,7 @@ void __thiscall update_damage_gauge(DamageGuage *damage_guage)
   }
   if ( damage_guage->state == DAMAGE_GUAGE_STATE_WARNING_TRANSITION )
   {
-    if ( g_game_base->subgame.player.completion_handoff_active )
+    if ( g_game_base->subgame.player.completion_handoff_active != 0 )
       damage_guage->warning_transition_progress = 1.0;
     v4 = damage_guage->warning_transition_step + damage_guage->warning_transition_progress;
     damage_guage->warning_transition_progress = v4;
@@ -68,18 +71,18 @@ LABEL_25:
     goto LABEL_26;
   }
   change_snail_skin(&g_game_base->subgame.player.presentation.snail_skin, 1, 0.2);
-  apply_damage_gauge_delta(damage_guage, -0.0016666667, 1);
+  apply_damage_gauge_delta(damage_guage, -0.0016666667, true);
   damage_guage->skin_hold_ticks = 5;
   v2 = g_game_base;
-  if ( g_game_base->subgame.player.completion_handoff_active )
+  if ( g_game_base->subgame.player.completion_handoff_active != 0 )
   {
-    apply_damage_gauge_delta(damage_guage, -0.0066666668, 0);
+    apply_damage_gauge_delta(damage_guage, -0.0066666668, false);
     v2 = g_game_base;
   }
   if ( damage_guage->fill == 0.0 && LODWORD(v2->subgame.player.body.transform.position.y) == 1056629064
     || v2->subgame.player.completion_handoff_timer > 0.0
     || v2->subgame.player.resurrect_progress > 0.0
-    || v2->subgame.player.presentation.cutscene.state )
+    || v2->subgame.player.presentation.cutscene.state != CUT_SCENE_STATE_INACTIVE )
   {
     damage_guage->state = DAMAGE_GUAGE_STATE_MONITORING;
     stop_warning(&g_game_base->subgame.player.warning);
@@ -98,11 +101,11 @@ LABEL_26:
   {
     height = 0.0;
   }
-  if ( !v2->subgame.subgame_pause_gate )
+  if ( v2->subgame.subgame_pause_gate == 0 )
     damage_guage->pulse_progress = damage_guage->pulse_step + damage_guage->pulse_progress;
   if ( damage_guage->pulse_progress > 1.0 )
     damage_guage->pulse_progress = damage_guage->pulse_progress - 1.0;
-  if ( damage_guage->display_fill > 0.89999998 || damage_guage->state )
+  if ( damage_guage->display_fill > 0.89999998 || damage_guage->state != DAMAGE_GUAGE_STATE_MONITORING )
   {
     if ( damage_guage->display_fill <= 0.89999998 )
     {

@@ -124,6 +124,12 @@ TRUSTED_NAMES = [
     (0x445F40, "unhide_gameplay_scores"),
     (0x445CD0, "build_snail_world_hotspots"),
     (0x445D50, "extract_snail_local_hotspots"),
+    (0x446E80, "initialize_warning"),
+    (0x446F10, "uninit_warning"),
+    (0x446F30, "start_warning"),
+    (0x446F50, "stop_warning"),
+    (0x446F60, "stop_warning_sample"),
+    (0x446F80, "update_warning"),
     (0x447090, "initialize_fringe_manager"),
     (0x4470A0, "allocate_fringe_object"),
     (0x447290, "recycle_bod_to_free_list"),
@@ -375,6 +381,42 @@ EXPECTED_NUKE_PLAYER_EMBED = {
     "type": "cRNuke",
 }
 
+WARNING_OWNER_MARKERS = (
+    "typedef struct cRWarning {",
+    "} cRWarning;",
+    "cRWarning_must_be_0x10",
+    "cRWarning warning;",
+    "void __thiscall initialize_warning(cRWarning* warning);",
+    "void __thiscall uninit_warning(cRWarning* warning);",
+    "void __thiscall start_warning(cRWarning* warning);",
+    "void __thiscall stop_warning(cRWarning* warning);",
+    "void __thiscall stop_warning_sample(cRWarning* warning);",
+    "void __thiscall update_warning(cRWarning* warning);",
+)
+
+WARNING_OWNER_SIZES = {
+    "cRWarning": 0x10,
+}
+
+WARNING_OWNER_TYPE_ALIASES = (("Warning", "cRWarning", 0x10),)
+
+EXPECTED_WARNING_OWNER_LAYOUT = {
+    "size": 0x10,
+    "members": {
+        0x00: (0x04, "state", "WarningState"),
+        0x04: (0x04, "phase", "float"),
+        0x08: (0x04, "phase_step", "float"),
+        0x0C: (0x04, "border", "FrontendWidget *"),
+    },
+}
+
+EXPECTED_WARNING_PLAYER_EMBED = {
+    "offset": "0x3f4",
+    "size": 0x10,
+    "name": "warning",
+    "type": "cRWarning",
+}
+
 TIP_OWNER_MARKERS = (
     "cRTipData_must_be_0x14",
     "cRTip_must_be_0x20",
@@ -610,6 +652,12 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x446130,  # initialize_cutscene_ai
     0x446160,  # initialize_cameraman
     0x4466D0,  # update_cutscene
+    0x446E80,  # initialize_warning
+    0x446F10,  # uninit_warning
+    0x446F30,  # start_warning
+    0x446F50,  # stop_warning
+    0x446F60,  # stop_warning_sample
+    0x446F80,  # update_warning
     0x447090,  # initialize_fringe_manager
     0x4470A0,  # allocate_fringe_object
     0x4470E0,  # uninit_nuke
@@ -3039,6 +3087,30 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_progress_bar(ProgressBar* progress_bar);",
     ),
     (
+        "initialize_warning",
+        "void __thiscall initialize_warning(cRWarning* warning);",
+    ),
+    (
+        "uninit_warning",
+        "void __thiscall uninit_warning(cRWarning* warning);",
+    ),
+    (
+        "start_warning",
+        "void __thiscall start_warning(cRWarning* warning);",
+    ),
+    (
+        "stop_warning",
+        "void __thiscall stop_warning(cRWarning* warning);",
+    ),
+    (
+        "stop_warning_sample",
+        "void __thiscall stop_warning_sample(cRWarning* warning);",
+    ),
+    (
+        "update_warning",
+        "void __thiscall update_warning(cRWarning* warning);",
+    ),
+    (
         "initialize_nuke",
         "void __thiscall initialize_nuke(cRNuke* nuke);",
     ),
@@ -4895,6 +4967,64 @@ def _nuke_owner_layout_readback() -> dict[str, object]:
     }
 
 
+def _warning_owner_layout_readback() -> dict[str, object]:
+    """Verify the complete canonical cRWarning owner and Player embed."""
+    type_name = "cRWarning"
+    expected = EXPECTED_WARNING_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "warning",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "warning",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    player_embed = _named_struct_member_readback("Player", 0x3F4)
+    if player_embed != EXPECTED_WARNING_PLAYER_EMBED:
+        failures.append(
+            {
+                "selector": "Player.warning",
+                "owner_group": "warning",
+                "reason": "embedded_owner_mismatch",
+                "expected": EXPECTED_WARNING_PLAYER_EMBED,
+                "observed": player_embed,
+            }
+        )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "player_embed": player_embed,
+        "failures": failures,
+    }
+
+
 def _tip_owner_layout_readback() -> dict[str, object]:
     """Verify every canonical tip owner before applying its method ABIs."""
     readback: dict[str, object] = {}
@@ -5274,6 +5404,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in NUKE_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_warning_owner_markers = [
+        marker
+        for marker in WARNING_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_tip_owner_markers = [
         marker
         for marker in TIP_OWNER_MARKERS
@@ -5317,6 +5452,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_bod_core_owner_markers
         or missing_fringe_owner_markers
         or missing_nuke_owner_markers
+        or missing_warning_owner_markers
         or missing_tip_owner_markers
         or missing_tutorial_owner_markers
         or missing_track_render_cache_owner_markers
@@ -5348,6 +5484,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
             marker_failures.append({"reason": "noncanonical_fringe_header"})
         if missing_nuke_owner_markers:
             marker_failures.append({"reason": "noncanonical_nuke_owner_header"})
+        if missing_warning_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_warning_owner_header"}
+            )
         if missing_tip_owner_markers:
             marker_failures.append({"reason": "noncanonical_tip_owner_header"})
         if missing_tutorial_owner_markers:
@@ -5392,6 +5532,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "missing_bod_core_owner_markers": missing_bod_core_owner_markers,
                     "missing_fringe_owner_markers": missing_fringe_owner_markers,
                     "missing_nuke_owner_markers": missing_nuke_owner_markers,
+                    "missing_warning_owner_markers": (
+                        missing_warning_owner_markers
+                    ),
                     "missing_tip_owner_markers": missing_tip_owner_markers,
                     "missing_tutorial_owner_markers": (
                         missing_tutorial_owner_markers
@@ -5447,6 +5590,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in nuke_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    warning_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(WARNING_OWNER_TYPE_ALIASES)
+    )
+    warning_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "warning",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in warning_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     tip_owner_type_alias_migrations = (
@@ -5517,6 +5675,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         }
         if parse_errors or nuke_owner_type_alias_failures
         else _nuke_owner_layout_readback()
+    )
+    warning_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in WARNING_OWNER_SIZES
+    }
+    warning_owner_layout_readback = (
+        {
+            "type": "cRWarning",
+            "size": None,
+            "members": {},
+            "player_embed": None,
+            "failures": [],
+        }
+        if parse_errors or warning_owner_type_alias_failures
+        else _warning_owner_layout_readback()
     )
     tip_owner_sizes = {
         name: _named_struct_size(name)
@@ -5652,6 +5825,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in NUKE_OWNER_SIZES.items()
         if nuke_owner_sizes[name] != expected_size
     ]
+    warning_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "warning",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": warning_owner_sizes[name],
+        }
+        for name, expected_size in WARNING_OWNER_SIZES.items()
+        if warning_owner_sizes[name] != expected_size
+    ]
     tip_owner_size_failures = [
         {
             "selector": name,
@@ -5694,6 +5878,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + fringe_owner_size_failures
         + nuke_owner_size_failures
         + nuke_owner_layout_readback["failures"]
+        + warning_owner_size_failures
+        + warning_owner_layout_readback["failures"]
         + tip_owner_size_failures
         + tip_owner_layout_readback["failures"]
         + tutorial_owner_size_failures
@@ -5815,6 +6001,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         parse_errors
         or fringe_owner_type_alias_failures
         or nuke_owner_type_alias_failures
+        or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
         or tutorial_owner_type_alias_failures
         or owner_size_failures
@@ -5831,6 +6018,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "nuke_owner_type_alias_migrations": (
                         nuke_owner_type_alias_migrations
                     ),
+                    "warning_owner_type_alias_migrations": (
+                        warning_owner_type_alias_migrations
+                    ),
                     "tip_owner_type_alias_migrations": (
                         tip_owner_type_alias_migrations
                     ),
@@ -5845,6 +6035,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "fringe_owner_sizes": fringe_owner_sizes,
                     "nuke_owner_sizes": nuke_owner_sizes,
                     "nuke_owner_layout_readback": nuke_owner_layout_readback,
+                    "warning_owner_sizes": warning_owner_sizes,
+                    "warning_owner_layout_readback": (
+                        warning_owner_layout_readback
+                    ),
                     "tip_owner_sizes": tip_owner_sizes,
                     "tip_owner_layout_readback": tip_owner_layout_readback,
                     "tutorial_owner_sizes": tutorial_owner_sizes,
@@ -5864,6 +6058,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "failed": (
                         fringe_owner_type_alias_failures
                         + nuke_owner_type_alias_failures
+                        + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
                         + tutorial_owner_type_alias_failures
                         + owner_size_failures
@@ -6585,6 +6780,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "nuke_owner_type_alias_migrations": (
                     nuke_owner_type_alias_migrations
                 ),
+                "warning_owner_type_alias_migrations": (
+                    warning_owner_type_alias_migrations
+                ),
                 "tip_owner_type_alias_migrations": (
                     tip_owner_type_alias_migrations
                 ),
@@ -6599,6 +6797,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "fringe_owner_sizes": fringe_owner_sizes,
                 "nuke_owner_sizes": nuke_owner_sizes,
                 "nuke_owner_layout_readback": nuke_owner_layout_readback,
+                "warning_owner_sizes": warning_owner_sizes,
+                "warning_owner_layout_readback": warning_owner_layout_readback,
                 "tip_owner_sizes": tip_owner_sizes,
                 "tip_owner_layout_readback": tip_owner_layout_readback,
                 "tutorial_owner_sizes": tutorial_owner_sizes,

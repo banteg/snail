@@ -10,9 +10,11 @@ from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_symbol_updates,
-    current_struct_size,
+    apply_type_renames,
+    current_header_type_equivalence,
     current_type_widths,
     emit_summary,
+    reanalyze_functions,
     types_declare_missing_only,
 )
 
@@ -21,8 +23,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/warning_types.h"
 
 EXPECTED_STRUCT_SIZES = {
-    "Warning": 0x10,
+    "cRWarning": 0x10,
 }
+
+OWNER_TYPE_RENAMES = (("Warning", "cRWarning"),)
 
 EXPECTED_ENUM_WIDTHS = {
     "WarningState": 0x04,
@@ -37,6 +41,19 @@ FUNCTION_SYMBOL_UPDATES = (
     ("0x446f80", "update_warning"),
 )
 
+REANALYSIS_FUNCTIONS = (
+    "initialize_warning",
+    "uninit_warning",
+    "start_warning",
+    "stop_warning",
+    "stop_warning_sample",
+    "update_warning",
+    "initialize_subgame",
+    "destroy_subgame",
+    "update_damage_gauge",
+    "update_subgoldy",
+)
+
 WARNING_FIELD_UPDATES = (
     ("0x00", "state", "WarningState"),
     ("0x04", "phase", "float"),
@@ -45,12 +62,15 @@ WARNING_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
-    ("initialize_warning", "void __thiscall initialize_warning(Warning* warning)"),
-    ("uninit_warning", "void __thiscall uninit_warning(Warning* warning)"),
-    ("start_warning", "void __thiscall start_warning(Warning* warning)"),
-    ("stop_warning", "void __thiscall stop_warning(Warning* warning)"),
-    ("stop_warning_sample", "void __thiscall stop_warning_sample(Warning* warning)"),
-    ("update_warning", "void __thiscall update_warning(Warning* warning)"),
+    ("initialize_warning", "void __thiscall initialize_warning(cRWarning* warning)"),
+    ("uninit_warning", "void __thiscall uninit_warning(cRWarning* warning)"),
+    ("start_warning", "void __thiscall start_warning(cRWarning* warning)"),
+    ("stop_warning", "void __thiscall stop_warning(cRWarning* warning)"),
+    (
+        "stop_warning_sample",
+        "void __thiscall stop_warning_sample(cRWarning* warning)",
+    ),
+    ("update_warning", "void __thiscall update_warning(cRWarning* warning)"),
 )
 
 
@@ -76,15 +96,28 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=args.target,
+        type_names=EXPECTED_STRUCT_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=args.target,
+        header_path=header_path,
+    )
     mismatched_structs = tuple(
         name
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
-        if current_struct_size(
-            REPO_ROOT,
-            target=args.target,
-            struct_name=name,
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
         )
-        != expected_size
     )
     enum_widths = current_type_widths(
         REPO_ROOT,
@@ -103,19 +136,24 @@ def main() -> int:
             target=args.target,
             header_path=header_path,
             replace_types=repaired_types,
+            include_types=EXPECTED_STRUCT_SIZES,
         )
         type_operation["repaired_types"] = repaired_types
     else:
         type_operation = {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "Warning owner size and WarningState width already current",
+            "reason": "cRWarning owner layout and WarningState width already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
             "expected_enum_widths": EXPECTED_ENUM_WIDTHS,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in EXPECTED_STRUCT_SIZES
+            },
         }
 
-    operations: list[dict[str, object]] = [
+    operations.extend([
         type_operation,
         *apply_symbol_updates(
             REPO_ROOT,
@@ -126,10 +164,18 @@ def main() -> int:
         *apply_struct_and_proto_updates(
             REPO_ROOT,
             target=args.target,
-            struct_updates=(("Warning", WARNING_FIELD_UPDATES),),
+            struct_updates=(
+                ("cRWarning", WARNING_FIELD_UPDATES),
+                ("Player", (("0x3f4", "warning", "cRWarning"),)),
+            ),
             proto_updates=PROTO_UPDATES,
         ),
-    ]
+        *reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=REANALYSIS_FUNCTIONS,
+        ),
+    ])
     return emit_summary(
         repo_root=REPO_ROOT,
         target=args.target,

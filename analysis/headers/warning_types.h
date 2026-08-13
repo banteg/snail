@@ -15,13 +15,13 @@ typedef enum WarningState {
 
 struct FrontendWidget;
 
-typedef struct Warning {
+typedef struct cRWarning {
     WarningState state;
     float phase;
     float phase_step;
     struct FrontendWidget* border;
-} Warning;
+} cRWarning;
 
-typedef char Warning_must_be_0x10[(sizeof(Warning) == 0x10) ? 1 : -1];
+typedef char cRWarning_must_be_0x10[(sizeof(cRWarning) == 0x10) ? 1 : -1];
 
 #endif

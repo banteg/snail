@@ -3,12 +3,12 @@
 /* selector: update_warning */
 
 // Advances Player's embedded cRWarning phase and warning-border alpha while gameplay is unpaused, alternating its solid and fade states and replaying the warning cue. Android and iOS retain the same owner role as cRWarning::AI().
-void __thiscall update_warning(Warning *warning)
+void __thiscall update_warning(cRWarning *warning)
 {
   double v1; // st7
   double v2; // st7
 
-  if ( !g_game_base->subgame.subgame_pause_gate && warning->state )
+  if ( g_game_base->subgame.subgame_pause_gate == 0 && warning->state != WARNING_STATE_INACTIVE )
   {
     if ( warning->state == WARNING_STATE_OPAQUE )
     {

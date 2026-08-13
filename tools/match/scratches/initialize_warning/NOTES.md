@@ -55,3 +55,12 @@ iOS preserves the same owner role as `cRWarning::Init(cRSubGoldy*)`, with its
 port-specific parent argument and wider layout left local to that build. The
 promotion is codegen-neutral: focused matching remains exact at 32/32
 instructions with all six masked operands clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+The paired analysis databases now use `cRWarning` as the sole primary 0x10-byte
+Windows owner. The replay retires the generic `Warning` record only after exact
+layout equivalence, verifies the embed at `Player +0x3f4`, and rebinds all six
+lifecycle ABIs. The matcher keeps `Warning` only as a source-compatibility
+typedef. This ownership-only change leaves `Init` exact at 32/32 instructions
+with all six masked operands clean.

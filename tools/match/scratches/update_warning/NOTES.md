@@ -132,3 +132,12 @@ Android and iOS independently retain the same authored method and lifecycle
 owner. The promotion does not replay the recorded state-dispatch sweeps and
 is codegen-neutral: focused matching remains exact at 52/52 instructions,
 full prefix, with all seven masked operands clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+Binary Ninja and IDA now use `cRWarning` as the sole primary Windows owner,
+after verifying the exact state/phase/step/border layout and the
+`Player +0x3f4` embed. The six-method replay is idempotent and refreshes both
+Goldy AI call paths. No matcher source or recorded experiment was changed: focused
+matching remains exact at 52/52 instructions with full prefix and all seven
+operands clean.

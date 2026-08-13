@@ -1431,26 +1431,57 @@ def test_sound_manager_replay_keeps_empty_owner_bank_and_void_init_abi() -> None
 
 
 def test_warning_replay_keeps_exact_owner_and_six_member_abis() -> None:
+    repo_root = Path(__file__).parents[1]
     binja_sync = (BINJA_DIR / "sync_warning_types.py").read_text(encoding="utf-8")
     ida_sync = (IDA_DIR / "apply_warning_types.py").read_text(encoding="utf-8")
     ida_runner = (IDA_DIR / "sync_warning_types.py").read_text(encoding="utf-8")
     analysis_header = (HEADER_DIR / "warning_types.h").read_text(encoding="utf-8")
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/warning.h").read_text(
+        encoding="utf-8"
+    )
 
-    for source in (binja_sync, ida_sync):
-        assert "void __thiscall initialize_warning(Warning* warning)" in source
-        assert "void __thiscall uninit_warning(Warning* warning)" in source
-        assert "void __thiscall start_warning(Warning* warning)" in source
-        assert "void __thiscall stop_warning(Warning* warning)" in source
-        assert "void __thiscall stop_warning_sample(Warning* warning)" in source
-        assert "void __thiscall update_warning(Warning* warning)" in source
+    for source in (binja_sync, ida_sync, path_binja_sync, path_ida_sync):
+        assert "void __thiscall initialize_warning(cRWarning* warning)" in source
+        assert "void __thiscall uninit_warning(cRWarning* warning)" in source
+        assert "void __thiscall start_warning(cRWarning* warning)" in source
+        assert "void __thiscall stop_warning(cRWarning* warning)" in source
+        assert "void __thiscall stop_warning_sample(cRWarning* warning)" in source
+        assert "void __thiscall update_warning(cRWarning* warning)" in source
 
-    assert '"Warning": 0x10' in binja_sync
+    assert '"cRWarning": 0x10' in binja_sync
+    assert 'OWNER_TYPE_RENAMES = (("Warning", "cRWarning"),)' in binja_sync
     assert '"WarningState": 0x04' in binja_sync
-    assert 'struct_updates=(("Warning", WARNING_FIELD_UPDATES),)' in binja_sync
+    assert '("cRWarning", WARNING_FIELD_UPDATES)' in binja_sync
+    assert '("0x3f4", "warning", "cRWarning")' in binja_sync
     assert "typedef enum WarningState {" in analysis_header
+    assert "typedef struct cRWarning {" in analysis_header
+    assert "typedef struct Warning {" not in analysis_header
     assert "struct FrontendWidget* border;" in analysis_header
-    assert "Warning_must_be_0x10" in analysis_header
-    assert 'EXPECTED_OWNER_SIZES = {\n    "Warning": 0x10,' in ida_sync
+    assert "cRWarning_must_be_0x10" in analysis_header
+    assert "typedef struct cRWarning {" in path_header
+    assert "typedef struct Warning {" not in path_header
+    assert "cRWarning warning;" in path_header
+    assert "void __thiscall update_warning(cRWarning* warning);" in path_header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRWarning": 0x10,' in ida_sync
+    assert '("Warning", "cRWarning", 0x10)' in ida_sync
+    assert "EXPECTED_OWNER_LAYOUT" in ida_sync
+    assert "EXPECTED_PLAYER_EMBED" in ida_sync
+    assert "owner_layout_readback" in ida_sync
+    assert "WARNING_OWNER_TYPE_RENAMES" in path_binja_sync
+    assert "ensure_warning_owner_type" in path_binja_sync
+    assert "WARNING_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert "warning_owner_layout_readback" in path_ida_sync
+    assert "class cRWarning" in matcher_header
+    assert "typedef cRWarning Warning;" in matcher_header
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/warning_types.h"' in ida_runner
 
 

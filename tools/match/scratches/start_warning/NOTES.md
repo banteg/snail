@@ -28,3 +28,11 @@ receiver and sole direct call at `0x4411a8` from the damage-gauge controller.
 Android independently exports the same authored method and caller edge. The
 promotion is codegen-neutral: focused matching remains exact at 4/4
 instructions with its one masked operand clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+Both decompilers now render the receiver and its `Player +0x3f4` embed as
+`cRWarning`, after guarded retirement of the layout-equivalent generic record.
+The replay also refreshes the damage-gauge caller that supplies the embedded
+owner. Focused matching remains exact at 4/4 instructions with its one operand
+clean.

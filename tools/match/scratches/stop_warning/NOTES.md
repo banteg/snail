@@ -26,3 +26,11 @@ receiver and sole direct call at `0x4410f4` from the damage-gauge controller.
 Android and iOS independently retain the same authored method. The promotion
 is codegen-neutral: focused matching remains exact at 3/3 instructions with
 its one masked operand clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+The paired databases now use the authored `cRWarning` name for the exact
+0x10-byte owner and its `Player +0x3f4` embed. The generic analysis record is
+retired only after layout equivalence, while the matcher compatibility typedef
+remains codegen-neutral. Focused matching stays exact at 3/3 instructions with
+its one operand clean.

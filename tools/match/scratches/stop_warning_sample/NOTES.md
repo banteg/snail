@@ -32,3 +32,12 @@ sample `0x32`, then stops the returned handle. Android and iOS independently
 retain the authored method even though Android's body is a port-specific no-op.
 Keeping the receiver-free Windows body source-honest remains exact at 7/7
 instructions with all four masked operands clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+The live receiver remains unused by Windows code, but both databases now retain
+its canonical `cRWarning*` ABI rather than the generic analysis spelling. The
+guarded replay verifies the complete owner and Player embed before applying the
+method type, preserving the mobile-owned member edge without inventing a
+receiver read. Focused matching remains exact at 7/7 instructions with all four
+operands clean.

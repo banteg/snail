@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 6,
+  "function_count": 10,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 6,
-  "ida_exported": 6,
+  "bn_exported": 10,
+  "ida_exported": 10,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,31 +18,47 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
+      "name": "initialize_subgame",
+      "address": "0x4374b0"
+    },
+    {
+      "name": "destroy_subgame",
+      "address": "0x438850"
     },
     {
       "name": "update_subgoldy",
       "address": "0x43b120"
     },
     {
-      "name": "handle_subgoldy_collisions",
-      "address": "0x444cf0"
+      "name": "update_damage_gauge",
+      "address": "0x440fd0"
     },
     {
-      "name": "uninit_nuke",
-      "address": "0x4470e0"
+      "name": "initialize_warning",
+      "address": "0x446e80"
     },
     {
-      "name": "initialize_nuke",
-      "address": "0x447110"
+      "name": "uninit_warning",
+      "address": "0x446f10"
     },
     {
-      "name": "update_nuke",
-      "address": "0x4471e0"
+      "name": "start_warning",
+      "address": "0x446f30"
+    },
+    {
+      "name": "stop_warning",
+      "address": "0x446f50"
+    },
+    {
+      "name": "stop_warning_sample",
+      "address": "0x446f60"
+    },
+    {
+      "name": "update_warning",
+      "address": "0x446f80"
     }
   ],
-  "health_check_count": 1171,
+  "health_check_count": 1172,
   "health_failing_check_count": 0,
   "health_passed": true,
   "health_config": "analysis/decompile/health_checks.json"

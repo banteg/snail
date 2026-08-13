@@ -22,3 +22,11 @@ receiver and sole direct call at `0x43888b` from subgame teardown. Android
 independently exports the same authored method and border-release edge. The
 promotion is codegen-neutral: focused matching remains exact at 6/6
 instructions with both masked operands clean.
+
+## 2026-08-13 canonical analysis-owner replay
+
+Both analysis databases now expose this receiver as `cRWarning*`; the generic
+`Warning` record is retired after exact 0x10-byte layout equivalence and the
+`Player +0x3f4` embed is read back as `cRWarning`. Android's exact authored
+teardown remains the independent ownership witness. Focused matching stays
+exact at 6/6 instructions with both operands clean.

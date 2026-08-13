@@ -781,12 +781,15 @@ typedef enum WarningState {
  * stop_warning_sample @ 0x446f60, and update_warning @ 0x446f80.
  * Mobile variants retain the owner and lifecycle but add fields before border.
  */
-typedef struct Warning {
+typedef struct cRWarning {
     WarningState state;
     float phase;
     float phase_step;
     FrontendWidget* border;
-} Warning;
+} cRWarning;
+
+typedef char cRWarning_must_be_0x10[
+    (sizeof(cRWarning) == 0x10) ? 1 : -1];
 
 /*
  * Authored cRTimesUp countdown actor at cRSubGame +0x1272828. Native
@@ -2552,7 +2555,7 @@ typedef struct Player {
     DamageGuage damage_gauge;
     ProgressBar progress_bar;
     uint8_t _pad_3f1[0x3];
-    Warning warning;
+    cRWarning warning;
     int32_t lives;
     cRSubGame* game;
     int32_t movement_mode_selector;
@@ -3005,6 +3008,12 @@ void __thiscall dispatch_cutscene_animation(Snail* snail, int32_t animation_id, 
 void __thiscall initialize_cutscene_ai(CutScene* cutscene);
 void __thiscall update_cutscene(CutScene* cutscene);
 void __thiscall update_progress_bar(ProgressBar* progress_bar);
+void __thiscall initialize_warning(cRWarning* warning);
+void __thiscall uninit_warning(cRWarning* warning);
+void __thiscall start_warning(cRWarning* warning);
+void __thiscall stop_warning(cRWarning* warning);
+void __thiscall stop_warning_sample(cRWarning* warning);
+void __thiscall update_warning(cRWarning* warning);
 void __thiscall initialize_nuke(cRNuke* nuke);
 void __thiscall update_nuke(cRNuke* nuke);
 void __thiscall uninit_nuke(cRNuke* nuke);

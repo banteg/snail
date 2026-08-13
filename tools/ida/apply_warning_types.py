@@ -6,11 +6,14 @@ import re
 import sys
 
 import ida_funcs
+import ida_hexrays
 import ida_kernwin
 import ida_name
 import ida_pro
 import ida_typeinf
 import idc
+
+from type_alias_migration import migrate_equivalent_struct_aliases
 
 
 TRUSTED_NAMES = (
@@ -23,27 +26,63 @@ TRUSTED_NAMES = (
 )
 
 TRUSTED_DECLARATIONS = (
-    ("initialize_warning", "void __thiscall initialize_warning(Warning* warning);"),
-    ("uninit_warning", "void __thiscall uninit_warning(Warning* warning);"),
-    ("start_warning", "void __thiscall start_warning(Warning* warning);"),
-    ("stop_warning", "void __thiscall stop_warning(Warning* warning);"),
+    (
+        "initialize_warning",
+        "void __thiscall initialize_warning(cRWarning* warning);",
+    ),
+    ("uninit_warning", "void __thiscall uninit_warning(cRWarning* warning);"),
+    ("start_warning", "void __thiscall start_warning(cRWarning* warning);"),
+    ("stop_warning", "void __thiscall stop_warning(cRWarning* warning);"),
     (
         "stop_warning_sample",
-        "void __thiscall stop_warning_sample(Warning* warning);",
+        "void __thiscall stop_warning_sample(cRWarning* warning);",
     ),
-    ("update_warning", "void __thiscall update_warning(Warning* warning);"),
+    ("update_warning", "void __thiscall update_warning(cRWarning* warning);"),
 )
 
 REQUIRED_OWNER_MARKERS = (
     "typedef enum WarningState {",
-    "typedef struct Warning {",
+    "typedef struct cRWarning {",
+    "} cRWarning;",
     "struct FrontendWidget* border;",
-    "Warning_must_be_0x10",
+    "cRWarning_must_be_0x10",
 )
 
 EXPECTED_OWNER_SIZES = {
-    "Warning": 0x10,
+    "cRWarning": 0x10,
 }
+
+OWNER_TYPE_ALIASES = (("Warning", "cRWarning", 0x10),)
+
+EXPECTED_OWNER_LAYOUT = {
+    "size": 0x10,
+    "members": {
+        0x00: (0x04, "state", "WarningState"),
+        0x04: (0x04, "phase", "float"),
+        0x08: (0x04, "phase_step", "float"),
+        0x0C: (0x04, "border", "FrontendWidget *"),
+    },
+}
+
+EXPECTED_PLAYER_EMBED = {
+    "offset": "0x3f4",
+    "size": 0x10,
+    "name": "warning",
+    "type": "cRWarning",
+}
+
+DIRTY_FUNCTIONS = (
+    0x4374B0,  # initialize_subgame
+    0x438850,  # destroy_subgame
+    0x43B120,  # update_subgoldy
+    0x440FD0,  # update_damage_gauge
+    0x446E80,  # initialize_warning
+    0x446F10,  # uninit_warning
+    0x446F30,  # start_warning
+    0x446F50,  # stop_warning
+    0x446F60,  # stop_warning_sample
+    0x446F80,  # update_warning
+)
 
 
 def _normalize_type_text(value: str | None) -> str | None:
@@ -72,6 +111,87 @@ def _named_struct_size(name: str) -> int | None:
     return value.get_size()
 
 
+def _normalize_udt_type(value: str) -> str:
+    normalized = _normalize_type_text(value) or ""
+    return re.sub(r"\b(?:struct|class|union)\s+", "", normalized)
+
+
+def _named_struct_member_readback(
+    struct_name: str, offset: int
+) -> dict[str, object] | None:
+    owner = ida_typeinf.tinfo_t()
+    if not owner.get_named_type(None, struct_name, ida_typeinf.BTF_STRUCT):
+        return None
+    members = ida_typeinf.udt_type_data_t()
+    if not owner.get_udt_details(members):
+        return None
+    for member in members:
+        member_offset = int(member.offset) // 8
+        if member_offset == offset:
+            return {
+                "offset": hex(member_offset),
+                "size": int(member.size) // 8,
+                "name": member.name,
+                "type": _normalize_udt_type(member.type.dstr()),
+            }
+    return None
+
+
+def _owner_layout_readback() -> dict[str, object]:
+    type_name = "cRWarning"
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in EXPECTED_OWNER_LAYOUT["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != EXPECTED_OWNER_LAYOUT["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "reason": "owner_size_mismatch",
+                "expected": EXPECTED_OWNER_LAYOUT["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in EXPECTED_OWNER_LAYOUT[
+        "members"
+    ].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    player_embed = _named_struct_member_readback("Player", 0x3F4)
+    if player_embed != EXPECTED_PLAYER_EMBED:
+        failures.append(
+            {
+                "selector": "Player.warning",
+                "reason": "embedded_owner_mismatch",
+                "expected": EXPECTED_PLAYER_EMBED,
+                "observed": player_embed,
+            }
+        )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "player_embed": player_embed,
+        "failures": failures,
+    }
+
+
 def _sync_types(header_path: pathlib.Path) -> int:
     header_text = header_path.read_text(encoding="utf-8")
     missing_owner_markers = [
@@ -92,8 +212,22 @@ def _sync_types(header_path: pathlib.Path) -> int:
         return 1
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE | idc.PT_REPLACE)
+    owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(OWNER_TYPE_ALIASES)
+    )
+    owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
-    failed = [
+    owner_size_failures = [
         {
             "selector": name,
             "reason": "owner_size_mismatch",
@@ -103,6 +237,22 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in EXPECTED_OWNER_SIZES.items()
         if owner_sizes[name] != expected_size
     ]
+    owner_layout_readback = (
+        {
+            "type": "cRWarning",
+            "size": None,
+            "members": {},
+            "player_embed": None,
+            "failures": [],
+        }
+        if parse_errors or owner_type_alias_failures
+        else _owner_layout_readback()
+    )
+    failed = (
+        owner_type_alias_failures
+        + owner_size_failures
+        + owner_layout_readback["failures"]
+    )
     if parse_errors or failed:
         print(
             json.dumps(
@@ -110,7 +260,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "parse_errors": parse_errors,
+                    "owner_type_alias_migrations": owner_type_alias_migrations,
                     "owner_sizes": owner_sizes,
+                    "owner_layout_readback": owner_layout_readback,
                     "failed": failed,
                 },
                 indent=2,
@@ -137,7 +289,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     for selector, declaration in TRUSTED_DECLARATIONS:
         address = idc.get_name_ea_simple(selector)
-        if address == idc.BADADDR or ida_funcs.get_func(address) is None:
+        if address == idc.BADADDR or ida_funcs.get_func_start(address) == idc.BADADDR:
             missing.append({"selector": selector, "reason": "missing_function"})
             continue
 
@@ -162,17 +314,26 @@ def _sync_types(header_path: pathlib.Path) -> int:
             continue
         applied += 1
 
+    dirty_functions = []
+    for address in DIRTY_FUNCTIONS:
+        if ida_funcs.get_func_start(address) != idc.BADADDR:
+            ida_hexrays.mark_cfunc_dirty(address, True)
+            dirty_functions.append(hex(address))
+
     print(
         json.dumps(
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
                 "parse_errors": parse_errors,
+                "owner_type_alias_migrations": owner_type_alias_migrations,
                 "owner_sizes": owner_sizes,
+                "owner_layout_readback": owner_layout_readback,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,
                 "names_unchanged": names_unchanged,
+                "dirty_functions": dirty_functions,
                 "missing": missing,
                 "failed": failed,
             },

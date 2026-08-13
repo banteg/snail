@@ -7451,7 +7451,7 @@
       "name": "ida_warning_initializer_exact_owner",
       "artifact": "analysis/decompile/ida/functions/00446e80-initialize_warning.c",
       "required_substrings": [
-        "void __thiscall initialize_warning(Warning *warning)",
+        "void __thiscall initialize_warning(cRWarning *warning)",
         "warning->border = allocate_border(&g_game_base->border_manager);",
         "warning->border->sprite_shadow_offset = 0.0;",
         "warning->phase_step = 0.083333336;",
@@ -7459,8 +7459,24 @@
       ],
       "forbidden_substrings": [
         "sub_446E80",
+        "initialize_warning(Warning *warning)",
         "int *this",
         "*(this +",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "ida_warning_uninit_exact_owner",
+      "artifact": "analysis/decompile/ida/functions/00446f10-uninit_warning.c",
+      "required_substrings": [
+        "void __thiscall uninit_warning(cRWarning *warning)",
+        "kill_border(&g_game_base->border_manager, warning->border);"
+      ],
+      "forbidden_substrings": [
+        "uninit_warning(Warning *warning)",
+        "sub_446F10",
+        "int *this",
         "__asm",
         "_ET1"
       ]
@@ -7484,7 +7500,7 @@
       "name": "ida_warning_start_owner_and_void_abi",
       "artifact": "analysis/decompile/ida/functions/00446f30-start_warning.c",
       "required_substrings": [
-        "void __thiscall start_warning(Warning *warning)",
+        "void __thiscall start_warning(cRWarning *warning)",
         "warning->phase = 1.0;",
         "warning->state = WARNING_STATE_FADING;",
         "unhide_border_init(warning->border);"
@@ -7492,6 +7508,7 @@
       "forbidden_substrings": [
         "__int16 __thiscall",
         "sub_446F30",
+        "start_warning(Warning *warning)",
         "_DWORD *this",
         "return unhide_border_init",
         "__asm",
@@ -7516,12 +7533,13 @@
       "name": "ida_warning_stop_owner",
       "artifact": "analysis/decompile/ida/functions/00446f50-stop_warning.c",
       "required_substrings": [
-        "void __thiscall stop_warning(Warning *warning)",
+        "void __thiscall stop_warning(cRWarning *warning)",
         "warning->state = WARNING_STATE_INACTIVE;",
         "hide_border_init(warning->border);"
       ],
       "forbidden_substrings": [
         "sub_446F50",
+        "stop_warning(Warning *warning)",
         "_DWORD **this",
         "*this = nullptr",
         "__asm",
@@ -7551,7 +7569,7 @@
       "name": "ida_warning_update_state_border_and_sound_owners",
       "artifact": "analysis/decompile/ida/functions/00446f80-update_warning.c",
       "required_substrings": [
-        "void __thiscall update_warning(Warning *warning)",
+        "void __thiscall update_warning(cRWarning *warning)",
         "warning->state == WARNING_STATE_OPAQUE",
         "warning->state == WARNING_STATE_FADING",
         "warning->border->hot_text_color.a",
@@ -7560,6 +7578,7 @@
       ],
       "forbidden_substrings": [
         "float *this",
+        "update_warning(Warning *warning)",
         "*(_DWORD *)this",
         "*((_DWORD *)this",
         "MEMORY[0x4DF904]",
@@ -7586,12 +7605,13 @@
       "name": "ida_warning_sound_manager_handle_flow",
       "artifact": "analysis/decompile/ida/functions/00446f60-stop_warning_sample.c",
       "required_substrings": [
-        "void __thiscall stop_warning_sample(Warning *warning)",
+        "void __thiscall stop_warning_sample(cRWarning *warning)",
         "v1 = play_warning_sample_backend(&g_sound_effect_manager, 50);",
         "stop_warning_sample_handle(&g_sound_effect_manager, v1);"
       ],
       "forbidden_substrings": [
         "void stop_warning_sample()",
+        "stop_warning_sample(Warning *warning)",
         "play_warning_sample_backend(50)",
         "return stop_warning_sample_handle",
         "__asm",
