@@ -1,11 +1,10 @@
 # initialize_high_score_screen @ 0x416910
 
-Current recovery: semantic-complete (`compiler` residual). Exact Android/iOS
-`cRHighScore::Init(int, int)` bodies and the live Windows HighScore method
-establish bank selection, ten-row construction, replay/name-entry modes, the
-footer, and all five widget banks. All 137 references are clean and both sides
-contain 600 instructions; the only delta is twelve equivalent `tColour`
-temporary stack-slot assignments.
+Current recovery: exact. Exact Android/iOS `cRHighScore::Init(int, int)` bodies
+and the live Windows HighScore method establish bank selection, ten-row
+construction, replay/name-entry modes, the footer, and all five widget banks.
+The Windows scratch matches all 600 instructions with all 137 references
+clean.
 
 Starter scratch for the high-score front-end screen.
 
@@ -195,3 +194,21 @@ This promotion preserves the evidence from 275 tested `tColour` allocation
 variants and does not hide their twelve honest stack-slot permutations. The
 instruction stream remains at 98.00%, 600/600 instructions, prefix 80, with
 all 137 masked operands clean.
+
+## 2026-08-13 anonymous color-temporary recovery
+
+The exact sibling `cRBorder::Init` recovery established that VC6's native
+stack coloring comes from full-expression `tColour().Set(...)` values rather
+than a bank of named scratch locals. Applying that source shape consistently
+to the title, both row branches, alternating-row tint, and footer controls
+removes all twelve remaining differences here as well.
+
+Focused matching is now exact at 600/600 instructions with a 600-instruction
+prefix and all 137 references clean. Replaying the former twelve-local source
+records its 98.00% result and 520-instruction prefix loss. This also improves
+the decomp by removing synthetic cross-branch color owners that existed only
+to approximate VC6's temporary-slot reuse.
+
+The two color-allocation mutation plans are retired because their named-local
+anchors no longer exist; their append-only ledger records remain available as
+historical evidence.

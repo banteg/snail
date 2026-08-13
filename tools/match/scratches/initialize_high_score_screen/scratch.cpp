@@ -18,13 +18,6 @@ char cache_music_file(char* path, int unused, char* unused_default_path); // @ 0
 
 void cRHighScore::Init(int mode_, int rank)
 {
-    // VC6 gives the short-lived color values distinct stack objects. Several
-    // slots are reused after their title or row branch has ended.
-    tColour shared_action_color;
-    tColour alternating_background_color;
-    tColour challenge_heading_rank_color;
-    tColour postal_heading_challenge_background_color;
-
     selected_bank = mode_;
     selected_rank = rank;
     if (rank == -1)
@@ -50,7 +43,7 @@ void cRHighScore::Init(int mode_, int rank)
     case 0:
         title_widget->Init(
             0, (char*)"Postal High Scores", 23, 0.0f, 64.0f,
-            postal_heading_challenge_background_color.Set(
+            tColour().Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.postal_records;
@@ -61,7 +54,7 @@ void cRHighScore::Init(int mode_, int rank)
     case 1:
         title_widget->Init(
             0, (char*)"Challenge High Scores", 23, 0.0f, 64.0f,
-            challenge_heading_rank_color.Set(
+            tColour().Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 0.0f);
         g_game->subgame.sub_high_score.active_record_bank =
             g_game->subgame.sub_high_score.survival_records;
@@ -87,11 +80,6 @@ void cRHighScore::Init(int mode_, int rank)
                 + record_offset))->active == 1) {
             switch (selected_bank) {
             case 0: {
-                tColour postal_background_color;
-                tColour postal_rank_color;
-                tColour postal_name_color;
-                tColour postal_score_color;
-                tColour postal_replay_color;
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
@@ -100,7 +88,7 @@ void cRHighScore::Init(int mode_, int rank)
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                               ",
                     22, 0.0f, y,
-                    postal_background_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -228.0f);
 
@@ -110,7 +98,7 @@ void cRHighScore::Init(int mode_, int rank)
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->Init(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    postal_rank_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->AddTextNumber(row_index + 1);
@@ -123,7 +111,7 @@ void cRHighScore::Init(int mode_, int rank)
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
-                    postal_name_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
@@ -138,7 +126,7 @@ void cRHighScore::Init(int mode_, int rank)
                     g_game->border_manager.GetBorder();
                 score_row_widgets[row_index]->Init(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    postal_score_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     3, 160.0f);
                 score_row_widgets[row_index]->AddTextNumber(
@@ -153,7 +141,7 @@ void cRHighScore::Init(int mode_, int rank)
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                         | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                     (char*)"Replay", 22, 0.0f, y,
-                    postal_replay_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     2, 125.0f);
                 replay_row_widgets[row_index]->HideInit();
@@ -161,9 +149,6 @@ void cRHighScore::Init(int mode_, int rank)
             }
 
             case 1: {
-                tColour challenge_name_color;
-                tColour challenge_score_color;
-                tColour challenge_replay_color;
                 y = (float)row_index * row_step + 111.0f;
 
                 row_background_widgets[row_index] =
@@ -172,7 +157,7 @@ void cRHighScore::Init(int mode_, int rank)
                     highlight | FRONTEND_WIDGET_FLAG_ALLOW_OFFSCREEN,
                     (char*)"                                           ",
                     22, 0.0f, y,
-                    postal_heading_challenge_background_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -228.0f);
 
@@ -182,7 +167,7 @@ void cRHighScore::Init(int mode_, int rank)
                     | FRONTEND_WIDGET_FLAG_FRAMELESS;
                 rank_row_widgets[row_index]->Init(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    challenge_heading_rank_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -222.0f);
                 rank_row_widgets[row_index]->AddTextNumber(row_index + 1);
@@ -195,7 +180,7 @@ void cRHighScore::Init(int mode_, int rank)
                     ((SubSolution*)((char*)g_game->subgame.sub_high_score.active_record_bank
                         + record_offset))->player_name,
                     22, 0.0f, y,
-                    challenge_name_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     1, -180.0f);
                 if (row_index == selected_rank) {
@@ -210,7 +195,7 @@ void cRHighScore::Init(int mode_, int rank)
                     g_game->border_manager.GetBorder();
                 score_row_widgets[row_index]->Init(
                     row_flags, g_blank_text, 22, 0.0f, y,
-                    challenge_score_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     3, 125.0f);
                 score_row_widgets[row_index]->AddTextNumber(
@@ -225,7 +210,7 @@ void cRHighScore::Init(int mode_, int rank)
                         | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                         | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
                     (char*)"Replay", 22, 0.0f, y,
-                    challenge_replay_color.Set(
+                    tColour().Set(
                         1.0f, 1.0f, 1.0f, 1.0f),
                     2, 170.0f);
                 if (entering_name != 0)
@@ -236,10 +221,10 @@ void cRHighScore::Init(int mode_, int rank)
 
             if ((row_index & 1) != 0) {
                 row_background_widgets[row_index]->idle_fill_color =
-                    *alternating_background_color.Set(
+                    *tColour().Set(
                         0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
                 replay_row_widgets[row_index]->idle_fill_color =
-                    *shared_action_color.Set(
+                    *tColour().Set(
                         0.32941177f, 0.18431373f, 0.41960785f, 0.69999999f);
             }
         }
@@ -256,7 +241,7 @@ void cRHighScore::Init(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Cancel", 23, 0.0f, y,
-            shared_action_color.Set(
+            tColour().Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, -110.0f);
         cancel_name_button->SetKeyLeft(11);
 
@@ -266,7 +251,7 @@ void cRHighScore::Init(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Submit", 23, 0.0f, y,
-            shared_action_color.Set(
+            tColour().Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 55.0f);
         submit_name_button->SetKeyLeft(5);
         return;
@@ -278,7 +263,7 @@ void cRHighScore::Init(int mode_, int rank)
             | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
             | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
         g_back_text, 23, 0.0f, y,
-        shared_action_color.Set(
+        tColour().Set(
             1.0f, 1.0f, 1.0f, 1.0f), 2, -132.0f);
 
     bank_toggle_button = g_game->border_manager.GetBorder();
@@ -289,7 +274,7 @@ void cRHighScore::Init(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Challenge Scores", 23, 0.0f, y,
-            alternating_background_color.Set(
+            tColour().Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     case 1:
@@ -298,7 +283,7 @@ void cRHighScore::Init(int mode_, int rank)
                 | FRONTEND_WIDGET_FLAG_HOVER_HIGHLIGHT_ENABLED
                 | FRONTEND_WIDGET_FLAG_PRIMARY_INPUT_ENABLED,
             (char*)"Postal Scores", 23, 0.0f, y,
-            shared_action_color.Set(
+            tColour().Set(
                 1.0f, 1.0f, 1.0f, 1.0f), 2, 33.0f);
         return;
     }
