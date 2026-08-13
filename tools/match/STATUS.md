@@ -758,7 +758,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🖥 | write_file_bytes | 0x431650 | 229 | 74/74 | 100.00% | 74/74 | 10 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | enumerate_matching_archive_or_fs_entries | 0x431740 | 570 | 186/182 | 81.52% | 7/182 | 5 mismatch, 21 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | xor_archive_bytes_in_place | 0x431980 | 55 | 27/27 | 100.00% | 27/27 | - |  | replaceable-platform |
-| 🖥 | load_archive_index | 0x4319c0 | 187 | 67/67 | 92.54% | 40/67 | 14 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
+| 🖥 | load_archive_index | 0x4319c0 | 187 | 67/67 | 100.00% | 67/67 | 14 ok | msvc6.5 /O2 /G5 /W3 /TC | replaceable-platform |
 | 🖥 | is_archive_index_loaded | 0x431a80 | 11 | 4/4 | 100.00% | 4/4 | 1 ok |  | replaceable-platform |
 | 🖥 | get_archive_data_base | 0x431a90 | 6 | 2/2 | 100.00% | 2/2 | 1 ok |  | replaceable-platform |
 | 🖥 | get_archive_data_end | 0x431aa0 | 11 | 3/3 | 100.00% | 3/3 | 1 ok |  | replaceable-platform |

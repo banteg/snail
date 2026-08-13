@@ -12,10 +12,7 @@ char __cdecl load_archive_index(char* path)
     char header[0x7c];
     int byte_count;
     SerializedArchiveIndex* serialized_index;
-    ArchiveIndex* records;
     int i;
-    int offset;
-    char* rebased_path;
 
     g_archive_index_records = 0;
     if (archive_or_file_exists(path, 0) == 0) {
@@ -34,20 +31,15 @@ char __cdecl load_archive_index(char* path)
     load_file_bytes_fixed_size_from_archive_or_fs(
         path, (char*)serialized_index, byte_count);
     xor_archive_bytes_in_place(0, (char*)serialized_index, byte_count);
-    records = (ArchiveIndex*)serialized_index;
-    g_archive_index_records = records;
+    g_archive_index_records = (ArchiveIndex*)serialized_index;
 
     i = 0;
     if (serialized_index->count > 0) {
-        offset = 0;
         do {
-            rebased_path = *(char**)((char*)records + offset + 4);
-            offset += sizeof(ArchiveEntry);
-            rebased_path += (int)records;
+            g_archive_index_records->entries[i].path +=
+                (int)g_archive_index_records;
             ++i;
-            *(char**)((char*)records + offset - 8) = rebased_path;
-            records = g_archive_index_records;
-        } while (i < records->count);
+        } while (i < g_archive_index_records->count);
     }
 
     g_archive_file = fopen(path, "rb");

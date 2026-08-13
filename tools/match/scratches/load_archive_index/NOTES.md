@@ -4,86 +4,40 @@ Loads and decrypts the archive index blob, rebases each entry path pointer from
 file-relative offsets to live pointers, opens the backing dat stream, and leaves
 `g_archive_index_records` null when no archive exists.
 
-Current matcher result: 92.54%, 67/67 candidate instructions, 40/67 exact prefix,
-13/13 masked references resolved.
+Current matcher result: **100.00%**, 67/67 exact instructions, with all 14
+masked references resolved.
 
-Known residual: after the full-index decrypt call, native copies the allocated
-index pointer from `esi` to `eax`, cleans up the batched call arguments, stores
-`g_archive_index_records` through `eax`, then tests the entry count. The source
-shape here still stores the global directly from `esi` before the stack cleanup,
-then copies `esi` to `eax` before the rebase loop. The archive semantics and
-entry-pointer rebase loop are otherwise aligned.
+The proof-grade source publishes the decoded allocation directly as
+`g_archive_index_records`, then updates each typed `ArchiveEntry::path` in
+place through that published owner. VC6 strength-reduces the typed entry loop
+to the native 12-byte offset induction, including the otherwise elusive SIB
+base/index order.
 
-2026-06-20 shared header sync: `archive_index.h` took ownership of the stream
-pointer plus `g_archive_file` and typed `ArchiveIndex* g_archive_index_records`
-externs. Removing duplicate local externs from the archive-index consumers is
-codegen-neutral for the focused archive scratches; `load_archive_index` remains
-92.54% with the same store/stack-cleanup residual.
+## 2026-08-13 exact typed-entry recovery
 
-2026-06-20 install-store retry: a typed `ArchiveIndex* installed_records`
-temporary and a raw integer base temporary both preserve the 92.54% object.
-Neither source shape moves VC6's `mov eax, esi` before stack cleanup or the
-global store, reinforcing that the residual is local scheduling rather than the
-source-level alias used for `g_archive_index_records`.
+Both verified mobile bodies publish the decoded allocation directly to their
+authored `gDat` owner before rebasing its path entries. Removing the separate
+Windows `records` carrier first improved the focused result from **92.54%** to
+**97.01%** and extended the exact prefix from 40 to 48 instructions. Expressing
+the remaining rebase as the owned operation
+`g_archive_index_records->entries[i].path += (int)g_archive_index_records`
+then recovers the two scale-one SIB encodings exactly.
 
-2026-06-20 archive-family audit: making the installed global the explicit owner
-for the entry-count test (`g_archive_index_records = index; records =
-g_archive_index_records; if (records->count > 0)`), using a chained assignment
-(`g_archive_index_records = records = index`), and using the assignment result
-inside the count test all compile identically at 92.54%. None recover native's
-`mov eax, esi; add esp, 0x38; mov [global], eax` schedule. Keep the current
-clear `records = index; g_archive_index_records = records` source shape.
+The final result is **100.00%**, 67/67 instructions, exact prefix 67, and all
+14 references clean. This is a semantic ownership correction, not an address
+or register coercion: the typed source is also simpler than the former manual
+byte-offset load/store sequence.
 
-2026-07-11 ownership sweep: the five remaining boolean-only consumers now use
-the shared `ArchiveIndex*` declaration instead of redeclaring the address as an
-integer. `archive_or_file_exists` also uses the recovered `ArchiveEntry*` return
-type for `find_archive_entry`, while `register_sound_sample` keeps its saved
-global as an `ArchiveIndex*`. All five focused objects remain exact; this clears
-the archive-index address from the shared-extern conflict report without
-changing code generation.
+## Supporting ownership evidence
 
-2026-07-12 cross-port ownership: the exact iOS `RShell.o` symbol is
-`RShellDatInit(char*)`. Its ARM body independently decodes the 0x7c-byte
-header, allocates and decodes the full index, rebases each 12-byte entry path,
-installs `gDat`, and opens `gDatFP`, matching the Windows `ArchiveIndex` and
-`g_archive_file` ownership.
-
-## 2026-07-14 serialized-to-live index lifecycle
-
-The decoded bytes now use `SerializedArchiveIndex` until the path-offset rebase
-begins. Its first entry's `data_offset` owns the complete header/index byte
-count read from the 0x7c-byte prefix, and each serialized record begins with a
-file-relative `path_offset`. Only after decryption does the helper expose the
-same allocation as `ArchiveIndex` and replace those offsets in place with live
-`char* path` values before publishing `g_archive_index_records`.
-
-This separates the on-disk and relocated record owners without changing the
-native transition: the focused result remains 92.54%, 67/67 instructions, a
-40-instruction prefix, and 13 clean masked references, with a byte-identical
-normalized candidate listing.
-
-## 2026-07-15 CRT stream ownership
-
-The backing DAT handle is now owned by the pinned VC6 `<stdio.h>` `FILE` type,
-not a scratch-invented opaque `File`. `archive_index.h` publishes
-`FILE* g_archive_file`, and this loader uses the authentic CRT `fopen`
-declaration instead of a local approximation. All archive-header consumers
-recompile unchanged; the focused object remains 92.54% with 13 clean masked
-references and the same install-store scheduling residual.
-
-## 2026-07-25 serialized-header ownership replay
-
-The exact 0x7c-byte prefix is now represented in both decompilers as
-`SerializedArchiveHeader`: a count followed by ten 12-byte serialized entries.
-The first entry's `data_offset` is the complete encrypted-index byte count read
-by the native loader. The following allocation remains a
-`SerializedArchiveIndex` through decryption, then becomes an `ArchiveIndex` in
-place while each `path_offset` is rebased to a live path pointer and the result
-is published.
-
-Binary Ninja and IDA now retain the serialized header, byte count, allocated
-serialized index, live archive index, entry index/byte offset, serialized path
-offset, rebased path, and archive stream as distinct lifetimes. The scratch and
-focused object are unchanged at 92.54%, 67/67 instructions, a 40-instruction
-prefix, and 13 clean masked references; the remaining difference is still the
-documented install-store scheduling.
+- Android and iOS retain the exact authored `RShellDatInit(char*)` symbol in
+  `RShell.o`. Both decode an archive index, publish it as `gDat`, rebase every
+  entry path in place, and open the backing stream.
+- `SerializedArchiveIndex` owns the decoded file-relative `path_offset` values
+  until publication. The same allocation then becomes an `ArchiveIndex` whose
+  12-byte `ArchiveEntry` records hold live `char* path` values.
+- The shared archive header owns `ArchiveIndex* g_archive_index_records` and the
+  authentic VC6 `FILE* g_archive_file`; the archive consumers use those same
+  types, so the exact loop does not depend on a scratch-local layout alias.
+- Binary Ninja and IDA replays retain distinct serialized header, decoded
+  allocation, live index, rebased path, and stream lifetimes.
