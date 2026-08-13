@@ -3,7 +3,7 @@
 /* selector: initialize_options_menu */
 
 // Constructs the Options screen widgets, seeds them from SnailMail.cfg, and links the fullscreen, sounds, music, and back controls. Cross-port Android and iOS symbols match this helper to `cROptions::Init()`.
-void __thiscall initialize_options_menu(Options *options)
+void __thiscall initialize_options_menu(cROptions *options)
 {
   tColour *v2; // eax
   tColour *v3; // eax

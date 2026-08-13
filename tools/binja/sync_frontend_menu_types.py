@@ -21,7 +21,7 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_menu_types.h"
 
 EXPECTED_STRUCT_SIZES = {
     "cRMainMenu": 0x18,
-    "Options": 0x24,
+    "cROptions": 0x24,
     "Exit": 0x1C,
 }
 
@@ -29,12 +29,15 @@ BOD_BASE_EXPECTED_SIZE = 0x38
 
 GAME_ROOT_FIELD_UPDATES = (
     ("0x4f324", "main_menu", "cRMainMenu"),
-    ("0x4f388", "options", "Options"),
+    ("0x4f388", "options", "cROptions"),
     ("0x4f3ac", "exit_controller", "Exit"),
     ("0x4f3c8", "root_bod_4f3c8", "BodBase"),
 )
 
-TYPE_RENAMES = (("MainMenu", "cRMainMenu"),)
+TYPE_RENAMES = (
+    ("MainMenu", "cRMainMenu"),
+    ("Options", "cROptions"),
+)
 
 MAIN_MENU_FIELD_UPDATES = (
     ("0x00", "new_game_widget", "FrontendWidget*"),
@@ -69,16 +72,19 @@ PROTO_UPDATES = (
     ("update_main_menu", "void __thiscall update_main_menu(cRMainMenu* menu)"),
     (
         "initialize_options_menu",
-        "void __thiscall initialize_options_menu(Options* options)",
+        "void __thiscall initialize_options_menu(cROptions* options)",
     ),
     (
         "destroy_options_menu",
-        "void __thiscall destroy_options_menu(Options* options)",
+        "void __thiscall destroy_options_menu(cROptions* options)",
     ),
-    ("update_options_menu", "void __thiscall update_options_menu(Options* options)"),
+    (
+        "update_options_menu",
+        "void __thiscall update_options_menu(cROptions* options)",
+    ),
     (
         "apply_audio_config_volumes",
-        "void __thiscall apply_audio_config_volumes(Options* options)",
+        "void __thiscall apply_audio_config_volumes(cROptions* options)",
     ),
     (
         "destroy_completion_screen",
@@ -143,7 +149,10 @@ def main() -> int:
         for name, expected_size in EXPECTED_STRUCT_SIZES.items()
         if (
             observed_widths.get(name) != expected_size
-            or (name == "cRMainMenu" and not type_equivalence.get(name, False))
+            or (
+                name in {"cRMainMenu", "cROptions"}
+                and not type_equivalence.get(name, False)
+            )
         )
     )
     if mismatched_types:
@@ -170,7 +179,7 @@ def main() -> int:
 
     struct_updates = (
         ("cRMainMenu", MAIN_MENU_FIELD_UPDATES),
-        ("Options", OPTIONS_FIELD_UPDATES),
+        ("cROptions", OPTIONS_FIELD_UPDATES),
         ("Exit", EXIT_FIELD_UPDATES),
         ("GameRoot", GAME_ROOT_FIELD_UPDATES),
     )

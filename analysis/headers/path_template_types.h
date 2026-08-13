@@ -500,7 +500,7 @@ typedef struct Help {
 typedef char Help_must_be_0x04[(sizeof(Help) == 0x04) ? 1 : -1];
 
 /* Exact 0x24-byte authored cROptions front-end controller. */
-typedef struct Options {
+typedef struct cROptions {
     int32_t previous_frontend_state;
     uint8_t active;
     uint8_t _pad_05[0x0b];
@@ -509,7 +509,7 @@ typedef struct Options {
     FrontendWidget* sound_volume_widget;
     FrontendWidget* music_volume_widget;
     float previous_sample_volume;
-} Options;
+} cROptions;
 
 /* Exact 0x0c-byte global cRLoadingBar lifecycle owner. */
 typedef struct cRLoadingBar {
@@ -3401,7 +3401,7 @@ void __thiscall destroy_loading_screen(cRLoadingBar* loading_bar);
 
 void __thiscall update_loading_screen(cRLoadingBar* loading_bar);
 
-void __thiscall destroy_options_menu(Options* options);
+void __thiscall destroy_options_menu(cROptions* options);
 
 void __thiscall initialize_subgame(cRSubGame* game);
 

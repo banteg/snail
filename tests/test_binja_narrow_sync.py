@@ -1495,7 +1495,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '(0x4F2DC, 0x48, "intro", "Intro")',
         '(0x4F324, 0x18, "main_menu", "cRMainMenu")',
         '(0x4F33C, 0x4C, "star_manager", "cRStarManager")',
-        '(0x4F388, 0x24, "options", "Options")',
+        '(0x4F388, 0x24, "options", "cROptions")',
         '(0x4F3AC, 0x1C, "exit_controller", "Exit")',
         '(0x4F3C8, 0x38, "root_bod_4f3c8", "BodBase")',
         '(0x4F400, 0x25218, "logo", "cRLogo")',
@@ -1709,10 +1709,11 @@ def test_ida_frontend_owner_lanes_replay_the_shared_root_graph() -> None:
     )
 
     assert '"cRMainMenu": 0x18' in menu_apply
-    assert '"Options": 0x24' in menu_apply
+    assert '"cROptions": 0x24' in menu_apply
     assert '"Exit": 0x1C' in menu_apply
     assert "migrate_equivalent_struct_aliases" in menu_apply
     assert '("MainMenu", "cRMainMenu", 0x18)' in menu_apply
+    assert '("Options", "cROptions", 0x24)' in menu_apply
     assert "EXPECTED_OWNER_LAYOUTS" in menu_apply
     assert "owner_layout_readback" in menu_apply
     assert 'analysis/headers/bn_frontend_menu_types.h' in menu_sync
@@ -3654,26 +3655,27 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
 
     for owner in (
         '("0x4f324", "main_menu", "cRMainMenu")',
-        '("0x4f388", "options", "Options")',
+        '("0x4f388", "options", "cROptions")',
         '("0x4f3ac", "exit_controller", "Exit")',
         '("0x4f3c8", "root_bod_4f3c8", "BodBase")',
     ):
         assert owner in source
     for expected_size in (
         '"cRMainMenu": 0x18',
-        '"Options": 0x24',
+        '"cROptions": 0x24',
         '"Exit": 0x1C',
     ):
         assert expected_size in source
     for prototype in (
         "void __thiscall initialize_main_menu(cRMainMenu* menu)",
-        "void __thiscall update_options_menu(Options* options)",
+        "void __thiscall update_options_menu(cROptions* options)",
         "void __thiscall initialize_exit_prompt(Exit* exit_controller)",
     ):
         assert prototype in source
     assert "apply_struct_and_proto_updates" in source
     assert "apply_type_renames" in source
     assert '("MainMenu", "cRMainMenu")' in source
+    assert '("Options", "cROptions")' in source
     assert "current_header_type_equivalence" in source
     assert "types_declare_missing_only" in source
     assert 'BOD_BASE_EXPECTED_SIZE = 0x38' in source
@@ -3682,7 +3684,8 @@ def test_frontend_menu_sync_owns_the_contiguous_root_block() -> None:
     assert "typedef struct FrontendWidget FrontendWidget;" in header
     assert "typedef struct cRMainMenu" in header
     assert "typedef struct MainMenu" not in header
-    assert "typedef struct Options" in header
+    assert "typedef struct cROptions" in header
+    assert "typedef struct Options" not in header
     assert "typedef struct Exit" in header
 
 
@@ -19528,7 +19531,7 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     ):
         assert prototype in runtime_sync
         assert prototype + ";" in ida_path_sync
-    assert "void __thiscall destroy_options_menu(Options* options)" in menu_sync
+    assert "void __thiscall destroy_options_menu(cROptions* options)" in menu_sync
     assert "void __thiscall destroy_intro_screen(cRLogo* logo)" in logo_sync
     assert "void __thiscall destroy_intro_screen(cRLogo* logo);" in ida_logo_sync
     assert "void __thiscall open_logo(cRLogo* logo)" in logo_sync
@@ -19587,7 +19590,10 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert "typedef struct LoadingQuadVertexView" in path_header
     assert "def _sync_loading_quad_lvars()" in ida_path_sync
     assert '"loading_quad_lvars"' in ida_path_sync
-    assert "typedef struct Options" in path_header
+    assert "typedef struct cROptions" in path_header
+    assert "typedef struct Options" not in path_header
+    assert "void __thiscall destroy_options_menu(cROptions* options);" in path_header
+    assert "void __thiscall destroy_options_menu(cROptions* options);" in ida_path_sync
     assert "cRLoadingBar g_loading_bar;" in ida_path_sync
     for resource_declaration in (
         "Direct3DTexture8 *g_loading_bar_on_texture;",

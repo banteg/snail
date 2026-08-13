@@ -2191,7 +2191,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "destroy_options_menu",
-        "void __thiscall destroy_options_menu(Options* options);",
+        "void __thiscall destroy_options_menu(cROptions* options);",
     ),
     (
         "uninit_pause_menu",

@@ -3,7 +3,7 @@
 /* selector: update_options_menu */
 
 // Runs the Options-screen state machine, including fullscreen toggles, slider updates, audio-volume refresh, save, and return to the owning front-end state. Cross-port Android and iOS symbols match this helper to `cROptions::AI()`.
-void __thiscall update_options_menu(Options *options)
+void __thiscall update_options_menu(cROptions *options)
 {
   FrontendWidget *fullscreen_widget; // ecx
   FrontendWidgetFlag widget_flags; // eax

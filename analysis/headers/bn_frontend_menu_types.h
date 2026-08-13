@@ -17,7 +17,7 @@ typedef struct cRMainMenu {
 } cRMainMenu;
 
 /* Exact Windows cROptions owner at GameRoot +0x4f388. */
-typedef struct Options {
+typedef struct cROptions {
     int32_t previous_frontend_state;
     uint8_t active;
     uint8_t _pad_05[0x0b];
@@ -26,7 +26,7 @@ typedef struct Options {
     FrontendWidget* sound_volume_widget;
     FrontendWidget* music_volume_widget;
     float previous_sample_volume;
-} Options;
+} cROptions;
 
 /* Exact Windows cRExit owner at GameRoot +0x4f3ac. */
 typedef struct Exit {

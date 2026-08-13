@@ -3,7 +3,7 @@
 /* selector: apply_audio_config_volumes */
 
 // Pushes the saved sound and music scalar fields from SnailMail.cfg into the audio engine through the root-owned cROptions receiver. Cross-port `cROptions::Apply(bool)` is a broader lifecycle member; Windows retains this exact no-argument audio subset.
-void __thiscall apply_audio_config_volumes(Options *options)
+void __thiscall apply_audio_config_volumes(cROptions *options)
 {
   float volume; // [esp+0h] [ebp-4h]
 

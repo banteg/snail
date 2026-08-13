@@ -18,12 +18,15 @@ if str(SCRIPT_ROOT) not in sys.path:
 from game_root_owner import sync_game_root_owner_graph
 from type_alias_migration import migrate_equivalent_struct_aliases
 
-MAIN_MENU_OWNER_TYPE_ALIASES = (("MainMenu", "cRMainMenu", 0x18),)
+FRONTEND_MENU_OWNER_TYPE_ALIASES = (
+    ("MainMenu", "cRMainMenu", 0x18),
+    ("Options", "cROptions", 0x24),
+)
 
 
 EXPECTED_OWNER_SIZES = {
     "cRMainMenu": 0x18,
-    "Options": 0x24,
+    "cROptions": 0x24,
     "Exit": 0x1C,
 }
 
@@ -38,7 +41,7 @@ EXPECTED_OWNER_LAYOUTS = {
             0x14: ("exit_widget", "FrontendWidget *"),
         },
     },
-    "Options": {
+    "cROptions": {
         "size": 0x24,
         "members": {
             0x00: ("previous_frontend_state", "int32_t"),
@@ -69,16 +72,19 @@ TRUSTED_DECLARATIONS = (
     ("update_main_menu", "void __thiscall update_main_menu(cRMainMenu* menu);"),
     (
         "initialize_options_menu",
-        "void __thiscall initialize_options_menu(Options* options);",
+        "void __thiscall initialize_options_menu(cROptions* options);",
     ),
     (
         "destroy_options_menu",
-        "void __thiscall destroy_options_menu(Options* options);",
+        "void __thiscall destroy_options_menu(cROptions* options);",
     ),
-    ("update_options_menu", "void __thiscall update_options_menu(Options* options);"),
+    (
+        "update_options_menu",
+        "void __thiscall update_options_menu(cROptions* options);",
+    ),
     (
         "apply_audio_config_volumes",
-        "void __thiscall apply_audio_config_volumes(Options* options);",
+        "void __thiscall apply_audio_config_volumes(cROptions* options);",
     ),
     (
         "destroy_completion_screen",
@@ -179,7 +185,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     type_alias_migrations = (
         []
         if parse_errors
-        else migrate_equivalent_struct_aliases(MAIN_MENU_OWNER_TYPE_ALIASES)
+        else migrate_equivalent_struct_aliases(FRONTEND_MENU_OWNER_TYPE_ALIASES)
     )
     type_alias_failures = [
         {

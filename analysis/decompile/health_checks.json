@@ -16742,7 +16742,7 @@
       "name": "ida_options_uninit_void_owner",
       "artifact": "analysis/decompile/ida/functions/0041aee0-destroy_options_menu.c",
       "required_substrings": [
-        "void __thiscall destroy_options_menu(Options *options)",
+        "void __thiscall destroy_options_menu(cROptions *options)",
         "options->back_widget",
         "save_config_file("
       ],
@@ -16750,6 +16750,9 @@
         "char *__thiscall destroy_options_menu",
         "return (char *)save_config_file",
         "unimplemented"
+      ],
+      "forbidden_regexes": [
+        "\\bOptions \\*options"
       ]
     },
     {
@@ -17264,7 +17267,7 @@
       "name": "ida_initialize_options_root_latch_owner",
       "artifact": "analysis/decompile/ida/functions/0041ace0-initialize_options_menu.c",
       "required_substrings": [
-        "void __thiscall initialize_options_menu(Options *options)",
+        "void __thiscall initialize_options_menu(cROptions *options)",
         "hide_all_borders(&g_game_base->border_manager)",
         "g_game_base->frontend_link_latch = 1",
         "allocate_border(&g_game_base->border_manager)"
@@ -17273,19 +17276,25 @@
         "g_game_base->unknown_000521",
         "FrameBorderManager",
         "hide_all_borders((int *)"
+      ],
+      "forbidden_regexes": [
+        "\\bOptions \\*options"
       ]
     },
     {
       "name": "ida_update_options_root_latch_owner",
       "artifact": "analysis/decompile/ida/functions/0041af60-update_options_menu.c",
       "required_substrings": [
-        "void __thiscall update_options_menu(Options *options)",
+        "void __thiscall update_options_menu(cROptions *options)",
         "g_game_base->frontend_link_latch = 0",
         "g_game_base->players[0].frontend_state"
       ],
       "forbidden_substrings": [
         "g_game_base->unknown_000521",
         "(char *)g_game_base + 1384"
+      ],
+      "forbidden_regexes": [
+        "\\bOptions \\*options"
       ]
     },
     {
@@ -18831,7 +18840,7 @@
       "name": "ida_audio_backend_global_aggregate_owner",
       "artifact": "analysis/decompile/ida/functions/0041b070-apply_audio_config_volumes.c",
       "required_substrings": [
-        "void __thiscall apply_audio_config_volumes(Options *options)",
+        "void __thiscall apply_audio_config_volumes(cROptions *options)",
         "set_global_sample_volume_config(&g_audio_backend",
         "g_audio_backend.music_normalization_scale",
         "set_global_stream_volume_config(&g_audio_backend"
@@ -18839,6 +18848,9 @@
       "forbidden_substrings": [
         "g_stream_volume_scale",
         "(AudioBackend *)g_audio_backend"
+      ],
+      "forbidden_regexes": [
+        "\\bOptions \\*options"
       ]
     },
     {

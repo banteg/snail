@@ -3,7 +3,7 @@
 /* selector: destroy_options_menu */
 
 // Exact void cROptions::UnInit(): tears down the Options widgets and writes SnailMail.cfg. Its sole Windows caller discards the save_config_file pointer left in EAX.
-void __thiscall destroy_options_menu(Options *options)
+void __thiscall destroy_options_menu(cROptions *options)
 {
   unhide_all_borders(&g_game_base->border_manager);
   kill_border(&g_game_base->border_manager, options->back_widget);
