@@ -4279,7 +4279,7 @@
       "artifact": "analysis/decompile/ida/functions/00416910-initialize_high_score_screen.c",
       "required_substrings": [
         "void __thiscall initialize_high_score_screen(",
-        "HighScore *high_score",
+        "cRHighScore *high_score",
         "&g_game_base->subgame.landscape_manager,",
         "subgame.landscape_manager.scripts[landscape_script_by_name]",
         "high_score->selected_bank",
@@ -4293,6 +4293,9 @@
         "return result",
         "__asm",
         "_ET1"
+      ],
+      "forbidden_regexes": [
+        "\\bHighScore \\*high_score"
       ]
     },
     {
@@ -4396,6 +4399,7 @@
       "name": "bn_high_score_update_root_owners",
       "artifact": "analysis/decompile/binja/functions/00417260-update_high_score_screen.c",
       "required_substrings": [
+        "struct cRHighScore* high_score_1 = high_score",
         "g_game_base->subgame.sub_high_score.active_record_bank",
         "game_base_3->subgame.sub_high_score.active_record_count",
         "g_game_base->players[0].player_name",
@@ -4415,7 +4419,8 @@
         "g_game_base + 0x",
         "game_base_1 + 0x",
         "game_base_2 + 0x",
-        "game_base_3 + 0x"
+        "game_base_3 + 0x",
+        "struct HighScore"
       ]
     },
     {
@@ -4439,7 +4444,7 @@
       "name": "ida_high_score_destroy_root_owners",
       "artifact": "analysis/decompile/ida/functions/00417220-destroy_high_score_screen.c",
       "required_substrings": [
-        "void __thiscall destroy_high_score_screen(HighScore *high_score)",
+        "void __thiscall destroy_high_score_screen(cRHighScore *high_score)",
         "g_runtime_config.high_score_selected_bank = high_score->selected_bank",
         "kill_all_borders(&g_game_base->border_manager)",
         "g_game_base->players[0].high_score_entry_pending = 0",
@@ -4450,6 +4455,9 @@
         "(int *)g_game_base",
         "*((_BYTE *)g_game_base",
         "*((_DWORD *)g_game_base"
+      ],
+      "forbidden_regexes": [
+        "\\bHighScore \\*high_score"
       ]
     },
     {
@@ -4457,7 +4465,7 @@
       "artifact": "analysis/decompile/ida/functions/00417260-update_high_score_screen.c",
       "required_substrings": [
         "void __thiscall update_high_score_screen(",
-        "HighScore *high_score",
+        "cRHighScore *high_score",
         "high_score->replay_row_widgets",
         "g_game_base->subgame.sub_high_score.active_record_bank",
         "g_game_base->subgame.sub_high_score.active_record_count",
@@ -4482,13 +4490,16 @@
         "return result",
         "__asm",
         "_ET1"
+      ],
+      "forbidden_regexes": [
+        "\\bHighScore \\*high_score"
       ]
     },
     {
       "name": "ida_high_score_exit_root_owners",
       "artifact": "analysis/decompile/ida/functions/00417b50-exit_high_score_screen.c",
       "required_substrings": [
-        "void __thiscall exit_high_score_screen(HighScore *high_score)",
+        "void __thiscall exit_high_score_screen(cRHighScore *high_score)",
         "GameRoot *v1",
         "g_game_base->subgame.level_mode",
         "g_game_base->players[0].frontend_state",
@@ -4499,6 +4510,9 @@
         "_DWORD *v1",
         "*((_BYTE *)g_game_base",
         "*((_DWORD *)g_game_base"
+      ],
+      "forbidden_regexes": [
+        "\\bHighScore \\*high_score"
       ]
     },
     {

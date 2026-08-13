@@ -533,7 +533,7 @@ component types are present, it composes the contiguous
 `RootBodCatalog +0x44100`, `cRDirectX +0x48e00`, `cRBackdrop +0x4ec10`,
 `cRIntro`, `cRMainMenu`, `cRStarManager`, `cROptions`, `cRExit`, standalone `BodBase`,
 and `cRLogo` block through `+0x74618`, followed by the complete
-`cRSubGame` (`0x1272838` bytes), `HighScore` at `+0x12e6e50`, the real
+`cRSubGame` (`0x1272838` bytes), `cRHighScore` at `+0x12e6e50`, the real
 `0x14`-byte gap, `TipManager` at `+0x12e6f58`, and the final four-byte gap into
 the exact `0x12e6ff4` root. Bootstrap databases missing the catalog/loader types
 retain the front-end-plus-tail composition; databases also missing a front-end

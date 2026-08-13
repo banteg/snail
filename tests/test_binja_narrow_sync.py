@@ -1462,7 +1462,7 @@ def test_frontend_tail_syncs_promote_proved_game_root_owners() -> None:
 
     assert '("0x12e6f58", "tip_manager", "TipManager")' in path_sync
     assert '("GameRoot", GAME_ROOT_FIELD_UPDATES)' in path_sync
-    assert '("0x12e6e50", "high_score", "HighScore")' in high_score_sync
+    assert '("0x12e6e50", "high_score", "cRHighScore")' in high_score_sync
     assert 'struct_name="GameRoot"' in high_score_sync
 
 
@@ -1501,7 +1501,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         '(0x4F400, 0x25218, "logo", "cRLogo")',
     ):
         assert owner in owner_sync
-    assert '(0x12E6E50, 0xF4, "high_score", "HighScore")' in owner_sync
+    assert '(0x12E6E50, 0xF4, "high_score", "cRHighScore")' in owner_sync
     assert '(0x12E6F58, 0x98, "tip_manager", "TipManager")' in owner_sync
     assert "GAME_ROOT_GLOBAL_ADDRESS = 0x4DF904" in owner_sync
     assert "GAME_ROOT_ACTIVE_BOD_LIST_OFFSET = 0x5A8" in owner_sync
@@ -1520,7 +1520,8 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
         "uint8_t __thiscall initialize_game_assets_and_world(GameRoot *game);"
         in frame_sync
     )
-    assert "typedef struct HighScore" in path_header
+    assert "typedef struct cRHighScore" in path_header
+    assert "typedef struct HighScore" not in path_header
     assert "FrontendWidget* replay_row_widgets[10];" in path_header
     for source, required in (
         (path_sync, True),
@@ -3723,8 +3724,8 @@ def test_intro_sync_promotes_the_canonical_crintro_owner() -> None:
         assert prototype + ";" in ida_source
     assert "migrate_equivalent_struct_aliases" in ida_source
     assert '("Intro", "cRIntro", 0x48)' in ida_source
-    assert "EXPECTED_INTRO_OWNER_LAYOUT" in ida_source
-    assert "intro_owner_layout_readback" in ida_source
+    assert "EXPECTED_OWNER_LAYOUTS" in ida_source
+    assert "owner_layout_readback" in ida_source
     assert '(0x4F2DC, 0x48, "intro", "cRIntro")' in root_source
     assert "void __thiscall destroy_main_menu(cRMainMenu* menu);" in (
         IDA_DIR / "apply_frontend_menu_types.py"
@@ -5196,7 +5197,7 @@ def test_high_score_bank_replay_settles_screen_init_prototype_last() -> None:
     expected = (
         'HIGH_SCORE_INIT_PROTO_UPDATE = (\n'
         '    "initialize_high_score_screen",\n'
-        '    "void __thiscall initialize_high_score_screen(HighScore* high_score, '
+        '    "void __thiscall initialize_high_score_screen(cRHighScore* high_score, '
         'int32_t selected_bank, int32_t selected_rank)",\n'
         ")"
     )
@@ -5225,6 +5226,14 @@ def test_high_score_lifecycle_replays_complete_owner_graph() -> None:
     ida_source = (IDA_DIR / "apply_frontend_replay_types.py").read_text(
         encoding="utf-8"
     )
+    headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "bn_high_score_screen_types.h",
+            "frontend_replay_types.h",
+            "path_template_types.h",
+        )
+    )
     operand_block = ida_source.split(
         "HIGH_SCORE_UPDATE_BANK_OFFSET_OPERANDS = (", 1
     )[1].split("\n)\n\nHIGH_SCORE_LIFECYCLE", 1)[0]
@@ -5251,6 +5260,32 @@ def test_high_score_lifecycle_replays_complete_owner_graph() -> None:
         )[1]
 
     assert "reanalyze_functions" in binja_source
+    assert 'TYPE_RENAMES = (("HighScore", "cRHighScore"),)' in binja_source
+    assert "current_header_type_equivalence" in binja_source
+    assert "current_type_widths" in binja_source
+    assert "types_declare_missing_only" in binja_source
+    assert "types_declare(REPO_ROOT" not in binja_source
+    for header in headers:
+        assert "typedef struct cRHighScore" in header
+        assert "typedef struct HighScore" not in header
+    assert '("HighScore", "cRHighScore", 0xF4)' in ida_source
+    assert '"cRHighScore": {' in ida_source
+    assert "EXPECTED_OWNER_LAYOUTS" in ida_source
+    assert (
+        "void __thiscall initialize_high_score_screen(cRHighScore* high_score, "
+        "int32_t selected_bank, int32_t selected_rank)"
+    ) in binja_source
+    assert (
+        "void __thiscall initialize_high_score_screen(cRHighScore* high_score, "
+        "int selected_bank, int selected_rank);"
+    ) in ida_source
+    for prototype in (
+        "void __thiscall destroy_high_score_screen(cRHighScore* high_score)",
+        "void __thiscall update_high_score_screen(cRHighScore* high_score)",
+        "void __thiscall exit_high_score_screen(cRHighScore* high_score)",
+    ):
+        assert prototype in binja_source
+        assert prototype + ";" in ida_source
     assert (
         "identifiers=HIGH_SCORE_LIFECYCLE_REANALYSIS_FUNCTIONS"
         in binja_source

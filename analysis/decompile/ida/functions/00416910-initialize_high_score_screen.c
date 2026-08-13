@@ -3,7 +3,7 @@
 /* selector: initialize_high_score_screen */
 
 // Void `cRHighScore::Init(int, int)`: builds the postal or challenge high-score screen, optionally enables inline name entry, and lays out five owned ten-handle row banks. Android AI tail-branches among the void lifecycle peers; all three Windows callers discard EAX.
-void __thiscall initialize_high_score_screen(HighScore *high_score, int selected_bank, int selected_rank)
+void __thiscall initialize_high_score_screen(cRHighScore *high_score, int selected_bank, int selected_rank)
 {
   int32_t landscape_script_by_name; // eax
   int32_t v5; // eax

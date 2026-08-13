@@ -184,7 +184,7 @@ typedef struct SubSolution SubSolution;
 
 /* Authored cRHighScore. Windows proves storage through +0xf4; the final class
    boundary before the following TipManager remains open by 0x14 bytes. */
-typedef struct HighScore {
+typedef struct cRHighScore {
     int32_t field_00;
     int32_t mode;
     int32_t selected_bank;
@@ -202,7 +202,7 @@ typedef struct HighScore {
     FrontendWidget* name_row_widgets[10];
     FrontendWidget* score_row_widgets[10];
     FrontendWidget* replay_row_widgets[10];
-} HighScore;
+} cRHighScore;
 
 /* Exact 0x48-byte Windows cRIntro owner; mobile has one additional widget. */
 typedef struct cRIntro {

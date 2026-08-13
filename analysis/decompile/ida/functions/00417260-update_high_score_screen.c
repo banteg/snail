@@ -3,7 +3,7 @@
 /* selector: update_high_score_screen */
 
 // Exact void Windows `cRHighScore::AI()`: runs replay launch, bank toggling, inline name submission, and exit actions while borrowing row widgets and the separate persistent cRSubHighScore bank. Android directly tail-branches to Init, UnInit, and Exit; the Windows transcription is proof-grade at 205/205 instructions.
-void __thiscall update_high_score_screen(HighScore *high_score)
+void __thiscall update_high_score_screen(cRHighScore *high_score)
 {
   FrontendWidget *v2; // ecx
   FrontendWidgetFlag widget_flags; // eax

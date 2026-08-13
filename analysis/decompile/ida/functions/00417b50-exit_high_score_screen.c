@@ -3,12 +3,12 @@
 /* selector: exit_high_score_screen */
 
 // Exact void `cRHighScore::Exit()`: leaves the high-score screen, restores front-end state `2` for postal or `10` for challenge, and seeds rebuild selector `2` on both paths. Both Windows callers discard the incidental root pointer left in EAX.
-void __thiscall exit_high_score_screen(HighScore *high_score)
+void __thiscall exit_high_score_screen(cRHighScore *high_score)
 {
   GameRoot *v1; // eax
 
   v1 = g_game_base;
-  if ( !g_game_base->subgame.level_mode )
+  if ( g_game_base->subgame.level_mode == 0 )
   {
     g_game_base->players[0].frontend_state = 2;
     g_game_base->subgame.subgame_rebuild_selector = 2;

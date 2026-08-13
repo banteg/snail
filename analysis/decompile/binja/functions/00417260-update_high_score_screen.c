@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_high_score_screen @ 0x417260 */
 
-00417260        struct HighScore* high_score_1 = high_score
+00417260        struct cRHighScore* high_score_1 = high_score
 0041726b        if (high_score->entering_name != 0)
 00417274        void* ecx = high_score->name_row_widgets[high_score->selected_rank]
 00417278        int32_t eax_2 = *(ecx + 0x1a0)

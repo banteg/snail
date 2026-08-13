@@ -3,7 +3,7 @@
 
 /* Authored cRHighScore front-end controller. The following 0x14 root bytes
    remain unassigned before the exact TipManager boundary. */
-typedef struct HighScore {
+typedef struct cRHighScore {
     int32_t field_00;
     int32_t mode;
     int32_t selected_bank;
@@ -21,6 +21,6 @@ typedef struct HighScore {
     FrontendWidget* name_row_widgets[10];
     FrontendWidget* score_row_widgets[10];
     FrontendWidget* replay_row_widgets[10];
-} HighScore;
+} cRHighScore;
 
 #endif

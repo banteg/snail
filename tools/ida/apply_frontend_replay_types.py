@@ -18,23 +18,48 @@ from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 from type_alias_migration import migrate_equivalent_struct_aliases  # noqa: E402
 
 
-INTRO_OWNER_TYPE_ALIASES = (("Intro", "cRIntro", 0x48),)
+FRONTEND_REPLAY_OWNER_TYPE_ALIASES = (
+    ("Intro", "cRIntro", 0x48),
+    ("HighScore", "cRHighScore", 0xF4),
+)
 
-EXPECTED_INTRO_OWNER_LAYOUT = {
-    "size": 0x48,
-    "members": {
-        0x00: ("replay_attract_bank_cursor", "int32_t"),
-        0x04: ("hide_for_replay_latch", "uint8_t"),
-        0x08: ("attract_reset_progress", "float"),
-        0x0C: ("attract_reset_step", "float"),
-        0x10: ("replay_probe_progress", "float"),
-        0x14: ("replay_probe_step", "float"),
-        0x30: ("postal_button", "FrontendWidget *"),
-        0x34: ("time_trial_button", "FrontendWidget *"),
-        0x38: ("challenge_button", "FrontendWidget *"),
-        0x3C: ("tutorial_button", "FrontendWidget *"),
-        0x40: ("help_button", "FrontendWidget *"),
-        0x44: ("back_button", "FrontendWidget *"),
+EXPECTED_OWNER_LAYOUTS = {
+    "cRIntro": {
+        "size": 0x48,
+        "members": {
+            0x00: ("replay_attract_bank_cursor", "int32_t"),
+            0x04: ("hide_for_replay_latch", "uint8_t"),
+            0x08: ("attract_reset_progress", "float"),
+            0x0C: ("attract_reset_step", "float"),
+            0x10: ("replay_probe_progress", "float"),
+            0x14: ("replay_probe_step", "float"),
+            0x30: ("postal_button", "FrontendWidget *"),
+            0x34: ("time_trial_button", "FrontendWidget *"),
+            0x38: ("challenge_button", "FrontendWidget *"),
+            0x3C: ("tutorial_button", "FrontendWidget *"),
+            0x40: ("help_button", "FrontendWidget *"),
+            0x44: ("back_button", "FrontendWidget *"),
+        },
+    },
+    "cRHighScore": {
+        "size": 0xF4,
+        "members": {
+            0x00: ("field_00", "int32_t"),
+            0x04: ("mode", "int32_t"),
+            0x08: ("selected_bank", "int32_t"),
+            0x10: ("entering_name", "uint8_t"),
+            0x14: ("selected_rank", "int32_t"),
+            0x18: ("title_widget", "FrontendWidget *"),
+            0x1C: ("back_button", "FrontendWidget *"),
+            0x20: ("bank_toggle_button", "FrontendWidget *"),
+            0x24: ("cancel_name_button", "FrontendWidget *"),
+            0x28: ("submit_name_button", "FrontendWidget *"),
+            0x2C: ("row_background_widgets", "FrontendWidget *[10]"),
+            0x54: ("rank_row_widgets", "FrontendWidget *[10]"),
+            0x7C: ("name_row_widgets", "FrontendWidget *[10]"),
+            0xA4: ("score_row_widgets", "FrontendWidget *[10]"),
+            0xCC: ("replay_row_widgets", "FrontendWidget *[10]"),
+        },
     },
 }
 
@@ -79,19 +104,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_high_score_screen",
-        "void __thiscall initialize_high_score_screen(HighScore* high_score, int selected_bank, int selected_rank);",
+        "void __thiscall initialize_high_score_screen(cRHighScore* high_score, int selected_bank, int selected_rank);",
     ),
     (
         "destroy_high_score_screen",
-        "void __thiscall destroy_high_score_screen(HighScore* high_score);",
+        "void __thiscall destroy_high_score_screen(cRHighScore* high_score);",
     ),
     (
         "update_high_score_screen",
-        "void __thiscall update_high_score_screen(HighScore* high_score);",
+        "void __thiscall update_high_score_screen(cRHighScore* high_score);",
     ),
     (
         "exit_high_score_screen",
-        "void __thiscall exit_high_score_screen(HighScore* high_score);",
+        "void __thiscall exit_high_score_screen(cRHighScore* high_score);",
     ),
     (
         "initialize_new_game_menu",
@@ -157,66 +182,60 @@ def _named_struct_size(name: str) -> int | None:
     return value.get_size()
 
 
-def _intro_owner_layout_readback() -> dict[str, object]:
-    type_name = "cRIntro"
-    type_info = ida_typeinf.tinfo_t()
-    if not type_info.get_named_type(None, type_name, ida_typeinf.BTF_STRUCT):
-        return {
-            "type": type_name,
-            "observed": None,
-            "failures": [{"type": type_name, "reason": "missing_named_struct"}],
-        }
-
-    members = ida_typeinf.udt_type_data_t()
-    if not type_info.get_udt_details(members):
-        return {
-            "type": type_name,
-            "observed": None,
-            "failures": [{"type": type_name, "reason": "missing_struct_details"}],
-        }
-
-    observed_members = {
-        int(member.offset) // 8: {
-            "name": str(member.name),
-            "type": _normalize_type_text(member.type.dstr()),
-        }
-        for member in members
-    }
-    observed = {
-        "size": type_info.get_size(),
-        "members": {
-            hex(offset): observed_members.get(offset)
-            for offset in EXPECTED_INTRO_OWNER_LAYOUT["members"]
-        },
-    }
+def _owner_layout_readback() -> dict[str, object]:
+    readback: dict[str, object] = {}
     failures: list[dict[str, object]] = []
-    if observed["size"] != EXPECTED_INTRO_OWNER_LAYOUT["size"]:
-        failures.append(
-            {
-                "type": type_name,
-                "reason": "owner_size_mismatch",
-                "expected": EXPECTED_INTRO_OWNER_LAYOUT["size"],
-                "observed": observed["size"],
+    for type_name, expected in EXPECTED_OWNER_LAYOUTS.items():
+        type_info = ida_typeinf.tinfo_t()
+        if not type_info.get_named_type(None, type_name, ida_typeinf.BTF_STRUCT):
+            failures.append({"type": type_name, "reason": "missing_named_struct"})
+            continue
+
+        members = ida_typeinf.udt_type_data_t()
+        if not type_info.get_udt_details(members):
+            failures.append({"type": type_name, "reason": "missing_struct_details"})
+            continue
+
+        observed_members = {
+            int(member.offset) // 8: {
+                "name": str(member.name),
+                "type": _normalize_type_text(member.type.dstr()),
             }
-        )
-    for offset, (expected_name, expected_type) in EXPECTED_INTRO_OWNER_LAYOUT[
-        "members"
-    ].items():
-        expected_member = {
-            "name": expected_name,
-            "type": _normalize_type_text(expected_type),
+            for member in members
         }
-        if observed_members.get(offset) != expected_member:
+        observed = {
+            "size": type_info.get_size(),
+            "members": {
+                hex(offset): observed_members.get(offset)
+                for offset in expected["members"]
+            },
+        }
+        readback[type_name] = observed
+        if observed["size"] != expected["size"]:
             failures.append(
                 {
                     "type": type_name,
-                    "offset": hex(offset),
-                    "reason": "owner_member_mismatch",
-                    "expected": expected_member,
-                    "observed": observed_members.get(offset),
+                    "reason": "owner_size_mismatch",
+                    "expected": expected["size"],
+                    "observed": observed["size"],
                 }
             )
-    return {"type": type_name, "observed": observed, "failures": failures}
+        for offset, (expected_name, expected_type) in expected["members"].items():
+            expected_member = {
+                "name": expected_name,
+                "type": _normalize_type_text(expected_type),
+            }
+            if observed_members.get(offset) != expected_member:
+                failures.append(
+                    {
+                        "type": type_name,
+                        "offset": hex(offset),
+                        "reason": "owner_member_mismatch",
+                        "expected": expected_member,
+                        "observed": observed_members.get(offset),
+                    }
+                )
+    return {"types": readback, "failures": failures}
 
 
 def _normalize_root_offset_operands(
@@ -385,7 +404,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     type_alias_migrations = (
         []
         if parse_errors
-        else migrate_equivalent_struct_aliases(INTRO_OWNER_TYPE_ALIASES)
+        else migrate_equivalent_struct_aliases(FRONTEND_REPLAY_OWNER_TYPE_ALIASES)
     )
     type_alias_failures = [
         {
@@ -396,12 +415,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in type_alias_migrations
         if result.get("status") == "failed"
     ]
-    intro_owner_layout_readback = (
-        {"type": "cRIntro", "observed": None, "failures": []}
+    owner_layout_readback = (
+        {"types": {}, "failures": []}
         if parse_errors or type_alias_failures
-        else _intro_owner_layout_readback()
+        else _owner_layout_readback()
     )
-    intro_owner_size = _named_struct_size("cRIntro")
+    owner_sizes = {
+        name: _named_struct_size(name) for name in EXPECTED_OWNER_LAYOUTS
+    }
 
     applied = 0
     unchanged = 0
@@ -410,17 +431,18 @@ def _sync_types(header_path: pathlib.Path) -> int:
     missing = []
     failed = [
         *type_alias_failures,
-        *intro_owner_layout_readback["failures"],
-    ]
-    if intro_owner_size != EXPECTED_INTRO_OWNER_LAYOUT["size"]:
-        failed.append(
+        *[
             {
-                "selector": "cRIntro",
+                "selector": name,
                 "reason": "owner_size_mismatch",
-                "expected": EXPECTED_INTRO_OWNER_LAYOUT["size"],
-                "observed": intro_owner_size,
+                "expected": expected["size"],
+                "observed": owner_sizes[name],
             }
-        )
+            for name, expected in EXPECTED_OWNER_LAYOUTS.items()
+            if owner_sizes[name] != expected["size"]
+        ],
+        *owner_layout_readback["failures"],
+    ]
 
     if parse_errors or failed:
         print(
@@ -430,8 +452,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "header": str(header_path),
                     "parse_errors": parse_errors,
                     "type_alias_migrations": type_alias_migrations,
-                    "intro_owner_size": intro_owner_size,
-                    "intro_owner_layout_readback": intro_owner_layout_readback,
+                    "owner_sizes": owner_sizes,
+                    "owner_layout_readback": owner_layout_readback,
                     "applied": applied,
                     "unchanged": unchanged,
                     "renamed": renamed,
@@ -532,8 +554,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "parse_errors": parse_errors,
                 "type_alias_migrations": type_alias_migrations,
-                "intro_owner_size": intro_owner_size,
-                "intro_owner_layout_readback": intro_owner_layout_readback,
+                "owner_sizes": owner_sizes,
+                "owner_layout_readback": owner_layout_readback,
                 "applied": applied,
                 "unchanged": unchanged,
                 "renamed": renamed,
