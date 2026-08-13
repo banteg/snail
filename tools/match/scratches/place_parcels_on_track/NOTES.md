@@ -574,6 +574,24 @@ evaluation order of the final projection arguments, but those differences do
 not hide a behavior or ownership lane. Recovery is therefore
 `semantic-complete` with compiler residue; no source-shape coercion is justified.
 
+## Borrowed projection-path lifetime (2026-08-13)
+
+A fresh Windows comparison showed one source-real lifetime still hidden by the
+2026-08-12 classification. The final projection loop borrows the attachment's
+`Path*` before dispatching on its kind, and both branches consume that same
+borrow. Keeping `template_record` live across the ordinary-path `Yi()` call,
+rather than re-deriving the path from `live_cell`, improves focused Wibo from
+87.77% to 88.09% (+8 fuzzy bytes) with the same 637/639 instructions,
+7-instruction exact prefix, and all 98 references clean.
+
+The recorded four-variant sweep also tried reloading the cell from its owning
+row, spelling both calls through that reload, and introducing a fresh borrowed
+cell after `Yi()`. All three regress to 79.91%; only reuse of the already
+borrowed `Path*` improves. This corrects the earlier claim that no further
+ownership lifetime remained. The residual is still compiler scheduling and
+stack coloring, but the retained change is an ordinary semantic borrow with no
+volatile barrier, dummy dependency, register coercion, or reference tradeoff.
+
 ## Bounded receiver/segment stack coloring (2026-07-30)
 
 The dominant remaining catalog-and-claim diff swaps two long-lived stack

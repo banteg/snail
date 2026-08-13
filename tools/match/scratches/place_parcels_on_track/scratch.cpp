@@ -284,7 +284,7 @@ void cRSubGame::PlaceParcels()
                 row_record->parcel_spawn_position.y = transform.position.y;
             } else {
                 int row_index = live_cell->Yi();
-                live_cell->attachment_template_record->GetPos(
+                template_record->GetPos(
                     row_record->parcel_spawn_position, node, row_index,
                     row_record->parcel_spawn_position);
             }

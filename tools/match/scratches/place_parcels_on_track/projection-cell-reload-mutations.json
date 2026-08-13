@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "projection-cell-reload",
+      "find": "            } else {\n                int row_index = live_cell->Yi();\n                live_cell->attachment_template_record->GetPos(\n                    row_record->parcel_spawn_position, node, row_index,\n                    row_record->parcel_spawn_position);\n            }",
+      "replacements": [
+        {
+          "name": "reload-after-yi",
+          "text": "            } else {\n                int row_index = live_cell->Yi();\n                row_record->primary_attachment_cell->attachment_template_record->GetPos(\n                    row_record->parcel_spawn_position, node, row_index,\n                    row_record->parcel_spawn_position);\n            }"
+        },
+        {
+          "name": "direct-yi-and-reload",
+          "text": "            } else {\n                int row_index = row_record->primary_attachment_cell->Yi();\n                row_record->primary_attachment_cell->attachment_template_record->GetPos(\n                    row_record->parcel_spawn_position, node, row_index,\n                    row_record->parcel_spawn_position);\n            }"
+        },
+        {
+          "name": "fresh-cell-after-yi",
+          "text": "            } else {\n                int row_index = live_cell->Yi();\n                cRSubLoc* projection_cell = row_record->primary_attachment_cell;\n                projection_cell->attachment_template_record->GetPos(\n                    row_record->parcel_spawn_position, node, row_index,\n                    row_record->parcel_spawn_position);\n            }"
+        },
+        {
+          "name": "template-owner-after-yi",
+          "text": "            } else {\n                int row_index = live_cell->Yi();\n                template_record->GetPos(\n                    row_record->parcel_spawn_position, node, row_index,\n                    row_record->parcel_spawn_position);\n            }"
+        }
+      ]
+    }
+  ]
+}

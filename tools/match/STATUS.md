@@ -2,7 +2,7 @@
 
 Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 
-**545/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101486/294937** bytes (**34.41%**) are proof-grade, and overall fuzzy is **85.52%**.
+**545/662** port-relevant functions matched, **662/662** port-relevant functions have a scratch, **101486/294937** bytes (**34.41%**) are proof-grade, and overall fuzzy is **85.55%**.
 
 **120** replaceable-platform functions (**22103** curated-extent bytes) and **3** third-party functions (**8104** curated-extent bytes) remain visible for contract, semantic, and extent context but are excluded from port-relevant totals.
 
@@ -625,7 +625,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | firework_shoot | 0x441dd0 | 390 | 103/103 | 94.17% | 78/103 | 21 ok |  | core |
 | 🚧 | release_snail_weapons | 0x442e40 | 554 | 125/125 | 92.80% | 13/125 | 33 ok |  | core |
 | 🚧 | load_frontend_level_by_mode_and_index | 0x443650 | 220 | 61/57 | 81.36% | 5/57 | 1 unaudited, 12 ok |  | core |
-| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 637/639 | 87.77% | 7/639 | 98 ok |  | core |
+| 🚧 | place_parcels_on_track | 0x4438e0 | 2396 | 637/639 | 88.09% | 7/639 | 98 ok |  | core |
 | 🚧 | place_challenge_parcels_on_track | 0x444240 | 617 | 173/171 | 81.40% | 0/171 | 2 unaudited, 33 ok |  | core |
 | 🚧 | dispatch_cutscene_animation | 0x444600 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  | core |
 | 🚧 | set_weapon_animation | 0x4446e0 | 221 | 55/55 | 94.55% | 48/55 | 3 ok |  | core |
@@ -650,7 +650,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | select_level_track_texture_set | 0x410730 | 156 | 41/43 | 76.19% | 0/43 | 1 mismatch, 6 ok |  | core |
 | 🚧 | create_golb | 0x415280 | 2349 | 549/582 | 77.98% | 81/582 | 1 unaudited, 47 ok |  | core |
 | 🚧 | spawn_golb_impact_sprite | 0x415d80 | 159 | 43/45 | 63.64% | 3/45 | 3 ok |  | core |
-| 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 113/109 | 60.36% | 0/109 | 13 ok |  | core |
+| 🚧 | sample_smtrack_heightmap | 0x41a360 | 364 | 108/109 | 79.26% | 37/109 | 13 ok |  | core |
 | 🚧 | initialize_looptheloop_path_template_pair | 0x41b0f0 | 2630 | 720/721 | 74.81% | 44/721 | 49 ok |  | core |
 | 🚧 | initialize_looptheloopw_path_template_pair | 0x41bb40 | 2725 | 739/745 | 72.51% | 10/745 | 55 ok |  | core |
 | 🚧 | initialize_loopout_path_template_pair | 0x41c5f0 | 2615 | 723/718 | 67.87% | 0/718 | 52 ok |  | core |
