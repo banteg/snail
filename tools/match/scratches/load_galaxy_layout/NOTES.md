@@ -22,8 +22,8 @@ This replaces the old false split into an unrelated 0x50-byte route table plus
 four scalar X/Y globals. The checked-in reference manifest now describes the
 two complete banks and the group `y`-cursor sentinel.
 
-Current retained result: 88.27%, 236 candidate instructions for 233 target
-instructions, 62-instruction common prefix, and 39 clean / 0 unresolved / 0
+Current retained result: 89.13%, 236 candidate instructions for 233 target
+instructions, 62-instruction common prefix, and 42 clean / 0 unresolved / 0
 mismatched masked operands. The source keeps literals as literals so the matcher
 verifies the real `_Galaxy.txt` path, markers, errors, and missing-level string.
 
@@ -288,3 +288,29 @@ continues through register and terminal-block allocation choices already
 bounded by worse source-real alternatives. It does not imply a missing field,
 owner, or control-flow lane. Recovery is therefore `semantic-complete` with
 compiler residue.
+
+## 2026-08-13 outer induction publication recovery
+
+Live Windows disassembly keeps four independent outer-loop publications after
+the star expansion: advance the group-point cursor, increment the galaxy index,
+advance the route-name cursor, and add ten to the route-point group offset.
+Publishing the route-name cursor before the numeric group offset lets VC6 keep
+the latter in `edx` instead of restoring it through `ebp`. That moves the
+candidate closer to native's cursor lifetime and raises focused matching from
+**88.27% to 89.13%** (+6.85 fuzzy weighted bytes), while preserving 236/233
+instructions, the 62-instruction prefix, and all 42 clean references.
+
+The accepted order is an ordinary reordering of independent owner updates. A
+complete 24-order publication sweep and 24-order declaration sweep find no
+better form; one alternate publication order and three declaration orders tie
+the new baseline. Current-baseline replays also bound the neighboring control
+units: natural parser-error blocks and finalization guards are neutral, an
+actual outer `do/while` regresses to 72.46%, the mobile positive-count guarded
+star loop regresses to 84.80%, and publishing generated route Z from the live
+zero index regresses to 88.70%.
+
+This improvement supersedes the earlier implication that the full residual was
+pinned by the recorded experiments. `semantic-complete` still describes the
+cross-port-proved behavior and ownership; it is not a stop state. The remaining
+four mismatch regions are open compiler/source-shape work, not an exhausted
+lane and not evidence for another Galaxy field or parser branch.

@@ -595,7 +595,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 |---|---|---|---|---|---|---|---|---|---|
 | 🚧 | draw_frontend_widget | 0x401130 | 2353 | 707/712 | 85.13% | 16/712 | 68 ok |  | core |
 | 🚧 | initialize_completion_screen | 0x404920 | 972 | 278/278 | 92.81% | 23/278 | 46 ok |  | core |
-| 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 88.27% | 62/233 | 42 ok |  | core |
+| 🚧 | load_galaxy_layout | 0x4088e0 | 803 | 236/233 | 89.13% | 62/233 | 42 ok |  | core |
 | 🚧 | initialize_game_assets_and_world | 0x40acf0 | 23070 | 5405/5411 | 81.34% | 0/5411 | 2 unaudited, 1880 ok |  | core |
 | 🚧 | update_backdrop | 0x4112f0 | 189 | 69/67 | 89.71% | 17/67 | 7 ok |  | core |
 | 🚧 | refresh_object_vertex_buffer | 0x412250 | 393 | 137/139 | 90.58% | 7/139 | 4 ok |  | boundary |

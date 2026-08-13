@@ -136,8 +136,8 @@ void cRGalaxy::Open()
 
         current_galaxy_point += 2;
         ++galaxy_index;
-        star_group_offset += 10;
         route_name_cursor += ROUTE_NAME_COLOR_STRIDE;
+        star_group_offset += 10;
         if ((int)current_galaxy_point < 0x4a1ca0)
             continue;
 
