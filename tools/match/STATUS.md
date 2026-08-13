@@ -610,7 +610,7 @@ Regenerate with `uv run snail match status --write tools/match/STATUS.md`.
 | 🚧 | initialize_snake_path_template_pair | 0x423580 | 2436 | 652/652 | 85.74% | 289/652 | 40 ok |  | core |
 | 🚧 | build_track_fringe_mesh | 0x4246a0 | 1069 | 318/318 | 92.77% | 100/318 | 23 ok |  | core |
 | 🚧 | build_track_fringe_supertramp_mesh | 0x424ad0 | 1396 | 421/421 | 94.54% | 69/421 | 25 ok |  | core |
-| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 610/610 | 84.75% | 148/610 | 35 ok |  | core |
+| 🚧 | initialize_start_path_template_pair | 0x426400 | 2223 | 609/610 | 87.94% | 148/610 | 35 ok |  | core |
 | 🚧 | initialize_hill_valley_path_template_pair | 0x42d570 | 2447 | 669/668 | 81.68% | 21/668 | 41 ok |  | core |
 | 🚧 | initialize_sbend_path_template_pair | 0x42df00 | 2068 | 578/579 | 90.06% | 373/579 | 39 ok |  | core |
 | 🚧 | calc_object_facequad_normals | 0x42fcb0 | 1397 | 433/437 | 93.56% | 98/437 | 22 ok |  | core |

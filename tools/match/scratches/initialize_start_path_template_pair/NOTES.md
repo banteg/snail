@@ -15,11 +15,13 @@ sample, decrements `segment_count`, and uses the final allocated sample directly
 for the mesh row. The scratch models that allocation shape, the raised starting
 plateau, the cosine descent, the flat tail, deltas, mesh, and finalization.
 
-The retained scratch now matches 84.75% at exact 610/610 candidate/target
+The retained scratch now matches 87.94% at 609/610 candidate/target
 instructions, with a 148-instruction exact prefix and masked operands at 35
 ok, 0 unresolved, 0 mismatch, 0 unaudited. The candidate frame agrees with
 the target at 0x44, and the mesh setup now snapshots both native banks before
-using a separate row/sample induction; later face allocation remains open.
+using a separate row/sample induction. The face pass now also resets its
+two-face counter at the native column boundary; branch-local record address
+formation remains open.
 
 2026-06-21 helper-inline sweep: native flattens the scratch-local helper layer.
 Forcing those helpers inline moves focused Wibo from 10.90% (124/610
@@ -472,3 +474,27 @@ and leaves the candidate one instruction short. Testing the curve's physical
 sample displacement reproduces the native `cmp edi, 0x348`, but currently
 disturbs the preheader and also loses an instruction. Those observations are
 useful combination leads, not retained source yet.
+
+## 2026-08-13 live face-counter ownership
+
+The reopened Windows body resets the two-face counter at `0x426acc`, before it
+stores the next column and derives the two U coordinates. The previous scratch
+declared and initialized that counter in the inner `for` header after the U
+values, extending the column arithmetic across the wrong owner boundary.
+
+Moving only the counter initialization ahead of the U-coordinate derivation
+reproduces the native EDX/ECX setup and raises focused matching from **84.75%**
+to **87.94%**. The exact prefix remains **148/610** and all 35 masked references
+remain clean. VC6 now emits 609 candidate instructions against 610 native
+instructions because it hoists the common face-record scale before the winding
+branch; Windows forms that scale independently in each arm.
+
+The adjacent ownership hypotheses are bounded rather than forced. Branch-local
+face pointers sharply regress. Two branch-scoped integer offsets fall to
+74.30%, and one shared offset assigned independently by both arms falls to
+75.18%; both disturb owners from the function prologue onward. A `switch`
+restores exact instruction count and reaches 88.69%, but reverses the native
+branch orientation and conflicts with the family-wide authored `if` shape, so
+it is rejected as a score-only rewrite. `if (!face_index)` and `do`/`while`
+spellings are byte-identical to the retained form. The native counter boundary
+is retained; the branch-local scale remains an explicit analysis residual.

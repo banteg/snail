@@ -52,12 +52,13 @@ static __forceinline void build_direct_strip_mesh(Path* path, char* texture)
 
     for (row = 0; row < path->segment_count; ++row) {
         for (column = 0; column < path->width_cells; ++column) {
+            int face_index = 0;
             float v0 = (float)(row % 8) * 0.125f;
             float v1 = (float)(row % 8 + 1) * 0.125f;
             float u0 = (float)column * 0.125f;
             float u1 = (float)(column + 1) * 0.125f;
 
-            for (int face_index = 0; face_index < 2; ++face_index) {
+            for (; face_index < 2; ++face_index) {
                 int face_offset =
                     2 * column
                     + 2 * row * path->width_cells + face_index;
