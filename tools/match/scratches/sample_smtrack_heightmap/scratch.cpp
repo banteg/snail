@@ -21,27 +21,32 @@ void __cdecl ObjectProcLandScapeUpdate(
     Vector3* sample = source->vertices;
 
     for (float row = 0.0f; row <= row_count_float; row += 1.0f) {
-        for (float column = 0.0f; column <= sample_count_float; column += 1.0f) {
+        float column = 0.0f;
+        if (column <= sample_count_float) {
             int y = (int)(row * y_step);
-            int x = (int)(column * x_step);
-            int pixel_index =
-                ((image->height - y - 1) * image->width + x)
-                * (image->bits_per_pixel >> 3);
-            unsigned char* pixel = image->pixels + pixel_index;
-            float red = (float)pixel[2];
-            float green = (float)pixel[1];
-            float blue = (float)pixel[0];
-            float value = red;
-            value += green;
-            value += blue;
-            value *= 0.00392156886f;
-            value *= 0.333333343f;
+            int row_base = (image->height - y - 1) * image->width;
+            do {
+                int x = (int)(column * x_step);
+                int pixel_index =
+                    (row_base + x)
+                    * (image->bits_per_pixel >> 3);
+                unsigned char* pixel = image->pixels + pixel_index;
+                float red = (float)pixel[2];
+                float green = (float)pixel[1];
+                float blue = (float)pixel[0];
+                float value = red;
+                value += green;
+                value += blue;
+                value *= 0.00392156886f;
+                value *= 0.333333343f;
 
-            if (cubic)
-                value = value * value * value;
+                if (cubic)
+                    value = value * value * value;
 
-            ++sample;
-            sample[-1].y = value * scale + base;
+                ++sample;
+                sample[-1].y = value * scale + base;
+                column += 1.0f;
+            } while (column <= sample_count_float);
         }
     }
 }

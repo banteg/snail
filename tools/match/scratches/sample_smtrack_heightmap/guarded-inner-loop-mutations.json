@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "sites": [
+    {
+      "name": "guarded-inner-loop",
+      "find": "    for (float row = 0.0f; row <= row_count_float; row += 1.0f) {\n        int y = (int)(row * y_step);\n        int row_base = (image->height - y - 1) * image->width;\n        for (float column = 0.0f; column <= sample_count_float; column += 1.0f) {\n            int x = (int)(column * x_step);\n            int pixel_index =\n                (row_base + x)\n                * (image->bits_per_pixel >> 3);\n            unsigned char* pixel = image->pixels + pixel_index;\n            float red = (float)pixel[2];\n            float green = (float)pixel[1];\n            float blue = (float)pixel[0];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;\n\n            if (cubic)\n                value = value * value * value;\n\n            ++sample;\n            sample[-1].y = value * scale + base;\n        }\n    }",
+      "replacements": [
+        {
+          "name": "prechecked-do",
+          "text": "    for (float row = 0.0f; row <= row_count_float; row += 1.0f) {\n        float column = 0.0f;\n        if (column <= sample_count_float) {\n            int y = (int)(row * y_step);\n            int row_base = (image->height - y - 1) * image->width;\n            do {\n                int x = (int)(column * x_step);\n                int pixel_index =\n                    (row_base + x)\n                    * (image->bits_per_pixel >> 3);\n                unsigned char* pixel = image->pixels + pixel_index;\n                float red = (float)pixel[2];\n                float green = (float)pixel[1];\n                float blue = (float)pixel[0];\n                float value = red;\n                value += green;\n                value += blue;\n                value *= 0.00392156886f;\n                value *= 0.333333343f;\n\n                if (cubic)\n                    value = value * value * value;\n\n                ++sample;\n                sample[-1].y = value * scale + base;\n                column += 1.0f;\n            } while (column <= sample_count_float);\n        }\n    }"
+        },
+        {
+          "name": "while-body-row-base",
+          "text": "    for (float row = 0.0f; row <= row_count_float; row += 1.0f) {\n        float column = 0.0f;\n        while (column <= sample_count_float) {\n            int y = (int)(row * y_step);\n            int row_base = (image->height - y - 1) * image->width;\n            int x = (int)(column * x_step);\n            int pixel_index =\n                (row_base + x)\n                * (image->bits_per_pixel >> 3);\n            unsigned char* pixel = image->pixels + pixel_index;\n            float red = (float)pixel[2];\n            float green = (float)pixel[1];\n            float blue = (float)pixel[0];\n            float value = red;\n            value += green;\n            value += blue;\n            value *= 0.00392156886f;\n            value *= 0.333333343f;\n\n            if (cubic)\n                value = value * value * value;\n\n            ++sample;\n            sample[-1].y = value * scale + base;\n            column += 1.0f;\n        }\n    }"
+        },
+        {
+          "name": "guarded-for",
+          "text": "    for (float row = 0.0f; row <= row_count_float; row += 1.0f) {\n        if (0.0f <= sample_count_float) {\n            int y = (int)(row * y_step);\n            int row_base = (image->height - y - 1) * image->width;\n            for (float column = 0.0f; column <= sample_count_float; column += 1.0f) {\n                int x = (int)(column * x_step);\n                int pixel_index =\n                    (row_base + x)\n                    * (image->bits_per_pixel >> 3);\n                unsigned char* pixel = image->pixels + pixel_index;\n                float red = (float)pixel[2];\n                float green = (float)pixel[1];\n                float blue = (float)pixel[0];\n                float value = red;\n                value += green;\n                value += blue;\n                value *= 0.00392156886f;\n                value *= 0.333333343f;\n\n                if (cubic)\n                    value = value * value * value;\n\n                ++sample;\n                sample[-1].y = value * scale + base;\n            }\n        }\n    }"
+        }
+      ]
+    }
+  ]
+}
