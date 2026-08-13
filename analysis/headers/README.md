@@ -120,6 +120,13 @@ Current checked-in example:
     equivalence, verifies the authored 0x20-byte `cRSnailSkin` and its
     `Snail +0x1938` embed, then replays the exact `Init`, `AI`, and
     `Change(int, float)` receivers plus every live Windows caller.
+- `times_up_types.h`
+- `uv run python tools/binja/sync_times_up_types.py`
+- `uv run python tools/ida/sync_times_up_types.py`
+  - Retires the generic analysis-only `TimesUp` record after exact layout
+    equivalence, verifies the authored 0x10-byte `cRTimesUp` tail at
+    `cRSubGame +0x1272828`, then replays the exact `Init`, `AI`, and `UnInit`
+    receivers plus all live Windows producers and teardown edges.
 - `click_start_types.h`
 - `uv run python tools/ida/sync_click_start_types.py`
 - `frontend_replay_types.h`

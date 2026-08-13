@@ -43,3 +43,12 @@ The scratch now spells the exact member as `cRTimesUp::AI()` and exports
 0x10-byte owner at `cRSubGame + 0x1272828`; the state-2 arm calls the adjacent
 authored `UnInit()` member on the same receiver. Android and iOS independently
 retain `cRTimesUp::AI()`. Matching stays exact at 26/26 with five clean operands.
+
+## 2026-08-13 canonical database ownership
+
+Live Binary Ninja and IDA readback found the exact 0x10-byte layout only under
+the generic `TimesUp` name, embedded at the final `cRSubGame +0x1272828`, with
+no `cRTimesUp` type present. The guarded replay now retires that generic owner
+only after full layout equivalence, verifies the canonical tail embed, and
+assigns this function `void __thiscall(cRTimesUp*)`. Matching remains exact at
+26/26 with all five operands clean.

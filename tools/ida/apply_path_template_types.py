@@ -527,6 +527,39 @@ EXPECTED_SNAIL_SKIN_SNAIL_EMBED = {
     "type": "cRSnailSkin",
 }
 
+TIMES_UP_OWNER_MARKERS = (
+    "typedef struct cRTimesUp {",
+    "} cRTimesUp;",
+    "cRTimesUp_must_be_0x10",
+    "cRTimesUp times_up;",
+    "void __thiscall update_times_up(cRTimesUp* times_up);",
+    "void __thiscall uninit_times_up(cRTimesUp* times_up);",
+    "void __thiscall show_times_up_message(cRTimesUp* times_up);",
+)
+
+TIMES_UP_OWNER_SIZES = {
+    "cRTimesUp": 0x10,
+}
+
+TIMES_UP_OWNER_TYPE_ALIASES = (("TimesUp", "cRTimesUp", 0x10),)
+
+EXPECTED_TIMES_UP_OWNER_LAYOUT = {
+    "size": 0x10,
+    "members": {
+        0x00: (0x04, "state", "TimesUpState"),
+        0x04: (0x04, "border", "FrontendWidget *"),
+        0x08: (0x04, "progress", "float"),
+        0x0C: (0x04, "progress_step", "float"),
+    },
+}
+
+EXPECTED_TIMES_UP_SUBGAME_EMBED = {
+    "offset": "0x1272828",
+    "size": 0x10,
+    "name": "times_up",
+    "type": "cRTimesUp",
+}
+
 WARNING_OWNER_MARKERS = (
     "typedef struct cRWarning {",
     "} cRWarning;",
@@ -801,6 +834,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x445CD0,  # build_snail_world_hotspots
     0x445D50,  # extract_snail_local_hotspots
     0x445E20,  # update_times_up
+    0x445E70,  # uninit_times_up
+    0x445E90,  # show_times_up_message
     0x445F60,  # initialize_snail_skin
     0x445F80,  # update_snail_skin_transition
     0x445FD0,  # change_snail_skin
@@ -2931,6 +2966,18 @@ TRUSTED_DECLARATIONS = [
     (
         "change_snail_skin",
         "void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds);",
+    ),
+    (
+        "update_times_up",
+        "void __thiscall update_times_up(cRTimesUp* times_up);",
+    ),
+    (
+        "uninit_times_up",
+        "void __thiscall uninit_times_up(cRTimesUp* times_up);",
+    ),
+    (
+        "show_times_up_message",
+        "void __thiscall show_times_up_message(cRTimesUp* times_up);",
     ),
     (
         "store_color4f",
@@ -5357,6 +5404,64 @@ def _snail_skin_owner_layout_readback() -> dict[str, object]:
     }
 
 
+def _times_up_owner_layout_readback() -> dict[str, object]:
+    """Verify the complete canonical cRTimesUp owner and cRSubGame embed."""
+    type_name = "cRTimesUp"
+    expected = EXPECTED_TIMES_UP_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "times_up",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "times_up",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    subgame_embed = _named_struct_member_readback("cRSubGame", 0x1272828)
+    if subgame_embed != EXPECTED_TIMES_UP_SUBGAME_EMBED:
+        failures.append(
+            {
+                "selector": "cRSubGame.times_up",
+                "owner_group": "times_up",
+                "reason": "embedded_owner_mismatch",
+                "expected": EXPECTED_TIMES_UP_SUBGAME_EMBED,
+                "observed": subgame_embed,
+            }
+        )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "subgame_embed": subgame_embed,
+        "failures": failures,
+    }
+
+
 def _warning_owner_layout_readback() -> dict[str, object]:
     """Verify the complete canonical cRWarning owner and Player embed."""
     type_name = "cRWarning"
@@ -5814,6 +5919,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in SNAIL_SKIN_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_times_up_owner_markers = [
+        marker
+        for marker in TIMES_UP_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_warning_owner_markers = [
         marker
         for marker in WARNING_OWNER_MARKERS
@@ -5866,6 +5976,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_progress_bar_owner_markers
         or missing_squidge_owner_markers
         or missing_snail_skin_owner_markers
+        or missing_times_up_owner_markers
         or missing_warning_owner_markers
         or missing_tip_owner_markers
         or missing_tutorial_owner_markers
@@ -5913,6 +6024,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if missing_snail_skin_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_snail_skin_owner_header"}
+            )
+        if missing_times_up_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_times_up_owner_header"}
             )
         if missing_warning_owner_markers:
             marker_failures.append(
@@ -5973,6 +6088,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_snail_skin_owner_markers": (
                         missing_snail_skin_owner_markers
+                    ),
+                    "missing_times_up_owner_markers": (
+                        missing_times_up_owner_markers
                     ),
                     "missing_warning_owner_markers": (
                         missing_warning_owner_markers
@@ -6092,6 +6210,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in snail_skin_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    times_up_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(TIMES_UP_OWNER_TYPE_ALIASES)
+    )
+    times_up_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "times_up",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in times_up_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     warning_owner_type_alias_migrations = (
@@ -6237,6 +6370,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         }
         if parse_errors or snail_skin_owner_type_alias_failures
         else _snail_skin_owner_layout_readback()
+    )
+    times_up_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in TIMES_UP_OWNER_SIZES
+    }
+    times_up_owner_layout_readback = (
+        {
+            "type": "cRTimesUp",
+            "size": None,
+            "members": {},
+            "subgame_embed": None,
+            "failures": [],
+        }
+        if parse_errors or times_up_owner_type_alias_failures
+        else _times_up_owner_layout_readback()
     )
     warning_owner_sizes = {
         name: _named_struct_size(name)
@@ -6431,6 +6579,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in SNAIL_SKIN_OWNER_SIZES.items()
         if snail_skin_owner_sizes[name] != expected_size
     ]
+    times_up_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "times_up",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": times_up_owner_sizes[name],
+        }
+        for name, expected_size in TIMES_UP_OWNER_SIZES.items()
+        if times_up_owner_sizes[name] != expected_size
+    ]
     warning_owner_size_failures = [
         {
             "selector": name,
@@ -6492,6 +6651,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + squidge_owner_layout_readback["failures"]
         + snail_skin_owner_size_failures
         + snail_skin_owner_layout_readback["failures"]
+        + times_up_owner_size_failures
+        + times_up_owner_layout_readback["failures"]
         + warning_owner_size_failures
         + warning_owner_layout_readback["failures"]
         + tip_owner_size_failures
@@ -6619,6 +6780,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or progress_bar_owner_type_alias_failures
         or squidge_owner_type_alias_failures
         or snail_skin_owner_type_alias_failures
+        or times_up_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
         or tutorial_owner_type_alias_failures
@@ -6647,6 +6809,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "snail_skin_owner_type_alias_migrations": (
                         snail_skin_owner_type_alias_migrations
+                    ),
+                    "times_up_owner_type_alias_migrations": (
+                        times_up_owner_type_alias_migrations
                     ),
                     "warning_owner_type_alias_migrations": (
                         warning_owner_type_alias_migrations
@@ -6681,6 +6846,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "snail_skin_owner_layout_readback": (
                         snail_skin_owner_layout_readback
                     ),
+                    "times_up_owner_sizes": times_up_owner_sizes,
+                    "times_up_owner_layout_readback": (
+                        times_up_owner_layout_readback
+                    ),
                     "warning_owner_sizes": warning_owner_sizes,
                     "warning_owner_layout_readback": (
                         warning_owner_layout_readback
@@ -6708,6 +6877,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         + progress_bar_owner_type_alias_failures
                         + squidge_owner_type_alias_failures
                         + snail_skin_owner_type_alias_failures
+                        + times_up_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
                         + tutorial_owner_type_alias_failures
@@ -7442,6 +7612,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "snail_skin_owner_type_alias_migrations": (
                     snail_skin_owner_type_alias_migrations
                 ),
+                "times_up_owner_type_alias_migrations": (
+                    times_up_owner_type_alias_migrations
+                ),
                 "warning_owner_type_alias_migrations": (
                     warning_owner_type_alias_migrations
                 ),
@@ -7472,6 +7645,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "snail_skin_owner_sizes": snail_skin_owner_sizes,
                 "snail_skin_owner_layout_readback": (
                     snail_skin_owner_layout_readback
+                ),
+                "times_up_owner_sizes": times_up_owner_sizes,
+                "times_up_owner_layout_readback": (
+                    times_up_owner_layout_readback
                 ),
                 "warning_owner_sizes": warning_owner_sizes,
                 "warning_owner_layout_readback": warning_owner_layout_readback,

@@ -147,6 +147,22 @@ SNAIL_SKIN_REANALYSIS_FUNCTIONS = (
     "update_invincible_shell",
 )
 
+TIMES_UP_OWNER_SIZES = {
+    "cRTimesUp": 0x10,
+}
+
+TIMES_UP_OWNER_TYPE_RENAMES = (("TimesUp", "cRTimesUp"),)
+
+TIMES_UP_REANALYSIS_FUNCTIONS = (
+    "initialize_subgame",
+    "build_subgame_level",
+    "destroy_subgame",
+    "update_subgoldy",
+    "update_times_up",
+    "uninit_times_up",
+    "show_times_up_message",
+)
+
 WARNING_OWNER_SIZES = {
     "cRWarning": 0x10,
 }
@@ -483,6 +499,13 @@ SNAIL_SKIN_FIELD_UPDATES = (
     ("0x1c", "progress_step", "float"),
 )
 
+TIMES_UP_FIELD_UPDATES = (
+    ("0x00", "state", "TimesUpState"),
+    ("0x04", "border", "FrontendWidget*"),
+    ("0x08", "progress", "float"),
+    ("0x0c", "progress_step", "float"),
+)
+
 GOLB_PATH_FOLLOW_STATE_FIELD_UPDATES = (
     ("0x00", "active", "uint8_t"),
     ("0x04", "template_record", "cRPath*"),
@@ -653,6 +676,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ParcelState",
     "CompletionState",
     "TimesUpState",
+    "cRTimesUp",
     "AxisAngle",
     "Quaternion",
     "RenderableBod",
@@ -1206,6 +1230,82 @@ def ensure_snail_skin_owner_type(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in SNAIL_SKIN_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_times_up_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRTimesUp lifecycle ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIMES_UP_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in TIMES_UP_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRTimesUp owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "times_up",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_times_up_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire TimesUp only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=TIMES_UP_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIMES_UP_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in TIMES_UP_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=TIMES_UP_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: TIMES_UP_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRTimesUp owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": TIMES_UP_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in TIMES_UP_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -3582,6 +3682,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0x1270fcc", "next_slug_voice_trigger_z", "float"),
     ("0x1270fd0", "slug_voice_trigger_spacing_z", "float"),
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
+    ("0x1272828", "times_up", "cRTimesUp"),
 )
 
 # The frame-renderer bootstrap uses a renderer-local list view at +0x5a8 and
@@ -4876,6 +4977,18 @@ PROTO_UPDATES = (
     (
         "change_snail_skin",
         "void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds)",
+    ),
+    (
+        "update_times_up",
+        "void __thiscall update_times_up(cRTimesUp* times_up)",
+    ),
+    (
+        "uninit_times_up",
+        "void __thiscall uninit_times_up(cRTimesUp* times_up)",
+    ),
+    (
+        "show_times_up_message",
+        "void __thiscall show_times_up_message(cRTimesUp* times_up)",
     ),
     (
         "build_snail_world_hotspots",
@@ -6841,6 +6954,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_times_up_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_warning_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -6897,6 +7016,7 @@ def main() -> int:
         operations.append(verify_progress_bar_owner_size(target=args.target))
         operations.append(verify_squidge_owner_size(target=args.target))
         operations.append(verify_snail_skin_owner_size(target=args.target))
+        operations.append(verify_times_up_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
         operations.append(verify_tutorial_owner_size(target=args.target))
@@ -7053,6 +7173,7 @@ def main() -> int:
                 ("Cameraman", CAMERAMAN_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),
                 ("cRSnailSkin", SNAIL_SKIN_FIELD_UPDATES),
+                ("cRTimesUp", TIMES_UP_FIELD_UPDATES),
                 *collect_c_r_subgame_backpointer_struct_updates(
                     target=args.target
                 ),
@@ -7093,6 +7214,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=SNAIL_SKIN_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=TIMES_UP_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

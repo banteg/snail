@@ -115,6 +115,20 @@ SUBGAME_FUNCTION_SYMBOL_UPDATES = (
 
 HELP_EXPECTED_SIZE = 0x04
 
+TIMES_UP_EXPECTED_SIZE = 0x10
+
+TIMES_UP_TYPE_RENAMES = (("TimesUp", "cRTimesUp"),)
+
+TIMES_UP_REANALYSIS_FUNCTIONS = (
+    "initialize_subgame",
+    "build_subgame_level",
+    "destroy_subgame",
+    "update_subgoldy",
+    "update_times_up",
+    "uninit_times_up",
+    "show_times_up_message",
+)
+
 PARCEL_EXPECTED_SIZES = {
     "Parcel": 0x8C,
     "ParcelManager": 0x1B58,
@@ -334,7 +348,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0x1270fd0", "slug_voice_trigger_spacing_z", "float"),
     ("0x1270fd4", "enemy_manager", "EnemyManager"),
     ("0x12727d8", "completion", "Completion"),
-    ("0x1272828", "times_up", "TimesUp"),
+    ("0x1272828", "times_up", "cRTimesUp"),
 )
 
 # These richer nested types are supplied by later ownership slices. Preserve
@@ -384,6 +398,9 @@ SALT_STARTUP_CURSOR_FIELD_UPDATES = (
 
 TIMES_UP_FIELD_UPDATES = (
     ("0x00", "state", "TimesUpState"),
+    ("0x04", "border", "FrontendWidget*"),
+    ("0x08", "progress", "float"),
+    ("0x0c", "progress_step", "float"),
 )
 
 GUI_FIELD_UPDATES = (
@@ -567,15 +584,15 @@ PROTO_UPDATES = (
     ),
     (
         "update_times_up",
-        "void __thiscall update_times_up(TimesUp* times_up)",
+        "void __thiscall update_times_up(cRTimesUp* times_up)",
     ),
     (
         "uninit_times_up",
-        "void __thiscall uninit_times_up(TimesUp* times_up)",
+        "void __thiscall uninit_times_up(cRTimesUp* times_up)",
     ),
     (
         "show_times_up_message",
-        "void __thiscall show_times_up_message(TimesUp* times_up)",
+        "void __thiscall show_times_up_message(cRTimesUp* times_up)",
     ),
     (
         "initialize_challenge_setup_screen",
@@ -700,6 +717,62 @@ def ensure_time_trial_owner_types(
     )
 
 
+def ensure_times_up_owner_type(
+    *, target: str, header_path: Path
+) -> dict[str, object]:
+    """Repair cRTimesUp only when its complete 0x10-byte layout is stale."""
+    observed_size = current_struct_size(
+        REPO_ROOT,
+        target=target,
+        struct_name="cRTimesUp",
+    )
+    equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    if (
+        observed_size == TIMES_UP_EXPECTED_SIZE
+        and equivalence.get("cRTimesUp", False)
+    ):
+        return {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRTimesUp owner type already matches the header",
+            "header": str(header_path),
+            "replace_types": (),
+            "include_types": ("cRTimesUp",),
+        }
+    operation = types_declare_missing_only(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+        replace_types=("cRTimesUp",),
+        include_types={"cRTimesUp": TIMES_UP_EXPECTED_SIZE},
+    )
+    operation["expected_size"] = TIMES_UP_EXPECTED_SIZE
+    return operation
+
+
+def verify_times_up_owner_size(*, target: str) -> dict[str, object]:
+    observed_size = current_struct_size(
+        REPO_ROOT,
+        target=target,
+        struct_name="cRTimesUp",
+    )
+    if observed_size != TIMES_UP_EXPECTED_SIZE:
+        raise RuntimeError(
+            "refusing cRTimesUp method replay with owner-size mismatch: "
+            f"expected {TIMES_UP_EXPECTED_SIZE:#x}, observed {observed_size!r}"
+        )
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "times_up",
+        "owner_sizes": {"cRTimesUp": observed_size},
+    }
+
+
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
@@ -737,6 +810,7 @@ def main() -> int:
             ("SubgameRuntime", "cRSubGame"),
             ("GalaxyRouteSlot", "GalaxyStar"),
             ("Galaxy", "cRGalaxy"),
+            *TIMES_UP_TYPE_RENAMES,
         ),
     )
 
@@ -791,10 +865,17 @@ def main() -> int:
                 "CompletionState",
                 "Completion",
                 "TimesUpState",
-                "TimesUp",
+                "cRTimesUp",
             ),
         ),
     ]
+    operations.append(
+        ensure_times_up_owner_type(
+            target=args.target,
+            header_path=header_path,
+        )
+    )
+    operations.append(verify_times_up_owner_size(target=args.target))
     operations.append(
         ensure_time_trial_owner_types(
             target=args.target,
@@ -1004,7 +1085,7 @@ def main() -> int:
                 ("SaltOwnerGameStrideCursor", SALT_STARTUP_CURSOR_FIELD_UPDATES),
                 ("Completion", COMPLETION_FIELD_UPDATES),
                 ("Parcel", PARCEL_FIELD_UPDATES),
-                ("TimesUp", TIMES_UP_FIELD_UPDATES),
+                ("cRTimesUp", TIMES_UP_FIELD_UPDATES),
                 ("GUI", GUI_FIELD_UPDATES),
                 ("Help", HELP_FIELD_UPDATES),
                 ("cRSplash", SPLASH_FIELD_UPDATES),
@@ -1044,6 +1125,7 @@ def main() -> int:
             # adds several minutes to the replay without changing its state.
             identifiers=(
                 *COMPLETION_REANALYSIS_FUNCTIONS,
+                *TIMES_UP_REANALYSIS_FUNCTIONS,
                 *HELP_REANALYSIS_FUNCTIONS,
                 *TRACK_MIRROR_REANALYSIS_FUNCTIONS,
             ),

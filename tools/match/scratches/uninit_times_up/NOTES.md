@@ -26,3 +26,11 @@ The scratch now spells the exact member as `cRTimesUp::UnInit()` and exports
 `cRSubGame` destruction and the internal expiry edge from `cRTimesUp::AI()`.
 Android independently preserves the class-qualified symbol and body. Matching
 stays exact at 8/8 with both operands clean.
+
+## 2026-08-13 canonical database ownership
+
+The two live Windows callers prove the same canonical receiver: `destroy_subgame`
+passes the final `cRSubGame +0x1272828` child, while `cRTimesUp::AI()` reuses its
+own receiver on expiry. Both decompiler replays now preserve that exact
+`cRTimesUp*` ABI and the borrowed border field. Matching stays exact at 8/8
+with both operands clean.

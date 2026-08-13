@@ -804,12 +804,15 @@ typedef enum TimesUpState {
     TIMES_UP_STATE_EXPIRED = 2,
 } TimesUpState;
 
-typedef struct TimesUp {
+typedef struct cRTimesUp {
     TimesUpState state;
     FrontendWidget* border;
     float progress;
     float progress_step;
-} TimesUp;
+} cRTimesUp;
+
+typedef char cRTimesUp_must_be_0x10[
+    (sizeof(cRTimesUp) == 0x10) ? 1 : -1];
 
 /*
  * Authored cRTime value. Native cRTime::Zero @ 0x441b70 clears all six fields;
@@ -2717,7 +2720,7 @@ typedef struct cRSubGame {
     float slug_voice_trigger_spacing_z;
     EnemyManager enemy_manager;
     Completion completion;
-    TimesUp times_up;
+    cRTimesUp times_up;
 } cRSubGame;
 
 TextureRef* __thiscall get_or_create_texture_ref(
@@ -2962,6 +2965,9 @@ int32_t __thiscall serialize_compact_high_score_record(
 void __thiscall set_weapon_animation(Weapon* weapon, int32_t animation_id, uint8_t immediate, int32_t mode_flags);
 void __thiscall update_snail_skin_transition(cRSnailSkin* snail_skin);
 void __thiscall change_snail_skin(cRSnailSkin* snail_skin, int32_t slot_id, float duration_seconds);
+void __thiscall update_times_up(cRTimesUp* times_up);
+void __thiscall uninit_times_up(cRTimesUp* times_up);
+void __thiscall show_times_up_message(cRTimesUp* times_up);
 void __thiscall store_color4f(tColour* color, float r, float g, float b, float a);
 tColourSmall* __thiscall pack_color_rgba_u8(tColourSmall* out, tColour* color);
 void __thiscall kill_tip_widgets(cRTip* tip);

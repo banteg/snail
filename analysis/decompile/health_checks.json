@@ -469,7 +469,7 @@
       "name": "ida_times_up_ai_tail_owner",
       "artifact": "analysis/decompile/ida/functions/00445e20-update_times_up.c",
       "required_substrings": [
-        "void __thiscall update_times_up(TimesUp *times_up)",
+        "void __thiscall update_times_up(cRTimesUp *times_up)",
         "times_up->state == TIMES_UP_STATE_DISPLAYING",
         "times_up->state == TIMES_UP_STATE_EXPIRED",
         "times_up->progress_step + times_up->progress",
@@ -478,6 +478,7 @@
         "times_up->state = TIMES_UP_STATE_INACTIVE;"
       ],
       "forbidden_substrings": [
+        "update_times_up(TimesUp *times_up)",
         "void __thiscall update_times_up(int this)",
         "*(_DWORD *)this",
         "*(float *)(this +",
@@ -576,11 +577,12 @@
       "name": "ida_times_up_uninit_tail_owner",
       "artifact": "analysis/decompile/ida/functions/00445e70-uninit_times_up.c",
       "required_substrings": [
-        "void __thiscall uninit_times_up(TimesUp *times_up)",
-        "if ( times_up->state )",
+        "void __thiscall uninit_times_up(cRTimesUp *times_up)",
+        "if ( times_up->state != TIMES_UP_STATE_INACTIVE )",
         "kill_border(&g_game_base->border_manager, times_up->border);"
       ],
       "forbidden_substrings": [
+        "uninit_times_up(TimesUp *times_up)",
         "sub_445E70",
         "_DWORD **this",
         "*this",
@@ -610,7 +612,7 @@
       "name": "ida_times_up_init_tail_owner",
       "artifact": "analysis/decompile/ida/functions/00445e90-show_times_up_message.c",
       "required_substrings": [
-        "void __thiscall show_times_up_message(TimesUp *times_up)",
+        "void __thiscall show_times_up_message(cRTimesUp *times_up)",
         "times_up->state == TIMES_UP_STATE_INACTIVE",
         "times_up->border = allocate_border(&g_game_base->border_manager);",
         "initialize_frontend_widget(times_up->border",
@@ -618,6 +620,7 @@
         "times_up->state = TIMES_UP_STATE_DISPLAYING;"
       ],
       "forbidden_substrings": [
+        "show_times_up_message(TimesUp *times_up)",
         "sub_445E90",
         "int *this",
         "*(this +",

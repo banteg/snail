@@ -31,3 +31,11 @@ The scratch now spells the exact member as `cRTimesUp::Init()` and exports
 0x10-byte `cRSubGame` child immediately before calling its `AI()` method.
 Android and iOS independently retain the authored symbol. Matching stays exact
 at 31/31 with all six operands clean.
+
+## 2026-08-13 canonical database ownership
+
+The sole live Windows caller passes `cRSubGame +0x1272828` immediately before
+calling the adjacent exact `AI()` member on the same child. The focused and
+broad replays now verify the complete canonical `cRTimesUp` layout, tail embed,
+and `Init()` receiver instead of preserving the generic analysis name.
+Matching remains exact at 31/31 with all six operands clean.

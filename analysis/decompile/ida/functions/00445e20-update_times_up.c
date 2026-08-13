@@ -2,12 +2,12 @@
 /* function: update_times_up @ 0x445e20 */
 /* selector: update_times_up */
 
-// Exact Windows `TimesUp::update_times_up` state machine: advances the message timer, tears the message down, and kills Goldy when the terminal phase completes. Android and iOS retain this member as `cRTimesUp::AI()`.
-void __thiscall update_times_up(TimesUp *times_up)
+// Exact Windows `cRTimesUp::AI()` (`update_times_up`): advances the message timer, tears the message down, and kills Goldy when the terminal phase completes. Android and iOS independently retain the authored class-qualified member.
+void __thiscall update_times_up(cRTimesUp *times_up)
 {
   double v2; // st7
 
-  if ( times_up->state )
+  if ( times_up->state != TIMES_UP_STATE_INACTIVE )
   {
     if ( times_up->state == TIMES_UP_STATE_DISPLAYING )
     {

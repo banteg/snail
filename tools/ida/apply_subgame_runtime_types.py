@@ -117,6 +117,22 @@ GALAXY_OWNER_TYPE_ALIASES = (
     ("Galaxy", "cRGalaxy", 0x10FA8),
 )
 
+TIMES_UP_OWNER_TYPE_ALIASES = (("TimesUp", "cRTimesUp", 0x10),)
+
+TIMES_UP_OWNER_EXPECTED_SIZE = 0x10
+TIMES_UP_OWNER_EXPECTED_MEMBERS = (
+    (0x00, 4, "state", "TimesUpState"),
+    (0x04, 4, "border", "FrontendWidget *"),
+    (0x08, 4, "progress", "float"),
+    (0x0C, 4, "progress_step", "float"),
+)
+TIMES_UP_SUBGAME_EMBED_EXPECTED_MEMBER = (
+    0x1272828,
+    0x10,
+    "times_up",
+    "cRTimesUp",
+)
+
 GALAXY_OWNER_EXPECTED_SIZES = {
     "GalaxyStar": 0x2A0,
     "cRGalaxy": 0x10FA8,
@@ -551,15 +567,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "update_times_up",
-        "void __thiscall update_times_up(TimesUp* times_up);",
+        "void __thiscall update_times_up(cRTimesUp* times_up);",
     ),
     (
         "uninit_times_up",
-        "void __thiscall uninit_times_up(TimesUp* times_up);",
+        "void __thiscall uninit_times_up(cRTimesUp* times_up);",
     ),
     (
         "show_times_up_message",
-        "void __thiscall show_times_up_message(TimesUp* times_up);",
+        "void __thiscall show_times_up_message(cRTimesUp* times_up);",
     ),
     (
         "initialize_challenge_setup_screen",
@@ -649,6 +665,10 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
+    "typedef struct cRTimesUp {",
+    "} cRTimesUp;",
+    "cRTimesUp_must_be_0x10",
+    "cRTimesUp times_up;",
     "typedef struct SubGarbageSlotCursor {",
     "typedef struct BannerInitStrideView {",
     "uint8_t root_to_banner[0x3cd698];",
@@ -685,6 +705,8 @@ REANALYSIS_FUNCTIONS = (
     0x437270,  # normalize_segment_glyph_for_track_flags
     0x437EB0,  # build_subgame_level
     0x437B10,  # reset_subgame
+    0x4374B0,  # initialize_subgame
+    0x438850,  # destroy_subgame
     0x438B90,  # update_subgame
     0x43B120,  # update_subgoldy
     0x43D5A0,  # spawn_garbage_smoke_particle
@@ -713,6 +735,9 @@ REANALYSIS_FUNCTIONS = (
     0x4431D0,  # update_track_parcel
     0x443730,  # spawn_track_parcel
     0x444CF0,  # handle_subgoldy_collisions
+    0x445E20,  # update_times_up
+    0x445E70,  # uninit_times_up
+    0x445E90,  # show_times_up_message
     0x448960,  # format_time_trial_string
     0x449C00,  # debug_report_stub
 )
@@ -1064,6 +1089,79 @@ def _time_trial_owner_readback() -> dict[str, object]:
             for offset, member_size, member_name, member_type
             in TIME_TRIAL_EXPECTED_MEMBERS
         ],
+    }
+
+
+def _times_up_owner_readback() -> dict[str, object]:
+    members = _named_struct_members("cRTimesUp")
+    selected_members = (
+        []
+        if members is None
+        else [
+            member
+            for member in members
+            if int(member["offset"])
+            in {expected[0] for expected in TIMES_UP_OWNER_EXPECTED_MEMBERS}
+        ]
+    )
+    observed_members = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_members
+    )
+    subgame_members = _named_struct_members("cRSubGame")
+    selected_embed = (
+        []
+        if subgame_members is None
+        else [
+            member
+            for member in subgame_members
+            if int(member["offset"])
+            == TIMES_UP_SUBGAME_EMBED_EXPECTED_MEMBER[0]
+        ]
+    )
+    observed_embed = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_embed
+    )
+    owner_size = _named_struct_size("cRTimesUp")
+    return {
+        "status": (
+            "verified"
+            if owner_size == TIMES_UP_OWNER_EXPECTED_SIZE
+            and observed_members == TIMES_UP_OWNER_EXPECTED_MEMBERS
+            and observed_embed == (TIMES_UP_SUBGAME_EMBED_EXPECTED_MEMBER,)
+            else "failed"
+        ),
+        "owner_size": owner_size,
+        "owner_members": selected_members,
+        "subgame_embed": selected_embed,
+        "expected_owner_size": TIMES_UP_OWNER_EXPECTED_SIZE,
+        "expected_owner_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type
+            in TIMES_UP_OWNER_EXPECTED_MEMBERS
+        ],
+        "expected_subgame_embed": {
+            "offset": TIMES_UP_SUBGAME_EMBED_EXPECTED_MEMBER[0],
+            "size": TIMES_UP_SUBGAME_EMBED_EXPECTED_MEMBER[1],
+            "name": TIMES_UP_SUBGAME_EMBED_EXPECTED_MEMBER[2],
+            "type": TIMES_UP_SUBGAME_EMBED_EXPECTED_MEMBER[3],
+        },
     }
 
 
@@ -1886,7 +1984,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     type_alias_migrations = (
         []
         if parse_errors
-        else migrate_equivalent_struct_aliases(GALAXY_OWNER_TYPE_ALIASES)
+        else migrate_equivalent_struct_aliases(
+            (*GALAXY_OWNER_TYPE_ALIASES, *TIMES_UP_OWNER_TYPE_ALIASES)
+        )
     )
     type_alias_failures = [
         {
@@ -1907,6 +2007,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     galaxy_owner_sizes = {
         name: _named_struct_size(name) for name in GALAXY_OWNER_EXPECTED_SIZES
     }
+    times_up_owner_readback = _times_up_owner_readback()
     presentation_animation_cursor_sizes = {
         name: _named_struct_size(name)
         for name in PRESENTATION_ANIMATION_CURSOR_EXPECTED_SIZES
@@ -1966,6 +2067,14 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in GALAXY_OWNER_EXPECTED_SIZES.items()
         if galaxy_owner_sizes[name] != expected_size
     )
+    if times_up_owner_readback["status"] != "verified":
+        size_failures.append(
+            {
+                "selector": "cRTimesUp",
+                "reason": "owner_layout_mismatch",
+                "owner_readback": times_up_owner_readback,
+            }
+        )
     size_failures.extend(
         {
             "selector": name,
@@ -2012,6 +2121,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "help_owner_size": help_owner_size,
                     "banner_owner_sizes": banner_owner_sizes,
                     "galaxy_owner_sizes": galaxy_owner_sizes,
+                    "times_up_owner_readback": times_up_owner_readback,
                     "presentation_animation_cursor_sizes": (
                         presentation_animation_cursor_sizes
                     ),
@@ -2416,6 +2526,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "parcel_owner_sizes": parcel_owner_sizes,
                 "banner_owner_sizes": banner_owner_sizes,
                 "galaxy_owner_sizes": galaxy_owner_sizes,
+                "times_up_owner_readback": times_up_owner_readback,
                 "type_alias_migrations": type_alias_migrations,
                 "presentation_animation_cursor_sizes": (
                     presentation_animation_cursor_sizes
@@ -2449,7 +2560,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "Parcel": _named_struct_size("Parcel"),
                     "ParcelManager": _named_struct_size("ParcelManager"),
                     "Completion": _named_struct_size("Completion"),
-                    "TimesUp": _named_struct_size("TimesUp"),
+                    "cRTimesUp": _named_struct_size("cRTimesUp"),
                     "SubLazer": _named_struct_size("SubLazer"),
                     "SubLazerManager": _named_struct_size("SubLazerManager"),
                     "SubLazerBodyObjectStrideCursor": _named_struct_size(

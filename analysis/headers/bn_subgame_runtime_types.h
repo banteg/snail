@@ -167,12 +167,15 @@ typedef enum TimesUpState {
 } TimesUpState;
 
 /* Exact 0x10-byte Windows cRTimesUp tail owner. */
-typedef struct TimesUp {
+typedef struct cRTimesUp {
     TimesUpState state;
     FrontendWidget* border;
     float progress;
     float progress_step;
-} TimesUp;
+} cRTimesUp;
+
+typedef char cRTimesUp_must_be_0x10[
+    (sizeof(cRTimesUp) == 0x10) ? 1 : -1];
 
 /* Exact 0x94-byte Windows cRVapour owner. */
 typedef struct Vapour {
@@ -571,7 +574,7 @@ typedef struct cRSubGame {
     float slug_voice_trigger_spacing_z;
     EnemyManager enemy_manager;
     Completion completion;
-    TimesUp times_up;
+    cRTimesUp times_up;
 } cRSubGame;
 
 void __thiscall uninit_pause_menu(SubPause* pause);

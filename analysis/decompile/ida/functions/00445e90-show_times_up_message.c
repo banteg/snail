@@ -2,8 +2,8 @@
 /* function: show_times_up_message @ 0x445e90 */
 /* selector: show_times_up_message */
 
-// Exact Windows `TimesUp::show_times_up_message`: spawns the floating `Time's Up` widget and seeds its progress lanes once the subgame timer reaches its terminal threshold. Android and iOS retain this member as `cRTimesUp::Init()`.
-void __thiscall show_times_up_message(TimesUp *times_up)
+// Exact Windows `cRTimesUp::Init()` (`show_times_up_message`): spawns the floating `Time's Up` widget and seeds its progress lanes once the subgame timer reaches its terminal threshold. Android and iOS independently retain the authored class-qualified member.
+void __thiscall show_times_up_message(cRTimesUp *times_up)
 {
   tColour *v2; // eax
   Color4f color; // [esp+4h] [ebp-10h] BYREF

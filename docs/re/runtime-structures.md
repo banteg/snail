@@ -755,11 +755,15 @@ only as historical decompiler spelling in older evidence.
     and the final result screen
 - `+0x1272828`: `times_up`
   - exact adjacent `0x10`-byte authored `cRTimesUp` tail owner
+  - `+0x00`: `TimesUpState state`
+  - `+0x04`: borrowed `FrontendWidget* border`
+  - `+0x08`: `progress`
+  - `+0x0c`: `progress_step`
   - `show_times_up_message` moves `INACTIVE -> DISPLAYING` and seeds its
     progress pair; AI advances to `EXPIRED`, tears down the borrowed widget,
     kills the embedded player on the following tick, and returns to `INACTIVE`
   - the maintained BN/IDA runtime replay now applies all three
-    `void __thiscall(TimesUp*)` ABIs, so both tracked decompilers preserve the
+    `void __thiscall(cRTimesUp*)` ABIs, so both tracked decompilers preserve the
     state/progress/border owner instead of raw receiver arithmetic
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`

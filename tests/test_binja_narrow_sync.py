@@ -12160,14 +12160,15 @@ def test_times_up_state_ownership_stays_aligned() -> None:
     assert '"TimesUpState",' in runtime_sync
     assert '("0x00", "state", "TimesUpState")' in runtime_sync
     assert '"TimesUpState",' in path_sync
-    for replay in (runtime_sync, ida_runtime_sync):
-        assert "void __thiscall update_times_up(TimesUp* times_up)" in replay
-        assert "void __thiscall uninit_times_up(TimesUp* times_up)" in replay
-        assert "void __thiscall show_times_up_message(TimesUp* times_up)" in replay
+    for replay in (runtime_sync, ida_runtime_sync, path_sync):
+        assert "void __thiscall update_times_up(cRTimesUp* times_up)" in replay
+        assert "void __thiscall uninit_times_up(cRTimesUp* times_up)" in replay
+        assert "void __thiscall show_times_up_message(cRTimesUp* times_up)" in replay
     for header in (*analysis_headers, matcher_header):
         assert "TIMES_UP_STATE_INACTIVE = 0" in header
         assert "TIMES_UP_STATE_DISPLAYING = 1" in header
         assert "TIMES_UP_STATE_EXPIRED = 2" in header
+        assert "cRTimesUp" in header
 
     consumers = {
         "update_times_up": "TIMES_UP_STATE_EXPIRED",
@@ -14914,6 +14915,111 @@ def test_snail_skin_replay_keeps_authored_owner_layout_and_method_abis() -> None
         "initialize_snail_skin(cRSnailSkin *snail_skin)",
         "update_snail_skin_transition(cRSnailSkin *snail_skin)",
         "change_snail_skin(cRSnailSkin *snail_skin, int32_t slot_id, float duration_seconds)",
+    ):
+        assert selector in health_checks
+
+
+def test_times_up_replay_keeps_authored_owner_layout_and_method_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    focused_binja_sync = (BINJA_DIR / "sync_times_up_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_sync = (IDA_DIR / "apply_times_up_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_times_up_types.py").read_text(
+        encoding="utf-8"
+    )
+    runtime_binja_sync = (
+        BINJA_DIR / "sync_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    runtime_ida_sync = (
+        IDA_DIR / "apply_subgame_runtime_types.py"
+    ).read_text(encoding="utf-8")
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    analysis_headers = tuple(
+        (HEADER_DIR / name).read_text(encoding="utf-8")
+        for name in (
+            "times_up_types.h",
+            "path_template_types.h",
+            "bn_subgame_runtime_types.h",
+            "ida_subgame_runtime_types.h",
+        )
+    )
+    matcher_header = (repo_root / "tools/match/include/times_up.h").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    prototypes = (
+        "void __thiscall update_times_up(cRTimesUp* times_up)",
+        "void __thiscall uninit_times_up(cRTimesUp* times_up)",
+        "void __thiscall show_times_up_message(cRTimesUp* times_up)",
+    )
+    for prototype in prototypes:
+        for source in (
+            focused_binja_sync,
+            focused_ida_sync,
+            runtime_binja_sync,
+            runtime_ida_sync,
+            path_binja_sync,
+            path_ida_sync,
+        ):
+            assert prototype in source
+
+    assert '"cRTimesUp": 0x10' in focused_binja_sync
+    assert 'OWNER_TYPE_RENAMES = (("TimesUp", "cRTimesUp"),)' in focused_binja_sync
+    assert '("cRTimesUp", TIMES_UP_FIELD_UPDATES)' in focused_binja_sync
+    assert '("0x1272828", "times_up", "cRTimesUp")' in focused_binja_sync
+    for header in analysis_headers:
+        assert "typedef struct cRTimesUp {" in header
+        assert "typedef struct TimesUp {" not in header
+        assert "cRTimesUp_must_be_0x10" in header
+    for header in analysis_headers[1:]:
+        assert "cRTimesUp times_up;" in header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRTimesUp": 0x10,' in focused_ida_sync
+    assert '("TimesUp", "cRTimesUp", 0x10)' in focused_ida_sync
+    assert "EXPECTED_OWNER_LAYOUT" in focused_ida_sync
+    assert "EXPECTED_SUBGAME_EMBED" in focused_ida_sync
+    assert "owner_layout_readback" in focused_ida_sync
+    assert "TIMES_UP_TYPE_RENAMES" in runtime_binja_sync
+    assert "TIMES_UP_OWNER_TYPE_ALIASES" in runtime_ida_sync
+    assert "TIMES_UP_OWNER_TYPE_RENAMES" in path_binja_sync
+    assert "TIMES_UP_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert "times_up_owner_layout_readback" in path_ida_sync
+    assert "class cRTimesUp" in matcher_header
+    assert "typedef cRTimesUp TimesUp;" in matcher_header
+    notes_text = "\n".join(
+        (repo_root / f"tools/match/scratches/{scratch}/NOTES.md").read_text(
+            encoding="utf-8"
+        )
+        for scratch in (
+            "update_times_up",
+            "uninit_times_up",
+            "show_times_up_message",
+        )
+    )
+    for symbol in (
+        "?AI@cRTimesUp@@QAEXXZ",
+        "?UnInit@cRTimesUp@@QAEXXZ",
+        "?Init@cRTimesUp@@QAEXXZ",
+    ):
+        assert symbol in notes_text
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/times_up_types.h"'
+        in ida_runner
+    )
+    for selector in (
+        "update_times_up(cRTimesUp *times_up)",
+        "uninit_times_up(cRTimesUp *times_up)",
+        "show_times_up_message(cRTimesUp *times_up)",
     ):
         assert selector in health_checks
 
