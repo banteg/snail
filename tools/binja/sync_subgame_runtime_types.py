@@ -119,6 +119,19 @@ TIMES_UP_EXPECTED_SIZE = 0x10
 
 TIMES_UP_TYPE_RENAMES = (("TimesUp", "cRTimesUp"),)
 
+TIME_TRIAL_TYPE_RENAMES = (("TimeTrial", "cRTimeTrial"),)
+
+TIME_TRIAL_FIELD_UPDATES = (
+    ("0x00", "course_records", "TimeTrialCourseRecord[0x33]"),
+)
+
+TIME_TRIAL_REANALYSIS_FUNCTIONS = (
+    "format_time_trial_string",
+    "update_challenge_setup_screen",
+    "initialize_subgame",
+    "update_subgame",
+)
+
 TIMES_UP_REANALYSIS_FUNCTIONS = (
     "initialize_subgame",
     "build_subgame_level",
@@ -335,7 +348,7 @@ SUBGAME_FIELD_UPDATES = (
     ("0xff25d4", "selected_level_record", "SubSolution*"),
     ("0xff25d8", "selected_level_record_cursor", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
-    ("0xff25e0", "time_trial", "TimeTrial"),
+    ("0xff25e0", "time_trial", "cRTimeTrial"),
     ("0x125e480", "parcel_manager", "ParcelManager"),
     ("0x125ffd8", "garbage_frequency", "float"),
     ("0x125ffdc", "salt_frequency", "float"),
@@ -608,7 +621,7 @@ PROTO_UPDATES = (
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer)",
+        "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer)",
     ),
     (
         "update_subgame_camera",
@@ -690,7 +703,7 @@ def ensure_time_trial_owner_types(
     *, target: str, header_path: Path
 ) -> dict[str, object]:
     """Replay the recovered inline course records when either owner is stale."""
-    type_names = ("TimeTrialCourseRecord", "TimeTrial")
+    type_names = ("TimeTrialCourseRecord", "cRTimeTrial")
     equivalence = current_header_type_equivalence(
         REPO_ROOT,
         target=target,
@@ -703,7 +716,7 @@ def ensure_time_trial_owner_types(
         return {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "TimeTrial owner types already match the header",
+            "reason": "cRTimeTrial owner types already match the header",
             "header": str(header_path),
             "replace_types": (),
             "include_types": type_names,
@@ -811,6 +824,7 @@ def main() -> int:
             ("GalaxyRouteSlot", "GalaxyStar"),
             ("Galaxy", "cRGalaxy"),
             ("Time", "cRTime"),
+            *TIME_TRIAL_TYPE_RENAMES,
             *TIMES_UP_TYPE_RENAMES,
         ),
     )
@@ -843,7 +857,7 @@ def main() -> int:
                 "SubPause",
                 "cRTime",
                 "TimeTrialCourseRecord",
-                "TimeTrial",
+                "cRTimeTrial",
                 "GUI",
                 "Help",
                 "cRSplash",
@@ -1087,6 +1101,7 @@ def main() -> int:
                 ("SaltOwnerGameStrideCursor", SALT_STARTUP_CURSOR_FIELD_UPDATES),
                 ("Completion", COMPLETION_FIELD_UPDATES),
                 ("Parcel", PARCEL_FIELD_UPDATES),
+                ("cRTimeTrial", TIME_TRIAL_FIELD_UPDATES),
                 ("cRTimesUp", TIMES_UP_FIELD_UPDATES),
                 ("GUI", GUI_FIELD_UPDATES),
                 ("Help", HELP_FIELD_UPDATES),
@@ -1127,6 +1142,7 @@ def main() -> int:
             # adds several minutes to the replay without changing its state.
             identifiers=(
                 *COMPLETION_REANALYSIS_FUNCTIONS,
+                *TIME_TRIAL_REANALYSIS_FUNCTIONS,
                 *TIMES_UP_REANALYSIS_FUNCTIONS,
                 *HELP_REANALYSIS_FUNCTIONS,
                 *TRACK_MIRROR_REANALYSIS_FUNCTIONS,

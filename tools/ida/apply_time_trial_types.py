@@ -8,26 +8,12 @@ import sys
 import ida_funcs
 import ida_hexrays
 import ida_kernwin
-import ida_name
 import ida_pro
 import ida_typeinf
 import idc
 from type_alias_migration import migrate_equivalent_struct_aliases
 
-TRUSTED_NAMES = (
-    (0x441B70, "zero_timer_counters"),
-    (0x441B90, "advance_timer_counters"),
-)
-
 TRUSTED_DECLARATIONS = (
-    (
-        "zero_timer_counters",
-        "void __thiscall zero_timer_counters(cRTime* time);",
-    ),
-    (
-        "advance_timer_counters",
-        "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks);",
-    ),
     (
         "format_time_trial_string",
         "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer);",
@@ -35,78 +21,62 @@ TRUSTED_DECLARATIONS = (
 )
 
 REQUIRED_OWNER_MARKERS = (
-    "typedef struct cRTime {",
-    "} cRTime;",
-    "float total_seconds;",
-    "int32_t display_thousandths;",
-    "float second_fraction;",
-    "cRTime_must_be_0x18",
+    "typedef struct TimeTrialCourseRecord {",
+    "TimeTrialCourseRecord_must_be_0x10",
+    "typedef struct cRTimeTrial {",
+    "TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];",
+    "cRTimeTrial_must_be_0x330",
 )
 
-EXPECTED_OWNER_SIZES = {
-    "cRTime": 0x18,
-}
+OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
 
-OWNER_TYPE_ALIASES = (("Time", "cRTime", 0x18),)
-
-EXPECTED_OWNER_LAYOUT = {
-    "size": 0x18,
-    "members": {
-        0x00: (0x04, "total_seconds", "float"),
-        0x04: (0x04, "minutes", "int32_t"),
-        0x08: (0x04, "seconds", "int32_t"),
-        0x0C: (0x04, "display_hundredths", "int32_t"),
-        0x10: (0x04, "display_thousandths", "int32_t"),
-        0x14: (0x04, "second_fraction", "float"),
+EXPECTED_LAYOUTS = {
+    "TimeTrialCourseRecord": {
+        "size": 0x10,
+        "members": {
+            0x00: (0x04, "course_name", "char *"),
+            0x04: (0x0C, "unknown_04", "uint8_t[12]"),
+        },
+    },
+    "cRTimeTrial": {
+        "size": 0x330,
+        "members": {
+            0x00: (
+                0x330,
+                "course_records",
+                "TimeTrialCourseRecord[51]",
+            ),
+        },
     },
 }
 
 EXPECTED_OWNER_EDGES = {
-    "player_stopwatch": {
-        "struct": "Player",
-        "offset": 0x2E8,
-        "expected": {
-            "offset": "0x2e8",
-            "size": 0x18,
-            "name": "stopwatch",
-            "type": "cRTime",
-        },
-    },
-    "subgame_active_level_timer": {
+    "subgame_embed": {
         "struct": "cRSubGame",
-        "offset": 0x355D98,
+        "offset": 0xFF25E0,
         "expected": {
-            "offset": "0x355d98",
-            "size": 0x18,
-            "name": "active_level_timer",
-            "type": "cRTime",
+            "offset": "0xff25e0",
+            "size": 0x330,
+            "name": "time_trial",
+            "type": "cRTimeTrial",
         },
     },
-}
-
-EXPECTED_NAMED_OWNER_EDGES = {
-    "high_score_timer": {
-        "struct_candidates": ("ScoreOrTime", "SubSolutionScoreOrTime"),
-        "member": "timer",
+    "following_path_manager": {
+        "struct": "cRSubGame",
+        "offset": 0xFF2910,
         "expected": {
-            "offset": "0x0",
-            "size": 0x18,
-            "name": "timer",
-            "type": "cRTime",
+            "offset": "0xff2910",
+            "size": 0x01,
+            "name": "path_manager",
+            "type": "cRPathManager",
         },
     },
 }
 
 DIRTY_FUNCTIONS = (
     0x416370,  # update_challenge_setup_screen
-    0x417A70,  # initialize_high_score_entry
-    0x435EB0,  # populate_runtime_track_cells_from_segments
     0x4374B0,  # initialize_subgame
-    0x437B10,  # reset_subgame
     0x438B90,  # update_subgame
-    0x43B120,  # update_subgoldy
-    0x441B70,  # zero_timer_counters
-    0x441B90,  # advance_timer_counters
     0x448960,  # format_time_trial_string
 )
 
@@ -146,9 +116,7 @@ def _normalize_udt_type(value: str) -> str:
 
 def _named_struct_members(name: str) -> list[dict[str, object]] | None:
     owner = ida_typeinf.tinfo_t()
-    if not owner.get_named_type(
-        None, name, ida_typeinf.BTF_STRUCT
-    ) and not owner.get_named_type(None, name, ida_typeinf.BTF_UNION):
+    if not owner.get_named_type(None, name, ida_typeinf.BTF_STRUCT):
         return None
     members = ida_typeinf.udt_type_data_t()
     if not owner.get_udt_details(members):
@@ -177,52 +145,45 @@ def _named_struct_member_readback(
     )
 
 
-def _named_struct_named_member_readback(
-    struct_name: str, member_name: str
-) -> dict[str, object] | None:
-    members = _named_struct_members(struct_name)
-    if members is None:
-        return None
-    return next(
-        (member for member in members if member["name"] == member_name),
-        None,
-    )
-
-
 def _owner_layout_readback() -> dict[str, object]:
-    type_name = "cRTime"
-    observed_size = _named_struct_size(type_name)
-    observed_members = {
-        hex(offset): _named_struct_member_readback(type_name, offset)
-        for offset in EXPECTED_OWNER_LAYOUT["members"]
-    }
+    types = {}
     failures: list[dict[str, object]] = []
-    if observed_size != EXPECTED_OWNER_LAYOUT["size"]:
-        failures.append(
-            {
-                "selector": type_name,
-                "reason": "owner_size_mismatch",
-                "expected": EXPECTED_OWNER_LAYOUT["size"],
-                "observed": observed_size,
-            }
-        )
-    for offset, (size, name, type_text) in EXPECTED_OWNER_LAYOUT["members"].items():
-        expected_member = {
-            "offset": hex(offset),
-            "size": size,
-            "name": name,
-            "type": _normalize_udt_type(type_text),
+    for type_name, expected in EXPECTED_LAYOUTS.items():
+        observed_size = _named_struct_size(type_name)
+        observed_members = {
+            hex(offset): _named_struct_member_readback(type_name, offset)
+            for offset in expected["members"]
         }
-        observed_member = observed_members[hex(offset)]
-        if observed_member != expected_member:
+        types[type_name] = {
+            "size": observed_size,
+            "members": observed_members,
+        }
+        if observed_size != expected["size"]:
             failures.append(
                 {
-                    "selector": f"{type_name}.{name}",
-                    "reason": "owner_member_mismatch",
-                    "expected": expected_member,
-                    "observed": observed_member,
+                    "selector": type_name,
+                    "reason": "owner_size_mismatch",
+                    "expected": expected["size"],
+                    "observed": observed_size,
                 }
             )
+        for offset, (size, name, type_text) in expected["members"].items():
+            expected_member = {
+                "offset": hex(offset),
+                "size": size,
+                "name": name,
+                "type": _normalize_udt_type(type_text),
+            }
+            observed_member = observed_members[hex(offset)]
+            if observed_member != expected_member:
+                failures.append(
+                    {
+                        "selector": f"{type_name}.{name}",
+                        "reason": "owner_member_mismatch",
+                        "expected": expected_member,
+                        "observed": observed_member,
+                    }
+                )
 
     edges = {}
     for edge_name, edge in EXPECTED_OWNER_EDGES.items():
@@ -238,39 +199,9 @@ def _owner_layout_readback() -> dict[str, object]:
                 }
             )
 
-    named_edges = {}
-    for edge_name, edge in EXPECTED_NAMED_OWNER_EDGES.items():
-        observed_owner = None
-        observed_member = None
-        for candidate in edge["struct_candidates"]:
-            candidate_member = _named_struct_named_member_readback(
-                candidate, edge["member"]
-            )
-            if candidate_member is not None:
-                observed_owner = candidate
-                observed_member = candidate_member
-                break
-        named_edges[edge_name] = {
-            "owner": observed_owner,
-            "member": observed_member,
-        }
-        if observed_member != edge["expected"]:
-            failures.append(
-                {
-                    "selector": f"{edge_name}.{edge['member']}",
-                    "reason": "named_owner_edge_mismatch",
-                    "expected": edge["expected"],
-                    "observed_owner": observed_owner,
-                    "observed": observed_member,
-                }
-            )
-
     return {
-        "type": type_name,
-        "size": observed_size,
-        "members": observed_members,
+        "types": types,
         "edges": edges,
-        "named_edges": named_edges,
         "failures": failures,
     }
 
@@ -287,7 +218,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "database": idc.get_idb_path(),
                     "header": str(header_path),
                     "missing_owner_markers": missing_owner_markers,
-                    "failed": [{"reason": "noncanonical_time_header"}],
+                    "failed": [{"reason": "noncanonical_time_trial_header"}],
                 },
                 indent=2,
             )
@@ -307,34 +238,12 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for result in owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
-    owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
-    owner_size_failures = [
-        {
-            "selector": name,
-            "reason": "owner_size_mismatch",
-            "expected": expected_size,
-            "observed": owner_sizes[name],
-        }
-        for name, expected_size in EXPECTED_OWNER_SIZES.items()
-        if owner_sizes[name] != expected_size
-    ]
     owner_layout_readback = (
-        {
-            "type": "cRTime",
-            "size": None,
-            "members": {},
-            "edges": {},
-            "named_edges": {},
-            "failures": [],
-        }
+        {"types": {}, "edges": {}, "failures": []}
         if parse_errors or owner_type_alias_failures
         else _owner_layout_readback()
     )
-    failed = (
-        owner_type_alias_failures
-        + owner_size_failures
-        + owner_layout_readback["failures"]
-    )
+    failed = owner_type_alias_failures + owner_layout_readback["failures"]
     if parse_errors or failed:
         print(
             json.dumps(
@@ -343,7 +252,6 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "header": str(header_path),
                     "parse_errors": parse_errors,
                     "owner_type_alias_migrations": owner_type_alias_migrations,
-                    "owner_sizes": owner_sizes,
                     "owner_layout_readback": owner_layout_readback,
                     "failed": failed,
                 },
@@ -354,21 +262,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     applied = 0
     unchanged = 0
-    renamed = 0
-    names_unchanged = 0
     missing = []
-
-    for address, name in TRUSTED_NAMES:
-        if idc.get_name(address) == name:
-            names_unchanged += 1
-            continue
-        if not idc.set_name(address, name, ida_name.SN_NOWARN | ida_name.SN_FORCE):
-            failed.append(
-                {"selector": name, "address": hex(address), "reason": "rename_failed"}
-            )
-            continue
-        renamed += 1
-
     for selector, declaration in TRUSTED_DECLARATIONS:
         address = idc.get_name_ea_simple(selector)
         if address == idc.BADADDR or ida_funcs.get_func_start(address) == idc.BADADDR:
@@ -379,11 +273,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if _normalize_type_text(idc.get_type(address)) == expected:
             unchanged += 1
             continue
-
         if not idc.SetType(address, declaration):
             failed.append({"selector": selector, "reason": "set_type_failed"})
             continue
-
         observed = idc.get_type(address)
         if _normalize_type_text(observed) != expected:
             failed.append(
@@ -409,12 +301,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "parse_errors": parse_errors,
                 "owner_type_alias_migrations": owner_type_alias_migrations,
-                "owner_sizes": owner_sizes,
                 "owner_layout_readback": owner_layout_readback,
                 "applied": applied,
                 "unchanged": unchanged,
-                "renamed": renamed,
-                "names_unchanged": names_unchanged,
                 "dirty_functions": dirty_functions,
                 "missing": missing,
                 "failed": failed,
@@ -428,7 +317,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
 def main() -> None:
     argv = list(idc.ARGV)
     if len(argv) != 2:
-        print("usage: apply_time_types.py <header-path>", file=sys.stderr)
+        print("usage: apply_time_trial_types.py <header-path>", file=sys.stderr)
         ida_pro.qexit(2)
         return
 

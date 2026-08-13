@@ -136,6 +136,14 @@ Current checked-in example:
     `Player +0x2e8` and `cRSubGame +0x355d98` embeds, and the high-score timer
     union edge, then replays the exact `Zero`, `Add(float)`, and Time Trial
     formatter receivers plus every live Windows caller.
+- `time_trial_types.h`
+- `uv run python tools/binja/sync_time_trial_types.py`
+- `uv run python tools/ida/sync_time_trial_types.py`
+  - Retires the generic analysis-only `TimeTrial` owner after exact layout
+    equivalence, verifies the 51 inline 0x10-byte course records, the authored
+    0x330-byte `cRTimeTrial` embed at `cRSubGame +0xff25e0`, and the following
+    `cRPathManager` boundary, then replays `TimeString(cRTime&)` and every live
+    Windows caller.
 - `times_up_types.h`
 - `uv run python tools/binja/sync_times_up_types.py`
 - `uv run python tools/ida/sync_times_up_types.py`

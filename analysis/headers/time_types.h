@@ -10,6 +10,9 @@
 
 typedef int int32_t;
 
+/* The formatter borrows this independently recovered owner. */
+typedef struct cRTimeTrial cRTimeTrial;
+
 typedef struct cRTime {
     float total_seconds;
     int32_t minutes;

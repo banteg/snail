@@ -8,7 +8,6 @@ from pathlib import Path
 
 from _narrow_sync import (
     apply_struct_and_proto_updates,
-    apply_symbol_updates,
     apply_type_renames,
     current_header_type_equivalence,
     current_type_widths,
@@ -19,50 +18,36 @@ from _narrow_sync import (
 from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/time_types.h"
+DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/time_trial_types.h"
 
 EXPECTED_STRUCT_SIZES = {
-    "cRTime": 0x18,
+    "TimeTrialCourseRecord": 0x10,
+    "cRTimeTrial": 0x330,
 }
 
-OWNER_TYPE_RENAMES = (("Time", "cRTime"),)
-
-FUNCTION_SYMBOL_UPDATES = (
-    ("0x441b70", "zero_timer_counters"),
-    ("0x441b90", "advance_timer_counters"),
-)
+OWNER_TYPE_RENAMES = (("TimeTrial", "cRTimeTrial"),)
 
 REANALYSIS_FUNCTIONS = (
-    "zero_timer_counters",
-    "advance_timer_counters",
     "format_time_trial_string",
-    "initialize_high_score_entry",
     "update_challenge_setup_screen",
-    "populate_runtime_track_cells_from_segments",
     "initialize_subgame",
-    "reset_subgame",
     "update_subgame",
-    "update_subgoldy",
 )
 
-TIME_FIELD_UPDATES = (
-    ("0x00", "total_seconds", "float"),
-    ("0x04", "minutes", "int32_t"),
-    ("0x08", "seconds", "int32_t"),
-    ("0x0c", "display_hundredths", "int32_t"),
-    ("0x10", "display_thousandths", "int32_t"),
-    ("0x14", "second_fraction", "float"),
+COURSE_RECORD_FIELD_UPDATES = (
+    ("0x00", "course_name", "char*"),
+    ("0x04", "unknown_04", "uint8_t[0xc]"),
+)
+
+TIME_TRIAL_FIELD_UPDATES = (
+    (
+        "0x00",
+        "course_records",
+        "TimeTrialCourseRecord[0x33]",
+    ),
 )
 
 PROTO_UPDATES = (
-    (
-        "zero_timer_counters",
-        "void __thiscall zero_timer_counters(cRTime* time)",
-    ),
-    (
-        "advance_timer_counters",
-        "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks)",
-    ),
     (
         "format_time_trial_string",
         "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer)",
@@ -72,7 +57,7 @@ PROTO_UPDATES = (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the exact Windows cRTime ownership lane."
+        description="Apply the exact Windows cRTimeTrial ownership lane."
     )
     parser.add_argument(
         "--target", default=DEFAULT_TARGET, help="Binary Ninja target selector."
@@ -128,7 +113,7 @@ def main() -> int:
         type_operation = {
             "op": "types_declare_missing_only",
             "status": "skipped",
-            "reason": "cRTime owner layout already current",
+            "reason": "cRTimeTrial owner layout already current",
             "header": str(header_path),
             "expected_sizes": EXPECTED_STRUCT_SIZES,
             "type_equivalence": {
@@ -140,21 +125,18 @@ def main() -> int:
     operations.extend(
         [
             type_operation,
-            *apply_symbol_updates(
-                REPO_ROOT,
-                target=args.target,
-                updates=FUNCTION_SYMBOL_UPDATES,
-                kind="function",
-            ),
             *apply_struct_and_proto_updates(
                 REPO_ROOT,
                 target=args.target,
                 struct_updates=(
-                    ("cRTime", TIME_FIELD_UPDATES),
-                    ("Player", (("0x2e8", "stopwatch", "cRTime"),)),
+                    ("TimeTrialCourseRecord", COURSE_RECORD_FIELD_UPDATES),
+                    ("cRTimeTrial", TIME_TRIAL_FIELD_UPDATES),
                     (
                         "cRSubGame",
-                        (("0x355d98", "active_level_timer", "cRTime"),),
+                        (
+                            ("0xff25e0", "time_trial", "cRTimeTrial"),
+                            ("0xff2910", "path_manager", "cRPathManager"),
+                        ),
                     ),
                 ),
                 proto_updates=PROTO_UPDATES,

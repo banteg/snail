@@ -35,7 +35,7 @@ promotable local duplicate.
 2026-07-11 ownership pass:
 
 - Promoted the former method-only receiver view to the complete embedded
-  `TimeTrial` owner. The exact formatter scratch deliberately remains `/TC` so
+  `cRTimeTrial` owner. The exact formatter scratch deliberately remains `/TC` so
   VC6 retains the native coalesced `sprintf` cleanup; C++ callers now address
   the real owner directly without changing their codegen.
 
@@ -48,10 +48,10 @@ promotable local duplicate.
 2026-07-13 analysis propagation:
 
 - The path-template Binary Ninja/IDA runtime now embeds the complete 0x330-byte
-  `TimeTrial` at `+0xff25e0`, followed by the one-byte `PathManager` at
+  `cRTimeTrial` at `+0xff25e0`, followed by the one-byte `cRPathManager` at
   `+0xff2910` and all 63 exact `PathPair` values at `+0xff2914`.
 - The former `runtime_track_index` lane was a flattened field inside the
-  TimeTrial extent, not an independent cRSubGame member.
+  cRTimeTrial extent, not an independent cRSubGame member.
 - Binary Ninja preview verifies all boundaries and keeps
   `cRSubGame == 0x1272838`, then reverts. The formatter remains exact at
   36/36 instructions with all twelve operands clean.

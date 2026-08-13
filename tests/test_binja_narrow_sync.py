@@ -15068,7 +15068,7 @@ def test_time_replay_keeps_authored_owner_layout_and_method_abis() -> None:
     prototypes = (
         "void __thiscall zero_timer_counters(cRTime* time)",
         "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks)",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer)",
+        "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer)",
     )
     for prototype in prototypes:
         for source in (
@@ -15128,7 +15128,7 @@ def test_time_replay_keeps_authored_owner_layout_and_method_abis() -> None:
     for selector in (
         "zero_timer_counters(cRTime *time)",
         "advance_timer_counters(cRTime *time, float delta_ticks)",
-        "format_time_trial_string(TimeTrial *time_trial, cRTime *timer)",
+        "format_time_trial_string(cRTimeTrial *time_trial, cRTime *timer)",
     ):
         assert selector in health_checks
 
@@ -25099,6 +25099,7 @@ def test_time_trial_replays_inline_course_record_ownership() -> None:
     analysis_headers = [
         (HEADER_DIR / header_name).read_text(encoding="utf-8")
         for header_name in (
+            "time_trial_types.h",
             "bn_subgame_runtime_types.h",
             "ida_subgame_runtime_types.h",
             "path_template_types.h",
@@ -25111,19 +25112,52 @@ def test_time_trial_replays_inline_course_record_ownership() -> None:
         assert "char* course_name;" in header
         assert "unknown_04[0x10 - 0x04]" in header
         assert "TimeTrialCourseRecord_must_be_0x10" in header
-        assert "TimeTrial_must_be_0x330" in header
+
+    assert "TimeTrial_must_be_0x330" in match_header
+    assert "typedef cRTimeTrial TimeTrial;" in match_header
 
     for header in analysis_headers:
+        assert "typedef struct cRTimeTrial {" in header
+        assert "typedef struct TimeTrial {" not in header
+        assert "cRTimeTrial_must_be_0x330" in header
         assert (
             "TimeTrialCourseRecord course_records["
             "TIME_TRIAL_COURSE_RECORD_COUNT];"
         ) in header
 
+    for header in analysis_headers[1:]:
+        assert "cRTimeTrial time_trial;" in header
+
+    focused_binja_sync = (
+        BINJA_DIR / "sync_time_trial_types.py"
+    ).read_text(encoding="utf-8")
+    focused_ida_sync = (
+        IDA_DIR / "apply_time_trial_types.py"
+    ).read_text(encoding="utf-8")
+    ida_runner = (
+        IDA_DIR / "sync_time_trial_types.py"
+    ).read_text(encoding="utf-8")
+    for source in (focused_binja_sync, focused_ida_sync):
+        assert (
+            "char* __thiscall format_time_trial_string("
+            "cRTimeTrial* time_trial, cRTime* timer)"
+        ) in source
+        assert '("TimeTrial", "cRTimeTrial"' in source
+    assert '("0xff25e0", "time_trial", "cRTimeTrial")' in focused_binja_sync
+    assert '("0xff2910", "path_manager", "cRPathManager")' in focused_binja_sync
+    assert "EXPECTED_OWNER_EDGES" in focused_ida_sync
+    assert "following_path_manager" in focused_ida_sync
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/time_trial_types.h"'
+        in ida_runner
+    )
+
     runtime_sync = (
         BINJA_DIR / "sync_subgame_runtime_types.py"
     ).read_text(encoding="utf-8")
     assert "ensure_time_trial_owner_types" in runtime_sync
-    assert 'type_names = ("TimeTrialCourseRecord", "TimeTrial")' in runtime_sync
+    assert 'type_names = ("TimeTrialCourseRecord", "cRTimeTrial")' in runtime_sync
+    assert '("TimeTrial", "cRTimeTrial")' in runtime_sync
     assert "current_header_type_equivalence" in runtime_sync
     assert "types_declare_missing_only" in runtime_sync
 
@@ -25131,14 +25165,31 @@ def test_time_trial_replays_inline_course_record_ownership() -> None:
         BINJA_DIR / "sync_path_template_types.py"
     ).read_text(encoding="utf-8")
     assert '"TimeTrialCourseRecord",' in path_sync
-    assert '"TimeTrial",' in path_sync
+    assert '"cRTimeTrial",' in path_sync
+    assert "ensure_time_trial_owner_type" in path_sync
+    assert "verify_time_trial_owner_sizes" in path_sync
 
     ida_sync = (
         IDA_DIR / "apply_subgame_runtime_types.py"
     ).read_text(encoding="utf-8")
     assert "TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE = 0x10" in ida_sync
     assert "TIME_TRIAL_EXPECTED_SIZE = 0x330" in ida_sync
+    assert '("TimeTrial", "cRTimeTrial", 0x330)' in ida_sync
     assert "_time_trial_owner_readback" in ida_sync
+
+    ida_path_sync = (
+        IDA_DIR / "apply_path_template_types.py"
+    ).read_text(encoding="utf-8")
+    assert "TIME_TRIAL_OWNER_TYPE_ALIASES" in ida_path_sync
+    assert "_time_trial_owner_layout_readback" in ida_path_sync
+
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+    assert (
+        "format_time_trial_string(cRTimeTrial *time_trial, cRTime *timer)"
+        in health_checks
+    )
 
 
 def test_help_lifecycle_owner_replays_cross_decompiler() -> None:

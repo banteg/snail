@@ -22848,7 +22848,7 @@
       "name": "ida_time_trial_formatter_owner",
       "artifact": "analysis/decompile/ida/functions/00448960-format_time_trial_string.c",
       "required_substrings": [
-        "char *__thiscall format_time_trial_string(TimeTrial *time_trial, cRTime *timer)",
+        "char *__thiscall format_time_trial_string(cRTimeTrial *time_trial, cRTime *timer)",
         "timer->total_seconds",
         "timer->minutes",
         "timer->seconds",
@@ -22856,6 +22856,7 @@
         "timer->display_hundredths"
       ],
       "forbidden_substrings": [
+        "format_time_trial_string(TimeTrial *time_trial",
         "format_time_trial_string(TimeTrial *time_trial, Time *timer)",
         "arg1["
       ]

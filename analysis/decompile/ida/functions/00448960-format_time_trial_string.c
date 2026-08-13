@@ -2,8 +2,8 @@
 /* function: format_time_trial_string @ 0x448960 */
 /* selector: format_time_trial_string */
 
-// Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte TimeTrial owner embedded at cRSubGame +0xff25e0, although the body does not read receiver fields.
-char *__thiscall format_time_trial_string(TimeTrial *time_trial, cRTime *timer)
+// Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte cRTimeTrial owner embedded at cRSubGame +0xff25e0, although the body does not read receiver fields.
+char *__thiscall format_time_trial_string(cRTimeTrial *time_trial, cRTime *timer)
 {
   if ( timer->total_seconds == 0.0 )
   {

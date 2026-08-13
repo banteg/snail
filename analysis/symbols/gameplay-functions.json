@@ -4609,7 +4609,7 @@
     {
       "address": "0x448960",
       "name": "format_time_trial_string",
-      "description": "Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte TimeTrial owner embedded at cRSubGame +0xff25e0, although the body does not read receiver fields."
+      "description": "Implements `cRTimeTrial::TimeString(cRTime&)`: formats one authored cRTime value into the shared Time Trial HUD buffer. The receiver is the exact 0x330-byte cRTimeTrial owner embedded at cRSubGame +0xff25e0, although the body does not read receiver fields."
     },
     {
       "address": "0x4489e0",

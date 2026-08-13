@@ -600,7 +600,7 @@ TIME_OWNER_MARKERS = (
     "cRTime active_level_timer;",
     "void __thiscall zero_timer_counters(cRTime* time);",
     "void __thiscall advance_timer_counters(cRTime* time, float delta_ticks);",
-    "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer);",
+    "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer);",
 )
 
 TIME_OWNER_SIZES = {
@@ -618,6 +618,63 @@ EXPECTED_TIME_OWNER_LAYOUT = {
         0x0C: (0x04, "display_hundredths", "int32_t"),
         0x10: (0x04, "display_thousandths", "int32_t"),
         0x14: (0x04, "second_fraction", "float"),
+    },
+}
+
+TIME_TRIAL_OWNER_MARKERS = (
+    "typedef struct TimeTrialCourseRecord {",
+    "TimeTrialCourseRecord_must_be_0x10",
+    "typedef struct cRTimeTrial {",
+    "} cRTimeTrial;",
+    "cRTimeTrial_must_be_0x330",
+    "cRTimeTrial time_trial;",
+    "cRPathManager path_manager;",
+    "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer);",
+)
+
+TIME_TRIAL_OWNER_SIZES = {
+    "TimeTrialCourseRecord": 0x10,
+    "cRTimeTrial": 0x330,
+}
+
+TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
+
+EXPECTED_TIME_TRIAL_OWNER_LAYOUTS = {
+    "TimeTrialCourseRecord": {
+        "size": 0x10,
+        "members": {
+            0x00: (0x04, "course_name", "char *"),
+            0x04: (0x0C, "unknown_04", "uint8_t[12]"),
+        },
+    },
+    "cRTimeTrial": {
+        "size": 0x330,
+        "members": {
+            0x00: (0x330, "course_records", "TimeTrialCourseRecord[51]"),
+        },
+    },
+}
+
+EXPECTED_TIME_TRIAL_OWNER_EDGES = {
+    "subgame_embed": {
+        "struct": "cRSubGame",
+        "offset": 0xFF25E0,
+        "expected": {
+            "offset": "0xff25e0",
+            "size": 0x330,
+            "name": "time_trial",
+            "type": "cRTimeTrial",
+        },
+    },
+    "following_path_manager": {
+        "struct": "cRSubGame",
+        "offset": 0xFF2910,
+        "expected": {
+            "offset": "0xff2910",
+            "size": 0x01,
+            "name": "path_manager",
+            "type": "cRPathManager",
+        },
     },
 }
 
@@ -3069,7 +3126,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer);",
+        "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer);",
     ),
     (
         "advance_frame_sequence",
@@ -5662,6 +5719,70 @@ def _time_owner_layout_readback() -> dict[str, object]:
     }
 
 
+def _time_trial_owner_layout_readback() -> dict[str, object]:
+    """Verify the canonical course records, owner, and cRSubGame boundary."""
+    types = {}
+    failures: list[dict[str, object]] = []
+    for type_name, expected in EXPECTED_TIME_TRIAL_OWNER_LAYOUTS.items():
+        observed_size = _named_struct_size(type_name)
+        observed_members = {
+            hex(offset): _named_struct_member_readback(type_name, offset)
+            for offset in expected["members"]
+        }
+        types[type_name] = {
+            "size": observed_size,
+            "members": observed_members,
+        }
+        if observed_size != expected["size"]:
+            failures.append(
+                {
+                    "selector": type_name,
+                    "owner_group": "time_trial",
+                    "reason": "owner_size_mismatch",
+                    "expected": expected["size"],
+                    "observed": observed_size,
+                }
+            )
+        for offset, (size, name, type_text) in expected["members"].items():
+            expected_member = {
+                "offset": hex(offset),
+                "size": size,
+                "name": name,
+                "type": _normalize_udt_type(type_text),
+            }
+            observed_member = observed_members[hex(offset)]
+            if observed_member != expected_member:
+                failures.append(
+                    {
+                        "selector": f"{type_name}.{name}",
+                        "owner_group": "time_trial",
+                        "reason": "owner_member_mismatch",
+                        "expected": expected_member,
+                        "observed": observed_member,
+                    }
+                )
+
+    edges = {}
+    for edge_name, edge in EXPECTED_TIME_TRIAL_OWNER_EDGES.items():
+        observed = _named_struct_member_readback(edge["struct"], edge["offset"])
+        edges[edge_name] = observed
+        if observed != edge["expected"]:
+            failures.append(
+                {
+                    "selector": f"{edge['struct']}.{edge_name}",
+                    "owner_group": "time_trial",
+                    "reason": "owner_edge_mismatch",
+                    "expected": edge["expected"],
+                    "observed": observed,
+                }
+            )
+    return {
+        "types": types,
+        "edges": edges,
+        "failures": failures,
+    }
+
+
 def _times_up_owner_layout_readback() -> dict[str, object]:
     """Verify the complete canonical cRTimesUp owner and cRSubGame embed."""
     type_name = "cRTimesUp"
@@ -6187,6 +6308,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in TIME_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_time_trial_owner_markers = [
+        marker
+        for marker in TIME_TRIAL_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_times_up_owner_markers = [
         marker
         for marker in TIMES_UP_OWNER_MARKERS
@@ -6246,6 +6372,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_snail_skin_owner_markers
         or missing_anim_manager_owner_markers
         or missing_time_owner_markers
+        or missing_time_trial_owner_markers
         or missing_times_up_owner_markers
         or missing_warning_owner_markers
         or missing_tip_owner_markers
@@ -6302,6 +6429,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if missing_time_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_time_owner_header"}
+            )
+        if missing_time_trial_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_time_trial_owner_header"}
             )
         if missing_times_up_owner_markers:
             marker_failures.append(
@@ -6371,6 +6502,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         missing_anim_manager_owner_markers
                     ),
                     "missing_time_owner_markers": missing_time_owner_markers,
+                    "missing_time_trial_owner_markers": (
+                        missing_time_trial_owner_markers
+                    ),
                     "missing_times_up_owner_markers": (
                         missing_times_up_owner_markers
                     ),
@@ -6522,6 +6656,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in time_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    time_trial_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(TIME_TRIAL_OWNER_TYPE_ALIASES)
+    )
+    time_trial_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "time_trial",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in time_trial_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     times_up_owner_type_alias_migrations = (
@@ -6712,6 +6861,19 @@ def _sync_types(header_path: pathlib.Path) -> int:
         }
         if parse_errors or time_owner_type_alias_failures
         else _time_owner_layout_readback()
+    )
+    time_trial_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in TIME_TRIAL_OWNER_SIZES
+    }
+    time_trial_owner_layout_readback = (
+        {
+            "types": {},
+            "edges": {},
+            "failures": [],
+        }
+        if parse_errors or time_trial_owner_type_alias_failures
+        else _time_trial_owner_layout_readback()
     )
     times_up_owner_sizes = {
         name: _named_struct_size(name)
@@ -6943,6 +7105,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in TIME_OWNER_SIZES.items()
         if time_owner_sizes[name] != expected_size
     ]
+    time_trial_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "time_trial",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": time_trial_owner_sizes[name],
+        }
+        for name, expected_size in TIME_TRIAL_OWNER_SIZES.items()
+        if time_trial_owner_sizes[name] != expected_size
+    ]
     times_up_owner_size_failures = [
         {
             "selector": name,
@@ -7019,6 +7192,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + anim_manager_owner_layout_readback["failures"]
         + time_owner_size_failures
         + time_owner_layout_readback["failures"]
+        + time_trial_owner_size_failures
+        + time_trial_owner_layout_readback["failures"]
         + times_up_owner_size_failures
         + times_up_owner_layout_readback["failures"]
         + warning_owner_size_failures
@@ -7150,6 +7325,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or snail_skin_owner_type_alias_failures
         or anim_manager_owner_type_alias_failures
         or time_owner_type_alias_failures
+        or time_trial_owner_type_alias_failures
         or times_up_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
@@ -7185,6 +7361,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "time_owner_type_alias_migrations": (
                         time_owner_type_alias_migrations
+                    ),
+                    "time_trial_owner_type_alias_migrations": (
+                        time_trial_owner_type_alias_migrations
                     ),
                     "times_up_owner_type_alias_migrations": (
                         times_up_owner_type_alias_migrations
@@ -7228,6 +7407,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "time_owner_sizes": time_owner_sizes,
                     "time_owner_layout_readback": time_owner_layout_readback,
+                    "time_trial_owner_sizes": time_trial_owner_sizes,
+                    "time_trial_owner_layout_readback": (
+                        time_trial_owner_layout_readback
+                    ),
                     "times_up_owner_sizes": times_up_owner_sizes,
                     "times_up_owner_layout_readback": (
                         times_up_owner_layout_readback
@@ -7261,6 +7444,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         + snail_skin_owner_type_alias_failures
                         + anim_manager_owner_type_alias_failures
                         + time_owner_type_alias_failures
+                        + time_trial_owner_type_alias_failures
                         + times_up_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
@@ -8002,6 +8186,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "time_owner_type_alias_migrations": (
                     time_owner_type_alias_migrations
                 ),
+                "time_trial_owner_type_alias_migrations": (
+                    time_trial_owner_type_alias_migrations
+                ),
                 "times_up_owner_type_alias_migrations": (
                     times_up_owner_type_alias_migrations
                 ),
@@ -8042,6 +8229,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 ),
                 "time_owner_sizes": time_owner_sizes,
                 "time_owner_layout_readback": time_owner_layout_readback,
+                "time_trial_owner_sizes": time_trial_owner_sizes,
+                "time_trial_owner_layout_readback": (
+                    time_trial_owner_layout_readback
+                ),
                 "times_up_owner_sizes": times_up_owner_sizes,
                 "times_up_owner_layout_readback": (
                     times_up_owner_layout_readback

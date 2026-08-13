@@ -385,11 +385,11 @@ typedef char TimeTrialCourseRecord_must_be_0x10[
     (sizeof(TimeTrialCourseRecord) == 0x10) ? 1 : -1
 ];
 
-typedef struct TimeTrial {
+typedef struct cRTimeTrial {
     TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];
-} TimeTrial;
-typedef char TimeTrial_must_be_0x330[
-    (sizeof(TimeTrial) == 0x330) ? 1 : -1
+} cRTimeTrial;
+typedef char cRTimeTrial_must_be_0x330[
+    (sizeof(cRTimeTrial) == 0x330) ? 1 : -1
 ];
 
 typedef struct GUI {
@@ -563,7 +563,7 @@ typedef struct cRSubGame {
     SubSolution* selected_level_record;
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
-    TimeTrial time_trial;
+    cRTimeTrial time_trial;
     uint8_t unknown_ff2910[0x125e480 - 0xff2910];
     ParcelManager parcel_manager;
     float garbage_frequency;

@@ -1242,11 +1242,11 @@ typedef char TimeTrialCourseRecord_must_be_0x10[
 ];
 
 /* Exact 0x330-byte authored cRTimeTrial owner. */
-typedef struct TimeTrial {
+typedef struct cRTimeTrial {
     TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];
-} TimeTrial;
-typedef char TimeTrial_must_be_0x330[
-    (sizeof(TimeTrial) == 0x330) ? 1 : -1
+} cRTimeTrial;
+typedef char cRTimeTrial_must_be_0x330[
+    (sizeof(cRTimeTrial) == 0x330) ? 1 : -1
 ];
 
 /* Exact 0x3c-byte authored cRBarrier tutorial actor. */
@@ -2705,7 +2705,7 @@ typedef struct cRSubGame {
     SubSolution* selected_level_record;
     int32_t selected_level_record_cursor;
     int32_t replay_update_cursor;
-    TimeTrial time_trial;
+    cRTimeTrial time_trial;
     cRPathManager path_manager;
     uint8_t _pad_ff2911[0xff2914 - 0xff2911];
     PathPair path_pairs[63];
@@ -2955,7 +2955,7 @@ void __thiscall initialize_anim_manager(cRAnimManager* manager);
 void __thiscall update_anim_manager(cRAnimManager* manager);
 void __thiscall zero_timer_counters(cRTime* time);
 void __thiscall advance_timer_counters(cRTime* time, float delta_ticks);
-char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer);
+char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer);
 void __thiscall advance_frame_sequence(Movie* movie);
 void __thiscall update_smtracks(Face* face);
 void __cdecl sample_smtrack_heightmap(

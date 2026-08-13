@@ -119,6 +119,7 @@ GALAXY_OWNER_TYPE_ALIASES = (
 
 TIMES_UP_OWNER_TYPE_ALIASES = (("TimesUp", "cRTimesUp", 0x10),)
 TIME_OWNER_TYPE_ALIASES = (("Time", "cRTime", 0x18),)
+TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
 
 TIMES_UP_OWNER_EXPECTED_SIZE = 0x10
 TIMES_UP_OWNER_EXPECTED_MEMBERS = (
@@ -592,7 +593,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer);",
+        "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer);",
     ),
     (
         "initialize_help_screen",
@@ -648,6 +649,12 @@ TIME_TRIAL_EXPECTED_SIZE = 0x330
 TIME_TRIAL_EXPECTED_MEMBERS = (
     (0x00, 0x330, "course_records", "TimeTrialCourseRecord[51]"),
 )
+TIME_TRIAL_SUBGAME_EMBED_EXPECTED_MEMBER = (
+    0xFF25E0,
+    0x330,
+    "time_trial",
+    "cRTimeTrial",
+)
 
 
 REQUIRED_CANONICAL_OWNER_MARKERS = (
@@ -661,7 +668,10 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "cRSubLoc runtime_cells[3200][8];",
     "SubRow runtime_rows[3200];",
     "SubSolution* selected_level_record;",
+    "typedef struct cRTimeTrial {",
     "TimeTrialCourseRecord course_records[TIME_TRIAL_COURSE_RECORD_COUNT];",
+    "cRTimeTrial_must_be_0x330",
+    "cRTimeTrial time_trial;",
     "Help_must_be_0x04",
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
@@ -1032,7 +1042,7 @@ def _time_trial_owner_readback() -> dict[str, object]:
         for member in selected_course_record_members
     )
 
-    owner_members = _named_struct_members("TimeTrial")
+    owner_members = _named_struct_members("cRTimeTrial")
     selected_owner_members = (
         []
         if owner_members is None
@@ -1053,7 +1063,28 @@ def _time_trial_owner_readback() -> dict[str, object]:
         for member in selected_owner_members
     )
     course_record_size = _named_struct_size("TimeTrialCourseRecord")
-    owner_size = _named_struct_size("TimeTrial")
+    owner_size = _named_struct_size("cRTimeTrial")
+    subgame_members = _named_struct_members("cRSubGame")
+    selected_subgame_members = (
+        []
+        if subgame_members is None
+        else [
+            member
+            for member in subgame_members
+            if int(member["offset"])
+            == TIME_TRIAL_SUBGAME_EMBED_EXPECTED_MEMBER[0]
+        ]
+    )
+    observed_subgame_members = tuple(
+        (
+            int(member["offset"]),
+            int(member["size"]),
+            str(member["name"]),
+            str(member["type"]),
+        )
+        for member in selected_subgame_members
+    )
+    expected_subgame_members = (TIME_TRIAL_SUBGAME_EMBED_EXPECTED_MEMBER,)
     return {
         "status": (
             "verified"
@@ -1062,12 +1093,14 @@ def _time_trial_owner_readback() -> dict[str, object]:
             == TIME_TRIAL_COURSE_RECORD_EXPECTED_MEMBERS
             and owner_size == TIME_TRIAL_EXPECTED_SIZE
             and observed_owner_members == TIME_TRIAL_EXPECTED_MEMBERS
+            and observed_subgame_members == expected_subgame_members
             else "failed"
         ),
         "course_record_size": course_record_size,
         "course_record_members": selected_course_record_members,
         "owner_size": owner_size,
         "owner_members": selected_owner_members,
+        "subgame_members": selected_subgame_members,
         "expected_course_record_size": TIME_TRIAL_COURSE_RECORD_EXPECTED_SIZE,
         "expected_course_record_members": [
             {
@@ -1089,6 +1122,16 @@ def _time_trial_owner_readback() -> dict[str, object]:
             }
             for offset, member_size, member_name, member_type
             in TIME_TRIAL_EXPECTED_MEMBERS
+        ],
+        "expected_subgame_members": [
+            {
+                "offset": offset,
+                "size": member_size,
+                "name": member_name,
+                "type": member_type,
+            }
+            for offset, member_size, member_name, member_type
+            in expected_subgame_members
         ],
     }
 
@@ -1989,6 +2032,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             (
                 *GALAXY_OWNER_TYPE_ALIASES,
                 *TIME_OWNER_TYPE_ALIASES,
+                *TIME_TRIAL_OWNER_TYPE_ALIASES,
                 *TIMES_UP_OWNER_TYPE_ALIASES,
             )
         )
@@ -2485,7 +2529,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
     if time_trial_owner_readback["status"] != "verified":
         failed.append(
             {
-                "selector": "TimeTrial",
+                "selector": "cRTimeTrial",
                 "owner_readback": time_trial_owner_readback,
             }
         )
@@ -2562,7 +2606,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "TimeTrialCourseRecord": _named_struct_size(
                         "TimeTrialCourseRecord"
                     ),
-                    "TimeTrial": _named_struct_size("TimeTrial"),
+                    "cRTimeTrial": _named_struct_size("cRTimeTrial"),
                     "SubRingStar": _named_struct_size("SubRingStar"),
                     "SubRing": _named_struct_size("SubRing"),
                     "SubRingPool": _named_struct_size("SubRingPool"),

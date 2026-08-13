@@ -182,6 +182,20 @@ TIME_REANALYSIS_FUNCTIONS = (
     "update_subgoldy",
 )
 
+TIME_TRIAL_OWNER_SIZES = {
+    "TimeTrialCourseRecord": 0x10,
+    "cRTimeTrial": 0x330,
+}
+
+TIME_TRIAL_OWNER_TYPE_RENAMES = (("TimeTrial", "cRTimeTrial"),)
+
+TIME_TRIAL_REANALYSIS_FUNCTIONS = (
+    "format_time_trial_string",
+    "update_challenge_setup_screen",
+    "initialize_subgame",
+    "update_subgame",
+)
+
 TIMES_UP_OWNER_SIZES = {
     "cRTimesUp": 0x10,
 }
@@ -473,6 +487,15 @@ TIME_FIELD_UPDATES = (
     ("0x14", "second_fraction", "float"),
 )
 
+TIME_TRIAL_COURSE_RECORD_FIELD_UPDATES = (
+    ("0x00", "course_name", "char*"),
+    ("0x04", "unknown_04", "uint8_t[0xc]"),
+)
+
+TIME_TRIAL_FIELD_UPDATES = (
+    ("0x00", "course_records", "TimeTrialCourseRecord[0x33]"),
+)
+
 INVINCIBLE_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x80", "state", "InvincibleState"),
@@ -703,7 +726,8 @@ REQUIRED_HEADER_STRUCTS = (
     "CompactHighScoreRecord",
     "SubTracks",
     "SlugVoiceManager",
-    "TimeTrial",
+    "TimeTrialCourseRecord",
+    "cRTimeTrial",
     "SnailVisual",
     "BodNode",
     "BodList",
@@ -803,7 +827,7 @@ def ensure_path_analysis_views(
     """Replace mutable views and recovered inline owners when their shape changes."""
     type_names = (
         "TimeTrialCourseRecord",
-        "TimeTrial",
+        "cRTimeTrial",
         "PresentationWobbleController",
         "PresentationAnimationObjectStrideCursor",
         "PathTemplateSamplePairCursorView",
@@ -1373,6 +1397,82 @@ def ensure_time_owner_type(
             "type_equivalence": {
                 name: type_equivalence.get(name, False)
                 for name in TIME_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
+
+
+def verify_time_trial_owner_sizes(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRTimeTrial receiver ABI."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIME_TRIAL_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in TIME_TRIAL_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRTimeTrial owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "time_trial",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_time_trial_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire TimeTrial only when both canonical record layouts are exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=TIME_TRIAL_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=TIME_TRIAL_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in TIME_TRIAL_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=TIME_TRIAL_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: TIME_TRIAL_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRTimeTrial owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": TIME_TRIAL_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in TIME_TRIAL_OWNER_SIZES
             },
         }
     return [*operations, type_operation]
@@ -3862,7 +3962,7 @@ SUBGAME_RUNTIME_FIELD_UPDATES = (
     ("0xff25d4", "selected_level_record", "SubSolution*"),
     ("0xff25d8", "selected_level_record_cursor", "int32_t"),
     ("0xff25dc", "replay_update_cursor", "int32_t"),
-    ("0xff25e0", "time_trial", "TimeTrial"),
+    ("0xff25e0", "time_trial", "cRTimeTrial"),
     ("0xff2910", "path_manager", "cRPathManager"),
     ("0xff2914", "path_pairs", "PathPair[63]"),
     ("0xff7bc4", "barrier", "BarrierActor"),
@@ -5132,7 +5232,7 @@ PROTO_UPDATES = (
     ),
     (
         "format_time_trial_string",
-        "char* __thiscall format_time_trial_string(TimeTrial* time_trial, cRTime* timer)",
+        "char* __thiscall format_time_trial_string(cRTimeTrial* time_trial, cRTime* timer)",
     ),
     (
         "advance_frame_sequence",
@@ -7175,6 +7275,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_time_trial_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_times_up_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -7239,6 +7345,7 @@ def main() -> int:
         operations.append(verify_snail_skin_owner_size(target=args.target))
         operations.append(verify_anim_manager_owner_size(target=args.target))
         operations.append(verify_time_owner_size(target=args.target))
+        operations.append(verify_time_trial_owner_sizes(target=args.target))
         operations.append(verify_times_up_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
@@ -7393,6 +7500,11 @@ def main() -> int:
                 ("Weapon", WEAPON_FIELD_UPDATES),
                 ("cRAnimManager", ANIM_MANAGER_FIELD_UPDATES),
                 ("cRTime", TIME_FIELD_UPDATES),
+                (
+                    "TimeTrialCourseRecord",
+                    TIME_TRIAL_COURSE_RECORD_FIELD_UPDATES,
+                ),
+                ("cRTimeTrial", TIME_TRIAL_FIELD_UPDATES),
                 ("Invincible", INVINCIBLE_FIELD_UPDATES),
                 ("Cameraman", CAMERAMAN_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),
@@ -7452,6 +7564,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=TIME_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=TIME_TRIAL_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(
