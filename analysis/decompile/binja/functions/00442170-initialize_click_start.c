@@ -12,13 +12,13 @@
 004421e4        click_start->hide_prompt = 1
 004421ed        click_start->owner_player = player
 004421f3        if ((0x200 & list_flags) == 0)
-00442209        struct ClickStart** eax_2 = &g_game_base->active_bod_list.first
-0044220e        struct ClickStart* ecx_5 = *eax_2
+00442209        struct cRClickStart** eax_2 = &g_game_base->active_bod_list.first
+0044220e        struct cRClickStart* ecx_5 = *eax_2
 00442212        if (ecx_5 != 0)
 00442220        ecx_5->bod.bod.bod.list_prev = click_start
-00442223        struct ClickStart* ecx_6 = *eax_2
+00442223        struct cRClickStart* ecx_6 = *eax_2
 00442229        ecx_6->bod.bod.bod.list_prev->list_next = ecx_6
-0044222f        struct ClickStart* list_prev = (*eax_2)->bod.bod.bod.list_prev
+0044222f        struct cRClickStart* list_prev = (*eax_2)->bod.bod.bod.list_prev
 00442232        *eax_2 = list_prev
 00442234        list_prev->bod.bod.bod.list_prev = nullptr
 00442214        *eax_2 = click_start

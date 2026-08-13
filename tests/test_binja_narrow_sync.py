@@ -7888,6 +7888,18 @@ def test_track_render_cache_slot_owns_active_bod_lifecycle() -> None:
 
 def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     repo_root = Path(__file__).parents[1]
+    focused_binja_sync = (BINJA_DIR / "sync_click_start_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_sync = (IDA_DIR / "apply_click_start_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_runner = (IDA_DIR / "sync_click_start_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_subgame_sync = (IDA_DIR / "apply_subgame_runtime_types.py").read_text(
+        encoding="utf-8"
+    )
     path_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
         encoding="utf-8"
     )
@@ -7895,6 +7907,9 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
         encoding="utf-8"
     )
     path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    focused_header = (HEADER_DIR / "click_start_types.h").read_text(
         encoding="utf-8"
     )
     click_matcher = (repo_root / "tools/match/include/click_start.h").read_text(
@@ -7912,9 +7927,9 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     assert '"--landscape-loader-only"' in path_sync
 
     declarations = (
-        "ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start)",
-        "void __thiscall initialize_click_start(ClickStart* click_start, Player* player)",
-        "void __thiscall update_click_start(ClickStart* click_start)",
+        "cRClickStart* __thiscall initialize_click_start_controller_runtime(cRClickStart* click_start)",
+        "void __thiscall initialize_click_start(cRClickStart* click_start, Player* player)",
+        "void __thiscall update_click_start(cRClickStart* click_start)",
         "ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(ActiveLandscapeEntry* active_entry)",
         "void __thiscall reset_landscape_manager(LandscapeManager* manager)",
         "void __thiscall activate_landscape_entry(LandscapeManager* manager, int32_t script_index)",
@@ -7925,6 +7940,10 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     for declaration in declarations:
         assert declaration in path_sync
         assert declaration + ";" in ida_sync
+
+    for declaration in declarations[:3]:
+        assert declaration in focused_binja_sync
+        assert declaration + ";" in focused_ida_sync
 
     for function_name in (
         "initialize_click_start_controller_runtime",
@@ -7942,6 +7961,21 @@ def test_click_start_and_landscape_lifecycle_replay_share_real_owners() -> None:
     assert "class cRClickStart : public RenderableBod" in click_matcher
     assert "typedef cRClickStart ClickStart;" in click_matcher
     assert "cRSubGoldy* owner_player" in click_matcher
+    for header in (focused_header, path_header):
+        assert "typedef struct cRClickStart" in header
+        assert "typedef struct ClickStart" not in header
+        assert "cRClickStart_must_be_0xac" in header
+    assert '("ClickStart", "cRClickStart")' in focused_binja_sync
+    assert '("ClickStart", "cRClickStart", 0xAC)' in focused_ida_sync
+    assert '("0xa0", "click_start", "cRClickStart")' in focused_binja_sync
+    assert '"player_embed"' in focused_ida_sync
+    assert '"following_cutscene_flag"' in focused_ida_sync
+    assert '"following_nuke"' in focused_ida_sync
+    assert '("ClickStart", "cRClickStart")' in path_sync
+    assert "CLICK_START_OWNER_TYPE_ALIASES" in ida_sync
+    assert '("ClickStart", "cRClickStart", 0xAC)' in ida_subgame_sync
+    assert '"cRClickStart_must_be_0xac"' in ida_subgame_sync
+    assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/click_start_types.h"' in focused_ida_runner
     assert "class ActiveLandscapeEntry : public RenderableBod" in landscape_matcher
     assert "RenderableBod* reference_bod" in landscape_matcher
     for address in (
@@ -15253,7 +15287,7 @@ def test_click_start_state_ownership_stays_aligned() -> None:
     assert '"ClickStartState",' in path_sync
     assert '("0x80", "state", "ClickStartState")' in path_sync
     assert '("0x98", "owner_player", "Player*")' in path_sync
-    assert '("ClickStart", CLICK_START_FIELD_UPDATES)' in path_sync
+    assert '("cRClickStart", CLICK_START_FIELD_UPDATES)' in path_sync
     for header in (analysis_header, matcher_header):
         assert "CLICK_START_STATE_INACTIVE = 0" in header
         assert "CLICK_START_STATE_UNKNOWN_1 = 1" in header

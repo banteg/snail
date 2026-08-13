@@ -2,7 +2,11 @@
 #define CLICK_START_TYPES_H
 
 typedef unsigned char uint8_t;
+typedef unsigned int uint32_t;
 typedef int int32_t;
+
+typedef struct Object Object;
+typedef struct cRAnimManager cRAnimManager;
 
 typedef struct Vec3 {
     float x;
@@ -29,23 +33,43 @@ typedef struct TransformMatrix {
 } TransformMatrix;
 
 typedef struct FrontendWidget FrontendWidget;
-
 typedef struct Player Player;
 
-typedef struct ClickStart {
+typedef struct BodNode {
     void* vtable;
-    int32_t list_flags;
-    struct ClickStart* list_prev;
-    struct ClickStart* list_next;
+    uint32_t list_flags;
+    struct BodNode* list_prev;
+    struct BodNode* list_next;
+} BodNode;
+
+typedef struct BodBase {
+    BodNode bod;
     Vec3 position;
     float render_arg_1c;
     float render_arg_20;
-    void* object;
+    Object* object;
     tColour color;
+} BodBase;
+
+typedef struct RenderableBod {
+    BodBase bod;
     TransformMatrix transform;
-    void* render_animation_manager;
-    uint8_t _pad_7c[0x4];
-    int32_t state;
+    cRAnimManager* render_animation_manager;
+    int32_t frame_number;
+} RenderableBod;
+
+typedef enum ClickStartState {
+    CLICK_START_STATE_INACTIVE = 0,
+    CLICK_START_STATE_UNKNOWN_1 = 1,
+    CLICK_START_STATE_WAITING_FOR_START = 2,
+    CLICK_START_STATE_START_PENDING = 3,
+    CLICK_START_STATE_TEARDOWN = 4,
+} ClickStartState;
+
+/* Exact Windows cRClickStart child embedded at Player +0xa0. */
+typedef struct cRClickStart {
+    RenderableBod bod;
+    ClickStartState state;
     FrontendWidget* prompt;
     float teardown_progress;
     float teardown_progress_step;
@@ -54,13 +78,9 @@ typedef struct ClickStart {
     uint8_t _pad_9c[0xc];
     uint8_t hide_prompt;
     uint8_t _pad_a9[0x3];
-} ClickStart;
+} cRClickStart;
 
-struct Player {
-    uint8_t _pad_000[0xa0];
-    ClickStart click_start;
-    uint8_t _pad_14c[0x304 - 0x14c];
-    int32_t replay_start_cursor;
-};
+typedef char cRClickStart_must_be_0xac[
+    (sizeof(cRClickStart) == 0xac) ? 1 : -1];
 
 #endif

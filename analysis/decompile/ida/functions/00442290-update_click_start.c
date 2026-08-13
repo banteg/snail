@@ -3,7 +3,7 @@
 /* selector: update_click_start */
 
 // Windows `ClickStart::update_click_start`, authored as `cRClickStart::AI`: advances the prompt hide gate and selected-replay or player-confirm handoff through `cRSubGame`'s replay record/cursor fields, updates the working `SubSolution` run flags and parent startup index, recenters both pointers, plays SFX 8, and recycles the embedded RenderableBod child through `GameRoot::active_bod_list`.
-void __thiscall update_click_start(ClickStart *click_start)
+void __thiscall update_click_start(cRClickStart *click_start)
 {
   FrontendWidget *prompt; // ecx
   GameRoot *v3; // eax

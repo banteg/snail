@@ -2140,7 +2140,7 @@ typedef enum ClickStartState {
 } ClickStartState;
 
 /* Authored cRClickStart, exact 0xac-byte RenderableBod child. */
-typedef struct ClickStart {
+typedef struct cRClickStart {
     RenderableBod bod;
     ClickStartState state;
     FrontendWidget* prompt;
@@ -2151,7 +2151,10 @@ typedef struct ClickStart {
     uint8_t _pad_9c[0xc];
     uint8_t hide_prompt;
     uint8_t _pad_a9[0x3];
-} ClickStart;
+} cRClickStart;
+
+typedef char cRClickStart_must_be_0xac[
+    (sizeof(cRClickStart) == 0xac) ? 1 : -1];
 
 /* Authored tutorial-message owner family recovered from cRTipData, cRTip,
  * and cRTipManager mobile symbols and the exact Windows storage graph. */
@@ -2526,7 +2529,7 @@ typedef struct Player {
     uint8_t _pad_94[0x4];
     Sprite* ghost_sprite_a;
     Sprite* ghost_sprite_b;
-    ClickStart click_start;
+    cRClickStart click_start;
     uint8_t row_event_cutscene_started;
     uint8_t _pad_14d[0x3];
     cRNuke nuke;
@@ -2881,9 +2884,11 @@ cRFringe* __thiscall initialize_fringe_object(cRFringe* fringe);
 void __thiscall refresh_fringe_object_draw_list(cRFringe* fringe);
 void __thiscall initialize_fringe_manager(cRFringeManager* manager);
 cRFringe* __thiscall allocate_fringe_object(cRFringeManager* manager);
-ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start);
-void __thiscall initialize_click_start(ClickStart* click_start, Player* player);
-void __thiscall update_click_start(ClickStart* click_start);
+cRClickStart* __thiscall initialize_click_start_controller_runtime(
+    cRClickStart* click_start
+);
+void __thiscall initialize_click_start(cRClickStart* click_start, Player* player);
+void __thiscall update_click_start(cRClickStart* click_start);
 ActiveLandscapeEntry* __thiscall initialize_active_landscape_entry(
     ActiveLandscapeEntry* active_entry
 );

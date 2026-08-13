@@ -3,7 +3,7 @@
 /* selector: initialize_click_start */
 
 // Exact Windows `ClickStart::initialize_click_start`, authored as `cRClickStart::Init(cRSubGoldy*)`: initializes the 0xac-byte child at Player +0xa0, stores its borrowed Player backlink, links it through `GameRoot::active_bod_list`, seeds the prompt and state, and applies `cRSubGame::replay_launch_active` as the initial hide gate.
-void __thiscall initialize_click_start(ClickStart *click_start, Player *player)
+void __thiscall initialize_click_start(cRClickStart *click_start, Player *player)
 {
   tColour *v3; // eax
   uint32_t list_flags; // eax

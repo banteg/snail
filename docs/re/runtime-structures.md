@@ -18,8 +18,9 @@ The current high-confidence `Player` fields are:
 - `+0x90`: `resurrect_progress_step`
 - `+0x98`: `ghost_sprite_a`
 - `+0x9c`: `ghost_sprite_b`
-- `+0xa0`: exact `0xac`-byte primary `cRClickStart` child; `ClickStart` remains
-  compatibility/analyzer vocabulary
+- `+0xa0`: exact `0xac`-byte primary `cRClickStart` child; the generic
+  analysis-only `ClickStart` shell is retired in both decompilers, while the
+  matcher keeps its compatibility typedef for shared source consumers
   - child `+0x80` / Player `+0x120`: `state`, the complete observed
     `ClickStartState` graph: `INACTIVE (0)`, deliberately unresolved
     `UNKNOWN_1 (1)`, `WAITING_FOR_START (2)`, `START_PENDING (3)`, and

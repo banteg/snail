@@ -148,3 +148,10 @@ sole data reference at the constructor-installed table `0x497348`; Android
 and iOS retain the same authored AI owner. State `1` remains deliberately
 `CLICK_START_STATE_UNKNOWN_1` because no recovered writer justifies a role.
 Matching remains exact at 138/138 instructions with all 24 operands clean.
+
+## 2026-08-13 canonical analysis owner
+
+The exact AI receiver is now `cRClickStart*` in both analysis databases. Its
+focused replay retires only the layout-equivalent generic shell, verifies the
+0xac-byte Player embed and adjacent boundaries, and leaves the exact 138/138
+matcher body untouched.

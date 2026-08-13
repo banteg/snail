@@ -166,7 +166,12 @@ Current checked-in example:
     `cRSplash`, then replays the exact void `Init`, `UnInit`, and `AI`
     receivers plus their front-end dispatcher.
 - `click_start_types.h`
+- `uv run python tools/binja/sync_click_start_types.py --target SnailMail_unwrapped.exe.bndb`
 - `uv run python tools/ida/sync_click_start_types.py`
+  - Retires the generic analysis-only `ClickStart` record after exact layout
+    equivalence, verifies the 0xac-byte `cRClickStart` child at `Player +0xa0`
+    between the second ghost sprite and the cutscene flag, then replays the
+    exact constructor, `Init`, and `AI` receiver ABIs.
 - `frontend_replay_types.h`
 - `uv run python tools/ida/sync_frontend_replay_types.py`
   - Migrates the exact 0x48-byte front-end owner from the stale generic

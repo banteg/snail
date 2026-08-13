@@ -2304,7 +2304,7 @@
       "name": "ida_update_click_start_replay_flag_word_owner",
       "artifact": "analysis/decompile/ida/functions/00442290-update_click_start.c",
       "required_substrings": [
-        "void __thiscall update_click_start(ClickStart *click_start)",
+        "void __thiscall update_click_start(cRClickStart *click_start)",
         "click_start->owner_player->replay_start_cursor",
         "CLICK_START_STATE_WAITING_FOR_START",
         "CLICK_START_STATE_TEARDOWN",
@@ -20339,7 +20339,7 @@
       "name": "ida_click_start_constructor_owner_abi",
       "artifact": "analysis/decompile/ida/functions/00408670-initialize_click_start_controller_runtime.c",
       "required_substrings": [
-        "ClickStart *__thiscall initialize_click_start_controller_runtime(ClickStart *click_start)",
+        "cRClickStart *__thiscall initialize_click_start_controller_runtime(cRClickStart *click_start)",
         "initialize_renderable_bod(&click_start->bod)",
         "click_start->bod.bod.bod.vtable",
         "return click_start"
@@ -20370,7 +20370,7 @@
       "name": "ida_click_start_initializer_owner_graph",
       "artifact": "analysis/decompile/ida/functions/00442170-initialize_click_start.c",
       "required_substrings": [
-        "void __thiscall initialize_click_start(ClickStart *click_start, Player *player)",
+        "void __thiscall initialize_click_start(cRClickStart *click_start, Player *player)",
         "click_start->owner_player = player",
         "click_start->state = CLICK_START_STATE_WAITING_FOR_START",
         "&g_game_base->active_bod_list.first"

@@ -47,3 +47,10 @@ This exact leaf now emits `cRClickStart::Init(cRSubGoldy*)` with
 `0x43ad45` passes the embedded child at `cRSubGoldy +0xa0` and that same
 Goldy as the borrowed parent. Android and iOS independently retain the exact
 authored member. Matching remains 79/79 with all 13 operands clean.
+
+## 2026-08-13 canonical analysis owner
+
+Binary Ninja and IDA now persist this receiver as `cRClickStart*`, matching the
+authored mobile identity already used by the exact matcher. The guarded replay
+reads back the complete child, its borrowed `Player*`, and both adjacent Player
+boundaries without changing the 79/79 source.

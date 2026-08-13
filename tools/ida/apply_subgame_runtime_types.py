@@ -20,6 +20,7 @@ from game_root_owner import sync_game_root_owner_graph
 from type_alias_migration import migrate_equivalent_struct_aliases
 
 HELP_OWNER_EXPECTED_SIZE = 0x04
+CLICK_START_OWNER_EXPECTED_SIZE = 0xAC
 SUBGAME_OWNER_EXPECTED_SIZE = 0x1272838
 
 TRUSTED_NAMES = (
@@ -122,6 +123,7 @@ TIME_OWNER_TYPE_ALIASES = (("Time", "cRTime", 0x18),)
 TIME_TRIAL_OWNER_TYPE_ALIASES = (("TimeTrial", "cRTimeTrial", 0x330),)
 GUI_OWNER_TYPE_ALIASES = (("GUI", "cRGUI", 0x28),)
 HELP_OWNER_TYPE_ALIASES = (("Help", "cRHelp", 0x04),)
+CLICK_START_OWNER_TYPE_ALIASES = (("ClickStart", "cRClickStart", 0xAC),)
 
 TIMES_UP_OWNER_EXPECTED_SIZE = 0x10
 TIMES_UP_OWNER_EXPECTED_MEMBERS = (
@@ -675,6 +677,7 @@ REQUIRED_CANONICAL_OWNER_MARKERS = (
     "cRTimeTrial_must_be_0x330",
     "cRTimeTrial time_trial;",
     "cRHelp_must_be_0x04",
+    "cRClickStart_must_be_0xac",
     "Parcel_must_be_0x8c",
     "Parcel slots[50];",
     "ParcelManager_must_be_0x1b58",
@@ -2037,6 +2040,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 *TIME_TRIAL_OWNER_TYPE_ALIASES,
                 *GUI_OWNER_TYPE_ALIASES,
                 *HELP_OWNER_TYPE_ALIASES,
+                *CLICK_START_OWNER_TYPE_ALIASES,
                 *TIMES_UP_OWNER_TYPE_ALIASES,
             )
         )
@@ -2108,6 +2112,16 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "reason": "owner_size_mismatch",
                 "expected": HELP_OWNER_EXPECTED_SIZE,
                 "observed": help_owner_size,
+            }
+        )
+    click_start_owner_size = _named_struct_size("cRClickStart")
+    if click_start_owner_size != CLICK_START_OWNER_EXPECTED_SIZE:
+        size_failures.append(
+            {
+                "selector": "cRClickStart",
+                "reason": "owner_size_mismatch",
+                "expected": CLICK_START_OWNER_EXPECTED_SIZE,
+                "observed": click_start_owner_size,
             }
         )
     size_failures.extend(
@@ -2619,6 +2633,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "EnemyManager": _named_struct_size("EnemyManager"),
                     "cRGUI": _named_struct_size("cRGUI"),
                     "cRHelp": _named_struct_size("cRHelp"),
+                    "cRClickStart": _named_struct_size("cRClickStart"),
                     "cRSplash": _named_struct_size("cRSplash"),
                     "GalaxyStar": _named_struct_size("GalaxyStar"),
                     "cRGalaxy": _named_struct_size("cRGalaxy"),

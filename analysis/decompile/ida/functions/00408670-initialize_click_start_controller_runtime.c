@@ -3,7 +3,7 @@
 /* selector: initialize_click_start_controller_runtime */
 
 // Exact Windows constructor for the 0xac-byte authored `ClickStart` (`cRClickStart`) child: constructs its RenderableBod base and installs the callback table whose first entry is `update_click_start`.
-ClickStart *__thiscall initialize_click_start_controller_runtime(ClickStart *click_start)
+cRClickStart *__thiscall initialize_click_start_controller_runtime(cRClickStart *click_start)
 {
   initialize_renderable_bod(&click_start->bod);
   click_start->bod.bod.bod.vtable = &g_click_start_controller_vtable;

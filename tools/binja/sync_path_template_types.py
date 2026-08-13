@@ -790,7 +790,7 @@ REQUIRED_HEADER_STRUCTS = (
     "cRNuke",
     "FireWork",
     "ClickStartState",
-    "ClickStart",
+    "cRClickStart",
     "Cameraman",
     "cRCameraman",
     "cRSquidge",
@@ -2004,7 +2004,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x90", "resurrect_progress_step", "float"),
     ("0x98", "ghost_sprite_a", "Sprite*"),
     ("0x9c", "ghost_sprite_b", "Sprite*"),
-    ("0xa0", "click_start", "ClickStart"),
+    ("0xa0", "click_start", "cRClickStart"),
     ("0x14c", "row_event_cutscene_started", "uint8_t"),
     ("0x150", "nuke", "cRNuke"),
     ("0x1cc", "shoot_sfx_variant_sample", "int32_t"),
@@ -5002,15 +5002,15 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_click_start_controller_runtime",
-        "ClickStart* __thiscall initialize_click_start_controller_runtime(ClickStart* click_start)",
+        "cRClickStart* __thiscall initialize_click_start_controller_runtime(cRClickStart* click_start)",
     ),
     (
         "initialize_click_start",
-        "void __thiscall initialize_click_start(ClickStart* click_start, Player* player)",
+        "void __thiscall initialize_click_start(cRClickStart* click_start, Player* player)",
     ),
     (
         "update_click_start",
-        "void __thiscall update_click_start(ClickStart* click_start)",
+        "void __thiscall update_click_start(cRClickStart* click_start)",
     ),
     (
         "initialize_active_landscape_entry",
@@ -7232,6 +7232,7 @@ def main() -> int:
                     ("FringeManager", "cRFringeManager"),
                     ("GUI", "cRGUI"),
                     ("Help", "cRHelp"),
+                    ("ClickStart", "cRClickStart"),
                 ),
             )
         )
@@ -7472,7 +7473,7 @@ def main() -> int:
                 ("cRProgressBar", PROGRESS_BAR_FIELD_UPDATES),
                 ("cRSquidge", SQUIDGE_FIELD_UPDATES),
                 ("cRNuke", NUKE_FIELD_UPDATES),
-                ("ClickStart", CLICK_START_FIELD_UPDATES),
+                ("cRClickStart", CLICK_START_FIELD_UPDATES),
                 ("TextureRef", TEXTURE_REF_FIELD_UPDATES),
                 ("SnailVisual", SNAIL_VISUAL_FIELD_UPDATES),
                 ("BodBase", BOD_BASE_FIELD_UPDATES),

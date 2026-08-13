@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 9,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 9,
+  "ida_exported": 9,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -18,20 +18,40 @@
   "strict": true,
   "selected_functions": [
     {
-      "name": "update_frontend_state_machine",
-      "address": "0x4107d0"
+      "name": "initialize_runtime_pools_and_path_template_bank",
+      "address": "0x408060"
     },
     {
-      "name": "initialize_help_screen",
-      "address": "0x416800"
+      "name": "initialize_click_start_controller_runtime",
+      "address": "0x408670"
     },
     {
-      "name": "destroy_help_screen",
-      "address": "0x4168c0"
+      "name": "update_subgame",
+      "address": "0x438b90"
     },
     {
-      "name": "update_help_screen",
-      "address": "0x4168d0"
+      "name": "initialize_subgoldy",
+      "address": "0x43a9c0"
+    },
+    {
+      "name": "update_subgoldy",
+      "address": "0x43b120"
+    },
+    {
+      "name": "remove_subgame_bods",
+      "address": "0x440910"
+    },
+    {
+      "name": "initialize_click_start",
+      "address": "0x442170"
+    },
+    {
+      "name": "update_click_start",
+      "address": "0x442290"
+    },
+    {
+      "name": "update_cutscene",
+      "address": "0x4466d0"
     }
   ],
   "health_check_count": 1177,
