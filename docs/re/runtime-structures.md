@@ -554,10 +554,23 @@ The paired queue/start helpers operate at two different ownership levels:
 
 - void `dispatch_cutscene_animation` (`0x444600`) is
   `cRSnail::SetAnimation(int, bool, int)` over the Snail root, its root
-  `AnimManager`, and ten owned animation slots
+  `cRAnimManager`, and ten owned animation slots
 - `set_weapon_animation` (`0x4446e0`) is
   `cRWeapon::SetAnimation(int, bool, int)` over one Weapon, its inline
-  `AnimManager`, and five owned animation slots
+  `cRAnimManager`, and five owned animation slots
+
+The shared 0x48-byte `cRAnimManager` layout is exact:
+
+- `+0x00/+0x04/+0x08`: state, progress, and progress step
+- `+0x0c`: borrowed active `ObjectAnimation*`
+- `+0x10`: completion latch
+- `+0x14`: ten queued animation ids; `+0x3c` is their live count
+- `+0x40`: borrowed target `RenderableBod*`
+- `+0x44`: borrowed first `PresentationAnimationSlot*`
+- `Snail +0x104` and `Weapon +0x108` own the manager; their exact slot banks
+  begin immediately after it at `+0x14c` and `+0x150`
+- `RenderableBod +0x78` is the reverse borrowed manager link used by render
+  synchronization
 
 - when their third argument is non-zero, they immediately begin a selected state
 - when their third argument is zero, they append the requested state id to a small queued-transition list

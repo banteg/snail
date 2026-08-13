@@ -18,7 +18,7 @@ typedef struct cRSubGame cRSubGame;
 typedef cRSubGame SubgameRuntime;
 typedef struct cRSubLoc cRSubLoc;
 typedef struct TransformMatrix TransformMatrix;
-typedef struct AnimManager AnimManager;
+typedef struct cRAnimManager cRAnimManager;
 
 typedef struct Vec3 {
     float x;
@@ -63,7 +63,7 @@ typedef struct BodBase {
 typedef struct RenderableBod {
     BodBase bod;
     TransformMatrix transform;
-    AnimManager* render_animation_manager;
+    cRAnimManager* render_animation_manager;
     int32_t frame_number;
 } RenderableBod;
 

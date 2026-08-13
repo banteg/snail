@@ -527,6 +527,70 @@ EXPECTED_SNAIL_SKIN_SNAIL_EMBED = {
     "type": "cRSnailSkin",
 }
 
+ANIM_MANAGER_OWNER_MARKERS = (
+    "struct cRAnimManager {",
+    "cRAnimManager_must_be_0x48",
+    "cRAnimManager* render_animation_manager;",
+    "cRAnimManager anim_manager;",
+    "void __thiscall initialize_anim_manager(cRAnimManager* manager);",
+    "void __thiscall update_anim_manager(cRAnimManager* manager);",
+)
+
+ANIM_MANAGER_OWNER_SIZES = {
+    "cRAnimManager": 0x48,
+}
+
+ANIM_MANAGER_OWNER_TYPE_ALIASES = (("AnimManager", "cRAnimManager", 0x48),)
+
+EXPECTED_ANIM_MANAGER_OWNER_LAYOUT = {
+    "size": 0x48,
+    "members": {
+        0x00: (0x04, "state", "int32_t"),
+        0x04: (0x04, "progress", "float"),
+        0x08: (0x04, "progress_step", "float"),
+        0x0C: (0x04, "active_animation", "ObjectAnimation *"),
+        0x10: (0x01, "completed", "uint8_t"),
+        0x11: (0x03, "_pad_11", "uint8_t[3]"),
+        0x14: (0x28, "queued_animations", "int32_t[10]"),
+        0x3C: (0x04, "queue_count", "int32_t"),
+        0x40: (0x04, "target_model", "RenderableBod *"),
+        0x44: (0x04, "animation_slots", "PresentationAnimationSlot *"),
+    },
+}
+
+EXPECTED_ANIM_MANAGER_EMBEDS = {
+    "renderable_backlink": {
+        "struct": "RenderableBod",
+        "offset": 0x78,
+        "expected": {
+            "offset": "0x78",
+            "size": 0x04,
+            "name": "render_animation_manager",
+            "type": "cRAnimManager *",
+        },
+    },
+    "snail_embed": {
+        "struct": "Snail",
+        "offset": 0x104,
+        "expected": {
+            "offset": "0x104",
+            "size": 0x48,
+            "name": "anim_manager",
+            "type": "cRAnimManager",
+        },
+    },
+    "weapon_embed": {
+        "struct": "Weapon",
+        "offset": 0x108,
+        "expected": {
+            "offset": "0x108",
+            "size": 0x48,
+            "name": "anim_manager",
+            "type": "cRAnimManager",
+        },
+    },
+}
+
 TIMES_UP_OWNER_MARKERS = (
     "typedef struct cRTimesUp {",
     "} cRTimesUp;",
@@ -823,6 +887,8 @@ PATH_OWNERSHIP_DIRTY_FUNCTIONS = (
     0x4444B0,  # project_position_onto_track_attachment
     0x444600,  # dispatch_cutscene_animation
     0x4446E0,  # set_weapon_animation
+    0x4447C0,  # initialize_anim_manager
+    0x4447D0,  # update_anim_manager
     0x444960,  # initialize_squidge
     0x444980,  # start_squidge_y
     0x4449A0,  # start_squidge_z
@@ -2929,11 +2995,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_anim_manager",
-        "void __thiscall initialize_anim_manager(AnimManager* manager);",
+        "void __thiscall initialize_anim_manager(cRAnimManager* manager);",
     ),
     (
         "update_anim_manager",
-        "void __thiscall update_anim_manager(AnimManager* manager);",
+        "void __thiscall update_anim_manager(cRAnimManager* manager);",
     ),
     (
         "advance_frame_sequence",
@@ -5404,6 +5470,67 @@ def _snail_skin_owner_layout_readback() -> dict[str, object]:
     }
 
 
+def _anim_manager_owner_layout_readback() -> dict[str, object]:
+    """Verify the canonical cRAnimManager and every owned/borrowed edge."""
+    type_name = "cRAnimManager"
+    expected = EXPECTED_ANIM_MANAGER_OWNER_LAYOUT
+    observed_size = _named_struct_size(type_name)
+    observed_members = {
+        hex(offset): _named_struct_member_readback(type_name, offset)
+        for offset in expected["members"]
+    }
+    failures: list[dict[str, object]] = []
+    if observed_size != expected["size"]:
+        failures.append(
+            {
+                "selector": type_name,
+                "owner_group": "anim_manager",
+                "reason": "owner_size_mismatch",
+                "expected": expected["size"],
+                "observed": observed_size,
+            }
+        )
+    for offset, (size, name, type_text) in expected["members"].items():
+        expected_member = {
+            "offset": hex(offset),
+            "size": size,
+            "name": name,
+            "type": _normalize_udt_type(type_text),
+        }
+        observed_member = observed_members[hex(offset)]
+        if observed_member != expected_member:
+            failures.append(
+                {
+                    "selector": f"{type_name}.{name}",
+                    "owner_group": "anim_manager",
+                    "reason": "owner_member_mismatch",
+                    "expected": expected_member,
+                    "observed": observed_member,
+                }
+            )
+    embeds = {}
+    for edge_name, edge in EXPECTED_ANIM_MANAGER_EMBEDS.items():
+        observed = _named_struct_member_readback(edge["struct"], edge["offset"])
+        embeds[edge_name] = observed
+        if observed != edge["expected"]:
+            failures.append(
+                {
+                    "selector": f"{edge['struct']}.{edge_name}",
+                    "owner_group": "anim_manager",
+                    "reason": "owner_edge_mismatch",
+                    "expected": edge["expected"],
+                    "observed": observed,
+                }
+            )
+    return {
+        "type": type_name,
+        "size": observed_size,
+        "members": observed_members,
+        "embeds": embeds,
+        "failures": failures,
+    }
+
+
 def _times_up_owner_layout_readback() -> dict[str, object]:
     """Verify the complete canonical cRTimesUp owner and cRSubGame embed."""
     type_name = "cRTimesUp"
@@ -5919,6 +6046,11 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for marker in SNAIL_SKIN_OWNER_MARKERS
         if marker not in header_text
     ]
+    missing_anim_manager_owner_markers = [
+        marker
+        for marker in ANIM_MANAGER_OWNER_MARKERS
+        if marker not in header_text
+    ]
     missing_times_up_owner_markers = [
         marker
         for marker in TIMES_UP_OWNER_MARKERS
@@ -5976,6 +6108,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or missing_progress_bar_owner_markers
         or missing_squidge_owner_markers
         or missing_snail_skin_owner_markers
+        or missing_anim_manager_owner_markers
         or missing_times_up_owner_markers
         or missing_warning_owner_markers
         or missing_tip_owner_markers
@@ -6024,6 +6157,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
         if missing_snail_skin_owner_markers:
             marker_failures.append(
                 {"reason": "noncanonical_snail_skin_owner_header"}
+            )
+        if missing_anim_manager_owner_markers:
+            marker_failures.append(
+                {"reason": "noncanonical_anim_manager_owner_header"}
             )
         if missing_times_up_owner_markers:
             marker_failures.append(
@@ -6088,6 +6225,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "missing_snail_skin_owner_markers": (
                         missing_snail_skin_owner_markers
+                    ),
+                    "missing_anim_manager_owner_markers": (
+                        missing_anim_manager_owner_markers
                     ),
                     "missing_times_up_owner_markers": (
                         missing_times_up_owner_markers
@@ -6210,6 +6350,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
             "result": result,
         }
         for result in snail_skin_owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
+    anim_manager_owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(ANIM_MANAGER_OWNER_TYPE_ALIASES)
+    )
+    anim_manager_owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "owner_group": "anim_manager",
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in anim_manager_owner_type_alias_migrations
         if result.get("status") == "failed"
     ]
     times_up_owner_type_alias_migrations = (
@@ -6370,6 +6525,21 @@ def _sync_types(header_path: pathlib.Path) -> int:
         }
         if parse_errors or snail_skin_owner_type_alias_failures
         else _snail_skin_owner_layout_readback()
+    )
+    anim_manager_owner_sizes = {
+        name: _named_struct_size(name)
+        for name in ANIM_MANAGER_OWNER_SIZES
+    }
+    anim_manager_owner_layout_readback = (
+        {
+            "type": "cRAnimManager",
+            "size": None,
+            "members": {},
+            "embeds": {},
+            "failures": [],
+        }
+        if parse_errors or anim_manager_owner_type_alias_failures
+        else _anim_manager_owner_layout_readback()
     )
     times_up_owner_sizes = {
         name: _named_struct_size(name)
@@ -6579,6 +6749,17 @@ def _sync_types(header_path: pathlib.Path) -> int:
         for name, expected_size in SNAIL_SKIN_OWNER_SIZES.items()
         if snail_skin_owner_sizes[name] != expected_size
     ]
+    anim_manager_owner_size_failures = [
+        {
+            "selector": name,
+            "owner_group": "anim_manager",
+            "reason": "owner_size_mismatch",
+            "expected": expected_size,
+            "observed": anim_manager_owner_sizes[name],
+        }
+        for name, expected_size in ANIM_MANAGER_OWNER_SIZES.items()
+        if anim_manager_owner_sizes[name] != expected_size
+    ]
     times_up_owner_size_failures = [
         {
             "selector": name,
@@ -6651,6 +6832,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
         + squidge_owner_layout_readback["failures"]
         + snail_skin_owner_size_failures
         + snail_skin_owner_layout_readback["failures"]
+        + anim_manager_owner_size_failures
+        + anim_manager_owner_layout_readback["failures"]
         + times_up_owner_size_failures
         + times_up_owner_layout_readback["failures"]
         + warning_owner_size_failures
@@ -6780,6 +6963,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
         or progress_bar_owner_type_alias_failures
         or squidge_owner_type_alias_failures
         or snail_skin_owner_type_alias_failures
+        or anim_manager_owner_type_alias_failures
         or times_up_owner_type_alias_failures
         or warning_owner_type_alias_failures
         or tip_owner_type_alias_failures
@@ -6809,6 +6993,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     ),
                     "snail_skin_owner_type_alias_migrations": (
                         snail_skin_owner_type_alias_migrations
+                    ),
+                    "anim_manager_owner_type_alias_migrations": (
+                        anim_manager_owner_type_alias_migrations
                     ),
                     "times_up_owner_type_alias_migrations": (
                         times_up_owner_type_alias_migrations
@@ -6846,6 +7033,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "snail_skin_owner_layout_readback": (
                         snail_skin_owner_layout_readback
                     ),
+                    "anim_manager_owner_sizes": anim_manager_owner_sizes,
+                    "anim_manager_owner_layout_readback": (
+                        anim_manager_owner_layout_readback
+                    ),
                     "times_up_owner_sizes": times_up_owner_sizes,
                     "times_up_owner_layout_readback": (
                         times_up_owner_layout_readback
@@ -6877,6 +7068,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                         + progress_bar_owner_type_alias_failures
                         + squidge_owner_type_alias_failures
                         + snail_skin_owner_type_alias_failures
+                        + anim_manager_owner_type_alias_failures
                         + times_up_owner_type_alias_failures
                         + warning_owner_type_alias_failures
                         + tip_owner_type_alias_failures
@@ -7612,6 +7804,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "snail_skin_owner_type_alias_migrations": (
                     snail_skin_owner_type_alias_migrations
                 ),
+                "anim_manager_owner_type_alias_migrations": (
+                    anim_manager_owner_type_alias_migrations
+                ),
                 "times_up_owner_type_alias_migrations": (
                     times_up_owner_type_alias_migrations
                 ),
@@ -7645,6 +7840,10 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "snail_skin_owner_sizes": snail_skin_owner_sizes,
                 "snail_skin_owner_layout_readback": (
                     snail_skin_owner_layout_readback
+                ),
+                "anim_manager_owner_sizes": anim_manager_owner_sizes,
+                "anim_manager_owner_layout_readback": (
+                    anim_manager_owner_layout_readback
                 ),
                 "times_up_owner_sizes": times_up_owner_sizes,
                 "times_up_owner_layout_readback": (

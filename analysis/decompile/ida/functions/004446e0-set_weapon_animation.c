@@ -17,7 +17,7 @@ void __thiscall set_weapon_animation(Weapon *weapon, int32_t animation_id, uint8
   RenderableBod *target_model; // ecx
   uint32_t list_flags; // eax
 
-  if ( immediate )
+  if ( immediate != 0 )
   {
     animation = weapon->animation_slots[animation_id].body.bod.object->animation;
     weapon->anim_manager.active_animation = animation;
@@ -27,7 +27,7 @@ void __thiscall set_weapon_animation(Weapon *weapon, int32_t animation_id, uint8
     if ( (active_animation->flags & 8) != 0 )
     {
       progress_step = active_animation->progress_step;
-      if ( v8 )
+      if ( v8 != 0 )
         progress_step = -progress_step;
       v9 = -progress_step;
       weapon->anim_manager.progress_step = v9;
@@ -38,7 +38,7 @@ void __thiscall set_weapon_animation(Weapon *weapon, int32_t animation_id, uint8
       v10 = weapon->anim_manager.active_animation;
       weapon->anim_manager.progress = 0.0;
       v12 = v10->progress_step;
-      if ( v13 )
+      if ( v13 != 0 )
         v12 = -v12;
       weapon->anim_manager.progress_step = v12;
     }

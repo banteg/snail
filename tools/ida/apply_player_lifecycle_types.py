@@ -12,7 +12,7 @@ import ida_name
 import ida_pro
 import ida_typeinf
 import idc
-
+from type_alias_migration import migrate_equivalent_struct_aliases
 
 TRUSTED_NAMES = (
     (0x43A010, "health_collect_particles"),
@@ -96,7 +96,7 @@ DEPENDENCY_OWNER_MARKERS = {
 REQUIRED_OWNER_MARKERS = (
     "typedef struct SubHealth {",
     "typedef struct SubHover {",
-    "typedef struct GolbShot {",
+    "typedef struct __base(RenderableBod, 0x00) GolbShot {",
     "typedef struct GolbShotFlightStrideCursor {",
     "typedef struct GolbShotVapourObjectStrideCursor {",
     "TransformMatrix flight_transform;",
@@ -119,7 +119,7 @@ EXPECTED_OWNER_SIZES = {
     "Sprite": 0xB4,
     "RuntimeConfig": 0xC4,
     "RenderableBod": 0x80,
-    "AnimManager": 0x48,
+    "cRAnimManager": 0x48,
     "SubHealth": 0x74,
     "SubHover": 0x214,
     "GolbShot": 0x2E8,
@@ -131,6 +131,8 @@ EXPECTED_OWNER_SIZES = {
     "Player": 0x4364,
     "cRSubGame": 0x1272838,
 }
+
+PLAYER_OWNER_TYPE_ALIASES = (("AnimManager", "cRAnimManager", 0x48),)
 
 GOLB_SHOT_CURSOR_LVAR = (
     "golb_shot_flight_cursor",
@@ -455,8 +457,22 @@ def _sync_types(header_path: pathlib.Path) -> int:
         result["parse_errors"] for result in dependency_parse_results
     )
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    owner_type_alias_migrations = (
+        []
+        if parse_errors
+        else migrate_equivalent_struct_aliases(PLAYER_OWNER_TYPE_ALIASES)
+    )
+    owner_type_alias_failures = [
+        {
+            "selector": result.get("old_name"),
+            "reason": "type_alias_migration_failed",
+            "result": result,
+        }
+        for result in owner_type_alias_migrations
+        if result.get("status") == "failed"
+    ]
     owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
-    failed = [
+    failed = owner_type_alias_failures + [
         {
             "selector": name,
             "reason": "owner_size_mismatch",
@@ -474,6 +490,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                     "header": str(header_path),
                     "dependency_parse_results": dependency_parse_results,
                     "parse_errors": parse_errors,
+                    "owner_type_alias_migrations": owner_type_alias_migrations,
                     "owner_sizes": owner_sizes,
                     "failed": failed,
                 },
@@ -552,6 +569,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
                 "header": str(header_path),
                 "dependency_parse_results": dependency_parse_results,
                 "parse_errors": parse_errors,
+                "owner_type_alias_migrations": owner_type_alias_migrations,
                 "owner_sizes": owner_sizes,
                 "golb_shot_cursor_lvar": golb_shot_cursor_lvar,
                 "golb_shot_asset_cursor_lvar": golb_shot_asset_cursor_lvar,

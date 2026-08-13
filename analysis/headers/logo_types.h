@@ -6,7 +6,7 @@ typedef unsigned int uint32_t;
 typedef int int32_t;
 
 typedef struct Object Object;
-typedef struct AnimManager AnimManager;
+typedef struct cRAnimManager cRAnimManager;
 
 typedef struct Vec3 {
     float x;
@@ -51,7 +51,7 @@ typedef struct TransformMatrix {
 typedef struct RenderableBod {
     BodBase bod;
     TransformMatrix transform;
-    AnimManager* render_animation_manager;
+    cRAnimManager* render_animation_manager;
     int32_t frame_number;
 } RenderableBod;
 

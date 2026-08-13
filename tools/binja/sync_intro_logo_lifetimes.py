@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_type_renames,
@@ -15,7 +15,6 @@ from _narrow_sync import (
     types_declare_missing_only,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_logo_types.h"
@@ -29,6 +28,7 @@ EXPECTED_TYPE_WIDTHS = {
 }
 
 TYPE_RENAMES = (
+    ("AnimManager", "cRAnimManager"),
     ("LogoLetter", "cRLogoLetter"),
     ("Logo", "cRLogo"),
 )

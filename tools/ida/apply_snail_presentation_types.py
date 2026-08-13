@@ -14,7 +14,6 @@ import ida_typeinf
 import idc
 from type_alias_migration import migrate_equivalent_struct_aliases
 
-
 TRUSTED_NAMES = (
     (0x43A390, "update_jetpack_gauge"),
     (0x43A580, "uninit_jet_particles"),
@@ -135,7 +134,8 @@ DEPENDENCY_OWNER_MARKERS = {
 
 REQUIRED_OWNER_MARKERS = (
     "typedef struct ObjectAnimation {",
-    "struct AnimManager {",
+    "struct cRAnimManager {",
+    "cRAnimManager_must_be_0x48",
     "typedef struct SubHover {",
     "typedef struct Weapon {",
     "Vec3 release_step;",
@@ -159,7 +159,7 @@ EXPECTED_OWNER_SIZES = {
     "RenderableBod": 0x80,
     "SnailHotspotLocalZCursorView": 0x0C,
     "PresentationAnimationSlot": 0x80,
-    "AnimManager": 0x48,
+    "cRAnimManager": 0x48,
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0x98,
@@ -168,7 +168,10 @@ EXPECTED_OWNER_SIZES = {
     "Player": 0x4364,
 }
 
-SNAIL_SKIN_OWNER_TYPE_ALIASES = (("SnailSkin", "cRSnailSkin", 0x20),)
+SNAIL_PRESENTATION_OWNER_TYPE_ALIASES = (
+    ("SnailSkin", "cRSnailSkin", 0x20),
+    ("AnimManager", "cRAnimManager", 0x48),
+)
 
 # The authored Player root displacement numerically lands on the tracked
 # g_player_block offset symbol. Keep that evidence symbol, but render this one
@@ -527,7 +530,9 @@ def _sync_types(header_path: pathlib.Path) -> int:
     owner_type_alias_migrations = (
         []
         if parse_errors
-        else migrate_equivalent_struct_aliases(SNAIL_SKIN_OWNER_TYPE_ALIASES)
+        else migrate_equivalent_struct_aliases(
+            SNAIL_PRESENTATION_OWNER_TYPE_ALIASES
+        )
     )
     owner_type_alias_failures = [
         {

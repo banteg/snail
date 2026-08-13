@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
     apply_symbol_updates,
@@ -16,7 +15,7 @@ from _narrow_sync import (
     emit_summary,
     types_declare_missing_only,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_logo_types.h"
@@ -27,6 +26,7 @@ EXPECTED_STRUCT_SIZES = {
 }
 
 TYPE_RENAMES = (
+    ("AnimManager", "cRAnimManager"),
     ("LogoLetter", "cRLogoLetter"),
     ("Logo", "cRLogo"),
 )

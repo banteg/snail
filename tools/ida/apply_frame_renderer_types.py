@@ -21,9 +21,10 @@ if str(SCRIPT_ROOT) not in sys.path:
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 from type_alias_migration import migrate_equivalent_struct_aliases
 
-INPUT_OWNER_TYPE_ALIASES = (
+OWNER_TYPE_ALIASES = (
     ("InputState", "cRInput", 0x38),
     ("GameInput", "cRGameInput", 0x70),
+    ("AnimManager", "cRAnimManager", 0x48),
 )
 
 
@@ -32,7 +33,7 @@ EXPECTED_OWNER_SIZES = {
     "ObjectAnimation": 0x14,
     "BodBase": 0x38,
     "RenderableBod": 0x80,
-    "AnimManager": 0x48,
+    "cRAnimManager": 0x48,
     "Sprite": 0xB4,
     "TransformMatrix": 0x40,
     "ObjectRenderVertex": 0x18,
@@ -952,7 +953,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
 
     parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
     type_alias_migrations = migrate_equivalent_struct_aliases(
-        INPUT_OWNER_TYPE_ALIASES
+        OWNER_TYPE_ALIASES
     )
     owner_sizes = {name: _named_struct_size(name) for name in EXPECTED_OWNER_SIZES}
     applied = 0

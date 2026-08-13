@@ -3,7 +3,7 @@
 /* selector: update_anim_manager */
 
 // Exact Windows `cRAnimManager::AI()`: advances the authored 0x48-byte queue owner, applies loop, bounce, or clamp flags, then installs the next owned RenderableBod slot's Object and ObjectAnimation on its borrowed Snail or animation-channel target. Android independently preserves the same ownership chain with port-specific slot layout.
-void __thiscall update_anim_manager(AnimManager *manager)
+void __thiscall update_anim_manager(cRAnimManager *manager)
 {
   int32_t state; // eax
   int32_t v2; // edx
@@ -84,7 +84,7 @@ void __thiscall update_anim_manager(AnimManager *manager)
       }
       manager->progress = progress;
     }
-    if ( manager->completed && manager->queue_count > 0 )
+    if ( manager->completed != 0 && manager->queue_count > 0 )
     {
       queued_animations = manager->queued_animations;
       if ( manager->queued_animations[0] == -1 )

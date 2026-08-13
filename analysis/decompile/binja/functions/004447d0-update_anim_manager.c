@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_anim_manager @ 0x4447d0 */
 
-004447d0        struct AnimManager* manager_1 = manager
+004447d0        struct cRAnimManager* manager_1 = manager
 004447d1        int32_t state = manager->state
 004447d3        int32_t i = 0
 004447d9        manager->completed = 0

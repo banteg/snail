@@ -1109,7 +1109,7 @@ def test_snail_presentation_replay_keeps_exact_snail_weapon_and_subhover_owners(
             ('"Sprite"', "0xB4"),
             ('"RenderableBod"', "0x80"),
             ('"PresentationAnimationSlot"', "0x80"),
-            ('"AnimManager"', "0x48"),
+            ('"cRAnimManager"', "0x48"),
             ('"SubHover"', "0x214"),
             ('"Weapon"', "0x3DC"),
             ('"Invincible"', "0x98"),
@@ -1285,7 +1285,7 @@ def test_player_lifecycle_replay_keeps_exact_owners_and_stride_cursor() -> None:
             ('"Sprite"', "0xB4"),
             ('"RuntimeConfig"', "0xC4"),
             ('"RenderableBod"', "0x80"),
-            ('"AnimManager"', "0x48"),
+            ('"cRAnimManager"', "0x48"),
             ('"SubHealth"', "0x74"),
             ('"SubHover"', "0x214"),
             ('"GolbShot"', "0x2E8"),
@@ -1641,7 +1641,7 @@ def test_ida_replays_compose_the_complete_game_root_catalog_frontend_and_tail() 
     assert '"Object": 0xDC' in frame_sync
     assert '"ObjectAnimation": 0x14' in frame_sync
     assert '"BodBase": 0x38' in frame_sync
-    assert '"AnimManager": 0x48' in frame_sync
+    assert '"cRAnimManager": 0x48' in frame_sync
     assert "DEPENDENCY_HEADER_NAMES = (" in frame_sync
     assert '"object_render_types.h"' in frame_sync
     assert '"path_template_types.h"' in frame_sync
@@ -5104,7 +5104,7 @@ def test_anim_manager_replay_preserves_queue_and_slot_borrows() -> None:
         '"Object": 0xDC',
         '"RenderableBod": 0x80',
         '"PresentationAnimationSlot": 0x80',
-        '"AnimManager": 0x48',
+        '"cRAnimManager": 0x48',
         '0xBC: ("animation", "ObjectAnimation*")',
         '0x14: ("queued_animations", "int32_t[10]")',
         '0x40: ("target_model", "RenderableBod*")',
@@ -5149,6 +5149,103 @@ def test_anim_manager_replay_preserves_queue_and_slot_borrows() -> None:
         '"(queue_cursor - 0x14)->queued_animations"',
     ):
         assert fragment in health_checks
+
+
+def test_anim_manager_replay_keeps_authored_owner_layout_and_method_abis() -> None:
+    repo_root = Path(__file__).parents[1]
+    focused_binja_sync = (BINJA_DIR / "sync_anim_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_ida_sync = (IDA_DIR / "apply_anim_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    ida_runner = (IDA_DIR / "sync_anim_manager_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_binja_sync = (BINJA_DIR / "sync_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    path_ida_sync = (IDA_DIR / "apply_path_template_types.py").read_text(
+        encoding="utf-8"
+    )
+    snail_binja_sync = (BINJA_DIR / "sync_snail_presentation_types.py").read_text(
+        encoding="utf-8"
+    )
+    snail_ida_sync = (IDA_DIR / "apply_snail_presentation_types.py").read_text(
+        encoding="utf-8"
+    )
+    frame_ida_sync = (IDA_DIR / "apply_frame_renderer_types.py").read_text(
+        encoding="utf-8"
+    )
+    logo_ida_sync = (IDA_DIR / "apply_logo_types.py").read_text(
+        encoding="utf-8"
+    )
+    focused_header = (HEADER_DIR / "anim_manager_types.h").read_text(
+        encoding="utf-8"
+    )
+    path_header = (HEADER_DIR / "path_template_types.h").read_text(
+        encoding="utf-8"
+    )
+    matcher_header = (repo_root / "tools/match/include/anim_manager.h").read_text(
+        encoding="utf-8"
+    )
+    health_checks = (
+        repo_root / "analysis/decompile/health_checks.json"
+    ).read_text(encoding="utf-8")
+
+    prototypes = (
+        "void __thiscall initialize_anim_manager(cRAnimManager* manager)",
+        "void __thiscall update_anim_manager(cRAnimManager* manager)",
+    )
+    for prototype in prototypes:
+        for source in (
+            focused_binja_sync,
+            focused_ida_sync,
+            path_binja_sync,
+            path_ida_sync,
+        ):
+            assert prototype in source
+
+    assert '"cRAnimManager": 0x48' in focused_binja_sync
+    assert (
+        'OWNER_TYPE_RENAMES = (("AnimManager", "cRAnimManager"),)'
+        in focused_binja_sync
+    )
+    assert '("cRAnimManager", ANIM_MANAGER_FIELD_UPDATES)' in focused_binja_sync
+    assert (
+        '("0x78", "render_animation_manager", "cRAnimManager*")'
+        in focused_binja_sync
+    )
+    assert '("0x108", "anim_manager", "cRAnimManager")' in focused_binja_sync
+    assert '("0x104", "anim_manager", "cRAnimManager")' in focused_binja_sync
+    for header in (focused_header, path_header):
+        assert "cRAnimManager" in header
+        assert "cRAnimManager_must_be_0x48" in header
+        assert "struct AnimManager {" not in header
+    assert "cRAnimManager* render_animation_manager;" in path_header
+    assert "cRAnimManager anim_manager;" in path_header
+    assert 'EXPECTED_OWNER_SIZES = {\n    "cRAnimManager": 0x48,' in focused_ida_sync
+    assert '("AnimManager", "cRAnimManager", 0x48)' in focused_ida_sync
+    assert "EXPECTED_OWNER_EDGES" in focused_ida_sync
+    assert "owner_layout_readback" in focused_ida_sync
+    assert "ANIM_MANAGER_OWNER_TYPE_RENAMES" in path_binja_sync
+    assert "ANIM_MANAGER_OWNER_TYPE_ALIASES" in path_ida_sync
+    assert "anim_manager_owner_layout_readback" in path_ida_sync
+    for broad_sync in (snail_binja_sync, snail_ida_sync, frame_ida_sync):
+        assert '"cRAnimManager": 0x48' in broad_sync
+    assert "SNAIL_PRESENTATION_OWNER_TYPE_ALIASES" in snail_ida_sync
+    assert "ANIM_MANAGER_OWNER_TYPE_ALIASES" in logo_ida_sync
+    assert "class cRAnimManager" in matcher_header
+    assert "typedef cRAnimManager AnimManager;" in matcher_header
+    assert (
+        'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/anim_manager_types.h"'
+        in ida_runner
+    )
+    for selector in (
+        "initialize_anim_manager(cRAnimManager *manager)",
+        "update_anim_manager(cRAnimManager *manager)",
+    ):
+        assert selector in health_checks
 
 
 def test_high_score_screen_replays_preserve_record_and_widget_cursors() -> None:
@@ -6745,7 +6842,7 @@ def test_matcher_fringe_logo_and_galaxy_owners_preserve_recovered_vocabulary() -
     assert "typedef struct cRLogo {" in logo_analysis
     assert "typedef struct cRLogoLetter {" in logo_analysis
     assert "Object* object;" in logo_analysis
-    assert "AnimManager* render_animation_manager;" in logo_analysis
+    assert "cRAnimManager* render_animation_manager;" in logo_analysis
     assert "Vec3 position;" in logo_analysis
     assert "float position_w;" in logo_analysis
     assert "void* object;" not in logo_analysis
@@ -20182,7 +20279,7 @@ def test_frontend_lifecycle_void_abis_and_loading_owner_are_persisted() -> None:
     assert "EXPECTED_OWNER_LAYOUTS" in ida_logo_sync
     assert "_owner_layout_readback" in ida_logo_sync
     assert '0x24: ("object", "Object *")' in ida_logo_sync
-    assert '0x78: ("render_animation_manager", "AnimManager *")' in ida_logo_sync
+    assert '0x78: ("render_animation_manager", "cRAnimManager *")' in ida_logo_sync
     assert '("LogoLetter", "cRLogoLetter", 0x90)' in ida_logo_sync
     assert '("Logo", "cRLogo", 0x25218)' in ida_logo_sync
     assert 'DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/logo_types.h"' in ida_logo_runner

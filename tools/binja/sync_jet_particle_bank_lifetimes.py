@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_user_var_updates,
@@ -14,7 +14,6 @@ from _narrow_sync import (
     remove_user_var_updates,
 )
 from _target import DEFAULT_TARGET
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -55,7 +54,7 @@ EXPECTED_STRUCT_FIELDS = {
         0x38: ("transform", "TransformMatrix"),
     },
     "Weapon": {
-        0x108: ("anim_manager", "AnimManager"),
+        0x108: ("anim_manager", "cRAnimManager"),
         0x150: ("animation_slots", "PresentationAnimationSlot[5]"),
     },
     "Snail": {

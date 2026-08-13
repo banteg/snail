@@ -31,8 +31,9 @@
 0044473a        long double x87_r7_2 = fneg(x87_r7_1)
 0044473c        weapon->anim_manager.progress_step = fconvert.s(x87_r7_2)
 00444748        weapon->anim_manager.progress = fconvert.s(x87_r7_2 + fconvert.t(1f))
+0044477b        struct Object* object = weapon->animation_slots[animation_id].body.bod.object
 0044477d        weapon->anim_manager.queue_count = 0
-00444787        weapon->body.bod.object = weapon->animation_slots[animation_id].body.bod.object
+00444787        weapon->body.bod.object = object
 0044478a        struct RenderableBod* target_model = weapon->anim_manager.target_model
 00444791        uint32_t list_flags = target_model->bod.bod.list_flags
 00444794        list_flags.b |= 0x20

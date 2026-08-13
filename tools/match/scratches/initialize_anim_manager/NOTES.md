@@ -25,3 +25,13 @@ The scratch now spells the exact member as `cRAnimManager::Init()` and exports
 `cRSubGoldy::Init`, each with a receiver at the start of an inline presentation
 manager. Android and iOS independently retain the authored class-qualified
 symbol. The promotion preserves the exact 6/6 instruction match.
+
+## 2026-08-13 canonical database ownership
+
+Live Binary Ninja and IDA readback found the complete 0x48-byte owner only
+under the generic `AnimManager` name, while both databases lacked
+`cRAnimManager`. All ten Windows calls originate in `cRSubGoldy::Init` and
+receive one of the exact inline Snail or Weapon managers. The guarded replay
+now retires the generic owner only after complete layout equivalence, verifies
+both embeds plus the RenderableBod backlink, and assigns this function
+`void __thiscall(cRAnimManager*)`. Matching remains exact at 6/6.

@@ -6401,27 +6401,28 @@
         "void __thiscall render_game_frame(GameRoot *game)",
         "struct RenderableBod *bod;",
         "bod = (struct RenderableBod *)v1->active_bod_list.first;",
-        "v28 = &g_post_sprite_bods;",
+        "v18 = &g_post_sprite_bods;",
+        "*v18++ = bod;",
         "bod->bod.object->animation->progress = bod->render_animation_manager->progress;",
-        "Sprite *v39;",
-        "v39 = g_sprite_manager.active_heads[v17];",
-        "flags = v39->flags;",
-        "vector = v39->position;",
-        "v39->depth_bias",
-        "SpriteDepthNode *v73;",
-        "v73 = g_sprite_depth_nodes;",
-        "g_sprite_depth_buckets[v45]",
-        "v47->sprite = v39;",
-        "v39->render_bucket_index = v45;",
+        "cRSprite *v21;",
+        "v21 = g_sprite_manager.active_heads[v15];",
+        "flags = v21->flags;",
+        "vector = v21->position;",
+        "v21->depth_bias",
+        "SpriteDepthNode *v58;",
+        "v58 = g_sprite_depth_nodes;",
+        "g_sprite_depth_buckets[v26]",
+        "v28->sprite = v21;",
+        "v21->render_bucket_index = v26;",
         "struct SpriteDepthNode **depth_bucket_cursor;",
         "depth_bucket_cursor = &g_sprite_depth_buckets[255];",
         "struct Sprite *sprite;",
-        "sprite = v52->sprite;",
+        "sprite = v33->sprite;",
         "sprite->flags",
-        "draw_sprite_quad((Vec3 *)&v52->position, v52->sprite);",
+        "draw_sprite_quad((Vec3 *)&v33->position, v33->sprite);",
         "struct RenderableBod **post_cursor;",
-        "v57 = (BodBase *)*--post_cursor;",
-        "v58->bod.object,"
+        "v38 = (BodBase *)*--post_cursor;",
+        "render_object(v39->bod.object,"
       ],
       "forbidden_substrings": [
         "int __thiscall render_game_frame",
@@ -18276,6 +18277,7 @@
       "name": "bn_animation_manager_queue_owner",
       "artifact": "analysis/decompile/binja/functions/004447d0-update_anim_manager.c",
       "required_substrings": [
+        "struct cRAnimManager* manager_1 = manager",
         "float next_progress =",
         "manager->active_animation",
         "manager->queued_animations",
@@ -18291,6 +18293,7 @@
       ],
       "forbidden_substrings": [
         "arg1[",
+        "struct AnimManager* manager_1 = manager",
         "data_4df904 + 0x74648",
         "manager_1 = fconvert.s",
         "int32_t (*",
@@ -18304,7 +18307,7 @@
       "name": "ida_animation_manager_queue_owner",
       "artifact": "analysis/decompile/ida/functions/004447d0-update_anim_manager.c",
       "required_substrings": [
-        "void __thiscall update_anim_manager(AnimManager *manager)",
+        "void __thiscall update_anim_manager(cRAnimManager *manager)",
         "manager->active_animation",
         "manager->queued_animations",
         "manager->animation_slots",
@@ -18312,6 +18315,7 @@
       ],
       "forbidden_substrings": [
         "AnimationDispatchState",
+        "update_anim_manager(AnimManager *manager)",
         "MEMORY[0x4DF904]",
         "queue_sentinel",
         "self_ref"
@@ -18335,7 +18339,7 @@
       "name": "ida_animation_manager_init_owner",
       "artifact": "analysis/decompile/ida/functions/004447c0-initialize_anim_manager.c",
       "required_substrings": [
-        "void __thiscall initialize_anim_manager(AnimManager *manager)",
+        "void __thiscall initialize_anim_manager(cRAnimManager *manager)",
         "manager->progress = 0.0",
         "manager->progress_step = 0.0",
         "manager->state = 0",
@@ -18343,6 +18347,7 @@
       ],
       "forbidden_substrings": [
         "AnimationDispatchState",
+        "initialize_anim_manager(AnimManager *manager)",
         "return result"
       ]
     },

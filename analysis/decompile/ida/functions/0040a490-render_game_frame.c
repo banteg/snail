@@ -2,7 +2,7 @@
 /* function: render_game_frame @ 0x40a490 */
 /* selector: render_game_frame */
 
-// Renders every active root viewport in camera sort order, synchronizes flagged Snail/weapon BODs from their borrowed AnimManager progress into Object::animation, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`, and Android preserves the animation-progress chain at port-specific offsets.
+// Renders every active root viewport in camera sort order, synchronizes flagged Snail/weapon BODs from their borrowed cRAnimManager progress into Object::animation, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`, and Android preserves the animation-progress chain at port-specific offsets.
 void __thiscall render_game_frame(GameRoot *game)
 {
   GameRoot *v1; // edi
@@ -10,84 +10,67 @@ void __thiscall render_game_frame(GameRoot *game)
   int32_t render_skip_count; // eax
   int v4; // ebx
   uint32_t *p_flags; // eax
-  int v6; // ecx
+  int i; // ecx
   int32_t *p_sort_key; // eax
-  int v8; // edx
-  int v9; // ecx
-  int v10; // edx
-  int32_t v11; // ebp
-  int v12; // eax
-  int *v13; // ebx
-  int *v14; // eax
-  int v15; // ecx
-  float v16; // edx
-  int v17; // ebx
-  char *v18; // ebp
-  int v19; // eax
-  float v20; // edx
-  float v21; // ecx
-  float v22; // eax
-  float v23; // ecx
-  float viewport_width; // edx
-  float v25; // eax
-  float v26; // ecx
+  int v8; // ecx
+  int v9; // edx
+  int32_t v10; // ebp
+  int v11; // eax
+  int *v12; // ebx
+  int *v13; // eax
+  int v14; // ecx
+  int v15; // ebx
+  char *v16; // ebp
   struct RenderableBod *bod; // esi
-  RenderableBod **v28; // edi
+  RenderableBod **v18; // edi
   uint32_t list_flags; // eax
-  int32_t *v30; // ecx
-  uint32_t v31; // eax
-  float v32; // eax
-  float render_arg_20; // edx
-  float render_arg_1c; // eax
   TransformMatrix *p_transform; // ecx
-  float v36; // eax
-  float v37; // edx
-  float v38; // eax
-  Sprite *v39; // ebx
-  int v40; // ecx
+  cRSprite *v21; // ebx
   SpriteFlag flags; // eax
-  const void *v42; // esi
-  double v43; // st7
-  double v44; // st7
-  int v45; // esi
-  SpriteDepthNode *v46; // ecx
-  SpriteDepthNode *v47; // edx
-  SpriteDepthNode *v48; // edi
+  TransformMatrix *v23; // esi
+  double v24; // st7
+  double v25; // st7
+  int v26; // esi
+  SpriteDepthNode *v27; // ecx
+  SpriteDepthNode *v28; // edx
+  SpriteDepthNode *v29; // edi
   float x; // ecx
   float y; // ecx
   struct SpriteDepthNode **depth_bucket_cursor; // ebx
-  struct SpriteDepthNode *v52; // esi
+  struct SpriteDepthNode *v33; // esi
   struct Sprite *sprite; // ecx
-  int32_t *v54; // ebx
-  char *v55; // eax
+  int v35; // ebx
+  int v36; // eax
   struct RenderableBod **post_cursor; // edi
-  BodBase *v57; // eax
-  struct RenderableBod *v58; // esi
-  float v59; // eax
-  float v60; // ecx
-  float v61; // edx
-  TransformMatrix *v62; // eax
-  float v63; // eax
-  float v64; // ecx
-  float v65; // edx
-  bool v66; // zf
-  TransformMatrix v67; // [esp-40h] [ebp-D0h] BYREF
-  int32_t *v68; // [esp+10h] [ebp-80h]
-  int v69; // [esp+14h] [ebp-7Ch]
-  GameRoot *v70; // [esp+18h] [ebp-78h]
-  int *v71; // [esp+1Ch] [ebp-74h]
-  int v72; // [esp+20h] [ebp-70h]
-  SpriteDepthNode *v73; // [esp+24h] [ebp-6Ch]
-  int v74; // [esp+28h] [ebp-68h]
+  BodBase *v38; // eax
+  struct RenderableBod *v39; // esi
+  TransformMatrix *v40; // eax
+  bool v41; // zf
+  float render_arg_1c; // [esp-10h] [ebp-A0h]
+  float v43; // [esp-10h] [ebp-A0h]
+  float render_arg_20; // [esp-Ch] [ebp-9Ch]
+  float v45; // [esp-Ch] [ebp-9Ch]
+  tColour *p_color; // [esp-8h] [ebp-98h]
+  tColour *v47; // [esp-8h] [ebp-98h]
+  char v48; // [esp-4h] [ebp-94h]
+  char v49; // [esp-4h] [ebp-94h]
+  int32_t *v50; // [esp+10h] [ebp-80h]
+  int v51; // [esp+10h] [ebp-80h]
+  int v52; // [esp+14h] [ebp-7Ch]
+  int v53; // [esp+14h] [ebp-7Ch]
+  int v55; // [esp+1Ch] [ebp-74h]
+  int *v56; // [esp+1Ch] [ebp-74h]
+  int v57; // [esp+20h] [ebp-70h]
+  SpriteDepthNode *v58; // [esp+24h] [ebp-6Ch]
+  int v59; // [esp+28h] [ebp-68h]
   float *p_viewport_width; // [esp+2Ch] [ebp-64h]
   Vec3 vector; // [esp+30h] [ebp-60h] BYREF
-  _DWORD v77[4]; // [esp+3Ch] [ebp-54h] BYREF
-  int v78; // [esp+4Ch] [ebp-44h] BYREF
+  _DWORD v62[4]; // [esp+3Ch] [ebp-54h] BYREF
+  int v63; // [esp+4Ch] [ebp-44h] BYREF
   TransformMatrix transform; // [esp+50h] [ebp-40h] BYREF
 
   v1 = game;
   v2 = 0;
-  v70 = game;
   render_skip_count = game->render_skip_count;
   if ( render_skip_count > 0 )
   {
@@ -95,286 +78,246 @@ void __thiscall render_game_frame(GameRoot *game)
     return;
   }
   reset_render_counters();
-  v72 = 0;
+  v57 = 0;
   set_matrix_identity(&transform);
   v4 = 0;
-  memset(v77, 255, sizeof(v77));
-  v71 = nullptr;
+  memset(v62, 255, sizeof(v62));
   p_flags = &v1->viewports[0].flags;
-  v78 = -1;
-  v6 = 5;
-  do
+  v63 = -1;
+  for ( i = 5; i != 0; --i )
   {
     if ( (*(_BYTE *)p_flags & 1) != 0 )
       ++v4;
     p_flags += 10;
-    --v6;
   }
-  while ( v6 );
   p_sort_key = &v1->viewports[0].sort_key;
-  v8 = v1->viewports[1].flags & 0xFFFFFF;
-  v71 = (int *)v4;
-  v9 = 0;
-  v1->viewports[1].flags = v8 | 0x2000000;
-  v69 = 0;
-  v68 = &v1->viewports[0].sort_key;
+  v55 = v4;
+  v8 = 0;
+  v1->viewports[1].flags = v1->viewports[1].flags & 0xFFFFFF | 0x2000000;
+  v52 = 0;
+  v50 = &v1->viewports[0].sort_key;
   do
   {
     if ( (p_sort_key[1] & 1) != 0 )
     {
-      if ( v2 )
+      if ( v2 != 0 )
       {
-        v10 = 0;
+        v9 = 0;
         if ( v2 > 0 )
         {
-          v11 = *p_sort_key;
-          v12 = 0;
+          v10 = *p_sort_key;
+          v11 = 0;
           do
           {
-            v13 = &v77[v12];
-            if ( v11 > v1->viewports[v77[v12]].sort_key )
+            v12 = &v62[v11];
+            if ( v10 > v1->viewports[v62[v11]].sort_key )
             {
-              if ( v12 <= 3 )
+              if ( v11 <= 3 )
               {
-                v14 = &v78;
-                v15 = 4 - v10;
+                v13 = &v63;
+                v14 = 4 - v9;
                 do
                 {
-                  *v14 = *(v14 - 1);
+                  *v13 = *(v13 - 1);
+                  --v13;
                   --v14;
-                  --v15;
                 }
-                while ( v15 );
+                while ( v14 != 0 );
               }
               ++v2;
-              *v13 = v69;
-              v10 = v2;
-              v12 = v2;
+              *v12 = v52;
+              v9 = v2;
+              v11 = v2;
             }
-            ++v10;
-            ++v12;
+            ++v9;
+            ++v11;
           }
-          while ( v10 < v2 );
-          p_sort_key = v68;
-          v4 = (int)v71;
-          v9 = v69;
+          while ( v9 < v2 );
+          p_sort_key = v50;
+          v4 = v55;
+          v8 = v52;
         }
       }
       else
       {
-        v77[0] = v9;
+        v62[0] = v8;
         v2 = 1;
       }
     }
-    ++v9;
+    ++v8;
     p_sort_key += 10;
-    v69 = v9;
-    v68 = p_sort_key;
+    v52 = v8;
+    v50 = p_sort_key;
   }
-  while ( v9 < 5 );
-  v68 = nullptr;
-  v69 = 0;
+  while ( v8 < 5 );
+  v51 = 0;
+  v53 = 0;
   if ( v4 > 0 )
   {
-    v74 = v4;
-    v71 = v77;
+    v59 = v4;
+    v56 = v62;
     do
     {
-      v16 = *(float *)&v71;
-      v17 = *v71;
-      v18 = (char *)v1 + 40 * *v71;
-      if ( (v18[1468] & 1) != 0 )
+      v15 = *v56;
+      v16 = (char *)v1 + 40 * *v56;
+      if ( (v16[1468] & 1) != 0 )
       {
-        v19 = *((_DWORD *)v18 + 373);
-        LOBYTE(v16) = v18[1496];
-        v67.position_w = 0.0;
-        v67.position.z = v16;
-        LODWORD(v20) = v19 + 56;
-        LODWORD(v21) = v19 + 128;
-        v22 = *(float *)(v19 + 192);
-        v67.position.y = v21;
-        v23 = *((float *)v18 + 371);
-        v67.position.x = v20;
-        viewport_width = v1->viewports[v17].viewport_width;
-        v67.basis_forward_w = v22;
-        v25 = *((float *)v18 + 369);
-        v67.basis_forward.z = v23;
-        v26 = *((float *)v18 + 368);
-        p_viewport_width = &v1->viewports[v17].viewport_width;
+        p_viewport_width = &v1->viewports[v15].viewport_width;
         render_camera(
-          v26,
-          v25,
-          viewport_width,
-          v67.basis_forward.z,
-          v67.basis_forward_w,
-          (TransformMatrix *)LODWORD(v67.position.x),
-          (TransformMatrix *)LODWORD(v67.position.y),
-          SLOBYTE(v67.position.z),
+          *((float *)v16 + 368),
+          *((float *)v16 + 369),
+          *p_viewport_width,
+          *((float *)v16 + 371),
+          *(float *)(*((_DWORD *)v16 + 373) + 192),
+          (TransformMatrix *)(*((_DWORD *)v16 + 373) + 56),
+          (TransformMatrix *)(*((_DWORD *)v16 + 373) + 128),
+          v16[1496],
           0);
-        if ( (v18[1468] & 2) == 0 )
+        if ( (v16[1468] & 2) == 0 )
         {
           bod = (struct RenderableBod *)v1->active_bod_list.first;
-          v68 = nullptr;
-          if ( bod )
+          v51 = 0;
+          if ( bod != nullptr )
           {
-            v28 = &g_post_sprite_bods;
+            v18 = &g_post_sprite_bods;
             do
             {
               if ( (bod->bod.bod.list_flags & 0x10) != 0 )
-              {
-                LODWORD(v67.position_w) = aDebugRender;
-                debug_report_stub();
-              }
+                debug_report_stub(aDebugRender);
               list_flags = bod->bod.bod.list_flags;
               if ( (list_flags & 2) != 0
                 && (list_flags & 0x20) != 0
-                && (list_flags & *((_DWORD *)v18 + 367) & 0xFF000000) != 0 )
+                && (list_flags & *((_DWORD *)v16 + 367) & 0xFF000000) != 0 )
               {
                 if ( (list_flags & 0x80u) != 0 )
                 {
-                  v30 = v68;
-                  *v28++ = bod;
-                  v68 = (int32_t *)((char *)v30 + 1);
+                  *v18++ = bod;
+                  ++v51;
                 }
-                v31 = bod->bod.bod.list_flags;
-                ++v69;
-                if ( (v31 & 0x800) != 0 )
+                ++v53;
+                if ( (bod->bod.bod.list_flags & 0x800) != 0 )
                   bod->bod.object->animation->progress = bod->render_animation_manager->progress;
                 if ( (bod->bod.bod.list_flags & 0x400) != 0 )
                 {
-                  LOBYTE(v32) = is_bod_after_sprites(&bod->bod);
+                  v48 = is_bod_after_sprites(&bod->bod);
+                  p_color = &bod->bod.color;
                   render_arg_20 = bod->bod.render_arg_20;
-                  v67.position_w = v32;
                   render_arg_1c = bod->bod.render_arg_1c;
-                  LODWORD(v67.position.z) = &bod->bod.color;
-                  v67.position.y = render_arg_20;
-                  v67.position.x = render_arg_1c;
                   p_transform = &bod->transform;
                 }
                 else
                 {
                   transform.position = bod->bod.position;
-                  LOBYTE(v36) = is_bod_after_sprites(&bod->bod);
-                  v37 = bod->bod.render_arg_20;
-                  v67.position_w = v36;
-                  v38 = bod->bod.render_arg_1c;
-                  LODWORD(v67.position.z) = &bod->bod.color;
-                  v67.position.y = v37;
-                  v67.position.x = v38;
+                  v48 = is_bod_after_sprites(&bod->bod);
+                  p_color = &bod->bod.color;
+                  render_arg_20 = bod->bod.render_arg_20;
+                  render_arg_1c = bod->bod.render_arg_1c;
                   p_transform = &transform;
                 }
-                render_object(
-                  bod->bod.object,
-                  p_transform,
-                  v67.position.x,
-                  v67.position.y,
-                  (tColour *)LODWORD(v67.position.z),
-                  SLOBYTE(v67.position_w));
+                render_object(bod->bod.object, p_transform, render_arg_1c, render_arg_20, p_color, v48);
               }
               bod = (struct RenderableBod *)bod->bod.bod.list_next;
             }
-            while ( bod );
-            v1 = v70;
+            while ( bod != nullptr );
+            v1 = game;
           }
         }
-        v39 = g_sprite_manager.active_heads[v17];
-        v73 = g_sprite_depth_nodes;
+        v21 = g_sprite_manager.active_heads[v15];
+        v58 = g_sprite_depth_nodes;
         begin_sprite_depth_render_state();
-        if ( v39 )
+        if ( v21 != nullptr )
         {
           while ( 1 )
           {
-            v40 = *((_DWORD *)v18 + 367);
-            ++v72;
-            flags = v39->flags;
-            if ( (flags & v40 & 0xFF000000) != 0 )
+            ++v57;
+            flags = v21->flags;
+            if ( (flags & *((_DWORD *)v16 + 367) & 0xFF000000) != 0 )
               break;
             report_errorf(aLooseSpriteSce);
 LABEL_63:
-            v39 = v39->next;
-            if ( !v39 )
+            v21 = v21->next;
+            if ( v21 == nullptr )
               goto LABEL_64;
           }
           if ( (flags & 1) == 0 || (flags & 0x40) == 0 || (BYTE1(flags) & 2) != 0 )
             goto LABEL_63;
-          v42 = (const void *)(*((_DWORD *)v18 + 373) + 128);
-          vector = v39->position;
-          qmemcpy(&v67, v42, sizeof(v67));
-          multiply_vector_by_matrix(&vector, v67);
+          v23 = (TransformMatrix *)(*((_DWORD *)v16 + 373) + 128);
+          vector = v21->position;
+          multiply_vector_by_matrix(&vector, *v23);
           vector.x = -vector.x;
-          v43 = -vector.z;
-          vector.z = v43;
-          v44 = -v43 * 4.1967211 + v39->depth_bias;
-          v45 = (__int64)v44;
-          if ( v45 >= 256 )
+          v24 = -vector.z;
+          vector.z = v24;
+          v25 = -v24 * 4.1967211 + v21->depth_bias;
+          v26 = (__int64)v25;
+          if ( v26 >= 256 )
           {
-            v45 = 255;
+            v26 = 255;
             goto LABEL_50;
           }
-          if ( (int)(__int64)v44 >= 0 )
+          if ( (int)(__int64)v25 >= 0 )
           {
 LABEL_50:
-            v46 = g_sprite_depth_buckets[v45];
-            v47 = v73++;
-            if ( v46 )
+            v27 = g_sprite_depth_buckets[v26];
+            v28 = v58++;
+            if ( v27 != nullptr )
             {
-              v48 = nullptr;
-              while ( v44 < v46->depth_key )
+              v29 = nullptr;
+              while ( v25 < v27->depth_key )
               {
-                v48 = v46;
-                v46 = v46->next;
-                if ( !v46 )
+                v29 = v27;
+                v27 = v27->next;
+                if ( v27 == nullptr )
                 {
-                  v48->next = v47;
+                  v29->next = v28;
                   goto LABEL_59;
                 }
               }
-              if ( v48 )
+              if ( v29 != nullptr )
               {
-                v48->next = v47;
-                v47->next = v46;
+                v29->next = v28;
+                v28->next = v27;
               }
               else
               {
-                v47->next = v46;
-                g_sprite_depth_buckets[v45] = v47;
+                v28->next = v27;
+                g_sprite_depth_buckets[v26] = v28;
               }
             }
             else
             {
-              g_sprite_depth_buckets[v45] = v47;
+              g_sprite_depth_buckets[v26] = v28;
 LABEL_59:
-              v47->next = nullptr;
+              v28->next = nullptr;
             }
             x = vector.x;
-            v47->depth_key = v44;
-            v47->position.x = x;
+            v28->depth_key = v25;
+            v28->position.x = x;
             y = vector.y;
-            v47->sprite = v39;
-            v47->position.y = y;
-            v47->position.z = vector.z;
-            v39->render_bucket_index = v45;
-            v39->render_depth_key = v44;
+            v28->sprite = v21;
+            v28->position.y = y;
+            v28->position.z = vector.z;
+            v21->render_bucket_index = v26;
+            v21->render_depth_key = v25;
           }
-          v1 = v70;
+          v1 = game;
           goto LABEL_63;
         }
 LABEL_64:
         depth_bucket_cursor = &g_sprite_depth_buckets[255];
         do
         {
-          v52 = *depth_bucket_cursor;
-          if ( *depth_bucket_cursor )
+          v33 = *depth_bucket_cursor;
+          if ( *depth_bucket_cursor != nullptr )
           {
             do
             {
-              sprite = v52->sprite;
+              sprite = v33->sprite;
               if ( (sprite->flags & 2) != 0 )
-                build_sprite_tail(sprite, (const struct TransformMatrix *)(*((_DWORD *)v18 + 373) + 128));
-              draw_sprite_quad((Vec3 *)&v52->position, v52->sprite);
-              v52 = v52->next;
+                build_sprite_tail(sprite, (const struct TransformMatrix *)(*((_DWORD *)v16 + 373) + 128));
+              draw_sprite_quad((Vec3 *)&v33->position, v33->sprite);
+              v33 = v33->next;
             }
-            while ( v52 );
+            while ( v33 != nullptr );
             *depth_bucket_cursor = nullptr;
           }
           --depth_bucket_cursor;
@@ -382,71 +325,59 @@ LABEL_64:
         while ( (int)depth_bucket_cursor >= (int)g_sprite_depth_buckets );
         end_sprite_depth_render_state();
         begin_overlay_render_state();
-        draw_font_text_queue(*((_DWORD *)v18 + 367));
+        draw_font_text_queue(*((_DWORD *)v16 + 367));
         end_overlay_render_state();
-        if ( (v18[1468] & 2) == 0 && v68 )
+        if ( (v16[1468] & 2) == 0 && v51 != 0 )
         {
           render_camera(
-            *((float *)v18 + 368),
-            *((float *)v18 + 369),
+            *((float *)v16 + 368),
+            *((float *)v16 + 369),
             *p_viewport_width,
-            *((float *)v18 + 371),
-            *(float *)(*((_DWORD *)v18 + 373) + 192),
-            (TransformMatrix *)(*((_DWORD *)v18 + 373) + 56),
-            (TransformMatrix *)(*((_DWORD *)v18 + 373) + 128),
-            v18[1496],
+            *((float *)v16 + 371),
+            *(float *)(*((_DWORD *)v16 + 373) + 192),
+            (TransformMatrix *)(*((_DWORD *)v16 + 373) + 56),
+            (TransformMatrix *)(*((_DWORD *)v16 + 373) + 128),
+            v16[1496],
             1);
-          v54 = v68;
-          v55 = (char *)v68 + v69;
-          post_cursor = (struct RenderableBod **)(4 * (_DWORD)v68 + 5110544);
-          v68 = nullptr;
-          v69 = (int)v55;
+          v35 = v51;
+          v36 = v51 + v53;
+          post_cursor = (struct RenderableBod **)(4 * v51 + 5110544);
+          v51 = 0;
+          v53 = v36;
           do
           {
-            v57 = (BodBase *)*--post_cursor;
-            if ( (v57->bod.list_flags & 0x400) != 0 )
+            v38 = (BodBase *)*--post_cursor;
+            if ( (v38->bod.list_flags & 0x400) != 0 )
             {
-              v58 = (struct RenderableBod *)v57;
-              LOBYTE(v59) = is_bod_after_sprites(v57);
-              v60 = v58->bod.render_arg_20;
-              v61 = v58->bod.render_arg_1c;
-              v67.position_w = v59;
-              LODWORD(v67.position.z) = &v58->bod.color;
-              v67.position.y = v60;
-              v67.position.x = v61;
-              v62 = &v58->transform;
+              v39 = (struct RenderableBod *)v38;
+              v49 = is_bod_after_sprites(v38);
+              v47 = &v39->bod.color;
+              v45 = v39->bod.render_arg_20;
+              v43 = v39->bod.render_arg_1c;
+              v40 = &v39->transform;
             }
             else
             {
-              v58 = *post_cursor;
-              transform.position = v57->position;
-              LOBYTE(v63) = is_bod_after_sprites(&v58->bod);
-              v64 = v58->bod.render_arg_20;
-              v65 = v58->bod.render_arg_1c;
-              v67.position_w = v63;
-              LODWORD(v67.position.z) = &v58->bod.color;
-              v67.position.y = v64;
-              v67.position.x = v65;
-              v62 = &transform;
+              v39 = *post_cursor;
+              transform.position = v38->position;
+              v49 = is_bod_after_sprites(&v39->bod);
+              v47 = &v39->bod.color;
+              v45 = v39->bod.render_arg_20;
+              v43 = v39->bod.render_arg_1c;
+              v40 = &transform;
             }
-            render_object(
-              v58->bod.object,
-              v62,
-              v67.position.x,
-              v67.position.y,
-              (tColour *)LODWORD(v67.position.z),
-              SLOBYTE(v67.position_w));
-            v54 = (int32_t *)((char *)v54 - 1);
+            render_object(v39->bod.object, v40, v43, v45, v47, v49);
+            --v35;
           }
-          while ( v54 );
-          v1 = v70;
+          while ( v35 != 0 );
+          v1 = game;
         }
       }
-      v66 = v74 == 1;
-      ++v71;
-      --v74;
+      v41 = v59 == 1;
+      ++v56;
+      --v59;
     }
-    while ( !v66 );
+    while ( !v41 );
   }
   noop_runtime_ai();
 }

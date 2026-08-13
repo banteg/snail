@@ -3,7 +3,7 @@
 /* selector: initialize_anim_manager */
 
 // Exact void `cRAnimManager::Init()`: clears the state, progress, progress step, and completion latch of the authored 0x48-byte queued animation owner. Android preserves the same offsets and void contract.
-void __thiscall initialize_anim_manager(AnimManager *manager)
+void __thiscall initialize_anim_manager(cRAnimManager *manager)
 {
   manager->progress = 0.0;
   manager->progress_step = 0.0;

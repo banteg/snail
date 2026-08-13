@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
 from _narrow_sync import (
     apply_split_away_user_var_update,
@@ -15,7 +15,6 @@ from _narrow_sync import (
 )
 from _target import DEFAULT_TARGET
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
 
@@ -24,7 +23,7 @@ EXPECTED_TYPE_WIDTHS = {
     "Object": 0xDC,
     "RenderableBod": 0x80,
     "PresentationAnimationSlot": 0x80,
-    "AnimManager": 0x48,
+    "cRAnimManager": 0x48,
 }
 
 EXPECTED_STRUCT_FIELDS = {
@@ -34,7 +33,7 @@ EXPECTED_STRUCT_FIELDS = {
     "PresentationAnimationSlot": {
         0x00: ("body", "RenderableBod"),
     },
-    "AnimManager": {
+    "cRAnimManager": {
         0x00: ("state", "int32_t"),
         0x04: ("progress", "float"),
         0x08: ("progress_step", "float"),
@@ -98,7 +97,7 @@ def parse_args() -> argparse.Namespace:
         "--header",
         type=Path,
         default=DEFAULT_HEADER_PATH,
-        help="Header documenting the canonical AnimManager owner.",
+        help="Header documenting the canonical cRAnimManager owner.",
     )
     return parser.parse_args()
 

@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_symbol_updates,
@@ -18,7 +17,7 @@ from _narrow_sync import (
     types_declare_if_missing,
     types_declare_missing_only,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -31,7 +30,7 @@ EXPECTED_OWNER_SIZES = {
     "Sprite": 0xB4,
     "RenderableBod": 0x80,
     "PresentationAnimationSlot": 0x80,
-    "AnimManager": 0x48,
+    "cRAnimManager": 0x48,
     "SubHover": 0x214,
     "Weapon": 0x3DC,
     "Invincible": 0x98,
@@ -249,7 +248,10 @@ def main() -> int:
         *apply_type_renames(
             REPO_ROOT,
             target=args.target,
-            renames=(("SnailSkin", "cRSnailSkin"),),
+            renames=(
+                ("SnailSkin", "cRSnailSkin"),
+                ("AnimManager", "cRAnimManager"),
+            ),
         ),
         types_declare_if_missing(
             REPO_ROOT,

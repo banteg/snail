@@ -147,6 +147,22 @@ SNAIL_SKIN_REANALYSIS_FUNCTIONS = (
     "update_invincible_shell",
 )
 
+ANIM_MANAGER_OWNER_SIZES = {
+    "cRAnimManager": 0x48,
+}
+
+ANIM_MANAGER_OWNER_TYPE_RENAMES = (("AnimManager", "cRAnimManager"),)
+
+ANIM_MANAGER_REANALYSIS_FUNCTIONS = (
+    "initialize_anim_manager",
+    "update_anim_manager",
+    "initialize_subgoldy",
+    "update_subgoldy",
+    "render_game_frame",
+    "dispatch_cutscene_animation",
+    "set_weapon_animation",
+)
+
 TIMES_UP_OWNER_SIZES = {
     "cRTimesUp": 0x10,
 }
@@ -388,7 +404,7 @@ SNAIL_FIELD_UPDATES = (
     ("0x80", "previous_live_matrix", "TransformMatrix"),
     ("0xc0", "cached_cutscene_matrix", "TransformMatrix"),
     ("0x100", "owner_player", "Player*"),
-    ("0x104", "anim_manager", "AnimManager"),
+    ("0x104", "anim_manager", "cRAnimManager"),
     ("0x14c", "cutscene_animation_slots", "PresentationAnimationSlot[0xa]"),
     ("0x64c", "weapon_channels", "Weapon[0x3]"),
     ("0x11e0", "jetpack_channel", "Weapon"),
@@ -413,7 +429,7 @@ PRESENTATION_WOBBLE_CONTROLLER_FIELD_UPDATES = (
 WEAPON_FIELD_UPDATES = (
     ("0x00", "body", "RenderableBod"),
     ("0x104", "selected_state", "int32_t"),
-    ("0x108", "anim_manager", "AnimManager"),
+    ("0x108", "anim_manager", "cRAnimManager"),
     ("0x150", "animation_slots", "PresentationAnimationSlot[0x5]"),
 )
 
@@ -441,7 +457,7 @@ INVINCIBLE_FIELD_UPDATES = (
 RENDERABLE_BOD_FIELD_UPDATES = (
     ("0x00", "bod", "BodBase"),
     ("0x38", "transform", "TransformMatrix"),
-    ("0x78", "render_animation_manager", "AnimManager*"),
+    ("0x78", "render_animation_manager", "cRAnimManager*"),
     ("0x7c", "frame_number", "int32_t"),
 )
 
@@ -735,7 +751,7 @@ REQUIRED_HEADER_STRUCTS = (
     "ObjectAnimation",
     "PresentationAnimationSlot",
     "PresentationAnimationObjectStrideCursor",
-    "AnimManager",
+    "cRAnimManager",
     "Weapon",
     "GolbShot",
     "GolbShotVapourObjectStrideCursor",
@@ -1179,6 +1195,82 @@ def verify_snail_skin_owner_size(*, target: str) -> dict[str, object]:
         "owner_group": "snail_skin",
         "owner_sizes": observed,
     }
+
+
+def verify_anim_manager_owner_size(*, target: str) -> dict[str, object]:
+    """Fail closed before applying the cRAnimManager method ABIs."""
+    observed = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=ANIM_MANAGER_OWNER_SIZES,
+    )
+    failures = {
+        name: {"expected": expected, "observed": observed.get(name)}
+        for name, expected in ANIM_MANAGER_OWNER_SIZES.items()
+        if observed.get(name) != expected
+    }
+    if failures:
+        raise RuntimeError(f"cRAnimManager owner size mismatch: {failures}")
+    return {
+        "op": "owner_size_verify",
+        "status": "verified",
+        "owner_group": "anim_manager",
+        "owner_sizes": observed,
+    }
+
+
+def ensure_anim_manager_owner_type(
+    *, target: str, header_path: Path
+) -> list[dict[str, object]]:
+    """Retire AnimManager only when its canonical owner graph is exact."""
+    operations = apply_type_renames(
+        REPO_ROOT,
+        target=target,
+        renames=ANIM_MANAGER_OWNER_TYPE_RENAMES,
+    )
+    observed_widths = current_type_widths(
+        REPO_ROOT,
+        target=target,
+        type_names=ANIM_MANAGER_OWNER_SIZES,
+    )
+    type_equivalence = current_header_type_equivalence(
+        REPO_ROOT,
+        target=target,
+        header_path=header_path,
+    )
+    mismatched_types = tuple(
+        name
+        for name, expected_size in ANIM_MANAGER_OWNER_SIZES.items()
+        if (
+            observed_widths.get(name) != expected_size
+            or not type_equivalence.get(name, False)
+        )
+    )
+    if mismatched_types:
+        type_operation = types_declare_missing_only(
+            REPO_ROOT,
+            target=target,
+            header_path=header_path,
+            replace_types=mismatched_types,
+            include_types=ANIM_MANAGER_OWNER_SIZES,
+        )
+        type_operation["repaired_types"] = mismatched_types
+        type_operation["expected_sizes"] = {
+            name: ANIM_MANAGER_OWNER_SIZES[name] for name in mismatched_types
+        }
+    else:
+        type_operation = {
+            "op": "types_declare_missing_only",
+            "status": "skipped",
+            "reason": "cRAnimManager owner layout already matches the header",
+            "header": str(header_path),
+            "expected_sizes": ANIM_MANAGER_OWNER_SIZES,
+            "type_equivalence": {
+                name: type_equivalence.get(name, False)
+                for name in ANIM_MANAGER_OWNER_SIZES
+            },
+        }
+    return [*operations, type_operation]
 
 
 def ensure_snail_skin_owner_type(
@@ -4919,11 +5011,11 @@ PROTO_UPDATES = (
     ),
     (
         "initialize_anim_manager",
-        "void __thiscall initialize_anim_manager(AnimManager* manager)",
+        "void __thiscall initialize_anim_manager(cRAnimManager* manager)",
     ),
     (
         "update_anim_manager",
-        "void __thiscall update_anim_manager(AnimManager* manager)",
+        "void __thiscall update_anim_manager(cRAnimManager* manager)",
     ),
     (
         "advance_frame_sequence",
@@ -6954,6 +7046,12 @@ def main() -> int:
             )
         )
         operations.extend(
+            ensure_anim_manager_owner_type(
+                target=args.target,
+                header_path=header_path,
+            )
+        )
+        operations.extend(
             ensure_times_up_owner_type(
                 target=args.target,
                 header_path=header_path,
@@ -7016,6 +7114,7 @@ def main() -> int:
         operations.append(verify_progress_bar_owner_size(target=args.target))
         operations.append(verify_squidge_owner_size(target=args.target))
         operations.append(verify_snail_skin_owner_size(target=args.target))
+        operations.append(verify_anim_manager_owner_size(target=args.target))
         operations.append(verify_times_up_owner_size(target=args.target))
         operations.append(verify_warning_owner_size(target=args.target))
         operations.append(verify_tip_owner_sizes(target=args.target))
@@ -7168,7 +7267,7 @@ def main() -> int:
                 ),
                 ("Snail", SNAIL_FIELD_UPDATES),
                 ("Weapon", WEAPON_FIELD_UPDATES),
-                ("AnimManager", ANIM_MANAGER_FIELD_UPDATES),
+                ("cRAnimManager", ANIM_MANAGER_FIELD_UPDATES),
                 ("Invincible", INVINCIBLE_FIELD_UPDATES),
                 ("Cameraman", CAMERAMAN_FIELD_UPDATES),
                 ("CutScene", CUT_SCENE_FIELD_UPDATES),
@@ -7214,6 +7313,13 @@ def main() -> int:
             REPO_ROOT,
             target=args.target,
             identifiers=SNAIL_SKIN_REANALYSIS_FUNCTIONS,
+        )
+    )
+    operations.extend(
+        reanalyze_functions(
+            REPO_ROOT,
+            target=args.target,
+            identifiers=ANIM_MANAGER_REANALYSIS_FUNCTIONS,
         )
     )
     operations.extend(

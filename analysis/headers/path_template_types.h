@@ -125,13 +125,13 @@ typedef struct BodBase {
 typedef char BodBase_must_be_0x38[(sizeof(BodBase) == 0x38) ? 1 : -1];
 typedef BodBase cRBod;
 
-typedef struct AnimManager AnimManager;
+typedef struct cRAnimManager cRAnimManager;
 
 typedef struct RenderableBod {
     BodBase bod;
     TransformMatrix transform;
     /* Borrowed only when BodNode.list_flags has the render-sync bit 0x800. */
-    AnimManager* render_animation_manager;
+    cRAnimManager* render_animation_manager;
     /* Authored frame number when LoadAnim uses this cRBodPos as a keyframe. */
     int32_t frame_number;
 } RenderableBod;
@@ -1985,7 +1985,7 @@ typedef struct PresentationAnimationObjectStrideCursor {
 } PresentationAnimationObjectStrideCursor;
 
 /* Authored cRAnimManager, exact 0x48-byte queued animation owner. */
-struct AnimManager {
+struct cRAnimManager {
     int32_t state;
     float progress;
     float progress_step;
@@ -1997,13 +1997,15 @@ struct AnimManager {
     RenderableBod* target_model;
     PresentationAnimationSlot* animation_slots;
 };
+typedef char cRAnimManager_must_be_0x48[
+    (sizeof(cRAnimManager) == 0x48) ? 1 : -1];
 
 /* Authored cRWeapon, exact 0x3dc-byte animation-channel owner. */
 typedef struct Weapon {
     RenderableBod body;
     uint8_t _pad_80[0x104 - 0x80];
     int32_t selected_state;
-    AnimManager anim_manager;
+    cRAnimManager anim_manager;
     PresentationAnimationSlot animation_slots[5];
     Vec3 release_step;
 } Weapon;
@@ -2056,7 +2058,7 @@ typedef struct Snail {
     TransformMatrix previous_live_matrix;
     TransformMatrix cached_cutscene_matrix;
     Player* owner_player;
-    AnimManager anim_manager;
+    cRAnimManager anim_manager;
     PresentationAnimationSlot cutscene_animation_slots[10];
     Weapon weapon_channels[3];
     Weapon jetpack_channel;
@@ -2946,8 +2948,8 @@ void __thiscall initialize_snail_skin(cRSnailSkin* snail_skin);
 void __thiscall release_snail_weapons(Snail* snail);
 void __thiscall build_snail_world_hotspots(Snail* snail);
 void __thiscall extract_snail_local_hotspots(Snail* snail);
-void __thiscall initialize_anim_manager(AnimManager* manager);
-void __thiscall update_anim_manager(AnimManager* manager);
+void __thiscall initialize_anim_manager(cRAnimManager* manager);
+void __thiscall update_anim_manager(cRAnimManager* manager);
 void __thiscall advance_frame_sequence(Movie* movie);
 void __thiscall update_smtracks(Face* face);
 void __cdecl sample_smtrack_heightmap(

@@ -131,12 +131,13 @@
 0040a783        if ((*(ebp_1 + 0x5bc) & flags & 0xff000000) == 0)
 0040a8a4        report_errorf("Loose Sprite scene viewport")
 0040a79c        if ((flags.b & 1) != 0 && (flags.b & 0x40) != 0 && (flags:1.b & 2) == 0)
+0040a7ae        int32_t esi_3 = *(ebp_1 + 0x5d4) + 0x80
 0040a7b8        struct Vec3 vector
 0040a7b8        vector.x = next->position.x
 0040a7bf        vector.y = next->position.y
 0040a7cb        vector.z = next->position.z
 0040a7cf        void matrix
-0040a7cf        __builtin_memcpy(&matrix, *(ebp_1 + 0x5d4) + 0x80, 0x40)
+0040a7cf        __builtin_memcpy(&matrix, esi_3, 0x40)
 0040a7d5        multiply_vector_by_matrix(&vector, matrix)
 0040a7e0        vector.x = fconvert.s(fneg(fconvert.t(vector.x)))
 0040a7e8        long double x87_r7_4 = fneg(fconvert.t(vector.z))

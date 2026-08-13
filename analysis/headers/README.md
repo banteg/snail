@@ -120,6 +120,14 @@ Current checked-in example:
     equivalence, verifies the authored 0x20-byte `cRSnailSkin` and its
     `Snail +0x1938` embed, then replays the exact `Init`, `AI`, and
     `Change(int, float)` receivers plus every live Windows caller.
+- `anim_manager_types.h`
+- `uv run python tools/binja/sync_anim_manager_types.py`
+- `uv run python tools/ida/sync_anim_manager_types.py`
+  - Retires the generic analysis-only `AnimManager` record after exact layout
+    equivalence, verifies the authored 0x48-byte `cRAnimManager`, the
+    `Snail +0x104` and `Weapon +0x108` embeds, and the borrowed
+    `RenderableBod +0x78` backlink, then replays the exact `Init` and `AI`
+    receivers plus all live Windows callers.
 - `times_up_types.h`
 - `uv run python tools/binja/sync_times_up_types.py`
 - `uv run python tools/ida/sync_times_up_types.py`

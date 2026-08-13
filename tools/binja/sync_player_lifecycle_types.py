@@ -3,20 +3,20 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_proto_updates,
     apply_symbol_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_type_widths,
     emit_summary,
     reanalyze_functions,
     types_declare_if_missing,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/path_template_types.h"
@@ -30,7 +30,7 @@ EXPECTED_OWNER_SIZES = {
     "Sprite": 0xB4,
     "RuntimeConfig": 0xC4,
     "RenderableBod": 0x80,
-    "AnimManager": 0x48,
+    "cRAnimManager": 0x48,
     "SubHealth": 0x74,
     "SubHover": 0x214,
     "GolbShot": 0x2E8,
@@ -155,6 +155,11 @@ def main() -> int:
         raise FileNotFoundError(f"Player owner type header not found: {header_path}")
 
     operations: list[dict[str, object]] = [
+        *apply_type_renames(
+            REPO_ROOT,
+            target=args.target,
+            renames=(("AnimManager", "cRAnimManager"),),
+        ),
         types_declare_if_missing(
             REPO_ROOT,
             target=args.target,

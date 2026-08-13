@@ -2,7 +2,7 @@
 /* function: initialize_subgoldy @ 0x43a9c0 */
 /* selector: initialize_subgoldy */
 
-// Authored void `cRSubGoldy::Init(int)`: initializes the cRSubGame-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own AnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method.
+// Authored void `cRSubGoldy::Init(int)`: initializes the cRSubGame-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own cRAnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method.
 void __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
 {
   uint32_t list_flags; // eax

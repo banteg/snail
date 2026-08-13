@@ -2,7 +2,7 @@
 /* function: dispatch_cutscene_animation @ 0x444600 */
 /* selector: dispatch_cutscene_animation */
 
-// Stable Windows name for the authored void `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation. Android independently proves the void contract: its immediate exit leaves `this` in R0 while its queued exit leaves an interior queued-array address.
+// Stable Windows name for the authored void `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root cRAnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation. Android independently proves the void contract: its immediate exit leaves `this` in R0 while its queued exit leaves an interior queued-array address.
 void __thiscall dispatch_cutscene_animation(Snail *snail, int32_t animation_id, uint8_t immediate, int32_t mode_flags)
 {
   ObjectAnimation *animation; // eax
@@ -17,7 +17,7 @@ void __thiscall dispatch_cutscene_animation(Snail *snail, int32_t animation_id, 
   RenderableBod *target_model; // ecx
   uint32_t list_flags; // eax
 
-  if ( immediate )
+  if ( immediate != 0 )
   {
     animation = snail->cutscene_animation_slots[animation_id].body.bod.object->animation;
     snail->anim_manager.active_animation = animation;
@@ -27,7 +27,7 @@ void __thiscall dispatch_cutscene_animation(Snail *snail, int32_t animation_id, 
     if ( (active_animation->flags & 8) != 0 )
     {
       progress_step = active_animation->progress_step;
-      if ( v8 )
+      if ( v8 != 0 )
         progress_step = -progress_step;
       v9 = -progress_step;
       snail->anim_manager.progress_step = v9;
@@ -38,7 +38,7 @@ void __thiscall dispatch_cutscene_animation(Snail *snail, int32_t animation_id, 
       v10 = snail->anim_manager.active_animation;
       snail->anim_manager.progress = 0.0;
       v12 = v10->progress_step;
-      if ( v13 )
+      if ( v13 != 0 )
         v12 = -v12;
       snail->anim_manager.progress_step = v12;
     }

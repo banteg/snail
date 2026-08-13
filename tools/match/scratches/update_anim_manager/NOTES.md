@@ -114,3 +114,12 @@ The scratch now spells the exact member as `cRAnimManager::AI()` and exports
 `cRSubGoldy::AI`, covering the Snail manager, jetpack channel, and three weapon
 channels. Android and iOS independently retain the same authored symbol. The
 source promotion preserves the exact 134/134 match and 13 clean operands.
+
+## 2026-08-13 canonical database ownership
+
+The five live Windows calls in `cRSubGoldy::AI` cover the Snail manager,
+jetpack channel, and all three Weapon managers. The focused and broad replays
+now preserve their shared canonical `cRAnimManager` owner, every field through
+`+0x44`, the inline `Snail +0x104` and `Weapon +0x108` embeds, and the borrowed
+`RenderableBod +0x78` backlink. The exact `void __thiscall(cRAnimManager*)`
+ABI remains 134/134 with all 13 operands clean.

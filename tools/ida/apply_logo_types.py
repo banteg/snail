@@ -17,7 +17,6 @@ if str(SCRIPT_ROOT) not in sys.path:
 from game_root_owner import sync_game_root_owner_graph  # noqa: E402
 from type_alias_migration import migrate_equivalent_struct_aliases  # noqa: E402
 
-
 TRUSTED_NAMES = [
     (0x497310, "g_logo_letter_vtable"),
 ]
@@ -26,6 +25,8 @@ LOGO_OWNER_TYPE_ALIASES = (
     ("LogoLetter", "cRLogoLetter", 0x90),
     ("Logo", "cRLogo", 0x25218),
 )
+
+ANIM_MANAGER_OWNER_TYPE_ALIASES = (("AnimManager", "cRAnimManager", 0x48),)
 
 EXPECTED_OWNER_LAYOUTS = {
     "BodBase": {
@@ -46,7 +47,7 @@ EXPECTED_OWNER_LAYOUTS = {
         "members": {
             0x00: ("bod", "BodBase"),
             0x38: ("transform", "TransformMatrix"),
-            0x78: ("render_animation_manager", "AnimManager *"),
+            0x78: ("render_animation_manager", "cRAnimManager *"),
             0x7C: ("frame_number", "int32_t"),
         },
     },
@@ -165,12 +166,39 @@ def _owner_layout_readback() -> dict[str, object]:
 
 
 def _sync_types(header_path: pathlib.Path) -> int:
-    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
-    type_alias_migrations = (
+    anim_manager_header_path = header_path.with_name("anim_manager_types.h")
+    if not anim_manager_header_path.is_file():
+        print(
+            json.dumps(
+                {
+                    "database": idc.get_idb_path(),
+                    "header": str(header_path),
+                    "anim_manager_header": str(anim_manager_header_path),
+                    "failed": [{"reason": "missing_anim_manager_header"}],
+                },
+                indent=2,
+            )
+        )
+        return 1
+
+    anim_manager_parse_errors = idc.parse_decls(
+        str(anim_manager_header_path), idc.PT_FILE
+    )
+    anim_manager_type_alias_migrations = (
         []
-        if parse_errors
+        if anim_manager_parse_errors
+        else migrate_equivalent_struct_aliases(ANIM_MANAGER_OWNER_TYPE_ALIASES)
+    )
+    parse_errors = idc.parse_decls(str(header_path), idc.PT_FILE)
+    logo_type_alias_migrations = (
+        []
+        if anim_manager_parse_errors or parse_errors
         else migrate_equivalent_struct_aliases(LOGO_OWNER_TYPE_ALIASES)
     )
+    type_alias_migrations = [
+        *anim_manager_type_alias_migrations,
+        *logo_type_alias_migrations,
+    ]
     type_alias_failures = [
         {
             "selector": result.get("old_name"),
@@ -230,6 +258,8 @@ def _sync_types(header_path: pathlib.Path) -> int:
             {
                 "database": idc.get_idb_path(),
                 "header": str(header_path),
+                "anim_manager_header": str(anim_manager_header_path),
+                "anim_manager_parse_errors": anim_manager_parse_errors,
                 "parse_errors": parse_errors,
                 "type_alias_migrations": type_alias_migrations,
                 "owner_layout_readback": owner_layout_readback,
@@ -244,7 +274,7 @@ def _sync_types(header_path: pathlib.Path) -> int:
             indent=2,
         )
     )
-    return 1 if parse_errors or failed or missing else 0
+    return 1 if anim_manager_parse_errors or parse_errors or failed or missing else 0
 
 
 def main() -> None:

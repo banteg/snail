@@ -31,8 +31,9 @@
 0044465a        long double x87_r7_2 = fneg(x87_r7_1)
 0044465c        snail->anim_manager.progress_step = fconvert.s(x87_r7_2)
 00444668        snail->anim_manager.progress = fconvert.s(x87_r7_2 + fconvert.t(1f))
+0044469b        struct Object* object = snail->cutscene_animation_slots[animation_id].body.bod.object
 0044469d        snail->anim_manager.queue_count = 0
-004446a7        snail->body.bod.object = snail->cutscene_animation_slots[animation_id].body.bod.object
+004446a7        snail->body.bod.object = object
 004446aa        struct RenderableBod* target_model = snail->anim_manager.target_model
 004446b1        uint32_t list_flags = target_model->bod.bod.list_flags
 004446b4        list_flags.b |= 0x20

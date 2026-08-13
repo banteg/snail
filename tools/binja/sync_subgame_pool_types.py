@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import sys
+from pathlib import Path
 
-from _target import DEFAULT_TARGET
 from _narrow_sync import (
     apply_struct_and_proto_updates,
+    apply_type_renames,
     apply_user_var_updates,
     current_enum_members,
     current_struct_fields_batch,
@@ -16,7 +16,7 @@ from _narrow_sync import (
     emit_summary,
     types_declare_missing_only,
 )
-
+from _target import DEFAULT_TARGET
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_subgame_pool_types.h"
@@ -287,6 +287,12 @@ def main() -> int:
     if not header_path.is_file():
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
+    type_rename_operations = apply_type_renames(
+        REPO_ROOT,
+        target=args.target,
+        renames=(("AnimManager", "cRAnimManager"),),
+    )
+
     type_widths = current_type_widths(
         REPO_ROOT,
         target=args.target,
@@ -421,6 +427,7 @@ def main() -> int:
         struct_updates.insert(0, ("FrameSubgameRuntime", SUBGAME_FIELD_UPDATES))
 
     operations: list[dict[str, object]] = [
+        *type_rename_operations,
         type_operation,
         cursor_type_operation,
         ring_particle_cursor_type_operation,

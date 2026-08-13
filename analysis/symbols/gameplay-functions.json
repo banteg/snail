@@ -1012,7 +1012,7 @@
       "address": "0x40a490",
       "name": "render_game_frame",
       "port_scope": "boundary",
-      "description": "Renders every active root viewport in camera sort order, synchronizes flagged Snail/weapon BODs from their borrowed AnimManager progress into Object::animation, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`, and Android preserves the animation-progress chain at port-specific offsets."
+      "description": "Renders every active root viewport in camera sort order, synchronizes flagged Snail/weapon BODs from their borrowed cRAnimManager progress into Object::animation, draws eligible BODs, depth-buckets the active sprite list through the fixed 3000-node workspace, drains all 256 buckets, renders queued text, and replays staged after-sprite BODs. The native function has a void thiscall ABI; iOS names the same root-owned method `cRGame::Render()`, and Android preserves the animation-progress chain at port-specific offsets."
     },
     {
       "address": "0x40aa50",
@@ -3501,7 +3501,7 @@
       "aliases": [
         "cRSubGoldy_Init"
       ],
-      "description": "Authored void `cRSubGoldy::Init(int)`: initializes the cRSubGame-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own AnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method."
+      "description": "Authored void `cRSubGoldy::Init(int)`: initializes the cRSubGame-owned Goldy actor, including movement/follow state, animation and cutscene owners, cached camera target, exact cRSubHover child, cameraman, and click-start prompt. It binds each animated Snail/weapon BOD to its own cRAnimManager and owned donor-slot bank for render-time ObjectAnimation progress synchronization; Android and iOS retain the method."
     },
     {
       "address": "0x43af10",
@@ -4221,7 +4221,7 @@
       "aliases": [
         "cRSnail_SetAnimation"
       ],
-      "description": "Stable Windows name for the authored void `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root AnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation. Android independently proves the void contract: its immediate exit leaves `this` in R0 while its queued exit leaves an interior queued-array address."
+      "description": "Stable Windows name for the authored void `cRSnail::SetAnimation(int, bool, int)`: queues an animation on the exact embedded Snail or begins it immediately through the root cRAnimManager and one of ten owned 0x80-byte RenderableBod slots, following the slot Object link to Object::animation. Android independently proves the void contract: its immediate exit leaves `this` in R0 while its queued exit leaves an interior queued-array address."
     },
     {
       "address": "0x4446e0",
